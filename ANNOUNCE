@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.6.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.6.5 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,10 +31,73 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.6.0'.
+   The currently released version of the library is `0.6.5'.
+
+Noteworthy changes in version `0.6.5'
+=====================================
+
+   Many of the basic GUI classes have been vastly improved or
+rewritten, thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many
+others.
+
+   * New Info Panel support
+
+   * New NSBezierPath
+
+   * Rewrite of several classes including Cell and Button classes.
+
+   * Rewrite of NSBrowser, NSSavePanel, menus, text classes,
+     NSTableHeader.
+
+   * RTF Parser
+
+   * Implemented image caching.
+
+   * Implemented editing in Forms, Matricies.
+
+   * New autolayout classes GSHBox, GSTable, and GSVBox.
+
+   * Almost all back-end classes have been removed and code incorporated
+     in a DPS-like graphics context structure.
+
+   * Better keyboard handling.
+
+   * NSHelpManager, NSComboBox, ProgressIndicator written.
+
+   In addition a preliminary version of an Interface Builder (Gorm) has
+been written, thanks to Richard Frith-Macdonald
+<richard@brainstorm.co.uk>
 
 Noteworthy changes in version `0.6.0'
 =====================================
+
+   A Huge amount of progress, although a lot still needs to be done.
+It's usable for a large base of moderately simple apps. Several
+NeXT/OpenStep apps and libraries have been ported with little changes.
+
+   * Drag and Drop support fleshed out but not completed.
+
+   * NSText and related classes rewritten. Basic functionality but much
+     needs to be done to finish them off.
+
+   * nib2gmodel app works with MacOS-X
+
+   * Work done in minimizing the backend which allowed a lot of
+     functionality to move to the GNU library.
+
+   * Menu code rewritten.
+
+   * PopupButtons now work.
+
+   * Many new images
+
+   * Basic functionality for NSTabView
+
+   * Much better lockFocus support in NSView. Flipped views handled.
+
+   * Rewrite of NSSavePanel and NSOpenPanel
+
+   * Several fixes that at least double the speed of the gui.
 
 Noteworthy changes in version `0.5.5'
 =====================================
@@ -43,6 +106,7 @@ Noteworthy changes in version `0.5.5'
 
    * A lot of rewritting has been done to the classes, with general
      cleanup of coordinate conversion code, etc.
+
 
 Noteworthy changes in version `0.5.0'
 =====================================
@@ -93,6 +157,7 @@ Noteworthy changes in version `0.5.0'
 
    * Several cleanups and as usual, many bug fixes.
 
+
 How can I get support for this software?
 ========================================
 
@@ -105,7 +170,7 @@ the GNUstep Web Pages for more information regarding GNUstep resources
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.6.0.tar.gz distribution file has been placed on
+   The gstep-gui-0.6.5.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.
@@ -115,7 +180,7 @@ library version 3.4 may be required depending on the backend you choose.
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `0.6.0'.
+GNUstep Base Library version `0.6.5'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.
@@ -132,13 +197,10 @@ Where do I send bug reports?
 
    Bug reports can be sent to <bug-gnustep@gnu.org>.
 
-Creators rejoice!
-Scott Christley
-<scottc@net-community.com>
 Obtaining GNU Software
 ======================
 
-Check out the GNU web site. (`http://www.gnu.org/')
+   Check out the GNU web site. (`http://www.gnu.org/')
 
    Check out the GNUstep web site. (`http://www.gnustep.org/')
 

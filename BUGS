@@ -1,0 +1,93 @@
+TODO
+****
+
+Bugs in the GUI library
+=======================
+
+Windows
+-------
+
+   * Code to manage window decorations is not finished.  The reported
+     frame origin of a window might be wrong.
+
+   * Windows never get released.  Setting isReleasedWhenClosed does not
+     work.
+
+     Fixing these bugs requires touching delicate parts of the library.
+     This is why fixing them has been postponed after 0.6.5, to keep
+     0.6.5 reasonably stable.
+
+Texts
+-----
+
+   * The NSText code is particularly complex to work on and it has not
+     improved much since 0.6.0.  Many bugs are know in the code - it is
+     somewhat usable though.  We hope on a big improvement of this area
+     for next release.
+
+Matrices
+--------
+
+   * Encoding/Decoding of matrices is unimplemented.  There are some
+     minor known bugs with handling of mouse down in matrices.
+
+Cells
+-----
+
+   * Since NSText does only left alignment, when you select or edit text
+     in a cell it becomes automatically left aligned regardless of the
+     original alignment.
+
+   * Multi line texts are unsupported; isScrollable, wordWraps etc do
+     nothing.  This restriction will hopefully be removed in next
+     releases.
+
+Images anf Graphics
+-------------------
+
+   * There are problems with alpha composing.  To avoid these problems,
+     you may set manually the background color of your image when
+     displaying it.
+
+   * Only TIFF images are supported in 0.6.5.  Support at least for PNG
+     and JPEG images is planned for next release.
+
+   * alpha drawing and compositing of graphics doesn't work.
+
+
+Alert, Info Panels
+------------------
+
+   * Multi line messages are generally unsupported due to the similar
+     restriction in the cells code.
+
+Unimplemented Classes
+---------------------
+
+   The following classes are currently unimplemented or unfinished to
+such a degree to be unusable.
+
+   * NSColorPanel
+
+   * NSDataLink
+
+   * NSFontManager
+
+   * NSFontPanel
+
+   * NSHelpPanel
+
+   * NSLayoutManager
+
+   * NSPageLayout
+
+   * NSPrintPanel
+
+   * NSSecureTextField
+
+   * NSSpellChecker
+
+   * NSTableView
+
+   * NSTextView
+

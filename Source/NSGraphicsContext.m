@@ -129,7 +129,7 @@ NSGraphicsContext	*GSCurrentContext()
  */
   NSThread *th = GSCurrentThread();
 
-  th->_gcontext = context;
+  ASSIGN(th->_gcontext, context);
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 

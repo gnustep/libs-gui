@@ -723,18 +723,25 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeString:[self title] withName:@"title"];
-  [archiver encodeObject:[self image] withName:@"image"];
-  [archiver encodeObject:[self onStateImage] withName:@"onStateImage"];
-  [archiver encodeObject:[self offStateImage] withName:@"offStateImage"];
-  [archiver encodeObject:[self mixedStateImage] withName:@"mixedStateImage"];
+  if ([self respondsToSelector: @selector(image)])
+    [archiver encodeObject:[self image] withName:@"image"];
+  if ([self respondsToSelector: @selector(onStateImage)])
+    [archiver encodeObject:[self onStateImage] withName:@"onStateImage"];
+  if ([self respondsToSelector: @selector(offStateImage)])
+    [archiver encodeObject:[self offStateImage] withName:@"offStateImage"];
+  if ([self respondsToSelector: @selector(mixedStateImage)])
+    [archiver encodeObject:[self mixedStateImage] withName:@"mixedStateImage"];
   [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
-  [archiver encodeInt:[self state] withName:@"state"];
+  if ([self respondsToSelector: @selector(state)])
+    [archiver encodeInt:[self state] withName:@"state"];
   [archiver encodeObject:[self target] withName:@"target"];
   [archiver encodeSelector:[self action] withName:@"action"];
   [archiver encodeInt:[self tag] withName:@"tag"];
   [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
-  [archiver encodeBOOL:[self changesState] withName:@"changesState"];
-  [archiver encodeObject:[self submenu] withName:@"submenu"];
+  if ([self respondsToSelector: @selector(changesState)])
+    [archiver encodeBOOL:[self changesState] withName:@"changesState"];
+  if ([self respondsToSelector: @selector(submenu)])
+    [archiver encodeObject:[self submenu] withName:@"submenu"];
   [archiver encodeConditionalObject:[self representedObject]
 	                   withName:@"representedObject"];
 }
@@ -759,6 +766,18 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setRepresentedObject:[unarchiver
 			       decodeObjectWithName:@"representedObject"]];
 
+#ifdef GNU_GUI_LIBRARY
+  /*
+   * Set submenu from target if not set
+   */
+  if ([NSStringFromSelector ([self action]) 
+      isEqualToString: @"submenuAction:"])
+    {
+      if ([self submenu] == nil)
+	[self setSubmenu: [self target]];
+    }
+#endif
+  
 #if 0
   NSLog (@"menu item %@: target = %@, isEnabled = %d",
 	[self title], [self target], [self isEnabled]);

@@ -81,11 +81,6 @@ be placed in
 Bug reports can be sent to 
 @email{bug-gnustep@@gnu.org}.
 
-@noindent
-Creators rejoice!@*
-Scott Christley@*
-@email{scottc@@net-community.com}@*
-
 @section Obtaining GNU Software
 
 Check out the GNU web site. (@url{http://www.gnu.org/})

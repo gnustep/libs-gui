@@ -32,7 +32,3 @@ Give us feedback!  Tell us what you like; tell us what you think
 could be better.  Send bug reports to @email{bug-gnustep@@gnu.org}.
 @end itemize
 
-@noindent
-Creators rejoice!@*
-Scott Christley@*
-@email{scottc@@net-community.com}

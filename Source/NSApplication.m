@@ -719,6 +719,8 @@ static NSCell* tileCell = nil;
       NSZoneFree(NSDefaultMallocZone(), tmp);
     }
 
+  TEST_RELEASE (_infoPanel);
+
   [super dealloc];
 }
 
@@ -1144,7 +1146,7 @@ static NSCell* tileCell = nil;
 {
   if (theEvent == null_event)
     {
-      NSDebugLog(@"Not sending the Null Event\n");
+      NSDebugLLog(@"NSEvent", @"Not sending the Null Event\n");
       return;
     }
 
@@ -1155,7 +1157,7 @@ static NSCell* tileCell = nil;
 
       case NSKeyDown:
 	{
-	  NSDebugLog(@"send key down event\n");
+	  NSDebugLLog(@"NSEvent", @"send key down event\n");
 	  if ([theEvent modifierFlags] & NSCommandKeyMask)
 	    {
 	      NSArray	*window_list = [self windows];
@@ -1177,7 +1179,7 @@ static NSCell* tileCell = nil;
 
       case NSKeyUp:
 	{
-	  NSDebugLog(@"send key up event\n");
+	  NSDebugLLog(@"NSEvent", @"send key up event\n");
 	  [[theEvent window] sendEvent: theEvent];
 	  break;
 	}
@@ -1187,16 +1189,16 @@ static NSCell* tileCell = nil;
 	  NSWindow	*window = [theEvent window];
 
 	  if (!theEvent)
-	    NSDebugLog(@"NSEvent is nil!\n");
-	  NSDebugLog(@"NSEvent type: %d", [theEvent type]);
-	  NSDebugLog(@"send event to window");
-	  NSDebugLog([window description]);
+	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
+	  NSDebugLLog(@"NSEvent", @"NSEvent type: %d", [theEvent type]);
+	  NSDebugLLog(@"NSEvent", @"send event to window");
+	  NSDebugLLog(@"NSEvent", [window description]);
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if ([theEvent type] == NSRightMouseDown)
 	    [self rightMouseDown: theEvent];
 	  else
-	    NSDebugLog(@"no window");
+	    NSDebugLLog(@"NSEvent", @"no window");
 	}
     }
 }
@@ -1612,19 +1614,53 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  * Showing Standard Panels
  */
 - (void) orderFrontColorPanel: sender
-{
+{ 
+  NSRunAlertPanel (NULL, @"Color Panel not implemented yet",
+		   @"OK", NULL, NULL);
 }
 
 - (void) orderFrontDataLinkPanel: sender
 {
+  NSRunAlertPanel (NULL, @"Data Link Panel not implemented yet",
+		   @"OK", NULL, NULL);
 }
 
 - (void) orderFrontHelpPanel: sender
 {
+  NSRunAlertPanel (NULL, @"Help Panel not implemented yet",
+		   @"OK", NULL, NULL);
 }
 
 - (void) runPageLayout: sender
 {
+  NSRunAlertPanel (NULL, @"Page Layout Panel not implemented yet",
+		   @"OK", NULL, NULL);
+}
+
+/* infoPanel, macosx API -- Deprecated */
+- (void) orderFrontStandardAboutPanel: sender
+{
+  [self orderFrontStandardInfoPanel: sender];
+}
+
+- (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)options
+{
+  [self orderFrontStandardInfoPanelWithOptions: options];
+}
+
+/* infoPanel, GNUstep API */
+- (void) orderFrontStandardInfoPanel: sender
+{
+  [self orderFrontStandardInfoPanelWithOptions: nil];
+}
+
+- (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)options
+{
+  if (_infoPanel == nil)
+    _infoPanel = [[GSInfoPanel alloc] initWithDictionary: options];
+  
+  [_infoPanel setTitle: @"Info"];
+  [_infoPanel orderFront: self];
 }
 
 /*

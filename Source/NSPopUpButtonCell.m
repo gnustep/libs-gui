@@ -36,7 +36,75 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/PSOperators.h>
 
+@interface NSMenuItemCell (GNUStepPrivate)
+- (void) setBelongsToPopUpButton: (BOOL)flag;
+@end
+@implementation NSMenuItemCell (GNUStepPrivate)
+- (void) setBelongsToPopUpButton: (BOOL)flag
+{
+  _mcell_belongs_to_popupbutton = flag;
+}
+@end
+
+/* Same as [NSWindow -convertBaseToScreen:] with the difference 
+   that detects and fixes at run time bugs in the window frame management */
+/* frame is a frame where the mouse is supposed to be. 
+   If the mouse is out of that frame, it means the window code has got the 
+   window origin wrong -- presumably by a decoration height.
+   Looking if mouse is upper or lower than the given frame we determine 
+   if decoration window size need to be added or subtracted. */
+NSPoint 
+_convertBaseToScreen_with_fix(NSRect frame, NSWindow *window, NSPoint point)
+{
+  /* We get mouse position */
+  NSPoint mouse = [window mouseLocationOutsideOfEventStream]; 
+  float   l, r, b; 
+  float   t = 0;
+  NSPoint ret;
+  
+  /* If the reported mouse position is not in frame 
+     this means that the window frame origin is broken. */
+  if (mouse.y > frame.origin.y + frame.size.height)
+    {
+      NSLog (@"Window Frame Origin Bug Detected: point reported higher");
+      NSLog (@"Workaround enabled.");
+      DPSstyleoffsets (GSCurrentContext (), &l, &r, &t, &b, 
+		       [window styleMask]);
+    }
+  else if (mouse.y < frame.origin. y)
+    {
+      NSLog (@"Window Frame Origin Bug Detected: point reported lower");
+      NSLog (@"Workaround enabled.");
+      DPSstyleoffsets (GSCurrentContext (), &l, &r, &t, &b, 
+		       [window styleMask]);
+      t = -t;
+    }
+  
+  /* Convert the origin */
+  ret = [window convertBaseToScreen: point];
+
+  /* Add the bug correction */
+  ret.y += t;
+
+  return ret;
+}
+
+/* The image to use in a specific popupbutton is
+ * _pbc_image[_pbcFlags.pullsDown]; that is, _pbc_image[0] if it is a
+ * popup menu, _pbc_image[1] if it is a pulls down list.  */
+static NSImage *_pbc_image[2];
+
 @implementation NSPopUpButtonCell
++ (void) initialize
+{
+  if (self == [NSPopUpButtonCell class])
+    {
+      [self setVersion: 1];
+      ASSIGN(_pbc_image[0], [NSImage imageNamed: @"common_Nibble"]);
+      ASSIGN(_pbc_image[1], [NSImage imageNamed: @"common_3DArrowDown"]);
+    }
+}
+
 - (void) dealloc
 {
   RELEASE(_menu);
@@ -146,15 +214,8 @@
 // Adding and removing items
 - (void) addItemWithTitle: (NSString *)title
 {
-  NSMenuItem *anItem = [NSMenuItem new];
-
-  [anItem setTitle: title];
-  // Not bad as defaults:
-  [anItem setTarget: nil];
-  [anItem setAction: NULL];
-
-  [_menu insertItem: anItem atIndex: [_menu numberOfItems]];
-  RELEASE(anItem);
+  [self insertItemWithTitle: title
+	atIndex: [_menu numberOfItems]];
 }
 
 - (void) addItemsWithTitles: (NSArray *)itemTitles
@@ -171,19 +232,25 @@
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
   NSMenuItem *anItem = [NSMenuItem new];
+  NSMenuItemCell *aCell;
+  int count = [_menu numberOfItems];
 
   if (index < 0)
     index = 0;
-  if (index > [_menu numberOfItems])
-    index = [_menu numberOfItems];
+  if (index > count)
+    index = count;
 
   [anItem setTitle: title];
-  // Not bad as defaults:
   [anItem setTarget: nil];
   [anItem setAction: NULL];
 
   [_menu insertItem: anItem atIndex: index];
+
   RELEASE(anItem);
+
+  aCell = [[_menu menuRepresentation] menuItemCellForItemAtIndex: index];
+  [aCell setBelongsToPopUpButton: YES];
+  [aCell setImagePosition: NSImageRight];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
@@ -265,8 +332,11 @@
   if (!item)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
-        [_selectedItem setState: NSOffState];
-
+	{
+	  [_selectedItem setState: NSOffState];
+	  [_selectedItem setChangesState: NO];
+	}
+      [_selectedItem setImage: nil];
       _selectedItem = nil;
     }
   else
@@ -274,18 +344,32 @@
       if (_pbcFlags.altersStateOfSelectedItem)
         {
           [_selectedItem setState: NSOffState];
-	}
+	  [_selectedItem setChangesState: NO];
+      	}
+      [_selectedItem setImage: nil];
+
       _selectedItem = item;
+
       if (_pbcFlags.altersStateOfSelectedItem)
         {
-          [_selectedItem setState: NSOnState];
+	  [_selectedItem setState: NSOnState];
+	  [_selectedItem setChangesState: NO];
         }
+      [_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
     }
+  /* Set the item in the menu */
+  [(NSMenuView *)[_menu menuRepresentation] setHighlightedItemIndex: 
+		   [_menu indexOfItem: _selectedItem]];
 }
 
 - (void) selectItemAtIndex: (int)index
 {
-  NSMenuItem	*anItem = (index == -1) ? nil : [self itemAtIndex: index];
+  NSMenuItem	*anItem;
+
+  if (index < 0) 
+    anItem = nil;
+  else
+    anItem = [self itemAtIndex: index];
 
   [self selectItem: anItem];
 }
@@ -349,8 +433,8 @@
     }
   else
     {
-      int	index = [[_menu menuRepresentation] highlightedItemIndex];
-
+      int index = [[_menu menuRepresentation] highlightedItemIndex];
+      
       if (index < 0)
 	index = 0;
       [self selectItemAtIndex: index];
@@ -393,6 +477,8 @@
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
   int                   items;
+  NSRect                origCellFrame = [controlView convertRect: cellFrame 
+						     toView: nil];
 
   [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
       object: self];
@@ -417,10 +503,14 @@
     }
 
   // Convert to Screen Coordinates
+
+  /* Convert to content view */
   cellFrame = [controlView convertRect: cellFrame 
 			   toView: nil];
-  cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin];
-  
+
+  cellFrame.origin = _convertBaseToScreen_with_fix (origCellFrame, cvWin, 
+						    cellFrame.origin);
+
   // Ask the MenuView to attach the menu to this rect
   if (_pbcFlags.pullsDown)
     {
@@ -464,17 +554,6 @@
   // This method is not executed upon mouse down; rather, it should
   // simulate what would happen upon mouse down.  It should not start
   // any real mouse tracking.
-
-  /*
-    int indexToClick;
-    [self attachPopUpWithFrame: frame
-                      inView: controlView];
-  indexToClick = [[_menu menuRepresentation] indexOfItemAtPoint: 
-			[[_menu window] mouseLocationOutsideOfEventStream]];
-  [[_menu menuRepresentation] mouseDown: [NSApp currentEvent]];
-
-  [[[_menu menuRepresentation] menuItemCellForItemAtIndex: indexToClick]
-  performClick: nil];*/
 }
 
 // Arrow position for bezel style and borderless popups.
@@ -483,18 +562,26 @@
   return _pbcFlags.arrowPosition;
 }
 
+/*
+ * Does nothing for now.
+ */
 - (void) setArrowPosition: (NSPopUpArrowPosition)position
 {
   _pbcFlags.arrowPosition = position;
 }
 
+/*
+ * What would be nice and natural is to make this drawing using the same code 
+ * that is used to draw cells in the menu.
+ * This looks like a mess to do in this framework.
+ */
 - (void) drawWithFrame: (NSRect)cellFrame
                 inView: (NSView*)view  
 {
   NSSize   size;
   NSPoint  position;
-  NSImage *aImage;
-                                  
+  NSImage *anImage;
+  
   // Save last view drawn to
   if (_control_view != view)
     _control_view = view;
@@ -508,17 +595,13 @@
   cellFrame.size.width -= 5;
 
   [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
+  
+  anImage = _pbc_image[_pbcFlags.pullsDown];
 
-  if (_pbcFlags.pullsDown)
-    {
-      aImage = [NSImage imageNamed: @"common_3DArrowDown"];
-    }
-  else
-    {
-      aImage = [NSImage imageNamed: @"common_Nibble"];
-    }
+  /* NB: If we are drawing here, then the control can't be selected */
+  [anImage setBackgroundColor: [NSColor controlBackgroundColor]];
 
-  size = [aImage size];
+  size = [anImage size];
   position.x = cellFrame.origin.x + cellFrame.size.width - size.width - 4;
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
   /*
@@ -527,9 +610,8 @@
    */
   if ([view isFlipped])
     position.y += size.height;
-  [aImage  compositeToPoint: position operation: NSCompositeCopy];
+  [anImage  compositeToPoint: position operation: NSCompositeCopy];
 
   [view unlockFocus]; 
 }
-
 @end

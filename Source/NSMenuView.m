@@ -228,7 +228,17 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 - (void) setMenuItemCell: (NSMenuItemCell *)cell
 	  forItemAtIndex: (int)index
 {
+  NSMenuItem *anItem = [menuv_items_link objectAtIndex: index];
+  
   [menuv_itemCells replaceObjectAtIndex: index withObject: cell];
+
+  [cell setMenuItem: anItem];
+  [cell setMenuView: self];
+
+  if ([self highlightedItemIndex] == index)
+    [cell setHighlighted: YES];
+  else
+    [cell setHighlighted: NO];
 
   // Mark the new cell and the menu view as needing resizing.
   [cell setNeedsSizing: YES];

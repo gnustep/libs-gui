@@ -348,6 +348,8 @@ static SEL getSel = @selector(objectAtIndex:);
 	  cells[i][column] = old;
 	  selectedCells[i][column] = NO;
 	}
+	if (_selectedCell && (_selectedColumn >= column))
+	_selectedColumn++;
     }
 
   /*
@@ -425,6 +427,8 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
       cells[row] = oldr;
       selectedCells[row] = olds;
+      if (_selectedCell && (_selectedRow >= row))
+	_selectedRow++;
     }
 
   /*
@@ -501,7 +505,13 @@ static SEL getSel = @selector(objectAtIndex:);
       [NSException raise: NSRangeException
 		  format: @"attempt to put cell outside matrix bounds"];
     }
+
+  if ((row == _selectedRow) && (column == _selectedColumn) 
+      && (_selectedCell != nil))
+    _selectedCell = newCell;
+  
   ASSIGN(cells[row][column], newCell);
+
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
@@ -1779,6 +1789,15 @@ static SEL getSel = @selector(objectAtIndex:);
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
   int clickCount;
+
+  /*
+   * Pathological case -- ignore mouse down
+   */
+  if ((numRows == 0) || (numCols == 0))
+    {
+      [super mouseDown: theEvent];
+      return; 
+    }
 
   // Manage multi-click events
   clickCount = [theEvent clickCount];

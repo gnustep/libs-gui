@@ -113,7 +113,6 @@
   SEL mi_action;
   int mi_tag;
   id mi_representedObject;
-  BOOL mi_hasSubmenu;
   NSMenu *mi_submenu;
   BOOL mi_changesState;
 

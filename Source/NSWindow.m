@@ -344,9 +344,12 @@ static NSMapTable* windowmaps = NULL;
       [content_view removeFromSuperview];
     }
   content_view = aView;
-  [content_view setFrame: [_wv frame]];		    // Resize to fill window.
-  [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [_wv addSubview: content_view];		    // Add to our window view
+  [content_view setAutoresizingMask: (NSViewWidthSizable 
+				      | NSViewHeightSizable)];
+  [_wv addSubview: content_view];
+  [content_view resizeWithOldSuperviewSize: [content_view frame].size]; 
+  [content_view setFrameOrigin: [_wv bounds].origin];
+
   NSAssert1 ([[_wv subviews] count] == 1,
     @"window's view has %d	 subviews!", [[_wv subviews] count]);
 
@@ -679,17 +682,24 @@ static NSMapTable* windowmaps = NULL;
       if ([self isKeyWindow])
 	{
 	  [self resignKeyWindow];
-	  for (i = pos + 1; i != pos; i++)
+	  i = pos + 1;
+	  if (i == c)
 	    {
-	      if (i == c)
-		{
-		  i = 0;
-		}
+	      i = 0;
+	    }
+	  while (i != pos)
+	    {
 	      w = [windowList objectAtIndex: i];
 	      if ([w isVisible] && [w canBecomeKeyWindow])
 		{
 		  [w makeKeyWindow];
 		  break;
+		}
+
+	      i++;
+	      if (i == c)
+		{
+		  i = 0;
 		}
 	    }
 	  /*
@@ -720,18 +730,25 @@ static NSMapTable* windowmaps = NULL;
 	    }
 	  else
 	    {
-	      for (i = pos + 1; i != pos; i++)
+	      i = pos + 1;
+	      if (i == c)
 		{
-		  if (i == c)
-		    {
-		      i = 0;
-		    }
+		  i = 0;
+		}
+	      while (i != pos)
+		{
 		  w = [windowList objectAtIndex: i];
 		  if ([w isVisible] && [w canBecomeMainWindow])
 		    {
 		      [w makeMainWindow];
 		      break;
 		    }
+		
+		  i++;
+		  if (i == c)
+		    {
+		      i = 0;
+		    }		  
 		}
 	    }
 	}

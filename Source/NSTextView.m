@@ -1,3 +1,27 @@
+/* 
+   NSTextView.m
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/ 
+
+
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
@@ -24,79 +48,90 @@
 
 /* Class methods */
 
-+ (void)initialize
++ (void) initialize
 {
   [super initialize];
 
-  if([self class] == [NSTextView class])
+  if ([self class] == [NSTextView class])
     {
-      [self setVersion:1];
+      [self setVersion: 1];
       [self registerForServices];
     }
 }
 
-+ (void)registerForServices
++ (void) registerForServices
 {
-  // Talk to Richard about how to do this properly.
+  NSArray	*r;
+  NSArray	*s;
+      
+  /*
+   * FIXME - should register for all types of data we support, not just string.
+   */
+  r  = [NSArray arrayWithObjects: NSStringPboardType, nil];
+  s  = [NSArray arrayWithObjects: NSStringPboardType, nil];
+ 
+  [[NSApplication sharedApplication] registerServicesMenuSendTypes: s
+						       returnTypes: r];
 }
 
 /* Initializing Methods */
 
-- (id)initWithFrame:(NSRect)frameRect
-      textContainer:(NSTextContainer *)aTextContainer
+- (id) initWithFrame: (NSRect)frameRect
+       textContainer: (NSTextContainer*)aTextContainer
 {
-  self = [super initWithFrame:frameRect];
+  self = [super initWithFrame: frameRect];
 
-  [self setTextContainer:aTextContainer];
-  [self setEditable:YES];
+  [self setTextContainer: aTextContainer];
+  [self setEditable: YES];
 
   return self;
 }
 
-- (id)initWithFrame:(NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
   textStorage = [[NSTextStorage alloc] init];
 
   layoutManager = [[NSLayoutManager alloc] init];
 
-  [textStorage addLayoutManager:layoutManager];
-  [layoutManager release];
+  [textStorage addLayoutManager: layoutManager];
+  RELEASE(layoutManager);
 
-  textContainer = [[NSTextContainer alloc] initWithContainerSize:frameRect.size];
-  [layoutManager addTextContainer:textContainer];
-  [textContainer release];
+  textContainer
+    = [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
+  [layoutManager addTextContainer: textContainer];
+  RELEASE(textContainer);
 
-  return [self initWithFrame:frameRect textContainer:textContainer];
+  return [self initWithFrame: frameRect textContainer: textContainer];
 }
 
-- (void)setTextContainer:(NSTextContainer *)aTextContainer
+- (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
   ASSIGN(textContainer, aTextContainer);
 }
 
-- (NSTextContainer *)textContainer
+- (NSTextContainer*) textContainer
 {
   return textContainer;
 }
 
-- (void)replaceTextContainer:(NSTextContainer *)aTextContainer
+- (void) replaceTextContainer: (NSTextContainer*)aTextContainer
 {
   // Notify layoutManager of change?
 
   ASSIGN(textContainer, aTextContainer);
 }
 
-- (void)setTextContainerInset:(NSSize)inset
+- (void) setTextContainerInset: (NSSize)inset
 {
   textContainerInset = inset;
 }
 
-- (NSSize)textContainerInset
+- (NSSize) textContainerInset
 {
   return textContainerInset;
 }
 
-- (NSPoint)textContainerOrigin
+- (NSPoint) textContainerOrigin
 {
   // use bounds, inset, and used rect.
   NSRect bRect = [self bounds];
@@ -104,70 +139,70 @@
   return NSZeroPoint;
 }
 
-- (void)invalidateTextContainerOrigin
+- (void) invalidateTextContainerOrigin
 {
   tv_resetTextContainerOrigin = YES;
 }
 
-- (NSLayoutManager *)layoutManager
+- (NSLayoutManager*) layoutManager
 {
   return [textContainer layoutManager];
 }
 
-- (NSTextStorage *)textStorage
+- (NSTextStorage*) textStorage
 {
   return textStorage;
 }
 
-- (void)setBackgroundColor:(NSColor *)aColor
+- (void) setBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(tv_backGroundColor, aColor);
 }
 
-- (NSColor *)backgroundColor
+- (NSColor*) backgroundColor
 {
   return tv_backGroundColor;
 }
 
-- (void)setDrawsBackground:(BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   tv_drawsBackground = flag;
 }
 
-- (BOOL)drawsBackground
+- (BOOL) drawsBackground
 {
   return tv_drawsBackground;
 }
 
-- (void)setNeedsDisplayInRect:(NSRect)aRect
-        avoidAdditionalLayout:(BOOL)flag
+- (void) setNeedsDisplayInRect: (NSRect)aRect
+	 avoidAdditionalLayout: (BOOL)flag
 {
 /*
-  NSRange glyphsToDraw = [layoutManager
-glyphRangeForTextContainer:textContainer];
+  NSRange	glyphsToDraw;
 
+  glyphsToDraw = [layoutManager glyphRangeForTextContainer: textContainer];
   [self lockFocus];
-  [layoutManager drawGlyphsForGlyphRange:glyphsToDraw
-                        atPoint:[self frame].origin];
+  [layoutManager drawGlyphsForGlyphRange: glyphsToDraw
+				 atPoint: [self frame].origin];
   [self unlockFocus];
 */
 }
 
 /* We override NSView's setNeedsDisplayInRect: */
 
-- (void)setNeedsDisplayInRect:(NSRect)aRect
+- (void) setNeedsDisplayInRect: (NSRect)aRect
 {
-  [self setNeedsDisplayInRect:aRect avoidAdditionalLayout:NO];
+  [self setNeedsDisplayInRect: aRect avoidAdditionalLayout: NO];
 }
 
-- (BOOL)shouldDrawInsertionPoint
+- (BOOL) shouldDrawInsertionPoint
 {
   return tv_shouldDrawInsertionPoint;
 }
 
-- (void)drawInsertionPointInRect:(NSRect)aRect
-			   color:(NSColor *)aColor
-			turnedOn:(BOOL)flag
+- (void) drawInsertionPointInRect: (NSRect)aRect
+			    color: (NSColor*)aColor
+			 turnedOn: (BOOL)flag
 {
   [self lockFocus];
 
@@ -191,18 +226,18 @@ glyphRangeForTextContainer:textContainer];
   [_window flushWindow];
 }
 
-- (void)setConstrainedFrameSize:(NSSize)desiredSize
+- (void) setConstrainedFrameSize: (NSSize)desiredSize
 {
   // some black magic here.
-  [self setFrameSize:desiredSize];
+  [self setFrameSize: desiredSize];
 }
 
-- (void)cleanUpAfterDragOperation
+- (void) cleanUpAfterDragOperation
 {
   // release drag information
 }
 
-- (void)setEditable:(BOOL)flag
+- (void) setEditable: (BOOL)flag
 {
   if (flag)
     tv_selectable = flag;
@@ -210,32 +245,32 @@ glyphRangeForTextContainer:textContainer];
   tv_editable = flag;
 }
 
-- (BOOL)isEditable
+- (BOOL) isEditable
 {
   return tv_editable;
 }
 
-- (void)setSelectable:(BOOL)flag
+- (void) setSelectable: (BOOL)flag
 {
   tv_selectable = flag;
 }
 
-- (BOOL)isSelectable
+- (BOOL) isSelectable
 {
   return tv_selectable;
 }
 
-- (void)setFieldEditor:(BOOL)flag
+- (void) setFieldEditor: (BOOL)flag
 {
   tv_fieldEditor = flag;
 }
 
-- (BOOL)isFieldEditor
+- (BOOL) isFieldEditor
 {
   return tv_fieldEditor;
 }
 
-- (void)setRichText:(BOOL)flag
+- (void) setRichText: (BOOL)flag
 {
   if (!flag)
     tv_acceptDraggedFiles = flag;
@@ -243,12 +278,12 @@ glyphRangeForTextContainer:textContainer];
   tv_richText = flag;
 }
 
-- (BOOL)isRichText
+- (BOOL) isRichText
 {
   return tv_richText;
 }
 
-- (void)setImportsGraphics:(BOOL)flag
+- (void) setImportsGraphics: (BOOL)flag
 {
   if (flag)
     tv_richText = flag;
@@ -256,155 +291,155 @@ glyphRangeForTextContainer:textContainer];
   tv_acceptDraggedFiles = flag;
 }
 
-- (BOOL)importsGraphics
+- (BOOL) importsGraphics
 {
   return tv_acceptDraggedFiles;
 }
 
-- (void)setUsesFontPanel:(BOOL)flag
+- (void) setUsesFontPanel: (BOOL)flag
 {
   tv_usesFontPanel = flag;
 }
 
-- (BOOL)usesFontPanel
+- (BOOL) usesFontPanel
 {
   return tv_usesFontPanel;
 }
 
-- (void)setUsesRuler:(BOOL)flag
+- (void) setUsesRuler: (BOOL)flag
 {
   tv_usesRuler = flag;
 }
 
-- (BOOL)usesRuler
+- (BOOL) usesRuler
 {
   return tv_usesRuler;
 }
 
-- (void)setRulerVisible:(BOOL)flag
+- (void) setRulerVisible: (BOOL)flag
 {
   tv_rulerVisible = flag;
 }
 
-- (BOOL)isRulerVisible
+- (BOOL) isRulerVisible
 {
   return tv_rulerVisible;
 }
 
-- (void)setSelectedRange:(NSRange)charRange
+- (void) setSelectedRange: (NSRange)charRange
 {
   NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
 /*
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:NSTextViewDidChangeSelectionNotification
-    object:self];
+    postNotificationName: NSTextViewDidChangeSelectionNotification
+    object: self];
 */
   tv_selectedRange = charRange;
-  [self setSelectionGranularity:NSSelectByCharacter];
+  [self setSelectionGranularity: NSSelectByCharacter];
 
   // Also removes the marking from
   // marked text if the new selection is greater than the marked region.
 }
 
-- (NSRange)selectedRange
+- (NSRange) selectedRange
 {
   return tv_selectedRange;
 }
 
-- (void)setSelectedRange:(NSRange)charRange
-		affinity:(NSSelectionAffinity)affinity
-	  stillSelecting:(BOOL)flag
+- (void) setSelectedRange: (NSRange)charRange
+		 affinity: (NSSelectionAffinity)affinity
+	   stillSelecting: (BOOL)flag
 {
   NSDebugLLog(@"NSText", @"setSelectedRange stillSelecting.");
 
   tv_selectedRange = charRange;
-  [self setSelectionGranularity:NSSelectByCharacter];
+  [self setSelectionGranularity: NSSelectByCharacter];
 
   // FIXME, more.
 }
 
-- (NSSelectionAffinity)selectionAffinity
+- (NSSelectionAffinity) selectionAffinity
 {
   return tv_selectionAffinity;
 }
 
-- (void)setSelectionGranularity:(NSSelectionGranularity)granularity
+- (void) setSelectionGranularity: (NSSelectionGranularity)granularity
 {
   tv_selectionGranularity = granularity;
 }
 
-- (NSSelectionGranularity)selectionGranularity
+- (NSSelectionGranularity) selectionGranularity
 {
   return tv_selectionGranularity;
 }
 
-- (void)setInsertionPointColor:(NSColor *)aColor
+- (void) setInsertionPointColor: (NSColor*)aColor
 {
   ASSIGN(tv_caretColor, aColor);
 }
 
-- (NSColor *)insertionPointColor
+- (NSColor*) insertionPointColor
 {
   return tv_caretColor;
 }
 
-- (void)updateInsertionPointStateAndRestartTimer:(BOOL)flag
+- (void) updateInsertionPointStateAndRestartTimer: (BOOL)flag
 {
   // tv_caretLocation =
 
   // restart blinking timer.
 }
 
-- (void)setSelectedTextAttributes:(NSDictionary *)attributes
+- (void) setSelectedTextAttributes: (NSDictionary*)attributes
 {
   ASSIGN(tv_selectedTextAttributes, attributes);
 }
 
-- (NSDictionary *)selectedTextAttributes
+- (NSDictionary*) selectedTextAttributes
 {
   return tv_selectedTextAttributes;
 }
 
-- (NSRange)markedRange
+- (NSRange) markedRange
 {
   // calculate
 
   return NSMakeRange(NSNotFound, 0);
 }
 
-- (void)setMarkedTextAttributes:(NSDictionary *)attributes
+- (void) setMarkedTextAttributes: (NSDictionary*)attributes
 {
   ASSIGN(tv_markedTextAttributes, attributes);
 }
 
-- (NSDictionary *)markedTextAttributes
+- (NSDictionary*) markedTextAttributes
 {
   return tv_markedTextAttributes;
 }
 
-- (NSString *)preferredPasteboardTypeFromArray:(NSArray *)availableTypes
-		    restrictedToTypesFromArray:(NSArray *)allowedTypes
+- (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
+		    restrictedToTypesFromArray: (NSArray*)allowedTypes
 {
   // No idea.
 }
 
-- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
 {
 /*
 Reads the text view's preferred type of data from the pasteboard specified
 by the pboard parameter. This method
-invokes the preferredPasteboardTypeFromArray:restrictedToTypesFromArray:
+invokes the preferredPasteboardTypeFromArray: restrictedToTypesFromArray: 
 method to determine the text view's
 preferred type of data and then reads the data using the
-readSelectionFromPasteboard:type: method. Returns YES if the
+readSelectionFromPasteboard: type: method. Returns YES if the
 data was successfully read.
 */
 
   return NO;
 }
 
-- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard
-			       type:(NSString *)type 
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
+				type: (NSString*)type 
 {
 /*
 Reads data of the given type from pboard. The new data is placed at the
@@ -419,18 +454,18 @@ of characters (if any) to be replaced by the new data.
   return NO;
 }
 
-- (NSArray *)readablePasteboardTypes
+- (NSArray*) readablePasteboardTypes
 {
   // get default types, what are they?
 }
 
-- (NSArray *)writablePasteboardTypes
+- (NSArray*) writablePasteboardTypes
 {
   // the selected text can be written to the pasteboard with which types.
 }
 
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard
-			      type:(NSString *)type
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
+			       type: (NSString*)type
 {
 /*
 Writes the current selection to pboard using the given type. Returns YES
@@ -443,8 +478,8 @@ overridden version does not.
   return NO;
 }
 
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard
-			     types:(NSArray *)types
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
+			      types: (NSArray*)types
 {
 
 /* Writes the current selection to pboard under each type in the types
@@ -458,7 +493,7 @@ other than copy/paste or dragging. */
   return NO;
 }
 
-- (void)alignJustified:(id)sender
+- (void) alignJustified: (id)sender
 {
 /*
   if (!tv_richText)
@@ -468,19 +503,19 @@ other than copy/paste or dragging. */
 */
 }
 
-- (void)changeColor:(id)sender
+- (void) changeColor: (id)sender
 {
 //  NSColor *aColor = [sender color];
 
   // sets the color for the selected range.
 }
 
-- (void)setAlignment:(NSTextAlignment)alignment
-	       range:(NSRange)aRange
+- (void) setAlignment: (NSTextAlignment)alignment
+		range: (NSRange)aRange
 { 
 /*
 Sets the alignment of the paragraphs containing characters in aRange to
-alignment. alignment is one of:
+alignment. alignment is one of: 
 
       NSLeftTextAlignment
       NSRightTextAlignment 
@@ -490,24 +525,24 @@ alignment. alignment is one of:
 */
 }
 
-- (void)setTypingAttributes:(NSDictionary *)attributes
+- (void) setTypingAttributes: (NSDictionary*)attributes
 {
   // more?
 
   ASSIGN(tv_typingAttributes, attributes);
 }
 
-- (NSDictionary *)typingAttributes
+- (NSDictionary*) typingAttributes
 {
   return tv_typingAttributes;
 }
 
-- (void)useStandardKerning:(id)sender
+- (void) useStandardKerning: (id)sender
 {
   // rekern for selected range if rich text, else rekern entire document.
 }
 
-- (void)lowerBaseline:(id)sender
+- (void) lowerBaseline: (id)sender
 {
 /*
   if (tv_richText)
@@ -517,7 +552,7 @@ alignment. alignment is one of:
 */
 }
 
-- (void)raiseBaseline:(id)sender
+- (void) raiseBaseline: (id)sender
 {
 /*
   if (tv_richText)
@@ -527,7 +562,7 @@ alignment. alignment is one of:
 */
 }
 
-- (void)turnOffKerning:(id)sender
+- (void) turnOffKerning: (id)sender
 {
 /*
   if (tv_richText)
@@ -537,7 +572,7 @@ alignment. alignment is one of:
 */
 }
 
-- (void)loosenKerning:(id)sender
+- (void) loosenKerning: (id)sender
 {
 /*
   if (tv_richText)
@@ -547,7 +582,7 @@ alignment. alignment is one of:
 */
 }
 
-- (void)tightenKerning:(id)sender
+- (void) tightenKerning: (id)sender
 {
 /*
   if (tv_richText)
@@ -557,31 +592,31 @@ alignment. alignment is one of:
 */
 }
 
-- (void)useStandardLigatures:(id)sender
+- (void) useStandardLigatures: (id)sender
 {
   // well.
 }
 
-- (void)turnOffLigatures:(id)sender
+- (void) turnOffLigatures: (id)sender
 {
   // sure.
 }
 
-- (void)useAllLigatures:(id)sender
+- (void) useAllLigatures: (id)sender
 {
   // as you say.
 }
 
-- (void)clickedOnLink:(id)link
-	      atIndex:(unsigned int)charIndex
+- (void) clickedOnLink: (id)link
+	       atIndex: (unsigned int)charIndex
 {
 
 /* Notifies the delegate that the user clicked in a link at the specified
 charIndex. The delegate may take any appropriate actions to handle the
-click in its textView:clickedOnLink:atIndex: method.Notifies the delegate
+click in its textView: clickedOnLink: atIndex: method.Notifies the delegate
 that the user clicked in a link at the specified charIndex. The delegate
 may take any appropriate actions to handle the click in its
-textView:clickedOnLink:atIndex: method. */
+textView: clickedOnLink: atIndex: method. */
  
 }
 
@@ -590,55 +625,55 @@ The text is inserted at the insertion point if there is one, otherwise
 replacing the selection.
 */
 
-- (void)pasteAsPlainText:(id)sender
+- (void) pasteAsPlainText: (id)sender
 {
-  [self insertText:[sender string]];
+  [self insertText: [sender string]];
 }
 
-- (void)pasteAsRichText:(id)sender
+- (void) pasteAsRichText: (id)sender
 {
-  [self insertText:[sender string]];
+  [self insertText: [sender string]];
 }
 
-- (void)updateFontPanel
+- (void) updateFontPanel
 {
-  // [fontPanel setFont:[self fontFromRange]];
+  // [fontPanel setFont: [self fontFromRange]];
 }
 
-- (void)updateRuler
+- (void) updateRuler
 {
   // ruler!
 }
 
-- (NSArray *)acceptableDragTypes
+- (NSArray*) acceptableDragTypes
 {
 }
 
-- (void)updateDragTypeRegistration
+- (void) updateDragTypeRegistration
 {
 }
 
-- (NSRange)selectionRangeForProposedRange:(NSRange)proposedSelRange
-			      granularity:(NSSelectionGranularity)granularity
+- (NSRange) selectionRangeForProposedRange: (NSRange)proposedSelRange
+			       granularity: (NSSelectionGranularity)granularity
 {
   NSRange retRange;
 
   switch (granularity)
     {
-      case NSSelectByParagraph:
+      case NSSelectByParagraph: 
         // we need to: 1, find how far to end of paragraph; 2, increase
         // range.
-      case NSSelectByWord:
+      case NSSelectByWord: 
         // we need to: 1, find how far to end of word; 2, increase range.
-      case NSSelectByCharacter:
-      default:
+      case NSSelectByCharacter: 
+      default: 
         retRange = proposedSelRange;
     }
 
   return retRange;
 }
 
-- (NSRange)rangeForUserCharacterAttributeChange
+- (NSRange) rangeForUserCharacterAttributeChange
 {
   if (!tv_editable || !tv_usesFontPanel)
     return NSMakeRange(NSNotFound, 0);
@@ -649,19 +684,19 @@ replacing the selection.
     return NSMakeRange(NSNotFound, 0); // should be entire contents.
 }
 
-- (NSRange)rangeForUserParagraphAttributeChange
+- (NSRange) rangeForUserParagraphAttributeChange
 {
   if (!tv_editable)
     return NSMakeRange(NSNotFound, 0);
 
   if (tv_richText)
-    return [self selectionRangeForProposedRange:tv_selectedRange
-		granularity:NSSelectByParagraph];
+    return [self selectionRangeForProposedRange: tv_selectedRange
+		granularity: NSSelectByParagraph];
   else
     return NSMakeRange(NSNotFound, 0); // should be entire contents.
 }
 
-- (NSRange)rangeForUserTextChange
+- (NSRange) rangeForUserTextChange
 {
   if (!tv_editable || !tv_usesRuler)
     return NSMakeRange(NSNotFound, 0);
@@ -669,13 +704,13 @@ replacing the selection.
   return tv_selectedRange;
 }
 
-- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange
-	      replacementString:(NSString *)replacementString
+- (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
+	       replacementString: (NSString*)replacementString
 {
 /*
 This method checks with the delegate as needed using
 textShouldBeginEditing: and
-textView:shouldChangeTextInRange:replacementString:, returning YES to
+textView: shouldChangeTextInRange: replacementString: , returning YES to
 allow the change, and NO to prohibit it.
 
 This method must be invoked at the start of any sequence of user-initiated
@@ -690,32 +725,32 @@ the affected range or replacement string before beginning changes, pass
   return NO;
 }
 
-- (void)didChangeText
+- (void) didChangeText
 {
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:NSTextDidChangeNotification object:self];
+    postNotificationName: NSTextDidChangeNotification object: self];
 }
 
-- (void)setSmartInsertDeleteEnabled:(BOOL)flag
+- (void) setSmartInsertDeleteEnabled: (BOOL)flag
 {
   tv_smartInsertDelete = flag;
 }
 
-- (BOOL)smartInsertDeleteEnabled
+- (BOOL) smartInsertDeleteEnabled
 {
   return tv_smartInsertDelete;
 }
 
-- (NSRange)smartDeleteRangeForProposedRange:(NSRange)proposedCharRange
+- (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
 {
 // FIXME.
   return proposedCharRange;
 }
 
-- (void)smartInsertForString:(NSString *)aString
-              replacingRange:(NSRange)charRange
-		beforeString:(NSString *)beforeString 
-		 afterString:(NSString *)afterString
+- (void) smartInsertForString: (NSString*)aString
+	       replacingRange: (NSRange)charRange
+		 beforeString: (NSString*)beforeString 
+		  afterString: (NSString*)afterString
 {
 
 /* Determines whether whitespace needs to be added around aString to
@@ -726,8 +761,8 @@ nil. Both are returned as nil if aString is nil or if smart insertion and
 deletion is disabled.
 
 As part of its implementation, this method calls
-smartInsertAfterStringForString:replacingRange: and
-smartInsertBeforeStringForString:replacingRange:.To change this method's
+smartInsertAfterStringForString: replacingRange: and
+smartInsertBeforeStringForString: replacingRange: .To change this method's
 behavior, override those two methods instead of this one.
 
 NSTextView uses this method as necessary. You can also use it in
@@ -737,7 +772,7 @@ afterString in order over charRange. */
 
 }
 
-- (BOOL)resignFirstResponder
+- (BOOL) resignFirstResponder
 {
 /*
   if (nextRsponder == NSTextView_in_NSLayoutManager)
@@ -749,7 +784,7 @@ afterString in order over charRange. */
       else
 	{
   	  [[NSNotificationCenter defaultCenter]
-    	    postNotificationName:NSTextDidEndEditingNotification object:self];
+    	    postNotificationName: NSTextDidEndEditingNotification object: self];
 	  // [self hideSelection];
 	  return YES;
 	}
@@ -758,7 +793,7 @@ afterString in order over charRange. */
   return YES;
 }
 
-- (BOOL)becomeFirstResponder
+- (BOOL) becomeFirstResponder
 {
 /*
   if (!nextRsponder == NSTextView_in_NSLayoutManager)
@@ -770,8 +805,8 @@ afterString in order over charRange. */
   return YES;
 }
 
-- (id)validRequestorForSendType:(NSString *)sendType
-		     returnType:(NSString *)returnType
+- (id) validRequestorForSendType: (NSString*)sendType
+		      returnType: (NSString*)returnType
 {
 /*
 Returns self if sendType specifies a type of data the text view can put on
@@ -782,7 +817,7 @@ read from the pasteboard; otherwise returns nil.
  return nil;
 }
 
-- (int)spellCheckerDocumentTag
+- (int) spellCheckerDocumentTag
 {
 /*
   if (!tv_spellTag)
@@ -791,13 +826,13 @@ read from the pasteboard; otherwise returns nil.
   return tv_spellTag;
 }
 
-- (void)rulerView:(NSRulerView *)aRulerView
-    didMoveMarker:(NSRulerMarker *)aMarker
+- (void) rulerView: (NSRulerView*)aRulerView
+     didMoveMarker: (NSRulerMarker*)aMarker
 {
 /*
 NSTextView checks for permission to make the change in its
-rulerView:shouldMoveMarker: method, which invokes
-shouldChangeTextInRange:replacementString: to send out the proper request
+rulerView: shouldMoveMarker: method, which invokes
+shouldChangeTextInRange: replacementString: to send out the proper request
 and notifications, and only invokes this
 method if permission is granted.
 
@@ -805,19 +840,19 @@ method if permission is granted.
 */
 }
 
-- (void)rulerView:(NSRulerView *)aRulerView
-  didRemoveMarker:(NSRulerMarker *)aMarker
+- (void) rulerView: (NSRulerView*)aRulerView
+   didRemoveMarker: (NSRulerMarker*)aMarker
 {
 /*
 NSTextView checks for permission to move or remove a tab stop in its
-rulerView:shouldMoveMarker: method, which invokes
-shouldChangeTextInRange:replacementString: to send out the proper request
+rulerView: shouldMoveMarker: method, which invokes
+shouldChangeTextInRange: replacementString: to send out the proper request
 and notifications, and only invokes this method if permission is granted.
 */
 }
 
-- (void)rulerView:(NSRulerView *)aRulerView
-  handleMouseDown:(NSEvent *)theEvent
+- (void) rulerView: (NSRulerView*)aRulerView
+   handleMouseDown: (NSEvent*)theEvent
 {
 /*
 This NSRulerView client method adds a left tab marker to the ruler, but a
@@ -828,34 +863,34 @@ NSRulerView class specification.
 */
 }
 
-- (BOOL)rulerView:(NSRulerView *)aRulerView
-  shouldAddMarker:(NSRulerMarker *)aMarker
+- (BOOL) rulerView: (NSRulerView*)aRulerView
+   shouldAddMarker: (NSRulerMarker*)aMarker
 {
 
 /* This NSRulerView client method controls whether a new tab stop can be
 added. The receiver checks for permission to make the change by invoking
-shouldChangeTextInRange:replacementString: and returning the return value
+shouldChangeTextInRange: replacementString: and returning the return value
 of that message. If the change is allowed, the receiver is then sent a
-rulerView:didAddMarker: message. */
+rulerView: didAddMarker: message. */
 
   return NO;
 }
 
-- (BOOL)rulerView:(NSRulerView *)aRulerView
- shouldMoveMarker:(NSRulerMarker *)aMarker
+- (BOOL) rulerView: (NSRulerView*)aRulerView
+  shouldMoveMarker: (NSRulerMarker*)aMarker
 {
 
 /* This NSRulerView client method controls whether an existing tab stop
 can be moved. The receiver checks for permission to make the change by
-invoking shouldChangeTextInRange:replacementString: and returning the
+invoking shouldChangeTextInRange: replacementString: and returning the
 return value of that message. If the change is allowed, the receiver is
-then sent a rulerView:didAddMarker: message. */
+then sent a rulerView: didAddMarker: message. */
 
   return NO;
 }
 
-- (BOOL)rulerView:(NSRulerView *)aRulerView
-  shouldRemoveMarker:(NSRulerMarker *)aMarker
+- (BOOL) rulerView: (NSRulerView*)aRulerView
+shouldRemoveMarker: (NSRulerMarker*)aMarker
 {
 
 /* This NSRulerView client method controls whether an existing tab stop
@@ -863,14 +898,14 @@ can be removed. Returns YES if aMarker represents an NSTextTab, NO
 otherwise. Because this method can be invoked repeatedly as the user drags
 a ruler marker, it returns that value immediately. If the change is allows
 and the user actually removes the marker, the receiver is also sent a
-rulerView:didRemoveMarker: message. */
+rulerView: didRemoveMarker: message. */
 
   return NO;
 }
 
-- (float)rulerView:(NSRulerView *)aRulerView
-     willAddMarker:(NSRulerMarker *)aMarker 
-        atLocation:(float)location
+- (float) rulerView: (NSRulerView*)aRulerView
+      willAddMarker: (NSRulerMarker*)aMarker 
+	 atLocation: (float)location
 {
 
 /* This NSRulerView client method ensures that the proposed location of
@@ -880,9 +915,9 @@ container, returning the modified location. */
   return 0.0;
 }
 
-- (float)rulerView:(NSRulerView *)aRulerView
-    willMoveMarker:(NSRulerMarker *)aMarker 
-        toLocation:(float)location
+- (float) rulerView: (NSRulerView*)aRulerView
+     willMoveMarker: (NSRulerMarker*)aMarker 
+	 toLocation: (float)location
 {
 
 /* This NSRulerView client method ensures that the proposed location of
@@ -899,9 +934,9 @@ container, returning the modified location. */
   [super setDelegate: anObject];
  
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector: @selector(textView##notif_name:)]) \
+  if ([delegate respondsToSelector: @selector(textView##notif_name: )]) \
     [nc addObserver: delegate \
-           selector: @selector(textView##notif_name:) \
+           selector: @selector(textView##notif_name: ) \
                name: NSTextView##notif_name##Notification \
              object: self]
  
@@ -909,69 +944,79 @@ container, returning the modified location. */
   SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
 }
 
--(void) setString:(NSString *)string
+- (void) setString: (NSString*)string
 {
-  NSAttributedString *aString = [[[NSAttributedString alloc]
-		initWithString: string
-                attributes: [self typingAttributes]] autorelease];
+  NSAttributedString	*aString;
 
-//  [textStorage replaceRange:NSMakeRange(0, [string length])
-//	withString:aString];
+  aString = [NSAttributedString alloc];
+  aString = [aString initWithString: string
+			 attributes: [self typingAttributes]];
+  AUTORELEASE(aString);
+
+//  [textStorage replaceRange: NSMakeRange(0, [string length])
+//	withString: aString];
 
   [textStorage setAttributedString: aString];
 
-//replaceCharactersInRange:NSMakeRange(0, [string length])
+//replaceCharactersInRange: NSMakeRange(0, [string length])
 //                   withAttributedString: aString];
 
-//  [textStorage insertAttributedString:aString atIndex:0];
+//  [textStorage insertAttributedString: aString atIndex: 0];
 }
 
--(void) setText:(NSString *)string {[self setString:string];}
+- (void) setText: (NSString*)string
+{
+  [self setString: string];
+}
 
-- (void)insertText:(NSString *)aString
+- (void) insertText: (NSString*)aString
 {
   NSDebugLLog(@"NSText", @"%@", aString);
 
-  if (![aString isKindOfClass:[NSAttributedString class]])
-    aString = [[NSAttributedString alloc] initWithString:aString
-		attributes:[self typingAttributes]];
+  if (![aString isKindOfClass: [NSAttributedString class]])
+    aString = [[NSAttributedString alloc] initWithString: aString
+		attributes: [self typingAttributes]];
 
-  [textStorage replaceCharactersInRange:[self selectedRange]
-       withAttributedString:(NSAttributedString *)aString];
+  [textStorage replaceCharactersInRange: [self selectedRange]
+       withAttributedString: (NSAttributedString*)aString];
 
   [self sizeToFit];                       // ScrollView interaction
 
-  [self setSelectedRange:NSMakeRange([self 
+  [self setSelectedRange: NSMakeRange([self 
     selectedRange].location+[aString length],0)];
 
   [self display];
   [_window update]; 
-  [self textDidChange: nil];      // broadcast notification
 
   NSLog(@"%@", [textStorage string]);
+  /*
+   * broadcast notification
+   */
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextDidChangeNotification
+    object: self];
 }
 
-- (void)sizeToFit
+- (void) sizeToFit
 {
   NSLog(@"sizeToFit called.\n");
 }
 
-- (void)drawRect:(NSRect)aRect
+- (void) drawRect: (NSRect)aRect
 {
-  if(tv_backGroundColor)
+  NSRange	glyphRange;
+
+  if (tv_backGroundColor)
     {
       [tv_backGroundColor set];
-      NSRectFill (aRect);
+      NSRectFill(aRect);
     }
-
-  [layoutManager drawGlyphsForGlyphRange:[layoutManager glyphRangeForTextContainer: textContainer]
-	atPoint: [self frame].origin];
+  glyphRange = [layoutManager glyphRangeForTextContainer: textContainer];
+  if (glyphRange.length > 0)
+    {
+      [layoutManager drawGlyphsForGlyphRange: glyphRange
+				     atPoint: [self frame].origin];
+    }
 }
 
-/*
-- (void)mouseDown:(NSEvent *)aEvent
-{
-  NSLog(@"mouseDown:");
-}
-*/
 @end

@@ -496,16 +496,16 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 // Managing Submenus.
 //
 - (void) setSubmenu: (NSMenu *)aMenu
-	    forItem: (id <NSMenuItem>) anItem 
+	    forItem: (id <NSMenuItem>)anItem 
 {
   [(NSMenuItem *)anItem setSubmenu: aMenu];
   [anItem setTarget: self];
   [anItem setAction: @selector(submenuAction:)];
-  if (aMenu)
-    aMenu->menu_supermenu = self;
-
-  ASSIGN(aMenu->menu_title, [anItem title]);
-
+  if (aMenu != nil)
+    {
+      aMenu->menu_supermenu = self;
+      ASSIGN(aMenu->menu_title, [anItem title]);
+    }
   [self itemChanged: anItem];
 }
 
@@ -856,66 +856,37 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 {
   [encoder encodeObject: menu_title];
   [encoder encodeObject: menu_items];
-  [encoder encodeObject: menu_view];
-  [encoder encodeConditionalObject: menu_supermenu];
-  [encoder encodeConditionalObject: menu_popb];
   [encoder encodeValueOfObjCType: @encode(BOOL) at: &menu_autoenable];
-  [encoder encodeValueOfObjCType: @encode(BOOL) at: &menu_is_tornoff];
-  [encoder encodeValueOfObjCType: @encode(BOOL)
-	                     at: &menu_is_beholdenToPopUpButton];
 }
 
 - (id) initWithCoder: (NSCoder*)decoder
 {
-  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
-  NSRect                winRect   = {{0,0},{20,23}};
+  NSString	*dTitle;
+  NSArray	*dItems;
+  BOOL		dAuto;
+  unsigned	i;
 
-  [decoder decodeValueOfObjCType: @encode(id) at: &menu_title];
-  [decoder decodeValueOfObjCType: @encode(id) at: &menu_items];
-  [decoder decodeValueOfObjCType: @encode(id) at: &menu_view];
-  [menu_view setMenu: self];	// Sets notifications up
-  menu_supermenu = [decoder decodeObject];
-  menu_popb      = [decoder decodeObject];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &menu_autoenable];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &menu_is_tornoff];
-  [decoder decodeValueOfObjCType: @encode(BOOL)
-	                       at: &menu_is_beholdenToPopUpButton];
+  dTitle = [decoder decodeObject];
+  dItems = [decoder decodeObject];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &dAuto];
 
-  menu_attachedMenu = nil;
-  menu_changedMessagesEnabled = YES;
-  menu_notifications = [NSMutableArray new];
-  menu_follow_transient = NO;
-  menu_is_visible = NO;
+  self = [self initWithTitle: dTitle];
+  [self setAutoenablesItems: dAuto];
 
-  // Mark the menu as changed in order to get it resized.
-  menu_changed = YES;
+  /*
+   * Make sure that items and submenus are set correctly.
+   */
+  for (i = 0; i < [dItems count]; i++)
+    {
+      NSMenuItem	*item = [dItems objectAtIndex: i];
+      NSMenu		*sub = [item submenu];
 
-  // Transient windows private stuff.
-  _oldAttachedMenu = nil;
-
-  // Create the windows that will display the menu.
-  aWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
-                                            styleMask: NSBorderlessWindowMask
-                                              backing: NSBackingStoreRetained
-                                                defer: NO];
-  bWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
-                                            styleMask: NSBorderlessWindowMask
-                                              backing: NSBackingStoreRetained
-                                                defer: NO];
-  
-  titleView = [NSMenuWindowTitleView new];
-  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
-  [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
-  [[aWindow contentView] addSubview: menu_view];
-  [[aWindow contentView] addSubview: titleView];
-  [titleView setMenu: self];
-
-  // Set up the notification to start the process of redisplaying
-  // the menus where the user left them the last time.
-  [theCenter addObserver: self
-	        selector: @selector(_showTornOffMenuIfAny:)
-	            name: NSApplicationWillFinishLaunchingNotification 
-	          object: NSApp];
+      [self addItem: item];
+      if (sub != nil)
+	{
+	  [self setSubmenu: sub forItem: item];
+	}
+    }
 
   return self;
 }
@@ -1010,7 +981,10 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
       defaults = [NSUserDefaults standardUserDefaults];
       menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
       [menuLocations removeObjectForKey: key];
-      [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+      if ([menuLocations count] > 0)
+        [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+      else
+        [defaults removeObjectForKey: NSMenuLocationsKey];
       RELEASE(menuLocations);
       [defaults synchronize];
     }
@@ -1448,7 +1422,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
       defaults = [NSUserDefaults standardUserDefaults];
       menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
       if (menuLocations == nil)
-	menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
+	{
+	  menuLocations = [[NSMutableDictionary alloc] initWithCapacity: 2];
+	}
       locString = [[menu window] stringWithSavedFrame];
       [menuLocations setObject: locString forKey: key];
       [defaults setObject: menuLocations forKey: NSMenuLocationsKey];

@@ -27,6 +27,9 @@ AC_INIT(Source/NSApplication.m)
 
 AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 
+AC_CHECK_LIB(m, main)
+AC_CHECK_FUNCS(rintf)
+
 AC_OUTPUT()
 
 

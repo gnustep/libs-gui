@@ -32,26 +32,26 @@
 #import <Foundation/NSNotification.h>
 
 @interface NSTextContainer (TextViewObserver)
-- (void) _textViewFrameChanged: (NSNotification *)aNotification;
+- (void) _textViewFrameChanged: (NSNotification*)aNotification;
 @end
 
 @implementation NSTextContainer (TextViewObserver)
 
-- (void) _textViewFrameChanged: (NSNotification *)aNotification
+- (void) _textViewFrameChanged: (NSNotification*)aNotification
 {
   id		textView;
   NSSize	newSize;
   NSSize	inset;
 
-  if ( _observingFrameChanges )
+  if (_observingFrameChanges)
     {
       textView = [aNotification object];
       newSize = [textView frame].size;
       inset = [textView textContainerInset];
 
-      if ( _widthTracksTextView )
+      if (_widthTracksTextView)
 	newSize.width = MAX(newSize.width - (inset.width * 2.0), 0.0);
-      if ( _heightTracksTextView )
+      if (_heightTracksTextView)
 	newSize.height = MAX(newSize.height - (inset.height * 2.0), 0.0);
 
       [self setContainerSize: newSize];
@@ -64,8 +64,10 @@
 
 + (void) initialize
 {
-  if ( self == [NSTextContainer class] )
-    [self setVersion: 1];
+  if (self == [NSTextContainer class])
+    {
+      [self setVersion: 1];
+    }
 }
 
 - (id) initWithContainerSize: (NSSize)aSize
@@ -82,36 +84,43 @@
   return self;
 }
 
-- (void) setLayoutManager: (NSLayoutManager *)aLayoutManager
+- (void) setLayoutManager: (NSLayoutManager*)aLayoutManager
 {
   ASSIGN(_layoutManager, aLayoutManager);
 }
 
-- (NSLayoutManager *) layoutManager
+- (NSLayoutManager*) layoutManager
 {
   return _layoutManager;
 }
 
-- (void) replaceLayoutManager: (NSLayoutManager *)newLayoutManager
+- (void) replaceLayoutManager: (NSLayoutManager*)newLayoutManager
 {
-  id		textStorage = [_layoutManager textStorage];
-  NSArray	*textContainers = [_layoutManager textContainers]; 
-  unsigned	i, count = [textContainers count];
-
-  [textStorage removeLayoutManager: _layoutManager];
-  [textStorage addLayoutManager: newLayoutManager];
-  [_layoutManager setTextStorage: nil];
-
-  for ( i = 0; i < count; i++ )
+  if (newLayoutManager != _layoutManager)
     {
-      [newLayoutManager addTextContainer: [textContainers objectAtIndex: i]];
-      [_layoutManager removeTextContainerAtIndex: i];
+      id	textStorage = [_layoutManager textStorage];
+      NSArray	*textContainers = [_layoutManager textContainers]; 
+      unsigned	i, count = [textContainers count];
+
+      [textStorage removeLayoutManager: _layoutManager];
+      [textStorage addLayoutManager: newLayoutManager];
+      [_layoutManager setTextStorage: nil];
+
+      for (i = 0; i < count; i++)
+	{
+	  NSTextContainer	*container;
+
+	  container = RETAIN([textContainers objectAtIndex: i]);
+	  [_layoutManager removeTextContainerAtIndex: i];
+	  [newLayoutManager addTextContainer: container];
+	  RELEASE(container);
+	}
     }
 }
 
-- (void) setTextView: (NSTextView *)aTextView
+- (void) setTextView: (NSTextView*)aTextView
 {
-  if ( _textView )
+  if (_textView)
     {
       [_textView setTextContainer: nil];
       [[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -119,17 +128,17 @@
 
   ASSIGN(_textView, aTextView);
 
-  if ( aTextView )
+  if (aTextView)
     {
       [_textView setTextContainer: self];
       [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(_textViewFrameChanged: )
+	selector: @selector(_textViewFrameChanged:)
 	    name: NSViewFrameDidChangeNotification
 	  object: _textView];
     }
 }
 
-- (NSTextView *) textView
+- (NSTextView*) textView
 {
   return _textView;
 }
@@ -138,7 +147,7 @@
 {
   _containerRect = NSMakeRect(0, 0, aSize.width, aSize.height);
 
-  if ( _layoutManager )
+  if (_layoutManager)
     [_layoutManager textContainerChangedGeometry: self];
 }
 
@@ -173,7 +182,7 @@
 {
   _lineFragmentPadding = aFloat;
 
-  if ( _layoutManager )
+  if (_layoutManager)
     [_layoutManager textContainerChangedGeometry: self];
 }
 
@@ -185,7 +194,7 @@
 - (NSRect) lineFragmentRectForProposedRect: (NSRect)proposedRect
 			    sweepDirection: (NSLineSweepDirection)sweepDir
 			 movementDirection: (NSLineMovementDirection)moveDir
-			     remainingRect: (NSRect *)remainingRect;
+			     remainingRect: (NSRect*)remainingRect;
 {
   // line fragment rectangle simply must fit within the container rectangle
   *remainingRect = NSZeroRect;

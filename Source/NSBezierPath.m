@@ -34,6 +34,8 @@
 #define PI 3.1415926535897932384626433
 #endif
 
+#define PMAX 10000
+
 typedef struct {
 	NSPoint p1;
 	NSPoint p2;
@@ -52,35 +54,126 @@ typedef enum {
 } pointPosition;
 
 pointPosition inPath(NSBezierPath *aPath, NSPoint p);
-BOOL onPathBorder(NSBezierPath *aPath, NSPoint p);
-int ccw(NSPoint p0, NSPoint p1, NSPoint p2);
-BOOL intersect(Line line1, Line line2);
-BOOL intersectRect(NSRect rect, Line line);
 void subdiv(int degree, float coeff[], float t, float bleft[], float bright[]);
 NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 
-@interface PathElement : NSObject
+
+@interface PathElement : NSObject <NSCopying, NSCoding>
 {
 	NSPoint p[3];
-	NSBezierPathElementType type;
+	NSBezierPathElement type;
 }
 
 + (PathElement *)pathElement;
-- (void)setType:(NSBezierPathElementType)t;
+
+- (void)setType:(NSBezierPathElement)t;
+
 - (void)setPointAtIndex:(int)index toPoint:(NSPoint)aPoint;
-- (NSBezierPathElementType)type;
+
+- (NSBezierPathElement)type;
+
 - (NSPoint *)points;
 
 @end
+
+
+@interface NSBezierPath (PrivateMethods)
+
+- (void)setBounds:(NSRect)br;
+
+- (void)setControlPointBounds:(NSRect)br;
+
+@end
+
+
+@interface GSBezierPath : NSBezierPath
+{
+	NSMutableArray *pathElements;
+	NSMutableArray *subPaths;
+	NSPoint draftPolygon[PMAX];
+	int pcount;
+	NSPoint currentPoint;
+	BOOL cachesBezierPath;
+	NSImage *cacheimg;
+	BOOL isValid;
+}
+
+- (void)setCurrentPoint:(NSPoint)aPoint;
+
+- (BOOL)isPathElement:(PathElement *)elm1 onPathElement:(PathElement *)elm2;
+
+- (NSMutableArray *)pathElements;
+
+- (PathElement *)moveToElement;
+
+- (PathElement *)lastElement;
+
+- (int)indexOfElement:(PathElement *)element;
+
+- (PathElement *)elementPrecedingElement:(PathElement *)element;
+
+- (void)calculateDraftPolygon;
+
+- (NSPoint *)draftPolygon;
+
+- (int)pcount;
+
+- (void)movePathToPoint:(NSPoint)p;
+
+- (void)rotateByAngle:(float)angle center:(NSPoint)center;
+
+- (pointOnCurve)pointOnPathSegmentOfElement:(PathElement *)elm
+									  nearestToPoint:(NSPoint)p;
+									  
+- (PathElement *)pathElementSubdividingPathAtPoint:(NSPoint)p 
+											 pathSegmentOwner:(PathElement *)owner;
+
+@end
+
 
 @implementation PathElement
 
 + (PathElement *)pathElement
 {
-  	return AUTORELEASE([[self alloc] init]);
+	PathElement *element = [[self alloc] init];
+	[element setPointAtIndex: 0 toPoint: NSMakePoint(0, 0)];
+  	return AUTORELEASE(element);
 }
 
-- (void)setType:(NSBezierPathElementType)t
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+	[super encodeWithCoder: aCoder];
+	[aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+	[aCoder encodeValueOfObjCType: @encode(NSPoint *) at: &p];
+}
+
+- (id)initWithCoder:(NSCoder *)aCoder
+{
+	self = [super initWithCoder: aCoder];
+   [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+   [aCoder decodeValueOfObjCType: @encode(NSPoint *) at: &p];
+	return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+	PathElement *element = [[PathElement allocWithZone: zone] init];
+	element->type = type;
+	if(type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) {
+		element->p[0].x = p[0].x;
+		element->p[0].y = p[0].y;
+	} else if(type == NSCurveToBezierPathElement) {
+		element->p[0].x = p[0].x;
+		element->p[0].y = p[0].y;
+		element->p[1].x = p[1].x;
+		element->p[1].y = p[1].y;
+		element->p[2].x = p[2].x;
+		element->p[2].y = p[2].y;
+	}
+	return AUTORELEASE(element);
+}
+
+- (void)setType:(NSBezierPathElement)t
 {
 	type = t;
 }
@@ -91,7 +184,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	p[index].y = aPoint.y;
 }
 
-- (NSBezierPathElementType)type
+- (NSBezierPathElement)type
 {
 	return type;
 }
@@ -103,34 +196,33 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 
 @end
 
-@interface NSBezierPath (PrivateMethods)
 
-- (void)setCurrentPoint:(NSPoint)aPoint;
-- (BOOL)isPathElement:(PathElement *)elm1 onPathElement:(PathElement *)elm2;
-- (NSMutableArray *)pathElements;
-- (PathElement *)moveToElement;
-- (PathElement *)lastElement;
-- (int)indexOfElement:(PathElement *)element;
-- (PathElement *)elementPrecedingElement:(PathElement *)element;
-- (void)calculateDraftPolygon;
-- (NSPoint *)draftPolygon;
-- (int)pcount;
-- (NSBezierPath *)pathWithOvalInRect:(NSRect)aRect;
-- (void)movePathToPoint:(NSPoint)p;
-- (void)rotateByAngle:(float)angle center:(NSPoint)center;
-- (pointOnCurve)pointOnPathSegmentOfElement:(PathElement *)elm
-									  nearestToPoint:(NSPoint)p;
-- (PathElement *)pathElementSubdividingPathAtPoint:(NSPoint)p 
-											 pathSegmentOwner:(PathElement *)owner;
-
-@end
-
+static Class NSBezierPath_concrete_class = nil;
 
 @implementation NSBezierPath
 
-+ (NSBezierPath *)bezierPath
++ (void)initialize
 {
-  	return AUTORELEASE([[self alloc] init]);
+	if(self == [NSBezierPath class])
+      NSBezierPath_concrete_class = [GSBezierPath class];
+}
+
++ (void)_setConcreteClass:(Class)c
+{
+  	NSBezierPath_concrete_class = c;
+}
+
++ (Class)_concreteClass
+{
+	return NSBezierPath_concrete_class;
+}
+
+//
+// Creating common paths
+//
++ (id)bezierPath
+{
+	return [[[self _concreteClass] alloc] init];
 }
 
 + (NSBezierPath *)bezierPathWithRect:(NSRect)aRect
@@ -154,13 +246,489 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	return path;
 }
 
++ (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)rect
+{
+	NSBezierPath *path;
+	NSPoint p, p1, p2;
+	double originx = rect.origin.x;
+	double originy = rect.origin.y;
+	double width = rect.size.width;
+	double height = rect.size.height;
+	double hdiff = width / 2 * 0.5522847498;
+	double vdiff = height / 2 * 0.5522847498;
+	
+	path = [NSBezierPath bezierPath];
+	p = NSMakePoint(originx + width / 2, originy + height);
+	[path moveToPoint: p];
+
+	p = NSMakePoint(originx, originy + height / 2);
+	p1 = NSMakePoint(originx + width / 2 - hdiff, originy + height);
+	p2 = NSMakePoint(originx, originy + height / 2 + vdiff);
+	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];
+	
+	p = NSMakePoint(originx + width / 2, originy);
+	p1 = NSMakePoint(originx, originy + height / 2 - vdiff);
+	p2 = NSMakePoint(originx + width / 2 - hdiff, originy);
+	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
+	
+	p = NSMakePoint(originx + width, originy + height / 2);
+	p1 = NSMakePoint(originx + width / 2 + hdiff, originy);
+	p2 = NSMakePoint(originx + width, originy + height / 2 - vdiff);
+	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
+	
+	p = NSMakePoint(originx + width / 2, originy + height);
+	p1 = NSMakePoint(originx + width, originy + height / 2 + vdiff);
+	p2 = NSMakePoint(originx + width / 2 + hdiff, originy + height);
+	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
+	
+	return path;
+}
+
+//
+// Immediate mode drawing of common paths
+//
++ (void)fillRect:(NSRect)aRect
+{
+	NSBezierPath *path = [NSBezierPath bezierPathWithRect: aRect];
+	[path fill];
+}
+
++ (void)strokeRect:(NSRect)aRect
+{
+	NSBezierPath *path = [NSBezierPath bezierPathWithRect: aRect];
+	[path stroke];
+}
+
++ (void)clipRect:(NSRect)rect
+{
+
+}
+
++ (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2
+{
+	NSBezierPath *path = [NSBezierPath bezierPath];
+	[path moveToPoint: point1];
+	[path lineToPoint: point2];
+	[path stroke];
+}
+
++ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)aPoint
+{
+
+}
+
+//
+// Default path rendering parameters
+//
++ (void)setDefaultMiterLimit:(float)limit
+{
+	PSsetmiterlimit(limit);
+}
+
++ (float)defaultMiterLimit
+{
+	float limit;
+	PScurrentmiterlimit(&limit);
+	return limit;
+}
+
++ (void)setDefaultFlatness:(float)flatness
+{
+	PSsetflat(flatness);
+}
+
++ (float)defaultFlatness
+{
+	float flatness;
+	PScurrentflat(&flatness);
+	return flatness;
+}
+
++ (void)setDefaultWindingRule:(NSWindingRule)windingRule
+{
+
+}
+
++ (NSWindingRule)defaultWindingRule
+{
+	return NSNonZeroWindingRule;
+}
+
++ (void)setDefaultLineCapStyle:(NSLineCapStyle)lineCapStyle
+{
+	PSsetlinecap(lineCapStyle);
+}
+
++ (NSLineCapStyle)defaultLineCapStyle
+{
+	int lineCapStyle;
+	PScurrentlinecap(&lineCapStyle);
+	return lineCapStyle;
+}
+
++ (void)setDefaultLineJoinStyle:(NSLineJoinStyle)lineJoinStyle
+{
+	PSsetlinejoin(lineJoinStyle);
+}
+
++ (NSLineJoinStyle)defaultLineJoinStyle
+{
+	int lineJoinStyle;
+	PScurrentlinejoin(&lineJoinStyle);
+	return lineJoinStyle;
+}
+
++ (void)setDefaultLineWidth:(float)lineWidth
+{
+	PSsetlinewidth(lineWidth);
+}
+
++ (float)defaultLineWidth
+{
+	float lineWidth;
+	PScurrentlinewidth(&lineWidth);
+	return lineWidth;
+}
+
+//
+// Path construction
+//
+- (void)moveToPoint:(NSPoint)aPoint
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)lineToPoint:(NSPoint)aPoint
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)curveToPoint:(NSPoint)aPoint 
+		 controlPoint1:(NSPoint)controlPoint1
+		 controlPoint2:(NSPoint)controlPoint2
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)closePath
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)removeAllPoints
+{
+	[self subclassResponsibility:_cmd];
+}
+
+//
+// Relative path construction
+//
+- (void)relativeMoveToPoint:(NSPoint)aPoint
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)relativeLineToPoint:(NSPoint)aPoint
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)relativeCurveToPoint:(NSPoint)aPoint
+					controlPoint1:(NSPoint)controlPoint1
+					controlPoint2:(NSPoint)controlPoint2
+{
+	[self subclassResponsibility:_cmd];
+}
+
+//
+// Path rendering parameters
+//
+- (float)lineWidth
+{
+	return _lineWidth;
+}
+
+- (void)setLineWidth:(float)lineWidth
+{
+	_lineWidth = lineWidth;
+}
+
+- (NSLineCapStyle)lineCapStyle
+{
+	return _lineCapStyle;
+}
+
+- (void)setLineCapStyle:(NSLineCapStyle)lineCapStyle
+{
+	_lineCapStyle = lineCapStyle;
+}
+
+- (NSLineJoinStyle)lineJoinStyle
+{
+	return _lineJoinStyle;
+}
+
+- (void)setLineJoinStyle:(NSLineJoinStyle)lineJoinStyle
+{
+	_lineJoinStyle = lineJoinStyle;
+}
+
+- (NSWindingRule)windingRule
+{
+	return _windingRule;
+}
+
+- (void)setWindingRule:(NSWindingRule)windingRule
+{
+	_windingRule = windingRule;
+}
+
+//
+// Path operations
+//
+- (void)stroke
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)fill
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)addClip
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)setClip
+{
+	[self subclassResponsibility:_cmd];
+}
+
+//
+// Path modifications.
+//
+- (NSBezierPath *)bezierPathByFlatteningPath
+{
+	return self;
+}
+
+- (NSBezierPath *)bezierPathByReversingPath
+{
+	return self;
+}
+
+//
+// Applying transformations.
+//
+- (void)transformUsingAffineTransform:(NSAffineTransform *)transform
+{
+	[self subclassResponsibility:_cmd];
+}
+
+//
+// Path info
+//
+- (BOOL)isEmpty
+{
+	[self subclassResponsibility:_cmd];
+	return NO;
+}
+
+- (NSPoint)currentPoint
+{
+	[self subclassResponsibility:_cmd];
+	return NSZeroPoint;
+}
+
+- (NSRect)controlPointBounds
+{
+	return _controlPointBounds;
+}
+
+- (NSRect)bounds
+{
+	return _bounds;
+}
+
+//
+// Elements
+//
+- (int)elementCount
+{
+	[self subclassResponsibility:_cmd];
+	return 0;
+}
+
+- (NSBezierPathElement)elementAtIndex:(int)index
+		     				associatedPoints:(NSPoint *)points
+{
+	[self subclassResponsibility:_cmd];	
+	return 0;
+}
+
+- (NSBezierPathElement)elementAtIndex:(int)index
+{
+	return [self elementAtIndex: index associatedPoints: NULL];	
+}
+
+- (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index
+{
+	[self subclassResponsibility:_cmd];	
+}
+
+//
+// Appending common paths
+//
+- (void)appendBezierPath:(NSBezierPath *)aPath
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithRect:(NSRect)rect
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithOvalInRect:(NSRect)aRect
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
+											  radius:(float)radius
+			       					 startAngle:(float)startAngle
+				 							endAngle:(float)endAngle
+										  clockwise:(BOOL)clockwise
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
+											  radius:(float)radius
+			       					 startAngle:(float)startAngle
+				 							endAngle:(float)endAngle
+{
+	[self appendBezierPathWithArcWithCenter: center radius: radius
+			       	startAngle: startAngle endAngle: endAngle clockwise: NO];
+}
+
+- (void)appendBezierPathWithArcFromPoint:(NSPoint)point1
+				 							toPoint:(NSPoint)point2
+				  							 radius:(float)radius
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font
+{
+
+}
+
+- (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
+									  count:(int)count
+			    					 inFont:(NSFont *)font
+{
+
+}
+				 
+- (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
+{
+
+}
+
+//
+// Hit detection  
+// 
+- (BOOL)containsPoint:(NSPoint)point
+{
+	[self subclassResponsibility:_cmd];
+	return NO;
+}
+
+//
+// Caching paths 
+// 
+- (BOOL)cachesBezierPath
+{
+	[self subclassResponsibility:_cmd];
+	return NO;
+}
+
+- (void)setCachesBezierPath:(BOOL)flag
+{
+	[self subclassResponsibility:_cmd];
+}
+
+//
+// NSCoding protocol
+//
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+	[self subclassResponsibility:_cmd];
+}
+
+- (id)initWithCoder:(NSCoder *)aCoder
+{
+	[self subclassResponsibility:_cmd];
+	return self;
+}
+
+//
+// NSCopying Protocol
+//
+- (id)copyWithZone:(NSZone *)zone
+{
+	[self subclassResponsibility:_cmd];
+	return self;
+}
+
+@end
+
+
+@implementation NSBezierPath (PrivateMethods)
+
+- (void)setBounds:(NSRect)br
+{
+	_bounds = NSMakeRect(br.origin.x, br.origin.y, br.size.width, br.size.height);
+}
+
+- (void)setControlPointBounds:(NSRect)br
+{
+	_controlPointBounds = NSMakeRect(br.origin.x, br.origin.y, br.size.width, br.size.height);
+}
+
+@end
+
+
+@implementation GSBezierPath
+
++ (id)bezierPath
+{
+  	return AUTORELEASE([[self alloc] init]);
+}
+
 - (id)init
 {
 	self = [super init];
 	if(self) {
 		pathElements = [[NSMutableArray alloc] initWithCapacity: 1];
 		subPaths = [[NSMutableArray alloc] initWithCapacity: 1];
-		windingRule = NSWindingRuleNonZero;
+		[self setLineWidth: 1];
+		[self setLineCapStyle: NSButtLineCapStyle];
+		[self setLineJoinStyle: NSMiterLineJoinStyle];
+		[self setWindingRule: NSNonZeroWindingRule];
+		[self setBounds: NSZeroRect];
+		[self setControlPointBounds: NSZeroRect];
+		cachesBezierPath = NO;
+		cacheimg = nil;
+		isValid = NO;
 	}
 	return self;
 }
@@ -169,16 +737,18 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 {
 	[pathElements release];
 	[subPaths release];
+	if(cacheimg)
+		[cacheimg release];
 	[super dealloc];
 }
 
 //
-// Contructing paths 
+// Path construction
 //
 - (void)moveToPoint:(NSPoint)aPoint
 {
 	PathElement *elm = [PathElement pathElement];
-	[elm setType: NSBezierPathElementMoveTo];
+	[elm setType: NSMoveToBezierPathElement];
 	[elm setPointAtIndex: 0 toPoint: aPoint];
 	[pathElements addObject: elm];
 	[self setCurrentPoint: aPoint];
@@ -188,7 +758,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 - (void)lineToPoint:(NSPoint)aPoint
 {
 	PathElement *elm = [PathElement pathElement];
-	[elm setType: NSBezierPathElementLineTo];
+	[elm setType: NSLineToBezierPathElement];
 	[elm setPointAtIndex: 0 toPoint: aPoint];
 	[pathElements addObject: elm];
 	[self setCurrentPoint: aPoint];
@@ -200,7 +770,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 		 controlPoint2:(NSPoint)controlPoint2
 {
 	PathElement *elm = [PathElement pathElement];
-	[elm setType: NSBezierPathElementCurveTo];
+	[elm setType: NSCurveToBezierPathElement];
 	[elm setPointAtIndex: 0 toPoint: controlPoint1];
 	[elm setPointAtIndex: 1 toPoint: controlPoint2];
 	[elm setPointAtIndex: 2 toPoint: aPoint];
@@ -221,16 +791,26 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 		[self lineToPoint: p];
 	}
 	elm = [PathElement pathElement];
-	[elm setType: NSBezierPathElementClose];
+	[elm setType: NSClosePathBezierPathElement];
 	[pathElements addObject: elm];
 }
 
-- (void)reset
+- (void)removeAllPoints
 {
 	[pathElements removeAllObjects];
 	[subPaths removeAllObjects];
+	[self setBounds: NSZeroRect];
+	[self setControlPointBounds: NSZeroRect];
+	if(cacheimg != nil) {
+		[cacheimg release];
+		cacheimg = nil;	
+		isValid = NO;
+	}
 }
 
+//
+// Relative path construction
+//
 - (void)relativeMoveToPoint:(NSPoint)aPoint
 {
 	NSBezierPath *path;
@@ -281,13 +861,269 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 }
 
 //
-// Appending paths and some common shapes 
+// Path operations
+//
+- (void)stroke
+{
+	PathElement *elm;
+	NSBezierPathElement t;
+	NSPoint *pts, origin;
+	int i;
+		
+	if(cachesBezierPath) {
+		origin = [self bounds].origin;
+		if(!isValid) {
+			if(cacheimg) 
+				[cacheimg release];
+			cacheimg = [[NSImage alloc] initWithSize: [self bounds].size];		
+			[self movePathToPoint: NSMakePoint(0, 0)];
+			
+			[cacheimg lockFocus];
+			PSsetlinewidth([self lineWidth]);
+			PSsetlinejoin([self lineJoinStyle]);
+			PSsetlinecap([self lineCapStyle]);
+			for(i = 0; i < [pathElements count]; i++) {
+				elm = [pathElements objectAtIndex: i];
+				pts = [elm points];
+				t = [elm type];
+				switch(t) {
+					case NSMoveToBezierPathElement:
+						PSmoveto(pts[0].x, pts[0].y);
+						break;
+					case NSLineToBezierPathElement:
+						PSlineto(pts[0].x, pts[0].y);
+						break;
+					case NSCurveToBezierPathElement:
+						PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+						break;
+					default:
+						break;
+				}
+			}
+			PSstroke();
+			[cacheimg unlockFocus];
+						
+			[self movePathToPoint: origin];			
+			isValid = YES;
+		}
+		[cacheimg compositeToPoint: origin operation: NSCompositeCopy];
+	} else {
+		PSsetlinewidth([self lineWidth]);
+		PSsetlinejoin([self lineJoinStyle]);
+		PSsetlinecap([self lineCapStyle]);
+		for(i = 0; i < [pathElements count]; i++) {
+			elm = [pathElements objectAtIndex: i];
+			pts = [elm points];
+			t = [elm type];
+			switch(t) {
+				case NSMoveToBezierPathElement:
+					PSmoveto(pts[0].x, pts[0].y);
+					break;
+				case NSLineToBezierPathElement:
+					PSlineto(pts[0].x, pts[0].y);
+					break;
+				case NSCurveToBezierPathElement:
+					PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+					break;
+				default:
+					break;
+			}
+		}
+		PSstroke();
+	}
+	
+	for(i = 0; i < [subPaths count]; i++) 
+		[[subPaths objectAtIndex: i] stroke];
+}
+
+- (void)fill
+{
+	PathElement *elm;
+	NSBezierPathElement t;
+	NSPoint *pts, origin;
+	int i;
+
+	if(cachesBezierPath) {
+		origin = [self bounds].origin;
+		if(!isValid) {
+			if(cacheimg) 
+				[cacheimg release];
+			cacheimg = [[NSImage alloc] initWithSize: [self bounds].size];		
+			[self movePathToPoint: NSMakePoint(0, 0)];
+			
+			[cacheimg lockFocus];
+			for(i = 0; i < [pathElements count]; i++) {
+				elm = [pathElements objectAtIndex: i];
+				pts = [elm points];
+				t = [elm type];
+				switch(t) {
+					case NSMoveToBezierPathElement:
+						PSmoveto(pts[0].x, pts[0].y);
+						break;
+					case NSLineToBezierPathElement:
+						PSlineto(pts[0].x, pts[0].y);
+						break;
+					case NSCurveToBezierPathElement:
+						PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+						break;
+					default:
+						break;
+				}
+			}
+			if([self windingRule] == NSNonZeroWindingRule)
+				PSfill();
+			else
+				PSeofill();
+			[cacheimg unlockFocus];
+			
+			[self movePathToPoint: origin];			
+			isValid = YES;
+		}
+		[cacheimg compositeToPoint: origin operation: NSCompositeCopy];
+	} else {
+		for(i = 0; i < [pathElements count]; i++) {
+			elm = [pathElements objectAtIndex: i];
+			pts = [elm points];
+			t = [elm type];
+			switch(t) {
+				case NSMoveToBezierPathElement:
+					PSmoveto(pts[0].x, pts[0].y);
+					break;
+				case NSLineToBezierPathElement:
+					PSlineto(pts[0].x, pts[0].y);
+					break;
+				case NSCurveToBezierPathElement:
+					PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+					break;
+				default:
+					break;
+			}
+		}
+		if([self windingRule] == NSNonZeroWindingRule)
+			PSfill();
+		else
+			PSeofill();
+	}
+	
+	for(i = 0; i < [subPaths count]; i++) 
+		[[subPaths objectAtIndex: i] fill];
+}
+
+- (void)addClip
+{
+
+}
+
+- (void)setClip
+{
+
+}
+
+//
+// Applying transformations.
+//
+- (void)transformUsingAffineTransform:(NSAffineTransform *)transform
+{
+	PathElement *elm;
+	NSBezierPathElement t;
+	NSPoint p, *pts;
+	int i;
+
+	for(i = 0; i < [pathElements count]; i++) {
+		elm = [pathElements objectAtIndex: i];
+		pts = [elm points];
+		t = [elm type];
+		if(t == NSCurveToBezierPathElement) {
+			p = [transform transformPoint: pts[0]];
+			[elm setPointAtIndex: 0 toPoint: p];
+			p = [transform transformPoint: pts[1]];
+			[elm setPointAtIndex: 1 toPoint: p];
+			p = [transform transformPoint: pts[2]];
+			[elm setPointAtIndex: 2 toPoint: p];
+		} else {									
+			p = [transform transformPoint: pts[0]];
+			[elm setPointAtIndex: 0 toPoint: p];
+		}	
+	}
+	
+	[self calculateDraftPolygon];
+}
+
+//
+// Path info
+//
+- (BOOL)isEmpty
+{
+	if([pathElements count])
+		return NO;
+		
+	return YES;
+}
+
+- (NSPoint)currentPoint
+{
+	return currentPoint;
+}
+
+//
+// Elements
+//
+- (int)elementCount
+{
+	return [pathElements count];
+}
+
+- (NSBezierPathElement)elementAtIndex:(int)index
+		     				associatedPoints:(NSPoint *)points
+{
+	PathElement *elm = [pathElements objectAtIndex: index];
+	NSBezierPathElement type = [elm type];
+	NSPoint *p = [elm points];
+	
+	if(points != NULL) {
+		if(type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) {
+			points[0].x = p[0].x;
+			points[0].y = p[0].y;
+		} else if(type == NSCurveToBezierPathElement) {
+			points[0].x = p[0].x;
+			points[0].y = p[0].y;
+			points[1].x = p[1].x;
+			points[1].y = p[1].y;
+			points[2].x = p[2].x;
+			points[2].y = p[2].y;
+		}
+	}
+	
+	return type;
+}
+
+- (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index
+{
+	PathElement *elm = [pathElements objectAtIndex: index];
+	NSBezierPathElement type = [elm type];
+
+	if(type == NSMoveToBezierPathElement
+						|| type == NSLineToBezierPathElement
+										|| type == NSClosePathBezierPathElement) {
+		[elm setPointAtIndex: 0 toPoint: points[0]];
+		return;
+	}
+	
+	[elm setPointAtIndex: 0 toPoint: points[0]];
+	[elm setPointAtIndex: 1 toPoint: points[1]];
+	[elm setPointAtIndex: 2 toPoint: points[2]];
+	
+	[self calculateDraftPolygon];
+}
+
+//
+// Appending common paths
 //
 - (void)appendBezierPath:(NSBezierPath *)aPath
 {
 	NSArray *pathelems;
 	PathElement *last, *elm;
-	NSBezierPathElementType t1, t2;
+	NSBezierPathElement t1, t2;
 	NSPoint p, *p1, *p2;
 	int i;
 	
@@ -298,21 +1134,21 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	
 	last = [self lastElement];
 	t1 = [last type];
-	elm = [aPath lastElement];
+	elm = [(GSBezierPath *)aPath lastElement];
 	t2 = [elm type];
 
-	if(t1 == NSBezierPathElementClose || t2 == NSBezierPathElementClose) {
+	if(t1 == NSClosePathBezierPathElement || t2 == NSClosePathBezierPathElement) {
 		[subPaths addObject: aPath];
 		return;
 	}
 	
 	p1 = [last points];
-	if(t1 == NSBezierPathElementCurveTo) 
+	if(t1 == NSCurveToBezierPathElement) 
 		p = NSMakePoint(p1[2].x, p1[2].y);
 	else
 		p = NSMakePoint(p1[0].x, p1[0].y);
 	
-	elm = [aPath moveToElement];
+	elm = [(GSBezierPath *)aPath moveToElement];
 	p2 = [elm points];
 	
 	if((p.x != p2[0].x) || (p.y != p2[0].y)) {
@@ -320,23 +1156,29 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 		return;
 	}
 	
-	pathelems = [aPath pathElements];
+	pathelems = [(GSBezierPath *)aPath pathElements];
 	for(i = 1; i < [pathelems count]; i++) {
 		elm = [pathelems objectAtIndex: i];
 		t2 = [elm type];
 		p2 = [elm points];
-		if(t2 == NSBezierPathElementCurveTo)
+		if(t2 == NSCurveToBezierPathElement)
 			[self curveToPoint: p2[2] controlPoint1: p2[0] controlPoint2: p2[1]];
 		else 
 			[self lineToPoint: p2[0]];
 	}
 }
 
+- (void)appendBezierPathWithRect:(NSRect)rect
+{
+	NSBezierPath *path = [NSBezierPath bezierPathWithRect: rect];
+	[subPaths addObject: path];
+}
+
 - (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count
 {
 	int i, c;
 	
-	if([[self lastElement] type] == NSBezierPathElementClose)
+	if([[self lastElement] type] == NSClosePathBezierPathElement)
 		return;
 		
 	if(![pathElements count]) {
@@ -351,14 +1193,15 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 
 - (void)appendBezierPathWithOvalInRect:(NSRect)aRect
 {
-	NSBezierPath *path = [self pathWithOvalInRect: aRect];
+	NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect: aRect];
 	[subPaths addObject: path];
 }
 
-- (void)appendBezierPathWithArcWithCenter:(NSPoint)center 
-											  radius:(float)radius 
-										 startAngle:(float)startAngle
-											endAngle:(float)endAngle
+- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
+											  radius:(float)radius
+			       					 startAngle:(float)startAngle
+				 							endAngle:(float)endAngle
+										  clockwise:(BOOL)clockwise
 {
 	NSRect r;
 	NSBezierPath *path, *npath;
@@ -384,16 +1227,16 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	endangrd = PI * endAngle / 180;
 
 	r = NSMakeRect(center.x - radius, center.y - radius, radius * 2, radius * 2);
-	path = [self pathWithOvalInRect: r];
-	[path rotateByAngle: -90 center: center];
-	[path rotateByAngle: startAngle center: center];
+	path = [NSBezierPath bezierPathWithOvalInRect: r];
+	[(GSBezierPath *)path rotateByAngle: -90 center: center];
+	[(GSBezierPath *)path rotateByAngle: startAngle center: center];
 	
 	npath = [NSBezierPath bezierPath];
-	elm = [path moveToElement];
+	elm = [(GSBezierPath *)path moveToElement];
 	p = [elm points][0];
 	[npath moveToPoint: p];
 
-	pelements = [path pathElements];	
+	pelements = [(GSBezierPath *)path pathElements];	
 	diffangle = endAngle - startAngle;
 	index = 1;
 	while(diffangle >= 90) {
@@ -410,517 +1253,33 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	
 	p = NSMakePoint(center.x + radius * cos(endangrd), 
 											center.y + radius * sin(endangrd));
-	elm = [path pathElementSubdividingPathAtPoint: p 
+	elm = [(GSBezierPath *)path pathElementSubdividingPathAtPoint: p 
 							pathSegmentOwner: [pelements objectAtIndex: index]];
 	pts = [elm points];
 	[npath curveToPoint: pts[2] controlPoint1: pts[0] controlPoint2: pts[1]];
 	[self appendBezierPath: npath];
 }
 
-- (void)appendBezierPathWithGlyph:(NSGlyph)aGlyph inFont:(NSFont *)fontObj
+- (void)appendBezierPathWithArcFromPoint:(NSPoint)point1
+				 							toPoint:(NSPoint)point2
+				  							 radius:(float)radius
 {
-
-
-
-}
-
-- (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
-									  count:(int)count
-									 inFont:(NSFont *)fontObj
-{
-
-}
-
-- (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
-{
-
-}
-
-//
-// Setting attributes 
-//
-- (void)setWindingRule:(NSWindingRule)aWindingRule
-{
-	windingRule = aWindingRule;
-}
-
-- (NSWindingRule)windingRule
-{
-	return windingRule;
-}
-
-+ (void)setLineCapStyle:(int)style
-{
-	[[NSGraphicsContext currentContext] DPSsetlinecap: style];
-}
-
-+ (void)setLineJoinStyle:(int)style
-{
-	[[NSGraphicsContext currentContext] DPSsetlinejoin: style];
-}
-
-+ (void)setLineWidth:(float)width
-{
-	[[NSGraphicsContext currentContext] DPSsetlinewidth: width];
-}
-
-+ (void)setMiterLimit:(float)limit
-{
-	[[NSGraphicsContext currentContext] DPSsetmiterlimit: limit];
-}
-
-+ (void)setFlatness:(float)flatness
-{
-	[[NSGraphicsContext currentContext] DPSsetflat: flatness];
-}
-
-+ (void)setHalftonePhase:(float)x : (float)y
-{
-	[[NSGraphicsContext currentContext] DPSsethalftonephase: x : y];
-}
-
-//
-// Drawing paths
-// 
-- (void)stroke
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts;
-	int i;
-	
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-		switch(t) {
-			case NSBezierPathElementMoveTo:
-				PSmoveto(pts[0].x, pts[0].y);
-				break;
-			case NSBezierPathElementLineTo:
-				PSlineto(pts[0].x, pts[0].y);
-				break;
-			case NSBezierPathElementCurveTo:
-				PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
-				break;
-			default:
-				break;
-		}
-	}
-	PSstroke();
-	
-	for(i = 0; i < [subPaths count]; i++) 
-		[[subPaths objectAtIndex: i] stroke];
-}
-
-- (void)fill
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts;
-	int i;
-	
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-		switch(t) {
-			case NSBezierPathElementMoveTo:
-				PSmoveto(pts[0].x, pts[0].y);
-				break;
-			case NSBezierPathElementLineTo:
-				PSlineto(pts[0].x, pts[0].y);
-				break;
-			case NSBezierPathElementCurveTo:
-				PScurveto(pts[0].x, pts[0].y, pts[1].x, pts[1].y, pts[2].x, pts[2].y);
-				break;
-			default:
-				break;
-		}
-	}
-	if(windingRule == NSWindingRuleNonZero)
-		PSfill();
-	else
-		PSeofill();
-		
-	for(i = 0; i < [subPaths count]; i++) 
-		[[subPaths objectAtIndex: i] fill];
-}
-
-+ (void)fillRect:(NSRect)aRect
-{
-	NSBezierPath *path = [NSBezierPath bezierPathWithRect: aRect];
-	[path fill];
-}
-
-+ (void)strokeRect:(NSRect)aRect
-{
-	NSBezierPath *path = [NSBezierPath bezierPathWithRect: aRect];
-	[path stroke];
-}
-
-+ (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2
-{
-	NSBezierPath *path = [NSBezierPath bezierPath];
-	[path moveToPoint: point1];
-	[path lineToPoint: point2];
-	[path stroke];
-}
-
-+ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)aPoint
-{
-
-}
-
-//
-// Clipping paths 
-// 
-- (void)addClip
-{
-
-}
-
-- (void)setClip
-{
-
-}
-
-+ (void)clipRect:(NSRect)aRect
-{
-
+	[self subclassResponsibility:_cmd];
 }
 
 //
 // Hit detection  
 // 
-- (BOOL)isHitByPoint:(NSPoint)aPoint
+- (BOOL)containsPoint:(NSPoint)point
 {
-	if(inPath(self, aPoint) == INTERIOR)
+	if(inPath(self, point) == INTERIOR)
 		return YES;
 
-	return NO;
-}
-
-- (BOOL)isHitByRect:(NSRect)aRect
-{
-	NSPoint p;
-
-	p.x = aRect.origin.x;
-	p.y = aRect.origin.y;
-	if([self isHitByPoint: p])
-		return YES;	
-	p.x = aRect.origin.x + aRect.size.width;
-	p.y = aRect.origin.y;
-	if([self isHitByPoint: p])
-		return YES;
-	p.x = aRect.origin.x + aRect.size.width;
-	p.y = aRect.origin.y + aRect.size.height;
-	if([self isHitByPoint: p])
-		return YES;	
-	p.x = aRect.origin.x;
-	p.y = aRect.origin.y + aRect.size.height;
-	if([self isHitByPoint: p])
-		return YES;		
-				
-	return NO;
-}
-
-- (BOOL)isHitByPath:(NSBezierPath *)aBezierPath
-{
-	NSPoint p, *pts;
-	int i;
-	
-	pts = [aBezierPath draftPolygon];
-	for(i = 0; i < [aBezierPath pcount]; i++) {
-		p.x = pts[i].x;
-		p.y = pts[i].y;
-		if([self isHitByPoint: p])
-			return YES;			
-	}
-		
-	return NO;
-}
-
-- (BOOL)isStrokeHitByPoint:(NSPoint)aPoint
-{
-	return onPathBorder(self, aPoint);
-}
-
-- (BOOL)isStrokeHitByRect:(NSRect)aRect
-{
-	Line line;
-	int i;
-
-	for(i = 1; i < pcount; i++) {
-		line.p1.x = draftPolygon[i-1].x;
-		line.p1.y = draftPolygon[i-1].y;
-		line.p2.x = draftPolygon[i].x;
-		line.p2.y = draftPolygon[i].y;
-		if(intersectRect(aRect, line))
-			return YES;
-	}
-
-	return NO;
-}
-
-- (BOOL)isStrokeHitByPath:(NSBezierPath *)aBezierPath
-{
-	return [self isHitByPath: aBezierPath];
+	return NO;	
 }
 
 //
-// Querying paths
-// 
-- (NSRect)bounds
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts, *pp;
-	float maxx, minx, maxy, miny;
-	int i, count = 0;
-	
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
-			pp[count].x = pts[0].x;
-			pp[count].y = pts[0].y;
-			count++;
-		} else if(t == NSBezierPathElementCurveTo) {
-			pp[count].x = pts[2].x;
-			pp[count].y = pts[2].y;
-			count++;
-		}
-	}
-
-	maxx = minx = pp[0].x;
-	maxy = miny = pp[0].x;
-	for(i = 0; i < count; i++) {
-		if(pp[i].x > maxx)
-			maxx = pp[i].x;
-		if(pp[i].x < minx)
-			minx = pp[i].x;
-		if(pp[i].y > maxy)
-			maxy = pp[i].y;
-		if(pp[i].y < minx)
-			minx = pp[i].y;
-	}
-
-	return NSMakeRect(minx, miny, maxx - minx, maxy - miny);
-}
-
-- (NSRect)controlPointBounds
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts, *pp;
-	float maxx, minx, maxy, miny;
-	int i, count = 0;
-	
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
-			pp[count].x = pts[0].x;
-			pp[count].y = pts[0].y;
-			count++;
-		} else if(t == NSBezierPathElementCurveTo) {
-			pp[count].x = pts[0].x;
-			pp[count].y = pts[0].y;
-			count++;
-			pp[count].x = pts[1].x;
-			pp[count].y = pts[1].y;
-			count++;
-			pp[count].x = pts[2].x;
-			pp[count].y = pts[2].y;
-			count++;
-		}
-	}
-
-	maxx = minx = pp[0].x;
-	maxy = miny = pp[0].x;
-	for(i = 0; i < count; i++) {
-		if(pp[i].x > maxx)
-			maxx = pp[i].x;
-		if(pp[i].x < minx)
-			minx = pp[i].x;
-		if(pp[i].y > maxy)
-			maxy = pp[i].y;
-		if(pp[i].y < minx)
-			minx = pp[i].y;
-	}
-
-	return NSMakeRect(minx, miny, maxx - minx, maxy - miny);
-}
-
-- (NSPoint)currentPoint
-{
-	return currentPoint;
-}
-
-//
-// Accessing elements of a path 
-// 
-- (int)elementCount
-{
-	return [pathElements count];
-}
-
-- (NSBezierPathElementType)elementTypeAtIndex:(int)index
-{
-	return [(PathElement *)[pathElements objectAtIndex: index] type];
-}
-
-- (NSBezierPathElementType)elementTypeAtIndex:(int)index
-									  associatedPoints:(NSPoint *)points
-{
-	PathElement *elm = [pathElements objectAtIndex: index];
-	NSBezierPathElementType type = [elm type];
-	NSPoint *p = [elm points];
-	
-	if(type == NSBezierPathElementMoveTo || type == NSBezierPathElementLineTo) {
-		points[0].x = p[0].x;
-		points[0].y = p[0].y;
-	} else if(type == NSBezierPathElementCurveTo) {
-		points[0].x = p[0].x;
-		points[0].y = p[0].y;
-		points[1].x = p[1].x;
-		points[1].y = p[1].y;
-		points[2].x = p[2].x;
-		points[2].y = p[2].y;
-	}
-	
-	return type;
-}
-
-- (void)removeLastElement
-{
-	[pathElements removeObjectAtIndex: [pathElements count]-1];
-}
-
-- (int)pointCount
-{
-	NSBezierPathElementType t;
-	int i, count = 0;
-
-	for(i = 0; i < [pathElements count]; i++) {
-		t = [(PathElement *)[pathElements objectAtIndex: i] type];
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo)
-			count++;
-		else if(t == NSBezierPathElementCurveTo)
-			count += 3;
-	}
-	
-	return count;
-}
-
-- (NSPoint)pointAtIndex:(int)index
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint p, *pts;
-	int i, j, count = 0;
-	
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-		
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
-			count++;
-			if(count == index) {
-				p.x = pts[0].x;
-				p.y = pts[0].y;
-				break;
-			}
-		} else if(t == NSBezierPathElementCurveTo) {
-			for(j = 0; j <= 3; j++) {
-				count++;
-				if(count == index) {
-					p.x = pts[j].x;
-					p.y = pts[j].y;
-					break;
-				}		
-			}
-		}
-	}
-
-	return p;
-}
-
-- (void)setPointAtIndex:(int)index toPoint:(NSPoint)aPoint
-{
-	PathElement *elm;
-	int eindex, fpointind, localind;
-	
-	eindex = [self pathElementIndexForPointIndex: index];
-	elm = [pathElements objectAtIndex: eindex];
-	fpointind = [self pointIndexForPathElementIndex: eindex];
-	localind = index - fpointind;
-	[elm setPointAtIndex: localind toPoint: aPoint];
-	[self calculateDraftPolygon];
-}
-
-- (int)pointIndexForPathElementIndex:(int)index
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts;
-	int i, j, pindex = -1;
-
-	for(i = 0; i <= index; i++) {
-		elm = [pathElements objectAtIndex: i];
-		pts = [elm points];
-		t = [elm type];
-
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
-			pindex++;
-		} else if(t == NSBezierPathElementCurveTo) {
-			if(i < index) 
-				for(j = 0; j <= 3; j++)
-					pindex++;
-			else 
-				pindex++;
-		}
-	}
-
-	return pindex;
-}
-
-- (int)pathElementIndexForPointIndex:(int)index
-{
-	PathElement *elm;
-	NSBezierPathElementType t;
-	NSPoint *pts;
-	int pindex = 0, j, elemindex = 0;
-
-	while(elemindex < [pathElements count]) {
-		elm = [pathElements objectAtIndex: elemindex];
-		pts = [elm points];
-		t = [elm type];
-		
-		if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
-			pindex++;
-			elemindex++;
-			if(pindex == index)
-				break;
-		} else if(t == NSBezierPathElementCurveTo) {
-			elemindex++;
-			for(j = 0; j <= 3; j++) {
-				pindex++;
-				if(pindex == index)
-					break;
-			}
-		}
-	}
-
-	return elemindex;
-}
-
-//
-// Caching paths 
+// Caching
 // 
 - (BOOL)cachesBezierPath
 {
@@ -930,34 +1289,186 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 - (void)setCachesBezierPath:(BOOL)flag
 {
 	cachesBezierPath = flag;
+	if(flag)
+		[self calculateDraftPolygon];
 }
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:(NSCoder*)aCoder
+- (void)encodeWithCoder:(NSCoder *)aCoder
 {
-	[super encodeWithCoder: aCoder];
+	float f;
+	int i;
+	NSRect r;
+	
+	[aCoder encodeValueOfObjCType: @encode(NSMutableArray) at: &pathElements];
+	[aCoder encodeValueOfObjCType: @encode(NSMutableArray) at: &subPaths];
+	r = [self bounds];
+	[aCoder encodeValueOfObjCType: @encode(NSRect) at: &r];
+	r = [self controlPointBounds];
+	[aCoder encodeValueOfObjCType: @encode(NSRect) at: &r];
+	f = [self lineWidth];
+	[aCoder encodeValueOfObjCType: @encode(float) at: &f];
+	i = [self lineCapStyle];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	i = [self lineJoinStyle];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	i = [self windingRule];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &cachesBezierPath];
+	[aCoder encodeValueOfObjCType: @encode(NSImage) at: &cacheimg];
 }
 
-- (id)initWithCoder:(NSCoder*)aCoder
+- (id)initWithCoder:(NSCoder *)aCoder
 {
-	[super initWithCoder: aCoder];
+	float f;
+	int i;
+	NSRect r;
+
+	self = [super init];
+	if(self) {
+		[aCoder decodeValueOfObjCType: @encode(NSMutableArray) at: &pathElements];
+		[aCoder decodeValueOfObjCType: @encode(NSMutableArray) at: &subPaths];
+		[aCoder decodeValueOfObjCType: @encode(NSRect) at: &r];
+		[self setBounds: r];
+		[aCoder decodeValueOfObjCType: @encode(NSRect) at: &r];
+		[self setControlPointBounds: r];		
+		[aCoder decodeValueOfObjCType: @encode(float) at: &f];
+		[self setLineWidth: f];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setLineCapStyle: i];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setLineJoinStyle: i];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setWindingRule: i];
+		[aCoder decodeValueOfObjCType: @encode(BOOL) at: &cachesBezierPath];
+		[aCoder decodeValueOfObjCType: @encode(NSImage) at: &cacheimg];
+		isValid = NO;
+	}
 	return self;
 }
 
 //
 // NSCopying Protocol
 //
-- (id)copyWithZone:(NSZone*)zone
+- (id)copyWithZone:(NSZone *)zone
 {
-  	return self;
+	GSBezierPath *path = [[GSBezierPath allocWithZone: zone] init];
+	
+	path->pathElements = [[pathElements copy] retain];
+	path->subPaths = [[subPaths copy] retain];
+	path->cachesBezierPath = cachesBezierPath;
+	if(cachesBezierPath && cacheimg)
+		path->cacheimg = [[cacheimg copy] retain];
+	[path setLineWidth: [self lineWidth]];
+	[path setLineCapStyle: [self lineCapStyle]];
+	[path setLineJoinStyle: [self lineJoinStyle]];
+	[path setWindingRule: [self windingRule]];
+	[path setBounds: [self bounds]];
+	[path setControlPointBounds: [self controlPointBounds]];
+
+	return path;
 }
 
-@end
+//
+// Private Methods 
+// 
+- (void)calculateDraftPolygon
+{
+	PathElement *elm;
+	NSBezierPathElement bpt;
+	NSPoint p, *pts;
+	double x, y, t, k = 0.25;
+	float maxx, minx, maxy, miny;
+	float cpmaxx, cpminx, cpmaxy, cpminy;	
+	int i;
 
+	if(![pathElements count])
+		return;
+		
+	pts = [[pathElements objectAtIndex: 0] points];
+	maxx = minx = cpmaxx = cpminx = pts[0].x;
+	maxy = miny = cpmaxy = cpminy = pts[0].y;
+				
+	pcount = 0;
+	for(i = 0; i < [pathElements count]; i++) {
+		elm = [pathElements objectAtIndex: i];
+		bpt = [elm type];
+		pts = [elm points];
+		
+		if(bpt == NSMoveToBezierPathElement || bpt == NSLineToBezierPathElement) {
+			draftPolygon[pcount].x = pts[0].x;
+			draftPolygon[pcount].y = pts[0].y;
+			
+			if(pts[0].x > maxx) maxx = pts[0].x;
+			if(pts[0].x < minx) minx = pts[0].x;
+			if(pts[0].y > maxy) maxy = pts[0].y;
+			if(pts[0].y < miny) miny = pts[0].y;
 
-@implementation NSBezierPath (PrivateMethods)
+			if(pts[0].x > cpmaxx) cpmaxx = pts[0].x;
+			if(pts[0].x < cpminx) cpminx = pts[0].x;
+			if(pts[0].y > cpmaxy) cpmaxy = pts[0].y;
+			if(pts[0].y < cpminy) cpminy = pts[0].y;
+			
+			pcount++;
+		} else if(bpt == NSCurveToBezierPathElement) {
+			if(pcount) {
+  				p.x = draftPolygon[pcount -1].x;
+  				p.y = draftPolygon[pcount -1].y;
+			} else {
+  				p.x = pts[0].x;
+  				p.y = pts[0].y;
+			}
+			
+			if(pts[2].x > maxx) maxx = pts[2].x;
+			if(pts[2].x < minx) minx = pts[2].x;
+			if(pts[2].y > maxy) maxy = pts[2].y;
+			if(pts[2].y < miny) miny = pts[2].y;
+			
+			if(pts[0].x > cpmaxx) cpmaxx = pts[0].x;
+			if(pts[0].x < cpminx) cpminx = pts[0].x;
+			if(pts[0].y > cpmaxy) cpmaxy = pts[0].y;
+			if(pts[0].y < cpminy) cpminy = pts[0].y;
+			if(pts[1].x > cpmaxx) cpmaxx = pts[1].x;
+			if(pts[1].x < cpminx) cpminx = pts[1].x;
+			if(pts[1].y > cpmaxy) cpmaxy = pts[1].y;
+			if(pts[1].y < cpminy) cpminy = pts[1].y;
+			if(pts[2].x > cpmaxx) cpmaxx = pts[2].x;
+			if(pts[2].x < cpminx) cpminx = pts[2].x;
+			if(pts[2].y > cpmaxy) cpmaxy = pts[2].y;
+			if(pts[2].y < cpminy) cpminy = pts[2].y;
+				
+  			for(t = k; t <= 1+k; t += k) {
+      		x = (p.x+t*(-p.x*3+t*(3*p.x-p.x*t)))
+        			+t*(3*pts[0].x+t*(-6*pts[0].x+pts[0].x*3*t))
+					+t*t*(pts[1].x*3-pts[1].x*3*t)+pts[2].x*t*t*t;
+      		y = (p.y+t*(-p.y*3+t*(3*p.y-p.y*t)))
+        			+t*(3*pts[0].y+t*(-6*pts[0].y+pts[0].y*3*t))
+					+t*t*(pts[1].y*3-pts[1].y*3*t)+pts[2].y*t*t*t;
+
+				draftPolygon[pcount].x = x;
+				draftPolygon[pcount].y = y;
+				
+				if(x > maxx) maxx = x;
+				if(x < minx) minx = x;
+				if(y > maxy) maxy = y;
+				if(y < miny) miny = y;
+				
+				if(x > cpmaxx) cpmaxx = x;
+				if(x < cpminx) cpminx = x;
+				if(y > cpmaxy) cpmaxy = y;
+				if(y < cpminy) cpminy = y;
+				
+				pcount++;
+			}
+		}
+	}
+	
+	[self setBounds: NSMakeRect(minx, miny, maxx - minx, maxy - miny)];
+	[self setControlPointBounds: NSMakeRect(cpminx, cpminy, cpmaxx - cpminx, cpmaxy - cpminy)];
+	isValid = NO;
+}
 
 - (void)setCurrentPoint:(NSPoint)aPoint
 {
@@ -968,13 +1479,13 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 - (BOOL)isPathElement:(PathElement *)elm1 onPathElement:(PathElement *)elm2
 {
 	NSPoint p1, p2;
-	NSBezierPathElementType t;
+	NSBezierPathElement t;
 
 	t = [elm1 type];
-	if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
+	if(t == NSMoveToBezierPathElement || t == NSLineToBezierPathElement) {
 		p1.x = [elm1 points][0].x;
 		p1.y = [elm1 points][0].y;
-	} else if(t == NSBezierPathElementCurveTo) {
+	} else if(t == NSCurveToBezierPathElement) {
 		p1.x = [elm1 points][2].x;
 		p1.y = [elm1 points][2].y;
 	} else {
@@ -982,10 +1493,10 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	}
 
 	t = [elm2 type];
-	if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
+	if(t == NSMoveToBezierPathElement || t == NSLineToBezierPathElement) {
 		p2.x = [elm2 points][0].x;
 		p2.y = [elm2 points][0].y;
-	} else if(t == NSBezierPathElementCurveTo) {
+	} else if(t == NSCurveToBezierPathElement) {
 		p2.x = [elm2 points][2].x;
 		p2.y = [elm2 points][2].y;
 	} else {
@@ -1038,56 +1549,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	else
 		prevelm = [pathElements objectAtIndex: index -1];
 		
-		
-		// ATTENZIONE !!!!!
-		// COSA FARE SE IL PATH E' APERTO ??????????????
-		// ATTENZIONE !!!!!
-		// E SE E' DI TYPO CLOSEPATH ???????????????
-		
-		
 	return prevelm;
-}
-
-- (void)calculateDraftPolygon
-{
-	PathElement *elm;
-	NSBezierPathElementType bpt;
-	NSPoint p, *pts;
-	double x, y, t, k = 0.025;
-	int i;
-				
-	pcount = 0;
-	for(i = 0; i < [pathElements count]; i++) {
-		elm = [pathElements objectAtIndex: i];
-		bpt = [elm type];
-		pts = [elm points];
-		
-		if(bpt == NSBezierPathElementMoveTo || bpt == NSBezierPathElementLineTo) {
-			draftPolygon[pcount].x = pts[0].x;
-			draftPolygon[pcount].y = pts[0].y;
-			pcount++;
-		} else if(bpt == NSBezierPathElementCurveTo) {
-			if(pcount) {
-  				p.x = draftPolygon[pcount -1].x;
-  				p.y = draftPolygon[pcount -1].y;
-			} else {
-  				p.x = pts[0].x;
-  				p.y = pts[0].y;
-			}
-  			for(t = k; t <= 1+k; t += k) {
-      		x = (p.x+t*(-p.x*3+t*(3*p.x-p.x*t)))
-        			+t*(3*pts[0].x+t*(-6*pts[0].x+pts[0].x*3*t))
-					+t*t*(pts[1].x*3-pts[1].x*3*t)+pts[2].x*t*t*t;
-      		y = (p.y+t*(-p.y*3+t*(3*p.y-p.y*t)))
-        			+t*(3*pts[0].y+t*(-6*pts[0].y+pts[0].y*3*t))
-					+t*t*(pts[1].y*3-pts[1].y*3*t)+pts[2].y*t*t*t;
-
-				draftPolygon[pcount].x = x;
-				draftPolygon[pcount].y = y;
-				pcount++;
-			}
-		}
-	}
 }
 
 - (NSPoint *)draftPolygon
@@ -1100,56 +1562,44 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	return pcount;
 }
 
-- (NSBezierPath *)pathWithOvalInRect:(NSRect)aRect
-{
-	NSBezierPath *path;
-	NSPoint p, p1, p2;
-	double originx = aRect.origin.x;
-	double originy = aRect.origin.y;
-	double width = aRect.size.width;
-	double height = aRect.size.height;
-	double hdiff = width / 2 * 0.5522847498;
-	double vdiff = height / 2 * 0.5522847498;
-	
-	path = [NSBezierPath bezierPath];
-	p = NSMakePoint(originx + width / 2, originy + height);
-	[path moveToPoint: p];
-
-	p = NSMakePoint(originx, originy + height / 2);
-	p1 = NSMakePoint(originx + width / 2 - hdiff, originy + height);
-	p2 = NSMakePoint(originx, originy + height / 2 + vdiff);
-	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];
-	
-	p = NSMakePoint(originx + width / 2, originy);
-	p1 = NSMakePoint(originx, originy + height / 2 - vdiff);
-	p2 = NSMakePoint(originx + width / 2 - hdiff, originy);
-	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-	
-	p = NSMakePoint(originx + width, originy + height / 2);
-	p1 = NSMakePoint(originx + width / 2 + hdiff, originy);
-	p2 = NSMakePoint(originx + width, originy + height / 2 - vdiff);
-	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-	
-	p = NSMakePoint(originx + width / 2, originy + height);
-	p1 = NSMakePoint(originx + width, originy + height / 2 + vdiff);
-	p2 = NSMakePoint(originx + width / 2 + hdiff, originy + height);
-	[path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-	
-	return path;
-}
-
 - (void)movePathToPoint:(NSPoint)p
 {
+	PathElement *elm;
+	NSBezierPathElement t;
+	NSPoint pp, origin, *pts;
+	float diffx, diffy;
+	int i, j;
 
+	origin = [self bounds].origin;
+	diffx = origin.x - p.x;
+	diffy = origin.y - p.y;
 
-
-
+	for(i = 0; i < [pathElements count]; i++) {
+		elm = [pathElements objectAtIndex: i];
+		pts = [elm points];
+		t = [elm type];
+		if(t == NSCurveToBezierPathElement) {
+			for(j = 0; j < 3; j++) {
+				pp.x = pts[j].x - diffx;
+				pp.y = pts[j].y - diffy;
+				[elm setPointAtIndex: j toPoint: pp];
+			}
+		} else if(t == NSMoveToBezierPathElement 
+							|| t == NSLineToBezierPathElement 
+									|| t == NSClosePathBezierPathElement) {
+			pp.x = pts[0].x - diffx;
+			pp.y = pts[0].y - diffy;
+			[elm setPointAtIndex: 0 toPoint: pp];
+		}	
+	}
+	
+	[self calculateDraftPolygon];
 }
 
 - (void)rotateByAngle:(float)angle center:(NSPoint)center
 {
 	PathElement *elm;
-	NSBezierPathElementType t;
+	NSBezierPathElement t;
 	NSPoint p, *pts;
 	int i;
 
@@ -1157,18 +1607,21 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 		elm = [pathElements objectAtIndex: i];
 		pts = [elm points];
 		t = [elm type];
-		if(t == NSBezierPathElementCurveTo) {
+		if(t == NSCurveToBezierPathElement) {
 			p = rotatePoint(pts[0], center, angle);
 			[elm setPointAtIndex: 0 toPoint: p];
 			p = rotatePoint(pts[1], center, angle);
 			[elm setPointAtIndex: 1 toPoint: p];
 			p = rotatePoint(pts[2], center, angle);
 			[elm setPointAtIndex: 2 toPoint: p];
-		} else if(t == NSBezierPathElementMoveTo || t == NSBezierPathElementLineTo) {
+		} else if(t == NSMoveToBezierPathElement 
+							|| t == NSLineToBezierPathElement 
+									|| t == NSClosePathBezierPathElement) {
 			p = rotatePoint(pts[0], center, angle);
 			[elm setPointAtIndex: 0 toPoint: p];
 		}	
 	}
+	[self calculateDraftPolygon];
 }
 
 - (pointOnCurve)pointOnPathSegmentOfElement:(PathElement *)elm
@@ -1180,13 +1633,13 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	double x, y, d, dmin = 10000, t, k = 0.001;
 	
 	prevelm = [self elementPrecedingElement: elm];
-	if([prevelm type] == NSBezierPathElementClose)
+	if([prevelm type] == NSClosePathBezierPathElement)
 		prevelm = [self elementPrecedingElement: prevelm];
 	
 	pp1 = [prevelm points];
 	pp2 = [elm points];
 
-	if([prevelm type] == NSBezierPathElementCurveTo) {
+	if([prevelm type] == NSCurveToBezierPathElement) {
 		cpp[0].x = pp1[2].x;
 		cpp[0].y = pp1[2].y;
 	} else {
@@ -1194,7 +1647,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 		cpp[0].y = pp1[0].y;
 	}
 	
-	if([elm type] == NSBezierPathElementCurveTo) {
+	if([elm type] == NSCurveToBezierPathElement) {
 		cpp[1].x = pp2[0].x;
 		cpp[1].y = pp2[0].y;
 		cpp[2].x = pp2[1].x;
@@ -1238,20 +1691,20 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	float coeffx[4], coeffy[4], bleftx[4], blefty[4], brightx[4], brighty[4];
 	
 	prevelm = [self elementPrecedingElement: owner];
-	if([prevelm type] == NSBezierPathElementClose)
+	if([prevelm type] == NSClosePathBezierPathElement)
 		prevelm = [self elementPrecedingElement: prevelm];
 	prevpts = [prevelm points];
 	ownerpts = [owner points];	
 	pc = [self pointOnPathSegmentOfElement: owner nearestToPoint: p];
 	
-	if([prevelm type] == NSBezierPathElementCurveTo) {
+	if([prevelm type] == NSCurveToBezierPathElement) {
 		coeffx[0] = prevpts[2].x;
 		coeffy[0] = prevpts[2].y;
 	} else {
 		coeffx[0] = prevpts[0].x;
 		coeffy[0] = prevpts[0].y;
 	}	
-	if([owner type] == NSBezierPathElementCurveTo) {
+	if([owner type] == NSCurveToBezierPathElement) {
 		coeffx[1] = ownerpts[0].x;
 		coeffy[1] = ownerpts[0].y;
 		coeffx[2] = ownerpts[1].x;
@@ -1271,12 +1724,12 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	subdiv(3, coeffy, pc.t, blefty, brighty);
 		
 	elm = [PathElement pathElement];
-	[elm setType: NSBezierPathElementCurveTo];
+	[elm setType: NSCurveToBezierPathElement];
 	[elm setPointAtIndex: 0 toPoint: NSMakePoint(bleftx[2], blefty[2])];
 	[elm setPointAtIndex: 1 toPoint: NSMakePoint(bleftx[1], blefty[1])];
 	[elm setPointAtIndex: 2 toPoint: p];
 
-	[owner setType: NSBezierPathElementCurveTo];
+	[owner setType: NSCurveToBezierPathElement];
 	[owner setPointAtIndex: 0 toPoint: NSMakePoint(brightx[1], brighty[1])];
 	[owner setPointAtIndex: 1 toPoint: NSMakePoint(brightx[2], brighty[2])];
 
@@ -1284,6 +1737,7 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 }
 
 @end
+
 
 //
 // Functions
@@ -1297,8 +1751,8 @@ pointPosition inPath(NSBezierPath *aPath, NSPoint p)
 	int Rcross = 0;
   	int Lcross = 0;	
 	
-	pts = [aPath draftPolygon];
-	pcount = [aPath pcount];	
+	pts = [(GSBezierPath *)aPath draftPolygon];
+	pcount = [(GSBezierPath *)aPath pcount];	
 	for(i = 0; i < pcount; i++) {
 		xs[i] = (int)pts[i].x - p.x;
 		ys[i] = (int)pts[i].y - p.y;
@@ -1329,93 +1783,6 @@ pointPosition inPath(NSBezierPath *aPath, NSPoint p)
     	return INTERIOR;
   	else	
 		return EXTERIOR;
-}
-
-BOOL onPathBorder(NSBezierPath *aPath, NSPoint p)
-{
-	if(inPath(aPath, p) == ONBORDER)
-		return YES;
-	
-	return NO;
-}
-
-int ccw(NSPoint p0, NSPoint p1, NSPoint p2)
-{
-	int dx1, dx2, dy1, dy2;
-        
-	dx1 = p1.x - p0.x; 
-	dy1 = p1.y - p0.y;
-	dx2 = p2.x - p0.x; 
-	dy2 = p2.y - p0.y;
-        
-	if(dx1*dy2 > dy1*dx2)
-		return +1;
-	if(dx1*dy2 < dy1*dx2)
-		return -1;
-	if((dx1*dx2 < 0) || (dy1*dy2 < 0))
-		return -1;
-	if((dx1*dx1 + dy1*dy1) < (dx2*dx2 + dy2*dy2))
-		return +1;
-	
-	return 0;
-}
-
-BOOL intersect(Line line1, Line line2)
-{
-	return ((ccw(line1.p1, line1.p2, line2.p1)
-                        * ccw(line1.p1, line1.p2, line2.p2)) <= 0)
-          && ((ccw(line2.p1, line2.p2, line1.p1)
-                        * ccw(line2.p1, line2.p2, line1.p2)) <= 0);
-}
-
-BOOL intersectRect(NSRect rect, Line line)
-{
-	Line line1, line2, line3, line4;
-	NSPoint topLeft, bottomRight;
-	double tmp;
-
-	line1.p1.x = rect.origin.x;
-	line1.p1.y = rect.origin.y + rect.size.height;
-	line1.p2.x = rect.origin.x + rect.size.width;
-	line1.p2.y = rect.origin.y + rect.size.height;
-	
-	line2.p1.x = line1.p2.x;
-	line2.p1.y = line1.p2.y;
-	line2.p2.x = line2.p1.x;
-	line2.p2.y = rect.origin.y;
-
-	line3.p1.x = line2.p2.x;
-   line3.p1.y = line2.p2.y;     
-	line3.p2.x = rect.origin.x;
-	line3.p2.y = rect.origin.y;
-        
-   line4.p1.x = line3.p2.x;
-	line4.p1.y = line3.p2.y;
-	line4.p2.x = line1.p1.x;
-	line4.p2.y = line1.p1.y;
-	        
-	if(intersect(line1, line) || intersect(line2, line)
-     					|| intersect(line3, line) || intersect(line4, line))
-		return YES;
-        
-	topLeft.x = rect.origin.x;
-	topLeft.y = rect.origin.y + rect.size.height;
-	bottomRight.x = rect.origin.x + rect.size.width;
-	bottomRight.y = rect.origin.y;
-	
-	if(bottomRight.x < topLeft.x) {
-		tmp = bottomRight.x;
-		bottomRight.x = topLeft.x;
-		topLeft.x = tmp;
-	}
-	if(bottomRight.y < topLeft.y) {
-		tmp = bottomRight.y;
-		bottomRight.y = topLeft.y;
-		topLeft.y = tmp;
-	}
-        
-	return (line.p1.x >= topLeft.x && line.p1.x <= bottomRight.x
-             && line.p1.y >= topLeft.y && line.p1.y <= bottomRight.y);
 }
 
 void subdiv(int degree, float coeff[], float t, float bleft[], float bright[])

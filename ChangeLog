@@ -1,3 +1,309 @@
+2000-02-17  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.6.5 released.
+
+2000-02-16  Adam Fedor  <fedor@gnu.org>
+
+	* gnustep-gui.spec: Newfile
+
+2000-02-15  Adam Fedor  <fedor@gnu.org>
+
+	* configure.in: Fix test for rintf
+
+2000-02-14  Adam Fedor  <fedor@gnu.org>
+
+	* Version: Update version number
+	* Documentation/announce.tmpl.texi: Update
+	* Documentation/readme.tmpl.texi: Likewise.
+	* Documentation/news.tmpl.texi: Likewise.
+	* Documentation/todo.tmpl.texi: Likewise.
+	* ANNOUNCE, BUGS, NEWS, README: Regenerate
+
+Mon Feb 14 13:23:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSLayoutManager.m: Tidied and simplified by removing
+	inefficient scanner class and using NSScanner instead.
+	* Source/NSText.m: ditto.
+	* Source/NSTextView.m: fix a couple of bugs that were causing crash in
+	text network demo - lets the demo run a while longer before crashing.
+
+2000-02-13  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSAffineTransform (-transformBezierPath:): Implement.
+	(from Enrico Sersale  <enrico@imago.ro>).
+
+Mon Feb 14 00:59:33 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-orderFrontStandardAboutPanel:]): Fixed
+	typo/bug.  Reported by Fred Kiefer <FredKiefer@gmx.de>
+
+Sun Feb 13 22:24:54 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	This fixes a bug; the same bug that produced those little white
+	vertical lines at the bottom of windows with editable textfields
+	when windows were ordered out then in after editing.
+	* Source/NSView.m ([-removeFromSuperviewWithoutNeedingDisplay]),
+	([-removeFromSuperview]): Ask the window to take first responder
+	status in our place if we are.  Important: this is done *before*
+	any other action is undertaken, because changing first responder
+	invokes -resignFirstResponder:, which should be allowed to assume
+	that the view is normally placed in the view hierarchy.
+
+Sun Feb 13 19:20:00 2000  Enrico Sersale  <enrico@imago.ro>
+
+	* Source/NSBezierPath.m: ([-copyWithZone:]) implemented.
+
+Sat Feb 12 21:16:00 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m ([-loadColumnZero]), ([-reloadColumn:]):
+	Adjust frame of column after loading it.
+
+Sat Feb 12 20:27:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([setNeedsDisplayInRect:]) change to ensure that
+	superviews are always marked as needing display when we are.
+	* Source/NSPopUpButton.m: ([-encodeWithCoder:]) ([-initWithCoder:])
+	implemented for Gorm.
+	
+Sat Feb 12 19:47:14 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSPopUpButton.m ([-selectItem:]): Bug fix: Update menu
+	knowledge of the selected item.  ([-selectItemWithTitle:]),
+	([-selectItemAtIndex:]), ([-selectItem:]): Bug fix: Invoke
+	synchronizeTitleAndSelectedItem to update what is displayed.
+
+Sat Feb 12 18:11:32 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([-setContentView:]): When expanding the new
+	content view to cover the whole window, do it using the nice way,
+	resizeWithOldSuperviewSize:, which allows the view to reorganize
+	its subviews for the new size.  
+	
+Sat Feb 12 17:53:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenu.m: Replace non-working archiving code with
+	drastically simplified code that does work in the normal case, but
+	doesn't deal with non-standard menu representations.  This lets
+	Gorm work with menus.  
+	* Source/NSMenuItem.m: Don't archive parent menu.
+
+Fri Feb 11 20:18:10 2000  Enrico Sersale  <enrico@imago.ro>
+
+	* Source/NSBezierPath.m: ([-transformUsingAffineTransform:]) implement.
+	
+2000-02-09  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/announce.tmpl.texi: Update.
+	* Documentation/news.tmpl.texi: Likewise.
+	* Documentation/readme.tmpl.texi: Likewise.
+
+Thu Feb 10 00:56:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSText.m ([-keyDown:]): Implemented NSDeleteFunctionKey,
+	which was unimplemented - problem reported by Jory van Zessen.
+	
+	Simple superficial improvements to make NSText just a little
+	faster:
+	* Source/NSText.m: Changed everywhere [self selectedRange] simply
+	to selected_range.  ([-moveCursorUp:]), ([-moveCursorLeft:]):
+	Return at once if cursor is already at the beginning of text.
+	([-moveCursorDown:]), ([-moveCursorRight:]): Return at once if
+	cursor is already at the end of text.
+	
+Wed Feb 09 18:59:02 2000  Enrico Sersale  <enrico@imago.ro>
+
+	* Source/NSBezierPath.m  Headers/gnustep/gui/NSBezierPath.h :
+	Rewritten conforming to MacOS-X implementation details.
+
+Tue Feb  8 17:22:05 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]): Fix
+	for having GNUstep load gmodels created from OPENSTEP NIBs.
+	NSMenu internals are slightly different in GNUstep and OPENSTEP;
+	OPENSTEP stores an item submenu as the item target, while GNUstep
+	stores it in a special mi_submenu ivar.  This patch, for GNUstep
+	only, sets the submenu ivar from the target for items which have a
+	submenu.
+
+2000-02-07  Adam Fedor  <fedor@gnu.org>
+
+	* configure.in: Add check for rintf.
+	* Source/NSBrowser.m: Use rint i no rintf.
+
+	* Source/NSApplication.m: Convert NSDebugLog to NSDebugLLog for
+	various NSEvent debugs.
+
+	* Source/NSMenuItemCell.m ([NSMenuItemCell -calcSize]): Make
+ 	sure anImage exists before getting size (methods with nil receivers
+	returning structs segfaults on Solaris).
+
+Mon Feb  7 18:55:29 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([-mouseDown:]): Pass mouse down to super if
+	we have no cells.
+
+Mon Feb  7 03:06:36 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	This bug was crashing GNUstep while I was doing experiments with
+	the Save Panel's code.  It wasn't easy to find.
+	* Source/NSMatrix.m ([-putCell:atRow:column:]): Fixed bug.  If we
+	are putting a new cell precisely in _selectedRow, _selectedColumn,
+	we have to update _selectedCell, otherwise it remains pointing to
+	the released cell!  ([-insertRow:withCells:]): Update _selectedRow 
+	if needed.  ([-insertColumn:withCells:]): Update _selectedColumn if 
+	needed.
+	
+Sun Feb  6  8:52:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GSInfoPanel.m: Make newly created panel appear in center
+	of screen.
+
+Sun Feb  6 05:50:20 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gnustep-gui.tmpl.texi (Window Manager): Added a
+	tiny section recommending to set "Click Window To Focus" in the
+	window manager configuration.  Also, improved the section on the
+	Standard Info Panel.
+
+Sat Feb  5 03:02:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([-orderWindow:relativeTo:]): Fixed a quite
+	serious bug appearing twice, in two for loops.  It was messing
+	window ordering, causing the app to freeze under certain
+	circumstances.
+
+Fri Feb  4 18:35:59 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSInfoPanel.m ([-initWithDictionary:]): Use
+	Helvetica-Bold instead of Helvetica-BoldOblique [for now].
+
+Thu Feb  3 17:24:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenu.m: ([NSMenuWindowTitleView -mouseDown:]) fix memory
+	allocation error when setting new menu location frame info.
+
+Thu Feb  3 02:56:10 2000  Enrico Sersale <enrico@imago.ro>
+
+	* Source/NSBezierPath.m Partially rewritten, fixed, 
+	added a concrete class
+	([-setCachesBezierPath:]): Implemented using NSImage.
+
+Thu Feb  3 03:45:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-drawInteriorWithFrame:inView:]):
+	NSImageAbove, NSImageBelow: Rewritten.  In these cases now we
+	determine the space taken by the text; then all the remaining
+	space is given to the image, which is centered in it.
+
+Thu Feb  3 02:20:29 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-cellSize]): Bug fix: typo would prevent
+	button with both image and text, image above/below text, to size
+	correctly.
+
+Wed Feb  2 06:56:33 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	With a hack the library is now able to pop up popupbuttons in the
+	right position, correcting at run time bugs in the window frame
+	code.  This was hard.
+	* Source/NSPopUpButtonCell.m (_convertBaseToScreen_with_fix):
+	Added private function to do the conversion right, automatically
+	fixing window frame origin bugs.
+	* Source/NSPopUpButtonCell.m ([-attachPopUpWithFrame:inView:]):
+	Use the above mentioned function to perform the coordinate
+	conversion right.
+	* Source/NSPopUpButton.m ([-mouseDown:]): Idem.	
+
+Tue Feb  1 00:46:42 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSMenuItem.h: Removed unused ivar mi_hasSubmenu.
+	* Source/NSMenuItem.m ([-init]): Removed reference to the unused 
+	ivar.
+
+Mon Jan 31 00:24:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Rewritten, fixed, NSPopUpButton appearance.  NB: When the button
+	popups in the wrong position, that is a bug elsewhere.
+	* Headers/AppKit/NSMenuItemCell.h: Added ivar
+	_mcell_belongs_to_popupbutton.
+	* Source/NSMenuItemCell.m ([-imageRectForBounds:]): In the special
+	case _mcell_belongs_to_popupbutton == YES and there is an image,
+	draw it at the extreme right.
+	* Source/NSPopUpButtonCell.m: Added private method [NSMenuItemCell
+	-setBelongsToPopUpButton:].  ([+initialize]): Added method.  We
+	are now caching the two standard images.  ([-addItemWithTitle:]):
+	Simplified.  ([-insertItemWithTitle:atIndex:]): Set image position
+	to right, and set cell to belong to popup button.
+	([-selectItem:]): Invoke setChangesState: NO and set proper image
+	after setting state of any item. ([-selectItemAtIndex:]): Made
+	code readable.  ([-drawWithFrame:inView:]): Set background of
+	image.
+
+	* Source/NSMenuItemCell.m ([-calcSize]): Bug fix: don't move the
+	image to the left if a valid image position has been already set.
+	* Source/NSMenuView.m ([-setMenuItemCell:forItemAtIndex:]): Bug
+	fix: Connect new cell to menuItem and menu so that it works.
+	* Source/NSApplication.m
+	([-orderFrontStandardAboutPanelWithOptions:]): Display 'Info' in
+	the title.
+
+2000-01-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]): Don't
+	release columns's columnMatrix, the column will do it.
+
+2000-01-26  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m ([NSGraphicsContext
+	+setCurrentContext:]): Retain (assign) the new context (fix
+	suggested by Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>)
+
+	* gui/Model/GMAppkit.m ([NSMenuItem -encodeWithModelArchiver:]):
+        Check to see if object responds to various selectors before
+        invoking them.
+
+Wed Jan 26 06:50:14 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Fixed mixed state stuff so that it is exactly as in macosx 
+	[untested]:  
+	* Headers/AppKit/NSCell.h: Turned _cell.state into a normal int;
+	changed NSMixedState to -1.
+	* Source/NSCell.m ([-setState:]): Rewritten, mixed state support.
+
+Wed Jan 26 02:03:25 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gnustep-gui.tmpl.texi (Standard Info Panel): Added
+	documentation for [NSApplication -orderFrontInfoPanel:] and
+	[NSApplication -orderFrontInfoPanelWithOptions:].
+
+Mon Jan 24 23:45:30 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Implemented a standard Info Panel for GNUstep.  To make everyone
+	happy, both -orderFrontStandardAboutPanel: and
+	-orderFrontStandardInfoPanel: are available; one displays 'About'
+	in the title, and the other displays 'Info'; they are otherwise
+	identical.  GNUstep recommends using the 'Info' version.
+	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Added
+	GSInfoPanel.  (libgnustep-gui_HEADER_FILES): Idem.
+	* Source/GSInfoPanel.m: New class.
+	* Headers/AppKit/GSInfoPanel.h: New class.
+	* Headers/AppKit/NSApplication.h: Added ivar _infoPanel, declaration 
+	of new methods. 
+	* Source/NSApplication.m
+	([-orderFrontStandardInfoPanelWithOptions:]): New method,
+	implemented.
+	([-orderFrontStandardInfoPanel:]): Idem.
+	([-orderFrontStandardAboutPanel:]): Idem.
+	([-orderFrontStandardAboutPanelWithOptions:]): Idem.
+	([-dealloc]): Added release of _infoPanel.
+
+Mon Jan 24 04:01:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-orderFrontHelpPanel:]),
+	([-orderFrontColorPanel:]), ([-orderFrontDataLinkPanel:]),
+	([-runPageLayout:]): Display an alert panel informing that the
+	corresponding panel has not been implemented yet.
+
 2000-01-21  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.m: Change NSCompositeData...
