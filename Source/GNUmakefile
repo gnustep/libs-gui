@@ -282,6 +282,7 @@ NSTextField.h \
 NSTextFieldCell.h \
 NSTextStorage.h \
 NSTextView.h \
+NSUserInterfaceValidation.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
