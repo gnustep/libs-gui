@@ -49,7 +49,7 @@
 	default = "To upper";
 	English = "To upper";
 	Italian = "Rendi maiuscolo";
-	German = "Groﬂ schreiben";
+	German = "Gro\U00DF schreiben";
       };
       NSKeyEquivalent = {
 	default = U;

@@ -1,3 +1,8 @@
+2002-03-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/exampleInfo.plist: Fix illegal character in plist ...
+	use unicode escape.  Bug reported by Yen-Ju Chen
+
 2002-03-22  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSOutlineView.h
