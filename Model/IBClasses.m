@@ -140,7 +140,7 @@
 #endif
 - (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
 {
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(__APPLE__)
   NSLog (@"%x awakeAfterUsingCoder %@: source = %@, destination = %@, label = %@",
 	  self, NSStringFromClass(isa), source, destination, label);
 #endif

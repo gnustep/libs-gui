@@ -52,6 +52,13 @@
 {
   return [[[self allocWithZone:[unarchiver objectZone]] init] autorelease];
 }
+
+/* Works around a bug in MacOSX 10.1.x?. [NSPatternColor -isEqual:] doesn't
+   check if the object is a color before calling colorSpaceName on it */
+- (NSString *) colorSpaceName
+{
+  return nil;
+}
 @end
 
 

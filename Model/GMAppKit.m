@@ -926,7 +926,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   /* OUCH! This code crashes the translator; probably we interfere somehow with
      the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
      popup buttons cannot be handled by the convertor! */
-  [archiver encodeArray:[self itemArray] withName:@"itemArray"];
+  //[archiver encodeArray:[self itemArray] withName:@"itemArray"];
+  NSLog(@"Cannot encode NSPopUpButton - please fix me");
+  [archiver encodeArray: [NSArray array] withName: @"itemArray"];
+
   //[archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
   //[archiver encodeString:[self title] withName:@"selectedItem"];
   //[super encodeWithModelArchiver:archiver];
