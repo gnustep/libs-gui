@@ -1538,6 +1538,24 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSTextFieldCell (GMArchiverMethods) */
 
+@implementation NSForm (GMArchiverMethods)
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{ int  i;
+
+  self = [super initWithModelUnarchiver:unarchiver];
+  [self setValidateSize: YES];
+  for (i=[self numberOfRows]-1; i>=0; i--)
+      [[NSNotificationCenter defaultCenter]
+        addObserver: self
+        selector: @selector(_setTitleWidthNeedsUpdate:)
+        name: _NSFormCellDidChangeTitleWidthNotification
+        object: [self cellAtIndex:i]];
+  return self;
+}
+
+@end /* NSForm (GMArchiverMethods) */
+
 @implementation NSFormCell (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
