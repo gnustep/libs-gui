@@ -83,7 +83,9 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 }
 
 /*
- * Post notification both locally and remotely.
+ * Post notification remotely - since we are listening for distributed
+ * notifications, we will observe the notification arriving from the
+ * distributed notification center, and it will get sent out locally too.
  */
 - (void) postNotification: (NSNotification*)aNotification
 {
@@ -93,7 +95,6 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 				      object: GSWorkspaceNotification
 				    userInfo: [aNotification userInfo]];
   [remote postNotification: rem];
-  [super postNotification: aNotification];
 }
 
 - (void) postNotificationName: (NSString*)name 

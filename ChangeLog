@@ -1,3 +1,9 @@
+Tue Oct 19  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: ([-terminate:]) modification based on
+	patch by Aled.Davies@bigfoot.com to send notification.
+	* Source/NSWorkspace.m: Fix to prevent duplicate notifications.
+
 Tue Oct 19  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Changing suggested by Richard: 

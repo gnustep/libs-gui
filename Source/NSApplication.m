@@ -1493,12 +1493,24 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
   if (shouldTerminate)
     {
+      NSDictionary	*userInfo;
+
       app_should_quit = YES;
       /*
        * add dummy event to queue to assure loop cycles
        * at least one more time
        */
       DPSPostEvent(GSCurrentContext(), null_event, NO);
+
+      /*
+       * Tell the Workspace that we really did terminate
+       */
+      userInfo = [NSDictionary dictionaryWithObject:
+	[[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSWorkspaceDidTerminateApplicationNotification
+		      object: self
+		    userInfo: userInfo];
     }
 }
 
