@@ -597,7 +597,6 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 {
   NSString      *port = [appName stringByDeletingPathExtension];
   id            app = nil;
-  NSDictionary  *userinfo = nil;
 
   /*
    *	Try to contact a running application.
@@ -617,6 +616,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
     {
       NSString	*path;
       NSArray	*args;
+      NSDictionary  *userinfo = nil;
 
       path = [self locateApplicationBinary: appName];
       if (path == nil)
@@ -628,10 +628,10 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	  return NO;
 	}
 
-      userinfo = [NSDictionary dictionaryWithObject: appName
-                           forKey: @"NSApplicationName"];
-
      // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
+     userinfo = [NSDictionary dictionaryWithObject: port
+					    forKey: @"NSApplicationName"];
+
      [workspaceCenter
           postNotificationName: NSWorkspaceWillLaunchApplicationNotification
           object: self
@@ -646,11 +646,6 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	    @"Continue", nil, nil);
 	  return NO;
 	}
-
-      [workspaceCenter
-	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-	object: self
-	userInfo: userinfo];
 
       return YES;
     }
@@ -959,10 +954,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   if (path == nil)
     return NO;
 
-  userinfo = [NSDictionary dictionaryWithObject: appName
-                           forKey: @"NSApplicationName"];
-
   // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
+  userinfo = [NSDictionary dictionaryWithObject:
+    [[appName lastPathComponent] stringByDeletingPathExtension]
+    forKey: @"NSApplicationName"];
   [workspaceCenter
     postNotificationName: NSWorkspaceWillLaunchApplicationNotification
     object: self
@@ -970,12 +965,6 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
   if ([NSTask launchedTaskWithLaunchPath: path arguments: nil] == nil)
     return NO;
-
-  // App has been launched raise NSWorkspaceDidLaunchApplicationNotification
-  [workspaceCenter
-     postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-    object: self
-    userInfo: userinfo];
 
   return YES;
 }

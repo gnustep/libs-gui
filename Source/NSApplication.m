@@ -61,6 +61,7 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSWorkspace.h>
 #include <AppKit/GSServicesManager.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/DPSOperators.h>
@@ -173,6 +174,7 @@ NSApplication	*NSApp = nil;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSString		*filePath;
+  NSDictionary		*userInfo;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile && ![mainModelFile isEqual: @""])
@@ -238,6 +240,13 @@ NSApplication	*NSApp = nil;
 	  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile:filePath display:YES];
 	}
     }
+
+  userInfo = [NSDictionary dictionaryWithObject:
+    [[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+    object: self
+    userInfo: userInfo];
 }
 
 - (void) dealloc
