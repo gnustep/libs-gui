@@ -75,6 +75,7 @@ static NSColor	*shadowCol;
   self = [super initTextCell: @""];
   _cell.is_bezeled = YES;
   _cell.is_editable = YES;
+  [self setAlignment: NSLeftTextAlignment];
   _titleCell = [[NSCell alloc] initTextCell: aString];
   [_titleCell setAlignment: NSRightTextAlignment];
   _formcell_auto_title_width = YES;
