@@ -188,9 +188,9 @@
 	      NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
 	      unsigned 	i;
 
-	      for (i = 0; i < [types count]; i++)
+	      for (i = 0; i < [originalTypes count]; i++)
 		{
-		  fromType = [types objectAtIndex: i];
+		  fromType = [originalTypes objectAtIndex: i];
 		  if ([sendTypes containsObject: fromType] == YES)
 		    {
 		      break;
@@ -258,7 +258,7 @@
       /*
        * Now get the service provider to do the job.
        */
-      GSPerformService(filterName, tmp, YES)
+      GSPerformService(filterName, tmp, YES);
 
       /*
        * Finally, make it available.
@@ -551,7 +551,7 @@ static  NSMapTable              *mimeMap = NULL;
     {
       id<GSPasteboardObj>	anObj;
 
-      anObj = [[self _pbs] pasteboardWithUniqueName];
+      anObj = [[self _pbs] pasteboardWithName: nil];
       if (anObj)
 	{
 	  NSString	*aName;

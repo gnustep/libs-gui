@@ -3,6 +3,8 @@
 	* Source/NSPasteboard.m: Documented all methods, fixed minor bugs
 	writing fiels to pastebaords, implemented ([+typesFilterableTo:])
 	wrote (partial implementation ...) the unimplemented filters stuff.
+	* Source/GSServicesManager.m: helpers for filters.
+	* Headers/AppKit/GSPasteboard.h: Removed unused methods.
 
 2003-06-26  Ludovic Marcotte <ludovic@Sophos.ca>
 

@@ -73,15 +73,7 @@
  *	and controlling general server behaviour.
  */
 @protocol GSPasteboardSvr
-// Use this next to implement [+pasteboardByFilteringData:ofType:] and
-// [+pasteboardByFilteringFile:] methods.
-- (id<GSPasteboardObj>) pasteboardByFilteringData: (in bycopy NSData*)data
-					    ofType: (in bycopy NSString*)type
-				            isFile: (BOOL)flag;
-- (id<GSPasteboardObj>) pasteboardByFilteringTypesInPasteboard: pb;
 - (id<GSPasteboardObj>) pasteboardWithName: (in bycopy NSString*)name;
-- (id<GSPasteboardObj>) pasteboardWithUniqueName;
-- (bycopy NSArray*) typesFilterableTo: (in bycopy NSString*)type;
 @end
 
 /*
