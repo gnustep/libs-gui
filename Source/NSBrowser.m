@@ -241,8 +241,9 @@
   _takesTitleFromPreviousColumn = YES;
   _isTitled = YES;
   _hasHorizontalScroller = YES;
-  _scrollerRect.origin = NSZeroPoint;
-  _scrollerRect.size.width = frame.size.width;
+  _scrollerRect.origin.x = bs.width;
+  _scrollerRect.origin.y = bs.height;
+  _scrollerRect.size.width = frame.size.width - (2 * bs.width);
   _scrollerRect.size.height = [NSScroller scrollerWidth];
   _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
   [_horizontalScroller setTarget: self];
@@ -1235,6 +1236,7 @@
 {
   NSRect r = NSZeroRect;
   int n;
+  NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
 
   // Number of columns over from the first
   n = column - _firstVisibleColumn;
@@ -1248,7 +1250,7 @@
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
-    r.origin.y = [NSScroller scrollerWidth] + 4;
+    r.origin.y = [NSScroller scrollerWidth] + (2 * bs.height) + 4;
 
   return r;
 }
@@ -1399,6 +1401,7 @@
 - (void)tile
 {
   int num;
+  NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
 
   // It is assumed the frame/bounds are set appropriately
   // before calling this method
@@ -1415,10 +1418,11 @@
   // Horizontal scroller
   if (_hasHorizontalScroller)
     {
-      _scrollerRect.origin = NSZeroPoint;
-      _scrollerRect.size.width = frame.size.width;
-      _scrollerRect.size.height = [NSScroller scrollerWidth] + 4;
-      _columnSize.height -= _scrollerRect.size.height;
+      _scrollerRect.origin.x = bs.width;
+      _scrollerRect.origin.y = bs.height;
+      _scrollerRect.size.width = frame.size.width - (2* bs.width);
+      _scrollerRect.size.height = [NSScroller scrollerWidth];
+      _columnSize.height -= _scrollerRect.size.height + 4 + (2 * bs.height);
     }
   else
     _scrollerRect = NSZeroRect;
@@ -1452,6 +1456,20 @@
       NSRect r = NSIntersectionRect([self titleFrameOfColumn: i], rect);
       if (! NSIsEmptyRect(r))
 	[self displayColumn: i];
+    }
+
+  if (_hasHorizontalScroller)
+    {
+      NSRect scrollerBorderRect = _scrollerRect;
+      NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
+
+      scrollerBorderRect.origin.x = 0;
+      scrollerBorderRect.origin.y = 0;
+      scrollerBorderRect.size.width += 2 * bs.width;
+      scrollerBorderRect.size.height += 2 * bs.height;
+
+      // Draw the horizontal scroller border
+      NSDrawGrayBezel (scrollerBorderRect, rect);
     }
 }
 
