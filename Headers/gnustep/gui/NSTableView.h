@@ -54,6 +54,14 @@
   id                 _target;
   int                _clickedRow;
   int                _clickedColumn;
+  NSMutableArray    *_selectedColumns;
+  NSMutableArray    *_selectedRows;
+  int                _selectedColumn;
+  int                _selectedRow;
+  BOOL               _allowsMultipleSelection;
+  BOOL               _allowsEmptySelection;
+  BOOL               _allowsColumnSelection;
+  BOOL               _selectingColumns;
   NSText            *_textObject;
   int                _editedRow;
   int                _editedColumn;
@@ -194,7 +202,6 @@
 - (void) scrollColumnToVisible: (int)columnIndex;
 
 /* Text delegate methods */
-/* ALL TODOS */
 - (BOOL) textShouldBeginEditing: (NSText *)textObject;
 - (void) textDidBeginEditing: (NSNotification *)aNotification;
 - (void) textDidChange: (NSNotification *)aNotification;
@@ -216,6 +223,8 @@
 
 @interface NSTableView (GNUPrivate)
 - (void) _sendDoubleActionForColumn: (int)columnIndex;
+- (void) _selectColumn: (int)columnIndex  
+	     modifiers: (unsigned int)modifiers;
 @end
 
 /* 
