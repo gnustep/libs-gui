@@ -37,11 +37,14 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
+#include <AppKit/NSActionCell.h>
 
 /*
  * Class variables
  */
+static Class usedCellClass;
 static Class cellClass;
+static Class actionCellClass;
 
 @implementation NSControl
 
@@ -55,6 +58,8 @@ static Class cellClass;
       NSDebugLog(@"Initialize NSControl class\n");
       [self setVersion: 1];
       cellClass = [NSCell class];
+      usedCellClass = cellClass;
+      actionCellClass = [NSActionCell class];
     }
 }
 
@@ -63,12 +68,12 @@ static Class cellClass;
  */
 + (Class) cellClass
 {
-  return cellClass;
+  return usedCellClass;
 }
 
 + (void) setCellClass: (Class)factoryId
 {
-  cellClass = factoryId ? factoryId : [NSCell class];
+  usedCellClass = factoryId ? factoryId : cellClass;
 }
 
 /*
@@ -76,9 +81,12 @@ static Class cellClass;
  */
 - (id) initWithFrame: (NSRect)frameRect
 {
+  NSCell *cell = [[[self class] cellClass] new];
+
   [super initWithFrame: frameRect];
-  [self setCell: AUTORELEASE([[[self class] cellClass] new])];
-  _tag = 0;
+  [self setCell: cell];
+  RELEASE(cell);
+  //_tag = 0;
 
   return self;
 }
@@ -87,22 +95,6 @@ static Class cellClass;
 {
   RELEASE(_cell);
   [super dealloc];
-}
-
-/*
- * Creating copies
- */
-- (id) copyWithZone: (NSZone*)zone
-{
-  id		c = NSCopyObject(self, 0, zone);
-  NSCell	*o = [_cell copy];
-
-  /* Prevents the original cell from being released */
-  ((NSControl *)c)->_cell = nil;
-
-  [c setCell: o];
-  RELEASE(o);
-  return c;
 }
 
 /*
@@ -115,7 +107,7 @@ static Class cellClass;
 
 - (void) setCell: (NSCell *)aCell
 {
-  if (aCell != nil && [aCell isKindOfClass: [NSCell class]] == NO)
+  if (aCell != nil && [aCell isKindOfClass: cellClass] == NO)
     [NSException raise: NSInvalidArgumentException
 		format: @"attempt to set non-cell object for control cell"];
 
@@ -133,6 +125,9 @@ static Class cellClass;
 - (void) setEnabled: (BOOL)flag
 {
   [[self selectedCell] setEnabled: flag];
+  if (!flag)
+    [self abortEditing];
+  [self setNeedsDisplay: YES];
 }
 
 /*
@@ -145,7 +140,12 @@ static Class cellClass;
 
 - (int) selectedTag
 {
-  return [[self selectedCell] tag];
+  NSCell *selected = [self selectedCell];
+
+  if (selected == nil)
+    return -1;
+  else
+    return [selected tag];
 }
 
 /*
@@ -153,6 +153,7 @@ static Class cellClass;
  */
 - (double) doubleValue
 {
+  // The validation is performed by the NSActionCell
   return [[self selectedCell] doubleValue];
 }
 
@@ -166,6 +167,11 @@ static Class cellClass;
   return [[self selectedCell] intValue];
 }
 
+- (NSString *) stringValue
+{
+  return [[self selectedCell] stringValue];
+}
+
 - (id) objectValue
 {
   return [[self selectedCell] objectValue];
@@ -173,52 +179,62 @@ static Class cellClass;
 
 - (void) setDoubleValue: (double)aDouble
 {
+  NSCell *selected = [self selectedCell];
+
   [self abortEditing];
 
-  [[self selectedCell] setDoubleValue: aDouble];
-  [self setNeedsDisplay: YES];
+  [selected setDoubleValue: aDouble];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
 }
 
 - (void) setFloatValue: (float)aFloat
 {
+  NSCell *selected = [self selectedCell];
+
   [self abortEditing];
 
-  [[self selectedCell] setFloatValue: aFloat];
-  [self setNeedsDisplay: YES];
+  [selected setFloatValue: aFloat];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
 }
 
 - (void) setIntValue: (int)anInt
 {
+  NSCell *selected = [self selectedCell];
+
   [self abortEditing];
 
-  [[self selectedCell] setIntValue: anInt];
-  [self setNeedsDisplay: YES];
+  [selected setIntValue: anInt];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
+}
+
+- (void) setStringValue: (NSString *)aString
+{
+  NSCell *selected = [self selectedCell];
+
+  [self abortEditing];
+
+  [selected setStringValue: aString];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
 }
 
 - (void) setObjectValue: (id)anObject
 {
+  NSCell *selected = [self selectedCell];
+
   [self abortEditing];
 
-  [[self selectedCell] setObjectValue: anObject];
-  [self setNeedsDisplay: YES];
+  [selected setObjectValue: anObject];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
 }
 
 - (void) setNeedsDisplay
 {
   [super setNeedsDisplay: YES];
-}
-
-- (void) setStringValue: (NSString *)aString
-{
-  [self abortEditing];
-
-  [[self selectedCell] setStringValue: aString];
-  [self setNeedsDisplay: YES];
-}
-
-- (NSString *) stringValue
-{
-  return [[self selectedCell] stringValue];
 }
 
 /*
@@ -262,7 +278,7 @@ static Class cellClass;
   if (_cell)
     return [_cell alignment];
   else
-    return NSLeftTextAlignment;
+    return NSNaturalTextAlignment;
 }
 
 - (NSFont *) font
@@ -277,25 +293,36 @@ static Class cellClass;
 {
   if (_cell)
     {
+      [self abortEditing];
+
       [_cell setAlignment: mode];
-      [self setNeedsDisplay: YES];
+      if (![_cell isKindOfClass: actionCellClass])
+	[self setNeedsDisplay: YES];
     }
 }
 
 - (void) setFont: (NSFont *)fontObject
 {
-  // TODO: Complete
   if (_cell)
-    [_cell setFont: fontObject];
+    {
+      NSText *editor = [self currentEditor];
+      
+      [_cell setFont: fontObject];
+      if (editor != nil)
+	[editor setFont: fontObject];
+    }
 }
 
 - (void) setFloatingPointFormat: (BOOL)autoRange
 			   left: (unsigned)leftDigits
 			  right: (unsigned)rightDigits
 {
-  // TODO: Complete
+  [self abortEditing];
+
   [_cell setFloatingPointFormat: autoRange  left: leftDigits
 	 right: rightDigits];
+  if (![_cell isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
 }
 
 /*
@@ -360,7 +387,10 @@ static Class cellClass;
 - (void) selectCell: (NSCell *)aCell
 {
   if (_cell == aCell)
-    [_cell setState: 1];
+    {
+      [_cell setState: 1];
+      [self setNeedsDisplay: YES];
+    }
 }
 
 - (void) updateCell: (NSCell *)aCell
@@ -371,10 +401,6 @@ static Class cellClass;
 - (void) updateCellInside: (NSCell *)aCell
 {
   [self setNeedsDisplay: YES];
-}
-- (void) performClick: (id)sender
-{
-  [_cell performClick: sender];
 }
 
 /*
@@ -392,10 +418,8 @@ static Class cellClass;
 
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
   if (theAction)
-    return [theApp sendAction: theAction to: theTarget from: self];
+    return [NSApp sendAction: theAction to: theTarget from: self];
   else
     return NO;
 }
@@ -439,6 +463,24 @@ static Class cellClass;
 }
 
 /*
+ * Activation
+ */
+- (void) performClick: (id)sender
+{
+  [_cell performClick: sender];
+}
+
+- (BOOL)refusesFirstResponder
+{
+  return [[self selectedCell] refusesFirstResponder];
+}
+
+- (void)setRefusesFirstResponder:(BOOL)flag
+{
+  [[self selectedCell] setRefusesFirstResponder: flag];
+}
+
+/*
  * Tracking the Mouse
  */
 - (void) mouseDown: (NSEvent *)theEvent
@@ -457,7 +499,10 @@ static Class cellClass;
     return;
 
   if (_ignoresMultiClick && ([theEvent clickCount] > 1))
-    [super mouseDown: theEvent];
+    {
+      [super mouseDown: theEvent];
+      return;
+    }
 
   if ([_cell isContinuous])
     oldActionMask = [_cell sendActionOn: 0];
@@ -541,6 +586,7 @@ static Class cellClass;
 
   [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
   [aCoder encodeObject: _cell];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -549,6 +595,7 @@ static Class cellClass;
 
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
 
   return self;
 }
