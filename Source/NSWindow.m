@@ -106,10 +106,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
    non-obvious window that can become key) unless we have no choice
    (i.e. all the candidate windows were ordered out.)
 
-   FIXME: It should be the appicon which can become key, not the main
-   menu, but there is currently an unsolved problem with WindowMaker
-   interaction that prevents me from doing this.
-
    FIXME: It would really be better if we maintained a stack of the
    most recent key/main windows and went through in order of most
    recent to least recent. That's probably a lot of work, however.
@@ -3017,6 +3013,13 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		  [self makeKeyWindow];
 		  [self makeMainWindow];
 		  [NSApp activateIgnoringOtherApps: YES];
+		}
+	      if (self == [[NSApp mainMenu] window])
+		{
+		  /* We should really find another window that can become
+		     key (if possible)
+		  */
+		  [self _lossOfKeyOrMainWindow];
 		}
 	      break;
 

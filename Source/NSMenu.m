@@ -91,10 +91,10 @@ static NSNotificationCenter *nc;
 @implementation NSMenuPanel
 - (BOOL) canBecomeKeyWindow
 {
-  /* This should be NO, but there's currently a bug in the interaction
-     with WindowMaker that causes spurious deactivation of the app
-     if the app icon is the only window that can become key */
-  return YES;
+  /* See [NSWindow-_lossOfKeyOrMainWindow] */
+  if (self == (NSMenuPanel *)[[NSApp mainMenu] window])
+    return YES;
+  return NO;
 }
 @end
 

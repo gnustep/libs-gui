@@ -458,8 +458,16 @@ selectCellWithString: (NSString*)title
 - (BOOL) _shouldShowExtension: (NSString *)extension
 			isDir: (BOOL *)isDir;
 {
-  if (_treatsFilePackagesAsDirectories == NO && *isDir == YES &&
-	  ![extension isEqualToString: @""])
+  if (*isDir == NO)
+    {
+      if ([extension isEqualToString: _requiredFileType] == NO)
+	return NO;
+    }
+  else if ([extension length] == 0)
+    {
+      /* Automatic YES */
+    }
+  else if (_treatsFilePackagesAsDirectories == NO)
     {
       if ([extension isEqualToString: _requiredFileType] == YES)
 	  *isDir = NO;

@@ -1,3 +1,13 @@
+2002-11-08  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSSavePanel.m ([NSSavePanel -_shouldShowExtension:isDir:]): 
+	Filter regular files also.
+
+	* Source/NSMenu.m ([NSMenuPanel -canBecomeKeyWindow]): Return
+	YES only if we are the main menu.
+	* Source/NSWindow.m ([NSWindow -sendEvent:]) (FocusIn): If we are
+	the main menu, try to find another window to become key.	
+
 2002-11-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m

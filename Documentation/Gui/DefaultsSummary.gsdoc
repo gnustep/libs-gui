@@ -63,6 +63,14 @@
 	  it is).  Default is <code>Control-q</code>.
 	  </p>
 	  </desc>
+	  <term>GSFileBrowserHideDotFiles</term>
+	  <desc>
+          <p>
+	  A boolean, by default NO.  If you set it to YES, files that
+	  begin with a dot ('.') are not shown in the NSSavePanel or
+	  NSOpenPanel.
+	  </p>
+	  </desc>
 	  <term>GSInsertControlKeystrokes</term>
 	  <desc>
           <p>
