@@ -314,9 +314,7 @@ Class gmodel_class(void)
 		    withZone: [owner zone]];
 }
 
-- (BOOL) loadNibFile: (NSString*)fileName
-   externalNameTable: (NSDictionary*)context
-	    withZone: (NSZone*)zone
+- (NSString *) pathForNibResource: (NSString *)fileName
 {
   NSFileManager		*mgr = [NSFileManager defaultManager];
   NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
@@ -378,23 +376,33 @@ Class gmodel_class(void)
 		    }
 		}
 	    }
-	  return [NSBundle loadNibFile: path
-		     externalNameTable: context
-			      withZone: (NSZone*)zone];
+	  return path;
 	}
       else
 	{
 	  path = [rootPath stringByAppendingPathExtension: ext];
 	  if([mgr isReadableFileAtPath: path])
 	    {
-	       return [NSBundle loadNibFile: path
-		     externalNameTable: context
-			      withZone: (NSZone*)zone];
+	      return path;
 	    }
 	}
     }
 
-  return NO;
+  return nil;
+}
+
+- (BOOL) loadNibFile: (NSString*)fileName
+   externalNameTable: (NSDictionary*)context
+	    withZone: (NSZone*)zone
+{
+  NSString *path = [self pathForNibResource: fileName];
+
+  if (path != nil)
+    return [NSBundle loadNibFile: path
+		     externalNameTable: context
+		     withZone: (NSZone*)zone];
+  else 
+    return NO;
 }
 @end
 
