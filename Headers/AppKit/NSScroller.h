@@ -66,6 +66,7 @@ typedef enum _NSScrollerArrow {
 {
   float _floatValue;
   float _knobProportion;
+  float _pendingKnobProportion;
   id _target;
   SEL _action;
   BOOL _isHorizontal;
