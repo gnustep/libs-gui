@@ -3001,6 +3001,16 @@ afterString in order over charRange. */
 				       inTextContainer: _textContainer];
   if (_tf.draws_background)
     {
+      /* First paint the background with the color.  This is necessary
+       * to remove markings of old glyphs.  These would not be removed
+       * by the following call to the layout manager because that only
+       * paints the background of new glyphs.  Depending on the
+       * situation, there might be no new glyphs where the old glyphs
+       * were!  */
+      [_background_color set];
+      NSRectFill (rect);
+
+      /* Then draw the special background of the new glyphs.  */
       [_layoutManager drawBackgroundForGlyphRange: drawnRange 
 		      atPoint: _textContainerOrigin];
     }
