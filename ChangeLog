@@ -1,3 +1,12 @@
+Sun Mar  5 23:39:33 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-setPeriodicDelay:interval:]): Bug fix:
+	do not set the cell as being continuous.  This was also causing
+	Model/GMAppKit.m to make all buttoncells continuous upon decoding.
+	* Model/GMAppKit.m ([NSCell -initWithModelUnarchiver:]): Temporary 
+	commented out line setting cell's action mask so things go on 
+	working.  Better solution coming soon.
+	
 Sun Mar  5 01:51:52 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSPanel -encodeWithModelArchiver:]): Cleaned,
