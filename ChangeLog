@@ -1,3 +1,8 @@
+2003-01-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFConsumer.m
+	In [copyWithZone:] use mutable copy of prargraph style.
+	
 2003-01-28 23:29  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-setConstrainedFrameSize:) Fix calculation of
