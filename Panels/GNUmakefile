@@ -32,6 +32,7 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+include ../Version
 prefix = $(GNUSTEP_INSTALLATION_DIR)
 
 PANELS = SavePanel.gmodel
@@ -56,6 +57,7 @@ before-uninstall::
 clean::
 
 -include GNUmakefile.preamble
+-include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/rules.make
 

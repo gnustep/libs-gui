@@ -28,6 +28,7 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+include ../Version
 LIBRARY_NAME = libgmodel
 
 ifeq ($(GUI_LIB), nx)

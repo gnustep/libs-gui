@@ -35,6 +35,7 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+include ../Version
 # The application to be compiled
 TEST_TOOL_NAME = testpb
 
@@ -59,6 +60,7 @@ slider_OBJC_FILES = slider.m
 
 
 -include GNUmakefile.preamble
+-include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/test-tool.make
 include $(GNUSTEP_MAKEFILES)/test-application.make
