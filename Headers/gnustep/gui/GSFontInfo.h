@@ -32,19 +32,17 @@
 #include <AppKit/NSFontManager.h>
 
 @class NSMutableDictionary;
-@class NSMutableSet;
+@class NSArray;
 
 @interface GSFontEnumerator : NSObject
 {
-  id fontManager;
-  NSMutableSet *allFontNames;
+  NSArray *allFontNames;
   NSMutableDictionary *allFontFamilies;
-  NSMutableDictionary* fontInfoDictionary;
 }
 
 + (void) setDefaultClass: (Class)defaultClass;
-+ sharedEnumeratorWithFontManager: manager;
-- (NSArray*) allFonts;
++ (GSFontEnumerator*) sharedEnumerator;
+- (void) enumerateFontsAndFamilies;
 - (NSArray*) availableFonts;
 - (NSArray*) availableFontFamilies;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
