@@ -82,6 +82,11 @@ static BOOL _gs_display_reading_progress = NO;
 @implementation NSSavePanel (_PrivateMethods)
 -(id) _initWithoutGModel
 {
+  NSBox *bar;
+  NSButton *button;
+  NSImage *image;
+  NSRect r;
+
   //
   // WARNING: We create the panel sized (308, 317), which is the 
   // minimum size we want it to have.  Then, we resize it at the 
@@ -93,21 +98,24 @@ static BOOL _gs_display_reading_progress = NO;
   [self setMinSize: NSMakeSize (308, 317)];
   [[self contentView] setBounds: NSMakeRect (0, 0, 308, 317)];
   
-  _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 64, 308, 245)];
-  [_topView setBounds:  NSMakeRect (0, 64, 308, 245)];
+  r = NSMakeRect (0, 64, 308, 245);
+  _topView = [[NSView alloc] initWithFrame: r]; 
+  [_topView setBounds:  r];
   [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_topView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _topView];
   [_topView release];
   
-  _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 308, 64)];
-  [_bottomView setBounds:  NSMakeRect (0, 0, 308, 64)];
+  r = NSMakeRect (0, 0, 308, 64);
+  _bottomView = [[NSView alloc] initWithFrame: r];
+  [_bottomView setBounds:  r];
   [_bottomView setAutoresizingMask: NSViewWidthSizable];
   [_bottomView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _bottomView];
   [_bottomView release];
 
-  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect (8, 68, 292, 177)];
+  r = NSMakeRect (8, 68, 292, 177);
+  _browser = [[NSBrowser alloc] initWithFrame: r]; 
   [_browser setDelegate: self];
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
@@ -117,9 +125,10 @@ static BOOL _gs_display_reading_progress = NO;
   [_topView addSubview: _browser];
   [_browser release];
 
+  r = NSMakeRect (8, 39, 291, 21);
   _form = [NSForm new];
   [_form addEntry: @"Name:"];
-  [_form setFrame: NSMakeRect (8, 39, 291, 21)];
+  [_form setFrame: r];
   // Force the size we want
   [_form setCellSize: NSMakeSize (291, 21)];
   [_form setEntryWidth: 291];
@@ -131,60 +140,64 @@ static BOOL _gs_display_reading_progress = NO;
   [_bottomView addSubview: _form];
   [_form release];
 
-  {
-    NSButton *button;
-
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (43, 6, 27, 27)];
-    [button setBordered: YES];
-    [button setButtonType: NSMomentaryPushButton];
-    [button setImage:  [NSImage imageNamed: @"common_Home"]]; 
-    [button setImagePosition: NSImageOnly]; 
-    [button setTarget: self];
-    [button setAction: @selector(_setHomeDirectory)];
-    // [_form setNextKeyView: button];
-    [button setAutoresizingMask: NSViewMinXMargin];
-    [button setTag: NSFileHandlingPanelHomeButton];
-    [_bottomView addSubview: button];
-    [button release];
-
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (78, 6, 27, 27)];
-    [button setBordered: YES];
-    [button setButtonType: NSMomentaryPushButton];
-    [button setImage:  [NSImage imageNamed: @"common_Mount"]]; 
-    [button setImagePosition: NSImageOnly]; 
-    [button setTarget: self];
-    [button setAction: @selector(_mountMedia)];
-    [button setAutoresizingMask: NSViewMinXMargin];
-    [button setTag: NSFileHandlingPanelDiskButton];
-    [_bottomView addSubview: button];
-    [button release];
-
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (112, 6, 27, 27)];
-    [button setBordered: YES];
-    [button setButtonType: NSMomentaryPushButton];
-    [button setImage:  [NSImage imageNamed: @"common_Unmount"]]; 
-    [button setImagePosition: NSImageOnly]; 
-    [button setTarget: self];
-    [button setAction: @selector(_unmountMedia)];
-    [button setAutoresizingMask: NSViewMinXMargin];
-    [button setTag: NSFileHandlingPanelDiskEjectButton];
-    [_bottomView addSubview: button];
-    [button release];
-
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (148, 6, 71, 27)];
-    [button setBordered: YES];
-    [button setButtonType: NSMomentaryPushButton];
-    [button setTitle:  @"Cancel"];
-    [button setImagePosition: NSNoImage]; 
-    [button setTarget: self];
-    [button setAction: @selector(cancel:)];
-    [button setAutoresizingMask: NSViewMinXMargin];
-    [button setTag: NSFileHandlingPanelCancelButton];
-    [_bottomView addSubview: button];
-    [button release];
-  }
+  r = NSMakeRect (43, 6, 27, 27);
+  button = [[NSButton alloc] initWithFrame: r]; 
+  [button setBordered: YES];
+  [button setButtonType: NSMomentaryPushButton];
+  image = [NSImage imageNamed: @"common_Home"];
+  [button setImage: image];
+  [button setImagePosition: NSImageOnly]; 
+  [button setTarget: self];
+  [button setAction: @selector(_setHomeDirectory)];
+  // [_form setNextKeyView: button];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  [button setTag: NSFileHandlingPanelHomeButton];
+  [_bottomView addSubview: button];
+  [button release];
   
-  _okButton = [[NSButton alloc] initWithFrame: NSMakeRect (228, 6, 71, 27)];
+  r = NSMakeRect (78, 6, 27, 27);
+  button = [[NSButton alloc] initWithFrame: r];
+  [button setBordered: YES];
+  [button setButtonType: NSMomentaryPushButton];
+  image = [NSImage imageNamed: @"common_Mount"]; 
+  [button setImage: image]; 
+  [button setImagePosition: NSImageOnly]; 
+  [button setTarget: self];
+  [button setAction: @selector(_mountMedia)];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  [button setTag: NSFileHandlingPanelDiskButton];
+  [_bottomView addSubview: button];
+  [button release];
+
+  r = NSMakeRect (112, 6, 27, 27);
+  button = [[NSButton alloc] initWithFrame: r];
+  [button setBordered: YES];
+  [button setButtonType: NSMomentaryPushButton];
+  image = [NSImage imageNamed: @"common_Unmount"]; 
+  [button setImage: image];
+  [button setImagePosition: NSImageOnly]; 
+  [button setTarget: self];
+  [button setAction: @selector(_unmountMedia)];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  [button setTag: NSFileHandlingPanelDiskEjectButton];
+  [_bottomView addSubview: button];
+  [button release];
+  
+  r = NSMakeRect (148, 6, 71, 27);
+  button = [[NSButton alloc] initWithFrame: r]; 
+  [button setBordered: YES];
+  [button setButtonType: NSMomentaryPushButton];
+  [button setTitle:  @"Cancel"];
+  [button setImagePosition: NSNoImage]; 
+  [button setTarget: self];
+  [button setAction: @selector(cancel:)];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  [button setTag: NSFileHandlingPanelCancelButton];
+  [_bottomView addSubview: button];
+  [button release];
+  
+  r = NSMakeRect (228, 6, 71, 27);
+  _okButton = [[NSButton alloc] initWithFrame: r]; 
   [_okButton setBordered: YES];
   [_okButton setButtonType: NSMomentaryPushButton];
   [_okButton setTitle:  @"OK"];
@@ -197,21 +210,20 @@ static BOOL _gs_display_reading_progress = NO;
   [_bottomView addSubview: _okButton];
   [_okButton release];
   
-  {
-    NSImageView *imageView;
-    
-    imageView
-      = [[NSImageView alloc] initWithFrame: NSMakeRect (8, 261, 48, 48)];
-    [imageView setImageFrameStyle: NSImageFrameNone];
-    [imageView setImage:
-      [[NSApplication sharedApplication] applicationIconImage]];
-    [imageView setAutoresizingMask: NSViewMinYMargin];
-    [imageView setTag: NSFileHandlingPanelImageButton];
-    [_topView addSubview: imageView];
-    [imageView release];
-  }
-  _titleField
-    = [[NSTextField alloc] initWithFrame: NSMakeRect (67, 276, 200, 14)];
+  r = NSMakeRect (8, 261, 48, 48);
+  button = [[NSButton alloc] initWithFrame: r]; 
+  image = [[NSApplication sharedApplication] applicationIconImage];
+  [button setImage: image];
+  [button setBordered: NO];
+  [button setEnabled: NO];
+  [button setImagePosition: NSImageOnly];
+  [button setAutoresizingMask: NSViewMinYMargin];
+  [button setTag: NSFileHandlingPanelImageButton];
+  [_topView addSubview: button];
+  [button release];
+
+  r = NSMakeRect (67, 276, 200, 14);
+  _titleField = [[NSTextField alloc] initWithFrame: r]; 
   [_titleField setSelectable: NO];
   [_titleField setEditable: NO];
   [_titleField setDrawsBackground: NO];
@@ -222,15 +234,15 @@ static BOOL _gs_display_reading_progress = NO;
   [_titleField setTag: NSFileHandlingPanelTitleField];
   [_topView addSubview: _titleField];
   [_titleField release];
-  { 
-    NSBox *bar;
-    bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 252, 308, 2)];
-    [bar setBorderType: NSGrooveBorder];
-    [bar setTitlePosition: NSNoTitle];
-    [bar setAutoresizingMask: NSViewWidthSizable|NSViewMinYMargin];
-    [_topView addSubview: bar];
-    [bar release];
-  }
+
+  r = NSMakeRect (0, 252, 308, 2);
+  bar = [[NSBox alloc] initWithFrame: r]; 
+  [bar setBorderType: NSGrooveBorder];
+  [bar setTitlePosition: NSNoTitle];
+  [bar setAutoresizingMask: NSViewWidthSizable|NSViewMinYMargin];
+  [_topView addSubview: bar];
+  [bar release];
+
   [self setContentSize: NSMakeSize (384, 426)];
   [super setTitle: @""];
   return self;
