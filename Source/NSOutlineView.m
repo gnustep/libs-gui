@@ -50,6 +50,9 @@ static const int current_version = 1;
 static NSImage *rightArrow = nil;
 static NSImage *downArrow = nil;
 
+// Some necessary things which should not become ivars....
+static float widest = 0.0;
+
 //
 // Forward declarations for functions used by both the NSTableView class
 // and NSOutlineView.
@@ -261,7 +264,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 				 numberOfChildrenOfItem: item];
   int i = 0;
 
-  NSLog(@"closing: %@");
+  NSLog(@"closing: %@", item);
   // close the item...
   if(item == nil)
     {
@@ -274,7 +277,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
   // For the close method it doesn't matter what order they are 
   // removed in.
-  for(i=0;i<numchildren;i++)
+  for(i=1;i<=numchildren;i++)
     {
       id child = [_dataSource outlineView: self
 			      child: i
@@ -345,7 +348,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
   if([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
     {
-      NSMutableDictionary *infoDict = [NSDictionary dictionary];      
+      NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];      
       [infoDict setObject: item forKey: @"NSObject"];
       
       // Send out the notification to let observers know that this is about
@@ -411,7 +414,6 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
   BOOL canExpand = YES;
 
-  NSLog(@"HELLO!!!!!!!!");
   if([_delegate respondsToSelector: shouldExpandSelector])
     {
       canExpand = [_delegate outlineView: self shouldExpandItem: item];
@@ -509,19 +511,55 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   return [_items objectAtIndex: row];
 }
 
-- (int)levelForItem: (id)item
+// Utility function to determine the level of an item.
+static int _levelForItem(NSOutlineView *outline,
+			id startitem,
+			id searchitem,
+			int level,
+			BOOL *found)
 {
-  if(item == nil)
+  int num = [[outline dataSource] outlineView: outline
+				  numberOfChildrenOfItem: startitem];
+  int i = 0;
+  int finallevel = 0;
+
+  if(*found == YES)
     {
-      return 0;
+      return level;
     }
   
-  return 0;
+  if(searchitem == startitem)
+    {
+      *found = YES;
+      return level;
+    }
+
+  for(i = 1; i <= num; i++)
+    {
+      id anitem = [[outline dataSource] outlineView: outline
+					child: i
+					ofItem: startitem];
+      finallevel = _levelForItem(outline, anitem, searchitem, level + 1, found); 
+    }
+
+  return finallevel;
+}
+
+- (int)levelForItem: (id)item
+{
+  //  NSLog(@"Getting level for %@", item);
+  if(item != nil)
+    {
+      BOOL found = NO;
+      return _levelForItem(self, nil, item, -1, &found);
+    }
+
+  return -1;
 }
 
 - (int)levelForRow: (int)row
 {
-  return -1;
+  return [self levelForItem: [self itemAtRow: row]];
 }
 
 - (NSTableColumn *)outlineTableColumn
@@ -1293,7 +1331,15 @@ byExtendingSelection: (BOOL)flag
 	  NSLog(@"row which was clicked %d, item %@", 
 		_clickedRow,
 		[self itemAtRow: _clickedRow]);
-	  [self expandItem: [self itemAtRow: _clickedRow]];
+
+	  if(![self isItemExpanded: [self itemAtRow: _clickedRow]])
+	    {
+	      [self expandItem: [self itemAtRow: _clickedRow]];
+	    }
+	  else
+	    {
+	      [self collapseItem: [self itemAtRow: _clickedRow]];
+	    }
 
 	  if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
 	      && _allowsMultipleSelection)
@@ -1620,7 +1666,6 @@ byExtendingSelection: (BOOL)flag
 /* 
  * Drawing 
  */
-
 - (void)drawRow: (int)rowIndex clipRect: (NSRect)aRect
 {
   int startingColumn; 
@@ -1684,7 +1729,6 @@ byExtendingSelection: (BOOL)flag
 			 item: item];
 	    }
 
-	  // item = [self itemAtRow: rowIndex];
 	  [cell setObjectValue: [_dataSource outlineView: self
 					     objectValueForTableColumn: tb
 					     byItem: item]]; 
@@ -1699,6 +1743,9 @@ byExtendingSelection: (BOOL)flag
 	  if(tb == _outlineTableColumn)
 	    {
 	      NSImage *arrow = nil;
+	      int level = 0;
+	      float indentationFactor = 0.0;
+	      float originalWidth = drawingRect.size.width;
 
 	      // display the correct arrow...
 	      if([self isItemExpanded: item])
@@ -1710,10 +1757,22 @@ byExtendingSelection: (BOOL)flag
 		  arrow = rightArrow;
 		}
 
-	      NSLog(@"outlineColumn: %@", item);
+	      level = [self levelForItem: item];
+	      //	      NSLog(@"outlineColumn: %@ level = %d", item, level);
+	      indentationFactor = _indentationPerLevel * level;
 	      imageCell = [[NSCell alloc] initImageCell: arrow];
-	      imageRect.origin.x = drawingRect.origin.x;
-	      imageRect.origin.y = drawingRect.origin.y;
+
+	      if(_indentationMarkerFollowsCell)
+		{
+		  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+		  imageRect.origin.y = drawingRect.origin.y;
+		}
+	      else
+		{
+		  imageRect.origin.x = drawingRect.origin.x;
+		  imageRect.origin.y = drawingRect.origin.y;
+		}
+
 	      imageRect.size.width = [arrow size].width;
 	      imageRect.size.height = [arrow size].height;
 
@@ -1723,9 +1782,18 @@ byExtendingSelection: (BOOL)flag
 		  [imageCell drawWithFrame: imageRect inView: self];
 		}
 
-	      // reformat drawing rect, so that there is no overlap
-	      drawingRect.origin.x += [arrow size].width + 1;
-	      drawingRect.size.width -= [arrow size].width + 1;
+	      drawingRect.origin.x += indentationFactor + [arrow size].width + 1;
+	      drawingRect.size.width -= indentationFactor + [arrow size].width + 1;
+	      
+	      if (widest < (drawingRect.origin.x + originalWidth))
+		{
+		  widest = (drawingRect.origin.x + originalWidth);
+		  NSLog(@"widest = %lf", widest);
+		}
+	      else
+		{
+		  NSLog(@"Still widest = %lf", widest);
+		}
 	    }
 
 	  [cell drawWithFrame: drawingRect inView: self];
@@ -1734,69 +1802,30 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
-/*
-- (void) tile
+- (void) drawRect: (NSRect)aRect
 {
-  float table_width = 0;
-  float table_height;
+  int index = 0;
 
-  NSLog(@"In NSOutlineView's tile method *********");
-  if (_tilingDisabled == YES)
+  for(index = 1;index <= _numberOfRows; index++)
     {
-      NSLog(@"NO TILING!!");
-      return;
+      NSRect drawingRect;
+
+      NSLog(@"Row = %d",index);
+      drawingRect = [self frameOfCellAtColumn: 1
+			  row: index];
+      NSLog(@"Width = %d",drawingRect.size.width);
     }
 
-  if (_numberOfColumns > 0)
+  [super drawRect: aRect];
+
+  // We need to resize here since all of the columns have been
+  // processed.
+  if(_autoResizesOutlineColumn)
     {
-      int i;
-      float width;
-      float offset = 0.0;
-
-      if([_tableColumns objectAtIndex: 0] == _outlineTableColumn)
-	{
-	  offset = 10.0;
-	}
-
-      _columnOrigins[0] = _bounds.origin.x; // + offset; 
-      width = [[_tableColumns objectAtIndex: 0] width] + offset;
-      table_width += width;
-
-      for (i = 1; i < _numberOfColumns; i++)
-	{
-	  id column = [_tableColumns objectAtIndex: i];
-	  float coloffset = 0.0;
-
-	  // When determining where each column begins, we need to make
-	  // sure that the outline column is taken into account
-	  if (column == _outlineTableColumn)
-	    {
-	      coloffset = 10.0; // width of image.
-	    }
-	  
-	  _columnOrigins[i] = _columnOrigins[i - 1] + width + coloffset;
-	  width = [column width];
-	  table_width += width;
-	}
+      //      [_outlineTableColumn setWidth: widest];
+      widest = 0; // blank this since it was just set into the column..
     }
-
-  // + 1 for the last grid line 
-  table_height = (_numberOfRows * _rowHeight) + 1;
-  [self setFrameSize: NSMakeSize (table_width, table_height)];
-  [self setNeedsDisplay: YES];
-
-  if (_headerView != nil)
-    {
-      [_headerView setFrameSize: 
-		     NSMakeSize (_frame.size.width,
-				 [_headerView frame].size.height)];
-      [_cornerView setFrameSize: 
-		     NSMakeSize ([NSScroller scrollerWidth] + 1,
-				 [_headerView frame].size.height)];
-      [_headerView setNeedsDisplay: YES];
-      [_cornerView setNeedsDisplay: YES];
-    }  
 }
-*/
+
 @end /* implementation of NSOutlineView */
 

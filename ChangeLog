@@ -1,3 +1,8 @@
+Wed Feb 27 01:03:58 2002  Gregory Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m implemented indentation and enabled
+	collapsing of items in the outline view.
+	
 Tue Feb 26 19:08:38 2002  Nicola Pero <nicola@brainstorm.co.uk>
 
 	Patch by Michael Hanni <mhanni@yahoo.com> modified - 
