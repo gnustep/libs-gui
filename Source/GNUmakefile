@@ -103,6 +103,7 @@ NSMenu.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
+NSNib.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
@@ -315,6 +316,7 @@ NSGraphics.h \
 NSNibConnector.h \
 NSNibDeclarations.h \
 NSNibLoading.h \
+NSNib.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
 DPSOperators.h \
