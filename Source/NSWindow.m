@@ -669,7 +669,7 @@ static Class	responderClass;
 {
   NSPoint basePoint;
 
-  screenPoint = [GSCurrentContext() convertScreenToBase: screenPoint]
+  screenPoint = [GSCurrentContext() convertScreenToBase: screenPoint];
   basePoint.x = screenPoint.x - frame.origin.x;
   basePoint.y = screenPoint.y - frame.origin.y;
 
