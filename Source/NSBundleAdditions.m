@@ -288,7 +288,6 @@
 	    }
 	  RELEASE(unarchiver);
 	}
-      RELEASE(data);
     }
   return loaded;
 }

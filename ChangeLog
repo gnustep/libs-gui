@@ -3,6 +3,7 @@ Mon Dec 20 15:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSView.m: Fix removal of view from window such that we reset
 	the windows first responder if any of the removed views in first
 	responder (avoid crash iv views subsequently deallocated).
+	* Source/NSBundleAdditions.m: Removed excess release of bundle data.
 
 Mon Dec 20 11:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
