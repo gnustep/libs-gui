@@ -825,7 +825,9 @@ static Class rulerViewClass = nil;
   //
   [_contentView setDocumentView: aView];
   if (_contentView && !_contentView->_rFlags.flipped_view)
-    [_vertScroller setFloatValue: 1];
+    {
+      [_vertScroller setFloatValue: 1];
+    }
   [self tile];
 }
 
