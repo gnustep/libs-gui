@@ -2359,7 +2359,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   layout_glyph = tc->pos + tc->length;
   /*
-  We must have layouts beyond all the soft-invalidated line frags,
+  We must have glyphs beyond all the soft-invalidated line frags,
   so comparing with glyphs->glyph_length is ok.
   */
   if (layout_glyph == glyphs->glyph_length)
@@ -2369,6 +2369,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 }
 
 -(NSRect) _softInvalidateLineFragRect: (int)index
+			   firstGlyph: (unsigned int *)first_glyph
 			    nextGlyph: (unsigned int *)next_glyph
 		      inTextContainer: (NSTextContainer *)textContainer
 {
@@ -2388,6 +2389,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     return NSZeroRect;
 
   lf = &tc->linefrags[tc->num_linefrags + index];
+  *first_glyph = lf->pos;
   *next_glyph = lf->pos + lf->length;
   return lf->rect;
 }

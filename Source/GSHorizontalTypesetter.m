@@ -415,7 +415,7 @@ Return values 0, 1, 2 are mostly the same as from
       NSRect r0, r;
       NSSize shift;
       int i;
-      unsigned int g, g2;
+      unsigned int g, g2, first;
       float container_height;
       /*
       Ask the layout manager for soft-invalidated layout for the current
@@ -424,6 +424,7 @@ Return values 0, 1, 2 are mostly the same as from
       tell the layout manager to use the soft-invalidated information.
       */
       r0 = [curLayoutManager _softInvalidateLineFragRect: 0
+					      firstGlyph: &first
 					       nextGlyph: &g
 					 inTextContainer: curTextContainer];
 
@@ -436,28 +437,27 @@ Return values 0, 1, 2 are mostly the same as from
 	  */
 	  shift.width = 0;
 	  shift.height = curPoint.y - r0.origin.y;
-	  if (shift.height == 0)
-	    {
-	      /*
-	      If we don't need to shift, we know that everything will fit,
-	      so we just need the last rectangle so we can update the
-	      current point and glyph.
-	      */
-	      i = [curLayoutManager _softInvalidateNumberOfLineFragsInTextContainer: curTextContainer];
-	      i--;
-	    }
-	  else
-	    {
-	      i = 1;
-	    }
+	  i = 1;
+	  curPoint.y = NSMaxY(r0) + shift.height;
 	  for (; 1; i++)
 	    {
 	      r = [curLayoutManager _softInvalidateLineFragRect: i
+						     firstGlyph: &first
 						      nextGlyph: &g2
 						inTextContainer: curTextContainer];
 
+	      /*
+	      If there's a gap in soft invalidated information, we need to
+	      fill it in before we can continue.
+	      */
+	      if (first != g)
+		{
+		  break;
+		}
+
 	      if (NSEqualRects(r, NSZeroRect) || NSMaxY(r) + shift.height > container_height)
 		break;
+
 	      g = g2;
 	      curPoint.y = NSMaxY(r) + shift.height;
 	    }

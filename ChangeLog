@@ -1,3 +1,9 @@
+2003-05-05 22:48  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m,
+	Source/GSHorizontalTypesetter.m: Detect and handle gaps in the soft
+	invalidated layout information.
+
 2003-05-02  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/Gui/GNUmakefile: Remove GNUSTEP_MAKEFILES.

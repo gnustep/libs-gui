@@ -330,6 +330,7 @@ layout information.
 			  withShift: (NSSize)shift
 		    inTextContainer: (NSTextContainer *)textContainer;
 -(NSRect) _softInvalidateLineFragRect: (int)index
+			   firstGlyph: (unsigned int *)first_glyph
 			    nextGlyph: (unsigned int *)next_glyph
 		      inTextContainer: (NSTextContainer *)textContainer;
 -(unsigned int) _softInvalidateFirstGlyphInTextContainer: (NSTextContainer *)textContainer;
