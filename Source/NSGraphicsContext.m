@@ -153,11 +153,11 @@ NSGraphicsContext	*GSCurrentContext()
 	       @"Internal Error: No default NSGraphicsContext set\n");
       ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
 	       initWithContextInfo: attributes];
-      AUTORELEASE(ctxt);
     }
   else
     ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: attributes];
-  return ctxt;
+ 
+  return AUTORELEASE(ctxt);
 }
 
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
@@ -182,8 +182,6 @@ NSGraphicsContext	*GSCurrentContext()
 
 - (void) dealloc
 {
-  if (GSCurrentContext() == self)
-    [NSGraphicsContext setCurrentContext: nil];
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
@@ -196,6 +194,8 @@ NSGraphicsContext	*GSCurrentContext()
    the next autorelease pool end */
 - (void) destroyContext
 {
+  if (GSCurrentContext() == self)
+    [NSGraphicsContext setCurrentContext: nil];
   [contextLock lock];
   [contextList removeObject: self];
   [contextLock unlock];
