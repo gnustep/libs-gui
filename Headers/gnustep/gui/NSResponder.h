@@ -135,8 +135,19 @@
 - (NSUndoManager*) undoManager;
 
 /*
- * Action methods, declared but not implemented
- */ 
+ * Menu
+ */
+- (NSMenu*) menu;
+- (void) setMenu: (NSMenu*)aMenu;
+
+/*
+ * Setting the interface
+ */
+- (NSInterfaceStyle) interfaceStyle;
+- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
+@end
+
+@interface NSResponder (OptionalActionMethods)
 - (void) capitalizeWord: (id)sender;
 - (void) centerSelectionInVisibleArea: (id)sender;
 - (void) changeCaseOfLetter: (id)sender;
@@ -195,19 +206,7 @@
 - (void) transposeWords: (id)sender;
 - (void) uppercaseWord: (id)sender;
 - (void) yank: (id)sender;
-
-/*
- * Menu
- */
-- (NSMenu*) menu;
-- (void) setMenu: (NSMenu*)aMenu;
-
-/*
- * Setting the interface
- */
-- (NSInterfaceStyle) interfaceStyle;
-- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
-#endif
 @end
+#endif
 
 #endif /* _GNUstep_H_NSResponder */
