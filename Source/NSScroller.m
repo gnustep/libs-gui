@@ -613,9 +613,7 @@ static const float buttonsWidth = 16;
 
       if (theCell)
 	{
-	  [self lockFocus];
 	  [theCell highlight: YES withFrame: rect inView: self];
-	  [self unlockFocus];
 	  [window flushWindow];
 
 	  NSDebugLog (@"tracking cell %x", theCell);
@@ -625,9 +623,7 @@ static const float buttonsWidth = 16;
 				      ofView: self
 				untilMouseUp: YES];
 
-	  [self lockFocus];
 	  [theCell highlight: NO withFrame: rect inView: self];
-	  [self unlockFocus];
 	  [window flushWindow];
 	}
 

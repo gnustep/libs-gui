@@ -281,8 +281,6 @@ static Class cellClass;
   NSSliderCell* theCell = [self cell];
   NSRect rect;
 
-  [self lockFocus];
-
   rect = [theCell knobRectFlipped: [self isFlipped]];
   if (![self mouse: location inRect: rect])
     {
@@ -300,7 +298,6 @@ static Class cellClass;
 
   [self trackKnob: theEvent knobRect: rect];
 
-  [self unlockFocus];
 }
 
 @end
