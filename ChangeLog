@@ -1,3 +1,8 @@
+Tue Jan 12 11:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/NSWindow.m: ([-sendEvent:]) fix cursor update code to set
+	cursors as it should.
+
 Mon Jan 11 17:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Source/NSColor.m: ([-colorWithAlphaComponent:]) bugfix from
