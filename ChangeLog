@@ -1,3 +1,12 @@
+2000-11-21  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSPrintOperation.h: 
+	* Source/NSPrintOperation.m: Split up in three classes added
+	primitiv printing in file
+	* Source/NSPageLayout.m: Added more graphical elements,
+	any functionality is still missing.
+	* Source/GSInfoPanel.m: Use system fonts, not explicit names.
+
 Tue Nov 14 23:45:56 2000  Adam Fedor  <fedor@yogi.doc.com>
 
 	* Source/NSScrollView.m (reflectScrolledClipView:): Check for 

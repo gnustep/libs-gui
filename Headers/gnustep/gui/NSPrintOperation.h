@@ -64,6 +64,7 @@ typedef enum _NSPrintingPageOrder {
   NSView *_accessoryView;
   NSPrintingPageOrder _pageOrder;
   BOOL _showPanels;
+  BOOL _pathSet;
 }
 
 //
