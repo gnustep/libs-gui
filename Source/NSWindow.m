@@ -91,7 +91,7 @@
 /*
  * Class variables
  */
-static SEL	ccSel = @selector(_checkCusrorRectangles:forEvent:);
+static SEL	ccSel = @selector(_checkCursorRectangles:forEvent:);
 static SEL	ctSel = @selector(_checkTrackingRectangles:forEvent:);
 static IMP	ccImp;
 static IMP	ctImp;
