@@ -45,7 +45,7 @@
   // setup variables  
 
   tab_items = [NSMutableArray new];
-  tab_font = RETAIN([NSFont systemFontOfSize: 12]);
+  tab_font = RETAIN([NSFont systemFontOfSize: 0]);
   tab_selected = nil;
 
   return self;

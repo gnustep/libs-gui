@@ -416,7 +416,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   unsigned	i;
   unsigned	howMany = [menuv_itemCells count];
   float		howHigh = (howMany * cellSize.height);
-  float		neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 12]
+  float		neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 0]
 				   widthOfString: [menuv_menu title]] + 17;
   float		neededKeyEquivalentWidth = 0.0;
   float		neededStateImageWidth = 0.0;

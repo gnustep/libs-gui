@@ -46,7 +46,7 @@ static NSColor *clearCol = nil;
   _cell.text_align = NSCenterTextAlignment;
   ASSIGN (_text_color, [NSColor windowFrameTextColor]);
   [self setBackgroundColor: [NSColor controlShadowColor]];
-  [self setFont: [NSFont titleBarFontOfSize:12]];
+  [self setFont: [NSFont titleBarFontOfSize: 0]];
   _cell.is_bezeled = YES;
   _textfieldcell_draws_background = YES;
 

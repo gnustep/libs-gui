@@ -347,7 +347,7 @@ static const float ButtonInterspace = 10.0;
 static const float ButtonMinHeight = 24.0;
 static const float ButtonMinWidth = 72.0;
 
-#define MessageFont [NSFont systemFontOfSize: 14.0]
+#define MessageFont [NSFont messageFontOfSize: 14]
 // TODO: Check on NeXTSTEP, I think that the message font size is only 12.0.
 
 + (void) initialize
@@ -432,7 +432,7 @@ makeScrollViewWithRect(NSRect rect)
   [button setTitle: @""];
   [button setTarget: self];
   [button setAction: @selector(buttonAction: )];
-  [button setFont: [NSFont systemFontOfSize: 12.0]];
+  [button setFont: [NSFont systemFontOfSize: 0]];
   return button;
 }
 

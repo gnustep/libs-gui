@@ -3318,7 +3318,7 @@ other than copy/paste or dragging. */
 {
   return [NSDictionary dictionaryWithObjectsAndKeys:
 			 [NSParagraphStyle defaultParagraphStyle], NSParagraphStyleAttributeName,
-			 [NSFont userFontOfSize: 12], NSFontAttributeName,
+			 [NSFont userFontOfSize: 0], NSFontAttributeName,
 		         [NSColor textColor], NSForegroundColorAttributeName,
 		         nil];
 }

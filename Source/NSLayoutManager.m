@@ -1098,7 +1098,7 @@ Ghiradelli chocolate to he who puts all the pieces together : ) */
   int startIndex;
   NSRect firstProposedRect;
   NSRect secondProposedRect;
-  NSFont *default_font = [NSFont systemFontOfSize: 12.0];
+  NSFont *default_font = [NSFont systemFontOfSize: 0];
   int widthOfString;
   NSSize rSize;
   NSCharacterSet *selectionParagraphGranularitySet = [NSCharacterSet characterSetWithCharactersInString: @"\n"];

@@ -178,10 +178,10 @@ static NSImage	*arrowImageH = nil;
     }
   else
     {
-      mcell_titleWidth = [[NSFont menuFontOfSize:12]
-			   widthOfString:[mcell_item title]];
-      mcell_keyEquivalentWidth = [[NSFont menuFontOfSize:12]
-				   widthOfString:[mcell_item keyEquivalent]];
+      NSFont *defFont = [NSFont menuFontOfSize: 0];
+      
+      mcell_titleWidth = [defFont widthOfString:[mcell_item title]];
+      mcell_keyEquivalentWidth = [defFont widthOfString:[mcell_item keyEquivalent]];
     }
 
   // Submenu Arrow

@@ -95,7 +95,7 @@ checkInit()
    * These defaults could change during the running of the program if the
    * user defaults are changed.
    */
-  defFont = [NSFont userFontOfSize: 12];
+  defFont = [NSFont userFontOfSize: 0];
   defFgCol = [NSColor textColor];
 }
 

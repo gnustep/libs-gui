@@ -1366,7 +1366,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   // Draw the title.
   [[NSColor windowFrameTextColor] set];
-  [[NSFont boldSystemFontOfSize: 12] set];
+  [[NSFont boldSystemFontOfSize: 0] set];
   PSmoveto(rect.origin.x + 7, rect.origin.y + 7);
   PSshow([[menu title] cString]);
 

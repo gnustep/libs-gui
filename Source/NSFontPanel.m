@@ -405,7 +405,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // label for selection of size
   label = [[NSTextField alloc] initWithFrame: l3];
-  [label setFont: [NSFont boldSystemFontOfSize: 12]];
+  [label setFont: [NSFont boldSystemFontOfSize: 0]];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground: YES];
   [label setEditable: NO];
