@@ -69,6 +69,7 @@ static NSCharacterSet *invSelectionParagraphGranularitySet;
 @public
   NSRange	lineRange;
   NSRect	lineRect;
+  NSRect	usedRect;
   unsigned	type;
 }
 
@@ -81,15 +82,12 @@ typedef enum
 
 + (id) lineLayoutWithRange: (NSRange)aRange
 		      rect: (NSRect)aRect
+		      usedRect: (NSRect)charRect
 		      type: (unsigned)aType;
 
 - (NSRange) lineRange;
 - (NSRect) lineRect;
 - (unsigned) type;
-
-- (void) setLineRange: (NSRange)aRange;
-- (void) setLineRect: (NSRect)aRect;
-- (void) setType: (unsigned)aType;
 
 - (NSString*) description;
 @end
@@ -98,12 +96,14 @@ typedef enum
 
 + (_GNULineLayoutInfo *) lineLayoutWithRange: (NSRange)aRange
 		      rect: (NSRect)aRect
+		      usedRect: (NSRect)charRect
 		      type: (unsigned)aType
 {
   _GNULineLayoutInfo *ret = AUTORELEASE([_GNULineLayoutInfo new]);
 
   ret->lineRange = aRange;
-  ret->lineRect =aRect;
+  ret->lineRect = aRect;
+  ret->usedRect = charRect;
   ret->type = aType;
   return ret;
 }
@@ -121,21 +121,6 @@ typedef enum
 - (NSRect) lineRect
 {
   return lineRect;
-}
-
-- (void) setLineRange: (NSRange)aRange
-{
-  lineRange = aRange;
-}
-
-- (void) setLineRect: (NSRect)aRect
-{
-  lineRect = aRect;
-}
-
-- (void) setType: (unsigned)aType
-{
-  type = aType;
 }
 
 - (NSString*) description
@@ -248,11 +233,16 @@ typedef enum
 				[[NSText class] newlineString]]];
 }
 
+- (void) dealloc
+{
+  RELEASE(_lineLayoutInformation);
+
+  [super dealloc];
+}
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
-  RELEASE(_lineLayoutInformation);
-  _lineLayoutInformation = nil;
+  DESTROY(_lineLayoutInformation);
 
   [super setTextStorage: aTextStorage];
 }
@@ -307,7 +297,7 @@ typedef enum
   _GNULineLayoutInfo *currentInfo = [_lineLayoutInformation 
 				      objectAtIndex: 
 					[self lineLayoutIndexForPoint: point]];
-  NSRect rect = currentInfo->lineRect;
+  NSRect rect = currentInfo->usedRect;
   NSRange range = currentInfo->lineRange;
   int i;
   int min = range.location;
@@ -380,6 +370,7 @@ typedef enum
   float x;
   unsigned start;
   _GNULineLayoutInfo *currentInfo;
+  NSRect rect;
 
   if (![_textStorage length])
     {
@@ -390,12 +381,14 @@ typedef enum
 		    objectAtIndex: [self lineLayoutIndexForCharacterIndex: 
 					     index]];
   if (index >= NSMaxRange(currentInfo->lineRange))
-    return NSMakePoint(currentInfo->lineRect.size.width, 0);
+    return NSMakePoint(NSMaxX(currentInfo->usedRect), 0);
 
   start = currentInfo->lineRange.location;
+  rect = currentInfo->lineRect;
   x = [self _sizeOfRange: NSMakeRange(start, index-start)].width;
 
   return NSMakePoint(x, 0);
+//  return NSMakePoint(rect.origin.x + x, rect.origin.y);
 }
 
 - (NSRect)boundingRectForGlyphRange:(NSRange)aRange 
@@ -416,12 +409,12 @@ typedef enum
 
   // This is not exacty what we need, but should be correct enought
   currentInfo = [_lineLayoutInformation objectAtIndex: i1];
-  rect1 = currentInfo->lineRect;
+  rect1 = currentInfo->usedRect;
 
   if (i1 != i2)
     {
       currentInfo = [_lineLayoutInformation objectAtIndex: i2];
-      rect1 = NSUnionRect(rect1, currentInfo->lineRect);
+      rect1 = NSUnionRect(rect1, currentInfo->usedRect);
     }
 
   rect1.size.width = width - rect1.origin.x;
@@ -581,7 +574,7 @@ typedef enum
       NSMaxRange(aRange) > [_textStorage length])
     return NSZeroSize;
 
-  return [[_textStorage attributedSubstringFromRange: aRange] size];
+  return [_textStorage sizeRange: aRange];
 }
 
 - (NSRect) frame
@@ -761,11 +754,13 @@ typedef enum
   if (index >= NSMaxRange(currentInfo->lineRange))
     {
       NSRect rect = currentInfo->lineRect;
+/*
       if (NSMaxX(rect) >= width)
 	{
 	  return NSMakeRect(0, NSMaxY(rect),
 			    width, rect.size.height);
 	}
+*/
       return NSMakeRect(NSMaxX (rect), rect.origin.y,
 			width - NSMaxX (rect),
 			rect.size.height);
@@ -822,7 +817,7 @@ typedef enum
   return NSMakeRange(startLine, endLine - startLine);
 }
 
-// relies on lineLayoutInformation
+// relies on _lineLayoutInformation
 - (void) drawLinesInLineRange: (NSRange)aRange;
 {
   NSArray *linesToDraw = [_lineLayoutInformation subarrayWithRange: aRange];
@@ -836,9 +831,7 @@ typedef enum
 	continue;	// e.g. for nl
 
       [_textStorage drawRange: currentInfo->lineRange
-		    atPoint: currentInfo->lineRect.origin];
-	  // <!> make this use drawRange: inRect: in the future
-	  // (for proper adoption of layout information [e.g. centering])
+		    inRect: currentInfo->lineRect];
     }
 }
 
@@ -916,6 +909,8 @@ verticalDisplacement: (float*)verticalDisplacement
 		     NSMakeRange (startingLineCharIndex, 1)
 		   rect: NSMakeRect (aPointP->x, aPointP->y,
 				     width - aPointP->x, advanceSize.height)
+		   usedRect: NSMakeRect (aPointP->x, aPointP->y,
+					 1, advanceSize.height)
 		   type: LineLayoutInfoType_Paragraph]];
 
       startingLineCharIndex++;
@@ -957,16 +952,10 @@ verticalDisplacement: (float*)verticalDisplacement
   for ((relocEnum = [relocArray objectEnumerator]);
        (currReloc = [relocEnum nextObject]);)
     {
-      NSRange range = currReloc->lineRange;
-      [currReloc setLineRange: NSMakeRange (range.location + relocOffset,
-					    range.length)];
+      currReloc->lineRange.location += relocOffset;
       if (yReloc)
 	{
-	  NSRect rect = currReloc->lineRect;
-	  [currReloc setLineRect: NSMakeRect (rect.origin.x,
-					      rect.origin.y + yReloc,
-					      rect.size.width,
-					      rect.size.height)];
+	  currReloc->lineRect.origin.y += yReloc;
 	}
     }
   [_lineLayoutInformation addObjectsFromArray: relocArray];
@@ -992,8 +981,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 // begin: central line formatting method---------------------------------------
 // returns count of lines actually updated
-// <!> detachNewThreadSelector: selector toTarget: target withObject: argument;
-
 - (NSRange) rebuildForRange: (NSRange)aRange
 		  delta: (int)insertionDelta
 {
@@ -1091,12 +1078,12 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	[_lineLayoutInformation
 	    addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
-			   rect: NSMakeRect (0, 0, 0, 12)
+			   rect: NSMakeRect (0, 0, width, 12)
+			   usedRect: NSMakeRect (0, 0, 0, 12)
 			   type: LineLayoutInfoType_Text]];
 	return NSMakeRange(0,1);
     }
       
-
   currentLineIndex = aLine;
 
   // each paragraph
@@ -1252,6 +1239,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 				    NSMakeRange (startingLineCharIndex,
 						 scannerPosition - localLineStartIndex)
 				  rect: currentLineRect
+				  usedRect: currentLineRect
 				  type: LineLayoutInfoType_Text])];
 
 		currentLineIndex++;
@@ -1349,6 +1337,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 				      NSMakeRange (startingLineCharIndex,
 						   scannerPosition - localLineStartIndex)
 				    rect: currentLineRect
+				    usedRect: currentLineRect
 				    type: LineLayoutInfoType_Text])];
 		  currentLineIndex++;
 		  startingLineCharIndex = NSMaxRange (thisInfo->lineRange);
