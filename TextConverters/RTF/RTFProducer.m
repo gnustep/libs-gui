@@ -1,32 +1,34 @@
-/* 
-   RTFProducer.m
+/*
+ RTFProducer.m
 
-   Writes out a NSAttributedString as RTF 
+ Writes out a NSAttributedString as RTF
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+ Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author: Daniel Bðhringer
-   Date: November 1999
-   Modifications: Fred Kiefer <FredKiefer@gmx.de>
-   Date: June 2000
-   
-   This file is part of the GNUstep GUI Library.
+ Author: Daniel Boehringer
+ Date: November 1999
+ Modifications: Fred Kiefer <FredKiefer@gmx.de>
+ Date: June 2000
+ Modifications: Axel Katerbau <axel@objectpark.org>
+ Date: April 2003
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+ This file is part of the GNUstep GUI Library.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; see the file COPYING.LIB.
+ If not, write to the Free Software Foundation,
+ 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
 #include "RTFProducer.h"
@@ -37,56 +39,89 @@
 #define RIGHTMARGIN @"RightMargin"
 #define TOPMARGIN @"TopMargin"
 #define BUTTOMMARGIN @"ButtomMargin"
+#define HYPHENATIONFACTOR @"HyphenationFactor"
+#define VIEWSIZE @"ViewSize"
+#define VIEWZOOM @"ViewZoom"
+#define VIEWMODE @"ViewMode"
 
-#define	points2twips(a)	((a)*20.0)
+#define	points2twips(a)	((int)((a) * 20.0))
 
 @interface RTFDProducer (Private)
 
-- (NSString*) headerString;
-- (NSString*) trailerString;
-- (NSString*) bodyString;
-- (NSString*) RTFDStringFromAttributedString: (NSAttributedString*)aText
-			  documentAttributes: (NSDictionary*)dict;
+- (NSArray *)_attachments;
+- (NSDictionary *)_attributesOfLastRun;
+- (void)_setAttributesOfLastRun: (NSDictionary *)aDict;
+
+- (NSString *)_runStringForString: (NSString *)substring
+                       attributes: (NSDictionary *)attributes;
+
+- (NSString *)_ASCIIfiedString: (NSString *)string;
+- (NSString *)_headerString;
+- (NSString *)_trailerString;
+- (NSString *)_bodyString;
+- (NSString *)_RTFDStringFromAttributedString: (NSAttributedString *)aText
+                           documentAttributes: (NSDictionary *)dict
+                               inlineGraphics: (BOOL)inlineGraphics;
 @end
 
 @implementation RTFDProducer
 
-+ (NSFileWrapper*) produceFileFrom: (NSAttributedString*) aText
-		documentAttributes: (NSDictionary*)dict
++ (NSFileWrapper *)produceFileFrom: (NSAttributedString *)aText
+                documentAttributes: (NSDictionary *)dict
 {
-  RTFDProducer *new = [self new];
-  NSData *data;
+  RTFDProducer *producer;
+  NSData *encodedText;
   NSFileWrapper *wrapper;
 
-  data = [[new RTFDStringFromAttributedString: aText
-	       documentAttributes: dict]
-	     dataUsingEncoding: NSISOLatin1StringEncoding];
+  producer = [[self alloc] init];
+
+  encodedText = [[producer _RTFDStringFromAttributedString: aText
+                                        documentAttributes: dict
+                                            inlineGraphics: NO]
+                   dataUsingEncoding: NSASCIIStringEncoding];
 
   if ([aText containsAttachments])
     {
-      NSMutableDictionary *fileDict = [NSMutableDictionary dictionary];
-      NSFileWrapper *txt = [[NSFileWrapper alloc]
-			     initRegularFileWithContents: data];
+      NSMutableDictionary *fileDict;
+      NSFileWrapper *txt;
+      NSEnumerator *enumerator;
+      NSFileWrapper *fileWrapper;
+    
+      fileDict = [NSMutableDictionary dictionary];
+      txt = [[NSFileWrapper alloc] initRegularFileWithContents: encodedText];
 
       [fileDict setObject: txt forKey: @"TXT.rtf"];
+    
       RELEASE(txt);
-      // FIXME: We have to add the attachments to the directory file wrapper
+    
+      enumerator = [[producer _attachments] objectEnumerator];
+      while ((fileWrapper = [enumerator nextObject]))
+        {
+          NSString *filename;
+    
+          filename = [fileWrapper filename] ? [fileWrapper filename]
+                                            : [fileWrapper preferredFilename];
+
+          [fileDict setObject: fileWrapper forKey: filename];
+        }
 
       wrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers: fileDict];
     }
   else
-      wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: data];
+    {
+      wrapper = [[NSFileWrapper alloc]
+                  initRegularFileWithContents: encodedText];
+    }
 
-
-  RELEASE(new);
+  RELEASE(producer);
   return AUTORELEASE(wrapper);
 }
 
-+ (NSData*) produceDataFrom: (NSAttributedString*) aText
-	 documentAttributes: (NSDictionary*)dict
++ (NSData *)produceDataFrom: (NSAttributedString *)aText
+         documentAttributes: (NSDictionary *)dict
 {
   return [[self produceFileFrom: aText
-		documentAttributes: dict] serializedRepresentation];
+             documentAttributes: dict] serializedRepresentation];
 }
 
 - (id)init
@@ -95,204 +130,271 @@
    * maintain a dictionary for the used colours
    * (for rtf-header generation)
    */
-  colorDict = [NSMutableDictionary new];
+  colorDict = [[NSMutableDictionary alloc] init];
   /*
    * maintain a dictionary for the used fonts
    * (for rtf-header generation)
    */
-  fontDict = [NSMutableDictionary new];
-  
-  currentFont = nil;
+  fontDict = [[NSMutableDictionary alloc] init];
+
+  attachments = [[NSMutableArray alloc] init];
+
   ASSIGN(fgColor, [NSColor textColor]);
   ASSIGN(bgColor, [NSColor textBackgroundColor]);
 
   return self;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
   RELEASE(text);
   RELEASE(fontDict);
   RELEASE(colorDict);
   RELEASE(docDict);
+  RELEASE(attachments);
 
-  RELEASE(currentFont);
   RELEASE(fgColor);
   RELEASE(bgColor);
+
+  RELEASE(_attributesOfLastRun);
+
+  [super dealloc];
 }
 
 @end
 
 @implementation RTFProducer
 
-+ (NSData*) produceDataFrom: (NSAttributedString*) aText
-	 documentAttributes: (NSDictionary*)dict
++ (NSData *)produceDataFrom: (NSAttributedString *)aText
+         documentAttributes: (NSDictionary *)dict
 {
-  RTFProducer *new = [self new];
+  RTFProducer *producer;
   NSData *data;
 
-  data = [[new RTFDStringFromAttributedString: aText
-	       documentAttributes: dict]
-	     dataUsingEncoding: NSISOLatin1StringEncoding];
-  RELEASE(new);
+  producer = [[self alloc] init];
+  data = [[producer _RTFDStringFromAttributedString: aText
+                                 documentAttributes: dict
+                                     inlineGraphics: YES]
+            dataUsingEncoding: NSASCIIStringEncoding];
+
+  RELEASE(producer);
+
   return data;
 }
 
-+ (NSFileWrapper*) produceFileFrom: (NSAttributedString*) aText
-		documentAttributes: (NSDictionary*)dict
++ (NSFileWrapper *)produceFileFrom: (NSAttributedString *)aText
+                documentAttributes: (NSDictionary *)dict
 {
-  return [[NSFileWrapper alloc] initRegularFileWithContents: 
-				    [self produceDataFrom: aText
-					  documentAttributes: dict]];
+  return AUTORELEASE([[NSFileWrapper alloc]
+            initRegularFileWithContents: [self produceDataFrom: aText
+                                            documentAttributes: dict]]);
 }
 
 @end
 
 @implementation RTFDProducer (Private)
 
-- (NSString*) fontTable
+- (NSArray *)_attachments
 {
-  // write Font Table
+  return attachments;
+}
+
+- (NSDictionary *)_attributesOfLastRun
+{
+  return _attributesOfLastRun;
+}
+
+- (void)_setAttributesOfLastRun: (NSDictionary *)aDict;
+{
+  ASSIGN(_attributesOfLastRun, aDict);
+}
+
+- (NSString *)fontTable
+{
   if ([fontDict count])
     {
-      NSMutableString	*fontlistString = [NSMutableString string];
-      NSEnumerator	*fontEnum;
-      NSString		*currFont;
-      NSArray		*keyArray;
+      NSMutableString *fontlistString;
+      NSEnumerator *fontEnum;
+      NSString *currFont;
+      NSArray	*keyArray;
 
+      fontlistString = (NSMutableString *)[NSMutableString string];
       keyArray = [fontDict allKeys];
       keyArray = [keyArray sortedArrayUsingSelector: @selector(compare:)];
 
       fontEnum = [keyArray objectEnumerator];
-      while ((currFont = [fontEnum nextObject]) != nil)
-	{
-	  NSString	*fontFamily;
-	  NSString	*detail;
+      while ((currFont = [fontEnum nextObject]))
+        {
+          NSString *fontFamily;
 
-	  // If we ever have more fonts to map to families, we should use a dictionary
-	  if ([currFont isEqualToString: @"Symbol"])
-	    fontFamily = @"tech";
-	  else if ([currFont isEqualToString: @"Helvetica"])
-	    fontFamily = @"swiss";
-	  else if ([currFont isEqualToString: @"Courier"])
-	    fontFamily = @"modern";
-	  else if ([currFont isEqualToString: @"Times"])
-	    fontFamily = @"roman";
-	  else
-	    fontFamily = @"nil";
+          // ##FIXME: If we ever have more fonts to map to families, we should
+          // use a dictionary
+          if ([currFont isEqualToString: @"Symbol"])
+            {
+              fontFamily = @"tech";
+            }
+          else if ([currFont isEqualToString: @"Helvetica"])
+            {
+              fontFamily = @"swiss";
+            }
+          else if ([currFont isEqualToString: @"Courier"])
+            {
+              fontFamily = @"modern";
+            }
+          else if ([currFont isEqualToString: @"Times"])
+            {
+              fontFamily = @"roman";
+            }
+          else
+            {
+              fontFamily = @"nil";
+            }
 
-	  detail = [NSString stringWithFormat: @"%@\\f%@ %@;",
-	    [fontDict objectForKey: currFont], fontFamily, currFont];
-	  [fontlistString appendString: detail];
-	}
+          [fontlistString appendFormat: @"%@\\f%@ %@;",
+              [fontDict objectForKey: currFont], fontFamily, currFont];
+        }
       return [NSString stringWithFormat: @"{\\fonttbl%@}\n", fontlistString];
     }
   else
-    return @"";
+    {
+      return @"";
+    }
 }
 
-- (NSString*) colorTable
+- (NSString *)colorTable
 {
-  // write Colour table
   if ([colorDict count])
     {
-      NSMutableString	*result;
+      NSMutableString *result;
       unsigned int count = [colorDict count];
       id list[count];
-      NSEnumerator *keyEnum = [colorDict keyEnumerator];
+      NSEnumerator *keyEnum;
       id next;
       int i;
 
-      while ((next = [keyEnum nextObject]) != nil)
-	{
-	  NSNumber *cn = [colorDict objectForKey: next];
-	  list[[cn intValue]-1] =  next;
-	}
+      keyEnum = [colorDict keyEnumerator];
 
-      result = (NSMutableString*)[NSMutableString stringWithString: @"{\\colortbl;"];
+      while ((next = [keyEnum nextObject]))
+        {
+          NSNumber *cn;
+
+          cn = [colorDict objectForKey: next];
+          list[[cn intValue] - 1] = next;
+        }
+
+      result = (NSMutableString *)[NSMutableString
+                                   stringWithString: @"{\\colortbl;"];
+
       for (i = 0; i < count; i++)
-	{
-	  NSColor *color = [list[i] colorUsingColorSpaceName: 
-				    NSCalibratedRGBColorSpace];
-	  [result appendString: [NSString stringWithFormat:
-					    @"\\red%d\\green%d\\blue%d;",
-					  (int)([color redComponent]*255),
-					  (int)([color greenComponent]*255),
-					  (int)([color blueComponent]*255)]];
-	}
+        {
+          NSColor *color;
+
+          color = [list[i] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+
+          [result appendFormat: @"\\red%d\\green%d\\blue%d;",
+              (short)([color redComponent] * 255),
+              (short)([color greenComponent] * 255),
+              (short)([color blueComponent] * 255)];
+        }
 
       [result appendString: @"}\n"];
       return result;
     }
   else
-    return @"";
+    {
+      return @"";
+    }
 }
 
-- (NSString*) documentAttributes
+- (NSString *)documentAttributes
 {
-  if (docDict != nil)
+  if (docDict)
     {
       NSMutableString *result;
-      NSString *detail;
       NSValue *val;
       NSNumber *num;
 
-      result = (NSMutableString*)[NSMutableString string];
+      result = (NSMutableString *)[NSMutableString string];
 
-      val = [docDict objectForKey: PAPERSIZE];
-      if (val != nil)
+      if ((val = [docDict objectForKey: PAPERSIZE]))
         {
-	  NSSize size = [val sizeValue];
-	  detail = [NSString stringWithFormat: @"\\paperw%d \\paperh%d",
-			     (int)points2twips(size.width), 
-			     (int)points2twips(size.height)];
-	  [result appendString: detail];
-	}
+          NSSize size = [val sizeValue];
+          [result appendFormat: @"\\paperw%d\\paperh%d",
+              (short)points2twips(size.width),
+              (short)points2twips(size.height)];
+        }
 
-      num = [docDict objectForKey: LEFTMARGIN];
-      if (num != nil)
+      if ((num = [docDict objectForKey: LEFTMARGIN]))
         {
-	  float f = [num floatValue];
-	  detail = [NSString stringWithFormat: @"\\margl%d",
-			     (int)points2twips(f)];
-	  [result appendString: detail];
-	}
-      num = [docDict objectForKey: RIGHTMARGIN];
-      if (num != nil)
+          [result appendFormat: @"\\margl%d",
+              (short)points2twips([num floatValue])];
+        }
+
+      if ((num = [docDict objectForKey: RIGHTMARGIN]))
         {
-	  float f = [num floatValue];
-	  detail = [NSString stringWithFormat: @"\\margr%d",
-			     (int)points2twips(f)];
-	  [result appendString: detail];
-	}
-      num = [docDict objectForKey: TOPMARGIN];
-      if (num != nil)
+          [result appendFormat: @"\\margr%d",
+              (short)points2twips([num floatValue])];
+        }
+
+      if ((num = [docDict objectForKey: TOPMARGIN]))
         {
-	  float f = [num floatValue];
-	  detail = [NSString stringWithFormat: @"\\margt%d",
-			     (int)points2twips(f)];
-	  [result appendString: detail];
-	}
-      num = [docDict objectForKey: BUTTOMMARGIN];
-      if (num != nil)
+          [result appendFormat: @"\\margt%d",
+              (short)points2twips([num floatValue])];
+        }
+
+      if ((num = [docDict objectForKey: BUTTOMMARGIN]))
         {
-	  float f = [num floatValue];
-	  detail = [NSString stringWithFormat: @"\\margb%d",
-			     (int)points2twips(f)];
-	  [result appendString: detail];
-	}
+          [result appendFormat: @"\\margb%d",
+              (short)points2twips([num floatValue])];
+        }
+
+      if ((val = [docDict objectForKey: VIEWSIZE]))
+        {
+          NSSize size = [val sizeValue];
+          [result appendFormat: @"\\vieww%d\\viewh%d",
+              (short)points2twips(size.width),
+              (short)points2twips(size.height)];
+        }
+
+      if ((num = [docDict objectForKey: VIEWZOOM]))
+        {
+          float factor = [num floatValue];
+          [result appendFormat: @"\\viewscale%d",
+              (short)factor];
+        }
+
+      if ((num = [docDict objectForKey: VIEWMODE]))
+        {
+          int mode = [num intValue];
+          [result appendFormat: @"\\viewkind%d",
+              (short)mode];
+        }
+
+      if ((num = [docDict objectForKey: HYPHENATIONFACTOR]))
+        {
+          [result appendFormat: @"\\hyphauto1\\hyphfactor%d",
+              (short)points2twips([num floatValue]) * 5];
+        }
 
       return result;
     }
   else
-    return @"";
+    {
+      return @"";
+    }
 }
 
-- (NSString*) headerString
+- (NSString *)_headerString
+/*" It is essential that before this method is called the method
+-_bodyString is called! "*/
 {
-  NSMutableString	*result;
+  NSMutableString *result;
 
-  result = (NSMutableString*)[NSMutableString stringWithString: @"{\\rtf1\\ansi"];
+  // As 'ugly' as it seems but had to add \cocoartf to let Apple's RTF parser
+  // grok paragraph spacing \saN. Should be no problem with other RTF parsers
+  // as this command will be ignored. So this is for compatibility with OS X.
+  result = (NSMutableString *)[NSMutableString stringWithString: 
+      @"{\\rtf1\\ansi\\ansicpg10000\\cocoartf102"];
 
   [result appendString: [self fontTable]];
   [result appendString: [self colorTable]];
@@ -301,404 +403,695 @@
   return result;
 }
 
-- (NSString*) trailerString
+- (NSString *)_trailerString
 {
   return @"}";
 }
 
-- (NSString*) fontToken: (NSString*) fontName
+- (NSString *)fontToken: (NSString *)fontName
 {
-  NSString *fCount = [fontDict objectForKey: fontName];
+  NSString *fCount;
 
-  if (fCount == nil)
+  fCount = [fontDict objectForKey: fontName];
+
+  if (! fCount)
     {
-      unsigned	count = [fontDict count];
-      
-      fCount = [NSString stringWithFormat: @"\\f%d", count];
+      unsigned count = [fontDict count];
+
+      fCount = [NSString stringWithFormat: @"\\f%d", (short)count];
       [fontDict setObject: fCount forKey: fontName];
     }
 
   return fCount;
 }
 
-- (int) numberForColor: (NSColor*)color
+- (int)numberForColor: (NSColor *)color
 {
   unsigned int cn;
-  NSNumber *num = [colorDict objectForKey: color];
+  NSNumber *num;
 
-  if (num == nil)
+  num = [colorDict objectForKey: color];
+
+  if (! num)
     {
       cn = [colorDict count] + 1;
-	    
-      [colorDict setObject: [NSNumber numberWithInt: cn]
-		 forKey: color];
+
+      [colorDict setObject: [NSNumber numberWithInt: cn] forKey: color];
     }
   else
-    cn = [num intValue];
+    {
+      cn = [num intValue];
+    }
 
   return cn;
 }
 
-- (NSString*) paragraphStyle: (NSParagraphStyle*) paraStyle
+- (NSString *)paragraphStyle: (NSParagraphStyle *)paraStyle
 {
-  NSMutableString *headerString = (NSMutableString *)[NSMutableString 
-							 stringWithString: 
-							     @"\\pard\\plain"];
+  NSMutableString *result;
   int twips;
 
-  if (paraStyle == nil)
-    return headerString;
+  result = (NSMutableString *)[NSMutableString stringWithString: @"\\pard"];
+
+  if (! paraStyle)
+    {
+      return result;
+    }
+
+  // tabs
+  {
+    NSEnumerator *enumerator;
+    NSTextTab *tab;
+
+    enumerator = [[paraStyle tabStops] objectEnumerator];
+    while ((tab = [enumerator nextObject]))
+      {
+        switch ([tab tabStopType])
+          {
+            case NSLeftTabStopType:
+                // no tabkind emission needed
+                break;
+            case NSRightTabStopType:
+                [result appendString: @"\\tqr"];
+                break;
+            case NSCenterTabStopType:
+                [result appendString: @"\\tqc"];
+                break;
+            case NSDecimalTabStopType:
+                [result appendString: @"\\tqdec"];
+                break;
+            default:
+                NSLog(@"Unknown tab stop type.");
+                break;
+          }
+
+        [result appendString: [NSString stringWithFormat: @"\\tx%d",
+            (short)points2twips([tab location])]];
+      }
+  }
+
+  switch ((int)[paraStyle baseWritingDirection])
+    {
+      case NSWritingDirectionLeftToRight:
+        // default -> nothing to emit
+        break;
+      case NSWritingDirectionRightToLeft:
+        [result appendString: @"\\rtlpar"];
+        break;
+      default:
+        break;
+    }
+  
+  // write first line indent and left indent
+  twips = points2twips([paraStyle headIndent]);
+  if (twips != 0)
+    {
+      [result appendFormat: @"\\li%d", (short)twips];
+    }
+
+  twips = points2twips([paraStyle firstLineHeadIndent]) - twips;
+  if (twips != 0)
+    {
+      [result appendFormat: @"\\fi%d", (short)twips];
+    }
+
+  // right indent
+  // this only works when doc attributes are given
+  {
+    NSNumber *rightMargin, *leftMargin;
+    NSValue *paperSize;
+
+    paperSize = [docDict objectForKey: PAPERSIZE];
+    rightMargin = [docDict objectForKey: RIGHTMARGIN];
+    leftMargin = [docDict objectForKey: LEFTMARGIN];
+
+    if (paperSize && leftMargin && rightMargin)
+      {
+        int rightMarginTwips;
+        int leftMarginTwips;
+        int tailIndentTwips;
+        int paperWidthTwips;
+
+        rightMarginTwips = points2twips([rightMargin floatValue]);
+        leftMarginTwips = points2twips([leftMargin floatValue]);
+        tailIndentTwips = points2twips([paraStyle tailIndent]);
+        paperWidthTwips = points2twips([paperSize sizeValue].width);
+
+        [result appendFormat: @"\\ri%d",
+            (short)(paperWidthTwips - rightMarginTwips
+            - leftMarginTwips - tailIndentTwips)];
+      }
+  }
+  
+  twips = points2twips([paraStyle paragraphSpacing]);
+  if (twips != 0)
+    {
+      [result appendFormat: @"\\sa%d", (short)twips];
+    }
+
+  twips = points2twips([paraStyle minimumLineHeight]);
+  if (twips != 0)
+    {
+      [result appendFormat: @"\\sl%d", (short)twips];
+    }
+
+  twips = points2twips([paraStyle maximumLineHeight]);
+  if (twips != 0)
+    {
+      [result appendFormat: @"\\sl-%d", (short)twips];
+    }
 
   switch ([paraStyle alignment])
     {
       case NSRightTextAlignment:
-	[headerString appendString: @"\\qr"];
-	break;
+          [result appendString: @"\\qr"];
+          break;
       case NSCenterTextAlignment:
-	[headerString appendString: @"\\qc"];
-	break;
+          [result appendString: @"\\qc"];
+          break;
       case NSLeftTextAlignment:
-	[headerString appendString: @"\\ql"];
-	break;
+          [result appendString: @"\\ql"];
+          break;
       case NSJustifiedTextAlignment:
-	[headerString appendString: @"\\qj"];
-	break;
-      default: break;
+          [result appendString: @"\\qj"];
+          break;
+      default:
+          [result appendString: @"\\ql"];
+          break;
     }
 
-  // write first line indent and left indent
-  twips = (int)points2twips([paraStyle firstLineHeadIndent]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\fi%d",
-					    twips]];
-    }
-  twips = (int)points2twips([paraStyle headIndent]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\li%d",
-					    twips]];
-    }
-  twips = (int)points2twips([paraStyle tailIndent]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\ri%d",
-					    twips]];
-    }
-  twips = (int)points2twips([paraStyle paragraphSpacing]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\sa%d",
-					    twips]];
-    }
-  twips = (int)points2twips([paraStyle minimumLineHeight]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\sl%d",
-					    twips]];
-    }
-  twips = (int)points2twips([paraStyle maximumLineHeight]);
-  if (twips != 0.0)
-    {
-      [headerString appendString: [NSString stringWithFormat:
-						@"\\sl-%d",
-					    twips]];
-    }
-  // FIXME: Tab definitions are still missing
-  
-  return headerString;
+  return result;
 }
 
-- (NSString*) runStringForString: (NSString*) substring
-		     attributes: (NSDictionary*) attributes
-		 paragraphStart: (BOOL) first
+- (NSString *)font: (NSFont *)font
 {
-  NSMutableString *result = [NSMutableString stringWithCapacity: 
-						 [substring length]*2];
-  NSMutableString *headerString = [NSMutableString stringWithCapacity: 20];
-  NSMutableString *trailerString = [NSMutableString stringWithCapacity: 20];
-  NSEnumerator	*attribEnum;
-  id currAttrib;
-  
-  if (first)
+  NSString *fontName;
+  NSFontTraitMask traits, traitsOfLastRun;
+  NSMutableString *result;
+  NSFont *fontOfLastRun;
+
+  fontOfLastRun = [[self _attributesOfLastRun]
+                         objectForKey: NSFontAttributeName];
+
+  result = (NSMutableString *)[NSMutableString string];
+
+  // name
+  fontName = [font familyName];
+  if ((! fontOfLastRun) || (! [fontName isEqualToString: 
+      [fontOfLastRun familyName]]))
     {
-      NSParagraphStyle *paraStyle = [attributes objectForKey:
-						    NSParagraphStyleAttributeName];
-      [headerString appendString: [self paragraphStyle: paraStyle]];
-      DESTROY(currentFont);
+      [result appendString: [self fontToken: fontName]];
     }
 
-  /*
-   * analyze attributes of current run
-   *
-   * FIXME: All the character attributes should be output relative to the font
-   * attributes of the paragraph. So if the paragraph has underline on it should 
-   * still be possible to switch it off for some characters, which currently is 
-   * not possible.
-   */
-  attribEnum = [attributes keyEnumerator];
-  while ((currAttrib = [attribEnum nextObject]) != nil)
+  // size
+  if ((! fontOfLastRun) || ([font pointSize] != [fontOfLastRun pointSize]))
     {
-      if ([currAttrib isEqualToString: NSFontAttributeName])
-        {
-	  /*
-	   * handle fonts
-	   */
-	  NSFont			*font;
-	  NSString			*fontName;
-	  NSFontTraitMask		traits;
-	  NSFontTraitMask		oldTraits;
-	  
-	  font = [attributes objectForKey: NSFontAttributeName];
-	  fontName = [font familyName];
-	  traits = [[NSFontManager sharedFontManager] traitsOfFont: font];
-	  
-	  if (currentFont == nil)
-	    oldTraits = 0;
-	  else
-	    oldTraits = [[NSFontManager sharedFontManager] traitsOfFont: currentFont];
-
-	  /*
-	   * font name
-	   */
-	  if (currentFont == nil || 
-	      ![fontName isEqualToString: [currentFont familyName]])
-	  {
-	    [headerString appendString: [self fontToken: fontName]];
-	  }
-	  /*
-	   * font size
-	   */
-	  if (currentFont == nil || 
-	      [font pointSize] != [currentFont pointSize])
-	    {
-	      int points = (int)[font pointSize]*2;
-	      NSString *pString;
-	      
-	      pString = [NSString stringWithFormat: @"\\fs%d", points];
-	      [headerString appendString: pString];
-	    }
-	  /*
-	   * font attributes
-	   */
-	  if ((traits & NSItalicFontMask) != (oldTraits & NSItalicFontMask))
-	    {
-	      if (traits & NSItalicFontMask)
-	        {
-		  [headerString appendString: @"\\i"];
-		  [trailerString appendString: @"\\i0"];
-		}
-	      else 
-	        {
-		  [headerString appendString: @"\\i0"];
-		  [trailerString appendString: @"\\i"];
-		}
-	    }
-	  if ((traits & NSBoldFontMask) != (oldTraits & NSBoldFontMask))
-	    {
-	      if (traits & NSBoldFontMask)
-	        {
-		  [headerString appendString: @"\\b"];
-		  [trailerString appendString: @"\\b0"];
-		}
-	      else
-	        {
-		  [headerString appendString: @"\\b0"];
-		  [trailerString appendString: @"\\b"];
-		}
-	    }
-
-	  if (first)
-	    ASSIGN(currentFont, font);
-	}
-      else if ([currAttrib isEqualToString: NSForegroundColorAttributeName])
-        {
-	  NSColor *color = [attributes objectForKey: NSForegroundColorAttributeName];
-	  if (![color isEqual: fgColor])
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\cf%d", 
-						    [self numberForColor: color]]];
-	      [trailerString appendString: @"\\cf0"];
-	    }
-	}
-      else if ([currAttrib isEqualToString: NSBackgroundColorAttributeName])
-        {
-	  NSColor *color = [attributes objectForKey: NSBackgroundColorAttributeName];
-	  if (![color isEqual: bgColor])
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\cb%d", 
-						    [self numberForColor: color]]];
-	      [trailerString appendString: @"\\cb0"];
-	    }
-	}
-      else if ([currAttrib isEqualToString: NSUnderlineStyleAttributeName])
-        {
-	  [headerString appendString: @"\\ul"];
-	  [trailerString appendString: @"\\ulnone"];
-	}
-      else if ([currAttrib isEqualToString: NSSuperscriptAttributeName])
-        {
-	  NSNumber *value = [attributes objectForKey: NSSuperscriptAttributeName];
-	  int svalue = [value intValue] * 6;
-	  
-	  if (svalue > 0)
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\up%d", svalue]];
-	      [trailerString appendString: @"\\up0"];
-	    }
-	  else if (svalue < 0)
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\dn-%d", svalue]];
-	      [trailerString appendString: @"\\dn0"];
-	    }
-	}
-      else if ([currAttrib isEqualToString: NSBaselineOffsetAttributeName])
-        {
-	  NSNumber *value = [attributes objectForKey: NSBaselineOffsetAttributeName];
-	  int svalue = (int)[value floatValue] * 2;
-	  
-	  if (svalue > 0)
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\up%d", svalue]];
-	      [trailerString appendString: @"\\up0"];
-	    }
-	  else if (svalue < 0)
-	    {
-	      [headerString appendString: [NSString stringWithFormat:
-							@"\\dn-%d", svalue]];
-	      [trailerString appendString: @"\\dn0"];
-	    }
-	}
-      else if ([currAttrib isEqualToString: NSAttachmentAttributeName])
-        {
-	}
-      else if ([currAttrib isEqualToString: NSLigatureAttributeName])
-        {
-	}
-      else if ([currAttrib isEqualToString: NSKernAttributeName])
-        {
-	}
+      [result appendFormat: @"\\fs%d", (short)(int)([font pointSize] * 2)];
     }
 
-  // FIXME: There should be a more efficient way to replace these
-  substring = [substring stringByReplacingString: @"\\"
-			 withString: @"\\\\"];
-  substring = [substring stringByReplacingString: @"\n"
-			 withString: @"\\par\n"];
-  substring = [substring stringByReplacingString: @"\t"
-			 withString: @"\\tab "];
-  substring = [substring stringByReplacingString: @"{"
-			 withString: @"\\{"];
-  substring = [substring stringByReplacingString: @"}"
-			 withString: @"\\}"];
-  // FIXME: All characters not in the standard encoding must be
-  // replaced by \'xx
-  
-  if (!first)
+  // traits
+  traits = [[NSFontManager sharedFontManager] traitsOfFont: font];
+  traitsOfLastRun = [[NSFontManager sharedFontManager] traitsOfFont: 
+      fontOfLastRun];
+
+  if ((traits & NSItalicFontMask) != (traitsOfLastRun & NSItalicFontMask))
     {
-      NSString	*braces;
-      
-      if ([headerString length])
-	  braces = [NSString stringWithFormat: @"{%@ %@}",
-			     headerString, substring];
+      if (traits & NSItalicFontMask)
+        {
+          [result appendString: @"\\i"];
+        }
       else
-	  braces = substring;
-      
-      [result appendString: braces];
-    }
-  else
-    {
-      NSString	*nobraces;
-
-      if ([headerString length])
-	  nobraces = [NSString stringWithFormat: @"%@ %@",
-			       headerString, substring];
-      else 
-	  nobraces = substring;
-
-/* This has no result, as the character style is reset for each paragraph
-      if ([trailerString length])
-	  nobraces = [NSString stringWithFormat: @"%@%@ ",
-			       nobraces, trailerString];
-*/
-      
-      [result appendString: nobraces];
-    }
-
-  return result;
-}
-
-- (NSString*) bodyString
-{
-  NSString		*string = [text string];
-  NSMutableString	*result = [NSMutableString string];
-  unsigned loc = 0;
-  unsigned length = [string length];
-
-  while (loc < length)
-    {
-      // Range of the current run
-      NSRange currRange = NSMakeRange(loc, 0);
-      // Range of the current paragraph
-      NSRange completeRange = [string lineRangeForRange: currRange];
-      BOOL first = YES;
-
-      while (NSMaxRange(currRange) < NSMaxRange(completeRange))  // save all "runs"
         {
-	  NSDictionary	*attributes;
-	  NSString	*substring;
-	  NSString	*runString;
-	  
-	  attributes = [text attributesAtIndex: NSMaxRange(currRange)
-			     longestEffectiveRange: &currRange
-			     inRange: completeRange];
-	  substring = [string substringWithRange: currRange];
-	  
-	  runString = [self runStringForString: substring
-			    attributes: attributes
-			    paragraphStart: first];
-	  [result appendString: runString];
-	  first = NO;
-	}
+          [result appendString: @"\\i0"];
+        }
+    }
 
-      loc = NSMaxRange(completeRange);
+  if ((traits & NSBoldFontMask) != (traitsOfLastRun & NSBoldFontMask))
+    {
+      if (traits & NSBoldFontMask)
+        {
+          [result appendString: @"\\b"];
+        }
+      else
+        {
+          [result appendString: @"\\b0"];
+        }
+    }
+  return result;
+}
+
+- (NSString *)_removeAttributesString: (NSDictionary *)attributesToRemove
+{
+  NSMutableString *result;
+  NSEnumerator *enumerator;
+  NSString *attributeName;
+
+  result = (NSMutableString *)[NSMutableString string];
+
+  enumerator = [attributesToRemove keyEnumerator];
+  while ((attributeName = [enumerator nextObject]))
+    {
+      if ([attributeName isEqualToString: NSParagraphStyleAttributeName])
+        {
+          [result appendString: @"\\pard\\ql"];
+        }
+      else if ([attributeName isEqualToString: NSForegroundColorAttributeName])
+        {
+          [result appendString: @"\\cf0"];
+        }
+      else if ([attributeName isEqualToString: NSBackgroundColorAttributeName])
+        {
+          [result appendString: @"\\cb0"];
+        }
+      else if ([attributeName isEqualToString: NSUnderlineStyleAttributeName])
+        {
+          [result appendString: @"\\ulnone"];
+        }
+      else if ([attributeName isEqualToString: NSSuperscriptAttributeName])
+        {
+          [result appendString: @"\\nosupersub"];
+        }
+      else if ([attributeName isEqualToString: NSBaselineOffsetAttributeName])
+        {
+          NSNumber *value = [[self _attributesOfLastRun] objectForKey: 
+              NSBaselineOffsetAttributeName];
+          int svalue = (int)[value floatValue];
+
+          if (svalue >= 0)
+            {
+              [result appendString: @"\\up0"];
+            }
+          else if (svalue < 0)
+            {
+              [result appendString: @"\\dn0"];
+            }
+        }
+      else if ([attributeName isEqualToString: NSLigatureAttributeName])
+        {
+          [result appendString: @"\\zwnj"];
+        }
+      else if ([attributeName isEqualToString: NSAttachmentAttributeName])
+        {
+        }
+      else if ([attributeName isEqualToString: NSFontAttributeName])
+        {
+        }
+      else
+        {
+          NSLog(@"(removal) Missing handling of '%@' attributes.",
+                attributeName);
+          // ##TODO: attributes missing e.g. NSKernAttributeName
+        }
     }
 
   return result;
 }
 
-
-- (NSString*) RTFDStringFromAttributedString: (NSAttributedString*)aText
-	       documentAttributes: (NSDictionary*)dict
+- (NSString *)_stringWithRTFCharacters: (NSString *)string
 {
-  NSMutableString	*output = [NSMutableString string];
-  NSString		*headerString;
-  NSString		*trailerString;
-  NSString		*bodyString;
+  NSString *result;
+  NSMutableData *resultData;
+  unichar *buffer;
+  int length, i;
+  
+  if (string == nil)
+    {
+      return nil;
+    }
+  
+  length = [string length];
+  buffer = NSZoneCalloc([self zone], length, sizeof(unichar));
+  [string getCharacters: buffer];
+  resultData = [[NSMutableData alloc]
+                               initWithCapacity: (int)(length * 1.2)];
+  
+  for (i = 0; i < length; i++)
+    {
+      unichar c;
+
+      c = buffer[i];
+      if (c < 0x80)
+        {
+          // encoding found
+          char ansiChar;
+
+          ansiChar = (char)c;
+
+          switch (ansiChar)
+            {
+              case '\\':
+                  [resultData appendBytes: "\\\\" length: 2];
+                  break;
+              case '\n':
+                  [resultData appendBytes: "\\par\n" length: 5];
+                  break;
+              case '\t':
+                  [resultData appendBytes: "\\tab " length: 5];
+                  break;
+              case '{':
+                  [resultData appendBytes: "\\{" length: 2];
+                  break;
+              case '}':
+                  [resultData appendBytes: "\\}" length: 2];
+                  break;
+              case '`':
+                  [resultData appendBytes: "\\lquote }" length: 8];
+                  break;
+              case '\'':
+                  [resultData appendBytes: "\\rquote }" length: 8];
+                  break;
+              default:
+                  [resultData appendBytes: &ansiChar length: 1];
+                  break;                  
+            }
+        }
+      else if (c < 0xFF)
+        {
+          char unicodeCommand[16];
+          unicodeCommand[15] = '\0';
+          
+          sprintf(unicodeCommand, "\\'%X", (short)c);
+
+          [resultData appendBytes: unicodeCommand
+                           length: strlen(unicodeCommand)];
+	}
+      else
+        {
+          // write unicode encoding
+          char unicodeCommand[16];
+          unicodeCommand[15] = '\0';
+          
+          sprintf(unicodeCommand, "\\u%d ", (short)c);
+
+          [resultData appendBytes: unicodeCommand
+                           length: strlen(unicodeCommand)];
+          
+          if (c == NSAttachmentCharacter)
+            {
+              [resultData appendBytes: "}" length: 1];
+            }
+        }
+    }
+
+  NSZoneFree([self zone], buffer);
+  result = AUTORELEASE([[NSString alloc] initWithData: resultData
+					 encoding: NSASCIIStringEncoding]);
+  RELEASE(resultData);
+
+  return result;
+}
+
+- (NSString *)_ASCIIfiedString: (NSString *)string;
+{
+    // workaround:converting non-ASCII chars
+    NSData *lossyConversion;
+
+    lossyConversion = [string dataUsingEncoding: NSASCIIStringEncoding
+                           allowLossyConversion: YES];
+
+    return AUTORELEASE([[NSString alloc] initWithData: lossyConversion
+					 encoding: NSASCIIStringEncoding]);
+}
+
+- (NSString *)_addAttributesString: (NSDictionary *)attributesToAdd
+{
+  NSMutableString *result;
+  NSEnumerator *enumerator;
+  NSString *attributeName;
+
+  result = (NSMutableString *)[NSMutableString string];
+
+  enumerator = [attributesToAdd keyEnumerator];
+  while ((attributeName = [enumerator nextObject]))
+    {
+      if ([attributeName isEqualToString: NSParagraphStyleAttributeName])
+        {
+          [result appendString: [self paragraphStyle:
+              [attributesToAdd objectForKey: NSParagraphStyleAttributeName]]];
+        }
+      else if ([attributeName isEqualToString: NSFontAttributeName])
+        {
+          [result appendString: [self font:
+              [attributesToAdd objectForKey: NSFontAttributeName]]];
+        }
+      else if ([attributeName isEqualToString: NSForegroundColorAttributeName])
+        {
+          NSColor *color = [attributesToAdd objectForKey: 
+              NSForegroundColorAttributeName];
+          if (! [color isEqual: fgColor])
+            {
+              [result appendFormat: @"\\cf%d",
+                  (short)[self numberForColor: color]];
+            }
+        }
+      else if ([attributeName isEqualToString: NSBackgroundColorAttributeName])
+        {
+          NSColor *color = [attributesToAdd objectForKey: 
+              NSBackgroundColorAttributeName];
+
+          if (! [color isEqual: bgColor])
+            {
+              [result appendFormat: @"\\cb%d",
+                  (short)[self numberForColor: color]];
+            }
+        }
+      else if ([attributeName isEqualToString: NSUnderlineStyleAttributeName])
+        {
+          [result appendString: @"\\ul"];
+        }
+      else if ([attributeName isEqualToString: NSSuperscriptAttributeName])
+        {
+          NSNumber *value = [attributesToAdd objectForKey: 
+              NSSuperscriptAttributeName];
+          int svalue = [value intValue];
+
+          if (svalue > 0)
+            {
+              [result appendString: @"\\super"];
+              if (svalue > 1)
+                {
+                  [result appendFormat: @"%d", (short)svalue];
+                }
+            }
+          else if (svalue < 0)
+            {
+              [result appendString: @"\\sub"];
+              if (svalue < -1)
+                {
+                  [result appendFormat: @"%d", (short)-svalue];
+                }
+            }
+        }
+      else if ([attributeName isEqualToString: NSBaselineOffsetAttributeName])
+        {
+          NSNumber *value = [attributesToAdd objectForKey: 
+              NSBaselineOffsetAttributeName];
+          int svalue = (int)([value floatValue] * 2);
+
+          if (svalue > 0)
+            {
+              [result appendFormat: @"\\up%d", (short)svalue];
+            }
+          else if (svalue < 0)
+            {
+              [result appendFormat: @"\\dn%d", (short)-svalue];
+            }
+        }
+      else if ([attributeName isEqualToString: NSLigatureAttributeName])
+        {
+          [result appendString: @"\\zwj"];
+        }
+      else if ([attributeName isEqualToString: NSAttachmentAttributeName])
+        {
+          NSTextAttachment *attachment;
+
+          if ((attachment = [attributesToAdd objectForKey: 
+              NSAttachmentAttributeName]))
+            {
+              NSFileWrapper *attachmentFileWrapper;
+              NSString *attachmentFilename;
+              NSSize cellSize;
+
+              attachmentFileWrapper = [attachment fileWrapper];
+              attachmentFilename = [attachmentFileWrapper filename];
+              if (! attachmentFilename)
+                {
+                  attachmentFilename =
+                    [attachmentFileWrapper preferredFilename];
+
+                  if (! attachmentFilename)
+                    {
+                      attachmentFilename = @"unnamed";
+                      [attachmentFileWrapper setPreferredFilename: 
+                          attachmentFilename];
+                    }
+                }
+
+              /*
+               if ([attachmentFilename respondsToSelector: 
+                  @selector(fileSystemRepresentation)])
+                {
+                  const char *fileSystemRepresentation;
+
+                  fileSystemRepresentation =
+                      [attachmentFilename fileSystemRepresentation];
+
+                  attachmentFilename = [self _encodedFilenameRepresentation: 
+                      fileSystemRepresentation];
+                }
+              else
+               */
+                {
+                  attachmentFilename =
+                    [self _ASCIIfiedString: attachmentFilename];
+                }
+
+              cellSize = [[attachment attachmentCell] cellSize];
+
+              [result appendString: @"{{\\NeXTGraphic "];
+              [result appendString: attachmentFilename];
+              [result appendFormat: @" \\width%d \\height%d}",
+                  (short)points2twips(cellSize.width),
+                  (short)points2twips(cellSize.height)];
+
+              [attachmentFileWrapper setFilename: attachmentFilename];
+              [attachmentFileWrapper setPreferredFilename: attachmentFilename];
+              [attachments addObject: attachmentFileWrapper];
+            }
+        }
+      else
+        {
+          NSLog(@"(addition) Missing handling of '%@' attributes.",
+                attributeName);
+          // ##TODO: attributes missing e.g. NSKernAttributeName
+        }
+    }
+  return result;
+}
+
+- (NSString *)_runStringForString: (NSString *)string
+                       attributes: (NSDictionary *)attributes
+{
+  NSMutableString *result;
+  NSMutableDictionary *attributesToAdd, *attributesToRemove;
+  NSEnumerator *enumerator;
+  NSString *attributeName;
+
+  result = (NSMutableString *)[NSMutableString stringWithCapacity:
+                                            [string length] + 15];
+  attributesToAdd = [[NSMutableDictionary alloc] init];
+  attributesToRemove = [[self _attributesOfLastRun] mutableCopy];
+
+  // calculation of deltas
+  enumerator = [attributes keyEnumerator];
+  while ((attributeName = [enumerator nextObject]))
+    {
+      id attributeValue;
+      id attributeValueOfLastRun;
+
+      attributeValue = [attributes objectForKey: attributeName];
+      attributeValueOfLastRun =
+          [attributesToRemove objectForKey: attributeName];
+
+      if (attributeValueOfLastRun)
+        {
+          if ([attributeValueOfLastRun isEqual: attributeValue])
+            {
+              [attributesToRemove removeObjectForKey: attributeName];
+            }
+          else
+            {
+              [attributesToAdd setObject: attributeValue forKey: attributeName];
+            }
+        }
+      else
+        {
+          [attributesToAdd setObject: attributeValue forKey: attributeName];
+        }
+    }
+
+  [result appendString: [self _removeAttributesString: attributesToRemove]];
+  [result appendString: [self _addAttributesString: attributesToAdd]];
+  RELEASE(attributesToRemove);
+  RELEASE(attributesToAdd);
+
+  if ([result length]) // ensure delimiter
+    {
+      [result appendString: @" "];
+    }
+
+  [result appendString: [self _stringWithRTFCharacters: string]];
+
+  return result;
+}
+
+- (NSString *)_bodyString
+{
+  NSString *string;
+  NSMutableString *result;
+  unsigned loc;
+  unsigned length;
+  NSRange effectiveRange;
+
+  string = [text string];
+  result = (NSMutableString *)[NSMutableString string];
+  loc = 0;
+  length = [string length];
+  effectiveRange = NSMakeRange(0, 0);
+
+  while (effectiveRange.location < length)
+    {
+      NSDictionary *attributes;
+      CREATE_AUTORELEASE_POOL(pool);
+
+      attributes = [text attributesAtIndex: effectiveRange.location
+                     longestEffectiveRange: &effectiveRange
+                                   inRange: NSMakeRange(effectiveRange.location,
+                                                       length
+                                                    - effectiveRange.location)];
+
+      [result appendString: [self _runStringForString:
+                           [string substringWithRange: effectiveRange]
+                                           attributes: attributes]];
+
+      effectiveRange = NSMakeRange(NSMaxRange(effectiveRange), 0);
+
+      [self _setAttributesOfLastRun: attributes];
+
+      RELEASE(pool);
+    }
+
+  [self _setAttributesOfLastRun: nil]; // cleanup, should be unneccessary
+
+  return result;
+}
+
+- (NSString *)_RTFDStringFromAttributedString: (NSAttributedString *)aText
+                           documentAttributes: (NSDictionary *)dict
+                               inlineGraphics: (BOOL)inlineGraphics
+{
+  NSMutableString *output;
+  NSString *headerString;
+  NSString *trailerString;
+  NSString *bodyString;
 
   ASSIGN(text, aText);
   ASSIGN(docDict, dict);
 
+  output = (NSMutableString *)[NSMutableString string];
+  _inlineGraphics = inlineGraphics;
   /*
    * do not change order! (esp. body has to be generated first; builds context)
    */
-  bodyString = [self bodyString];
-  trailerString = [self trailerString];
-  headerString = [self headerString];
+  bodyString = [self _bodyString];
+  trailerString = [self _trailerString];
+  headerString = [self _headerString];
 
   [output appendString: headerString];
   [output appendString: bodyString];
   [output appendString: trailerString];
-  return (NSString*)output;
+
+  return output;
 }
+
 @end
