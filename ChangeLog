@@ -1,3 +1,9 @@
+2003-02-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorList.m
+	[_loadAvailableColorLists] check if a directory exists before
+	looking for a colour list in it.
+
 2003-02-08 22:56  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView_actions.m (-lowerBaseline:): Change the correct
