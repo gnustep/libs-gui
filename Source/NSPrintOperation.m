@@ -1212,6 +1212,8 @@ scaleRect(NSRect rect, double scale)
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
+  NSAutoreleasePool   *pool;
+
   if (_context)
     return _context;
 
@@ -1220,7 +1222,11 @@ scaleRect(NSRect rect, double scale)
   [info setObject: _path forKey: @"NSOutputFile"];
   [info setObject: NSGraphicsContextPSFormat
 	   forKey: NSGraphicsContextRepresentationFormatAttributeName];
+  /* We have to remove the autorelease from the context, because we need the
+     contents of the file before the next return to the run loop */
+  pool = [NSAutoreleasePool new];
   _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
+  [pool release];
 
   return _context;
 }
