@@ -70,6 +70,23 @@
 - (int)runModalForDirectory:(NSString *)path
                        file:(NSString *)name
                       types:(NSArray *)fileTypes;
+
+#ifndef	STRICT_OPENSTEP
+- (int)runModalForDirectory:(NSString *)path
+		       file:(NSString *)name
+		      types:(NSArray *)fileTypes
+	   relativeToWindow:(NSWindow*)window;
+- (void)beginSheetForDirectory:(NSString *)path
+			  file:(NSString *)name
+			 types:(NSArray *)fileTypes
+		modalForWindow:(NSWindow *)docWindow
+		 modalDelegate:(id)delegate
+		didEndSelector:(SEL)didEndSelector
+		   contextInfo:(void *)contextInfo;
+
+- (NSArray *)URLs; 
+#endif
+
 @end
 
 #endif // _GNUstep_H_NSOpenPanel

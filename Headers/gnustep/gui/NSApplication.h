@@ -112,6 +112,10 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) activateIgnoringOtherApps: (BOOL)flag;
 - (void) deactivate;
 - (BOOL) isActive;
+#ifndef STRICT_OPENSTEP
+- (void) hideOtherApplications: (id)sender;
+- (void) unhideAllApplications: (id)sender;
+#endif
 
 /*
  * Running the event loop
@@ -128,6 +132,19 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) stop: (id)sender;
 - (void) stopModal;
 - (void) stopModalWithCode: (int)returnCode;
+
+#ifndef STRICT_OPENSTEP
+- (int) runModalForWindow: (NSWindow *)theWindow
+	relativeToWindow: (NSWindow *)docWindow;
+- (void) beginSheet: (NSWindow *)sheet
+     modalForWindow: (NSWindow *)docWindow
+      modalDelegate: (id)modalDelegate
+     didEndSelector: (SEL)didEndSelector
+	contextInfo: (void *)contextInfo;
+- (void) endSheet: (NSWindow *)sheet;
+- (void) endSheet: (NSWindow *)sheet
+       returnCode: (int)returnCode;
+#endif
 
 /*
  * Getting, removing, and posting events
