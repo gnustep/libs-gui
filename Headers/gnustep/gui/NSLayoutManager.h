@@ -1,4 +1,4 @@
-/*
+/*                                                       -*-objc-*-
    NSLayoutManager.h
 
      An NSLayoutManager stores glyphs, attributes, and layout information 
@@ -59,9 +59,9 @@
   but must be shared between componenets.
 */
 enum _NSGlyphAttribute {
-    NSGlyphAttributeSoft = 0,
-    NSGlyphAttributeElastic = 1,
-    NSGlyphAttributeInscribe = 5,
+  NSGlyphAttributeSoft = 0,
+  NSGlyphAttributeElastic = 1,
+  NSGlyphAttributeInscribe = 5,
 };
 
 /*
@@ -69,228 +69,295 @@ enum _NSGlyphAttribute {
   the previous glyph.
 */
 typedef enum {
-    NSGlyphInscribeBase = 0,
-    NSGlyphInscribeBelow = 1,
-    NSGlyphInscribeAbove = 2,
-    NSGlyphInscribeOverstrike = 3,
-    NSGlyphInscribeOverBelow = 4
+  NSGlyphInscribeBase = 0,
+  NSGlyphInscribeBelow = 1,
+  NSGlyphInscribeAbove = 2,
+  NSGlyphInscribeOverstrike = 3,
+  NSGlyphInscribeOverBelow = 4
 } NSGlyphInscription;
 
 @interface NSLayoutManager : NSObject
 {
-    NSMutableArray		*_textContainers;
-    NSTextStorage		*_textStorage;
+  /* Public for use only in the associated NSTextViews.  Don't access
+     them directly from elsewhere. */
+@public 
+  /* Ivars to synchronize multiple textviews */
+  BOOL _isSynchronizingFlags;
+  BOOL _isSynchronizingDelegates;
+  BOOL _beganEditing;
+  
+@protected
+  NSMutableArray *_textContainers;
+  NSTextStorage	 *_textStorage;
 
-    BOOL			_backgroundLayout;
-    BOOL			_showsInvisibleChars;
-    BOOL			_showsControlChars;
-    BOOL			_usesScreenFonts;
-    BOOL			_finished;
-    float			_hyphenationFactor;
-    NSTypesetter		*_typesetter;
+  /* NB: if _textContainersCount == 1, then _firstTextView == our only
+     text view. */
+  /* Cached - number of text containers: */
+  unsigned        _textContainersCount; 
+  /* Cached -  first text view: */
+  NSTextView	 *_firstTextView;
 
-    /*
-      These three arrays must bekeppt in step. The size of all is 
-      _glyph_max_count with _glyph_count used entries.
-     */
-    unsigned _glyph_count; 
-    unsigned _glyph_max_count; 
-    NSGlyph *_glyphs;
-    unsigned *char_glyph_mapping;
-    unsigned *glyph_attrs;
+  id              _delegate;
 
-    NSGlyphGenerator		*_glyphGenerator;
-    NSStorage			*_containerUsedRects;
+  /* TODO: Tidyup the following ivars, remove useless ones */
+  BOOL			_backgroundLayout;
+  BOOL			_showsInvisibleChars;
+  BOOL			_showsControlChars;
+  BOOL			_usesScreenFonts;
+  BOOL			_finished;
+  float			_hyphenationFactor;
+  NSTypesetter		*_typesetter;
 
+  /*
+    These three arrays must bekeppt in step. The size of all is 
+    _glyph_max_count with _glyph_count used entries.
+  */
+  unsigned _glyph_count; 
+  unsigned _glyph_max_count; 
+  NSGlyph *_glyphs;
+  unsigned *char_glyph_mapping;
+  unsigned *glyph_attrs;
+  
+  NSGlyphGenerator		*_glyphGenerator;
+  NSStorage			*_containerUsedRects;
+  
+  
+  // GS data storage.
+  GSRunStorage *_containerRuns;
+  GSRunStorage *_fragmentRuns;
+  GSRunStorage *_locationRuns;
+  
+  NSRect 			 _extraLineFragmentRect;
+  NSRect 			 _extraLineFragmentUsedRect;
+  NSTextContainer		*_extraLineFragmentContainer;
+  
 
-    // GS data storage.
-    GSRunStorage *_containerRuns;
-    GSRunStorage *_fragmentRuns;
-    GSRunStorage *_locationRuns;
-
-    NSRect 			 _extraLineFragmentRect;
-    NSRect 			 _extraLineFragmentUsedRect;
-    NSTextContainer		*_extraLineFragmentContainer;
-
-    id				_delegate;
-
-    // Enable/disable stacks
-    unsigned short		_textViewResizeDisableStack;
-    unsigned short		_displayInvalidationDisableStack;
-    NSRange			_deferredDisplayCharRange;
-
-    // Cache for first text view (that is text view of the first text container which has one) (Cost: 4 bytes)
-    NSTextView			*_firstTextView;
-
-    // Cache for rectangle arrays (Cost: 8 bytes + malloced 16 * <max number of rects returned in an array> bytes)
-    NSRect			*_cachedRectArray;
-    unsigned			 _cachedRectArrayCapacity;
-
-    // Cache for glyph strings (used when drawing) (Cost: 8 bytes + malloced glyph buffer size)
-    char			*_glyphBuffer;
-    unsigned 			 _glyphBufferSize;
-
-    // Cache for faster glyph location lookup (Cost: 20 bytes)
-    NSRange			_cachedLocationNominalGlyphRange;
-    unsigned			_cachedLocationGlyphIndex;
-    NSPoint			_cachedLocation;
-
-    // Cache for faster glyph location lookup (Cost: 12 bytes)
-    NSRange			 _cachedFontCharRange;
-    NSFont			*_cachedFont;
-
-    // Cache for first unlaid glypha and character (Cost: 8 bytes)
-    unsigned			_firstUnlaidGlyphIndex;
-    unsigned			_firstUnlaidCharIndex;
-
-    NSRange			 _newlyFilledGlyphRange;
+  
+  // Enable/disable stacks
+  unsigned short		_textViewResizeDisableStack;
+  unsigned short		_displayInvalidationDisableStack;
+  NSRange			_deferredDisplayCharRange;
+  
+  
+  // Cache for rectangle arrays (Cost: 8 bytes + malloced 16 * <max number of rects returned in an array> bytes)
+  NSRect			*_cachedRectArray;
+  unsigned			 _cachedRectArrayCapacity;
+  
+  // Cache for glyph strings (used when drawing) (Cost: 8 bytes + malloced glyph buffer size)
+  char			*_glyphBuffer;
+  unsigned 			 _glyphBufferSize;
+  
+  // Cache for faster glyph location lookup (Cost: 20 bytes)
+  NSRange			_cachedLocationNominalGlyphRange;
+  unsigned			_cachedLocationGlyphIndex;
+  NSPoint			_cachedLocation;
+  
+  // Cache for faster glyph location lookup (Cost: 12 bytes)
+  NSRange			 _cachedFontCharRange;
+  NSFont			*_cachedFont;
+  
+  // Cache for first unlaid glypha and character (Cost: 8 bytes)
+  unsigned			_firstUnlaidGlyphIndex;
+  unsigned			_firstUnlaidCharIndex;
+  
+  NSRange			 _newlyFilledGlyphRange;
 }
 
 /**************************** Initialization ****************************/
 
-- (id)init;
+- (id) init;
 
 /*************************** Helper objects ***************************/
 
-- (NSTextStorage *)textStorage;
-- (void)setTextStorage:(NSTextStorage *)textStorage;
+- (NSTextStorage *) textStorage;
+- (void) setTextStorage: (NSTextStorage *)textStorage;
 
-- (void)replaceTextStorage:(NSTextStorage *)newTextStorage;
+- (void) replaceTextStorage: (NSTextStorage *)newTextStorage;
 
-- (id)delegate;
-- (void)setDelegate:(id)delegate;
+- (id) delegate;
+- (void) setDelegate: (id)delegate;
 
 /**************************** Containers ****************************/
 
-- (NSArray *)textContainers;
+- (NSArray *) textContainers;
 
--(void)addTextContainer:(NSTextContainer *)container;
-- (void)insertTextContainer:(NSTextContainer *)container atIndex:(unsigned)index;
-- (void)removeTextContainerAtIndex:(unsigned)index;
+-(void) addTextContainer: (NSTextContainer *)container;
+- (void) insertTextContainer: (NSTextContainer *)container 
+		     atIndex: (unsigned)index;
+- (void) removeTextContainerAtIndex: (unsigned)index;
 
-- (void)textContainerChangedGeometry:(NSTextContainer *)container;
-- (void)textContainerChangedTextView:(NSTextContainer *)container;
+- (void) textContainerChangedGeometry: (NSTextContainer *)container;
+- (void) textContainerChangedTextView: (NSTextContainer *)container;
 
 /************************** Invalidation primitives **************************/
 
-- (void)invalidateGlyphsForCharacterRange:(NSRange)charRange 
-			   changeInLength:(int)delta 
-		     actualCharacterRange:(NSRange *)actualCharRange;
-- (void)invalidateLayoutForCharacterRange:(NSRange)charRange 
-				   isSoft:(BOOL)flag 
-		     actualCharacterRange:(NSRange *)actualCharRange;
+- (void) invalidateGlyphsForCharacterRange: (NSRange)charRange 
+			    changeInLength: (int)delta 
+		      actualCharacterRange: (NSRange *)actualCharRange;
+- (void) invalidateLayoutForCharacterRange: (NSRange)charRange 
+				    isSoft: (BOOL)flag 
+		      actualCharacterRange: (NSRange *)actualCharRange;
 
-- (void)invalidateDisplayForGlyphRange:(NSRange)glyphRange;
+- (void) invalidateDisplayForGlyphRange: (NSRange)glyphRange;
 #ifndef STRICT_40
-- (void)invalidateDisplayForCharacterRange:(NSRange)charRange;
+- (void) invalidateDisplayForCharacterRange: (NSRange)charRange;
 #endif
 
 /******************* Invalidation sent by NSTextStorage *******************/
 
-- (void)textStorage: (NSTextStorage *)aTextStorage
-             edited: (unsigned)mask
-              range: (NSRange)range
-     changeInLength: (int)lengthChange
-   invalidatedRange: (NSRange)invalidatedRange;
+- (void) textStorage: (NSTextStorage *)aTextStorage
+	      edited: (unsigned)mask
+	       range: (NSRange)range
+      changeInLength: (int)lengthChange
+    invalidatedRange: (NSRange)invalidatedRange;
 
 
 /*********************** Global layout manager options ***********************/
 
-- (void)setBackgroundLayoutEnabled:(BOOL)flag;
-- (BOOL)backgroundLayoutEnabled;
+- (void) setBackgroundLayoutEnabled: (BOOL)flag;
+- (BOOL) backgroundLayoutEnabled;
 
-- (void)setShowsInvisibleCharacters:(BOOL)flag;
-- (BOOL)showsInvisibleCharacters;
+- (void) setShowsInvisibleCharacters: (BOOL)flag;
+- (BOOL) showsInvisibleCharacters;
 
-- (void)setShowsControlCharacters:(BOOL)flag;
-- (BOOL)showsControlCharacters;
+- (void) setShowsControlCharacters: (BOOL)flag;
+- (BOOL) showsControlCharacters;
 
 /************************ Adding and removing glyphs ************************/
 
-- (void)insertGlyph:(NSGlyph)glyph atGlyphIndex:(unsigned)glyphIndex characterIndex:(unsigned)charIndex;
-- (void)replaceGlyphAtIndex:(unsigned)glyphIndex withGlyph:(NSGlyph)newGlyph;
-- (void)deleteGlyphsInRange:(NSRange)glyphRange;
-- (void)setCharacterIndex:(unsigned)charIndex forGlyphAtIndex:(unsigned)glyphIndex;
+- (void) insertGlyph: (NSGlyph)glyph   atGlyphIndex: (unsigned)glyphIndex 
+      characterIndex: (unsigned)charIndex;
+
+- (void) replaceGlyphAtIndex: (unsigned)glyphIndex 
+		   withGlyph: (NSGlyph)newGlyph;
+
+- (void) deleteGlyphsInRange: (NSRange)glyphRange;
+
+- (void) setCharacterIndex: (unsigned)charIndex 
+	   forGlyphAtIndex: (unsigned)glyphIndex;
 
 /************************ Accessing glyphs ************************/
 
-- (unsigned)numberOfGlyphs;
-- (NSGlyph)glyphAtIndex:(unsigned)glyphIndex;
-- (NSGlyph)glyphAtIndex:(unsigned)glyphIndex isValidIndex:(BOOL *)isValidIndex;
-- (unsigned)getGlyphs:(NSGlyph *)glyphArray range:(NSRange)glyphRange;
-- (unsigned)characterIndexForGlyphAtIndex:(unsigned)glyphIndex;
+- (unsigned) numberOfGlyphs;
+
+- (NSGlyph) glyphAtIndex: (unsigned)glyphIndex;
+
+- (NSGlyph) glyphAtIndex: (unsigned)glyphIndex 
+	    isValidIndex: (BOOL *)isValidIndex;
+
+- (unsigned) getGlyphs: (NSGlyph *)glyphArray  range: (NSRange)glyphRange;
+
+- (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex;
 
 /************************ Set/Get glyph attributes ************************/
 
-- (void)setIntAttribute:(int)attributeTag 
-		  value:(int)val 
-	forGlyphAtIndex:(unsigned)glyphIndex;
-- (int)intAttribute:(int)attributeTag forGlyphAtIndex:(unsigned)glyphIndex;
-- (void)setAttachmentSize:(NSSize)attachmentSize forGlyphRange:(NSRange)glyphRange;
+- (void) setIntAttribute: (int)attributeTag 
+		   value: (int)val 
+	 forGlyphAtIndex: (unsigned)glyphIndex;
+
+- (int) intAttribute: (int)attributeTag  
+     forGlyphAtIndex: (unsigned)glyphIndex;
+
+- (void) setAttachmentSize: (NSSize)attachmentSize 
+	     forGlyphRange: (NSRange)glyphRange;
 
 /************************ Set/Get layout attributes ************************/
 
-- (void)setTextContainer:(NSTextContainer *)container forGlyphRange:(NSRange)glyphRange;
-- (void)setLineFragmentRect:(NSRect)fragmentRect 
-	      forGlyphRange:(NSRange)glyphRange 
-		   usedRect:(NSRect)usedRect;
-- (void)setExtraLineFragmentRect:(NSRect)fragmentRect 
-			usedRect:(NSRect)usedRect 
-		   textContainer:(NSTextContainer *)container;
-- (void)setDrawsOutsideLineFragment:(BOOL)flag 
-		    forGlyphAtIndex:(unsigned)glyphIndex;
-- (void)setLocation:(NSPoint)location forStartOfGlyphRange:(NSRange)glyphRange;
-- (void)setNotShownAttribute:(BOOL)flag forGlyphAtIndex:(unsigned)glyphIndex;
-- (NSTextContainer *)textContainerForGlyphAtIndex:(unsigned)glyphIndex effectiveRange:(NSRange *)effectiveGlyphRange;
-- (NSRect)usedRectForTextContainer:(NSTextContainer *)container;
-- (NSRect)lineFragmentRectForGlyphAtIndex:(unsigned)glyphIndex 
-			   effectiveRange:(NSRange *)effectiveGlyphRange;
-- (NSRect)lineFragmentUsedRectForGlyphAtIndex:(unsigned)glyphIndex 
-			       effectiveRange:(NSRange *)effectiveGlyphRange;
-- (NSRect)extraLineFragmentRect;
-- (NSRect)extraLineFragmentUsedRect;
-- (NSTextContainer *)extraLineFragmentTextContainer;
-- (BOOL)drawsOutsideLineFragmentForGlyphAtIndex:(unsigned) glyphIndex;
-- (NSPoint)locationForGlyphAtIndex:(unsigned)glyphIndex;
-- (BOOL)notShownAttributeForGlyphAtIndex:(unsigned) glyphIndex;
+- (void) setTextContainer: (NSTextContainer *)container 
+	    forGlyphRange: (NSRange)glyphRange;
+
+- (void) setLineFragmentRect: (NSRect)fragmentRect 
+	       forGlyphRange: (NSRange)glyphRange 
+		    usedRect: (NSRect)usedRect;
+
+- (void) setExtraLineFragmentRect: (NSRect)fragmentRect 
+			 usedRect: (NSRect)usedRect 
+		    textContainer: (NSTextContainer *)container;
+
+- (void) setDrawsOutsideLineFragment: (BOOL)flag 
+		     forGlyphAtIndex: (unsigned)glyphIndex;
+
+- (void) setLocation: (NSPoint)location 
+forStartOfGlyphRange: (NSRange)glyphRange;
+
+- (void) setNotShownAttribute: (BOOL)flag 
+	      forGlyphAtIndex: (unsigned)glyphIndex;
+
+- (NSTextContainer *) textContainerForGlyphAtIndex: (unsigned)glyphIndex 
+				    effectiveRange: (NSRange *)effectiveGlyphRange;
+
+- (NSRect) usedRectForTextContainer: (NSTextContainer *)container;
+
+- (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex 
+			    effectiveRange: (NSRange *)effectiveGlyphRange;
+
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex 
+				effectiveRange: (NSRange *)effectiveGlyphRange;
+
+- (NSRect) extraLineFragmentRect;
+
+- (NSRect) extraLineFragmentUsedRect;
+
+- (NSTextContainer *) extraLineFragmentTextContainer;
+
+- (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned) glyphIndex;
+
+- (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex;
+
+- (BOOL) notShownAttributeForGlyphAtIndex: (unsigned) glyphIndex;
 
 /************************ More sophisticated queries ************************/
 
-- (NSRange)glyphRangeForCharacterRange:(NSRange)charRange 
-		  actualCharacterRange:(NSRange *)actualCharRange;
-- (NSRange)characterRangeForGlyphRange:(NSRange)glyphRange 
-		      actualGlyphRange:(NSRange *)actualGlyphRange;
-- (NSRange)glyphRangeForTextContainer:(NSTextContainer *)container;
-- (NSRange)rangeOfNominallySpacedGlyphsContainingIndex:(unsigned)glyphIndex;
-- (NSRect *)rectArrayForCharacterRange:(NSRange)charRange 
-	  withinSelectedCharacterRange:(NSRange)selCharRange 
-		       inTextContainer:(NSTextContainer *)container 
-			     rectCount:(unsigned *)rectCount;
-- (NSRect *)rectArrayForGlyphRange:(NSRange)glyphRange 
-	  withinSelectedGlyphRange:(NSRange)selGlyphRange 
-		   inTextContainer:(NSTextContainer *)container 
-			 rectCount:(unsigned *)rectCount;
-- (NSRect)boundingRectForGlyphRange:(NSRange)glyphRange 
-		    inTextContainer:(NSTextContainer *)container;
-- (NSRange)glyphRangeForBoundingRect:(NSRect)bounds 
-		     inTextContainer:(NSTextContainer *)container;
-- (NSRange)glyphRangeForBoundingRectWithoutAdditionalLayout:(NSRect)bounds 
-					    inTextContainer:(NSTextContainer *)container;
-- (unsigned)glyphIndexForPoint:(NSPoint)aPoint 
-	       inTextContainer:(NSTextContainer *)aTextContainer;
-- (unsigned)glyphIndexForPoint:(NSPoint)point 
-	       inTextContainer:(NSTextContainer *)container 
-fractionOfDistanceThroughGlyph:(float *)partialFraction;
-- (unsigned)firstUnlaidCharacterIndex;
-- (unsigned)firstUnlaidGlyphIndex;
-- (void)getFirstUnlaidCharacterIndex:(unsigned *)charIndex 
-			  glyphIndex:(unsigned *)glyphIndex;
+- (NSRange) glyphRangeForCharacterRange: (NSRange)charRange 
+		   actualCharacterRange: (NSRange *)actualCharRange;
+
+- (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange 
+		       actualGlyphRange: (NSRange *)actualGlyphRange;
+
+- (NSRange) glyphRangeForTextContainer: (NSTextContainer *)container;
+
+- (NSRange) rangeOfNominallySpacedGlyphsContainingIndex:(unsigned)glyphIndex;
+
+- (NSRect *) rectArrayForCharacterRange: (NSRange)charRange 
+	   withinSelectedCharacterRange: (NSRange)selCharRange 
+			inTextContainer: (NSTextContainer *)container 
+			      rectCount: (unsigned *)rectCount;
+
+- (NSRect *) rectArrayForGlyphRange: (NSRange)glyphRange 
+	   withinSelectedGlyphRange: (NSRange)selGlyphRange 
+		    inTextContainer: (NSTextContainer *)container 
+			  rectCount: (unsigned *)rectCount;
+
+- (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange 
+		     inTextContainer: (NSTextContainer *)container;
+
+- (NSRange) glyphRangeForBoundingRect: (NSRect)bounds 
+		      inTextContainer: (NSTextContainer *)container;
+
+- (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds 
+					     inTextContainer: (NSTextContainer *)container;
+
+- (unsigned) glyphIndexForPoint: (NSPoint)aPoint 
+		inTextContainer: (NSTextContainer *)aTextContainer;
+
+- (unsigned) glyphIndexForPoint: (NSPoint)point 
+		inTextContainer: (NSTextContainer *)container 
+ fractionOfDistanceThroughGlyph: (float *)partialFraction;
+
+- (unsigned) firstUnlaidCharacterIndex;
+
+- (unsigned) firstUnlaidGlyphIndex;
+
+- (void) getFirstUnlaidCharacterIndex: (unsigned *)charIndex 
+			  glyphIndex: (unsigned *)glyphIndex;
 
 /************************ Screen font usage control ************************/
 
-- (BOOL)usesScreenFonts;
-- (void)setUsesScreenFonts:(BOOL)flag;
-- (NSFont *)substituteFontForFont:(NSFont *)originalFont;
+- (BOOL) usesScreenFonts;
+
+- (void) setUsesScreenFonts: (BOOL)flag;
+
+- (NSFont *) substituteFontForFont: (NSFont *)originalFont;
 
 @end
 
@@ -298,54 +365,61 @@ fractionOfDistanceThroughGlyph:(float *)partialFraction;
 
 /************************ Ruler stuff ************************/
 
-- (NSArray *)rulerMarkersForTextView:(NSTextView *)view 
-		      paragraphStyle:(NSParagraphStyle *)style 
-			       ruler:(NSRulerView *)ruler;
-- (NSView *)rulerAccessoryViewForTextView:(NSTextView *)view 
-			   paragraphStyle:(NSParagraphStyle *)style 
-				    ruler:(NSRulerView *)ruler 
-				  enabled:(BOOL)isEnabled;
+- (NSArray *) rulerMarkersForTextView: (NSTextView *)view 
+		       paragraphStyle: (NSParagraphStyle *)style 
+				ruler: (NSRulerView *)ruler;
+
+- (NSView *) rulerAccessoryViewForTextView: (NSTextView *)view 
+			    paragraphStyle: (NSParagraphStyle *)style 
+				     ruler: (NSRulerView *)ruler 
+				   enabled: (BOOL)isEnabled;
 
 /************************ First responder support ************************/
 
-- (BOOL)layoutManagerOwnsFirstResponderInWindow:(NSWindow *)window;
-- (NSTextView *)firstTextView;
-- (NSTextView *)textViewForBeginningOfSelection;
+- (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window;
+
+- (NSTextView *) firstTextView;
+
+- (NSTextView *) textViewForBeginningOfSelection;
 
 /************************ Drawing support ************************/
 
-- (void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow 
-			    atPoint:(NSPoint)origin;
-- (void)drawGlyphsForGlyphRange:(NSRange)glyphsToShow 
-			atPoint:(NSPoint)origin;
-- (void)drawUnderlineForGlyphRange:(NSRange)glyphRange 
-		     underlineType:(int)underlineVal 
-		    baselineOffset:(float)baselineOffset 
-		  lineFragmentRect:(NSRect)lineRect 
-	    lineFragmentGlyphRange:(NSRange)lineGlyphRange 
-		   containerOrigin:(NSPoint)containerOrigin;
-- (void)underlineGlyphRange:(NSRange)glyphRange 
-	      underlineType:(int)underlineVal 
-	   lineFragmentRect:(NSRect)lineRect 
-     lineFragmentGlyphRange:(NSRange)lineGlyphRange 
-	    containerOrigin:(NSPoint)containerOrigin;
+- (void) drawBackgroundForGlyphRange: (NSRange)glyphsToShow 
+			     atPoint: (NSPoint)origin;
+
+- (void) drawGlyphsForGlyphRange: (NSRange)glyphsToShow 
+			 atPoint: (NSPoint)origin;
+
+- (void) drawUnderlineForGlyphRange: (NSRange)glyphRange 
+		      underlineType: (int)underlineVal 
+		     baselineOffset: (float)baselineOffset 
+		   lineFragmentRect: (NSRect)lineRect 
+	     lineFragmentGlyphRange: (NSRange)lineGlyphRange 
+		    containerOrigin: (NSPoint)containerOrigin;
+
+- (void) underlineGlyphRange: (NSRange)glyphRange 
+	       underlineType: (int)underlineVal 
+	    lineFragmentRect: (NSRect)lineRect 
+      lineFragmentGlyphRange: (NSRange)lineGlyphRange 
+	     containerOrigin: (NSPoint)containerOrigin;
 
 /************************ Hyphenation support ************************/
 
 - (float) hyphenationFactor;
+
 - (void) setHyphenationFactor: (float)factor;
 
 @end
 
 @interface NSObject (NSLayoutManagerDelegate)
 
-- (void)layoutManagerDidInvalidateLayout:(NSLayoutManager *)sender;
+- (void) layoutManagerDidInvalidateLayout: (NSLayoutManager *)sender;
 // This is sent whenever layout or glyphs become invalidated in a 
 // layout manager which previously had all layout complete.
 
-- (void)layoutManager:(NSLayoutManager *)layoutManager 
-didCompleteLayoutForTextContainer:(NSTextContainer *)textContainer 
-		atEnd:(BOOL)layoutFinishedFlag;
+- (void) layoutManager: (NSLayoutManager *)layoutManager 
+didCompleteLayoutForTextContainer: (NSTextContainer *)textContainer 
+atEnd: (BOOL)layoutFinishedFlag;
 // This is sent whenever a container has been filled. 
 // This method can be useful for paginating.  The textContainer might
 // be nil if we have completed all layout and not all of it fit into
