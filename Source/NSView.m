@@ -483,7 +483,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  if (newWindow == window)
+  if (newWindow == window || !newWindow)
     return;
 
   if (_rFlags.has_draginfo)

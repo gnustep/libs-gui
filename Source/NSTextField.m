@@ -91,6 +91,7 @@ id _nsTextfieldCellClass = nil;
   [cell setState: 1];
   [cell setBezeled: YES];
   [cell setSelectable: YES];
+  [cell setEnabled: YES];
   [cell setEditable: YES];
   [cell setDrawsBackground: YES];
   text_cursor = [[NSCursor IBeamCursor] retain];
@@ -373,7 +374,7 @@ fprintf(stderr, " TextField mouseDown --- ");
   unsigned int key_code = [theEvent keyCode];
   id nextResponder;
 
-  NSDebugLog(@"NSTextField: -keyDown %s\n", [[theEvent characters] cString]);
+  NSLog(@"NSTextField: -keyDown %s\n", [[theEvent characters] cString]);
 
   // If TAB, SHIFT-TAB or RETURN key then make another text the first
   // responder. This depends on key.
@@ -454,7 +455,7 @@ fprintf(stderr, " TextField mouseDown --- ");
 
 - (BOOL) acceptsFirstResponder
 {
-  if ([self isSelectable])
+  if ([self isSelectable] || [self isEditable])
     return YES;
   else
     return NO;
@@ -517,9 +518,6 @@ fprintf(stderr, " TextField mouseDown --- ");
       NSBeep();
       return NO;
     }
-
-  [self display];
-  [window flushWindow];
 
   return YES;
 }

@@ -270,6 +270,8 @@
 	 encoded. */
       upperObjectRepresentation = lastObjectRepresentation;
 
+// Removed by patch, was archiving templates and all kinds of naughty
+// stuff.
 //      anObject = [anObject replacementObjectForModelArchiver: self];
       archiveClass = [anObject classForModelArchiver];
 

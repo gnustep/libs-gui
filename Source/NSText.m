@@ -662,8 +662,9 @@ nil];
 	plainContent=[[NSMutableString stringWithString:string] retain];
 	[lineLayoutInformation autorelease]; lineLayoutInformation=nil;	// force complete re-layout
 	[self setRichText:NO];
-
-	[self setNeedsDisplay:YES];
+	[self setSelectedRangeNoDrawing:NSMakeRange(0,0)];
+//      [self rebuildLineLayoutInformationStartingAtLine:0];
+//	[self setNeedsDisplay:YES];
 }
 -(void) setText:(NSString *)string {[self setString:string];}
 
@@ -845,7 +846,8 @@ NSLog(@"did set font");
 }
 -(void) drawInsertionPointAtIndex:(unsigned)index color:(NSColor *)color turnedOn:(BOOL)flag
 {	NSRect		startRect=[self rectForCharacterIndex:index];
-	[self drawInsertionPointInRect:NSMakeRect(startRect.origin.x, startRect.origin.y,0.5,startRect.size.height)
+//	[self drawInsertionPointInRect:NSMakeRect(startRect.origin.x, startRect.origin.y,0.5,startRect.size.height)
+	[self drawInsertionPointInRect:NSMakeRect(startRect.origin.x, startRect.origin.y,1,startRect.size.height)
 							 color:[NSColor blackColor] turnedOn:flag];
 }
 
@@ -986,8 +988,6 @@ NSLog(@"did set font");
 -(void) sizeToFit
 {
   NSRect sizeToRect=[self frame];
-
-  NSLog(@"- sizeToFit called.\n");
 
   if ([self isFieldEditor]) // if we are a field editor we don't have to handle the size.
     return;
@@ -1244,7 +1244,8 @@ currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].ori
 //<!> make this non-blocking (or make use of timed entries)
 	for(currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask];[currentEvent type] != NSLeftMouseUp;
 	   (currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask]), prevChosenRange=chosenRange)	// run modal loop
-	{	BOOL	didScroll=[self autoscroll:currentEvent];
+	{
+		BOOL	didScroll= [self autoscroll:currentEvent];
 		point = [self convertPoint:[currentEvent locationInWindow] fromView:nil];
 		proposedRange=MakeRangeFromAbs([self characterIndexForPoint:point],startIndex);
 		chosenRange=[self selectionRangeForProposedRange:proposedRange granularity:granularity];
@@ -1256,7 +1257,6 @@ currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].ori
 			}
 			else continue;
 		}
-
 	// this changes the selection without needing instance drawing (carefully thought out ;-) 
 		if(!didScroll)
 		{	[self drawSelectionAsRangeNoCaret:MakeRangeFromAbs(MIN(chosenRange.location, prevChosenRange.location),
@@ -1282,7 +1282,6 @@ currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].ori
 
 	currentCursorX=[self rectForCharacterIndex:chosenRange.location].origin.x;	// remember for column stable cursor up/down
 	currentCursorY=[self rectForCharacterIndex:chosenRange.location].origin.y;	// remember for column stable cursor up/down
-
 	[self unlockFocus];
 	[[self window] flushWindow];
 }
@@ -1346,7 +1345,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 
 -(void) insertText:insertObjc
 {	NSRange		selectedRange=[self selectedRange];
-	int			lineIndex=[self lineLayoutIndexForCharacterIndex:selectedRange.location],origLineIndex=lineIndex,caretLineIndex=lineIndex;
+	int		lineIndex=[self lineLayoutIndexForCharacterIndex:selectedRange.location],origLineIndex=lineIndex,caretLineIndex=lineIndex;
 	NSRange		redrawLineRange;
 	NSString	*insertString=nil;
 
@@ -1491,6 +1490,17 @@ NSLog(NSStringFromRange(redrawLineRange));
 				return;
 			}
 		break;
+/* fixme */
+		case 0x09:
+			if ([self isFieldEditor])
+			  {
+			    [[self window] makeFirstResponder:[self nextResponder]];
+			    [self textDidEndEditing:[NSNotification
+notificationWithName:NSTextDidEndEditingNotification object:self
+	userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:NSTabTextMovement],@"NSTextMovement",nil]]];
+			    break;
+			  }
+/* fixme */
 	}
 #if 0
 NSLog(@"keycode:%x",keyCode);
@@ -1509,9 +1519,9 @@ NSLog(@"keycode:%x",keyCode);
 -(BOOL) resignFirstResponder
 {	if([self shouldDrawInsertionPoint])
 	{
-		[self lockFocus];
+//		[self lockFocus];
 		[self drawInsertionPointAtIndex:[self selectedRange].location color:nil turnedOn:NO];
-		[self unlockFocus];
+//		[self unlockFocus];
 
 		//<!> stop timed entry
 	}
@@ -1520,13 +1530,14 @@ NSLog(@"keycode:%x",keyCode);
 }
 
 -(BOOL) becomeFirstResponder
-{	if([self shouldDrawInsertionPoint])
-	{
+{
+//	if([self shouldDrawInsertionPoint])
+//	{
 //		[self lockFocus];
-		[self drawInsertionPointAtIndex:[self selectedRange].location color:[NSColor blackColor] turnedOn:YES];
+//		[self drawInsertionPointAtIndex:[self selectedRange].location color:[NSColor blackColor] turnedOn:YES];
 //		[self unlockFocus];
-		//<!> restart timed entry
-	}
+//		//<!> restart timed entry
+//	}
 	if([self isEditable] && [self textShouldBeginEditing:(NSText*)self]) return YES;
 	else return NO;
 }
@@ -1936,7 +1947,7 @@ NSLog(@"opti hook 1 (preferred)");
 							else if(currentLineIndex-1 == insertionLineIndex && ABS(insertionDelta)== 1)
 							{	erg=2;	// return 2: redisplay only this and previous line
 							}
-#if 1
+#if 0
 NSLog(@"opti for:%d",erg);
 #endif
 							return erg;

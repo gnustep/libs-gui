@@ -1162,6 +1162,8 @@ static NSRecursiveLock	*windowsLock;
   if ((first_responder) && (![first_responder resignFirstResponder]))
     return NO;
 
+// FIXME
+//  [first_responder resignFirstResponder];
   first_responder = aResponder;
   [first_responder becomeFirstResponder];
   return YES;
