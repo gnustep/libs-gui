@@ -83,7 +83,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 @interface NSFontPanel (Private)
 - (NSFont*) _fontForSelection: (NSFont*) fontObject;
 
--(void) _trySelectSize: (float)size;
+-(void) _trySelectSize: (float)size
+       updateSizeField: (BOOL)updateSizeField;
 
 // Some action methods
 - (void) cancel: (id) sender;
@@ -282,7 +283,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	}
 
       // show point size and select the row if there is one
-      [self _trySelectSize: size];
+      [self _trySelectSize: size  updateSizeField: YES];
 
       // Use in preview
       [previewArea setFont: fontObject];
@@ -881,14 +882,18 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 
 -(void) _trySelectSize: (float)size
+       updateSizeField: (BOOL)updateSizeField
 {
   unsigned int i;
   NSBrowser *sizeBrowser = [[self contentView] viewWithTag: NSFPSizeBrowser];
   NSTextField *sizeField;
 
-  /* Make sure our sizeField is updated. */
-  sizeField = [[self contentView] viewWithTag: NSFPSizeField];
-  _setFloatValue (sizeField, size);
+  if (updateSizeField)
+    {
+      /* Make sure our sizeField is updated. */
+      sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+      _setFloatValue (sizeField, size);
+    }
         
   /* Make sure our column is loaded. */ 
   [sizeBrowser loadColumnZero];
@@ -913,7 +918,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 {
   NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
   float size = [sizeField floatValue];
-  [self _trySelectSize: size];
+  [self _trySelectSize: size  updateSizeField: NO];
   [self _doPreview];
 }
 
@@ -1050,7 +1055,7 @@ static int score_difference(int weight1, int traits1,
 
     if (size == 0.0)
       {
-	[self _trySelectSize: 12.0];
+	[self _trySelectSize: 12.0  updateSizeField: YES];
       }
   }
 

@@ -1,3 +1,8 @@
+2004-07-21 19:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSFontPanel.m (-_trySelectSize:updateSizeField:): Add
+	updateSizeField	argument. Update callers.
+
 2004-07-20 01:24  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSScroller.m (-rectForPart:): Use floor() instead of
