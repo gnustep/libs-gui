@@ -654,11 +654,6 @@ restart:
     while (1)
       {
 //        printf("at %3i+%3i\n",cache_base,i);
-/*printf("at %3i+%2i, glyph %08x, char %04x (%i)\n",
-	cache_base,i,
-	g->g,
-	[[curTextStorage string] characterAtIndex: g->char_index],g->char_index);*/
-
 	/* Update the cache. */
 	if (i >= cache_length)
 	  {
@@ -675,6 +670,11 @@ restart:
 	      }
 	    g = cache + i;
 	  }
+
+/*printf("at %3i+%2i, glyph %08x, char %04x (%i)\n",
+	cache_base,i,
+	g->g,
+	[[curTextStorage string] characterAtIndex: g->char_index],g->char_index);*/
 
 	/*
 	At this point:

@@ -2061,7 +2061,6 @@ no_soft_invalidation:
 
   [self _didInvalidateLayout];
 
-
   if ((mask & NSTextStorageEditedCharacters) && lengthChange)
     {
       /*

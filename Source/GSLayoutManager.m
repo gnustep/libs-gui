@@ -153,6 +153,7 @@ Private method used internally by GSLayoutManager for sanity checking.
   printf("--- dumping runs\n");
   {
     glyph_run_t *h;
+    unsigned int cpos = 0;
     h = (glyph_run_t *)(glyphs + SKIP_LIST_DEPTH - 1)->next;
     for (; h; h = (glyph_run_t *)h->head.next)
       {
@@ -160,14 +161,17 @@ Private method used internally by GSLayoutManager for sanity checking.
 		(int)h, h->head.char_length, h->head.glyph_length, h->head.complete,
 		(int)h->prev, (int)h->head.next);
 	printf("         level %i, continued %i\n", h->level, h->continued);
-/*	if (h->head.complete)
+	if (h->head.complete)
 	  {
 	    int i;
 	    printf("glyphs:\n");
 	    for (i = 0;i < h->head.glyph_length;i++)
-	      printf("%5i %04x  ",h->glyphs[i].char_offset,h->glyphs[i].g);
+	      printf("%5i %04x u%04x  ",
+		h->glyphs[i].char_offset,h->glyphs[i].g,
+		[[_textStorage string] characterAtIndex: cpos+h->glyphs[i].char_offset]);
 	    printf("\n");
-	  }*/
+	  }
+	cpos += h->head.char_length;
       }
   }
   printf("- structure\n");
@@ -516,23 +520,24 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 }
 
 
-/* returns number of new glyphs generated */
+/*
+Returns number of valid glyphs under h after generating up to last (sortof,
+not completely accurate).
+*/
 -(unsigned int) _generateGlyphs_char_r: (unsigned int)last : (unsigned int)pos
 	: (int)level
 	: (glyph_run_head_t *)h : (glyph_run_head_t *)stop
 	: (BOOL *)all_complete
 {
-  int total_new = 0, new;
-  BOOL c, seen_incomplete;
+  int total = 0, sub_total;
+  BOOL c;
 
   *all_complete = YES;
-  seen_incomplete = NO;
   while (h != stop && (pos <= last || *all_complete))
     {
       if (h->complete)
 	{
-	  if (seen_incomplete)
-	    total_new += h->glyph_length;
+	  total += h->glyph_length;
 	  pos += h->char_length;
 	  h = h->next;
 	  continue;
@@ -541,32 +546,31 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       if (pos > last)
 	break;
 
-      seen_incomplete = YES;
       if (level)
 	{
 	  if (h->next)
-	    new = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: h->next + 1: &c];
+	    sub_total = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: h->next + 1: &c];
 	  else
-	    new = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: NULL : &c];
+	    sub_total = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: NULL : &c];
 	  if (!c)
 	    *all_complete = NO;
 	  else
 	    h->complete = 1;
-	  h->glyph_length += new;
-	  total_new += new;
+	  h->glyph_length = sub_total;
+	  total += sub_total;
 	}
       else
 	{
 	  [self _generateGlyphsForRun: (glyph_run_t *)h at: pos];
 	  h->complete = 1;
-	  total_new += h->glyph_length;
+	  total += h->glyph_length;
 	}
       pos += h->char_length;
       h = h->next;
     }
   if (h != stop)
     *all_complete = NO;
-  return total_new;
+  return total;
 }
 
 -(void) _generateGlyphsUpToCharacter: (unsigned int)last
@@ -602,7 +606,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   if (glyphs->char_length <= last)
     [self _generateRunsToCharacter: last];
 
-//	[self _glyphDumpRuns];
+//  [self _glyphDumpRuns];
   if ([self _generateGlyphs_char_r: last : 0 : SKIP_LIST_DEPTH - 1: glyphs : NULL : &dummy])
     /*[self _glyphDumpRuns]*/;
 }
@@ -1023,7 +1027,7 @@ places where we switch.
 //  [self _glyphDumpRuns];
 
 
-  /* Switch to before-incides. */
+  /* Switch to before-indices. */
   range.length -= lengthChange;
 //  printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
 
