@@ -1,3 +1,34 @@
+2000-07-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSUserInterfaceValidation.h
+	New header file with protocols NSValidatedUserInterfaceItem and
+	NSUserInterfaceValidations.
+	* Headers/gnustep/gui/AppKit.h
+	Include NSUserInterfaceValidation.h.
+	* Source/GNUmake
+	Install NSUserInterfaceValidation.h.
+	* Headers/gnustep/gui/NSDocument.h
+	Added declarations for new methods in specification. Some of this
+	where already present in the code.
+	* Source/NSDocument.m
+	Added dummy implementation for the new delegate operations.
+	Corrected [initWithContentsOfURL:ofType:], the alert was shown un
+	success.
+	Implemented [removeWindowController:] and [validateUserInterfaceItem:].
+	* Headers/gnustep/gui/NSDocumentController.h
+	Added declarations for new methods in specification
+	([noteNewRecentDocument:], [validateUserInterfaceItem:],
+	[closeAllDocumentsWithDelegate:didCloseAllSelector:contextInfo:],
+	[reviewUnsavedDocumentsWithAlertTitle:...contextInfo:]).
+	* Source/NSDocumentController.m
+	Commented out unused static variables.
+	Dummy implementation of new methods.
+	In [openDocumentWithContentsOfFile:display:] call
+	[noteNewRecentDocument:]. 
+	In [openDocumentWithContentsOfURL:display:] only call
+	[noteNewRecentDocumentURL:] when document is not nil.
+	Implemented [noteNewRecentDocument:].
+	
 2001-07-27  Georg Fleischmann
 
 	* gui/Source/NSWindow.m
