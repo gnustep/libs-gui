@@ -1,3 +1,9 @@
+2003-02-26 17:09  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-glyphRangeForBoundingRect:inTextContainer:): Fix the horizontal
+	intersection checks.
+
 2003-02-26 00:47  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-_generateRunsToCharacter:): Optimize

@@ -446,11 +446,6 @@ line frag rect. */
   NSRange range;
 
 
-/*  NSLog(@"%@ %s  (%g %g)+(%g %g) in %@\n", self, __PRETTY_FUNCTION__,
-	bounds.origin.x, bounds.origin.y,
-	bounds.size.width, bounds.size.height,
-	container);*/
-
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->textContainer == container)
       break;
@@ -489,18 +484,15 @@ line frag rect. */
   i = low;
   lf = &tc->linefrags[i];
 
-//  printf("low=%i (%g+%g) %g\n",low,lf->rect.origin.y,lf->rect.size.height,NSMinY(bounds));
-
   if (NSMaxY(lf->rect) < NSMinY(bounds))
     {
-//      printf("  empty (bounds below text)\n");
       return NSMakeRange(0, 0);
     }
 
   /* Scan to first line frag intersecting bounds horizontally. */
   while (i < tc->num_linefrags - 1 &&
 	 NSMinY(lf[0].rect) == NSMinY(lf[1].rect) &&
-	 NSMaxX(lf[1].rect) < NSMinX(bounds))
+	 NSMaxX(lf[0].rect) < NSMinX(bounds))
     i++, lf++;
 
   /* TODO: find proper position in line frag rect */
@@ -529,34 +521,26 @@ line frag rect. */
   if (i && NSMinY(lf->rect) > NSMaxY(bounds))
     i--, lf--;
 
-//  printf("low=%i (%i) (%g+%g) %g\n",low,tc->num_linefrags,lf->rect.origin.y,lf->rect.size.height,NSMaxY(bounds));
-
   if (NSMinY(lf->rect) > NSMaxY(bounds))
     {
-//      printf("  empty (bounds above text)\n");
       return NSMakeRange(0, 0);
     }
 
   /* Scan to last line frag intersecting bounds horizontally. */
   while (i > 0 &&
 	 NSMinY(lf[0].rect) == NSMinY(lf[-1].rect) &&
-	 NSMinX(lf[1].rect) > NSMaxX(bounds))
+	 NSMinX(lf[-1].rect) > NSMaxX(bounds))
     i--, lf--;
-//  printf("i=%i\n",i);
 
   /* TODO: find proper position in line frag rect */
 
   j = lf->pos + lf->length;
   if (j <= range.location)
     {
-//      printf("  empty (bound between lines?)\n");
       return NSMakeRange(0, 0);
     }
 
   range.length = j - range.location;
-/*  printf("  range= %i - %i  |%@|\n",
-	range.location,range.length,
-	[[_textStorage string] substringWithRange: range]);*/
   return range;
 }
 
@@ -1307,7 +1291,6 @@ container
   NSPoint gbuf_point;
 
   NSView *controlView = nil;
-
 
   if (!range.length)
     return;
