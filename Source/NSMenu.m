@@ -415,7 +415,14 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
  */
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  return [menu_items indexOfObjectIdenticalTo: anObject];
+  int index;
+
+  index = [menu_items indexOfObjectIdenticalTo: anObject];
+
+  if (index == NSNotFound)
+    return -1;
+  else
+    return index;
 }
 
 - (int) indexOfItemWithTitle: (NSString*)aTitle
