@@ -446,9 +446,11 @@ static NSNotificationCenter *nc;
 {
   if ([_textStorage length] > 0)
     {
-      NSFont *font = [_textStorage attribute: NSFontAttributeName
-				   atIndex: 0
-				   effectiveRange: NULL];
+      NSFont	*font;
+
+      font = [_textStorage attribute: NSFontAttributeName
+			     atIndex: 0
+		      effectiveRange: NULL];
       if (font != nil)
 	{
 	  return font;
@@ -575,15 +577,19 @@ static NSNotificationCenter *nc;
  */
 - (NSColor*) textColor
 {
-  /* FIXME */
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  if ([_textStorage length] > 0)
+    {
+      NSColor	*color;
 
-  if (aRange.location != NSNotFound)
-    return [_textStorage attribute: NSForegroundColorAttributeName
-			 atIndex: aRange.location
-			 effectiveRange: NULL];
-  else 
-    return [_typingAttributes objectForKey: NSForegroundColorAttributeName];
+      color = [_textStorage attribute: NSForegroundColorAttributeName
+			      atIndex: 0
+		       effectiveRange: NULL];
+      if (color != nil)
+	{
+	  return color;
+	}
+    }
+  return [_typingAttributes objectForKey: NSForegroundColorAttributeName];
 }
 
 - (void) setTextColor: (NSColor*)color
@@ -1567,6 +1573,8 @@ static NSNotificationCenter *nc;
     {
       ASSIGN (_typingAttributes, (NSMutableDictionary*)dict);
     }
+  [self updateFontPanel];
+  [self updateRuler];
 }
 
 - (NSDictionary*) typingAttributes
@@ -1784,13 +1792,13 @@ replacing the selection.
 - (void) pasteAsPlainText: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
-				type: NSStringPboardType];
+			       type: NSStringPboardType];
 }
 
 - (void) pasteAsRichText: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
-				type: NSRTFPboardType];
+			       type: NSRTFPboardType];
 }
 
 - (void) updateFontPanel
@@ -1813,21 +1821,7 @@ replacing the selection.
 	}
       else /* Just Insertion Point. */ 
 	{
-	  unsigned location;
-
-	  if (_selected_range.location > 0) 
-	    {
-	      /* Use the font before the insertion point... */
-	      location = _selected_range.location - 1;
-	    }
-	  else
-	    {
-	      /* ...or at location 0 if at the beginning of text*/
-	      location = _selected_range.location;
-	    }
-	  currentFont = [_textStorage attribute: NSFontAttributeName
-				      atIndex: location  
-				      effectiveRange: NULL];
+	  currentFont = [_typingAttributes objectForKey: NSFontAttributeName];
 	  [fm setSelectedFont: currentFont  isMultiple: NO];
 	}
     }
@@ -2780,9 +2774,16 @@ container, returning the modified location. */
     {
       NSColor *color = [NSColor colorFromPasteboard: pboard];
       NSRange aRange = [self rangeForUserCharacterAttributeChange];
+      NSMutableDictionary	*d = [[self typingAttributes] mutableCopy];
+
+      [d setObject: color forKey: NSForegroundColorAttributeName];
+      [self setTypingAttributes: d];
+      RELEASE(d);
 
       if (aRange.location != NSNotFound)
-	[self setTextColor: color  range: aRange];
+	{
+	  [self setTextColor: color range: aRange];
+	}
 
       return YES;
     }
@@ -2790,18 +2791,22 @@ container, returning the modified location. */
   // font pasting
   if ([type isEqualToString: NSFontPboardType])
     {
-      // FIXME - This should use a serializer. To get that working a
-      // helper object is needed that implements the
-      // NSObjCTypeSerializationCallBack protocol.  We should add this
-      // later, currently the NSArchiver is used.  Thanks to Richard,
-      // for pointing this out.
       NSData *data = [pboard dataForType: NSFontPboardType];
       NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData: data];
 
       if (dict != nil)
 	{
-	  [self setAttributes: dict 
-		range: [self rangeForUserCharacterAttributeChange]];
+	  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+	  NSMutableDictionary	*d;
+
+	  if (aRange.location != NSNotFound)
+	    {
+	      [self setAttributes: dict range: aRange];
+	    }
+	  d = [[self typingAttributes] mutableCopy];
+	  [d addEntriesFromDictionary: dict];
+	  [self setTypingAttributes: d];
+	  RELEASE(d);
 	  return YES;
 	}
       return NO;
@@ -2810,14 +2815,22 @@ container, returning the modified location. */
   // ruler pasting
   if ([type isEqualToString: NSRulerPboardType])
     {
-      // FIXME: see NSFontPboardType above
       NSData *data = [pboard dataForType: NSRulerPboardType];
       NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData: data];
 
       if (dict != nil)
 	{
-	  [self setAttributes: dict 
-		range: [self rangeForUserParagraphAttributeChange]];
+	  NSRange aRange = [self rangeForUserParagraphAttributeChange];
+	  NSMutableDictionary	*d;
+
+	  if (aRange.location != NSNotFound)
+	    {
+	      [self setAttributes: dict range: aRange];
+	    }
+	  d = [[self typingAttributes] mutableCopy];
+	  [d addEntriesFromDictionary: dict];
+	  [self setTypingAttributes: d];
+	  RELEASE(d);
 	  return YES;
 	}
       return NO;
@@ -2884,6 +2897,8 @@ other than copy/paste or dragging. */
 
   if (types == nil)
     return NO;
+  if (_selected_range.location == NSNotFound)
+    return NO;
 
   [pboard declareTypes: types owner: self];
     
@@ -2910,8 +2925,11 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSColorPboardType])
         {
-	  NSColor *color = [self textColor];
+	  NSColor	*color;
 
+	  color = [_textStorage attribute: NSForegroundColorAttributeName
+				  atIndex: _selected_range.location
+			   effectiveRange: 0];
 	  if (color != nil)
 	    {
 	      [color writeToPasteboard:  pboard];
@@ -2921,16 +2939,11 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSFontPboardType])
         {
-	  NSDictionary *dict;
+	  NSDictionary	*dict;
 
 	  dict = [_textStorage fontAttributesInRange: _selected_range];
 	  if (dict != nil)
 	    {
-	      // FIXME - This should use a serializer. To get that
-	      // working a helper object is needed that implements the
-	      // NSObjCTypeSerializationCallBack protocol.  We should
-	      // add this later, currently the NSArchiver is used.
-	      // Thanks to Richard, for pointing this out.
 	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
 		      forType: NSFontPboardType];
 	      ret = YES;
@@ -2939,12 +2952,11 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSRulerPboardType])
         {
-	  NSDictionary *dict;
+	  NSDictionary	*dict;
 
 	  dict = [_textStorage rulerAttributesInRange: _selected_range];
 	  if (dict != nil)
 	    {
-	      //FIXME: see NSFontPboardType above
 	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
 		      forType: NSRulerPboardType];
 	      ret = YES;

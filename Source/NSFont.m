@@ -56,32 +56,35 @@ static NSMutableSet* fontsUsed = nil;
 /* Fonts that are preferred by the application */
 NSArray *_preferredFonts;
 
+/* Class for fonts */
+static Class	NSFontClass = 0;
+
+static NSUserDefaults	*defaults = nil;
+
 NSFont*
 getNSFont(NSString* key, NSString* defaultFontName, float fontSize)
 {
   NSString* fontName;
 
-  fontName = [[NSUserDefaults standardUserDefaults] objectForKey: key];
+  fontName = [defaults objectForKey: key];
   if (fontName == nil)
     fontName = defaultFontName;
 
   if (fontSize == 0)
     {
-      fontSize = [[NSUserDefaults standardUserDefaults]
-	floatForKey: [NSString stringWithFormat: @"%@Size", key]];
+      fontSize = [defaults floatForKey:
+	[NSString stringWithFormat: @"%@Size", key]];
       if (fontSize == 0)
 	fontSize = 12;
     }
 
-  return [NSFont fontWithName: fontName size: fontSize];
+  return [NSFontClass fontWithName: fontName size: fontSize];
 }
 
 void
 setNSFont(NSString* key, NSFont* font)
 {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-
-  [standardDefaults setObject: [font fontName] forKey: key];
+  [defaults setObject: [font fontName] forKey: key];
 
   systemCacheNeedsRecomputing = YES;
   boldSystemCacheNeedsRecomputing = YES;
@@ -89,7 +92,7 @@ setNSFont(NSString* key, NSFont* font)
   userFixedCacheNeedsRecomputing = YES;
 
   /* Don't care about errors*/
-  [standardDefaults synchronize];
+  [defaults synchronize];
 }
 
 //
@@ -97,12 +100,17 @@ setNSFont(NSString* key, NSFont* font)
 //
 + (void) initialize
 {
-  static BOOL initialized = NO;
-
-  if (!initialized)
+  if (self == [NSFont class])
     {
-      initialized = YES;
-      fontsUsed = [NSMutableSet new];
+      NSFontClass = self;
+      if (fontsUsed == nil)
+	{
+	  fontsUsed = [NSMutableSet new];
+	}
+      if (defaults == nil)
+	{
+	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
+	}
     }
 }
 
@@ -328,17 +336,19 @@ setNSFont(NSString* key, NSFont* font)
 
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
 {
-  [fontsUsed addObject: name];
-  fontName = RETAIN(name);
+  fontName = [name copy];
+  [fontsUsed addObject: fontName];
   memcpy(matrix, fontMatrix, sizeof(matrix));
-  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: name matrix: fontMatrix]);
+  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
+					     matrix: fontMatrix]);
   return self;
 }
 
 + (NSFont*) fontWithName: (NSString*)name 
 		  matrix: (const float*)fontMatrix
 {
-  return AUTORELEASE([[NSFont alloc] initWithName: name matrix: fontMatrix]);
+  return AUTORELEASE([[NSFontClass alloc] initWithName: name
+						matrix: fontMatrix]);
 }
 
 + (NSFont*) fontWithName: (NSString*)name
@@ -573,6 +583,11 @@ setNSFont(NSString* key, NSFont* font)
 //
 // NSCoding protocol
 //
+- (Class) classForCoder
+{
+  return NSFontClass;
+}
+
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: fontName];
