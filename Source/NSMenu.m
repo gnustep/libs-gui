@@ -728,6 +728,8 @@ static NSNotificationCenter *nc;
     }
   else if (_popUpButtonCell != nil)
     {
+      // Tell the popup button, which item was selected
+      [_popUpButtonCell selectItemAtIndex: index];
       if (NULL != (action = [_popUpButtonCell action]))
 	[NSApp sendAction: action
 	       to: [_popUpButtonCell target]
