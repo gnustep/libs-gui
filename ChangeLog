@@ -1,3 +1,11 @@
+2002-12-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m
+	In [TIFFRepresentationUsingCompression:factor:] set extraSamples
+	and correct compression type if 0.
+	* Source/NSImageView.m
+	Implement dragging of images.
+
 2002-12-02  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m, Model/GMArchiver.m, Model/IBClasses.m,
@@ -39,13 +47,13 @@
 	* TextConverters/RTF/RTFConsumer.m
 	GSRTFregisterFont() handle fontnames with and without trailing ';'.
 	* TextConverters/RTF/rtfGrammer.y
-	Documented how to compile with recent bision releases.
+	Documented how to compile with recent bison releases.
 	Removed one conflict and an unneeded terminal.
 	Allow for additional blocks in font definition.
 	* TextConverters/RTF/rtfGrammer.tab.h
-	Regenerated with bision 1.35
+	Regenerated with bison 1.35
 	* TextConverters/RTF/rtfGrammer.tab.c
-	Regenerated with bision 1.35 and corrected yyparse declaration.
+	Regenerated with bison 1.35 and corrected yyparse declaration.
 	* TextConverters/RTF/rtfScanner.c
 	Redefined GSRTFlex() without location parameter. Some cleanup
 	against compiler warnings.
