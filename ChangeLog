@@ -1,8 +1,9 @@
-Tue Jan 29 10:52:09 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+Tue Jan 29 10:59:04 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* GNUmakefile.postamble (configure): Rule removed.  It was causing
 	problems on systems without autoconf.
-
+	(gui.make, config.make): Do not depend on configure.
+	
 2002-01-25  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/gsdoc/GNUmakefile: Remove autogsdoc processing

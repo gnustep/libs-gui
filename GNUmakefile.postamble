@@ -80,10 +80,10 @@ after-clean::
 after-distclean:: remove-header-links
 	rm -f config.status config.log config.cache TAGS config.mak gui.make
 
-gui.make: gui.make.in configure
+gui.make: gui.make.in
 	./configure
 
-config.make: config.make.in configure
+config.make: config.make.in
 	./configure
 
 # Things to do before checking
