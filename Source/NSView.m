@@ -59,6 +59,11 @@
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
 
+/* Variable tells this view and subviews that we're printing. Not really
+   a class variable because we want it visible to subviews also
+*/
+NSView *viewIsPrinting = nil;
+
 struct NSWindow_struct
 {
   @defs(NSWindow)
@@ -1333,12 +1338,33 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSDebugLLog(@"NSView", @"Displaying rect \n\t%@\n\t window %p, flip %d", 
 	      NSStringFromRect(wrect), _window, _rFlags.flipped_view);
   window_t = (struct NSWindow_struct *)_window;
-  [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+  if (viewIsPrinting == nil)
+    [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
 
   /* Make sure we don't modify superview's gstate */
   DPSgsave(ctxt);
 
-  if (_gstate)
+  if (viewIsPrinting != nil)
+    {
+      if (viewIsPrinting == self)
+	{
+	  /* Make sure coordinates are valid, then fake that we don't have
+	     a superview so we get printed correctly */
+	  [self _matrixToWindow];
+	  [_matrixToWindow makeIdentityMatrix];
+	  _visibleRect = _bounds;
+	}
+      else
+	{
+	  [[self _matrixToWindow] concat];
+	}
+      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect), 
+		      NSWidth(rect), NSHeight(rect));
+
+      /* Allow subclases to make other modifications */
+      [self setUpGState];
+    }
+  else if (_gstate)
     {
       DPSsetgstate(ctxt, _gstate);
       if (_renew_gstate)
@@ -1385,8 +1411,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) unlockFocusNeedsFlush: (BOOL)flush
 {
-  NSRect        rect;
-  struct	NSWindow_struct *window_t;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   NSAssert(_window != nil, NSInternalInconsistencyException);
@@ -1394,22 +1418,34 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if ([_window gState] == 0)
     return;
 
-  /* Restore our original gstate */
-  DPSgrestore(ctxt);
+  if (viewIsPrinting != nil)
+    {
+      _coordinates_valid = NO;
+    }
+  else
+    {
+      /* Restore our original gstate */
+      DPSgrestore(ctxt);
+    }
   /* Restore state of nesting lockFocus */
   DPSgrestore(ctxt);
   if (!_allocate_gstate)
     _gstate = 0;
 
-  window_t = (struct NSWindow_struct *)_window;
-  if (flush)
+  if (viewIsPrinting == nil)
     {
-      rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
-      window_t->_rectNeedingFlush =
-	NSUnionRect(window_t->_rectNeedingFlush, rect);
-      window_t->_f.needs_flush = YES;
+      NSRect        rect;
+      struct	NSWindow_struct *window_t;
+      window_t = (struct NSWindow_struct *)_window;
+      if (flush)
+	{
+	  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+	  window_t->_rectNeedingFlush =
+	    NSUnionRect(window_t->_rectNeedingFlush, rect);
+	  window_t->_f.needs_flush = YES;
+	}
+      [window_t->_rectsBeingDrawn removeLastObject];
     }
-  [window_t->_rectsBeingDrawn removeLastObject];
   [ctxt unlockFocusView: self needsFlush: YES ];
 }
 
@@ -2409,10 +2445,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (NSData*) dataWithEPSInsideRect: (NSRect)aRect
 {
   NSMutableData *data = [NSMutableData data];
-  
+
+  /* Inform ourselves and subviews that we're printing so we adjust
+     the PostScript accordingly. Perhaps this could be in the thread
+     dictionary, but that's probably overkill and slow */
+  viewIsPrinting = self;
+
   [[NSPrintOperation EPSOperationWithView: self
 		     insideRect: aRect
 		     toData: data] runOperation];
+
+  viewIsPrinting = nil;
   return data;
 }
 

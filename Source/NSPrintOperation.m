@@ -318,6 +318,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (void)destroyContext
 {
+  [_context destroyContext];
   DESTROY(_context);
 }
 
@@ -465,7 +466,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 - (void) _print
 {
   // This is the actual printing
-  [_view displayRect: _rect];
+  [_view displayRectIgnoringOpacity: _rect];
 }
 
 @end
@@ -554,14 +555,24 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (NSGraphicsContext*)createContext
 {
-  // FIXME
-  return nil;
+  NSMutableDictionary *info = [_printInfo dictionary];
+  NSGraphicsContext *psContext;
+
+  [info setObject: _path forKey: @"NSOutputFile"];
+  psContext = [NSGraphicsContext postscriptContextWithInfo: info];
+
+  return psContext;
 }
 
 - (BOOL)deliverResult
 {
-  if (_data != nil && _path != nil && [_data length])
-    return [_data writeToFile: _path atomically: NO];
+  if (_data != nil && _path != nil)
+    {
+      NSString	*eps;
+
+      eps = [NSString stringWithContentsOfFile: _path];
+      [_data setData: [eps dataUsingEncoding:NSASCIIStringEncoding]];
+    }
 
   return YES;
 }
