@@ -1,5 +1,13 @@
 2001-02-19  Fred Kiefer  <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/NSDragging.h
+	Corrected the values for NSDragOperation and all methods returning
+	an operation mask.
+	* Source/NSColorPanel.m
+	[_initWithoutGModel] set target and action for the main colour well.
+
+2001-02-19  Fred Kiefer  <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m
 	[_initBackendWindow:] corrected the registration of drag types,
 	when a window gets realized. We have to use a copy here, as the
