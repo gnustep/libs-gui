@@ -1317,7 +1317,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) lockFocusInRect: (NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSAffineTransform *matrix;
   struct NSWindow_struct *window_t;
   NSRect wrect;
   int window_gstate;
@@ -1336,20 +1335,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   window_t = (struct NSWindow_struct *)_window;
   [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
 
-  /*
-   * Clipping - set viewclip to the visible rectangle - which will never be
-   * greater than the bounds of the view.  This prevents drawing outside 
-   * our bounds (FIXME: Perhaps IntersectRect with bounds, just to make sure?)
-   */
-  DPSsave(ctxt);
-  DPSmark(ctxt); /* Rather than keep the save object, just mark it to make
-		    sure we can find it when we unlock. We really should
-		    keep an ivar for it, though... */
-  matrix = [self _matrixToWindow];
-  if ([matrix isRotated])
-    {
-      [matrix boundingRectFor: rect result: &rect];
-    }
+  /* Make sure we don't modify superview's gstate */
+  DPSgsave(ctxt);
 
   if (_gstate)
     {
@@ -1360,15 +1347,24 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       _renew_gstate = 0;
       DPSgsave(ctxt);
-      DPSrectviewclip(ctxt, NSMinX(rect), NSMinY(rect), 
-		      NSWidth(rect), NSHeight(rect));
     }
   else
     {
+      NSAffineTransform *matrix;
+      matrix = [self _matrixToWindow];
+      if ([matrix isRotated])
+	{
+	  [matrix boundingRectFor: rect result: &rect];
+	}
+
       DPSsetgstate(ctxt, window_gstate);
       DPSgsave(ctxt);
       [matrix concat];
-      DPSrectviewclip(ctxt, NSMinX(rect), NSMinY(rect), 
+      /* Clip to the visible rectangle - which will never be greater
+       * than the bounds of the view.  This prevents drawing outside
+       * our bounds 
+       */
+      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect), 
 		      NSWidth(rect), NSHeight(rect));
 
       /* Allow subclases to make other modifications */
@@ -1400,9 +1396,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   /* Restore our original gstate */
   DPSgrestore(ctxt);
-  /* Restore state (including viewclip) of nesting lockFocus */
-  DPScleartomark(ctxt);
-  DPSrestore(ctxt);
+  /* Restore state of nesting lockFocus */
+  DPSgrestore(ctxt);
   if (!_allocate_gstate)
     _gstate = 0;
 

@@ -1,3 +1,9 @@
+2001-09-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-lockFocusInRect:): Switch back to gsave/grestore
+	syntax, use rectclip instead of rectviewclip.
+	(-unlockFocusWithFlush:): Likewise.
+
 2001-09-03  Adam Fedor  <fedor@gnu.org>
 
 	* Source/tiff.m (NSTiffWrite): Set EXTRASAMPLES even if 0.
