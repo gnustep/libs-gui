@@ -301,6 +301,7 @@ typedef struct
 	    }
 	}
       start = lf->last_glyph;
+      lf->last_used = lf->rect.size.width;
     }
 }
 
@@ -316,6 +317,7 @@ typedef struct
       delta = lf->rect.size.width - lf->last_used;
       for (;i < lf->last_glyph;i++,g++)
 	g->pos.x += delta;
+      lf->last_used += delta;
     }
 }
 
@@ -330,6 +332,7 @@ typedef struct
       delta = (lf->rect.size.width - lf->last_used) / 2.0;
       for (;i < lf->last_glyph;i++,g++)
 	g->pos.x += delta;
+      lf->last_used += delta;
     }
 }
 
@@ -507,8 +510,8 @@ restart:
 	      default:
 	      case NSLineBreakByCharWrapping:
 	      char_wrapping:
-	      lf->last_glyph = i;
-	      break;
+		lf->last_glyph = i;
+		break;
 
 	      case NSLineBreakByWordWrapping:
 		lf->last_glyph = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
@@ -579,12 +582,19 @@ restart:
       NSPoint p;
       unsigned int i,j;
       glyph_cache_t *g;
+      NSRect used_rect;
 
       for (lf = line_frags,i = 0,g = cache;lfi >= 0;lfi--,lf++)
 	{
+	  used_rect.origin.x = g->pos.x + lf->rect.origin.x;
+	  used_rect.size.width = lf->last_used - g->pos.x;
+	  /* TODO: be pickier about height? */
+	  used_rect.origin.y = lf->rect.origin.y;
+	  used_rect.size.height = lf->rect.size.height;
+
 	  [curLayoutManager setLineFragmentRect: lf->rect
 			    forGlyphRange: NSMakeRange(cache_base + i,lf->last_glyph - i)
-			    usedRect: lf->rect /* TODO */ ];
+			    usedRect: used_rect];
 	  p = g->pos;
 	  [curLayoutManager setDrawsOutsideLineFragment: g->outside_line_frag
 			    forGlyphAtIndex: cache_base + i];
