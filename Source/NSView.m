@@ -187,12 +187,13 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
     }
 
   // Add to our subview list
-  [sub_views addObject:(id)aView];
+  [aView viewWillMoveToWindow:window];
   [aView setSuperview:self];
   [aView setNextResponder:self];
-  [aView viewWillMoveToWindow:window];
+  [sub_views addObject:(id)aView];
 }
 
+/* This method needs to be worked out!!! */
 - (void)addSubview:(NSView *)aView
 	positioned:(NSWindowOrderingMode)place
 	relativeTo:(NSView *)otherView
@@ -268,6 +269,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   // No superview then just return
   if (!super_view) return;
 
+  [self viewWillMoveToWindow:nil];
+
   views = [super_view subviews];
   [views removeObjectIdenticalTo:self];
 }
@@ -275,10 +278,26 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)replaceSubview:(NSView *)oldView
 		  with:(NSView *)newView
 {
-  int index = [sub_views indexOfObjectIdenticalTo:oldView];
+  if (!newView)
+    return;
 
-  if (index != NSNotFound)
-    [sub_views replaceObjectAtIndex:index withObject:newView];
+  if (!oldView)
+    [self addSubview:newView];
+  else {
+    int index = [sub_views indexOfObjectIdenticalTo:oldView];
+
+    if (index != NSNotFound) {
+      [oldView viewWillMoveToWindow:nil];
+      [oldView setSuperview:nil];
+      [newView setNextResponder:nil];
+
+      [sub_views replaceObjectAtIndex:index withObject:newView];
+
+      [newView viewWillMoveToWindow:window];
+      [newView setSuperview:self];
+      [newView setNextResponder:self];
+    }
+  }
 }
 
 - (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 

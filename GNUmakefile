@@ -32,8 +32,8 @@ include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 #
 SUBPROJECTS = Source Images Tools
 
--include Makefile.preamble
+-include GNUmakefile.preamble
 
 include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/aggregate.make
 
--include Makefile.postamble
+-include GNUmakefile.postamble

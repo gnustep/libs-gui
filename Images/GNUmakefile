@@ -51,10 +51,10 @@ common_SliderVert.tiff \
 common_Dimple.tiff \
 common_ret.tiff
 
--include Makefile.preamble
+-include GNUmakefile.preamble
 
 # We don't actually build anything in this directory so
 # just include the common makefile rules
 include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/rules.make
 
--include Makefile.postamble
+-include GNUmakefile.postamble

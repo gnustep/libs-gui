@@ -426,11 +426,17 @@ static id NSApp;
 
   // Not in queue so wait for next event
   while (!done) {
-    NSDate* limitDate = [currentLoop limitDateForMode:mode];
+    /* Retain the limitDate so it doesn't get release accidentally by
+       runMode:beforeDate: if a timer which has this date as fire date gets
+       released. */
+    NSDate* limitDate = [[currentLoop limitDateForMode:mode] retain];
+    NSDate* originalLimitDate = limitDate;
 
     event = [self _eventMatchingMask:mask];
-    if (event)
+    if (event) {
+      [limitDate release];
       break;
+    }
 
     if (limitDate)
       limitDate = [expiration earlierDate:limitDate];
@@ -441,6 +447,7 @@ static id NSApp;
     [self _flushCommunicationChannels];
     [currentLoop runMode:mode beforeDate:limitDate];
 
+    [originalLimitDate release];
     event = [self _eventMatchingMask:mask];
     if (event)
       break;
@@ -568,6 +575,11 @@ static id NSApp;
 - (void)hide:sender
 {
   int i, count;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  // notify that we will hide
+  [nc postNotificationName: NSApplicationWillHideNotification
+      object: self];
 
   // TODO: hide the menu
 
@@ -576,6 +588,10 @@ static id NSApp;
     [[window_list objectAtIndex:i] performHide:sender];
 
   app_is_hidden = YES;
+
+  // notify that we did hide
+  [nc postNotificationName: NSApplicationDidHideNotification
+      object: self];
 }
 
 - (BOOL)isHidden
@@ -601,7 +617,17 @@ static id NSApp;
 
 - (void)unhideWithoutActivation
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  // notify that we will unhide
+  [nc postNotificationName: NSApplicationWillUnhideNotification
+      object: self];
+
   [self unhide: self];
+
+  // notify that we did unhide
+  [nc postNotificationName: NSApplicationDidUnhideNotification
+      object: self];
 }
 
 //
@@ -660,9 +686,18 @@ static id NSApp;
 - (void)updateWindows
 {
   int i, count;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  // notify that we will update
+  [nc postNotificationName: NSApplicationWillUpdateNotification
+      object: self];
 
   for (i = 0, count = [window_list count]; i < count; i++)
     [[window_list objectAtIndex:i] update];
+
+  // notify that we did update
+  [nc postNotificationName: NSApplicationDidUpdateNotification
+      object: self];
 }
 
 - (NSArray *)windows
@@ -865,12 +900,28 @@ static id NSApp;
 
 - (void)setDelegate:anObject
 {
+  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+
   delegate = anObject;
 
-  if ([delegate respondsToSelector:@selector(applicationDidFinishLaunching:)])
-    [[NSNotificationCenter defaultCenter] addObserver:delegate
-	  selector:@selector(applicationDidFinishLaunching:)
-	  name:NSApplicationDidFinishLaunchingNotification object:self];
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([delegate respondsToSelector:@selector(application##notif_name:)]) \
+    [nc addObserver:delegate \
+	  selector:@selector(application##notif_name:) \
+	  name:NSApplication##notif_name##Notification object:self]
+
+  SET_DELEGATE_NOTIFICATION(DidBecomeActive);
+  SET_DELEGATE_NOTIFICATION(DidFinishLaunching);
+  SET_DELEGATE_NOTIFICATION(DidHide);
+  SET_DELEGATE_NOTIFICATION(DidResignActive);
+  SET_DELEGATE_NOTIFICATION(DidUnhide);
+  SET_DELEGATE_NOTIFICATION(DidUpdate);
+  SET_DELEGATE_NOTIFICATION(WillBecomeActive);
+  SET_DELEGATE_NOTIFICATION(WillFinishLaunching);
+  SET_DELEGATE_NOTIFICATION(WillHide);
+  SET_DELEGATE_NOTIFICATION(WillResignActive);
+  SET_DELEGATE_NOTIFICATION(WillUnhide);
+  SET_DELEGATE_NOTIFICATION(WillUpdate);
 }
 
 //

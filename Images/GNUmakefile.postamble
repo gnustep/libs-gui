@@ -1,5 +1,5 @@
 #
-#  Makefile.postamble
+#  GNUmakefile.postamble
 #
 #  Copyright (C) 1997 Free Software Foundation, Inc.
 #
@@ -26,7 +26,7 @@
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #
-#   Makefile.postamble
+#   GNUmakefile.postamble
 #
 #   Project specific makefile rules
 #
@@ -36,22 +36,29 @@
 #
 
 # Things to do before compiling
-before-all:: header-links
+# before-all::
 
 # Things to do after compiling
 # after-all::
 
 # Things to do before installing
-# before-install::
+before-install::
+	$(GNUSTEP_MAKEFILES)/mkinstalldirs $(imagedir)
 
 # Things to do after installing
-# after-install::
+after-install::
+	for file in $(IMAGE_FILES); do \
+	  $(INSTALL_DATA) $$file $(imagedir)/$$file ; \
+	done
 
 # Things to do before uninstalling
 # before-uninstall::
 
 # Things to do after uninstalling
-# after-uninstall::
+after-uninstall::
+	for file in $(IMAGE_FILES); do \
+	  rm -f $(imagedir)/$$file ; \
+	done
 
 # Things to do before cleaning
 # before-clean::
@@ -70,12 +77,3 @@ before-all:: header-links
 
 # Things to do after checking
 # after-check::
-
-#
-# GNUstep GUI Library specific targets
-#
-header-links:
-	-rm -rf ../Headers/AppKit
-	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
-	-rm -rf ../Headers/DPSClient
-	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient

@@ -32,6 +32,30 @@
 
 @implementation NSForm
 
+/* Class variables */
+static Class defaultCellClass = nil;
+
++ (void)initialize
+{
+  if (self == [NSForm class]) {
+    /* Set the initial version */
+    [self setVersion: 1];
+
+    /* Set the default cell class */
+    defaultCellClass = [NSFormCell class];
+  }
+}
+
++ (Class)cellClass
+{
+  return defaultCellClass;
+}
+
++ (void)setCellClass:(Class)classId
+{
+  defaultCellClass = classId;
+}
+
 - (NSFormCell*)addEntry:(NSString*)title
 {
   return [self insertEntry:title atIndex:[self numberOfRows]];

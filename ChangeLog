@@ -1,10 +1,41 @@
+Tue Oct 28 11:24:40 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Makefile: Changed to GNUmakefile.
+	* Makefile.postamble: Changed to GNUmakefile.postamble.
+	* Documentation/Makefile: Changed to GNUmakefile.
+	* Images/Makefile: Changed to GNUmakefile.
+	* Images/Makefile.postamble: Changed to GNUmakefile.postamble.
+	* Source/Makefile: Changed to GNUmakefile.
+	* Source/Makefile.preamble: Changed to GNUmakefile.preamble.
+	* Source/Makefile.postamble: Changed to GNUmakefile.postamble.
+	* Testing/Makefile: Changed to GNUmakefile.
+	* Testing/Makefile.preamble: Changed to GNUmakefile.preamble.
+	* Testing/Makefile.postamble: Changed to GNUmakefile.postamble.
+
+Mon Oct 27 09:33:17 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Source/NSBox.m (-initWithFrame:): Call super's addSubview: method
+	(bug fix from Benhur Stein <Benhur-de-Oliveira.Stein@imag.fr>).
+	(setContentView:): Fixed.
+
 Tue Oct 21 18:25:14 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Incorporated some bug fixes from Benhur Stein
 	<Benhur-de-Oliveira.Stein@imag.fr>.
 	* Source/NSApplication.m (setDelegate:): Register the delegate for
 	receiving notifications.
+	(hide:): Post the NSApplicationWillHideNotification and
+	NSApplicationDidHideNotification notifications.
+	(unhideWithoutActivation:): Post NSApplicationWillUnhideNotification
+	and NSApplicationDidUnhideNotification notifications.
 	* Source/NSView.m (visibleRect): Implemented.
+	* Source/NSColorWell.m (initWithFrame:): Assign the color without
+	using ASSIGN.
+	* Source/NSForm (+initialize): New method.
+	(+cellClass): Likewise.
+	(+setCellClass:): Likewise.
+	* Source/NSView.m (addSubview:): Invoke windowWillMoveToWindow:.
+	(replaceSubview:): Likewise.
 
 Tue Oct 21 16:21:06 1997  Ovidiu Predescu <ovidiu@net-community.com>
 

@@ -58,7 +58,7 @@
 
   is_bordered = YES;
   is_active = NO;
-  ASSIGN(the_color, [NSColor blackColor]);
+  the_color = [[NSColor blackColor] retain];
 
   return self;
 }

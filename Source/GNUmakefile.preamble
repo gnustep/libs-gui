@@ -1,5 +1,5 @@
 #
-#  Makefile.preamble
+#  GNUmakefile.preamble
 #
 #  Copyright (C) 1997 Free Software Foundation, Inc.
 #
@@ -26,12 +26,12 @@
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #
-#   Makefile.preamble
+#   GNUmakefile.preamble
 #
 #   Project specific makefile variables, and additional
 #
-#   Do not put any Makefile rules in this file, instead they should
-#   be put into Makefile.postamble.
+#   Do not put any GNUmakefile rules in this file, instead they should
+#   be put into GNUmakefile.postamble.
 #
 
 #

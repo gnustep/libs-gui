@@ -183,8 +183,8 @@ DPSClient/DPSOperators.h \
 DPSClient/TypesandConstants.h
 
 
--include Makefile.preamble
+-include GNUmakefile.preamble
 
 include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/library.make
 
--include Makefile.postamble
+-include GNUmakefile.postamble

@@ -70,7 +70,8 @@
   border_type = NSLineBorder;
   title_position = NSAtTop;
   title_rect = NSZeroRect;
-  [self setContentView: [[NSView alloc] init]];
+  content_view = [NSView new];
+  [super addSubview:content_view];
 
   return self;
 }
@@ -169,26 +170,11 @@
 
 - (void)setContentView:(NSView *)aView
 {
-  if (content_view)
-    {
-      // Tell view that it is no longer in a window
-      [content_view viewWillMoveToWindow:nil];
-      [content_view release];
-    }
+  [aView retain];
+  [content_view release];
   content_view = aView;
-  [content_view retain];
 
-  // We only have one view in our subview array
-  [sub_views release];
-  sub_views = [NSMutableArray array];
-  if ([sub_views count] == 0)
-    {
-      [sub_views addObject:aView];
-    }
-
-  [content_view setSuperview:self];
-  [content_view setNextResponder:self];
-  [content_view viewWillMoveToWindow:window];
+  [self replaceSubview:content_view with:aView];
   [content_view setFrame: [self calcSizes]];
 }
 
