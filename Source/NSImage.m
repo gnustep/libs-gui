@@ -57,10 +57,6 @@
 BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
-// Resource directories
-static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
-static NSString* NSImage_PATH = @"Images";
-
 @interface	GSRepData : NSObject
 {
 @public
@@ -134,10 +130,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   if (self == [NSImage class])
     {
-      NSBundle	*system = [NSBundle bundleWithPath: gnustep_libdir];
+#ifdef GNUSTEP_BASE_LIBRARY
+      NSString	*path = [NSBundle pathForGNUstepResource: @"nsmapping"
+				  ofType: @"strings"
+				  inDirectory: @"Images"];
+#else
+      NSBundle	*system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
       NSString	*path = [system pathForResource: @"nsmapping"
 					 ofType: @"strings"
-				    inDirectory: NSImage_PATH];
+				    inDirectory: @"Images"];
+#endif
+
       // Initial version
       [self setVersion: 1];
 
@@ -216,14 +219,36 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       /* If not found then search in system */
       if (!path)
 	{
-	  NSBundle *system = [NSBundle bundleWithPath: gnustep_libdir];
-
 	  if (ext)
-	    path = [system pathForResource: the_name
-				    ofType: ext
-			       inDirectory: NSImage_PATH];
+	    {
+#ifdef GNUSTEP_BASE_LIBRARY
+	      path = [NSBundle pathForGNUstepResource: the_name
+			       ofType: ext
+			       inDirectory: @"Images"];
+#else
+	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
+	  
+	      path = [system pathForResource: the_name
+			     ofType: ext
+			     inDirectory: @"Images"];
+#endif 
+	    }
 	  else 
 	    {
+#ifdef GNUSTEP_BASE_LIBRARY
+	      id o, e;
+
+	      e = [array objectEnumerator];
+	      while ((o = [e nextObject]))
+		{
+		  path = [NSBundle pathForGNUstepResource: the_name
+			       ofType: o
+			       inDirectory: @"Images"];
+		  if (path != nil && [path length] != 0)
+		    break;
+		}
+#else
+	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
 	      id o, e;
 
 	      e = [array objectEnumerator];
@@ -231,10 +256,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 		{
 		  path = [system pathForResource: the_name
 					  ofType: o
-				     inDirectory: NSImage_PATH];
+				     inDirectory: @"Images"];
 		  if (path != nil && [path length] != 0)
 		    break;
 		}
+#endif
 	    }
 	}
 
