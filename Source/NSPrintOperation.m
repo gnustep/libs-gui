@@ -231,10 +231,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toData:(NSMutableData *)data 
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
-  return AUTORELEASE([[self alloc] initPDFOperationWithView: aView 
-				   insideRect: rect 
-				   toData: data 
-				   printInfo: aPrintInfo]);
+  return AUTORELEASE([[GSPDFPrintOperation alloc] 
+			 initPDFOperationWithView: aView 
+			 insideRect: rect 
+			 toData: data 
+			 printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
@@ -242,10 +243,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toPath:(NSString *)path 
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
-  return AUTORELEASE([[self alloc] initPDFOperationWithView: aView 
-				   insideRect: rect 
-				   toPath: path 
-				   printInfo: aPrintInfo]);
+  return AUTORELEASE([[GSPDFPrintOperation alloc] 
+			 initPDFOperationWithView: aView 
+			 insideRect: rect 
+			 toPath: path 
+			 printInfo: aPrintInfo]);
 }
 
 //

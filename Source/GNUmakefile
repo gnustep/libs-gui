@@ -170,6 +170,7 @@ tiff.m \
 externs.m \
 linking.m \
 GSDrawFunctions.m \
+GSDragView.m \
 GSFontInfo.m \
 GSTable.m \
 GSHbox.m \

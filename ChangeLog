@@ -1,3 +1,11 @@
+2004-06-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDragView.h:
+	* Source/GSDragView.m: New files with a backend neutral drag and
+	drop implementation.
+	* Source/GNUmakefile: Added GSDragView.m. 
+	* Source/NSPrintOperation.m: Use correct subclass for PDF operations.
+
 2004-06-02  Riccardo Mottola  <rollei@tiscalinet.it>
 	    David Ayers  <d.ayers@inode.at>
 
