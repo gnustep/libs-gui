@@ -46,10 +46,10 @@ enum {
 {
   // Attributes
   NSString* _colorSpace;
-  NSSize size;
-  BOOL   hasAlpha;
-  BOOL   isOpaque;
-  int    bitsPerSample;
+  NSSize _size;
+  BOOL   _hasAlpha;
+  BOOL   _isOpaque;
+  int    _bitsPerSample;
   int    _pixelsWide;
   int    _pixelsHigh;
 }
@@ -61,6 +61,8 @@ enum {
 + (NSArray *)imageRepsWithContentsOfFile:(NSString *)filename;
 + (id)imageRepWithPasteboard:(NSPasteboard *)pasteboard;
 + (NSArray *)imageRepsWithPasteboard:(NSPasteboard *)pasteboard;
++ (id)imageRepWithContentsOfURL:(NSURL *)anURL;
++ (NSArray *)imageRepsWithContentsOfURL:(NSURL *)anURL;
 
 //
 // Checking Data Types 
@@ -110,12 +112,6 @@ enum {
 + (void)registerImageRepClass:(Class)imageRepClass;
 + (NSArray *)registeredImageRepClasses;
 + (void)unregisterImageRepClass:(Class)imageRepClass;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

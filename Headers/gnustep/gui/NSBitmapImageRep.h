@@ -47,20 +47,22 @@ typedef enum _NSTIFFCompression {
   NSTIFFCompressionOldJPEG  = 32865
 } NSTIFFCompression;
 
-@interface NSBitmapImageRep : NSImageRep <NSCoding>
+@interface NSBitmapImageRep : NSImageRep
 {
   // Attributes
-  unsigned int		bytesPerRow;
-  unsigned int		numColors;
-  unsigned int		bitsPerPixel;   
-  unsigned short	compression;
-  float			comp_factor;
+  unsigned int		_bytesPerRow;
+  unsigned int		_numColors;
+  unsigned int		_bitsPerPixel;   
+  unsigned short	_compression;
+  float			_comp_factor;
   BOOL			_isPlanar;
-  unsigned char		**imagePlanes;
-  NSMutableData		*imageData;
+  unsigned char		**_imagePlanes;
+  NSMutableData		*_imageData;
 
   // Reserved for back-end use
-  void			*back_end_reserved;
+  // FIXME: This is used only for the method xPixmapMask in the shared X code. 
+  // If we change the dragging code, we can remove this method and the ivar!
+  void			*_back_end_reserved;
 }
 
 //
@@ -119,12 +121,6 @@ typedef enum _NSTIFFCompression {
 		 factor: (float*)factor;
 - (void) setCompression: (NSTIFFCompression)compression
 		 factor: (float)factor;
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 

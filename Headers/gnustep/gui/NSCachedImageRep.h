@@ -34,12 +34,11 @@
 
 @class NSWindow;
 
-@interface NSCachedImageRep : NSImageRep <NSCoding>
+@interface NSCachedImageRep : NSImageRep
 {
   // Attributes
   NSRect      _rect;
   NSWindow*   _window;
-  void*       _cache;
 }
 
 //
@@ -57,12 +56,6 @@
 //
 - (NSRect)rect;
 - (NSWindow *)window;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

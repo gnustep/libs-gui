@@ -31,11 +31,11 @@
 
 #include <AppKit/NSImageRep.h>
 
-@interface NSCustomImageRep : NSImageRep <NSCoding>
+@interface NSCustomImageRep : NSImageRep
 {
   // Attributes
-  id  delegate;
-  SEL selector;
+  id  _delegate;
+  SEL _selector;
 }
 
 - (id)initWithDrawSelector:(SEL)aSelector
@@ -46,12 +46,6 @@
 //
 - (id)delegate;
 - (SEL)drawSelector;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 
