@@ -121,7 +121,7 @@ static NSString *attachmentString()
 - (NSDictionary*) fontAttributesInRange: (NSRange)range
 {
   NSDictionary	*all;
-  static SEL	sel = @selector(objectForKey:);
+  static SEL	sel = 0;
   IMP		objForKey;
   id		objects[8];
   id		keys[8];
@@ -135,6 +135,8 @@ static NSString *attachmentString()
   all = [self attributesAtIndex: range.location
 		 effectiveRange: &range];
 
+  if (sel == 0)
+    sel = @selector(objectForKey:);
   objForKey = [all methodForSelector: sel];
 
   keys[count] = NSFontAttributeName;

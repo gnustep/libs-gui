@@ -391,8 +391,8 @@ typedef struct NSView_struct
 /*
  * Class variables
  */
-static SEL	ccSel = @selector(_checkCursorRectangles:forEvent:);
-static SEL	ctSel = @selector(_checkTrackingRectangles:forEvent:);
+static SEL	ccSel;
+static SEL	ctSel;
 static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
@@ -410,6 +410,8 @@ static NSMapTable* windowmaps = NULL;
     {
       NSDebugLog(@"Initialize NSWindow class\n");
       [self setVersion: 2];
+      ccSel = @selector(_checkCursorRectangles:forEvent:);
+      ctSel = @selector(_checkTrackingRectangles:forEvent:);
       ccImp = [self instanceMethodForSelector: ccSel];
       ctImp = [self instanceMethodForSelector: ctSel];
       responderClass = [NSResponder class];

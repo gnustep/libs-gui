@@ -119,23 +119,19 @@
 
 static Class	infCls = 0;
 
-static SEL	infSel = @selector(newWithZone:value:at:);
-static IMP	infImp = 0;
+static SEL infSel;
+static SEL addSel;
+static SEL cntSel;
+static SEL insSel;
+static SEL oatSel;
+static SEL remSel;
 
-static SEL	addSel = @selector(addObject:);
-static void	(*addImp)() = 0;
-
-static SEL	cntSel = @selector(count);
-static unsigned (*cntImp)() = 0;
-
-static SEL	insSel = @selector(insertObject:atIndex:);
-static void	(*insImp)() = 0;
-
-static SEL	oatSel = @selector(objectAtIndex:);
-static IMP	oatImp = 0;
-
-static SEL	remSel = @selector(removeObjectAtIndex:);
-static void	(*remImp)() = 0;
+static IMP	infImp;
+static void	(*addImp)();
+static unsigned (*cntImp)();
+static void	(*insImp)();
+static IMP	oatImp;
+static void	(*remImp)();
 
 #define	NEWINFO(Z,O,L)	((*infImp)(infCls, infSel, (Z), (O), (L)))
 #define	ADDOBJECT(O)	((*addImp)(infoArray, addSel, (O)))
@@ -154,6 +150,13 @@ static void _setup()
   if (infCls == 0)
     {
       NSMutableArray	*a;
+
+      infSel = @selector(newWithZone:value:at:);
+      addSel = @selector(addObject:);
+      cntSel = @selector(count);
+      insSel = @selector(insertObject:atIndex:);
+      oatSel = @selector(objectAtIndex:);
+      remSel = @selector(removeObjectAtIndex:);
 
       infCls = [GSTextInfo class];
       infImp = [infCls methodForSelector: infSel];

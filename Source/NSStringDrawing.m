@@ -49,7 +49,7 @@ static NSFont		*defFont;
 static NSParagraphStyle	*defStyle;
 static NSColor		*defFgCol;
 static NSColor		*defBgCol;
-static SEL		advSel = @selector(advancementForGlyph:);
+static SEL		advSel;
 
 /*
  *	Thne 'checkInit()' function is called to ensure that any static
@@ -64,6 +64,8 @@ checkInit()
     {
       NSMutableCharacterSet	*ms;
       NSCharacterSet	*whitespace;
+
+      advSel = @selector(advancementForGlyph:);
 
       whitespace = RETAIN([NSCharacterSet whitespaceCharacterSet]);
 

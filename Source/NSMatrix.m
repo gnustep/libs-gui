@@ -131,10 +131,10 @@ enum {
 /* Class variables */
 static Class defaultCellClass = nil;
 static int mouseDownFlags = 0;
-static SEL copySel = @selector(copyWithZone:);
-static SEL initSel = @selector(init);
-static SEL allocSel = @selector(allocWithZone:);
-static SEL getSel = @selector(objectAtIndex:);
+static SEL copySel;
+static SEL initSel;
+static SEL allocSel;
+static SEL getSel;
 
 + (void) initialize
 {
@@ -142,6 +142,11 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       /* Set the initial version */
       [self setVersion: 1];
+
+      copySel = @selector(copyWithZone:);
+      initSel = @selector(init);
+      allocSel = @selector(allocWithZone:);
+      getSel = @selector(objectAtIndex:);
 
       /*
        * MacOS-X docs say default cell class is NSActionCell

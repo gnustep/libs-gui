@@ -70,11 +70,11 @@ static Class	viewClass;
 
 static NSAffineTransform	*flip = nil;
 
-static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
-static SEL	appSel = @selector(appendTransform:);
+static SEL	appSel;
+static SEL	invalidateSel;
 
-static void	(*invalidateImp)(NSView*, SEL) = 0;
-static SEL	invalidateSel = @selector(_invalidateCoordinates);
+static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*);
+static void	(*invalidateImp)(NSView*, SEL);
 
 /*
  *	Stuff to maintain a map table so we know what views are
@@ -155,6 +155,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       typesMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                 NSObjectMapValueCallBacks, 0);
       typesLock = [NSLock new];
+
+      appSel = @selector(appendTransform:);
+      invalidateSel = @selector(_invalidateCoordinates);
 
       appImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
 		[matrixClass instanceMethodForSelector: appSel];

@@ -1,10 +1,23 @@
+2000-10-31  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Use new GSObjCClassOfObject() function
+	from NSObjCRuntime.h
+	* Source/GSTextStorage.m: Avoid static variable initialisation with
+	@selector() as it doesn't work with Apple runtime.
+	* Source/NSAttributedString.m: ditto
+	* Source/NSMatrix.m: ditto
+	* Source/NSStringDrawing.m: ditto
+	* Source/NSView.m: ditto
+	* Source/NSWindow.m: ditto
+
 2000-10-24  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m: _GNULineLayoutInfo has new ivar
 	usedRect. Simplified the code a bit.
 	* Source/NSText.m: [buildUpTextNetwork:] The text container no
 	longer tracks its view by default. 
-	[initWithFrame:textContainer:] the view is no longer resizable by default.
+	[initWithFrame:textContainer:] the view is no longer resizable by
+	default.
 	* Source/NSTextContainer.m: [setContainerSize:] only informs
 	layout manager if really changed.
 	* Source/Parser/attributedStringConsumer.m

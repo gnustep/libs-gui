@@ -45,8 +45,7 @@
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSTask.h>
-
-#include <base/fast.x>
+#include <Foundation/NSObjCRuntime.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
@@ -1271,7 +1270,7 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   [connection setRequestTimeout: seconds];
   [connection setReplyTimeout: seconds];
 
-  msgImp = get_imp(fastClass(provider), msgSel);
+  msgImp = get_imp(GSObjCClassOfObject(provider), msgSel);
   NS_DURING
     {
       [provider performService: selName
