@@ -1,3 +1,20 @@
+2003-06-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/GSLayoutManager.h
+	Changed ivars cached_pos and cached_cpos to unsigned.
+	* Headers/gnustep/gui/GSLayoutManager_internal.h
+	Changed element char_offset of structure glyph_t to unsigned.
+	* Source/GSLayoutManager.m (_glyphDumpRuns,
+	helpers::generateRunsToCharacter:,
+	helpers::generateGlyphsUpToCharacter:,
+	helpers::generateGlyphsUpToGlyph:,
+	helpers::glyphForCharacter:index:positions::, getGlyphs:range:,
+	characterRangeForGlyphRange:actualGlyphRange:,
+	glyphRangeForCharacterRange:actualCharacterRange:,
+	invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:, 
+	insertTextContainer:atIndex:):
+	Removed compiler warning about signed/unsigned comparision. 
+
 2003-06-25  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (initWithPasteboard:):
