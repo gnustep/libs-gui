@@ -455,8 +455,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSWindow      *resp = [[_application keyWindow] firstResponder];
   id            obj = nil;
 
-  NSLog(@"doService: called");
-
   for (i = 0; i <= es; i++)
     {
       NSString  *sendType;
@@ -476,8 +474,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
               NSPasteboard      *pb;
 
               pb = [NSPasteboard pasteboardWithUniqueName];
-	      if ([obj writeSelectionToPasteboard: pb
-					    types: sendTypes] == NO)
+	      if (sendType
+		  && [obj writeSelectionToPasteboard: pb
+					       types: sendTypes] == NO)
 		{
 		  NSRunAlertPanel(nil,
 			@"object failed to write to pasteboard",
@@ -485,7 +484,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
 		}
 	      else if (NSPerformService(title, pb) == YES)
 		{
-		  if ([obj readSelectionFromPasteboard: pb] == NO)
+		  if (returnType
+		      && [obj readSelectionFromPasteboard: pb] == NO)
 		    {
 		      NSRunAlertPanel(nil,
 			    @"object failed to read from pasteboard",
@@ -1259,8 +1259,9 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   if (service == nil)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat: @"No service matching '%@'", serviceItem],
-	@"Continue", nil, nil);
+	@"No service matching '%@'",
+	@"Continue", nil, nil,
+	serviceItem);
       return NO;			/* No matching service.	*/
     }
 
@@ -1288,9 +1289,9 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   if (provider == nil)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
-	    @"Failed to contact service provider for '%@'", serviceItem],
-	@"Continue", nil, nil);
+	@"Failed to contact service provider for '%@'",
+	@"Continue", nil, nil,
+	serviceItem);
       return NO;
     }
 
@@ -1327,9 +1328,9 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   if (error != nil)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
-	    @"Failed to contact service provider for '%@'", serviceItem],
-	    @"Continue", nil, nil);
+	@"Failed to contact service provider for '%@': %@",
+        @"Continue", nil, nil,
+	serviceItem, error);
       return NO;
     }
 

@@ -1,3 +1,10 @@
+2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/GSServicesProvider.m (-doService:): Only try to
+        write/read selection if the send/return type isn't nil.
+        Fix calls to NSRunAlertPanel() so they don't do printf()
+        expansion on the message twice.
+
 Thu Jun  6 08:29:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScroller.m ([NSScroller -setFrame:]): Do not add
