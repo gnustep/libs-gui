@@ -30,6 +30,7 @@
 #include "config.h"
 #include <Foundation/NSNotification.h>
 #include "AppKit/NSColor.h"
+#include "AppKit/NSControl.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
@@ -120,6 +121,9 @@ static NSColor	*txtCol;
 {
   ASSIGN (_background_color, aColor);
   _textfieldcell_is_opaque = [self _isOpaque];
+  if (_control_view)
+    if ([_control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)_control_view updateCell: self];
 }
 
 - (NSColor *) backgroundColor
@@ -131,6 +135,9 @@ static NSColor	*txtCol;
 {
   _textfieldcell_draws_background = flag;
   _textfieldcell_is_opaque = [self _isOpaque];
+  if (_control_view)
+    if ([_control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)_control_view updateCell: self];
 }
 
 - (BOOL) drawsBackground
@@ -141,6 +148,9 @@ static NSColor	*txtCol;
 - (void) setTextColor: (NSColor *)aColor
 {
   ASSIGN (_text_color, aColor);
+  if (_control_view)
+    if ([_control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)_control_view updateCell: self];
 }
 
 - (NSColor *) textColor
