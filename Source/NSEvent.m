@@ -509,10 +509,13 @@ static Class eventClass;
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
+      case NSMiddleMouseDown:
+      case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
       case NSMouseMoved:
       case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
       case NSRightMouseDragged:
 	[aCoder encodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
 		&event_data.mouse.click, &event_data.mouse.pressure];
@@ -559,10 +562,13 @@ static Class eventClass;
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
+      case NSMiddleMouseDown:
+      case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
       case NSMouseMoved:
       case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
       case NSRightMouseDragged:
 	[aDecoder decodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
 	      &event_data.mouse.click, &event_data.mouse.pressure];
@@ -600,21 +606,40 @@ static Class eventClass;
 
 - (NSString*) description
 {
-  const char* eventTypes[] = { "leftMouseDown", "leftMouseUp",
-    "rightMouseDown", "rightMouseUp", "mouseMoved", "leftMouseDragged",
-    "rightMouseDragged", "mouseEntered", "mouseExited",
-    "keyDown", "keyUp", "flagsChanged", "appKitDefined",
-    "systemDefined", "applicationDefined", "periodic", "cursorUpdate"
+  const char* eventTypes[] = {
+    "leftMouseDown",
+    "leftMouseUp",
+    "middleMouseDown",
+    "middleMouseUp",
+    "rightMouseDown",
+    "rightMouseUp",
+    "mouseMoved",
+    "leftMouseDragged",
+    "middleMouseDragged",
+    "rightMouseDragged",
+    "mouseEntered",
+    "mouseExited",
+    "keyDown",
+    "keyUp",
+    "flagsChanged",
+    "appKitDefined",
+    "systemDefined",
+    "applicationDefined",
+    "periodic",
+    "cursorUpdate"
   };
 
   switch (event_type)
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
+      case NSMiddleMouseDown:
+      case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
       case NSMouseMoved:
       case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
       case NSRightMouseDragged:
 	return [NSString stringWithFormat:
 	      @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"

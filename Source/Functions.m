@@ -55,10 +55,6 @@ NSApplicationMain(int argc, const char **argv)
 			     environment: environ];
 #endif
 
-#ifndef NX_CURRENT_COMPILER_RELEASE
-  initialize_gnustep_backend();
-#endif
-
   infoDict = [[NSBundle mainBundle] infoDictionary];
   className = [infoDict objectForKey: @"NSPrincipalClass"];
   appClass = NSClassFromString(className);
@@ -84,16 +80,19 @@ NSApplicationMain(int argc, const char **argv)
 unsigned
 NSEventMaskFromType(NSEventType type)
 {
-  switch(type)
+  switch (type)
     {
       case NSLeftMouseDown:	return NSLeftMouseDownMask;
       case NSLeftMouseUp:	return NSLeftMouseUpMask;
+      case NSMiddleMouseDown:	return NSMiddleMouseDownMask;
+      case NSMiddleMouseUp:	return NSMiddleMouseUpMask;
       case NSRightMouseDown:	return NSRightMouseDownMask;
       case NSRightMouseUp:	return NSRightMouseUpMask;
       case NSMouseMoved:	return NSMouseMovedMask;
       case NSMouseEntered:	return NSMouseEnteredMask;
       case NSMouseExited:	return NSMouseExitedMask;
       case NSLeftMouseDragged:	return NSLeftMouseDraggedMask;
+      case NSMiddleMouseDragged:	return NSMiddleMouseDraggedMask;
       case NSRightMouseDragged:	return NSRightMouseDraggedMask;
       case NSKeyDown:		return NSKeyDownMask;
       case NSKeyUp:		return NSKeyUpMask;

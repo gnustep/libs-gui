@@ -1,3 +1,18 @@
+2000-08-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSEvent.h: Support middle mouse button
+	* Headers/gnustep/gui/NSResponder.h: ditto
+	* Source/Functions.m: ditto
+	* Source/GSComboSupport.m: ditto
+	* Source/NSApplication.m: ditto
+	* Source/NSCell.m: ditto
+	* Source/NSControl.m: ditto
+	* Source/NSEvent.m: ditto
+	* Source/NSGraphicsContext.m: ditto
+	* Source/NSMenuView.m: ditto
+	* Source/NSResponder.m: ditto
+	* Source/NSWindow.m: ditto
+
 2000-07-30 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBundleAdditions.m: patch by borgheron@yahoo.com to simplify

@@ -422,9 +422,9 @@ static Class cellClass;
   NSEvent *e;
   int oldActionMask;
   NSPoint location;
-  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-			    NSMouseMovedMask | NSLeftMouseDraggedMask |
-			    NSRightMouseDraggedMask;
+  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
+    | NSMouseMovedMask | NSLeftMouseDraggedMask | NSMiddleMouseDraggedMask
+    | NSRightMouseDraggedMask;
   NSDebugLog(@"NSControl mouseDown\n");
 
   if (![self isEnabled])

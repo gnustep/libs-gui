@@ -228,6 +228,30 @@
     return [self noResponderFor: @selector(keyUp:)];
 }
 
+- (void) middleMouseDown: (NSEvent*)theEvent
+{
+  if (_next_responder)
+    return [_next_responder middleMouseDown: theEvent];
+  else
+    return [self noResponderFor: @selector(middleMouseDown:)];
+}
+
+- (void) middleMouseDragged: (NSEvent*)theEvent
+{
+  if (_next_responder)
+    return [_next_responder middleMouseDragged: theEvent];
+  else
+    return [self noResponderFor: @selector(middleMouseDragged:)];
+}
+
+- (void) middleMouseUp: (NSEvent*)theEvent
+{
+  if (_next_responder)
+    return [_next_responder middleMouseUp: theEvent];
+  else
+    return [self noResponderFor: @selector(middleMouseUp:)];
+}
+
 - (void) mouseDown: (NSEvent*)theEvent
 {
   if (_next_responder)

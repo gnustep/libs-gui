@@ -897,8 +897,8 @@ static NSColor	*shadowCol;
 {
   NSApplication	*theApp = [NSApplication sharedApplication];
   unsigned	event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			    | NSMouseMovedMask | NSLeftMouseDraggedMask
-			    | NSRightMouseDraggedMask;
+    | NSMouseMovedMask | NSLeftMouseDraggedMask | NSMiddleMouseDraggedMask
+    | NSRightMouseDraggedMask;
   NSPoint	location = [theEvent locationInWindow];
   NSPoint	point = [controlView convertPoint: location fromView: nil];
   float		delay;

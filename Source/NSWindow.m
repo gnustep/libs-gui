@@ -237,16 +237,14 @@ static NSCell* tileCell = nil;
   if ([theEvent clickCount] >= 2)
     {
       NSWindow	*w = [_window counterpart];
-
-      [_window orderOut: self];
-      [w orderFront: self];
+      [w deminiaturize: self];
     }
   else
     {
       NSPoint	lastLocation;
       NSPoint	location;
       unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-				| NSPeriodicMask | NSRightMouseUpMask;
+	| NSPeriodicMask | NSMiddleMouseUpMask | NSRightMouseUpMask;
       NSDate	*theDistantFuture = [NSDate distantFuture];
       BOOL	done = NO;
 
@@ -263,6 +261,7 @@ static NSCell* tileCell = nil;
 	  switch ([theEvent type])
 	    {
 	      case NSRightMouseUp:
+	      case NSMiddleMouseUp:
 	      case NSLeftMouseUp:
 	      /* right mouse up or left mouse up means we're done */
 		done = YES;
@@ -2296,6 +2295,18 @@ resetCursorRectsForView(NSView *theView)
 	last_point = [theEvent locationInWindow];
 	break;
 
+      case NSMiddleMouseDown:				  // Middle mouse down
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v middleMouseDown: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
+
+      case NSMiddleMouseUp:				  // Middle mouse up
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v middleMouseUp: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
+
       case NSRightMouseDown:				  // Right mouse down
 	v = [content_view hitTest: [theEvent locationInWindow]];
 	[v rightMouseDown: theEvent];
@@ -2309,6 +2320,7 @@ resetCursorRectsForView(NSView *theView)
 	break;
 
       case NSLeftMouseDragged:				// Left mouse dragged
+      case NSMiddleMouseDragged:			// Middle mouse dragged
       case NSRightMouseDragged:				// Right mouse dragged
       case NSMouseMoved:				// Mouse moved
 	switch (type)
@@ -2316,6 +2328,10 @@ resetCursorRectsForView(NSView *theView)
 	    case NSLeftMouseDragged:
 	      v = [content_view hitTest: [theEvent locationInWindow]];
 	      [v mouseDragged: theEvent];
+	      break;
+	    case NSMiddleMouseDragged:
+	      v = [content_view hitTest: [theEvent locationInWindow]];
+	      [v middleMouseDragged: theEvent];
 	      break;
 	    case NSRightMouseDragged:
 	      v = [content_view hitTest: [theEvent locationInWindow]];

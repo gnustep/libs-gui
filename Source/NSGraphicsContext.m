@@ -224,6 +224,10 @@ NSGraphicsContext	*GSCurrentContext()
 {
 }
 
++ (void) waitAllContexts
+{
+}
+
 - (NSView*) focusView
 {
   return [focus_stack lastObject];
@@ -2045,6 +2049,16 @@ NSGraphicsContext	*GSCurrentContext()
 			  matched = YES;
 			break;
 
+		      case NSMiddleMouseDown:
+			if (mask & NSMiddleMouseDownMask)
+			  matched = YES;
+			break;
+
+		      case NSMiddleMouseUp:
+			if (mask & NSMiddleMouseUpMask)
+			  matched = YES;
+			break;
+
 		      case NSRightMouseDown:
 			if (mask & NSRightMouseDownMask)
 			  matched = YES;
@@ -2072,6 +2086,11 @@ NSGraphicsContext	*GSCurrentContext()
 
 		      case NSLeftMouseDragged:
 			if (mask & NSLeftMouseDraggedMask)
+			  matched = YES;
+			break;
+
+		      case NSMiddleMouseDragged:
+			if (mask & NSMiddleMouseDraggedMask)
 			  matched = YES;
 			break;
 
@@ -2200,6 +2219,16 @@ NSGraphicsContext	*GSCurrentContext()
 			  shouldRemove = YES;
 			break;
 
+		      case NSMiddleMouseDown:
+			if (mask & NSMiddleMouseDownMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSMiddleMouseUp:
+			if (mask & NSMiddleMouseUpMask)
+			  shouldRemove = YES;
+			break;
+
 		      case NSRightMouseDown:
 			if (mask & NSRightMouseDownMask)
 			  shouldRemove = YES;
@@ -2227,6 +2256,11 @@ NSGraphicsContext	*GSCurrentContext()
 
 		      case NSLeftMouseDragged:
 			if (mask & NSLeftMouseDraggedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSMiddleMouseDragged:
+			if (mask & NSMiddleMouseDraggedMask)
 			  shouldRemove = YES;
 			break;
 

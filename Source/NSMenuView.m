@@ -749,6 +749,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
       end = NSRightMouseUp;
       eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
     }
+  else if (type == NSMiddleMouseDown)
+    {
+      end = NSMiddleMouseUp;
+      eventMask |= NSMiddleMouseUpMask | NSMiddleMouseDraggedMask;
+    }
   else
     {
       end = NSLeftMouseUp;

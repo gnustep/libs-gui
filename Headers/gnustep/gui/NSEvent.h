@@ -44,10 +44,13 @@
 typedef enum _NSEventType {
   NSLeftMouseDown,
   NSLeftMouseUp,
+  NSMiddleMouseDown,		/* GNUstep extension	*/
+  NSMiddleMouseUp,		/* GNUstep extension	*/
   NSRightMouseDown,
   NSRightMouseUp,
   NSMouseMoved,
   NSLeftMouseDragged,
+  NSMiddleMouseDragged,		/* GNUstep extension	*/
   NSRightMouseDragged,
   NSMouseEntered,
   NSMouseExited,
@@ -64,10 +67,13 @@ typedef enum _NSEventType {
 enum {
   NSLeftMouseDownMask = (1 << NSLeftMouseDown),
   NSLeftMouseUpMask = (1 << NSLeftMouseUp),
+  NSMiddleMouseDownMask = (1 << NSMiddleMouseDown),	/* GNUstep	*/
+  NSMiddleMouseUpMask = (1 << NSMiddleMouseUp),		/* GNUstep	*/
   NSRightMouseDownMask = (1 << NSRightMouseDown),
   NSRightMouseUpMask = (1 << NSRightMouseUp),
   NSMouseMovedMask = (1 << NSMouseMoved),
   NSLeftMouseDraggedMask = (1 << NSLeftMouseDragged),
+  NSMiddleMouseDraggedMask = (1 << NSMiddleMouseDragged),	/* GNUstep */
   NSRightMouseDraggedMask = (1 << NSRightMouseDragged),
   NSMouseEnteredMask = (1 << NSMouseEntered),
   NSMouseExitedMask = (1 << NSMouseExited),
