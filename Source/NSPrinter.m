@@ -136,6 +136,30 @@ NSArray *printerTypesAvailable = nil;
 
 extern NSString* NSPPDParseException;
 
+#ifndef LIB_FOUNDATION_LIBRARY
+
+static void __NSRetainNothing(void *table, const void *anObject)
+{
+}
+
+static void __NSReleaseNothing(void *table, void *anObject)
+{
+}
+
+static NSString* __NSDescribeObjects(void *table, const void *anObject)
+{
+    return [(NSObject*)anObject description];
+}
+
+static const NSMapTableValueCallBacks NSNonRetainedObjectMapValueCallBacks = {
+    (void (*)(NSMapTable *, const void *))__NSRetainNothing,
+    (void (*)(NSMapTable *, void *))__NSReleaseNothing,
+    (NSString *(*)(NSMapTable *, const void *))__NSDescribeObjects
+}; 
+
+#endif /* LIB_FOUNDATION_LIBRARY */
+
+
 @interface NSPrinter (private)
 + allocMaps;
 - initWithPPD:(NSString *)PPDstring
