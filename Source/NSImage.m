@@ -510,7 +510,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       NSImageRep *rep = [self bestRepresentationForDevice: nil];
 
-      _size = [rep size];
+      if (rep)
+	_size = [rep size];
+      else
+	_size = NSZeroSize;
     }
   return _size;
 }
