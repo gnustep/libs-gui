@@ -71,6 +71,7 @@
   //_buttoncell_is_transparent = NO;
   //_altContents = nil;
 
+  _cell.text_align = NSCenterTextAlignment;
   _cell.is_bordered = YES;
   _showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
   _highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
