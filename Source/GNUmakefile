@@ -148,7 +148,8 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
-Parsers/attributedStringConsumer.m
+Parsers/attributedStringConsumer.m \
+Parsers/RTFProducer.m
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
