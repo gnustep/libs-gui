@@ -817,7 +817,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return -1;
 }
 
-- (int) showsServicesMenuItem: (NSString*)item
+- (BOOL) showsServicesMenuItem: (NSString*)item
 {
   [self loadServices];
   if ([allDisabled member: item] == nil)
@@ -1082,6 +1082,6 @@ NSSetShowsServicesMenuItem(NSString *name, BOOL enabled)
 BOOL
 NSShowsServicesMenuItem(NSString * itemName)
 {
-  return [[GNUServicesManager manager] showsServicesMenuItem: name];
+  return [[GNUServicesManager manager] showsServicesMenuItem: itemName];
 }
 
