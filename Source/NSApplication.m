@@ -471,12 +471,11 @@ static NSCell* tileCell = nil;
 }
 
 // Helper method
-+ (void) invokeWithAutoreleasePool: (NSInvocation*) inv
++ (void) _invokeWithAutoreleasePool: (NSInvocation*) inv
 {
   CREATE_AUTORELEASE_POOL(pool);
 
   [inv invoke];
-  RELEASE(inv);
   RELEASE(pool);
 }
 
@@ -489,9 +488,10 @@ static NSCell* tileCell = nil;
   // This uses a GNUstep extension on NSInvocation
   inv = [[NSInvocation alloc] initWithTarget: target 
 			      selector: selector, argument];
-  [NSThread detachNewThreadSelector: @selector(invokeWithAutoreleasePool:) 
+  [NSThread detachNewThreadSelector: @selector(_invokeWithAutoreleasePool:) 
 	    toTarget: self 
 	    withObject: inv];
+  RELEASE(inv);
 }
 
 /* 
