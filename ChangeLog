@@ -1,3 +1,25 @@
+2004-06-28  Serg Stoyan <stoyan255@ukr.net>
+
+        * Headers/AppKit/NSScroller.h: Added _pendingKnobProportion ivar.
+
+        * Source/NSScroller.m:
+        (setFloatValue:knobProportion:): Implemented disabling of scroller
+        when knob proportion equals to 1.0, and implemented pending knob
+        proportion setting (fix disappearing of scroller parts when mouse
+        button still held down). Set float value only if knob is not being
+        dragged.
+        (mouseDown): Redundant code removed. Call
+        setFloatValue:knobProportion: if _pendingKnobProportion is not 0 or
+        just update scroller otherwise.
+
+        * Source/NSBrowser.m:
+        (_createColumn): Set initial frame origin to -110,-110 to avoid
+        appearing newly created column on top of exising.
+        (updateScroller): Remove enabling/disabling scroller wrt last
+        NSScroller changes. Rewrite floating value calculating code and
+        avoid devide-by-zero case. Always update scroller values (scroller
+        handle the case when it shouldn't update itself).
+
 2004-06-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSCursor.h: Added more MacOSX methods for standard
