@@ -13,6 +13,9 @@
 	without having to build binaries. Also add flag for macros template.
 	* Source/GNUmakefile: Removed documentation building rules.
 	* Documentation/GNUmakefile: Use DocMakefile
+	* Source/NSWindow.m: Slight documentation update/addition.
+	* Source/NSView.m: ditto.
+	* Source/NSToolbar.m: ditto.
 
 2002-10-11  Adam Fedor  <fedor@gnu.org>
 

@@ -683,12 +683,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
 }
 
-- (NSImage*) iconForFile: (NSString*)aPath
+- (NSImage*) iconForFile: (NSString*)fullPath
 {
   NSImage	*image = nil;
-  NSString	*pathExtension = [[aPath pathExtension] lowercaseString];
+  NSString	*pathExtension = [[fullPath pathExtension] lowercaseString];
 
-  if ([self isFilePackageAtPath: aPath])
+  if ([self isFilePackageAtPath: fullPath])
     {
       NSFileManager	*mgr = [NSFileManager defaultManager];
       NSString		*iconPath = nil;
@@ -699,7 +699,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	{
 	  NSBundle	*bundle;
 
-	  bundle = [NSBundle bundleWithPath: aPath];
+	  bundle = [NSBundle bundleWithPath: fullPath];
 	  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
 	  if (iconPath && [iconPath isAbsolutePath] == NO)
 	    {
@@ -713,7 +713,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	       */
 	      if (iconPath == nil)
 		{
-		  iconPath = [aPath stringByAppendingPathComponent: file];
+		  iconPath = [fullPath stringByAppendingPathComponent: file];
 		  if ([mgr isReadableFileAtPath: iconPath] == NO)
 		    {
 		      iconPath = nil;
@@ -728,8 +728,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	    {
 	      NSString	*str;
 
-	      str = [[aPath lastPathComponent] stringByDeletingPathExtension];
-	      iconPath = [aPath stringByAppendingPathComponent: str];
+	      str = [fullPath lastPathComponent];
+	      str = [str stringByDeletingPathExtension];
+	      iconPath = [fullPath stringByAppendingPathComponent: str];
 	      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
 	      if ([mgr isReadableFileAtPath: iconPath] == NO)
 		{
@@ -744,7 +745,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        */
       if (iconPath == nil)
 	{
-	  iconPath = [aPath stringByAppendingPathComponent: @".dir.tiff"];
+	  iconPath = [fullPath stringByAppendingPathComponent: @".dir.tiff"];
 	  if ([mgr isReadableFileAtPath: iconPath] == NO)
 	    {
 	      iconPath = nil;
@@ -770,11 +771,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  image = [self _iconForExtension: pathExtension];
 	  if (image == nil || image == [self unknownFiletypeImage])
 	    {
-	      if ([aPath isEqual: _rootPath])
+	      if ([fullPath isEqual: _rootPath])
 		{
 		  image = [self rootImage];
 		}
-	      else if ([aPath isEqual: NSHomeDirectory ()])
+	      else if ([fullPath isEqual: NSHomeDirectory ()])
 		{
 		  image = [self homeDirectoryImage];
 		}

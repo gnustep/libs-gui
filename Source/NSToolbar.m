@@ -46,22 +46,22 @@ static const int current_version = 1;
 {
   NSToolbar *_toolbar;
 }
-- (void)setToolbar: (NSToolbar *)toolbar;
-- (NSToolbar *)toolbar;
+- (void) setToolbar: (NSToolbar *)toolbar;
+- (NSToolbar *) toolbar;
 @end
 
 @implementation GSToolbarView
-- (void)setToolbar: (NSToolbar *)toolbar
+- (void) setToolbar: (NSToolbar *)toolbar
 {
   ASSIGN(_toolbar, toolbar);
 }
 
-- (NSToolbar *)toolbar
+- (NSToolbar *) toolbar
 {
   return _toolbar;
 }
 
-- (void)drawRect: (NSRect)aRect
+- (void) drawRect: (NSRect)aRect
 {
   [super drawRect: aRect];
 }
@@ -74,7 +74,7 @@ static const int current_version = 1;
 @end
 
 @implementation GSToolbarButton
-- (id)initWithItem: (NSToolbarItem *)item
+- (id) initWithItem: (NSToolbarItem *)item
 {
   [super init];
   ASSIGN(_item, item);
@@ -87,7 +87,7 @@ static const int current_version = 1;
   [super dealloc];
 }
 
-- (void)drawRect: (NSRect)aRect
+- (void) drawRect: (NSRect)aRect
 {
   // set the image and draw using the super class...
   [super drawRect: aRect];
@@ -118,37 +118,37 @@ static const int current_version = 1;
 }
 
 // Instance methods
-- (BOOL)allowsUserCustomization
+- (BOOL) allowsUserCustomization
 {
   return _allowsUserCustomization;
 }
 
-- (BOOL)autosavesConfiguration
+- (BOOL) autosavesConfiguration
 {
   return _autosavesConfiguration;
 }
 
-- (NSDictionary *)configurationDictionary
+- (NSDictionary *) configurationDictionary
 {
   return _configurationDictionary;
 }
 
-- (BOOL)customizationPaletteIsRunning
+- (BOOL) customizationPaletteIsRunning
 {
   return _customizationPaletteIsRunning;
 }
 
-- (id)delegate
+- (id) delegate
 {
   return _delegate;
 }
 
-- (NSToolbarDisplayMode)displayMode
+- (NSToolbarDisplayMode) displayMode
 {
   return _displayMode;
 }
 
-- (NSString *)identifier
+- (NSString *) identifier
 {
   return _identifier;
 }
@@ -179,7 +179,7 @@ static const int current_version = 1;
 }
 
 
-- (id)initWithIdentifier: (NSString *)identifier
+- (id) initWithIdentifier: (NSString*)identifier
 {
   [super init];
   ASSIGN(_identifier, identifier);
@@ -203,40 +203,40 @@ static const int current_version = 1;
 }
 
 
-- (void)insertItemWithItemIdentifier: (NSString *)itemIdentifier
+- (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
                              atIndex: (int)index
 {
 }
 
-- (BOOL)isVisible
+- (BOOL) isVisible
 {
   return _visible;
 }
 
-- (NSArray *)items
+- (NSArray *) items
 {
   return _items;
 }
 
-- (void)removeItemAtIndex: (int)index
+- (void) removeItemAtIndex: (int)index
 {
 }
 
-- (void)runCustomizationPalette: (id)sender
+- (void) runCustomizationPalette: (id)sender
 {
 }
 
-- (void)setAllowsUserCustomization: (BOOL)flag
+- (void) setAllowsUserCustomization: (BOOL)flag
 {
   _allowsUserCustomization = flag;
 }
 
-- (void)setAutosavesConfiguration: (BOOL)flag
+- (void) setAutosavesConfiguration: (BOOL)flag
 {
   _autosavesConfiguration = flag;
 }
 
-- (void)setConfigurationFromDictionary: (NSDictionary *)configDict
+- (void) setConfigurationFromDictionary: (NSDictionary *)configDict
 {
   if(!_configurationDictionary)
     {
@@ -245,10 +245,16 @@ static const int current_version = 1;
   ASSIGN(_configurationDictionary, configDict);
 }
 
-- (void) setDelegate: (id)anObject
+/**
+ * Sets the receivers delgate ... this is the object which will receive
+ * -toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:
+ * -toolbarAllowedItemIdentifiers: and -toolbarDefaultItemIdentifiers:
+ * messages.
+ */
+- (void) setDelegate: (id)delegate
 { 
 #define CHECK_REQUIRED_METHOD(selector_name) \
-  if (![anObject respondsToSelector: @selector(selector_name)]) \
+  if (![delegate respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
                  format: @"delegate does not respond to %@",@#selector_name]
 
@@ -258,7 +264,7 @@ static const int current_version = 1;
 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
-  _delegate = anObject;
+  _delegate = delegate;
 
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
@@ -271,21 +277,21 @@ static const int current_version = 1;
   SET_DELEGATE_NOTIFICATION(WillAddItem);
 }
 
-- (void)setDisplayMode: (NSToolbarDisplayMode)displayMode
+- (void) setDisplayMode: (NSToolbarDisplayMode)displayMode
 {
   _displayMode = displayMode;
 }
 
-- (void)setVisible: (BOOL)shown
+- (void) setVisible: (BOOL)shown
 {
   _visible = shown;
 }
 
-- (void)validateVisibleItems
+- (void) validateVisibleItems
 {
 }
 
-- (NSArray *)visibleItems
+- (NSArray *) visibleItems
 {
   return nil;
 }

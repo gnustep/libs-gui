@@ -466,7 +466,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 /**
   <p> Removes the receiver from its superviews list of subviews, by
-  invoking the superviews [-removeSubview:] method, and marks the
+  invoking the superviews -removeSubview: method, and marks the
   rectangle that the reciever occupied in the superview as needing
   redisplay.  </p>
 
@@ -486,12 +486,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   <p> Removes aSubview from the receivers list of subviews and from
   the responder chain.  </p>
 
-  <p> Also invokes [aView -viewWillMoveToWindow: nil] to handle
+  <p> Also invokes -viewWillMoveToWindow: on aView with a nil argument,
+  to handle
   removal of aView (and recursively, its children) from its window -
   performing tidyup by invalidating cursor rects etc.  </p> 
   <standards><NotMacOS-X/><NotOpenStep/></standards>
 */
-- (void) removeSubview: (NSView*)aSubview
+- (void) removeSubview: (NSView*)aView
 {
   id view;
   /*
@@ -502,22 +503,22 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     view != nil && [view respondsToSelector:@selector(superview)];
     view = [view superview])
     {
-      if (view == aSubview)
+      if (view == aView)
 	{      
 	  [_window makeFirstResponder: _window];
 	  break;
 	}
     }
-  [self willRemoveSubview: aSubview];
-  aSubview->_super_view = nil;
-  [aSubview viewWillMoveToWindow: nil];
-  [aSubview setNextResponder: nil];
-  RETAIN(aSubview);
-  [_sub_views removeObjectIdenticalTo: aSubview];
-  [aSubview setNeedsDisplay: NO];
-  [aSubview viewDidMoveToWindow];
-  [aSubview viewDidMoveToSuperview];
-  RELEASE(aSubview);
+  [self willRemoveSubview: aView];
+  aView->_super_view = nil;
+  [aView viewWillMoveToWindow: nil];
+  [aView setNextResponder: nil];
+  RETAIN(aView);
+  [_sub_views removeObjectIdenticalTo: aView];
+  [aView setNeedsDisplay: NO];
+  [aView viewDidMoveToWindow];
+  [aView viewDidMoveToSuperview];
+  RELEASE(aView);
   if ([_sub_views count] == 0)
     {
       _rFlags.has_subviews = 0;
@@ -1811,18 +1812,23 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
-- (void) displayRect: (NSRect)rect
+/**
+ * Causes the area of the view specified by aRect to be displayed.
+ * This is done by moving up the view hierarchy until an opaque view
+ * is found, then asking that view to update the appropriate area.
+ */
+- (void) displayRect: (NSRect)aRect
 {
   if ([self isOpaque] == YES)
     {
-      [self displayRectIgnoringOpacity: rect];
+      [self displayRectIgnoringOpacity: aRect];
     }
   else
     {
       NSView *firstOpaque = [self opaqueAncestor];
 
-      rect = [firstOpaque convertRect: rect fromView: self];
-      [firstOpaque displayRectIgnoringOpacity: rect];
+      aRect = [firstOpaque convertRect: aRect fromView: self];
+      [firstOpaque displayRectIgnoringOpacity: aRect];
     }
 }
 
@@ -1973,7 +1979,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
-- (void) setNeedsDisplayInRect: (NSRect)rect
+/**
+ * Inform the view system that the specified rectangle is invalid and
+ * requires updating.  This automatically informs any superviews of
+ * any updating they need to do.
+ */
+- (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
   NSView	*currentView = _super_view;
 
@@ -1982,22 +1993,22 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    *	if the result is the same as the old _invalidRect - if it isn't then
    *	set the new _invalidRect.
    */
-  rect = NSIntersectionRect(rect, _bounds);
-  rect = NSUnionRect(_invalidRect, rect);
-  if (NSEqualRects(rect, _invalidRect) == NO)
+  invalidRect = NSIntersectionRect(invalidRect, _bounds);
+  invalidRect = NSUnionRect(_invalidRect, invalidRect);
+  if (NSEqualRects(invalidRect, _invalidRect) == NO)
     {
       NSView	*firstOpaque = [self opaqueAncestor];
 
       _rFlags.needs_display = YES;
-      _invalidRect = rect;
+      _invalidRect = invalidRect;
       if (firstOpaque == self)
 	{
 	  [_window setViewsNeedDisplay: YES];
 	}
       else
 	{
-	  rect = [firstOpaque convertRect: _invalidRect fromView: self];
-	  [firstOpaque setNeedsDisplayInRect: rect];
+	  invalidRect = [firstOpaque convertRect: _invalidRect fromView: self];
+	  [firstOpaque setNeedsDisplayInRect: invalidRect];
 	}
     }
   /*
@@ -2554,12 +2565,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	   slideBack: slideFlag];
 }
 
-- (void) registerForDraggedTypes: (NSArray*)types
+/**
+ * Registers the fact that the receiver should accept dragged data
+ * of any of the specified types.  You need to do this if you want
+ * your view to support drag and drop.
+ */
+- (void) registerForDraggedTypes: (NSArray*)newTypes
 {
   NSArray	*o;
   NSArray	*t;
 
-  if (types == nil || [types count] == 0)
+  if (newTypes == nil || [newTypes count] == 0)
     [NSException raise: NSInvalidArgumentException
 		format: @"Types information missing"];
 
@@ -2577,7 +2593,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       o = nil;
     }
 
-  t = GSSetDragTypes(self, types);
+  t = GSSetDragTypes(self, newTypes);
   _rFlags.has_draginfo = 1;
   if (_window != nil)
     {
@@ -2867,7 +2883,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [self beginPageInRect: aRect atPlacement: location];
 }
 
-- (void) beginPrologueBBox: (NSRect)bBox
+- (void) beginPrologueBBox: (NSRect)boundingBox
 	      creationDate: (NSString*)dateCreated
 		 createdBy: (NSString*)anApplication
 		     fonts: (NSString*)fontNames
@@ -2897,10 +2913,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   else
     DPSPrintf(ctxt, "%%%%DocumentFonts: (atend)\n");
 
-  if (NSIsEmptyRect(bBox) == NO)
+  if (NSIsEmptyRect(boundingBox) == NO)
     DPSPrintf(ctxt, "%%%%BoundingBox: %d %d %d %d\n", 
-    	      (int)NSMinX(bBox), (int)NSMinY(bBox), 
-	      (int)NSMaxX(bBox), (int)NSMaxY(bBox));
+    	      (int)NSMinX(boundingBox), (int)NSMinY(boundingBox), 
+	      (int)NSMaxX(boundingBox), (int)NSMaxY(boundingBox));
   else
     DPSPrintf(ctxt, "%%%%BoundingBox: (atend)\n");
 

@@ -71,29 +71,29 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 }
 
 // Instance methods
-- (BOOL)allowsUserCustomization;
-- (BOOL)autosavesConfiguration;
-- (NSDictionary *)configurationDictionary;
-- (BOOL)customizationPaletteIsRunning;
-- (id)delegate;
-- (NSToolbarDisplayMode)displayMode;
-- (NSString *)identifier;
-- (id)initWithIdentifier: (NSString *)indentifier;
-- (void)insertItemWithItemIdentifier: (NSString *)itemIdentifier
-                             atIndex: (int)index;
-- (BOOL)isVisible;
-- (NSArray *)items;
-- (void)removeItemAtIndex: (int)index;
-- (void)runCustomizationPalette: (id)sender;
+- (BOOL) allowsUserCustomization;
+- (BOOL) autosavesConfiguration;
+- (NSDictionary*) configurationDictionary;
+- (BOOL) customizationPaletteIsRunning;
+- (id) delegate;
+- (NSToolbarDisplayMode) displayMode;
+- (NSString*) identifier;
+- (id) initWithIdentifier: (NSString*)identifier;
+- (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier
+			      atIndex: (int)index;
+- (BOOL) isVisible;
+- (NSArray*) items;
+- (void) removeItemAtIndex: (int)index;
+- (void) runCustomizationPalette: (id)sender;
 
-- (void)setAllowsUserCustomization: (BOOL)flag;
-- (void)setAutosavesConfiguration: (BOOL)flag;
-- (void)setConfigurationFromDictionary: (NSDictionary *)configDict;
-- (void)setDelegate: (id)delegate;
-- (void)setDisplayMode: (NSToolbarDisplayMode)displayMode;
-- (void)setVisible: (BOOL)shown;
-- (void)validateVisibleItems;
-- (NSArray *)visibleItems;
+- (void) setAllowsUserCustomization: (BOOL)flag;
+- (void) setAutosavesConfiguration: (BOOL)flag;
+- (void) setConfigurationFromDictionary: (NSDictionary*)configDict;
+- (void) setDelegate: (id)delegate;
+- (void) setDisplayMode: (NSToolbarDisplayMode)displayMode;
+- (void) setVisible: (BOOL)shown;
+- (void) validateVisibleItems;
+- (NSArray*) visibleItems;
 @end /* interface of NSToolbar */
 
 /*
@@ -101,18 +101,18 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
  */
 @interface NSObject (NSToolbarDelegate)
 // notification methods
-- (void) toolbarDidRemoveItem: (NSNotification *)aNotification;
-- (void) toolbarWillAddItem: (NSNotification *)aNotification;
+- (void) toolbarDidRemoveItem: (NSNotification*)aNotification;
+- (void) toolbarWillAddItem: (NSNotification*)aNotification;
 
 // delegate methods
 // required method
-- (NSToolbarItem *)toolbar: (NSToolbar *)toolbar
-     itemForItemIdentifier: (NSString *)itemIdentifier
+- (NSToolbarItem*)toolbar: (NSToolbar*)toolbar
+    itemForItemIdentifier: (NSString*)itemIdentifier
  willBeInsertedIntoToolbar: (BOOL)flag;
 // required method
-- (NSArray *)toolbarAllowedItemIdentifiers: (NSToolbar *)toolbar;
+- (NSArray*) toolbarAllowedItemIdentifiers: (NSToolbar*)toolbar;
 // required method
-- (NSArray *)toolbarDefaultItemIdentifiers: (NSToolbar *)toolbar;
+- (NSArray*) toolbarDefaultItemIdentifiers: (NSToolbar*)toolbar;
 @end
 
 #endif /* _GNUstep_H_NSToolbar */

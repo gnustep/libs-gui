@@ -1502,7 +1502,11 @@ static NSNotificationCenter *nc = nil;
   [self setFrameOrigin: origin];
 }
 
-- (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: screen
+/**
+ * Given a proposed frame rectangle, return a modified version
+ * which will fit inside the screen.
+ */
+- (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: (NSScreen*)screen
 {
   NSRect screenRect = [screen frame];
   float difference;
@@ -1532,7 +1536,9 @@ static NSNotificationCenter *nc = nil;
 	  frameRect.size.height -= difference;
 	}
       if (frameRect.size.height < _minimumSize.height)
-	frameRect.size.height = _minimumSize.height;
+	{
+	  frameRect.size.height = _minimumSize.height;
+	}
     }
 
   return frameRect;
@@ -1690,31 +1696,36 @@ static NSNotificationCenter *nc = nil;
   // FIXME: This method is missing
 }
 
-/*
- * Converting coordinates
+/**
+ * Convert from a point in the base coordinate system for the window
+ * to a point in the screen coordinate system.
  */
-- (NSPoint) convertBaseToScreen: (NSPoint)basePoint
+- (NSPoint) convertBaseToScreen: (NSPoint)aPoint
 {
   GSDisplayServer *srv = GSCurrentServer();
   NSPoint		screenPoint;
   float			t, b, l, r;
 
   [srv styleoffsets: &l : &r : &t : &b : _styleMask];
-  screenPoint.x = _frame.origin.x + basePoint.x + l;
-  screenPoint.y = _frame.origin.y + basePoint.y + b;
+  screenPoint.x = _frame.origin.x + aPoint.x + l;
+  screenPoint.y = _frame.origin.y + aPoint.y + b;
 
   return screenPoint;
 }
 
-- (NSPoint) convertScreenToBase: (NSPoint)screenPoint
+/**
+ * Convert from a point in the screen coordinate system to a point in the
+ * screen coordinate system of the receiver.
+ */
+- (NSPoint) convertScreenToBase: (NSPoint)aPoint
 {
   GSDisplayServer *srv = GSCurrentServer();
   NSPoint 		basePoint;
   float			t, b, l, r;
 
   [srv styleoffsets: &l : &r : &t : &b : _styleMask];
-  basePoint.x = screenPoint.x - _frame.origin.x - l;
-  basePoint.y = screenPoint.y - _frame.origin.y - b;
+  basePoint.x = aPoint.x - _frame.origin.x - l;
+  basePoint.y = aPoint.y - _frame.origin.y - b;
 
   return basePoint;
 }
@@ -3677,13 +3688,13 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   return _defaultButtonCell;
 }
 
-- (void) setDefaultButtonCell: (NSButtonCell *)aButtonCell
+- (void) setDefaultButtonCell: (NSButtonCell *)aCell
 {
-  ASSIGN(_defaultButtonCell, aButtonCell);
+  ASSIGN(_defaultButtonCell, aCell);
   _f.default_button_cell_key_disabled = NO;
 
-  [aButtonCell setKeyEquivalent: @"\r"];
-  [aButtonCell setKeyEquivalentModifierMask: 0];
+  [aCell setKeyEquivalent: @"\r"];
+  [aCell setKeyEquivalentModifierMask: 0];
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell
