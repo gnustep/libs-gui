@@ -66,9 +66,6 @@ static NSColor *BorderColor;
 
 
 // Toolbar color extensions
-@interface NSColor (GNUstepPrivate)
-+ (NSColor *) colorFromString: (NSString *)string;
-@end
 
 static void initSystemExtensionsColors(void)
 {
@@ -128,7 +125,7 @@ static void initSystemExtensionsColors(void)
     }
 }
 
-@implementation NSColor (Extensions)
+@implementation NSColor (GSToolbarViewAdditions)
 + (NSColor *) toolbarBackgroundColor
 {
   return [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];

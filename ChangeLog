@@ -1,3 +1,12 @@
+2005-01-21  Quentin Mathe  <qmathe@club-internet.fr>
+
+	* Source/GSToolbarView.m:
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h:
+	Renamed the NSColor(Extensions) category with the more descriptive name 
+	NSColor(GSToolbarViewAdditions). This modification permits GNUMail 
+	compilation with recent Darwin linker versions which prevented it 
+	because GNUMail has a NSColor category identically named "Extensions".
+
 2005-01-20  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m (-rowAtPoint:): If the heigh of the table

@@ -79,7 +79,7 @@ typedef enum {
 @end
 
 // Toolbar related NSColor methods
-@interface NSColor (Extensions)
+@interface NSColor (GSToolbarViewAdditions)
 + (NSColor *) toolbarBackgroundColor;
 + (NSColor *) toolbarBorderColor;
 @end
