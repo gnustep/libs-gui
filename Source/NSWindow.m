@@ -1259,7 +1259,7 @@ static NSRecursiveLock	*windowsLock;
   if (key_code == 0x1b)
     {
       NSApplication *app = [NSApplication sharedApplication];
-      if ([app isRunningModalForWindow: self])
+      if ([app modalWindow] == self)
 	{
 	  // NB: The following *never* returns.
 	  [app abortModal];
