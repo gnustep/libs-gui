@@ -1,3 +1,9 @@
+Tue Mar  9 19:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSParagraphStyle.h: Tidied
+	* Source/NSParagraphStyle.m: Implemented NSTextTab, NSParagraphStyle,
+	and NSMutableParagraphStyle classes.
+
 1999-03-08  Adam Fedor  <fedor@gnu.org>
 
 	* Merge dawn branch into main.
