@@ -5,6 +5,8 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: January 1998
+   Updated by: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
+   Date: May 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -23,34 +25,121 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <AppKit/NSDragging.h>
+#include <AppKit/NSImageCell.h>
 #include <AppKit/NSImageView.h>
 
 @implementation NSImageView
 
-- (void)setImage:(NSImage *)image
++ (Class) cellClass
 {
+  return [NSImageCell class];
 }
 
-- (void)setImageAlignment:(NSImageAlignment)align
+- (id) init
 {
+  return [self initWithFrame: NSZeroRect];
 }
 
-- (void)setImageScaling:(NSImageScaling)scaling
+- (id) initWithFrame: (NSRect)frame
 {
+  [super initWithFrame: frame];
+
+  // allocate the image cell
+  [self setCell: [[NSImageCell alloc] init]];
+
+  // set the default values
+  [self setImageAlignment: NSImageAlignCenter];
+  [self setImageFrameStyle: NSImageFrameNone];
+  [self setImageScaling: NSScaleProportionally];
+  [self setEditable: YES];
+
+  return self;
 }
 
-- (void)setImageFrameStyle:(NSImageFrameStyle)style
+- (void) setImage: (NSImage *)image
 {
+  [[self cell] setImage: image];
 }
 
-- (void)setEditable:(BOOL)flag
+- (void) setImageAlignment: (NSImageAlignment)align
 {
+  [[self cell] setImageAlignment: align];
 }
 
-- (NSImage *)image			{ return nil; }
-- (NSImageAlignment)imageAlignment	{ return 0; }
-- (NSImageScaling)imageScaling		{ return 0; }
-- (NSImageFrameStyle)imageFrameStyle	{ return 0; }
-- (BOOL)isEditable			{ return 0; }
+- (void) setImageScaling: (NSImageScaling)scaling
+{
+  [[self cell] setImageScaling: scaling];
+}
+
+- (void) setImageFrameStyle: (NSImageFrameStyle)style
+{
+  [[self cell] setImageFrameStyle: style];
+}
+
+- (void) setEditable: (BOOL)flag
+{
+  [[self cell] setEditable: flag];
+}
+
+- (NSImage *) image
+{
+  return [[self cell] image];
+}
+
+- (NSImageAlignment) imageAlignment
+{
+  return [[self cell] imageAlignment];
+}
+
+- (NSImageScaling) imageScaling
+{
+  return [[self cell] imageScaling];
+}
+
+- (NSImageFrameStyle) imageFrameStyle
+{
+  return [[self cell] imageFrameStyle];
+}
+
+- (BOOL) isEditable
+{
+  return [[self cell] isEditable];
+}
 
 @end
+
+@implementation NSImageView (NSDraggingDestination)
+
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  // FIX - should highlight to show that we are a valid target
+  return NSDragOperationNone;
+}
+
+- (void) draggingExited: (id <NSDraggingInfo>)sender
+{
+  // FIX - should remove highlighting
+}
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  if ([self isEditable])
+    return YES;
+  else
+    return NO;
+}
+
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  // FIX - should copy image data into image cell here
+  return NO;
+}
+
+- (void) concludeDragOperation: (id <NSDraggingInfo>)sender
+{
+  // FIX - should update refresh image here
+}
+
+@end
+
