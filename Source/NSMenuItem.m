@@ -90,7 +90,7 @@ static Class imageClass;
 
 + (id <NSMenuItem>) separatorItem
 {
-  return [GSMenuSeparator new];
+  return AUTORELEASE([GSMenuSeparator new]);
 }
 
 - (id) init
