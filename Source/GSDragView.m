@@ -748,6 +748,7 @@ static	GSDragView *sharedDragView = nil;
         }
       break;
     case NSPeriodic:
+      newPosition = [NSEvent mouseLocation];
       if (newPosition.x != dragPosition.x || newPosition.y != dragPosition.y) 
         {
           [self _updateAndMoveImageToCorrectPosition];

@@ -1,5 +1,10 @@
 2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSDragView.m: (-_handleEventDuringDragging:) Get mouse
+	location on periodic event.
+
+2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Added new method
 	(-findWindowAt:windowRef:excluding:).
 	* Source/GSDisplayServer.m: Implemented (-dragInfo) with
