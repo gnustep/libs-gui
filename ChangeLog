@@ -1,3 +1,9 @@
+Sun Jan  6 11:16:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/GSServicesManager.h: Prefixed all ivars with
+	underscores.
+	* Source/GSServicesManager.m: Idem.
+	
 Sun Jan  6 10:49:49 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSServicesManager.m ([-rebuildServicesMenu]): If the key
