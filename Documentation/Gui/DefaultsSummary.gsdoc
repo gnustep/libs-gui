@@ -135,7 +135,7 @@
 	  <term>GSWorkspaceApplication</term>
 	  <desc>
           <p>
-          A string value that defaults to <code>"GSWorkspace"</code>.
+          A string value that defaults to <code>"GWorkspace"</code>.
           This defines the application NSWorkspace will try to
           connect to process some operations that require an external
           application. This is a new feature and has not been tested. 
@@ -180,6 +180,15 @@
           NSRulerView class documentation). The default is
           Centimeters. Other possible values are Inches, Points, and Picas.
           </p>
+	  <term>NSPreviewApp</term>
+	  <desc>
+          <p>
+          A string value that defaults to <code>"gv"</code>.
+          This defines the application NSPrintOperation will try to
+          connect to preview PostScript files, unless there is already
+	  an application registed as a Viewer of ps files.
+          </p>
+	  </desc>
 	  </desc>
 	  <term><em>System Colors</em></term>
 	  <desc>

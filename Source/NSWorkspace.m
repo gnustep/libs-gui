@@ -1898,7 +1898,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   appName = [defs stringForKey: @"GSWorkspaceApplication"];
   if (appName == nil)
     {
-      appName = @"GSWorkspace";
+      appName = @"GWorkspace";
     }
 
   app = [self _connectApplication: appName];
