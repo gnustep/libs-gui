@@ -51,6 +51,8 @@ extern const float *NSFontIdentityMatrix;
   NSString *fontName;
   float matrix[6];
 
+  BOOL matrixExplicitlySet;
+
   // Reserved for back-end use
   void *be_font_reserved;
 }

@@ -1238,6 +1238,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   NSPoint	point;
   NSView	*view = [NSView focusView];
 
+  PSgsave();
   NSRectClip(rect);
 
   /*
@@ -1252,6 +1253,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
     point.y = rect.origin.y + rect.size.height;
 
   [self drawAtPoint: point];
+  PSgrestore();
 }
 
 - (NSSize) size

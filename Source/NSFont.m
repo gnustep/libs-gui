@@ -170,9 +170,12 @@ void setNSFont(NSString* key, NSFont* font)
 + (NSFont*)fontWithName:(NSString*)name
 		   size:(float)fontSize
 {
+  NSFont *font;
   float fontMatrix[6] = { fontSize, 0, 0, fontSize, 0, 0 };
 
-  return [self fontWithName:name matrix:fontMatrix];
+  font = [self fontWithName: name matrix: fontMatrix];
+  font->matrixExplicitlySet = NO;
+  return font;
 }
 
 + (void)useFont:(NSString*)name

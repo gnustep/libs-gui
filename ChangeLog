@@ -1,3 +1,17 @@
+1999-05-12  Adam Fedor  <fedor@gnu.org>
+
+
+	* Source/NSButtonCell.m (-drawWithFrame:inView:): Don't set a clip
+	rect (not needed since we know what we're drawing).
+	(-drawInteriorWithFrame:inView): Remove gsave/grestore.
+	* Source/NSCell.m: Likewise.
+	* Source/NSStringDrawing.m ([NSAttributedString -drawInRect:]):
+	gsave/grestore around rectclip.
+ 
+	* Headers/gnustep/gui/NSFont.h: ivar to show when matrix was
+	explicitly set. 
+	* Source/NSFont.m (+fontWithName:size:): Reset it.
+
 1999-05-11  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSButtonCell.m ([NSButtonCell

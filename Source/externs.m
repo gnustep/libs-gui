@@ -330,6 +330,8 @@ NSString *NSLigatureAttributeName = 		@"NSLigatureAttributeName";
 NSString *NSBaselineOffsetAttributeName = 	@"NSBaselineOffsetAttributeName";   	 
 NSString *NSKernAttributeName = 			@"NSKernAttributeName";        
 
+/* NSFont matrix */
+const float NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};
 
 /* Drawing engine externs */
 NSString *NSBackendContext = @"NSBackendContext";

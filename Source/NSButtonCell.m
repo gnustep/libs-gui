@@ -399,11 +399,11 @@
     {
       if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask))
         {
-          NSDrawGrayBezel(cellFrame, cellFrame);
+          NSDrawGrayBezel(cellFrame, NSZeroRect);
         }
       else
         {
-          NSDrawButton(cellFrame, cellFrame);
+          NSDrawButton(cellFrame, NSZeroRect);
         }
     }
 
@@ -501,11 +501,7 @@
 	 rect.origin = cellFrame.origin;
 	 rect.size.width = imageSize.width;
 	 rect.size.height = cellFrame.size.height;
-	 /* Have to save the gstate, since a new clip rect may be defined
-	    when drawing */
-	 PSgsave();
 	 [self _drawImage: imageToDisplay inFrame: rect];
-	 PSgrestore();
 
 	 // draw title
 	 rect.origin.x += imageSize.width + xDist;
@@ -519,11 +515,7 @@
 	 rect.origin.y = cellFrame.origin.y;
 	 rect.size.width = imageSize.width;
 	 rect.size.height = cellFrame.size.height;
-	 /* Have to save the gstate, since a new clip rect may be defined
-	    when drawing */
-	 PSgsave();
 	 [self _drawImage: imageToDisplay inFrame: rect];
-	 PSgrestore();
 
 	 // draw title
 	 rect.origin = cellFrame.origin;
@@ -535,11 +527,7 @@
       case NSImageBelow: 
 	 // draw image below title
 	 cellFrame.size.height /= 2;
-	 /* Have to save the gstate, since a new clip rect may be defined
-	    when drawing */
-	 PSgsave();
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 PSgrestore();
 	 cellFrame.origin.y += cellFrame.size.height;
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
 	 break;
@@ -547,22 +535,14 @@
       case NSImageAbove: 
 	 // draw image above title
 	 cellFrame.size.height /= 2;
-	 /* Have to save the gstate, since a new clip rect may be defined
-	    when drawing */
-	 PSgsave();
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
-	 PSgrestore();
 	 cellFrame.origin.y += cellFrame.size.height;
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
 	 break;
 
       case NSImageOverlaps: 
 	 // draw title over the image
-	 /* Have to save the gstate, since a new clip rect may be defined
-	    when drawing */
-	 PSgsave();
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 PSgrestore();
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
 	 break;
     }

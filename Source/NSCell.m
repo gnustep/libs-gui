@@ -690,7 +690,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
   else if ([self isBezeled])
     {
-      NSDrawWhiteBezel(cellFrame, cellFrame);
+      NSDrawWhiteBezel(cellFrame, NSZeroRect);
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -708,9 +708,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   if (cell_highlighted != lit)
     {
       cell_highlighted = lit;
-      PSgsave();
       [self drawWithFrame: cellFrame inView: controlView];
-      PSgrestore();
     }
 }
 
