@@ -414,7 +414,7 @@
   NSString	*titleToDisplay;
   NSSize	imageSize = {0, 0};
   NSRect	rect;
-  float		backgroundGray = NSLightGray;
+  NSColor	*backgroundColor = [NSColor controlBackgroundColor];
 
   cellFrame = NSInsetRect(cellFrame, xDist, yDist);
 
@@ -423,18 +423,18 @@
     {
       if ( [self showsStateBy]
            & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-        backgroundGray = NSWhite;
+	backgroundColor = [NSColor selectedControlColor];
     }
 
   if ([self isHighlighted])
     {
       if ( [self highlightsBy]
            & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-        backgroundGray = NSWhite;
+	backgroundColor = [NSColor selectedControlColor];
     }
 
   // set cell's background color
-  [[NSColor colorWithCalibratedWhite: backgroundGray alpha: 1.0] set];
+  [backgroundColor set];
   NSRectFill(cellFrame);
 
   // Determine the image and the title that will be
@@ -465,7 +465,10 @@
     }
 
   if (imageToDisplay)
-    imageSize = [imageToDisplay size];
+    {
+      imageSize = [imageToDisplay size];
+      [imageToDisplay setBackgroundColor: backgroundColor];
+    }
 
   rect = NSMakeRect (cellFrame.origin.x, cellFrame.origin.y,
                      imageSize.width, imageSize.height);

@@ -261,15 +261,15 @@ static NSImage *highlight_image;
 //
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  NSRect title_rect = cellFrame;
-  NSRect image_rect = cellFrame;
-  NSImage *image = nil;
+  NSRect	title_rect = cellFrame;
+  NSRect	image_rect = cellFrame;
+  NSImage	*image = nil;
+  NSColor	*backColor;
 
-  control_view = controlView;	// remember last view cell was drawn in
+  control_view = controlView;		// remember last view cell was drawn in
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
     {
-      NSColor	*backColor = [NSColor selectedControlColor];
-
+      backColor = [NSColor selectedControlColor];
       [backColor set];
       if (!_isLeaf)
 	{
@@ -284,8 +284,7 @@ static NSImage *highlight_image;
     }
   else
     {
-      NSColor *backColor = [[controlView window] backgroundColor];
-
+      backColor = [[controlView window] backgroundColor];
       [backColor set];
       if (!_isLeaf)
 	{
@@ -304,7 +303,10 @@ static NSImage *highlight_image;
   [_browserText drawWithFrame: title_rect inView: controlView];
 
   if (image)
-    [self _drawImage: image inFrame: image_rect];
+    {
+      [image setBackgroundColor: backColor];
+      [self _drawImage: image inFrame: image_rect];
+    }
 }
 
 //

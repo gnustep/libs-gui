@@ -646,9 +646,18 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   // Clear the cell frame
   if ([self isOpaque])
     {
-      [[NSColor lightGrayColor] set];
+      NSColor	*bg;
+
+      if (cell_highlighted)
+	bg = [NSColor selectedControlColor];
+      else
+	bg = [NSColor controlBackgroundColor];
+      [bg set];
+      [[self image] setBackgroundColor: bg];
       NSRectFill(cellFrame);
     }
+  else
+    [[self image] setBackgroundColor: [NSColor clearColor]];
 
   switch ([self type])
     {
