@@ -231,6 +231,7 @@ enum {
 - (void) drawRow: (int)rowIndex clipRect: (NSRect)clipRect;
 - (void) drawGridInClipRect: (NSRect)aRect;
 - (void) highlightSelectionInClipRect: (NSRect)clipRect;
+- (void) drawBackgroundInClipRect: (NSRect)clipRect;
 
 /* Scrolling */
 - (void) scrollRowToVisible: (int)rowIndex;
@@ -273,6 +274,10 @@ enum {
       dropOperation: (NSTableViewDropOperation)operation;
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag;
 - (BOOL) verticalMotionCanBeginDrag;
+
+/* sorting */
+- (void) setSortDescriptors: (NSArray *)array;
+- (NSArray *)sortDescriptors;
 
 @end /* interface of NSTableView */
 
