@@ -69,14 +69,10 @@ checkInit()
       /*
        * Build a character set containing only word separators.
        */
-#if 0	/* FIXME */
       ms = [[NSCharacterSet punctuationCharacterSet] mutableCopy];
       [ms formUnionWithCharacterSet: whitespace];
       separators = [ms copy];
       [ms release];
-#else
-      separators = whitespace;
-#endif
 
       isSepImp = (BOOL (*)(NSCharacterSet*, SEL, unichar))
 	[separators methodForSelector: @selector(characterIsMember:)];
@@ -423,17 +419,726 @@ sizeLine(NSAttributedString *str,
 
 @implementation NSAttributedString (NSStringDrawing)
 
+/*
+ * A GSGlyphInfo is usee to maintain information about a single glyph
+ */
+typedef struct {
+  NSGlyph	glyph;		// The glyph to be drawn.
+  NSSize	adv;		// How far to move to draw next glyph.
+  unsigned	pos;		// Position in attributed string.
+} GSGlyphInfo;
+
+/*
+ * A GSGlyphArray structure is used to keep track of how many slots in an
+ * array of GSGlyphInfo structures have been allocated to GSTextRuns
+ */
+typedef struct {
+  unsigned	used;
+  GSGlyphInfo	*glyphs;
+} GSGlyphArray;
+
+typedef struct {
+  NSFont		*font;		// Last font used.
+  NSColor		*color;		// Last color used.
+  NSGraphicsContext	*ctxt;		// Drawing context.
+  BOOL			flip;		// If view is flipped.
+} GSDrawInfo;
+
+/*
+ * A GSTextRun structure is used to hold information about a run of characters
+ * identical attributes.
+ */
+typedef struct GSTextRunStruct {
+  unsigned	glyphCount;	// Number of glyphs in run.
+  GSGlyphInfo	*glyphs;	// Starting glyph.
+  float		width;		// Width of entire run.
+  float		height;		// Height of entire run.
+  float		baseline;	// Where to draw glyphs.
+  NSFont	*font;
+  NSColor	*bg;
+  NSColor	*fg;
+  int		underline;
+  int		superscript;
+  float		base;
+  float		kern;
+  float		ypos;
+  int		ligature;
+  struct GSTextRunStruct *last;
+  struct GSTextRunStruct *next;
+} GSTextRun;
+
+static void
+drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
+{
+  /*
+   * Adjust the drawing origin so that the y coordinate is at the baseline
+   * of the font.
+   */
+  if (draw->flip)
+    {
+      origin.y += run->height - run->baseline;
+    }
+  else
+    {
+      origin.y -= run->height - run->baseline;
+    }
+
+  /*
+   * Set current font and color if necessary.
+   */
+  if (draw->color != run->fg)
+    {
+      [run->fg set];
+      draw->color = run->fg;
+    }
+
+  if (draw->font != run->font)
+    {
+      [run->font set];
+      draw->font = run->font;
+    }
+
+  /*
+   * Now draw the text.
+   * FIXME - should actually draw glyphs - at present we just use ascii.
+   */
+  if (run->kern == 0)
+    {
+      char	buf[run->glyphCount + 1];
+      unsigned	i;
+
+      for (i = 0; i < run->glyphCount; i++)
+	{
+	  buf[i] = (char)run->glyphs[i].glyph;
+	}
+      buf[i] = '\0';
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
+    }
+  else
+    {
+      char	buf[2];
+      unsigned	i;
+
+      buf[1] = '\0';
+      for (i = 0; i < run->glyphCount; i++)
+        {
+	  buf[0] = (char)run->glyphs[i].glyph;
+	  DPSmoveto(draw->ctxt, origin.x, origin.y);
+	  DPSshow(draw->ctxt, buf);
+	  origin.x += run->glyphs[i].adv.width;
+	}
+    }
+
+  if (run->underline)
+    {
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSlineto(draw->ctxt, origin.x + run->width, origin.y);
+    }
+}
+
+static void
+setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
+	NSDictionary *attr, GSGlyphArray *g, GSTextRun *last)
+{
+  NSNumber	*num;
+  unsigned	i;
+  float		above;
+  float		below;
+
+  /*
+   * Add run to linked list after the previous run.
+   */
+  run->next = 0;
+  run->last = last;
+  if (last != 0)
+    last->next = run;
+
+  /*
+   * Assign a section of the glyphs array to hold info for this run.
+   */
+  run->glyphCount = length;
+  run->glyphs = &g->glyphs[g->used];
+  g->used += run->glyphCount;
+
+  // Get font to be used by characters in run.
+  run->font = (NSFont*)[attr objectForKey: NSFontAttributeName];
+  if (run->font == nil)
+    run->font = defFont;
+
+  // Get background color
+  run->bg = (NSColor*)[attr objectForKey: NSBackgroundColorAttributeName]; 
+  if (run->bg == nil)
+    run->bg = defBgCol;
+
+  // Get foreground color
+  run->fg = (NSColor*)[attr objectForKey: NSForegroundColorAttributeName]; 
+  if (run->fg == nil)
+    run->fg = defFgCol;
+
+  // Get underline style
+  num = (NSNumber*)[attr objectForKey: NSUnderlineStyleAttributeName]; 
+  if (num == nil)
+    run->underline = GSNoUnderlineStyle;	// No underline
+  else
+    run->underline = [num intValue];
+
+  // Get superscript
+  num = (NSNumber*)[attr objectForKey: NSSuperscriptAttributeName]; 
+  if (num == nil)
+    run->superscript = 0;
+  else
+    run->superscript = [num intValue];
+
+  // Get baseline offset
+  num = (NSNumber*)[attr objectForKey: NSBaselineOffsetAttributeName]; 
+  if (num == nil)
+    run->base = 0.0;
+  else
+    run->base = [num floatValue];
+
+  // Get kern attribute
+  num = (NSNumber*)[attr objectForKey: NSKernAttributeName]; 
+  if (num == nil)
+    run->kern = 0.0;
+  else
+    run->kern = [num floatValue];
+
+  // Get ligature attribute
+  num = (NSNumber*)[attr objectForKey: NSLigatureAttributeName]; 
+  if (num == nil)
+    run->ligature = 1;
+  else
+    run->ligature = [num intValue];
+
+  /*
+   * Calculate height of line from font information and base offset.
+   * FIXME - should include superscript information here.
+   */
+  below = [run->font descender];
+  above = [run->font pointSize] - below;
+  if (run->base > 0)
+    above += run->base;		// Character is above baseline.
+  else if (run->base < 0)
+    below -= run->base;		// Character is below baseline.
+  run->baseline = below;
+  run->height = run->baseline + above;
+
+  /*
+   *	Get the characters for this run from the string and set up the
+   *    array of glyphs, allong with their advancement information.
+   *	As we build the array, we keep a total of the run width.
+   *	FIXME This code should really look at the string and determine
+   *	glyphs properly rather than assuming that the unicode character
+   *	is the same as the glyph (which will not always be true).
+   *	At the moment, we are ignoring unicode character composition and
+   *	are ignoring ligatures.
+   */
+  if (length > 0)
+    {
+      NSSize		(*advImp)(NSFont*, SEL, NSGlyph);
+      NSFont		*font = run->font;
+      float		kern = run->kern;
+      float		width = 0;
+
+      advImp = (NSSize (*)(NSFont*, SEL, NSGlyph))
+	[run->font methodForSelector: advSel];
+
+      if (kern == 0)
+	{
+	  /* Special case - if no kerning, we can do things a bit quicker. */
+	  for (i = 0; i < length; i++)
+	    {
+	      GSGlyphInfo	*gi = &run->glyphs[i];
+
+	      gi->glyph = (NSGlyph)chars[i];
+	      gi->adv = (*advImp)(font, advSel, gi->glyph);
+	      gi->pos = pos++;
+	      width += gi->adv.width;
+	    }
+	}
+      else
+	{
+	  for (i = 0; i < length; i++)
+	    {
+	      GSGlyphInfo	*gi = &run->glyphs[i];
+
+	      gi->glyph = (NSGlyph)chars[i];
+	      gi->adv = (*advImp)(font, advSel, gi->glyph);
+	      gi->pos = pos++;
+	      gi->adv.width += kern;
+	      width += gi->adv.width;
+	    }
+	}
+
+      run->width = width;
+    }
+  else
+    {
+      run->width = 0;
+    }
+}
+
+/*
+ * A GSTextChunk structure is used to maintain a list of GSTextRuns that make
+ * up the text between two tabstops.
+ */
+typedef	struct GSTextChunkStruct {
+  GSTextRun	run0;		// Starting run in chunk.
+  float		width;		// Width of entire chunk.
+  float		height;		// Height of entire chunk.
+  float		baseline;	// Baseline for characters.
+  float		xpos;		// Position of chunk in line.
+  float		decimal;	// Position of decimal point.
+  struct GSTextChunkStruct *last;
+  struct GSTextChunkStruct *next;
+} GSTextChunk;
+
+static void
+drawChunk(GSTextChunk *chunk, NSPoint origin, GSDrawInfo *draw)
+{
+  GSTextRun	*run = &chunk->run0;
+
+  origin.x += chunk->xpos;
+  while (run != 0)
+    {
+      drawRun(run, origin, draw);
+      origin.x += run->width;
+      run = run->next;
+    }
+}
+
+/*
+ *	emptyChunk() - release memory used by all chunks after this one,
+ *	and release all dynamically allocated runs in this chunk (ie all
+ *	but 'run0').
+ */
+static void
+emptyChunk(GSTextChunk *chunk)
+{
+  while (chunk->run0.next != 0)
+    {
+      GSTextRun	*tmp = chunk->run0.next;
+
+      chunk->run0.next = tmp->next;
+      objc_free(tmp);
+    }
+  if (chunk->next != 0)
+    {
+      emptyChunk(chunk->next);
+      objc_free(chunk->next);
+      chunk->next = 0;
+    }
+}
+
+static void
+setupChunk(GSTextChunk *chunk, NSAttributedString *str, NSRange range,
+	GSGlyphArray *g, GSTextChunk *last)
+{
+  GSTextRun	*lastRun = 0;
+  NSDictionary	*attr;
+  unsigned	start = range.location;
+  unsigned	loc = start;
+  unsigned	end = NSMaxRange(range);
+  NSString	*string = [str string];
+  unichar	chars[range.length];
+
+  [string getCharacters: chars range: range];
+
+  /*
+   * Add chunk to linked list after the previous chunk.
+   */
+  chunk->next = 0;
+  chunk->last = last;
+  if (last != 0)
+    last->next = chunk;
+
+  chunk->xpos = 0;
+  chunk->width = 0;
+  chunk->height = 0;
+  chunk->baseline = 0;
+  chunk->decimal = -1;		// Not yet valid.
+
+  /*
+   *	Build up all the runs in this chunk - a run is a sequence of characters
+   *	with the same attributes.
+   */
+  do
+    {
+      unsigned	where;
+      unsigned	length;
+
+      attr = [str attributesAtIndex: loc effectiveRange: &range];
+      if (range.location < loc)
+	{
+	  range.length -= (range.location - loc);
+	  range.location = loc;
+	}
+      if (NSMaxRange(range) > end)
+	range.length = end - range.location;
+
+      where = loc - start;
+      length = range.length;
+
+      if (lastRun == 0)
+	{
+	  setupRun(&chunk->run0, length, &chars[where], loc, attr, g, 0);
+	  lastRun = &chunk->run0;
+	}
+      else
+	{
+	  GSTextRun	*run = (GSTextRun*)objc_malloc(sizeof(GSTextRun));
+
+	  setupRun(run, length, &chars[where], loc, attr, g, lastRun);
+	  lastRun = run;
+	} 
+
+      chunk->width += lastRun->width;
+      if (lastRun->baseline > chunk->baseline)
+	chunk->baseline = lastRun->baseline;
+      if (lastRun->height > chunk->height)
+	chunk->height = lastRun->height;
+
+      loc = NSMaxRange(range);
+    }
+  while (loc < end);
+
+  if (lastRun == 0)
+    setupRun(&chunk->run0, 0, 0, start, nil, g, 0);
+}
+
+/*
+ * The chunkDecimal() function searches a chunk of text for the first decimal
+ * point and returns it's position within the chunk.  This is used for decimal
+ * tabs.
+ */
+static float
+chunkDecimal(GSTextChunk *chunk)
+{
+  if (chunk->decimal < 0)
+    {
+      GSTextRun	*run = &chunk->run0;
+
+      chunk->decimal = 0;
+      while (run != 0)
+	{
+	  unsigned	i;
+	  GSGlyphInfo	*gi = run->glyphs;
+
+	  for (i = 0; i < run->glyphCount; i++)
+	    {
+	      if (gi[i].glyph == (NSGlyph)'.')
+		break;
+	      chunk->decimal += gi[i].adv.width;
+	    }
+	  run = run->next;
+	}
+    }
+  return chunk->decimal;
+}
+
+/*
+ * The GSTextLine structure is used to maintain information about a
+ * complete line of text consisting of one or more GSTextChunks.
+ */
+typedef	struct GSTextLine {
+  GSTextChunk		chunk0;		// Starting run in chunk.
+  float			width;		// Width of entire chunk.
+  float			height;		// Height of entire chunk.
+  NSArray		*tabs;		// Tabstops in line.
+  float			indent;		// Position of start of line.
+  float			rmargin;	// Position of end of line.
+  float			leading;	// Space below line.
+  NSTextAlignment	alignment;	// Alignment for entire line.
+  NSLineBreakMode	lineBreakMode;	// How to deal with long lines.
+} GSTextLine;
+
+static void
+emptyLine(GSTextLine *line)
+{
+  emptyChunk(&line->chunk0);
+}
+
+/*
+ * The backLine() function draws the text background for a line of text.
+ * FIXME - is this behavior what we want?
+ * We actually fill the entire line including the inter-line space (leading)
+ * with whatever background color is used by the text at any point.
+ */
+static void
+backLine(GSTextLine *line, NSGraphicsContext *ctxt, NSPoint origin, BOOL flip)
+{
+  NSRect	fillrect;
+  GSTextChunk	*chunk = &line->chunk0;
+  NSColor	*bg;
+  float		offset = origin.x;
+
+  fillrect.origin.y = origin.y;
+  fillrect.size.height = line->height + line->leading;
+  if (flip == NO)
+    fillrect.origin.y -= fillrect.size.height;
+
+  fillrect.origin.x = line->chunk0.xpos;
+
+  bg = line->chunk0.run0.bg;
+  while (chunk != 0)
+    {
+      GSTextRun	*run = &chunk->run0;
+
+      fillrect.size.width = chunk->xpos - fillrect.origin.x;
+
+      while (run != 0)
+	{
+	  if (run->bg == bg)
+	    {
+	      fillrect.size.width += run->width;
+	    }
+	  else
+	    {
+	      if (bg != nil)
+		{
+		  [bg set];
+		  fillrect.origin.x += offset;
+		  NSRectFill(fillrect);
+		  fillrect.origin.x -= offset;
+		}
+	      bg = run->bg;
+	      fillrect.origin.x += fillrect.size.width;
+	      fillrect.size.width = 0;
+	    }
+	  run = run->next;
+	}
+      chunk = chunk->next;
+    }
+
+  if (bg != nil && fillrect.size.width > 0)
+    {
+      [bg set];
+      fillrect.origin.x += offset;
+      NSRectFill(fillrect);
+    }
+}
+
+static void
+drawLine(GSTextLine *line, NSGraphicsContext *ctxt, NSPoint origin, BOOL flip)
+{
+  GSTextChunk	*chunk = &line->chunk0;
+  GSDrawInfo	draw;
+
+  backLine(line, ctxt, origin, flip);
+
+  draw.font = nil;
+  draw.color = nil;
+  draw.ctxt = ctxt;
+  draw.flip = flip;
+
+  while (chunk != 0)
+    {
+      drawChunk(chunk, origin, &draw);
+      chunk = chunk->next;
+    }
+}
+
+static GSTextChunk*
+setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
+	GSGlyphArray *g, NSParagraphStyle *style, BOOL first)
+{
+  GSTextChunk	*lastChunk = 0;
+  NSString	*string = [str string];
+  NSArray	*tabs = [style tabStops];
+  float		maxh = [style maximumLineHeight];
+  unsigned	start = range.location;
+  unsigned	end = NSMaxRange(range);
+  unsigned	numTabs = [tabs count];
+  unsigned	nextTab = 0;
+#define	NO_R_MARGIN	1.0E8
+
+  line->alignment = [style alignment];
+  line->lineBreakMode = [style lineBreakMode];
+  line->height = [style minimumLineHeight];
+  line->rmargin = [style tailIndent];
+  if (line->rmargin <= 0.0)
+    line->rmargin = NO_R_MARGIN;
+
+  if (first)
+    line->indent = [style firstLineHeadIndent];
+  else
+    line->indent = [style headIndent];
+  line->width = line->indent;
+
+  line->leading = [style lineSpacing];
+
+  do
+    {
+      NSRange	tabRange;
+      NSRange	chunkRange;
+ 
+      /*
+       * Locate a tab or end-of-line and set the chunk range to be the range
+       * up to (but not including) the tab.
+       */
+      tabRange = [string rangeOfString: @"\t"
+			       options: NSLiteralSearch
+				 range: range];
+      if (tabRange.length == 0)
+	tabRange.location = end;
+      chunkRange.location = range.location;
+      chunkRange.length = tabRange.location - range.location;
+
+      /*
+       * Load information about the text chunk upto the tabstop into a
+       * GSTextChunk structure.
+       */
+      if (lastChunk == 0)
+	{
+	  setupChunk(&line->chunk0, str, chunkRange, g, 0);
+	  lastChunk = &line->chunk0;
+	}
+      else
+	{
+	  GSTextChunk	*chunk;
+
+	  chunk = (GSTextChunk*)objc_malloc(sizeof(GSTextChunk));
+	  setupChunk(chunk, str, chunkRange, g, lastChunk);
+	  lastChunk = chunk;
+	}
+
+      /*
+       * Advance our range past the tab we found, or to the end-of-line
+       */
+      range.location = NSMaxRange(tabRange);
+      range.length = end - range.location;
+
+      if (chunkRange.location > start)
+	{
+	  float	offset;
+	  BOOL	found = NO;
+
+	  /*
+	   * We have had a tab before this chunk, try to align at a tabstop
+	   */
+	  while (found == NO && nextTab < numTabs)
+	    {
+	      NSTextTab		*tab = [tabs objectAtIndex: nextTab++];
+	      float		loc = [tab location];
+
+	      if (loc > line->width)
+		{
+		  NSTextTabType	type = [tab tabStopType];
+
+		  if (type == NSLeftTabStopType)
+		    {
+		      lastChunk->xpos = loc;
+		      found = YES;
+		    }
+		  else if (type == NSRightTabStopType
+		    && loc - (offset = lastChunk->width) > line->width)
+		    {
+		      lastChunk->xpos = loc - offset;
+		      found = YES;
+		    }
+		  else if (type == NSCenterTabStopType
+		    && loc - (offset = lastChunk->width/2.0) > line->width)
+		    {
+		      lastChunk->xpos = loc - offset;
+		      found = YES;
+		    }
+		  else if (type == NSDecimalTabStopType
+		    && loc - (offset = chunkDecimal(lastChunk)) > line->width)
+		    {
+		      lastChunk->xpos = loc - offset;
+		      found = YES;
+		    }
+		}
+	    }
+	  if (found == NO)
+	    {
+	      /*
+	       * No more tabs - run this chunk on directly from last.
+	       */
+	      lastChunk->xpos = line->width;
+	    }
+	}
+      else if (range.location >= end)
+	{
+	  /*
+	   * There are no tabs in this line - align by paragraph style.
+	   * FIXME - NSNaturalTextAlignment should have different effects
+	   * depending on script in use.
+	   */
+	  if (line->alignment == NSLeftTextAlignment
+	    || line->alignment == NSNaturalTextAlignment
+	    || line->rmargin == NO_R_MARGIN)
+	    {
+	      /*
+	       * Simple left alignment.
+	       */
+	      lastChunk->xpos = line->width;
+	    }
+	  else if (line->alignment == NSRightTextAlignment)
+	    {
+	      lastChunk->xpos = line->rmargin - lastChunk->width;
+	    }
+	  else if (line->alignment == NSCenterTextAlignment)
+	    {
+	      lastChunk->xpos = line->rmargin - line->width - lastChunk->width;
+	      lastChunk->xpos = (lastChunk->xpos / 2.0) + line->width;
+	    }
+	  else if (line->alignment == NSJustifiedTextAlignment)
+	    {
+	      // FIXME - need to support justified text.
+	      lastChunk->xpos = line->width;
+	    }
+	  else
+	    {
+	      lastChunk->xpos = line->width;
+	    }
+	}
+      else
+	{
+	  /*
+	   * First chunk on a line with tabs - simply align to left.
+	   */
+	  lastChunk->xpos = line->width;
+	}
+
+      /*
+       * FIXME - should check for line-break and handle long lines here.
+       * If we break a line, we should return the first chunk of the next line.
+       */
+
+      /*
+       * Now extend line width to add the new chunk and adjust the line
+       * height if necessary.
+       */
+      line->width = lastChunk->xpos + lastChunk->width;
+      if (lastChunk->height > line->height)
+	{
+	  line->height = lastChunk->height;
+	  if (maxh > 0 && line->height > maxh)
+	    line->height = maxh;
+	}
+    }
+  while (range.location < end);
+
+  /*
+   * If we got here, we are on the last line in the paragraph, so we use the
+   * paragraph spacing rather than line spacing as our leading.
+   */
+  line->leading = [style paragraphSpacing];
+
+  return 0;
+}
+
 - (void) drawAtPoint: (NSPoint)point
 {
   NSGraphicsContext	*ctxt = [NSGraphicsContext currentContext];
+  BOOL			isFlipped = [[ctxt focusView] isFlipped];
   NSString		*allText = [self string];
   unsigned		length = [allText length];
   unsigned		paraPos = 0;
-  BOOL			isFlipped = [[ctxt focusView] isFlipped];
   NSParagraphStyle	*style = nil;
-  BOOL			firstLineOfFirstPara = YES;
-  NSFont		*oldFont = nil;
-  NSSize		(*advImp)(NSFont*, SEL, NSGlyph);
+  GSTextLine		current;
 
   checkInit();
 
@@ -446,11 +1151,6 @@ sizeLine(NSAttributedString *str,
       NSRange	line;		// Range of current line.
       NSRange	eol;		// Range of newline character.
       unsigned	position;	// Position in NSString.
-      NSSize	lineSize;
-      float	baseline;
-      float	xpos = 0;
-      NSColor	*bg = nil;
-      float	leading;
       BOOL	firstLine = YES;
 
       /*
@@ -473,389 +1173,39 @@ sizeLine(NSAttributedString *str,
 	{
 	  if (firstLine == YES)
 	    {
-	      leading = [style paragraphSpacing];
-	      /*
-	       * Check to see if the new line begins with the same paragraph
-	       * styl that the old ended in. This information is used to handle
-	       * what happens between lines and whether the new line is also a
-	       * new paragraph.
-	       */
 	      style = (NSParagraphStyle*)[self
 				    attribute: NSParagraphStyleAttributeName
 				      atIndex: position
 			       effectiveRange: 0];
-	    }
-	  else
-	    {
-	      leading = [style lineSpacing];
-	    }
-    
-	  if (firstLineOfFirstPara == YES)
-	    {
-	      firstLineOfFirstPara = NO;
-	    }
-	  else
-	    {
-	      if (isFlipped)
-		point.y -= leading;
-	      else
-		point.y += leading;
-
-	      /*
-	       * Fill the inter-line/interparagraph space with the background
-	       * color in use at the end of the last line.
-	       */
-	      bg = (NSColor*)[self attribute: NSBackgroundColorAttributeName
-				     atIndex: position - 1
-			      effectiveRange: 0];
-	      if (bg == nil)
-		bg = defBgCol;
-
-	      if (bg != nil)
-		{
-		  NSRect	fillrect;
-
-		  fillrect.origin = point;
-		  fillrect.size.width = lineSize.width;
-		  fillrect.size.height = leading;
-		  [bg set];
-		  if (isFlipped == NO)
-		    fillrect.origin.y -= fillrect.size.height;
-		  NSRectFill(fillrect);
-		}
-	    }
-
-	  /*
-	   * Calculate sizing information for the entire line.
-	   */
-	  line = para;
-	  lineSize = sizeLine(self, style, &line, firstLine, &baseline);
-	  firstLine = NO;
-
-	  while (position < NSMaxRange(line))
-	    {
-	      NSAttributedString		*subAttr;
-	      NSString		*subString;
-	      NSSize		size;
-	      NSFont		*font;
-	      NSColor		*bg;
-	      NSColor		*fg;
-	      int		underline;
-	      int		superscript;
-	      float		base;
-	      float		kern;
-	      float		ypos;
-	      int		ligature;
-	      NSNumber		*num;
-	      NSRange		maxRange;
-	      NSRange		range;
-
-	      // Maximum range is up to end of line.
-	      maxRange = NSMakeRange(position, eol.location - position);
-
-	      // Get font and range over which it applies.
-	      font = (NSFont*)[self attribute: NSFontAttributeName
-				      atIndex: position
-			       effectiveRange: &range];
-	      if (font == nil)
-		font = defFont;
-	      if (font != oldFont)
-		{
-		  oldFont = font;
-		  advImp = (NSSize (*)(NSFont*, SEL, NSGlyph))
-		    [font methodForSelector: advSel];
-		}
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get style and range over which it applies.
-	      style = (NSParagraphStyle*)[self
-				    attribute: NSParagraphStyleAttributeName
-				      atIndex: position
-			       effectiveRange: &range];
 	      if (style == nil)
 		style = defStyle;
-	      maxRange = NSIntersectionRange(maxRange, range);
-	    
-	      // Get background color and range over which it applies.
-	      bg = (NSColor*)[self attribute: NSBackgroundColorAttributeName 
-				     atIndex: position
-			      effectiveRange: &range];
-	      if (bg == nil)
-		bg = defBgCol;
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get foreground color and range over which it applies.
-	      fg = (NSColor*)[self attribute: NSForegroundColorAttributeName 
-				     atIndex: position
-			      effectiveRange: &range];
-	      if (fg == nil)
-		fg = defFgCol;
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get underline style and range over which it applies.
-	      num = (NSNumber*)[self attribute: NSUnderlineStyleAttributeName 
-				       atIndex: position
-				effectiveRange: &range];
-	      if (num == nil)
-		underline = GSNoUnderlineStyle;	// No underline
-	      else
-		underline = [num intValue];
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get superscript and range over which it applies.
-	      num = (NSNumber*)[self attribute: NSSuperscriptAttributeName 
-				       atIndex: position
-				effectiveRange: &range];
-	      if (num == nil)
-		superscript = 0;
-	      else
-		superscript = [num intValue];
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get baseline offset and range over which it applies.
-	      num = (NSNumber*)[self attribute: NSBaselineOffsetAttributeName 
-				       atIndex: position
-				effectiveRange: &range];
-	      if (num == nil)
-		base = 0.0;
-	      else
-		base = [num floatValue];
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get kern attribute and range over which it applies.
-	      num = (NSNumber*)[self attribute: NSKernAttributeName 
-				       atIndex: position
-				effectiveRange: &range];
-	      if (num == nil)
-		kern = 0.0;
-	      else
-		kern = [num floatValue];
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      // Get ligature attribute and range over which it applies.
-	      num = (NSNumber*)[self attribute: NSLigatureAttributeName 
-				       atIndex: position
-				effectiveRange: &range];
-	      if (num == nil)
-		ligature = 1;
-	      else
-		ligature = [num intValue];
-	      maxRange = NSIntersectionRange(maxRange, range);
-
-	      /*
-	       *	If this is a new line - adjust for indentation.
-	       */
-	      if (position == line.location)
-		{
-		  NSRect	fillrect;
-
-		  fillrect.origin = point;
-		  fillrect.size = lineSize;
-
-		  if (firstLine)
-		    xpos = [style firstLineHeadIndent];
-		  else
-		    xpos += [style headIndent];
-
-		  fillrect.size.width = xpos;
-		  if (bg != nil && fillrect.size.width > 0)
-		    {
-		      [bg set];
-		      if (isFlipped == NO)
-			fillrect.origin.y -= fillrect.size.height;
-		      NSRectFill(fillrect);
-		    }
-		}
-
-	      /*
-	       * Now, at last we have all the required text drawing attributes 
-	       * and we have a range over which ALL of them apply.  We update
-	       * our position to point past this range, then we grab the
-	       * substring, draw it, and update our drawing position.
-	       */
-	      range = maxRange;
-	      position = NSMaxRange(range);	// Next position in string.
-	      subAttr = [self attributedSubstringFromRange: range];
-	      subString = [subAttr string];
-	      size.width = [font widthOfString: subString];
-	      size.height = [font pointSize];
-
-	      if (range.length > 0)
-		{
-		  unichar	chars[range.length];
-		  NSArray	*tabStops = [style tabStops];
-		  unsigned	numTabs = [tabStops count];
-		  unsigned	nextTab = 0;
-		  float		width = xpos;
-		  unsigned	i;
-
-		  [[self string] getCharacters: chars range: range];
-
-		  /*
-		   * If we have a background color set - we fill in the
-		   * region occupied by this substring.
-		   */
-		  if (bg)
-		    {
-		      float		oldx = xpos;
-		      NSRect	rect;
-
-
-		      for (i = 0; i < range.length; i++)
-			{
-			  if (chars[i] == '\t')
-			    {
-			      NSTextTab	*tab;
-
-			      /*
-			       *	Either advance to next tabstop or by
-			       *	a space if there are no more tabstops.
-			       */
-			      while (nextTab < numTabs)
-				{
-				  tab = [tabStops objectAtIndex: nextTab];
-				  if ([tab location] > xpos)
-				    break;
-				  nextTab++;
-				}
-			      if (nextTab < numTabs)
-				xpos = [tab location];
-			      else
-				{
-				  NSSize	adv;
-
-				  adv = ADVANCEMENT(' ');
-				  xpos += adv.width;
-				}
-			    }
-			  else
-			    {
-			      NSSize	adv;
-
-			      adv = ADVANCEMENT(chars[i]);
-			      xpos += adv.width;
-			      xpos += kern;
-			    }
-			}
-		      
-		      rect.origin.x = point.x + oldx;
-		      rect.origin.y = point.y;
-		      rect.size.height = lineSize.height;
-		      rect.size.width = xpos - oldx;
-		      xpos = oldx;
-		      if (isFlipped == NO)
-			rect.origin.y -= lineSize.height;
-
-		      [bg set];
-		      NSRectFill(rect);
-		    }
-
-		  /*
-		   * Set font and color, then draw the substring.
-		   * NB. Our origin is top-left of the string so we need to
-		   * calculate a vertical coordinate for the baseline of the
-		   * text produced by psshow.
-		   */
-		  [fg set];
-		  [font set];
-		  if (isFlipped)
-		    ypos = point.y + lineSize.height - baseline - base;
-		  else
-		    ypos = point.y - lineSize.height + baseline + base;
-
-		  i = 0;
-		  while (i < range.length)
-		    {
-		      unsigned	tabIndex = i;
-
-		      while (tabIndex < range.length)
-			{
-			  if (chars[tabIndex] == '\t')
-			    break;
-			  tabIndex++;
-			}
-
-		      if (tabIndex == i)
-			{
-			  NSTextTab	*tab;
-
-			  /*
-			   *	Either advance to next tabstop or by a space if
-			   *	there are no more tabstops.
-			   */
-			  while (nextTab < numTabs)
-			    {
-			      tab = [tabStops objectAtIndex: nextTab];
-			      if ([tab location] > width)
-				break;
-			      nextTab++;
-			    }
-			  if (nextTab < numTabs)
-			    width = [tab location];
-			  else
-			    {
-			      NSSize	adv;
-
-			      adv = ADVANCEMENT(' ');
-			      width += adv.width;
-			    }
-			  i++;			// Point to next char.
-			}
-		      else if (kern == 0)
-			{
-			  char	buf[tabIndex - i + 1];
-			  unsigned j;
-
-			  for (j = i; j < tabIndex; j++)
-			    buf[j-i] = chars[j];
-			  buf[j-i] = '\0';
-			  DPSmoveto(ctxt, point.x + xpos, ypos);
-			  DPSshow(ctxt, buf);
-			  while (i < tabIndex)
-			    {
-			      NSSize	adv;
-
-			      adv = ADVANCEMENT(chars[i]);
-			      width += adv.width;
-			      i++;
-			    }
-			}
-		      else
-			{
-			  while (i < tabIndex)
-			    {
-			      NSSize	adv;
-			      char	buf[2];
-
-			      width += kern;
-			      DPSmoveto(ctxt, point.x + width, ypos);
-			      buf[0] = chars[i];
-			      buf[1] = '\0';
-			      DPSshow(ctxt, buf);
-			      adv = ADVANCEMENT(chars[i]);
-			      width += adv.width;
-			      i++;
-			    }
-			}
-		      xpos = width;
-		    }
-
-		  if (underline == NSSingleUnderlineStyle)
-		    {
-		      DPSmoveto(ctxt, point.x + xpos, ypos);
-		      DPSlineto(ctxt, point.x + width - 1, ypos);
-		    }
-		  xpos = width;
-		}
 	    }
-	  if (isFlipped)
-	    point.y += lineSize.height;
-	  else
-	    point.y -= lineSize.height;
-	  firstLine = NO;
+    
+	  /*
+	   * Assemble drawing information for the entire line.
+	   */
+	  line = para;
+	  {
+	    GSGlyphInfo		info[line.length];
+	    GSGlyphArray	garray;
+
+	    garray.used = 0;
+	    garray.glyphs = info;
+
+	    setupLine(&current, self, line, &garray, style, YES);
+	    drawLine(&current, ctxt, point, isFlipped);
+
+	    if (isFlipped)
+	      point.y += current.height + current.leading;
+	    else
+	      point.y -= current.height + current.leading;
+
+	    emptyLine(&current);
+	  }
 	  para.length -= line.length;
 	  para.location += line.length;
-	} while (para.location < eol.location);
+	}
+      while (para.location < eol.location);
     }
 }
 
@@ -881,30 +1231,83 @@ sizeLine(NSAttributedString *str,
   NSRectClip([view bounds]);
 }
 
-/* FIXME completely ignores paragraph style attachments and other layout info */
 - (NSSize) size
 {
-  unsigned	length = [self length];
-  unsigned	position = 0;
-  float		height = 0;
-  float		width = 0;
+  NSString		*allText = [self string];
+  unsigned		length = [allText length];
+  unsigned		paraPos = 0;
+  NSParagraphStyle	*style = nil;
+  GSTextLine		current;
+  NSSize		size = NSMakeSize(0,0);
 
-  while (position < length)
+  checkInit();
+
+  while (paraPos < length)
     {
-      NSRange	range;
-      NSFont	*font;
-      NSString	*subString;
+      NSRange	para;		// Range of current paragraph.
+      NSRange	line;		// Range of current line.
+      NSRange	eol;		// Range of newline character.
+      unsigned	position;	// Position in NSString.
+      BOOL	firstLine = YES;
 
-      font = (NSFont*)[self attribute: NSFontAttributeName
-			      atIndex: position
-		       effectiveRange: &range];
-      subString = [[self attributedSubstringFromRange: range] string];
-      width += [font widthOfString: subString];
-      height = MAX([font pointSize], height);
-      position = NSMaxRange(range);
+      /*
+       * Determine the range of the next paragraph of text (in 'para') and set
+       * 'paraPos' to point after the terminating newline character (if any).
+       */
+      para = NSMakeRange(paraPos, length - paraPos);
+      eol = [allText rangeOfCharacterFromSet: newlines
+				     options: NSLiteralSearch
+				       range: para];
+
+      if (eol.length == 0)
+	eol.location = length;
+      else
+	para.length = eol.location - para.location;
+      paraPos = NSMaxRange(eol);
+      position = para.location;
+
+      do
+	{
+	  if (firstLine == YES)
+	    {
+	      style = (NSParagraphStyle*)[self
+				    attribute: NSParagraphStyleAttributeName
+				      atIndex: position
+			       effectiveRange: 0];
+	      if (style == nil)
+		style = defStyle;
+	    }
+    
+	  /*
+	   * Assemble drawing information for the entire line.
+	   */
+	  line = para;
+	  {
+	    GSGlyphInfo		info[line.length];
+	    GSGlyphArray	garray;
+	    GSTextChunk		*chunk;
+
+	    garray.used = 0;
+	    garray.glyphs = info;
+
+	    setupLine(&current, self, line, &garray, style, YES);
+
+	    chunk = &current.chunk0;
+	    while (chunk->next != 0)
+	      chunk = chunk->next;
+	    if (chunk->xpos + chunk->width > size.width)
+	      size.width = chunk->xpos + chunk->width;
+	    size.height += current.height + current.leading;
+
+	    emptyLine(&current);
+	  }
+	  para.length -= line.length;
+	  para.location += line.length;
+	}
+      while (para.location < eol.location);
     }
 
-  return NSMakeSize(width, height);
+  return size;
 }
 
 @end

@@ -1,3 +1,9 @@
+Fri Apr  9 16:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSStringDrawing.m: Further hacking of the string drawing stuff
+	to (hopefully) support fonts, colors, tabs, underline, kern, leading.
+	Very little actually tested and no line-break support yet.
+
 Thu Apr  8 21:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Tidy window view stuff
