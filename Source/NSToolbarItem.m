@@ -6,7 +6,8 @@
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
-            Fabien Vallon <fabien.vallon@fr.alcove.com>
+            Fabien Vallon <fabien.vallon@fr.alcove.com>,
+	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
    
    This file is part of the GNUstep GUI Library.
@@ -32,13 +33,13 @@
 #include <Foundation/NSDebug.h>
 
 #include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSToolbar.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSEvent.h"
+#include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 /*
@@ -55,16 +56,16 @@
  * with the item identifier.
  */
 
-@interface NSToolbar (GNUstepPrivate)
+@interface GSToolbar (GNUstepPrivate)
 - (GSToolbarView *) _toolbarView;
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
 - (void) _layout;
 - (NSView *) _backView;
-- (BOOL) _isUpdated;
+- (BOOL) _isModified;
 - (BOOL) _isFlexibleSpace;
-- (void) _setToolbar: (NSToolbar *)toolbar;
+- (void) _setToolbar: (GSToolbar *)toolbar;
 @end
 
 @interface GSToolbarView (GNUstepPrivate)
@@ -97,25 +98,76 @@
 
 - (void) layout
 {
-  float textWidth, layoutedWidth;
+  float textWidth, layoutedWidth = -1, layoutedHeight = -1;
   NSAttributedString *attrStr;
   NSDictionary *attr;
-  NSFont *font =[NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should NSControlContentFontSize
+  NSFont *font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should NSControlContentFontSize
 
+  // Adjust the layout in accordance with NSToolbarSizeMode
+
+  switch ([[_toolbarItem toolbar] sizeMode])
+    {
+      case NSToolbarSizeModeDefault:
+	layoutedWidth = _ItemBackViewDefaultWidth;
+	layoutedHeight = _ItemBackViewDefaultHeight;
+	[[_toolbarItem image] setSize: NSMakeSize(32, 32)];
+	break;
+      case NSToolbarSizeModeRegular:
+        layoutedWidth = _ItemBackViewRegularWidth;
+        layoutedHeight = _ItemBackViewRegularHeight;
+	[[_toolbarItem image] setSize: NSMakeSize(32, 32)];
+	break;
+      case NSToolbarSizeModeSmall:
+        layoutedWidth = _ItemBackViewSmallWidth;
+	layoutedHeight = _ItemBackViewSmallHeight;
+	[[_toolbarItem image] setSize: NSMakeSize(24, 24)];
+	// Not use [self image] here because it can return nil, when image position is
+	// set to NSNoImage. Even if NSToolbarDisplayModeTextOnly is not true anymore
+	// -setImagePosition: is only called below, then [self image] can still returns 
+	// nil.
+	font = [NSFont systemFontOfSize: 9];
+	break;
+      default:
+	; // invalid
+    }
+    
+  [[self cell] setFont: font];
+             
+  // Adjust the layout in accordance with the label
+	
   attr = [NSDictionary dictionaryWithObject: font forKey: @"NSFontAttributeName"];
   attrStr = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
       
   textWidth = [attrStr size].width + 2 * _InsetItemTextX;
-  if (textWidth > _ItemBackViewDefaultWidth) 
-  {
+  if (layoutedWidth != -1 && textWidth > layoutedWidth) 
      layoutedWidth = textWidth;
-  }
-  else 
-  {
-     layoutedWidth = _ItemBackViewDefaultWidth;
-  }
+     
+  // Adjust the layout in accordance with NSToolbarDisplayMode
+  
+  switch ([[_toolbarItem toolbar] displayMode])
+    {
+      case NSToolbarDisplayModeDefault:
+        [self setImagePosition: NSImageAbove];
+        break;
+      case NSToolbarDisplayModeIconAndLabel:
+        [self setImagePosition: NSImageAbove];
+        break;
+      case NSToolbarDisplayModeIconOnly:
+        [self setImagePosition: NSImageOnly];
+        layoutedHeight -= [attrStr size].height + _InsetItemTextY;
+	layoutedWidth -= [attrStr size].height + _InsetItemTextY;
+	break;
+      case NSToolbarDisplayModeLabelOnly:
+        [self setImagePosition: NSNoImage];
+        layoutedHeight = [attrStr size].height + _InsetItemTextY * 2;
+	break;
+      default:
+	; // invalid
+    }
       
-  [self setFrameSize: NSMakeSize(layoutedWidth, _ItemBackViewDefaultHeight)];
+  // Set the frame size to use the new layout
+  
+  [self setFrameSize: NSMakeSize(layoutedWidth, layoutedHeight)];
    
 }
 
@@ -132,6 +184,8 @@
 {
   NSToolbarItem *_toolbarItem;
   BOOL _enabled;
+  BOOL _showLabel;
+  NSFont *_font;
 }
 
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem;
@@ -158,57 +212,142 @@
 {
   NSAttributedString *attrString;
   NSDictionary *attr;
-  NSFont *font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should be NSControlContentFontSize
+  NSColor *color;
   int textX;
   
   [super drawRect: rect]; // We draw _view which is a subview
   
   if (_enabled)
     {
-      [[NSColor blackColor] set];
+      color = [NSColor blackColor];
     }
   else
     {
-      [[NSColor grayColor] set];
+      color = [NSColor disabledControlTextColor];
     }
-
-  attr = [NSDictionary dictionaryWithObject: font forKey: @"NSFontAttributeName"];
-  attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr]; // we draw the label
-  textX = (([self frame].size.width - _InsetItemTextX) - [attrString size].width) / 2;
-  [attrString drawAtPoint: NSMakePoint(textX, _InsetItemTextY)];
+    
+  if (_showLabel)
+    {
+      // we draw the label
+      attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
+                                                         @"NSFontAttributeName", 
+							 color,
+                                                         @"NSForegroundColorAttributeName",
+							 nil];
+      attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
+      textX = (([self frame].size.width - _InsetItemTextX) - [attrString size].width) / 2;
+      [attrString drawAtPoint: NSMakePoint(textX, _InsetItemTextY)];
+    }
 }
 
 - (void) layout
 {
-  NSView *view;
-  float textWidth;
+  NSView *view = [_toolbarItem view];
+  float insetItemViewY;
+  float textWidth, layoutedWidth = -1, layoutedHeight = -1;
   NSAttributedString *attrStr;
   NSDictionary *attr;
-  NSFont *font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should be NSControlContentFontSize
-
-  view = [_toolbarItem view];
   
-  if ([view frame].size.height <= _ItemBackViewDefaultHeight)
-    {
-      [view setFrameOrigin: NSMakePoint(_InsetItemViewX, _InsetItemViewY)];
-      [self addSubview: view];
-    }
-    else
-    {
-      [view removeFromSuperview];
-    }
+  _font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should be NSControlContentFontSize
   
-  [self setFrameSize: NSMakeSize([view frame].size.width + 2 * _InsetItemViewX, _ItemBackViewDefaultHeight)];
+  if ([view superview] == nil) // Show the view to eventually hide it later
+    [self addSubview: view];
+    
+  // Adjust the layout in accordance with NSToolbarSizeMode
+  
+  switch ([[_toolbarItem toolbar] sizeMode])
+    {
+      case NSToolbarSizeModeDefault:
+	layoutedWidth = _ItemBackViewDefaultWidth;
+	layoutedHeight = _ItemBackViewDefaultHeight;
+	if ([view frame].size.height > 32)
+	  [view removeFromSuperview];
+	break;
+      case NSToolbarSizeModeRegular:
+        layoutedWidth = _ItemBackViewRegularWidth;
+        layoutedHeight = _ItemBackViewRegularHeight;
+	if ([view frame].size.height > 32)
+	  [view removeFromSuperview];
+	break;
+      case NSToolbarSizeModeSmall:
+        layoutedWidth = _ItemBackViewSmallWidth;
+	layoutedHeight = _ItemBackViewSmallHeight;
+	_font = [NSFont systemFontOfSize: 9];
+	if ([view frame].size.height > 24)
+	  [view removeFromSuperview];
+	break;
+      default:
+	NSLog(@"Invalid NSToolbarSizeMode"); // invalid
+    } 
+  
+  // Adjust the layout in accordance with the label
  
-  attr = [NSDictionary dictionaryWithObject: font forKey: @"NSFontAttributeName"];
+  attr = [NSDictionary dictionaryWithObject: _font forKey: @"NSFontAttributeName"];
   attrStr = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
       
   textWidth = [attrStr size].width + 2 * _InsetItemTextX;
-  if (textWidth > [self frame].size.width)
+  if (textWidth > layoutedWidth)
+    layoutedWidth = textWidth;
+    
+  // Adjust the layout in accordance with NSToolbarDisplayMode
+  
+  _enabled = YES;
+  _showLabel = YES; 
+  // this boolean variable is used to known when it's needed to draw the label in the -drawRect:
+  // method.
+   
+  switch ([[_toolbarItem toolbar] displayMode])
     {
-      [self setFrameSize: NSMakeSize(textWidth, _ItemBackViewDefaultHeight)];
-      [view setFrameOrigin: NSMakePoint((textWidth - [view frame].size.width) / 2, _InsetItemViewY)];
-    }  
+      case NSToolbarDisplayModeDefault:
+        break; // Nothing to do
+      case NSToolbarDisplayModeIconAndLabel:
+        break; // Nothing to do
+      case NSToolbarDisplayModeIconOnly:
+        _showLabel = NO;
+        layoutedHeight -= [attrStr size].height + _InsetItemTextY;
+	break;
+      case NSToolbarDisplayModeLabelOnly:
+        _enabled = NO;
+        layoutedHeight = [attrStr size].height + _InsetItemTextY * 2;
+	if ([view superview] != nil)
+	  [view removeFromSuperview];
+	break;
+      default:
+	; // invalid
+    }
+   
+  // If the view is visible... 
+  // Adjust the layout in accordance with the view width in the case it is needed
+  
+  if ([view superview] != nil)
+    { 
+    if (layoutedWidth < [view frame].size.width + 2 * _InsetItemViewX)
+      layoutedWidth = [view frame].size.width + 2 * _InsetItemViewX; 
+    }
+  
+  // Set the frame size to use the new layout
+  
+  [self setFrameSize: NSMakeSize(layoutedWidth, layoutedHeight)];
+  
+  // If the view is visible...
+  // Adjust the view position in accordance with the new layout
+  
+  if ([view superview] != nil)
+    {
+      if (_showLabel)
+        {
+          insetItemViewY = ([self frame].size.height 
+	    - [view frame].size.height - [attrStr size].height - _InsetItemTextX) / 2
+	    + [attrStr size].height + _InsetItemTextX;
+	}
+      else
+        {
+	  insetItemViewY = ([self frame].size.height - [view frame].size.height) / 2;
+	}
+	
+      [view setFrameOrigin: 
+        NSMakePoint((layoutedWidth - [view frame].size.width) / 2, insetItemViewY)];
+    }
 }
 
 - (NSToolbarItem *)toolbarItem
@@ -244,14 +383,14 @@
 @implementation GSToolbarSeparatorItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"common_ToolbarSeparatorItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarSeperatorItem"];
 
   self = [super initWithItemIdentifier: itemIdentifier];
   [(NSButton *)[self _backView] setImagePosition: NSImageOnly];
   [(NSButton *)[self _backView] setImage: image];
   // We bypass the toolbar item accessor to set the image in order to have it (48 * 48) not resized
    
-  [[self _backView] setFrameSize: NSMakeSize(15, _ItemBackViewDefaultHeight)];
+  [[self _backView] setFrameSize: NSMakeSize(30, _ItemBackViewDefaultHeight)];
   
   return self;
 }
@@ -427,7 +566,7 @@
 {
   if(_flags._image)
     {
-      return [(id)_backView image];
+      return _image;
     }
   return nil;
 }
@@ -613,7 +752,7 @@
       ASSIGN(_image, image);  
       
       [_image setScalesWhenResized: YES];
-      [_image setSize: NSMakeSize(32, 32)];
+      //[_image setSize: NSMakeSize(32, 32)];
       
       if ([_backView isKindOfClass: [NSButton class]])
         [(NSButton *)_backView setImage: _image];
@@ -627,7 +766,7 @@
   if ([_backView isKindOfClass: [NSButton class]])
     [(NSButton *)_backView setTitle:_label];
 
-  _updated = YES;
+  _modified = YES;
   if (_toolbar != nil)
     [[_toolbar _toolbarView] _reload];
 }
@@ -720,7 +859,7 @@
   return _toolTip;
 }
 
-- (NSToolbar *)toolbar
+- (GSToolbar *)toolbar
 {
   return _toolbar;
 }
@@ -748,9 +887,9 @@
   [(id)_backView layout];
 }
 
-- (BOOL)_isUpdated
+- (BOOL)_isModified
 {
-  return _updated;
+  return _modified;
 }
 
 - (BOOL)_isFlexibleSpace
@@ -758,7 +897,7 @@
   return [self isKindOfClass: [GSToolbarFlexibleSpaceItem class]];
 }
 
-- (void) _setToolbar: (NSToolbar *)toolbar
+- (void) _setToolbar: (GSToolbar *)toolbar
 {
   ASSIGN(_toolbar, toolbar);
 }

@@ -176,8 +176,6 @@ static NSMutableArray *toolbars;
     return nil;
   
   ASSIGN(_identifier, identifier);
-  _displayMode = displayMode; 
-  _sizeMode = sizeMode;
   
   _items = [[NSMutableArray alloc] init];
     
@@ -189,7 +187,13 @@ static NSMutableArray *toolbars;
       _allowsUserCustomization = [toolbarModel allowsUserCustomization];
       _autosavesConfiguration = [toolbarModel autosavesConfiguration];
       ASSIGN(_configurationDictionary, [toolbarModel configurationDictionary]);
-
+      
+      if ([toolbarModel displayMode] != displayMode 
+        && [toolbarModel sizeMode] != sizeMode)
+	{
+	  // raise an exception.
+	}
+	
       //[self _loadConfig];
     
       [self _setDelegate: [toolbarModel delegate] broadcast: NO];
@@ -205,6 +209,9 @@ static NSMutableArray *toolbars;
     
        _delegate = nil;
     }
+    
+  _displayMode = displayMode; 
+  _sizeMode = sizeMode;
   
   [toolbars addObject: self];
   
@@ -287,6 +294,11 @@ static NSMutableArray *toolbars;
   return _delegate;
 }
 
+- (NSToolbarDisplayMode) displayMode
+{
+  return _displayMode;
+}
+
 - (NSString *) identifier
 {
   return _identifier;
@@ -304,7 +316,14 @@ static NSMutableArray *toolbars;
 
 - (NSArray *) visibleItems
 {
-  return [[_toolbarView _visibleBackViews] valueForKey: @"toolbarItem"];
+  if ([_toolbarView superview] == nil)
+    {
+      return nil;
+    }
+  else
+    {
+      return [[_toolbarView _visibleBackViews] valueForKey: @"toolbarItem"];
+    }
 }
 
 - (void) setAllowsUserCustomization: (BOOL)flag
@@ -341,7 +360,7 @@ static NSMutableArray *toolbars;
 
 - (NSToolbarSizeMode) sizeMode
 {
-  return 0;
+  return _sizeMode;
 }
 
 // Private methods

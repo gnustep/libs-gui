@@ -1,3 +1,16 @@
+2004-04-13  Quentin Mathe <qmathe@club-internet.fr>
+
+       * Source/NSToolbarItem.m: 
+       * Source/NSToolbar.m:
+       * Headers/AppKit/NSToolbar.h:
+       * Source/GSToolbar.m:
+       * Headers/GNUstepGUI/GSToolbar.h:
+       * Source/GSToolbarView.m:
+       * Headers/GNUstepGUI/GSToolbarView.h:
+       * Source/NSWindow+Toolbar.m:
+       * Headers/AppKit/NSWindow+Toolbar.h:
+       Added support for display mode and size mode and other minor changes.
+
 2004-04-09  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* Documentation/GuiUser/LanguageSetup.gsdoc: Added Korean stuff.

@@ -91,6 +91,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier atIndex: (int)index;
 - (void) removeItemAtIndex: (int)index;
 - (void) runCustomizationPalette: (id)sender;
+- (void) validateVisibleItems;
 
 // Accessors
 - (BOOL) allowsUserCustomization;
@@ -98,6 +99,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (NSDictionary*) configurationDictionary;
 - (BOOL) customizationPaletteIsRunning;
 - (id) delegate;
+- (NSToolbarDisplayMode) displayMode;
 - (NSString*) identifier;
 - (NSArray*) items;
 - (NSString *) selectedItemIdentifier;
@@ -107,7 +109,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (void) setConfigurationFromDictionary: (NSDictionary*)configDict;
 - (void) setDelegate: (id)delegate;
 - (void) setSelectedItemIdentifier: (NSString *) identifier;
-- (void) validateVisibleItems;
+- (NSToolbarSizeMode) sizeMode;
 
 @end /* interface of NSToolbar */
 

@@ -39,12 +39,11 @@
 }
 
 // Accessors
-- (NSToolbarDisplayMode) displayMode;
+
 - (BOOL) isVisible;
 - (void) setDisplayMode: (NSToolbarDisplayMode)displayMode;
 - (void) setSizeMode: (NSToolbarSizeMode)sizeMode;
 - (void) setVisible: (BOOL)shown;
-- (NSToolbarSizeMode) sizeMode;
 
 @end /* interface of NSToolbar */
 

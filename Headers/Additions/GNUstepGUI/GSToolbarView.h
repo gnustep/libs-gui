@@ -35,8 +35,10 @@
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSView.h>
 
+#include "GNUstepGUI/GSToolbar.h"
+// Necessary for NSToolbarDisplayMode and NSToolbarSizeMode
+
 @class NSMutableArray;
-@class GSToolbar;
 @class NSToolbarItem;
 @class NSClipView;
 @class GSToolbarClippedItemsButton;
@@ -49,13 +51,19 @@ enum {
   GSToolbarViewBottomBorder = 16
 };
 
-typedef enum _ItemBackViewHeight {
+typedef enum {
+  _ToolbarViewDefaultHeight = 61,
+  _ToolbarViewRegularHeight = 61,
+  _ToolbarViewSmallHeight = 51
+} _ToolbarViewHeight;
+
+typedef enum {
   _ItemBackViewDefaultHeight = 60,
   _ItemBackViewRegularHeight = 60,
   _ItemBackViewSmallHeight = 50
 } _ItemBackViewHeight;
 
-typedef enum _ItemViewWidth {
+typedef enum {
   _ItemBackViewDefaultWidth = 60,
   _ItemBackViewRegularWidth = 60,
   _ItemBackViewSmallWidth = 50
@@ -78,9 +86,15 @@ static const int _ClippedItemsViewWidth = 28;
   NSMutableArray *_visibleBackViews;
   BOOL _willBeVisible;
   unsigned int _borderMask;
+  NSToolbarDisplayMode _displayMode;
+  NSToolbarSizeMode _sizeMode;
+  unsigned int _heightFromLayout;
 }
 
-- (id) initWithFrame: (NSRect)frame; 
+- (id) initWithFrame: (NSRect)frame;
+- (id) initWithFrame: (NSRect)frame 
+         displayMode: (NSToolbarDisplayMode)displayMode 
+	    sizeMode: (NSToolbarSizeMode)sizeMode; 
 
 // Accessors
 - (GSToolbar *) toolbar;

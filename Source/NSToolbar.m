@@ -36,6 +36,7 @@
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
+#include "AppKit/NSWindow+Toolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 #include "GNUstepGUI/GSToolbar.h"
 #include "AppKit/NSToolbar.h"
@@ -75,6 +76,10 @@ static const int current_version = 1;
 - (NSArray *) _visibleBackViews;
 - (BOOL) _willBeVisible;
 - (void) _setWillBeVisible: (BOOL)willBeVisible;
+@end
+
+@interface NSWindow (ToolbarPrivate)
+- (void) _adjustToolbarView;
 @end
 
 // ---
@@ -134,16 +139,6 @@ static const int current_version = 1;
 
 // Accessors
 
-- (NSToolbarDisplayMode) displayMode
-{
-  return _displayMode;
-}
-
-- (NSToolbarSizeMode) sizeMode
-{
-  return _sizeMode;
-}
-
 - (BOOL) isVisible
 {
   return _visible;
@@ -196,7 +191,8 @@ static const int current_version = 1;
 {
    _displayMode = displayMode;
    
-   // do more
+   [_toolbarView _reload];
+   [_window _adjustToolbarView];
      
    if (broadcast) 
      {
@@ -204,12 +200,13 @@ static const int current_version = 1;
      }
 }
 
-- (void) setSizeMode: (NSToolbarSizeMode)sizeMode 
-           broadcast: (BOOL)broadcast
+- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode 
+            broadcast: (BOOL)broadcast
 {
    _sizeMode = sizeMode;
    
-   // do more
+   [_toolbarView _reload];
+   [_window _adjustToolbarView];
      
    if (broadcast) 
      {

@@ -33,7 +33,6 @@
 #include "AppKit/NSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
-static const int ToolbarHeight = 61;
 
 @interface NSToolbar (GNUstepPrivate)
 + (NSArray *) _toolbars;
@@ -44,11 +43,14 @@ static const int ToolbarHeight = 61;
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _setToolbar: (NSToolbar *)toolbar;
-- (void) _handleViewsVisibility;
+- (float) _heightFromLayout;
+- (void) _reload;
+- (void) _setWillBeVisible: (BOOL)willBeVisible;
 @end
 
 @interface NSWindow (ToolbarPrivate)
-- (void) _toggleToolbarView: (GSToolbarView *)toolbarView display: (BOOL)flag;
+- (void) _adjustToolbarView;
+- (void) _toggleToolbarViewWithDisplay: (BOOL)flag;
 @end
 
 @implementation NSWindow (Toolbar)
@@ -61,17 +63,26 @@ static const int ToolbarHeight = 61;
 - (void) toggleToolbarShown: (id)sender
 {
   NSToolbar *toolbar = [self toolbar];
+  BOOL isVisible = [toolbar isVisible];
+  GSToolbarView *toolbarView = [toolbar _toolbarView];
     
   if ([sender isEqual: toolbar]) 
-  // we can enter this branch when the toolbar class has called
+  // We can enter this branch when the toolbar class has called
   // toggleToolbarShown:
   {
-    [self _toggleToolbarView: [toolbar _toolbarView] display: YES];
+    if (!isVisible) // In the case : not visible when the method has been called
+      {
+        [toolbarView setFrameSize: NSMakeSize([self frame].size.width, 100)];
+	// -toogleToolbarViewWithDisplay: will reset the toolbarView frame
+	[toolbarView _reload]; // Will recalculate the layout
+      }
+      
+      [self _toggleToolbarViewWithDisplay: YES];
   }
   else
   {
-    // we call the toolbar class letting it call back on toggleToolbarShown:
-    [toolbar setVisible: ![toolbar isVisible]];
+    // We call the toolbar class letting it call back on toggleToolbarShown:
+    [toolbar setVisible: !isVisible];
   }
   
 }
@@ -85,7 +96,7 @@ static const int ToolbarHeight = 61;
   if (toolbar != nil && [toolbar isVisible])
   {
     NSArray *subviews = [_contentView subviews];
-    id subview;
+    NSView *subview;
     int i, n = [subviews count];
     GSToolbarView *toolbarView = [toolbar _toolbarView];
     
@@ -146,60 +157,114 @@ static const int ToolbarHeight = 61;
 - (void) setToolbar: (NSToolbar*)toolbar
 {
   NSToolbar *lastToolbar = [self toolbar];
-  GSToolbarView *toolbarView = nil;
-  // ---											  
+  GSToolbarView *toolbarView = nil;											  
   
   if (lastToolbar != nil)
   {
-    // we throw the last toolbar out
+    // We throw the last toolbar out
     
-    [self _toggleToolbarView : [lastToolbar _toolbarView] display: NO];
+    [self _toggleToolbarViewWithDisplay: NO];
     [lastToolbar _setWindow: nil];
   }
   
-  // when there is no new toolbar
+  // When there is no new toolbar
   
   if (toolbar == nil)
   {
-    [self display]; // to show we have toggle the previous toolbar view
+    [self display]; // To show we have toggle the previous toolbar view
     return;
   }
   
+  // -----
   // ELSE
-  // the window want to know which toolbar is binded
+  // -----
+  
+  // The window want to know which toolbar is binded
   
   [toolbar _setWindow : self];
   
-  // insert the toolbar view (we create this view when the toolbar hasn't such
+  // Instantiate or retrieve the toolbar view (we create this view when the toolbar hasn't such
   // view)...
   
   toolbarView = [toolbar _toolbarView];
   if (toolbarView == nil)
   {
-    toolbarView = [[GSToolbarView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)]; 
+    toolbarView = [[GSToolbarView alloc] initWithFrame: NSMakeRect(0, 0, 
+      [self frame].size.width, 100)]; 
     // _toggleToolbarView:display: method will set the toolbar view to the right
     // frame
     [toolbarView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
   }
   [toolbarView setBorderMask: GSToolbarViewBottomBorder];
-  [self _toggleToolbarView: toolbarView display: YES];
   
-  // load the toolbar inside the toolbar view
+  // Load the toolbar inside the toolbar view
   
-  [toolbarView _setToolbar: toolbar];
+  [toolbarView _setWillBeVisible: YES];
+  [toolbarView _setToolbar: toolbar]; // Will set the _toolbarView variable for the toolbar
+  [toolbarView _setWillBeVisible: NO];
+    
+  // Make the toolbar view visible
+  
+  // We do that in this way...
+  // because _toggleToolbarViewWithDisplay: will call -toolbarView method for the toolbar
+  [self _toggleToolbarViewWithDisplay: YES];
   
 }
 
 // Private methods
 
-- (void) _toggleToolbarView: (GSToolbarView *)toolbarView display: (BOOL)flag {
-  NSRect windowFrame;
+- (void) _adjustToolbarView
+{
+  NSToolbar *toolbar = [self toolbar]; 
+  
+  // Views
+  GSToolbarView *toolbarView = [toolbar _toolbarView];
+  NSView *contentViewWithoutToolbar = [self contentViewWithoutToolbar];
+  
+  // Frame and height
+  NSRect windowFrame = [self frame];
+  NSRect toolbarViewFrame = [toolbarView frame];
+  float toolbarViewHeight = toolbarViewFrame.size.height;
+  float newToolbarViewHeight = [toolbarView _heightFromLayout];
+  
+  [toolbarView setFrame: NSMakeRect(
+    toolbarViewFrame.origin.x,
+    toolbarViewFrame.origin.y + (toolbarViewHeight - newToolbarViewHeight),
+    toolbarViewFrame.size.width, 
+    newToolbarViewHeight)];
+  
+  if ([toolbar isVisible])
+    { 
+      // Resize the window
+      
+      [contentViewWithoutToolbar setAutoresizingMask: NSViewNotSizable];
+  
+      [self setFrame: NSMakeRect(
+        windowFrame.origin.x, 
+        windowFrame.origin.y + (toolbarViewHeight - newToolbarViewHeight), 
+	windowFrame.size.width, 
+        windowFrame.size.height - (toolbarViewHeight - newToolbarViewHeight)) display: NO];
+      
+      [contentViewWithoutToolbar setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
+  
+      [self display];
+    }
+   
+}
+
+- (void) _toggleToolbarViewWithDisplay: (BOOL)flag {
+  // Views
+  GSToolbarView *toolbarView = [[self toolbar] _toolbarView];
+  NSView *contentViewWithoutToolbar;
+  
+  // Frame
+  NSRect windowFrame = [self frame];
   
   if ([toolbarView superview] == nil)
     {
-      NSView *contentViewWithoutToolbar;
+      float newToolbarViewHeight = [toolbarView _heightFromLayout];
       NSRect contentViewWithoutToolbarFrame;
-    
+
       contentViewWithoutToolbar = _contentView;
     
       // Switch the content view
@@ -210,20 +275,23 @@ static const int ToolbarHeight = 61;
     
       // Resize the window
   
-      windowFrame = [self frame];
-      [self setFrame: NSMakeRect(windowFrame.origin.x, 
-        windowFrame.origin.y - ToolbarHeight, windowFrame.size.width, 
-        windowFrame.size.height + ToolbarHeight) display: flag];
+      [self setFrame: NSMakeRect(
+        windowFrame.origin.x, 
+        windowFrame.origin.y - newToolbarViewHeight, 
+	windowFrame.size.width, 
+        windowFrame.size.height + newToolbarViewHeight) display: NO];
   
       // Plug the toolbar view
-    
+      
       contentViewWithoutToolbarFrame = [contentViewWithoutToolbar frame];
-      [toolbarView setFrame: NSMakeRect(0,contentViewWithoutToolbarFrame.size.height, 
-        contentViewWithoutToolbarFrame.size.width, ToolbarHeight)];
+    
+      [toolbarView setFrame: NSMakeRect(
+        0,
+	contentViewWithoutToolbarFrame.size.height, 
+        contentViewWithoutToolbarFrame.size.width, 
+	newToolbarViewHeight)];
 
       [_contentView addSubview: toolbarView];
-      [toolbarView _handleViewsVisibility];
-      [toolbarView setNextResponder: self];
     
       // Insert the previous content view 
   
@@ -231,9 +299,9 @@ static const int ToolbarHeight = 61;
       RELEASE(contentViewWithoutToolbar);
     }
   else
-    {
-      NSView *contentViewWithoutToolbar;
-    
+    {      
+      float toolbarViewHeight = [toolbarView frame].size.height;
+      
       contentViewWithoutToolbar = [self contentViewWithoutToolbar];
     
       // Unplug the toolbar view
@@ -244,10 +312,11 @@ static const int ToolbarHeight = 61;
       
       [contentViewWithoutToolbar setAutoresizingMask: NSViewMaxYMargin];
   
-      windowFrame = [self frame];
-      [self setFrame: NSMakeRect(windowFrame.origin.x, 
-        windowFrame.origin.y + ToolbarHeight, windowFrame.size.width, 
-        windowFrame.size.height - ToolbarHeight) display: flag];
+      [self setFrame: NSMakeRect(
+        windowFrame.origin.x, 
+        windowFrame.origin.y + toolbarViewHeight, 
+	windowFrame.size.width, 
+        windowFrame.size.height - toolbarViewHeight) display: NO];
       
       [contentViewWithoutToolbar setAutoresizingMask: NSViewWidthSizable 
         | NSViewHeightSizable];
@@ -256,13 +325,16 @@ static const int ToolbarHeight = 61;
       // Switch the content view
 
       RETAIN(contentViewWithoutToolbar); 
-      // because setContentView: will release the parent view and their subviews
+      // because setContentView: will release the parent view (aka _contentView) and 
+      // their subviews and actually contentViewWithoutToolbar is a subview of _contentView
 
       [self setContentView: contentViewWithoutToolbar];
 
       RELEASE(contentViewWithoutToolbar);
     }
-  
+    
+    if (flag)
+      [self display]; 
 }
 
 @end

@@ -38,7 +38,6 @@
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 // internal
@@ -48,6 +47,7 @@ static const int current_version = 1;
 @interface GSToolbar (GNUstepPrivate)
 - (void) _build;
 - (void) _setToolbarView: (GSToolbarView *)toolbarView;
+- (GSToolbarView *) _toolbarView;
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
@@ -58,13 +58,14 @@ static const int current_version = 1;
 @end
 
 @interface GSToolbarView (GNUstepPrivate)
-- (void) _handleViewsFrame;
+- (void) _handleBackViewsFrame;
 - (void) _handleViewsVisibility;
 - (void) _reload;
 - (void) _setToolbar: (GSToolbar *)toolbar;
 - (void) _takeInAccountFlexibleSpaces;
 
 // Accessors
+- (float) _heightFromLayout;
 - (NSArray *) _visibleBackViews;
 - (void) _setWillBeVisible: (BOOL)willBeVisible;
 - (BOOL) _willBeVisible;
@@ -83,11 +84,12 @@ static const int current_version = 1;
 // this method cannot be called "menu" otherwise it would override NSResponder
 // method with the same name
 
-- (void)setToolbar: (GSToolbar *)toolbar; 
+- (void) layout;
+- (void) setToolbar: (GSToolbar *)toolbar; 
 @end
 
 @implementation GSToolbarClippedItemsButton
-- (id)init
+- (id) init
 {
   NSImage *image = [NSImage imageNamed: @"common_ToolbarClippedItemsMark"];
   
@@ -97,17 +99,22 @@ static const int current_version = 1;
       [self setBordered: NO];
       [[self cell] setHighlightsBy: NSChangeGrayCellMask 
         | NSChangeBackgroundCellMask];
-      [self setAutoresizingMask: NSViewNotSizable | NSViewMinXMargin];
+      [self setAutoresizingMask: NSViewNotSizable];
       [self setImagePosition: NSImageOnly];
       [image setScalesWhenResized: YES];
-      [image setSize: NSMakeSize(20, 20)];
+      //[image setSize: NSMakeSize(20, 20)];
       [self setImage: image];
       return self;
     }
   return nil;
 }
 
-- (void)mouseDown: (NSEvent *)event {
+- (void) layout {
+  [self setFrameSize: NSMakeSize([self frame].size.width, 
+                                 [[_toolbar _toolbarView] _heightFromLayout])];
+}
+
+- (void) mouseDown: (NSEvent *)event {
    NSMenu *clippedItemsMenu = [self menuForEvent:event];
    
    [super highlight: YES];
@@ -121,7 +128,7 @@ static const int current_version = 1;
     [super highlight: NO];
 }
 
-- (NSMenu *)menuForEvent: (NSEvent *)event {
+- (NSMenu *) menuForEvent: (NSEvent *)event {
   if ([event type] == NSLeftMouseDown)
     {
       return [self returnMenu];
@@ -129,7 +136,7 @@ static const int current_version = 1;
   return nil;
 }
 
-- (NSMenu *)returnMenu 
+- (NSMenu *) returnMenu 
 {
   // this method cannot be called menu otherwise it would
   // override NSResponder method with the same name
@@ -160,7 +167,7 @@ static const int current_version = 1;
 
 // Accessors
 
-- (void)setToolbar: (GSToolbar *)toolbar
+- (void) setToolbar: (GSToolbar *)toolbar
 {
   ASSIGN(_toolbar, toolbar);
 }
@@ -171,10 +178,48 @@ static const int current_version = 1;
 @implementation GSToolbarView
 - (id) initWithFrame: (NSRect)frame
 {
+  return [self initWithFrame: frame 
+                 displayMode: NSToolbarDisplayModeDefault 
+	            sizeMode: NSToolbarSizeModeDefault];
+}
+
+- (id) initWithFrame: (NSRect)frame 
+         displayMode: (NSToolbarDisplayMode)displayMode 
+	    sizeMode: (NSToolbarSizeMode)sizeMode
+{
   if((self = [super initWithFrame: frame]) != nil)
     {
+      float toolbarViewHeight;
+      
+      _displayMode = displayMode;
+      _sizeMode = sizeMode;
+      
+      switch (_sizeMode)
+        {
+	  case NSToolbarSizeModeDefault:
+	    toolbarViewHeight = _ToolbarViewDefaultHeight;
+	    break;
+	  case NSToolbarSizeModeRegular:
+	    toolbarViewHeight = _ToolbarViewRegularHeight;
+	    break;
+	  case NSToolbarSizeModeSmall:
+	    toolbarViewHeight = _ToolbarViewSmallHeight;
+	    break;
+	  default:
+	    // raise exception
+	    toolbarViewHeight = 0;
+	}
+  
+      [self setFrame: NSMakeRect(
+        frame.origin.x, 
+        frame.origin.y, 
+        frame.size.width,
+        toolbarViewHeight)];
+        
+      // ---
+      
       _clipView = [[NSClipView alloc] initWithFrame: 
-        NSMakeRect(0, 1, frame.size.width, frame.size.height)];
+        NSMakeRect(0, 1, frame.size.width, toolbarViewHeight - 1)];
 
       [_clipView setAutoresizingMask: (NSViewWidthSizable |
         NSViewHeightSizable)];
@@ -185,9 +230,12 @@ static const int current_version = 1;
       
       _borderMask = GSToolbarViewTopBorder | GSToolbarViewBottomBorder 
         | GSToolbarViewRightBorder | GSToolbarViewLeftBorder;
+      
+      // ---
 
       return self;
     }
+    
   return nil;
 }
 
@@ -250,7 +298,7 @@ static const int current_version = 1;
   if ([self superview] == nil) 
     return;
   
-  [self _handleViewsVisibility];
+  [self _reload];
 }
 
 - (void) viewDidMoveToSuperview
@@ -259,7 +307,7 @@ static const int current_version = 1;
   
  if (_toolbar != nil)
     {
-      [self _handleViewsVisibility];
+      //[self _reload];
     }
 }
 
@@ -275,7 +323,7 @@ static const int current_version = 1;
   [nc addObserver: self selector: @selector(windowDidResize:) 
                             name: NSWindowDidResizeNotification object: nil];
   
-  [self viewDidMoveToSuperview];
+  //[self viewDidMoveToSuperview];
 }
 
 // More methods... Accessors
@@ -308,7 +356,7 @@ static const int current_version = 1;
 
 // Private methods
 
-- (void) _handleViewsFrame
+- (void) _handleBackViewsFrame
 {
   NSEnumerator *e = [[_toolbar items] objectEnumerator];
   NSToolbarItem *item;
@@ -317,6 +365,8 @@ static const int current_version = 1;
   float x = 0;
   // ---
   NSArray *subviews = [self subviews];
+  
+  _heightFromLayout = 100;
  
   while ((item = [e nextObject]) != nil) 
     {
@@ -333,10 +383,13 @@ static const int current_version = 1;
       
       itemBackViewFrame = [itemBackView frame];
       [itemBackView setFrame: NSMakeRect(x, 
-        itemBackViewFrame.origin.y, 
-        itemBackViewFrame.size.width, 
-        itemBackViewFrame.size.height)];
+         itemBackViewFrame.origin.y, 
+         itemBackViewFrame.size.width, 
+         itemBackViewFrame.size.height)];
       x += [itemBackView frame].size.width;
+      
+      if (itemBackViewFrame.size.height < _heightFromLayout)
+        _heightFromLayout = itemBackViewFrame.size.height;
     }
     
 }
@@ -347,102 +400,119 @@ static const int current_version = 1;
   
   // The back views which are associated with each toolbar item (the toolbar
   // items doesn't reflect the toolbar view content)
-  NSArray *itemBackViews = [items valueForKey: @"_backView"];
-  
-  // The back views which are visible in the toolbar view now (before taking the
-  // last user action in account)
-  NSArray *visibleItemBackViews = [_clipView subviews]; 
- // more efficient than [self _visibleBackViews]
+  NSArray *backViews = [items valueForKey: @"_backView"];
   
   // The back views which will be visible in the toolbar view (when
   // _handleViewsVisibility will be terminated)
-  NSArray *willBeVisibleItemBackViews;
-    
+  NSArray *visibleBackViews;
+  
+  NSArray *subviews;
   NSEnumerator *e;
-  NSView *itemBackView;
+  NSView *backView;
   NSRect clipViewFrame;
   
   // First, we resize
-  [self _handleViewsFrame];
+  [self _handleBackViewsFrame];
   [self _takeInAccountFlexibleSpaces];
   
   // Then we retrieve the back views which should be visible now that the resize
   // process has been taken in account
-  willBeVisibleItemBackViews = [self _visibleBackViews];
+  visibleBackViews = [self _visibleBackViews];
   
-  // We remove the back view associated with the removed or not visible toolbar
-  // items
+  // ---
+     
+  // We remove each back view associated with a removed toolbar item
  
-  e = [visibleItemBackViews objectEnumerator];
+  e = [[_clipView subviews] objectEnumerator];
   
-  while ((itemBackView = [e nextObject]) != nil) 
+  while ((backView = [e nextObject]) != nil) 
     {
-      if (![itemBackViews containsObject: itemBackView] 
-        || ![willBeVisibleItemBackViews containsObject: itemBackView])
+      if (![backViews containsObject: backView])
         {
-          if ([itemBackView superview] != nil) 
-            [itemBackView removeFromSuperview];
+          if ([backView superview] != nil) 
+            [backView removeFromSuperview];
         }
     }
       
-  // We add the backView associated with the added toolbar item when it should
-  // become visible
+  // We add each backView associated with an added toolbar item
   
-  e = [willBeVisibleItemBackViews objectEnumerator];
+  e = [backViews objectEnumerator];
+ subviews = [_clipView subviews];
  
-  while ((itemBackView = [e nextObject]) != nil) 
+  while ((backView = [e nextObject]) != nil) 
   {
-    if (![visibleItemBackViews containsObject: itemBackView])
+    if (![subviews containsObject: backView])
       {
-        [_clipView addSubview: itemBackView];
+        [_clipView addSubview: backView];
       }
   }
   
+  // ---
+     
   // We manage the clipped items view in the case it should become visible or
   // invisible
- 
+  
   clipViewFrame = [_clipView frame];  
   
-  if (([_clippedItemsMark superview] == nil) 
-    && ([willBeVisibleItemBackViews count] < [itemBackViews count]))
+  if ([visibleBackViews count] < [backViews count])
     {
+      NSView *lastVisibleBackView = [visibleBackViews lastObject];
+      float width = 0;
+      
+      // Resize the clip view
+      
+      if (lastVisibleBackView != nil)
+          width = NSMaxX([lastVisibleBackView frame]);  
       [_clipView setFrame: NSMakeRect(clipViewFrame.origin.x,
-        clipViewFrame.origin.y, 
-        clipViewFrame.size.width - _ClippedItemsViewWidth,
-        clipViewFrame.size.height)]; 
-
-      clipViewFrame = [_clipView frame]; // we get the new _clipView frame
-      [_clippedItemsMark setFrameOrigin: NSMakePoint(clipViewFrame.size.width,
-        clipViewFrame.origin.y)];
-
-      [self addSubview: _clippedItemsMark];
+                                      clipViewFrame.origin.y, 
+                                      width,
+                                      clipViewFrame.size.height)]; 
+	
+      // Adjust the clipped items mark 
+      // Frame handling   
+      
+      [_clippedItemsMark layout];
+      
+      clipViewFrame = [_clipView frame]; // We get the new _clipView frame
+      [_clippedItemsMark setFrameOrigin: NSMakePoint(
+        [self frame].size.width - _ClippedItemsViewWidth, clipViewFrame.origin.y)];
+	
+      // ---
+	
+      if ([_clippedItemsMark superview] == nil)       
+        [self addSubview: _clippedItemsMark];  
+      
     }
   else if (([_clippedItemsMark superview] != nil) 
-    && ([willBeVisibleItemBackViews count] >= [itemBackViews count]))
-    {
+    && ([visibleBackViews count] >= [backViews count]))
+    {      
       [_clippedItemsMark removeFromSuperview];
+      
       [_clipView setFrame: NSMakeRect(clipViewFrame.origin.x,
-        clipViewFrame.origin.y, 
-        clipViewFrame.size.width + _ClippedItemsViewWidth,
-        clipViewFrame.size.height)]; 
+                                      clipViewFrame.origin.y, 
+                                      [self frame].size.width,
+                                      clipViewFrame.size.height)]; 
     }
-  
-  [self setNeedsDisplay: YES];
+ 
 }
 
 - (void) _reload 
 {  
   [self _handleViewsVisibility]; 
+  [self setNeedsDisplay: YES];
 }
 
 - (void) _setToolbar: (GSToolbar *)toolbar
 {
-  [_toolbar _setToolbarView: nil];
+  if ([toolbar sizeMode] != _sizeMode)
+    ; // FIXME : raise exception here
+  
+  [toolbar _setToolbarView: self]; // We set the toolbar view on the new toolbar
+  [_toolbar _setToolbarView: nil]; // We unset the toolbar view from the previous toolbar    
   
   ASSIGN(_toolbar, toolbar);
-  [_clippedItemsMark setToolbar: _toolbar];
   
-  [_toolbar _setToolbarView: self];
+  [_clippedItemsMark setToolbar: _toolbar];
   
   [self _reload]; // Load the toolbar in the toolbar view
 }
@@ -452,10 +522,10 @@ static const int current_version = 1;
   NSArray *items = [_toolbar items];
   NSEnumerator *e = [items objectEnumerator];
   NSToolbarItem *item;
-  NSView *itemBackView; 
-  NSRect lastItemBackViewFrame = [[[items lastObject] _backView] frame];
+  NSView *backView; 
+  NSRect lastBackViewFrame = [[[items lastObject] _backView] frame];
   float lengthAvailable = [self frame].size.width -
-    NSMaxX(lastItemBackViewFrame);
+    NSMaxX(lastBackViewFrame);
   unsigned int flexibleSpaceItemsNumber = 0;
   BOOL mustAdjustNext = NO;
   float x = 0;
@@ -477,57 +547,60 @@ static const int current_version = 1;
   e = [items objectEnumerator];
   while ((item = [e nextObject]) != nil)
   {
-    itemBackView = [item _backView];
+    backView = [item _backView];
     if ([item _isFlexibleSpace])
     {
-      NSRect itemBackViewFrame = [itemBackView frame];
+      NSRect backViewFrame = [backView frame];
       
-      [itemBackView setFrame: NSMakeRect(x, itemBackViewFrame.origin.y,
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
         lengthAvailable / flexibleSpaceItemsNumber, 
-        itemBackViewFrame.size.height)];
+	backViewFrame.size.height)];
       mustAdjustNext = YES;
     }
     else if (mustAdjustNext)
     {
-      NSRect itemBackViewFrame = [itemBackView frame];
+      NSRect backViewFrame = [backView frame];
       
-      [itemBackView setFrame: NSMakeRect(x, itemBackViewFrame.origin.y,
-        itemBackViewFrame.size.width, itemBackViewFrame.size.height)];
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+        backViewFrame.size.width, backViewFrame.size.height)];
     }
-    x += [itemBackView frame].size.width;
+    x += [backView frame].size.width;
   }
   
 }
 
 // Accessors private methods
 
+- (float) _heightFromLayout
+{    
+  return _heightFromLayout;
+}
+
 - (NSArray *) _visibleBackViews
 {
   NSArray *items = [_toolbar items];
-  NSView *itemBackView;
+  NSView *backView;
   int i, n = [items count];
-  float itemBackViewsWidth = 0, toolbarWidth;
-  
+  float backViewsWidth = 0, toolbarWidth = [self frame].size.width;
+  /*
   // _willBeVisible indicates that the toolbar view previously hidden is in
   // process to become visible again before the end of current the event loop.
   if ([self superview] == nil && ![self _willBeVisible]) 
     return nil;
-  
+  */
   [_visibleBackViews release];
   _visibleBackViews = [[NSMutableArray alloc] init];
   
-  toolbarWidth = [self frame].size.width;;
-  
   for (i = 0; i < n; i++)
     {
-      itemBackView = [[items objectAtIndex:i] _backView];
+      backView = [[items objectAtIndex:i] _backView];
   
-      itemBackViewsWidth += [itemBackView frame].size.width;
+      backViewsWidth += [backView frame].size.width;
 
-      if ((itemBackViewsWidth + _ClippedItemsViewWidth <= toolbarWidth)
-        || (i == n - 1 && itemBackViewsWidth <= toolbarWidth))
+      if ((backViewsWidth + _ClippedItemsViewWidth <= toolbarWidth)
+        || (i == n - 1 && backViewsWidth <= toolbarWidth))
         {
-          [_visibleBackViews addObject: itemBackView];
+          [_visibleBackViews addObject: backView];
         }     
     }
   
