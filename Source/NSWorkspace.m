@@ -178,8 +178,7 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 - (NSImage*) _iconForExtension: (NSString*)ext;
 - (BOOL) _extension: (NSString*)ext
                role: (NSString*)role
-	        app: (NSString**)app
-	    andInfo: (NSDictionary**)inf;
+	        app: (NSString**)app;
 
 // application communication
 - (BOOL) _launchApplication: (NSString *)appName
@@ -362,7 +361,7 @@ static NSString			*_rootPath = @"/";
     {
       NSString *ext = [fullPath pathExtension];
   
-      if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
+      if ([self _extension: ext role: nil app: &appName] == NO)
         {
 	  NSWarnLog(@"No known applications for file extension '%@'", ext);
 	  return NO;
@@ -406,7 +405,7 @@ static NSString			*_rootPath = @"/";
   NSString *appName;
   NSString *ext = [fullPath pathExtension];
   
-  if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
+  if ([self _extension: ext role: nil app: &appName] == NO)
     {
       NSWarnLog(@"No known applications for file extension '%@'", ext);
       return NO;
@@ -1019,7 +1018,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 {
   NSString	*appName = nil;
 
-  if ([self _extension: ext role: role app: &appName andInfo: 0] == NO)
+  if ([self _extension: ext role: role app: &appName] == NO)
     {
       appName = nil;
     }
@@ -1432,11 +1431,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (BOOL) _extension: (NSString*)ext
                role: (NSString*)role
 	        app: (NSString**)app
-	    andInfo: (NSDictionary**)inf
 {
   NSEnumerator	*enumerator;
   NSString      *appName = nil;
-  NSDictionary	*apps;
+  NSDictionary	*apps = [self infoForExtension: ext];
   NSDictionary	*prefs;
   NSDictionary	*info;
 
@@ -1459,9 +1457,17 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		{
 		  *app = appName;
 		}
-	      if (inf != 0)
+	      return YES;
+	    }
+	  else if ([self locateApplicationBinary: appName] != nil)
+	    {
+	      /*
+	       * Return the preferred application even though it doesn't
+	       * say it opens this type of file ... preferences overrule.
+	       */
+	      if (app != 0)
 		{
-		  *inf = info;
+		  *app = appName;
 		}
 	      return YES;
 	    }
@@ -1479,9 +1485,17 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		{
 		  *app = appName;
 		}
-	      if (inf != 0)
+	      return YES;
+	    }
+	  else if ([self locateApplicationBinary: appName] != nil)
+	    {
+	      /*
+	       * Return the preferred application even though it doesn't
+	       * say it opens this type of file ... preferences overrule.
+	       */
+	      if (app != 0)
 		{
-		  *inf = info;
+		  *app = appName;
 		}
 	      return YES;
 	    }
@@ -1495,7 +1509,6 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    * The 'NSRole' field specifies what the app can do with the file - if it
    * is missing, we assume an 'Editor' role.
    */
-  apps = [self infoForExtension: ext];
   if (apps == nil || [apps count] == 0)
     {
       return NO;
@@ -1519,17 +1532,17 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	  if (str == nil || [str isEqualToString: @"Editor"])
 	    {
 	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
+		{
+		  *app = appName;
+		}
 	      return YES;
 	    }
 	  else if ([str isEqualToString: @"Viewer"])
 	    {
 	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
+		{
+		  *app = appName;
+		}
 	      found = YES;
 	    }
 	}
@@ -1547,9 +1560,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	    || [str isEqualToString: role])
 	    {
 	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
+		{
+		  *app = appName;
+		}
 	      return YES;
 	    }
 	}
