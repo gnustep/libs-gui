@@ -247,7 +247,6 @@ static NSNotificationCenter *nc;
     return;
   
   [_items insertObject: newItem atIndex: index];
-  [newItem setMenu: self];
   _changed = YES;
   
   // Create the notification for the menu representation.
@@ -263,6 +262,9 @@ static NSNotificationCenter *nc;
     [nc postNotification: inserted];
   else
     [_notifications addObject: inserted];
+
+  // Set this after the insert notification has been send.
+  [newItem setMenu: self];
 
   // Update the menu.
   [self update];
@@ -885,6 +887,7 @@ static NSNotificationCenter *nc;
   self = [self initWithTitle: dTitle];
   [self setAutoenablesItems: dAuto];
 
+  [self setMenuChangedMessagesEnabled: NO];
   /*
    * Make sure that items and submenus are set correctly.
    */
@@ -902,6 +905,7 @@ static NSNotificationCenter *nc;
 	  [self setSubmenu: sub forItem: item];
 	}
     }
+  [self setMenuChangedMessagesEnabled: YES];
 
   return self;
 }
