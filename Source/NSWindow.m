@@ -1166,6 +1166,7 @@ static NSMapTable* windowmaps = NULL;
 	  DPSsetinputstate(context, _windowNum, GSTitleBarKey);
 	  DPSsetinputfocus(context, _windowNum);
 	}
+      _f.visible = YES;
     }
 }
 
@@ -1820,10 +1821,19 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (void) deminiaturize: sender
+/* Private Method. Many X Window managers will just deminiaturize us without
+   telling us to do it ourselves. Deal with it.
+*/
+- (void) _didDeminiaturize: sender
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
+  _f.is_miniaturized = NO;
+  [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
+}
+
+- (void) deminiaturize: sender
+{
   if (_counterpart != 0)
     {
       NSWindow		*mini = GSWindowWithNumber(_counterpart);
@@ -1832,8 +1842,7 @@ resetCursorRectsForView(NSView *theView)
     }
   _f.is_miniaturized = NO;
   [self makeKeyAndOrderFront: self];
-
-  [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
+  [self _didDeminiaturize: sender];
 }
 
 - (BOOL) isDocumentEdited
@@ -2549,43 +2558,65 @@ resetCursorRectsForView(NSView *theView)
 
 	  switch (sub)
 	    {
-	      case GSAppKitWindowMoved:
-		_frame.origin.x = (float)[theEvent data1];
-		_frame.origin.y = (float)[theEvent data2];
-		NSDebugLLog(@"Moving", @"Move event: %d %@",
-		  _windowNum, NSStringFromPoint(_frame.origin));
-		if (_autosaveName != nil)
-		  {
-		    [self saveFrameUsingName: _autosaveName];
-		  }
-		[nc postNotificationName: NSWindowDidMoveNotification
-				  object: self];
-		break;
-
-	      case GSAppKitWindowResized:
-		_frame.size.width = (float)[theEvent data1];
-		_frame.size.height = (float)[theEvent data2];
-		if (_autosaveName != nil)
-		  {
-		    [self saveFrameUsingName: _autosaveName];
-		  }
+	    case GSAppKitWindowMoved:
+	      _frame.origin.x = (float)[theEvent data1];
+	      _frame.origin.y = (float)[theEvent data2];
+	      NSDebugLLog(@"Moving", @"Move event: %d %@",
+			  _windowNum, NSStringFromPoint(_frame.origin));
+	      if (_autosaveName != nil)
 		{
-		  NSRect	rect = _frame;
-
-		  rect = [NSWindow contentRectForFrameRect: rect
-						 styleMask: _styleMask];
-		  rect.origin = NSZeroPoint;
-		  [_wv setFrame: rect];
-		  [_wv setNeedsDisplay: YES];
+		  [self saveFrameUsingName: _autosaveName];
 		}
-		[self _processResizeEvent];
-		[nc postNotificationName: NSWindowDidResizeNotification
-				  object: self];
-		break;
+	      [nc postNotificationName: NSWindowDidMoveNotification
+		  object: self];
+	      break;
+	      
+	    case GSAppKitWindowResized:
+	      _frame.size.width = (float)[theEvent data1];
+	      _frame.size.height = (float)[theEvent data2];
+	      if (_autosaveName != nil)
+		{
+		  [self saveFrameUsingName: _autosaveName];
+		}
+	      {
+		NSRect	rect = _frame;
+		
+		rect = [NSWindow contentRectForFrameRect: rect
+				               styleMask: _styleMask];
+		rect.origin = NSZeroPoint;
+		[_wv setFrame: rect];
+		[_wv setNeedsDisplay: YES];
+	      }
+	      [self _processResizeEvent];
+	      [nc postNotificationName: NSWindowDidResizeNotification
+		                object: self];
+	      break;
 
-	      case GSAppKitWindowClose:
-		[self performClose: NSApp];
-		break;
+	    case GSAppKitWindowClose:
+	      [self performClose: NSApp];
+	      break;
+		
+	    case GSAppKitWindowMiniaturize:
+	      [self performMiniaturize: NSApp];
+	      break;
+
+	    case GSAppKitWindowFocusIn:
+	      if (_f.is_miniaturized)
+		{
+		  /* Window Manager just deminiaturized us */
+		  [self _didDeminiaturize: self];
+		}
+	      if ([self canBecomeKeyWindow] == YES)
+		{
+		  [self makeKeyWindow];
+		  [self makeMainWindow];
+		  [NSApp activateIgnoringOtherApps: YES];
+		}
+	      break;
+
+	    case GSAppKitWindowFocusOut:
+	      break;
+
 
 #define     GSPerformDragSelector(view, sel, info, action)		     \
 		if (view == _contentView && _delegate)			     \

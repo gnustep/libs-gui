@@ -1,3 +1,11 @@
+2000-10-15  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-orderWindow:relativeTo:): Set visible flag
+	immediately.
+	_didDeminiaturize: New method.
+	(-sendEvent:): Handle GSAppKitWindowMiniaturize an GSAppKitWindowFocusIn
+	events.
+
 2000-10-12  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/Parser/attributedStringConsumer.m
