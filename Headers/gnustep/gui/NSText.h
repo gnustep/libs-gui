@@ -327,8 +327,14 @@ typedef enum _NSSelectionAffinity {
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange 
 			       granularity: (NSSelectionGranularity)granularity;
 
-- (NSArray*) acceptableDragTypes;
-- (void) updateDragTypeRegistration;
+- (NSString *)preferredPasteboardTypeFromArray:(NSArray *)availableTypes 
+                    restrictedToTypesFromArray:(NSArray *)allowedTypes;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
+- (NSArray *)readablePasteboardTypes;
+- (NSArray *)writablePasteboardTypes;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
 @end
 
 
