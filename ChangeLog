@@ -1,4 +1,11 @@
-2000-05-13  Fred Kiefer <FredKiefer@gmx.de>
+2000-05-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFont.m
+	Cache all the fonts so we can returend a cached on if the same
+	font is required twice, this makes some of the caching in xdps
+	obsolte. 
+	
+2000-05-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSBezierPath.h
 	* Source/NSBezierPath.m
