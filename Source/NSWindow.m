@@ -1132,12 +1132,15 @@ static NSNotificationCenter *nc = nil;
 {
   if (_f.is_key == NO)
     {
+      _f.is_key = YES;
+
       [_firstResponder becomeFirstResponder];
       if ((_firstResponder != self)
-	&& [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
-	[_firstResponder becomeKeyWindow];
+	  && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
+	{
+	  [_firstResponder becomeKeyWindow];
+	}
 
-      _f.is_key = YES;
       [GSServerForWindow(self) setinputstate: GSTitleBarKey : _windowNum];
       [GSServerForWindow(self) setinputfocus: _windowNum];
       [self resetCursorRects];
