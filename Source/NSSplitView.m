@@ -3,14 +3,16 @@
 
    Allows multiple views to share a region in a window
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
 
-   Author:  Robert Vasvari < vrobi@ddrummer.com >
+   Author: Robert Vasvari <vrobi@ddrummer.com>
    Date: Jul 1998
-   Author:  Felipe A. Rodriguez < far@ix.netcom.com >
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: November 1998
-   Author:  Richard Frith-Macdonald < richard@brainstorm.co.uk >
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: January 1999
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: 2000, 2001
 
    This file is part of the GNUstep GUI Library.
 
@@ -56,6 +58,7 @@
       ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]);
       ASSIGN (_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
 
+      _never_displayed_before = YES;
       _autoresizes_subviews = NO;
     }
   return self;
@@ -392,115 +395,107 @@
   [self display];
 }
 
+- (void) _adjustSubviews
+{
+  SEL delegateMethod = @selector (splitView:resizeSubviewsWithOldSize:);
+  
+  if (_delegate != nil  && [_delegate respondsToSelector: delegateMethod])     
+    {
+      [_delegate splitView: self  resizeSubviewsWithOldSize: _frame.size];
+    }
+  else
+    {
+      [self adjustSubviews];
+    }
+  
+}
+
 - (void) adjustSubviews
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
+  NSArray	*subs = [self subviews];
+  unsigned	count = [subs count];
+  NSView	*views[count];
+  NSRect	frames[count];
+  NSSize	newSize;
+  NSPoint	newPoint;
+  unsigned	i;
+  NSRect	r;
+  float	oldTotal;
+  float	newTotal;
+  float	scale;
+  float	running;
+  
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
-		    object: self];
-
-  if (_delegate && [_delegate 
-		     respondsToSelector:
-		       @selector(splitView:resizeSubviewsWithOldSize:)])
+      object: self];
+  
+  
+  [subs getObjects: views];
+  if (_isVertical == NO)
     {
-      [_delegate splitView: self resizeSubviewsWithOldSize: _frame.size];
+      newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
+      oldTotal = 0.0;
+      for (i = 0; i < count; i++)
+	{
+	  frames[i] = [views[i] frame];
+	  oldTotal +=  NSHeight(frames[i]);
+	}
+      scale = newTotal/oldTotal;
+      running = 0.0;
+      for (i = 0; i < count; i++)
+	{
+	  float	newHeight;
+	  
+	  r = [views[i] frame];
+	  newHeight = NSHeight(frames[i]) * scale;
+	  if (i == count - 1)
+	    {
+	      newHeight = floor(newHeight);
+	    }
+	  else
+	    {
+	      newHeight = ceil(newHeight);
+	    }
+	  newSize = NSMakeSize(NSWidth(_bounds), newHeight);
+	  newPoint = NSMakePoint(0.0, running);
+	  running += newHeight + _dividerWidth;
+	  [views[i] setFrameSize: newSize];
+	  [views[i] setFrameOrigin: newPoint];
+	}
     }
   else
-    {	/* split the area up evenly */
-      NSArray	*subs = [self subviews];
-      unsigned	count = [subs count];
-      NSView	*views[count];
-      NSRect	frames[count];
-      NSSize	newSize;
-      NSPoint	newPoint;
-      unsigned	i;
-      NSRect	r;
-      float	oldTotal;
-      float	newTotal;
-      float	scale;
-      float	running;
-
-      [subs getObjects: views];
-      if (_isVertical == NO)
+    {
+      newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
+      oldTotal = 0.0;
+      for (i = 0; i < count; i++)
 	{
-	  newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
-	  oldTotal = 0.0;
-	  for (i = 0; i < count; i++)
-	    {
-	      frames[i] = [views[i] frame];
-	      oldTotal +=  NSHeight(frames[i]);
-	    }
-	  scale = newTotal/oldTotal;
-	  running = 0.0;
-	  for (i = 0; i < count; i++)
-	    {
-	      float	newHeight;
-
-	      r = [views[i] frame];
-	      newHeight = NSHeight(frames[i]) * scale;
-	      if (i == count - 1)
-		{
-		  newHeight = floor(newHeight);
-		}
-	      else
-		{
-		  newHeight = ceil(newHeight);
-		}
-	      newSize = NSMakeSize(NSWidth(_bounds), newHeight);
-	      newPoint = NSMakePoint(0.0, running);
-	      running += newHeight + _dividerWidth;
-	      [views[i] setFrameSize: newSize];
-	      [views[i] setFrameOrigin: newPoint];
-	    }
+	  oldTotal +=  NSWidth([views[i] frame]);
 	}
-      else
+      scale = newTotal/oldTotal;
+      running = 0.0;
+      for (i = 0; i < count; i++)
 	{
-	  newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
-	  oldTotal = 0.0;
-	  for (i = 0; i < count; i++)
+	  float	newWidth;
+	  
+	  r = [views[i] frame];
+	  newWidth = NSWidth(r) * scale;
+	  if (i == count - 1)
 	    {
-	      oldTotal +=  NSWidth([views[i] frame]);
+	      newWidth = floor(newWidth);
 	    }
-	  scale = newTotal/oldTotal;
-	  running = 0.0;
-	  for (i = 0; i < count; i++)
+	  else
 	    {
-	      float	newWidth;
-
-	      r = [views[i] frame];
-	      newWidth = NSWidth(r) * scale;
-	      if (i == count - 1)
-		{
-		  newWidth = floor(newWidth);
-		}
-	      else
-		{
-		  newWidth = ceil(newWidth);
-		}
-	      newSize = NSMakeSize(newWidth, NSHeight(_bounds));
-	      newPoint = NSMakePoint(running, 0.0);
-	      running += newWidth + _dividerWidth;
-	      [views[i] setFrameSize: newSize];
-	      [views[i] setFrameOrigin: newPoint];
+	      newWidth = ceil(newWidth);
 	    }
+	  newSize = NSMakeSize(newWidth, NSHeight(_bounds));
+	  newPoint = NSMakePoint(running, 0.0);
+	  running += newWidth + _dividerWidth;
+	  [views[i] setFrameSize: newSize];
+	  [views[i] setFrameOrigin: newPoint];
 	}
     }
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
-		    object: self];
-}
-
-- (void) addSubview: (NSView*)aView
-	 positioned: (NSWindowOrderingMode)place
-	 relativeTo: (NSView*)otherView
-{
-  [super addSubview: aView positioned: place relativeTo: otherView];
-  [self adjustSubviews];
-}
-
-- (void) addSubview: aView
-{
-  [super addSubview: aView];
-  [self adjustSubviews];
+      object: self];
 }
 
 - (float) dividerThickness 
@@ -603,24 +598,22 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
 
   /* draw the dimples */
-  {
-    for (i = 0; i < (count-1); i++)
-      {
-	v = [subs objectAtIndex: i];
-	divRect = [v frame];
-	if (_isVertical == NO)
-	  {
-	    divRect.origin.y = NSMaxY (divRect);
-	    divRect.size.height = _dividerWidth;
-	  }
-	else
-	  {
-	    divRect.origin.x = NSMaxX (divRect);
-	    divRect.size.width = _dividerWidth;
-	  }
-	[self drawDividerInRect: divRect];
-      }
-  }
+  for (i = 0; i < (count-1); i++)
+    {
+      v = [subs objectAtIndex: i];
+      divRect = [v frame];
+      if (_isVertical == NO)
+	{
+	  divRect.origin.y = NSMaxY (divRect);
+	  divRect.size.height = _dividerWidth;
+	}
+      else
+	{
+	  divRect.origin.x = NSMaxX (divRect);
+	  divRect.size.width = _dividerWidth;
+	}
+      [self drawDividerInRect: divRect];
+    }
 }
 
 - (NSImage*) dimpleImage
@@ -642,9 +635,43 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
   [super resizeWithOldSuperviewSize: oldSize];
-  [self adjustSubviews];
+  [self _adjustSubviews];
   [_window invalidateCursorRectsForView: self];
 }
+
+- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
+{
+  if (_window == nil)
+    {
+      return;
+    }
+  
+  if (_never_displayed_before == YES)
+    {
+      [self _adjustSubviews];
+      _never_displayed_before = NO;
+    }
+
+  [super displayIfNeededInRectIgnoringOpacity: aRect];
+}
+
+- (void) displayRectIgnoringOpacity: (NSRect)aRect
+{
+  if (_window == nil)
+    {
+      return;
+    }
+  
+  if (_never_displayed_before == YES)
+    {
+      [self _adjustSubviews];
+      _never_displayed_before = NO;
+    }
+
+  [super displayRectIgnoringOpacity: aRect];
+}
+
+
 
 - (id) delegate
 {
