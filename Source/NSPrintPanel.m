@@ -41,6 +41,7 @@
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSSavePanel.h"
 #include "AppKit/NSView.h"
+#include "AppKit/GSGuiPrivate.h"
 
 static NSPrintPanel *shared_instance;
 
@@ -101,7 +102,7 @@ static NSPrintPanel *shared_instance;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
-  int i;
+  unsigned int i;
   id control;
   NSArray *subviews, *list;
   NSString *panel;
@@ -116,7 +117,7 @@ static NSPrintPanel *shared_instance;
     return nil;
 
   panel = [GSGuiBundle() pathForResource: GSPANELNAME ofType: @"gorm"
-		             inDirectory: nil];
+		      inDirectory: nil];
   if (panel == nil)
     {
       NSRunAlertPanel(@"Error", @"Could not find print panel resource", 
@@ -390,8 +391,9 @@ static NSPrintPanel *shared_instance;
       list = [printer stringListForKey:@"Resolution" inTable: @"PPD"];
       if ([list count])
 	{
-	  int i;
+	  unsigned int i;
 	  NSString *display, *option;
+
 	  for (i = 0; i < [list count]; i++)
 	    {
 	      NSString *key = [list objectAtIndex: i];
@@ -427,14 +429,16 @@ static NSPrintPanel *shared_instance;
     {
       NSString *manual;
       NSArray *list;
+
       manual = [printer stringForKey:@"DefaultManualFeed" inTable: @"PPD"];
       if (manual)
 	[control addItemWithTitle: @"Manual"];
       list = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
       if ([list count])
 	{
-	  int i;
+	  unsigned int i;
 	  NSString *display, *option;
+
 	  for (i = 0; i < [list count]; i++)
 	    {
 	      NSString *paper = [list objectAtIndex: i];
