@@ -31,7 +31,7 @@
 
 #include <AppKit/NSCell.h>
 
-@interface NSActionCell : NSCell <NSCopying, NSCoding>
+@interface NSActionCell : NSCell
 {
   // Attributes
   int _tag;
@@ -39,48 +39,6 @@
   SEL _action;
   NSView *_control_view; 
 }
-
-//
-// Configuring an NSActionCell 
-//
-- (void)setAlignment:(NSTextAlignment)mode;
-- (void)setBezeled:(BOOL)flag;
-- (void)setBordered:(BOOL)flag;
-- (void)setEnabled:(BOOL)flag;
-- (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned int)leftDigits
-			 right:(unsigned int)rightDigits;
-- (void)setFont:(NSFont *)fontObject;
-- (void)setImage:(NSImage *)image;
-
-//
-// Manipulating NSActionCell Values 
-//
-- (void)setIntValue:(int)anInt;
-- (void)setFloatValue:(float)aFloat;
-- (void)setDoubleValue:(double)aDouble;
-- (void)setStringValue:(NSString *)aString;
-
-//
-// Target and Action 
-//
-- (SEL)action;
-- (void)setAction:(SEL)aSelector;
-- (void)setTarget:(id)anObject;
-- (id)target;
-
-//
-// Assigning a Tag 
-//
-- (void)setTag:(int)anInt;
-- (int)tag;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
 @end
 
 #endif // _GNUstep_H_NSActionCell
