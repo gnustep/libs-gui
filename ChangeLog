@@ -1,3 +1,7 @@
+Mon Jun 25 10:55:03 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/AppKit.h: Removed useless @class directives.
+
 Mon Jun 25 10:35:32 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/GSVersion.h.in: New file.
