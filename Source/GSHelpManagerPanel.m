@@ -1,10 +1,41 @@
-#import <AppKit/AppKit.h>
-#import <AppKit/GSHelpManagerPanel.h>
+/* 
+   GSHelpManagerPanel.m
+
+   GSHelpManagerPanel displays a help message for an item.
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   Author:  Pedro Ivo Andrade Tavares <ptavares@iname.com>
+   Date: September 1999
+   
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/ 
+
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSAttributedString.h>
+#include <AppKit/NSTextView.h>
+#include <AppKit/NSScrollView.h>
+#include <AppKit/NSClipView.h>
+#include <AppKit/NSColor.h>
+
+#include <AppKit/GSHelpManagerPanel.h>
 
 @implementation GSHelpManagerPanel
-{
-  id textView;
-}
 
 static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 
@@ -12,6 +43,7 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 {
   if(!_GSsharedGSHelpPanel)
     _GSsharedGSHelpPanel = [[GSHelpManagerPanel alloc] init];
+
   return _GSsharedGSHelpPanel;
 }
 
@@ -35,7 +67,6 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
   NSScrollView	*scrollView;
   NSRect	scrollViewRect = {{0, 0}, {470, 150}};
   NSRect	winRect = {{100, 100}, {470, 150}};
-  NSColor	*backColor;
   unsigned int	style = NSTitledWindowMask | NSClosableWindowMask
     | NSMiniaturizableWindowMask | NSResizableWindowMask;
   
@@ -43,7 +74,9 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 		  styleMask: style
 		    backing: NSBackingStoreRetained
 		      defer: NO];
+  [self setFloatingPanel: YES];
   [self setRepresentedFilename: @"Help"];
+  [self setTitle: @"Help"];
   [self setDocumentEdited: NO];
   
   scrollView = [[NSScrollView alloc] initWithFrame: scrollViewRect];
@@ -51,29 +84,26 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
   [scrollView setHasVerticalScroller: YES]; 
   [scrollView setAutoresizingMask: NSViewHeightSizable];
   
-  textView = [NSText new];
+  textView = [[NSTextView alloc] initWithFrame: 
+				     [[scrollView contentView] frame]];
   [textView setEditable: NO];
   [textView setRichText: YES];
   [textView setSelectable: YES];
-  [textView setFrame: [[scrollView contentView] frame]];
-  backColor = [NSColor colorWithCalibratedWhite: 0.85 alpha: 1.0]; // off white
-  [textView setBackgroundColor: backColor];					
+  // off white
+  [textView setBackgroundColor: [NSColor colorWithCalibratedWhite: 0.85 
+					 alpha: 1.0]];					
   [scrollView setDocumentView: textView];
   [[self contentView] addSubview: scrollView];
-  
-  [self setTitle: @"Help"];
-  
+  RELEASE(scrollView);
+
   return self;
 }
 
 - (void) setHelpText: (NSAttributedString*) helpText
 {
+  // FIXME: The attributed text should be set, but there is 
+  // no public method for this.
   [textView setText: [helpText string]];
-}
-
-- (BOOL) isFloatingPanel
-{
-  return YES;
 }
 
 - (void) close
