@@ -1,3 +1,9 @@
+2003-02-16  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m: Upon creation of bWindow, set its level to
+	pop up window level, so right click brings up the menu above
+	panels etc.
+
 Sun Feb 16 04:13:46 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-mouseDown:]): Fixed calling delegate

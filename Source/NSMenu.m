@@ -225,6 +225,7 @@ static NSNotificationCenter *nc;
   // Create the windows that will display the menu.
   _aWindow = [self _createWindow];
   _bWindow = [self _createWindow];
+  [_bWindow setLevel: NSPopUpMenuWindowLevel];
 
   // Create a NSMenuView to draw our menu items.
   _view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
