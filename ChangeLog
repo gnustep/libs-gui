@@ -1,3 +1,10 @@
+Tue Oct 23 04:16:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by Ludovic Marcotte <ludovic@sophos.ca>:
+	* Source/NSTextView.m ([-mouseDown:]): Check if the click was on a
+	text attachment cell only if the text storage contains text
+	attachments, rather than only if the text view imports graphics.
+
 Tue Oct 23 15:06:57 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	Patch by Ludovic Marcotte <ludovic@sophos.ca>:
