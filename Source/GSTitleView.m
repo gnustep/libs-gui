@@ -367,7 +367,7 @@
   if ([owner class] == [NSWindow class] 
       || [owner class] == [NSPanel class])
     {
-      NSDebugLLog(@"GSTitleView: owner is NSWindow or NSPanel");
+      NSDebugLLog(@"GSTitleView", @"owner is NSWindow or NSPanel");
       _owner = owner;
       _ownedByMenu = NO;
 
@@ -391,7 +391,7 @@
     }
   else if ([owner respondsToSelector:@selector(menuRepresentation)])
     {
-      NSDebugLLog(@"GSTitleView: owner is NSMenu");
+      NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
       _owner = owner;
       _ownedByMenu = YES;
 
@@ -402,7 +402,8 @@
     }
   else
     {
-      NSDebugLLog(@"GSTitleView: %@ owner is not NSMenu or NSWindow or NSPanel",
+      NSDebugLLog(@"GSTitleView", 
+		  @"%@ owner is not NSMenu or NSWindow or NSPanel",
 		  [owner className]);
       return;
     }
