@@ -1,3 +1,8 @@
+Tue Jan  1 20:57:07 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-tile]): Rewritten to be simpler to
+	understand.
+
 Tue Jan  1 13:36:56 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSView.m ([-resizeWithOldSuperviewSize:]): Removed all
