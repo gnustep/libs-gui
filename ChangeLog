@@ -1,3 +1,8 @@
+Fri Jun 25 12:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GMArchiver.m: Fix for decodeDoubleWithName: by
+	jagapen@whitewater.chem.wisc.edu
+
 1999-06-23  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSText.m: tweaked - sizeToFit and now scrollbars are

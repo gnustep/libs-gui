@@ -46,19 +46,19 @@
   BOOL written;
 }
 
-+ classInfoWithClassName:(NSString*)className version:(int)version;
++ classInfoWithClassName: (NSString*)className version: (int)version;
 
-- (NSString*)className;
-- (int)version;
-- (void)setWasWritten:(BOOL)flag;
-- (BOOL)wasWritten;
+- (NSString*) className;
+- (int) version;
+- (void) setWasWritten: (BOOL)flag;
+- (BOOL) wasWritten;
 
 @end
 
 
 @implementation GMClassInfo
 
-+ classInfoWithClassName:(NSString*)name version:(int)_version
++ classInfoWithClassName: (NSString*)name version: (int)_version
 {
   GMClassInfo* object = [[self new] autorelease];
 
@@ -68,33 +68,33 @@
   return object;
 }
 
-- (NSString*)className			{ return className; }
-- (int)version				{ return version; }
-- (void)setWasWritten:(BOOL)flag	{ written = flag; }
-- (BOOL)wasWritten			{ return written; }
+- (NSString*) className			{ return className; }
+- (int) version				{ return version; }
+- (void) setWasWritten: (BOOL)flag	{ written = flag; }
+- (BOOL) wasWritten			{ return written; }
 
 @end
 
 
 @implementation GMArchiver
 
-+ (BOOL)archiveRootObject:(id)rootObject
-  toFile:(NSString*)path
++ (BOOL) archiveRootObject: (id)rootObject
+  toFile: (NSString*)path
 {
   GMArchiver* archiver = [[self new] autorelease];
   BOOL result;
 
-  [archiver encodeRootObject:rootObject withName:@"RootObject"];
-  result = [archiver writeToFile:path];
+  [archiver encodeRootObject: rootObject withName: @"RootObject"];
+  result = [archiver writeToFile: path];
 
   return result;
 }
 
-- (id)init
+- (id) init
 {
   propertyList = [NSMutableDictionary new];
   topLevelObjects = [NSMutableArray new];
-  [propertyList setObject:topLevelObjects forKey:@"TopLevelObjects"];
+  [propertyList setObject: topLevelObjects forKey: @"TopLevelObjects"];
   lastObjectRepresentation = propertyList;
 
   objects = NSCreateMapTable (NSNonRetainedObjectMapKeyCallBacks,
@@ -102,12 +102,12 @@
   conditionals = NSCreateHashTable (NSNonRetainedObjectHashCallBacks, 19);
   classes = NSCreateMapTable (NSObjectMapKeyCallBacks,
 			      NSObjectMapValueCallBacks, 19);
-  [propertyList setObject:@"1" forKey:@"Version"];
+  [propertyList setObject: @"1" forKey: @"Version"];
 
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [propertyList release];
   [topLevelObjects release];
@@ -118,17 +118,17 @@
   return [super dealloc];
 }
 
-- (NSString*)newLabel
+- (NSString*) newLabel
 {
-  return [NSString stringWithFormat:@"Object%5d", ++counter];
+  return [NSString stringWithFormat: @"Object%5d", ++counter];
 }
 
-- (BOOL)writeToFile:(NSString*)path
+- (BOOL) writeToFile: (NSString*)path
 {
-  return [propertyList writeToFile:path atomically:YES];
+  return [propertyList writeToFile: path atomically: YES];
 }
 
-- (id)encodeRootObject:(id)rootObject withName:(NSString*)name
+- (id) encodeRootObject: (id)rootObject withName: (NSString*)name
 {
   id originalPList = propertyList;
   int oldCounter = counter;
@@ -148,7 +148,7 @@
    * Prepare for writing the graph objects for which `rootObject' is the root
    * node. The algorithm consists from two passes. In the first pass it
    * determines the nodes so-called 'conditionals' - the nodes encoded *only*
-   * with -encodeConditionalObject:. They represent nodes that are not
+   * with -encodeConditionalObject: . They represent nodes that are not
    * related directly to the graph. In the second pass objects are encoded
    * normally, except for the conditional objects which are encoded as nil.
    */
@@ -158,21 +158,21 @@
   lastObjectRepresentation = propertyList = nil;
   NSResetHashTable(conditionals);
   NSResetMapTable(objects);
-  [self encodeObject:rootObject withName:name];
+  [self encodeObject: rootObject withName: name];
 
   /* Second pass. */
   findingConditionals = NO;
   counter = oldCounter;
   lastObjectRepresentation = propertyList = originalPList;
   NSResetMapTable(objects);
-  label = [self encodeObject:rootObject withName:name];
+  label = [self encodeObject: rootObject withName: name];
 
   writingRoot = NO;
 
   return label;
 }
 
-- (id)encodeConditionalObject:(id)anObject withName:(NSString*)name
+- (id) encodeConditionalObject: (id)anObject withName: (NSString*)name
 {
 #if 0
   if (!writingRoot)
@@ -184,8 +184,8 @@
      * This is the first pass of the determining the conditionals
      * algorithm. We traverse the graph and insert into the `conditionals'
      * set. In the second pass all objects that are still in this set will
-     * be encoded as nil when they receive -encodeConditionalObject:. An
-     * object is removed from this set when it receives -encodeObject:.
+     * be encoded as nil when they receive -encodeConditionalObject: . An
+     * object is removed from this set when it receives -encodeObject: .
      */
     id value;
 
@@ -199,7 +199,7 @@
       return value;
 
     /*
-     * Maybe it has received -encodeObject:
+     * Maybe it has received -encodeObject: 
      * and now is in the `objects' set.
      */
     value = (id)NSMapGet(objects, anObject);
@@ -212,19 +212,19 @@
   else {
     /* If anObject is in the `conditionals' set, it is encoded as nil. */
     if (!anObject || NSHashGet(conditionals, anObject))
-      return [self encodeObject:nil withName:name];
+      return [self encodeObject: nil withName: name];
     else
-      return [self encodeObject:anObject withName:name];
+      return [self encodeObject: anObject withName: name];
   }
 
   return nil;
 }
 
-- (id)encodeObject:(id)anObject withName:(NSString*)name
+- (id) encodeObject: (id)anObject withName: (NSString*)name
 {
   if (!anObject) {
     if (!findingConditionals && name)
-      [lastObjectRepresentation setObject:@"nil" forKey:name];
+      [lastObjectRepresentation setObject: @"nil" forKey: name];
     return @"nil";
   }
   else {
@@ -268,17 +268,17 @@
 	 encoded. */
       upperObjectRepresentation = lastObjectRepresentation;
 
-      anObject = [anObject replacementObjectForModelArchiver:self];
+      anObject = [anObject replacementObjectForModelArchiver: self];
       archiveClass = [anObject classForModelArchiver];
 
       if (!findingConditionals) {
 	NSMutableDictionary* objectPList = [NSMutableDictionary dictionary];
 
 	/* If anObject is the first object in the graph that receives the
-	   -encodeObject:withName: message, save its label into the
+	   -encodeObject: withName: message, save its label into the
 	   topLevelObjects array. */
 	if (!level)
-	  [topLevelObjects addObject:(name ? name : label)];
+	  [topLevelObjects addObject: (name ? name : label)];
 
 	lastObjectRepresentation = objectPList;
 
@@ -287,20 +287,20 @@
 	      description of anObject on the top level like 'label = object'.
 	    */
 	  if (name)
-	    [upperObjectRepresentation setObject:label forKey:name];
-	  [propertyList setObject:objectPList forKey:label];
+	    [upperObjectRepresentation setObject: label forKey: name];
+	  [propertyList setObject: objectPList forKey: label];
 	}
 	else {
 	  /* The encoded object is on the top level so encode it and put it
 	      under the key 'name'. */
 	  if (name)
 	    label = name;
-	  [propertyList setObject:objectPList
-			forKey:label];
+	  [propertyList setObject: objectPList
+			forKey: label];
 	}
 
-	[objectPList setObject:NSStringFromClass(archiveClass)
-		      forKey:@"isa"];
+	[objectPList setObject: NSStringFromClass(archiveClass)
+		      forKey: @"isa"];
       }
       else {
 	/*
@@ -312,31 +312,31 @@
       }
 
       level++;
-      [anObject encodeWithModelArchiver:self];
+      [anObject encodeWithModelArchiver: self];
       level--;
 
       lastObjectRepresentation = upperObjectRepresentation;
     }
     else if (!findingConditionals) {
       if (name)
-	[lastObjectRepresentation setObject:label forKey:name];
+	[lastObjectRepresentation setObject: label forKey: name];
     }
 
     return label;
   }
 }
 
-- (id)encodeString:(NSString*)anObject withName:(NSString*)name
+- (id) encodeString: (NSString*)anObject withName: (NSString*)name
 {
   if (!findingConditionals) {
     if (!anObject) {
       if (name)
-	[lastObjectRepresentation setObject:@"nil" forKey:name];
+	[lastObjectRepresentation setObject: @"nil" forKey: name];
       return @"nil";
     }
     else {
       if (name)
-	[lastObjectRepresentation setObject:anObject forKey:name];
+	[lastObjectRepresentation setObject: anObject forKey: name];
       return anObject;
     }
   }
@@ -344,17 +344,17 @@
   return @"nil";
 }
 
-- (id)encodeData:(NSData*)anObject withName:(NSString*)name
+- (id) encodeData: (NSData*)anObject withName: (NSString*)name
 {
   if (!findingConditionals) {
     if (!anObject) {
       if (name)
-	[lastObjectRepresentation setObject:@"nil" forKey:name];
+	[lastObjectRepresentation setObject: @"nil" forKey: name];
       return @"nil";
     }
     else {
       if (name)
-	[lastObjectRepresentation setObject:anObject forKey:name];
+	[lastObjectRepresentation setObject: anObject forKey: name];
       return anObject;
     }
   }
@@ -362,202 +362,202 @@
   return @"nil";
 }
 
-- (id)encodeArray:(NSArray*)array withName:(NSString*)name
+- (id) encodeArray: (NSArray*)array withName: (NSString*)name
 {
   if (array) {
     int i, count = [array count];
-    NSMutableArray* description = [NSMutableArray arrayWithCapacity:count];
+    NSMutableArray* description = [NSMutableArray arrayWithCapacity: count];
 
     for (i = 0; i < count; i++) {
-      id object = [array objectAtIndex:i];
-      [description addObject:[self encodeObject:object withName:nil]];
+      id object = [array objectAtIndex: i];
+      [description addObject: [self encodeObject: object withName: nil]];
     }
     if (name)
-      [lastObjectRepresentation setObject:description forKey:name];
+      [lastObjectRepresentation setObject: description forKey: name];
     return description;
   }
   else {
     if (name)
-      [lastObjectRepresentation setObject:@"nil" forKey:name];
+      [lastObjectRepresentation setObject: @"nil" forKey: name];
     return @"nil";
   }
 }
 
-- (id)encodeDictionary:(NSDictionary*)dictionary withName:(NSString*)name
+- (id) encodeDictionary: (NSDictionary*)dictionary withName: (NSString*)name
 {
   if (dictionary) {
     id enumerator, key;
     NSMutableDictionary* description
-	= [NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+	= [NSMutableDictionary dictionaryWithCapacity: [dictionary count]];
 
     enumerator = [dictionary keyEnumerator];
 
     while ((key = [enumerator nextObject])) {
-      id value = [dictionary objectForKey:key];
-      id keyDesc = [self encodeObject:key withName:nil];
-      id valueDesc = [self encodeObject:value withName:nil];
+      id value = [dictionary objectForKey: key];
+      id keyDesc = [self encodeObject: key withName: nil];
+      id valueDesc = [self encodeObject: value withName: nil];
 
-      [description setObject:valueDesc forKey:keyDesc];
+      [description setObject: valueDesc forKey: keyDesc];
     }
     if (name)
-      [lastObjectRepresentation setObject:description forKey:name];
+      [lastObjectRepresentation setObject: description forKey: name];
     return description;
   }
   else {
     if (name)
-      [lastObjectRepresentation setObject:@"nil" forKey:name];
+      [lastObjectRepresentation setObject: @"nil" forKey: name];
     return @"nil";
   }
 }
 
-- (id)propertyList
+- (id) propertyList
 {
   return propertyList;
 }
 
-- (id)encodeClass:(Class)class withName:(NSString*)name
+- (id) encodeClass: (Class)class withName: (NSString*)name
 {
   if (class)
-    return [self encodeString:NSStringFromClass(class) withName:name];
+    return [self encodeString: NSStringFromClass(class) withName: name];
   else
-    return [self encodeString:nil withName:name];
+    return [self encodeString: nil withName: name];
 }
 
-- (id)encodeSelector:(SEL)selector withName:(NSString*)name
+- (id) encodeSelector: (SEL)selector withName: (NSString*)name
 {
   if (selector)
-    return [self encodeString:NSStringFromSelector(selector) withName:name];
+    return [self encodeString: NSStringFromSelector(selector) withName: name];
   else
-    return [self encodeString:nil withName:name];
+    return [self encodeString: nil withName: name];
 }
 
-- (void)encodeChar:(char)value withName:(NSString*)name
+- (void) encodeChar: (char)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%c", value];
+    id valueString = [NSString stringWithFormat: @"%c", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeUnsignedChar:(unsigned char)value withName:(NSString*)name
+- (void) encodeUnsignedChar: (unsigned char)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%uc", value];
+    id valueString = [NSString stringWithFormat: @"%uc", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeBOOL:(BOOL)value withName:(NSString*)name
+- (void) encodeBOOL: (BOOL)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%s", value ? "YES" : "NO"];
+    id valueString = [NSString stringWithFormat: @"%s", value ? "YES" : "NO"];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeShort:(short)value withName:(NSString*)name
+- (void) encodeShort: (short)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%s", value];
+    id valueString = [NSString stringWithFormat: @"%s", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeUnsignedShort:(unsigned short)value withName:(NSString*)name
+- (void) encodeUnsignedShort: (unsigned short)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%us", value];
+    id valueString = [NSString stringWithFormat: @"%us", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeInt:(int)value withName:(NSString*)name
+- (void) encodeInt: (int)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%i", value];
+    id valueString = [NSString stringWithFormat: @"%i", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeUnsignedInt:(unsigned int)value withName:(NSString*)name
+- (void) encodeUnsignedInt: (unsigned int)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%u", value];
+    id valueString = [NSString stringWithFormat: @"%u", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeLong:(long)value withName:(NSString*)name
+- (void) encodeLong: (long)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%l", value];
+    id valueString = [NSString stringWithFormat: @"%l", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeUnsignedLong:(unsigned long)value withName:(NSString*)name
+- (void) encodeUnsignedLong: (unsigned long)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%lu", value];
+    id valueString = [NSString stringWithFormat: @"%lu", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeFloat:(float)value withName:(NSString*)name
+- (void) encodeFloat: (float)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%f", value];
+    id valueString = [NSString stringWithFormat: @"%f", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeDouble:(double)value withName:(NSString*)name
+- (void) encodeDouble: (double)value withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = [NSString stringWithFormat:@"%f", value];
+    id valueString = [NSString stringWithFormat: @"%f", value];
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodePoint:(NSPoint)point withName:(NSString*)name
+- (void) encodePoint: (NSPoint)point withName: (NSString*)name
 {
   if (!findingConditionals && name) {
     id valueString = NSStringFromPoint (point);
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeSize:(NSSize)size withName:(NSString*)name
+- (void) encodeSize: (NSSize)size withName: (NSString*)name
 {
   if (!findingConditionals) {
     id valueString = NSStringFromSize (size);
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (void)encodeRect:(NSRect)rect withName:(NSString*)name
+- (void) encodeRect: (NSRect)rect withName: (NSString*)name
 {
   if (!findingConditionals) {
     id valueString = NSStringFromRect (rect);
 
-    [lastObjectRepresentation setObject:valueString forKey:name];
+    [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
 
-- (NSString*)classNameEncodedForTrueClassName:(NSString*)trueName
+- (NSString*) classNameEncodedForTrueClassName: (NSString*)trueName
 {
   id inArchiveName = [(id)NSMapGet(classes, trueName) className];
 
@@ -568,11 +568,11 @@
    version for class named inArchiveName. Is this right? It is possible for
    the inArchiveName class that it could not be linked in the running process
    at the time the archive is written. */
-- (void)encodeClassName:(NSString*)trueName
-  intoClassName:(NSString*)inArchiveName
+- (void) encodeClassName: (NSString*)trueName
+  intoClassName: (NSString*)inArchiveName
 {
-  id classInfo = [GMClassInfo classInfoWithClassName:inArchiveName
-			    version:[NSClassFromString(trueName) version]];
+  id classInfo = [GMClassInfo classInfoWithClassName: inArchiveName
+			    version: [NSClassFromString(trueName) version]];
 
   NSMapInsert(classes, trueName, classInfo);
 }
@@ -584,62 +584,62 @@
 
 static NSMutableDictionary* classToAliasMappings = nil;
 
-+ (void)initialize
++ (void) initialize
 {
   classToAliasMappings = [NSMutableDictionary new];
 }
 
-+ (id)unarchiverWithContentsOfFile:(NSString*)path
++ (id) unarchiverWithContentsOfFile: (NSString*)path
 {
-  id plist = [[NSString stringWithContentsOfFile:path] propertyList];
+  id plist = [[NSString stringWithContentsOfFile: path] propertyList];
   GMUnarchiver* unarchiver;
 
   if (!plist)
     return nil;
 
-  unarchiver = [[[self alloc] initForReadingWithPropertyList:plist]
+  unarchiver = [[[self alloc] initForReadingWithPropertyList: plist]
 		    autorelease];
   return unarchiver;
 }
 
-+ (id)unarchiveObjectWithName:(NSString*)name
-  fromPropertyList:(id)plist
++ (id) unarchiveObjectWithName: (NSString*)name
+  fromPropertyList: (id)plist
 {
   GMUnarchiver* unarchiver
-      = [[[self alloc] initForReadingWithPropertyList:plist] autorelease];
+      = [[[self alloc] initForReadingWithPropertyList: plist] autorelease];
 
-  return [unarchiver decodeObjectWithName:name];
+  return [unarchiver decodeObjectWithName: name];
 }
 
-+ (id)unarchiveObjectWithName:(NSString*)name fromFile:(NSString*)path
++ (id) unarchiveObjectWithName: (NSString*)name fromFile: (NSString*)path
 {
-  GMUnarchiver* unarchiver = [self unarchiverWithContentsOfFile:path];
-  return [unarchiver decodeObjectWithName:name];
+  GMUnarchiver* unarchiver = [self unarchiverWithContentsOfFile: path];
+  return [unarchiver decodeObjectWithName: name];
 }
 
 - init
 {
-  return [self initForReadingWithPropertyList:nil];
+  return [self initForReadingWithPropertyList: nil];
 }
 
-- (id)initForReadingWithPropertyList:(id)plist
+- (id) initForReadingWithPropertyList: (id)plist
 {
   NSString* versionString;
 
   propertyList = [plist copy];
   currentDecodedObjectRepresentation = propertyList;
-  namesToObjects = [NSMutableDictionary dictionaryWithCapacity:119];
+  namesToObjects = [NSMutableDictionary dictionaryWithCapacity: 119];
 
   /* Decode version information */
-  versionString = [propertyList objectForKey:@"Version"];
-  [[NSScanner scannerWithString:versionString] scanInt:&version];
+  versionString = [propertyList objectForKey: @"Version"];
+  [[NSScanner scannerWithString: versionString] scanInt: &version];
 
   objectZone = NSDefaultMallocZone ();
 
   return self;
 }
 
-- (id)decodeObjectWithName:(NSString*)name
+- (id) decodeObjectWithName: (NSString*)name
 {
   id object, label, representation, className;
   id upperObjectRepresentation;
@@ -653,22 +653,22 @@ static NSMutableDictionary* classToAliasMappings = nil;
 
   if (level) {
     /* First try to see if the object has been already decoded */
-    if ((object = [namesToObjects objectForKey:name]))
+    if ((object = [namesToObjects objectForKey: name]))
       return object;
   }
 
   /* The object has not been decoded yet. Read its label from the current
      object dictionary representation. */
-  label = [currentDecodedObjectRepresentation objectForKey:name];
+  label = [currentDecodedObjectRepresentation objectForKey: name];
 
   if (label) {
     /* Try to see if the object has been decoded using `label' as name */
-    if ((object = [namesToObjects objectForKey:label]))
+    if ((object = [namesToObjects objectForKey: label]))
       return object;
   }
   else {
     /* Try to find the object on the top level */
-    label = [propertyList objectForKey:name];
+    label = [propertyList objectForKey: name];
 
     if (label)
       objectOnTopLevel = YES;
@@ -688,15 +688,15 @@ static NSMutableDictionary* classToAliasMappings = nil;
    */
   if (currentDecodedObjectRepresentation != propertyList
       && !objectOnTopLevel) {
-    NSAssert1 ([label isKindOfClass:[NSString class]],
+    NSAssert1 ([label isKindOfClass: [NSString class]],
 		@"label is not a string: '%@'!", label);
 
     /* label is either a name of an object on the top level dictionary or the
 	string "nil" which means the object has the nil value. */
-    if ([label isEqual:@"nil"])
+    if ([label isEqual: @"nil"])
       return nil;
 
-    representation = [propertyList objectForKey:label];
+    representation = [propertyList objectForKey: label];
   }
   else {
     representation = label;
@@ -716,15 +716,15 @@ static NSMutableDictionary* classToAliasMappings = nil;
   currentDecodedObjectRepresentation = representation;
 
   /* Create the object */
-  className = [representation objectForKey:@"isa"];
-  decodeAsName = [classToAliasMappings objectForKey:className];
-  if( decodeAsName )
+  className = [representation objectForKey: @"isa"];
+  decodeAsName = [classToAliasMappings objectForKey: className];
+  if ( decodeAsName )
   {
     NSDebugLLog(@"GMArchiver", @"%@ to be decoded as %@", className, decodeAsName);
     className = decodeAsName;
   }
   class = NSClassFromString(className);
-  object = [class createObjectForModelUnarchiver:self];
+  object = [class createObjectForModelUnarchiver: self];
 
   if (!class) {
     NSLog (@"Class %@ not linked into application!", className);
@@ -732,16 +732,16 @@ static NSMutableDictionary* classToAliasMappings = nil;
   }
 
   /* Push it into the dictionary of known objects */
-  [namesToObjects setObject:object forKey:label];
+  [namesToObjects setObject: object forKey: label];
 
   /* Read it from dictionary */
   level++;
-  newObject = [object initWithModelUnarchiver:self];
+  newObject = [object initWithModelUnarchiver: self];
   level--;
 
   if (newObject != object) {
     object = newObject;
-    [namesToObjects setObject:object forKey:label];
+    [namesToObjects setObject: object forKey: label];
   }
 
   /* Restore the current object representation */
@@ -750,14 +750,14 @@ static NSMutableDictionary* classToAliasMappings = nil;
   return object;
 }
 
-- (NSString*)decodeStringWithName:(NSString*)name
+- (NSString*) decodeStringWithName: (NSString*)name
 {
   id string;
 
   if (!name)
     return nil;
 
-  string = [currentDecodedObjectRepresentation objectForKey:name];
+  string = [currentDecodedObjectRepresentation objectForKey: name];
   if (!string) {
 #if 0
     NSLog (@"Couldn't find the string value for key '%@' (object '%@')",
@@ -766,7 +766,7 @@ static NSMutableDictionary* classToAliasMappings = nil;
     return nil;
   }
 
-  if (![string isKindOfClass:[NSString class]]) {
+  if (![string isKindOfClass: [NSString class]]) {
     NSLog (@"Decoded object is not a string: '%@'! (key '%@', object '%@')",
 	   string, name, currentDecodedObjectRepresentation);
     return nil;
@@ -778,21 +778,21 @@ static NSMutableDictionary* classToAliasMappings = nil;
   return string;
 }
 
-- (NSData*)decodeDataWithName:(NSString*)name
+- (NSData*) decodeDataWithName: (NSString*)name
 {
   id data;
 
   if (!name)
     return nil;
 
-  data = [currentDecodedObjectRepresentation objectForKey:name];
+  data = [currentDecodedObjectRepresentation objectForKey: name];
   if (!data) {
     NSLog (@"Couldn't find the data value for key '%@' (object '%@')",
 	    name, currentDecodedObjectRepresentation);
     return nil;
   }
 
-  if (![data isKindOfClass:[NSData class]]) {
+  if (![data isKindOfClass: [NSData class]]) {
     NSLog (@"Decoded object is not a data: '%@'! (key '%@', object '%@')",
 	   data, name, currentDecodedObjectRepresentation);
     return nil;
@@ -801,7 +801,7 @@ static NSMutableDictionary* classToAliasMappings = nil;
   return data;
 }
 
-- (NSArray*)decodeArrayWithName:(NSString*)name
+- (NSArray*) decodeArrayWithName: (NSString*)name
 {
   id array, decodedArray;
   int i, count;
@@ -809,24 +809,24 @@ static NSMutableDictionary* classToAliasMappings = nil;
   if (!name)
     return nil;
 
-  array = [currentDecodedObjectRepresentation objectForKey:name];
+  array = [currentDecodedObjectRepresentation objectForKey: name];
   if (!array) {
     NSLog (@"Couldn't find the array value for key '%@' (object '%@')",
 	    name, currentDecodedObjectRepresentation);
     return nil;
   }
 
-  if (![array isKindOfClass:[NSArray class]]) {
+  if (![array isKindOfClass: [NSArray class]]) {
     NSLog (@"Decoded object is not an array: '%@'! (key '%@', object '%@')",
 	   array, name, currentDecodedObjectRepresentation);
     return nil;
   }
 
   count = [array count];
-  decodedArray = [NSMutableArray arrayWithCapacity:count];
+  decodedArray = [NSMutableArray arrayWithCapacity: count];
   for (i = 0; i < count; i++) {
-    id label = [array objectAtIndex:i];
-    id objectDescription = [propertyList objectForKey:label];
+    id label = [array objectAtIndex: i];
+    id objectDescription = [propertyList objectForKey: label];
 
     if (!objectDescription) {
       NSLog (@"warning: couldn't find the description for object labeled '%@' "
@@ -834,13 +834,13 @@ static NSMutableDictionary* classToAliasMappings = nil;
       continue;
     }
 
-    [decodedArray addObject:[self decodeObjectWithName:label]];
+    [decodedArray addObject: [self decodeObjectWithName: label]];
   }
 
   return decodedArray;
 }
 
-- (NSDictionary*)decodeDictionaryWithName:(NSString*)name
+- (NSDictionary*) decodeDictionaryWithName: (NSString*)name
 {
   id dictionary, decodedDictionary;
   id enumerator, keyLabel, valueLabel;
@@ -848,118 +848,118 @@ static NSMutableDictionary* classToAliasMappings = nil;
   if (!name)
     return nil;
 
-  dictionary = [currentDecodedObjectRepresentation objectForKey:name];
+  dictionary = [currentDecodedObjectRepresentation objectForKey: name];
   if (!dictionary) {
     NSLog (@"Couldn't find the dictionary value for key '%@' (object '%@')",
 	    name, currentDecodedObjectRepresentation);
     return nil;
   }
 
-  if (![dictionary isKindOfClass:[NSDictionary class]]) {
+  if (![dictionary isKindOfClass: [NSDictionary class]]) {
     NSLog (@"Decoded object is not a dictionary: '%@'! (key '%@', object '%@')",
 	   dictionary, name, currentDecodedObjectRepresentation);
     return nil;
   }
 
   decodedDictionary
-      = [NSMutableDictionary dictionaryWithCapacity:[dictionary count]];
+      = [NSMutableDictionary dictionaryWithCapacity: [dictionary count]];
   enumerator = [dictionary keyEnumerator];
   while ((keyLabel = [enumerator nextObject])) {
     id key, value, objectDescription;
 
-    objectDescription = [propertyList objectForKey:keyLabel];
+    objectDescription = [propertyList objectForKey: keyLabel];
     if (!objectDescription) {
       NSLog (@"warning: couldn't find the description for object labeled '%@' "
 	     @"in the dictionary description '%@ = %@'!",
 	     keyLabel, name, dictionary);
       continue;
     }
-    key = [self decodeObjectWithName:keyLabel];
+    key = [self decodeObjectWithName: keyLabel];
 
-    valueLabel = [dictionary objectForKey:keyLabel];
-    objectDescription = [propertyList objectForKey:valueLabel];
+    valueLabel = [dictionary objectForKey: keyLabel];
+    objectDescription = [propertyList objectForKey: valueLabel];
     if (!objectDescription) {
       NSLog (@"warning: couldn't find the description for object labeled '%@' "
 	     @"in the dictionary description '%@ = %@'!",
 	     valueLabel, name, dictionary);
       continue;
     }
-    value = [self decodeObjectWithName:valueLabel];
+    value = [self decodeObjectWithName: valueLabel];
 
-    [decodedDictionary setObject:value forKey:key];
+    [decodedDictionary setObject: value forKey: key];
   }
 
   return decodedDictionary;
 }
 
-- (Class)decodeClassWithName:(NSString*)name
+- (Class) decodeClassWithName: (NSString*)name
 {
-  NSString* className = [self decodeStringWithName:name];
+  NSString* className = [self decodeStringWithName: name];
 
   return className ? NSClassFromString (className) : Nil;
 }
 
-- (SEL)decodeSelectorWithName:(NSString*)name
+- (SEL) decodeSelectorWithName: (NSString*)name
 {
-  NSString* selectorName = [self decodeStringWithName:name];
+  NSString* selectorName = [self decodeStringWithName: name];
 
   return selectorName ? NSSelectorFromString (selectorName) : NULL;
 }
 
-- (char)decodeCharWithName:(NSString*)name
+- (char) decodeCharWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return 0;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return 0;
 
   return *[valueString cString];
 }
 
-- (unsigned char)decodeUnsignedCharWithName:(NSString*)name
+- (unsigned char) decodeUnsignedCharWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return 0;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return 0;
 
   return *[valueString cString];
 }
 
-- (BOOL)decodeBOOLWithName:(NSString*)name
+- (BOOL) decodeBOOLWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return NO;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return NO;
 
-  return [valueString compare:@"YES" options:NSCaseInsensitiveSearch]
+  return [valueString compare: @"YES" options: NSCaseInsensitiveSearch]
 	    == NSOrderedSame;
 }
 
-- (short)decodeShortWithName:(NSString*)name
+- (short) decodeShortWithName: (NSString*)name
 {
-  return [self decodeIntWithName:name];
+  return [self decodeIntWithName: name];
 }
 
-- (unsigned short)decodeUnsignedShortWithName:(NSString*)name
+- (unsigned short) decodeUnsignedShortWithName: (NSString*)name
 {
-  return [self decodeIntWithName:name];
+  return [self decodeIntWithName: name];
 }
 
-- (int)decodeIntWithName:(NSString*)name
+- (int) decodeIntWithName: (NSString*)name
 {
   NSString* valueString;
   int value;
@@ -967,11 +967,11 @@ static NSMutableDictionary* classToAliasMappings = nil;
   if (!name)
     return 0;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return 0;
 
-  if (![[NSScanner scannerWithString:valueString] scanInt:&value]) {
+  if (![[NSScanner scannerWithString: valueString] scanInt: &value]) {
     NSLog (@"Cannot scan integer value '%@' from object '%@' under key '%@'",
 	   valueString, currentDecodedObjectRepresentation, name);
     return 0;
@@ -980,22 +980,22 @@ static NSMutableDictionary* classToAliasMappings = nil;
   return value;
 }
 
-- (unsigned int)decodeUnsignedIntWithName:(NSString*)name
+- (unsigned int) decodeUnsignedIntWithName: (NSString*)name
 {
-  return [self decodeIntWithName:name];
+  return [self decodeIntWithName: name];
 }
 
-- (long)decodeLongWithName:(NSString*)name
+- (long) decodeLongWithName: (NSString*)name
 {
-  return [self decodeIntWithName:name];
+  return [self decodeIntWithName: name];
 }
 
-- (unsigned long)decodeUnsignedLongWithName:(NSString*)name
+- (unsigned long) decodeUnsignedLongWithName: (NSString*)name
 {
-  return [self decodeIntWithName:name];
+  return [self decodeIntWithName: name];
 }
 
-- (float)decodeFloatWithName:(NSString*)name
+- (float) decodeFloatWithName: (NSString*)name
 {
   NSString* valueString;
   float value;
@@ -1003,11 +1003,11 @@ static NSMutableDictionary* classToAliasMappings = nil;
   if (!name)
     return 0;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return 0;
 
-  if (![[NSScanner scannerWithString:valueString] scanFloat:&value]) {
+  if (![[NSScanner scannerWithString: valueString] scanFloat: &value]) {
     NSLog (@"Cannot scan float value '%@' from object '%@' under key '%@'",
 	   valueString, currentDecodedObjectRepresentation, name);
     return 0;
@@ -1016,87 +1016,103 @@ static NSMutableDictionary* classToAliasMappings = nil;
   return value;
 }
 
-- (double)decodeDoubleWithName:(NSString*)name
+- (double) decodeDoubleWithName: (NSString*)name
 {
-  return [self decodeDoubleWithName:name];
+  NSString* valueString;
+  double value;
+
+  if ( !name )
+    return 0;
+
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
+  if ( !valueString )
+    return 0;
+
+  if ( ![[NSScanner scannerWithString: valueString] scanDouble: &value] )
+    {
+      NSLog(@"Cannot scan double value '%@' from object '%@' under key '%@'",
+	    valueString, currentDecodedObjectRepresentation, name);
+      return 0;
+    }
+  return value;
 }
 
-- (NSPoint)decodePointWithName:(NSString*)name
+- (NSPoint) decodePointWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return NSZeroPoint;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return NSZeroPoint;
 
   return NSPointFromString (valueString);
 }
 
-- (NSSize)decodeSizeWithName:(NSString*)name
+- (NSSize) decodeSizeWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return NSZeroSize;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return NSZeroSize;
 
   return NSSizeFromString (valueString);
 }
 
-- (NSRect)decodeRectWithName:(NSString*)name
+- (NSRect) decodeRectWithName: (NSString*)name
 {
   NSString* valueString;
 
   if (!name)
     return NSZeroRect;
 
-  valueString = [currentDecodedObjectRepresentation objectForKey:name];
+  valueString = [currentDecodedObjectRepresentation objectForKey: name];
   if (!valueString)
     return NSZeroRect;
 
   return NSRectFromString (valueString);
 }
 
-- (BOOL)isAtEnd
+- (BOOL) isAtEnd
 {
   // TODO
   return NO;
 }
 
-- (void)setObjectZone:(NSZone*)zone	{ objectZone = zone; }
-- (unsigned int)systemVersion		{ return version; }
-- (NSZone*)objectZone			{ return objectZone; }
+- (void) setObjectZone: (NSZone*)zone	{ objectZone = zone; }
+- (unsigned int) systemVersion		{ return version; }
+- (NSZone*) objectZone			{ return objectZone; }
 
-+ (NSString*)classNameDecodedForArchiveClassName:(NSString*)nameInArchive
++ (NSString*) classNameDecodedForArchiveClassName: (NSString*)nameInArchive
 {
-    NSString* className = [classToAliasMappings objectForKey:nameInArchive];
+    NSString* className = [classToAliasMappings objectForKey: nameInArchive];
 
     return className ? className : nameInArchive;
 }
 
-+ (void)decodeClassName:(NSString*)nameInArchive
-  asClassName:(NSString*)trueName
++ (void) decodeClassName: (NSString*)nameInArchive
+  asClassName: (NSString*)trueName
 {
-    [classToAliasMappings setObject:trueName forKey:nameInArchive];
+    [classToAliasMappings setObject: trueName forKey: nameInArchive];
 }
 
-- (NSString*)classNameDecodedForArchiveClassName:(NSString*)nameInArchive
+- (NSString*) classNameDecodedForArchiveClassName: (NSString*)nameInArchive
 {
   return nameInArchive;
 }
 
-- (void)decodeClassName:(NSString*)nameInArchive
-	asClassName:(NSString*)trueName
+- (void) decodeClassName: (NSString*)nameInArchive
+	asClassName: (NSString*)trueName
 {
 }
 
-- (unsigned int)versionForClassName:(NSString*)className
+- (unsigned int) versionForClassName: (NSString*)className
 {
   return 1;
 }
