@@ -2552,13 +2552,13 @@
 	  int i;
 
 	  // create a new col matrix
-	  matrix = [[[_browserMatrixClass alloc]
-					initWithFrame: matrixRect
-					mode: NSListModeMatrix
-					prototype: _browserCellPrototype
-					numberOfRows: n
-					numberOfColumns: 1]
-					autorelease];
+	  matrix = [_browserMatrixClass alloc];
+	  matrix = [matrix initWithFrame: matrixRect
+			   mode: NSListModeMatrix
+			   prototype: _browserCellPrototype
+			   numberOfRows: n
+			   numberOfColumns: 1];
+	  AUTORELEASE (matrix);
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -2582,7 +2582,6 @@
 	}
       else
 	{
-	  //NSRect matrixRect = {{0, 0}, {100, 100}};
 	  // create a new col matrix
 	  matrix = [_browserMatrixClass alloc];
 	  [matrix initWithFrame: matrixRect
@@ -2590,6 +2589,7 @@
 		  prototype: _browserCellPrototype
 		  numberOfRows: 0
 		  numberOfColumns: 0];
+	  AUTORELEASE (matrix);
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (_allowsMultipleSelection)
 	    [matrix setMode: NSListModeMatrix];
