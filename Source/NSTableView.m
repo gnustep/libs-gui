@@ -162,8 +162,8 @@ static void computeNewSelection
 	// this is the first pass
 	{
 	  int diff, i;
-      	  diff = _currentRow - _originalRow;
 	  BOOL notified = NO;
+      	  diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
@@ -596,8 +596,8 @@ static void computeNewSelection
 	{
 	  int diff, i;
 	  int count = [_selectedRows count];
-      	  diff = _currentRow - _originalRow;
 	  BOOL notified = NO;
+      	  diff = _currentRow - _originalRow;
 
 	  if (count > 0)
 	    {
@@ -1152,8 +1152,8 @@ static void computeNewSelection
 	      // (AM = 1, SD=0, AE=1, AR=*, first pass)
 	      int diff, i;
 	      int count = [_selectedRows count];
-	      diff = _currentRow - _originalRow;
 	      BOOL notified = NO;
+	      diff = _currentRow - _originalRow;
 	      
 	      if (count > 0)
 		{
@@ -1219,8 +1219,8 @@ static void computeNewSelection
 	      // (AM=1, SD=1, AE=*, AR=1)
 	      int diff, i;
 	      //	      int count = [_selectedRows count];
-	      diff = _currentRow - _originalRow;
 	      BOOL notified = NO;
+	      diff = _currentRow - _originalRow;
 	      
 	      if (diff >= 0)
 		{
@@ -1929,8 +1929,8 @@ static void computeNewSelection
 	  int diff, i;
 	  unsigned pos;
 	  //	  int count = [_selectedRows count];
-      	  diff = _currentRow - _originalRow;
 	  BOOL notified = NO;
+      	  diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
@@ -2296,8 +2296,8 @@ static void computeNewSelection
 	  int diff, i;
 	  unsigned pos;
 	  int count = [_selectedRows count];
-      	  diff = _currentRow - _originalRow;
 	  BOOL notified = NO;
+      	  diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
