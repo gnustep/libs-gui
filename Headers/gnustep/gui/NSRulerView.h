@@ -1,16 +1,58 @@
+/* 
+   NSRulerView.h
+
+   The NSRulerView class.
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   Author: Michael Hanni <mhanni@sprintmail.com>
+   Date: Feb 1999
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: Sept 2001
+   
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/ 
 #ifndef _GNUstep_H_NSRulerView
 #define _GNUstep_H_NSRulerView
 
 #include <AppKit/NSView.h>
-#include <AppKit/NSRulerMarker.h>
-#include <AppKit/NSScrollView.h>
+
+@class NSRulerMarker;
+@class NSScrollView;
 
 typedef enum {
   NSHorizontalRuler,
   NSVerticalRuler
 } NSRulerOrientation;
 
-@interface NSRulerView : NSView <NSObject, NSCoding>
+@interface NSRulerView : NSView
+{
+  NSMutableArray *_markers;
+  NSString *_measurementUnits;
+  NSView *_clientView;
+  NSView *_accessoryView; 
+  NSScrollView *_scrollView;
+  float _originOffset;
+  float _reservedThicknessForAccessoryView; 
+  float _reservedThicknessForMarkers; 
+  float _ruleThickness; 
+  NSRulerOrientation _orientation; 
+}
 
 - (id)initWithScrollView:(NSScrollView *)aScrollView
 	     orientation:(NSRulerOrientation)orientation; 
@@ -60,7 +102,14 @@ unitToPointsConversionFactor:(float)conversionFactor
 - (float)ruleThickness; 
 - (float)requiredThickness;
 - (float)baselineLocation; 
-- (BOOL)isFlipped; 
+- (BOOL)isFlipped;
+
+@end
+
+//
+// Methods Implemented by the Delegate 
+//
+@interface NSObject (NSRulerViewClient)
 
 - (void)rulerView:(NSRulerView *)aRulerView
      didAddMarker:(NSRulerMarker *)aMarker;
