@@ -1,3 +1,8 @@
+2002-03-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Start gpbs for other server automatically.
+	Improve log messages.
+
 2002-03-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Use NSHost to look for alternative servers.

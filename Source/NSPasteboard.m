@@ -107,6 +107,7 @@ static  NSMapTable              *mimeMap = NULL;
   if (the_server == nil)
     {
       NSString	*host;
+      NSString	*description;
 
       host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
       if (host == nil)
@@ -124,14 +125,41 @@ static  NSMapTable              *mimeMap = NULL;
 	   * indicate that we may start a pasteboard server locally.
 	   */
 	  h = [NSHost hostWithName: host];
-	  if ([h isEqual: [NSHost currentHost]] == YES)
+	  if (h == nil)
+	    {
+	      NSLog(@"Unknown NSHost (%@) ignored", host);
+	      host = @"";
+	    }
+	  else if ([h isEqual: [NSHost currentHost]] == YES)
 	    {
 	      host = @"";
 	    }
+	  else
+	    {
+	      host = [h name];
+	    }
 	}
+
+      if ([host length] == 0)
+	{
+	  description = @"local host";
+	}
+      else
+	{
+	  description = host;
+	}
+
       the_server = (id<GSPasteboardSvr>)[NSConnection
-		rootProxyForConnectionWithRegisteredName: PBSNAME
-						    host: host];
+	rootProxyForConnectionWithRegisteredName: PBSNAME host: host];
+      if (the_server == nil && [host length] > 0)
+	{
+	  NSString	*service;
+
+	  service = [PBSNAME stringByAppendingFormat: @"-%@", host];
+	  the_server = (id<GSPasteboardSvr>)[NSConnection
+	    rootProxyForConnectionWithRegisteredName: service host: @"*"];
+	}
+
       if (RETAIN((id)the_server) != nil)
 	{
 	  NSConnection*	conn = [(id)the_server connectionForProxy];
@@ -142,33 +170,43 @@ static  NSMapTable              *mimeMap = NULL;
 		   name: NSConnectionDidDieNotification
 		 object: conn];
 	}
-      else if ([host isEqual: @""] == YES)
+      else
 	{
 	  static BOOL	recursion = NO;
 
 	  if (recursion)
 	    {
 	      NSLog(@"Unable to contact pasteboard server - "
-		@"please ensure that gpbs is running.");
+		@"please ensure that gpbs is running for %@.", description);
 	      return nil;
 	    }
 	  else
 	    {
-	      static	NSString	*cmd = nil;
+	      static NSString	*cmd = nil;
+	      static NSArray	*args = nil;
 
+	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
+@"so I'm attempting to to start one - which will take a few seconds.\n"
+@"It is recommended that you start the pasteboard server (gpbs) either at\n"
+@"login or (better) when your computer is started up.\n", description);
 	      if (cmd == nil)
 	        {
 #ifdef GNUSTEP_BASE_LIBRARY
 		  cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-		      GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
-				   stringByAppendingPathComponent: @"gpbs"]);
+		    GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
+		    stringByAppendingPathComponent: @"gpbs"]);
 #else
 		  cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-				    stringByAppendingPathComponent: @"Tools"] 
-				   stringByAppendingPathComponent: @"gpbs"]);
+		    stringByAppendingPathComponent: @"Tools"] 
+		    stringByAppendingPathComponent: @"gpbs"]);
 #endif
+		  if ([host length] > 0)
+		    {
+		      args = [[NSArray alloc] initWithObjects:
+			@"-NSHost", host, nil];
+		    }
 		}
-	      [NSTask launchedTaskWithLaunchPath: cmd arguments: nil];
+	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
 	      [NSTimer scheduledTimerWithTimeInterval: 5.0
 					   invocation: nil
 					      repeats: NO];
@@ -178,18 +216,6 @@ static  NSMapTable              *mimeMap = NULL;
 	      [self _pbs];
 	      recursion = NO;
 	    }
-	}
-      else
-	{
-	  the_server = (id<GSPasteboardSvr>)[NSConnection
-	    rootProxyForConnectionWithRegisteredName:
-            [PBSNAME stringByAppendingFormat: @"-%@", host] host: @"*"];
-          if (the_server == nil)
-            {
-	      NSLog(@"Unable to contact pasteboard server for %@ - "
-		  @"please ensure that gpbs is running.", host);
-            }
-          RETAIN(the_server);
 	}
     }
   return the_server;
