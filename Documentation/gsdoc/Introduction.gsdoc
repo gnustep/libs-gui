@@ -10,8 +10,8 @@
         text.
       </desc>
     </author>
-    <version>very preliminary, 0.1</version>
-    <date>29 February, 2000</date>
+    <version>$Revision$</version>
+    <date>$Date$</date>
     <abstract>
       A short and simple introduction to the GNUstep GUI API.
     </abstract>
