@@ -1445,12 +1445,12 @@ static SEL getSel;
 
 - (id) nextText
 {
-  return _nextKeyView;
+  return [self nextKeyView];
 }
 
 - (id) previousText
 {
-  return _previousKeyView;
+  return [self previousKeyView];
 }
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification

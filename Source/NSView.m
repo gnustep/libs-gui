@@ -285,8 +285,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _autoresizes_subviews = YES;
   _autoresizingMask = NSViewNotSizable;
   _coordinates_valid = NO;
-  _nextKeyView = nil;
-  _previousKeyView = nil;
+  _nextKeyView = 0;
+  _previousKeyView = 0;
 
   _rFlags.flipped_view = [self isFlipped];
 
@@ -3501,8 +3501,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_autoresizingMask];
-  [aCoder encodeConditionalObject: _nextKeyView];
-  [aCoder encodeConditionalObject: _previousKeyView];
+  [aCoder encodeConditionalObject: [self nextKeyView]];
+  [aCoder encodeConditionalObject: [self previousKeyView]];
   [aCoder encodeObject: _sub_views];
   NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
 }
@@ -3512,6 +3512,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSRect	rect;
   NSEnumerator	*e;
   NSView	*sub;
+  NSView	*prev;
   NSArray	*subs;
 
   self = [super initWithCoder: aDecoder];
@@ -3549,8 +3550,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int)
 			       at: &_autoresizingMask];
-  _nextKeyView = [aDecoder decodeObject];
-  _previousKeyView = [aDecoder decodeObject];
+  [self setNextKeyView: [aDecoder decodeObject]];
+  [[aDecoder decodeObject] setNextKeyView: self];
+  
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
   e = [subs objectEnumerator];
