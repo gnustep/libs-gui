@@ -305,24 +305,31 @@ GSWDefineAsUserObj(NSGraphicsContext *ctxt)
 }
 
 static inline void
-GSWViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
+GSWSetViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
 {
-  (ctxt->methods->GSWViewIsFlipped_)
-    (ctxt, @selector(GSWViewIsFlipped::), flipped);
+  (ctxt->methods->GSWSetViewIsFlipped_)
+    (ctxt, @selector(GSWSetViewIsFlipped:), flipped);
+}
+
+static inline BOOL
+GSWViewIsFlipped(NSGraphicsContext *ctxt)
+{
+  return (ctxt->methods->GSWViewIsFlipped)
+    (ctxt, @selector(GSWViewIsFlipped));
 }
 
 static inline NSWindowDepth
 GSWindowDepthForScreen(NSGraphicsContext *ctxt, int screen_num)
 {
   return (ctxt->methods->GSWindowDepthForScreen_)
-    (ctxt, @selector(GSWindowDepthForScreen::), screen_num);
+    (ctxt, @selector(GSWindowDepthForScreen:), screen_num);
 }
 
 static inline const NSWindowDepth*
 GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
 {
   return (ctxt->methods->GSAvailableDepthsForScreen_)
-    (ctxt, @selector(GSAvailableDepthsForScreen::), screen_num);
+    (ctxt, @selector(GSAvailableDepthsForScreen:), screen_num);
 }
 
 #ifndef	NO_GNUSTEP

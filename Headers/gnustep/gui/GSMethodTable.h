@@ -589,7 +589,8 @@ typedef struct {
 
 /* Context helper wraps */
   unsigned int (*GSWDefineAsUserObj)(NSGraphicsContext*, SEL);
-  void (*GSWViewIsFlipped_)(NSGraphicsContext*, SEL, BOOL flipped);
+  BOOL (*GSWViewIsFlipped)(NSGraphicsContext*, SEL);
+  void (*GSWSetViewIsFlipped_)(NSGraphicsContext*, SEL, BOOL flipped);
   NSWindowDepth (*GSWindowDepthForScreen_)(NSGraphicsContext*, SEL, int screen);
 
   const NSWindowDepth *(*GSAvailableDepthsForScreen_)(NSGraphicsContext*, SEL,
