@@ -1,3 +1,10 @@
+2004-08-02  Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Clarify the role of
+	NSGlobalDomain; explain that NSShowNonLocalizedStrings is a developer
+	option (in absence of a document specifically documenting developer
+	defaults, the doc will go here).
+
 2004-08-02 16:32  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSCell.h, Source/NSMenuView.m: Rename xDist and
