@@ -47,6 +47,11 @@
       NSSize	inset;
 
       textView = [aNotification object];
+      if (textView != _textView)
+        {
+	    NSDebugLog(@"NSTextContainer got notification for wrong View %@", textView);
+	    return;
+	}
       newTextViewSize = [textView frame].size;
       newSize = _containerRect.size;
       inset = [textView textContainerInset];
@@ -132,6 +137,7 @@
   if (_textView)
     {
       [_textView setTextContainer: nil];
+      [_textView setPostsFrameChangedNotifications: NO];
       [nc removeObserver: self name: NSViewFrameDidChangeNotification 
 	  object: _textView];
     }
@@ -143,6 +149,7 @@
       [_textView setTextContainer: self];
       if (_observingFrameChanges)
 	{
+	  [_textView setPostsFrameChangedNotifications: YES];
 	  [nc addObserver: self
 	      selector: @selector(_textViewFrameChanged:)
 	      name: NSViewFrameDidChangeNotification
@@ -176,6 +183,9 @@
 
   _widthTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
+  if (_textView == nil)
+    return;
+
   if (_observingFrameChanges)
     {      
       [nc addObserver: self
@@ -202,6 +212,9 @@
 
   _heightTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
+  if (_textView == nil)
+    return;
+
   if (_observingFrameChanges)
     {      
       [nc addObserver: self
