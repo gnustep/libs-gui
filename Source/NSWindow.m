@@ -2883,7 +2883,9 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	  m = [v menuForEvent: theEvent];
 	  if (m)
 	    {
-	      [m _rightMouseDisplay: theEvent];
+	      [NSMenu popUpContextMenu: m
+		      withEvent: theEvent
+		      forView: v];
 	    }
 	  else
 	    {
