@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
 <gsdoc base="Introduction" next="NSActionCell.html" up="Gui.html">
   <head>
     <title>Introduction to the AppKit</title>
@@ -33,8 +33,7 @@
             I am very interested in comments regarding this text,
             particularly from people who are new to the OPENSTEP
             AppKit API.  Send comments and/or suggestions to 
-            <email address="n.pero@mi.flashnet.it">Nicola Pero</email>
-            [Nicola Pero, n.pero@mi.flashnet.it].
+            Nicola Pero (n.pero@mi.flashnet.it).
           </p>
       </chapter>
     </front>
@@ -62,7 +61,7 @@
         </section>
         <section>
           <heading>NSCell</heading> 
-            <p>              
+            <p>
               NSCell is the class of objects representing a single
               amount of displayable data.  For example, a cell could
               represent a number, or a string, or an image.  Cells
