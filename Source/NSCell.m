@@ -71,9 +71,9 @@ static NSColor	*shadowCol;
 @implementation	NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n
 {
-  ASSIGN(txtCol, [colorClass controlTextColor]);
-  ASSIGN(dtxtCol, [colorClass disabledControlTextColor]);
-  ASSIGN(shadowCol, [colorClass controlDarkShadowColor]);
+  ASSIGN (txtCol, [colorClass controlTextColor]);
+  ASSIGN (dtxtCol, [colorClass disabledControlTextColor]);
+  ASSIGN (shadowCol, [colorClass controlDarkShadowColor]);
 }
 @end
 
@@ -126,12 +126,14 @@ static NSColor	*shadowCol;
 - (id) initImageCell: (NSImage*)anImage
 {
   _cell.type = NSImageCellType;
-  _cell_image = RETAIN(anImage);
+  _cell_image = RETAIN (anImage);
   _cell.image_position = NSImageOnly;
+  _font = RETAIN ([fontClass userFontOfSize: 0]);
 
   // Implicitly set by allocation:
   //
-  //_typingAttributes = nil;
+  //_font = nil;
+  //_cell.contents_is_attributed_string = NO;
   //_cell.is_highlighted = NO;
   //_cell.is_disabled = NO;
   //_cell.is_editable = NO;
@@ -154,11 +156,12 @@ static NSColor	*shadowCol;
 - (id) initTextCell: (NSString*)aString
 {
   _cell.type = NSTextCellType;
-  _contents = RETAIN(aString);
+  _contents = RETAIN (aString);
+  _font = RETAIN ([fontClass userFontOfSize: 0]);
 
   // Implicitly set by allocation:
   //
-  //_typingAttributes = nil;
+  //_cell.contents_is_attributed_string = NO;
   //_cell_image = nil;
   //_cell.image_position = NSNoImage;
   //_cell.is_disabled = NO;
@@ -179,7 +182,7 @@ static NSColor	*shadowCol;
 {
   TEST_RELEASE (_contents);
   TEST_RELEASE (_cell_image);
-  TEST_RELEASE (_typingAttributes);
+  TEST_RELEASE (_font);
   TEST_RELEASE (_represented_object);
   TEST_RELEASE (_objectValue);
   TEST_RELEASE (_formatter);
@@ -210,22 +213,50 @@ static NSColor	*shadowCol;
 
 - (double) doubleValue
 {
-  return [_contents doubleValue];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      return [_contents doubleValue];
+    }
+  else
+    {
+      return [[(NSAttributedString *)_contents string] doubleValue];
+    }
 }
 
 - (float) floatValue
 {
-  return [_contents floatValue];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      return [_contents floatValue];
+    }
+  else
+    {
+      return [[(NSAttributedString *)_contents string] floatValue];      
+    }
 }
 
 - (int) intValue
 {
-  return [_contents intValue];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      return [_contents intValue];
+    }
+  else
+    {
+      return [[(NSAttributedString *)_contents string] intValue];
+    }
 }
 
 - (NSString*) stringValue
 {
-  return _contents;
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      return _contents;
+    }
+  else
+    {
+      return [(NSAttributedString *)_contents string];
+    }
 }
 
 - (void) setObjectValue: (id)object 
@@ -255,6 +286,7 @@ static NSColor	*shadowCol;
     }
   
   ASSIGN (_contents, newContents);
+  _cell.contents_is_attributed_string = NO;
 }
 
 - (void) setDoubleValue: (double)aDouble
@@ -293,6 +325,7 @@ static NSColor	*shadowCol;
   NSString *string = aString;
 
   _cell.type = NSTextCellType;
+  _cell.contents_is_attributed_string = NO;
 
   if (string == nil)
     {
@@ -378,7 +411,9 @@ static NSColor	*shadowCol;
     {
       case NSTextCellType:
 	ASSIGN (_contents, @"title");
-	// Doc says we should set the font too.
+	_cell.contents_is_attributed_string = NO;
+	/* Doc says we have to reset the font too. */
+	ASSIGN (_font, [fontClass userFontOfSize: 0]);
 	break;
       case NSImageCellType:
 	TEST_RELEASE (_cell_image);
@@ -504,13 +539,12 @@ static NSColor	*shadowCol;
  */
 - (NSTextAlignment) alignment
 {
-    return [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
-	       alignment];
+  return _cell.text_align;
 }
 
 - (NSFont*) font
 {
-  return [[self _typingAttributes] objectForKey: NSFontAttributeName];
+  return _font;
 }
 
 - (BOOL) isEditable
@@ -530,32 +564,22 @@ static NSColor	*shadowCol;
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
-      setAlignment: mode];
+  _cell.text_align = mode;
 }
 
 - (void) setEditable: (BOOL)flag
 {
   /*
-   *	The cell_editable flag is also checked to see if the cell is selectable
-   *	so turning edit on also turns selectability on (until edit is turned
-   *	off again).
+   * The cell_editable flag is also checked to see if the cell is
+   * selectable so turning edit on also turns selectability on (until
+   * edit is turned off again).  
    */
   _cell.is_editable = flag;
 }
 
 - (void) setFont: (NSFont*)fontObject
 {
-  if (fontObject == nil)
-    {
-      [[self _typingAttributes] removeObjectForKey: NSFontAttributeName];
-    }
-  else 
-    {
-      NSAssert([fontObject isKindOfClass: fontClass], NSInvalidArgumentException);
-
-      [[self _typingAttributes] setObject: fontObject forKey: NSFontAttributeName];
-    }
+  ASSIGN (_font, fontObject);
 }
 
 - (void) setSelectable: (BOOL)flag
@@ -577,44 +601,71 @@ static NSColor	*shadowCol;
 
 - (void) setWraps: (BOOL)flag
 {
+  _cell.wraps = flag;  
+
   if (flag)
     {
-      [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
-	  setLineBreakMode: NSLineBreakByWordWrapping];
       _cell.is_scrollable = NO;
     }
-  else
-    {
-      [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
-	  setLineBreakMode: NSLineBreakByClipping];
-    }   
 }
 
 - (BOOL) wraps
 {
-  return ([[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
-	      lineBreakMode] == NSLineBreakByWordWrapping);
+  return _cell.wraps;
 }
 
 - (void) setAttributedStringValue: (NSAttributedString*)attribStr
 {
-  [self setStringValue: [attribStr string]];
-  ASSIGN(_typingAttributes, [[attribStr attributesAtIndex: 0 effectiveRange: NULL]
-				mutableCopy]);
-  if ([_typingAttributes objectForKey: NSParagraphStyleAttributeName] == nil)
-      [_typingAttributes setObject: [NSMutableParagraphStyle defaultParagraphStyle] 
-			 forKey: NSParagraphStyleAttributeName];
+  /* Hmm.  FIXME.  Not sure what to do here. */
+  if (_formatter != nil)
+    {
+      id newObjectValue;
+      
+      if ([_formatter getObjectValue: &newObjectValue 
+		      forString: [attribStr string] 
+		      errorDescription: NULL] == YES)
+	{
+	  [self setObjectValue: newObjectValue];
+	  /* What about the attributed string ?  We are loosing it. */
+	  return;
+	}
+    }
+
+  /* In all other cases */
+  ASSIGN (_contents, attribStr);
+  _cell.has_valid_object_value = NO;
+  _cell.contents_is_attributed_string = YES;
 }
 
 - (NSAttributedString*) attributedStringValue
 {
   if (_formatter != nil)
     {
-      return [_formatter attributedStringForObjectValue: _objectValue 
-			 withDefaultAttributes: [self _typingAttributes]];
+      NSAttributedString *attrStr;
+
+      attrStr = [_formatter attributedStringForObjectValue: _objectValue 
+			    withDefaultAttributes: [self _typingAttributes]];
+      if (attrStr != nil)
+	{
+	  return attrStr;
+	}
     }
-  return AUTORELEASE([[NSAttributedString alloc] initWithString: _contents 
-						 attributes: [self _typingAttributes]]);
+
+  /* In all other cases */
+  if (_cell.contents_is_attributed_string)
+    {
+      return (NSAttributedString *)_contents;
+    }
+  else
+    {
+      NSDictionary *dict;
+      NSAttributedString *attrStr;
+
+      dict = [self _typingAttributes];
+      attrStr = [[NSAttributedString alloc] initWithString: _contents 
+					    attributes: dict];
+      return AUTORELEASE (attrStr);
+    }
 }
 
 - (void) setAllowsEditingTextAttributes: (BOOL)flag
@@ -644,8 +695,18 @@ static NSColor	*shadowCol;
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
   [textObject setTextColor: [self textColor]];
-  [textObject setFont: [self font]];
-  [textObject setAlignment: [self alignment]];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      /* TODO: Manage scrollable attribute */
+      [textObject setFont: _font];
+      [textObject setAlignment: _cell.text_align];
+    }
+  else
+    {
+      /* FIXME/TODO.  What do we do if we are an attributed string.  
+	 Think about what happens when the user ends editing. 
+	 Allows editing text attributes... Formatter... TODO. */
+    }
   [textObject setEditable: _cell.is_editable];
   [textObject setSelectable: _cell.is_selectable || _cell.is_editable];
   [textObject setRichText: _cell.is_rich_text];
@@ -722,7 +783,7 @@ static NSColor	*shadowCol;
   
   _cell.type = NSImageCellType;    
   
-  ASSIGN(_cell_image, anImage);
+  ASSIGN (_cell_image, anImage);
 }
 
 /*
@@ -775,12 +836,16 @@ static NSColor	*shadowCol;
 {
   if (_formatter != nil)
     {
-      return [_formatter isPartialStringValid: aString 
-			newEditingString: NULL 
-			errorDescription: NULL];
+      id newObjectValue;
+      
+      return [_formatter getObjectValue: &newObjectValue 
+			 forString: aString 
+			 errorDescription: NULL];
     }
   else 
-    return YES;
+    {
+      return YES;
+    }
 }
 
 /*
@@ -788,7 +853,7 @@ static NSColor	*shadowCol;
  */
 - (void) setMenu: (NSMenu*)aMenu 
 {
-  ASSIGN(_menu, aMenu);
+  ASSIGN (_menu, aMenu);
 }
 
 - (NSMenu*) menu
@@ -853,11 +918,21 @@ static NSColor	*shadowCol;
 - (NSString*) mnemonic
 {
   unsigned int location = [self mnemonicLocation];
+  NSString *c;
 
-  if ((location == NSNotFound) || location >= [_contents length])
+  if (_cell.contents_is_attributed_string)
+    {
+      c = [(NSAttributedString *)_contents string];
+    }
+  else
+    {
+      c = _contents;
+    }
+
+  if ((location == NSNotFound) || location >= [c length])
     return @"";
 
-  return [_contents substringWithRange: NSMakeRange(location, 1)];
+  return [c substringWithRange: NSMakeRange (location, 1)];
 }
 
 - (void) setMnemonicLocation: (unsigned int)location 
@@ -973,7 +1048,7 @@ static NSColor	*shadowCol;
 
 - (void) setRepresentedObject: (id)anObject
 {
-  /* Ahm - not nice - RETAIN here could cause retain cycles - anyway. */
+  /* Ahm - not nice - the RETAIN here could cause retain cycles - anyway. */
   ASSIGN (_represented_object, anObject);
 }
 
@@ -1230,13 +1305,21 @@ static NSColor	*shadowCol;
     {
       case NSTextCellType:
 	{
-	  if ((_contents != nil) && ([_contents isEqualToString: @""] == NO))
+	  if (_cell.contents_is_attributed_string)
 	    {
-	      s = [self _sizeText: _contents];
+	      s = [(NSAttributedString *)_contents size];
 	    }
-	  else 
+	  else
 	    {
-	      s = [self _sizeText: @"A"];
+	      if ((_contents != nil) 
+		  && ([_contents isEqualToString: @""] == NO))
+		{
+		  s = [self _sizeText: _contents];
+		}
+	      else 
+		{
+		  s = [self _sizeText: @"A"];
+		}
 	    }
 	}
 	break;
@@ -1356,7 +1439,15 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-	 [self _drawText: _contents inFrame: cellFrame];
+	if (_cell.contents_is_attributed_string)
+	  {
+	    [self _drawAttributedText: (NSAttributedString *)_contents  
+		  inFrame: cellFrame];
+	  }
+	else
+	  {
+	    [self _drawText: _contents inFrame: cellFrame];
+	  }
 	 break;
 
       case NSImageCellType:
@@ -1465,7 +1556,15 @@ static NSColor	*shadowCol;
     }
   else
     {
-      [textObject setText: _contents];
+      if (_cell.contents_is_attributed_string == NO)
+	{
+	  [textObject setText: _contents];
+	}
+      else
+	{
+	  /* FIXME/TODO make sure this is correct. */
+	  [textObject setText: [(NSAttributedString *)_contents string]];
+	}
     }
   
   [textObject setDelegate: anObject];
@@ -1496,7 +1595,15 @@ static NSColor	*shadowCol;
 
   [textObject setFrame: [self titleRectForBounds: aRect]];
   [controlView addSubview: textObject];
-  [textObject setText: _contents];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      [textObject setText: _contents];
+    }
+  else
+    {
+      /* FIXME/TODO make sure this is correct. */
+      [textObject setText: [(NSAttributedString *)_contents string]];
+    }
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
@@ -1525,7 +1632,7 @@ static NSColor	*shadowCol;
   /* Because of performance issues (and because so the doc says) only
      pointers to the objects are copied.  We need to RETAIN them all
      though. */
-  TEST_RETAIN (_typingAttributes);
+  TEST_RETAIN (_font);
   TEST_RETAIN (_objectValue);
   TEST_RETAIN (_menu);
   TEST_RETAIN (_cell_image);
@@ -1545,8 +1652,10 @@ static NSColor	*shadowCol;
 
   [aCoder encodeObject: _contents];
   [aCoder encodeObject: _cell_image];
-  [aCoder encodeObject: _typingAttributes];
+  [aCoder encodeObject: _font];
   [aCoder encodeObject: _objectValue];
+  flag = _cell.contents_is_attributed_string;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_highlighted;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_disabled;
@@ -1575,6 +1684,10 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.allows_mixed_state;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.wraps;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  tmp_int = _cell.text_align;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   tmp_int = _cell.type;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   tmp_int = _cell.image_position;
@@ -1598,8 +1711,10 @@ static NSColor	*shadowCol;
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_typingAttributes];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_objectValue];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.contents_is_attributed_string = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_highlighted = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1628,6 +1743,10 @@ static NSColor	*shadowCol;
   _cell.is_continuous = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.allows_mixed_state = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.wraps = flag;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.text_align = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   _cell.type = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
@@ -1654,6 +1773,7 @@ static NSColor	*shadowCol;
 	{
 	  _cell.has_valid_object_value = YES;
 	  ASSIGN (_contents, contents);
+	  _cell.contents_is_attributed_string = NO;
 	}
     }
   
@@ -1671,41 +1791,56 @@ static NSColor	*shadowCol;
     return txtCol;    
 }
 
-- (NSMutableDictionary*) _typingAttributes
+- (NSDictionary*) _typingAttributes
 {
-  if (_typingAttributes == nil)
-    {
-      _typingAttributes = [[NSMutableDictionary alloc] 
-			      initWithObjectsAndKeys: 
-				  [NSFont userFontOfSize: 0], NSFontAttributeName,
-			      [NSMutableParagraphStyle defaultParagraphStyle], 
-			      NSParagraphStyleAttributeName,
-			      nil];
-    }
+  NSDictionary *attr;
+  NSColor *color;
+  NSMutableParagraphStyle *paragraphStyle;
 
-  // TODO: Remove this hack without breaking NSTextFieldCell
-  [_typingAttributes setObject: [self textColor] forKey: NSForegroundColorAttributeName];
-  return _typingAttributes;
+  color = [self textColor];
+  paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+
+  if (_cell.wraps)
+    {
+      [paragraphStyle setLineBreakMode: NSLineBreakByWordWrapping];
+    }
+  else
+    {
+      [paragraphStyle setLineBreakMode: NSLineBreakByClipping];
+    }   
+
+  [paragraphStyle setAlignment: _cell.text_align];
+
+  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+			       _font, NSFontAttributeName,
+			       color, NSForegroundColorAttributeName,
+			       paragraphStyle, NSParagraphStyleAttributeName,
+			       nil];
+  RELEASE (paragraphStyle);
+  return AUTORELEASE (attr);
 }
 
-- (NSSize) _sizeText: (NSString*) title
+- (NSSize) _sizeText: (NSString*)title
 {
-    NSSize size;
+  NSSize size;
   if (title == nil)
-    return NSMakeSize(0,0);
+    {
+      return NSMakeSize (0,0);
+    }
 
   size = [title sizeWithAttributes: [self _typingAttributes]];
   return size;
 }
 
-- (void) _drawText: (NSString*) title inFrame: (NSRect) cellFrame
+- (void) _drawAttributedText: (NSAttributedString *)title 
+		     inFrame: (NSRect)cellFrame
 {
-  NSSize        titleSize;
+  NSSize titleSize;
 
-  if (!title)
+  if (title == nil)
     return;
 
-  titleSize = [self _sizeText: title];
+  titleSize = [title size];
 
   // Determine y position of text
 
@@ -1717,7 +1852,31 @@ static NSColor	*shadowCol;
   cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
   cellFrame.size.height = titleSize.height;
 
-  [title drawInRect: cellFrame  withAttributes: [self _typingAttributes]];
+  [title drawInRect: cellFrame];
+}
+
+- (void) _drawText: (NSString*)title  inFrame: (NSRect)cellFrame
+{
+  NSSize titleSize;
+  NSDictionary *attributes;
+
+  if (title == nil)
+    return;
+
+  attributes = [self _typingAttributes];
+  titleSize = [title sizeWithAttributes: attributes];
+
+  // Determine y position of text
+
+  /* Important: text should always be vertically centered without
+   * considering descender [as if descender did not exist].
+   * This is particularly important for single line texts.
+   * Please make sure the output remains always correct.
+   */
+  cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
+  cellFrame.size.height = titleSize.height;
+
+  [title drawInRect: cellFrame  withAttributes: attributes];
 }
 
 @end
