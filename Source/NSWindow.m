@@ -1226,6 +1226,10 @@ static NSNotificationCenter *nc = nil;
 
 - (void) makeKeyWindow
 {
+  if (_f.is_key == YES)
+    {
+      return;
+    }
   if (![self canBecomeKeyWindow])
     return;
   [[NSApp keyWindow] resignKeyWindow];
@@ -1235,6 +1239,10 @@ static NSNotificationCenter *nc = nil;
 
 - (void) makeMainWindow
 {
+  if (_f.is_main == YES)
+    {
+      return;
+    }
   if (![self canBecomeMainWindow])
     return;
   [[NSApp mainWindow] resignMainWindow];
@@ -1562,6 +1570,10 @@ static NSNotificationCenter *nc = nil;
 					       toSize: frameRect.size];
 	}
     }
+
+  // If nothing changes, don't send it to the backend and don't redisplay 
+  if (NSEqualRects(_frame, frameRect))
+    return;
 
   if (NSEqualPoints(_frame.origin, frameRect.origin) == NO)
     [nc postNotificationName: NSWindowWillMoveNotification object: self];
