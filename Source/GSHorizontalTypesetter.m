@@ -386,6 +386,60 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 #define COMPUTE_BASELINE  baseline = line_height - descender
 
 
+  /* TODO: doesn't have to be a simple horizontal container, but it's easier
+  to handle that way. */
+  if ([curTextContainer isSimpleRectangularTextContainer] &&
+      [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
+    {
+      /*
+      We only handle the simple-horizontal-text-container case currently.
+      */
+      NSRect r0, r;
+      NSSize shift;
+      int i;
+      unsigned int g, g2;
+      float container_height;
+      /*
+      Ask the layout manager for soft-invalidated layout for the current
+      glyph. If there is a set of line frags starting at the current glyph,
+      and we can get rects with the same size and horizontal position, we
+      tell the layout manager to use the soft-invalidated information.
+      */
+      r0 = [curLayoutManager _softInvalidateLineFragRect: 0
+					       nextGlyph: &g
+					 inTextContainer: curTextContainer];
+
+      container_height = [curTextContainer containerSize].height;
+      if (curPoint.y + r0.size.height <= container_height)
+	{
+	  /*
+	  We can shift the rects and still have things fit. Find all the line
+	  frags in the line and shift them.
+	  */
+	  shift.width = 0;
+	  shift.height = curPoint.y - r0.origin.y;
+	  for (i = 1; 1; i++)
+	    {
+	      r = [curLayoutManager _softInvalidateLineFragRect: i
+						      nextGlyph: &g2
+						inTextContainer: curTextContainer];
+
+	      if (NSEqualRects(r, NSZeroRect) || NSMaxY(r) + shift.height > container_height)
+		break;
+	      g = g2;
+	    }
+
+	  [curLayoutManager _softInvalidateUseLineFrags: i
+					      withShift: shift
+					inTextContainer: curTextContainer];
+
+	  curGlyph = g;
+	  curPoint.y = NSMaxY(r);
+	  return 0;
+	}
+    }
+
+
   [self _cacheMoveTo: curGlyph];
   if (!cache_length)
     [self _cacheGlyphs: 16];
@@ -1081,7 +1135,6 @@ NS_DURING
   *nextGlyphIndex = curGlyph;
 NS_HANDLER
   [lock unlock];
-//  printf("got exception %@\n",localException);
   [localException raise];
 NS_ENDHANDLER
   [lock unlock];
