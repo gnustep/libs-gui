@@ -1056,8 +1056,11 @@ static NSColor	*shadowCol;
   return [self menu];
 }
 
-/*
- * Comparing to Another NSCell
+/**
+ * Compares the reciever to another to another NSCell.
+ * The argument must be an NSCell sublclass and have
+ * the NSCellType NSTextCellType.  Returns the result
+ * of the comparison of each cell's stringValue.
  */
 - (NSComparisonResult) compare: (id)otherCell
 {
@@ -1072,7 +1075,9 @@ static NSColor	*shadowCol;
       [NSException raise: NSBadComparisonException
 		   format: @"Comparison between non-text cells"];
     }
-  return [_contents compare: ((NSCell*)otherCell)->_contents];
+  /* We shouldn't access instance variables directly as subclasses
+     may override stringValue to retrieve the value from somewhere else.  */
+  return [[self stringValue] compare: [(NSCell*)otherCell stringValue]];
 }
 
 /*
