@@ -162,7 +162,9 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
-GSSimpleLayoutManager.m 
+GSSimpleLayoutManager.m \
+GSKeyBindingAction.m \
+GSKeyBindingTable.m
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
