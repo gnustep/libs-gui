@@ -120,7 +120,10 @@ static BOOL _gs_display_reading_progress = NO;
   _form = [NSForm new];
   [_form addEntry: @"Name:"];
   [_form setFrame: NSMakeRect (8, 39, 291, 21)];
+  // Force the size we want
+  [_form setCellSize: NSMakeSize (291, 21)];
   [_form setEntryWidth: 291];
+  [_form setInterlineSpacing: 0];
   [_form setAutosizesCells: YES];
   [_form setTag: NSFileHandlingPanelForm];
   [_form setAutoresizingMask: NSViewWidthSizable];
@@ -131,7 +134,7 @@ static BOOL _gs_display_reading_progress = NO;
   {
     NSButton *button;
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (43, 6, 26, 26)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (43, 6, 27, 27)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Home"]]; 
@@ -144,7 +147,7 @@ static BOOL _gs_display_reading_progress = NO;
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (78, 6, 26, 26)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (78, 6, 27, 27)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Mount"]]; 
@@ -156,7 +159,7 @@ static BOOL _gs_display_reading_progress = NO;
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (112, 6, 26, 26)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (112, 6, 27, 27)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Unmount"]]; 
@@ -168,7 +171,7 @@ static BOOL _gs_display_reading_progress = NO;
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (148, 6, 71, 26)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (148, 6, 71, 27)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setTitle:  @"Cancel"];
@@ -181,7 +184,7 @@ static BOOL _gs_display_reading_progress = NO;
     [button release];
   }
   
-  _okButton = [[NSButton alloc] initWithFrame: NSMakeRect (228, 6, 71, 26)];
+  _okButton = [[NSButton alloc] initWithFrame: NSMakeRect (228, 6, 71, 27)];
   [_okButton setBordered: YES];
   [_okButton setButtonType: NSMomentaryPushButton];
   [_okButton setTitle:  @"OK"];
@@ -208,7 +211,7 @@ static BOOL _gs_display_reading_progress = NO;
     [imageView release];
   }
   _titleField
-    = [[NSTextField alloc] initWithFrame: NSMakeRect (67, 281, 200, 14)];
+    = [[NSTextField alloc] initWithFrame: NSMakeRect (67, 276, 200, 14)];
   [_titleField setSelectable: NO];
   [_titleField setEditable: NO];
   [_titleField setDrawsBackground: NO];
@@ -691,6 +694,8 @@ createRowsForColumn: (int)column
       [GSCurrentContext() flush];
     }
 
+  //TODO: Sort after creation of matrix so we do not sort 
+  // files we are not going to show.  Use NSMatrix sorting cells method
   // Sort list of files to display
   if (_delegateHasCompareFilter == YES)
     {
