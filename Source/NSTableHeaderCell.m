@@ -61,7 +61,7 @@ static NSColor *clearCol = nil;
   [controlView lockFocus];
   NSDrawButton (cellFrame, NSZeroRect);
   [controlView unlockFocus];
-  [super drawInteriorWithFrame: cellFrame inView: controlView];
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 
