@@ -1,3 +1,11 @@
+2003-02-11 17:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSScrollView.m (-setBorderType:): Call -tile to make
+	the change visible.
+
+	* Source/NSBrowser.m (-_createColumn): Set the border of the created
+	scroll view explicitly.
+
 2003-02-11 16:33  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSAttributedString.m (-fixAttachmentAttributeInRange:):

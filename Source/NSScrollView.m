@@ -989,6 +989,7 @@ static float scrollerWidth;
 - (void) setBorderType: (NSBorderType)borderType
 {
   _borderType = borderType;
+  [self tile];
 }
 
 - (void) setDocumentView: (NSView *)aView
