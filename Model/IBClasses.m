@@ -29,6 +29,13 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
 #import <AppKit/GMArchiver.h>
+
+#ifdef __APPLE__
+#import <AppKit/NSNibConnector.h>
+#import <AppKit/NSNibOutletConnector.h>
+#import <AppKit/NSNibControlConnector.h>
+#endif
+
 #import "IBClasses.h"
 #import "Translator.h"
 #import "IMConnectors.h"
@@ -114,8 +121,11 @@
 
 @end
 
-
+#ifdef __APPLE__
+@implementation NSNibConnector (NibToGModel)
+#else
 @implementation NSIBConnector (NibToGModel)
+#endif
 - (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
 {
 #ifdef DEBUG
@@ -123,18 +133,31 @@
 	  self, NSStringFromClass(isa), source, destination, label);
 #endif
 
+#ifdef __APPLE__
+  [_source retain];
+  [_destination retain];
+  [_label retain];
+#else
   [source retain];
   [destination retain];
   [label retain];
+#endif
+
   [connections addObject:self];
   return self;
 }
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
+#ifdef __APPLE__
+  [archiver encodeObject:_source withName:@"source"];
+  [archiver encodeObject:_destination withName:@"destination"];
+  [archiver encodeObject:_label withName:@"label"];
+#else
   [archiver encodeObject:source withName:@"source"];
   [archiver encodeObject:destination withName:@"destination"];
   [archiver encodeObject:label withName:@"label"];
+#endif
 }
 
 - (Class)classForModelArchiver
@@ -144,8 +167,11 @@
 
 @end /* NSIBConnector */
 
-
+#ifdef __APPLE__
+@implementation NSNibOutletConnector (NibToGModel)
+#else
 @implementation NSIBOutletConnector (NibToGModel)
+#endif
 - (void)establishConnection
 {
 }
@@ -157,8 +183,11 @@
 
 @end /* NSIBOutletConnector */
 
-
+#ifdef __APPLE__
+@implementation NSNibControlConnector (NibToGModel)
+#else
 @implementation NSIBControlConnector (NibToGModel)
+#endif
 - (void)establishConnection
 {
 }

@@ -620,7 +620,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSControl (GMArchiverMethods) */
 
-
+#ifndef __APPLE__
 @implementation NSCStringText (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
@@ -634,7 +634,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSCStringText (GMArchiverMethods) */
-
+#endif
 
 @implementation NSFont (GMArchiverMethods)
 

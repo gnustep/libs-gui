@@ -1,3 +1,14 @@
+1999-06-14  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Model/GMAppKit.m: Minor adjustments for MacOS-X so nib2model
+	works (mainly #ifdef'ing NSCStringText out if on __APPLE__).
+	* Model/IBClasses.m: NSIB* -> NSNib on __APPLE__. Some ivars
+	#ifedef'ed to new names if on __APPLE__.
+	* Model/IMLoading.m: makeObjectsPerformSelector on __APPLE__.
+	* Headers/GMAppKit.h: #ifdef'ed out NSCStringText on __APPLE__.
+
+	With these changes nib2gmodel works on MacOSX-Server machines.
+
 Sat Jun 12  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSResponder.m: Update encoding/decoding for interface styles

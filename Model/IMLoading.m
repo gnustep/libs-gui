@@ -124,7 +124,11 @@ BOOL _fileOwnerDecoded = NO;
 {
   int i, count;
 
+#ifdef __APPLE__
+  [connections makeObjectsPerformSelector:@selector(establishConnection)];
+#else
   [connections makeObjectsPerform:@selector(establishConnection)];
+#endif
 
   /* Send the -awakeFromModel method */
   for (i = 0, count = [objects count]; i < count; i++) {

@@ -133,7 +133,7 @@
   [label setEditable:NO];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
-  [label setBackgroundColor:[NSColor darkGrayColor]];
+  [label setBackgroundColor:[NSColor colorWithCalibratedWhite:NSDarkGray alpha: 1.0]];
   [bottomSplit addSubview:label];
   [label release];
 
