@@ -40,6 +40,7 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/PSOperators.h>
 
 NSString	*NSSystemColorsDidChangeNotification =
 			@"NSSystemColorsDidChangeNotification";
@@ -1049,6 +1050,34 @@ static NSMutableDictionary	*colorStrings = nil;
 
 - (void) set
 {
+  switch (active_component)
+    {
+    case GNUSTEP_GUI_RGB_ACTIVE:
+      NSDebugLLog(@"NSColor", @"RGB %f %f %f\n", RGB_component.red,
+		 RGB_component.green, RGB_component.blue);
+      PSsetrgbcolor(RGB_component.red, RGB_component.green, 
+		    RGB_component.blue);
+      break;
+
+    case GNUSTEP_GUI_CMYK_ACTIVE:
+      NSDebugLLog(@"NSColor", @"CMYK %f %f %f %f\n", CMYK_component.cyan, 
+		 CMYK_component.magenta,
+		 CMYK_component.yellow, CMYK_component.black);
+      PSsetcmykcolor(CMYK_component.cyan, CMYK_component.magenta,
+		     CMYK_component.yellow, CMYK_component.black);
+      break;
+
+    case GNUSTEP_GUI_HSB_ACTIVE:
+      NSDebugLLog(@"NSColor", @"HSB %f %f %f\n", HSB_component.hue,
+		 HSB_component.saturation, HSB_component.brightness);
+      PSsethsbcolor(HSB_component.hue, HSB_component.saturation,
+		    HSB_component.brightness);
+      break;
+
+    case GNUSTEP_GUI_WHITE_ACTIVE:
+      NSDebugLLog(@"NSColor", @"Gray %f\n", white_component);
+      PSsetgray(white_component);
+    }
 }
 
 //
