@@ -64,6 +64,7 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSWorkspace.h>
 #include <AppKit/PSOperators.h>
 
 /* Variable tells this view and subviews that we're printing. Not really
@@ -2523,7 +2524,26 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	slideBack: (BOOL)slideFlag
 	    event: (NSEvent*)event
 {
-  return NO;
+  NSImage *anImage = [[NSWorkspace sharedWorkspace] iconForFile: filename];
+  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+
+  if (anImage == nil)
+    return NO;
+
+  [pboard declareTypes: [NSArray arrayWithObject: NSFilenamesPboardType] 
+	  owner: self];
+  if (![pboard setPropertyList: filename
+	       forType: NSFilenamesPboardType])
+    return NO;
+
+  [self dragImage: anImage
+	at: rect.origin
+	offset: NSMakeSize(0, 0)
+	event: event
+	pasteboard: pboard
+	source: self
+	slideBack: slideFlag];
+  return YES;
 }
 
 - (void) dragImage: (NSImage*)anImage
@@ -2534,16 +2554,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {
-  NSView *dragView = (NSView*)[GSCurrentContext() _dragInfo];
-
-  [NSApp preventWindowOrdering];
-  [dragView dragImage: anImage
-		   at: viewLocation
-	       offset: initialOffset
-		event: event
+  [_window dragImage: anImage
+	   at: [self convertPoint: viewLocation toView: nil]
+	   offset: initialOffset
+	   event: event
 	   pasteboard: pboard
-	       source: sourceObject
-	    slideBack: slideFlag];
+	   source: sourceObject
+	   slideBack: slideFlag];
 }
 
 - (void) registerForDraggedTypes: (NSArray*)types
