@@ -666,7 +666,6 @@ static NSNotificationCenter *nc = nil;
   // Set window in new _gstate
   DPSgsave(context);
   [srv windowdevice: _windowNum];
-  DPSgstate(context);
   _gstate = GSDefineGState(context);
   DPSgrestore(context);
   NSMapInsert (windowmaps, (void*)_windowNum, self);

@@ -876,21 +876,30 @@ NSGraphicsContext	*GSCurrentContext()
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 
+/** Depcreciated. Same as -GSReplaceGState: */
 - (void) DPScurrentgstate: (int)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Pops a previously saved gstate from the gstate stack and makes it
+    current. Drawing information in the previously saved gstate
+    becomes the current information */
 - (void) DPSgrestore
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Saves (pushes) a copy of the current gstate information onto the
+    gstate stack. This saves drawing information contained in the
+    gstate, such as the current path, ctm and colors. */
 - (void) DPSgsave
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Depreciated. Use -DPSDefineGState to create a gstate it and tag it
+    with a id tag. */
 - (void) DPSgstate
 {
   [self subclassResponsibility: _cmd];
@@ -901,22 +910,33 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Makes the gstate indicated by the tag gst the current gstate. Note
+    that the gstate is copied, so that changes to either gstate do not
+    affect the other. */
 - (void) DPSsetgstate: (int)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Creates a copy of the current gstate and associates it with a tag,
+    which is given in the return value. This tag can later be used in
+    -DPSsetgstate: to set the gstate as being current again. */
 - (int)  GSDefineGState
 {
   [self subclassResponsibility: _cmd];
   return 0;
 }
 
+/** Disassociates the tag gst with it's gstate and destroys the gstate
+    object. The tag will no longer be valid and should not be used to
+    refer to the gstate again. */
 - (void) GSUndefineGState: (int)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Replaces the gstate refered to by the tag gst with the current
+    gstate. The former gstate is destroyed. */
 - (void) GSReplaceGState: (int)gst
 {
   [self subclassResponsibility: _cmd];

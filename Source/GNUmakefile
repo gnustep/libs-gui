@@ -185,6 +185,7 @@ Gui_AGSDOC_FLAGS = \
 	}' -Up Gui
 
 AUTOGSDOC_HEADERS = \
+GSDisplayServer.h \
 GSTable.h \
 GSHbox.h \
 GSVbox.h \
@@ -297,7 +298,6 @@ AppKitExceptions.h \
 DPSOperators.h \
 GMAppKit.h \
 GMArchiver.h \
-GSDisplayServer.h \
 GSFontInfo.h \
 GSMemoryPanel.h \
 GSInfoPanel.h \

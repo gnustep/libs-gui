@@ -1505,7 +1505,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _renew_gstate = 0;
       if (_allocate_gstate)
 	{
-	  DPSgstate(ctxt);
 	  _gstate = GSDefineGState(ctxt);
 	  /* Balance the previous gsave and install our own gstate */
 	  DPSgrestore(ctxt);
