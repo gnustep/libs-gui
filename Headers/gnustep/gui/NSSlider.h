@@ -27,6 +27,7 @@
 #define _GNUstep_H_NSSlider
 
 #include <AppKit/NSControl.h>
+#include <AppKit/NSSliderCell.h>
 
 @class NSString;
 @class NSImage;
@@ -36,25 +37,47 @@
 @class NSEvent;
 
 @interface NSSlider : NSControl
-
+// appearance 
+- (double) altIncrementValue;
 - (NSImage*) image;
 - (int) isVertical;
 - (float) knobThickness;
+- (void) setAltIncrementValue: (double)increment;
 - (void) setImage: (NSImage*)backgroundImage;
 - (void) setKnobThickness: (float)aFloat;
-- (void) setTitle: (NSString*)aString;
-- (void) setTitleCell: (NSCell*)aCell;
-- (void) setTitleColor: (NSColor*)aColor;
-- (void) setTitleFont: (NSFont*)fontObject;
+
+// title
 - (NSString*) title;
 - (id) titleCell;
 - (NSColor*) titleColor;
 - (NSFont*) titleFont;
+- (void) setTitle: (NSString*)aString;
+- (void) setTitleCell: (NSCell*)aCell;
+- (void) setTitleColor: (NSColor*)aColor;
+- (void) setTitleFont: (NSFont*)fontObject;
+
+// value limits 
 - (double) maxValue;
 - (double) minValue;
 - (void) setMaxValue: (double)aDouble;
 - (void) setMinValue: (double)aDouble;
+
+// mouse handling
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent;
+
+#ifndef	STRICT_OPENSTEP
+// ticks
+- (BOOL) allowsTickMarkValuesOnly;
+- (double) closestTickMarkValueToValue: (double)aValue;
+- (int) indexOfTickMarkAtPoint: (NSPoint)point;
+- (int) numberOfTickMarks;
+- (NSRect) rectOfTickMarkAtIndex: (int)index;
+- (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
+- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+- (void) setTickMarkPosition: (NSTickMarkPosition)position;
+- (NSTickMarkPosition) tickMarkPosition;
+- (double) tickMarkValueAtIndex: (int)index;
+#endif
 
 @end
 

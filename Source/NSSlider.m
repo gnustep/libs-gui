@@ -26,7 +26,7 @@
 */
 
 #include <Foundation/NSRunLoop.h>
-#include "gnustep/gui/config.h"
+
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>
@@ -123,6 +123,11 @@ static Class cellClass;
   return self;
 }
 
+- (double) altIncrementValue
+{
+  return [_cell altIncrementValue];
+}
+
 - (NSImage *) image
 {
   return [_cell image];
@@ -136,6 +141,11 @@ static Class cellClass;
 - (float) knobThickness
 {
   return [_cell knobThickness];
+}
+
+- (void) setAltIncrementValue: (double)increment
+{
+  [_cell setAltIncrementValue: increment];
 }
 
 - (void) setImage: (NSImage *)backgroundImage
@@ -213,15 +223,57 @@ static Class cellClass;
   return YES;
 }
 
-- (void) drawRect: (NSRect)rect
+// ticks
+- (BOOL) allowsTickMarkValuesOnly
 {
-  /*
-   * Give the cell our bounds to draw in, not the rect - if we give it a rect
-   * that represents an exposed part of this view, it will try to draw the
-   * slider knob positioned in that rectangle ... which is wrong.
-   */
-  [_cell drawWithFrame: _bounds inView: self];
+  return [_cell allowsTickMarkValuesOnly];
 }
+
+- (double) closestTickMarkValueToValue: (double)aValue
+{
+  return [_cell closestTickMarkValueToValue: aValue];
+}
+
+- (int) indexOfTickMarkAtPoint: (NSPoint)point;
+{
+  return [_cell indexOfTickMarkAtPoint: point];
+}
+
+- (int) numberOfTickMarks;
+{
+  return [_cell numberOfTickMarks];
+}
+
+- (NSRect) rectOfTickMarkAtIndex: (int)index;
+{
+  return [_cell rectOfTickMarkAtIndex: index];
+}
+
+- (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
+{
+  [_cell setAllowsTickMarkValuesOnly: flag];
+}
+
+- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+{
+ [_cell setNumberOfTickMarks: numberOfTickMarks];
+}
+
+- (void) setTickMarkPosition: (NSTickMarkPosition)position;
+{
+ [_cell setTickMarkPosition: position];
+}
+
+- (NSTickMarkPosition) tickMarkPosition;
+{
+  return [_cell tickMarkPosition];
+}
+
+- (double) tickMarkValueAtIndex: (int)index;
+{
+  return [_cell tickMarkValueAtIndex: index];
+}
+
 
 - (void) trackKnob: (NSEvent*)theEvent knobRect: (NSRect)knobRect
 {
@@ -275,7 +327,7 @@ static Class cellClass;
 		  [_window flushWindow];
 		  if (isContinuous)
 		    {
-		      [target performSelector: action withObject: self];
+		      [self sendAction: action to: target];
 		    }
 		  oldFloatValue = floatValue;
 		}
@@ -286,7 +338,7 @@ static Class cellClass;
   // If the control is not continuous send the action at the end of the drag
   if (!isContinuous)
     {
-      [target performSelector: action withObject: self];
+      [self sendAction: action to: target];
     }
   [NSEvent stopPeriodicEvents];
 }
@@ -311,7 +363,7 @@ static Class cellClass;
       [_cell setFloatValue: floatValue];
       if ([_cell isContinuous])
 	{
-	  [[_cell target] performSelector: [_cell action]  withObject: self];
+	  [self sendAction: [_cell action] to: [_cell target]];
 	}
       [_cell drawWithFrame: _bounds inView: self];
       [_window flushWindow];

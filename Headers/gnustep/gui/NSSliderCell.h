@@ -33,6 +33,14 @@
 @class NSFont;
 @class NSImage;
 
+typedef enum _NSTickMarkPosition
+{
+    NSTickMarkBelow = 0,
+    NSTickMarkAbove,
+    NSTickMarkLeft = 0,
+    NSTickMarkRight
+} NSTickMarkPosition;
+
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
   float		_minValue;
@@ -42,6 +50,9 @@
   id		_knobCell;
   NSRect	_trackRect;
   BOOL		_isVertical;
+  BOOL          _allowsTickMarkValuesOnly;
+  int           _numberOfTickMarks;
+  NSTickMarkPosition _tickMarkPosition;
 }
 
 /* Asking about the cell's behavior */
@@ -80,6 +91,20 @@
 /* Changing the value limits */
 - (void) setMinValue: (double)aDouble;
 - (void) setMaxValue: (double)aDouble;
+
+#ifndef	STRICT_OPENSTEP
+// ticks
+- (BOOL) allowsTickMarkValuesOnly;
+- (double) closestTickMarkValueToValue: (double)aValue;
+- (int) indexOfTickMarkAtPoint: (NSPoint)point;
+- (int) numberOfTickMarks;
+- (NSRect) rectOfTickMarkAtIndex: (int)index;
+- (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
+- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+- (void) setTickMarkPosition: (NSTickMarkPosition)position;
+- (NSTickMarkPosition) tickMarkPosition;
+- (double) tickMarkValueAtIndex: (int)index;
+#endif
 
 @end
 

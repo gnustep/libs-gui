@@ -25,8 +25,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include "gnustep/gui/config.h"
-
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSSliderCell.h>
@@ -279,6 +277,73 @@
   else if (aFloat > _maxValue)
     return _maxValue;
   return aFloat;
+}
+
+// ticks
+- (BOOL) allowsTickMarkValuesOnly
+{
+  return _allowsTickMarkValuesOnly;
+}
+
+- (double) closestTickMarkValueToValue: (double)aValue
+{
+  if (aValue < _minValue)
+    return _minValue;
+  else if (aValue > _maxValue)
+    return _maxValue; 
+  
+  if (_numberOfTickMarks == 0)
+    return aValue;
+
+  // FIXME
+  return 0.0;
+}
+
+- (int) indexOfTickMarkAtPoint: (NSPoint)point;
+{
+  // FIXME
+  return 0;
+}
+
+- (int) numberOfTickMarks;
+{
+  return _numberOfTickMarks;
+}
+
+- (NSRect) rectOfTickMarkAtIndex: (int)index;
+{
+  // FIXME
+  return NSZeroRect;
+}
+
+- (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
+{
+  _allowsTickMarkValuesOnly = flag;
+}
+
+- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+{
+  _numberOfTickMarks = numberOfTickMarks;
+}
+
+- (void) setTickMarkPosition: (NSTickMarkPosition)position;
+{
+  _tickMarkPosition = position;
+}
+
+- (NSTickMarkPosition) tickMarkPosition;
+{
+  return _tickMarkPosition;
+}
+
+- (double) tickMarkValueAtIndex: (int)index;
+{
+  if (index >= _numberOfTickMarks)
+    return _maxValue;
+  if (index <= 0)
+    return _minValue;
+
+  return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
 }
 
 - (id) initWithCoder: (NSCoder*)decoder
