@@ -36,7 +36,7 @@
 #
 
 # Things to do before compiling
-# before-all::
+before-all:: $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)/config.h
 
 # Things to do after compiling
 # after-all::
@@ -73,4 +73,12 @@
 
 #
 # GNUstep GUI Library specific targets
+
 #
+#
+# The config.h file is specific to a target
+#
+$(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)/config.h: ../config.status
+	$(GNUSTEP_MAKEFILES)/mkinstalldirs \
+	   $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS) \
+	-mv ../config.h $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)

@@ -27,6 +27,9 @@
 #ifndef _GNUstep_H_config
 #define _GNUstep_H_config
 
+/* Define this if the DPS client library exists */
+#undef HAVE_DPS_DPSCLIENT_H
+
 #include <Foundation/NSGeometry.h>
 
 /* Define NSDebugLog if not defined */

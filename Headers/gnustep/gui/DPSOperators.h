@@ -29,12 +29,60 @@
 #ifndef _GNUstep_H_DPSOperators
 #define _GNUstep_H_DPSOperators
 
+#include "config.h"
+
 // Use the DPSclient library if we have it
-// #ifdef HAVE_DPS_DPSCLIENT_H
+#ifdef HAVE_DPS_DPSCLIENT_H
 
 #include <DPS/dpsclient.h>
 #include <DPS/psops.h>
 
-// #endif /* HAVE_DPS_DPSCLIENT_H */
+#else
+
+typedef void (*DPSTextProc)();
+typedef void (*DPSErrorProc)();
+
+typedef enum {
+  dps_ascii, dps_binObjSeq, dps_encodedTokens
+  } DPSProgramEncoding;
+  /* Defines the 3 possible encodings of PostScript language programs. */
+     
+typedef enum {
+  dps_indexed, dps_strings
+  } DPSNameEncoding;
+  /* Defines the 2 possible encodings for user names in the
+     dps_binObjSeq and dps_encodedTokens forms of PostScript language
+     programs. */     
+
+typedef enum {
+  dps_tBoolean,
+  dps_tChar,    dps_tUChar,
+  dps_tFloat,   dps_tDouble,
+  dps_tShort,   dps_tUShort,
+  dps_tInt,     dps_tUInt,
+  dps_tLong,    dps_tULong } DPSDefinedType;
+  
+typedef struct {
+    unsigned char attributedType;
+    unsigned char tag;
+    unsigned short length;
+    union {
+        int integerVal;
+        float realVal;
+        int nameVal;    /* offset or index */
+        int booleanVal;
+        int stringVal;  /* offset */
+        int arrayVal;  /* offset */
+    } val;
+} DPSBinObjRec, *DPSBinObj;
+
+typedef struct {
+    unsigned char tokenType;
+    unsigned char nTopElements;
+    unsigned short length;
+    DPSBinObjRec objects[1];
+} DPSBinObjSeqRec, *DPSBinObjSeq;
+
+#endif /* HAVE_DPS_DPSCLIENT_H */
 
 #endif /* _GNUstep_H_DPSOperators */

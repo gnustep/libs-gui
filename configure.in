@@ -1,0 +1,77 @@
+# configure.in for GNUstep GUI library
+# Process this file with autoconf to produce a configure script.
+#
+# Copyright (C) 1996 Free Software Foundation, Inc.
+#
+# Author:  Adam Fedor <fedor@gnu.org>
+#
+# This file is part of the GNUstep GUI X/DPS Backend.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; see the file COPYING.LIB.
+# If not, write to the Free Software Foundation,
+# 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+
+AC_INIT(Source/NSApplication.m)
+
+AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PATH_X
+
+if test "$ac_x_includes" != ""; then
+  CPPFLAGS="$CPPFLAGS -I$ac_x_includes"
+fi
+if test -r $ac_x_includes/X11/DPS; then
+  CPPFLAGS="$CPPFLAGS -I$ac_x_includes/X11"
+fi
+
+if test -f ../make/clean_cpu.sh; then
+  transformed_host_cpu=`../make/clean_cpu.sh $host_cpu`
+  transformed_target_cpu=`../make/clean_cpu.sh $target_cpu`
+else if test -f ${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_cpu.sh; then
+  transformed_host_cpu=`${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_cpu.sh $host_cpu`
+  transformed_target_cpu=`${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_cpu.sh $target_cpu`
+fi
+fi
+
+if test -f ../make/clean_os.sh; then
+  transformed_host_os=`../make/clean_os.sh $host_os`
+  transformed_target_os=`../make/clean_os.sh $target_os`
+else if test -f ${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_os.sh; then
+  transformed_host_os=`${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_os.sh $host_os`
+  transformed_target_os=`${GNUSTEP_SYSTEM_ROOT}/Makefiles/clean_os.sh $target_os`
+fi
+fi
+
+ac_cv_file_output_directory=Source/$transformed_host_cpu/$transformed_host_os
+
+# Add the target header file directory as an include path so that the
+# check for dpsNXargs.h below looks at the appropriate target includes
+ORIG_C_INCLUDE_PATH=${C_INCLUDE_PATH}
+C_INCLUDE_PATH=${GNUSTEP_SYSTEM_ROOT}/Headers/$transformed_target_cpu/$transformed_target_os:${C_INCLUDE_PATH}
+C_INCLUDE_PATH=${GNUSTEP_LOCAL_ROOT}/Headers/$transformed_target_cpu/$transformed_target_os:${C_INCLUDE_PATH}
+C_INCLUDE_PATH=${GNUSTEP_USER_ROOT}/Headers/$transformed_target_cpu/$transformed_target_os:${C_INCLUDE_PATH}
+export C_INCLUDE_PATH
+
+# We care about this header file on the target not host system
+AC_HAVE_HEADERS(DPS/dpsclient.h)
+
+# Restore back to the original
+C_INCLUDE_PATH=${ORIG_C_INCLUDE_PATH}
+
+AC_OUTPUT()
+
+
