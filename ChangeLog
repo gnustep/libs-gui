@@ -1,5 +1,11 @@
 2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Tools/gopen.m 
+	The option -a no longer starts the provided applciation
+	directly, but uses this application to open the specified files.
+	
+2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColorPicker.m
 	Autorelease image returned by [provideNewButtonImage].
 	* Source/NSColorPanel.m
