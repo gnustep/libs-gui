@@ -44,6 +44,14 @@
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
+typedef enum {
+  ToolbarViewDefaultHeight = 62,
+  ToolbarViewRegularHeight = 62,
+  ToolbarViewSmallHeight = 52
+} ToolbarViewHeight;
+
+static const int ClippedItemsViewWidth = 28;
+
 // internal
 static const int current_version = 1;
 static NSColorList *SystemExtensionsColors;
@@ -187,7 +195,7 @@ static void initSystemExtensionsColors(void)
 {
   NSImage *image = [NSImage imageNamed: @"common_ToolbarClippedItemsMark"];
   
-  if ((self = [super initWithFrame: NSMakeRect(0, 0, _ClippedItemsViewWidth, 
+  if ((self = [super initWithFrame: NSMakeRect(0, 0, ClippedItemsViewWidth, 
     100)]) != nil) // The correct height will be set by the layout method
     {
       [self setBordered: NO];
@@ -307,13 +315,13 @@ static void initSystemExtensionsColors(void)
       switch (_sizeMode)
         {
 	  case NSToolbarSizeModeDefault:
-	    toolbarViewHeight = _ToolbarViewDefaultHeight;
+	    toolbarViewHeight = ToolbarViewDefaultHeight;
 	    break;
 	  case NSToolbarSizeModeRegular:
-	    toolbarViewHeight = _ToolbarViewRegularHeight;
+	    toolbarViewHeight = ToolbarViewRegularHeight;
 	    break;
 	  case NSToolbarSizeModeSmall:
-	    toolbarViewHeight = _ToolbarViewSmallHeight;
+	    toolbarViewHeight = ToolbarViewSmallHeight;
 	    break;
 	  default:
 	    // Raise exception
@@ -480,13 +488,13 @@ static void initSystemExtensionsColors(void)
   switch (_sizeMode)
     {
       case NSToolbarSizeModeDefault:
-        rect.size.height = _ToolbarViewDefaultHeight;
+        rect.size.height = ToolbarViewDefaultHeight;
 	break;
       case NSToolbarSizeModeRegular:
-        rect.size.height = _ToolbarViewRegularHeight;
+        rect.size.height = ToolbarViewRegularHeight;
 	break;
       case NSToolbarSizeModeSmall:
-        rect.size.height = _ToolbarViewSmallHeight;
+        rect.size.height = ToolbarViewSmallHeight;
 	break;
       default:
 	; // Invalid
@@ -654,7 +662,7 @@ static void initSystemExtensionsColors(void)
       
       clipViewFrame = [_clipView frame]; // We get the new _clipView frame
       [_clippedItemsMark setFrameOrigin: NSMakePoint(
-        [self frame].size.width - _ClippedItemsViewWidth, clipViewFrame.origin.y)];
+        [self frame].size.width - ClippedItemsViewWidth, clipViewFrame.origin.y)];
 	
       // ---
 	
@@ -787,7 +795,7 @@ static void initSystemExtensionsColors(void)
   
       backViewsWidth += [backView frame].size.width;
 
-      if ((backViewsWidth + _ClippedItemsViewWidth <= toolbarWidth)
+      if ((backViewsWidth + ClippedItemsViewWidth <= toolbarWidth)
         || (i == n - 1 && backViewsWidth <= toolbarWidth))
         {
           [_visibleBackViews addObject: backView];

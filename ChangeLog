@@ -1,3 +1,15 @@
+2004-07-27  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h:
+	* Source/GSToolbarView.m:
+	* Source/NSToolbarItem.m:
+	Moved static const and enum declarations from GSToolbarView.h to
+	GSToolbarView.m and NSToolbarItem.m.
+	* Source/NSWindow+Toolbar.m:
+	Fixed non correct toolbar view visibility when [NSToolbar -setVisible:]
+	is called before [NSWindow -setToolbar:](bug reported by Yen-Ju Chen
+	<yjchenx@hotmail.com>).
+
 2004-07-24 22:47  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSToolbarItem.m: Use the predefined variables instead of

@@ -57,6 +57,25 @@
  * with the item identifier.
  */
  
+typedef enum {
+  ItemBackViewDefaultHeight = 60,
+  ItemBackViewRegularHeight = 60,
+  ItemBackViewSmallHeight = 50
+} ItemBackViewHeight;
+
+typedef enum {
+  ItemBackViewDefaultWidth = 60,
+  ItemBackViewRegularWidth = 60,
+  ItemBackViewSmallWidth = 50
+} ItemBackViewWidth;
+
+static const int ItemBackViewX = 0;
+static const int ItemBackViewY = 0;
+static const int InsetItemViewX = 10;
+static const int InsetItemViewY = 26;
+static const int InsetItemTextX = 3;
+static const int InsetItemTextY = 4;
+ 
 static NSFont *NormalFont = nil; // See NSToolbarItem -initialize method
 // [NSFont smallSystemFontSize] or better should be NSControlContentFontSize
   
@@ -106,7 +125,7 @@ static NSFont *SmallFont = nil;
 @implementation GSToolbarButton
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem
 { 
-  self = [super initWithFrame: NSMakeRect(_ItemBackViewX, _ItemBackViewY, _ItemBackViewDefaultWidth, _ItemBackViewDefaultHeight)];
+  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY, ItemBackViewDefaultWidth, ItemBackViewDefaultHeight)];
   // Frame will be reset by the layout method
   
   if (self != nil)
@@ -140,18 +159,18 @@ static NSFont *SmallFont = nil;
   switch ([[_toolbarItem toolbar] sizeMode])
     {
       case NSToolbarSizeModeDefault:
-	layoutedWidth = _ItemBackViewDefaultWidth;
-	layoutedHeight = _ItemBackViewDefaultHeight;
+	layoutedWidth = ItemBackViewDefaultWidth;
+	layoutedHeight = ItemBackViewDefaultHeight;
 	[[_toolbarItem image] setSize: NSMakeSize(32, 32)];
 	break;
       case NSToolbarSizeModeRegular:
-        layoutedWidth = _ItemBackViewRegularWidth;
-        layoutedHeight = _ItemBackViewRegularHeight;
+        layoutedWidth = ItemBackViewRegularWidth;
+        layoutedHeight = ItemBackViewRegularHeight;
 	[[_toolbarItem image] setSize: NSMakeSize(32, 32)];
 	break;
       case NSToolbarSizeModeSmall:
-        layoutedWidth = _ItemBackViewSmallWidth;
-	layoutedHeight = _ItemBackViewSmallHeight;
+        layoutedWidth = ItemBackViewSmallWidth;
+	layoutedHeight = ItemBackViewSmallHeight;
 	[[_toolbarItem image] setSize: NSMakeSize(24, 24)];
 	// Not use [self image] here because it can return nil, when image position is
 	// set to NSNoImage. Even if NSToolbarDisplayModeTextOnly is not true anymore
@@ -186,7 +205,7 @@ static NSFont *SmallFont = nil;
     label = @"Dummy";
   attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
       
-  textWidth = [attrStr size].width + 2 * _InsetItemTextX;
+  textWidth = [attrStr size].width + 2 * InsetItemTextX;
   if (layoutedWidth != -1 && textWidth > layoutedWidth) 
      layoutedWidth = textWidth;
      
@@ -202,12 +221,12 @@ static NSFont *SmallFont = nil;
         break;
       case NSToolbarDisplayModeIconOnly:
         [self setImagePosition: NSImageOnly];
-        layoutedHeight -= [attrStr size].height + _InsetItemTextY;
-	layoutedWidth -= [attrStr size].height + _InsetItemTextY;
+        layoutedHeight -= [attrStr size].height + InsetItemTextY;
+	layoutedWidth -= [attrStr size].height + InsetItemTextY;
 	break;
       case NSToolbarDisplayModeLabelOnly:
         [self setImagePosition: NSNoImage];
-        layoutedHeight = [attrStr size].height + _InsetItemTextY * 2;
+        layoutedHeight = [attrStr size].height + InsetItemTextY * 2;
 	break;
       default:
 	; // Invalid
@@ -282,8 +301,8 @@ static NSFont *SmallFont = nil;
 
 - (id)initWithToolbarItem: (NSToolbarItem *)toolbarItem
 {  
-  self = [super initWithFrame: NSMakeRect(_ItemBackViewX, _ItemBackViewY, _ItemBackViewDefaultWidth,
-  _ItemBackViewDefaultHeight)];
+  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY, ItemBackViewDefaultWidth,
+  ItemBackViewDefaultHeight)];
   // Frame will be reset by the layout method
   
   if (self != nil)
@@ -330,8 +349,8 @@ static NSFont *SmallFont = nil;
 				NSForegroundColorAttributeName,
 						          nil];
       attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
-      textX = (([self frame].size.width - _InsetItemTextX) - [attrString size].width) / 2;
-      [attrString drawAtPoint: NSMakePoint(textX, _InsetItemTextY)];
+      textX = (([self frame].size.width - InsetItemTextX) - [attrString size].width) / 2;
+      [attrString drawAtPoint: NSMakePoint(textX, InsetItemTextY)];
       DESTROY(attrString);
     }
 }
@@ -356,20 +375,20 @@ static NSFont *SmallFont = nil;
   switch ([[_toolbarItem toolbar] sizeMode])
     {
       case NSToolbarSizeModeDefault:
-	layoutedWidth = _ItemBackViewDefaultWidth;
-	layoutedHeight = _ItemBackViewDefaultHeight;
+	layoutedWidth = ItemBackViewDefaultWidth;
+	layoutedHeight = ItemBackViewDefaultHeight;
 	if ([view frame].size.height > 32)
 	  [view removeFromSuperview];
 	break;
       case NSToolbarSizeModeRegular:
-        layoutedWidth = _ItemBackViewRegularWidth;
-        layoutedHeight = _ItemBackViewRegularHeight;
+        layoutedWidth = ItemBackViewRegularWidth;
+        layoutedHeight = ItemBackViewRegularHeight;
 	if ([view frame].size.height > 32)
 	  [view removeFromSuperview];
 	break;
       case NSToolbarSizeModeSmall:
-        layoutedWidth = _ItemBackViewSmallWidth;
-	layoutedHeight = _ItemBackViewSmallHeight;
+        layoutedWidth = ItemBackViewSmallWidth;
+	layoutedHeight = ItemBackViewSmallHeight;
 	_font = SmallFont;
 	if ([view frame].size.height > 24)
 	  [view removeFromSuperview];
@@ -399,7 +418,7 @@ static NSFont *SmallFont = nil;
     label = @"Dummy";
   attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
       
-  textWidth = [attrStr size].width + 2 * _InsetItemTextX;
+  textWidth = [attrStr size].width + 2 * InsetItemTextX;
   if (textWidth > layoutedWidth)
     layoutedWidth = textWidth;
     
@@ -418,11 +437,11 @@ static NSFont *SmallFont = nil;
         break; // Nothing to do
       case NSToolbarDisplayModeIconOnly:
         _showLabel = NO;
-        layoutedHeight -= [attrStr size].height + _InsetItemTextY;
+        layoutedHeight -= [attrStr size].height + InsetItemTextY;
 	break;
       case NSToolbarDisplayModeLabelOnly:
         _enabled = NO;
-        layoutedHeight = [attrStr size].height + _InsetItemTextY * 2;
+        layoutedHeight = [attrStr size].height + InsetItemTextY * 2;
 	if ([view superview] != nil)
 	  [view removeFromSuperview];
 	break;
@@ -435,8 +454,8 @@ static NSFont *SmallFont = nil;
   
   if ([view superview] != nil)
     { 
-    if (layoutedWidth < [view frame].size.width + 2 * _InsetItemViewX)
-      layoutedWidth = [view frame].size.width + 2 * _InsetItemViewX; 
+    if (layoutedWidth < [view frame].size.width + 2 * InsetItemViewX)
+      layoutedWidth = [view frame].size.width + 2 * InsetItemViewX; 
     }
   
   // Set the frame size to use the new layout
@@ -451,8 +470,8 @@ static NSFont *SmallFont = nil;
       if (_showLabel)
         {
           insetItemViewY = ([self frame].size.height 
-	    - [view frame].size.height - [attrStr size].height - _InsetItemTextX) / 2
-	    + [attrStr size].height + _InsetItemTextX;
+	    - [view frame].size.height - [attrStr size].height - InsetItemTextX) / 2
+	    + [attrStr size].height + InsetItemTextX;
 	}
       else
         {
@@ -517,7 +536,7 @@ static NSFont *SmallFont = nil;
   [(NSButton *)[self _backView] setImage: image];
   // We bypass the toolbar item accessor to set the image in order to have it (48 * 48) not resized
    
-  [[self _backView] setFrameSize: NSMakeSize(30, _ItemBackViewDefaultHeight)];
+  [[self _backView] setFrameSize: NSMakeSize(30, ItemBackViewDefaultHeight)];
   
   return self;
 }

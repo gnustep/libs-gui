@@ -219,7 +219,8 @@
   
   // We do that in this way...
   // because _toggleToolbarViewWithDisplay: will call -toolbarView method for the toolbar
-  [self _toggleToolbarViewWithDisplay: YES];
+  if ([toolbar isVisible])
+    [self _toggleToolbarViewWithDisplay: YES];
   
 }
 

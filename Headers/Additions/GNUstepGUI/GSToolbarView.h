@@ -43,40 +43,13 @@
 @class NSToolbarItem;
 @class GSToolbarClippedItemsButton;
 
-enum {
+typedef enum {
   GSToolbarViewNoBorder = 0,
   GSToolbarViewRightBorder = 2,
   GSToolbarViewLeftBorder = 4,
   GSToolbarViewTopBorder = 8,
   GSToolbarViewBottomBorder = 16
-};
-
-typedef enum {
-  _ToolbarViewDefaultHeight = 62,
-  _ToolbarViewRegularHeight = 62,
-  _ToolbarViewSmallHeight = 52
-} _ToolbarViewHeight;
-
-typedef enum {
-  _ItemBackViewDefaultHeight = 60,
-  _ItemBackViewRegularHeight = 60,
-  _ItemBackViewSmallHeight = 50
-} _ItemBackViewHeight;
-
-typedef enum {
-  _ItemBackViewDefaultWidth = 60,
-  _ItemBackViewRegularWidth = 60,
-  _ItemBackViewSmallWidth = 50
-} _ItemBackViewWidth;
-
-static const int _ItemBackViewX = 0;
-static const int _ItemBackViewY = 0;
-static const int _InsetItemViewX = 10;
-static const int _InsetItemViewY = 26;
-static const int _InsetItemTextX = 3;
-static const int _InsetItemTextY = 4;
-
-static const int _ClippedItemsViewWidth = 28;
+} GSToolbarViewBorder;
 
 @interface GSToolbarView : NSView
 {
