@@ -2218,7 +2218,10 @@ delegate.
 
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
+
       _app_is_running = NO;
+
+      [[self windows] makeObjectsPerformSelector: @selector(close)];
       
       // Store our user information
       [[NSUserDefaults standardUserDefaults] synchronize];
