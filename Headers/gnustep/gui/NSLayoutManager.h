@@ -37,10 +37,11 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSFont.h>
 
-@class NSTextStorage;
+#import <AppKit/NSTextStorage.h>
+#import <AppKit/NSTextContainer.h>
+
 @class NSTypesetter;
 @class NSGlyphGenerator;
-@class NSTextContainer;
 @class NSTextView;
 @class NSWindow;
 @class NSColor;
@@ -77,69 +78,77 @@ typedef enum {
 } NSGlyphInscription;
 
 @interface NSLayoutManager : NSObject
-{	NSTextStorage		*textStorage;
-    NSGlyphGenerator	*glyphGenerator;
-    NSTypesetter		*typesetter;
+{
+    NSTextStorage		*_textStorage;
+    NSGlyphGenerator		*_glyphGenerator;
+    NSTypesetter		*_typesetter;
 
-    NSMutableArray		*textContainers;
-    NSStorage			*containerUsedRects;
+    NSMutableArray		*_textContainers;
+    NSStorage			*_containerUsedRects;
 
-    NSStorage			*glyphs;
-    NSRunStorage		*containerRuns;
-    NSRunStorage		*fragmentRuns;
-    NSRunStorage		*glyphLocations;
-    NSRunStorage		*glyphRotationRuns;
+    NSStorage			*_glyphs;
+    NSRunStorage		*_containerRuns;
+    NSRunStorage		*_fragmentRuns;
+    NSRunStorage		*_glyphLocations;
+    NSRunStorage		*_glyphRotationRuns;
     
-    NSRect 				 extraLineFragmentRect;
-    NSRect 				 extraLineFragmentUsedRect;
-    NSTextContainer		*extraLineFragmentContainer;
+    NSRect 			 _extraLineFragmentRect;
+    NSRect 			 _extraLineFragmentUsedRect;
+    NSTextContainer		*_extraLineFragmentContainer;
 
-    NSSortedArray		*glyphHoles;
-    NSSortedArray		*layoutHoles;
+    NSSortedArray		*_glyphHoles;
+    NSSortedArray		*_layoutHoles;
 
-    id					 delegate;
+    id				_delegate;
 
     // Enable/disable stacks
-    unsigned short		textViewResizeDisableStack;
-    unsigned short		displayInvalidationDisableStack;
-    NSRange				deferredDisplayCharRange;
+    unsigned short		_textViewResizeDisableStack;
+    unsigned short		_displayInvalidationDisableStack;
+    NSRange			_deferredDisplayCharRange;
 
     // Cache for first text view (that is text view of the first text container which has one) (Cost: 4 bytes)
-    NSTextView			*firstTextView;
+    NSTextView			*_firstTextView;
 
     // Cache for rectangle arrays (Cost: 8 bytes + malloced 16 * <max number of rects returned in an array> bytes)
-    NSRect				*cachedRectArray;
-    unsigned			 cachedRectArrayCapacity;
+    NSRect			*_cachedRectArray;
+    unsigned			 _cachedRectArrayCapacity;
 
     // Cache for glyph strings (used when drawing) (Cost: 8 bytes + malloced glyph buffer size)
-    char				*glyphBuffer;
-    unsigned 			 glyphBufferSize;
+    char			*_glyphBuffer;
+    unsigned 			 _glyphBufferSize;
 
     // Cache for faster glyph location lookup (Cost: 20 bytes)
-    NSRange			cachedLocationNominalGlyphRange;
-    unsigned		cachedLocationGlyphIndex;
-    NSPoint			cachedLocation;
+    NSRange			_cachedLocationNominalGlyphRange;
+    unsigned			_cachedLocationGlyphIndex;
+    NSPoint			_cachedLocation;
 
     // Cache for faster glyph location lookup (Cost: 12 bytes)
-    NSRange			 cachedFontCharRange;
-    NSFont			*cachedFont;
+    NSRange			 _cachedFontCharRange;
+    NSFont			*_cachedFont;
 
     // Cache for first unlaid glypha and character (Cost: 8 bytes)
-    unsigned		firstUnlaidGlyphIndex;
-    unsigned		firstUnlaidCharIndex;
+    unsigned			_firstUnlaidGlyphIndex;
+    unsigned			_firstUnlaidCharIndex;
 
     // Outlets for ruler accessory view.
-    NSBox			*rulerAccView;
-    NSMatrix		*rulerAccViewAlignmentButtons;
-    NSTextField		*rulerAccViewLeadingField;
-    NSTabWell		*rulerAccViewLeftTabWell;
-    NSTabWell		*rulerAccViewRightTabWell;
-    NSTabWell		*rulerAccViewCenterTabWell;
-    NSTabWell		*rulerAccViewDecimalTabWell;
-    NSMatrix		*rulerAccViewIncrementLineHeightButtons;
-    NSMatrix		*rulerAccViewFixedLineHeightButtons;
+    NSBox			*_rulerAccView;
+    NSMatrix			*_rulerAccViewAlignmentButtons;
+    NSTextField			*_rulerAccViewLeadingField;
+    NSTabWell			*_rulerAccViewLeftTabWell;
+    NSTabWell			*_rulerAccViewRightTabWell;
+    NSTabWell			*_rulerAccViewCenterTabWell;
+    NSTabWell			*_rulerAccViewDecimalTabWell;
+    NSMatrix			*_rulerAccViewIncrementLineHeightButtons;
+    NSMatrix			*_rulerAccViewFixedLineHeightButtons;
 
-    NSRange			 newlyFilledGlyphRange;
+    NSRange			 _newlyFilledGlyphRange;
+
+// Michael additions.
+    BOOL			_backgroundLayout;
+    BOOL			_showsInvisibleChars;
+    BOOL			_showsControlChars;
+    float			_hyphenationFactor;
+    BOOL			_usesScreenFonts;
 }
 
 /**************************** Initialization ****************************/

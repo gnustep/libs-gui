@@ -34,6 +34,7 @@
 #endif
 
 #import <Foundation/Foundation.h>
+#import <AppKit/NSTextView.h>
 
 typedef enum {
   NSLineSweepLeft,

@@ -77,6 +77,7 @@ NSImageCell.m \
 NSImageRep.m \
 NSImageView.m \
 NSInterfaceStyle.m \
+NSLayoutManager.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuView.m \

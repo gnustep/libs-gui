@@ -582,6 +582,9 @@ static NSFont* menuFont = nil;
 {
   id aCell;
 
+  if ([[list_items itemArray] count] == 0)
+    return;
+
   if (!pulls_down)
     aCell  = [[list_items itemArray] objectAtIndex:selected_item]; 
   else

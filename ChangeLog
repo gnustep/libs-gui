@@ -1,3 +1,10 @@
+1999-07-15  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSLayoutManager.m: new file from
+	jagapen@whitewater.chem.wisc.edu
+	* Source/NSTextView.m: initWithFrame: now creates a proper NSText
+	network.
+
 Thu Jul 15 18:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Make sure cursor and tracking rects are converted
