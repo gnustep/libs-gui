@@ -1,3 +1,8 @@
+2004-01-12 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/GSTextTitle.m (setOwner): Recognize class that responds to
+	menuRepresetation method as NSMenu derived class. Fix for Gorm.
+	
 2004-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextStorage.m (_setAttributesFrom): Initialize
