@@ -35,6 +35,7 @@
 
 @class NSArray;
 @class NSIndexSet;
+@class NSMutableIndexSet;
 @class NSTableColumn;
 @class NSTableHeaderView;
 @class NSText;
@@ -72,8 +73,8 @@ enum {
   int                _clickedRow;
   int                _clickedColumn;
   NSTableColumn     *_highlightedTableColumn;
-  NSMutableArray    *_selectedColumns;
-  NSMutableArray    *_selectedRows;
+  NSMutableIndexSet    *_selectedColumns;
+  NSMutableIndexSet    *_selectedRows;
   int                _selectedColumn;
   int                _selectedRow;
   BOOL               _allowsMultipleSelection;

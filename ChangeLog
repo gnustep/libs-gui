@@ -1,3 +1,12 @@
+2004-03-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSTableView.h:
+	Added ivars _selectedColumns and _selectedRows to NSMutableIndexSet.
+	* Source/NSTableView.m: 
+	* Source/NSOutlineView.m: 
+	Chnaged all the uses of these ivars and started to restructure the
+	row selection code. Also removed some (not all) dead code.
+	
 2004-03-23 23:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/Additions/GNUstepGUI/GSToolbar.h,

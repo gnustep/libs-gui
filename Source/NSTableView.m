@@ -8,6 +8,9 @@
    Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
    Date: August 2001, January 2002
 
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: March 2004
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -84,6 +87,7 @@ static unsigned currentDragOperation;
 - (void) _postColumnDidResizeNotification;
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn;
 - (BOOL) _shouldSelectRow: (int)rowIndex;
+
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
@@ -97,6 +101,17 @@ static unsigned currentDragOperation;
 	 forTableColumn: (NSTableColumn *)tb
 		    row: (int)index;
 @end
+
+@interface NSTableView (SelectionHelper)
+- (NSArray *) _selectedRowArray;
+- (BOOL) _selectRow: (int)rowIndex;
+- (BOOL) _selectUnselectedRow: (int)rowIndex;
+- (BOOL) _unselectRow: (int)rowIndex;
+- (void) _unselectAllRows;
+- (NSArray *) _selectedColumArray;
+- (void) _unselectAllColumns;
+@end
+
 
 
 /*
@@ -158,30 +173,6 @@ void quick_sort_internal(columnSorting *data, int p, int r)
     }
 }
 
-
-/* The selection arrays are stored so that the selected columns/rows
-   are always in ascending order.  The following function is used
-   whenever a new column/row is added to the array, to keep the
-   columns/rows in the correct order. */
-static 
-void _insertNumberInSelectionArray (NSMutableArray *array, 
-				    NSNumber *num)
-{
-  int i, count;
-
-  count = [array count];
-
-  for (i = 0; i < count; i++)
-    {
-      NSNumber *number;
-
-      number = [array objectAtIndex: i];
-      if ([number compare: num] == NSOrderedDescending)
-	break;
-    }
-  [array insertObject: num  atIndex: i];
-}
-
 /* 
  * Now some auxiliary functions used to manage real-time user selections. 
  *
@@ -189,54 +180,159 @@ void _insertNumberInSelectionArray (NSMutableArray *array,
 
 static void computeNewSelection
 (NSTableView *tv,
- id delegate,
- NSSet *_oldSelectedRows,
- NSMutableArray *_selectedRows,
+ NSIndexSet *_oldSelectedRows,
+ NSMutableIndexSet *_selectedRows,
  int _originalRow,
  int _oldRow,
  int _currentRow,
  int *_selectedRow,
  unsigned selectionMode)
 {
-  if ((selectionMode & ALLOWS_MULTIPLE)
-    && (selectionMode & SHIFT_DOWN)
-    && (selectionMode & ADDING_ROW))
+  if (!(selectionMode & ALLOWS_MULTIPLE))
+    {
+      if ((selectionMode & SHIFT_DOWN) && 
+	  (selectionMode & ALLOWS_EMPTY) && 
+	  !(selectionMode & ADDING_ROW))
+	  // we will unselect the selected row
+	  // ic, sc : ok
+        {
+	  int count = [_selectedRows count];
+
+	  if ((count == 0) && (_oldRow == -1))
+	    {
+	      NSLog(@"how did you get there ?");
+	      NSLog(@"you're supposed to have clicked on a selected row,");
+	      NSLog(@"but there's no selected row!");
+	      return;
+	    }
+	  else if (count > 1)
+	    {
+	      [tv _unselectAllRows];
+	      [tv _postSelectionIsChangingNotification];
+	    }
+	  else if (_currentRow != _originalRow)
+	    {
+	      if (*_selectedRow == _originalRow)
+	        {
+		  // we are already selected, don't do anything
+		}
+	      else
+	        {
+		  //begin checking code
+		  if (count > 0)
+		    {
+		      NSLog(@"There should not be any row selected");
+		    }
+		  //end checking code
+		  
+		  if ([tv _selectRow: _originalRow])
+		    {
+		      [tv _postSelectionIsChangingNotification];
+		    }
+		}
+	    }
+	  else if (_currentRow == _originalRow)
+	    {
+	      if (count == 0)
+	        {
+		  // the row is already deselected
+		  // nothing to do !
+		}
+	      else
+	        {
+		  [tv _unselectRow: _originalRow];
+		  [tv _postSelectionIsChangingNotification];
+		}
+	    }
+	}
+      else  //(!(selectionMode & ALLOWS_MULTIPLE) && 
+	    //(!(selectionMode & SHIFT_DOWN) || 
+	    //!(selectionMode & ALLOWS_EMPTY) ||
+	    //(selectionMode & ADDING_ROW)))
+	  // we'll be selecting exactly one row
+	  // ic, sc : ok
+        {
+	  int count = [_selectedRows count];
+	  BOOL notified = NO;
+	  
+	  if ([tv _shouldSelectRow: _currentRow] == NO)
+	    {
+	      return;
+	    }
+	  
+	  if ((count != 1) || (_oldRow == -1))
+	    {
+	      // this is the first call that goes thru shouldSelectRow
+	      // Therefore we don't know anything about the selection
+	      notified = ![_selectedRows containsIndex: _currentRow];
+	      [tv _unselectAllRows];
+	      [_selectedRows addIndex: _currentRow];
+	      *_selectedRow = _currentRow;
+	      
+	      if (notified == YES)
+	        {
+		  [tv setNeedsDisplayInRect: [tv rectOfRow: _currentRow]];
+		}
+	      else
+	        {
+		  if (count > 1)
+		    {
+		      notified = YES;
+		    }
+		}
+	      if (notified == YES)
+	        {
+		  [tv _postSelectionIsChangingNotification];
+		}
+	    }
+	  else
+	    {
+	      // we know there is only one column selected
+	      // this column is *_selectedRow
+
+	      //begin checking code
+	      if (![_selectedRows containsIndex: *_selectedRow])
+	        {
+		  NSLog(@"*_selectedRow is not the only selected row!");
+		}
+	      //end checking code
+	      
+	      if (*_selectedRow == _currentRow)
+	        {
+		  // currentRow is already selecteed
+		  return;
+		}
+	      else
+	        {
+		  [tv _unselectRow: *_selectedRow];
+		  // CHANGE: This does a check more
+		  [tv _selectRow: _currentRow];
+		  [tv _postSelectionIsChangingNotification];
+		}
+	    }
+	}
+    }
+  else if ((selectionMode & ALLOWS_MULTIPLE)
+	   && (selectionMode & SHIFT_DOWN)
+	   && (selectionMode & ADDING_ROW))
     // we add new row to the current selection
     {
       if (_oldRow == -1)
 	// this is the first pass
 	{
-	  int diff, i;
 	  BOOL notified = NO;
-      	  diff = _currentRow - _originalRow;
+	  int i;
+	  int diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
 	      for (i = _originalRow; i <= _currentRow; i++)
 		{
-		  if ([_selectedRows 
-			containsObject: 
-			  [NSNumber numberWithInt: i]] == YES)
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
 		    {
 		      *_selectedRow = i;
 		      notified = YES;
-		    }
-		  else
-		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
-			}
 		    }
 		}
 	    }
@@ -245,32 +341,15 @@ static void computeNewSelection
 	      // this case does happen, (sometimes)
 	      for (i = _originalRow; i >= _currentRow; i--)
 		{
-		  if ([_selectedRows 
-			containsObject: 
-			  [NSNumber numberWithInt: i]] == YES)
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
 		    {
 		      *_selectedRow = i;
 		      notified = YES;
 		    }
-		  else
-		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
-			}
-		    }
 		}
 	    }
+
 	  if (notified == YES)
 	    {
 	      [tv _postSelectionIsChangingNotification];
@@ -287,30 +366,14 @@ static void computeNewSelection
 		// we're extending the selection
 		{
 		  BOOL notified = NO;
+
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] ||
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
-			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
 			}
 		    }
 		  if (notified == YES)
@@ -322,43 +385,32 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // leave it selected
 			  continue;
 			}
 		      
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+		      if ([tv _unselectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      NSNumber *lastObject = [_selectedRows lastObject];
-		      if (lastObject == nil)
+		      unsigned int last = [_selectedRows lastIndex];
+
+		      if (last == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  *_selectedRow = [lastObject intValue];
+			  *_selectedRow = last;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -372,29 +424,12 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] ||
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
 			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
-			} 
 		    }
 		  if (notified == YES)
 		    {
@@ -405,45 +440,32 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
-
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // leave it selected
 			  continue;
 			}
 
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
+		      if ([tv _unselectRow: i])
 			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      if ([_selectedRows count] == 0)
+		      unsigned int first = [_selectedRows firstIndex];
+
+		      if (first == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  NSNumber *firstObject = 
-			    [_selectedRows objectAtIndex: 0];
-			  *_selectedRow = [firstObject intValue];
+			  *_selectedRow = first;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -455,74 +477,43 @@ static void computeNewSelection
 	      
 	      // we're reducing the selection
 	      {
-		int pos;
 		for (i = _oldRow; i < _originalRow; i++)
 		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
+		    if ([_oldSelectedRows containsIndex: i])
 		      {
 			// this row was in the old selection
 			// leave it selected
 			continue;
 		      }
 		    
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
+		    if ([tv _unselectRow: i])
 		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
+			notified = YES;
 		      }
 		  }
 	      }
 	      // then we're extending it
-	      {
-		for (i = _originalRow + 1; i <= _currentRow; i++)
-		  {
-		    if ([_selectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]] == YES)
-		      {
-			*_selectedRow = i;
-			notified = YES;
-		      }
-		    else
-		      {
-			if ([tv _shouldSelectRow: i] == YES)
-			  {
-			    if (notified == NO)
-			      {
-				notified = YES;
-			      }
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
-			  }
-		      }
-		  }
-	      }
+	      for (i = _originalRow + 1; i <= _currentRow; i++)
+	        {
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
+		    {
+		      *_selectedRow = i;
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *firstObject = 
-			[_selectedRows objectAtIndex: 0];
-		      *_selectedRow = [firstObject intValue];
+		      *_selectedRow = first;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -532,75 +523,42 @@ static void computeNewSelection
 	      BOOL notified = NO;
 
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i > _originalRow; i--)
-		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
-		      {
-			// this row was in the old selection
-			// leave it selected
-			continue;
-		      }
+	      for (i = _oldRow; i > _originalRow; i--)
+	        {
+		  if ([_oldSelectedRows containsIndex: i])
+		    {
+		      // this row was in the old selection
+		      // leave it selected
+		      continue;
+		    }
 		    
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow - 1; i >= _currentRow; i--)
-		  {
-		    if ([_selectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]] == YES)
-		      {
-			*_selectedRow = i;
-			notified = YES;
-		      }
-		    else
-		      {
-			if ([tv _shouldSelectRow: i] == YES)
-			  {
-			    if (notified == NO)
-			      {
-				notified = YES;
-			      }
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
-			  }
-		      }
-		  }
-	      }
+	      for (i = _originalRow - 1; i >= _currentRow; i--)
+	        {
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
+		    {
+		      *_selectedRow = i;
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int last = [_selectedRows lastIndex];
+
+		  if (last == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *lastObject = 
-			[_selectedRows lastObject];
-		      *_selectedRow = [lastObject intValue];
+		      *_selectedRow = last;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -629,32 +587,15 @@ static void computeNewSelection
 	      notified = YES;
 	    }
 
-	  for (i = 0; i < count; i++)
-	    {
-	      [tv setNeedsDisplayInRect: 
-		    [tv rectOfRow: 
-			  [[_selectedRows objectAtIndex: i] intValue]]];
-	    }
-	  [_selectedRows removeAllObjects];
-	  *_selectedRow = -1;
+	  [tv _unselectAllRows];
 
 	  if (diff >= 0)
 	    {
 	      for (i = _originalRow; i <= _currentRow; i++)
 		{
-		  if ([tv _shouldSelectRow: i] == YES)
+		  if ([tv _selectRow: i])
 		    {
-		      if (notified == NO)
-			{
-			  notified = YES;
-			}
-
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
-		      _insertNumberInSelectionArray
-			(_selectedRows,
-			 [NSNumber numberWithInt: i]);
-		      *_selectedRow = i;
+		      notified = YES;
 		    }
 		}
 	    }
@@ -663,19 +604,9 @@ static void computeNewSelection
 	      // this case does happen (sometimes)
 	      for (i = _originalRow; i >= _currentRow; i--)
 		{
-		  if ([tv _shouldSelectRow: i] == YES)
+		  if ([tv _selectRow: i])
 		    {
-		      if (notified == NO)
-			{
-			  notified = YES;
-			}
-
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
-		      _insertNumberInSelectionArray
-			(_selectedRows,
-			 [NSNumber numberWithInt: i]);
-		      *_selectedRow = i;
+		      notified = YES;
 		    }
 		}
 	    }
@@ -696,18 +627,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
+		      if ([tv _selectRow: i])
 			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
@@ -718,34 +640,25 @@ static void computeNewSelection
 	      else
 		{
 		  BOOL notified = NO;
-		  int pos;
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
+		      if ([tv _unselectRow: i])
 			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      NSNumber *lastObject = [_selectedRows lastObject];
-		      if (lastObject == nil)
+		      unsigned int last = [_selectedRows lastIndex];
+
+		      if (last == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  *_selectedRow = [lastObject intValue];
+			  *_selectedRow = last;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -757,20 +670,12 @@ static void computeNewSelection
 		// we're extending the selection
 		{
 		  BOOL notified = NO;
+
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
+		      if ([tv _selectRow: i])
 			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+			  notified = YES;
 			}
 		    } 
 		  if (notified == YES)
@@ -782,36 +687,25 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
-
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
+		      if ([tv _unselectRow: i])
 			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      if ([_selectedRows count] == 0)
+		      unsigned int first = [_selectedRows firstIndex];
+
+		      if (first == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  NSNumber *firstObject = 
-			    [_selectedRows objectAtIndex: 0];
-			  *_selectedRow = [firstObject intValue];
+			  *_selectedRow = first;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -822,56 +716,33 @@ static void computeNewSelection
 	      BOOL notified = NO;
 	      
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i < _originalRow; i++)
-		  {
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+	      for (i = _oldRow; i < _originalRow; i++)
+	        {
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow + 1; i <= _currentRow; i++)
-		  {
-		    if ([tv _shouldSelectRow: i] == YES)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
-			*_selectedRow = i;
-		      }
-		  }
-	      }
+	      for (i = _originalRow + 1; i <= _currentRow; i++)
+	        {
+		  if ([tv _selectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *firstObject = 
-			[_selectedRows objectAtIndex: 0];
-		      *_selectedRow = [firstObject intValue];
+		      *_selectedRow = first;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -881,236 +752,36 @@ static void computeNewSelection
 	      BOOL notified = NO;
 
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i > _originalRow; i--)
-		  {
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+	      for (i = _oldRow; i > _originalRow; i--)
+	        {
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow - 1; i >= _currentRow; i--)
-		  {
-		    if ([tv _shouldSelectRow: i] == YES)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
-			*_selectedRow = i;
-		      }
-		  }
-	      }
+	      for (i = _originalRow - 1; i >= _currentRow; i--)
+	        {
+		  if ([tv _selectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int last = [_selectedRows lastIndex];
+
+		  if (last == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *lastObject = 
-			[_selectedRows lastObject];
-		      *_selectedRow = [lastObject intValue];
+		      *_selectedRow = last;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
-	    }
-
-	}
-    }
-  else if ((((selectionMode & ALLOWS_MULTIPLE) == 0)
-	    && ((selectionMode & SHIFT_DOWN) == 0))
-	   || 
-	   (((selectionMode & ALLOWS_MULTIPLE) == 0)
-	    && ((selectionMode & ALLOWS_EMPTY) == 0))
-	   ||
-	   (((selectionMode & ALLOWS_MULTIPLE) == 0)
-	    && (selectionMode & SHIFT_DOWN)
-	    && (selectionMode & ALLOWS_EMPTY)
-	    && (selectionMode & ADDING_ROW)))
-    // we'll be selecting exactly one row
-    // ic, sc : ok
-    {
-      int i;
-      int j;
-      int count = [_selectedRows count];
-      BOOL notified = NO;
-
-      if ([tv _shouldSelectRow: _currentRow] == NO)
-	{
-	  return;
-	}
-      
-      if ((count != 1) || (_oldRow == -1))
-	{
-	  // this is the first call that goes thru shouldSelectRow
-	  // Therefore we don't know anything about the selection
-	  notified = YES;
-	  for (i = 0; i < count; i++)
-	    {
-	      j = [[_selectedRows objectAtIndex: i] intValue];
-	      if (j == _currentRow)
-		{
-		  notified = NO;
-		  continue;
-		}
-	      [tv setNeedsDisplayInRect: 
-		    [tv rectOfRow: j]];
-	    }
-	  [_selectedRows removeAllObjects];
-	  [_selectedRows addObject: 
-			   [NSNumber numberWithInt: _currentRow]];
-	  *_selectedRow = _currentRow;
-	  
-	  if (notified == YES)
-	    {
-	      [tv setNeedsDisplayInRect:
-		    [tv rectOfRow: _currentRow]];
-	    }
-	  else
-	    {
-	      if (count > 1)
-		{
-		  notified = YES;
-		}
-	    }
-	  if (notified == YES)
-	    {
-	      [tv _postSelectionIsChangingNotification];
-	    }
-	}
-      else
-	{
-	  // we know there is only one column selected
-	  // this column is *_selectedRow
-
-	  //begin checking code
-	  if ([_selectedRows containsObject:
-			     [NSNumber numberWithInt: *_selectedRow]]
-	      == NO)
-	    {
-	      NSLog(@"*_selectedRow is not the only selected row!");
-	    }
-	  //end checking code
-
-	  if (*_selectedRow == _currentRow)
-	    {
-	      // currentRow is already selecteed
-	      return;
-	    }
-	  else
-	    {
-	      [_selectedRows replaceObjectAtIndex:0
-			     withObject:
-			       [NSNumber numberWithInt: _currentRow]];
-	      [tv setNeedsDisplayInRect:
-		    [tv rectOfRow: *_selectedRow]];
-	      [tv setNeedsDisplayInRect:
-		    [tv rectOfRow: _currentRow]];
-	      *_selectedRow = _currentRow;
-	      [tv _postSelectionIsChangingNotification];
-	    }
-	}
-      
-    }
-  else if (((selectionMode & ALLOWS_MULTIPLE) == 0)
-	   && ((selectionMode & SHIFT_DOWN) == SHIFT_DOWN)
-	   && ((selectionMode & ALLOWS_EMPTY) == ALLOWS_EMPTY)
-	   && ((selectionMode & ADDING_ROW) == 0))
-    // we will unselect the selected row
-    // ic, sc : ok
-    {
-      int i;
-      int count = [_selectedRows count];
-      /*
-      BOOL wasOriginalRowSelected =
-	[_oldSelectedRows containsObject:
-			    [NSNumber numberWithInt: _originalRow]];
-      */
-
-      if ((count == 0) && (_oldRow == -1))
-	{
-	  NSLog(@"how did you get there ?");
-	  NSLog(@"you're supposed to have clicked on a selected row,");
-	  NSLog(@"but there's no selected row!");
-	  return;
-	}
-      else if (count > 1)
-	{
-	  for (i = 0; i < count; i++)
-	    {
-	      [tv setNeedsDisplayInRect: 
-		    [tv rectOfRow:
-			  [[_selectedRows objectAtIndex: i] intValue]]];
-	    }
-	  [_selectedRows removeAllObjects];
-	  *_selectedRow = -1;
-	  [tv _postSelectionIsChangingNotification];
-	  
-	}
-      else if (_currentRow != _originalRow)
-	{
-	  if (*_selectedRow == _originalRow)
-	    {
-	      // we are already selected, don't do anything
-	    }
-	  else
-	    {
-	      //begin checking code
-	      if (count > 0)
-		{
-		  NSLog(@"There should not be any row selected");
-		}
-	      //end checking code
-
-	      if ([tv _shouldSelectRow: _originalRow] == NO)
-		{
-		  return;
-		}
-
-	      [tv setNeedsDisplayInRect:
-		    [tv rectOfRow: _originalRow]];
-	      
-	      [_selectedRows addObject: 
-			       [NSNumber numberWithInt: _originalRow]];
-	      *_selectedRow = _originalRow;
-	      [tv _postSelectionIsChangingNotification];
-	    }
-	}
-      else if (_currentRow == _originalRow)
-	{
-	  if (count == 0)
-	    {
-	      // the row is already deselected
-	      // nothing to do !
-	    }
-	  else
-	    {
-	      [tv setNeedsDisplayInRect:
-		    [tv rectOfRow: _originalRow]];
-	      [_selectedRows removeObjectAtIndex: 0];
-	      *_selectedRow = -1;
-	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
     }
@@ -1148,32 +819,15 @@ static void computeNewSelection
 		  notified = YES;
 		}
 	      
-	      for (i = 0; i < count; i++)
-		{
-		  [tv setNeedsDisplayInRect: 
-			[tv rectOfRow: 
-			      [[_selectedRows objectAtIndex: i] intValue]]];
-		}
-	      [_selectedRows removeAllObjects];
-	      *_selectedRow = -1;
+	      [tv _unselectAllRows];
 	      
 	      if (diff >= 0)
 		{
 		  for (i = _originalRow; i <= _currentRow; i++)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+		      if ([tv _selectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }	      
 		}
@@ -1181,19 +835,9 @@ static void computeNewSelection
 		{
 		  for (i = _originalRow; i >= _currentRow; i--)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+		      if ([tv _selectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }	      
 		}
@@ -1204,7 +848,6 @@ static void computeNewSelection
 	      // this code is copied from another case
 	      // (AM=1, SD=1, AE=*, AR=1)
 	      int diff, i;
-	      //	      int count = [_selectedRows count];
 	      BOOL notified = NO;
 	      diff = _currentRow - _originalRow;
 	      
@@ -1212,29 +855,11 @@ static void computeNewSelection
 		{
 		  for (i = _originalRow; i <= _currentRow; i++)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] || 
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
-			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
 			}
 		    }
 		}
@@ -1243,29 +868,11 @@ static void computeNewSelection
 		  // this case does happen (sometimes)
 		  for (i = _originalRow; i >= _currentRow; i--)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] || 
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
-			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
 			}
 		    }
 		}
@@ -1275,8 +882,7 @@ static void computeNewSelection
 		}
 	    }
 	}
-      else if ([_selectedRows containsObject:
-				[NSNumber numberWithInt: _originalRow]])
+      else if ([_selectedRows containsIndex: _originalRow])
 	// as the originalRow is selected,
 	// we are in a new selection
 	{
@@ -1292,18 +898,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+		      if ([tv _selectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
@@ -1314,34 +911,25 @@ static void computeNewSelection
 	      else
 		{
 		  BOOL notified = NO;
-		  int pos;
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+		      if ([tv _unselectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      NSNumber *lastObject = [_selectedRows lastObject];
-		      if (lastObject == nil)
-			{
+		      unsigned int last = [_selectedRows lastIndex];
+		      
+		      if (last == NSNotFound)
+		        {
 			  *_selectedRow = -1;
 			}
 		      else
-			{
-			  *_selectedRow = [lastObject intValue];
+		        {
+			  *_selectedRow = last;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -1353,20 +941,12 @@ static void computeNewSelection
 		// we're extending the selection
 		{
 		  BOOL notified = NO;
+
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ([tv _shouldSelectRow: i] == YES)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
-			  *_selectedRow = i;
+		      if ([tv _selectRow: i])
+		        {
+			  notified = YES;
 			}
 		    } 
 		  if (notified == YES)
@@ -1378,36 +958,26 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
-
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+		      if ([tv _unselectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
+
 		  if (notified == YES)
 		    {
-		      if ([_selectedRows count] == 0)
+		      unsigned int first = [_selectedRows firstIndex];
+
+		      if (first == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  NSNumber *firstObject = 
-			    [_selectedRows objectAtIndex: 0];
-			  *_selectedRow = [firstObject intValue];
+			  *_selectedRow = first;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -1418,56 +988,33 @@ static void computeNewSelection
 	      BOOL notified = NO;
 	      
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i < _originalRow; i++)
-		  {
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+	      for (i = _oldRow; i < _originalRow; i++)
+	        {
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow + 1; i <= _currentRow; i++)
-		  {
-		    if ([tv _shouldSelectRow: i] == YES)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
-			*_selectedRow = i;
-		      }
-		  }
-	      }
+	      for (i = _originalRow + 1; i <= _currentRow; i++)
+	        {
+		  if ([tv _selectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *firstObject = 
-			[_selectedRows objectAtIndex: 0];
-		      *_selectedRow = [firstObject intValue];
+		      *_selectedRow = first;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -1477,56 +1024,33 @@ static void computeNewSelection
 	      BOOL notified = NO;
 
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i > _originalRow; i--)
-		  {
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+	      for (i = _oldRow; i > _originalRow; i--)
+	        {
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow - 1; i >= _currentRow; i--)
-		  {
-		    if ([tv _shouldSelectRow: i] == YES)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
-			*_selectedRow = i;
-		      }
-		  }
-	      }
+	      for (i = _originalRow - 1; i >= _currentRow; i--)
+	        {
+		  if ([tv _selectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int last = [_selectedRows lastIndex];
+
+		  if (last == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *lastObject = 
-			[_selectedRows lastObject];
-		      *_selectedRow = [lastObject intValue];
+		      *_selectedRow = last;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -1550,28 +1074,11 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] || 
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
-			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
 			}
 		    }
 		  if (notified == YES)
@@ -1583,43 +1090,33 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // leave it selected
 			  continue;
 			}
 		      
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+		      if ([tv _unselectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
+
 		  if (notified == YES)
 		    {
-		      NSNumber *lastObject = [_selectedRows lastObject];
-		      if (lastObject == nil)
-			{
+		      unsigned int last = [_selectedRows lastIndex];
+
+		      if (last == NSNotFound)
+		        {
 			  *_selectedRow = -1;
 			}
 		      else
-			{
-			  *_selectedRow = [lastObject intValue];
+		        {
+			  *_selectedRow = last;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -1633,30 +1130,14 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ([_selectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]] == YES)
+		      if ([_selectedRows containsIndex: i] || 
+			  [tv _selectRow: i])
 			{
 			  *_selectedRow = i;
 			  notified = YES;
 			}
-		      else
-			{
-			  if ([tv _shouldSelectRow: i] == YES)
-			    {
-			      if (notified == NO)
-				{
-				  notified = YES;
-				}
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
-			    }
-			} 
 		    }
+
 		  if (notified == YES)
 		    {
 		      [tv _postSelectionIsChangingNotification];
@@ -1666,45 +1147,31 @@ static void computeNewSelection
 		// we're reducing the selection
 		{
 		  BOOL notified = NO;
-		  int pos;
-
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // leave it selected
 			  continue;
 			}
-
-		      pos = [_selectedRows indexOfObject:
-					     [NSNumber numberWithInt: i]];
-		      if (pos != NSNotFound)
-			{
-			  if (notified == NO)
-			    {
-			      notified = YES;
-			    }
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  [_selectedRows removeObject:
-					   [NSNumber numberWithInt: i]];
+		      if ([tv _unselectRow: i])
+		        {
+			  notified = YES;
 			}
 		    }
 		  if (notified == YES)
 		    {
-		      if ([_selectedRows count] == 0)
+		      unsigned int first = [_selectedRows firstIndex];
+
+		      if (first == NSNotFound)
 			{
 			  *_selectedRow = -1;
 			}
 		      else
 			{
-			  NSNumber *firstObject = 
-			    [_selectedRows objectAtIndex: 0];
-			  *_selectedRow = [firstObject intValue];
+			  *_selectedRow = first;
 			}
 		      [tv _postSelectionIsChangingNotification];
 		    }
@@ -1715,75 +1182,41 @@ static void computeNewSelection
 	      BOOL notified = NO;
 	      
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i < _originalRow; i++)
-		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
-		      {
-			// this row was in the old selection
-			// leave it selected
-			continue;
-		      }
-		    
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+	      for (i = _oldRow; i < _originalRow; i++)
+	        {
+		  if ([_oldSelectedRows containsIndex: i])
+		    {
+		      // this row was in the old selection
+		      // leave it selected
+		      continue;
+		    }
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
 	      // then we're extending it
-	      {
-		for (i = _originalRow + 1; i <= _currentRow; i++)
-		  {
-		    if ([_selectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]] == YES)
-		      {
-			*_selectedRow = i;
-			notified = YES;
-		      }
-		    else
-		      {
-			if ([tv _shouldSelectRow: i] == YES)
-			  {
-			    if (notified == NO)
-			      {
-				notified = YES;
-			      }
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
-			  }
-		      }
-		  }
-	      }
+	      for (i = _originalRow + 1; i <= _currentRow; i++)
+	        {
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
+		    {
+		      *_selectedRow = i;
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *firstObject = 
-			[_selectedRows objectAtIndex: 0];
-		      *_selectedRow = [firstObject intValue];
+		      *_selectedRow = first;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -1793,75 +1226,43 @@ static void computeNewSelection
 	      BOOL notified = NO;
 
 	      // we're reducing the selection
-	      {
-		int pos;
-		for (i = _oldRow; i > _originalRow; i--)
-		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
-		      {
-			// this row was in the old selection
-			// leave it selected
-			continue;
-		      }
+	      for (i = _oldRow; i > _originalRow; i--)
+	        {
+		  if ([_oldSelectedRows containsIndex: i])
+		    {
+		      // this row was in the old selection
+		      // leave it selected
+		      continue;
+		    }
 		    
-		    pos = [_selectedRows indexOfObject:
-					   [NSNumber numberWithInt: i]];
-		    if (pos != NSNotFound)
-		      {
-			if (notified == NO)
-			  {
-			    notified = YES;
-			  }
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
-			[_selectedRows removeObject:
-					 [NSNumber numberWithInt: i]];
-		      }
-		  }
-	      }
+		  if ([tv _unselectRow: i])
+		    {
+		      notified = YES;
+		    }
+		}
+
 	      // then we're extending it
-	      {
-		for (i = _originalRow - 1; i >= _currentRow; i--)
-		  {
-		    if ([_selectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]] == YES)
-		      {
-			*_selectedRow = i;
-			notified = YES;
-		      }
-		    else
-		      {
-			if ([tv _shouldSelectRow: i] == YES)
-			  {
-			    if (notified == NO)
-			      {
-				notified = YES;
-			      }
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
-			  }
-		      }
-		  }
-	      }
+	      for (i = _originalRow - 1; i >= _currentRow; i--)
+	        {
+		  if ([_selectedRows containsIndex: i] ||
+		      [tv _selectRow: i])
+		    {
+		      *_selectedRow = i;
+		      notified = YES;
+		    }
+		}
 
 	      if (notified == YES)
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int last = [_selectedRows lastIndex];
+
+		  if (last == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      NSNumber *lastObject = 
-			[_selectedRows lastObject];
-		      *_selectedRow = [lastObject intValue];
+		      *_selectedRow = last;
 		    }
 		  [tv _postSelectionIsChangingNotification];
 		}
@@ -1877,39 +1278,32 @@ static void computeNewSelection
 	// this is the first pass
 	{
 	  int diff, i;
-	  unsigned pos;
-	  //	  int count = [_selectedRows count];
 	  BOOL notified = NO;
+
       	  diff = _currentRow - _originalRow;
 
 	  if (diff >= 0)
 	    {
 	      for (i = _originalRow; i <= _currentRow; i++)
 		{
-		  if ((pos = [_selectedRows 
-			       indexOfObject: 
-				 [NSNumber numberWithInt: i]])
-		      != NSNotFound)
+		  if ([tv _unselectRow: i])
 		    {
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 		      notified = YES;
-		      [_selectedRows removeObjectAtIndex: pos];
 		    }
 		}
 	      if (   notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 	    }
@@ -1918,30 +1312,24 @@ static void computeNewSelection
 	      // this case does happen (sometimes)
 	      for (i = _originalRow; i >= _currentRow; i--)
 		{
-		  if ((pos = [_selectedRows 
-			       indexOfObject: 
-				 [NSNumber numberWithInt: i]])
-		      != NSNotFound)
+		  if ([tv _unselectRow: i])
 		    {
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 		      notified = YES;
-		      [_selectedRows removeObjectAtIndex: pos];
 		    }
 		}
 	      if (   notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 	    }
@@ -1953,7 +1341,7 @@ static void computeNewSelection
       else // new multiple antiselection, after first pass
 	{ 
 	  int oldDiff, newDiff, i;
-	  unsigned pos;
+
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
 	  if (oldDiff >= 0 && newDiff >= 0)
@@ -1964,15 +1352,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ((pos = [_selectedRows 
-				   indexOfObject: 
-				     [NSNumber numberWithInt: i]])
-			  != NSNotFound)
+		      if ([tv _unselectRow: i])
 			{
-			  [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 			  notified = YES;
-			  [_selectedRows removeObjectAtIndex: pos];
 			}
 		    }
 
@@ -1980,16 +1362,16 @@ static void computeNewSelection
 		      && (*_selectedRow > _oldRow)
 		      && (*_selectedRow <= _currentRow))
 		    {
-		      if ([_selectedRows count] == 0)
-			{
-			  *_selectedRow = -1;
-			}
-		      else
-			{
-			  *_selectedRow = 
-			    [[_selectedRows objectAtIndex: 0]
-			      intValue];
-			}
+			unsigned int first = [_selectedRows firstIndex];
+			
+			if (first == NSNotFound)
+			  {
+			    *_selectedRow = -1;
+			  }
+			else
+			  {
+			    *_selectedRow = first;
+			  }
 		    }
 
 		  if (notified == YES)
@@ -2004,17 +1386,12 @@ static void computeNewSelection
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // select it
-			  [tv setNeedsDisplayInRect:
-				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
+			  [tv setNeedsDisplayInRect: [tv rectOfRow: i]];
+			  [_selectedRows addIndex: i];
 			  *_selectedRow = i;
 			  notified = YES;
 			}
@@ -2033,15 +1410,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ((pos = [_selectedRows 
-				   indexOfObject: 
-				     [NSNumber numberWithInt: i]])
-			  != NSNotFound)
+		      if ([tv _unselectRow: i])
 			{
-			  [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 			  notified = YES;
-			  [_selectedRows removeObjectAtIndex: pos];
 			}
 		    }
 
@@ -2049,15 +1420,15 @@ static void computeNewSelection
 		      && (*_selectedRow < _oldRow)
 		      && (*_selectedRow >= _currentRow))
 		    {
-		      if ([_selectedRows count] == 0)
-			{
+		      unsigned int first = [_selectedRows firstIndex];
+		  
+		      if (first == NSNotFound)
+		        {
 			  *_selectedRow = -1;
 			}
 		      else
-			{
-			  *_selectedRow = 
-			    [[_selectedRows objectAtIndex: 0]
-			      intValue];
+		        {
+			  *_selectedRow = first;
 			}
 		    }
 
@@ -2073,17 +1444,13 @@ static void computeNewSelection
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // select it
 			  [tv setNeedsDisplayInRect:
 				[tv rectOfRow: i]];
-			  _insertNumberInSelectionArray
-			    (_selectedRows,
-			     [NSNumber numberWithInt: i]);
+			  [_selectedRows addIndex: i];
 			  *_selectedRow = i;
 			  notified = YES;
 			}
@@ -2103,17 +1470,13 @@ static void computeNewSelection
 	      {
 		for (i = _oldRow; i < _originalRow; i++)
 		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
+		    if ([_oldSelectedRows containsIndex: i])
 		      {
 			// this row was in the old selection
 			// select it
 			[tv setNeedsDisplayInRect:
 			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
+			[_selectedRows addIndex: i];
 			*_selectedRow = i;
 			notified = YES;
 		      }
@@ -2123,15 +1486,9 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow + 1; i <= _currentRow; i++)
 		  {
-		    if ((pos = [_selectedRows 
-				 indexOfObject: 
-				   [NSNumber numberWithInt: i]])
-			!= NSNotFound)
+		    if ([tv _unselectRow: i])
 		      {
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
 			notified = YES;
-			[_selectedRows removeObjectAtIndex: pos];
 		      }
 		  }
 	      }
@@ -2140,15 +1497,15 @@ static void computeNewSelection
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 
@@ -2165,17 +1522,13 @@ static void computeNewSelection
 	      {
 		for (i = _oldRow; i > _originalRow; i--)
 		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
+		    if ([_oldSelectedRows containsIndex: i])
 		      {
 			// this row was in the old selection
 			// select it
 			[tv setNeedsDisplayInRect:
 			      [tv rectOfRow: i]];
-			_insertNumberInSelectionArray
-			  (_selectedRows,
-			   [NSNumber numberWithInt: i]);
+			[_selectedRows addIndex: i];
 			*_selectedRow = i;
 			notified = YES;
 		      }
@@ -2185,15 +1538,9 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow - 1; i >= _currentRow; i--)
 		  {
-		    if ((pos = [_selectedRows 
-				 indexOfObject: 
-				   [NSNumber numberWithInt: i]])
-			!= NSNotFound)
+		    if ([tv _unselectRow: i])
 		      {
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
 			notified = YES;
-			[_selectedRows removeObjectAtIndex: pos];
 		      }
 		  }
 	      }
@@ -2202,15 +1549,15 @@ static void computeNewSelection
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 
@@ -2230,7 +1577,6 @@ static void computeNewSelection
 	// this is the first pass
 	{
 	  int diff, i;
-	  unsigned pos;
 	  int count = [_selectedRows count];
 	  BOOL notified = NO;
       	  diff = _currentRow - _originalRow;
@@ -2239,15 +1585,9 @@ static void computeNewSelection
 	    {
 	      for (i = _originalRow; i <= _currentRow; i++)
 		{
-		  if (((pos = [_selectedRows 
-			       indexOfObject: 
-				 [NSNumber numberWithInt: i]])
-		      != NSNotFound) && (count > 1))
+		  if ((count > 1) && [tv  _unselectRow: i])
 		    {
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 		      notified = YES;
-		      [_selectedRows removeObjectAtIndex: pos];
 		      count--;
 		    }
 		}
@@ -2255,16 +1595,16 @@ static void computeNewSelection
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      NSLog(@"error!");
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 	    }
@@ -2273,15 +1613,9 @@ static void computeNewSelection
 	      // this case does happen (sometimes)
 	      for (i = _originalRow; i >= _currentRow; i--)
 		{
-		  if (((pos = [_selectedRows 
-			       indexOfObject: 
-				 [NSNumber numberWithInt: i]])
-		      != NSNotFound) && (count > 1))
+		  if ((count > 1) && [tv  _unselectRow: i])
 		    {
-		      [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
 		      notified = YES;
-		      [_selectedRows removeObjectAtIndex: pos];
 		      count--;
 		    }
 		}
@@ -2289,16 +1623,16 @@ static void computeNewSelection
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		  
+		  if (first == NSNotFound)
 		    {
 		      NSLog(@"error!");
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 	    }
@@ -2310,7 +1644,6 @@ static void computeNewSelection
       else // new multiple antiselection, after first pass
 	{ 
 	  int oldDiff, newDiff, i;
-	  unsigned pos;
 	  int count = [_selectedRows count];
 	  oldDiff = _oldRow - _originalRow;
 	  newDiff = _currentRow - _originalRow;
@@ -2322,15 +1655,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if (((pos = [_selectedRows 
-				   indexOfObject: 
-				     [NSNumber numberWithInt: i]])
-			  != NSNotFound) && (count > 1))
-			{
-			  [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
+		      if ((count > 1) && [tv  _unselectRow: i])
+		        {
 			  notified = YES;
-			  [_selectedRows removeObjectAtIndex: pos];
 			  count--;
 			}
 		    }
@@ -2339,16 +1666,16 @@ static void computeNewSelection
 		      && (*_selectedRow > _oldRow)
 		      && (*_selectedRow <= _currentRow))
 		    {
-		      if ([_selectedRows count] == 0)
-			{
+		      unsigned int first = [_selectedRows firstIndex];
+		  
+		      if (first == NSNotFound)
+		        {
 			  NSLog(@"error!");
 			  *_selectedRow = -1;
 			}
 		      else
-			{
-			  *_selectedRow = 
-			    [[_selectedRows objectAtIndex: 0]
-			      intValue];
+		        {
+			  *_selectedRow = first;
 			}
 		    }
 
@@ -2364,22 +1691,12 @@ static void computeNewSelection
 
 		  for (i = _oldRow; i > _currentRow; i--)
 		    {
-		      if (([_oldSelectedRows 
-			     containsObject: 
-			       [NSNumber numberWithInt: i]]))
+		      if (([_oldSelectedRows containsIndex: i]))
 			{
 			  // this row was in the old selection
 			  // select it
-			  if ([_selectedRows 
-				containsObject:
-				  [NSNumber numberWithInt: i]] == NO)
+			  if ([tv _selectUnselectedRow: i])
 			    {
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
 			      notified = YES;
 			    }
 			}
@@ -2398,15 +1715,9 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if (((pos = [_selectedRows 
-				   indexOfObject: 
-				     [NSNumber numberWithInt: i]])
-			  != NSNotFound) && (count > 1))
-			{
-			  [tv setNeedsDisplayInRect:
-			    [tv rectOfRow: i]];
+		      if ((count > 1) && [tv  _unselectRow: i])
+		        {
 			  notified = YES;
-			  [_selectedRows removeObjectAtIndex: pos];
 			  count--;
 			}
 		    }
@@ -2415,16 +1726,16 @@ static void computeNewSelection
 		      && (*_selectedRow < _oldRow)
 		      && (*_selectedRow >= _currentRow))
 		    {
-		      if ([_selectedRows count] == 0)
-			{
+		      unsigned int first = [_selectedRows firstIndex];
+		      
+		      if (first == NSNotFound)
+		        {
 			  NSLog(@"error!");
 			  *_selectedRow = -1;
 			}
 		      else
-			{
-			  *_selectedRow = 
-			    [[_selectedRows objectAtIndex: 0]
-			      intValue];
+		        {
+			  *_selectedRow = first;
 			}
 		    }
 
@@ -2440,22 +1751,12 @@ static void computeNewSelection
 
 		  for (i = _oldRow; i < _currentRow; i++)
 		    {
-		      if ([_oldSelectedRows 
-			    containsObject: 
-			      [NSNumber numberWithInt: i]])
+		      if ([_oldSelectedRows containsIndex: i])
 			{
 			  // this row was in the old selection
 			  // select it
-			  if ([_selectedRows 
-				containsObject:
-				  [NSNumber numberWithInt: i]] == NO)
+			  if ([tv _selectUnselectedRow: i])
 			    {
-			      [tv setNeedsDisplayInRect:
-				    [tv rectOfRow: i]];
-			      _insertNumberInSelectionArray
-				(_selectedRows,
-				 [NSNumber numberWithInt: i]);
-			      *_selectedRow = i;
 			      notified = YES;
 			    }
 			  count++;
@@ -2476,22 +1777,12 @@ static void computeNewSelection
 	      {
 		for (i = _oldRow; i < _originalRow; i++)
 		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
+		    if ([_oldSelectedRows containsIndex: i])
 		      {
 			// this row was in the old selection
 			// select it
-			if ([_selectedRows 
-			      containsObject:
-				[NSNumber numberWithInt: i]] == NO)
+			if ([tv _selectUnselectedRow: i])
 			  {
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
 			    notified = YES;
 			  }
 		      }
@@ -2501,15 +1792,9 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow + 1; i <= _currentRow; i++)
 		  {
-		    if (((pos = [_selectedRows 
-				 indexOfObject: 
-				   [NSNumber numberWithInt: i]])
-			!= NSNotFound) && (count > 1))
+		    if ((count > 1) && [tv  _unselectRow: i])
 		      {
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
 			notified = YES;
-			[_selectedRows removeObjectAtIndex: pos];
 			count--;
 		      }
 		  }
@@ -2519,16 +1804,16 @@ static void computeNewSelection
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		    
+		  if (first == NSNotFound)
 		    {
 		      NSLog(@"error!");
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 
@@ -2545,22 +1830,12 @@ static void computeNewSelection
 	      {
 		for (i = _oldRow; i > _originalRow; i--)
 		  {
-		    if ([_oldSelectedRows 
-			  containsObject: 
-			    [NSNumber numberWithInt: i]])
+		    if ([_oldSelectedRows containsIndex: i])
 		      {
 			// this row was in the old selection
 			// select it
-			if ([_selectedRows 
-			      containsObject:
-				[NSNumber numberWithInt: i]] == NO)
+			if ([tv _selectUnselectedRow: i])
 			  {
-			    [tv setNeedsDisplayInRect:
-				  [tv rectOfRow: i]];
-			    _insertNumberInSelectionArray
-			      (_selectedRows,
-			       [NSNumber numberWithInt: i]);
-			    *_selectedRow = i;
 			    notified = YES;
 			  }
 		      }
@@ -2570,15 +1845,9 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow - 1; i >= _currentRow; i--)
 		  {
-		    if (((pos = [_selectedRows 
-				 indexOfObject: 
-				   [NSNumber numberWithInt: i]])
-			!= NSNotFound) && (count > 1))
+		    if ((count > 1) && [tv  _unselectRow: i])
 		      {
-			[tv setNeedsDisplayInRect:
-			      [tv rectOfRow: i]];
 			notified = YES;
-			[_selectedRows removeObjectAtIndex: pos];
 			count--;
 		      }
 		  }
@@ -2588,16 +1857,16 @@ static void computeNewSelection
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
-		  if ([_selectedRows count] == 0)
+		  unsigned int first = [_selectedRows firstIndex];
+		    
+		  if (first == NSNotFound)
 		    {
 		      NSLog(@"error!");
 		      *_selectedRow = -1;
 		    }
 		  else
 		    {
-		      *_selectedRow = 
-			[[_selectedRows objectAtIndex: 0]
-			  intValue];
+		      *_selectedRow = first;
 		    }
 		}
 
@@ -2607,121 +1876,6 @@ static void computeNewSelection
 		}
 	    }
 	}
-    }
-}
-
-/*
-static void
-_selectRowsInRange (NSTableView *tv, id delegate, 
-		    int startRow, int endRow, int clickedRow)
-{
-  int i;
-  int tmp;
-  int shift = 1;
-
-  // Switch rows if in the wrong order
-  if (startRow > endRow)
-    {
-      tmp = startRow;
-      startRow = endRow;
-      endRow = tmp;
-      shift = 0;
-    }
-
-  for (i = startRow + shift; i < endRow + shift; i++)
-    {
-      if (i != clickedRow)
-	{
-	  if (delegate != nil)
-	    {
-	      if ([delegate tableView: tv   shouldSelectRow: i] == NO)
-		continue;
-	    }
-
-	  [tv selectRow: i  byExtendingSelection: YES];
-	  [tv setNeedsDisplayInRect: [tv rectOfRow: i]];
-	}
-    }
-}
-
-static void
-_deselectRowsInRange (NSTableView *tv, int startRow, int endRow, 
-		      int clickedRow)
-{
-  int i;
-  int tmp;
-  int shift = 1;
-
-  if (startRow > endRow)
-    {
-      tmp = startRow;
-      startRow = endRow;
-      endRow = tmp;
-      shift = 0;
-    }
-
-  for (i = startRow + shift; i < endRow + shift; i++)
-    {
-      if (i != clickedRow)
-	{
-	  [tv deselectRow: i];
-	  [tv setNeedsDisplayInRect: [tv rectOfRow: i]];
-	}
-    }
-}
-*/
-
-/*
- * The following function can work on columns or rows; 
- * passing the correct select/deselect function switches between one 
- * and the other.  Currently used only for rows, anyway.
- */
-
-static void
-_selectionChange (NSTableView *tv, id delegate, int numberOfRows, 
-		  int clickedRow, 
-		  int oldSelectedRow, int newSelectedRow, 
-		  void (*deselectFunction)(NSTableView *, int, int, int), 
-		  void (*selectFunction)(NSTableView *, id, int, int, int))
-{
-  int newDistance;
-  int oldDistance;
-
-  if (oldSelectedRow == newSelectedRow)
-    return;
-
-  /* Change coordinates - distance from the center of selection */
-  oldDistance = oldSelectedRow - clickedRow;
-  newDistance = newSelectedRow - clickedRow;
-
-  /* If they have different signs, then we decompose it into 
-     two problems with the same sign */
-  if ((oldDistance * newDistance) < 0)
-    {
-      _selectionChange (tv, delegate, numberOfRows, clickedRow, 
-			oldSelectedRow, clickedRow, deselectFunction, 
-			selectFunction);
-      _selectionChange (tv, delegate, numberOfRows, clickedRow, clickedRow, 
-			newSelectedRow, deselectFunction, selectFunction);
-      return;
-    }
-
-  /* Otherwise, take the modulus of the distances */
-  if (oldDistance < 0)
-    oldDistance = -oldDistance;
-
-  if (newDistance < 0)
-    newDistance = -newDistance;
-
-  /* If the new selection is more wide, we need to select */
-  if (newDistance > oldDistance)
-    {
-      selectFunction (tv, delegate, oldSelectedRow, newSelectedRow, 
-		      clickedRow);
-    }
-  else /* Otherwise to deselect */
-    {
-      deselectFunction (tv, newSelectedRow, oldSelectedRow, clickedRow);
     }
 }
 
@@ -2827,8 +1981,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   ASSIGN (_gridColor, [NSColor gridColor]); 
   ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
   ASSIGN (_tableColumns, [NSMutableArray array]);
-  ASSIGN (_selectedColumns, [NSMutableArray array]);
-  ASSIGN (_selectedRows, [NSMutableArray array]);
+  ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+  ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
   _allowsColumnSelection = YES;
@@ -2921,7 +2075,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) removeTableColumn: (NSTableColumn *)aColumn
 {
   int columnIndex = [self columnWithIdentifier: [aColumn identifier]];
-  int column, i, count;
 
   if (columnIndex == -1)
     {
@@ -2937,17 +2090,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
       _selectedColumn--;
     }
 
-  count = [_selectedColumns count];
-  for (i = 0; i < count; i++)
-    {
-      column = [[_selectedColumns objectAtIndex: i] intValue];
-      if (column > columnIndex)
-	{
-	  column--;
-	  [_selectedColumns replaceObjectAtIndex: i 
-			    withObject: [NSNumber numberWithInt: column]];
-	}
-    }
+  [_selectedColumns removeIndex: columnIndex];
 
   /* Now really remove the column */
 
@@ -2975,8 +2118,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   int minRange, maxRange;
   /* Amount of shift for these columns */
   int shift;
-  /* Dummy variables for the loop */
-  int i, count, column;
+  BOOL selected = NO;
 
   if ((columnIndex < 0) || (columnIndex > (_numberOfColumns - 1)))
     {
@@ -3015,31 +2157,17 @@ _isCellEditable (id delegate, NSArray *tableColumns,
       _selectedColumn += shift;
     }
 
-  count = [_selectedColumns count];
-  for (i = 0; i < count; i++)
+  if ([_selectedColumns containsIndex: columnIndex])
     {
-      column = [[_selectedColumns objectAtIndex: i] intValue];
-
-      if (column == columnIndex)
-	{
-	  [_selectedColumns replaceObjectAtIndex: i 
-			    withObject: [NSNumber numberWithInt: newIndex]];
-	  continue;
-	}
-
-      if ((column >= minRange) && (column <= maxRange))
-	{
-	  column += shift;
-	  [_selectedColumns replaceObjectAtIndex: i 
-			    withObject: [NSNumber numberWithInt: column]];
-	  continue;
-	}
-
-      if ((column > columnIndex) && (column > newIndex))
-	{
-	  break;
-	}
+      selected = YES;
     }
+  [_selectedColumns shiftIndexesStartingAtIndex: columnIndex + 1 by: -1];
+  [_selectedColumns shiftIndexesStartingAtIndex: newIndex by: 1];
+  if (selected)
+    {
+      [_selectedColumns addIndex: newIndex];
+    }
+
   /* Now really move the column */
   if (columnIndex < newIndex)
     {
@@ -3405,8 +2533,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) selectColumn: (int)columnIndex 
  byExtendingSelection: (BOOL)flag
 {
-  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
-  
   if (columnIndex < 0 || columnIndex > _numberOfColumns)
     {
       [NSException raise: NSInvalidArgumentException
@@ -3422,7 +2548,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
        * a NSTableViewSelectionDidChangeNotification.
        * This behaviour is required by the specifications */
       if ([_selectedColumns count] == 1
-	  && [_selectedColumns containsObject: num] == YES)
+	  && [_selectedColumns containsIndex: columnIndex] == YES)
 	{
 	  /* Stop editing if any */
 	  if (_textObject != nil)
@@ -3437,7 +2563,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	 only column - because we have been called to select it. */
       if (_numberOfColumns > 1)
 	{
-	  [_selectedColumns removeAllObjects];
+	  [_selectedColumns removeAllIndexes];
 	  [self setNeedsDisplay: YES];
 	  if (_headerView)
 	    {
@@ -3463,9 +2589,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     }
 
   /* Now select the column and post notification only if needed */ 
-  if ([_selectedColumns containsObject: num] == NO)
+  if ([_selectedColumns containsIndex: columnIndex] == NO)
     {
-      _insertNumberInSelectionArray (_selectedColumns, num);
+      [_selectedColumns addIndex: columnIndex];
       _selectedColumn = columnIndex;
 
       [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
@@ -3482,81 +2608,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     }
 }
 
-#if 0
-- (void) internal_selectRow: (int)rowIndex
-byExtendingSelection: (BOOL)flag
-{
-  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
-
-  if (rowIndex < 0 || rowIndex > _numberOfRows)
-    {
-      [NSException raise: NSInvalidArgumentException
-		   format: @"Row index out of table in selectRow"];
-    }
-
-  _selectingColumns = NO;
-
-  if (flag == NO)
-    {
-      /* If the current selection is the one we want, just ends editing
-       * This is not just a speed up, it prevents us from sending
-       * a NSTableViewSelectionDidChangeNotification.
-       * This behaviour is required by the specifications */
-      if ([_selectedRows count] == 1
-	  && [_selectedRows containsObject: num] == YES)
-	{
-	  /* Stop editing if any */
-	  if (_textObject != nil)
-	    {
-	      [self validateEditing];
-	      [self abortEditing];
-	    }
-	  return;
-	} 
-
-      /* If _numberOfRows == 1, we can skip trying to deselect the
-	 only row - because we have been called to select it. */
-      if (_numberOfRows > 1)
-	{
-	  [_selectedRows removeAllObjects];
-	  _selectedRow = -1;
-	}
-    }
-  else // flag == YES
-    {
-      if (_allowsMultipleSelection == NO)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Can not extend selection in table view when multiple selection is disabled"];  
-	}
-    }
-
-  /* Stop editing if any */
-  if (_textObject != nil)
-    {
-      [self validateEditing];
-      [self abortEditing];
-    }  
-
-  /* Now select the row and post notification only if needed */ 
-  if ([_selectedRows containsObject: num] == NO)
-    {
-      _insertNumberInSelectionArray (_selectedRows, num);
-      _selectedRow = rowIndex;
-      [self _postSelectionIsChangingNotification];
-    }
-  else /* Otherwise simply change the last selected row */
-    {
-      _selectedRow = rowIndex;
-    }
-}
-#endif
-
 - (void) selectRow: (int)rowIndex
 byExtendingSelection: (BOOL)flag
 {
-  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
-
   if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
       [NSException raise: NSInvalidArgumentException
@@ -3579,7 +2633,7 @@ byExtendingSelection: (BOOL)flag
        * a NSTableViewSelectionDidChangeNotification.
        * This behaviour is required by the specifications */
       if ([_selectedRows count] == 1
-	  && [_selectedRows containsObject: num] == YES)
+	  && [_selectedRows containsIndex: rowIndex] == YES)
 	{
 	  /* Stop editing if any */
 	  if (_textObject != nil)
@@ -3594,9 +2648,9 @@ byExtendingSelection: (BOOL)flag
 	 only row - because we have been called to select it. */
       if (_numberOfRows > 1)
 	{
-	  [self setNeedsDisplay: YES];
-	  [_selectedRows removeAllObjects];
+	  [_selectedRows removeAllIndexes];
 	  _selectedRow = -1;
+	  [self setNeedsDisplay: YES];
 	}
     }
   else // flag == YES
@@ -3616,11 +2670,8 @@ byExtendingSelection: (BOOL)flag
     }  
 
   /* Now select the row and post notification only if needed */ 
-  if ([_selectedRows containsObject: num] == NO)
+  if ([self _selectUnselectedRow: rowIndex])
     {
-      _insertNumberInSelectionArray (_selectedRows, num);
-      _selectedRow = rowIndex;
-      [self setNeedsDisplayInRect: [self rectOfRow: rowIndex]];
       [self _postSelectionDidChangeNotification];
     }
   else /* Otherwise simply change the last selected row */
@@ -3641,21 +2692,17 @@ byExtendingSelection: (BOOL)flag
 
 - (NSIndexSet *) selectedColumnIndexes;
 {
-  // FIXME
-  return nil;  
+  return _selectedColumns;  
 }
 
 - (NSIndexSet *) selectedRowIndexes;
 {
-  // FIXME
-  return nil;  
+  return _selectedRows;  
 }
 
 - (void) deselectColumn: (int)columnIndex
 {
-  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
-
-  if ([_selectedColumns containsObject: num] == NO)
+  if ([_selectedColumns containsIndex: columnIndex] == NO)
     {
       return;
     }
@@ -3671,32 +2718,38 @@ byExtendingSelection: (BOOL)flag
   
   _selectingColumns = YES;
 
-  [_selectedColumns removeObject: num];
+  [_selectedColumns removeIndex: columnIndex];
 
   if (_selectedColumn == columnIndex)
     {
-      int i, count = [_selectedColumns count]; 
-      int nearestColumn = -1;
-      int nearestColumnDistance = _numberOfColumns;
-      int column, distance;
-      for (i = 0; i < count; i++)
-	{
-	  column = [[_selectedColumns objectAtIndex: i] intValue];
+      unsigned int less = [_selectedColumns indexLessThanIndex: columnIndex];
+      unsigned int greater = [_selectedColumns indexGreaterThanIndex: columnIndex];
 
-	  distance = column - columnIndex;
-	  if (distance < 0)
+      if (less == NSNotFound)
+        {
+	  if (greater == NSNotFound)
 	    {
-	      distance = -distance;
+	      _selectedColumn = -1;
 	    }
-
-	  if (distance < nearestColumnDistance)
+	  else
 	    {
-	      nearestColumn = column;
-	    }
+	      _selectedColumn = greater;		
+	    }  
 	}
-      _selectedColumn = nearestColumn;
+      else if (greater == NSNotFound)
+        {
+	  _selectedColumn = less;
+	}
+      else if (columnIndex - less > greater - columnIndex)
+        {
+	  _selectedColumn = greater;		
+	}
+      else 
+        {
+	  _selectedColumn = less;
+	}
     }
-
+      
   [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
   if (_headerView)
     {
@@ -3709,9 +2762,7 @@ byExtendingSelection: (BOOL)flag
 
 - (void) deselectRow: (int)rowIndex
 {
-  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
-
-  if ([_selectedRows containsObject: num] == NO)
+  if ([_selectedRows containsIndex: rowIndex] == NO)
     {
       return;
     }
@@ -3724,30 +2775,36 @@ byExtendingSelection: (BOOL)flag
 
   _selectingColumns = NO;
 
-  [_selectedRows removeObject: num];
+  [_selectedRows removeIndex: rowIndex];
 
   if (_selectedRow == rowIndex)
     {
-      int i, count = [_selectedRows count]; 
-      int nearestRow = -1;
-      int nearestRowDistance = _numberOfRows;
-      int row, distance;
-      for (i = 0; i < count; i++)
-	{
-	  row = [[_selectedRows objectAtIndex: i] intValue];
+      unsigned int less = [_selectedRows indexLessThanIndex: rowIndex];
+      unsigned int greater = [_selectedRows indexGreaterThanIndex: rowIndex];
 
-	  distance = row - rowIndex;
-	  if (distance < 0)
+      if (less == NSNotFound)
+        {
+	  if (greater == NSNotFound)
 	    {
-	      distance = -distance;
+	      _selectedRow = -1;
 	    }
-
-	  if (distance < nearestRowDistance)
+	  else
 	    {
-	      nearestRow = row;
-	    }
+	      _selectedRow = greater;		
+	    }  
 	}
-      _selectedRow = nearestRow;
+      else if (greater == NSNotFound)
+        {
+	  _selectedRow = less;
+	}
+      else if (rowIndex - less > greater - rowIndex)
+        {
+	  _selectedRow = greater;		
+	}
+      else 
+        {
+	  _selectedRow = less;
+	}
     }
 
   [self _postSelectionDidChangeNotification];
@@ -3775,24 +2832,22 @@ byExtendingSelection: (BOOL)flag
 
 - (BOOL) isColumnSelected: (int)columnIndex
 {
-  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
-  return [_selectedColumns containsObject: num];
+  return [_selectedColumns containsIndex: columnIndex];
 }
 
 - (BOOL) isRowSelected: (int)rowIndex
 {
-  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
-  return [_selectedRows containsObject: num];
+  return [_selectedRows containsIndex: rowIndex];
 }
 
 - (NSEnumerator *) selectedColumnEnumerator
 {
-  return [_selectedColumns objectEnumerator];
+  return [[self _selectedColumArray] objectEnumerator];
 }
 
 - (NSEnumerator *) selectedRowEnumerator
 {
-  return [_selectedRows objectEnumerator];
+  return [[self _selectedRowArray] objectEnumerator];
 }
 
 - (void) selectAll: (id) sender
@@ -3850,25 +2905,13 @@ byExtendingSelection: (BOOL)flag
   /* Do the real selection */
   if (_selectingColumns == YES)
     {
-      int column;
-
-      [_selectedColumns removeAllObjects];
-      for (column = 0; column < _numberOfColumns; column++)
-	{
-	  NSNumber *num  = [NSNumber numberWithInt: column];
-	  [_selectedColumns addObject: num];
-	}
+      [_selectedColumns removeAllIndexes];
+      [_selectedColumns addIndexesInRange: NSMakeRange(0, _numberOfColumns)];
     }
   else // selecting rows
     {
-      int row;
-
-      [_selectedRows removeAllObjects];
-      for (row = 0; row < _numberOfRows; row++)
-	{
-	  NSNumber *num  = [NSNumber numberWithInt: row];
-	  [_selectedRows addObject: num];
-	}
+      [_selectedRows removeAllIndexes];
+      [_selectedRows addIndexesInRange: NSMakeRange(0, _numberOfRows)];
     }
   
   [self _postSelectionDidChangeNotification];
@@ -3894,8 +2937,8 @@ byExtendingSelection: (BOOL)flag
 	  
   if (([_selectedColumns count] > 0) || ([_selectedRows count] > 0))
     {
-      [_selectedColumns removeAllObjects];
-      [_selectedRows removeAllObjects];
+      [_selectedColumns removeAllIndexes];
+      [_selectedRows removeAllIndexes];
       _selectedColumn = -1;
       _selectedRow = -1;
       _selectingColumns = NO;
@@ -4164,30 +3207,12 @@ byExtendingSelection: (BOOL)flag
   
   if (flag == NO)
     {
-      /* Compute rect to redraw to clear the old column selection */
-      int column, i, count = [_selectedColumns count];
-      
-      for (i = 0; i < count; i++)
-	{
-	  column = [[_selectedColumns objectAtIndex: i] intValue];
-	  [self setNeedsDisplayInRect: [self rectOfColumn: column]];
-	}	  
-      [_selectedColumns removeAllObjects];
-      _selectedColumn = -1;  
+      [self _unselectAllColumns];
       _selectingColumns = NO;
     }
   else
     {
-      /* Compute rect to redraw to clear the old row selection */
-      int row, i, count = [_selectedRows count];
-      
-      for (i = 0; i < count; i++)
-	{
-	  row = [[_selectedRows objectAtIndex: i] intValue];
-	  [self setNeedsDisplayInRect: [self rectOfRow: row]];
-	}	  
-      [_selectedRows removeAllObjects];
-      _selectedRow = -1;  
+      [self _unselectAllRows];
       _selectingColumns = YES;
     }
 }
@@ -4236,8 +3261,7 @@ byExtendingSelection: (BOOL)flag
       NSPoint mouseLocationWin;
       NSDate *distantFuture = [NSDate distantFuture];
       NSEvent *lastEvent;
-      NSSet *_oldSelectedRows;
-      id delegateIfItTakesPart = nil; /* Is this ever used ? */
+      NSIndexSet *_oldSelectedRows;
       BOOL mouseUp = NO;
       BOOL done = NO;
       BOOL draggingPossible = [self _isDraggingSource];
@@ -4289,8 +3313,7 @@ byExtendingSelection: (BOOL)flag
 	  selectionMode |= SHIFT_DOWN;
 	}
       
-      if ([_selectedRows containsObject: 
-			   [NSNumber numberWithInt: _clickedRow]] == NO)
+      if (![_selectedRows containsIndex: _clickedRow])
 	{
 	  selectionMode |= ADDING_ROW;
 	}
@@ -4329,7 +3352,7 @@ byExtendingSelection: (BOOL)flag
 	}
 
       // let's sort the _selectedRows
-      _oldSelectedRows = [NSSet setWithArray: _selectedRows];
+      _oldSelectedRows = [_selectedRows copy];
 
       lastEvent = theEvent;
       while (done != YES)
@@ -4397,6 +3420,7 @@ byExtendingSelection: (BOOL)flag
 		    {
 		      NSPoint mouseLocationView;
 		      NSPasteboard *pboard;
+		      NSArray *rows;
 
 		      pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
 		      mouseLocationView = [self convertPoint: 
@@ -4410,7 +3434,6 @@ byExtendingSelection: (BOOL)flag
 			  /* Mouse drag in a row that wasn't selected.
 			     select the new row before dragging */
 			  computeNewSelection(self,
-					      delegateIfItTakesPart,
 					      _oldSelectedRows, 
 					      _selectedRows,
 					      _originalRow,
@@ -4420,12 +3443,13 @@ byExtendingSelection: (BOOL)flag
 					      selectionMode);
 			  
 			}
-		      if ([self _writeRows: _selectedRows
+		      rows = [self _selectedRowArray];
+		      if ([self _writeRows: rows
 				toPasteboard: pboard] == YES)
 			{
 			  NSPoint p = NSZeroPoint;
 			  NSImage *dragImage =
-			    [self dragImageForRows: _selectedRows
+			    [self dragImageForRows: rows
 				  event: theEvent
 				  dragImageOffset: &p];
 
@@ -4523,7 +3547,6 @@ byExtendingSelection: (BOOL)flag
 	  if (shouldComputeNewSelection == YES)
 	    {
 	      computeNewSelection(self,
-				  delegateIfItTakesPart,
 				  _oldSelectedRows, 
 				  _selectedRows,
 				  _originalRow,
@@ -4546,12 +3569,7 @@ byExtendingSelection: (BOOL)flag
       if (startedPeriodicEvents == YES)
 	[NSEvent stopPeriodicEvents];
 
-      [_selectedRows sortUsingSelector: @selector(compare:)];
-
-      if ([_selectedRows 
-	    isEqualToArray: 
-	      [[_oldSelectedRows allObjects] 
-		sortedArrayUsingSelector: @selector(compare:)]] == NO)
+      if (![_selectedRows  isEqualToIndexSet: _oldSelectedRows])
 	{
 	  [self _postSelectionDidChangeNotification];
 	}
@@ -5141,34 +4159,18 @@ byExtendingSelection: (BOOL)flag
      selected rows below the new end of the table */
   if (!_selectingColumns)
     {
-      int i, count = [_selectedRows count]; 
-      int row = -1;
+      int row = [_selectedRows lastIndex];
       
       /* Check that all selected rows are in the new range of rows */
-      for (i = 0; i < count; i++)
-	{
-	  row = [[_selectedRows objectAtIndex: i] intValue];
-
-	  if (row >= _numberOfRows)
-	    {
-	      break;
-	    }
-	}
-
-      if (i < count  &&  row > -1)
-	{
-	  /* Some of them are outside the table ! - Remove them */
-	  for (; i < count; i++)
-	    {
-	      [_selectedRows removeLastObject];
-	    }
-	  /* Now if the _selectedRow is outside the table, reset it to be
-	     the last selected row (if any) */
+      if (row >= _numberOfRows)
+        {
+	  [_selectedRows removeIndexesInRange: 
+			     NSMakeRange(_numberOfRows,  row - _numberOfRows)];
 	  if (_selectedRow >= _numberOfRows)
 	    {
 	      if ([_selectedRows count] > 0)
 		{
-		  _selectedRow = [[_selectedRows lastObject] intValue];
+		  _selectedRow = [_selectedRows lastIndex];
 		}
 	      else
 		{
@@ -5185,8 +4187,7 @@ byExtendingSelection: (BOOL)flag
 		      
 		      if (lastRow > -1)
 			{
-			  [_selectedRows addObject: 
-					   [NSNumber numberWithInt: lastRow]];
+			  [_selectedRows addIndex: lastRow];
 			  _selectedRow = lastRow;
 			}
 		      else
@@ -5440,36 +4441,28 @@ byExtendingSelection: (BOOL)flag
 	return;
       
       /* highlight selected rows */
-      startingRow = [self rowAtPoint: NSMakePoint (0, NSMinY (clipRect))];
-      endingRow   = [self rowAtPoint: NSMakePoint (0, NSMaxY (clipRect))];
+      startingRow = [self rowAtPoint: NSMakePoint(0, NSMinY(clipRect))];
+      endingRow   = [self rowAtPoint: NSMakePoint(0, NSMaxY(clipRect))];
       
       if (startingRow == -1)
 	startingRow = 0;
       if (endingRow == -1)
 	endingRow = _numberOfRows - 1;
       
-      for (row = 0; row < selectedRowsCount; row++)
+      row = [_selectedRows indexGreaterThanOrEqualToIndex: startingRow];
+      while ((row != NSNotFound) && (row <= endingRow))
 	{
-	  int rowNumber; 
-	  
-	  rowNumber = [[_selectedRows objectAtIndex: row] intValue];
-	  
-	  if (rowNumber > endingRow)
-	    break;
-	  
-	  if (rowNumber >= startingRow)
-	    {
-	      //NSHighlightRect(NSIntersectionRect([self rectOfRow: rowNumber],
-	      //						 clipRect));
-	      [[NSColor whiteColor] set];
-	      NSRectFill(NSIntersectionRect([self rectOfRow: rowNumber], clipRect));
-	    }
-	}
+	  //NSHighlightRect(NSIntersectionRect([self rectOfRow: row],
+	    //						 clipRect));
+	  [[NSColor whiteColor] set];
+	  NSRectFill(NSIntersectionRect([self rectOfRow: row], clipRect));
+	  row = [_selectedRows indexGreaterThanIndex: row];
+	}	  
     }
   else // Selecting columns
     {
-      int selectedColumnsCount;
-      int column;
+      unsigned int selectedColumnsCount;
+      unsigned int column;
       int startingColumn, endingColumn;
       
       selectedColumnsCount = [_selectedColumns count];
@@ -5478,31 +4471,21 @@ byExtendingSelection: (BOOL)flag
 	return;
       
       /* highlight selected columns */
-      startingColumn = [self columnAtPoint: NSMakePoint (NSMinX (clipRect), 
-							 0)];
-      endingColumn = [self columnAtPoint: NSMakePoint (NSMaxX (clipRect), 0)];
+      startingColumn = [self columnAtPoint: NSMakePoint(NSMinX(clipRect), 0)];
+      endingColumn = [self columnAtPoint: NSMakePoint(NSMaxX(clipRect), 0)];
 
       if (startingColumn == -1)
 	startingColumn = 0;
       if (endingColumn == -1)
 	endingColumn = _numberOfColumns - 1;
-      
-      for (column = 0; column < selectedColumnsCount; column++)
+
+      column = [_selectedColumns indexGreaterThanOrEqualToIndex: startingColumn];
+      while ((column != NSNotFound) && (column <= endingColumn))
 	{
-	  int columnNumber; 
-	  
-	  columnNumber = [[_selectedColumns objectAtIndex: column] intValue];
-	  
-	  if (columnNumber > endingColumn)
-	    break;
-	  
-	  if (columnNumber >= startingColumn)
-	    {
-	      NSHighlightRect
-		(NSIntersectionRect([self rectOfColumn: columnNumber],
-				    clipRect));
-	    }
-	}     
+	  NSHighlightRect(NSIntersectionRect([self rectOfColumn: column],
+					     clipRect));
+	  column = [_selectedColumns indexGreaterThanIndex: column];
+	}	  
     }
 }
 
@@ -6103,8 +5086,8 @@ byExtendingSelection: (BOOL)flag
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 	} 
       
-      ASSIGN (_selectedColumns, [NSMutableArray array]);
-      ASSIGN (_selectedRows, [NSMutableArray array]);
+      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
       if (_numberOfColumns)
 	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
 				       sizeof(float) * _numberOfColumns);
@@ -6814,3 +5797,110 @@ byExtendingSelection: (BOOL)flag
 
 @end /* implementation of NSTableView */
 
+@implementation NSTableView (SelectionHelper)
+
+- (NSArray *) _selectedRowArray
+{
+  NSMutableArray *selected = [NSMutableArray array];
+  unsigned int row = [_selectedRows firstIndex];
+      
+  while (row != NSNotFound)
+    {
+      NSNumber *num  = [NSNumber numberWithInt: row];
+
+      [selected addObject: num]; 
+      row = [_selectedRows indexGreaterThanIndex: row];
+    }  
+	    
+  return selected;
+}
+
+- (BOOL) _selectRow: (int)rowIndex
+{
+  if (![self _shouldSelectRow: rowIndex])
+    {
+      return NO;
+    }
+  
+  [self setNeedsDisplayInRect: [self rectOfRow: rowIndex]];
+  [_selectedRows addIndex: rowIndex];
+  _selectedRow = rowIndex;
+  return YES;
+}
+
+- (BOOL) _selectUnselectedRow: (int)rowIndex
+{
+  if ([_selectedRows containsIndex: rowIndex])
+    {
+      return NO;
+    }
+  
+  [self setNeedsDisplayInRect: [self rectOfRow: rowIndex]];
+  [_selectedRows addIndex: rowIndex];
+  _selectedRow = rowIndex;
+  return YES;
+}
+
+- (BOOL) _unselectRow: (int)rowIndex
+{
+  if (![_selectedRows containsIndex: rowIndex])
+    {
+      return NO;
+    }
+
+  [self setNeedsDisplayInRect: [self rectOfRow: rowIndex]];
+  [_selectedRows removeIndex: rowIndex];
+
+  if (_selectedRow == rowIndex)
+    {
+      _selectedRow = -1;
+    }
+
+  return YES;
+}
+
+- (void) _unselectAllRows
+{
+  /* Compute rect to redraw to clear the old row selection */
+  unsigned int row = [_selectedRows firstIndex];
+      
+  while (row != NSNotFound)
+    {
+      [self setNeedsDisplayInRect: [self rectOfRow: row]];
+      row = [_selectedRows indexGreaterThanIndex: row];
+    }
+  [_selectedRows removeAllIndexes];
+  _selectedRow = -1;
+}
+
+- (NSArray *) _selectedColumArray
+{
+  NSMutableArray *selected = [NSMutableArray array];
+  unsigned int column = [_selectedColumns firstIndex];
+      
+  while (column != NSNotFound)
+    {
+      NSNumber *num  = [NSNumber numberWithInt: column];
+
+      [selected addObject: num]; 
+      column = [_selectedColumns indexGreaterThanIndex: column];
+    }  
+	    
+  return selected;
+}
+
+- (void) _unselectAllColumns
+{
+  /* Compute rect to redraw to clear the old column selection */
+  unsigned int column = [_selectedColumns firstIndex];
+      
+  while (column != NSNotFound)
+    {
+      [self setNeedsDisplayInRect: [self rectOfColumn: column]];
+      column = [_selectedColumns indexGreaterThanIndex: column];
+    }	  
+  [_selectedColumns removeAllIndexes];
+  _selectedColumn = -1;  
+}
+
+@end

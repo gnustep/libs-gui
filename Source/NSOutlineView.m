@@ -31,6 +31,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSIndexSet.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSNull.h>
@@ -350,7 +351,7 @@ static NSImage *unexpandable  = nil;
   if([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
     {
       NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
-      int i, count, row;
+      unsigned int row;
 
       [infoDict setObject: item forKey: @"NSObject"];
       
@@ -362,16 +363,14 @@ static NSImage *unexpandable  = nil;
       
       // We save the selection
       [_selectedItems removeAllObjects];
-      count = [_selectedRows count]; 
-      
-      for (i = 0; i < count; i++)
-	{
-	  row = [[_selectedRows objectAtIndex: i] intValue];
-
+      row = [_selectedRows firstIndex];
+      while (row != NSNotFound)
+        {
 	  if ([self itemAtRow: row])
 	    {
 	      [_selectedItems addObject: [self itemAtRow: row]];
 	    }
+	  row = [_selectedRows indexGreaterThanIndex: row];
 	}
 
       // collapse...
@@ -439,7 +438,7 @@ static NSImage *unexpandable  = nil;
       if(![self isItemExpanded: item] && canExpand)
 	{
 	  NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
-	  int i, count, row;
+	  unsigned int row;
 
 	  [infoDict setObject: item forKey: @"NSObject"];
 	  
@@ -451,16 +450,14 @@ static NSImage *unexpandable  = nil;
 	  
 	  // We save the selection
 	  [_selectedItems removeAllObjects];
-	  count = [_selectedRows count]; 
-	  
-	  for (i = 0; i < count; i++)
+	  row = [_selectedRows firstIndex];
+	  while (row != NSNotFound)
 	    {
-	      row = [[_selectedRows objectAtIndex: i] intValue];
-	      
 	      if ([self itemAtRow: row])
-		{
+	        {
 		  [_selectedItems addObject: [self itemAtRow: row]];
 		}
+	      row = [_selectedRows indexGreaterThanIndex: row];
 	    }
 	  
 	  // insert the root element, if necessary otherwise insert the
@@ -745,7 +742,7 @@ static NSImage *unexpandable  = nil;
       int i, count, row;
       
       /* We restore the selection */
-      [_selectedRows removeAllObjects];
+      [_selectedRows removeAllIndexes];
       count = [_selectedItems count];
 
       for (i = 0; i < count; i++)
@@ -754,7 +751,7 @@ static NSImage *unexpandable  = nil;
 
 	  if (row >= 0 && row < _numberOfRows)
 	    {
-	      [_selectedRows addObject: [NSNumber numberWithInt: row]];
+	      [_selectedRows addIndex: row];
 	    }
 	}
     }
