@@ -84,7 +84,7 @@
   NSString *file = [bundle pathForResource: NSStringFromClass(myClass)
                                     ofType:@"tiff"];
 
-  return [[NSImage alloc] initWithContentsOfFile: file];
+  return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: file]);
 }
 
 //
