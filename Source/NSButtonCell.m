@@ -1284,23 +1284,33 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSString *alternateContents = [aDecoder decodeObjectForKey: @"NSAlternateContents"];
-      NSImage *alternateImage = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
       //NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
-      NSString *key = [aDecoder decodeObjectForKey: @"NSKeyEquivalent"];
       int bFlags;
       int bFlags2;
       int delay = 0;
       int interval = 0;
       
-      [self setAlternateImage: alternateImage];
-      [self setAlternateTitle: alternateContents];
-      [self setKeyEquivalent: key];
-
+      if ([aDecoder containsValueForKey: @"NSKeyEquivalent"])
+        {
+	  [self setKeyEquivalent: [aDecoder decodeObjectForKey: @"NSKeyEquivalent"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSNormalImage"])
+        {
+	  [self setImage: [aDecoder decodeObjectForKey: @"NSNormalImage"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSAlternateImage"])
+        {
+	  [self setAlternateImage: [aDecoder decodeObjectForKey: @"NSAlternateImage"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSAlternateContents"])
+        {
+	  [self setAlternateTitle: [aDecoder decodeObjectForKey: @"NSAlternateContents"]];
+	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
 	  bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
 	  // FIXME
+	  [self setImagePosition: NSImageLeft];
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {

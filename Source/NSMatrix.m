@@ -2486,7 +2486,7 @@ static SEL getSel;
 	}
       if ([aDecoder containsValueForKey: @"NSCellBackgroundColor"])
         {
-	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSCellBackgroundColor"]];
+	  [self setCellBackgroundColor: [aDecoder decodeObjectForKey: @"NSCellBackgroundColor"]];
 	}
       if ([aDecoder containsValueForKey: @"NSProtoCell"])
         {
@@ -2502,11 +2502,13 @@ static SEL getSel;
 	}
       if ([aDecoder containsValueForKey: @"NSCellSize"])
         {
-	  [self setCellSize: [aDecoder decodeSizeForKey: @"NSCellSize"]];
+	  // Don't use method here as this would change the frame
+	  _cellSize = [aDecoder decodeSizeForKey: @"NSCellSize"];
 	}
       if ([aDecoder containsValueForKey: @"NSIntercellSpacing"])
         {
-	  [self setIntercellSpacing: [aDecoder decodeSizeForKey: @"NSIntercellSpacing"]];
+	  // Don't use method here as this would change the frame
+	  _intercell = [aDecoder decodeSizeForKey: @"NSIntercellSpacing"];
 	}
       if ([aDecoder containsValueForKey: @"NSMatrixFlags"])
         {
@@ -2536,7 +2538,6 @@ static SEL getSel;
 	      count = rows * columns;
 	    }
 	}
-
 
       for (i = 0; i < count; i++)
         {

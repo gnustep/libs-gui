@@ -298,6 +298,10 @@ static Class controlClass;
 
   if ([aDecoder allowsKeyedCoding])
     {
+      if ([aDecoder containsValueForKey: @"NSTag"])
+        {
+	  [self setTag: [aDecoder decodeIntForKey: @"NSTag"]];
+	}
     }
   else
     {

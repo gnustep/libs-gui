@@ -1,3 +1,15 @@
+2004-10-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSActionCell.m (-initWithCoder:):
+	* Source/NSBitmapImageRep.m (-initWithCoder:):
+	* Source/NSImage.m (-initWithCoder:): Implemented keyed decoding.
+	* Source/NSMatrix.m (-initWithCoder:): Don't use methods to set
+	the cell size and intercell spase, as this will change the frame.
+	* Source/NSFormCell.m (-initWithCoder:): Set the string value
+	later, as the decoding is super gets used for the title.
+	* Source/NSButtonCell.m (-initWithCoder:): Set fields only when
+	value is provided and fake NSImageLeft until flag decoding is there.
+	
 2004-10-08 22:08  Chad Hardin  <cehardin@mac.com>
 
 	* Printing/GNUmakefile:  Now goes in and build GSCUPS (Work in progress!)

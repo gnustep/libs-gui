@@ -370,6 +370,10 @@ static NSColor	*shadowCol;
   [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
+      if ([aDecoder containsValueForKey: @"NSContents"])
+        {
+	  [self setStringValue: [aDecoder decodeObjectForKey: @"NSContents"]];
+	}
       if ([aDecoder containsValueForKey: @"NSTitleWidth"])
         {
 	  [self setTitleWidth: [aDecoder decodeFloatForKey: @"NSTitleWidth"]];

@@ -947,7 +947,14 @@ static BOOL supports_lzw_compression = NO;
   NSData	*data;
 
   self = [super initWithCoder: aDecoder];
-  data = [aDecoder decodeObject];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      data = [aDecoder decodeObjectForKey: @"NSTIFFRepresentation"];	
+    }
+  else
+    {
+      data = [aDecoder decodeObject];
+    }
   return [self initWithData: data];
 }
 
