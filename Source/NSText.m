@@ -1167,10 +1167,10 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 {
   BOOL	didLock  = NO;
 
-  if (![self window])
+  if (!_window)
     return;
 
-  if ([self window] && [[self class] focusView] != self)
+  if (_window && [[self class] focusView] != self)
     {
       [self lockFocus];
       didLock  = YES;
@@ -1190,7 +1190,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if (didLock)
     {
       [self unlockFocus];
-      [[self window] flushWindow];
+      [_window flushWindow];
     }
 }
 
@@ -1227,7 +1227,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 	  // first line
 	  NSHighlightRect (NSMakeRect (startRect.origin.x, startRect.origin.y, 
-				       [self frame].size.width - startRect.origin.x, 
+				       _frame.size.width - startRect.origin.x, 
 				       startRect.size.height));	
 	  // second line
 	  NSHighlightRect (NSMakeRect (0, endRect.origin.y, endRect.origin.x, 
@@ -1240,11 +1240,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 	  // first line
 	  NSHighlightRect (NSMakeRect (startRect.origin.x, startRect.origin.y, 
-				       [self frame].size.width - startRect.origin.x, 
+				       _frame.size.width - startRect.origin.x, 
 				       startRect.size.height));
 	  // intermediate lines
 	  NSHighlightRect (NSMakeRect (0, NSMaxY(startRect), 
-				       [self frame].size.width, 
+				       _frame.size.width, 
 				       endRect.origin.y - NSMaxY (startRect)));	
 	  // last line
 	  NSHighlightRect (NSMakeRect (0, endRect.origin.y, endRect.origin.x, 
@@ -1290,10 +1290,10 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 {
   BOOL didLock = NO;
   
-  if (![self window])
+  if (!_window)
     return;
 
-  if ([self window] && [[self class] focusView] != self)
+  if (_window && [[self class] focusView] != self)
     {
       [self lockFocus];
       didLock = YES;
@@ -1355,7 +1355,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if (didLock)
     {
       [self unlockFocus];
-      [[self window] flushWindow];
+      [_window flushWindow];
     }
 }
 
@@ -1438,7 +1438,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 - (void) sizeToFit
 {
-  NSRect sizeToRect = [self frame];
+  NSRect sizeToRect = _frame;
   
   // if we are a field editor we don't have to handle the size.
   if ([self isFieldEditor]) 
@@ -1475,7 +1475,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	  if ([[self superview] isKindOfClass: [NSClipView class]])
 	    tRect  = [(NSClipView*)[self superview] documentVisibleRect];
 	  else
-	    tRect  = [self bounds];
+	    tRect  = _bounds;
 	  
 	  if (currentCursorY < tRect.size.height + tRect.origin.y -
 	      [[lineLayoutInformation lastObject] lineRect].size.height)
@@ -1499,7 +1499,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	sizeToRect = NSMakeRect(0,0,minSize.width,minSize.height);
     }
   
-  if (!NSEqualSizes([self frame].size,sizeToRect.size)) {
+  if (!NSEqualSizes(_frame.size,sizeToRect.size)) {
     [self setFrame: sizeToRect];	//[self setFrameSize: sizeToRect.size];
   }
 }
@@ -1757,7 +1757,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if (!is_selectable) 
     return;
 
-  [[self window] makeFirstResponder: self];
+  [_window makeFirstResponder: self];
   
   switch([theEvent clickCount])
     {
@@ -1789,11 +1789,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     [self drawSelectionAsRangeNoCaret: [self selectedRange]];
   
   //<!> make this non - blocking (or make use of timed entries)
-  for (currentEvent = [[self window] 
+  for (currentEvent = [_window 
 			nextEventMatchingMask: 
 			  (NSLeftMouseDraggedMask|NSLeftMouseUpMask)];
        [currentEvent type] != NSLeftMouseUp;
-       (currentEvent = [[self window] 
+       (currentEvent = [_window 
 			 nextEventMatchingMask: 
 			   (NSLeftMouseDraggedMask|NSLeftMouseUpMask)]), 
 	 prevChosenRange = chosenRange)	// run modal loop
@@ -1811,7 +1811,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	  if (!didDragging)
 	    {
 	      [self drawSelectionAsRangeNoCaret: chosenRange];
-	      [[self window] flushWindow];
+	      [_window flushWindow];
 	    }
 	  else 
 	    continue;
@@ -1830,13 +1830,13 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 					 NSMaxRange (prevChosenRange)),
 				    MAX (NSMaxRange (chosenRange),
 					 NSMaxRange (prevChosenRange)))];
-	  [[self window] flushWindow];
+	  [_window flushWindow];
 	}
       else
 	{
 	  [self drawRectNoSelection: [self visibleRect]];
 	  [self drawSelectionAsRangeNoCaret: chosenRange];
-	  [[self window] flushWindow];
+	  [_window flushWindow];
 	}
       
       didDragging = YES;
@@ -1857,7 +1857,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   // remember for column stable cursor up/down
   currentCursorY = [self rectForCharacterIndex: chosenRange.location].origin.y;	
   [self unlockFocus];
-  [[self window] flushWindow];
+  [_window flushWindow];
 }
 
 
@@ -1865,7 +1865,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 {
   BOOL	didLock = NO;
   
-  if ([self window] && [[self class] focusView] != self)
+  if (_window && [[self class] focusView] != self)
     {
       [self lockFocus]; 
       didLock = YES;
@@ -1894,7 +1894,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 			    MAX (0, (int)NSMaxRange (redrawLineRange) - 1)] 
 			 lineRect]);
       
-      displayRect.size.width = [self frame].size.width - displayRect.origin.x;
+      displayRect.size.width = _frame.size.width - displayRect.origin.x;
       [[self backgroundColor] set]; 
       NSRectFill (displayRect);
        
@@ -1912,7 +1912,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if ([self drawsBackground])	// clean up the remaining area under text of us
     {
       float lowestY = 0;
-      NSRect myFrame = [self frame];
+      NSRect myFrame = _frame;
       
       if ([lineLayoutInformation count]) 
 	lowestY = NSMaxY ([[lineLayoutInformation lastObject] lineRect]);
@@ -1934,7 +1934,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if (didLock)
     {
       [self unlockFocus];
-      [[self window] flushWindow];
+      [_window flushWindow];
     }
 }
 
@@ -2405,20 +2405,20 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   NSDictionary *attributes = [self defaultTypingAttributes];
 
   if (![lineLayoutInformation count]) 
-    return NSMakeRect (0, 0, [self frame].size.width, 
+    return NSMakeRect (0, 0, _frame.size.width, 
 		       [[[self class] newlineString] 
 			 sizeWithAttributes: attributes].height);
   
   if (index >= NSMaxRange([[lineLayoutInformation lastObject] lineRange]))
     {	
       NSRect rect = [[lineLayoutInformation lastObject] lineRect];
-      if (NSMaxX (rect) >= [self frame].size.width)
+      if (NSMaxX (rect) >= _frame.size.width)
 	{	
 	  return NSMakeRect (0, NSMaxY(rect), 
-			     [self frame].size.width, rect.size.height);
+			     _frame.size.width, rect.size.height);
 	}
       return NSMakeRect (NSMaxX (rect), rect.origin.y, 
-			 [self frame].size.width - NSMaxX (rect),
+			 _frame.size.width - NSMaxX (rect),
 			 rect.size.height);
     }
   
@@ -2622,7 +2622,7 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
   NSDictionary *attributes = [self defaultTypingAttributes];
   NSPoint drawingPoint = NSZeroPoint;
   _GNUTextScanner *parscanner;
-  float	width = [self frame].size.width;
+  float	width = _frame.size.width;
   unsigned startingIndex = 0,currentLineIndex;
   _GNULineLayoutInfo  *lastValidLineInfo = nil;
   NSArray *ghostArray = nil;	// for optimization detection
