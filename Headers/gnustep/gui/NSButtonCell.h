@@ -47,10 +47,15 @@ typedef enum _NSButtonType {
 } NSButtonType;
 
 typedef enum _NSBezelStyle {
-    NSRoundedBezelStyle,
-    NSRegularSquareBezelStyle,
-    NSThickSquareBezelStyle,
-    NSThickerSquareBezelStyle
+  NSRoundedBezelStyle,
+  NSRegularSquareBezelStyle,
+  NSThickSquareBezelStyle,
+  NSThickerSquareBezelStyle,
+  NSNeXTBezelStyle,
+  NSPushButtonBezelStyle,
+  NSSmallIconButtonBezelStyle,
+  NSMediumIconButtonBezelStyle,
+  NSLargeIconButtonBezelStyle
 } NSBezelStyle;
 
 typedef enum _NSGradientType {
@@ -79,7 +84,7 @@ typedef enum _NSGradientType {
   NSGradientType _gradient_type;
   BOOL _shows_border_only_while_mouse_inside;
   BOOL _mouse_inside;
-  // Think of the following as a BOOL ivar
+  // Think of the following as a BOOL ivars
 #define _buttoncell_is_transparent _cell.subclass_bool_one
 #define _image_dims_when_disabled _cell.subclass_bool_two
 }
