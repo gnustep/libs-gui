@@ -1,3 +1,20 @@
+Mon Jun 24 13:17:37 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Originated by a patch/suggestion by Serg Stoyan
+	<stoyan@on.com.ua>, rewritten by myself.
+	* Source/GSSimpleLayoutManager.m (defaultFontHeight): New static
+	inline function computing the height of the user font of the
+	default size.
+	([-boundingRectForGlyphRange:inTextContainer:]): Use
+	defaultFontHeight() instead of hardcoded 12.
+	([-lineFragmentRectForGlyphAtIndex:effectiveRange:]): Idem.
+	([-rectForCharacterIndex:]): Idem.
+	([-rebuildForRange:delta:inTextContainer:]): Idem.
+	([-rebuildForRange:delta:inTextContainer:]): Idem.
+	* Source/NSTextView.m
+	([-updateInsertionPointStateAndRestartTimer:]): Removed unused
+	code setting font size to 12 if it was 0.
+		
 Sat Jun 22 17:26:18 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMenuView.m ([-itemAdded:]): Fixed highlighting of
