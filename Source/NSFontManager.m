@@ -69,7 +69,7 @@ static Class		fontPanelClass = Nil;
       NSDebugLog(@"Initialize NSFontManager class\n");
 
       // Initial version
-     [self setVersion: 1];
+      [self setVersion: 1];
 
       // Set the factories
       [self setFontManagerFactory: [NSFontManager class]];
