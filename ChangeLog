@@ -1,3 +1,8 @@
+Tue Dec 31 16:30:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GNUmakefile: Build gmodel bundle when GUI_LIB is gnu, not
+	when it's not (Suggestion by Pete French <pete@twisted.org.uk>).
+
 Mon Dec 30 18:29:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GNUmakefile: Updated all checks for library-combo.
