@@ -944,7 +944,6 @@ static Class		fontPanelClass = Nil;
   if (fontPanel == nil)
     fontPanel = [self fontPanel: YES];
   [fontPanel orderFront: sender];
-  [fontPanel setPanelFont: _selectedFont isMultiple: _multiple];
 }
 
 /*
