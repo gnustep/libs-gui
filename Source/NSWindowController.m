@@ -235,35 +235,37 @@
     {
       NSString *filename = [_document fileName];
       NSString *displayName = [_document displayName];
-      NSString *title = [self windowTitleForDocumentDisplayName:displayName];
+      NSString *title = [self windowTitleForDocumentDisplayName: displayName];
 
       /* If they just want to display the filename, use the fancy method */
-      if (filename != nil && [title isEqualToString:filename])
+      if (filename != nil && [title isEqualToString: filename])
         {
-          [_window setTitleWithRepresentedFilename:filename];
+          [_window setTitleWithRepresentedFilename: filename];
         }
       else
         {
           if (filename) [_window setRepresentedFilename:filename];
+	  {
             [_window setTitle:title];
+	  }
         }
     }
 }
 
-- (BOOL)isWindowLoaded
+- (BOOL) isWindowLoaded
 {
   return _wcFlags.nibIsLoaded;
 }
 
-- (void)windowDidLoad
+- (void) windowDidLoad
 {
 }
 
-- (void)windowWillLoad
+- (void) windowWillLoad
 {
 }
 
-- (void)_windowDidLoad
+- (void) _windowDidLoad
 {
   _wcFlags.nibIsLoaded = YES;
 
@@ -307,28 +309,34 @@
            * extreme top of the screen, and offset only a small amount
            * from the left.
            */
-           nextWindowLocation = [_window 
-				  cascadeTopLeftFromPoint: nextWindowLocation];
+           nextWindowLocation 
+	     = [_window cascadeTopLeftFromPoint: nextWindowLocation];
         }
     }
 
   [self windowDidLoad];
 }
 
-- (void)loadWindow
+- (void) loadWindow
 {
-  if ([self isWindowLoaded]) return;
+  if ([self isWindowLoaded]) 
+    {
+      return;
+    }
 
-  if ([NSBundle loadNibNamed:_windowNibName owner:_owner])
+  if ([NSBundle loadNibNamed: _windowNibName  owner: _owner])
     {
       _wcFlags.nibIsLoaded = YES;
 
-      if (_window == nil && _document && _owner == _document)
-        [self setWindow:[_document _transferWindowOwnership]];
+      if (_window == nil  &&  _document != nil  &&  _owner == _document)
+	{
+	  [self setWindow: [_document _transferWindowOwnership]];
+	}
     }
   else
     {
-      NSLog(@"%@: could not load nib named %@.nib", [self class], _windowNibName);
+      NSLog (@"%@: could not load nib named %@.nib", 
+	     [self class], _windowNibName);
     }
 }
 
