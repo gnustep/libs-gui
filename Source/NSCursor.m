@@ -392,6 +392,11 @@ backgroundColorHint:(NSColor *)bg
         {
 	  self = [NSCursor IBeamCursor];
 	}
+      else 
+        {
+	  // FIXME
+	  self = [NSCursor arrowCursor];
+	}
       
       if ([aDecoder containsValueForKey: @"NSHotSpot"])
         {

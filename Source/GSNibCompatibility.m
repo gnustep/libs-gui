@@ -52,6 +52,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include "AppKit/AppKit.h"
 #include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibCompatibility.h>
@@ -97,16 +98,13 @@
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  /*
+    /**/
   if ([aDecoder allowsKeyedCoding])
     {
-      NSRect screenRect = [aDecoder decodeRectForKey: @"NSScreenRect"];
+      //NSRect screenRect = [aDecoder decodeRectForKey: @"NSScreenRect"];
       NSRect windowRect = [aDecoder decodeRectForKey: @"NSWindowRect"];
-      NSString *viewClass = [aDecoder decodeObjectForKey: @"NSViewClass"];
+      //NSString *viewClass = [aDecoder decodeObjectForKey: @"NSViewClass"];
       NSString *windowClass = [aDecoder decodeObjectForKey: @"NSWindowClass"];
-      NSString *title = [aDecoder decodeObjectForKey: @"NSWindowTitle"];
-      NSView *view = [aDecoder decodeObjectForKey: @"NSWindowView"];
-      int flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
       int style = [aDecoder decodeIntForKey: @"NSWindowStyleMask"];
       int backing = [aDecoder decodeIntForKey: @"NSWindowBacking"];
       
@@ -116,8 +114,16 @@
 			       backing: backing
 				 defer: NO
 				screen: nil];
-      [self setContentView: view];
 
+      if ([aDecoder containsValueForKey: @"NSWindowView"])
+        {
+	    [self setContentView: 
+		      [aDecoder decodeObjectForKey: @"NSWindowView"]];	  
+	}
+      if ([aDecoder containsValueForKey: @"NSWTFlags"])
+        {
+	  //int flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
+	}
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
 	  NSSize minSize = [aDecoder decodeSizeForKey: @"NSMinSize"];
@@ -128,18 +134,20 @@
 	  NSSize maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
 	  [self setMaxSize: maxSize];
 	}
-      [self setTitle: title];
+      if ([aDecoder containsValueForKey: @"NSWindowTitle"])
+        {
+	  [self setTitle: [aDecoder decodeObjectForKey: @"NSWindowTitle"]];
+	}
 
       return self;
     }
   else
     {
-  */
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  return [super initWithCoder: aDecoder];
-  //}
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
+      return [super initWithCoder: aDecoder];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder

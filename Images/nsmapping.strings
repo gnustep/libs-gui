@@ -9,3 +9,4 @@ NSHighlightedRadioButton = common_RadioOn;
 AppleMenuImage = GNUstepMenuImage;
 NSMenuCheckmark = common_2DCheckMark;
 NSMenuArrow = common_3DArrowRight;
+NSMenuMixedState = common_2DDash;

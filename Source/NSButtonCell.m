@@ -533,8 +533,8 @@
       case NSSwitchButton: 
 	[self setHighlightsBy: NSContentsCellMask];
 	[self setShowsStateBy: NSContentsCellMask];
-	[self setImage: [NSImage imageNamed: @"common_SwitchOff"]];
-	[self setAlternateImage: [NSImage imageNamed: @"common_SwitchOn"]];
+	[self setImage: [NSImage imageNamed: @"NSSwitch"]];
+	[self setAlternateImage: [NSImage imageNamed: @"NSHighlightedSwitch"]];
 	[self setImagePosition: NSImageLeft];
 	[self setAlignment: NSLeftTextAlignment];
 	[self setBordered: NO];
@@ -544,8 +544,8 @@
       case NSRadioButton: 
 	[self setHighlightsBy: NSContentsCellMask];
 	[self setShowsStateBy: NSContentsCellMask];
-	[self setImage: [NSImage imageNamed: @"common_RadioOff"]];
-	[self setAlternateImage: [NSImage imageNamed: @"common_RadioOn"]];
+	[self setImage: [NSImage imageNamed: @"NSRadioButton"]];
+	[self setAlternateImage: [NSImage imageNamed: @"NSHighlightedRadioButton"]];
 	[self setImagePosition: NSImageLeft];
 	[self setAlignment: NSLeftTextAlignment];
 	[self setBordered: NO];

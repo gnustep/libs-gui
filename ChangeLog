@@ -1,3 +1,14 @@
+2004-02-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Images/nsmapping.strings:
+	Added definition for NSMenuMixedState.
+	* Source/NSButtonCell.m: (-setButtonType:)
+	* Source/NSMenuItemCell.m: (+initialize)
+	* Source/NSMenuItem.m: (-initWithTitle:action:keyEquivalent:)
+	Use image aliases instead of file names.
+	* Source/GSNibCompatibility.m: Reenabled keyed archiver for
+	NSWindowTemplate and added missing include.
+
 2004-02-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSView.h:

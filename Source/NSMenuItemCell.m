@@ -54,7 +54,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (self == [NSMenuItemCell class])
     {
       [self setVersion: 2];
-      arrowImage = [[NSImage imageNamed: @"common_3DArrowRight"] copy];
+      arrowImage = [[NSImage imageNamed: @"NSMenuArrow"] copy];
     }
 }
 

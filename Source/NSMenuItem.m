@@ -127,8 +127,8 @@ static Class imageClass;
   _enabled = YES;
   //_image = nil;
   // Set the images according to the spec. On: check mark; off: dash.
-  [self setOnStateImage: [imageClass imageNamed: @"common_2DCheckMark"]];
-  [self setMixedStateImage: [imageClass imageNamed: @"common_2DDash"]];
+  [self setOnStateImage: [imageClass imageNamed: @"NSMenuCheckmark"]];
+  [self setMixedStateImage: [imageClass imageNamed: @"NSMenuMixedState"]];
   //_offStateImage = nil;
   //_target = nil;
   _action = aSelector;
