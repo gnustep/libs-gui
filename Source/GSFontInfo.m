@@ -161,11 +161,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - init
 {
-  int i;
   [super init];
   ASSIGN(fontDictionary, [NSMutableDictionary dictionaryWithCapacity:25]);
-  for (i = 0; i < 256; i++)
-    widths[i] = 0.0;
+  weight = 0;
+  traits = 0;
+  mostCompatibleStringEncoding = NSASCIIStringEncoding;
+
   return self;
 }
 
@@ -174,7 +175,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
   RELEASE(fontDictionary);
   RELEASE(fontName);
   RELEASE(familyName);
-  RELEASE(weight);
   RELEASE(encodingScheme);
   [super dealloc];
 }
@@ -190,7 +190,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
       copy->fontDictionary = [fontDictionary copyWithZone: zone];
       copy->fontName = [fontName copyWithZone: zone];
       copy->familyName = [familyName copyWithZone: zone];
-      copy->weight = [weight copyWithZone: zone];
       copy->encodingScheme = [encodingScheme copyWithZone: zone];
     }
   return copy;
@@ -205,7 +204,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
   copy->fontDictionary = [fontDictionary copyWithZone: zone];
   copy->fontName = [fontName copyWithZone: zone];
   copy->familyName = [familyName copyWithZone: zone];
-  copy->weight = [weight copyWithZone: zone];
   copy->encodingScheme = [encodingScheme copyWithZone: zone];
   return copy;
 }
@@ -308,11 +306,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (float) xHeight
 { 
   return xHeight; 
-}
-
-- (float*) widths
-{ 
-  return widths; 
 }
 
 - (float)defaultLineHeightForFont
@@ -431,7 +424,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (NSStringEncoding)mostCompatibleStringEncoding
 {
-  return NSASCIIStringEncoding;
+  return mostCompatibleStringEncoding;
 }
 
 - (float) widthOfString: (NSString*)string
@@ -441,12 +434,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (NSFontTraitMask) traits
 {
-  return 0;
+  return traits;
 }
 
 - (int) weight
 {
-  return 0;
+  return weight;
 }
 
 @end
