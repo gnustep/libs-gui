@@ -60,6 +60,7 @@ static NSButtonCell* knobCell = nil;
 static const float scrollerWidth = 18;
 static const float buttonsWidth = 16;
 
+static NSColor *scrollBarColor = nil;
 
 /*
  * Class methods
@@ -67,7 +68,10 @@ static const float buttonsWidth = 16;
 + (void) initialize
 {
   if (self == [NSScroller class])
-    [self setVersion: 1];
+    {
+      [self setVersion: 1];
+      ASSIGN (scrollBarColor, [NSColor scrollBarColor]);
+    }
 }
 
 + (float) scrollerWidth
@@ -280,6 +284,7 @@ static const float buttonsWidth = 16;
     return;
 
   _isEnabled = flag;
+  _cacheValid = NO;
   [self setNeedsDisplay: YES];
 }
 
@@ -289,6 +294,7 @@ static const float buttonsWidth = 16;
     return;
 
   _arrowsPosition = where;
+  _cacheValid = NO;
   [self setNeedsDisplay: YES];
 }
 
@@ -340,6 +346,7 @@ static const float buttonsWidth = 16;
     _arrowsPosition = NSScrollerArrowsMaxEnd;
 
   _hitPart = NSScrollerNoPart;
+  _cacheValid = NO;
   [self checkSpaceForParts];
 }
 
@@ -347,6 +354,7 @@ static const float buttonsWidth = 16;
 {
   [super setFrameSize: size];
   [self checkSpaceForParts];
+  _cacheValid = NO;
   [self setNeedsDisplay: YES];
 }
 
@@ -645,17 +653,34 @@ static const float buttonsWidth = 16;
  */
 - (void) drawRect: (NSRect)rect
 {
-  NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
-	    rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+  static NSRect rectForPartIncrementLine;
+  static NSRect rectForPartDecrementLine;
+  static NSRect rectForPartKnobSlot;
+  
+  if (_cacheValid == NO)
+    {
+      rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
+      rectForPartDecrementLine = [self rectForPart: NSScrollerDecrementLine];
+      rectForPartKnobSlot = [self rectForPart: NSScrollerKnobSlot];
+    }
 
   [[_window backgroundColor] set];
-  NSRectFill (_bounds);
+  NSRectFill (rect);
 
-  [self drawKnobSlot];
-  [self drawKnob];
+  if (NSIntersectsRect (rect, rectForPartKnobSlot) == YES)
+    {
+      [self drawKnobSlot];
+      [self drawKnob];
+    }
 
-  [self drawArrow: NSScrollerDecrementArrow highlight: NO];
-  [self drawArrow: NSScrollerIncrementArrow highlight: NO];
+  if (NSIntersectsRect (rect, rectForPartDecrementLine) == YES)
+    {
+      [self drawArrow: NSScrollerDecrementArrow highlight: NO];
+    }
+  if (NSIntersectsRect (rect, rectForPartIncrementLine) == YES)
+    {
+      [self drawArrow: NSScrollerIncrementArrow highlight: NO];
+    }
 }
 
 - (void) drawArrow: (NSScrollerArrow)whichButton highlight: (BOOL)flag
@@ -688,12 +713,15 @@ static const float buttonsWidth = 16;
 
 - (void) drawKnobSlot
 {
-  NSRect rect;
+  static NSRect rect;
 
-  rect = [self rectForPart: NSScrollerKnobSlot];
+  if (_cacheValid == NO)
+    {
+      rect = [self rectForPart: NSScrollerKnobSlot];
+    }
 
-  [[NSColor scrollBarColor] set];
-  NSRectFill(rect);
+  [scrollBarColor set];
+  NSRectFill (rect);
 }
 
 - (void) highlight: (BOOL)flag
