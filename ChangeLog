@@ -1,5 +1,14 @@
 2001-01-08  Fred Kiefer  <FredKiefer@gmx.de>
 
+	* Source/NSColor.m
+	In [supportMaxColorSpaces] corrected converions from RGB to HSB.
+	* Source/NSFontPanel.m
+	[_initWithoutGModel] make the size label non-selectable.
+	* Headers/gnustep/gui/GSWraps.h: 
+	Removed function GSWSetMatrix().
+	
+2001-01-08  Fred Kiefer  <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSAffineTransform.h: 
 	* Source/NSAffineTransform.m
 	Added new GS methods [concatenateWithMatrix:] and
