@@ -155,42 +155,44 @@ main(int argc, char** argv, char **env_c)
 	      }
 	    else // no argument specified
 	      {
-		if( ![workspace openFile: arg] )
+		// First check to see if it's an application
+		if( [ext isEqualToString: @"app"] ||
+		    [ext isEqualToString: @"debug"] ||
+		    [ext isEqualToString: @"profile"] )
 		  {
-		    if( [ext isEqualToString: @"app"] ||
-			[ext isEqualToString: @"debug"] ||
-			[ext isEqualToString: @"profile"] )
+		    NSString *appName = 
+		      [[arg lastPathComponent] stringByDeletingPathExtension];
+		    NSString *executable = 
+		      [arg stringByAppendingPathComponent: appName];
+		    NSTask *task = nil;
+		    
+		    if([fm fileExistsAtPath: arg])
 		      {
-			NSString *appName = 
-			  [[arg lastPathComponent] stringByDeletingPathExtension];
-			NSString *executable = 
-			  [arg stringByAppendingPathComponent: appName];
-			NSTask *task = nil;
-			
-			if([fm fileExistsAtPath: arg])
+			if ([NSTask launchedTaskWithLaunchPath: executable 
+				    arguments: nil] == nil)
 			  {
-			    if ([NSTask launchedTaskWithLaunchPath: executable arguments: nil] == nil)
-			      {
-				NSLog(@"Unable to launch: %@",arg);
-			      }
-			  }
-			else
-			  {
-			    [workspace launchApplication: arg];
+			    NSLog(@"Unable to launch: %@",arg);
 			  }
 		      }
-		    else // no recognized extension, run application indicated by environment var.
+		    else
 		      {
-			NSLog(@"Opening %@ with %@",arg,editor);
-			[workspace openFile: arg withApplication: editor];
+			[workspace launchApplication: arg];
 		      }
 		  }
+		else 
+		  if( ![workspace openFile: arg] )
+		    {
+		      // no recognized extension, 
+		      // run application indicated by environment var.	
+		      NSLog(@"Opening %@ with %@",arg,editor);
+		      [workspace openFile: arg withApplication: editor];
+		    }
 	      }
-	  NS_HANDLER
-	    NSLog(@"Exception while attempting open file %@ - %@: %@",
-		  arg, [localException name], [localException reason]);
-	  NS_ENDHANDLER
-	    }
+	    NS_HANDLER
+	      NSLog(@"Exception while attempting open file %@ - %@: %@",
+		    arg, [localException name], [localException reason]);
+	    NS_ENDHANDLER
+	      }
     }
   [pool release];
   exit(0);
