@@ -106,6 +106,7 @@ NSView.m \
 NSWindow.m \
 NSWorkspace.m \
 TrackingRectangle.m \
+GNUAlertPanel.m \
 GNUServicesManager.m \
 PSMatrix.m \
 tiff.m \
