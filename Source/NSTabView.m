@@ -319,7 +319,7 @@
   NSRect		previousRect;
   int			previousState = 0;
 
-  rect = NSIntersectionRect(_bounds, rect);
+  rect = _bounds;
 
   DPSgsave(ctxt);
 
