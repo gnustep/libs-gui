@@ -1,3 +1,13 @@
+2004-09-12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/NSDataLinkPanel.h: Added new attributes.
+	* Source/NSDataLinkPanel.m: Implemented some 
+	methods.
+	* Panels/English.lproj/GSDataLinkPanel.gorm: Updated
+	graphics and added link to new ivar.
+	* Source/NSDataLink.m:
+	* Source/NSDataLinkManager.m: Code cleanup.
+	
 2004-09-11 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCell.m: Reverted previous change. 

@@ -1,9 +1,10 @@
 /** <title>NSDataLinkPanel</title>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2003, 2004 Free Software Foundation, Inc.
 
+   Author: Gregory John Casamento <greg_casamento@yahoo.com>
    Author: Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Date: 1996, 2003, 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -25,6 +26,9 @@
 
 #include "config.h"
 #include "AppKit/NSDataLinkPanel.h"
+#include "AppKit/NSDataLinkManager.h"
+#include "AppKit/NSDataLink.h"
+#include "AppKit/NSView.h"
 #include "AppKit/NSNibLoading.h"
 #include "GSGuiPrivate.h"
 
@@ -77,6 +81,10 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
 
 @implementation NSApplication (NSDataLinkPanel)
 
+/**
+ * Order the data link panel to the front.  If it has not already 
+ * been instantiated, instantiate it.
+ */
 - (void) orderFrontDataLinkPanel: sender
 {
   NSDataLinkPanel *dataLinkPanel = [NSDataLinkPanel sharedDataLinkPanel];
@@ -91,9 +99,6 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
 
 @implementation NSDataLinkPanel
 
-//
-// Class methods
-//
 + (void)initialize
 {
   if (self == [NSDataLinkPanel class])
@@ -103,92 +108,148 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
     }
 }
 
-//
-// Initializing
-//
+/**
+ * Initializes and returns the shared panel.
+ */
 + (NSDataLinkPanel *)sharedDataLinkPanel
 {
   if(_sharedDataLinkPanel == nil)
     {
       id controller = [[GSDataLinkPanelController alloc] init];
       _sharedDataLinkPanel = [controller panel];
+      [_sharedDataLinkPanel setDelegate: controller];
     }
   NSLog(@"%@",_sharedDataLinkPanel);
   return _sharedDataLinkPanel;
 }
 
-//
-// Keeping the Panel Up to Date
-//
+/**
+ * Get the currently selected array of links and thier respective managers. 
+ * Return the whether or not multiple links are selected in flag.
+ */
 + (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
      isMultiple:(BOOL *)flag
 {
+  [[NSDataLinkPanel sharedDataLinkPanel]
+    getLink: link
+    manager: linkManager
+    isMultiple: flag];
 }
 
+/**
+ * Set the currently selected array of links and their respective managers.
+ * If all of the given links should be selected flag should be YES.
+ */
 + (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
      isMultiple:(BOOL)flag
 {
+  [[NSDataLinkPanel sharedDataLinkPanel]
+    setLink: link
+    manager: linkManager
+    isMultiple: flag];
 }
 
 //
 // Instance methods
 //
 
-//
-// Keeping the Panel Up to Date
-//
+/**
+ * Get the currently selected array of links and thier respective managers. 
+ * Return the whether or not multiple links are selected in flag.
+ */
 - (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
      isMultiple:(BOOL *)flag
 {
+  ASSIGN(*link, _currentDataLink);
+  ASSIGN(*linkManager, _currentDataLinkManager);
+  *flag = _multipleSelection;
 }
 
+/**
+ * Set the currently selected array of links and their respective managers.
+ * If all of the given links should be selected flag should be YES.
+ */
 - (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
      isMultiple:(BOOL)flag
 {
+  ASSIGN(_currentDataLink, link);
+  ASSIGN(_currentDataLinkManager, linkManager);
+  _multipleSelection = flag;
 }
 
 //
 // Customizing the Panel
 //
+
+/**
+ * Add an accessory view to the panel.
+ */
 - (NSView *)accessoryView
 {
+  // not yet implemented.
   return nil;
 }
 
+/**
+ * Get the accessory view.
+ */
 - (void)setAccessoryView:(NSView *)aView
 {
+  // not yet implemented.
 }
 
 //
 // Responding to User Input
 //
+
+/**
+ * Called when the user presses the Break All Links button.
+ * Invokes breakAllLinks on the current link manager.
+ */
 - (void)pickedBreakAllLinks:(id)sender
 {
-  NSLog(@"Break all links...");
+  [_currentDataLinkManager breakAllLinks];
 }
 
+/**
+ * Called when the user presses the Break button.
+ * Invokes break on the current link.
+ */
 - (void)pickedBreakLink:(id)sender
 {
-  NSLog(@"Break link...");
+  [_currentDataLink break];
 }
 
+/**
+ * Called when the user presses the Open Source button.
+ * Invokes openSource on the current link.
+ */
 - (void)pickedOpenSource:(id)sender
 {
-  NSLog(@"Open Source...");
+  [_currentDataLink openSource];
 }
 
+/**
+ * Called when the Update Destination button
+ * Invokes updateDestination on the current link.
+ */
 - (void)pickedUpdateDestination:(id)sender
 {
-  NSLog(@"Update destination...");
+  [_currentDataLink updateDestination];
 }
 
+/**
+ * Called when the user selects an update mode from the pull down.
+ * Invokes setUpdateMode: on the current link.
+ */
 - (void)pickedUpdateMode:(id)sender
 {
-  NSLog(@"Update mode..");
+  NSDataLinkUpdateMode mode = (NSDataLinkUpdateMode)[sender tag];
+  [_currentDataLink setUpdateMode: mode];
 }
 
 //

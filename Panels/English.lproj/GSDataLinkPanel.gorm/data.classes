@@ -165,7 +165,8 @@
 	    _updateDestinationButton,
 	    _openSourceButton,
 	    _lastUpdateField,
-	    _sourceField
+	    _sourceField,
+	    _updateView
 	);
 	Super = NSPanel;
     };

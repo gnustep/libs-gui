@@ -42,7 +42,7 @@
 
 @interface NSDataLinkPanel : NSPanel <NSCoding>
 {
-  // Attributes
+  // Outlets
   id _sourceField;
   id _lastUpdateField;
   id _openSourceButton;
@@ -50,6 +50,12 @@
   id _breakLinkButton;
   id _breakAllLinksButton;
   id _updateModeButton;
+
+  // Attributes
+  NSDataLinkManager *_currentDataLinkManager;
+  NSDataLink *_currentDataLink;
+  BOOL _multipleSelection;
+  NSView *_accessoryView;
 }
 
 //

@@ -98,31 +98,40 @@
 }
 
 - (void)breakAllLinks
-{}
+{
+  NSLog(@"Break all links.");
+}
 
 - (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard
-{}
+{
+}
 
 //
 // Informing the Link Manager of Document Status
 //
 - (void)noteDocumentClosed
-{}
+{
+}
 
 - (void)noteDocumentEdited
-{}
+{
+}
 
 - (void)noteDocumentReverted
-{}
+{
+}
 
 - (void)noteDocumentSaved
-{}
+{
+}
 
 - (void)noteDocumentSavedAs:(NSString *)path
-{}
+{
+}
 
 - (void)noteDocumentSavedTo:(NSString *)path
-{}
+{
+}
 
 //
 // Getting and Setting Information about the Link Manager
@@ -202,7 +211,8 @@ cheapCopyAllowed:(BOOL)flag
 
 - (void)dataLinkManager:(NSDataLinkManager *)sender 
 	   didBreakLink:(NSDataLink *)link
-{}
+{
+}
 
 - (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
   isUpdateNeededForLink:(NSDataLink *)link
@@ -212,20 +222,25 @@ cheapCopyAllowed:(BOOL)flag
 
 - (void)dataLinkManager:(NSDataLinkManager *)sender 
       startTrackingLink:(NSDataLink *)link
-{}
+{
+}
 
 - (void)dataLinkManager:(NSDataLinkManager *)sender 
        stopTrackingLink:(NSDataLink *)link
-{}
+{
+}
 
 - (void)dataLinkManagerCloseDocument:(NSDataLinkManager *)sender
-{}
+{
+}
 
 - (void)dataLinkManagerDidEditLinks:(NSDataLinkManager *)sender
-{}
+{
+}
 
 - (void)dataLinkManagerRedrawLinkOutlines:(NSDataLinkManager *)sender
-{}
+{
+}
 
 - (BOOL)dataLinkManagerTracksLinksIndividually:(NSDataLinkManager *)sender
 {

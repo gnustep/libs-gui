@@ -89,7 +89,8 @@
 }
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard
-{}
+{
+}
 
 //
 // Information about the Link
