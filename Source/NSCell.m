@@ -107,12 +107,19 @@ static NSColor	*shadowCol;
 /*
  * Instance methods
  */
-- (id) _init
+- (id) init
 {
-  _cell.type = NSNullCellType;
-  _cell_image = nil;
-  _cell_font = nil;
-  _cell.image_position = NSNoImage;
+  return [self initTextCell: @""];
+}
+
+- (id) initImageCell: (NSImage*)anImage
+{
+  [super init];
+
+  _cell.type = NSImageCellType;
+  _cell_image = RETAIN(anImage);
+  _cell.image_position = NSImageOnly;
+  _cell_font = RETAIN([fontClass userFontOfSize: 0]);
   _cell.state = 0;
   _cell.is_highlighted = NO;
   _cell.is_enabled = YES;
@@ -126,27 +133,6 @@ static NSColor	*shadowCol;
   _cell_float_left = 0;
   _cell_float_right = 0;
   _action_mask = NSLeftMouseUpMask;
-  return self;
-}
-
-- (id) init
-{
-  return [self initTextCell: @""];
-}
-
-- (id) initImageCell: (NSImage*)anImage
-{
-  [super init];
-
-  [self _init];
-
-  NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
-	NSInvalidArgumentException);
-
-  _cell.type = NSImageCellType;
-  _cell_image = RETAIN(anImage);
-  _cell.image_position = NSImageOnly;
-  _cell_font = RETAIN([fontClass userFontOfSize: 0]);
 
   return self;
 }
@@ -155,14 +141,25 @@ static NSColor	*shadowCol;
 {
   [super init];
 
-  [self _init];
-
+  _cell.type = NSTextCellType;
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
   _contents = RETAIN(aString);
-  _cell.type = NSTextCellType;
   _cell.text_align = NSCenterTextAlignment;
+  _cell_image = nil;
+  _cell.image_position = NSNoImage;
+  _cell.state = 0;
+  _cell.is_highlighted = NO;
+  _cell.is_enabled = YES;
+  _cell.is_editable = NO;
+  _cell.is_bordered = NO;
+  _cell.is_bezeled = NO;
+  _cell.is_scrollable = NO;
+  _cell.is_selectable = NO;
+  _cell.is_continuous = NO;
   _cell.float_autorange = YES;
   _cell_float_right = 6;
+  _cell_float_left = 0;
+  _action_mask = NSLeftMouseUpMask;
 
   return self;
 }
