@@ -1,3 +1,8 @@
+2004-08-10 00:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSAttributedString.m (cache_init, cache_init_real): Add
+	missing void:s.
+
 2004-08-10 00:06  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m: Formatting cleanups.

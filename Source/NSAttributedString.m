@@ -58,7 +58,7 @@ static NSString *attachmentString = nil;
 
 
 /* This function initializes all the previous cached values. */
-static void cache_init_real ()
+static void cache_init_real(void)
 {
   NSMutableCharacterSet *m;
   NSCharacterSet *cset;
@@ -96,7 +96,7 @@ static void cache_init_real ()
    cache has been initialized) and limit memory consumption (we are
    not copying everywhere the real initialization code, which is in
    cache_real_init (), which is not inlined.).*/
-static inline void cache_init ()
+static inline void cache_init(void)
 {
   if (dictionaryClass == nil)
     {
