@@ -1,3 +1,9 @@
+2002-05-02  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Update to autoconf 2.53 from configure.in
+	* configure, Headers/gnustep/gui/config.h.in: Regenerate.
+	* Headers/gnustep/gui/config.h.bot: Remove.
+
 2002-05-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-resizeWithOldSuperviewSize:): Check supeview

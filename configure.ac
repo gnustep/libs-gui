@@ -22,14 +22,11 @@
 # If not, write to the Free Software Foundation,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-
-AC_INIT(Source/NSApplication.m)
+AC_INIT
+AC_CONFIG_SRCDIR([Source/NSApplication.m])
 
 if test -z "$GNUSTEP_SYSTEM_ROOT"; then
-  {
-   echo "ERROR: You must run the GNUstep initialization script before configuring the gui library!" 1>&2;
-  exit 1; 
-  }
+  AC_MSG_ERROR([You must run the GNUstep initialization script first!])
 fi
 
 #--------------------------------------------------------------------
@@ -42,7 +39,7 @@ AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 #--------------------------------------------------------------------
 # Determine the host, build, and target systems
 #--------------------------------------------------------------------
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET([])
 
 #--------------------------------------------------------------------
 # The following is so that headers and custom libraries
@@ -229,7 +226,27 @@ AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
 AC_SUBST(ADDITIONAL_DEPENDS)
 
-AC_OUTPUT(config.make gui.make Headers/gnustep/gui/GSVersion.h)
+#--------------------------------------------------------------------
+# Configure
+#--------------------------------------------------------------------
+AH_BOTTOM([
+/* Define for those who don't have rintf and/or rint */
+#ifndef HAVE_RINTF
+#define rintf rint
+#endif
+#ifndef HAVE_RINT
+#define DEFINE_RINT_IF_MISSING   \
+static double rint(double a)     \
+{                                \
+  return (floor(a+0.5));         \
+}
+#else
+#define DEFINE_RINT_IF_MISSING
+#endif
+])
+
+AC_CONFIG_FILES([config.make gui.make Headers/gnustep/gui/GSVersion.h])
+AC_OUTPUT
 
 
 
