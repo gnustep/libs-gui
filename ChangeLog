@@ -1,3 +1,9 @@
+1999-05-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSStringDrawing.m ([NSAttributesString -drawInRect:]):
+	Remove gsave/grestore and NSClipRect (to conform to Apple's
+	OPENSTEP NSString operation).
+
 Tue May 25  8:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/Model/IMConnectors.m: Use 'standard' function to set ivars
