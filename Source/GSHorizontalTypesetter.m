@@ -356,6 +356,20 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 }
 
 
+/*
+Return values 0, 1, 2 are mostly the same as from
+-layoutGlyphsInLayoutManager:.... Additions:
+
+  0   Last typeset character was not a newline; next glyph does not start
+      a new paragraph.
+
+  3   Last typeset character was a newline; next glyph starts a new
+      paragraph.
+
+  4   Last typeset character may or may not have been a newline; must
+      test before next call.
+
+*/
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
   NSRect rect, remain;
@@ -441,6 +455,7 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 	      if (NSEqualRects(r, NSZeroRect) || NSMaxY(r) + shift.height > container_height)
 		break;
 	      g = g2;
+	      curPoint.y = NSMaxY(r) + shift.height;
 	    }
 
 	  [curLayoutManager _softInvalidateUseLineFrags: i
@@ -448,8 +463,7 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 					inTextContainer: curTextContainer];
 
 	  curGlyph = g;
-	  curPoint.y = NSMaxY(r);
-	  return 0;
+	  return 4;
 	}
     }
 
@@ -458,7 +472,51 @@ typedef struct GSHorizontalTypesetter_line_frag_s
   if (!cache_length)
     [self _cacheGlyphs: 16];
   if (!cache_length && at_end)
-    return 2;
+    {
+      /*
+      We've typeset all glyphs, and thus return 2. If we ended with a
+      new-line, we set the extra line frag rect here so the insertion point
+      will be properly positioned after a trailing newline in the text.
+      */
+      NSRect r, r2, remain;
+      float hindent, tindent;
+
+      if (!newParagraph || !curGlyph)
+	return 2;
+
+      /*
+      We aren't actually interested in the glyph data, but we want the
+      attributes for the final character so we can make the extra line
+      frag rect match it. This call makes sure that cur* are set.
+      */
+      [self _cacheMoveTo: curGlyph - 1];
+
+      hindent = [curParagraphStyle firstLineHeadIndent];
+      tindent = [curParagraphStyle tailIndent];
+      if (tindent <= 0.0)
+	tindent = [curTextContainer containerSize].width + tindent;
+      line_height = [curFont defaultLineHeightForFont];
+
+      r = NSMakeRect(hindent,
+		     curPoint.y,
+		     tindent - hindent,
+		     line_height + [curParagraphStyle lineSpacing]);
+
+      r = [curTextContainer lineFragmentRectForProposedRect: r
+	    sweepDirection: NSLineSweepRight
+	    movementDirection: NSLineMoveDown
+	    remainingRect: &remain];
+
+      if (!NSEqualRects(r, NSZeroRect))
+	{
+	  r2 = r;
+	  r2.size.width = 1;
+	  [curLayoutManager setExtraLineFragmentRect: r
+	    usedRect: r2
+	    textContainer: curTextContainer];
+	}
+      return 2;
+    }
 
   /* Set up our initial baseline info. */
   {
@@ -1010,52 +1068,6 @@ restart:
 
   curPoint = NSMakePoint(0,NSMaxY(line_frags->rect));
 
-  /* Check if we're at the end. */
-  {
-    BOOL valid;
-    [curLayoutManager glyphAtIndex: curGlyph
-		      isValidIndex: &valid];
-    if (!valid)
-      {
-	/*
-	We've typeset all glyphs, and thus return 2. If we ended with a
-	new-line, we set the extra line frag rect here so the insertion point
-	will be properly positioned after a trailing newline in the text.
-	*/
-	if (newParagraph)
-	  {
-	    NSRect r, r2, remain;
-	    float hindent, tindent;
-
-	    hindent = [curParagraphStyle firstLineHeadIndent];
-	    tindent = [curParagraphStyle tailIndent];
-	    if (tindent <= 0.0)
-	      tindent = [curTextContainer containerSize].width + tindent;
-	    line_height = [curFont defaultLineHeightForFont];
-
-	    r = NSMakeRect(hindent,
-			   curPoint.y,
-			   tindent - hindent,
-			   line_height + [curParagraphStyle lineSpacing]);
-
-	    r = [curTextContainer lineFragmentRectForProposedRect: r
-		  sweepDirection: NSLineSweepRight
-		  movementDirection: NSLineMoveDown
-		  remainingRect: &remain];
-
-	    if (!NSEqualRects(r, NSZeroRect))
-	      {
-		r2 = r;
-		r2.size.width = 1;
-		[curLayoutManager setExtraLineFragmentRect: r
-		  usedRect: r2
-		  textContainer: curTextContainer];
-	      }
-	  }
-        return 2;
-      }
-  }
-
   if (newParagraph)
     return 3;
   else
@@ -1070,7 +1082,7 @@ restart:
 		    nextGlyphIndex: (unsigned int *)nextGlyphIndex
 	     numberOfLineFragments: (unsigned int)howMany
 {
-  int ret = 0;
+  int ret, real_ret;
   BOOL newParagraph;
 
   if (![lock tryLock])
@@ -1103,41 +1115,51 @@ NS_DURING
 
   [self _cacheClear];
 
-  /*
-  -layoutLineNewParagraph: needs to know if the starting glyph is the
-  first glyph of a paragraph so it can apply eg. -firstLineHeadIndent and
-  paragraph spacing properly.
-  */
-  if (!curGlyph)
-    {
-      newParagraph = YES;
-    }
-  else
-    {
-      unsigned char chi;
-      unichar ch;
-      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
-					 actualGlyphRange: NULL].location;
-      ch = [[curTextStorage string] characterAtIndex: chi];
 
-      if (ch == '\n')
-	newParagraph = YES;
-      else
-	newParagraph = NO;
-    }
-
-  ret = 0;
+  real_ret = 4;
   curPoint = NSMakePoint(0,NSMaxY(previousLineFragRect));
   while (1)
     {
-      ret = [self layoutLineNewParagraph: newParagraph];
-      if (ret == 3)
+      if (real_ret == 4)
+	{
+	  /*
+	  -layoutLineNewParagraph: needs to know if the starting glyph is the
+	  first glyph of a paragraph so it can apply eg. -firstLineHeadIndent and
+	  paragraph spacing properly.
+	  */
+	  if (!curGlyph)
+	    {
+	      newParagraph = YES;
+	    }
+	  else
+	    {
+	      unsigned char chi;
+	      unichar ch;
+	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
+						 actualGlyphRange: NULL].location;
+	      ch = [[curTextStorage string] characterAtIndex: chi];
+	
+	      if (ch == '\n')
+		newParagraph = YES;
+	      else
+		newParagraph = NO;
+	    }
+	}
+      else if (real_ret == 3)
 	{
 	  newParagraph = YES;
-	  ret = 0;
 	}
       else
-	newParagraph = NO;
+	{
+	  newParagraph = NO;
+	}
+
+      ret = [self layoutLineNewParagraph: newParagraph];
+
+      real_ret = ret;
+      if (ret == 3 || ret == 4)
+	ret = 0;
+
       if (ret)
 	break;
 

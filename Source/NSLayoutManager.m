@@ -2066,6 +2066,9 @@ no_soft_invalidation:
 	}
     }
 
+  /* Clear the extra line fragment information. */
+  extra_textcontainer = nil;
+
 /*  [self _dumpLayout];
   printf("*** done\n");*/
 
