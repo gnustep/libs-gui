@@ -182,6 +182,8 @@
 - (BOOL)_ownedByPopUp;
 - (void)_setOwnedByPopUp: (BOOL)flag;
 
+/* Show menu on right mouse down */
+- (void) _rightMouseDisplay: (NSEvent*)theEvent;
 @end
 #endif
 
