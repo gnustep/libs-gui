@@ -30,6 +30,8 @@
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSRange.h>
+#include <Foundation/NSBundle.h>
+#include <Foundation/NSFileManager.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextAttachment.h>
@@ -99,6 +101,62 @@ static inline void cache_init ()
     }
 }
 
+/* Return the class that handles format from the first bundle it finds */
+static 
+Class converter_bundles(NSString *format, BOOL producer)
+{
+  Class converter_class = Nil;
+  NSEnumerator *benum;
+  NSString *dpath;
+
+  /* Find the bundle paths */
+  benum = [NSStandardLibraryPaths() objectEnumerator];
+  while ((dpath = [benum nextObject]))
+    {
+      NSEnumerator *direnum;
+      NSString *path;
+      dpath = [dpath stringByAppendingPathComponent: @"Bundles"];
+      dpath = [dpath stringByAppendingPathComponent: @"TextConverters"];
+      if ([[NSFileManager defaultManager] fileExistsAtPath: dpath])
+	direnum = [[NSFileManager defaultManager] enumeratorAtPath: dpath];
+      else
+	direnum = nil;
+      while (direnum && (path = [direnum nextObject]))
+	{
+	  Class bclass;
+	  NSString *full_path;
+	  NSBundle *aBundle;
+	  if ([[path pathExtension] isEqual: @"bundle"] == NO)
+	    continue;
+	  full_path = [dpath stringByAppendingPathComponent: path];
+	  aBundle = [NSBundle bundleWithPath: full_path];
+	  if (aBundle && ((bclass = [aBundle principalClass])))
+	    {
+	      if ([bclass respondsToSelector: 
+			    @selector(classForFormat:producer:)])
+		{
+		  converter_class = (Class)[bclass classForFormat: format
+					                 producer: producer];
+		}
+	      else
+		{
+		  NSString *converter_name;
+		  if (producer)
+		    converter_name = [format stringByAppendingString: @"Producer"];
+		  else
+		    converter_name = [format stringByAppendingString: @"Consumer"];
+		  converter_class = [aBundle classNamed: converter_name];
+		}
+	    }	 
+	  if (converter_class)
+	    break;
+	}
+      if (converter_class)
+	break;
+    }
+  return converter_class;
+}
+
 /*
   Return a suitable converter for the text format supplied as argument.
   If producer is YES a class capable of writting that format is returned,
@@ -118,10 +176,9 @@ static Class converter_class(NSString *format, BOOL producer)
       found = [p_classes objectForKey: format];
       if (found == Nil)
         {
-	  if ([format isEqual: @"RTF"])
-	    found = NSClassFromString(@"RTFProducer");
-	  else if ([format isEqual: @"RTFD"])
-	    found = NSClassFromString(@"RTFDProducer");
+	  found = converter_bundles(format, producer);
+	  if (found != Nil)
+	    NSDebugLog(@"Found converter %@ for format %@", found, format);
 	  if (found != Nil)
 	    [p_classes setObject: found forKey: format];
 	}
@@ -135,10 +192,9 @@ static Class converter_class(NSString *format, BOOL producer)
       found = [c_classes objectForKey: format];
       if (found == Nil)
         {
-	  if ([format isEqual: @"RTF"])
-	    found = NSClassFromString(@"RTFConsumer");
-	  else if ([format isEqual: @"RTFD"])
-	    found = NSClassFromString(@"RTFDConsumer");
+	  found = converter_bundles(format, producer);
+	  if (found != Nil)
+	    NSDebugLog(@"Found converter %@ for format %@", found, format);
 	  if (found != Nil)
 	    [c_classes setObject: found forKey: format];
 	}

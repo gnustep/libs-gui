@@ -56,11 +56,6 @@ ifneq ($(BACKEND_BUNDLE),)
 ADDITIONAL_CPPFLAGS += -DBACKEND_BUNDLE=1
 endif
 
-
-BISON_FLAGS = -d -p GSRTF
-BISON = BISON_SIMPLE=Parsers/bison.simple bison
-
-
 # Additional flags to pass to the Objective-C compiler
 ADDITIONAL_OBJCFLAGS = -Wall
 

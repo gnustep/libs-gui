@@ -1,3 +1,13 @@
+2001-08-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSAttributedString.m (converter_bundles): New function
+	to find bundles that do text conversion.
+	(converter_class): Use it.
+	* Source/GNUmakefile: Update to remove Parsers files
+	
+	* TextConverters/RTF/*: New files moved from Source/Parsers.
+	Builds bundle for RTF text conversion.
+
 2001-08-21  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
 
 	* Source/NSTableColumn.m

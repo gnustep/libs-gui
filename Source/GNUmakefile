@@ -38,9 +38,7 @@ include ../config.make
 LIBRARY_NAME = libgnustep-gui
 
 # The Objective-C source files to be compiled
-libgnustep-gui_C_FILES = \
-Parsers/rtfGrammer.tab.c \
-Parsers/rtfScanner.c
+libgnustep-gui_C_FILES =
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
@@ -156,9 +154,7 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
-GSSimpleLayoutManager.m \
-Parsers/attributedStringConsumer.m \
-Parsers/RTFProducer.m
+GSSimpleLayoutManager.m 
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m

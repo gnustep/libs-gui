@@ -27,8 +27,9 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
-#include "Parsers/rtfConsumer.h"
-#include "Parsers/rtfConsumerFunctions.h"
+#include "RTFConsumer.h"
+#include "RTFConsumerFunctions.h"
+#include "RTFProducer.h"
 
 /*  we have to satisfy the scanner with a stream reading function */
 typedef struct {
@@ -224,6 +225,28 @@ readNSString (StringContext *ctxt)
 @end
 
 @implementation RTFConsumer
+
+/* RTFConsumer is the principal class and thus implements this */
++ (Class) classForFormat: (NSString *)format producer: (BOOL)flag
+{
+  Class cClass = Nil;
+
+  if (flag)
+    {
+      if ([format isEqual: @"RTFD"])
+	cClass = [RTFDProducer class];
+      else if ([format isEqual: @"RTF"])
+	cClass = [RTFProducer class];
+    }
+  else
+    {
+      if ([format isEqual: @"RTFD"])
+	cClass = [RTFDConsumer class];
+      else if ([format isEqual: @"RTF"])
+	cClass = [RTFConsumer class];
+    }
+  return cClass;
+}
 
 + (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
 	       documentAttributes: (NSDictionary **)dict

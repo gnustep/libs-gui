@@ -1,5 +1,5 @@
 
-/*  A Bison parser, made from Parsers/rtfGrammer.y
+/*  A Bison parser, made from rtfGrammer.y
  by  GNU Bison version 1.25
   */
 
@@ -86,7 +86,7 @@
 #define	RTFfamilyDecor	327
 #define	RTFfamilyTech	328
 
-#line 35 "Parsers/rtfGrammer.y"
+#line 35 "rtfGrammer.y"
 
 
 /*
@@ -109,7 +109,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "Parsers/rtfScanner.h"
+#include "rtfScanner.h"
 
 /*	this context is passed to the interface functions	*/
 typedef void	* GSRTFctxt;
@@ -118,10 +118,10 @@ typedef void	* GSRTFctxt;
 
 #define	YYERROR_VERBOSE
 
-#include "rtfConsumerFunctions.h"
+#include "RTFConsumerFunctions.h"
 
 
-#line 70 "Parsers/rtfGrammer.y"
+#line 70 "rtfGrammer.y"
 typedef union {
 	int		number;
 	const char	*text;
@@ -961,99 +961,99 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 159 "Parsers/rtfGrammer.y"
+#line 159 "rtfGrammer.y"
 { GSRTFstart(ctxt); ;
     break;}
 case 2:
-#line 159 "Parsers/rtfGrammer.y"
+#line 159 "rtfGrammer.y"
 { GSRTFstop(ctxt); ;
     break;}
 case 4:
-#line 162 "Parsers/rtfGrammer.y"
+#line 162 "rtfGrammer.y"
 { yyval.number = 1; ;
     break;}
 case 5:
-#line 163 "Parsers/rtfGrammer.y"
+#line 163 "rtfGrammer.y"
 { yyval.number = 2; ;
     break;}
 case 6:
-#line 164 "Parsers/rtfGrammer.y"
+#line 164 "rtfGrammer.y"
 { yyval.number = 3; ;
     break;}
 case 7:
-#line 165 "Parsers/rtfGrammer.y"
+#line 165 "rtfGrammer.y"
 { yyval.number = 4; ;
     break;}
 case 12:
-#line 172 "Parsers/rtfGrammer.y"
+#line 172 "rtfGrammer.y"
 { GSRTFmangleText(ctxt, yyvsp[0].text); free((void *)yyvsp[0].text); ;
     break;}
 case 14:
-#line 176 "Parsers/rtfGrammer.y"
+#line 176 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, NO); ;
     break;}
 case 15:
-#line 176 "Parsers/rtfGrammer.y"
+#line 176 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, NO); ;
     break;}
 case 16:
-#line 177 "Parsers/rtfGrammer.y"
+#line 177 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 17:
-#line 177 "Parsers/rtfGrammer.y"
+#line 177 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 18:
-#line 178 "Parsers/rtfGrammer.y"
+#line 178 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 19:
-#line 178 "Parsers/rtfGrammer.y"
+#line 178 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 20:
-#line 179 "Parsers/rtfGrammer.y"
+#line 179 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 21:
-#line 179 "Parsers/rtfGrammer.y"
+#line 179 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 22:
-#line 180 "Parsers/rtfGrammer.y"
+#line 180 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 23:
-#line 180 "Parsers/rtfGrammer.y"
+#line 180 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 24:
-#line 181 "Parsers/rtfGrammer.y"
+#line 181 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 25:
-#line 181 "Parsers/rtfGrammer.y"
+#line 181 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 26:
-#line 182 "Parsers/rtfGrammer.y"
+#line 182 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 27:
-#line 182 "Parsers/rtfGrammer.y"
+#line 182 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 28:
-#line 183 "Parsers/rtfGrammer.y"
+#line 183 "rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 29:
-#line 183 "Parsers/rtfGrammer.y"
+#line 183 "rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 31:
-#line 192 "Parsers/rtfGrammer.y"
+#line 192 "rtfGrammer.y"
 { int font;
 		    
 						  if (yyvsp[0].cmd.isEmpty)
@@ -1063,7 +1063,7 @@ case 31:
 						  GSRTFfontNumber(ctxt, font); ;
     break;}
 case 32:
-#line 199 "Parsers/rtfGrammer.y"
+#line 199 "rtfGrammer.y"
 { int size;
 
 						  if (yyvsp[0].cmd.isEmpty)
@@ -1073,7 +1073,7 @@ case 32:
 						  GSRTFfontSize(ctxt, size); ;
     break;}
 case 33:
-#line 206 "Parsers/rtfGrammer.y"
+#line 206 "rtfGrammer.y"
 { int width; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1083,7 +1083,7 @@ case 33:
 						  GSRTFpaperWidth(ctxt, width);;
     break;}
 case 34:
-#line 213 "Parsers/rtfGrammer.y"
+#line 213 "rtfGrammer.y"
 { int height; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1093,7 +1093,7 @@ case 34:
 						  GSRTFpaperHeight(ctxt, height);;
     break;}
 case 35:
-#line 220 "Parsers/rtfGrammer.y"
+#line 220 "rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1103,7 +1103,7 @@ case 35:
 						  GSRTFmarginLeft(ctxt, margin);;
     break;}
 case 36:
-#line 227 "Parsers/rtfGrammer.y"
+#line 227 "rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1113,7 +1113,7 @@ case 36:
 						  GSRTFmarginRight(ctxt, margin); ;
     break;}
 case 37:
-#line 234 "Parsers/rtfGrammer.y"
+#line 234 "rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1123,7 +1123,7 @@ case 37:
 						  GSRTFmarginTop(ctxt, margin); ;
     break;}
 case 38:
-#line 241 "Parsers/rtfGrammer.y"
+#line 241 "rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1133,7 +1133,7 @@ case 38:
 						  GSRTFmarginButtom(ctxt, margin); ;
     break;}
 case 39:
-#line 248 "Parsers/rtfGrammer.y"
+#line 248 "rtfGrammer.y"
 { int indent; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1143,7 +1143,7 @@ case 39:
 						  GSRTFfirstLineIndent(ctxt, indent); ;
     break;}
 case 40:
-#line 255 "Parsers/rtfGrammer.y"
+#line 255 "rtfGrammer.y"
 { int indent; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1153,7 +1153,7 @@ case 40:
 						  GSRTFleftIndent(ctxt, indent);;
     break;}
 case 41:
-#line 262 "Parsers/rtfGrammer.y"
+#line 262 "rtfGrammer.y"
 { int indent; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1163,7 +1163,7 @@ case 41:
 						  GSRTFrightIndent(ctxt, indent);;
     break;}
 case 42:
-#line 269 "Parsers/rtfGrammer.y"
+#line 269 "rtfGrammer.y"
 { int location; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1173,23 +1173,23 @@ case 42:
 						  GSRTFtabstop(ctxt, location);;
     break;}
 case 43:
-#line 276 "Parsers/rtfGrammer.y"
+#line 276 "rtfGrammer.y"
 { GSRTFalignCenter(ctxt); ;
     break;}
 case 44:
-#line 277 "Parsers/rtfGrammer.y"
+#line 277 "rtfGrammer.y"
 { GSRTFalignJustified(ctxt); ;
     break;}
 case 45:
-#line 278 "Parsers/rtfGrammer.y"
+#line 278 "rtfGrammer.y"
 { GSRTFalignLeft(ctxt); ;
     break;}
 case 46:
-#line 279 "Parsers/rtfGrammer.y"
+#line 279 "rtfGrammer.y"
 { GSRTFalignRight(ctxt); ;
     break;}
 case 47:
-#line 280 "Parsers/rtfGrammer.y"
+#line 280 "rtfGrammer.y"
 { int space; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1199,19 +1199,19 @@ case 47:
 						  GSRTFspaceAbove(ctxt, space); ;
     break;}
 case 48:
-#line 287 "Parsers/rtfGrammer.y"
+#line 287 "rtfGrammer.y"
 { GSRTFlineSpace(ctxt, yyvsp[0].cmd.parameter); ;
     break;}
 case 49:
-#line 288 "Parsers/rtfGrammer.y"
+#line 288 "rtfGrammer.y"
 { GSRTFdefaultParagraph(ctxt); ;
     break;}
 case 50:
-#line 289 "Parsers/rtfGrammer.y"
+#line 289 "rtfGrammer.y"
 { GSRTFstyle(ctxt, yyvsp[0].cmd.parameter); ;
     break;}
 case 51:
-#line 290 "Parsers/rtfGrammer.y"
+#line 290 "rtfGrammer.y"
 { int color; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1221,7 +1221,7 @@ case 51:
 						  GSRTFcolorbg(ctxt, color); ;
     break;}
 case 52:
-#line 297 "Parsers/rtfGrammer.y"
+#line 297 "rtfGrammer.y"
 { int color; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1231,7 +1231,7 @@ case 52:
 						  GSRTFcolorfg(ctxt, color); ;
     break;}
 case 53:
-#line 304 "Parsers/rtfGrammer.y"
+#line 304 "rtfGrammer.y"
 { int script;
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1241,7 +1241,7 @@ case 53:
 						  GSRTFsubscript(ctxt, script); ;
     break;}
 case 54:
-#line 311 "Parsers/rtfGrammer.y"
+#line 311 "rtfGrammer.y"
 { int script;
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1251,7 +1251,7 @@ case 54:
 						  GSRTFsuperscript(ctxt, script); ;
     break;}
 case 55:
-#line 318 "Parsers/rtfGrammer.y"
+#line 318 "rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1261,7 +1261,7 @@ case 55:
 						  GSRTFbold(ctxt, on); ;
     break;}
 case 56:
-#line 325 "Parsers/rtfGrammer.y"
+#line 325 "rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1271,7 +1271,7 @@ case 56:
 						  GSRTFitalic(ctxt, on); ;
     break;}
 case 57:
-#line 332 "Parsers/rtfGrammer.y"
+#line 332 "rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1281,74 +1281,74 @@ case 57:
 						  GSRTFunderline(ctxt, on); ;
     break;}
 case 58:
-#line 339 "Parsers/rtfGrammer.y"
+#line 339 "rtfGrammer.y"
 { GSRTFunderline(ctxt, NO); ;
     break;}
 case 59:
-#line 340 "Parsers/rtfGrammer.y"
+#line 340 "rtfGrammer.y"
 { GSRTFdefaultCharacterStyle(ctxt); ;
     break;}
 case 60:
-#line 341 "Parsers/rtfGrammer.y"
+#line 341 "rtfGrammer.y"
 { GSRTFparagraph(ctxt); ;
     break;}
 case 61:
-#line 342 "Parsers/rtfGrammer.y"
+#line 342 "rtfGrammer.y"
 { GSRTFparagraph(ctxt); ;
     break;}
 case 62:
-#line 343 "Parsers/rtfGrammer.y"
+#line 343 "rtfGrammer.y"
 { GSRTFgenericRTFcommand(ctxt, yyvsp[0].cmd); ;
     break;}
 case 67:
-#line 361 "Parsers/rtfGrammer.y"
+#line 361 "rtfGrammer.y"
 { GSRTFregisterFont(ctxt, yyvsp[0].text, yyvsp[-2].number, yyvsp[-3].cmd.parameter);
                                                           free((void *)yyvsp[0].text); ;
     break;}
 case 73:
-#line 374 "Parsers/rtfGrammer.y"
+#line 374 "rtfGrammer.y"
 { yyval.number = RTFfamilyNil - RTFfamilyNil; ;
     break;}
 case 74:
-#line 375 "Parsers/rtfGrammer.y"
+#line 375 "rtfGrammer.y"
 { yyval.number = RTFfamilyRoman - RTFfamilyNil; ;
     break;}
 case 75:
-#line 376 "Parsers/rtfGrammer.y"
+#line 376 "rtfGrammer.y"
 { yyval.number = RTFfamilySwiss - RTFfamilyNil; ;
     break;}
 case 76:
-#line 377 "Parsers/rtfGrammer.y"
+#line 377 "rtfGrammer.y"
 { yyval.number = RTFfamilyModern - RTFfamilyNil; ;
     break;}
 case 77:
-#line 378 "Parsers/rtfGrammer.y"
+#line 378 "rtfGrammer.y"
 { yyval.number = RTFfamilyScript - RTFfamilyNil; ;
     break;}
 case 78:
-#line 379 "Parsers/rtfGrammer.y"
+#line 379 "rtfGrammer.y"
 { yyval.number = RTFfamilyDecor - RTFfamilyNil; ;
     break;}
 case 79:
-#line 380 "Parsers/rtfGrammer.y"
+#line 380 "rtfGrammer.y"
 { yyval.number = RTFfamilyTech - RTFfamilyNil; ;
     break;}
 case 83:
-#line 397 "Parsers/rtfGrammer.y"
+#line 397 "rtfGrammer.y"
 { 
 		       GSRTFaddColor(ctxt, yyvsp[-3].cmd.parameter, yyvsp[-2].cmd.parameter, yyvsp[-1].cmd.parameter);
 		       free((void *)yyvsp[0].text);
 		     ;
     break;}
 case 84:
-#line 402 "Parsers/rtfGrammer.y"
+#line 402 "rtfGrammer.y"
 { 
 		       GSRTFaddDefaultColor(ctxt);
 		       free((void *)yyvsp[0].text);
 		     ;
     break;}
 case 85:
-#line 411 "Parsers/rtfGrammer.y"
+#line 411 "rtfGrammer.y"
 { yylsp[0].first_line; ;
     break;}
 }
@@ -1549,7 +1549,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 414 "Parsers/rtfGrammer.y"
+#line 414 "rtfGrammer.y"
 
 
 /*	some C code here	*/

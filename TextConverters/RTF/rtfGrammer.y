@@ -54,16 +54,17 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "Parsers/rtfScanner.h"
+#include "rtfScanner.h"
 
 /*	this context is passed to the interface functions	*/
 typedef void	* GSRTFctxt;
 #define YYPARSE_PARAM	ctxt, lctxt
 #define YYLEX_PARAM		lctxt
+#define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
 
-#include "rtfConsumerFunctions.h"
+#include "RTFConsumerFunctions.h"
 
 %}
 
@@ -156,7 +157,7 @@ typedef void	* GSRTFctxt;
 
 %%
 
-rtfFile:	'{' { GSRTFstart(ctxt); } RTFstart rtfCharset rtfIngredients { GSRTFstop(ctxt); } '}'
+rtfFile:	'{' { GSRTFstart(CTXT); } RTFstart rtfCharset rtfIngredients { GSRTFstop(CTXT); } '}'
 		;
 
 rtfCharset: RTFansi { $$ = 1; }
@@ -169,18 +170,18 @@ rtfIngredients:	/*	empty	*/
 		|	rtfIngredients rtfFontList
 		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
-		|	rtfIngredients RTFtext		{ GSRTFmangleText(ctxt, $2); free((void *)$2); }
+		|	rtfIngredients RTFtext		{ GSRTFmangleText(CTXT, $2); free((void *)$2); }
 		|	rtfIngredients rtfBlock
 		;
 
-rtfBlock:	'{' { GSRTFopenBlock(ctxt, NO); } rtfIngredients '}' { GSRTFcloseBlock(ctxt, NO); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFignore rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFinfo rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFstylesheet rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFfootnote rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
-		|	'{' { GSRTFopenBlock(ctxt, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(ctxt, YES); }
+rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock(CTXT, NO); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFignore rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFinfo rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFstylesheet rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfootnote rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
                 |	'{'  '}' /* empty */
 		;
 
@@ -195,152 +196,152 @@ rtfStatement: RTFfont				{ int font;
 						      font = 0;
 						  else
 						      font = $1.parameter;
-						  GSRTFfontNumber(ctxt, font); }
+						  GSRTFfontNumber(CTXT, font); }
 		|	RTFfontSize		{ int size;
 
 						  if ($1.isEmpty)
 						      size = 24;
 						  else
 						      size = $1.parameter;
-						  GSRTFfontSize(ctxt, size); }
+						  GSRTFfontSize(CTXT, size); }
 		|	RTFpaperWidth		{ int width; 
 		
 		                                  if ($1.isEmpty)
 						      width = 12240;
 						  else
 						      width = $1.parameter;
-						  GSRTFpaperWidth(ctxt, width);}
+						  GSRTFpaperWidth(CTXT, width);}
 		|	RTFpaperHeight		{ int height; 
 		
 		                                  if ($1.isEmpty)
 						      height = 15840;
 						  else
 						      height = $1.parameter;
-						  GSRTFpaperHeight(ctxt, height);}
+						  GSRTFpaperHeight(CTXT, height);}
 		|	RTFmarginLeft		{ int margin; 
 		
 		                                  if ($1.isEmpty)
 						      margin = 1800;
 						  else
 						      margin = $1.parameter;
-						  GSRTFmarginLeft(ctxt, margin);}
+						  GSRTFmarginLeft(CTXT, margin);}
 		|	RTFmarginRight		{ int margin; 
 		
 		                                  if ($1.isEmpty)
 						      margin = 1800;
 						  else
 						      margin = $1.parameter;
-						  GSRTFmarginRight(ctxt, margin); }
+						  GSRTFmarginRight(CTXT, margin); }
 		|	RTFmarginTop		{ int margin; 
 		
 		                                  if ($1.isEmpty)
 						      margin = 1440;
 						  else
 						      margin = $1.parameter;
-						  GSRTFmarginTop(ctxt, margin); }
+						  GSRTFmarginTop(CTXT, margin); }
 		|	RTFmarginButtom		{ int margin; 
 		
 		                                  if ($1.isEmpty)
 						      margin = 1440;
 						  else
 						      margin = $1.parameter;
-						  GSRTFmarginButtom(ctxt, margin); }
+						  GSRTFmarginButtom(CTXT, margin); }
 		|	RTFfirstLineIndent	{ int indent; 
 		
 		                                  if ($1.isEmpty)
 						      indent = 0;
 						  else
 						      indent = $1.parameter;
-						  GSRTFfirstLineIndent(ctxt, indent); }
+						  GSRTFfirstLineIndent(CTXT, indent); }
 		|	RTFleftIndent		{ int indent; 
 		
 		                                  if ($1.isEmpty)
 						      indent = 0;
 						  else
 						      indent = $1.parameter;
-						  GSRTFleftIndent(ctxt, indent);}
+						  GSRTFleftIndent(CTXT, indent);}
 		|	RTFrightIndent		{ int indent; 
 		
 		                                  if ($1.isEmpty)
 						      indent = 0;
 						  else
 						      indent = $1.parameter;
-						  GSRTFrightIndent(ctxt, indent);}
+						  GSRTFrightIndent(CTXT, indent);}
 		|	RTFtabstop		{ int location; 
 		
 		                                  if ($1.isEmpty)
 						      location = 0;
 						  else
 						      location = $1.parameter;
-						  GSRTFtabstop(ctxt, location);}
-		|	RTFalignCenter		{ GSRTFalignCenter(ctxt); }
-		|	RTFalignJustified	{ GSRTFalignJustified(ctxt); }
-		|	RTFalignLeft		{ GSRTFalignLeft(ctxt); }
-		|	RTFalignRight		{ GSRTFalignRight(ctxt); }
+						  GSRTFtabstop(CTXT, location);}
+		|	RTFalignCenter		{ GSRTFalignCenter(CTXT); }
+		|	RTFalignJustified	{ GSRTFalignJustified(CTXT); }
+		|	RTFalignLeft		{ GSRTFalignLeft(CTXT); }
+		|	RTFalignRight		{ GSRTFalignRight(CTXT); }
 		|	RTFspaceAbove		{ int space; 
 		
 		                                  if ($1.isEmpty)
 						      space = 0;
 						  else
 						      space = $1.parameter;
-						  GSRTFspaceAbove(ctxt, space); }
-		|	RTFlineSpace		{ GSRTFlineSpace(ctxt, $1.parameter); }
-		|	RTFdefaultParagraph	{ GSRTFdefaultParagraph(ctxt); }
-		|	RTFstyle		{ GSRTFstyle(ctxt, $1.parameter); }
+						  GSRTFspaceAbove(CTXT, space); }
+		|	RTFlineSpace		{ GSRTFlineSpace(CTXT, $1.parameter); }
+		|	RTFdefaultParagraph	{ GSRTFdefaultParagraph(CTXT); }
+		|	RTFstyle		{ GSRTFstyle(CTXT, $1.parameter); }
 		|	RTFcolorbg		{ int color; 
 		
 		                                  if ($1.isEmpty)
 						      color = 0;
 						  else
 						      color = $1.parameter;
-						  GSRTFcolorbg(ctxt, color); }
+						  GSRTFcolorbg(CTXT, color); }
 		|	RTFcolorfg		{ int color; 
 		
 		                                  if ($1.isEmpty)
 						      color = 0;
 						  else
 						      color = $1.parameter;
-						  GSRTFcolorfg(ctxt, color); }
+						  GSRTFcolorfg(CTXT, color); }
 		|	RTFsubscript		{ int script;
 		
 		                                  if ($1.isEmpty)
 						      script = 6;
 						  else
 						      script = $1.parameter;
-						  GSRTFsubscript(ctxt, script); }
+						  GSRTFsubscript(CTXT, script); }
 		|	RTFsuperscript		{ int script;
 		
 		                                  if ($1.isEmpty)
 						      script = 6;
 						  else
 						      script = $1.parameter;
-						  GSRTFsuperscript(ctxt, script); }
+						  GSRTFsuperscript(CTXT, script); }
 		|	RTFbold			{ BOOL on;
 
 		                                  if ($1.isEmpty || $1.parameter)
 						      on = YES;
 						  else
 						      on = NO;
-						  GSRTFbold(ctxt, on); }
+						  GSRTFbold(CTXT, on); }
 		|	RTFitalic		{ BOOL on;
 
 		                                  if ($1.isEmpty || $1.parameter)
 						      on = YES;
 						  else
 						      on = NO;
-						  GSRTFitalic(ctxt, on); }
+						  GSRTFitalic(CTXT, on); }
 		|	RTFunderline		{ BOOL on;
 
 		                                  if ($1.isEmpty || $1.parameter)
 						      on = YES;
 						  else
 						      on = NO;
-						  GSRTFunderline(ctxt, on); }
-		|	RTFunderlineStop	{ GSRTFunderline(ctxt, NO); }
-                |	RTFplain	        { GSRTFdefaultCharacterStyle(ctxt); }
-                |	RTFparagraph	        { GSRTFparagraph(ctxt); }
-                |	RTFrow   	        { GSRTFparagraph(ctxt); }
-		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(ctxt, $1); }
+						  GSRTFunderline(CTXT, on); }
+		|	RTFunderlineStop	{ GSRTFunderline(CTXT, NO); }
+                |	RTFplain	        { GSRTFdefaultCharacterStyle(CTXT); }
+                |	RTFparagraph	        { GSRTFparagraph(CTXT); }
+                |	RTFrow   	        { GSRTFparagraph(CTXT); }
+		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(CTXT, $1); }
 		;
 
 /*
@@ -358,7 +359,7 @@ rtfFonts:
 
 /* the first RTFfont tags the font with a number */
 /* RTFtext introduces the fontName */
-rtfFontStatement:	RTFfont rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(ctxt, $4, $2, $1.parameter);
+rtfFontStatement:	RTFfont rtfFontFamily rtfFontAttrs RTFtext	{ GSRTFregisterFont(CTXT, $4, $2, $1.parameter);
                                                           free((void *)$4); }
 		;
 
@@ -395,12 +396,12 @@ rtfColors: /* empty */
 /* We get the ';' as RTFText */
 rtfColorStatement: RTFred RTFgreen RTFblue RTFtext 
                      { 
-		       GSRTFaddColor(ctxt, $1.parameter, $2.parameter, $3.parameter);
+		       GSRTFaddColor(CTXT, $1.parameter, $2.parameter, $3.parameter);
 		       free((void *)$4);
 		     }
  		|	RTFtext 
                      { 
-		       GSRTFaddDefaultColor(ctxt);
+		       GSRTFaddDefaultColor(CTXT);
 		       free((void *)$1);
 		     }
 		;

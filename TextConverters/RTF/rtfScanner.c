@@ -26,8 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "Parsers/rtfScanner.h"
-#include "Parsers/rtfGrammer.tab.h"
+#include "rtfScanner.h"
+#include "rtfGrammer.tab.h"
 
 //	<§> scanner types and helpers
 

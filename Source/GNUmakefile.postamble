@@ -35,11 +35,8 @@
 #   otherwise the normal makefile rules will not be performed.
 #
 
-./$(GNUSTEP_OBJ_DIR)/Parsers:
-	$(MKDIRS) ./$(GNUSTEP_OBJ_DIR)/Parsers
-
 # Things to do before compiling
-before-all:: ./$(GNUSTEP_OBJ_DIR)/Parsers
+# before-all:: 
 
 # Things to do after compiling
 # after-all::
@@ -77,9 +74,6 @@ after-distclean::
 
 #
 # GNUstep GUI Library specific targets
-
-Parsers/rtfGrammer.tab.c: Parsers/rtfGrammer.y
-	$(BISON) $(BISON_FLAGS) $<
 
 #
 # Make list of class names for DLL exports. I'm not sure how to make this

@@ -1,9 +1,9 @@
 #
-#  Top level makefile for GNUstep GUI Library
+#  Makefile for TextConverters bundles
 #
-#  Copyright (C) 1997 Free Software Foundation, Inc.
+#  Copyright (C) 2001 Free Software Foundation, Inc.
 #
-#  Author: Scott Christley <scottc@net-community.com>
+#  Author: Adam Fedor <fedor@gnu.org>
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -25,28 +25,12 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-# Install into the system root by default
-GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
-
-RPM_DISABLE_RELOCATABLE=YES
-PACKAGE_NEEDS_CONFIGURE = YES
-
 GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
-GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
-
-PACKAGE_NAME = gnustep-gui
-
-include ./Version
-
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Source Images Model Tools Panels PrinterTypes TextConverters
-
--include GNUmakefile.preamble
+SUBPROJECTS = RTF
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
-
-include GNUmakefile.postamble

@@ -28,7 +28,7 @@
 #ifndef rtfConsumerFunctions_h_INCLUDE
 #define rtfConsumerFunctions_h_INCLUDE
 
-#include	"Parsers/rtfScanner.h"
+#include	"rtfScanner.h"
 
 /* general statements:
    measurement is usually in twips: one twentieth of a point (this is about 0.01764 mm)
