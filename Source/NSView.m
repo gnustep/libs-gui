@@ -47,7 +47,6 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/GSDragManager.h>
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/NSAffineTransform.h>
 
@@ -68,6 +67,72 @@ static void	(*invalidateImp)(NSView*, SEL) = 0;
 static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 /*
+ *	Stuff to maintain a map table so we know what views are
+ *	registered for drag and drop - we don't store the info in
+ *	the view directly 'cot it would take up a pointer in each
+ *	view and the vast majority of views wouldn't use it.
+ *	Types are not registered/unregistered often enough for the
+ *	performance of this mechanism to be an issue.
+ */
+static NSMapTable	*typesMap = 0;
+static NSLock		*typesLock = nil;
+
+/*
+ * This is the only external interface to the drag types info.
+ */
+NSArray*
+GSGetDragTypes(NSView *obj)
+{
+  NSArray	*t;
+
+  [typesLock lock];
+  t = (NSArray*)NSMapGet(typesMap, (void*)(gsaddr)obj);
+  [typesLock unlock];
+  return t;
+}
+
+static void
+GSRemoveDragTypes(NSView* obj)
+{
+  [typesLock lock];
+  NSMapRemove(typesMap, (void*)(gsaddr)obj);
+  [typesLock unlock];
+}
+
+static NSArray*
+GSSetDragTypes(NSView* obj, NSArray *types)
+{
+  unsigned	count = [types count];
+  NSString	*strings[count];
+  NSArray	*t;
+  unsigned	i;
+
+  /*
+   * Make a new array with copies of the type strings so we don't get
+   * them mutated by someone else.
+   */
+  [types getObjects: strings];
+  for (i = 0; i < count; i++)
+    {
+      strings[i] = [strings[i] copy];
+    }
+  t = [NSArray arrayWithObjects: strings count: count];
+  for (i = 0; i < count; i++)
+    {
+      RELEASE(strings[i]);
+    }
+  /*
+   * Store it.
+   */
+  [typesLock lock];
+  NSMapInsert(typesMap, (void*)(gsaddr)obj, (void*)(gsaddr)t);
+  [typesLock unlock];
+  return t;
+}
+
+
+
+/*
  * Class methods
  */
 + (void) initialize
@@ -76,6 +141,10 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     {
       Class	matrixClass = [NSAffineTransform class];
       NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, 1 };
+
+      typesMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+                NSObjectMapValueCallBacks, 0);
+      typesLock = [NSLock new];
 
       appImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
 		[matrixClass instanceMethodForSelector: appSel];
@@ -405,7 +474,21 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
+  if (newWindow == window)
+    return;
+
+  if (_rFlags.has_draginfo)
+    {
+      NSGraphicsContext	*ctxt = GSCurrentContext();
+      NSArray		*t = GSGetDragTypes(self);
+
+      if (window != nil)
+	[ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+      [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+    }
+
   window = newWindow;
+
   if (_rFlags.has_subviews)
     {
       unsigned	count = [sub_views count];
@@ -1772,17 +1855,56 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	 slideBack: (BOOL)slideFlag
 {}
 
-- (void) registerForDraggedTypes: (NSArray*)newTypes
+- (void) registerForDraggedTypes: (NSArray*)types
 {
-  GSRegisterDragTypes(self, newTypes);
+  NSArray	*o;
+  NSArray	*t;
+
+  if (types == nil || [types count] == 0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"Types information missing"];
+
+  /*
+   * Get the old drag types for this view if we need to tell the context
+   * to change the registered types for the window.
+   */
+  if (_rFlags.has_draginfo == 1 && window != nil)
+    {
+      o = GSGetDragTypes(self);
+      TEST_RETAIN(o);
+    }
+  else
+    {
+      o = nil;
+    }
+
+  t = GSSetDragTypes(self, types);
   _rFlags.has_draginfo = 1;
+  if (window != nil)
+    {
+      NSGraphicsContext	*ctxt = GSCurrentContext();
+
+      [ctxt _addDragTypes: t toWindow: [window windowNumber]];
+      if (o != nil)
+	{
+	  [ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+	}
+    }
+  TEST_RELEASE(o);
 }
 
 - (void) unregisterDraggedTypes
 {
   if (_rFlags.has_draginfo)
     {
-      GSUnregisterDragTypes(self);
+      if (window != nil)
+	{
+	  NSGraphicsContext	*ctxt = GSCurrentContext();
+	  NSArray		*t = GSGetDragTypes(self);
+
+	  [ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+	}
+      GSRemoveDragTypes(self);
       _rFlags.has_draginfo = 0;
     }
 }

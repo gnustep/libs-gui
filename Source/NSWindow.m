@@ -181,7 +181,12 @@ static Class	responderClass;
   TEST_RELEASE(miniaturized_image);
   TEST_RELEASE(window_title);
   TEST_RELEASE(rectsBeingDrawn);
-  [self unregisterDraggedTypes];
+  
+  /*
+   * FIXME This should not be necessary - the views should have removed
+   * their drag types, so we should already have been removed.
+   */
+  [GSCurrentContext() _removeDragTypes: nil fromWindow: [self windowNumber]];
 
   [super dealloc];
 }
@@ -1464,17 +1469,17 @@ static Class	responderClass;
 
 - (void) registerForDraggedTypes: (NSArray*)newTypes
 {
-  GSRegisterDragTypes(self, newTypes);
-  _rFlags.has_draginfo = 1;
+  /*
+   * Ensure we have a content view and it's associated window view.
+   */
+  if (content_view == nil)
+    [self setContentView: nil];
+  [[content_view superView] registerForDraggedTypes: newTypes];
 }
 
 - (void) unregisterDraggedTypes
 {
-  if (_rFlags.has_draginfo)
-    {
-      GSUnregisterDragTypes(self);
-      _rFlags.has_draginfo = 0;
-    }
+  [[content_view superView] unregisterDraggedTypes];
 }
 
 /*

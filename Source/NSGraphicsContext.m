@@ -155,6 +155,7 @@ struct NSWindow_struct
   DESTROY(context_data);
   DESTROY(context_info);
   DESTROY(event_queue);
+  NSFreeMapTable(drag_types);
   [super dealloc];
 }
 
@@ -182,6 +183,8 @@ struct NSWindow_struct
 			initWithCapacity: 1];
   event_queue = [[NSMutableArray allocWithZone: [self zone]]
 			initWithCapacity: 32];
+  drag_types = NSCreateMapTable(NSIntMapKeyCallBacks,
+                NSObjectMapValueCallBacks, 0);
 
   /*
    * The classMethodTable dictionary and the list of all contexts must both
@@ -261,6 +264,90 @@ struct NSWindow_struct
     }
   [window->rectsBeingDrawn removeLastObject];
   [focus_stack removeLastObject];
+}
+
+/*
+ *      Drag and drop support
+ */
+
+/*
+ * Add (increment count by 1) each drag type to those registered
+ * for the window.  If this results in a change to the types registered
+ * in the counted set, return YES, otherwise return NO.
+ * Subclasses should override this method, call 'super' and take
+ * appropriate action if the method returns 'YES'.
+ */
+- (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum
+{
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, winNum);
+  unsigned	originalCount;
+  unsigned	i = [types count];
+
+  /*
+   * Make sure the set exists.
+   */
+  if (old == nil)
+    {
+      old = [NSCountedSet new];
+      NSMapInsert(drag_types, (void*)winNum, (void*)(gsaddr)old);
+      RELEASE(old);
+    }
+  originalCount = [old count];
+
+  while (i-- > 0)
+    {
+      id	o = [types objectAtIndex: i];
+
+      [old removeObject: o];
+    }
+  if ([old count] == originalCount)
+    return NO;
+  return YES;
+}
+
+/*
+ * Remove (decrement count by 1) each drag type from those registered
+ * for the window.  If this results in a change to the types registered
+ * in the counted set, return YES, otherwise return NO.
+ * If given 'nil' as the array of types, remove ALL.
+ * Subclasses should override this method, call 'super' and take
+ * appropriate action if the method returns 'YES'.
+ */
+- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum
+{
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, winNum);
+
+  if (types == nil)
+    {
+      if (old == nil)
+	return NO;
+      NSMapRemove(drag_types, (void*)winNum);
+      return YES;
+    }
+  else if (old == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      unsigned	originalCount = [old count];
+      unsigned	i = [types count];
+
+      while (i-- > 0)
+	{
+	  id	o = [types objectAtIndex: i];
+
+	  [old removeObject: o];
+	}
+      if ([old count] == originalCount)
+	return NO;
+      return YES;
+    }
+}
+
+- (NSCountedSet*) _dragTypesForWindow: (int)winNum
+{
+  return (NSCountedSet*)NSMapGet(drag_types, winNum);
 }
 
 @end

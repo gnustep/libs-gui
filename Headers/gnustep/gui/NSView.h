@@ -378,6 +378,10 @@ enum {
 @end
 #endif
 
+/*
+ * GNUstep specific function to determine the drag types registered for a view.
+ */
+extern NSArray *GSGetDragTypes(NSView* aView);
 
 /* Notifications */
 extern NSString *NSViewFrameDidChangeNotification;

@@ -31,6 +31,8 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
+#include <Foundation/NSMapTable.h>
+#include <Foundation/NSSet.h>
 
 #include <AppKit/GSMethodTable.h>
 
@@ -100,6 +102,7 @@ typedef enum _NSWindowOrderingMode
   NSMutableData		*context_data;
   NSMutableArray	*focus_stack;
   NSMutableArray	*event_queue;
+  NSMapTable		*drag_types;
 }
 
 + (NSGraphicsContext*) currentContext;
@@ -128,6 +131,13 @@ NSGraphicsContext	*GSCurrentContext();
 - (NSView*) focusView;
 - (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect;
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush;
+
+/*
+ *	Drag and drop support
+ */
+- (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum;
+- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum;
+- (NSCountedSet*) _dragTypesForWindow: (int)winNum;
 
 @end
 #endif
