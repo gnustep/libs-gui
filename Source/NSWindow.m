@@ -1565,8 +1565,12 @@ many times.
 	  if (_f.menu_exclude == NO)
 	    {
 	      BOOL	isFileName;
-
-	      isFileName = [_windowTitle isEqual: _representedFilename];
+	      NSString *aString;
+	       
+	      aString = [NSString stringWithFormat: @"%@  --  %@", 
+	      			[_representedFilename lastPathComponent],
+		      [_representedFilename stringByDeletingLastPathComponent]];							    
+	      isFileName = [_windowTitle isEqual: aString]; 
 
 	      [NSApp addWindowsItem: self
 			      title: _windowTitle
@@ -3591,8 +3595,12 @@ resetCursorRectsForView(NSView *theView)
 	  if (_f.menu_exclude == NO)
 	    {
 	      BOOL	isFileName;
-
-	      isFileName = [_windowTitle isEqual: _representedFilename];
+	      NSString *aString;
+              
+	      aString = [NSString stringWithFormat: @"%@  --  %@",
+                                [_representedFilename lastPathComponent],
+                      [_representedFilename stringByDeletingLastPathComponent]];
+              isFileName = [_windowTitle isEqual: aString];
 
 	      [NSApp addWindowsItem: self
 			      title: _windowTitle

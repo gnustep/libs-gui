@@ -1,3 +1,12 @@
+2005-02-08  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSApplication.m (-changeWindowsItem:title:filename:): If the
+	window can become key, use makeKeyAndOrderFront: as the action.
+	(-updateWindowsItem:, -setWindowsMenu): Compare the title to what it
+	would be if there was a represented filename, not the filename.
+	* Source/NSApplication.m (-orderWindow:relativeTo:): Ditto.
+	(-setExcludedFromWindowsMenu): Ditto.
+
 2005-02-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSecureTextField.m (-drawInteriorWithFrame:inView:):

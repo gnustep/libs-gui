@@ -2476,10 +2476,21 @@ image.
 	break;
       i++;
     }
-  item = [_windows_menu insertItemWithTitle: aString
+
+  if ([aWindow canBecomeKeyWindow])
+    {
+      item = [_windows_menu insertItemWithTitle: aString
+			action: @selector(makeKeyAndOrderFront:)
+			keyEquivalent: @""
+			atIndex: i];
+    }
+  else 
+    {
+      item = [_windows_menu insertItemWithTitle: aString
 			action: @selector(orderFront:)
 			keyEquivalent: @""
 			atIndex: i];
+    }
   [item setTarget: aWindow];
 
   // When changing for a window with a file, we should also set the image.
@@ -2516,6 +2527,9 @@ image.
 	  NSString	*t = [aWindow title];
 	  NSString	*f = [aWindow representedFilename];
 
+	  f = [NSString stringWithFormat: @"%@  --  %@",
+	  				  [f lastPathComponent],
+					  [f stringByDeletingLastPathComponent]];
 	  [self changeWindowsItem: aWindow
 			    title: t
 			 filename: [t isEqual: f]];
@@ -2571,7 +2585,10 @@ image.
 	  {
 	    NSString	*t = [win title];
 	    NSString	*f = [win representedFilename];
-	    
+
+	    f = [NSString stringWithFormat: @"%@  --  %@",
+                                         [f lastPathComponent],
+                                         [f stringByDeletingLastPathComponent]];
 	    [self changeWindowsItem: win
 		  title: t
 		  filename: [t isEqual: f]];
