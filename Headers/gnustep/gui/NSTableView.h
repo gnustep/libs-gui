@@ -61,6 +61,7 @@
   BOOL               _allowsMultipleSelection;
   BOOL               _allowsEmptySelection;
   BOOL               _allowsColumnSelection;
+  BOOL               _allowsColumnResizing;
   BOOL               _selectingColumns;
   NSText            *_textObject;
   int                _editedRow;
