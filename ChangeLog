@@ -1,3 +1,8 @@
+Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Patch from Nicola Pero <n.pero@mi.flashnet.it>
+	* Source/NSBox.m: Fix setFrameFromContentFrame: for zero rect frame.
+
 Wed Aug 25 09:42:05 1999  Martin Man  <Martin.Man@seznam.cz>
 
         * Source/NSWindow.m ([NSWindow -setFrameTopLeftPoint:]): Corrected
@@ -6,7 +11,7 @@ Wed Aug 25 09:42:05 1999  Martin Man  <Martin.Man@seznam.cz>
 
 Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	Patch from Niico Pero <n.pero@mi.flashnet.it> modified to use
+	Patch from Nicola Pero <n.pero@mi.flashnet.it> modified to use
 	controlDarkShadowColor rather than blackColor.
 	* Source/NSBox.m: draw line borders in correct color.
 	* Source/NSCell.m ditto

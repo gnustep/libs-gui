@@ -37,7 +37,7 @@
 #include <AppKit/NSTextFieldCell.h>
 
 @interface NSBox (Private)
-- (NSRect) calcSizes;
+- (NSRect) calcSizesAllowingNegative: (BOOL)aFlag;
 @end
 
 @implementation NSBox
@@ -106,7 +106,7 @@
   if (border_type != aType)
     {
       border_type = aType;
-      [content_view setFrame: [self calcSizes]];
+      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
       [self setNeedsDisplay: YES];
     }
 }
@@ -114,14 +114,14 @@
 - (void) setTitle: (NSString *)aString
 {
   [cell setStringValue: aString];
-  [content_view setFrame: [self calcSizes]];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
 
 - (void) setTitleFont: (NSFont *)fontObj
 {
   [cell setFont: fontObj];
-  [content_view setFrame: [self calcSizes]];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
 
@@ -130,7 +130,7 @@
   if (title_position != aPosition)
     {
       title_position = aPosition;
-      [content_view setFrame: [self calcSizes]];
+      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
       [self setNeedsDisplay: YES];
     }
 }
@@ -179,7 +179,7 @@
     {
       [super replaceSubview: content_view with: aView];
       content_view = aView;
-      [content_view setFrame: [self calcSizes]];
+      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
     }
 }
 
@@ -189,7 +189,7 @@
 	@"illegal margins supplied");
 
   offsets = offsetSize;
-  [content_view setFrame: [self calcSizes]];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
 
@@ -199,7 +199,7 @@
 - (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
   // First calc the sizes to see how much we are off by
-  NSRect r = [self calcSizes];
+  NSRect r = [self calcSizesAllowingNegative: YES];
   NSRect f = [self frame];
 
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
@@ -210,6 +210,7 @@
   f.size.height = f.size.height + (contentFrame.size.height - r.size.height);
 
   [self setFrame: f];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];  
 }
 
 - (void) sizeToFit
@@ -237,7 +238,7 @@
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
   [super resizeWithOldSuperviewSize: oldSize];
-  [content_view setFrame: [self calcSizes]];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
 
 //
@@ -341,7 +342,7 @@
 
 @implementation NSBox (Private)
 
-- (NSRect)calcSizes
+- (NSRect) calcSizesAllowingNegative: (BOOL)aFlag
 {
   NSRect r = NSZeroRect;
 
@@ -569,11 +570,14 @@
       }
     }
 
-  if (r.size.width < 0)
-    r.size.width = 0;
-  if (r.size.height < 0)
-    r.size.height = 0;
-
+  if (!aFlag)
+    {
+      if (r.size.width < 0)
+	r.size.width = 0;
+      if (r.size.height < 0)
+	r.size.height = 0;
+    }
+  
   return r;
 }
 
