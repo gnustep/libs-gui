@@ -1,3 +1,9 @@
+Thu Apr 12 15:09:34 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Model/GMArchiver.m ([GMUnarchiver
+	-initForReadingWithPropertyList:]): Retain the namesToObjects
+	dictionary ([GMUnarchiver -dealloc]): Implemented.
+
 Thu Apr 12 15:07:19 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Model/IMCustomObject.m: Replaced #import with #include.
