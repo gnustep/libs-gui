@@ -1431,6 +1431,28 @@ static NSNotificationCenter *nc;
     return (NSWindow *)_aWindow;
 }
 
+- (void) setMain: (BOOL)isMain
+{
+  if (isMain)
+    {
+      // Set the title of the window.
+      // This wont be displayed, but the window manager may need it.
+      [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
+      [[self window] setLevel: NSMainMenuWindowLevel];
+      [self setGeometry];
+
+      if ([NSApp isActive])
+        {
+	  [self display];
+	}
+    }
+  else 
+    {
+      [self close];
+      [[self window] setLevel: NSSubmenuWindowLevel];
+    }
+}
+
 /**
    Set the frame origin of the receiver to aPoint. If a submenu of
    the receiver is attached. The frame origin of the submenu is set

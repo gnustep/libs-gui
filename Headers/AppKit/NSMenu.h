@@ -589,6 +589,13 @@ The displayed menus on the screen have the following structure:
 */
 - (NSWindow*) window;
 
+/**
+   Flag this menu to be the main menu of the application, 
+   when isMain is YES. Flag it as no longer being the main
+   menu when NO is handed in.
+ */
+- (void) setMain: (BOOL)isMain;
+
 /* Shows the menu window on screen */
 /**
    Show menu on the screen.  This method can/should be used by

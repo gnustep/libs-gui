@@ -1,3 +1,12 @@
+2004-11-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenu.h
+	* Source/NSMenu.m (-setMain:): New internal method to set the main
+	menu of an application. Uses code from [NSApplication
+	setMainMenu:] plus a display call for the new main menu.
+	* Source/NSApplication.m (-setMainMenu:): Use the new method on
+	NSMenu to flag a menu as main and cleaned up the logic.
+
 2004-11-11 15:08  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:): Reduce the

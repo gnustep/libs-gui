@@ -2278,19 +2278,22 @@ image.
  */ 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
-  if (_main_menu != nil && _main_menu != aMenu)
+  if (_main_menu == aMenu)
     {
-      [_main_menu close];
-      [[_main_menu window] setLevel: NSSubmenuWindowLevel];
+      return;
+    }
+
+  if (_main_menu != nil)
+    {
+      [_main_menu setMain: NO];
     }
 
   ASSIGN(_main_menu, aMenu);
 
-  // Set the title of the window.
-  // This wont be displayed, but the window manager may need it.
-  [[_main_menu window] setTitle: [[NSProcessInfo processInfo] processName]];
-  [[_main_menu window] setLevel: NSMainMenuWindowLevel];
-  [_main_menu setGeometry];
+  if (_main_menu != nil)
+    {
+      [_main_menu setMain: YES];
+    }
 }
 
 - (void) rightMouseDown: (NSEvent*)theEvent
