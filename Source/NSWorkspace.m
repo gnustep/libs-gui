@@ -564,7 +564,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    * If the original name included a path, check that the located name
    * matches it.  If it doesn't we return nil as MacOS-X does.
    */
-  if (base != nil
+  if ([base length] > 0
     && [base isEqual: [path stringByDeletingLastPathComponent]] == NO)
     {
       path = nil;
