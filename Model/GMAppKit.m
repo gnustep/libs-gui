@@ -1,4 +1,4 @@
-/*
+/* -*- C++ -*-
    GMAppKit.m
 
    Copyright (C) 1996 Free Software Foundation, Inc.
@@ -803,3 +803,201 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSWindow (GMArchiverMethods) */
 
+@implementation NSPanel (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    [archiver encodeRect:[self frame] withName:@"frame"];
+    [archiver encodeSize:[self maxSize] withName:@"maxSize"];
+    [archiver encodeSize:[self minSize] withName:@"minSize"];
+    [archiver encodeString:[self frameAutosaveName]
+	      withName:@"frameAutosaveName"];
+    [archiver encodeInt:[self level] withName:@"level"];
+    [archiver encodeBOOL:[self isVisible] withName:@"isVisible"];
+    [archiver encodeBOOL:[self isAutodisplay] withName:@"isAutodisplay"];
+    [archiver encodeString:[self title] withName:@"title"];
+    [archiver encodeString:[self representedFilename]
+	    withName:@"representedFilename"];
+    [archiver encodeBOOL:[self isReleasedWhenClosed]
+	    withName:@"isReleasedWhenClosed"];
+    [archiver encodeObject:[self contentView] withName:@"contentView"];
+    [archiver encodeBOOL:[self hidesOnDeactivate]
+	    withName:@"hidesOnDeactivate"];
+    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+    [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
+    [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
+
+    [archiver encodeBOOL:[self isFloatingPanel] withName:@"isFloatingPanel"];
+    [archiver encodeBOOL:[self becomesKeyOnlyIfNeeded]
+            withName:@"becomesKeyOnlyIfNeeded"];
+    [archiver encodeBOOL:[self worksWhenModal] withName:@"worksWhenModal"];
+}
+
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    unsigned backingType = [unarchiver decodeUnsignedIntWithName:
+			   @"backingType"];
+    unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
+    NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+    NSPanel* panel = [[[NSPanel allocWithZone:[unarchiver objectZone]]
+		     initWithContentRect:aRect
+		     styleMask:styleMask backing:backingType defer:YES]
+		    autorelease];
+
+    return panel;
+}
+
+-(id)initWithModelUnarchiver :(GMUnarchiver *)unarchiver
+{
+    NSString* frameAutosaveName;
+    
+    [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
+    [self setMaxSize:[unarchiver decodeSizeWithName:@"maxSize"]];
+    [self setMinSize:[unarchiver decodeSizeWithName:@"minSize"]];
+    
+    frameAutosaveName = [unarchiver decodeStringWithName:@"frameAutosaveName"];
+    if (frameAutosaveName)
+	[self setFrameAutosaveName:frameAutosaveName];
+    
+    [self setLevel:[unarchiver decodeIntWithName:@"level"]];
+    
+    [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
+    [self setTitle:[unarchiver decodeStringWithName:@"title"]];
+    [self setRepresentedFilename:
+        [unarchiver decodeStringWithName:@"representedFilename"]];
+    [self setReleasedWhenClosed:
+        [unarchiver decodeBOOLWithName:@"isReleasedWhenClosed"]];
+    [self setHidesOnDeactivate:
+        [unarchiver decodeBOOLWithName:@"hidesOnDeactivate"]];
+    [self setBackgroundColor:
+        [unarchiver decodeObjectWithName:@"backgroundColor"]];
+    if ([unarchiver decodeBOOLWithName:@"isVisible"])
+	[self orderFront:nil];
+
+    [self setFloatingPanel:
+        [unarchiver decodeBOOLWithName:@"isFloatingPanel"]];
+    [self setBecomesKeyOnlyIfNeeded:
+        [unarchiver decodeBOOLWithName:@"becomesKeyOnlyIfNeeded"]];
+    [self setWorksWhenModal:
+        [unarchiver decodeBOOLWithName:@"setWorksWhenModal"]];
+
+#if GNU_GUI_LIBRARY
+  [[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
+  [[self contentView] setNeedsDisplay:YES];
+#endif
+    return self;
+}
+
+@end  /* NSPanel (GMArchiverMethods) */
+
+
+@implementation NSSavePanel (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    //NSWindow specific
+    [archiver encodeRect:[self frame] withName:@"frame"];
+    [archiver encodeSize:[self maxSize] withName:@"maxSize"];
+    [archiver encodeSize:[self minSize] withName:@"minSize"];
+    [archiver encodeString:[self frameAutosaveName]
+	      withName:@"frameAutosaveName"];
+    [archiver encodeInt:[self level] withName:@"level"];
+    [archiver encodeBOOL:[self isVisible] withName:@"isVisible"];
+    [archiver encodeBOOL:[self isAutodisplay] withName:@"isAutodisplay"];
+    [archiver encodeString:[self title] withName:@"title"];
+    [archiver encodeString:[self representedFilename]
+	    withName:@"representedFilename"];
+    [archiver encodeBOOL:[self isReleasedWhenClosed]
+	    withName:@"isReleasedWhenClosed"];
+    [archiver encodeObject:[self contentView] withName:@"contentView"];
+    [archiver encodeBOOL:[self hidesOnDeactivate]
+	    withName:@"hidesOnDeactivate"];
+    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+    [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
+    [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
+
+    // NSPanel specific
+    [archiver encodeBOOL:[self isFloatingPanel] withName:@"isFloatingPanel"];
+    [archiver encodeBOOL:[self becomesKeyOnlyIfNeeded]
+            withName:@"becomesKeyOnlyIfNeeded"];
+    [archiver encodeBOOL:[self worksWhenModal] withName:@"worksWhenModal"];
+
+    // NSSavePanel specific
+    [archiver encodeString:[self prompt] withName:@"prompt"];
+    [archiver encodeObject:[self accessoryView] withName:@"accessoryView"];
+    [archiver encodeString:[self requiredFileType]
+            withName:@"requiredFileType"];
+    [archiver encodeBOOL:[self treatsFilePackagesAsDirectories]
+            withName:@"treatsFilePackagesAsDirectories"];
+    [archiver encodeString:[self directory]
+            withName:@"directory"];
+}
+
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    unsigned backingType = [unarchiver decodeUnsignedIntWithName:
+			   @"backingType"];
+    unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
+    NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+    NSSavePanel* panel = [[[NSSavePanel allocWithZone:[unarchiver objectZone]]
+			  initWithContentRect:aRect
+			  styleMask:styleMask backing:backingType defer:YES]
+			 autorelease];
+
+    return panel;
+}
+
+-(id)initWithModelUnarchiver :(GMUnarchiver *)unarchiver
+{
+    NSString* frameAutosaveName;
+    
+    //NSWindow specifics
+    [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
+    [self setMaxSize:[unarchiver decodeSizeWithName:@"maxSize"]];
+    [self setMinSize:[unarchiver decodeSizeWithName:@"minSize"]];
+    
+    frameAutosaveName = [unarchiver decodeStringWithName:@"frameAutosaveName"];
+    if (frameAutosaveName)
+	[self setFrameAutosaveName:frameAutosaveName];
+    
+    [self setLevel:[unarchiver decodeIntWithName:@"level"]];
+    
+    [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
+    [self setTitle:[unarchiver decodeStringWithName:@"title"]];
+    [self setRepresentedFilename:
+        [unarchiver decodeStringWithName:@"representedFilename"]];
+    [self setReleasedWhenClosed:
+        [unarchiver decodeBOOLWithName:@"isReleasedWhenClosed"]];
+    [self setHidesOnDeactivate:
+        [unarchiver decodeBOOLWithName:@"hidesOnDeactivate"]];
+    [self setBackgroundColor:
+        [unarchiver decodeObjectWithName:@"backgroundColor"]];
+    if ([unarchiver decodeBOOLWithName:@"isVisible"])
+	[self orderFront:nil];
+
+    //NSPanel specifics
+    [self setFloatingPanel:
+        [unarchiver decodeBOOLWithName:@"isFloatingPanel"]];
+    [self setBecomesKeyOnlyIfNeeded:
+        [unarchiver decodeBOOLWithName:@"becomesKeyOnlyIfNeeded"]];
+    [self setWorksWhenModal:
+        [unarchiver decodeBOOLWithName:@"setWorksWhenModal"]];
+
+    //NSSavePanel specifics
+    [self setPrompt:[unarchiver decodeStringWithName:@"prompt"]];
+    [self setAccessoryView:[unarchiver decodeObjectWithName:@"accessoryView"]];
+    [self setRequiredFileType:
+          [unarchiver decodeStringWithName:@"requiredFileType"]];
+    [self setTreatsFilePackagesAsDirectories:
+          [unarchiver decodeBOOLWithName:@"treatsFilePackagesAsDirectories"]];
+    [self setDirectory:
+          [unarchiver decodeStringWithName:@"directory"]];
+
+#if GNU_GUI_LIBRARY
+  [[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
+  [[self contentView] setNeedsDisplay:YES];
+#endif
+    return self;
+}
+
+@end  /* NSSavePanel (GMArchiverMethods) */

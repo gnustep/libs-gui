@@ -56,7 +56,8 @@ enum {
 
 @interface NSSavePanel : NSPanel <NSCoding>
 {
-	NSBrowser	   *browser;						// from Daniel's source
+
+    NSBrowser	   *browser;	// from Daniel's source
     id				form;
     id				homeButton;
     id				okButton;
