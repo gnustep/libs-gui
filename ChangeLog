@@ -1,3 +1,13 @@
+Wed Jan  9 12:07:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* configure.in: Abort with an error if GNUSTEP_SYSTEM_ROOT is not
+	set.  (AC_CONFIG_AUX_DIR): Call to set ac_aux_dir to
+	$GNUSTEP_SYSTEM_ROOT/Makefiles.
+	* configure: Regenerated.
+	* config.guess: Removed.
+	* config.sub: Removed.
+	* install-sh: Removed.
+
 Tue Jan  8 16:23:08 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Resources/English.lproj/Localizable.strings: Removed 'Windows'.
