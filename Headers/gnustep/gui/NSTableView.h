@@ -68,6 +68,8 @@
   int                _editedRow;
   int                _editedColumn;
   NSCell            *_editedCell;
+  BOOL               _autosaveTableColumns;
+  NSString          *_autosaveName;
 
   /*
    * Ivars Acting as Cache 
