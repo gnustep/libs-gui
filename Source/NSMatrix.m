@@ -957,6 +957,8 @@ static SEL getSel;
 
   if (aCell)
     {
+      NSRect cellFrame;
+
       if (_selectedCell && _selectedCell != aCell)
 	{
 	  [_selectedCell setShowsFirstResponder: NO];
@@ -969,6 +971,8 @@ static SEL getSel;
       _selectedColumn = column;
       _selectedCells[row][column] = YES;
 
+      cellFrame = [self cellFrameAtRow: row column: column];
+
       if ([_cells[row][column] acceptsFirstResponder])
 	{
 	  int lastRow, lastColumn;
@@ -980,7 +984,8 @@ static SEL getSel;
 	  _dottedColumn = column;
 
 	  if (lastRow != -1 && lastColumn != -1
-	      && (lastRow != row || lastColumn != column))
+	      && (lastRow != row || lastColumn != column) 
+	      && [self window] != nil)
 	    [self drawCellAtRow: lastRow column: lastColumn];
 	}
 
@@ -989,13 +994,16 @@ static SEL getSel;
       if (_mode == NSListModeMatrix)
 	[aCell setCellAttribute: NSCellHighlighted to: 1];
 
+      if (_autoscroll)
+	[self scrollRectToVisible: cellFrame];
+
       // Note: we select the cell iff it is 'selectable', not 'editable' 
       // as macosx says.  This looks definitely more appropriate. 
       // [This is going to start editing only if the cell is also editable,
       // otherwise the text gets selected and that's all.]
       [self selectTextAtRow: row column: column];
 
-      [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
+      [self setNeedsDisplayInRect: cellFrame];
     }
   else
     {
@@ -1465,7 +1473,10 @@ static SEL getSel;
 	case NSReturnTextMovement:
 	  if ([self sendAction] == NO)
 	    {
-	      if ([self performKeyEquivalent: [_window currentEvent]] == NO)
+	      NSEvent *event = [_window currentEvent];
+
+	      if ([self performKeyEquivalent: event] == NO
+		  && [_window performKeyEquivalent: event] == NO)
 		[self selectText: self];
 	    }
 	  break;

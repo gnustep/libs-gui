@@ -36,9 +36,62 @@ AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rintf)
 
 #--------------------------------------------------------------------
+# Find for JPEG
+#--------------------------------------------------------------------
+GRAPHIC_LIBS=
+GRAPHIC_CFLAGS=
+GRAPHIC_LFLAGS=
+
+AC_ARG_WITH(jpeg_library, 
+           [  --with-jpeg-library=DIR JPEG library file are in DIR], ,
+           with_jpeg_library=)
+AC_ARG_WITH(jpeg_include,  
+	[  --with-jpeg-include=DIR JPEG include files are in DIR], ,
+        with_jpeg_include=)
+
+if test "$with_jpeg_library" = ""; then
+  case "$target_os" in
+    freebsd*)	with_jpeg_include="/usr/local/include"
+		with_jpeg_library="/usr/local/lib";;
+  esac
+fi
+
+if test -n "$with_jpeg_library"; then
+  with_jpeg_library="-L$with_jpeg_library"
+fi
+if test -n "$with_jpeg_include"; then
+  with_jpeg_include="-I$with_jpeg_include"
+fi
+
+AC_DEFUN(AC_CHECK_JPEGLIB,
+[jpeg_check_lib_save_header=${CPPFLAGS}
+CPPFLAGS="$1 $2 ${CPPFLAGS}"
+
+AC_CHECK_LIB(jpeg, jpeg_destroy_decompress,
+      jpeg_ok=yes,
+      jpeg_ok=no)
+if test "$jpeg_ok" = yes; then
+  AC_MSG_CHECKING([for jpeglib.h])
+  AC_TRY_CPP([#include <stdio.h>
+              #undef PACKAGE
+	      #undef VERSION
+	      #undef HAVE_STDLIB_H
+              #include <jpeglib.h>],
+ 	      jpeg_ok=yes,
+	      jpeg_ok=no)
+  AC_MSG_RESULT($jpeg_ok)
+
+  if test "$jpeg_ok" = yes; then
+    GRAPHIC_LFLAGS="$1 $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="$2 $GRAPHIC_CFLAGS"
+  fi
+fi
+CPPFLAGS="${jpeg_check_lib_save_header}"])
+
+AC_CHECK_JPEGLIB(${with_jpeg_library}, ${with_jpeg_include})
+
+#--------------------------------------------------------------------
 # Find for TIFF
-# Do a superficial find only - The tiff library is actually linked with
-# the backend, and typically in conjunction with other graphic libraries.
 #--------------------------------------------------------------------
 AC_ARG_WITH(tiff_library, 
            [  --with-tiff-library=DIR TIFF library file are in DIR], ,
@@ -47,35 +100,82 @@ AC_ARG_WITH(tiff_include,
 	[  --with-tiff-include=DIR TIFF include files are in DIR], ,
         with_tiff_include=)
 
-case "$target_os" in
-  freebsd*)	CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-		LDFLAGS="$LDFLAGS -L/usr/local/lib"
-		ADDITIONAL_INCLUDE_DIRS="-I/usr/local/include"
-		ADDITIONAL_LIB_DIRS="-L/usr/local/lib";;
-esac
+if test "$with_tiff_library" = ""; then
+  case "$target_os" in
+    freebsd*)	with_tiff_include="/usr/local/include"
+		with_tiff_library="/usr/local/lib";;
+  esac
+fi
 
-save_cpp=${CPPFLAGS}
-save_ldf=${LDFLAGS}
-if test "$with_tiff_include" != ""; then
-  CPPFLAGS="-I$with_tiff_include ${CPPFLAGS}"
-  ADDITIONAL_INCLUDE_DIRS="-I$with_tiff_include"
-fi
 if test -n "$with_tiff_library"; then
-  LDFLAGS="-L$with_tiff_library $LDFLAGS"
-  ADDITIONAL_LIB_DIRS="-L$with_tiff_library"
+  with_tiff_library="-L$with_tiff_library"
 fi
-AC_CHECK_HEADER(tiffio.h)
-if test $ac_cv_header_tiffio_h = no; then
+if test -n "$with_tiff_include"; then
+  with_tiff_include="-I$with_tiff_include"
+fi
+
+AC_DEFUN(AC_CHECK_TIFFLIB,
+[tiff_check_lib_save_header=${CPPFLAGS}
+tiff_check_lib_save_libs=${LIBS}
+CPPFLAGS="$1 ${JPEG_LIB} $2 ${JPEG_INCLUDE} ${CPPFLAGS}"
+AC_CHECK_LIB(z, main, HAVE_LIBZ=1, HAVE_LIBZ=0)
+
+AC_MSG_CHECKING(for -ltiff without -ljpeg nor -lz)
+LIBS="-ltiff -lm $LIBS"
+AC_TRY_LINK([char TIFFReadScanline();], [TIFFReadScanline()],
+    jpeg_notneeded=yes,
+    jpeg_notneeded=no)
+AC_MSG_RESULT($jpeg_notneeded)
+LIBS=${tiff_check_lib_save_libs}
+JPEG=
+if test "$jpeg_notneeded" = no; then
+  JPEG=-ljpeg
+fi
+
+if test $HAVE_LIBZ = 1; then
+  AC_MSG_CHECKING(for -ltiff without -lz)
+  LIBS="-ltiff $JPEG -lm $LIBS"
+  AC_TRY_LINK([char TIFFReadScanline();], [TIFFReadScanline()],
+      libz_notneeded=yes,
+      libz_notneeded=no)
+  AC_MSG_RESULT($libz_notneeded)
+  LIBS=${tiff_check_lib_save_libs}
+  if test "$libz_notneeded" = no; then
+    JPEG="$JPEG -lz"
+  fi
+fi
+
+AC_CHECK_LIB(tiff, TIFFReadScanline, tiff_ok=yes, tiff_ok=no, $JPEG -lm)
+if test "$tiff_ok" = yes; then
+  AC_CHECK_HEADER(tiffio.h, tiff_ok=yes, tiff_ok=no)
+  if test "$tiff_ok" = yes; then
+    GRAPHIC_LFLAGS="$1 $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="$2 $GRAPHIC_CFLAGS"
+    GRAPHIC_LIBS="-ltiff $JPEG $GRAPHIC_LIBS"
+  else
     AC_MSG_WARN(Cannot find libtiff header tiffio)
     echo "* The GUI library requres the TIFF library"
     echo "* Use --with-tiff-include to specify the tiff header directory"
     echo "* and --with-tiff-library to specify the tiff library directory"
     echo "* if it is not in the usual place(s)"
     AC_MSG_ERROR(gnustep-gui will not compile without tiff includes)
+  fi
+else
+  AC_MSG_WARN(Cannot find libtiff)
+  echo "* The GUI library reqiures the TIFF library"
+  echo "* Use --with-tiff-library to specify the tiff library"
+  echo "* directory if it is not in the usual place(s)"
+  echo "* You may also have to specify --with-jpeg-library if the jpeg"
+  echo "* library is needed by tiff",
+  AC_MSG_ERROR(gnustep-gui will not compile without tiff)
 fi
-AC_CHECK_LIB(tiff, main)
-CPPFLAGS="$save_cpp"
-LDFLAGS="$save_ldf"
+CPPFLAGS="${tiff_check_lib_save_header}"])
+
+AC_CHECK_TIFFLIB(${with_tiff_library}, ${with_tiff_include})
+
+ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS"
+ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 
 #--------------------------------------------------------------------
 # Record the version
@@ -92,6 +192,7 @@ AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
+AC_SUBST(ADDITIONAL_DEPENDS)
 
 AC_OUTPUT(config.make gui.make Headers/gnustep/gui/GSVersion.h)
 

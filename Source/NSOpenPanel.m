@@ -377,16 +377,16 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
 - (void) ok: (id)sender
 {
-  NSMatrix      *matrix;
+  NSMatrix      *matrix = nil;
   NSBrowserCell *selectedCell = nil;
-  NSArray       *selectedCells;
+  NSArray       *selectedCells = nil;
   int            selectedColumn, lastColumn;
 
   selectedColumn = [_browser selectedColumn];
+  lastColumn = [_browser lastColumn];
   if (selectedColumn >= 0)
     {
       matrix = [_browser matrixInColumn: selectedColumn];
-      lastColumn = [_browser lastColumn];
 
       if ([_browser allowsMultipleSelection] == YES)
 	{
@@ -400,22 +400,33 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	{
 	  if (_canChooseDirectories == NO)
 	    {
-	      if (selectedColumn == lastColumn
-		  || [[[_form cellAtIndex: 0] stringValue] length] == 0)
+	      if (selectedColumn == lastColumn)
 		selectedCell = [matrix selectedCell];
 	    }
 	  else if (selectedColumn == lastColumn)
 	    selectedCell = [matrix selectedCell];
 	}
+    }
 
-      if (selectedCell)
+  if (selectedCell)
+    {
+      if ([selectedCell isLeaf] == NO)
 	{
-	  if ([selectedCell isLeaf] == NO)
-	    {
-	      [_browser doClick: matrix];
-	      return;
-	    }
+	  [[_form cellAtIndex: 0] setStringValue: @""];
+	  [_browser doClick: matrix];
+	  [_form selectTextAtIndex: 0];
+	  [_form setNeedsDisplay: YES];
+
+	  return;
 	}
+    }
+  else if (_canChooseDirectories == NO
+	   && (![_browser allowsMultipleSelection] || !selectedCells
+	       || selectedColumn != lastColumn || ![selectedCells count]))
+    {
+      [_form selectTextAtIndex: 0];
+      [_form setNeedsDisplay: YES];
+      return;
     }
 
   ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
@@ -534,8 +545,8 @@ selectCellWithString: (NSString *)title
   NSComparisonResult  result;
   NSRange             range;
 
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
-  s = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+  matrix = [_browser matrixInColumn: [_browser lastColumn]];
+  s = [[[aNotification userInfo] objectForKey: @"NSFieldEditor"] string];
 
   sLength = [s length];
   range.location = 0;
@@ -545,7 +556,7 @@ selectCellWithString: (NSString *)title
     {
       [matrix deselectAllCells];
       if(_canChooseDirectories == NO)
-	[_okButton setEnabled:NO];
+	[_okButton setEnabled: NO];
       return;
     }
 
@@ -561,7 +572,7 @@ selectCellWithString: (NSString *)title
       if(cellLength < sLength)
 	range.length = cellLength;
 
-      result = [selectedString compare:s options:0 range:range];
+      result = [selectedString compare: s options: 0 range: range];
 
       if(result == NSOrderedSame)
 	return;
@@ -581,53 +592,49 @@ selectCellWithString: (NSString *)title
 
       for(i = selectedRow+1; i < numberOfCells; i++)
 	{
-	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
+	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
 
 	  cellLength = [selectedString length];
 	  if(cellLength < sLength)
 	    continue;
 
-	  result = [selectedString compare:s options:0 range:range];
+	  result = [selectedString compare: s options: 0 range: range];
 
 	  if(result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow:i column:0];
-	      [matrix scrollCellToVisibleAtRow:i column:0];
-	      [_okButton setEnabled:YES];
+	      [matrix selectCellAtRow: i column: 0];
+	      [matrix scrollCellToVisibleAtRow: i column: 0];
+	      [_okButton setEnabled: YES];
 	      return;
 	    }
-	  else if(result == NSOrderedDescending)
-	    break;
 	}
     }
   else
     {
       for(i = selectedRow; i >= 0; --i)
 	{
-	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
+	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
 
 	  cellLength = [selectedString length];
 	  if(cellLength < sLength)
 	    continue;
 
-	  result = [selectedString compare:s options:0 range:range];
+	  result = [selectedString compare: s options: 0 range: range];
 
 	  if(result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow:i column:0];
-	      [matrix scrollCellToVisibleAtRow:i column:0];
-	      [_okButton setEnabled:YES];
+	      [matrix selectCellAtRow: i column: 0];
+	      [matrix scrollCellToVisibleAtRow: i column: 0];
+	      [_okButton setEnabled: YES];
 	      return;
 	    }
-	  else if(result == NSOrderedAscending)
-	    break;
 	}
     }
 
   [matrix deselectAllCells];
-  [_okButton setEnabled:YES];
+  [_okButton setEnabled: YES];
 }
 
 @end /* NSOpenPanel */

@@ -10,8 +10,7 @@ This is version @value{GNUSTEP-GUI-VERSION} of the GNUstep GUI library (@samp{gn
 
 It is a library of graphical user interface classes written completely 
 in the Objective-C language; the classes are based upon the OpenStep
-specification as release by NeXT Software, Inc.  The library does not 
-completely conform to the specification and has been
+specification as release by NeXT Software, Inc.  The library has been
 enhanced in a number of ways to take advantage of the GNU system.  
 These classes include graphical objects such as buttons, text fields, 
 popup lists, browser lists, and windows; there are also many associated 
@@ -56,10 +55,8 @@ file has not been made available by anonymous ftp.
 
 The program requires gcc @value{GNUSTEP-GUI-GCC} or higher.
 
-The Display Ghostscript System version
-@value{GNUSTEP-GUI-DGS} and the TIFF Graphics library version
-@value{GNUSTEP-GUI-LIBTIFF} may be required depending on the backend
-you choose.
+the TIFF Graphics library version
+@value{GNUSTEP-GUI-LIBTIFF} is required.
 
 It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the GNUstep
@@ -72,10 +69,6 @@ For info about FTP via email, send email to
 @email{ftpmail@@decwrl.dec.com} with no subject line, and two-line body
 with line one @samp{help} and line two @samp{quit}.
 
-The most recent (not necessarily tested) snapshots of the library will
-be placed in 
-@url{ftp://@value{GNUSTEP-GUI-SNAP-FTP-MACHINE}/@value{GNUSTEP-GUI-SNAP-FTP-DIRECTORY}}.
-
 @section Where do I send bug reports?
 
 Bug reports can be sent to 
@@ -83,12 +76,7 @@ Bug reports can be sent to
 
 @section Obtaining GNU Software
 
-Check out the GNU web site. (@url{http://www.gnu.org/})
+Check out the GNUstep web site. (@url{http://www.gnustep.org/}), and
+the GNU web site. (@url{http://www.gnu.org/})
 
-Check out the GNUstep web site. (@url{http://www.gnustep.org/})
-
-The GNUstep GUI Library was donated to the Free Software Foundation
-as part of the On-line Community project of NET-Community.  NET-Community is
-a company that develops and supports free software.  Check out
-their web site to learn more. (@url{http://www.net-community.com/})
 

@@ -83,26 +83,12 @@ version.texi: ../Version
 		>> version.texi
 	echo '@set GNUSTEP-GUI-BASE $(GNUSTEP_GUI_BASE)' \
 		>> version.texi
-	echo '@set LIB-FOUNDATION $(LIB_FOUNDATION)' \
-		>> version.texi
 	echo '@set GNUSTEP-GUI-LIBTIFF $(GNUSTEP_GUI_LIBTIFF)' \
-		>> version.texi
-	echo '@set GNUSTEP-GUI-DGS $(GNUSTEP_GUI_DGS)' \
-		>> version.texi
-	echo '@set GNUSTEP-GUI-DPSCLIENT $(GNUSTEP_GUI_DPSCLIENT)' \
 		>> version.texi
 	if [ $(GNUSTEP_GUI_FTP_MACHINE) ]; then \
 	  echo '@set GNUSTEP-GUI-FTP-MACHINE $(GNUSTEP_GUI_FTP_MACHINE)' \
 		>> version.texi; fi
 	if [ $(GNUSTEP_GUI_FTP_DIRECTORY) ]; then \
 	  echo '@set GNUSTEP-GUI-FTP-DIRECTORY $(GNUSTEP_GUI_FTP_DIRECTORY)' \
-		>> version.texi; fi
-	if [ $(GNUSTEP_GUI_SNAP_FTP_MACHINE) ]; then \
-	  echo '@set GNUSTEP-GUI-SNAP-FTP-MACHINE \
-		$(GNUSTEP_GUI_SNAP_FTP_MACHINE)' \
-		>> version.texi; fi
-	if [ $(GNUSTEP_GUI_SNAP_FTP_DIRECTORY) ]; then \
-	  echo '@set GNUSTEP-GUI-SNAP-FTP-DIRECTORY \
-		$(GNUSTEP_GUI_SNAP_FTP_DIRECTORY)' \
 		>> version.texi; fi
 

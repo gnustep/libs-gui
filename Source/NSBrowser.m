@@ -536,14 +536,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   NSArray	*subStrings;
   NSString	*aStr;
   unsigned	numberOfSubStrings;
-  unsigned	i, j;
-  BOOL	      	found = NO;
+  unsigned	i, j, column = 0;
+  BOOL	      	found = YES;
 
-  // Column Zero is always present. 
-  [self loadColumnZero];
-  
   // If that's all, return.
-  if (path == nil || [path isEqualToString: _pathSeparator])
+  if (path == nil)
     {
       [self setNeedsDisplay: YES];
       return YES;
@@ -554,29 +551,42 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   numberOfSubStrings = [subStrings count];
 
   // Ignore a trailing void component. 
-  if (![subStrings objectAtIndex: 0])
+  if (numberOfSubStrings > 0
+      && [[subStrings objectAtIndex: 0] isEqualToString: @""])
     {
-      NSRange theRange;
-      
-      theRange.location = 1;
       numberOfSubStrings--;
-      theRange.length = numberOfSubStrings;
-      subStrings = [subStrings subarrayWithRange: theRange];
+
+      if (numberOfSubStrings)
+	{
+	  NSRange theRange;
+
+	  theRange.location = 1;
+	  theRange.length = numberOfSubStrings;
+	  subStrings = [subStrings subarrayWithRange: theRange];
+	}
+
+      [self loadColumnZero];
     }
 
+  column = _lastColumnLoaded;
+  if (column < 0)
+    column = 0;
+
   // cycle thru str's array created from path
-  for (i = 1; i < numberOfSubStrings; i++)
+  for (i = 0; i < numberOfSubStrings; i++)
     {
-      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i - 1];
+      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column + i];
       NSMatrix		*matrix = [bc columnMatrix];
       NSArray		*cells = [matrix cells];
       unsigned		numOfRows = [cells count];
       NSBrowserCell	*selectedCell = nil;
       
-      found = NO;
       aStr = [subStrings objectAtIndex: i];
-      if (aStr)
+
+      if (![aStr isEqualToString: @""])
 	{
+	  found = NO;
+
 	  // find the cell in the browser matrix which is equal to aStr
 	  for (j = 0; j < numOfRows; j++)
 	    {
@@ -595,8 +605,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  // if unable to find a cell whose title matches aStr return NO
 	  if (found == NO)
 	    {
-	      NSLog (@"NSBrowser: unable to find cell '%@' in column %d\n", 
-		     aStr, i - 1);
+	      NSDebugLog (@"NSBrowser: unable to find cell '%@' in column %d\n", 
+			  aStr, column + i);
 	      break;
 	    }
 	  // if the cell is a leaf, we are finished setting the path
@@ -2183,7 +2193,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _firstVisibleColumn = 0;
   _lastVisibleColumn = 0;
   [self _createColumn];
-  NSLog(@"init2 %f", _frame.size.width);
 
   return self;
 }

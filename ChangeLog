@@ -1,3 +1,7 @@
+2001-07-08  Adam Fedor  <fedor@gnu.org>
+
+	* Merge from 0.7.0.
+
 Tue Jul  3 18:46:38 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSMenu.m ([NSMenuWindowTitleView -drawRect:]): Cache 
@@ -68,6 +72,120 @@ Sat Jun 16 14:53:05 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	-initWithContentRect:styleMask:backing:defer:screen:]): Set up the
 	next key view chain.
 	
+2001-07-08  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.7.0
+
+2001-07-08  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSSavePanel.m ([NSSavePanel -ok:]): do browser click after
+	resetting the text field.
+
+	* Source/NSOpenPanel.m ([NSOpenPanel -ok:]): do not allow selecting a
+	non existent file.
+
+	* Source/GSSimpleLayoutManager.m ([GSSimpleLayoutManager
+	-lineFragmentRectForGlyphAtIndex:effectiveRange:]): check for zero line
+	layout.
+	([GSSimpleLayoutManager -locationForGlyphAtIndex:]): likewise.
+	([GSSimpleLayoutManager -boundingRectForGlyphRange:inTextContainer:]):
+	likewise.
+	([GSSimpleLayoutManager -rectForCharacterIndex:]): likewise.
+	([GSSimpleLayoutManager -lineLayoutIndexForGlyphIndex:]): likewise.
+
+	* configure.in: Fixed FreeBSD library path.
+
+2001-07-03  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/*: Update.
+
+	* configure.in: Check for tiff and jpeg and zlib with tiff
+	* config.make.in: Add ADDTIONAL_DEPENDS for libs
+	* Source/GNUmakefile.preamble: Use it.
+
+2001-07-05  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSComboBoxCell.m ([NSComboBoxCell -initTextCell:]): use -1
+	for selectedItem.
+	([NSComboBoxCell -deselectItemAtIndex:]): likewise.
+	([NSComboBoxCell -objectValueOfSelectedItem]): likewise.
+	([NSComboBoxCell -selectItemWithObjectValue:]): likewise.
+	([NSComboBoxCell -selectItemAtIndex:]): likewise. Post the notification
+	only if the item change.
+
+	* Source/NSTextView.m ([NSTextView -becomeKeyWindow]): make sure that
+	the cursor is not displayed when the window become key.
+	([NSTextView -resignKeyWindow]): likewise.
+	([NSTextView -shouldDrawInsertionPoint]): check for key window.
+
+	* Source/NSWindow.m ([NSWindow -setDefaultButtonCell:]): set modifier
+	mask to 0.
+
+	* Source/NSMatrix.m ([NSMatrix -_selectCell:atRow:column:]): scroll
+	the cell to visible when the matrix is inside a scrollView.
+	([NSMatrix -textDidEndEditing:]): for NSReturn, call
+	performKeyEquivalent: on the window to perform the action of default
+	button.
+
+	* Source/NSSavePanel.m ([NSSavePanel -selectText:]): remove unused code
+	(selectCellWithString:): execute a full search.
+	([NSSavePanel -ok:]): fixed the value of the form cell after clicking
+	with a selected cell.
+
+	* Source/NSOpenPanel.m ([NSOpenPanel -controlTextDidChange:]): execute
+	a full search.
+	([NSOpenPanel -ok:]): fixed the value of the form cell after clicking
+	with a selected cell.
+
+	* Source/NSBrowser.m ([NSBrowser -setPath:]): fixed to work with local
+	path name.
+
+	* Source/NSButton.m ([NSButton -becomeFirstResponder]): disable window
+	key equivalent for default button cell.
+	([NSButton -resignFirstResponder]): likewise but enable.
+
+2001-06-26  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSMatrix.m (-updateCell:): Revert last change.
+
+2001-06-20  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSMatrix.m (-_selectCell:atRow:column:): Don't drawCell 
+	if we have no window yet (suggestion from jan.trembulak@ales.as)
+
+	* Source/NSWindow.m (-dealloc): Free our backend only if we're
+	not still defered.
+	(-miniaturize:): Make sure we're not deferred.
+	(-setDocumentEdited:): Set only if we're not deferred.
+
+2001-06-18  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSMatrix.m (-updateCell:): Call abortEditing.
+
+2000-06-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m
+	[compositeToPoint:fromRect:operation:] Move the drawing rectangle
+	to the origin of the image rep before the intersection of the two
+	rects. Now drag&drop in Gorm should display the DragView again.
+
+2001-06-15  Adam Fedor  <fedor@gnu.org>
+
+	* Version: snapshot release 0.6.9
+
+2001-06-14  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSWindow.m ([NSWindow -setDefaultButtonCell:]): set button
+	key equivalent to '\r'.
+
+	* Source/NSBrowser.m ([NSBrowser -initWithFrame:]): removed debug.
+
+	Patches from Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+	* Source/NSPanel.m ([GSAlertPanel -initWithContentRect:styleMask:
+	backing:defer:screen:]): set key view chain.
+	* Source/NSCell.m ([NSCell -performClick:]): set next cell state.
+	* Source/NSBrowser.m ([NSBrowser -keyDown:]): fixed tab selection.
+
 Wed Jun 13 02:36:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBitmapImageRep.m ([+imageRepsWithData:]): Replaced

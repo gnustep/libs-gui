@@ -1045,7 +1045,8 @@ static NSNotificationCenter *nc;
 
 - (BOOL) shouldDrawInsertionPoint
 {
-  return (_selected_range.length == 0) && _tf.is_editable;
+  return (_selected_range.length == 0) && _tf.is_editable
+    && [_window isKeyWindow];
 }
 
 /*
@@ -2489,6 +2490,20 @@ afterString in order over charRange. */
   //  }
 
   return YES;
+}
+
+- (void) becomeKeyWindow
+{
+  [self setNeedsDisplayInRect: _insertionPointRect  
+	avoidAdditionalLayout: YES];
+  //<!> start timed entry
+}
+
+- (void) resignKeyWindow
+{
+  [self setNeedsDisplayInRect: _insertionPointRect  
+	avoidAdditionalLayout: YES];
+  //<!> stop timed entry
 }
 
 - (void) drawRect: (NSRect)rect

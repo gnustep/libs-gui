@@ -31,5 +31,4 @@ to such a degree to be unusable.
 @item NSHelpPanel
 @item NSPageLayout
 @item NSPrintPanel
-@item NSSpellChecker
 @end itemize

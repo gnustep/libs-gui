@@ -751,7 +751,11 @@ static BOOL _gs_display_reading_progress = NO;
 
   if (selectedCell && [selectedCell isLeaf] == NO)
     {
+      [[_form cellAtIndex: 0] setStringValue: @""];
       [_browser doClick: matrix];
+      [_form selectTextAtIndex: 0];
+      [_form setNeedsDisplay: YES];
+
       return;
     }
 
@@ -808,7 +812,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) selectText: (id)sender
 {
   NSEvent  *theEvent = [self currentEvent];
-  NSString *characters = [theEvent characters], *keyString;
+  NSString *characters = [theEvent characters];
   unichar   character = 0;
 
   if ([characters length] > 0)
@@ -818,35 +822,6 @@ static BOOL _gs_display_reading_progress = NO;
 
   switch (character)
     {
-#if 0
-    case NSTabCharacter:
-      if ([theEvent modifierFlags] & NSShiftKeyMask)
-	{
-	  character = NSUpArrowFunctionKey;
-	  keyString = [NSString stringWithCharacters:&character
-				length:1];
-	}
-      else
-	{
-	  character = NSDownArrowFunctionKey;
-	  keyString = [NSString stringWithCharacters:&character
-				length:1];
-	}
-
-      [[_form cellAtIndex:0] setStringValue:nil];
-
-      [_browser keyDown:[NSEvent keyEventWithType:NSKeyDown
-				 location:[theEvent locationInWindow]
-				 modifierFlags:0
-				 timestamp:[theEvent timestamp]
-				 windowNumber:[theEvent windowNumber]
-				 context:[theEvent context]
-				 characters:keyString
-				 charactersIgnoringModifiers:keyString
-				 isARepeat:NO
-				 keyCode:0]];
-      break;
-#endif
     case NSUpArrowFunctionKey:
     case NSDownArrowFunctionKey:
     case NSLeftArrowFunctionKey:
@@ -1176,7 +1151,6 @@ selectCellWithString: (NSString*)title
   NSMatrix *m;
   BOOL isLeaf;
   NSString *path;
-  NSEvent *event;
 
   m = [sender matrixInColumn: column];
   isLeaf = [[m selectedCell] isLeaf];
@@ -1214,7 +1188,7 @@ selectCellWithString: (NSString*)title
 @end
 @implementation NSSavePanel (FormDelegate)
 
-- (void) controlTextDidChange: (NSNotification *)aNotification;
+- (void) controlTextDidChange: (NSNotification *)aNotification
 {
   NSString           *s, *selectedString;
   NSArray            *cells;
@@ -1275,8 +1249,6 @@ selectCellWithString: (NSString*)title
 	      [_okButton setEnabled:YES];
 	      return;
 	    }
-	  else if(result == NSOrderedDescending)
-	    break;
 	}
     }
   else
@@ -1299,8 +1271,6 @@ selectCellWithString: (NSString*)title
 	      [_okButton setEnabled:YES];
 	      return;
 	    }
-	  else if(result == NSOrderedAscending)
-	    break;
 	}
     }
 

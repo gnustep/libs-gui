@@ -626,7 +626,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  // FIXME: This undos the change done in NSCell, perhaps we can remove both?
 	  if ([[ctxt focusView] isFlipped])
 	    y -= rect.size.height;
-	  
+
+	  // Move the drawing rectangle to the origin of the image rep
+	  // and intersect the two rects.
+	  aRect.origin.x += rect.origin.x;
+	  aRect.origin.y += rect.origin.y;
 	  rect = NSIntersectionRect(aRect, rect);
 	  PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
 	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);

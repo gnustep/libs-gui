@@ -565,8 +565,11 @@ static NSMapTable* windowmaps = NULL;
 
   if (_gstate)
     DPSundefineuserobject(context, _gstate);
-  DPStermwindow(context, _windowNum);
-  NSMapRemove(windowmaps, (void*)_windowNum);
+  if (_windowNum)
+    {
+      DPStermwindow(context, _windowNum);
+      NSMapRemove(windowmaps, (void*)_windowNum);
+    }
   [super dealloc];
 }
 
@@ -1896,6 +1899,11 @@ resetCursorRectsForView(NSView *theView)
 		    object: self];
   
   _f.is_miniaturized = YES;
+  /* Make sure we're not defered */
+  if(_windowNum == 0)
+    {
+      [self _initBackendWindow: _frame];
+    }
   /*
    * Ensure that we have a miniwindow counterpart.
    */
@@ -2012,7 +2020,8 @@ resetCursorRectsForView(NSView *theView)
 	{
 	  [NSApp updateWindowsItem: self];
 	}
-      DPSdocedited(GSCurrentContext(), flag, _windowNum);
+      if (_windowNum)
+	DPSdocedited(GSCurrentContext(), flag, _windowNum);
     }
 }
 
@@ -3239,6 +3248,9 @@ resetCursorRectsForView(NSView *theView)
 {
   ASSIGN(_defaultButtonCell, aButtonCell);
   _f.default_button_cell_key_disabled = NO;
+
+  [aButtonCell setKeyEquivalent: @"\r"];
+  [aButtonCell setKeyEquivalentModifierMask: 0];
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell
