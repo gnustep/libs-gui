@@ -1,3 +1,9 @@
+Fri Jan 15 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPasteboard.m: Removed unused (and erroneous) header.
+	* Source/GSServicesManager.m: Fixed include path for fast.x as
+	suggested by dirk@object-factory.com
+
 Fri Jan 15  9:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Headers/AppKit/NSNibLoading.h: Added interface for new class -
