@@ -1,6 +1,12 @@
+Wed Oct 24 11:01:33 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSBrowser.m ([NSBrowser -_getTitleOfColumn:]): Make sure
+	we never return nil. (Suggestion by Ludovic Marcotte
+	<ludovic@sophos.ca>)
+
 2001-10-24  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
-        * Source/NSButtonCell.m ([NSButtonCell -_init]): 
+	* Source/NSButtonCell.m ([NSButtonCell -_init]): 
 	set the alternate title and the keyEquivalent to @""
         (by default this was nil)
 			
