@@ -1,4 +1,4 @@
-/* 
+/* -*- C++ -*-
    NSOpenPanel.m
 
    Standard open panel for opening files
