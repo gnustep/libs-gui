@@ -1,3 +1,10 @@
+2004-08-08  Quentin Mathe <qmathe@club-internet.fr>
+
+	* Source/NSComboBox.m:
+        * Source/NSComboBoxCell.m:
+        Fixed the class description markup errors which caused text 
+	truncations in the documentation.
+
 2004-08-08 01:19  Chad Hardin <cehardin@mac.com>
 
 	* Source/NSPageLayout.m: Ensure that the units on the panel

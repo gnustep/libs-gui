@@ -699,19 +699,22 @@ numberOfRowsInColumn: (int)column
 /**
  <unit>
  <heading>Class Description</heading> 
- An NSComboBoxCell is what we can call a completion/choices box cell, derived from
+ <p>An NSComboBoxCell is what we can call a completion/choices box cell, derived from
  NSTextFieldCell, it allows you to enter text like in a text field but also to click
  in the ellipsis button (indicating the fact other user inputs are possible) on
  the right of it to obtain a list of choices, you can use them as the text field
  value by selecting a row in this list. You can also obtain direct completion
  when it  is enabled via <code>setCompletes:</code> to get a suggested text
- field value updated as you type. 
- Like other NSCell classes, NSComboBoxCell has a matching NSControl named NSComboBox
+ field value updated as you type. </p>
+ <p>Like other NSCell classes, NSComboBoxCell has a matching NSControl named NSComboBox
  which is relying on it to implement the combo box behavior in a standalone
- control.
+ control.</p>
  </unit>
 */ 
 
+/**
+ <p>No special instructions to use NSComboBoxCell or text to detail the implementation.</p>
+*/
 @implementation NSComboBoxCell
 
 //

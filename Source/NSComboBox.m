@@ -39,19 +39,22 @@ static NSNotificationCenter *nc;
 /**
  <unit>
  <heading>Class Description</heading> 
- An NSComboBox is what we can call a completion/choices box, derived from
+ <p>An NSComboBox is what we can call a completion/choices box, derived from
  NSTextField, it allows you to enter text like in a text field but also to click
  in the ellipsis button (indicating the fact other user inputs are possible) on
  the right of it to obtain a list of choices, you can use them as the text field
  value by selecting a row in this list. You can also obtain direct completion
  when it  is enabled via <code>setCompletes:</code> to get a suggested text
- field value updated as you type. 
- Like other NSControl classes, NSComboBox is a wrapper around a core piece which
+ field value updated as you type.</p>
+ <p>Like other NSControl classes, NSComboBox is a wrapper around a core piece which
  implements the combo box behavior, a cell, which is in this case an
- NSComboBoxCell.
+ NSComboBoxCell.</p>
  </unit>
 */ 
 
+/**
+<p>No special instructions to use NSComboBox or text to detail the implementation.</p>
+ */
 @implementation NSComboBox
 
 + (void) initialize
