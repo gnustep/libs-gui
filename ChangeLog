@@ -1,3 +1,7 @@
+1999-08-20  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSSlider.m: added missing [self unlockFocus];.
+
 1999-08-19  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Headers/NSAttributedString.h

@@ -299,6 +299,8 @@ static Class cellClass;
     }
 
   [self trackKnob: theEvent knobRect: rect];
+
+  [self unlockFocus];
 }
 
 @end
