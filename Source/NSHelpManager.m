@@ -27,15 +27,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSHelpManager.h>
 #include <Foundation/NSNotification.h>
-
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSBundle.h>
 #include <AppKit/NSAttributedString.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
+#include <AppKit/NSHelpManager.h>
+
 #include <AppKit/GSHelpManagerPanel.h>
 
 @implementation NSBundle (NSHelpManager)
@@ -86,9 +86,19 @@
     {
       help = [info objectForKey: @"NSExecutable"];
       // If there's no specification, we look for a file named "appname.rtf"
-      [[NSWorkspace sharedWorkspace] 
-	openFile: [mb pathForResource: help ofType: @"rtf"]];
     }
+
+  if (help)
+    {
+      NSString *file = [mb pathForResource: help ofType: @"rtf"]; 
+      
+      if (file)
+        {
+	  [[NSWorkspace sharedWorkspace] openFile: file];
+	  return;
+	}
+    }
+  NSBeep();
 }
 
 - (void) activateContextHelpMode: (id)sender
@@ -199,13 +209,20 @@ static BOOL _gnu_contextHelpActive = NO;
 - (BOOL) showContextHelpForObject: (id)object locationHint: (NSPoint) point
 {
   id contextHelp = [self contextHelpForObject: object];
+
   if (contextHelp)
     {
-      [[GSHelpManagerPanel sharedHelpManagerPanel] setHelpText: contextHelp];
-      [NSApp runModalForWindow: [GSHelpManagerPanel sharedHelpManagerPanel]];
+	GSHelpManagerPanel *helpPanel = [GSHelpManagerPanel sharedHelpManagerPanel];
+
+      // FIXME: We should position the window at point! 
+      // runModalForWindow will centre the window.
+      [helpPanel setHelpText: contextHelp];
+      [NSApp runModalForWindow: helpPanel];
       return YES;
     }
-  else return NO;
+  else 
+    return NO;
 }
 
 @end
+
