@@ -2,6 +2,9 @@
 
 	* Source/NSCursor.m: Corrected illegal use of reserved word (id)
 	as method argument ... gcc-3 doesn't allow it.
+	* Source/GSServicesManager.m: GSContactApplication() fix to return our
+	own listener if contacting self.  NSPerformService() commented, tidied,
+	and fixed to cope with case where the service provider is this app.
 
 2001-05-03  Adam Fedor  <fedor@gnu.org>
 

@@ -1147,11 +1147,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
 id
 GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 {
-  id		app;
+  id	app;
 
   if (providerName != nil && [port isEqual: providerName] == YES)
     {
-      app = servicesProvider;
+      app = [GSListener listener];	// Contect our own listener.
     }
   else
     {
@@ -1213,12 +1213,9 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   NSDate		*finishBy;
   NSString		*appPath;
   id			provider;
-  NSConnection		*connection;
   NSString		*message;
   NSString		*selName;
-  SEL			msgSel;
   NSString		*userData;
-  IMP			msgImp;
   NSString		*error = nil;
 
   service = [[manager menuServices] objectForKey: serviceItem]; 
@@ -1245,24 +1242,11 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   userData = [service objectForKey: @"NSUserData"];
   message = [service objectForKey: @"NSMessage"];
   selName = [message stringByAppendingString: @":userData:error:"];
-  msgSel = NSSelectorFromString(selName);
 
   /*
-   *	If there is no selector - we need to generate one with the
-   *	appropriate types.
+   * Locate the service provider ... this will be a proxy to the remote
+   * object, or a local object (if we provide the service ourself)
    */
-  if (msgSel == 0)
-    {
-      NSMethodSignature	*sig;
-      const char	*name;
-      const char	*type;
-
-      sig = [NSMethodSignature signatureWithObjCTypes: "v@:@@^@"];
-      type = [sig methodType];
-      name = [selName cString];
-      msgSel = sel_register_typed_name(name, type);
-    }
-
   provider = GSContactApplication(appPath, port, finishBy);
   if (provider == nil)
     {
@@ -1273,20 +1257,29 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
       return NO;
     }
 
-  connection = [(NSDistantObject*)provider connectionForProxy];
-  seconds = [finishBy timeIntervalSinceNow];
-  [connection setRequestTimeout: seconds];
-  [connection setReplyTimeout: seconds];
+  /*
+   * If the service provider is a remote object, we can set timeouts on
+   * the NSConnection so we don't hang waiting for it to reply.
+   */
+  if ([provider isProxy] == YES)
+    {
+      NSConnection	*connection;
 
-  msgImp = get_imp(GSObjCClass(provider), msgSel);
+      connection = [(NSDistantObject*)provider connectionForProxy];
+      seconds = [finishBy timeIntervalSinceNow];
+      [connection setRequestTimeout: seconds];
+      [connection setReplyTimeout: seconds];
+    }
+
+  /*
+   * At last, we ask for the service to be performed.
+   */
   NS_DURING
     {
       [provider performService: selName
 		withPasteboard: pboard
 		      userData: userData
 			 error: &error];
-
-//      (*msgImp)(provider, msgSel, pboard, userData, &error);
     }
   NS_HANDLER
     {
