@@ -2891,7 +2891,9 @@ byExtendingSelection: (BOOL)flag
     {
       tb = [_tableColumns objectAtIndex: i];
       if ([tb dataCellForRow: -1] == aCell)
-	[self setNeedsDisplayInRect: [self rectOfColumn: i]];
+	{
+	  [self setNeedsDisplayInRect: [self rectOfColumn: i]];
+	}
       else
 	{
 	  NSRect columnRect = [self rectOfColumn: i];
