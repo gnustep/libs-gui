@@ -1,3 +1,25 @@
+Tue Oct  1 17:07:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.h (_lineLayoutInformation): Renamed
+	to _lineLayoutInfo.
+	* Source/GSSimpleLayoutManager.m: Updated for change.
+
+Tue Oct  1 16:58:36 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([NSTextView -moveToEndOfLine:]): Fixed
+	moving to the end of 'one before the last' line.
+	([NSTextView -moveToEndOfParagraph:]): Idem.
+
+Tue Oct  1 16:40:29 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m
+	([-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:]):
+	Fix the insertion point positioning when clicking beyond the last
+	character of a line in an NSTextView, or before the first one;
+	special care to be used for the last line in the textview
+	(Originated by a patch by David Ayers <d.ayers@inode.at>, modified
+	by me).
+
 2002-09-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSFont.m: Rewrote code dealing with creation and destruction
