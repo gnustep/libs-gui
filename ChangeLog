@@ -1,3 +1,17 @@
+Tue Mar  7 03:23:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Warning: the gmodel format was changed by this fix - and it is
+	going to be changing for a while.  If you are using CVS be sure to
+	be always creating and running gmodels with the same CVS version.
+	* Model/GMAppKit.m 
+	([NSPopUpButton +createObjectForModelUnarchiver:]): Tidied.
+	([NSPopUpButton -encodeWithModelArchiver:]): Encode isEnabled,
+	tag, target, action.  Code untested.
+	([NSPopUpButton -initWithModelUnarchiver:]): Bug fix - do not
+	invoke super's implementation.  Removed useless call to
+	synchronizeTitleAndSelectedItem.  Decode isEnabled, tag, target,
+	action.  Tidied.
+
 Mon Mar 06 20:09:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/GSMethodTable.h: Added method to set titlebar.
