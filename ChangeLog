@@ -1,7 +1,10 @@
-Thu Jun 10 19:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Thu Jun 10 22:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Optimise display routines - avoid unneeded
-	re-displays.
+	re-displays.  Use flag to tell if a view is opaque.  Optimise
+	'opaqueAncestor'
+	* Model/GMAppKit.m: Set flag to say if a view is opaque on decoding.
+	* Headers/AppKit/NSResponder.h: Add 'opaque_view' flag.
 
 Wed Jun  9  8:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

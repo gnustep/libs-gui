@@ -138,10 +138,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   autoresizingMask = NSViewNotSizable;
   coordinates_valid = NO;
 
-  /*
-   *	Keep a note of whether this is a flipped view or not.
-   */
   _rFlags.flipped_view = [self isFlipped];
+  _rFlags.opaque_view = [self isOpaque];
 
   return self;
 }
@@ -259,10 +257,17 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSView*) opaqueAncestor
 {
-  if ([self isOpaque] || !super_view)
-    return self;
-  else
-    return [super_view opaqueAncestor];
+  NSView	*next = super_view;
+  NSView	*current = self;
+
+  while (next != nil)
+    {
+      if (current->_rFlags.opaque_view)
+	break;
+      current = next;
+      next = current->super_view;
+    }
+  return current;
 }
 
 - (void) removeFromSuperviewWithoutNeedingDisplay
@@ -1090,21 +1095,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (window)
     {
-      NSRect	rect;
-
-      /*
-       * Display the entire view - if there is nothing marked as needing
-       * display, that's just the visible rect.  If there is an area needing
-       * display, do the entire area so that the view will no longer need
-       * be marked as needing display.
-       */
-      if (coordinates_valid == NO)
-	[self _rebuildCoordinates];
-      if (needs_display)
-	rect = NSUnionRect(invalidRect, visibleRect);
-      else
-	rect = visibleRect;
-      [self displayRect: rect];
+      [self displayRect: visibleRect];
     }
 }
 
@@ -1112,7 +1103,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (needs_display)
     {
-      if ([self isOpaque])
+      if (_rFlags.opaque_view)
 	{
 	  [self displayIfNeededIgnoringOpacity];
 	}
@@ -1123,7 +1114,19 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 	  if (coordinates_valid == NO)
 	    [self _rebuildCoordinates];
-	  rect = NSUnionRect(invalidRect, visibleRect);
+	  /*
+	   *	If this view is higher in the view hierarchy than one that
+	   *	actually needs display, it's invalidRect will be empty, so
+	   *	we need to set it to the visibleRect.
+	   */
+	  if (NSIsEmptyRect(invalidRect) == YES)
+	    {
+	      rect = visibleRect;
+	    }
+	  else
+	    {
+	      rect = invalidRect;
+	    }
 	  rect = [firstOpaque convertRect: rect fromView: self];
 	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
 	}
@@ -1138,7 +1141,19 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
       if (coordinates_valid == NO)
 	[self _rebuildCoordinates];
-      rect = NSUnionRect(invalidRect, visibleRect);
+      /*
+       *	If this view is higher in the view hierarchy than one that
+       *	actually needs display, it's invalidRect will be empty, so
+       *	we need to set it to the visibleRect.
+       */
+      if (NSIsEmptyRect(invalidRect) == YES)
+	{
+	  rect = visibleRect;
+	}
+      else
+	{
+	  rect = invalidRect;
+	}
       [self displayIfNeededInRectIgnoringOpacity: rect];
     }
 }
@@ -1147,7 +1162,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (needs_display)
     {
-      if ([self isOpaque])
+      if (_rFlags.opaque_view)
 	{
 	  [self displayIfNeededInRectIgnoringOpacity: aRect];
 	}
@@ -1169,17 +1184,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if (needs_display)
     {
-      unsigned	i, count;
-      BOOL	stillNeedsDisplay = NO;
       NSRect	redrawRect;
 
       if (coordinates_valid == NO)
 	[self _rebuildCoordinates];
 
-      invalidRect = NSIntersectionRect(invalidRect, visibleRect);
       aRect = NSIntersectionRect(aRect, visibleRect);
-
       redrawRect = NSIntersectionRect(aRect, invalidRect);
+
       if (NSIsEmptyRect(redrawRect) == NO)
 	{
 	  NSGraphicsContext	*ctxt = GSCurrentContext();
@@ -1191,18 +1203,21 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
       if (_rFlags.has_subviews)
 	{
-	  count = [sub_views count];
+	  unsigned	count = [sub_views count];
+
 	  if (count > 0)
 	    {
-	      NSView*	array[count];
+	      NSView	*array[count];
+	      unsigned	i;
 
 	      [sub_views getObjects: array];
 
 	      for (i = 0; i < count; i++)
 		{
-		  NSRect isect;
-		  NSView *subview = array[i];
-		  NSRect subviewFrame = subview->frame;
+		  NSRect	isect;
+		  NSView	*subview = array[i];
+		  NSRect	subviewFrame = subview->frame;
+		  BOOL		intersectCalculated = NO;
 
 		  if ([subview->frameMatrix isRotated])
 		    {
@@ -1219,6 +1234,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 		    {
 		      isect = [subview convertRect: isect
 					  fromView: self];
+		      intersectCalculated = YES;
 		      /*
 		       * hack the ivars of the subview directly for speed.
 		       */
@@ -1229,45 +1245,37 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 		  if (subview->needs_display)
 		    {
-		      isect = NSIntersectionRect(aRect, subviewFrame);
-		      if (NSIsEmptyRect(isect) == NO)
+		      if (intersectCalculated == NO
+			|| NSEqualRects(aRect, redrawRect) == NO)
 			{
+			  isect = NSIntersectionRect(aRect, subviewFrame);
 			  isect = [subview convertRect: isect
 					      fromView: self];
-			  [subview displayIfNeededInRectIgnoringOpacity: isect];
 			}
-		      if (subview->needs_display)
-			{
-			  stillNeedsDisplay = YES;
-			}
+		      [subview displayIfNeededInRectIgnoringOpacity: isect];
 		    }
 		}
 	    }
 	}
 
       /*
-       * If the rect we displayed contains the invalidRect for the view
+       * If the rect we displayed contains the invalidRect or visibleRect
        * then we can empty invalidRect.  All subviews will have been
-       * fully displayed, so the 'stillNeedsDisplay' flag will be NO.
+       * fully displayed, so this view no longer needs to be displayed.
        */
-      redrawRect = NSUnionRect(invalidRect, aRect);
-      if (NSEqualRects(aRect, redrawRect) == YES)
+      if (NSEqualRects(aRect, NSUnionRect(invalidRect, aRect)) == YES
+        || NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
 	{
 	  invalidRect = NSZeroRect;
+	  needs_display = NO;
 	}
-      else
-	{
-	  stillNeedsDisplay = YES;
-	}
-      needs_display = stillNeedsDisplay;
-
       [window flushWindow];
     }
 }
 
 - (void) displayRect: (NSRect)rect
 {
-  if ([self isOpaque])
+  if (_rFlags.opaque_view)
     {
       [self displayRectIgnoringOpacity: rect];
     }
@@ -1282,39 +1290,34 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
 {
-  unsigned		i, count;
-  NSRect		rect;
-  BOOL			stillNeedsDisplay = NO;
-  NSGraphicsContext	*ctxt;
-
   if (!window)
     return;
 
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
 
-  /*
-   * we limit the invalid rect to the visible area - since we can't
-   * display beyond that anyway.
-   */
-  if (needs_display)
-    invalidRect = NSIntersectionRect(invalidRect, visibleRect);
+  aRect = NSIntersectionRect(aRect, visibleRect);
 
-  /*
-   * Now we draw this view.
-   */
-  ctxt = GSCurrentContext();
-  [ctxt lockFocusView: self inRect: aRect];
-  [self drawRect: aRect];
-  [ctxt unlockFocusView: self needsFlush: YES];
+  if (NSIsEmptyRect(aRect) == NO)
+    {
+      NSGraphicsContext	*ctxt = GSCurrentContext();
+
+      /*
+       * Now we draw this view.
+       */
+      [ctxt lockFocusView: self inRect: aRect];
+      [self drawRect: aRect];
+      [ctxt unlockFocusView: self needsFlush: YES];
+    }
 
   if (_rFlags.has_subviews)
     {
-      count = [sub_views count];
+      unsigned		count = [sub_views count];
 
       if (count > 0)
 	{
-	  NSView*	array[count];
+	  NSView	*array[count];
+	  unsigned	i;
 
 	  [sub_views getObjects: array];
 
@@ -1322,42 +1325,55 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	    {
 	      NSView	*subview = array[i];
 	      NSRect	subviewFrame = subview->frame;
-	      NSRect	intersection;
+	      NSRect	isect;
+	      BOOL	intersectCalculated = NO;
 
 	      if ([subview->frameMatrix isRotated])
 		[subview->frameMatrix boundingRectFor: subviewFrame
 					       result: &subviewFrame];
 
-	      intersection = NSIntersectionRect(aRect, subviewFrame);
-	      if (NSIsEmptyRect(intersection) == NO)
+	      /*
+	       * Having drawn ourself into the rect, we must make sure that
+	       * subviews overlapping the area are redrawn.
+	       */
+	      isect = NSIntersectionRect(aRect, subviewFrame);
+	      if (NSIsEmptyRect(isect) == NO)
 		{
-		  intersection = [subview convertRect: intersection
-					     fromView: self];
-		  [subview displayRectIgnoringOpacity: intersection];
+		  isect = [subview convertRect: isect
+				      fromView: self];
+		  intersectCalculated = YES;
+		  /*
+		   * hack the ivars of the subview directly for speed.
+		   */
+		  subview->needs_display = YES;
+		  subview->invalidRect = NSUnionRect(subview->invalidRect,
+			isect);
 		}
+
 	      if (subview->needs_display)
 		{
-		  stillNeedsDisplay = YES;
+		  if (intersectCalculated == NO)
+		    {
+		      isect = [subview convertRect: isect
+					  fromView: self];
+		    }
+		  [subview displayIfNeededInRectIgnoringOpacity: isect];
 		}
 	    }
 	}
     }
 
   /*
-   *	If the rect we displayed contains the invalidRect for the view
-   *	then we can empty invalidRect.  All subviews will have been
-   *	fully displayed, so the 'stillNeedsDisplay' flag will be NO.
+   * If the rect we displayed contains the invalidRect or visibleRect
+   * then we can empty invalidRect.  All subviews will have been
+   * fully displayed, so this view no longer needs to be displayed.
    */
-  rect = NSUnionRect(invalidRect, aRect);
-  if (NSEqualRects(rect, aRect) == YES)
+  if (NSEqualRects(aRect, NSUnionRect(invalidRect, aRect)) == YES
+    || NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
     {
       invalidRect = NSZeroRect;
+      needs_display = NO;
     }
-  else
-    {
-      stillNeedsDisplay = YES;
-    }
-  needs_display = stillNeedsDisplay;
   [window flushWindow];
 }
 
@@ -1933,6 +1949,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
    *	Keep a note of whether this is a flipped view or not.
    */
   _rFlags.flipped_view = [self isFlipped];
+  _rFlags.opaque_view = [self isOpaque];
 
   if ([sub_views count])
     _rFlags.has_subviews = 1;
