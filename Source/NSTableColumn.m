@@ -1,155 +1,219 @@
+/*
+   NSTableColumn.m
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   Author: Michael Hanni  <mhanni@sprintmail.com>
+   Date: 1999
+   First Implementation.
+
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: December 1999
+   Completely Rewritten.
+
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+#include <Foundation/NSNotification.h>
+#include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTableView.h>
 
 @implementation NSTableColumn
-- (id)initWithIdentifier:(id)anObject
 {
-  [super init];
+}
 
-  tbcol_cell = [NSTableHeaderCell new];
+/*
+ *
+ * Class methods
+ *
+ */
++ (void) initialize
+{
+  if (self == [NSTableColumn class])
+    [self setVersion: 1];
+}
 
-  if ([anObject isKindOfClass:[NSString class]])
-    [tbcol_cell setStringValue:anObject];
-  else
-    [tbcol_cell setImage:anObject];
+/*
+ *
+ * Instance methods
+ *
+ */
 
-  ASSIGN(tbcol_identifier, anObject);
+/* 
+ * Initializing an NSTableColumn instance 
+ */
+- (NSTableColumn*)initWithIdentifier: (id)anObject
+{
+  self = [super init];
+  _width = 0;
+  _min_width = 0;
+  _max_width = 100000;
+  _is_resizable = YES;
+  _is_editable = NO;
+  _tableView = nil;
 
+  _headerCell = [NSTableHeaderCell new];
+  _dataCell = [NSTextFieldCell new];
+  // TODO: When things start to work with the other NSTable* classes, 
+  // set here default properties for the default cells to have them 
+  // display with the default table appearance.
+
+  ASSIGN (_identifier, anObject);
   return self;
 }
-
-- (void)setIdentifier:(id)anObject
+- (void)dealloc
 {
-  ASSIGN(tbcol_identifier, anObject);
+  [_headerCell release];
+  [_dataCell release];
+  TEST_RELEASE (_identifier);
+  [super dealloc];
 }
-
+/*
+ * Managing the Identifier
+ */
+- (void)setIdentifier: (id)anObject
+{
+  ASSIGN (_identifier, anObject);
+}
 - (id)identifier
 {
-  return tbcol_identifier;
+  return _identifier;
 }
-
-- (void)setTableView:(NSTableView *)aTableView
+/*
+ * Setting the NSTableView 
+ */
+- (void)setTableView: (NSTableView*)aTableView
 {
-  ASSIGN(tbcol_tableview, aTableView);
+  // We do *not* RETAIN aTableView. 
+  // On the contrary, aTableView is supposed to RETAIN us.
+  _tableView = aTableView;
 }
-
 - (NSTableView *)tableView
 {
-  return tbcol_tableview;
+  return _tableView;
 }
-
-// Sizing.
-
-- (void)setWidth:(float)newWidth
+/*
+ * Controlling size 
+ */
+- (void)setWidth: (float)newWidth
 {
-  if (newWidth > tbcol_maxWidth)
-    tbcol_width = tbcol_maxWidth;
-  else if (newWidth < tbcol_minWidth)
-    tbcol_width = tbcol_minWidth;
-  else
-    tbcol_width = newWidth;
+  if (newWidth > _max_width)
+    newWidth = _max_width;
+  else if (newWidth < _min_width)
+    newWidth = _min_width;
 
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTableViewColumnDidResizeNotification
-    object:tbcol_tableview];
+  _width = newWidth;
+  
+  if (_tableView)
+    {
+      [_tableView setNeedsDisplay: YES];
+      
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: NSTableViewColumnDidResizeNotification
+	object: _tableView];
+    }
 }
-
 - (float)width
 {
-  return tbcol_width;
+  return _width;
 }
-
-- (void)setMinWidth:(float)minWidth
+- (void)setMinWidth: (float)minWidth
 {
-  tbcol_minWidth = minWidth;
-
-  if (tbcol_width < minWidth)
-    [self setWidth:minWidth];
+  _min_width = minWidth;
+  if (_width < _min_width)
+    [self setWidth: _min_width];
 }
-
 - (float)minWidth
 {
-  return tbcol_minWidth;
+  return _min_width;
 }
-
-- (void)setMaxWidth:(float)maxWidth
+- (void)setMaxWidth: (float)maxWidth
 {
-  tbcol_maxWidth = maxWidth;
-
-  if (tbcol_width > maxWidth)
-    [self setWidth:maxWidth];
+  _max_width = maxWidth;
+  if (_width > _max_width)
+    [self setWidth: _max_width];
 }
-
 - (float)maxWidth
 {
-  return tbcol_maxWidth;
+  return _max_width;
 }
-
-- (void)setResizable:(BOOL)flag
+- (void)setResizable: (BOOL)flag
 {
-  tbcol_resizable = flag;
+  _is_resizable = flag;
 }
-
 - (BOOL)isResizable
 {
-  return tbcol_resizable;
+  return _is_resizable;
 }
-
 - (void)sizeToFit
 {
-  NSSize cell_size = [tbcol_cell cellSize];
-  BOOL changed = NO;
+  float new_width;
 
-// fix to use headerRectOfColumn:(int)columnIndex?
+  new_width = [_headerCell cellSize].width;
 
-  if (tbcol_width != cell_size.width)
-    {
-      tbcol_width = cell_size.width;
-      changed = YES;
-    }
+  if (new_width > _max_width)
+    _max_width = new_width;
 
-  if (cell_size.width > tbcol_maxWidth)
-    tbcol_maxWidth = cell_size.width;
-
-  if (cell_size.width < tbcol_minWidth)
-    tbcol_minWidth = cell_size.width;
-
-  if (changed)
-    [tbcol_tableview setNeedsDisplay:YES];
+  if (new_width < _min_width)
+    _min_width = new_width;
+  
+  // For easier subclassing we dont do it directly
+  [self setWidth: new_width];
 }
-
-- (void)setEditable:(BOOL)flag
+/*
+ * Controlling editability 
+ */
+- (void)setEditable: (BOOL)flag
 {
-  tbcol_editable = flag;
+  _is_editable = flag;
 }
-
 - (BOOL)isEditable
 {
-  return tbcol_editable;
+  return _is_editable;
 }
-
-// This cell is the cell used to draw the header.
-
-- (void)setHeaderCell:(NSCell *)aCell
+/*
+ * Setting component cells 
+ */
+- (void)setHeaderCell: (NSCell*)aCell
 {
-  ASSIGN(tbcol_cell, aCell);
+  if (aCell == nil)
+    {
+      NSLog (@"Attempt to set a nil headerCell for NSTableColumn");
+      return;
+    }
+  ASSIGN (_headerCell, aCell);
 }
-
-- (id)headerCell
+- (NSCell*)headerCell
 {
-  return tbcol_cell;
+  return _headerCell;
 }
-
-// This cell is used to draw the items in this column.
-
-- (void)setDataCell:(NSCell *)aCell
+- (void)setDataCell: (NSCell*)aCell
 {
-  ASSIGN(tbcol_datacell, aCell);
+  if (aCell == nil)
+    {
+      NSLog (@"Attempt to set a nil dataCell for NSTableColumn");
+      return;
+    }
+  ASSIGN (_dataCell, aCell);
 }
-
-- (id)dataCell
+- (NSCell*)dataCell
 {
-  if (!tbcol_datacell)
-    return [[NSTextFieldCell new] autorelease];
-  return tbcol_datacell;
+  return _dataCell;
 }
 @end
