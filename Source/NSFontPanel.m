@@ -74,13 +74,13 @@
 //
 - (id)init
 {
-  NSRect pf = {{100,100}, {300,300}};
-  NSRect ts = {{0,0}, {300,50}};
-  NSRect bs = {{0,0}, {300,182}};
-  NSRect pa = {{7,0}, {286,50}};
-  NSRect l = {{7,162}, {110,20}};
-  NSRect ss = {{7,0}, {110,160}};
-  NSRect b = {{58,5}, {75,25}};
+  NSRect pf = {{100,100}, {297,298}};
+  NSRect ts = {{0,0}, {297,48}};
+  NSRect bs = {{0,0}, {297,184}};
+  NSRect pa = {{8,0}, {281,48}};
+  NSRect l = {{8,162}, {109,21}};
+  NSRect ss = {{8,0}, {109,161}};
+  NSRect b = {{56,8}, {72,24}};
   NSView *v;
   NSView *topArea;
   NSView *bottomArea;
@@ -109,7 +109,7 @@
 
   v = [self contentView];
 
-  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,240)];
+  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,250)];
 
   splitView = [[NSSplitView alloc] initWithFrame:NSMakeRect(0,0,300,240)];  
   [splitView setVertical:NO]; 
@@ -124,6 +124,8 @@
 
   bottomSplit = [[NSView alloc] initWithFrame:bs];
 
+  l.size.width = 110;
+
   label = [[NSTextField alloc] initWithFrame:l];
   [label setAlignment: NSCenterTextAlignment];
   [label setFont:[NSFont boldSystemFontOfSize:12]];
@@ -135,10 +137,13 @@
   [bottomSplit addSubview:label];
   [label release];
 
+  ss.size.width = 110;
+
   familyScroll = [[NSScrollView alloc] initWithFrame:ss];
   [familyScroll setHasVerticalScroller:YES];
   [bottomSplit addSubview:familyScroll];
 
+  l.size.width = 109;
   l.origin.x = 120;
 
   label = [[NSTextField alloc] initWithFrame:l];
@@ -152,14 +157,15 @@
   [bottomSplit addSubview:label];
   [label release];
 
+  ss.size.width = 109;
   ss.origin.x = 120;
 
   typeScroll = [[NSScrollView alloc] initWithFrame:ss];
   [typeScroll setHasVerticalScroller:YES];
   [bottomSplit addSubview:typeScroll];
 
-  l.origin.x = 233;
-  l.size.width = 60;
+  l.origin.x = 231;
+  l.size.width = 58;
 
   label = [[NSTextField alloc] initWithFrame:l];
   [label setFont:[NSFont boldSystemFontOfSize:12]];
@@ -174,28 +180,27 @@
 
   // last label, this is the size input. We don't release this one.
 
-  l.origin.x = 233;
+  l.origin.x = 231;
   l.origin.y = 140;
-  l.size.height = 20;
-  l.size.width = 60;
 
   label = [[NSTextField alloc] initWithFrame:l];
   [label setDrawsBackground:YES];
   [label setBackgroundColor:[NSColor whiteColor]];
   [bottomSplit addSubview:label];
 
-  ss.origin.x = 233;
-  ss.size.height = 135;
-  ss.size.width = 60;
+  ss.origin.x = 231;
+  ss.size.height = 138;
+  ss.size.width = 58;
 
   sizeScroll = [[NSScrollView alloc] initWithFrame:ss];
   [sizeScroll setHasVerticalScroller:YES];
   [bottomSplit addSubview:sizeScroll];
 
-  bottomArea = [[NSView alloc] initWithFrame:NSMakeRect(0,0,300,100)];
+  bottomArea = [[NSView alloc] initWithFrame:NSMakeRect(0,0,300,50)];
  
   slash = [[NSBox alloc] initWithFrame:NSMakeRect(0,40,300,2)];
-  [slash setBorderType:NSLineBorder];
+  [slash setBorderType:NSGrooveBorder];
+  [slash setTitlePosition:NSNoTitle];
   [bottomArea addSubview:slash];
   [slash release];
 
@@ -203,14 +208,14 @@
   [revertButton setStringValue:@"Revert"];
   [bottomArea addSubview:revertButton];
 
-  b.origin.x = 138;
+  b.origin.x = 137;
 
   previewButton = [[NSButton alloc] initWithFrame:b];
   [previewButton setStringValue:@"Preview"];
   [previewButton setButtonType:NSOnOffButton];
   [bottomArea addSubview:previewButton];
 
-  b.origin.x = 218;
+  b.origin.x = 217;
 
   setButton = [[NSButton alloc] initWithFrame:b];
   [setButton setStringValue:@"Set"];
