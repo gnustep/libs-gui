@@ -1904,7 +1904,23 @@ _Sane(self);
 #if	USE_GLYPHS
   if (_JumpToGlyph(self, glyphIndex) == NO)
     {
-      [self glyphAtIndex: glyphIndex];
+      BOOL	exists;
+
+      [self glyphAtIndex: glyphIndex isValidIndex: &exists];
+      if (exists == NO)
+	{
+	  /*
+	   * As a special case, the glyph index just beyond the end of
+	   * the glyph stream is known to map to the character index just
+	   * beyond the end of the text.
+	   */
+	  if (glyphIndex == _numberOfGlyphs)
+	    {
+	      return [_textStorage length];
+	    }
+	  [NSException raise: NSRangeException
+		      format: @"glyph index out of range"];
+	}
       _JumpToGlyph(self, glyphIndex);
     }
   return _CharIndex(self);  
@@ -1926,11 +1942,34 @@ _Sane(self);
 		       actualGlyphRange: (NSRange*)actualGlyphRange
 {
 #if	USE_GLYPHS
-  unsigned	pos;
   NSRange	cRange;
   NSRange	gRange = glyphRange;
+  unsigned	cEnd;
+  BOOL		exists;
 
-  [self glyphAtIndex: glyphRange.location];	// Force generation of glyphs.
+  /*
+   * Force generation of glyphs to fill gaps.
+   */
+  [self glyphAtIndex: NSMaxRange(glyphRange)
+	isValidIndex: &exists];
+
+  /*
+   * Locate character index of location immediately beyond last glyph in range.
+   */
+  if (exists == NO)
+    {
+      if (NSMaxRange(glyphRange) > _numberOfGlyphs)
+	{
+	  [NSException raise: NSRangeException
+		      format: @"glyph range too large"];
+	}
+      cEnd = [_textStorage length];
+    }
+  else
+    {
+      _JumpToGlyph(self, NSMaxRange(glyphRange));
+      cEnd = _CharIndex(self);
+    }
 
   /*
    * Locate the first glyph and step backwards to the earliest glyph with
@@ -1938,52 +1977,13 @@ _Sane(self);
    */
   _JumpToGlyph(self, glyphRange.location);
   cRange.location = _CharIndex(self);
+  cRange.length = cEnd - cRange.location;
   while (_Back(self) == YES && _CharIndex(self) == cRange.location)
     {
       gRange.location--;
       gRange.length++;
     }
 
-  if (glyphRange.length == 0)
-    {
-      /*
-       * For a zero length range, we don't need to locate an end glyph.
-       */
-      cRange.length = 0;
-    }
-  else
-    {
-      BOOL	exists;
-
-      /*
-       * Make sure that the last glyph in the range exists.
-       */
-      [self glyphAtIndex: NSMaxRange(glyphRange)
-	    isValidIndex: &exists];
-      if (exists == YES)
-	{
-	  _JumpToGlyph(self, NSMaxRange(glyphRange));
-	  gRange.length = _GlyphIndex(self) - gRange.location;
-	  pos = _CharIndex(self);
-	}
-      else if (_numberOfGlyphs == NSMaxRange(glyphRange)-1)
-	{
-	  _JumpToGlyph(self, NSMaxRange(glyphRange)-1);
-	  gRange.length = _numberOfGlyphs - gRange.location;
-	  pos = [_textStorage length];
-	}
-      else
-	{
-	  [NSException raise: NSRangeException
-		      format: @"glyph index out of range"];
-	}
-      while (_Back(self) == YES && _CharIndex(self) == pos)
-	{
-	  gRange.length--;
-	}
-
-      cRange.length = pos - cRange.location;
-    }
   if (actualGlyphRange != 0)
     {
       *actualGlyphRange = gRange;

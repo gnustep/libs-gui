@@ -1,3 +1,9 @@
+2001-01-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSLayoutManager.m: when doing conversions between glyph
+	and character indices, support the index immediately beyond the
+	end of the glyphs/characters without raising an exception.
+
 2001-01-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSLayoutManager.m: loads of glyph changes - added some
