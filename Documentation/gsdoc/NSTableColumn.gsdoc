@@ -11,8 +11,6 @@
     <date>10 September, 2000</date>
   </head>
   <body>
-    <!-- All the following description should better go into NSTableColumn's <desc> -->
-    <!-- but it can't be done because gsdoc does not allow <p> and <section> inside <desc>. -->
     <chapter>
       <heading>Description of NSTableColumn</heading>
         <p>
