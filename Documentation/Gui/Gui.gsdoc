@@ -14,24 +14,31 @@
     <chapter>
       <heading>Gui</heading>
       <p>
-	Nicola Pero has begun work on writing an
-	<uref url="Introduction.html">introduction</uref>
-	to the basic concepts and use of the GNUstep GUI library  - a free
-	software library compatible with the OpenStep Application Kit (tm).
+	The GNUstep GUI library is a free software package implementing the
+        API of the OpenStep Application Kit, or AppKit (tm), including later
+        additions.  This documentation package describes the core of the GUI
+        library, for documentation on additional classes, see the
+        GuiAdditions documentation package.
+      </p>
+      <p>
+      	Read the
+	<uref url="../ReleaseNotes/ReleaseNotes.html">Release Notes</uref>
+	for the current release.
+      </p>
+
+
+      <p>
+	Nicola Pero and others have begun work on writing a
+	<uref url="../ProgrammingManual/manual_toc.html">manual</uref>
+	introducting the basic concepts and use of the GNUstep GUI library.
       </p>
       <p>
         Useful documentation for setting up GNUstep:
       </p>
       <list>
-        <item><uref url="DefaultsSummary.html">Available User Defaults</uref></item>
-        <item><uref url="LanguageSetup.html">Language Setup</uref></item>
+        <item><uref url="../../../User/Gui/DefaultsSummary.html">Available User Defaults</uref></item>
+        <item><uref url="../../../User/Gui/LanguageSetup.html">Language Setup</uref></item>
       </list>
-      <p>
-	We also have reference documentation for the classes, though this is
-	currently very sketchy, mostly consisting of listings of class
-	methods and the arguments they take.
-      </p>
-
     </chapter>
     <back>
       <index scope="project" type="class" />
