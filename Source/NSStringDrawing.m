@@ -33,6 +33,8 @@
 // For the encoding functions
 #include <base/Unicode.h>
 
+#define	NO_R_MARGIN	1.0E8
+
 /*
  * A function called by NSApplication to ensure that this file is linked
  * when it should be.
@@ -107,6 +109,7 @@ typedef struct {
 
 typedef struct {
   NSFont		*font;		// Last font used.
+  NSStringEncoding      enc;            // The encoding of the font
   NSColor		*color;		// Last color used.
   NSGraphicsContext	*ctxt;		// Drawing context.
   BOOL			flip;		// If view is flipped.
@@ -162,6 +165,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       [run->font set];
       draw->font = run->font;
+      draw->enc = [run->font mostCompatibleStringEncoding];
     }
 
   /*
@@ -172,7 +176,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       char	buf[run->glyphCount + 1];
       unsigned	i;
-      NSStringEncoding enc = [run->font mostCompatibleStringEncoding];
+      NSStringEncoding enc = draw->enc;
 
       // glyph is an unicode char value
       // if the font has non-standard encoding we need to remap it.
@@ -198,7 +202,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       char	buf[2];
       unsigned	i;
-      NSStringEncoding enc = [run->font mostCompatibleStringEncoding];
+      NSStringEncoding enc = draw->enc;
 
       buf[1] = '\0';
       for (i = 0; i < run->glyphCount; i++)
@@ -308,7 +312,6 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
 
   /*
    * Calculate height of line from font information and base offset.
-   * FIXME - should include superscript information here.
    */
   below = -([run->font descender]);
   above = [run->font pointSize];
@@ -642,7 +645,7 @@ drawLine(GSTextLine *line, NSGraphicsContext *ctxt, NSPoint origin, BOOL flip)
 
 static GSTextChunk*
 setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
-	GSGlyphArray *g, NSParagraphStyle *style, BOOL first)
+	GSGlyphArray *g, NSParagraphStyle *style, float rMargin, BOOL first)
 {
   GSTextChunk	*lastChunk = 0;
   NSString	*string = [str string];
@@ -652,14 +655,13 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   unsigned	end = NSMaxRange(range);
   unsigned	numTabs = [tabs count];
   unsigned	nextTab = 0;
-#define	NO_R_MARGIN	1.0E8
 
   line->alignment = [style alignment];
   line->lineBreakMode = [style lineBreakMode];
   line->height = [style minimumLineHeight];
   line->rmargin = [style tailIndent];
   if (line->rmargin <= 0.0)
-    line->rmargin = NO_R_MARGIN;
+    line->rmargin += rMargin;
 
   if (first)
     line->indent = [style firstLineHeadIndent];
@@ -811,13 +813,25 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
       if (lastChunk->xpos + lastChunk->width > line->rmargin)
       {
 	NSLineBreakMode lbm = line->lineBreakMode;  
-	unsigned pos;
+	unsigned pos = 0;
+	unisgned i;
+	float xpos = lastChunk->xpos;
+
+	// find the first character that does not fit on the line
+	for (i = chunkRange.location; i < NSMaxRange(chunkRange); i++)
+	  {
+	    float adv = g[i].adv.width;
+	    
+	    if (xpos + adv > line->rmargin)
+	      break;
+	    xpos += adv;
+	  }
 
 	if (lbm == NSLineBreakByWordWrapping)
 	  {
 	    // Get break position from string
 	    pos = [str lineBreakBeforeIndex: i
-			 withinRange: range];
+	              withinRange: chunkRange];
 	  }
 	else if (lbm == NSLineBreakByCharWrapping)
 	  {
@@ -827,8 +841,18 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	else
 	  {
 	    // Truncate line.
-	    pos = end;
+	    //pos = NSMaxRange(chunkRange);
 	  }
+	  // Break up the last chunk
+          // FIXME We should try to reuse as much as possible 
+	  if (pos)
+	    {
+	      NSRange newRange = NSMakeRange(chunkRange.location, pos-chunkRange.location);
+	      end = pos;
+	      empty_chunk(lastChunk);
+	      setupChunk(lastChunk, str, newRange, g, lastChunk->last);
+	    }
+
       }
 */
 
@@ -855,17 +879,14 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   return 0;
 }
 
-
-
-@implementation NSAttributedString (NSStringDrawing)
-
-- (void) drawAtPoint: (NSPoint)point
+static void
+drawAttributedString(NSAttributedString *str, NSRange aRange, NSPoint point, float width,
+		     NSGraphicsContext *ctxt)
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext();
   BOOL			isFlipped = [[ctxt focusView] isFlipped];
-  NSString		*allText = [self string];
-  unsigned		length = [allText length];
-  unsigned		paraPos = 0;
+  NSString		*allText = [str string];
+  unsigned		length = NSMaxRange(aRange);
+  unsigned		paraPos = aRange.location;
   NSRange		styleRange;
   NSParagraphStyle	*style = nil;
   GSTextLine		current;
@@ -902,7 +923,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	{
 	  if (style == nil || NSMaxRange(styleRange) > position)
 	    {
-	      style = (NSParagraphStyle*)[self
+	      style = (NSParagraphStyle*)[str
 				    attribute: NSParagraphStyleAttributeName
 				      atIndex: position
 			       effectiveRange: &styleRange];
@@ -922,7 +943,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	    garray.size = line.length;
 	    garray.glyphs = info;
 
-	    setupLine(&current, self, line, &garray, style, YES);
+	    setupLine(&current, str, line, &garray, style, width, YES);
 	    drawLine(&current, ctxt, point, isFlipped);
 
 	    if (isFlipped)
@@ -939,42 +960,16 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
     }
 }
 
-- (void) drawInRect: (NSRect)rect
+static NSSize
+sizeAttributedString(NSAttributedString *str, NSRange aRange)
 {
-  NSPoint	point;
-  NSView	*view = [NSView focusView];
-
-  /* FIXME: This is an extremely lossy and temporary workaround for
-     the fact that we should draw only inside rect. */
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  DPSgsave(ctxt);
-  NSRectClip (rect);
-
-  /*
-   * Since [-drawAtPoint:] positions the top-left corner of the text at
-   * the point, we locate the top-left corner of the rectangle to do the
-   * drawing.
-   */
-  point.x = rect.origin.x;
-  if ([view isFlipped])
-    point.y = rect.origin.y;
-  else
-    point.y = rect.origin.y + rect.size.height;
-
-  [self drawAtPoint: point];
-
-  /* Restore matching the DPSgsave used in the temporary workaround */
-  DPSgrestore(ctxt);
-}
-
-- (NSSize) size
-{
-  NSString		*allText = [self string];
-  unsigned		length = [allText length];
-  unsigned		paraPos = 0;
+  NSString		*allText = [str string];
+  unsigned		length = NSMaxRange(aRange);
+  unsigned		paraPos = aRange.location;
   NSParagraphStyle	*style = nil;
   GSTextLine		current;
   NSSize		size = NSMakeSize(0,0);
+  float rMargin = NO_R_MARGIN;
 
   checkInit();
 
@@ -1006,7 +1001,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	{
 	  if (firstLine == YES)
 	    {
-	      style = (NSParagraphStyle*)[self
+	      style = (NSParagraphStyle*)[str
 				    attribute: NSParagraphStyleAttributeName
 				      atIndex: position
 			       effectiveRange: 0];
@@ -1021,18 +1016,13 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	  {
 	    GSGlyphInfo		info[line.length];
 	    GSGlyphArray	garray;
-	    GSTextChunk		*chunk;
 
 	    garray.used = 0;
 	    garray.glyphs = info;
 
-	    setupLine(&current, self, line, &garray, style, YES);
-
-	    chunk = &current.chunk0;
-	    while (chunk->next != 0)
-	      chunk = chunk->next;
-	    if (chunk->xpos + chunk->width > size.width)
-	      size.width = chunk->xpos + chunk->width;
+	    setupLine(&current, str, line, &garray, style, rMargin, YES);
+	    if (current.width > size.width)
+	      size.width = current.width;
 	    size.height += current.height + current.leading;
 
 	    emptyLine(&current);
@@ -1045,22 +1035,93 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 
   return size;
 }
+ 
+
+
+@implementation NSAttributedString (NSStringDrawing)
+
+- (void) drawAtPoint: (NSPoint)point
+{
+  NSGraphicsContext	*ctxt = GSCurrentContext();
+
+  drawAttributedString(self, NSMakeRange(0, [self length]), point, NO_R_MARGIN,
+		       ctxt);
+}
+
+- (void) drawInRect: (NSRect)rect
+{
+  NSPoint	point;
+  NSView	*view = [NSView focusView];
+
+  /* FIXME: This is an extremely lossy and temporary workaround for
+     the fact that we should draw only inside rect. */
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
+  NSRectClip (rect);
+
+  /*
+   * Since [-drawAtPoint:] positions the top-left corner of the text at
+   * the point, we locate the top-left corner of the rectangle to do the
+   * drawing.
+   */
+  point.x = rect.origin.x;
+  if ([view isFlipped])
+    point.y = rect.origin.y;
+  else
+    point.y = rect.origin.y + rect.size.height;
+
+  drawAttributedString(self, NSMakeRange(0, [self length]), point, rect.size.width,
+		       ctxt);
+
+  /* Restore matching the DPSgsave used in the temporary workaround */
+  DPSgrestore(ctxt);
+}
+
+- (NSSize) size
+{
+  return sizeAttributedString(self, NSMakeRange(0, [self length]));
+}
 
 // GNUstep extensions.
-// Are they off any use?
 - (NSSize) sizeRange: (NSRange) lineRange
 {
-  return [[self attributedSubstringFromRange: lineRange] size];
+  return sizeAttributedString(self, lineRange);
 }
 
-- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) aPoint
+- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) point
 {
-  [[self attributedSubstringFromRange: lineRange] drawAtPoint: aPoint];
+  NSGraphicsContext	*ctxt = GSCurrentContext();
+
+  drawAttributedString(self, lineRange, point, NO_R_MARGIN,
+		       ctxt);
 }
 
-- (void) drawRange: (NSRange) lineRange inRect: (NSRect)aRect
+- (void) drawRange: (NSRange) lineRange inRect: (NSRect)rect
 {
-  [[self attributedSubstringFromRange: lineRange] drawInRect: aRect];
+  NSPoint	point;
+  NSView	*view = [NSView focusView];
+
+  /* FIXME: This is an extremely lossy and temporary workaround for
+     the fact that we should draw only inside rect. */
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
+  NSRectClip (rect);
+
+  /*
+   * Since [-drawAtPoint:] positions the top-left corner of the text at
+   * the point, we locate the top-left corner of the rectangle to do the
+   * drawing.
+   */
+  point.x = rect.origin.x;
+  if ([view isFlipped])
+    point.y = rect.origin.y;
+  else
+    point.y = rect.origin.y + rect.size.height;
+
+  drawAttributedString(self, lineRange, point, rect.size.width,
+		       ctxt);
+  /* Restore matching the DPSgsave used in the temporary workaround */
+  DPSgrestore(ctxt);
 }
 
 @end
