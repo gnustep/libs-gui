@@ -1314,7 +1314,7 @@ container
   if ([ctxt isDrawingToScreen])
     gbuf_size = GBUF_SIZE;
   else
-    gbuf_size = 16;
+    gbuf_size = 1;
 
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > range.location)
