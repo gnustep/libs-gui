@@ -47,6 +47,9 @@
 #endif
 
 @interface ExampleServices : NSObject
+- (void) md5: (NSPasteboard*)bp
+    userData: (NSString*)ud
+       error: (NSString**)err;
 - (void) openURL: (NSPasteboard*)bp
 	userData: (NSString*)ud
 	   error: (NSString**)err;
@@ -59,6 +62,38 @@
 @end
 
 @implementation ExampleServices
+
+/**
+ * Filter a string to an md5 digest of its utf8 value.
+ */
+- (void) md5: (NSPasteboard*)pb
+    userData: (NSString*)ud
+       error: (NSString**)err
+{
+  NSArray	*types;
+  NSString	*val;
+  NSData	*data;
+
+  types = [pb types];
+  if (![types containsObject: NSStringPboardType])
+    {
+      *err = @"No string type supplied on pasteboard";
+      return;
+    }
+
+  val = [pb stringForType: NSStringPboardType];
+  if (val == nil)
+    {
+      *err = @"No string value supplied on pasteboard";
+      return;
+    }
+
+  data = [val dataUsingEncoding: NSUTF8StringEncoding];
+  data = [data md5Digest];
+  [pb declareTypes: [NSArray arrayWithObject: @"md5Digest"] owner: nil];
+  [pb setData: data forType: @"md5Digest"];
+}
+
 - (void) openURL: (NSPasteboard*)pb
 	userData: (NSString*)ud
 	   error: (NSString**)err
@@ -242,7 +277,7 @@ init(int argc, char** argv)
 	    break;
 
 	  default:
-	    printf("%s - GNU Pasteboard server\n", argv[0]);
+	    printf("%s - filter server\n", argv[0]);
 	    printf("-H	for help\n");
 	    exit(EXIT_SUCCESS);
 	}

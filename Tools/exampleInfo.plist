@@ -1,6 +1,16 @@
   NSServices = (
     {
       NSPortName = ExampleServices;
+      NSFilter = "md5";
+      NSSendTypes = (
+	NSStringPboardType
+      );
+      NSReturnTypes = (
+	md5Digest
+      );
+    },
+    {
+      NSPortName = ExampleServices;
       NSMessage = openURL;
       NSSendTypes = (
 	NSStringPboardType
