@@ -1178,9 +1178,11 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       redrawRect = NSIntersectionRect(aRect, invalidRect);
       if (NSIsEmptyRect(redrawRect) == NO)
 	{
-	  [self lockFocus];
+	  NSGraphicsContext	*ctxt = GSCurrentContext();
+
+	  [ctxt lockFocusView: self inRect: redrawRect];
 	  [self drawRect: redrawRect];
-	  [self unlockFocus];
+	  [ctxt unlockFocusView: self needsFlush: YES];
 	}
 
       if (_rFlags.has_subviews)
@@ -1273,9 +1275,10 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
 {
-  unsigned	i, count;
-  NSRect	rect;
-  BOOL		stillNeedsDisplay = NO;
+  unsigned		i, count;
+  NSRect		rect;
+  BOOL			stillNeedsDisplay = NO;
+  NSGraphicsContext	*ctxt;
 
   if (!window)
     return;
@@ -1283,9 +1286,10 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
 
-  [self lockFocus];
+  ctxt = GSCurrentContext();
+  [ctxt lockFocusView: self inRect: aRect];
   [self drawRect: aRect];
-  [self unlockFocus];
+  [ctxt unlockFocusView: self needsFlush: YES];
 
   if (_rFlags.has_subviews)
     {

@@ -1,3 +1,7 @@
+Sun May 16  8:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Use new context lock/unlock operations.
+
 Mon May 14 19:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/make_services.m: Fix to get correct type info cached.
