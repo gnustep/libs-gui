@@ -35,6 +35,7 @@
 #include "AppKit/NSTabView.h"
 #include "AppKit/NSTabViewItem.h"
 #include "AppKit/PSOperators.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSTabView
 
@@ -346,7 +347,6 @@
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
-  float			borderThickness;
   int			howMany = [_items count];
   int			i;
   NSRect		previousRect;
@@ -360,31 +360,26 @@
       default:
       case NSTopTabsBezelBorder: 
 	aRect.size.height -= 16;
-	NSDrawButton(aRect, NSZeroRect);
-	borderThickness = 2;
+	[GSDrawFunctions drawButton: aRect : NSZeroRect];
 	break;
 
       case NSBottomTabsBezelBorder: 
 	aRect.size.height -= 16;
 	aRect.origin.y += 16;
-	NSDrawButton(aRect, rect);
+	[GSDrawFunctions drawButton: aRect : rect];
 	aRect.origin.y -= 16;
-	borderThickness = 2;
 	break;
 
       case NSNoTabsBezelBorder: 
-	NSDrawButton(aRect, rect);
-	borderThickness = 2;
+	[GSDrawFunctions drawButton: aRect : rect];
 	break;
 
       case NSNoTabsLineBorder: 
 	[[NSColor controlDarkShadowColor] set];
 	NSFrameRect(aRect);
-	borderThickness = 1;
 	break;
 
       case NSNoTabsNoBorder: 
-	borderThickness = 0;
 	break;
     }
 

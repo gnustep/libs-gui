@@ -37,6 +37,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSWindow.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSNotification.h>
 
@@ -163,7 +164,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       /*
        * Draw border.
        */
-      NSDrawButton(aRect, clipRect);
+      [GSDrawFunctions drawButton: aRect : clipRect];
 
       /*
        * Fill in control color.
@@ -200,7 +201,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       /*
        * Draw inner frame.
        */
-      NSDrawGrayBezel(aRect, clipRect);
+      [GSDrawFunctions drawGrayBezel: aRect : clipRect];
       aRect = NSInsetRect(aRect, 2.0, 2.0);
     }
 

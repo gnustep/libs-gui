@@ -1,3 +1,19 @@
+2004-06-08  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSCell.m: (-drawWithFrame:inView:)
+        * Source/NSFormCell.m: (-drawWithFrame:inView:)
+        * Source/NSTableHeaderCell.m: (-drawWithFrame:inView:)
+        * Source/NSTableView.m: (-drawRect:)
+        * Source/NSColorWell.m: (-drawRect:)
+        * Source/NSProgressIndicator.m: (+initialize, -drawRect:)
+        * Source/NSScrollView.m: (-drawRect:)
+        * Source/NSTabView.m: (-drawRect:)
+        * Source/GSTitleView.m: (-drawRect:)
+        * Source/NSBrowser.m: (-drawRect:, [GSBrowserTitleCell drawWithFrame:inView:])
+	Use GSDrawingFunction methods instead of NS functions. Also
+	changed colour of progress indicatore. Patch by Nicholas Roard
+	<nicolas@roard.com>. 
+	
 2004-06-07  Quentin Mathe <qmathe@club-internet.fr>
         * Source/NSComboBoxCell.m: Added complete documentation.
 	* Source/NSComboBox.m: Minor documentation corrections.

@@ -40,6 +40,7 @@
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSScrollView
 
@@ -917,11 +918,11 @@ static float scrollerWidth;
 	break;
 
       case NSBezelBorder:
-	NSDrawGrayBezel(_bounds, rect);
+	[GSDrawFunctions drawGrayBezel: _bounds : rect];
 	break;
 
       case NSGrooveBorder:
-	NSDrawGroove(_bounds, rect);
+	[GSDrawFunctions drawGroove: _bounds : rect];
 	break;
     }
 

@@ -29,6 +29,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/DPSOperators.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 // Cache the colors
 static NSColor *bgCol;
@@ -55,66 +56,22 @@ static NSColor *clearCol = nil;
 - (void) drawWithFrame: (NSRect)cellFrame
 		inView: (NSView *)controlView
 {
+  NSRect interiorFrame = NSMakeRect (cellFrame.origin.x-1, cellFrame.origin.y-1, 
+				cellFrame.size.width+2, cellFrame.size.height+2);
+
   if (NSIsEmptyRect (cellFrame) || ![controlView window])
     return;
 
   if (_cell.is_highlighted == YES)
     {
-      NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			       NSMinXEdge, NSMaxYEdge};
-      NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-				 NSMinXEdge, NSMinYEdge};
-      float grays[] = {NSBlack, NSBlack, 
-		       NSWhite, NSWhite};
-      NSRect rect;
-      NSGraphicsContext *ctxt;
-
-      ctxt = GSCurrentContext();
-
-      if (GSWViewIsFlipped(ctxt) == YES)
-	{
-	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
-				  down_sides, grays, 4);
-	}
-      else
-	{
-	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
-				  up_sides, grays, 4);
-	}
-      
-      DPSsetgray(ctxt, NSLightGray);
-      DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
-		  NSWidth(rect), NSHeight(rect));
+	[GSDrawFunctions drawButton: cellFrame :cellFrame];
     }
   else
     {
-      NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			       NSMinXEdge, NSMaxYEdge};
-      NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-				 NSMinXEdge, NSMinYEdge};
-      float grays[] = {NSBlack, NSBlack, 
-		       NSLightGray, NSLightGray};
-      NSRect rect;
-      NSGraphicsContext *ctxt;
-      
-      ctxt = GSCurrentContext();
-
-      if (GSWViewIsFlipped(ctxt) == YES)
-	{
-	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
-				  down_sides, grays, 4);
-	}
-      else
-	{
-	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
-				  up_sides, grays, 4);
-	}
-      
-      DPSsetgray(ctxt, NSDarkGray);
-      DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
-		  NSWidth(rect), NSHeight(rect));
+	[GSDrawFunctions drawDarkButton: cellFrame :cellFrame];
     }
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  [self drawInteriorWithFrame: interiorFrame inView: controlView];
 }
 
 - (NSColor *)textColor

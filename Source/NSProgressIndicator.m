@@ -27,6 +27,7 @@
 #include "AppKit/NSProgressIndicator.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSWindow.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSProgressIndicator
 
@@ -40,7 +41,8 @@ static NSImage *images[maxCount];
     {
       [self setVersion: 1];
       // FIXME: Should come from defaults and should be reset when defaults change
-      fillColour = RETAIN([NSColor blueColor]);
+      // FIXME: Should probably get the color from the color extension list (see NSToolbar)
+      fillColour = RETAIN([NSColor controlShadowColor]);
       // FIXME: Load the images and set maxCount
     }
 }
@@ -227,11 +229,8 @@ static NSImage *images[maxCount];
    // Draw the Bezel
    if (_isBezeled)
      {
-       NSSize borderSize = _sizeForBorderType (NSBezelBorder);
-
-       NSDrawGrayBezel(_bounds, rect);
        // Calc the inside rect to be drawn
-       r = NSInsetRect(_bounds, borderSize.width, borderSize.height);
+       r = [GSDrawFunctions drawGrayBezel: _bounds :rect];
      }
    else
      r = _bounds;

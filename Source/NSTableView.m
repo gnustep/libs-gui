@@ -57,6 +57,7 @@
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSCustomImageRep.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;
@@ -1904,44 +1905,16 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
 - (void) drawRect: (NSRect)aRect
 {
-  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			   NSMinXEdge, NSMaxYEdge, 
-			   NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-			     NSMinXEdge, NSMinYEdge, 
-			     NSMaxYEdge};
-  float grays[] = {NSBlack, NSBlack, 
-		   NSLightGray, NSLightGray, 
-		   NSBlack};
-  NSRect rect;
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSRect divide = NSMakeRect (aRect.origin.x, aRect.origin.y, aRect.size.width, 1);
+  NSRect rect = aRect;
+  rect.origin.y += 1;
+  rect.size.height -= 1;
 
-  if (GSWViewIsFlipped(ctxt) == YES)
-    {
-      rect = NSDrawTiledRects(_bounds, aRect,
-			       down_sides, grays, 5);
-    }
-  else
-    {
-      rect = NSDrawTiledRects(_bounds, aRect,
-			       up_sides, grays, 5);
-    }
-
-  DPSsetgray(ctxt, NSDarkGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
-	      NSWidth(rect), NSHeight(rect));
-
-
-  /*
-  NSRect rect = _bounds;
-
-  NSDrawButton (rect, aRect);
+  [[NSColor blackColor] set];
+  NSRectFill (divide);
+  rect = [GSDrawFunctions drawDarkButton: rect :aRect];
   [[NSColor controlShadowColor] set];
-  rect.size.width -= 4;
-  rect.size.height -= 4;
-  rect.origin.x += 2;
-  rect.origin.y += 2;
-  NSRectFill (rect);*/
+  NSRectFill (rect);
 }
 
 @end

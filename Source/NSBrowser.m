@@ -52,6 +52,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 DEFINE_RINT_IF_MISSING
 
@@ -192,7 +193,7 @@ static NSTextFieldCell *titleCell;
       return;
     }
 
-  NSDrawGrayBezel (cellFrame, NSZeroRect);
+  [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
   [self drawInteriorWithFrame: cellFrame  inView: controlView];
 }
 @end
@@ -2072,7 +2073,7 @@ static NSTextFieldCell *titleCell;
 
       if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)
       	{
-      	  NSDrawGrayBezel (scrollerBorderRect, rect);
+          [GSDrawFunctions drawGrayBezel: scrollerBorderRect : rect];
 	}
     }
 
@@ -2083,7 +2084,7 @@ static NSTextFieldCell *titleCell;
       float   hScrollerWidth = _hasHorizontalScroller ? scrollerWidth : 0;
       
       // Columns borders
-      NSDrawGrayBezel (_bounds, rect);
+      [GSDrawFunctions drawGrayBezel: _bounds : rect];
       
       [[NSColor blackColor] set];
       visibleColumns = [self numberOfVisibleColumns]; 

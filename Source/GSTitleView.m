@@ -37,6 +37,8 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
 
+#include "GNUstepGUI/GSDrawFunctions.h"
+
 @implementation GSTitleView
 
 // ============================================================================
@@ -211,7 +213,7 @@
 
   // Rectangle 2
   // Draw the title box's button.
-  NSDrawButton(workRect, workRect);
+  [GSDrawFunctions drawButton: workRect :workRect];
 
   // Overdraw white top and left lines with light gray lines for window title
   workRect.origin.y += 1;
