@@ -1,3 +1,13 @@
+2000-06-11  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSFont.h:
+	* Headers/gnustep/gui/GSFontInfo.h:
+	* Source/NSFont.m:
+	* Source/GSFontInfo.m:
+	Added some support for glyph layout
+	* Source/NSText.m:
+	updateFontPanel isMultiple was set wrong
+	
 2000-06-10  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSDocument.h:
