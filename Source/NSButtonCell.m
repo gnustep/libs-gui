@@ -66,14 +66,16 @@
 //
 - (id) _init
 {
-  _cell.is_enabled = YES;
-  _buttoncell_is_transparent = NO;
+  // Implicitly performed by allocation:
+  //
+  //_buttoncell_is_transparent = NO;
+  //_altContents = nil;
+
   _cell.is_bordered = YES;
   _showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
   _highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
   _delayInterval = 0.4;
   _repeatInterval = 0.075;
-  _altContents = nil;
   _keyEquivalentModifierMask = NSCommandKeyMask;
 
   return self;
@@ -356,7 +358,7 @@
 //
 - (NSColor *) textColor
 {
-  if (_cell.is_enabled == NO)
+  if (_cell.is_disabled == YES)
     return [NSColor disabledControlTextColor];
   if ((_cell.state && (_showAltStateMask & NSChangeGrayCellMask))
       || (_cell.is_highlighted && (_highlightsByMask & NSChangeGrayCellMask)))
