@@ -1,3 +1,10 @@
+Wed Apr 14 15:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPasteboard.m: Remove 'system()' and use NSTask to launch
+	gpbs if necessary instead.
+	* Source/NSWorkspace.m: Removed a load of obsolete code - depend on
+	NSBundle and NSTask to do the right thing.
+
 Fri Apr  9 16:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSStringDrawing.m: Further hacking of the string drawing stuff

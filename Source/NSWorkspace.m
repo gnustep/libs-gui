@@ -33,6 +33,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/GSServicesManager.h>
+#include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSPathUtilities.h>
@@ -46,11 +47,6 @@
 #define	mkpath(X) stringify_it(X) "/Tools"
 
 static NSDictionary	*applications = nil;
-
-@interface	NSWorkspace (GNUstep)
-- (NSTask*) launchProgram: (NSString *)prog
-		   atPath: (NSString *)path;
-@end
 
 
 @implementation	NSWorkspace
@@ -393,8 +389,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    * Try to locate and run an executable copy of 'make_services'
    */
   if (path == nil)
-    path = [[NSString alloc] initWithCString: mkpath(GNUSTEP_INSTALL_PREFIX)];
-  task = [self launchProgram: @"make_services" atPath: path];
+    path = [[NSString alloc] initWithFormat: @"%s/make_services",
+		mkpath(GNUSTEP_INSTALL_PREFIX)];
+  task = [NSTask launchedTaskWithLaunchPath: path
+				  arguments: nil];
   if (task != nil)
     [task waitUntilExit];
 
@@ -426,10 +424,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
 {
-  NSFileManager	*mgr;
   NSString	*path;
   NSString	*file;
-  NSDictionary	*info;
+  NSBundle	*bundle;
 
   if (appName == nil)
     return NO;
@@ -459,19 +456,8 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    *	value.  If the executable name is an absolute path name, we also
    *	replace the path with that specified.
    */
-  file = [path stringByAppendingPathComponent: @"Resources/Info-gnustep.plist"];
-  mgr = [NSFileManager defaultManager];
-  if ([mgr isReadableFileAtPath: file])
-    info = [NSDictionary dictionaryWithContentsOfFile: file];
-  else
-    {
-      file = [path stringByAppendingPathComponent: @"Resources/Info.plist"];
-      if ([mgr isReadableFileAtPath: file])
-	info = [NSDictionary dictionaryWithContentsOfFile: file];
-      else
-	info = nil;
-    }
-  file = [info objectForKey: @"NSExecutable"];
+  bundle = [NSBundle bundleWithPath: path];
+  file = [[bundle infoDictionary] objectForKey: @"NSExecutable"];
   if (file != nil)
     {
       NSString	*exepath;
@@ -487,7 +473,8 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	}
     }
 
-  if ([self launchProgram: appName atPath: path] == nil)
+  path = [path stringByAppendingPathComponent: appName];
+  if ([NSTask launchedTaskWithLaunchPath: path arguments: nil] == nil)
     return NO;
   return YES;
 }
@@ -555,50 +542,6 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (int) extendPowerOffBy: (int)requested
 {
   return 0;
-}
-
-@end
-
-
-@implementation	NSWorkspace (GNUstep)
-/*
- *	Attempt to start a program.  First look in machine/os/libs directory,
- *	then in machine/os directory, then at top level.
- */
-- (NSTask*) launchProgram: (NSString *)prog
-		   atPath: (NSString *)path
-{
-  NSArray	*args;
-  NSTask	*task;
-  NSString	*path0;
-  NSString	*path1;
-  NSString	*path2;
-  NSFileManager	*mgr;
-
-  /*
-   *	Try to locate the actual executable file and start it running.
-   */
-  path2 = [path stringByAppendingPathComponent: prog];
-  path = [path stringByAppendingPathComponent: gnustep_target_dir]; 
-  path1 = [path stringByAppendingPathComponent: prog];
-  path = [path stringByAppendingPathComponent: library_combo]; 
-  path0 = [path stringByAppendingPathComponent: prog]; 
-
-  mgr = [NSFileManager defaultManager];
-  if ([mgr isExecutableFileAtPath: path0])
-    path = path0;
-  else if ([mgr isExecutableFileAtPath: path1])
-    path = path1;
-  else if ([mgr isExecutableFileAtPath: path2])
-    path = path2;
-  else
-    return nil;
-
-  args = [NSArray arrayWithObjects: nil];
-  task = [NSTask launchedTaskWithLaunchPath: path
-				  arguments: args];
-
-  return task;
 }
 
 @end

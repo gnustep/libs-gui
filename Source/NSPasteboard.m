@@ -46,11 +46,11 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSMethodSignature.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
 #define stringify_it(X) #X
-#define	prog_path(X,Y) \
-  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO Y
+#define	prog_path(X) stringify_it(X) "/Tools/gpbs"
 
 @interface NSPasteboard (Private)
 + (id<PasteboardServer>) _pbs;
@@ -127,15 +127,17 @@ static	id<PasteboardServer>	the_server = nil;
 	    }
 	  else
 	    {
-	      NSRunLoop	*loop = [NSRunLoop currentRunLoop];
-	      NSDate	*next;
+	      static	NSString	*cmd = nil;
 
-	      system(prog_path(GNUSTEP_INSTALL_PREFIX, "/gpbs &"));
+	      if (cmd == nil)
+		cmd = [NSString stringWithCString:
+			prog_path(GNUSTEP_INSTALL_PREFIX)];
+	      [NSTask launchedTaskWithLaunchPath: cmd arguments: nil];
 	      [NSTimer scheduledTimerWithTimeInterval: 5.0
 					   invocation: nil
 					      repeats: NO];
-	      next = [NSDate dateWithTimeIntervalSinceNow: 5.0];
-	      [loop runUntilDate: next];
+	      [[NSRunLoop currentRunLoop] runUntilDate:
+		[NSDate dateWithTimeIntervalSinceNow: 5.0]];
 	      recursion = YES;
 	      [self _pbs];
 	      recursion = NO;
