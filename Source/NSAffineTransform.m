@@ -435,9 +435,10 @@ static NSAffineTransformStruct identityTransform = {
 
 - (float) rotationAngle
 {
-  /* FIXME - this is not correct in general!  */
-  float rotationAngle = atan2(C, A);
+  float rotationAngle = atan2(-C, A);
   rotationAngle *= 180.0 / pi;
+  if (rotationAngle < 0.0)
+    rotationAngle += 360.0;
 
   return rotationAngle;
 }
