@@ -1,3 +1,8 @@
+2003-06-04 23:02  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:): Use a (much)
+	larger maximum size for the field editor.
+
 2003-05-26  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (gsapp_user_bundles): New function

@@ -1752,7 +1752,7 @@ static NSColor	*shadowCol;
 		      editor: (NSText*)textObject
 {
   NSRect titleRect = [self titleRectForBounds: aRect];
-  NSSize maxSize = NSMakeSize(3000, titleRect.size.height);
+  NSSize maxSize = NSMakeSize(1e8, titleRect.size.height);
   NSClipView *cv = [[NSClipView alloc] 
 		       initWithFrame: titleRect];
   NSTextContainer *ct = [(NSTextView*)textObject textContainer];
