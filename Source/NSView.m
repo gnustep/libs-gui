@@ -79,26 +79,21 @@ NSString *NSViewFocusChangedNotification;
 {
   NSThread *current_thread = [NSThread currentThread];
 
-  NSLog(@"NSView: +pushFocusView\n");
+  // Obtain lock so we can edit the dictionary
   [gnustep_gui_nsview_lock lock];
-  NSLog(@"NSView: enter critical section\n");
 
   // If no context then remove from dictionary
   if (!focusView)
     {
-      NSLog(@"NSView: remove from dictionary\n");
       [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
     }
   else
     {
-      NSLog(@"NSView: add to dictionary\n");
       [gnustep_gui_nsview_thread_dict setObject: focusView 
 				      forKey: current_thread];
     }
 
   [gnustep_gui_nsview_lock unlock];
-  NSLog(@"NSView: exit critical section\n");
-  NSLog(@"NSView: return from +pushFocusView\n");
 }
 
 + (NSView *)popFocusView
@@ -109,23 +104,14 @@ NSString *NSViewFocusChangedNotification;
   NSThread *current_thread = [NSThread currentThread];
   NSView *current_view = nil;
 
-  NSLog(@"NSView: +focusView\n");
   // Get focused view for current thread
   [gnustep_gui_nsview_lock lock];
-  NSLog(@"NSView: enter critical section\n");
-  current_view = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
-  NSLog(@"NSView: Looked in view dictionary\n");
 
-  // If not in dictionary then no focused view
-  if (!current_view)
-      NSLog(@"NSView: Did not find a view\n");
-  else
-      NSLog(@"NSView: Found a view\n");
+  // current_view is nil if no focused view
+  current_view = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
 
   [gnustep_gui_nsview_lock unlock];
-  NSLog(@"NSView: exit critical section\n");
 
-  NSLog(@"NSView: return from +focusView\n");
   return current_view;
 }
 

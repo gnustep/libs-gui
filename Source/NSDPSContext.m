@@ -140,7 +140,7 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
   NSLog(@"NSDPSContext: +currentContext\n");
   // Get current context for current thread
   [GNU_CONTEXT_LOCK lock];
-  NSLog(@"NSDPSContext: enter critical section\n");
+
   current_context = [GNU_CONTEXT_THREAD_DICT objectForKey: current_thread];
   NSLog(@"NSDPSContext: Looked in context dictionary\n");
 
@@ -170,12 +170,10 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
   // If no context then remove from dictionary
   if (!context)
     {
-      NSLog(@"NSDPSContext: remove from dictionary\n");
       [GNU_CONTEXT_THREAD_DICT removeObjectForKey: current_thread];
     }
   else
     {
-      NSLog(@"NSDPSContext: add to dictionary\n");
       [GNU_CONTEXT_THREAD_DICT setObject: context 
 			       forKey: current_thread];
     }

@@ -1,3 +1,16 @@
+Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSApplication.h (-context): New method.
+	* Source/Makefile.sed.nt (install): Delete AppKit and DPSClient
+	headers directories before installing headers.
+	* Source/NSApplication.m (gnustep_gui_app_is_in_dealloc): New
+	global variable to flag when the application is being dealloced
+	so it can prevent -release loops.
+	(+initialize, -dealloc, -removeWindowsItem:): Likewise.
+	(-context): New method.
+	* Source/NSView.m (+pushFocusView, +focusView): Remove
+	debugging information.
+
 Mon Jun  3 10:54:28 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Makefile.in (clean-top, distclean): Correct targets and clean

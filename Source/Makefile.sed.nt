@@ -54,7 +54,9 @@ install-headers:\
 	for %i in ( $(GNUSTEP_DPS_HEADERS) ) do \\\
 	 ( $(INSTALL_DATA) ../Headers/gnustep/%i \\\
 		$(includedir)/gnustep/%i ) \
+	IF EXIST $(includedir)\\AppKit rm -rf $(includedir)/AppKit \
 	cp -r $(includedir)/gnustep/gui $(includedir)/AppKit \
+	IF EXIST $(includedir)\\DPSClient rm -rf $(includedir)/DPSClient \
 	cp -r $(includedir)/gnustep/dps $(includedir)/DPSClient \
 # end of install targets
 

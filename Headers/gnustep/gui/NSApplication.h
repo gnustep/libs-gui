@@ -41,6 +41,7 @@
 #include <Foundation/NSDate.h>
 #include <gnustep/base/Queue.h>
 #include <Foundation/NSCoder.h>
+#include <DPSClient/NSDPSContext.h>
 
 @interface NSApplication : NSResponder <NSCoding>
 
@@ -196,7 +197,7 @@
 //
 // Getting the display postscript context
 //
-// - (NSDOSContext *)context;
+- (NSDPSContext *)context;
 
 //
 // Reporting an exception
