@@ -635,7 +635,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
- * Removes oldView from the receiver and places newView in its place.
+ * Removes oldView, which should be a subview of the receiver, from the
+ * receiver and places newView in its place. If newView is nil, just
+ * removes oldView. If oldView is nil, just adds newView.
  */
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
 {
@@ -2379,6 +2381,11 @@ in the main thread.
 - (void) scrollRect: (NSRect)aRect by: (NSSize)delta
 {}
 
+/**
+Scrolls the nearest enclosing clip view the minimum required distance
+necessary to make aRect (or as much of it possible) in the receiver visible.
+Returns YES iff any scrolling was done.
+*/
 - (BOOL) scrollRectToVisible: (NSRect)aRect
 {
   NSClipView	*s = (NSClipView*)_super_view;
@@ -2391,42 +2398,29 @@ in the main thread.
     {
       NSRect	vRect = [self visibleRect];
       NSPoint	aPoint = vRect.origin;
-      BOOL	shouldScroll = NO;
+      // Ok we assume that the rectangle is origined at the bottom left
+      // and goes to the top and right as it grows in size for the naming
+      // of these variables
+      float ldiff, rdiff, tdiff, bdiff;
 
       if (vRect.size.width == 0 && vRect.size.height == 0)
 	return NO;
 
-      if (!(NSMinX(vRect) <= NSMinX(aRect)
-	&& (NSMaxX(vRect) >= NSMaxX(aRect))))
-	{
-	  shouldScroll = YES;
-	  if (aRect.origin.x < vRect.origin.x)
-	    aPoint.x = aRect.origin.x;
-	  else
-	    {
-	      float	visibleRange = vRect.origin.x + vRect.size.width;
-	      float	aRectRange = aRect.origin.x + aRect.size.width;
+      // Find the differences on each side.
+      ldiff = NSMinX(vRect) - NSMinX(aRect);
+      rdiff = NSMaxX(aRect) - NSMaxX(vRect);
+      bdiff = NSMinY(vRect) - NSMinY(aRect);
+      tdiff = NSMaxY(aRect) - NSMaxY(vRect);
 
-	      aPoint.x = vRect.origin.x + (aRectRange - visibleRange);
-	    }
-	}
+      // If the diff's have the same sign then nothing needs to be scrolled
+      if ((ldiff * rdiff) >= 0.0) ldiff = rdiff = 0.0;
+      if ((bdiff * tdiff) >= 0.0) bdiff = tdiff = 0.0;
 
-      if (!(NSMinY(vRect) <= NSMinY(aRect)
-	&& (NSMaxY(vRect) >= NSMaxY(aRect))))
-	{
-	  shouldScroll = YES;
-	  if (aRect.origin.y < vRect.origin.y)
-	    aPoint.y = aRect.origin.y;
-	  else
-	    {
-	      float	visibleRange = vRect.origin.y + vRect.size.height;
-	      float	aRectRange = aRect.origin.y + aRect.size.height;
+      // Move the smallest difference
+      aPoint.x += (fabs(ldiff) < fabs(rdiff)) ? (-ldiff) : rdiff;
+      aPoint.y += (fabs(bdiff) < fabs(tdiff)) ? (-bdiff) : tdiff;
 
-	      aPoint.y = vRect.origin.y + (aRectRange - visibleRange);
-	    }
-	}
-
-      if (shouldScroll)
+      if (aPoint.x != vRect.origin.x || aPoint.y != vRect.origin.y)
 	{
 	  aPoint = [self convertPoint: aPoint toView: s];
 	  [s scrollToPoint: aPoint];

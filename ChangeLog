@@ -1,3 +1,9 @@
+2004-09-02 00:17  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m (-replaceSubview:with:): Clarify documentation.
+	(-scrollRectToVisible:): Implement correctly, patch from Andrew
+	Ruder. Document.
+
 2004-08-30  Quentin Mathe <qmathe@club-internet.fr>
 
         * Headers/AppKit/NSCell.h:
