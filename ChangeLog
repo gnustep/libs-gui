@@ -1,3 +1,14 @@
+Thu Mar  7 08:29:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-dealloc]): Use DESTROY, not
+	TEST_RELEASE, fixing the segmentation fault on deallocating.
+
+Thu Mar  7 08:15:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-initTextCell:]): Use system font, not user
+	font.  ([-initImageCell:]): Idem.  ([-setType:]): Idem.
+	(Patch from Stefan Urbanek <stefanurbanek@yahoo.fr>).
+	
 2002-03-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: Applied fix for left-over attributes
@@ -12,7 +23,7 @@
 	* Source/NSOutlineView.m modified to the methods which
 	make calls to the datasource to retrieve children starting
 	from zero instead of one.  
-	
+
 2002-03-04  Gregory John Casamento <greg_casamento@yahoo.com>
 	  & Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
