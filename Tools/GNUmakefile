@@ -39,6 +39,8 @@ gpbs_OBJC_FILES = gpbs.m
 
 -include GNUmakefile.preamble
 
+-include GNUmakefile.local
+
 include $(GNUSTEP_MAKEFILE_DIR)/tool.make
 
 -include GNUmakefile.postamble

@@ -196,6 +196,8 @@ AppKit/DPSOperators.h
 
 -include GNUmakefile.preamble
 
+-include GNUmakefile.local
+
 include $(GNUSTEP_MAKEFILE_DIR)/library.make
 
 -include GNUmakefile.postamble

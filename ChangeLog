@@ -1,3 +1,12 @@
+Thu Feb  5 09:44:38 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* GNUmakefile.postamble (header-links): Remove non-package
+	links. Link DPSClient to gnustep/gui.
+	* Souce/GNUmakefile: Include GNUmakefile.local.
+	* Tools/GNUmakefile: Likewise.
+	* Tools/GNUmakefile.preamble (ADDITIONAL_LIB_DIRS): Removed
+	previous change.
+
 Wed Feb  4 09:11:49 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Changes to allow library to be compiled in a GNUstep package
