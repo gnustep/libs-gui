@@ -29,6 +29,8 @@
 #ifndef _GNUstep_H_AppKit
 #define _GNUstep_H_AppKit
 
+/* Define library version */
+#include <AppKit/GSVersion.h>
 
 //
 // Foundation
