@@ -581,6 +581,9 @@ static NSMapTable* windowmaps = NULL;
   dragTypes = [context _dragTypesForWindow: self];
   if (dragTypes)
     {
+      // As this is the original entry, it will change soon. 
+      // We use a copy to reregister the same types later on.
+      dragTypes = [dragTypes copy];
       [context _removeDragTypes: dragTypes fromWindow: self];
     }
 
@@ -611,6 +614,8 @@ static NSMapTable* windowmaps = NULL;
     {
       NSDebugLLog(@"NSWindow", @"Resetting drag types for window");
       [context _addDragTypes: dragTypes toWindow: self];
+      // Free our local copy.
+      RELEASE(dragTypes);
     }
 
   /* Other stuff we need to do for deferred windows */
