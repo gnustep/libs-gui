@@ -33,6 +33,7 @@
 #include <AppKit/NSFileWrapper.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSHost.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
@@ -97,7 +98,7 @@ static  NSMapTable              *mimeMap = NULL;
     removeObserver: self
 	      name: NSConnectionDidDieNotification
 	    object: [notification object]];
-  [obj release];
+  RELEASE(obj);
   return self;
 }
 
@@ -105,17 +106,33 @@ static  NSMapTable              *mimeMap = NULL;
 {
   if (the_server == nil)
     {
-      NSString*	host;
+      NSString	*host;
 
       host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
       if (host == nil)
 	{
-	  host = [[NSProcessInfo processInfo] hostName];
+	  host = @"";
+	}
+      else
+	{
+	  NSHost	*h;
+
+	  /*
+	   * If we have a host specified, but it is the current host,
+	   * we do not need to ask for a host by name (nameserver lookup
+	   * can be faster) and the empty host name can be used to
+	   * indicate that we may start a pasteboard server locally.
+	   */
+	  h = [NSHost hostWithName: host];
+	  if ([h isEqual: [NSHost currentHost]] == YES)
+	    {
+	      host = @"";
+	    }
 	}
       the_server = (id<GSPasteboardSvr>)[NSConnection
 		rootProxyForConnectionWithRegisteredName: PBSNAME
 						    host: host];
-      if ([(id)the_server retain])
+      if (RETAIN((id)the_server) != nil)
 	{
 	  NSConnection*	conn = [(id)the_server connectionForProxy];
 
@@ -125,14 +142,14 @@ static  NSMapTable              *mimeMap = NULL;
 		   name: NSConnectionDidDieNotification
 		 object: conn];
 	}
-      else
+      else if ([host isEqual: @""] == YES)
 	{
 	  static BOOL	recursion = NO;
 
 	  if (recursion)
 	    {
 	      NSLog(@"Unable to contact pasteboard server - "
-		    @"please ensure that gpbs is running.\n");
+		@"please ensure that gpbs is running.");
 	      return nil;
 	    }
 	  else
@@ -162,6 +179,12 @@ static  NSMapTable              *mimeMap = NULL;
 	      recursion = NO;
 	    }
 	}
+      else
+	{
+	  NSLog(@"Unable to contact pasteboard server on %@ - "
+	    @"please ensure that gpbs is running.", host);
+	  return nil;
+	}
     }
   return the_server;
 }
@@ -190,8 +213,8 @@ static  NSMapTable              *mimeMap = NULL;
        */
       if (p->target != (id)aTarget)
 	{
-	  [p->target autorelease];
-	  p->target = [(id)aTarget retain];
+	  AUTORELEASE(p->target);
+	  p->target = RETAIN((id)aTarget);
 	}
     }
   else
@@ -203,15 +226,15 @@ static  NSMapTable              *mimeMap = NULL;
       p = [NSPasteboard alloc];
       if (p)
 	{
-	  p->target = [(id)aTarget retain];
-	  p->name = [aName retain];
+	  p->target = RETAIN((id)aTarget);
+	  p->name = RETAIN(aName);
 	  [pasteboards setObject: p forKey: aName];
-	  [p autorelease];
+	  AUTORELEASE(p);
 	}
       /*
-       * The [-autorelease] message ensures that the NSPasteboard object we are
+       * The AUTORELEASE ensures that the NSPasteboard object we are
        * returning will be released once our caller has finished with it.
-       * This is necessary so that our [-release] method will be called to
+       * This is necessary so that our RELEASE method will be called to
        * remove the NSPasteboard from the 'pasteboards' array when it is not
        * needed any more.
        */
@@ -425,8 +448,8 @@ static  NSMapTable              *mimeMap = NULL;
 
 - (void) dealloc
 {
-  [target release];
-  [name release];
+  RELEASE(target);
+  RELEASE(name);
   [super dealloc];
 }
 
@@ -502,12 +525,12 @@ static  NSMapTable              *mimeMap = NULL;
   if ([self retainCount] == 2)
     {
       [dictionary_lock lock];
-      [super retain];
+      RETAIN(super);
       [pasteboards removeObjectForKey: name];
-      [super release];
+      RELEASE(super);
       [dictionary_lock unlock];
     }
-  [super release];
+  RELEASE(super);
 }
 
 - (BOOL) setData: (NSData*)data
@@ -937,7 +960,7 @@ NSGetFileTypes(NSArray *pboardTypes)
     }
   if ([a count] > 0)
     {
-      return [[a copy] autorelease];
+      return AUTORELEASE([a copy]);
     }
   return nil;
 }

@@ -32,6 +32,7 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSHost.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
@@ -78,17 +79,26 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
     {
       remote = RETAIN([NSDistributedNotificationCenter defaultCenter]);
       NS_DURING
-        [remote addObserver: self
-		   selector: @selector(_handleRemoteNotification:)
-		       name: nil
-		     object: GSWorkspaceNotification];
+	{
+	  [remote addObserver: self
+		     selector: @selector(_handleRemoteNotification:)
+			 name: nil
+		       object: GSWorkspaceNotification];
+	}
       NS_HANDLER
-        NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-        if ([defs boolForKey: @"GSLogWorkspaceTimeout"])
-          NSLog(@"NSWorkspace caught exception %@: %@", 
+	{
+	  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+
+	  if ([defs boolForKey: @"GSLogWorkspaceTimeout"])
+	    {
+	      NSLog(@"NSWorkspace caught exception %@: %@", 
 	        [localException name], [localException reason]);
-        else
-          [localException raise];
+	    }
+	  else
+	    {
+	      [localException raise];
+	    }
+	}
       NS_ENDHANDLER
     }
   return self;
@@ -107,14 +117,23 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 				      object: GSWorkspaceNotification
 				    userInfo: [aNotification userInfo]];
   NS_DURING
-    [remote postNotification: rem];
+    {
+      [remote postNotification: rem];
+    }
   NS_HANDLER
-    NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-    if ([defs boolForKey: @"GSLogWorkspaceTimeout"])
-      NSLog(@"NSWorkspace caught exception %@: %@", 
+    {
+      NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+
+      if ([defs boolForKey: @"GSLogWorkspaceTimeout"])
+	{
+	  NSLog(@"NSWorkspace caught exception %@: %@", 
 	    [localException name], [localException reason]);
-    else
-      [localException raise];
+	}
+      else
+	{
+	  [localException raise];
+	}
+    }
   NS_ENDHANDLER
 }
 
@@ -374,10 +393,10 @@ static NSString			*_rootPath = @"/";
 	}
       NS_ENDHANDLER
     }
-
   if (flag)
-    [NSApp deactivate];
-
+    {
+      [NSApp deactivate];
+    }
   return YES;
 }
 
@@ -1498,38 +1517,108 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
     }
 }
 
+/**
+ * Launch an application ... if there is a workspace application, ask it
+ * to perform the launch for us.  Otherwise we try to launch the app
+ * ourself as long as it is on the same host as we are.
+ */
 - (BOOL) _launchApplication: (NSString *)appName
 		  arguments: (NSArray *)args
 {
-  NSString	*path;
-  NSDictionary  *userinfo;
+  id	app = nil;
 
-  path = [self locateApplicationBinary: appName];
-  if (path == nil)
-    return NO;
+  // app = [self _workspaceApplication];
+  if (app != nil)
+    {
+      return [app _launchApplication: appName arguments: args];
+    }
+  else
+    {
+      NSString		*path;
+      NSDictionary	*userinfo;
+      NSString		*host;
 
-  // App being launched, send NSWorkspaceWillLaunchApplicationNotification
-  userinfo = [NSDictionary dictionaryWithObject:
-    [[appName lastPathComponent] stringByDeletingPathExtension]
-    forKey: @"NSApplicationName"];
-  [_workspaceCenter
-    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-    object: self
-    userInfo: userinfo];
+      path = [self locateApplicationBinary: appName];
+      if (path == nil)
+	{
+	  return NO;
+	}
 
-  if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
-    return NO;
+      /*
+       * Try to ensure that apps we launch display in this workspace
+       * ie they have the same -NSHost specification.
+       */
+      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+      if (host != nil)
+	{
+	  NSHost	*h;
 
-  // The NSWorkspaceDidLaunchApplicationNotification will be send by the
-  // started application itself.
-  return YES;
+	  h = [NSHost hostWithName: host];
+	  if ([h isEqual: [NSHost currentHost]] == NO)
+	    {
+	      if ([args containsObject: @"-NSHost"] == NO)
+		{
+		  NSMutableArray	*a;
+
+		  if (args == nil)
+		    {
+		      a = [NSMutableArray arrayWithCapacity: 2];
+		    }
+		  else
+		    {
+		      a = AUTORELEASE([args mutableCopy]);
+		    }
+		  [a insertObject: @"-NSHost" atIndex: 0];
+		  [a insertObject: host atIndex: 1];
+		  args = a;
+		}
+	    }
+	}
+      /*
+       * App being launched, send
+       * NSWorkspaceWillLaunchApplicationNotification
+       */
+      userinfo = [NSDictionary dictionaryWithObject:
+	[[appName lastPathComponent] stringByDeletingPathExtension]
+	forKey: @"NSApplicationName"];
+      [_workspaceCenter
+	postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+	object: self
+	userInfo: userinfo];
+
+      if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
+	{
+	  return NO;
+	}
+      /*
+       * The NSWorkspaceDidLaunchApplicationNotification will be
+       * sent by the started application itself.
+       */
+      return YES;
+    }
 }
 
 - (id) _connectApplication: (NSString *)appName
 {
-  NSString *port;
-  id app = nil;
+  NSString	*host;
+  NSString	*port;
+  id		app = nil;
 
+  host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+  if (host == nil)
+    {
+      host = @"";
+    }
+  else
+    {
+      NSHost	*h;
+
+      h = [NSHost hostWithName: host];
+      if ([h isEqual: [NSHost currentHost]] == YES)
+	{
+	  host = @"";
+	}
+    }
   port = [appName stringByDeletingPathExtension];
   /*
    *	Try to contact a running application.
@@ -1537,7 +1626,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NS_DURING
     {
       app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-                                                              host: @""];
+                                                              host: host];
     }
   NS_HANDLER
     {
@@ -1551,21 +1640,53 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 - (id) _workspaceApplication
 {
-  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-  NSString *appName;
-  id app;
+  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSString		*appName;
+  id			app;
 
   /* What Workspace application? */
   appName = [defs stringForKey: @"GSWorkspaceApplication"];
   if (appName == nil)
-    appName = @"GSWorkspace";
+    {
+      appName = @"GSWorkspace";
+    }
 
   app = [self _connectApplication: appName];
   if (app == nil)
     {
-      if (![self _launchApplication: appName arguments: nil])
-	return nil;
-      app = [self _connectApplication: appName];
+      NSString	*host;
+
+      /**
+       * We don't use -_launchApplication:arguents: here as that method
+       * calls -_workspaceApplication, and would cause recursion.
+       */
+      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+      if (host == nil)
+	{
+	  host = @"";
+	}
+      else
+	{
+	  NSHost	*h;
+
+	  h = [NSHost hostWithName: host];
+	  if ([h isEqual: [NSHost currentHost]] == YES)
+	    {
+	      host = @"";
+	    }
+	}
+      /**
+       * We can only launch a workspace app if we are displaying to the
+       * local host (since if we are displaying on another host we want
+       * to to talk to the workspace app on that host too).
+       */
+      if ([host isEqual: @""] == YES)
+	{
+	  if ([self _launchApplication: appName arguments: nil] == YES)
+	    {
+	      app = [self _connectApplication: appName];
+	    }
+	}
     }
 
   return app;

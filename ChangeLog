@@ -1,3 +1,14 @@
+2002-01-10  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Improve handling of -NSHost user default
+	so we don't try to start a local pasteboard server when what we
+	actually want is to connect to a remote one.
+	* Source/NSWorkspace.m: Use -NSHost default to control connection
+	to a remote workspace application.
+	Should we use the remote application to launch new apps if possible?
+	For now, try to launch the apps locally but have them display on
+	the remote host by passing the -NSHost default to them.
+
 2002-01-09  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): 
