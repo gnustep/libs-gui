@@ -267,10 +267,7 @@ RETURN_LABEL:
 
 - (void)adjustSubviews
 {
-  NSRect fr=[self frame];
-  NSSize newSize;
-  NSPoint newPoint;
-  float total=0.;
+  NSRect	fr = [self frame];
 
 NSLog (@"XRSplitView  adjustSubviews");
   if(delegate && [delegate respondsToSelector:@selector(splitView:resizeSubviewsWithOldSize:)])
@@ -279,62 +276,77 @@ NSLog (@"XRSplitView  adjustSubviews");
     }
   else
     {	/* split the area up evenly */
-      NSArray *subs=[self subviews];
-      int i, div, count=[subs count];
-      id v;
-      int w,h;
-      NSRect r, bd=[self bounds];
+      NSArray	*subs = [self subviews];
+      unsigned	count = [subs count];
+      NSView	*views[count];
+      NSRect	frames[count];
+      NSRect	bd = [self bounds];
+      float	thickness = [self dividerThickness];
+      NSSize	newSize;
+      NSPoint	newPoint;
+      unsigned	i;
+      NSRect	r;
+      float	oldTotal;
+      float	newTotal;
+      float	scale;
+      float	running;
 
-      div=(int)([self dividerThickness]*(count-1));
-      w=(int)ceil((NSWidth(bd)-div)/count);
-      h=(int)ceil((NSHeight(bd)-div)/count);
-      for(i=0;i<count;i++)
-        {	
-	  v=[subs objectAtIndex:i];
-	  r = [v frame];
-	  /* bounds check */
-	  if([self isVertical])
-            {
-	      newSize=NSMakeSize(NSWidth(bd), h);
-	      /* make sure nothing spills over */
-	      while((total+newSize.height)>(NSHeight(bd)-div))
-                {
-		  newSize.height-=1.;
-                }
-	      total+=newSize.height;
+      [subs getObjects: views];
+      if ([self isVertical])
+	{
+	  newTotal = NSHeight(bd) - thickness*(count-1);
+	  oldTotal = 0.0;
+	  for (i = 0; i < count; i++)
+	    {
+	      frames[i] = [views[i] frame];
+	      oldTotal +=  NSHeight(frames[i]);
+	    }
+	  scale = newTotal/oldTotal;
+	  running = 0.0;
+	  for (i = 0; i < count; i++)
+	    {
+	      float	newHeight;
 
-	      newPoint=NSMakePoint(0,(float)ceil(i ?
-						 (i*([self dividerThickness]+h)) : 0));
-	      if(newSize.height<1) newSize.height=1.;
-	      if(newPoint.y<1) newPoint.y=1.;
-            }
-	  else
-            {
-	      newSize=NSMakeSize(w, NSHeight(bd));
-	      /* make sure nothing spills over */
-	      while((total+newSize.width)>(NSWidth(bd)-div))
-                {
-		  newSize.width-=1.;
-                }
-	      total+=newSize.width;
+	      r = [views[i] frame];
+	      newHeight = NSHeight(frames[i]) * scale;
+	      if (i == count - 1)
+		newHeight = floor(newHeight);
+	      else
+		newHeight = ceil(newHeight);
+	      newSize = NSMakeSize(NSWidth(bd), newHeight);
+	      newPoint = NSMakePoint(0.0, running);
+	      running += newHeight + thickness;
+	      [views[i] setFrameSize: newSize];
+	      [views[i] setFrameOrigin: newPoint];
+	    }
+	}
+      else
+	{
+	  newTotal = NSWidth(bd) - thickness*(count-1);
+	  oldTotal = 0.0;
+	  for (i = 0; i < count; i++)
+	    {
+	      oldTotal +=  NSWidth([views[i] frame]);
+	    }
+	  scale = newTotal/oldTotal;
+	  running = 0.0;
+	  for (i = 0; i < count; i++)
+	    {
+	      float	newWidth;
 
-	      newPoint=NSMakePoint((float)ceil(i ?
-					       (i*([self dividerThickness]+w)) : 0), 0);
-	      if(newSize.width<1) newSize.width=1.;
-	      if(newPoint.x<1) newPoint.x=1.;
-            }
-	  [v setFrameSize: newSize];
-	  [v setFrameOrigin: newPoint];
-
-if(!i == 0)								// Fix me FAR
-{
-[v setFrameOrigin:NSMakePoint(0, bounds.size.height - ([v bounds].size.height -
-[self dividerThickness] - 20))];
-//NSLog (@"XRSplitView:  bounds.size.height %f, [v bounds].size.height %f ", //bounds.size.height, [v bounds].size.height);
-//NSLog (@"XRSplitView:  newPoint %f ", newPoint);
-}
-
-        }
+	      r = [views[i] frame];
+	      newWidth = NSWidth(r) * scale;
+	      if (i == count - 1)
+		newWidth = floor(newWidth);
+	      else
+		newWidth = ceil(newWidth);
+	      newSize = NSMakeSize(newWidth, NSHeight(bd));
+	      newPoint = NSMakePoint(running, 0.0);
+	      running += newWidth + thickness;
+	      [views[i] setFrameSize: newSize];
+	      [views[i] setFrameOrigin: newPoint];
+	    }
+	}
     }
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NSSplitViewDidResizeSubviewsNotification object:self];
@@ -366,7 +378,7 @@ if(!i == 0)								// Fix me FAR
 
 - (void)setDividerThickNess:(float)newWidth
 {
-  dividerWidth=newWidth;
+  dividerWidth=ceil(newWidth);
 }
 
 - (float)draggedBarWidth //defaults to 8
