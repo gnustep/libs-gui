@@ -18,7 +18,7 @@
 # before-install::
 
 # Things to do after installing
-after-install::
+# after-install::
 
 # Things to do before uninstalling
 # before-uninstall::
