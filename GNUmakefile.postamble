@@ -83,10 +83,10 @@ after-distclean:: remove-header-links
 configure: configure.in
 	autoreconf
 
-gui.make: gui.make.in
+gui.make: gui.make.in configure
 	./configure
 
-config.make: config.make.in
+config.make: config.make.in configure
 	./configure
 
 # Things to do before checking
