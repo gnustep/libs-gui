@@ -1,10 +1,17 @@
+2001-09-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m
+	[initWithCoder:] make sure the supermenu of a submenu is nil
+	before adding it to an item. This resolves drag problem for
+	"format" menu in Gorm.
+	
 Mon Sep 17 11:17:46 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/gnustep-gui.texi (Keyboard Modifiers): Updated for
 	the change in xgps/xdps, where we now use Mode_switch as default
 	for ALTERNATE if Alt_R is not on the keyboard.
 
-2001-09-15  Fred Kiefer <FredKiefer@gmx.de>
+2001-09-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSApplication.h
 	Added some new MacOSX methods.
