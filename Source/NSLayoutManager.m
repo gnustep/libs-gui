@@ -273,7 +273,8 @@ container? necessary? */
 	  The start index is inside the line frag rect, so we need to
 	  search through it to find the exact starting location.
 	  */
-	  int i, j;
+	  unsigned int i;
+	  int j;
 	  linefrag_point_t *lp;
 	  glyph_run_t *r;
 	  unsigned int gpos, cpos;
@@ -314,7 +315,8 @@ container? necessary? */
 	  The end index is inside the line frag, so we need to find the
 	  exact end location.
 	  */
-	  int i, j;
+	  unsigned int i;
+	  int j;
 	  linefrag_point_t *lp;
 	  glyph_run_t *r;
 	  unsigned int gpos, cpos;
@@ -438,7 +440,8 @@ line frag rect. */
 -(NSRange) glyphRangeForBoundingRect: (NSRect)bounds
 		     inTextContainer: (NSTextContainer *)container
 {
-  int i, j;
+  int i;
+  unsigned int j;
   int low, high, mid;
   textcontainer_t *tc;
   linefrag_t *lf;
@@ -675,6 +678,7 @@ anything visible
       float cur, prev, next;
       glyph_run_t *r;
       unsigned int glyph_pos, char_pos, last_visible;
+      unsigned j;
 
       if (i < lf->num_points)
 	next = lp->p.x;
@@ -687,18 +691,18 @@ anything visible
       prev = lp->p.x;
 
       last_visible = lf->pos;
-      for (i = lp->pos - glyph_pos; i + glyph_pos < lp->pos + lp->length; )
+      for (j = lp->pos - glyph_pos; j + glyph_pos < lp->pos + lp->length; )
 	{
-	  if (r->glyphs[i].isNotShown || r->glyphs[i].g == NSControlGlyph ||
-	      !r->glyphs[i].g)
+	  if (r->glyphs[j].isNotShown || r->glyphs[j].g == NSControlGlyph ||
+	      !r->glyphs[j].g)
 	    {
-	      GLYPH_STEP_FORWARD(r, i, glyph_pos, char_pos)
+	      GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
 		continue;
 	    }
-	  last_visible = i + glyph_pos;
+	  last_visible = j + glyph_pos;
 
-	  cur = prev + [r->font advancementForGlyph: r->glyphs[i].g].width;
-	  if (i + glyph_pos + 1 == lp->pos + lp->length && next > cur)
+	  cur = prev + [r->font advancementForGlyph: r->glyphs[j].g].width;
+	  if (j + glyph_pos + 1 == lp->pos + lp->length && next > cur)
 	    cur = next;
 
 	  if (cur >= point.x)
@@ -706,10 +710,10 @@ anything visible
 	      *partialFraction = (point.x - prev) / (cur - prev);
 	      if (*partialFraction < 0)
 		*partialFraction = 0;
-	      return i + glyph_pos;
+	      return j + glyph_pos;
 	    }
 	  prev = cur;
-	  GLYPH_STEP_FORWARD(r, i, glyph_pos, char_pos)
+	  GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
 	}
       *partialFraction = 1;
       return last_visible;
@@ -827,7 +831,8 @@ has the same y origin and height as the line frag rect it is in.
   LINEFRAG_FOR_GLYPH(glyph_index);
 
   {
-    int i, j;
+    unsigned int i;
+    int j;
     linefrag_point_t *lp;
     glyph_run_t *r;
     unsigned int gpos, cpos;
@@ -2081,7 +2086,8 @@ no_soft_invalidation:
 	}
       else if (_selected_range.location + _selected_range.length >= range.location)
 	{
-	  if (-lengthChange > _selected_range.length)
+	    if ((lengthChange < 0) && 
+		((unsigned)(-lengthChange) > _selected_range.length))
 	    {
 	      _selected_range.length = 0;
 	      _selected_range.location = range.location;
