@@ -2448,22 +2448,46 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) setNextKeyView: (NSView *)aView
 {
-  if (!aView)
+  /* As an exception, we do not retain aView, to avoid retain loops
+   * (the simplest being a view retaining and being retained by
+   * another view), which prevents objects from being ever
+   * deallocated.  To understand how we manage without retaining
+   * _nextKeyView, see [NSView -dealloc].  */
+
+  /* A safety measure against recursion.  */
+  if (aView == _nextKeyView)
     {
-      _nextKeyView = nil;
       return;
     }
 
-  if ([aView isKindOfClass: viewClass])
+  if (aView == nil  ||  [aView isKindOfClass: viewClass])
     {
-      // As an exception, we do not retain aView, to avoid retain loops
-      // (the simplest being a view retaining and being retained
-      // by another view), which prevents objects from being ever
-      // deallocated.  To understand how we manage without retaining
-      // _nextKeyView, see [NSView -dealloc].
+      if (_nextKeyView != nil)
+	{	
+	  NSView *oldNextKeyView = _nextKeyView;
+  
+	  /* Discard the pointer to us in the old next key view.  To
+	   * prevent [oldNextKeyView setPreviousKeyView: nil] from
+	   * calling us recursively, set _nextKeyView to nil for
+	   * the time of the call.  */
+	  _nextKeyView = nil;
+
+	  if ([oldNextKeyView previousKeyView] != nil)
+	    {
+	      [oldNextKeyView setPreviousKeyView: nil];
+	    }
+	}
+
+      /* Assign the _nextKeyView first to prevent recursion.  */
       _nextKeyView = aView;
-      if ([aView previousKeyView] != self)
-	[aView setPreviousKeyView: self];
+
+      if (aView != nil)
+	{
+	  if ([aView previousKeyView] != self)
+	    {
+	      [aView setPreviousKeyView: self];
+	    }
+	}
     }
 }
 - (NSView *) nextKeyView
@@ -2486,17 +2510,33 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 - (void) setPreviousKeyView: (NSView *)aView
 {
-  if (!aView)
+  if (aView == _previousKeyView)
     {
-      _previousKeyView = nil;
       return;
     }
 
-  if ([aView isKindOfClass: viewClass])
+  if (aView == nil  ||  [aView isKindOfClass: viewClass])
     {
+      if (_previousKeyView != nil)
+	{	
+	  NSView *oldPreviousKeyView = _previousKeyView;
+
+	  _previousKeyView = nil;
+	  if ([oldPreviousKeyView nextKeyView] != nil)
+	    {
+	      [oldPreviousKeyView setNextKeyView: nil];
+	    }
+	}
+
       _previousKeyView = aView;
-      if ([aView nextKeyView] != self)
-	[aView setNextKeyView: self];
+
+      if (aView != nil)
+	{
+	  if ([aView nextKeyView] != self)
+	    {
+	      [aView setNextKeyView: self];
+	    }
+	}
     }
 }
 - (NSView *) previousKeyView
