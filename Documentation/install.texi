@@ -21,6 +21,8 @@ GNUstep core package, read the file GNUstep-HOWTO for more complete
 instructions on how to install the entire GNUstep package (including
 this library).  GNUstep-HOWTO is located at @url{www.gnustep.org}
 
+You must have installed gnustep-base before building this library.
+
 @node Configuration, Compilation, Introduction, Top
 @section Configuration
 
