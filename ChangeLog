@@ -1,3 +1,13 @@
+2004-02-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCel.m: (-setObjectValue:, -objectValue)
+	Implemented to set/return the state. 
+	(-mouseEntered:, -mouseExited:, -drawWithFrame:inView:)
+	Partially added old showsBorderOnlyWhileMouseInside patch from
+	Michael Hanni (mhanni@yahoo.com).
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Source/GSDrawFunctions.m: New gradient border drawing method.
+
 2004-02-12  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/GuiUser/KeyboardSetup.gsdoc: Update.

@@ -26,8 +26,8 @@
 
 #include "GNUstepGUI/GSDrawFunctions.h"
 #include "AppKit/NSColor.h"
-#include "AppKit/NSView.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSView.h"
 #include "AppKit/PSOperators.h"
 
 
@@ -235,6 +235,60 @@
     {
       NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
     }
+}
+
+/** Draw a gradient border. */
++ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
+		       inRect: (NSRect)border 
+		     withClip: (NSRect)clip
+{
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge};
+  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			   NSMinXEdge, NSMinYEdge};
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *light = [NSColor controlColor];
+  NSColor **colors;
+  NSColor *concaveWeak[] = {dark, dark, 
+			    light, light};
+  NSColor *concaveStrong[] = {black, black, 
+			      light, light};
+  NSColor *convexWeak[] = {light, light,
+			   dark, dark};
+  NSColor *convexStrong[] = {light, light,
+			     black, black};
+  NSRect rect;
+  
+  switch (gradientType)
+    {
+      case NSGradientConcaveWeak:
+	colors = concaveWeak;
+	break;
+      case NSGradientConcaveStrong:
+	colors = concaveStrong;
+	break;
+      case NSGradientConvexWeak:
+	colors = convexWeak;
+	break;
+      case NSGradientConvexStrong:
+	colors = convexStrong;
+	break;
+      case NSGradientNone:
+      default:
+	return border;
+    }
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      rect = NSDrawColorTiledRects(border, clip, dn_sides, colors, 4);
+    }
+  else
+    {
+      rect = NSDrawColorTiledRects(border, clip, up_sides, colors, 4);
+    }
+ 
+  return rect;
 }
 
 @end

@@ -36,6 +36,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSValue.h>
 #include <GNUstepBase/GSCategories.h>
 
 #include "AppKit/AppKitExceptions.h"
@@ -446,8 +447,13 @@
 
 - (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show
 {
-  // FIXME: Switch mouse tracking on
+  if (_shows_border_only_while_mouse_inside == show)
+    {
+      return;
+    }
+
   _shows_border_only_while_mouse_inside = show;
+  // FIXME Switch mouse tracking on
 }
 
 - (NSGradientType)gradientType
@@ -584,8 +590,37 @@
   return _cell.state;
 }
 
-// FIXME: The spec says that the stringValue and setStringValue methods should 
-// also be redefined. But this does not fit to the way we uses this for the title.
+- (void) setObjectValue: (id)object 
+{
+  if (object == nil)
+    {
+      [self setState: NSOffState];
+    }
+  else if ([object respondsToSelector: @selector(intValue)])
+    {
+      [self setState: [object intValue]];
+    }
+  else
+    {
+      [self setState: NSOnState];
+    }
+}
+
+- (id) objectValue
+{
+  if (_cell.state == NSOffState)
+    {	
+      return [NSNumber numberWithBool: NO];
+    }
+  else if (_cell.state == NSOnState)
+    {	
+      return [NSNumber numberWithBool: YES];
+    }
+  else // NSMixedState
+    {	
+      return [NSNumber numberWithInt: -1];
+    }
+}
 
 /*
  * Displaying
@@ -615,7 +650,8 @@
     return;
 
   // draw the border if needed
-  if (_cell.is_bordered)
+  if ((_cell.is_bordered) && 
+      (!_shows_border_only_while_mouse_inside || _mouse_inside))
     {
       // FIXME Should check the bezel and gradient style
       if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
@@ -1057,11 +1093,13 @@
 - (void) mouseEntered: (NSEvent *)event
 {
   _mouse_inside = YES;
+  [(NSView *)[event userData] setNeedsDisplay: YES];
 }
 
 - (void) mouseExited: (NSEvent *)event
 {
   _mouse_inside = NO;
+  [(NSView *)[event userData] setNeedsDisplay: YES];
 }
 
 - (void) performClick: (id)sender

@@ -28,6 +28,8 @@
 #define _GNUstep_H_GSDrawFunctions
 
 #include <Foundation/NSGeometry.h>
+// For gradient types
+#include "AppKit/NSButtonCell.h"
 
 @class NSColor;
 
@@ -40,6 +42,10 @@
 + (void) drawWhiteBezel: (NSRect) border : (NSRect)clip;
 + (void) drawGroove: (NSRect)border : (NSRect)clip;
 + (void) drawFramePhoto: (NSRect)border : (NSRect)clip;
+
++ (NSRect) drawGradient: (NSGradientType)gradientType 
+           inRect: (NSRect)border 
+           withClip: (NSRect)clip;
 
 @end
 
