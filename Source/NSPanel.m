@@ -392,7 +392,7 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 
 @implementation	GSAlertPanel
 
-static const float WTitleHeight = 0.0;      // TODO: Check this value.
+//static const float WTitleHeight = 0.0;      // TODO: Check this value.
 static const float WinMinWidth = 362.0;
 static const float WinMinHeight = 161.0;
 static const float IconSide = 48.0;
@@ -403,9 +403,9 @@ static const float TitleMinRight = 8.0;
 static const float LineHeight = 2.0;
 static const float LineBottom = -66.0;       // from the top of the window.
 static const float LineLeft = 0.0;
-static const float ScrollMinSize = 48.0;     // in either direction.
+//static const float ScrollMinSize = 48.0;     // in either direction.
 static const float MessageHorzMargin = 8.0;  // 5 is too little margin.
-static const float MessageMinHeight = 20.0;
+//static const float MessageMinHeight = 20.0;
 static const float MessageVertMargin = 6.0;  // from the top of the buttons.
 static const float MessageTop = -72;         // from the top of the window;
 static const float ButtonBottom = 8.0;       // from the bottom of the window.
