@@ -1,3 +1,8 @@
+Sun Mar 18 15:58:43 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Tools/GNUmakefile (GNUSTEP_MAKE_SERVICES): Define it to tell
+	gnustep-make to use the local make_services.
+
 Fri Mar 16 23:41:10 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* GNUmakefile.postamble
