@@ -970,7 +970,7 @@ static NSColor *scrollBarColor = nil;
 
 	  /* calc knob's position */
 	  knobPosition = _floatValue * (slotHeight - knobHeight);
-	  knobPosition = (float)floorf(knobPosition);
+	  knobPosition = floor(knobPosition);
 
 
 	  /* calc actual position */

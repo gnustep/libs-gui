@@ -1,3 +1,8 @@
+2004-07-20 01:24  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSScroller.m (-rectForPart:): Use floor() instead of
+	floorf().
+
 2004-07-18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Removed some commented out code.
