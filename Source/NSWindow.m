@@ -1428,16 +1428,13 @@ many times.
   if (place == NSWindowOut)
     {
       _f.visible = NO;
-      if (_rFlags.needs_display == YES)
-	{
-	  /*
-	   * Don't keep trying to update the window while it is ordered out
-	   */
-	  [[NSRunLoop currentRunLoop]
-             cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-                            target: self
-                          argument: nil];
-	}
+      /*
+       * Don't keep trying to update the window while it is ordered out
+       */
+      [[NSRunLoop currentRunLoop]
+	  cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+	  target: self
+	  argument: nil];
       [self _lossOfKeyOrMainWindow];
     }
   else
@@ -2240,10 +2237,6 @@ resetCursorRectsForView(NSView *theView)
 
       [nc postNotificationName: NSWindowWillCloseNotification object: self];
       _f.has_opened = NO;
-      [[NSRunLoop currentRunLoop]
-	cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-	target: self
-	argument: nil];
       [NSApp removeWindowsItem: self];
       [self orderOut: self];
 

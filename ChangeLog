@@ -1,3 +1,11 @@
+2004-01-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-orderWindow:relativeTo:): In OrderOut case
+	cancle _handleWindowNeedsDisplay unconditional. (-close): Don't
+	cancle _handleWindowNeedsDisplay as this gets done by the
+	following [orderOut:] call. These changes adopt to a previous
+	change in [_handeWindowNeedsDisplay:] to always resend itself.
+
 2004-01-25 04:15  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-invalidateDisplayForCharacterRange:,
