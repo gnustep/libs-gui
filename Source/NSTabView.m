@@ -348,27 +348,26 @@
     {
       case NSTopTabsBezelBorder: 
 	aRect.size.height -= 16;
-	rect.size.height -= 16;
 	NSDrawButton(aRect, NSZeroRect);
 	borderThickness = 2;
 	break;
 
       case NSBottomTabsBezelBorder: 
-	rect.size.height -= 16;
-	rect.origin.y += 16;
-	NSDrawButton(rect, rect);
-	rect.origin.y -= 16;
+	aRect.size.height -= 16;
+	aRect.origin.y += 16;
+	NSDrawButton(aRect, rect);
+	aRect.origin.y -= 16;
 	borderThickness = 2;
 	break;
 
       case NSNoTabsBezelBorder: 
-	NSDrawButton(rect, rect);
+	NSDrawButton(aRect, rect);
 	borderThickness = 2;
 	break;
 
       case NSNoTabsLineBorder: 
 	[[NSColor controlDarkShadowColor] set];
-	NSFrameRect(rect);
+	NSFrameRect(aRect);
 	borderThickness = 1;
 	break;
 
@@ -404,8 +403,8 @@
 	  if (i == 0)
 	    {
 	      int iFlex = 0;
-	      iP.x = rect.origin.x;
-	      iP.y = rect.origin.y;
+	      iP.x = aRect.origin.x;
+	      iP.y = aRect.origin.y;
 
 	      if (itemState == NSSelectedTab)
 		{
@@ -425,8 +424,8 @@
 	      else
 		NSLog(@"Not finished yet. Luff ya.\n");
 
-	      r.origin.x = rect.origin.x + 13;
-	      r.origin.y = rect.origin.y + 2;
+	      r.origin.x = aRect.origin.x + 13;
+	      r.origin.y = aRect.origin.y + 2;
 	      r.size.width = s.width;
 	      r.size.height = 15 + iFlex;
 
@@ -446,7 +445,7 @@
 	      int	iFlex = 0;
 
 	      iP.x = previousRect.origin.x + previousRect.size.width;
-	      iP.y = rect.origin.y;
+	      iP.y = aRect.origin.y;
 
 	      if (itemState == NSSelectedTab) 
 		{
@@ -482,7 +481,7 @@
 		NSLog(@"Not finished yet. Luff ya.\n");
 	      
 	      r.origin.x = iP.x + 13;
-	      r.origin.y = rect.origin.y + 2;
+	      r.origin.y = aRect.origin.y + 2;
 	      r.size.width = s.width;
 	      r.size.height = 15 + iFlex; // was 15
 
@@ -536,8 +535,8 @@
 	  
 	  if (i == 0)
 	    {
-	      iP.x = rect.origin.x;
-	      iP.y = rect.size.height;
+	      iP.x = aRect.origin.x;
+	      iP.y = aRect.size.height;
 	      
 	      if (itemState == NSSelectedTab)
 		{
@@ -551,8 +550,8 @@
 	      else
 		NSLog(@"Not finished yet. Luff ya.\n");
 
-	      r.origin.x = rect.origin.x + 13;
-	      r.origin.y = rect.size.height;
+	      r.origin.x = aRect.origin.x + 13;
+	      r.origin.y = aRect.size.height;
 	      r.size.width = s.width;
 	      r.size.height = 15;
 	      
@@ -570,7 +569,7 @@
 	  else
 	    {
 	      iP.x = previousRect.origin.x + previousRect.size.width;
-	      iP.y = rect.size.height;
+	      iP.y = aRect.size.height;
 
 	      if (itemState == NSSelectedTab)
 		{
@@ -600,7 +599,7 @@
 		NSLog(@"Not finished yet. Luff ya.\n");
 
 	      r.origin.x = iP.x + 13;
-	      r.origin.y = rect.size.height;
+	      r.origin.y = aRect.size.height;
 	      r.size.width = s.width;
 	      r.size.height = 15;
 
