@@ -2085,24 +2085,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 extern NSThread *GSAppKitThread; /* TODO */
 
-- (void) _setNeedsDisplay_helper: (NSNumber *)v
-{
-  [self setNeedsDisplay: [v boolValue]];
-}
+/*
+For -setNeedsDisplay*, the real work is done in the ..._real methods, and
+the actual public method simply calls it, but makes sure that the call is
+in the main thread.
+*/
 
-/**
- * As an exception to the general rules for threads and -gui, this
- * method is thread-safe and may be called from any thread.
- */
-- (void) setNeedsDisplay: (BOOL)flag
+- (void) _setNeedsDisplay_real: (NSNumber *)n
 {
-  if (GSCurrentThread() != GSAppKitThread)
-    {
-      [self performSelectorOnMainThread: @selector(_setNeedsDisplay_helper:)
-	withObject: [NSNumber numberWithBool: flag]
-	waitUntilDone: NO];
-      return;
-    }
+  BOOL flag = [n boolValue];
 
   if (flag)
     {
@@ -2115,31 +2106,34 @@ extern NSThread *GSAppKitThread; /* TODO */
     }
 }
 
-
-- (void) _setNeedsDisplayInRect_helper: (NSValue *)v
-{
-  [self setNeedsDisplayInRect: [v rectValue]];
-}
-
 /**
- * Inform the view system that the specified rectangle is invalid and
- * requires updating.  This automatically informs any superviews of
- * any updating they need to do.
- *
  * As an exception to the general rules for threads and -gui, this
- * method is thread-safe and may be called from any thread.
+ * method is thread-safe and may be called from any thread. Display
+ * will always be done in the main thread. (Note that other methods are
+ * in general not thread-safe; if you want to access other properties of
+ * views from multiple threads, you need to provide the synchronization.)
  */
-- (void) setNeedsDisplayInRect: (NSRect)invalidRect
+- (void) setNeedsDisplay: (BOOL)flag
 {
-  NSView	*currentView = _super_view;
-
+  NSNumber *n = [[NSNumber alloc] initWithBool: flag];
   if (GSCurrentThread() != GSAppKitThread)
     {
-      [self performSelectorOnMainThread: @selector(_setNeedsDisplayInRect_helper:)
-	withObject: [NSValue valueWithRect: invalidRect]
+      [self performSelectorOnMainThread: @selector(_setNeedsDisplay_real:)
+	withObject: n
 	waitUntilDone: NO];
-      return;
     }
+  else
+    {
+      [self _setNeedsDisplay_real: n];
+    }
+  DESTROY(n);
+}
+
+
+- (void) _setNeedsDisplayInRect_real: (NSValue *)v
+{
+  NSRect invalidRect = [v rectValue];
+  NSView *currentView = _super_view;
 
   /*
    *	Limit to bounds, combine with old _invalidRect, and then check to see
@@ -2175,6 +2169,36 @@ extern NSThread *GSAppKitThread; /* TODO */
       currentView = currentView->_super_view;
     }
 }
+
+/**
+ * Inform the view system that the specified rectangle is invalid and
+ * requires updating.  This automatically informs any superviews of
+ * any updating they need to do.
+ *
+ * As an exception to the general rules for threads and -gui, this
+ * method is thread-safe and may be called from any thread. Display
+ * will always be done in the main thread. (Note that other methods are
+ * in general not thread-safe; if you want to access other properties of
+ * views from multiple threads, you need to provide the synchronization.)
+ */
+- (void) setNeedsDisplayInRect: (NSRect)invalidRect
+{
+  NSValue *v = [[NSValue alloc]
+		 initWithBytes: &invalidRect
+		 objCType: @encode(NSRect)];
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      [self performSelectorOnMainThread: @selector(_setNeedsDisplayInRect_real:)
+	withObject: v
+	waitUntilDone: NO];
+    }
+  else
+    {
+      [self _setNeedsDisplayInRect_real: v];
+    }
+  DESTROY(v);
+}
+
 
 /*
  * Scrolling

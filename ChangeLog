@@ -1,3 +1,10 @@
+2003-04-09 00:38  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):
+	Clean up, fix a potential issue when subclassing and thread-safety,
+	and clarify the documentation. (Based on discussion with David Ayers
+	and Pierre-Yves Rivaille.)
+
 2003-04-08 15:33  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-mouseDown:): Rewrite mouse tracking loop.
