@@ -200,7 +200,7 @@ AppKit/NSWindow.h \
 AppKit/NSWorkspace.h \
 AppKit/TrackingRectangle.h \
 AppKit/PSMatrix.h \
-AppKit/GNUServiceManager.h \
+AppKit/GNUServicesManager.h \
 AppKit/nsimage-tiff.h \
 
 -include GNUmakefile.preamble
