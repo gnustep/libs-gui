@@ -47,7 +47,9 @@ void __dummy_GMAppKit_functionForLinking() {}
   for (i = 0; i < count; i++) {
     NSWindow* window = [windows1 objectAtIndex:i];
 
-    if (![window isKindOfClass:[NSMenu class]])
+    if (([window isKindOfClass:[NSMenu class]] == NO)
+	&& ([NSStringFromClass ([window class]) 
+	    isEqualToString: @"NSMenuPanel"] == NO))
       [windows2 addObject:window];
   }
   [archiver encodeObject:windows2 withName:@"windows"];
@@ -702,10 +704,30 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  id image = [NSImage imageNamed:[unarchiver decodeStringWithName:@"name"]];
+  id image = nil;
+  NSString *imageName;
 
-  if (!image)
-    image = [NSImage imageNamed:@"NSRadioButton"];
+  imageName = [unarchiver decodeStringWithName:@"name"];
+
+  /* If the image is a standard system image with the MacOSX name, 
+     convert the name to the GNUstep name */
+#ifdef GNU_GUI_LIBRARY
+  if ([imageName isEqualToString: @"NSMenuCheckmark"])
+    imageName = @"common_2DCheckMark";
+  else if ([imageName isEqualToString: @"NSMenuArrow"])
+    imageName = @"common_3DArrowRight";
+  /*  else if ([imageName isEqualToString: @"NSMenuMixedState"])
+      imageName = @"common_??";*/
+  else if ([imageName isEqualToString: @"NSAppleMenuImage"])
+    imageName = @"GNUstepMenuImage";
+#endif
+
+  if (imageName)
+    image = [NSImage imageNamed: imageName];
+
+  if (image == nil)
+    image = [NSImage imageNamed:@"GNUstepMenuImage"];
+
   return image;
 }
 
