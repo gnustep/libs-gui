@@ -41,9 +41,15 @@ before-all:: header-links
 # Things to do after compiling
 # after-all::
 
-# Things to do before installing
-before-install::
+#
+# The following rule is important mainly for packaging, because in that case 
+# you install into a fake system tree, and the directory is not there.
+#
+$(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional:
 	$(MKDIRS) $(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional
+
+# Things to do before installing
+before-install:: $(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional
 	$(INSTALL_DATA) gui.make \
 	   $(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional/gui.make
 
