@@ -215,7 +215,7 @@ static NSNotificationCenter *nc;
       menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
 
       if ([_aWindow isVisible]
-	&& ([self isTornOff] || ([NSApp mainWindow] == self)))
+	&& ([self isTornOff] || ([NSApp mainMenu] == self)))
         {
           if (menuLocations == nil)
             {
