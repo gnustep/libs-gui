@@ -3518,7 +3518,7 @@ byExtendingSelection: (BOOL)flag
 {
   NSNumber *num  = [NSNumber numberWithInt: rowIndex];
 
-  if (rowIndex < 0 || rowIndex > _numberOfRows)
+  if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
       [NSException raise: NSInvalidArgumentException
 		   format: @"Row index out of table in selectRow"];
@@ -6777,7 +6777,6 @@ byExtendingSelection: (BOOL)flag
   if ((quarterPosition - oldDropRow * 4 <= 2) &&
       (quarterPosition - oldDropRow * 4 >= -3) )
     {
-      NSLog(@"nothing to do");
       row = oldDropRow;
     }
   else
