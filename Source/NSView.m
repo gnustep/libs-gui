@@ -632,7 +632,7 @@ id e, o;												// to and we have never
 {
 float change, changePerOption;
 int options = 0;
-NSSize old_size = bounds.size;
+NSSize old_size = frame.size;
 NSSize superViewFrameSize = [super_view frame].size;
 BOOL changedOrigin = NO;
 BOOL changedSize = NO;
