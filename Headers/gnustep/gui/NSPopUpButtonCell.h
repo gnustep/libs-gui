@@ -42,7 +42,6 @@ typedef enum {
 
 @interface NSPopUpButtonCell : NSMenuItemCell
 {
-  NSMenu	*_menu;
   NSMenuItem	*_selectedItem;
   struct __pbcFlags {
       unsigned int pullsDown: 1;
