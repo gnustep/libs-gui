@@ -1812,4 +1812,29 @@ DPScapturegstate(GSCTXT *ctxt, int *gst)
     (ctxt, @selector(DPScapturegstate:), gst);
 }
 
+/* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+static inline NSEvent*
+DPSGetEventMatchingMaskBeforeDateInModeDequeue(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode, BOOL dequeue)
+{
+  return (ctxt->methods->DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
+    (ctxt, @selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:),
+    mask, limit, mode, dequeue);
+}
+
+static inline void
+DPSDiscardEventsMatchingMaskBeforeEvent(GSCTXT *ctxt, unsigned mask, NSEvent* limit)
+{
+  (ctxt->methods->DPSDiscardEventsMatchingMask_beforeEvent_)
+    (ctxt, @selector(DPSDiscardEventsMatchingMask:beforeEvent:), mask, limit);
+}
+
+static inline void
+DPSPostEventAtStart(GSCTXT *ctxt, NSEvent* anEvent, BOOL atStart)
+{
+  (ctxt->methods->DPSPostEvent_atStart_)
+    (ctxt, @selector(DPSPostEvent:atStart:), anEvent, atStart);
+}
+
 #endif	

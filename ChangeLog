@@ -1,3 +1,11 @@
+Tue May  4 18:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSGraphicsContext.h: methods for event handling.
+	* Headers/AppKit/GSMethodTable.h: methods for event handling.
+	* Headers/AppKit/DPSOperators.h: methods for event handling.
+	* Headers/AppKit/PSOperators.h: methods for event handling.
+	* Source/NSGraphicsContext.m: methods for event handling.
+
 Tue May  4 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Updates from information supplied by Marc Champesme to make NSWindow

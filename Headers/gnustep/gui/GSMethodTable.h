@@ -26,7 +26,10 @@
 
 #include <Foundation/NSObject.h>
 
+@class NSDate;
+@class NSEvent;
 @class NSGraphicsContext;
+@class NSString;
 
 typedef struct {
 
@@ -371,6 +374,16 @@ typedef struct {
 	(NSGraphicsContext*, SEL, double, double, double, int*);
   void (*DPScapturegstate_)
 	(NSGraphicsContext*, SEL, int*);
+/* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+  NSEvent* (*DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
+	(NSGraphicsContext*, SEL, unsigned, NSDate*, NSString*, BOOL);
+  void (*DPSDiscardEventsMatchingMask_beforeEvent_)
+	(NSGraphicsContext*, SEL, unsigned, NSEvent*);
+  void (*DPSPostEvent_atStart_)
+	(NSGraphicsContext*, SEL, NSEvent*, BOOL);
+
 } gsMethodTable;
 
 #endif

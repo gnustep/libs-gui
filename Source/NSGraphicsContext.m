@@ -1434,4 +1434,27 @@ struct NSWindow_struct
   [self subclassResponsibility: _cmd];
 }
 
+/* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+- (NSEvent*) DPSGetEventMatchingMask: (unsigned)mask
+			  beforeDate: (NSDate*)limit
+			      inMode: (NSString*)mode
+			     dequeue: (BOOL)flag
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+
+- (void) DPSDiscardEventsMatchingMask: (unsigned)mask
+			  beforeEvent: (NSEvent*)limit
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag
+{
+  [self subclassResponsibility: _cmd];
+}
+
 @end

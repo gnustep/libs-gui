@@ -34,9 +34,12 @@
 
 #include <AppKit/GSMethodTable.h>
 
+@class NSDate;
+@class NSDictionary;
+@class NSEvent;
 @class NSMutableArray;
 @class NSMutableData;
-@class NSDictionary;
+@class NSString;
 @class NSView;
 
 //
@@ -324,6 +327,16 @@ typedef enum _NSWindowOrderingMode
 - (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int *)success ;
 - (void) DPScapturegstate: (int *)gst ;
 
+/* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+- (NSEvent*) DPSGetEventMatchingMask: (unsigned)mask
+			  beforeDate: (NSDate*)limit
+			      inMode: (NSString*)mode
+			     dequeue: (BOOL)flag;
+- (void) DPSDiscardEventsMatchingMask: (unsigned)mask
+			  beforeEvent: (NSEvent*)limit;
+- (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag;
 @end
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
