@@ -1,3 +1,9 @@
+Mon Sep 17 11:17:46 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gnustep-gui.texi (Keyboard Modifiers): Updated for
+	the change in xgps/xdps, where we now use Mode_switch as default
+	for ALTERNATE if Alt_R is not on the keyboard.
+
 2001-09-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSApplication.h

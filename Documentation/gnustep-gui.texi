@@ -59,7 +59,7 @@ Free Software Foundation instead of in the original English.
 @title GNUstep GUI Library
 @sp 3
 @subtitle Version @value{GNUSTEP-GUI-VERSION}
-@author Adam Fedor (fedor@@gnu.org)
+@author A. Fedor (fedor@@gnu.org), N. Pero (n.pero@@mi.flashnet.it)
 @page
 @vskip 0pt plus 1filll
 Copyright @copyright{} 1999 Free Software Foundation, Inc.
@@ -1268,15 +1268,16 @@ by lines; you have to press @key{ALTERNATE} while acting on a scrollbar
 with the mouse. 
 @end itemize
 @c
-By default, GNUstep uses @code{Control_L} (left Ctrl) 
-and @code{Control_R} (right Ctrl) 
-as @key{CONTROL}, @code{Alt_L} (left alt) as @key{COMMAND}, 
-and @code{Alt_R} (right alt, sometimes called AltGr) as @key{ALTERNATE}.  
+By default, GNUstep uses @code{Control_L} (left Ctrl) and
+@code{Control_R} (right Ctrl) as @key{CONTROL}, @code{Alt_L} (left alt)
+as @key{COMMAND}, and @code{Alt_R} (right alt, sometimes called AltGr)
+as @key{ALTERNATE}.  As a special exception, if @code{Alt_R} is not
+bound to any key on your keyboard, GNUstep will try to use
+@code{Mode_switch} for @key{ALTERNATE} instead.
 
-If this layout does not work for you, because your keyboard 
-misses some of these keys, or they have different X names 
-or they conflict heavily with your window manager shortcuts 
-(or for any other reason), read on.  
+If this layout does not work for you, because your keyboard misses some
+of these keys, or they have different X names or they conflict heavily
+with your window manager shortcuts (or for any other reason), read on.
 
 @subsection Changing the Default Settings
 Under GNUstep, you may change the default as you wish: 
@@ -1325,21 +1326,20 @@ its default value.  The default values are:
 @item GSSecondControlKey
 @code{Control_R}
 @item GSFirstCommandKey
-@code{Alt_L}
+@code{Alt_L} 
 @item GSSecondCommandKey
 @code{NoSymbol}
 @item GSFirstAlternateKey
-@code{Alt_R}
+@code{Alt_R} (or @code{Mode_switch} if there is no @code{Alt_R})
 @item GSSecondAlternateKey
 @code{NoSymbol}
 @end table
 
-What could go wrong is for example that you don't have 
-an @code{Alt_L} key.  With the default settings, 
-you will not be able to enter the @key{COMMAND} key 
-(which is quite an important key).  
-What you can do in this case is to use @code{Control_R} as @key{COMMAND}, 
-giving the following commands (from the command line): 
+What could go wrong is for example that you don't have an @code{Alt_L}
+key.  With the default settings, you will not be able to enter the
+@key{COMMAND} key (which is quite an important key).  What you can do in
+this case is to use @code{Control_R} as @key{COMMAND}, giving the
+following commands (from the command line):
 
 @smallexample
 defaults write NSGlobalDomain GSFirstCommandKey Control_R
@@ -1349,13 +1349,13 @@ defaults write NSGlobalDomain GSSecondControlKey NoSymbol
 These commands write in the GNUstep user database; 
 the information will be used every time you start a GNUstep application. 
 
-The first line sets @code{GSFirstCommandKey} to @code{Control_R}, 
-which makes @code{Control_R} to be read as @key{COMMAND}.  
+The first line sets @code{GSFirstCommandKey} to @code{Control_R}, which
+makes @code{Control_R} to be read as @key{COMMAND}.
 
-The second line disables the second control key, 
-which would otherwise be bound to @code{Control_R} by default. 
-If you omit it, @code{Control_R} will be used at the same time 
-as @key{COMMAND} and as @key{CONTROL}, which is not very useful. 
+The second line disables the second control key, which would otherwise
+be bound to @code{Control_R} by default. If you omit it,
+@code{Control_R} will be used at the same time as @key{COMMAND} and as
+@key{CONTROL}, which is not very useful.
 
 To delete these preferences and restore the defaults, use 
 @smallexample
@@ -1373,18 +1373,17 @@ setting for the @code{GSFirstCommandKey}, for example:
 defaults read | grep GSFirstCommandKey
 @end smallexample
 
-A thing which could go wrong if you are trying to use 
-a setting different from the default, and you do not know much 
-about X, is that you can't find out the name of one of your key.  
-In this case, you may try having a look at the output of programs 
-like @code{xmodmap} or @code{xkeycaps}; even if you do not 
-understand it completely, the output can inspire the right guessing.
+A thing which could go wrong if you are trying to use a setting
+different from the default, and you do not know much about X, is that
+you can't find out the name of one of your key.  In this case, you may
+try having a look at the output of programs like @code{xmodmap} or
+@code{xkeycaps}; even if you do not understand it completely, the output
+can inspire the right guessing.
 
-A problem you are likely to encounter is that of conflicts 
-with the window manager keyboard shortcuts.  
-Good window managers let you change the keyboard shortcuts, 
-so you may move the wm shortcuts that you do not use to keys 
-which do not conflict (at least not too much) with GNUstep.  
+A problem you are likely to encounter is that of conflicts with the
+window manager keyboard shortcuts.  Good window managers let you change
+the keyboard shortcuts, so you may move the wm shortcuts that you do not
+use to keys which do not conflict (at least not too much) with GNUstep.
 
 @node Window Manager,  , Keyboard Modifiers, Setup
 @section Window Manager Recommended Configuration
