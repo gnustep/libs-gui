@@ -1,7 +1,9 @@
 2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSMenu.m: ([_updateUserDefaults:]) restore saved menu
+	* Source/NSMenu.m: ([-_updateUserDefaults:]) restore saved menu
 	location functionality (was only working for torn off menus).
+	* Source/NSWindow: ([-miniaturise:]) order the counterpart window
+	in so that it gets drawn properly.
 
 2003-03-06  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
