@@ -123,8 +123,8 @@ unCacheAttributes(NSDictionary *attrs)
 
 @interface GSTextStorage : NSTextStorage
 {
-  NSMutableString       *textChars;
-  NSMutableArray        *infoArray;
+  NSMutableString       *_textChars;
+  NSMutableArray        *_infoArray;
 }
 @end
 
@@ -220,10 +220,10 @@ static IMP	oatImp;
 static void	(*remImp)();
 
 #define	NEWINFO(Z,O,L)	((*infImp)(infCls, infSel, (Z), (O), (L)))
-#define	ADDOBJECT(O)	((*addImp)(infoArray, addSel, (O)))
-#define	INSOBJECT(O,I)	((*insImp)(infoArray, insSel, (O), (I)))
-#define	OBJECTAT(I)	((*oatImp)(infoArray, oatSel, (I)))
-#define	REMOVEAT(I)	((*remImp)(infoArray, remSel, (I)))
+#define	ADDOBJECT(O)	((*addImp)(_infoArray, addSel, (O)))
+#define	INSOBJECT(O,I)	((*insImp)(_infoArray, insSel, (O), (I)))
+#define	OBJECTAT(I)	((*oatImp)(_infoArray, oatSel, (I)))
+#define	REMOVEAT(I)	((*remImp)(_infoArray, remSel, (I)))
 
 static inline NSDictionary *attrDict(GSTextInfo* info)
 {
@@ -264,9 +264,9 @@ static void
 _setAttributesFrom(
   NSAttributedString *attributedString,
   NSRange aRange,
-  NSMutableArray *infoArray)
+  NSMutableArray *_infoArray)
 {
-  NSZone	*z = [infoArray zone];
+  NSZone	*z = [_infoArray zone];
   NSRange	range;
   NSDictionary	*attr;
   GSTextInfo	*info;
@@ -275,7 +275,7 @@ _setAttributesFrom(
   /*
    * remove any old attributes of the string.
    */
-  [infoArray removeAllObjects];
+  [_infoArray removeAllObjects];
 
   if (aRange.length <= 0)
     return;
@@ -303,13 +303,13 @@ _attributesAtIndexEffectiveRange(
   unsigned int index,
   NSRange *aRange,
   unsigned int tmpLength,
-  NSMutableArray *infoArray,
+  NSMutableArray *_infoArray,
   unsigned int *foundIndex)
 {
   unsigned	low, high, used, cnt, nextLoc;
   GSTextInfo	*found = nil;
 
-  used = (*cntImp)(infoArray, cntSel);
+  used = (*cntImp)(_infoArray, cntSel);
   NSCAssert(used > 0, NSInternalInconsistencyException);
   high = used - 1;
 
@@ -393,8 +393,8 @@ _attributesAtIndexEffectiveRange(
   GSTextInfo	*info;
   unsigned	i;
   unsigned	l = 0;
-  unsigned	len = [textChars length];
-  unsigned	c = (*cntImp)(infoArray, cntSel);
+  unsigned	len = [_textChars length];
+  unsigned	c = (*cntImp)(_infoArray, cntSel);
 
   NSAssert(c > 0, NSInternalInconsistencyException);
   info = OBJECTAT(0);
@@ -454,15 +454,15 @@ _attributesAtIndexEffectiveRange(
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &textChars];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &infoArray];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_textChars];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_infoArray];
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   self = [super initWithCoder: aCoder];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &textChars];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &infoArray];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_textChars];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_infoArray];
   return self;
 }
 
@@ -472,13 +472,13 @@ _attributesAtIndexEffectiveRange(
   NSZone	*z = [self zone];
 
   self = [super initWithString: aString attributes: attributes];
-  infoArray = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
+  _infoArray = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
   if (aString != nil && [aString isKindOfClass: [NSAttributedString class]])
     {
       NSAttributedString	*as = (NSAttributedString*)aString;
 
       aString = [as string];
-      _setAttributesFrom(as, NSMakeRange(0, [aString length]), infoArray);
+      _setAttributesFrom(as, NSMakeRange(0, [aString length]), _infoArray);
     }
   else
     {
@@ -494,15 +494,15 @@ _attributesAtIndexEffectiveRange(
       RELEASE(info);
     }
   if (aString == nil)
-    textChars = [[NSMutableString allocWithZone: z] init];
+    _textChars = [[NSMutableString allocWithZone: z] init];
   else
-    textChars = [aString mutableCopyWithZone: z];
+    _textChars = [aString mutableCopyWithZone: z];
   return self;
 }
 
 - (NSString*) string
 {
-  return AUTORELEASE([textChars copyWithZone: NSDefaultMallocZone()]);
+  return AUTORELEASE([_textChars copyWithZone: NSDefaultMallocZone()]);
 }
 
 - (NSDictionary*) attributesAtIndex: (unsigned)index
@@ -511,7 +511,7 @@ _attributesAtIndexEffectiveRange(
   unsigned	dummy;
 
   return _attributesAtIndexEffectiveRange(
-    index, aRange, [textChars length], infoArray, &dummy);
+    index, aRange, [_textChars length], _infoArray, &dummy);
 }
 
 /*
@@ -545,9 +545,9 @@ _attributesAtIndexEffectiveRange(
     }
   attributes = cacheAttributes(attributes);
 SANITY();
-  tmpLength = [textChars length];
+  tmpLength = [_textChars length];
   GS_RANGE_CHECK(range, tmpLength);
-  arraySize = (*cntImp)(infoArray, cntSel);
+  arraySize = (*cntImp)(_infoArray, cntSel);
   beginRangeLoc = range.location;
   afterRangeLoc = NSMaxRange(range);
   if (afterRangeLoc < tmpLength)
@@ -556,7 +556,7 @@ SANITY();
        * Locate the first range that extends beyond our range.
        */
       attrs = _attributesAtIndexEffectiveRange(
-	afterRangeLoc, &effectiveRange, tmpLength, infoArray, &arrayIndex);
+	afterRangeLoc, &effectiveRange, tmpLength, _infoArray, &arrayIndex);
       if (attrs == attributes)
 	{
 	  /*
@@ -666,7 +666,7 @@ SANITY();
     {
       aString = @"";
     }
-  tmpLength = [textChars length];
+  tmpLength = [_textChars length];
   GS_RANGE_CHECK(range, tmpLength);
   if (range.location == tmpLength)
     {
@@ -674,18 +674,18 @@ SANITY();
        * Special case - replacing a zero length string at the end
        * simply appends the new string and attributes are inherited.
        */
-      [textChars appendString: aString];
+      [_textChars appendString: aString];
       goto finish;
     }
 
-  arraySize = (*cntImp)(infoArray, cntSel);
+  arraySize = (*cntImp)(_infoArray, cntSel);
   if (arraySize == 1)
     {
       /*
        * Special case - if the string has only one set of attributes
        * then the replacement characters will get them too.
        */
-      [textChars replaceCharactersInRange: range withString: aString];
+      [_textChars replaceCharactersInRange: range withString: aString];
       goto finish;
     }
 
@@ -700,7 +700,7 @@ SANITY();
   else
     start = range.location;
   attrs = _attributesAtIndexEffectiveRange(start, &effectiveRange,
-    tmpLength, infoArray, &arrayIndex);
+    tmpLength, _infoArray, &arrayIndex);
 
   arrayIndex++;
   if (NSMaxRange(effectiveRange) < NSMaxRange(range))
@@ -758,7 +758,7 @@ SANITY();
       info->loc += moveLocations;
       arrayIndex++;
     }
-  [textChars replaceCharactersInRange: range withString: aString];
+  [_textChars replaceCharactersInRange: range withString: aString];
 
 finish:
 SANITY();
@@ -769,9 +769,14 @@ changeInLength: [aString length] - range.length];
 
 - (void) dealloc
 {
-  RELEASE(textChars);
-  RELEASE(infoArray);
+  RELEASE(_textChars);
+  RELEASE(_infoArray);
   [super dealloc];
 }
 
+// The superclass implementation is correct but too slow
+- (unsigned int) length
+{
+  return [_textChars length];
+}
 @end

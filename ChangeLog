@@ -1,3 +1,8 @@
+Wed Jan 10 19:42:22 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSTextStorage.m ([-length]): Added for speed.
+	* Source/GSTextStorage.m: Prefixed ivars with underscore.
+	
 Tue Jan  9 11:24:32 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Tools/Functions.m: Include AppKit/DPSOperators.h so it 
