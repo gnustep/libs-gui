@@ -1,3 +1,9 @@
+2002-03-06  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSScrollView.m: Go through adding checks to avoid crashes
+	where _contentView has been set to nil through removal of the
+	subview.
+
 Thu Mar  7 08:29:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([-dealloc]): Use DESTROY, not

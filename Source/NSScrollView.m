@@ -186,7 +186,9 @@ static float scrollerWidth;
       [self addSubview: _contentView];
 
       if (docView != nil)
-	[self setDocumentView: docView];
+	{
+	  [self setDocumentView: docView];
+	}
     }
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self tile];
@@ -197,13 +199,8 @@ static float scrollerWidth;
   if (aView == _contentView)
     {
       _contentView = nil;
-      [super removeSubview: aView];
-      [self tile];
     }
-  else
-    {
-      [super removeSubview: aView];
-    }
+  [super removeSubview: aView];
 }
 
 - (void) setHorizontalScroller: (NSScroller*)aScroller
@@ -292,12 +289,20 @@ static float scrollerWidth;
 
 - (void) scrollWheel: (NSEvent *)theEvent
 {
-  NSRect	clipViewBounds = [_contentView bounds];
-  float deltaY = [theEvent deltaY];
-  float amount;
-  NSPoint point = clipViewBounds.origin;
+  NSRect	clipViewBounds;
+  float		deltaY = [theEvent deltaY];
+  float 	amount;
+  NSPoint	point;
 
-
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+    }
+  point = clipViewBounds.origin;
   if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
     {
       amount = - (clipViewBounds.size.height - _vPageScroll) * deltaY;
@@ -307,13 +312,14 @@ static float scrollerWidth;
       amount = - _vLineScroll * deltaY;
     }
 
-  if (!_contentView->_rFlags.flipped_view)
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
     {
       /* If view is flipped reverse the scroll direction */
       amount = -amount;
     }
   NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
-	      amount, _contentView->_rFlags.flipped_view);
+    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+
   point.y = clipViewBounds.origin.y + amount;
   
   if (_hasHeaderView)
@@ -343,11 +349,23 @@ static float scrollerWidth;
 - (void) _doScroll: (NSScroller*)scroller
 {
   float		floatValue = [scroller floatValue];
-  NSRect	clipViewBounds = [_contentView bounds];
   NSScrollerPart hitPart = [scroller hitPart];
-  NSRect	documentRect = [_contentView documentRect];
+  NSRect	clipViewBounds;
+  NSRect	documentRect;
   float		amount = 0;
-  NSPoint	point = clipViewBounds.origin;
+  NSPoint	point;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+      documentRect = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+      documentRect = [_contentView documentRect];
+    }
+  point = clipViewBounds.origin;
 
   NSDebugLog (@"_doScroll: float value = %f", floatValue);
 
@@ -403,13 +421,13 @@ static float scrollerWidth;
 	}
       else
 	{
-	  if (!_contentView->_rFlags.flipped_view)
+	  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
 	    {
 	      /* If view is flipped reverse the scroll direction */
 	      amount = -amount;
 	    }
 	  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
-			   amount, _contentView->_rFlags.flipped_view);
+	    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 	  point.y = clipViewBounds.origin.y + amount;
 	}
     }
@@ -423,10 +441,10 @@ static float scrollerWidth;
 	}
       else
 	{
-	  if (!_contentView->_rFlags.flipped_view)
+	  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
 	    floatValue = 1 - floatValue;
 	  point.y = floatValue * (documentRect.size.height
-		     			- clipViewBounds.size.height);
+	    - clipViewBounds.size.height);
 	  point.y += documentRect.origin.y;
 	}
     }
@@ -919,7 +937,7 @@ static float scrollerWidth;
   if (_hasCornerView == YES)
     {
       [self removeSubview: 
-	      [(NSTableView *)[_contentView documentView] cornerView]];
+	[(NSTableView *)[_contentView documentView] cornerView]];
     }
   _hasCornerView = ([aView respondsToSelector: @selector(cornerView)]
 		    && ([(NSTableView *)aView cornerView] != nil));
