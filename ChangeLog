@@ -1,3 +1,24 @@
+2001-11-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSSlider.h
+	* Headers/gnustep/gui/NSSliderCell.h
+	* Source/NSSlider.m
+	* Source/NSSliderCell.m
+	Added methods to handle ticks with a dummy implementation.
+	* Source/NSTextView.m
+	Added include for NSScrollView to avoid compiler warning.
+	[_blink] don't call [NSApp updateWindows], just redisplay our
+	window.
+	[mouseDown:] replaces all [_window flushWindow] with [self
+	displayIfNeeded]. 
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	Added APPKIT_DECLARE for GSCurrentContext().
+	* Headers/gnustep/gui/NSGraphics.h
+	Replaced APPKIT_EXPORT with APPKIT_DECLARE for all functions and
+	added some missing APPKIT_DECLARE.
+	* Headers/gnustep/gui/NSPanel.h
+	Added APPKIT_DECLARE for all functions.
+	
 Wed Oct 31 01:23:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Implemented blinking insertion point (Work done with Ludovic
