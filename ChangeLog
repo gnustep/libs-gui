@@ -1,3 +1,8 @@
+2003-06-23 19:03  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSStringDrawing.m (-drawAtPoint:): Place the text correctly
+	when the view isn't flipped.
+
 2003-06-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPanel.m

@@ -98,8 +98,18 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
   if (![[NSView focusView] isFlipped])
     {
+      NSRect usedRect;
+
       DPSscale(ctxt, 1, -1);
       point.y = -point.y;
+
+      /*
+      Adjust point.y so the lower left corner of the used rect is at the
+      point that was passed to us.
+      */
+      usedRect = [layoutManager usedRectForTextContainer: textContainer];
+      point.y -= NSMaxY(usedRect);
+
       [NSFont _setFontFlipHack: YES];
     }
 
@@ -253,9 +263,13 @@ NSAttributedString to do the job.
   RELEASE(a);
   return s;
 }
+
 @end
 
 
+/*
+Dummy function; see comment in NSApplication.m, +initialize.
+*/
 void GSStringDrawingDummyFunction(void)
 {
 }
