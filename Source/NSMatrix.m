@@ -724,6 +724,17 @@ static SEL getSel;
   betweenCols = !(point.x > approxColsWidth
 		  && point.x <= approxColsWidth + _cellSize.width);
 
+  if (beyondRows || betweenRows || beyondCols || betweenCols || nullMatrix)
+    {
+      if (row)
+	*row = -1;
+
+      if (column)
+	*column = -1;
+
+      return NO;
+    }
+
   if (row)
     {
       if (_rFlags.flipped_view == NO)
@@ -755,14 +766,7 @@ static SEL getSel;
       *column = approxCol;
     }
 
-  if (beyondRows || betweenRows || beyondCols || betweenCols || nullMatrix)
-    {
-      return NO;
-    }
-  else
-    {
-      return YES;
-    }
+  return YES;
 }
 
 - (BOOL) getRow: (int*)row
@@ -848,13 +852,20 @@ static SEL getSel;
 	{
 	  if (_selectedCells[i][j])
 	    {
-	      NSRect	theFrame = [self cellFrameAtRow: i column: j];
 	      NSCell	*aCell = _cells[i][j];
+	      BOOL       isHighlighted = [aCell isHighlighted];
 
-	      [aCell setState: 0];
-	      [aCell highlight: NO withFrame: theFrame inView: self];
-	      [self setNeedsDisplayInRect: theFrame];
 	      _selectedCells[i][j] = NO;
+
+	      if ([aCell state] || isHighlighted)
+		{
+		  [aCell setState: NSOffState];
+
+		  if (isHighlighted)
+		    [self highlightCell: NO atRow: i column: j];
+		  else
+		    [self drawCellAtRow: i column: j];
+		}
 	    }
 	}
     }
@@ -906,7 +917,7 @@ static SEL getSel;
 	      && [_cells[i][j] isEditable] == NO)
 	    {
 	      _selectedCell = _cells[i][j];
-	      [_selectedCell setState: 1];
+	      [_selectedCell setState: NSOnState];
 	      _selectedCells[i][j] = YES;
 
 	      _selectedRow = i;
@@ -929,16 +940,16 @@ static SEL getSel;
    * We always deselect the current selection unless the new selection
    * is the same. (in NSRadioModeMatrix)
    */
-  if (_selectedCell != nil && _selectedCell != aCell &&
-      _mode == NSRadioModeMatrix)
+  if (_mode == NSRadioModeMatrix && _selectedCell && aCell
+      && _selectedCell != aCell)
     {
       _selectedCells[_selectedRow][_selectedColumn] = NO;
-      [_selectedCell setState: 0];
+      [_selectedCell setState: NSOffState];
       [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
 					 column: _selectedColumn]];
     }
 
-  if (aCell != nil)
+  if (aCell)
     {
       if (_selectedCell && _selectedCell != aCell)
 	{
@@ -956,10 +967,9 @@ static SEL getSel;
 	{
 	  _dottedRow = row;
 	  _dottedColumn = column;
-	  [_selectedCell setShowsFirstResponder: YES];
 	}
 
-      [_selectedCell setState: 1];
+      [_selectedCell setState: NSOnState];
 
       // Note: we select the cell iff it is 'selectable', not 'editable' 
       // as macosx says.  This looks definitely more appropriate. 
@@ -968,6 +978,11 @@ static SEL getSel;
       [self selectTextAtRow: row column: column];
 
       [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
+    }
+  else
+    {
+      _selectedCell = nil;
+      _selectedRow = _selectedColumn = -1;
     }
 }
 
@@ -992,7 +1007,7 @@ static SEL getSel;
   aCell = [self cellAtRow: row column: column];
 
   if (aCell)
-    [self _selectCell:aCell atRow: row column: column];
+    [self _selectCell: aCell atRow: row column: column];
 }
 
 - (BOOL) selectCellWithTag: (int)anInt
@@ -1102,7 +1117,7 @@ static SEL getSel;
 		  /*
 		   * In old rectangle, but not new - clear row.
 		   */
-		  [self _setState: 0
+		  [self _setState: NSOffState
 			highlight: NO
 		       startIndex: INDEX_FROM_POINT(sp)
 			 endIndex: INDEX_FROM_POINT(ep)];
@@ -1116,7 +1131,7 @@ static SEL getSel;
 	      /*
 	       * In new rectangle, but not old - select row.
 	       */
-	      [self _setState: 1
+	      [self _setState: NSOnState
 		    highlight: flag ? YES : NO
 		   startIndex: INDEX_FROM_POINT(sp)
 		     endIndex: INDEX_FROM_POINT(ep)];
@@ -1186,12 +1201,12 @@ static SEL getSel;
 	}
 
       if (doUnselect)
-	[self _setState: 0
+	[self _setState: NSOffState
 	      highlight: NO
 	     startIndex: unselectx
 	       endIndex: unselecty];
       if (doSelect)
-	[self _setState: 1
+	[self _setState: NSOnState
 	      highlight: flag ? YES : NO
 	     startIndex: selectx
 	       endIndex: selecty];
@@ -1346,7 +1361,6 @@ static SEL getSel;
       {
 	_dottedRow = row;
 	_dottedColumn = column;
-	[_selectedCell setShowsFirstResponder: YES];
       }
 
     /* See comment in NSTextField */
@@ -1690,22 +1704,39 @@ static SEL getSel;
       NSRectFill(rect);
     }
 
-  [self getRow: &row1 column: &col1 forPoint: rect.origin];
-  [self getRow: &row2 column: &col2
-    forPoint: NSMakePoint(NSMaxX(rect), NSMaxY(rect))];
+  if (!_numRows || !_numCols)
+    return;
+
+  row1 = rect.origin.y / (_cellSize.height + _intercell.height);
+  col1 = rect.origin.x / (_cellSize.width + _intercell.width);
+  row2 = NSMaxY(rect) / (_cellSize.height + _intercell.height);
+  col2 = NSMaxX(rect) / (_cellSize.width + _intercell.width);
+
+  if (_rFlags.flipped_view == NO)
+    {
+      row1 = _numRows - row1 - 1;
+      row2 = _numRows - row2 - 1;
+    }
 
   if (row1 < 0)
     row1 = 0;
+  else if (row1 >= _numRows)
+    row1 = _numRows - 1;
+
   if (col1 < 0)
     col1 = 0;
+  else if (col1 >= _numCols)
+    col1 = _numCols - 1;
 
-  if (_dottedRow != -1 && _dottedColumn != -1
-      && [_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
-    {
-      [_cells[_dottedRow][_dottedColumn]
-	     setShowsFirstResponder: ([_window isKeyWindow]
-				      && [_window firstResponder] == self)];
-    }
+  if (row2 < 0)
+    row2 = 0;
+  else if (row1 >= _numRows)
+    row2 = _numRows - 1;
+
+  if (col2 < 0)
+    col2 = 0;
+  else if (col2 >= _numCols)
+    col2 = _numCols - 1;
 
   /* Draw the cells within the drawing rectangle. */
   for (i = row1; i <= row2 && i < _numRows; i++)
@@ -1713,9 +1744,6 @@ static SEL getSel;
       {
 	[self drawCellAtRow: i column: j];
       }
-
-  if (_dottedRow != -1 && _dottedColumn != -1)
-    [_cells[_dottedRow][_dottedColumn] setShowsFirstResponder: NO];
 }
 
 - (BOOL) isOpaque
@@ -1748,7 +1776,19 @@ static SEL getSel;
 	  NSRectFill(cellFrame);
 	  [self unlockFocus];
 	}
+
+      if (_dottedRow == row && _dottedColumn == column
+	  && [aCell acceptsFirstResponder])
+	{
+	  [aCell
+	    setShowsFirstResponder: ([_window isKeyWindow]
+				     && [_window firstResponder] == self)];
+	}
+      else
+	[aCell setShowsFirstResponder: NO];
+
       [aCell drawWithFrame: cellFrame inView: self];
+      [aCell setShowsFirstResponder: NO];
     }
 }
 
@@ -1767,9 +1807,23 @@ static SEL getSel;
 	  NSRectFill(cellFrame);
 	  [self unlockFocus];
 	}
+
+      if (_dottedRow != -1 && _dottedColumn != -1
+	  && _cells[_dottedRow][_dottedColumn] == aCell
+	  && [_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
+	{
+	  [_cells[_dottedRow][_dottedColumn]
+		 setShowsFirstResponder:
+		   ([_window isKeyWindow]
+		    && [_window firstResponder] == self)];
+	}
+
       [aCell highlight: flag
              withFrame: cellFrame
                 inView: self];
+
+      if (_dottedRow != -1 && _dottedColumn != -1)
+	[_cells[_dottedRow][_dottedColumn] setShowsFirstResponder: NO];
     }
 }
 
@@ -1870,10 +1924,9 @@ static SEL getSel;
     return YES;
 }
 
-// FIXME mouseDown code
 - (void) _mouseDownNonListMode: (NSEvent *)theEvent
 {
-  BOOL mouseUpInCell = NO;
+  BOOL mouseUpInCell = NO, onCell, scrolling = NO;
   NSCell *highlightedCell = nil;
   int highlightedRow = 0;
   int highlightedColumn = 0;
@@ -1882,86 +1935,143 @@ static SEL getSel;
   int mouseColumn;
   NSPoint mouseLocation;
   NSRect mouseCellFrame;
+  NSEvent *currentEvent = nil;
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
-
-  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
-    {
-      [_selectedCell setState: NSOffState];
-      [self drawCellAtRow: _selectedRow column: _selectedColumn];
-      [_window flushWindow];
-      _selectedCells[_selectedRow][_selectedColumn] = NO;
-      _selectedCell = nil;
-      _selectedRow = _selectedColumn = -1;
-    }
 
   while (!mouseUpInCell && ([theEvent type] != NSLeftMouseUp))
     {
       mouseLocation = [self convertPoint: [theEvent locationInWindow]
                                 fromView: nil];
-      [self getRow: &mouseRow column: &mouseColumn forPoint: mouseLocation];
-      mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
 
-      if (((_mode == NSRadioModeMatrix) && !_allowsEmptySelection)
-	|| [self mouse: mouseLocation inRect: mouseCellFrame])
-        {
-          mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
+      onCell = [self getRow: &mouseRow
+		     column: &mouseColumn
+		     forPoint: mouseLocation];
 
-          _selectedCell = mouseCell;
-          _selectedRow = mouseRow;
-          _selectedColumn = mouseColumn;
-          _selectedCells[_selectedRow][_selectedColumn] = YES;
+      if (onCell)
+	{
+	  mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
+	  mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
 
-          if (((_mode == NSRadioModeMatrix) || (_mode == NSHighlightModeMatrix))
-              && (highlightedCell != mouseCell))
-            {
-              if (highlightedCell)
-                [self highlightCell: NO
-                              atRow: highlightedRow
-                             column: highlightedColumn];
+	  if (_autoscroll)
+	    scrolling = [self scrollRectToVisible: mouseCellFrame];
 
-              highlightedCell = mouseCell;
-              highlightedRow = mouseRow;
-              highlightedColumn = mouseColumn;
-              [self highlightCell: YES
-                            atRow: highlightedRow
-                           column: highlightedColumn];
-              [_window flushWindow];
-            }
+	  if ([mouseCell isEnabled]
+	      && [self mouse: mouseLocation inRect: mouseCellFrame])
+	    {
+	      if ([mouseCell acceptsFirstResponder])
+		{
+		  NSCell *aCell = [self cellAtRow: _dottedRow
+					column: _dottedColumn];
 
-          mouseUpInCell = [mouseCell trackMouse: theEvent
+		  _dottedRow = mouseRow;
+		  _dottedColumn = mouseColumn;
+
+		  if (aCell && aCell != mouseCell)
+		    [self drawCell: aCell];
+		}
+
+	      if (_selectedCell)
+		{
+		  if (_mode == NSRadioModeMatrix)
+		    {
+		      [_selectedCell setState: NSOffState];
+		      [self drawCell: _selectedCell];
+		    }
+
+		  _selectedCells[_selectedRow][_selectedColumn] = NO;
+		}
+
+	      _selectedCell = mouseCell;
+	      _selectedRow = mouseRow;
+	      _selectedColumn = mouseColumn;
+	      _selectedCells[_selectedRow][_selectedColumn] = YES;
+
+	      if (_mode != NSTrackModeMatrix && highlightedCell != mouseCell)
+		{
+		  highlightedCell = mouseCell;
+		  highlightedRow = mouseRow;
+		  highlightedColumn = mouseColumn;
+
+		  [self highlightCell: YES
+			atRow: highlightedRow
+			column: highlightedColumn];
+		  [_window flushWindow];
+		}
+
+	      if (_mode == NSRadioModeMatrix)
+		[mouseCell setState: NSOffState];
+
+	      mouseUpInCell = [mouseCell trackMouse: theEvent
                                          inRect: mouseCellFrame
                                          ofView: self
-                                   untilMouseUp: NO];
+					 untilMouseUp: NO];
 
-          if (_mode == NSHighlightModeMatrix)
-            {
-              [self highlightCell: NO
-                            atRow: highlightedRow
-                           column: highlightedColumn];
-              highlightedCell = nil;
-              [_window flushWindow];
-            }
-        }
-      else
+	      if (_mode != NSTrackModeMatrix)
+		{
+		  if(_mode == NSRadioModeMatrix && !_allowsEmptySelection)
+		    {
+		      if (!mouseUpInCell)
+			[mouseCell setState: NSOnState];
+		    }
+
+		  highlightedCell = nil;
+
+		  [self highlightCell: NO
+			atRow: highlightedRow
+			column: highlightedColumn];
+		  [_window flushWindow];
+		}
+
+	      if (!mouseUpInCell)
+		{
+		  currentEvent = [NSApp currentEvent];
+
+		  if (currentEvent && [currentEvent type] != NSPeriodic)
+		    {
+		      if (!scrolling)
+			{
+			  theEvent = currentEvent;
+			  continue;
+			}
+		    }
+		  else
+		    currentEvent = nil;
+		}
+	    }
+	}
+      else if (_mode != NSRadioModeMatrix || _allowsEmptySelection)
         {
           // mouse is not over a Cell
-          if (highlightedCell)
-            {
-              [self highlightCell: NO
-                            atRow: highlightedRow
-                           column: highlightedColumn];
-              highlightedCell = nil;
-              [_window flushWindow];
-            }
+	  if (_selectedCell != nil)
+	    {
+	      if ([_selectedCell state])
+		{
+		  [_selectedCell setState: NSOffState];
+		  [self drawCell: _selectedCell];
+		}
+
+	      _selectedCells[_selectedRow][_selectedColumn] = NO;
+	      _selectedCell = nil;
+	      _selectedRow = _selectedColumn = -1;
+	    }
         }
 
       // if mouse didn't go up, take next event
       if (!mouseUpInCell)
-        theEvent = [NSApp nextEventMatchingMask: eventMask
-                                      untilDate: [NSDate distantFuture]
-                                         inMode: NSEventTrackingRunLoopMode
-                                        dequeue: YES];
+	{
+	  theEvent = [NSApp nextEventMatchingMask: eventMask
+			    untilDate: !scrolling && currentEvent
+			    ? [NSDate distantFuture]
+			    : [NSDate dateWithTimeIntervalSinceNow: 0.05]
+			    inMode: NSEventTrackingRunLoopMode
+			    dequeue: YES];
+
+	  if (scrolling && !theEvent)
+	    theEvent = currentEvent;
+	  else
+	    currentEvent = nil;
+	}
     }
 
   // the mouse went up.
@@ -1971,12 +2081,7 @@ static SEL getSel;
   // anyway, the action has to be sent
   if (!mouseUpInCell)
     {
-      if ((_mode == NSRadioModeMatrix) && !_allowsEmptySelection)
-	{
-	  [_selectedCell setState: NSOnState];
-	  [_window flushWindow];
-	}
-      else
+      if (_mode != NSRadioModeMatrix || _allowsEmptySelection)
 	{
 	  if (_selectedCell != nil)
 	    {
@@ -1987,13 +2092,12 @@ static SEL getSel;
 	}
       [self sendAction];
     }
-
-  if (highlightedCell)
+  else if (_selectedCell != nil && ([_selectedCell target] == nil))
     {
-      [self highlightCell: NO
-		    atRow: highlightedRow
-		   column: highlightedColumn];
-      [_window flushWindow];
+      // selected cell has no target so send single
+      // click action to matrix's (self's) target
+      if (_target)
+	[_target performSelector: _action withObject: self];
     }
 }
 
@@ -2009,8 +2113,8 @@ static SEL getSel;
   NSEvent* lastEvent = nil;
   BOOL done = NO;
   NSRect rect;
-  id aCell, previousCell = nil;
-  NSRect previousCellRect;
+  id aCell, previousCell = nil, previousDottedCell = nil;
+  NSRect previousRect;
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
   int clickCount;
@@ -2042,9 +2146,9 @@ static SEL getSel;
 		       fromView: nil];
 
   // If mouse down was on a selectable cell, start editing/selecting.
-  if([self getRow: &row
-	   column: &column
-	   forPoint: lastLocation])
+  if ([self getRow: &row
+	    column: &column
+	    forPoint: lastLocation])
     {
       if ([_cells[row][column] isEnabled])
 	{
@@ -2103,17 +2207,14 @@ static SEL getSel;
 
   mouseDownFlags = [theEvent modifierFlags];
 
-  // TODO: clean this up -- remove code in excess! 
-  // While doing that, FIXME! because all this code has bugs!
-  if (_mode != NSListModeMatrix && _mode != NSRadioModeMatrix)
+  if (_mode != NSListModeMatrix)
     {
       [self _mouseDownNonListMode: theEvent];
       return;
     }
 
-  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix)) 
-    [NSEvent startPeriodicEventsAfterDelay: 0.05
-	     withPeriod: 0.05];
+  [NSEvent startPeriodicEventsAfterDelay: 0.05
+	   withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
 
   // selection involves two steps, first
@@ -2127,155 +2228,75 @@ static SEL getSel;
       onCell = [self getRow: &row
 		     column: &column
 		     forPoint: lastLocation];
+
       if (onCell)
 	{
 	  aCell = [self cellAtRow: row column: column];
 	  rect = [self cellFrameAtRow: row column: column];
+
+	  if (_autoscroll)
+	    [self scrollRectToVisible: rect];
+
 	  if (aCell != previousCell && [aCell isEnabled] == YES)
 	    {
-	      switch (_mode)
+	      unsigned modifiers = [lastEvent modifierFlags];
+
+	      // List mode allows multiple cells to be selected
+
+	      // When the user first clicks on a cell
+	      // we clear the existing selection
+	      // unless the Alternate or Shift keys have been pressed.
+
+	      if ([aCell acceptsFirstResponder])
 		{
-		  case NSTrackModeMatrix:
-		    // in Track mode the cell should track the mouse
-		    // until the cursor either leaves the cellframe or
-		    // NSLeftMouseUp occurs
-		    _selectedCell = aCell;
-		    _selectedRow = row;
-		    _selectedColumn = column;
-		    if ([_cells[row][column] acceptsFirstResponder])
-		      {
-			_dottedRow = row;
-			_dottedColumn = column;
-		      }
-		    if ([aCell trackMouse: lastEvent
-				   inRect: rect
-				   ofView: self
-			     untilMouseUp: NO])
-		      done = YES;
-		    break;
+		  _dottedRow = row;
+		  _dottedColumn = column;
 
-		  case NSHighlightModeMatrix:
-		    // Highlight mode is like Track mode except that
-		    // the cell is lit before begins tracking and
-		    // unlit afterwards
-		    [aCell setState: 1];
-		    _selectedCell = aCell;
-		    _selectedRow = row;
-		    _selectedColumn = column;
-		    if ([_cells[row][column] acceptsFirstResponder])
-		      {
-			_dottedRow = row;
-			_dottedColumn = column;
-		      }
-		    [aCell highlight: YES withFrame: rect inView: self];
-		    [_window flushWindow];
+		  if (previousDottedCell && previousDottedCell != aCell)
+		    [self drawCell: previousDottedCell];
 
-		    if ([aCell trackMouse: lastEvent
-				      inRect: rect
-				      ofView: self
-				      untilMouseUp: NO])
-		      done = YES;
+		  previousDottedCell = aCell;
+		}
 
-		    [aCell setState: 0];
-		    [aCell highlight: NO withFrame: rect inView: self];
-		    [_window flushWindow];
-		    break;
-
-		  case NSRadioModeMatrix:
-		    // Radio mode allows no more than one cell to be selected
-		    if (previousCell == aCell || aCell == nil)
-		      break;
-
-		    // deselect previously selected cell
-		    if (_selectedCell != nil)
-		      {
-			[_selectedCell setState: 0];
-			if (!previousCell)
-			  previousCellRect = [self cellFrameAtRow: _selectedRow
-			   column: _selectedColumn];
-			[_selectedCell highlight: NO
-				      withFrame: previousCellRect
-					 inView: self];
-			_selectedCells[_selectedRow][_selectedColumn] = NO;
-		      }
-		    // select current cell
-		    _selectedCell = aCell;
-		    _selectedRow = row;
-		    _selectedColumn = column;
-		    if ([_cells[row][column] acceptsFirstResponder])
-		      {
-			_dottedRow = row;
-			_dottedColumn = column;
-		      }
-		    [aCell setState: 1];
-		    [aCell highlight: YES withFrame: rect inView: self];
-		    _selectedCells[row][column] = YES;
-		    [_window flushWindow];
-		    break;
-
-		  case NSListModeMatrix:
-		    // List mode allows multiple cells to be selected
+	      if (!previousCell)
+		{
+		  if (!(modifiers & NSShiftKeyMask)
+		      && !(modifiers & NSAlternateKeyMask))
 		    {
-		      unsigned modifiers = [lastEvent modifierFlags];
+		      [self deselectAllCells];
+		      anchor = MakePoint (column, row);
+		    }
 
-		      if (previousCell == aCell)
-			break;
-		      // When the user first clicks on a cell
-		      // we clear the existing selection
-		      // unless the Alternate or Shift keys have been pressed.
-		      if (!previousCell)
-			{
-			  if (!(modifiers & NSShiftKeyMask)
-			    && !(modifiers & NSAlternateKeyMask))
-			    {
-			      [self deselectAllCells];
-			      anchor = MakePoint (column, row);
-			    }
-			  // Consider the selected cell as the
-			  // anchor from which to extend the
-			  // selection to the current cell
-			  if (!(modifiers & NSAlternateKeyMask))
-			    {
-			      _selectedCell = aCell;
-			      _selectedRow = row;
-			      _selectedColumn = column;
-
-			      if ([_cells[row][column] acceptsFirstResponder])
-				{
-				  _dottedRow = row;
-				  _dottedColumn = column;
-				}
-
-			      [_selectedCell setState: 1];
-			      [_selectedCell highlight: YES
-					    withFrame: rect
-					       inView: self];
-			      _selectedCells[row][column]=YES;
-			      [_window flushWindow];
-			      break;
-			    }
-			}
-		      [self setSelectionFrom:
-			INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
+		  // Consider the selected cell as the
+		  // anchor from which to extend the
+		  // selection to the current cell
+		  if (!(modifiers & NSAlternateKeyMask))
+		    {
+		      [aCell setState: NSOnState];
+		      [self highlightCell: YES
+			    atRow: row
+			    column: column];
+		      [_window flushWindow];
+		    }
+		}
+	      else
+		{
+		  [self setSelectionFrom:
+			  INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
 			to: INDEX_FROM_COORDS(column, row)
 			anchor: INDEX_FROM_POINT(anchor)
 			highlight: YES];
 
-		      [_window flushWindow];
-		      _selectedCell = aCell;
-		      _selectedRow = row;
-		      _selectedColumn = column;
-		      if ([_cells[row][column] acceptsFirstResponder])
-			{
-			  _dottedRow = row;
-			  _dottedColumn = column;
-			}
-		      break;
-		    }
+		  [_window flushWindow];
 		}
+
+	      _selectedCell = aCell;
+	      _selectedRow = row;
+	      _selectedColumn = column;
+	      _selectedCells[row][column] = YES;
+
 	      previousCell = aCell;
-	      previousCellRect = rect;
-	      [self scrollRectToVisible: rect];
+	      previousRect = rect;
 	    }
 	}
 
@@ -2291,58 +2312,33 @@ static SEL getSel;
 				        dequeue: YES];
 	  switch ([theEvent type])
 	    {
-	      case NSPeriodic:
-		NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
-		shouldProceedEvent = YES;
-		break;
+	    case NSPeriodic:
+	      NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
+	      shouldProceedEvent = YES;
+	      break;
 
-	      // Track and Highlight modes do not use
-	      // periodic events so we must break out
-	      // and check if the mouse is in a cell
-	      case NSLeftMouseUp:
-		done = YES;
-	      case NSLeftMouseDown:
-	      default:
-		if ((_mode == NSTrackModeMatrix)
-		  || (_mode == NSHighlightModeMatrix))
-		  shouldProceedEvent = YES;
-		NSDebugLog(@"NSMatrix: got event of type: %d\n",
-					      [theEvent type]);
-		ASSIGN(lastEvent, theEvent);
-		continue;
+	    case NSLeftMouseUp:
+	      done = YES;
+	    case NSLeftMouseDown:
+	    default:
+	      shouldProceedEvent = YES;
+	      NSDebugLog(@"NSMatrix: got event of type: %d\n",
+			 [theEvent type]);
+	      ASSIGN(lastEvent, theEvent);
+	      continue;
 	    }
 	}
       lastLocation = [lastEvent locationInWindow];
       lastLocation = [self convertPoint: lastLocation fromView: nil];
     }
 
-  switch (_mode)
-    {
-      case NSRadioModeMatrix:
-	if (_selectedCell != nil)
-	  [_selectedCell highlight: NO withFrame: rect inView: self];
-      case NSListModeMatrix:
-	[self setNeedsDisplayInRect: rect];
-	[_window flushWindow];
-      case NSHighlightModeMatrix:
-      case NSTrackModeMatrix:
-	break;
-    }
-  // in Track and Highlight modes the single click action has already
-  // been sent by the cell to it's target (if it has one)
-  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix))
-    [self sendAction];
-  else if (_selectedCell != nil && ([_selectedCell target] == nil))
-    {
-      // selected cell has no target so send single
-      // click action to matrix's (self's) target
-      if (_target)
-	[_target performSelector: _action withObject: self];
-    }
-  
-  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix))
-    [NSEvent stopPeriodicEvents];
+  [self setNeedsDisplayInRect: rect];
+  [_window flushWindow];
 
+  [NSEvent stopPeriodicEvents];
+
+  [self sendAction];
+  
   RELEASE(lastEvent);
 }
 
@@ -2380,7 +2376,7 @@ static SEL getSel;
 
 	      _selectedCell = aCell;
 	      [self highlightCell: YES atRow: i column: j];
-	      [aCell setState: ![aCell state]];
+	      [aCell setNextState];
 	      [self sendAction];
 	      [self highlightCell: NO atRow: i column: j];
 	      _selectedCell = oldSelectedCell;
@@ -2850,19 +2846,361 @@ static SEL getSel;
   [self setNeedsDisplay: YES];
 }
 
-- (void) keyDown: (NSEvent *)theEvent;
+- (void)moveUp:(id)sender
+{
+  BOOL selectCell = NO;
+  int h, i, lastDottedRow;
+
+  if (_mode == NSRadioModeMatrix || _mode == NSListModeMatrix)
+    selectCell = YES;
+
+  if (_dottedRow == -1 || _dottedColumn == -1)
+    {
+      for (h = 0; h < _numCols; h++)
+	{
+	  for (i = 0; i < _numRows; i++)
+	    {
+	      if ([_cells[i][h] acceptsFirstResponder])
+		{
+		  _dottedRow = i;
+		  _dottedColumn = h;
+		  break;
+		}
+	    }
+
+	  if (i == _dottedRow)
+	    break;
+	}
+
+      if (_dottedRow == -1 || _dottedColumn == -1)
+	return;
+
+      if (selectCell)
+	[self selectCellAtRow: _dottedRow column: _dottedColumn];
+      else
+	[self drawCell: _cells[_dottedRow][_dottedColumn]];
+    }
+  else
+    {
+      if (_dottedRow <= 0)
+	return;
+
+      lastDottedRow = _dottedRow;
+
+      for (i = _dottedRow-1; i >= 0; i--)
+	{
+	  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+	    {
+	      _dottedRow = i;
+	      break;
+	    }
+	}
+
+      if (_dottedRow != i)
+	return;
+
+      if (selectCell)
+	{
+	  NSCell *aCell = _cells[lastDottedRow][_dottedColumn];
+	  BOOL    isHighlighted = [aCell isHighlighted];
+
+	  if ([aCell state] || isHighlighted)
+	    {
+	      [aCell setState: NSOffState];
+	      _selectedCells[lastDottedRow][_dottedColumn] = NO;
+
+	      if (isHighlighted)
+		[self highlightCell: NO
+		      atRow: lastDottedRow
+		      column: _dottedColumn];
+	      else
+		[self drawCell: aCell];
+	    }
+
+	  [self selectCellAtRow: _dottedRow column: _dottedColumn];
+	}
+      else
+	{
+	  [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+	  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	}
+    }
+
+  [_window flushWindow];
+
+  if (selectCell)
+    [self performClick: self];
+}
+
+- (void)moveDown:(id)sender
+{
+  BOOL selectCell = NO;
+  int h, i, lastDottedRow;
+
+  if (_mode == NSRadioModeMatrix || _mode == NSListModeMatrix)
+    selectCell = YES;
+
+  if (_dottedRow == -1 || _dottedColumn == -1)
+    {
+      for (h = 0; h < _numCols; h++)
+	{
+	  for (i = 0; i < _numRows; i++)
+	    {
+	      if ([_cells[i][h] acceptsFirstResponder])
+		{
+		  _dottedRow = i;
+		  _dottedColumn = h;
+		  break;
+		}
+	    }
+
+	  if (i == _dottedRow)
+	    break;
+	}
+
+      if (_dottedRow == -1 || _dottedColumn == -1)
+	return;
+
+      if (selectCell)
+	[self selectCellAtRow: _dottedRow column: _dottedColumn];
+      else
+	[self drawCell: _cells[_dottedRow][_dottedColumn]];
+    }
+  else
+    {
+      if (_dottedRow >= _numRows-1)
+	return;
+
+      lastDottedRow = _dottedRow;
+
+      for (i = _dottedRow+1; i < _numRows; i++)
+	{
+	  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+	    {
+	      _dottedRow = i;
+	      break;
+	    }
+	}
+
+      if (_dottedRow != i)
+	return;
+
+      if (selectCell)
+	{
+	  NSCell *aCell = _cells[lastDottedRow][_dottedColumn];
+	  BOOL    isHighlighted = [aCell isHighlighted];
+
+	  if ([aCell state] || isHighlighted)
+	    {
+	      [aCell setState: NSOffState];
+	      _selectedCells[lastDottedRow][_dottedColumn] = NO;
+
+	      if (isHighlighted)
+		[self highlightCell: NO
+		      atRow: lastDottedRow
+		      column: _dottedColumn];
+	      else
+		[self drawCell: aCell];
+	    }
+
+	  [self selectCellAtRow: _dottedRow column: _dottedColumn];
+	}
+      else
+	{
+	  [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+	  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	}
+    }
+
+  [_window flushWindow];
+
+  if (selectCell)
+    [self performClick: self];
+}
+
+- (void)moveLeft:(id)sender
+{
+  BOOL selectCell = NO;
+  int h, i, lastDottedColumn;
+
+  if (_mode == NSRadioModeMatrix || _mode == NSListModeMatrix)
+    selectCell = YES;
+
+  if (_dottedRow == -1 || _dottedColumn == -1)
+    {
+      for (i = 0; i < _numRows; i++)
+	{
+	  for (h = 0; h < _numCols; h++)
+	    {
+	      if ([_cells[i][h] acceptsFirstResponder])
+		{
+		  _dottedRow = i;
+		  _dottedColumn = h;
+		  break;
+		}
+	    }
+
+	  if (h == _dottedColumn)
+	    break;
+	}
+
+      if (_dottedRow == -1 || _dottedColumn == -1)
+	return;
+
+      if (selectCell)
+	[self selectCellAtRow: _dottedRow column: _dottedColumn];
+      else
+	[self drawCell: _cells[_dottedRow][_dottedColumn]];
+    }
+  else
+    {
+      if (_dottedColumn <= 0)
+	return;
+
+      lastDottedColumn = _dottedColumn;
+
+      for (i = _dottedColumn-1; i >= 0; i--)
+	{
+	  if ([_cells[_dottedRow][i] acceptsFirstResponder])
+	    {
+	      _dottedColumn = i;
+	      break;
+	    }
+	}
+
+      if (_dottedColumn != i)
+	return;
+
+      if (selectCell)
+	{
+	  NSCell *aCell = _cells[_dottedRow][lastDottedColumn];
+	  BOOL    isHighlighted = [aCell isHighlighted];
+
+	  if ([aCell state] || isHighlighted)
+	    {
+	      [aCell setState: NSOffState];
+	      _selectedCells[_dottedRow][lastDottedColumn] = NO;
+
+	      if (isHighlighted)
+		[self highlightCell: NO
+		      atRow: _dottedRow
+		      column: lastDottedColumn];
+	      else
+		[self drawCell: aCell];
+	    }
+
+	  [self selectCellAtRow: _dottedRow column: _dottedColumn];
+	}
+      else
+	{
+	  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
+	  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	}
+    }
+
+  [_window flushWindow];
+
+  if (selectCell)
+    [self performClick: self];
+}
+
+- (void)moveRight:(id)sender
+{
+  BOOL selectCell = NO;
+  int h, i, lastDottedColumn;
+
+  if (_mode == NSRadioModeMatrix || _mode == NSListModeMatrix)
+    selectCell = YES;
+
+  if (_dottedRow == -1 || _dottedColumn == -1)
+    {
+      for (i = 0; i < _numRows; i++)
+	{
+	  for (h = 0; h < _numCols; h++)
+	    {
+	      if ([_cells[i][h] acceptsFirstResponder])
+		{
+		  _dottedRow = i;
+		  _dottedColumn = h;
+		  break;
+		}
+	    }
+
+	  if (h == _dottedColumn)
+	    break;
+	}
+
+      if (_dottedRow == -1 || _dottedColumn == -1)
+	return;
+
+      if (selectCell)
+	[self selectCellAtRow: _dottedRow column: _dottedColumn];
+      else
+	[self drawCell: _cells[_dottedRow][_dottedColumn]];
+    }
+  else
+    {
+      if (_dottedColumn >= _numCols-1)
+	return;
+
+      lastDottedColumn = _dottedColumn;
+
+      for (i = _dottedColumn+1; i < _numCols; i++)
+	{
+	  if ([_cells[_dottedRow][i] acceptsFirstResponder])
+	    {
+	      _dottedColumn = i;
+	      break;
+	    }
+	}
+
+      if (_dottedColumn != i)
+	return;
+
+      if (selectCell)
+	{
+	  NSCell *aCell = _cells[_dottedRow][lastDottedColumn];
+	  BOOL    isHighlighted = [aCell isHighlighted];
+
+	  if ([aCell state] || isHighlighted)
+	    {
+	      [aCell setState: NSOffState];
+	      _selectedCells[_dottedRow][lastDottedColumn] = NO;
+
+	      if (isHighlighted)
+		[self highlightCell: NO
+		      atRow: _dottedRow
+		      column: lastDottedColumn];
+	      else
+		[self drawCell: aCell];
+	    }
+
+	  [self selectCellAtRow: _dottedRow column: _dottedColumn];
+	}
+      else
+	{
+	  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
+	  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	}
+    }
+
+  [_window flushWindow];
+
+  if (selectCell)
+    [self performClick: self];
+}
+
+- (void) keyDown: (NSEvent *)theEvent
 {
   NSString *characters = [theEvent characters];
-  unichar character = 0;
+  unsigned modifiers = [theEvent modifierFlags];
+  int      i, lastDottedRow, lastDottedColumn;
+  unichar  character = 0;
 
   if ([characters length] > 0)
     {
       character = [characters characterAtIndex: 0];
     }
-
-  // TODO
-  // Selecting (not-editable, not-selectable cells) with the keyboard
-  //  NSLog (@"NSMatrix -keyDown:");
 
   switch (character)
     {
@@ -2871,11 +3209,206 @@ static SEL getSel;
     case NSEnterCharacter: 
       [self selectText: self];
       break;
+
+    case ' ':
+      if (_dottedRow != -1 && _dottedColumn != -1)
+	{
+	  NSCell *cell;
+
+	  switch (_mode)
+	    {
+	    case NSTrackModeMatrix:
+	    case NSHighlightModeMatrix:
+	      cell = _cells[_dottedRow][_dottedColumn];
+
+	      [cell setNextState];
+	      [self drawCell: cell];
+	      break;
+
+	    case NSListModeMatrix:
+	      if (!(modifiers & NSShiftKeyMask))
+		[self deselectAllCells];
+
+	    case NSRadioModeMatrix:
+	      [self selectCellAtRow: _dottedRow column: _dottedColumn];
+	      break;
+	    }
+
+	  [_window flushWindow];
+	  [self performClick: self];
+	  return;
+	}
+      break;
+
+    case NSUpArrowFunctionKey:
+      if (modifiers & NSShiftKeyMask)
+	{
+	  if (_dottedRow > 0)
+	    {
+	      lastDottedRow = _dottedRow;
+
+	      for (i = _dottedRow-1; i >= 0; i--)
+		{
+		  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+		    {
+		      _dottedRow = i;
+		      break;
+		    }
+		}
+
+	      if (_dottedRow != i)
+		return;
+
+	      [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+	      [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	      [_window flushWindow];
+	    }
+	}
+      else if (modifiers & NSAlternateKeyMask)
+	{
+	  if (_dottedRow > 0)
+	    {
+	      // TODO
+	    }
+	}
+      else
+	[self moveUp: self];
+      return;
+
+    case NSDownArrowFunctionKey:
+      if (modifiers & NSShiftKeyMask)
+	{
+	  if (_dottedRow > -1 && _dottedRow < _numRows-1)
+	    {
+	      lastDottedRow = _dottedRow;
+
+	      for (i = _dottedRow+1; i < _numRows; i++)
+		{
+		  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+		    {
+		      _dottedRow = i;
+		      break;
+		    }
+		}
+
+	      if (_dottedRow != i)
+		return;
+
+	      [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+	      [self drawCell: _cells[_dottedRow][_dottedColumn]];
+	      [_window flushWindow];
+	    }
+	}
+      else if (modifiers & NSAlternateKeyMask)
+	{
+	  // TODO
+	}
+      else
+	[self moveDown: self];
+      return;
+
+    case NSTabCharacter:
+      if (_tabKeyTraversesCells)
+	{
+	  if ([theEvent modifierFlags] & NSShiftKeyMask)
+	    {
+	      if([self _selectNextSelectableCellAfterRow: _selectedRow
+		       column: _selectedColumn])
+		return;
+	    }
+	  else
+	    {
+	      if([self _selectPreviousSelectableCellBeforeRow: _selectedRow
+		       column: _selectedColumn])
+		return;
+	    }
+	}
+      break;
+
+    case NSLeftArrowFunctionKey:
+      if (_numCols > 1)
+	{
+	  if (modifiers & NSShiftKeyMask)
+	    {
+	      if (_dottedColumn > 0)
+		{
+		  lastDottedColumn = _dottedColumn;
+
+		  for (i = _dottedColumn-1; i >= 0; i--)
+		    {
+		      if ([_cells[_dottedRow][i] acceptsFirstResponder])
+			{
+			  _dottedColumn = i;
+			  break;
+			}
+		    }
+
+		  if (_dottedColumn != i)
+		    return;
+
+		  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
+		  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+		  [_window flushWindow];
+		}
+	    }
+	  else if (modifiers & NSAlternateKeyMask)
+	    {
+	      // TODO
+	    }
+	  else
+	    [self moveLeft: self];
+
+	  return;
+	}
+      break;
+
+    case NSRightArrowFunctionKey:
+      if (_numCols > 1)
+	{
+	  if (modifiers & NSShiftKeyMask)
+	    {
+	      if (_dottedColumn > -1 && _dottedColumn < _numCols-1)
+		{
+		  lastDottedColumn = _dottedColumn;
+
+		  for (i = _dottedColumn+1; i < _numCols; i++)
+		    {
+		      if ([_cells[_dottedRow][i] acceptsFirstResponder])
+			{
+			  _dottedColumn = i;
+			  break;
+			}
+		    }
+
+		  if (_dottedColumn != i)
+		    return;
+
+		  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
+		  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+		  [_window flushWindow];
+		}
+	    }
+	  else if (modifiers & NSAlternateKeyMask)
+	    {
+	      // TODO
+	    }
+	  else
+	    [self moveRight: self];
+
+	  return;
+	}
+      break;
+
     default:
       break;
     }
 
   [super keyDown: theEvent];
+}
+
+- (void) performClick: (id)sender
+{
+  [super sendAction: _action to: _target];
 }
 
 - (BOOL) acceptsFirstResponder
@@ -3142,16 +3675,16 @@ static SEL getSel;
 
       for (; j <= colLimit; j++)
 	{
-	  NSRect	rect = [self cellFrameAtRow: i column: j];
 	  NSCell	*aCell = _cells[i][j];
 
 	  [aCell setState: state];
-	  [aCell highlight: highlight withFrame: rect inView: self];
-	  [self setNeedsDisplayInRect: rect];
-	  if (state == 0)
+
+	  if (state == NSOffState)
 	    _selectedCells[i][j] = NO;
 	  else
 	    _selectedCells[i][j] = YES;
+
+	  [self highlightCell: highlight atRow: i column: i];
 	}
     }
 }

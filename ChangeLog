@@ -1,3 +1,48 @@
+2001-04-16  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSButtonCell.m ([NSButtonCell -drawInteriorWithFrame:
+	inView:]): fix mask if cell is highlighted and it isn't in off state.
+
+	* Source/NSCell.m ([NSCell -trackMouse:inRect:ofView:untilMouseUp:]):
+	set next cell state and send action after -stopTracking:
+
+	* Source/NSBrowser.m ([NSBrowser -keyDown:]): does nothing for arrow up
+	and down.
+	([NSBrowser -moveUp:]): removed.
+	([NSBrowser -moveDown:]): removed.
+	([NSBrowser -_performLoadOfColumn:]): fix matrix creation, enable
+	matrix autoscroll.
+	([NSBrowser -_performLoadOfColumn:]): implemented reusesColumns.
+
+	* Source/NSMatrix.m ([NSMatrix -keyDown:]): implemented keyboard
+	navigation.
+	([NSMatrix -moveUp:]): likewise.
+	([NSMatrix -moveDown:]): likewise.
+	([NSMatrix -moveLeft:]): likewise.
+	([NSMatrix -moveRight:]): likewise.
+	([NSMatrix -performClick:]): implemented.
+	([NSMatrix -mouseDown:]): scroll rect only if autoscroll is enabled,
+	do not hightlight a cell directly but use the matrix method.
+	Now it handles only NSListModeMatrix mode to reduce complexity
+	introduced by other modes.
+	([NSMatrix -_mouseDownNonListMode:]): fixed.
+	([NSMatrix -highlightCell:atRow:column:]): enable the cell dotted
+	outline.
+	([NSMatrix -drawCellAtRow:column:]): likewise.
+	([NSMatrix -drawRect:]): removed drawing of dotted outline. Rewritten
+	due to changes in -getRow:column:forPoint:
+	([NSMatrix -getRow:column:forPoint:]): set row and column to -1 if
+	point is not inside a cell.
+	([NSMatrix -_selectCell:atRow:column:]): use mnemonic value for cell
+	state, does not enable dotted outline and check for nil aCell.
+	([NSMatrix -selectTextAtRow:column:]): likewise.
+	([NSMatrix -_setState:highlight:startIndex:endIndex:]): use matrix
+	highlightCell: method and mnemonic for cell state.
+	([NSMatrix -deselectAllCells]): likewise.
+	([NSMatrix -selectAll:]): likewise.
+	([NSMatrix -setSelectionFrom:to:anchor:highlight:]): likewise.
+	([NSMatrix -performKeyEquivalent:]): select next cell state.
+
 2001-04-15  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (_invalidateCoordinates): release the gstate.

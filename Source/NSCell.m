@@ -1282,9 +1282,6 @@ static NSColor	*shadowCol;
 	  NSDebugLog(@"NSCell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
-          [self setState: !_cell.state];
-	  if ((_action_mask & NSLeftMouseUpMask))
-	    [(NSControl*)controlView sendAction: action to: target];
 	}
       else
 	{
@@ -1304,6 +1301,13 @@ static NSColor	*shadowCol;
 
   if (_cell.is_continuous)
     [NSEvent stopPeriodicEvents];
+
+  if (mouseWentUp)
+    {
+      [self setNextState];
+      if ((_action_mask & NSLeftMouseUpMask))
+	[(NSControl*)controlView sendAction: action to: target];
+    }
 
   // Return YES only if the mouse went up within the cell
   if (mouseWentUp && (flag || [controlView mouse: point inRect: cellFrame]))

@@ -2539,148 +2539,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
 }
 
-- (void)moveUp:(id)sender
-{
-  if (_acceptsArrowKeys == YES)
-    {
-      NSArray       *cells;
-      NSMatrix      *matrix;
-      NSBrowserCell *selectedCell;
-      BOOL           firstPass = YES;
-      int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
-
-      selectedColumn = [self selectedColumn];
-      if (selectedColumn == -1)
-	{
-	  matrix = [self matrixInColumn: 0];
-	  cells = [matrix cells];
-	  numberOfRows = [cells count];
-	  oldSelectedRow = selectedRow = numberOfRows - 1;
-	}
-      else
-	{
-	  matrix = [self matrixInColumn: selectedColumn];
-	  cells = [matrix cells];
-	  numberOfRows = [cells count];
-	  oldSelectedRow = selectedRow = [matrix selectedRow];
-	}
-
-      while (1)
-	{
-	  if (selectedColumn == -1)
-	    {
-	      if (numberOfRows)
-		{
-		  [matrix selectCellAtRow: selectedRow column: 0];
-		  [_window makeFirstResponder: matrix];
-		  [self doClick: matrix];
-		  selectedColumn = 0;
-		}
-	      else
-		return;
-	    }
-	  else
-	    {
-	      if (!selectedRow)
-		{
-		  numberOfRows = [cells count];
-		  if(numberOfRows <= 1)
-		    return;
-
-		  selectedRow = numberOfRows;
-		  firstPass = NO;
-		}
-
-	      selectedRow--;
-
-	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow: selectedRow column: 0];
-	      [_window makeFirstResponder: matrix];
-	      [self doClick: matrix];
-	    }
-
-	  selectedCell = [matrix selectedCell];
-
-	  if (selectedCell ||
-	      (firstPass == NO && selectedRow == oldSelectedRow))
-	    break;
-	}
-
-      if (_sendsActionOnArrowKeys == YES)
-	[super sendAction: _action to: _target];
-    }
-}
-
-- (void)moveDown:(id)sender
-{
-  if (_acceptsArrowKeys)
-    {
-      NSArray       *cells;
-      NSMatrix      *matrix;
-      NSBrowserCell *selectedCell;
-      BOOL           firstPass = YES;
-      int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
-
-      selectedColumn = [self selectedColumn];
-      if (selectedColumn == -1)
-	{
-	  matrix = [self matrixInColumn: 0];
-	  oldSelectedRow = selectedRow = 0;
-	}
-      else
-	{
-	  matrix = [self matrixInColumn: selectedColumn];
-	  oldSelectedRow = selectedRow = [matrix selectedRow];
-	}
-
-      cells = [matrix cells];
-      numberOfRows = [cells count];
-
-      while (1)
-	{
-	  if (selectedColumn == -1)
-	    {
-	      if (numberOfRows)
-		{
-		  [matrix selectCellAtRow: 0 column: 0];
-		  [_window makeFirstResponder: matrix];
-		  [self doClick: matrix];
-		  selectedColumn = 0;
-		}
-	      else
-		return;
-	    }
-	  else
-	    {
-	      selectedRow++;
-
-	      if (selectedRow >= numberOfRows)
-		{
-		  if (numberOfRows <= 1)
-		    return;
-
-		  selectedRow = 0;
-		  firstPass = NO;
-		}
-
-	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow: selectedRow column: 0];
-	      [_window makeFirstResponder: matrix];
-	      [self doClick: matrix];
-	    }
-
-	  selectedCell = [matrix selectedCell];
-
-	  if (selectedCell ||
-	      (firstPass == NO && selectedRow == oldSelectedRow))
-	    break;
-	}
-
-      if (_sendsActionOnArrowKeys == YES)
-	[super sendAction: _action to: _target];
-    }
-}
-
 - (void)moveLeft:(id)sender
 {
   if (_acceptsArrowKeys)
@@ -2768,10 +2626,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       switch (character)
 	{
 	case NSUpArrowFunctionKey:
-	  [self moveUp:self];
-	  return;
 	case NSDownArrowFunctionKey:
-	  [self moveDown:self];
 	  return;
 	case NSLeftArrowFunctionKey:
 	  [self moveLeft:self];
@@ -3025,7 +2880,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (void)_performLoadOfColumn: (int)column
 {
-  id bc, sc, matrix = nil;
+  id bc, sc, matrix;
   NSRect matrixRect = {{0, 0}, {100, 100}};
   NSSize matrixIntercellSpace = {0, 0};
 
@@ -3038,28 +2893,37 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (!(sc = [bc columnScrollView]))
     return;
 
+  matrix = [bc columnMatrix];
+
   // Loading is different based upon passive/active delegate
   if (_passiveDelegate)
     {
       // Ask the delegate for the number of rows
-      int n = [_browserDelegate browser: self numberOfRowsInColumn: column];
+      int i, n = [_browserDelegate browser: self numberOfRowsInColumn: column];
 
-      if (_reusesColumns)
+      if (_reusesColumns && matrix)
 	{
+	  [matrix renewRows: n columns: 1];
+	  [sc setDocumentView: matrix];
+
+	  for (i = 0; i < n; i++)
+	    {
+	      [[matrix cellAtRow: i column: 0] setLoaded: NO];
+	      [self loadedCellAtRow: i column: column];
+	    }
 	}
       else
 	{
-	  int i;
-
 	  // create a new col matrix
-	  matrix = [_browserMatrixClass alloc];
-	  matrix = [matrix initWithFrame: matrixRect
-			   mode: NSListModeMatrix
-			   prototype: _browserCellPrototype
-			   numberOfRows: n
-			   numberOfColumns: 1];
+	  matrix = [[_browserMatrixClass alloc]
+		     initWithFrame: matrixRect
+		     mode: NSListModeMatrix
+		     prototype: _browserCellPrototype
+		     numberOfRows: n
+		     numberOfColumns: 1];
 	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
+	  [matrix setAutoscroll: YES];
 	  if (!_allowsMultipleSelection)
 	    {
 	      [matrix setMode: NSRadioModeMatrix];
@@ -3082,20 +2946,27 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
   else
     {
-      if (_reusesColumns)
+      if (_reusesColumns && matrix)
 	{
+	  [matrix renewRows: 0 columns: 1];
+	  [sc setDocumentView: matrix];
+
+	  [_browserDelegate browser: self
+		createRowsForColumn: column
+			   inMatrix: matrix];
 	}
       else
 	{
 	  // create a new col matrix
-	  matrix = [_browserMatrixClass alloc];
-	  [matrix initWithFrame: matrixRect
-		  mode: NSRadioModeMatrix
-		  prototype: _browserCellPrototype
-		  numberOfRows: 0
-		  numberOfColumns: 0];
+	  matrix = [[_browserMatrixClass alloc]
+		     initWithFrame: matrixRect
+		     mode: NSRadioModeMatrix
+		     prototype: _browserCellPrototype
+		     numberOfRows: 0
+		     numberOfColumns: 0];
 	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
+	  [matrix setAutoscroll: YES];
 	  if (_allowsMultipleSelection)
 	    {
 	      [matrix setMode: NSListModeMatrix];

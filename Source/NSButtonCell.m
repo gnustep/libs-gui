@@ -602,7 +602,12 @@
   [controlView lockFocus];
 
   if (_cell.is_highlighted)
-    mask = _highlightsByMask;
+    {
+      mask = _highlightsByMask;
+
+      if (_cell.state)
+	mask &= ~_showAltStateMask;
+    }
   else if (_cell.state)
     mask = _showAltStateMask;
   else
