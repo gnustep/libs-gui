@@ -61,6 +61,7 @@
 
 #include <base/GSIMap.h>
 
+static NSDictionary	*blank;
 static NSLock		*attrLock = nil;
 static GSIMapTable_t	attrMap;
 static SEL		lockSel;
@@ -235,6 +236,7 @@ static void _setup()
   if (infCls == 0)
     {
       NSMutableArray	*a;
+      NSDictionary	*d;
 
       GSIMapInitWithZoneAndCapacity(&attrMap, NSDefaultMallocZone(), 32);
 
@@ -256,6 +258,10 @@ static void _setup()
       oatImp = [a methodForSelector: oatSel];
       remImp = (void (*)())[a methodForSelector: remSel];
       RELEASE(a);
+
+      d = [NSDictionary new];
+      blank = cacheAttributes(d);
+      RELEASE(d);
     }
 }
 
@@ -278,7 +284,7 @@ _setAttributesFrom(
 
   if (aRange.length <= 0)
     {
-      attr = [NSDictionary dictionary];
+      attr = blank;
     }
   else
     {
@@ -406,7 +412,7 @@ _attributesAtIndexEffectiveRange(
     {
       info = OBJECTAT(i);
       NSAssert(info->loc > l, NSInternalInconsistencyException);
-      NSAssert(info->loc <= len, NSInternalInconsistencyException);
+      NSAssert(info->loc < len, NSInternalInconsistencyException);
       l = info->loc;
     }
 }
@@ -489,7 +495,7 @@ _attributesAtIndexEffectiveRange(
 
       if (attributes == nil)
         {
-          attributes = [NSDictionary dictionary];
+          attributes = blank;
         }
       attributes = cacheAttributes(attributes);
       info = NEWINFO(z, attributes, 0);
@@ -548,7 +554,7 @@ _attributesAtIndexEffectiveRange(
     }
   if (attributes == nil)
     {
-      attributes = [NSDictionary dictionary];
+      attributes = blank;
     }
   attributes = cacheAttributes(attributes);
 SANITY();
@@ -709,6 +715,8 @@ SANITY();
   attrs = _attributesAtIndexEffectiveRange(start, &effectiveRange,
     tmpLength, _infoArray, &arrayIndex);
 
+  moveLocations = [aString length] - range.length;
+
   arrayIndex++;
   if (NSMaxRange(effectiveRange) < NSMaxRange(range))
     {
@@ -737,10 +745,31 @@ SANITY();
 		}
 	    }
 	}
-      info->loc = NSMaxRange(range);
-    }
+      if (NSMaxRange(range) < [_textChars length])
+	{
+	  info->loc = NSMaxRange(range);
+	}
+      else
+	{
+	  if (arrayIndex != 0)
+	    {
+	      REMOVEAT(arrayIndex);
+	      arraySize--;
+	    }
+	  else
+	    {
+	      NSDictionary	*d = blank;
 
-  moveLocations = [aString length] - range.length;
+	      unCacheAttributes(info->attrs);
+	      DESTROY(info->attrs);
+	      d = cacheAttributes(d);
+	      info->attrs = d;
+	      /* set location so it will be correct after being modified
+	      below */
+	      info->loc = NSMaxRange(range);
+	    }
+	}
+    }
 
   /*
    * If we are replacing a range with a zero length string and the
@@ -751,15 +780,29 @@ SANITY();
     {
       attrs = _attributesAtIndexEffectiveRange(start, &effectiveRange,
         tmpLength, _infoArray, &arrayIndex);
-      arrayIndex ++;
+      arrayIndex++;
 
       if (effectiveRange.location == range.location
-        && effectiveRange.length == range.length)
-        {
-          arrayIndex--;
-          REMOVEAT(arrayIndex);
-          arraySize--;
-        }
+	&& effectiveRange.length == range.length)
+	{
+	  arrayIndex--;
+	  if (arrayIndex != 0)
+	    {
+	      REMOVEAT(arrayIndex);
+	      arraySize--;
+	    }
+	  else
+	    {
+	      NSDictionary	*d = blank;
+
+	      info = OBJECTAT(0);
+	      unCacheAttributes(info->attrs);
+	      DESTROY(info->attrs);
+	      d = cacheAttributes(d);
+	      info->attrs = d;
+	      info->loc = NSMaxRange(range);
+	    }
+	}
     }
 
   /*

@@ -279,12 +279,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) dealloc
 {
-  if (_nextKeyView)
-    [_nextKeyView setPreviousKeyView: nil];
-
-  if (_previousKeyView)
-     [_previousKeyView setNextKeyView: nil];
-
+  while ([_sub_views count] > 0)
+    {
+      [[_sub_views lastObject] removeFromSuperviewWithoutNeedingDisplay];
+    }
+  if (_nextKeyView != nil)
+    {
+      [_nextKeyView setPreviousKeyView: nil];
+    }
+  if (_previousKeyView != nil)
+    {
+      [_previousKeyView setNextKeyView: nil];
+    }
   RELEASE(_matrixToWindow);
   RELEASE(_matrixFromWindow);
   RELEASE(_frameMatrix);
@@ -464,7 +470,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   redisplay.  </p>
 
   <p> This is dangerous to use during display, since it alters the
-  rectangles needing display.  </p> */
+  rectangles needing display. In this case, you can use the
+  -removeFromSuperviewWithoutNeedingDisplay method instead.</p> */
 - (void) removeFromSuperview
 {
   if (_super_view != nil)
@@ -475,7 +482,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  <p> Removes the view from the receivers list of subviews and from
+  <p> Removes aSubview from the receivers list of subviews and from
   the responder chain.  </p>
 
   <p> Also invokes [aView -viewWillMoveToWindow: nil] to handle
@@ -491,8 +498,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    * which assumes the view is still in the view hierarchy
    */
   for (view = [_window firstResponder];
-       view != nil && [view respondsToSelector:@selector(superview)];
-       view = [view superview] )
+    view != nil && [view respondsToSelector:@selector(superview)];
+    view = [view superview])
     {
       if (view == aSubview)
 	{      

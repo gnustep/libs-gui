@@ -1,3 +1,12 @@
+2002-03-06  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: Applied fix for left-over attributes
+	at end of string.  Patch supplied by Alexander Malmberg
+	<alexander@malmberg.org>.  Reformatting to conform to GNUstep
+	standards, and optimisation by me.
+	* Source/NSView.m: -dealloc remove subviews from this view as
+	suggested by Nicola.
+
 2002-03-05  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m modified to the methods which
