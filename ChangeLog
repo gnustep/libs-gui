@@ -1,3 +1,14 @@
+2002-12-13 02:00  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSText.h, Headers/gnustep/gui/NSTextView.h,
+	Source/NSText.m, Source/NSTextView.m: Moved ivars from NSText to
+	NSTextView. Added or updated documentation for many methods. Marked
+	primitive and non-openstep methods.
+
+	* Source/GSHorizontalTypesetter.m, Source/GSLayoutManager.m,
+	Source/GSTextStorage.m, Source/NSTextContainer.m,
+	Source/NSTextStorage.m: Cleaned up includes.
+
 2002-12-01 13:27  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,

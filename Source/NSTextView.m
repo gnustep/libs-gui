@@ -40,6 +40,8 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#include <AppKit/NSTextView.h>
+
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
@@ -47,31 +49,41 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSValue.h>
+#include <Foundation/NSTimer.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSApplication.h>
-#include <AppKit/NSWindow.h>
+#include <AppKit/NSDragging.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSColor.h>
-#include <AppKit/NSTextView.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSTextAttachment.h>
+#include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSColorPanel.h>
-#include <AppKit/NSAttributedString.h>
+
 
 /* From NSView.m */
-NSView *viewIsPrinting;
+extern NSView *viewIsPrinting;
+
 
 static const int currentVersion = 2;
 
+
 #define HUGE 1e7
+
 
 /* not the same as NSMakeRange! */
 static inline
@@ -82,6 +94,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   else
     return NSMakeRange (a2, a1 - a2);
 }
+
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(text##notif_name: )]) \
@@ -94,7 +107,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
  * Synchronizing flags.  Used to manage synchronizing shared
  * attributes between textviews coupled with the same layout manager.
  * These synchronizing flags are only accessed when
- * _tvf.multiple_textviews == YES and this can only happen if we have
+ * _tf.multiple_textviews == YES and this can only happen if we have
  * a non-nil NSLayoutManager - so we don't check. */
 
 /* YES when in the process of synchronizing text view attributes.  
@@ -122,12 +135,14 @@ static BOOL noLayoutManagerException ()
    change to be made.  We explicitly check for a layout manager, and
    raise an exception if not found. */
 #define BEGAN_EDITING \
-(_layoutManager ? _layoutManager->_beganEditing : noLayoutManagerException ())
+  (_layoutManager ? _layoutManager->_beganEditing : noLayoutManagerException ())
 #define SET_BEGAN_EDITING(X) \
-if (_layoutManager != nil) _layoutManager->_beganEditing = X
+  if (_layoutManager != nil) _layoutManager->_beganEditing = X
+
 
 /* The shared notification center */
 static NSNotificationCenter *nc;
+
 
 @interface NSTextView (GNUstepPrivate)
 /*
@@ -154,6 +169,7 @@ static NSNotificationCenter *nc;
 - (void) pasteSelection;
 @end
 
+
 @implementation NSTextView
 
 /* Class methods */
@@ -178,6 +194,7 @@ static NSNotificationCenter *nc;
   [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
 						       returnTypes: types];
 }
+
 
 /* Initializing Methods */
 
@@ -206,7 +223,7 @@ static NSNotificationCenter *nc;
 
   /* We keep a flag to remember that we are directly responsible for 
      managing the text objects. */
-  _tvf.owns_text_network = YES;
+  _tf.owns_text_network = YES;
 
   return textContainer;
 }
@@ -265,7 +282,7 @@ static NSNotificationCenter *nc;
      textView (us)  --RETAINs--> textStorage
      textStorage    --RETAINs--> layoutManager 
      layoutManager  --RETAINs--> textContainer 
-     textContainter --RETAINs --> textView (us) */
+     textContainer  --RETAINs--> textView (us) */
 
   /* The text system should be destroyed when the textView (us) is
      released.  To get this result, we send a RELEASE message to us
@@ -282,9 +299,38 @@ static NSNotificationCenter *nc;
 
   [super encodeWithCoder: aCoder];
 
-  flag = _tvf.smart_insert_delete;
+  [aCoder encodeConditionalObject: _delegate];
+
+  flag = _tf.is_field_editor;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tvf.allows_undo;
+  flag = _tf.is_editable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_selectable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_rich_text;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.imports_graphics;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.draws_background;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_horizontally_resizable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_vertically_resizable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_font_panel;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_ruler;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_ruler_visible;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+  [aCoder encodeObject: _background_color];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+
+  flag = _tf.smart_insert_delete;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.allows_undo;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   [aCoder encodeObject: _caret_color];
   [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
@@ -299,18 +345,52 @@ static NSNotificationCenter *nc;
   int version = [aDecoder versionForClassName: 
 			    @"NSTextView"];
 
+  if (version == 2 || version == 1)
+  {
+    BOOL flag;
+
+    self = [super initWithCoder: aDecoder];
+
+    _delegate  = [aDecoder decodeObject];
+
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_field_editor = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_editable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_selectable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_rich_text = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.imports_graphics = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.draws_background = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_horizontally_resizable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_vertically_resizable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.uses_font_panel = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.uses_ruler = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_ruler_visible = flag;
+
+    _background_color  = RETAIN([aDecoder decodeObject]);
+    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+  }
+
   if (version == currentVersion)
     {
       NSTextContainer *aTextContainer; 
       BOOL flag;
       NSSize containerSize;
-     
-      self = [super initWithCoder: aDecoder];
-      
+
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tvf.smart_insert_delete = flag;
+      _tf.smart_insert_delete = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tvf.allows_undo = flag;
+      _tf.allows_undo = flag;
       
       _caret_color  = RETAIN([aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
@@ -335,12 +415,10 @@ static NSNotificationCenter *nc;
       NSTextContainer *aTextContainer; 
       BOOL flag;
       
-      self = [super initWithCoder: aDecoder];
-      
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tvf.smart_insert_delete = flag;
+      _tf.smart_insert_delete = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tvf.allows_undo = flag;
+      _tf.allows_undo = flag;
       
       /* build up the rest of the text system, which doesn't get stored 
 	 <doesn't even implement the Coding protocol>. */
@@ -357,7 +435,7 @@ static NSNotificationCenter *nc;
 
 - (void) dealloc
 {
-  if (_tvf.owns_text_network == YES)
+  if (_tf.owns_text_network == YES)
     {
       if (_textStorage != nil)
 	{
@@ -390,11 +468,13 @@ static NSNotificationCenter *nc;
   RELEASE (_markedTextAttributes);
   RELEASE (_caret_color);
   RELEASE (_typingAttributes);
+  RELEASE (_background_color);
 
   /* FIXME - delegate notifications */
 
   [super dealloc];
 }
+
 
 /* 
  * Implementation of methods declared in superclass but depending 
@@ -472,20 +552,20 @@ static NSNotificationCenter *nc;
   [self didChangeText];
 }
 
+
 - (NSData*) RTFDFromRange: (NSRange)aRange
 {
   return [_textStorage RTFDFromRange: aRange  documentAttributes: nil];
 }
-
 - (NSData*) RTFFromRange: (NSRange)aRange
 {
   return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
 }
-
 - (NSString*) string
 {
   return [_textStorage string];
 }
+
 
 /*
  * [NSText] Managing the Ruler
@@ -920,7 +1000,7 @@ static NSNotificationCenter *nc;
   /* Safety call */
   [_textContainer setWidthTracksTextView: !flag];
 
-  [super setHorizontallyResizable: flag];
+  _tf.is_horizontally_resizable = flag;
 }
 
 - (void) setVerticallyResizable: (BOOL)flag
@@ -928,7 +1008,7 @@ static NSNotificationCenter *nc;
   /* Safety call */
   [_textContainer setHeightTracksTextView: !flag];
 
-  [super setVerticallyResizable: flag];
+  _tf.is_vertically_resizable = flag;
 }
 
 - (void) sizeToFit
@@ -1014,13 +1094,17 @@ static NSNotificationCenter *nc;
       NSRect rect;
       
       charRange = NSMakeRange (aRange.location, 0);
+  if (charRange.location == [[[_layoutManager textStorage] string] length])
+    {
+      rect = NSZeroRect;
+      goto ugly_hack_done;
+    }
       glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
 				   actualCharacterRange: NULL];
       glyphIndex = glyphRange.location;
       
       rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
 			     effectiveRange: NULL];
-      
       rect.origin.x += _textContainerOrigin.x;
       rect.origin.y += _textContainerOrigin.y;
       if ([self selectionAffinity] != NSSelectionAffinityUpstream)
@@ -1032,6 +1116,7 @@ static NSNotificationCenter *nc;
 	  rect.origin.x += loc.x;      
 	}
       
+ugly_hack_done:
       rect.size.width = 1;
       [self scrollRectToVisible: rect];
       
@@ -1083,12 +1168,12 @@ static NSNotificationCenter *nc;
 
   if ([[_layoutManager textContainers] count] > 1)
     {
-      _tvf.multiple_textviews = YES;
+      _tf.multiple_textviews = YES;
       _notifObject = [_layoutManager firstTextView];
     }
   else
     {
-      _tvf.multiple_textviews = NO;
+      _tf.multiple_textviews = NO;
       _notifObject = self;
     }  
 
@@ -1099,11 +1184,11 @@ static NSNotificationCenter *nc;
       if ([_delegate respondsToSelector: 
 		       @selector(shouldChangeTextInRange:replacementString:)])
 	{
-	  _tvf.delegate_responds_to_should_change = YES;
+	  _tf.delegate_responds_to_should_change = YES;
 	}
       else
 	{
-	  _tvf.delegate_responds_to_should_change = NO;
+	  _tf.delegate_responds_to_should_change = NO;
 	}
 
       /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
@@ -1122,7 +1207,7 @@ static NSNotificationCenter *nc;
 - (void) setTextContainer: (NSTextContainer*)container
 {
   _textContainer = container;
-  _layoutManager = [container layoutManager];
+  _layoutManager = (NSLayoutManager *)[container layoutManager];
   _textStorage = [_layoutManager textStorage];
 
   [self _updateMultipleTextViews];
@@ -1245,12 +1330,12 @@ static NSNotificationCenter *nc;
 
 - (void) setAllowsUndo: (BOOL)flag
 {
-  _tvf.allows_undo = flag;
+  _tf.allows_undo = flag;
 }
 
 - (BOOL) allowsUndo
 {
-  return _tvf.allows_undo;
+  return _tf.allows_undo;
 }
 
 - (void) setNeedsDisplayInRect: (NSRect)rect
@@ -1398,7 +1483,7 @@ static NSNotificationCenter *nc;
 }
 
 #define NSTEXTVIEW_SYNC \
-  if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_FLAGS == NO)) \
+  if (_tf.multiple_textviews && (IS_SYNCHRONIZING_FLAGS == NO)) \
     {  [self _syncTextViewsByCalling: _cmd  withFlag: flag]; \
     return; }
 
@@ -1419,7 +1504,13 @@ static NSNotificationCenter *nc;
 - (void) setEditable: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
-  [super setEditable: flag];
+
+  _tf.is_editable = flag;
+
+  if (flag)
+    {
+      _tf.is_selectable = YES;
+    }
   
   if ([self shouldDrawInsertionPoint])
     {
@@ -1439,22 +1530,31 @@ static NSNotificationCenter *nc;
 - (void) setFieldEditor: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
-  [self setHorizontallyResizable: NO];
+  [self setHorizontallyResizable: NO]; /* TODO: why? */
   [self setVerticallyResizable: NO];
-  [super setFieldEditor: flag];
+  _tf.is_field_editor = flag;
 }
 
 - (void) setSelectable: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
-  [super setSelectable: flag];
+  _tf.is_selectable = flag;
+  if (flag == NO)
+    {
+      _tf.is_editable = NO;
+    }
 }
 
 - (void) setRichText: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
 
-  [super setRichText: flag];
+  _tf.is_rich_text  = flag;
+  if (flag == NO)
+    {
+      _tf.imports_graphics = NO;
+    }
+
   [self updateDragTypeRegistration];
   /* FIXME/TODO: Also convert text to plain text or to rich text */
 }
@@ -1463,7 +1563,12 @@ static NSNotificationCenter *nc;
 {
   NSTEXTVIEW_SYNC;
 
-  [super setImportsGraphics: flag];
+  _tf.imports_graphics = flag;
+  if (flag == YES)
+    {
+      _tf.is_rich_text = YES;
+    }
+
   [self updateDragTypeRegistration];
 }
 
@@ -1481,7 +1586,7 @@ static NSNotificationCenter *nc;
 - (void) setUsesFontPanel: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
-  [super setUsesFontPanel: flag];
+  _tf.uses_font_panel = flag;
 }
 
 - (void) setRulerVisible: (BOOL)flag
@@ -1539,7 +1644,7 @@ static NSNotificationCenter *nc;
 	}
       
       /* Ask delegate to modify the range */
-      if (_tvf.delegate_responds_to_will_change_sel)
+      if (_tf.delegate_responds_to_will_change_sel)
 	{
 	  charRange = [_delegate textView: _notifObject
 			     willChangeSelectionFromCharacterRange: oldRange
@@ -1715,11 +1820,17 @@ static NSNotificationCenter *nc;
       return;
     }
 
+  if (_selected_range.location == [[[_layoutManager textStorage] string] length])
+    {
+      rect = NSZeroRect;
+      goto ugly_hack_done;
+    }
+
   charRange = NSMakeRange (_selected_range.location, 0);
   glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
 			       actualCharacterRange: NULL];
   glyphIndex = glyphRange.location;
-  
+
   rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
 			 effectiveRange: NULL];
   rect.origin.x += _textContainerOrigin.x;
@@ -1763,7 +1874,7 @@ static NSNotificationCenter *nc;
 	  rect.origin.x += loc.x;	  
 	}
     }
-
+ugly_hack_done:
 
   rect.size.width = 1;
 
@@ -2285,7 +2396,7 @@ replacing the selection.
 	  object: _notifObject];
     }
 
-  if (_tvf.delegate_responds_to_should_change)
+  if (_tf.delegate_responds_to_should_change)
     {
       return [_delegate shouldChangeTextInRange: affectedCharRange 
 			replacementString: replacementString];
@@ -2303,12 +2414,12 @@ replacing the selection.
 
 - (void) setSmartInsertDeleteEnabled: (BOOL)flag
 {
-  _tvf.smart_insert_delete = flag;
+  _tf.smart_insert_delete = flag;
 }
 
 - (BOOL) smartInsertDeleteEnabled
 {
-  return _tvf.smart_insert_delete;
+  return _tf.smart_insert_delete;
 }
 
 - (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
@@ -3322,7 +3433,7 @@ afterString in order over charRange. */
       _drawInsertionPointNow = NO;
     }
 
-  if (_tvf.multiple_textviews == YES)
+  if (_tf.multiple_textviews == YES)
     {
       id futureFirstResponder;
       NSArray *textContainers;
@@ -3444,8 +3555,13 @@ afterString in order over charRange. */
 
     }
 
+printf("%@ drawRect: (%g %g)+(%g %g)\n",
+	self,rect.origin.x,rect.origin.y,
+	rect.size.width,rect.size.height);
   [_layoutManager drawGlyphsForGlyphRange: drawnRange 
 		  atPoint: _textContainerOrigin];
+printf("insertion point %@\n",
+	NSStringFromRect(_insertionPointRect));
 
   if ([self shouldDrawInsertionPoint])
     {
@@ -3709,7 +3825,7 @@ afterString in order over charRange. */
 - (BOOL) rulerView: (NSRulerView*)ruler
 shouldRemoveMarker: (NSRulerMarker*)marker
 {
-  return [(id)[marker representedObject] isKindOfClass: [NSTextTab class]];
+  return [(NSObject *)[marker representedObject] isKindOfClass: [NSTextTab class]];
 }
 
 /**
@@ -3753,7 +3869,7 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   SEL selector;
   
   /* Code to allow sharing the delegate */
-  if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_DELEGATES == NO))
+  if (_tf.multiple_textviews && (IS_SYNCHRONIZING_DELEGATES == NO))
     {
       /* Invoke setDelegate: on all the textviews which share this
          delegate. */
@@ -3783,26 +3899,26 @@ shouldRemoveMarker: (NSRulerMarker*)marker
       [nc removeObserver: _delegate  name: nil  object: _notifObject];
     }
 
-  [super setDelegate: anObject];
+  _delegate = anObject;
 
   selector = @selector(shouldChangeTextInRange:replacementString:);
   if ([_delegate respondsToSelector: selector])
     {
-      _tvf.delegate_responds_to_should_change = YES;
+      _tf.delegate_responds_to_should_change = YES;
     }
   else
     {
-      _tvf.delegate_responds_to_should_change = NO;
+      _tf.delegate_responds_to_should_change = NO;
     }
 
   selector = @selector(textView:willChangeSelectionFromCharacterRange:toCharacterRange:);
   if ([_delegate respondsToSelector: selector])
     {
-      _tvf.delegate_responds_to_will_change_sel = YES;
+      _tf.delegate_responds_to_will_change_sel = YES;
     }
   else
     {
-      _tvf.delegate_responds_to_will_change_sel = NO;
+      _tf.delegate_responds_to_will_change_sel = NO;
     }
   
   /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
@@ -4588,6 +4704,182 @@ other than copy/paste or dragging. */
   // Should we change the insertion point, based on the event position?
   [self pasteSelection];
 }
-@end
 
+
+
+/* TODO: reorganize */
+
+- (NSColor*) backgroundColor
+{
+  return _background_color;
+}
+- (BOOL) drawsBackground
+{
+  return _tf.draws_background;
+}
+
+
+/* TODO: scroll view stuff is probably incorrect; iirc, NSTextView is
+supposed to automatically constrain its effective min size to the size
+of any clip view it's inside, so the scroll view's background color is
+never used */
+
+- (void) setBackgroundColor: (NSColor*)color
+{
+  if (![_background_color isEqual: color])
+    {
+      ASSIGN (_background_color, color);
+      
+      [self setNeedsDisplay: YES];
+
+      if (!_tf.is_field_editor)
+	{
+	  /* If we are embedded in a scrollview, we might not be
+	     filling all the scrollview's area (a textview might
+	     resize itself dynamically in response to user input).  If
+	     this is the case, the scrollview is drawing the rest of
+	     the background - change that too.  */
+	  NSScrollView *sv = [self enclosingScrollView];
+	  
+	  if (sv != nil)
+	    {
+	      [sv setBackgroundColor: color];
+	    }
+	}
+    }
+}
+
+- (void) setDrawsBackground: (BOOL)flag
+{
+  if (_tf.draws_background != flag)
+    {
+      _tf.draws_background = flag;
+
+      [self setNeedsDisplay: YES];
+
+      if (!_tf.is_field_editor)
+	{
+	  /* See comment in setBackgroundColor:.  */
+	  NSScrollView *sv = [self enclosingScrollView];
+	  
+	  if (sv != nil)
+	    {
+	      [sv setDrawsBackground: flag];
+	    }
+	}
+    }
+}
+
+/*
+ * Managing Global Characteristics
+ */
+- (BOOL) importsGraphics
+{
+  return _tf.imports_graphics;
+}
+
+- (BOOL) isEditable
+{
+  return _tf.is_editable;
+}
+
+- (BOOL) isFieldEditor
+{
+  return _tf.is_field_editor;
+}
+
+- (BOOL) isRichText
+{
+  return _tf.is_rich_text;
+}
+
+- (BOOL) isSelectable
+{
+  return _tf.is_selectable;
+}
+
+
+/*
+ * Using the font panel
+ */
+- (BOOL) usesFontPanel
+{
+  return _tf.uses_font_panel;
+}
+
+/*
+ * Managing the Ruler
+ */
+- (BOOL) isRulerVisible
+{
+  return _tf.is_ruler_visible;
+}
+
+
+/*
+ * Sizing the Frame Rectangle
+ */
+- (BOOL) isHorizontallyResizable
+{
+  return _tf.is_horizontally_resizable;
+}
+
+- (BOOL) isVerticallyResizable
+{
+  return _tf.is_vertically_resizable;
+}
+
+- (NSSize) maxSize
+{
+  return _maxSize;
+}
+
+- (NSSize) minSize
+{
+  return _minSize;
+}
+
+- (void) setMaxSize: (NSSize)newMaxSize
+{
+  _maxSize = newMaxSize;
+}
+
+- (void) setMinSize: (NSSize)newMinSize
+{
+  _minSize = newMinSize;
+}
+
+
+/*
+ * Managing the Delegate
+ */
+- (id) delegate
+{
+  return _delegate;
+}
+
+
+/* text lays out from top to bottom */
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
+
+-(BOOL) needsPanelToBecomeKey
+{
+  return _tf.is_editable;
+}
+
+- (BOOL) isOpaque
+{
+  if (_tf.draws_background == NO
+      || _background_color == nil
+      || [_background_color alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES;
+}
+
+@end
 
