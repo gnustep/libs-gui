@@ -25,52 +25,11 @@
 
 #include <string.h>
 
+#include <Foundation/NSObjCRuntime.h>
 #import <AppKit/NSActionCell.h>
 #include <AppKit/GMArchiver.h>
 #include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
-
-#if GNU_RUNTIME
-
-#include <objc/objc-api.h>
-#include <objc/Protocol.h>
-#include <objc/encoding.h>
-
-#else /* NeXT_RUNTIME */
-
-#include <objc/objc-class.h>
-//#include <extensions/objc-api.h>
-//#include <extensions/encoding.h>
-#endif
-
-static void
-object_set_instance_variable (id anObject,
-			      const char* variableName,
-			      const void* value)
-{
-  struct objc_class* class;
-  struct objc_ivar_list* ivars;
-  int i;
-
-  if (!anObject)
-    return;
-
-//  NSLog (@"%@: setting ivar '%s' to %x", anObject, variableName, value);
-  class = [anObject class];
-  ivars = class->ivars;
-  if (!ivars)
-    return;
-
-  for (i = 0; i < ivars->ivar_count; i++) {
-    struct objc_ivar ivar = ivars->ivar_list[i];
-
-    if (ivar.ivar_name && !strcmp (ivar.ivar_name, variableName)) {
-      /* We found it! */
-      *((void**)(((char*)anObject) + ivar.ivar_offset)) = value;
-      break;
-    }
-  }
-}
 
 @implementation IMConnector
 
@@ -109,7 +68,7 @@ object_set_instance_variable (id anObject,
     [_source setTarget:_destination];
   }
   else
-    object_set_instance_variable (_source, "target", [_destination retain]);
+    GSSetInstanceVariable (_source, @"target", (void*)[_destination retain]);
 
   if ([_source respondsToSelector:@selector(setAction:)]) {
 //    NSLog (@"%@: setting action to %@",
@@ -117,7 +76,7 @@ object_set_instance_variable (id anObject,
     [_source setAction:action];
   }
   else
-    object_set_instance_variable (_source, "action", action);
+    GSSetInstanceVariable (_source, @"action", (void*)action);
 }
 
 @end /* IMControlConnector:IMConnector */
@@ -140,7 +99,7 @@ object_set_instance_variable (id anObject,
   if (setSelector && [_source respondsToSelector:setSelector])
     [_source performSelector:setSelector withObject:_destination];
   else
-    object_set_instance_variable(_source, [label cString], [_destination retain]);
+    GSSetInstanceVariable(_source, label, (void*)[_destination retain]);
 }
 
 @end /* IMOutletConnector */
