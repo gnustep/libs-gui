@@ -444,9 +444,14 @@ static	Class	concrete;
   [self subclassResponsibility: _cmd];
 }
 
-- (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange
+- (void) setFont: (NSFont*)font  range: (NSRange)aRange
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange
+{
+  [self setFont: font  range: aRange];
 }
 
 /*
