@@ -10,6 +10,8 @@
 	unbordered buttons.
 	* Source/NSToolbar.m: Changes for new toolbar implementation.
 	* Source/NSToolbarItem.m: same...
+	* Source/NSWindow+Toolbar.[hm]: New category to localize
+	changes for NSToolbar which need to reside in NSWindow.
 
 2004-02-24  Fred Kiefer <FredKiefer@gmx.de>
 
