@@ -158,6 +158,15 @@ NSDictionary *paperSizes = nil;
   [super dealloc];
 }
 
+- (id) copyWithZone: (NSZone*)z
+{
+  NSPrintInfo *new = (NSPrintInfo *)NSCopyObject(self, 0, z);
+
+  new->_info = [_info mutableCopyWithZone: z];
+
+  return new;
+}
+
 //
 // Managing the Printing Rectangle 
 //
