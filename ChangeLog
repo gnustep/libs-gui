@@ -1,3 +1,14 @@
+2000-11-13  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSPrintInfo.h: Added NSCopying protocol.
+	* Source/NSPrintInfo.m: Added method [copyWithZone:].
+	* Source/NSView.m: Implemented [print:], [fax:],
+	[dataWithEPSInsideRect:] and [writeEPSInsideRect:toPasteboard:].
+	* Source/NSWindow.m:  Implemented [print:], [fax:],
+	[dataWithEPSInsideRect:].
+	* Headers/gnustep/gui/NSPrintOperation.h: Added ivars and PDF operations. 
+	* Source/NSPrintOperation.m: Started implementation of printing.
+	
 2000-11-13  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: partial rewrite to cache/unique dictionaries
