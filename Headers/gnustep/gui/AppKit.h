@@ -148,6 +148,9 @@
 #include <AppKit/NSSplitView.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTableHeaderCell.h>
+#include <AppKit/NSTableHeaderView.h>
+#include <AppKit/NSTableView.h>
 #include <AppKit/NSTabView.h>
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/NSText.h>
