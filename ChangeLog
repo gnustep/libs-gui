@@ -2,8 +2,9 @@
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,
 	Source/GSLayoutManager.m, Source/NSLayoutManager.m: Add
-	-_didInvalidateLayout method that is called whenever layout has
-	been invalidated. Use it in NSLayoutManager to resize text views.
+	-_didInvalidateLayout method that is called whenever any layout
+	information has been invalidated. Use it in NSLayoutManager to
+	resize text views.
 
 2003-02-09 15:23  Alexander Malmberg <alexander@malmberg.org>
 
