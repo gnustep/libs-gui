@@ -2040,7 +2040,8 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitDraggingStatus:
-	      NSLog(@"Internal: dropped GSAppKitDraggingStatus event\n");
+	      NSDebugLLog(@"NSDragging",
+		@"Internal: dropped GSAppKitDraggingStatus event");
 	      break;
 
 	    case GSAppKitDraggingExit:
@@ -2089,7 +2090,8 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitDraggingFinished:
 	      _lastDragView = nil;
-	      NSLog(@"Internal: dropped GSAppKitDraggingFinished event\n");
+	      NSDebugLLog(@"NSDragging",
+		@"Internal: dropped GSAppKitDraggingFinished event");
 	      break;
 
 	    default:
