@@ -54,7 +54,6 @@
 #include <AppKit/NSButton.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSCachedImageRep.h>
-#include <AppKit/NSCStringText.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSColor.h>

@@ -705,22 +705,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSControl (GMArchiverMethods) */
 
-#ifndef __APPLE__
-@implementation NSCStringText (GMArchiverMethods)
-
-- (void)encodeWithModelArchiver:(GMArchiver*)archiver
-{
-  [super encodeWithModelArchiver:archiver];
-}
-
-- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
-{
-  return [super initWithModelUnarchiver:unarchiver];
-}
-
-@end /* NSCStringText (GMArchiverMethods) */
-#endif
-
 @implementation NSFont (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver

@@ -50,11 +50,6 @@
 @interface NSControl (GMArchiverMethods) <ModelCoding>
 @end
 
-#ifndef __APPLE__ /* On MacOSX NSCStringText is depricated. */
-@interface NSCStringText (GMArchiverMethods) <ModelCoding>
-@end
-#endif
-
 @interface NSFont (GMArchiverMethods) <ModelCoding>
 @end
 
