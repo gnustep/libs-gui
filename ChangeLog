@@ -1,3 +1,9 @@
+2002-04-30  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.7.7
+	* Documentation/news.texi: Update
+	* NEWS: Regen.
+
 Fri Apr 26 12:45:07 2002  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: Added a patch by 

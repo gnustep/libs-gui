@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.7.6 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.7.7 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -26,25 +26,36 @@ systems.
 
    The GNUstep GUI Library requires the GNU Objective-C compiler, the
 GNUstep Base Library, the TIFF Graphics library, and a back-end
-component like the GNUstep X/GPS GUI Backend.
+component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.7.6'
+Noteworthy changes in version `0.7.7'
 =====================================
 
-   * NSOutlineView implemented.
+   The graphics/window interface was completely revamped. Window
+functions were split into a separate class, GSDisplayServer, and many
+PS and DPS functions were removed that were never implemented. However,
+new functionality was added to make things faster and eventually
+implement Quartz compatibility.
 
-   * Improvements to NSTableView, NSPopUpButton, NSTextView, NSFontPanel
+   In addition, the old backends, xgps and xdps were depreciated in
+favor of a new backend, simply named back, which can be configured for a
+variety of window server and graphics implementations, and also allow
+for improved code sharing.
 
-   * Scroll wheel support.
+   In addition there is now a window server backend for Windows
+computers, although it is in a very alpha state.
 
-   * Fully-functional keybindings, including multi-stroke keybindings.
+   Other improvements:
+   * Mutliple screens are now handled properly (untested)
 
-   * Memory panel available from Info Panel.
+   * Better autolayout with GSTable and subclasses.
+
+   * NSOutlineView much improved.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.7.6.tar.gz distribution file has been placed on
+   The gstep-gui-0.7.7.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.

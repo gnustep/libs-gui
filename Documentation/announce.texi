@@ -26,7 +26,7 @@ the library can be easily ported to other display systems.
 
 The GNUstep GUI Library requires the GNU Objective-C compiler, the
 GNUstep Base Library, the TIFF Graphics library, and a back-end
-component like the GNUstep X/GPS GUI Backend.
+component like the GNUstep 'Back' Backend.
 
 @set ANNOUNCE-ONLY
 @include news.texi

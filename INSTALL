@@ -14,7 +14,7 @@ and in the gnustep-make package (which you should install first).
    You must have installed gnustep-base and gnustep-make before
 building this library.
 
-   After installing this library, install gnustep-xgps.
+   After installing this library, install gnustep-back.
 
 Configuration
 =============

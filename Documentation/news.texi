@@ -9,6 +9,32 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.7.7}
+
+The graphics/window interface was completely revamped. Window functions
+were split into a separate class, GSDisplayServer, and many PS and DPS
+functions were removed that were never implemented. However, new functionality
+was added to make things faster and eventually implement Quartz compatibility.
+
+In addition, the old backends, xgps and xdps were depreciated in favor of
+a new backend, simply named back, which can be configured for a
+variety of window server and graphics implementations, and also allow
+for improved code sharing.
+
+In addition there is now a window server backend for Windows computers, 
+although it is in a very alpha state.
+
+Other improvements:
+@itemize @bullet
+@item Mutliple screens are now handled properly (untested)
+@item Better autolayout with GSTable and subclasses.
+@item NSOutlineView much improved.
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.7.6}
 
 @itemize @bullet
@@ -18,10 +44,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item Fully-functional keybindings, including multi-stroke keybindings.
 @item Memory panel available from Info Panel.
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.7.5}
 
