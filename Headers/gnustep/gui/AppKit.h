@@ -145,6 +145,7 @@
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTabView.h>
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/NSText.h>
