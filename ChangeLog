@@ -1,3 +1,8 @@
+2004-05-12 15:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* (-_generateGlyphsForRun:at:): Use a properly typed function
+	pointer for characterIsMember.
+
 2004-05-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/Cocoa/Cocoa.h:

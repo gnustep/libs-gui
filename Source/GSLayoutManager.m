@@ -2723,7 +2723,9 @@ for the backends to use it */
   glyph_t *g;
 
   NSCharacterSet *cs = [NSCharacterSet controlCharacterSet];
-  IMP characterIsMember = [cs methodForSelector: @selector(characterIsMember:)];
+  BOOL (*characterIsMember)(id, SEL, unichar)
+    = (BOOL(*)(id, SEL, unichar)) [cs methodForSelector:
+					@selector(characterIsMember:)];
 
   run->head.glyph_length = c;
   run->glyphs = malloc(sizeof(glyph_t) * c);
