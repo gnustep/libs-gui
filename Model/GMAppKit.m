@@ -1340,6 +1340,26 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end  /* NSSavePanel (GMArchiverMethods) */
 
+@implementation NSOpenPanel (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:(GMArchiver*)archiver];
+  [archiver encodeBOOL:[self canChooseFiles] 
+	    withName:@"canChooseFiles"];
+  [archiver encodeBOOL:[self canChooseDirectories] 
+	    withName:@"canChooseDirectories"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver *)unarchiver
+{
+  [super initWithModelUnarchiver:(GMUnarchiver *)unarchiver];
+  [self setCanChooseFiles:[unarchiver decodeBOOLWithName:@"canChooseFiles"]];
+  [self setCanChooseDirectories:[unarchiver decodeBOOLWithName:
+					      @"canChooseDirectories"]];
+  return self;
+}
+@end  /* NSOpenPanel (GMArchiverMethods) */
 
 @implementation NSBrowser (GMArchiverMethods)
 
