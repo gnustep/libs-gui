@@ -1,3 +1,9 @@
+2004-07-30  Adrian Robert  <arobert@cogsci.ucsd.edu>
+
+	* Documentation/GuiUser/GNUMakefile.postamble: Remove an unwanted
+	level of hierarchy when installing GSdoc generated under
+	Documentation/GuiUser.
+
 2004-07-30 15:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSGraphicsContext.h (-GSReadRect:): Document.
