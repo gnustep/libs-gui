@@ -1,5 +1,9 @@
 2002-12-04  Adam Fedor  <fedor@gnu.org>
 
+	* Source/GSSimpleLayoutManager.m ([GSSimpleLayoutManager
+	-textStorage:edited:range:changeInLength:invalidatedRange:]): Make
+	sure view exists before trying to get range (Solaris limitation).
+
 	* Source/NSPrintOperation.m: Update for change in GSSetLocale.
 
 2002-12-04  Adam Fedor  <fedor@gnu.org>
@@ -1795,7 +1799,7 @@ Fri May 10 11:24:38 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 2002-05-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-resizeWithOldSuperviewSize:): Check object
-	before getting struct. (Solaris limintation).
+	before getting struct. (Solaris limitation).
 
 2002-04-30  Adam Fedor  <fedor@gnu.org>
 

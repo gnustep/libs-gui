@@ -608,16 +608,17 @@ static inline float defaultFontHeight ()
   [[aTextContainer textView] sizeToFit];
   [[aTextContainer textView] invalidateTextContainerOrigin];
 
-  {
-    NSRange sr = [[aTextContainer textView] selectedRange];
-    if (sr.length == 0
-	&& aRange.location <= sr.location
-	&& aRange.location + aRange.length >= sr.location)
-      {
-	[[aTextContainer textView] 
-	  updateInsertionPointStateAndRestartTimer: YES];
-      }
-  }
+  if ([aTextContainer textView])
+    {
+      NSRange sr = [[aTextContainer textView] selectedRange];
+      if (sr.length == 0
+	  && aRange.location <= sr.location
+	  && aRange.location + aRange.length >= sr.location)
+	{
+	  [[aTextContainer textView] 
+	    updateInsertionPointStateAndRestartTimer: YES];
+	}
+    }
 
   /* FIXME - it was reported that at this point lineRange is no longer
    * correct ...  looks like sizeToFit / invalidateTextContainerOrigin
