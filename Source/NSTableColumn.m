@@ -240,9 +240,9 @@
   return _dataCell;
 }
 
-- (NSCell*)dataCellForRow: (int) row
+- (NSCell*)dataCellForRow: (int)row
 {
-  [self dataCell];
+  return [self dataCell];
 }
 
 /*
