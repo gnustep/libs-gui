@@ -1,3 +1,10 @@
+2005-04-02  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSTableView.m: ([-mouseDown:]) tweak vertical image
+	offset because view is flipped.  Still not sure this code is
+	correct  ... which coordinate system is the image offset supplied
+	by ([-dragImageForRows:event:dragImageOffset:]) supposed to be in?
+
 2005-04-01  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/AppKit/NSDataLinkManager.h, Source/NSDataLinkManager.m:

@@ -3639,7 +3639,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			  p = [self convertPoint:
 			    [theEvent locationInWindow] fromView: nil];
 			  p.x += s.width;
-			  p.y += s.height;
+			  p.y -= s.height;	// View is flipped
 
 			  [self dragImage: dragImage
 				       at: p
