@@ -1,12 +1,14 @@
 /*
-   libgnustep.m
+   Functions.m
 
-   Main initialization routine for the GNUstep GUI Library
+   Generic Functions for the GNUstep GUI Library.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: December 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,20 +29,23 @@
 */ 
 
 #include <Foundation/NSAutoreleasePool.h>
+
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSEvent.h>
+
 
 char **NSArgv = NULL;
 
 //
-// The main entry point for X Windows
+// Main initialization routine for the GNUstep GUI Library Apps
 //
 int NSApplicationMain(int argc, const char **argv)
 {
-  extern char** environ;
+extern char** environ;
 
 #if LIB_FOUNDATION_LIBRARY
   [NSProcessInfo initializeWithArguments:(char**)argv
-				   count:argc
+				 count:argc
 			     environment:environ];
 #endif
 
@@ -53,4 +58,46 @@ int NSApplicationMain(int argc, const char **argv)
   [[NSApplication sharedApplication] run];
 
   return 0;
+}
+
+//
+// Convert an NSEvent Type to it's respective Event Mask
+//
+unsigned int NSEventMaskFromType(NSEventType type)
+{													
+	switch(type)										
+		{												
+		case NSLeftMouseDown:							
+			return NSLeftMouseDownMask;
+		case NSLeftMouseUp:
+			return NSLeftMouseUpMask;
+		case NSRightMouseDown:
+			return NSRightMouseDownMask;
+		case NSRightMouseUp:
+			return NSRightMouseUpMask;
+		case NSMouseMoved:
+			return NSMouseMovedMask;
+		case NSMouseEntered:
+			return NSMouseEnteredMask;
+		case NSMouseExited:
+			return NSMouseExitedMask;
+		case NSLeftMouseDragged:
+			return NSLeftMouseDraggedMask;
+		case NSRightMouseDragged:
+			return NSRightMouseDraggedMask;
+		case NSKeyDown:
+			return NSKeyDownMask;
+		case NSKeyUp:
+			return NSKeyUpMask;
+		case NSFlagsChanged:
+			return NSFlagsChangedMask;
+		case NSPeriodic:
+			return NSPeriodicMask;
+		case NSCursorUpdate:
+			return NSCursorUpdateMask;
+		default:
+			break;
+		}
+
+	return 0;
 }
