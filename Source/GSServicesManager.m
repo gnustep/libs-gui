@@ -406,7 +406,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
   id	del = [NSApp delegate];
   BOOL	result = NO;
 
-  [NSApp activateIgnoringOtherApps: YES];
   if ([del respondsToSelector: _cmd])
     {
       result = [del application: theApp openFile: file];
@@ -414,6 +413,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   else if ([[NSDocumentController sharedDocumentController]
     openDocumentWithContentsOfFile: file display: YES] != nil)
     {
+      [NSApp activateIgnoringOtherApps: YES];
       result = YES;
     }
   return result;

@@ -1,3 +1,8 @@
+2003-04-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: on opening file, only activate for
+	document based applications as suggested by Alexander.
+
 2003-04-10 01:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-_generateGlyphs_char_r::::::): Fix
