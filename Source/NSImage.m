@@ -2,7 +2,7 @@
 
    <abstract>Load, manipulate and display images</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
    
    Author: Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -24,6 +24,7 @@
    */ 
 #include "config.h"
 #include <string.h>
+#include <math.h>
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
@@ -36,17 +37,38 @@
 #include <Foundation/NSValue.h>
 
 #include "AppKit/NSImage.h"
+
 #include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSCachedImageRep.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSScreen.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSPrintOperation.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+
+
+/* Helpers.  Would be nicer to use the C99 fmin/fmax functions, but that
+   isn't currently possible.  */
+static double min(double x, double y)
+{
+  if (x > y)
+    return y;
+  else
+    return x;
+}
+static double max(double x, double y)
+{
+  if (x < y)
+    return y;
+  else
+    return x;
+}
+
 
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
@@ -827,6 +849,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
+  BOOL r;
+
+  PSgsave();
+
   if (_color != nil)
     {
       NSRect fillrect = aRect;
@@ -841,9 +867,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	}
     }
 
-  if (!_flags.scalable) 
-    return [imageRep drawAtPoint: aRect.origin];
-  return [imageRep drawInRect: aRect];
+  if (!_flags.scalable)
+    r = [imageRep drawAtPoint: aRect.origin];
+  else
+    r = [imageRep drawInRect: aRect];
+
+  PSgrestore();
+
+  return r;
 }
 
 - (void) drawAtPoint: (NSPoint)point
@@ -851,15 +882,180 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	   operation: (NSCompositingOperation)op
 	    fraction: (float)delta
 {
-//FIXME We need another PS command for this
+  [self drawInRect: NSMakeRect(point.x, point.y, srcRect.size.width,
+			       srcRect.size.height)
+	  fromRect: srcRect
+	 operation: op
+	  fraction: delta];
 }
 
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+	   fraction: (float)fraction
 {
-//FIXME We need another PS command for this
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *transform;
+
+  if (!dstRect.size.width || !dstRect.size.height
+      || !srcRect.size.width || !srcRect.size.height)
+    return;
+
+  if (![ctxt isDrawingToScreen])
+    {
+      /* We can't composite or dissolve if we aren't drawing to a screen,
+	 so we'll just draw the right part of the image in the right
+	 place. */
+      NSSize s;
+      NSPoint p;
+      double fx, fy;
+
+      s = [self size];
+
+      fx = dstRect.size.width / srcRect.size.width;
+      fy = dstRect.size.height / srcRect.size.height;
+
+      p.x = dstRect.origin.x / fx - srcRect.origin.x;
+      p.y = dstRect.origin.y / fy - srcRect.origin.y;
+
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
+		  dstRect.size.width, dstRect.size.height);
+      DPSscale(ctxt, fx, fy);
+      [self drawRepresentation: [self bestRepresentationForDevice: nil]
+			inRect: NSMakeRect(p.x, p.y, s.width, s.height)];
+      DPSgrestore(ctxt);
+
+      return;
+    }
+
+  /* Figure out what the effective transform from image space to
+     'window space' is.  */
+  transform = [ctxt GSCurrentCTM];
+
+  [transform scaleXBy: dstRect.size.width / srcRect.size.width
+		  yBy: dstRect.size.height / srcRect.size.height];
+
+
+  /* If the effective transform is the identity transform and there's
+     no dissolve, we can composite from our cache.  */
+  if (fraction == 1.0
+      && fabs(transform->matrix.m11 - 1.0) < 0.01
+      && fabs(transform->matrix.m12) < 0.01
+      && fabs(transform->matrix.m21) < 0.01
+      && fabs(transform->matrix.m22 - 1.0) < 0.01)
+    {
+      [self compositeToPoint: dstRect.origin
+		    fromRect: srcRect
+		   operation: op];
+      return;
+    }
+
+  /* We can't composite or dissolve directly from the image reps, so we
+     create a temporary off-screen window large enough to hold the
+     transformed image, draw the image rep there, and composite from there
+     to the destination.
+
+     Optimization: Since we do the entire image at once, we might need a
+     huge buffer.  If this starts hurting too much, there are a couple of
+     things we could do to:
+
+     1. Take srcRect into account and only process the parts of the image
+	we really need.
+     2. Take the clipping path into account.  Desirable, especially if we're
+	being drawn as lots of small strips in a scrollview.  We don't have
+	the clipping path here, though.
+     3. Allocate a permanent but small buffer and process the image
+	piecewise.
+
+     */
+  {
+    NSCachedImageRep *cache;
+    NSSize s;
+    NSPoint p;
+    double x0, y0, x1, y1, w, h;
+    int gState;
+
+    s = [self size];
+
+    /* Figure out how big we need to make the window that'll hold the
+       transformed image.  */
+    p = [transform transformPoint: NSMakePoint(0, s.height)];
+    x0 = x1 = p.x;
+    y0 = y1 = p.y;
+
+    p = [transform transformPoint: NSMakePoint(s.width, 0)];
+    x0 = min(x0, p.x);
+    y0 = min(y0, p.y);
+    x1 = max(x1, p.x);
+    y1 = max(y1, p.y);
+
+    p = [transform transformPoint: NSMakePoint(s.width, s.height)];
+    x0 = min(x0, p.x);
+    y0 = min(y0, p.y);
+    x1 = max(x1, p.x);
+    y1 = max(y1, p.y);
+
+    p = [transform transformPoint: NSMakePoint(0, 0)];
+    x0 = min(x0, p.x);
+    y0 = min(y0, p.y);
+    x1 = max(x1, p.x);
+    y1 = max(y1, p.y);
+
+    x0 = floor(x0);
+    y0 = floor(y0);
+    x1 = ceil(x1);
+    y1 = ceil(y1);
+
+    w = x1 - x0;
+    h = y1 - y0;
+
+    /* This is where we want the origin of image space to be in our
+       window.  */
+    p.x -= x0;
+    p.y -= y0;
+
+    cache = [[NSCachedImageRep alloc]
+		initWithSize: NSMakeSize(w, h)
+		       depth: [[NSScreen mainScreen] depth]
+		    separate: YES
+		       alpha: YES];
+
+    [[[cache window] contentView] lockFocus];
+
+    DPScompositerect(ctxt, 0, 0, w, h, NSCompositeClear);
+
+    /* Set up the effective transform.  We also save a gState with this
+       transform to make it easier to do the final composite.  */
+    transform->matrix.tX = p.x;
+    transform->matrix.tY = p.y;
+    [ctxt GSSetCTM: transform];
+
+    gState = [ctxt GSDefineGState];
+
+    [self drawRepresentation: [self bestRepresentationForDevice: nil]
+		      inRect: NSMakeRect(0, 0, s.width, s.height)];
+
+    /* If we're doing a dissolve, use a DestinationIn composite to lower
+       the alpha of the pixels.  */
+    if (fraction != 1.0)
+      {
+	DPSsetalpha(ctxt, fraction);
+	DPScompositerect(ctxt, 0, 0, s.width, s.height,
+			 NSCompositeDestinationIn);
+      }
+
+    [[[cache window] contentView] unlockFocus];
+
+
+    DPScomposite(ctxt, srcRect.origin.x, srcRect.origin.y,
+		 srcRect.size.width, srcRect.size.height, gState,
+		 dstRect.origin.x, dstRect.origin.y, op);
+
+    [ctxt GSUndefineGState: gState];
+
+    DESTROY(cache);
+  }
 }
 
 - (void) addRepresentation: (NSImageRep *)imageRep

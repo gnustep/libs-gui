@@ -1,3 +1,15 @@
+2005-01-25 00:29  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Headers/AppKit/NSImage.h (-drawAtPoint:fromRect:fraction:)
+	(-drawInRect:fromRect:operation:fraction:): Document.
+	* Source/NSImage.m -drawAtPoint:fromRect:fraction:)
+	(-drawInRect:fromRect:operation:fraction:): Implement.
+	(min, max): New functions.
+	(-drawRepresentation:inRect:): Save the gstate before drawing
+	and restore it afterwards.
+
+	Fixes bug #11712.
+
 2005-01-24 16:57  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSPopUpButtonCell.m (-synchronizeTitleAndSelectedItem): For

@@ -3,7 +3,7 @@
 
    Load, manipulate and display images
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
 
    Written by:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
@@ -178,10 +178,26 @@ typedef enum {
 - (BOOL) drawRepresentation: (NSImageRep*)imageRep
 		     inRect: (NSRect)aRect;
 #ifndef STRICT_OPENSTEP
+/** Calls -drawAtPoint:fromRect:operation:fraction: with
+    <code>dstRect</code> given by <code>point</code> and the size of
+    <code>srcRect</code>.  */
 - (void) drawAtPoint: (NSPoint)point
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
 	    fraction: (float)delta;
+
+/** <p>Takes the part of the receiver given by <code>srcRect</code> and
+    draws it in <code>dstRect</code> in the current coordinate system,
+    transforming the image as necessary.
+    </p><p>
+    The image is drawn as if it was drawn to a cleared window, then
+    dissolved using the fraction <code>delta</code> to another cleared
+    window, and finally composited using <code>op</code> to the
+    destination.
+    </p><p>
+    Note that compositing and dissolving doesn't work on all devices
+    (printers, in particular).
+    </p>  */
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
