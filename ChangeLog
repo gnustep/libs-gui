@@ -1,3 +1,17 @@
+Thu Oct 25 16:42:00 2001  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/NSSelection.m implemented bodies of methods for NSSelection.
+	The behaviour implemented is identical to that observed when testing
+	NSSelection under OPENSTEP with the exception that I have replaced
+	the word "NeXT" with "GNUstep" in the selection marker descriptions. 
+	* Source/NSOutlineView.m implelemented a skeletal version of this
+	class to be filled in later.
+	* Headers/NSOutlineView.h created a skeletal version of this header
+	to be filled in later.
+	* Headers/AppKit.h added #include for NSOutlineView.h.
+	* Source/GNUmakefile added reference to NSOutlineView.h and 
+	NSOutlineView.m
+	
 Wed Oct 24 11:01:33 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSBrowser.m ([NSBrowser -_getTitleOfColumn:]): Make sure

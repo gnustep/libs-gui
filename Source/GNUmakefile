@@ -99,6 +99,7 @@ NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
 NSOpenPanel.m \
+NSOutlineView.m \
 NSObjectProtocols.m \
 NSPageLayout.m \
 NSPanel.m \
@@ -251,6 +252,7 @@ NSNibConnector.h \
 NSNibDeclarations.h \
 NSNibLoading.h \
 NSOpenPanel.h \
+NSOutlineView.h \
 NSPageLayout.h \
 NSPanel.h \
 NSParagraphStyle.h \

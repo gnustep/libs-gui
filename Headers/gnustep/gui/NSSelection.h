@@ -37,6 +37,10 @@
 @interface NSSelection : NSObject <NSCoding>
 {
   // Attributes
+  @private
+  NSData *_descriptionData;
+  BOOL    _isWellKnownSelection;
+  int     _selectionType;
 }
 
 //

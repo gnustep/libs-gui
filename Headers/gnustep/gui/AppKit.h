@@ -93,6 +93,7 @@
 #include <AppKit/NSMenuView.h>
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSOpenPanel.h>
+#include <AppKit/NSOutlineView.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSParagraphStyle.h>
