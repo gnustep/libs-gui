@@ -3,9 +3,10 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: Sep 2001
    Author:  David Lazaro Saz <khelekir@encomix.es>
    Date: Oct 1999
-
    Author:  Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
    
@@ -90,6 +91,15 @@
 {
   //FIXME
   return [self init];
+}
+
+- (void) dealloc
+{
+  RELEASE(_font);
+  RELEASE(_itemCells);
+  TEST_RELEASE(_menu);
+
+  [super dealloc];
 }
 
 /*
@@ -644,6 +654,38 @@
 			popUpSelectedItem: (int)selectedItemIndex
 {
   NSRect r;
+  NSRect cellFrame;
+  NSRect screenFrame;
+  int items = [_itemCells count];
+
+  // Convert the screen rect to our view
+  cellFrame.size = screenRect.size;
+  cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
+  cellFrame = [self convertRect: cellFrame fromView: nil];
+
+  _cellSize = cellFrame.size;
+  [self sizeToFit];
+
+  /*
+   * Compute the frame
+   */
+  screenFrame = screenRect;
+  if (items > 1)
+    {
+      float f;
+
+      if (!_horizontal)
+	{
+	    f = screenRect.size.height * (items - 1);
+	    screenFrame.size.height += f;
+	    screenFrame.origin.y -= f;
+	}
+      else
+        {
+	    f = screenRect.size.width * (items - 1);
+	    screenFrame.size.width += f;
+	}
+    }  
 
   // Move the menu window to screen?
   // TODO
@@ -651,22 +693,25 @@
   // Compute position for popups, if needed
   if (selectedItemIndex > -1)
     {
-      screenRect.origin.y
-	+= [self convertSize: _cellSize toView: nil].height * selectedItemIndex;
+      if (!_horizontal)
+        {
+	  screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	}
+      else
+        {
+	  screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+	}
     }
   
   // Get the frameRect
-  r = [NSWindow frameRectForContentRect: screenRect
+  r = [NSWindow frameRectForContentRect: screenFrame
 		styleMask: [_window styleMask]];
   
   // Update position,if needed, using the preferredEdge;
-  // It seems we should be calling [self resizeWindowWithMaxHeight:];
-  // see the (quite obscure) doc.
   // TODO
 
   // Set the window frame
-  [_window setFrame: r 
-	    display: YES]; 
+  [_window setFrame: r display: NO]; 
 }
 
 /*
@@ -1032,13 +1077,3 @@
 }
 
 @end
-
-@implementation NSMenuView (GNUstepExtension)
-
-- (void) _setCellSize: (NSSize)aSize
-{
-  _cellSize = aSize;
-}
-
-@end
-
