@@ -1,3 +1,9 @@
+2004-11-09 22:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:):
+	Implement NSLineBreakByClipping. Set outside_line_frag and dont_show
+	attributes for every glyph.
+
 2004-11-09 18:55  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSPasteboard.m (+_pbs): Give gpbs a --GSStartupNotification

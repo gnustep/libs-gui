@@ -969,11 +969,52 @@ restart: ;
 		if (lf->last_glyph <= first_glyph)
 		  goto char_wrapping;
 		break;
+
+	      case NSLineBreakByTruncatingHead:
+	      case NSLineBreakByTruncatingMiddle:
+	      case NSLineBreakByTruncatingTail:
+		/* Pretending that these are clipping is far from prefect,
+		but it's the closest we've got. */
+	      case NSLineBreakByClipping:
+		/* Scan forward to the next paragraph separator and mark
+		all the glyphs up to there as not visible. */
+		g->outside_line_frag = YES;
+		while (1)
+		  {
+		    i++;
+		    g++;
+		    /* Update the cache. */
+		    if (i >= cache_length)
+		      {
+			if (at_end)
+			  {
+			    newParagraph = NO;
+			    i--;
+			    break;
+			  }
+			[self _cacheGlyphs: cache_length + CACHE_STEP];
+			if (i >= cache_length)
+			  {
+			    newParagraph = NO;
+			    i--;
+			    break;
+			  }
+			g = cache + i;
+		      }
+		    g->dont_show = YES;
+		    g->pos = p;
+		    if (g->g == NSControlGlyph
+			&& [[curTextStorage string]
+			       characterAtIndex: g->char_index] == 0xa)
+		      break;
+		  }
+		lf->last_glyph = i + 1;
+		break;
 	      }
 
 	    /* We force at least one glyph into each line frag rect. This
 	    ensures that typesetting will never get stuck (ie. if the text
-	    container is to narrow to fit even a single glyph). */
+	    container is too narrow to fit even a single glyph). */
 	    if (lf->last_glyph <= first_glyph)
 	      lf->last_glyph = i + 1;
 
@@ -1062,21 +1103,20 @@ restart: ;
 			    forGlyphRange: NSMakeRange(cache_base + i, lf->last_glyph - i)
 			    usedRect: used_rect];
 	  p = g->pos;
-	  /* TODO: probably don't need to call unless the flags are YES */
-	  if (g->outside_line_frag)
-	    {
-	      [curLayoutManager setDrawsOutsideLineFragment: YES
-					    forGlyphAtIndex: cache_base + i];
-	    }
-	  if (g->dont_show)
-	    {
-	      [curLayoutManager setNotShownAttribute: YES
-				     forGlyphAtIndex: cache_base + i];
-	    }
 	  p.y += baseline;
 	  j = i;
 	  while (i < lf->last_glyph)
 	    {
+	      if (g->outside_line_frag)
+		{
+		  [curLayoutManager setDrawsOutsideLineFragment: YES
+		    forGlyphAtIndex: cache_base + i];
+		}
+	      if (g->dont_show)
+		{
+		  [curLayoutManager setNotShownAttribute: YES
+					 forGlyphAtIndex: cache_base + i];
+		}
 	      if (!g->nominal && i != j)
 		{
 		  [curLayoutManager setLocation: p
