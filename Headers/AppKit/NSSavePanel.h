@@ -98,10 +98,16 @@ enum {
 - (NSString *) prompt;
 
 #ifndef	STRICT_OPENSTEP
+- (void) setNameFieldLabel: (NSString *)label;
+- (NSString *) nameFieldLabel;
+- (void) setMessage: (NSString *)message;
+- (NSString *) message;
+
 /*
  * Hidding extensions
  */
 - (void) setCanSelectHiddenExtension: (BOOL) flag;
+- (BOOL) canSelectHiddenExtension;
 - (BOOL) isExtensionHidden;
 - (void) setExtensionHidden: (BOOL) flag;
 #endif
@@ -113,10 +119,22 @@ enum {
 - (void) setDirectory: (NSString *)path;
 - (void) setRequiredFileType: (NSString *)fileType;
 
+#ifndef	STRICT_OPENSTEP
+- (void) setAllowedFileTypes: (NSArray *)types;
+- (void) setAllowsOtherFileTypes: (BOOL)flag;
+- (NSArray *) allowedFileTypes;
+- (BOOL) allowsOtherFileTypes;
+#endif
+
 - (void) setTreatsFilePackagesAsDirectories: (BOOL)flag;
 - (BOOL) treatsFilePackagesAsDirectories;
 
 - (void) validateVisibleColumns;
+
+#ifndef	STRICT_OPENSTEP
+- (void) setCanCreateDirectories: (BOOL)flag;
+- (BOOL) canCreateDirectories;
+#endif
 
 /*
  * Running the NSSavePanel
@@ -182,6 +200,12 @@ enum {
 - (NSString *)panel: (id)sender
 userEnteredFilename: (NSString *)fileName
           confirmed: (BOOL)okFlag;
+
+#ifndef	STRICT_OPENSTEP
+- (void) panel: (id)sender willExpand: (BOOL)expanding;
+- (void) panelSelectionDidChange: (id)sender;
+- (void) panel: (id)sender directoryDidChange: (NSString *)path;
+#endif
 @end
 
 #endif /* _GNUstep_H_NSSavePanel */

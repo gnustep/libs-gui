@@ -796,6 +796,29 @@ selectCellWithString: (NSString*)title
   return _accessoryView;
 }
 
+- (void) setNameFieldLabel: (NSString *)label
+{
+  // FIXME
+}
+
+- (NSString *) nameFieldLabel
+{
+  // FIXME
+  return @"Save As";
+}
+
+- (void) setMessage: (NSString *)message
+{
+  // FIXME
+}
+
+- (NSString *) message
+{
+  // FIXME
+  return nil;
+}
+
+
 /**
  * Sets the current path name in the Save panel's browser. 
  * The path argument must be an absolute path name.
@@ -833,6 +856,28 @@ selectCellWithString: (NSString*)title
   return _requiredFileType;
 }
 
+- (void) setAllowedFileTypes: (NSArray *)types
+{
+  // FIXME
+}
+
+- (void) setAllowsOtherFileTypes: (BOOL)flag
+{
+  // FIXME
+}
+
+- (NSArray *) allowedFileTypes;
+{
+  // FIXME
+  return nil;
+}
+
+- (BOOL) allowsOtherFileTypes;
+{
+  // FIXME
+  return NO;
+}
+
 /** Returns YES if file packages are shown as directories. The default
     is NO.  */
 - (BOOL) treatsFilePackagesAsDirectories
@@ -865,6 +910,17 @@ selectCellWithString: (NSString*)title
 - (void) validateVisibleColumns
 {
   [_browser validateVisibleColumns];
+}
+
+- (void) setCanCreateDirectories: (BOOL)flag
+{
+  // FIXME
+}
+
+- (BOOL) canCreateDirectories
+{
+  // FIXME
+  return NO;
 }
 
 /**
@@ -1130,6 +1186,11 @@ selectCellWithString: (NSString*)title
 - (void) setCanSelectHiddenExtension: (BOOL) flag
 {
   // FIXME
+}
+- (BOOL) canSelectHiddenExtension
+{
+  // FIXME
+  return NO;
 }
 
 - (BOOL) isExtensionHidden

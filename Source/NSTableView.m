@@ -29,6 +29,7 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFormatter.h>
+#include <Foundation/NSIndexSet.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSUserDefaults.h>
@@ -3387,6 +3388,16 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 {
   return _backgroundColor;
 }
+- (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors
+{
+  // FIXME
+}
+
+- (BOOL) usesAlternatingRowBackgroundColors
+{
+  // FIXME
+  return NO;
+}
 
 /*
  * Selecting Columns and Rows
@@ -3616,6 +3627,28 @@ byExtendingSelection: (BOOL)flag
     {
       _selectedRow = rowIndex;
     }
+}
+
+- (void) selectColumnIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend
+{
+  // FIXME
+}
+
+- (void) selectRowIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend
+{
+  // FIXME
+}
+
+- (NSIndexSet *) selectedColumnIndexes;
+{
+  // FIXME
+  return nil;  
+}
+
+- (NSIndexSet *) selectedRowIndexes;
+{
+  // FIXME
+  return nil;  
 }
 
 - (void) deselectColumn: (int)columnIndex
@@ -3898,6 +3931,17 @@ byExtendingSelection: (BOOL)flag
 - (NSColor *) gridColor
 {
   return _gridColor;
+}
+
+- (void) setGridStyleMask: (unsigned int)gridType
+{
+  // FIXME
+}
+
+- (unsigned int) gridStyleMask;
+{
+  // FIXME
+  return 0;
 }
 
 /* 
@@ -5440,6 +5484,15 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
+- (void) drawBackgroundInClipRect: (NSRect)clipRect
+{
+  // FIXME
+ /*  
+  [_backgroundColor set];
+  NSRectFill (clipRect);
+  */
+} 
+
 - (void) drawRect: (NSRect)aRect
 {
   int startingRow;
@@ -5447,11 +5500,8 @@ byExtendingSelection: (BOOL)flag
   int i;
 
   /* Draw background */
+  [self drawBackgroundInClipRect: aRect];
 
-  /*  
-  [_backgroundColor set];
-  NSRectFill (aRect);
-  */
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
     {
       return;
@@ -6568,6 +6618,28 @@ byExtendingSelection: (BOOL)flag
 {
 }
 
+/* 
+ * sorting 
+ */
+- (void) setSortDescriptors: (NSArray *)array
+{
+  // FIXME
+}
+
+- (NSArray *)sortDescriptors
+{
+  // FIXME
+  return nil;
+}
+
+/*
+ * User interface validation
+ */
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
+{
+  // FIXME
+  return YES;
+}
 
 /*
  * (NotificationRequestMethods)

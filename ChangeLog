@@ -1,3 +1,14 @@
+2004-02-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSTableView.h:
+	* Header/AppKit/NSSavePanel.h:
+	* Source/NSTableView.m:
+	* Source/NSSavePanel.m:
+	Declared some more MacOSX 10.3 methods and added place holders for
+	them.
+	* Source/NSTextView.m:
+	Implemented keyed unarchiving.
+	
 2004-02-29  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/AppKit/NSPageLayout.h: Update tags.

@@ -31,8 +31,10 @@
 
 #include <AppKit/NSControl.h>
 #include <AppKit/NSDragging.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray;
+@class NSIndexSet;
 @class NSTableColumn;
 @class NSTableHeaderView;
 @class NSText;
@@ -43,7 +45,13 @@ typedef enum _NSTableViewDropOperation {
   NSTableViewDropAbove
 } NSTableViewDropOperation;
 
-@interface NSTableView : NSControl
+enum {
+    NSTableViewGridNone = 0,
+    NSTableViewSolidVerticalGridLineMask = 1,
+    NSTableViewSolidHorizontalGridLineMask = 2
+};
+
+@interface NSTableView : NSControl <NSUserInterfaceValidations>
 {
   /*
    * Real Ivars
@@ -114,18 +122,6 @@ typedef enum _NSTableViewDropOperation {
   BOOL   _tilingDisabled;
 }
 
-/* Table Dimensions */
-- (int) numberOfColumns;
-- (int) numberOfRows;
-
-/* Columns */
-- (void) addTableColumn: (NSTableColumn *)aColumn;
-- (void) removeTableColumn: (NSTableColumn *)aColumn;
-- (void) moveColumn: (int)columnIndex toColumn: (int)newIndex;
-- (NSArray *) tableColumns;
-- (int) columnWithIdentifier: (id)identifier;
-- (NSTableColumn *) tableColumnWithIdentifier: (id)anObject;
-
 /* Data Source */
 - (void) setDataSource: (id)anObject;
 - (id) dataSource;
@@ -158,10 +154,24 @@ typedef enum _NSTableViewDropOperation {
 - (float) rowHeight;
 - (void) setBackgroundColor: (NSColor *)aColor;
 - (NSColor *) backgroundColor;
+- (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors;
+- (BOOL) usesAlternatingRowBackgroundColors;
+
+/* Columns */
+- (void) addTableColumn: (NSTableColumn *)aColumn;
+- (void) removeTableColumn: (NSTableColumn *)aColumn;
+- (void) moveColumn: (int)columnIndex toColumn: (int)newIndex;
+- (NSArray *) tableColumns;
+- (int) columnWithIdentifier: (id)identifier;
+- (NSTableColumn *) tableColumnWithIdentifier: (id)anObject;
 
 /* Selecting Columns and Rows */
 - (void) selectColumn: (int) columnIndex byExtendingSelection: (BOOL)flag;
 - (void) selectRow: (int) rowIndex byExtendingSelection: (BOOL)flag;
+- (void) selectColumnIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend;
+- (void) selectRowIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend;
+- (NSIndexSet *) selectedColumnIndexes;
+- (NSIndexSet *) selectedRowIndexes;
 - (void) deselectColumn: (int)columnIndex;
 - (void) deselectRow: (int)rowIndex;
 - (int) numberOfSelectedColumns;
@@ -175,11 +185,17 @@ typedef enum _NSTableViewDropOperation {
 - (void) selectAll: (id)sender;
 - (void) deselectAll: (id)sender;
 
+/* Table Dimensions */
+- (int) numberOfColumns;
+- (int) numberOfRows;
+
 /* Grid Drawing attributes */
 - (void) setDrawsGrid: (BOOL)flag;
 - (BOOL) drawsGrid;
 - (void) setGridColor: (NSColor *)aColor;
 - (NSColor *) gridColor;
+- (void) setGridStyleMask: (unsigned int)gridType;
+- (unsigned int) gridStyleMask;
 
 /* Editing Cells */
 /* ALL TODOS */
@@ -208,8 +224,6 @@ typedef enum _NSTableViewDropOperation {
 - (void) setAutoresizesAllColumnsToFit: (BOOL)flag;
 - (BOOL) autoresizesAllColumnsToFit;
 - (void) sizeLastColumnToFit;
-// - (void) sizeToFit; inherited from NSControl
-- (void) setFrame: (NSRect) frameRect;
 - (void) noteNumberOfRowsChanged;
 - (void) tile;
 

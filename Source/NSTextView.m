@@ -51,6 +51,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
@@ -121,6 +122,51 @@ Interface for a bunch of internal methods that need to be cleaned up.
 -(void) pasteSelection;
 @end
 
+// This class is a helper for keyed unarchiving only
+@interface NSTextViewSharedData : NSObject 
+{
+@public
+  NSColor *backgroundColor;
+  NSParagraphStyle *paragraphStyle;
+  int flags;
+  NSColor *insertionColor;
+  NSArray *linkAttr;
+  NSArray *markAttr;
+  NSArray *selectedAttr;
+}
+@end
+
+@implementation NSTextViewSharedData
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  if ([aDecoder allowsKeyedCoding])
+    {
+      ASSIGN(backgroundColor, [aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
+      ASSIGN(paragraphStyle, [aDecoder decodeObjectForKey: @"NSDefaultParagraphStyle"]);
+      flags = [aDecoder decodeIntForKey: @"NSFlags"];
+      ASSIGN(insertionColor, [aDecoder decodeObjectForKey: @"NSInsertionColor"]);
+      ASSIGN(linkAttr, [aDecoder decodeObjectForKey: @"NSLinkAttributes"]);
+      ASSIGN(markAttr, [aDecoder decodeObjectForKey: @"NSMarkedAttributes"]);
+      ASSIGN(selectedAttr, [aDecoder decodeObjectForKey: @"NSSelectedAttributes"]);
+    }
+  else
+    {
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(backgroundColor);
+  RELEASE(paragraphStyle);
+  RELEASE(insertionColor);
+  RELEASE(linkAttr);
+  RELEASE(markAttr);
+  RELEASE(selectedAttr);
+}
+
+@end
 
 
 /**** Misc. helpers and stuff ****/
@@ -598,98 +644,115 @@ that makes decoding and encoding compatible with the old code.
 
 -(id) initWithCoder: (NSCoder *)aDecoder
 {
-  int version = [aDecoder versionForClassName: 
-			    @"NSTextView"];
+  self = [super initWithCoder: aDecoder];
 
-  /* Common stuff for version 1 and 2. */
-  {
-    BOOL flag;
-
-    self = [super initWithCoder: aDecoder];
-
-    _delegate  = [aDecoder decodeObject];
-
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_field_editor = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_editable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_selectable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_rich_text = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.imports_graphics = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.draws_background = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_horizontally_resizable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_vertically_resizable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.uses_font_panel = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.uses_ruler = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_ruler_visible = flag;
-
-    _backgroundColor  = RETAIN([aDecoder decodeObject]);
-    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
-    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-  }
-
-  if (version == currentVersion)
+  if ([aDecoder allowsKeyedCoding])
     {
-      NSTextContainer *aTextContainer; 
-      BOOL flag;
-      NSSize containerSize;
+      if ([aDecoder containsValueForKey: @"NSDelegate"])
+        {
+	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSMaxSize"])
+        {
+	  [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
+	}
+      // Is this a mistype from Apple?
+      if ([aDecoder containsValueForKey: @"NSMinize"])
+        {
+	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+        {
+	  [self setTextContainer: [aDecoder decodeObjectForKey: @"NSTextContainer"]];
+	}
 
+      // FIXME set the flags, shared data, storage
+      if ([aDecoder containsValueForKey: @"NSTVFlags"])
+        {
+	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  // FIXME set the flags
+	}
+      if ([aDecoder containsValueForKey: @"NSSharedData"])
+        {
+	  //NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+	}
+      if ([aDecoder containsValueForKey: @"NSTextStorage"])
+        {
+	  //NSTextStorage *storage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+	}
+    }
+  else
+    {
+      BOOL flag;
+      NSTextContainer *aTextContainer; 
+      int version = [aDecoder versionForClassName: 
+				  @"NSTextView"];
+
+      /* Common stuff for version 1 and 2. */
+      _delegate  = [aDecoder decodeObject];
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_field_editor = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_editable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_selectable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_rich_text = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.imports_graphics = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.draws_background = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_horizontally_resizable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_vertically_resizable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.uses_font_panel = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.uses_ruler = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.is_ruler_visible = flag;
+      
+      _backgroundColor  = RETAIN([aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+  
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.smart_insert_delete = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _tf.allows_undo = flag;
 
-      _insertionPointColor  = RETAIN([aDecoder decodeObject]);
-      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
-      /* build up the rest of the text system, which doesn't get stored 
-	 <doesn't even implement the Coding protocol>. */
-      aTextContainer = [self buildUpTextNetwork: _frame.size];
-      [aTextContainer setTextView: (NSTextView *)self];
-      [aTextContainer setContainerSize: containerSize];
-
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      [aTextContainer setWidthTracksTextView: flag];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      [aTextContainer setHeightTracksTextView: flag];
-
-      /* See initWithFrame: for comments on this RELEASE */
-      RELEASE(self);
-    }
-  else if (version == 1)
-    {
-      NSTextContainer *aTextContainer; 
-      BOOL flag;
-
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.smart_insert_delete = flag;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.allows_undo = flag;
-
       /* build up the rest of the text system, which doesn't get stored 
 	 <doesn't even implement the Coding protocol>. */
       aTextContainer = [self buildUpTextNetwork: _frame.size];
       [aTextContainer setTextView: (NSTextView *)self];
       /* See initWithFrame: for comments on this RELEASE */
       RELEASE(self);
+
+      if (version == currentVersion)
+        {
+	  NSSize containerSize;
+	  	  
+	  _insertionPointColor  = RETAIN([aDecoder decodeObject]);
+	  [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+	  [aTextContainer setContainerSize: containerSize];
+
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  [aTextContainer setWidthTracksTextView: flag];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  [aTextContainer setHeightTracksTextView: flag];
+	}
+
+      [self _recacheDelegateResponses];
+      [self invalidateTextContainerOrigin];
+
+      [self setPostsFrameChangedNotifications: YES];
+      [notificationCenter addObserver: self
+			  selector: @selector(_updateState:)
+			  name: NSViewFrameDidChangeNotification
+			  object: self];
     }
-
-  [self _recacheDelegateResponses];
-  [self invalidateTextContainerOrigin];
-
-  [self setPostsFrameChangedNotifications: YES];
-  [notificationCenter addObserver: self
-    selector: @selector(_updateState:)
-    name: NSViewFrameDidChangeNotification
-    object: self];
 
   return self;
 }
