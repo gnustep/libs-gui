@@ -736,8 +736,11 @@ static NSCell* tileCell = nil;
       NSZoneFree(NSDefaultMallocZone(), tmp);
     }
 
-  TEST_RELEASE(_main_menu);
-  TEST_RELEASE(_windows_menu);
+  /* Release the menus, then set them to nil so we don't try updating
+     them after they have been deallocated.  */
+  DESTROY(_main_menu);
+  DESTROY(_windows_menu);
+
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
   TEST_RELEASE(_infoPanel);
