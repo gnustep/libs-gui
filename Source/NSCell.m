@@ -824,38 +824,52 @@ static Class	cellClass;
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv;
-  NSRect   cvBounds;
-  NSWindow *cvWin;
-
-  if (control_view)
-    cv = control_view;
-  else 
-    cv = [NSView focusView];
-
-  cvBounds = [cv bounds];
-  cvWin = [cv window];
+  SEL action = [self action];
   
-  [self highlight: YES withFrame: cvBounds inView: cv];
-  [cvWin flushWindow];
-  // Wait approx 1/5 seconds
-  [[NSRunLoop currentRunLoop] 
-    runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
+  if (control_view)
+    {  
+      NSRect   cvBounds = [control_view bounds];
+      NSWindow *cvWin = [control_view window];
 
-  [self highlight: NO withFrame: cvBounds inView: cv];
-  [cvWin flushWindow];
+      [self highlight: YES withFrame: cvBounds inView: control_view];
+      [cvWin flushWindow];
 
-  if ([self action])
+      // Wait approx 1/10 seconds
+      [[NSRunLoop currentRunLoop] 
+	runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+      
+      [self highlight: NO withFrame: cvBounds inView: control_view];
+      [cvWin flushWindow];
+  
+      if (action)
+	{
+	  NS_DURING
+	    {
+	      [(NSControl *)control_view sendAction: action to: [self target]];
+	    }
+	  NS_HANDLER
+	    {
+	      [localException raise];
+	    }
+	  NS_ENDHANDLER
+	    }
+    }
+  else // We have no control view.  The best we can do is the following. 
     {
-      NS_DURING
+      if (action)
 	{
-	  [(NSControl*)cv sendAction: [self action] to: [self target]];
-	}
-      NS_HANDLER
-	{
-          [localException raise];
-	}
-      NS_ENDHANDLER
+	  NS_DURING
+	    {
+	      [[NSApplication sharedApplication] sendAction: action
+						 to: [self target]
+						 from: self];
+	    }
+	  NS_HANDLER
+	    {
+	      [localException raise];
+	    }
+	  NS_ENDHANDLER
+	    }
     }
 }
 /*
