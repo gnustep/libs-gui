@@ -383,7 +383,7 @@
 
 - (void)sizeToFit
 {
-  [[popb_menu menuView] sizeToFit];
+  [[popb_menu menuRepresentation] sizeToFit];
 } 
 
 - (void)_popup:(NSNotification*)notification
@@ -396,10 +396,11 @@
   butf = [[popb superview] convertRect: butf toView: nil];
   butf.origin = [[popb window] convertBaseToScreen: butf.origin];
 
-  [[popb_menu menuView] sizeToFit];
+  [[popb_menu menuRepresentation] sizeToFit];
 
-  winf = [NSMenuWindow frameRectForContentRect: [[popb_menu menuView] frame]
-                                     styleMask: [[popb_menu window] styleMask]];
+  winf = [NSMenuWindow
+	   frameRectForContentRect: [[popb_menu menuRepresentation] frame]
+	                 styleMask: [[popb_menu window] styleMask]];
   /*
    * Set popup window frame origin so that the top-left corner of the
    * window lines up with the top-left corner of this button.
@@ -436,7 +437,7 @@
                     object: self
                   userInfo: nil];
 
-  [[popb_menu menuView] mouseDown:
+  [[popb_menu menuRepresentation] mouseDown:
     [NSEvent mouseEventWithType: NSLeftMouseDown
                        location: [[popb_menu window] mouseLocationOutsideOfEventStream]
                   modifierFlags: [theEvent modifierFlags]
@@ -497,9 +498,11 @@
     }
 
   if (!popb_pullsDown)
-    aCell  = [[popb_menu itemArray] objectAtIndex:popb_selectedItem]; 
+    aCell  = [[popb_menu menuRepresentation]
+	       menuItemCellForItemAtIndex: popb_selectedItem]; 
   else
-    aCell  = [[popb_menu itemArray] objectAtIndex:0]; 
+    aCell  = [[popb_menu menuRepresentation]
+	       menuItemCellForItemAtIndex: 0]; 
 
   [aCell drawWithFrame:bounds inView:self]; 
 }
