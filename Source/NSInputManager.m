@@ -28,6 +28,9 @@
 #include <AppKit/NSInputServer.h>
 #include <AppKit/NSText.h>
 
+/* For NSBeep () */
+#include <AppKit/NSApplication.h>
+
 #include "GSKeyBindingAction.h"
 #include "GSKeyBindingTable.h"
 
@@ -366,6 +369,11 @@ static NSInputManager *currentInputManager = nil;
       }
   }
 
+  /* Read if we should insert Control- keystrokes into the text.  
+     This defaults to NO.  */
+  _insertControlKeystrokes = [defaults boolForKey: 
+					 @"GSInsertControlKeystrokes"];
+
   /* Read the quote key from the user defaults.  */
   {
     NSString *quoteKey = [defaults stringForKey: @"GSQuoteKey"];
@@ -611,7 +619,19 @@ static NSInputManager *currentInputManager = nil;
 	 Trying to insert 'PageUp' literally makes simply no sense.  */
       if (isFunctionKey)
 	{
+	  NSBeep ();
 	  break;
+	}
+
+      /* During literal interpretation, control characters are ignored
+	 if GSInsertControlKeystrokes was NO.  */
+      if (_insertControlKeystrokes == NO)
+	{
+	  if (flags & NSControlKeyMask)
+	    {
+	      NSBeep ();
+	      break;
+	    }
 	}
 
       switch (character)
@@ -641,7 +661,7 @@ static NSInputManager *currentInputManager = nil;
 	  [self insertText: characters];
 	  break;
 	}
-    }  
+    }
 }
 
 - (void) resetInternalState
