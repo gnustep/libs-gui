@@ -1,4 +1,4 @@
-/* 
+/*
    NSButton.m
 
    The button class
@@ -8,14 +8,14 @@
    Author:  Scott Christley <scottc@net-community.com>
 	    Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -25,7 +25,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 
@@ -47,24 +47,24 @@ id _nsbuttonCellClass = nil;
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
-	if (self == [NSButton class]) 
-		{
-		[self setVersion:1];
-   		[self setCellClass:[NSButtonCell class]];
-  		}
+  if (self == [NSButton class])
+    {
+      [self setVersion: 1];
+      [self setCellClass: [NSButtonCell class]];
+    }
 }
 
 //
-// Initializing the NSButton Factory 
+// Initializing the NSButton Factory
 //
-+ (Class)cellClass
++ (Class) cellClass
 {
   return _nsbuttonCellClass;
 }
 
-+ (void)setCellClass:(Class)classId
++ (void) setCellClass: (Class)classId
 {
   _nsbuttonCellClass = classId;
 }
@@ -77,191 +77,196 @@ id _nsbuttonCellClass = nil;
 //
 - init
 {
-  return [self initWithFrame:NSZeroRect];
+  return [self initWithFrame: NSZeroRect];
 }
 
-- initWithFrame:(NSRect)frameRect
+- initWithFrame: (NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
+  [super initWithFrame: frameRect];
 
   // set our cell
-  [self setCell:[[_nsbuttonCellClass new] autorelease]];
+  [self setCell: [[_nsbuttonCellClass new] autorelease]];
 
   return self;
 }
 
-//
-// Setting the Button Type 
-//
-- (void)setButtonType:(NSButtonType)aType
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
-  [cell setButtonType:aType];
+  return YES;
+}
+
+//
+// Setting the Button Type
+//
+- (void) setButtonType: (NSButtonType)aType
+{
+  [cell setButtonType: aType];
   [self display];
 }
 
 //
-// Identifying the Selected Cell 
+// Identifying the Selected Cell
 //
-- (id)selectedCell
+- (id) selectedCell
 {
   return cell;
 }
 
 //
-// Setting the State 
+// Setting the State
 //
-- (void)setIntValue:(int)anInt
+- (void) setIntValue: (int)anInt
 {
-  [self setState:(anInt != 0)];
+  [self setState: (anInt != 0)];
 }
 
-- (void)setFloatValue:(float)aFloat
+- (void) setFloatValue: (float)aFloat
 {
-  [self setState:(aFloat != 0)];
+  [self setState: (aFloat != 0)];
 }
 
-- (void)setDoubleValue:(double)aDouble
+- (void) setDoubleValue: (double)aDouble
 {
-  [self setState:(aDouble != 0)];
+  [self setState: (aDouble != 0)];
 }
 
-- (void)setState:(int)value
+- (void) setState: (int)value
 {
-  [cell setState:value];
+  [cell setState: value];
   [self display];
 }
 
-- (int)state
+- (int) state
 {
   return [cell state];
 }
 
 //
-// Setting the Repeat Interval 
+// Setting the Repeat Interval
 //
-- (void)getPeriodicDelay:(float *)delay
-		interval:(float *)interval
+- (void) getPeriodicDelay: (float *)delay
+		interval: (float *)interval
 {
-  [cell getPeriodicDelay:delay interval:interval];
+  [cell getPeriodicDelay: delay interval: interval];
 }
 
-- (void)setPeriodicDelay:(float)delay
-		interval:(float)interval
+- (void) setPeriodicDelay: (float)delay
+		interval: (float)interval
 {
-  [cell setPeriodicDelay:delay interval:interval];
+  [cell setPeriodicDelay: delay interval: interval];
 }
 
 //
-// Setting the Titles 
+// Setting the Titles
 //
-- (NSString *)alternateTitle
+- (NSString *) alternateTitle
 {
   return [cell alternateTitle];
 }
 
-- (void)setAlternateTitle:(NSString *)aString
+- (void) setAlternateTitle: (NSString *)aString
 {
-  [cell setAlternateTitle:aString];
+  [cell setAlternateTitle: aString];
   [self display];
 }
 
-- (void)setTitle:(NSString *)aString
+- (void) setTitle: (NSString *)aString
 {
-  [cell setTitle:aString];
+  [cell setTitle: aString];
   [self display];
 }
 
-- (NSString *)title
+- (NSString *) title
 {
   return [cell title];
 }
 
 //
-// Setting the Images 
+// Setting the Images
 //
-- (NSImage *)alternateImage
+- (NSImage *) alternateImage
 {
   return [cell alternateImage];
 }
 
-- (NSImage *)image
+- (NSImage *) image
 {
   return [cell image];
 }
 
-- (NSCellImagePosition)imagePosition
+- (NSCellImagePosition) imagePosition
 {
   return [cell imagePosition];
 }
 
-- (void)setAlternateImage:(NSImage *)anImage
+- (void) setAlternateImage: (NSImage *)anImage
 {
-  [cell setAlternateImage:anImage];
+  [cell setAlternateImage: anImage];
   [self display];
 }
 
-- (void)setImage:(NSImage *)anImage
+- (void) setImage: (NSImage *)anImage
 {
-  [cell setImage:anImage];
+  [cell setImage: anImage];
   [self display];
 }
 
-- (void)setImagePosition:(NSCellImagePosition)aPosition
+- (void) setImagePosition: (NSCellImagePosition)aPosition
 {
-  [cell setImagePosition:aPosition];
+  [cell setImagePosition: aPosition];
   [self display];
 }
 
-- (void)setAlignment:(NSTextAlignment)mode
+- (void) setAlignment: (NSTextAlignment)mode
 {
-  [cell setAlignment:mode];
+  [cell setAlignment: mode];
 }
 
-- (NSTextAlignment)alignment
+- (NSTextAlignment) alignment
 {
   return [cell alignment];
 }
 
 //
-// Modifying Graphic Attributes 
+// Modifying Graphic Attributes
 //
-- (BOOL)isBordered
+- (BOOL) isBordered
 {
   return [cell isBordered];
 }
 
-- (BOOL)isTransparent
+- (BOOL) isTransparent
 {
   return [cell isTransparent];
 }
 
-- (void)setBordered:(BOOL)flag
+- (void) setBordered: (BOOL)flag
 {
-  [cell setBordered:flag];
+  [cell setBordered: flag];
   [self display];
 }
 
-- (void)setTransparent:(BOOL)flag
+- (void) setTransparent: (BOOL)flag
 {
-  [cell setTransparent:flag];
+  [cell setTransparent: flag];
   [self display];
 }
 
 //
-// Displaying 
+// Displaying
 //
-- (void)drawRect:(NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
-  [cell drawWithFrame:rect inView:self];
+  [cell drawWithFrame: rect inView: self];
 }
 
-- (void)highlight:(BOOL)flag
+- (void) highlight: (BOOL)flag
 {
   [cell highlight: flag withFrame: bounds inView: self];
 }
 
 //
-// Setting the Key Equivalent 
+// Setting the Key Equivalent
 //
 - (NSString*) keyEquivalent
 {
@@ -286,10 +291,10 @@ id _nsbuttonCellClass = nil;
 //
 // Determining the first responder
 //
-- (BOOL)acceptsFirstResponder
-{														
-	return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);				
-}														
+- (BOOL) acceptsFirstResponder
+{
+	return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);
+}
 
 - (void) keyDown: (NSEvent*)theEvent
 {
@@ -298,7 +303,7 @@ id _nsbuttonCellClass = nil;
 }
 
 //
-// Handling Events and Action Messages 
+// Handling Events and Action Messages
 //
 
 - (void) performClick: (id)sender

@@ -88,6 +88,11 @@ static BOOL preCalcValues = NO;
   return YES;
 }
 
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (NSScrollArrowPosition) arrowsPosition
 {
   return _arrowsPosition;

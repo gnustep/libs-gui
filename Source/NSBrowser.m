@@ -40,6 +40,7 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSTextFieldCell.h>
+#include <AppKit/PSOperators.h>
 
 #define COLUMN_SEP 6
 
@@ -1296,6 +1297,7 @@
 {
   int i;
 
+  NSRectClip(rect);
   // Load the first column if not already done
   if (!_isLoaded)
     {

@@ -68,6 +68,11 @@
 // Class variables
 static NSFont* menuFont = nil;
 
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];

@@ -45,6 +45,11 @@
 //
 // Instance methods
 //
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSApplication	*app = [NSApplication sharedApplication];

@@ -1141,7 +1141,8 @@
 
 - (void) sendEvent: (NSEvent *)theEvent
 {
-  NSView *v;
+  NSView	*v;
+  NSEventType	type;
 
   if (!cursor_rects_valid)                // If the cursor rects are invalid
     {                                   // Then discard and reset
@@ -1149,15 +1150,19 @@
       [self resetCursorRects];
     }
 
-  switch ([theEvent type])
+  type = [theEvent type];
+  switch (type)
     {
       case NSLeftMouseDown:                               // Left mouse down
 	v = [content_view hitTest: [theEvent locationInWindow]];
-	NSDebugLog([v description]);
-	NSDebugLog(@"\n");
-	if (first_responder != v)               // if hit view is not first
-	  [self makeFirstResponder: v];        // responder ask it to be
-	[v mouseDown: theEvent];
+	if (first_responder != v)
+	  {
+	    [self makeFirstResponder: v];
+	    if ([v acceptsFirstMouse: theEvent] == YES)
+	      [v mouseDown: theEvent];
+	  }
+	else
+	  [v mouseDown: theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
 
@@ -1179,28 +1184,43 @@
 	last_point = [theEvent locationInWindow];
 	break;
 
-      case NSMouseMoved:                                  // Mouse moved
-	v = [content_view hitTest: [theEvent locationInWindow]];
-	[v mouseMoved: theEvent];    // First send the NSMouseMoved event
-		    // We need to go through all of the views, and any with
-		      // a tracking rectangle then we need to determine if we
-		      // should send a NSMouseEntered or NSMouseExited event
+      case NSLeftMouseDragged:				// Left mouse dragged
+      case NSRightMouseDragged:				// Right mouse dragged
+      case NSMouseMoved:				// Mouse moved
+	switch (type)
+	  {
+	    case NSLeftMouseDragged:
+	      v = [content_view hitTest: [theEvent locationInWindow]];
+	      [v mouseDragged: theEvent];
+	      break;
+	    case NSRightMouseDragged:
+	      v = [content_view hitTest: [theEvent locationInWindow]];
+	      [v rightMouseDragged: theEvent];
+	      break;
+	    default:
+	      if (accepts_mouse_moved)
+		{
+		  // If the window is set to accept mouse movements, we need to
+		  // forward the mouse movement to the correct view.
+		  v = [content_view hitTest: [theEvent locationInWindow]];
+		  [v mouseMoved: theEvent];
+		}
+	      break;
+	  }
+
+	// We need to go through all of the views, and if there is any with
+	// a tracking rectangle then we need to determine if we should send
+	// a NSMouseEntered or NSMouseExited event.
 	[self checkTrackingRectangles: content_view forEvent: theEvent];
-		      // We need to go through all of the views, and any with
-		      // a cursor rectangle then we need to determine if we
-		      // should send a cursor update event
-		      // We only do this if we are the key window
+
 	if (is_key)
-	  [self checkCursorRectangles: content_view forEvent: theEvent];
+	  {
+	    // We need to go through all of the views, and if there is any with
+	    // a cursor rectangle then we need to determine if we should send a
+	    // cursor update event.
+	    [self checkCursorRectangles: content_view forEvent: theEvent];
+	  }
 
-	last_point = [theEvent locationInWindow];
-	break;
-
-      case NSLeftMouseDragged:                        // Left mouse dragged
-	last_point = [theEvent locationInWindow];
-	break;
-
-      case NSRightMouseDragged:                       // Right mouse dragged
 	last_point = [theEvent locationInWindow];
 	break;
 
@@ -1219,7 +1239,7 @@
 
       case NSKeyUp:                                           // Key up
 	  if (original_responder)                     // send message to the
-	      [original_responder keyUp: theEvent];    // object that got the
+	    [original_responder keyUp: theEvent];    // object that got the
 	  break;                                      // key down
 
       case NSFlagsChanged:                                // Flags changed
@@ -1642,7 +1662,7 @@
     disable_flush_window = NO;
     menu_exclude = NO;
     hides_on_deactivate = NO;
-    accepts_mouse_moved = YES;
+    accepts_mouse_moved = NO;
 }
 
 - (id) cleanInit
