@@ -285,36 +285,56 @@ static Class textFieldCellClass;
 //
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSText *t;
-  
   if ([self isSelectable] == NO)
-    return;
-
-  /* This could happen if someone pressed the mouse on the borders.  */
-  if (_text_object)
     {
+      [super mouseDown: theEvent];
       return;
     }
 
-  t = [_window fieldEditor: YES forObject: self];
-
-  if ([t superview] != nil)
+  /* NB: If we're receiving this click from the NSWindow, we expect
+     _text_object to never be nil here, since NSWindow makes the
+     NSTextField the first responder (which invokes its
+     -becomeFirstResponder:, which invokes its -selectText:, which, if
+     it is selectable, sets up the _text_object, then makes the
+     _text_object first responder!) before calling its -mouseDown:.
+     Only the first click should go via here; further clicks will be
+     sent directly by the NSWindow to the _text_object.
+  */
+  if (_text_object)
     {
-      if ([t resignFirstResponder] == NO)
+      [_text_object mouseDown: theEvent];
+      return;
+    }
+  else
+    {
+      /* I suppose you could get here in subclasses which override
+       * -becomeFirstResponder not to select the text.  In that case,
+       * we set up the _text_object manually to start editing here.
+       */
+
+      /* Make sure we have first responder status when we start edit.
+       * This does nothing if we are already first responder; but
+       * (important!) it implicitly should free the fieldEditor if it
+       * was in use by another control.
+       */
+      if ([_window makeFirstResponder: self])
 	{
-	  if ([_window makeFirstResponder: _window] == NO)
-	    return;
+	  NSText *t = [_window fieldEditor: YES forObject: self];
+	  
+	  if ([t superview] != nil)
+	    {
+	      /* Can't take the field editor ... give up.  */
+	      return;
+	    }
+
+	  _text_object = [_cell setUpFieldEditorAttributes: t];
+	  [_cell editWithFrame: _bounds
+		 inView: self
+		 editor: _text_object
+		 delegate: self
+		 event: theEvent];
 	}
     }
-
-
-  //  [NSCursor hide];
-  _text_object = [_cell setUpFieldEditorAttributes: t];
-  [_cell editWithFrame: _bounds
-	inView: self
-	editor: _text_object
-	delegate: self
-	event: theEvent];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
@@ -332,7 +352,15 @@ static Class textFieldCellClass;
 
 - (BOOL) becomeFirstResponder
 {
-  return [self isSelectable];
+  if ([self acceptsFirstResponder])
+    {
+      [self selectText: self];
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
 }
 
 -(BOOL) needsPanelToBecomeKey
