@@ -2255,8 +2255,8 @@ replacing the selection.
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	       replacementString: (NSString*)replacementString
 {
-  //if (_tf.is_editable == NO)
-  //  return NO;
+  if (_tf.is_editable == NO)
+    return NO;
 
   /* We need to send the textShouldBeginEditing: /
      textDidBeginEditingNotification only once; and we need to send it
