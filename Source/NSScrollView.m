@@ -932,9 +932,9 @@ static float scrollerWidth;
     {
       DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
 		[_vertScroller frame].origin.y - 1);
-      DPSrlineto(ctxt, 0, [_vertScroller frame].size.height+1);
-	  DPSstroke(ctxt);
-	}
+      DPSrlineto(ctxt, 0, [_vertScroller frame].size.height + 1);
+      DPSstroke(ctxt);
+    }
 
   if (_hasHorizScroller)
     {
