@@ -1,3 +1,9 @@
+2003-07-02 16:38  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSFont.m: (Mostly) rewrite handling of standard fonts to
+	provide better behavior, especially when only some fonts are set in
+	the defaults. Updated documentation.
+
 2003-07-01 Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSBrowser.m (_createColumn):

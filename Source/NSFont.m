@@ -42,42 +42,6 @@
 #include "gnustep/gui/GSFusedSilicaContext.h"
 
 
-/*
-The valid font roles. Note that these values are used when encoding and
-decoding, so entries may never be removed. Entries may be added after the
-last entry, and entries don't have to actually be handled.
-
-Note that these values are multiplied by two before they are used since the
-lowest bit is used to indicate an explicit size. If the lowest bit is set,
-the size is explicitly specified and encoded.
-*/
-enum FontRoles
-{
-RoleExplicit=0,
-RoleBoldSystemFont,
-RoleSystemFont,
-RoleUserFixedPitchFont,
-RoleUserFont,
-RoleTitleBarFont,
-RoleMenuFont,
-RoleMessageFont,
-RolePaletteFont,
-RoleToolTipsFont,
-RoleControlContentFont,
-RoleLabelFont
-};
-
-
-
-/* We cache all the 4 default fonts after we first get them.
-   But when a default font is changed, the variable is set to YES 
-   so all default fonts are forced to be recomputed. */
-static BOOL systemCacheNeedsRecomputing = NO;
-static BOOL boldSystemCacheNeedsRecomputing = NO;
-static BOOL userCacheNeedsRecomputing = NO;
-static BOOL userFixedCacheNeedsRecomputing = NO;
-static NSFont	*placeHolder = nil;
-
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
 	     matrix: (const float*)fontMatrix
@@ -127,17 +91,17 @@ newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
   font names available are:
   </p>
   <list>
-    <item>NSBoldFont                Helvetica-Bold</item>
-    <item>NSControlContentFont      Helvetica</item>
+    <item>NSBoldFont                Helvetica-Bold (System bold font)</item>
+    <item>NSControlContentFont      System font</item>
     <item>NSFont                    Helvetica (System Font)</item>
-    <item>NSLabelFont               Helvetica</item>
-    <item>NSMenuFont                Helvetica</item>
-    <item>NSMessageFont             Helvetica</item>
-    <item>NSPaletteFont             Helvetica-Bold</item>
-    <item>NSTitleBarFont            Helvetica-Bold</item>
-    <item>NSToolTipsFont            Helvetica</item>
+    <item>NSLabelFont               System font</item>
+    <item>NSMenuFont                System font</item>
+    <item>NSMessageFont             System font</item>
+    <item>NSPaletteFont             System bold font</item>
+    <item>NSTitleBarFont            System bold font</item>
+    <item>NSToolTipsFont            System font</item>
     <item>NSUserFixedPitchFont      Courier</item>
-    <item>NSUserFont                Helvetica</item>
+    <item>NSUserFont                System font</item>
   </list>
   <p>
   The default sizes are:
@@ -146,7 +110,7 @@ newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
     <item>NSBoldFontSize            (none)</item>
     <item>NSControlContentFontSize  (none)</item>
     <item>NSFontSize                12 (System Font Size)</item>
-    <item>NSLabelFontSize           12</item>
+    <item>NSLabelFontSize           (none)</item>
     <item>NSMenuFontSize            (none)</item>
     <item>NSMessageFontSize         (none)</item>
     <item>NSPaletteFontSize         (none)</item>
@@ -166,6 +130,9 @@ newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
 
 /* Class variables*/
 
+/* See comments in +initialize. */
+static NSFont *placeHolder = nil;
+
 /* Fonts that are preferred by the application */
 static NSArray *_preferredFonts;
 
@@ -177,89 +144,195 @@ static NSMapTable* globalFontMap = 0;
 
 static NSUserDefaults	*defaults = nil;
 
-static NSFont *
-getNSFont(NSString* key, NSString* defaultFontName, float fontSize, int role)
+
+/*
+The valid font roles. Note that these values are used when encoding and
+decoding, so entries may never be removed. Entries may be added after the
+last entry, and entries don't have to actually be handled.
+
+Note that these values are multiplied by two before they are used since the
+lowest bit is used to indicate an explicit size. If the lowest bit is set,
+the size is explicitly specified and encoded.
+*/
+enum FontRoles
+{
+RoleExplicit=0,
+RoleBoldSystemFont,
+RoleSystemFont,
+RoleUserFixedPitchFont,
+RoleUserFont,
+RoleTitleBarFont,
+RoleMenuFont,
+RoleMessageFont,
+RolePaletteFont,
+RoleToolTipsFont,
+RoleControlContentFont,
+RoleLabelFont,
+RoleMax
+};
+
+typedef struct
+{
+  /* Defaults key for this font. */
+  NSString *key;
+
+  /* If there's no defaults key, fall back to the font for this role. */
+  int fallback;
+
+  /* If there's no other role to fall back to, use this font. */
+  NSString *defaultFont;
+
+  /* Cached font for the default size of this role. */
+  NSFont *cachedFont;
+} font_role_info_t;
+
+/*
+This table, through getNSFont, controls the behavior of getting the standard
+fonts, and must match the table in the documentation above. Each entry should
+have a fallback or a defaultFont. There must be a default font for the system
+font. Bad Things will happen if entries are invalid.
+*/
+static font_role_info_t font_roles[RoleMax]={
+  {nil                    , 0                 , nil              , nil},
+  {@"NSBoldFont"          , 0                 , @"Helvetica-Bold", nil},
+  {@"NSFont"              , 0                 , @"Helvetica"     , nil},
+  {@"NSUserFixedPitchFont", 0                 , @"Courier"       , nil},
+  {@"NSUserFont"          , RoleSystemFont    , nil              , nil},
+  {@"NSTitleBarFont"      , RoleBoldSystemFont, nil              , nil},
+  {@"NSMenuFont"          , RoleSystemFont    , nil              , nil},
+  {@"NSMessageFont"       , RoleSystemFont    , nil              , nil},
+  {@"NSPaletteFont"       , RoleBoldSystemFont, nil              , nil},
+  {@"NSToolTipsFont"      , RoleSystemFont    , nil              , nil},
+  {@"NSControlContentFont", RoleSystemFont    , nil              , nil},
+  {@"NSLabelFont"         , RoleSystemFont    , nil              , nil}
+};
+
+
+static NSString *fontNameForRole(int role, int *actual_entry)
+{
+  int i;
+  NSString *fontName;
+
+  i = role;
+  while (1)
+    {
+      fontName = [defaults stringForKey: font_roles[i].key];
+      if (fontName)
+	{
+	  break;
+	}
+      else if (font_roles[i].fallback)
+	{
+	  i = font_roles[i].fallback;
+	}
+      else if (font_roles[i].defaultFont)
+	{
+	  fontName = font_roles[i].defaultFont;
+	  break;
+	}
+      else
+	{
+	  NSCAssert(NO, @"Invalid font role table entry.");
+	}
+    }
+  if (actual_entry)
+    *actual_entry = i;
+  return fontName;
+}
+
+static NSFont *getNSFont(float fontSize, int role)
 {
   NSString *fontName;
   NSFont *font;
+  BOOL defaultSize;
+  int i;
+  int font_role;
 
-  role *= 2;
-  
-  fontName = [defaults objectForKey: key];
-  if (fontName == nil)
-    {
-      fontName = defaultFontName;
-    }
+  NSCAssert(role > RoleExplicit && role < RoleMax, @"Invalid font role.");
 
-  if (fontSize == 0)
+  font_role = role * 2;
+
+  defaultSize = (fontSize == 0.0);
+  if (defaultSize)
     {
+      font_role |= 1;
+
+      if (font_roles[role].cachedFont)
+	return font_roles[role].cachedFont;
+
       fontSize = [defaults floatForKey:
-	[NSString stringWithFormat: @"%@Size", key]];
-    }
-  else
-    {
-      role |= 1;
+	[NSString stringWithFormat: @"%@Size", font_roles[role].key]];
+
+      if (!fontSize)
+	fontSize = [NSFont systemFontSize];
     }
 
-  font = [NSFontClass _fontWithName: fontName size: fontSize role: role];
+  fontName = fontNameForRole(role, &i);
+  font = [NSFontClass _fontWithName: fontName
+			       size: fontSize
+			       role: font_role];
 
-  /* That font couldn't be found (?).  */
+  /* That font couldn't be found. */
   if (font == nil)
     {
-      /* Try the same size, but the defaultFontName.  */
-      font = [NSFontClass _fontWithName: defaultFontName
+      /* Warn using the role that specified the invalid font. */
+      NSLog(@"The font specified for %@, %@, can't be found.",
+	font_roles[i].key, fontName);
+
+      /* Try the system font. */
+      fontName = fontNameForRole(RoleSystemFont, NULL);
+      font = [NSFontClass _fontWithName: fontName
  				   size: fontSize
-				   role: role];
+				   role: font_role];
       
       if (font == nil)
 	{
-	  /* Try the default font name and size.  */
-	  fontSize = [defaults floatForKey:
-				 [NSString stringWithFormat: @"%@Size", key]];
-	  
-	  font = [NSFontClass _fontWithName: defaultFontName
-				       size: fontSize
-				       role: role];
+	  /* Try the default system font and size. */
+	  fontName = font_roles[RoleSystemFont].defaultFont;
+	  font = [NSFontClass _fontWithName: fontName
+				       size: 12.0
+				       role: font_role];
 
 	  /* It seems we can't get any font here!  Try some well known
 	   * fonts as a last resort.  */
 	  if (font == nil)
 	    {
 	      font = [NSFontClass _fontWithName: @"Helvetica"
-					   size: 12.
-					   role: role];
+					   size: 12.0
+					   role: font_role];
 	    }
 	  if (font == nil)
 	    {
 	      font = [NSFontClass _fontWithName: @"Courier"
-					   size: 12.
-					   role: role];
+					   size: 12.0
+					   role: font_role];
 	    }
 	  if (font == nil)
 	    {
 	      font = [NSFontClass _fontWithName: @"Fixed"
-					   size: 12.
-					   role: role];
+					   size: 12.0
+					   role: font_role];
 	    }
 	}
     }
 
+  ASSIGN(font_roles[role].cachedFont, font);
+
   return font;
 }
 
-void
-setNSFont(NSString* key, NSFont* font)
+static void setNSFont(NSString *key, NSFont *font)
 {
+  int i;
   [defaults setObject: [font fontName] forKey: key];
 
-  systemCacheNeedsRecomputing = YES;
-  boldSystemCacheNeedsRecomputing = YES;
-  userCacheNeedsRecomputing = YES;
-  userFixedCacheNeedsRecomputing = YES;
+  for (i = 1; i < RoleMax; i++)
+    DESTROY(font_roles[i].cachedFont);
 
   /* Don't care about errors */
   [defaults synchronize];
 }
+
 
 //
 // Class methods
@@ -275,7 +348,7 @@ setNSFont(NSString* key, NSFont* font)
        * as a font ... the initialiser knows that whenever it gets the
        * placeHolder it should either return a cached font or return a
        * newly allocated font to replace it.  This mechanism stops the
-       * +fontWithName:... methods from having to allocete fonts instances
+       * +fontWithName:... methods from having to allocate fonts instances
        * which would immediately have to be released for replacement by
        * a cache object.
        */
@@ -301,21 +374,7 @@ setNSFont(NSString* key, NSFont* font)
  */
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSBoldFont", @"Helvetica-Bold", fontSize, RoleBoldSystemFont);
-    }
-  else
-    {
-      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSBoldFont", @"Helvetica-Bold", 0, RoleBoldSystemFont));
-	  boldSystemCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleBoldSystemFont);
 }
 
 /** 
@@ -325,21 +384,7 @@ setNSFont(NSString* key, NSFont* font)
  */
 + (NSFont*) systemFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSFont", @"Helvetica", fontSize, RoleSystemFont);
-    }
-  else
-    {
-      if ((font == nil) || (systemCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSFont", @"Helvetica", 0, RoleSystemFont));
-	  systemCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleSystemFont);
 }
 
 /** 
@@ -348,21 +393,7 @@ setNSFont(NSString* key, NSFont* font)
  */
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSUserFixedPitchFont", @"Courier", fontSize, RoleUserFixedPitchFont);
-    }
-  else
-    {
-      if ((font == nil) || (userFixedCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSUserFixedPitchFont", @"Courier", 0, RoleUserFixedPitchFont));
-	  userFixedCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleUserFixedPitchFont);
 }
 
 /** 
@@ -371,21 +402,7 @@ setNSFont(NSString* key, NSFont* font)
  */
 + (NSFont*) userFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSUserFont", @"Helvetica", fontSize, RoleUserFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSUserFont", @"Helvetica", 0, RoleUserFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleUserFont);
 }
 
 /** 
@@ -417,137 +434,37 @@ setNSFont(NSString* key, NSFont* font)
 
 + (NSFont*) controlContentFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSControlContentFont", @"Helvetica", fontSize, RoleControlContentFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSControlContentFont", @"Helvetica", 0, RoleControlContentFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleControlContentFont);
 }
 
 + (NSFont*) labelFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSLabelFont", @"Helvetica", fontSize, RoleLabelFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSLabelFont", @"Helvetica", 0, RoleLabelFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleLabelFont);
 }
 
 + (NSFont*) menuFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSMenuFont", @"Helvetica", fontSize, RoleMenuFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSMenuFont", @"Helvetica", 0, RoleMenuFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleMenuFont);
 }
 
 + (NSFont*) titleBarFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSTitleBarFont", @"Helvetica-Bold", fontSize, RoleTitleBarFont);
-    }
-  else
-    {
-      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSTitleBarFont", @"Helvetica-Bold", 0, RoleTitleBarFont));
-	  boldSystemCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleTitleBarFont);
 }
 
 + (NSFont*) messageFontOfSize: (float)fontSize
 {
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSMessageFont", @"Helvetica", fontSize, RoleMessageFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSMessageFont", @"Helvetica", 0,  RoleMessageFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleMessageFont);
 }
 
 + (NSFont*) paletteFontOfSize: (float)fontSize
 {
-  // Not sure on this one.
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSPaletteFont", @"Helvetica-Bold", fontSize, RolePaletteFont);
-    }
-  else
-    {
-      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSPaletteFont", @"Helvetica-Bold", 0, RolePaletteFont));
-	  boldSystemCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RolePaletteFont);
 }
 
 + (NSFont*) toolTipsFontOfSize: (float)fontSize
 {
-  // Not sure on this one.
-  static NSFont *font = nil;
-
-  if (fontSize != 0)
-    {
-      return getNSFont (@"NSToolTipsFont", @"Helvetica", fontSize, RoleToolTipsFont);
-    }
-  else
-    {
-      if ((font == nil) || (userCacheNeedsRecomputing == YES))
-	{
-	  ASSIGN (font, getNSFont (@"NSToolTipsFont", @"Helvetica", 0, RoleToolTipsFont));
-	  userCacheNeedsRecomputing = NO;
-	}
-      return font;
-    }
+  return getNSFont(fontSize, RoleToolTipsFont);
 }
 
 //
@@ -559,7 +476,7 @@ setNSFont(NSString* key, NSFont* font)
   
   if (fontSize == 0)
     {
-      fontSize = 12;
+      return [self systemFontSize];
     }
 
   return fontSize;
