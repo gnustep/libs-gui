@@ -500,7 +500,6 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   unsigned i;
   unsigned howMany = [_itemCells count];
   float    neededImageAndTitleWidth = [_font widthOfString: [_menu title]];
-  float    initialImageAndTitleWidth = neededImageAndTitleWidth;
   float    neededKeyEquivalentWidth = 0.0;
   float    neededStateImageWidth = 0.0;
   float    accumulatedOffset = 0.0;
@@ -516,65 +515,67 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   if ([_menu _ownedByPopUp])
     _leftBorderOffset = 0;
 
+  if ([_menu supermenu] != nil)
+    neededImageAndTitleWidth = [_font widthOfString: [_menu title]] + 15;
+  else
+    neededImageAndTitleWidth = [_font widthOfString: [_menu title]];
+
   // TODO: Optimize this loop.
   for (i = 0; i < howMany; i++)
     {
-      float		anImageAndTitleWidth;
-      float		anImageWidth;
-      float		aKeyEquivalentWidth;
-      float		aStateImageWidth;
-      float		aTitleWidth;
+	  float		        anImageAndTitleWidth = 0.0;
+	  float		        anImageWidth = 0.0;
+	  float		        aKeyEquivalentWidth = 0.0;
+	  float		        aStateImageWidth = 0.0;
+	  float		        aTitleWidth = 0.0;
       NSMenuItemCell	*aCell = [_itemCells objectAtIndex: i];
 
       // State image area.
       aStateImageWidth = [aCell stateImageWidth];
 
-      if (aStateImageWidth > neededStateImageWidth)
-	neededStateImageWidth = aStateImageWidth;
-
-      // Image and title area.
+	  // Title and Image area.
       aTitleWidth = [aCell titleWidth];
       anImageWidth = [aCell imageWidth];
+
+	  // Key equivalent area.
+	  aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+
       switch ([aCell imagePosition])
-	{
-	  case NSNoImage: 
-	    anImageAndTitleWidth = aTitleWidth;
-	    break;
+		{
+		case NSNoImage: 
+		  anImageAndTitleWidth = aTitleWidth;
+		  break;
 
-	  case NSImageOnly: 
-	    anImageAndTitleWidth = anImageWidth;
-	    break;
+		case NSImageOnly: 
+		  anImageAndTitleWidth = anImageWidth;
+		  break;
 
-	  case NSImageLeft: 
-	  case NSImageRight: 
-	    anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
-	    break;
+		case NSImageLeft: 
+		case NSImageRight: 
+		  anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
+		  break;
 
-	  case NSImageBelow: 
-	  case NSImageAbove: 
-	  case NSImageOverlaps: 
-	  default: 
-	    if (aTitleWidth > anImageWidth)
-	      anImageAndTitleWidth = aTitleWidth;
-	    else
-	      anImageAndTitleWidth = anImageWidth;
-	    break;
-	}
+		case NSImageBelow: 
+		case NSImageAbove: 
+		case NSImageOverlaps: 
+		default: 
+		  if (aTitleWidth > anImageWidth)
+			anImageAndTitleWidth = aTitleWidth;
+		  else
+			anImageAndTitleWidth = anImageWidth;
+		  break;
+		}
       anImageAndTitleWidth += aStateImageWidth;
-      if (anImageAndTitleWidth > neededImageAndTitleWidth)
-	neededImageAndTitleWidth = anImageAndTitleWidth;
 
-      // Key equivalent area.
-      aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+	  if (aStateImageWidth > neededStateImageWidth)
+		neededStateImageWidth = aStateImageWidth;
+
+      if (anImageAndTitleWidth > neededImageAndTitleWidth)
+		neededImageAndTitleWidth = anImageAndTitleWidth;
 
       if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
-	neededKeyEquivalentWidth = aKeyEquivalentWidth;
+		neededKeyEquivalentWidth = aKeyEquivalentWidth;
     }
-
-  if (neededImageAndTitleWidth == initialImageAndTitleWidth)
-  {
-    neededImageAndTitleWidth += 10;
-  }
 
   // Cache the needed widths.
   _stateImageWidth = neededStateImageWidth;
@@ -584,9 +585,9 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   // Calculate the offsets and cache them.
   _stateImageOffset = _imageAndTitleOffset = accumulatedOffset 
     = _horizontalEdgePad;
-  accumulatedOffset += 2 * _horizontalEdgePad + neededImageAndTitleWidth;
+  accumulatedOffset += neededImageAndTitleWidth;
 
-  _keyEqOffset = accumulatedOffset += _horizontalEdgePad;
+  _keyEqOffset = accumulatedOffset += 2 * _horizontalEdgePad;
   accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad;
 
   // Calculate frame size.
@@ -600,14 +601,14 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
       float menuBarHeight = [[self class] menuBarHeight];
       
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-	(howMany * _cellSize.height) + menuBarHeight)];
+									 (howMany * _cellSize.height) + menuBarHeight)];
       [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
                                         NSWidth (_bounds), menuBarHeight)];
     }
   else
     {
       [self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
-				     _cellSize.height + _leftBorderOffset)];
+									 _cellSize.height + _leftBorderOffset)];
     }
 
   _needsSizing = NO;
