@@ -253,7 +253,7 @@ IMPORT_LIBRARY=@IMPORT_LIBRARY@
 # targets
 #
 
-all: header_links src
+all: header_links src gpbs
 
 header_links:
 	-rm -rf ../Headers/AppKit
@@ -262,6 +262,10 @@ header_links:
 	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
 
 src: @STATIC_LIBRARY@ @SHARED_LIBRARY@
+
+gpbs: gpbs.m
+	$(CC) $(ALL_CPPFLAGS) $(DEFS) $(ALL_OBJCFLAGS) -g -w -o $@ $< \
+	NSPasteboard.o $(LIBS)
 
 # library
 $(MAIN_FILE)$(libext): $(OBJS)
