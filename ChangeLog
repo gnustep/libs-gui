@@ -1,5 +1,11 @@
 2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
 
+	* Source/NSProgressIndicator.m: revert last change.
+	* Source/NSInterfaceStyle.m: revert last change.
+	* Headers/NSInterfaceStyle.h: revert last change.
+
+2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
+
 	Multiple outstanding commits.
 
 	* ColorPickers/GSWheelColorPicker.m:

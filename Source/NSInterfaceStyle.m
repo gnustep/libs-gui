@@ -48,8 +48,6 @@ styleFromString(NSString* str)
     return NSMacintoshInterfaceStyle;
   if ([str isEqualToString: @"NSWindows95InterfaceStyle"])
     return NSWindows95InterfaceStyle;
-  if ([str isEqualToString: @"GSGtkInterfaceStyle"])
-    return GSGtkInterfaceStyle;
   if ([str isEqualToString: @"GSWindowMakerInterfaceStyle"])
     return GSWindowMakerInterfaceStyle;
   return NSNoInterfaceStyle;
