@@ -1,4 +1,4 @@
-/* 
+/*                                                    -*-objc-*-
    NSTextView.h
 
    Copyright (C) 1999 Free Software Foundation, Inc.
@@ -48,11 +48,22 @@
        hand, and the text storage owns everything - thus we need to
        release nothing.  */
     unsigned owns_text_network: 1;
-    /* Always NO except when we own text network and are deallocating */
+    /* is_in_dealloc is always NO except when we own text network and
+       are deallocating */
     unsigned is_in_dealloc: 1;
     unsigned allows_undo: 1;
     unsigned smart_insert_delete: 1;
+    /* multiple_textviews is YES if more than one NSTextView are
+       sharing this layout manager.  In this case, we need to keep the
+       views in sync. */
+    unsigned multiple_textviews: 1;
   } _tvf;
+  
+  /* The following is the object used when posting notifications.  
+     It is usually `self' - but in the case of multiple textviews 
+     it is the firstTextView returned by the layout manager - which 
+     might or might not be `self'.  This must *not* be retained. */
+  NSTextView *_notifObject;
   
   NSSize _textContainerInset;
   NSPoint _textContainerOrigin;
@@ -286,6 +297,15 @@
                  afterString:(NSString **)afterString;
 @end
 
+@interface NSTextView (GSTextViewUpdateMultipleViews)
+/*
+ * This queries the NSLayoutManager to see if it is using multiple
+ * text views, and saves this information in a flag, and caches the
+ * first text view object.  The NSLayoutManager needs to call this
+ * method to update this information. */
+- (void) _updateMultipleTextViews;
+@end
+
 // Note that all delegation messages come from the first textView
 
 @interface NSObject (NSTextViewDelegate)
@@ -332,7 +352,8 @@ replacementString:(NSString *)replacementString;
 // If characters are changing, replacementString is what will replace the 
 // affectedCharRange.  If attributes only are changing, replacementString will be nil.
 
-- (BOOL)textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector;
+- (BOOL)textView:(NSTextView *)textView 
+doCommandBySelector:(SEL)commandSelector;
 
 - (NSUndoManager *)undoManagerForTextView:(NSTextView *)view;
 @end
