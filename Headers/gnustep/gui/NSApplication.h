@@ -64,6 +64,7 @@ extern NSString *NSEventTrackingRunLoopMode;
   NSMutableArray *window_list;
   NSMutableArray *event_queue;
   NSEvent *current_event;
+  NSModalSession session;
   id key_window;
   id main_window;
   id delegate;

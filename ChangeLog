@@ -1,3 +1,9 @@
+Tue Dec  3  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSApplication.m: Fixed include for GNUServicesManager.h
+	Implemented all the modal loop methods (untested).
+	* NSApplication.h: Added 'session' ivar for modal loop support.
+
 Tue Dec  1 21:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSApplication.m: Moved services code out to GNUServiceManager.m
