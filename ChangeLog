@@ -1,3 +1,22 @@
+2001-04-10  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSComboBox.h
+	* Headers/gnustep/gui/NSComboBoxCell.h
+	* Source/NSComboBox.m
+	* Source/NSComboBoxCell.m
+	Added aditional methods for text completion
+	* Source/externs.m
+	Added notifiaction strings from NSComboBox.m
+	* Source/NSComboBox.m
+	* Source/NSTextField.m
+	* Source/NSImageView.m
+	Corrected the handling of the cellClass so that every subclass of
+	NSControl, that uses a cell, has its own implementaion of
+	[cellClass] and [setCellClass].
+	* Source/NSSlider.m
+	[initWithFrame:] removed superflous [setCell:] call, as this gets
+	done in the super implementation.
+
 Fri Apr  6 23:39:52 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m (createRowsForColumn:): Use the public
