@@ -319,8 +319,10 @@
   NSRect rect;
 
   if (_documentView == nil)
-    return _bounds;
-
+    {
+      return _bounds;
+    }
+  
   documentFrame = [_documentView frame];
   clipViewBounds = _bounds;
   rect.origin = documentFrame.origin;
@@ -337,7 +339,9 @@
   NSRect rect;
 
   if (_documentView == nil)
-    return NSZeroRect;
+    {
+      return NSZeroRect;
+    }
 
   documentBounds = [_documentView bounds];
   clipViewBounds = [self convertRect: _bounds  toView: _documentView];
@@ -360,9 +364,12 @@
   NSPoint new;
 
   if (_documentView == nil)
-    return NO;
-
-  new = [_documentView convertPoint: [theEvent locationInWindow] fromView: nil];
+    {
+      return NO;
+    }
+  
+  new = [_documentView convertPoint: [theEvent locationInWindow] 
+		       fromView: nil];
   new = [self constrainScrollPoint: new];
 
   if (NSPointInRect(new, [self documentVisibleRect]))
