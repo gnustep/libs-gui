@@ -48,6 +48,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSPanel.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/GSServicesManager.h>
@@ -174,6 +175,7 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 - (NSImage*) _getImageWithName: (NSString*)name
 		     alternate: (NSString*)alternate;
 - (NSImage*) folderImage;
+- (NSImage*) homeDirectoryImage;
 - (NSImage*) unknownFiletypeImage;
 - (NSImage*) rootImage;
 - (NSImage*) _iconForExtension: (NSString*)ext;
@@ -683,9 +685,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  if (image == nil || image == [self unknownFiletypeImage])
 	    {
 	      if ([aPath isEqual: _rootPath])
-		image = [self rootImage];
+		{
+		  image = [self rootImage];
+		}
+	      else if ([aPath isEqual: NSHomeDirectory ()])
+		{
+		  image = [self homeDirectoryImage];
+		}
 	      else
-		image = [self folderImage];
+		{
+		  image = [self folderImage];
+		}
 	    }
 	}
     }
@@ -1321,6 +1331,20 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       image = RETAIN([self _getImageWithName: @"Folder.tiff"
 				   alternate: @"common_Folder.tiff"]);
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for the user home directory */
+- (NSImage*) homeDirectoryImage
+{
+  static NSImage *image = nil;
+  
+  if (image == nil)
+    {
+      image = RETAIN([self _getImageWithName: @"HomeDirectory.tiff"
+			   alternate: @"common_HomeDirectory.tiff"]);
     }
 
   return image;
