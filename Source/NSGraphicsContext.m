@@ -72,7 +72,7 @@ NSGraphicsContext	*GSCurrentContext()
 
   return (NSGraphicsContext*) th->_gcontext;
 #else
-  NSMutableDictionary *dict [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
   return (NSGraphicsContext*) [dict objectForKey: NSGraphicsContextThreadKey];
 #endif
@@ -135,7 +135,7 @@ struct NSWindow_struct
 
   th->_gcontext = context;
 #else
-  NSMutableDictionary *dict [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
   [dict setObject: context forKey: NSGraphicsContextThreadKey];
 #endif

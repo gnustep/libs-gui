@@ -1,3 +1,8 @@
+1999-06-03  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m (GSCurrentContext): Insert = (patch
+	from John BEPPU <beppu@taurus.oac.uci.edu>).
+
 Thu Jun  3  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWorkspace.m: Updated app launching code to supply info
