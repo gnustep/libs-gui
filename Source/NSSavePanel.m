@@ -59,14 +59,6 @@ static NSFileManager *_fm = nil;
 
 static BOOL _gs_display_reading_progress = NO;
 
-// Pacify the compiler
-// Subclasses (read NSOpenPanel) may implement this 
-// to filter some extensions out of displayed files.
-@interface NSObject (_SavePanelPrivate)
--(BOOL) _shouldShowExtension: (NSString*)extension isDir: (BOOL *)isDir;
-@end
-//
-
 //
 // NSSavePanel private methods
 //
@@ -82,7 +74,8 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _unmountMedia;
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
-
+- (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
+- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
 @end /* NSSavePanel (PrivateMethods) */
 
 @implementation NSSavePanel (_PrivateMethods)
@@ -398,6 +391,47 @@ static BOOL _gs_display_reading_progress = NO;
     }
 }
 
+- (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
+{
+  if (path == nil || filename == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"NSSavePanel runModalForDirectory:file: "
+		 @"does not accept nil arguments."];
+
+  ASSIGN (_directory, path);
+  ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
+  [_browser setPath: _fullFileName];
+
+  [self _selectCellName:filename];
+  [[_form cellAtIndex: 0] setStringValue: filename];
+  [_form selectTextAtIndex: 0];
+  [_form setNeedsDisplay: YES];
+
+  /*
+   * We need to take care of the possibility of 
+   * the panel being aborted.  We return NSCancelButton 
+   * in that case.
+   */
+  _OKButtonPressed = NO;
+
+  [self browser: _browser
+	selectCellWithString: [[_browser selectedCell] stringValue] 
+	inColumn: [_browser selectedColumn]];
+}
+
+- (BOOL) _shouldShowExtension: (NSString *)extension
+			isDir: (BOOL *)isDir;
+{
+  if (_treatsFilePackagesAsDirectories == NO && *isDir == YES &&
+	  ![extension isEqualToString: @""])
+    {
+      if ([extension isEqualToString: _requiredFileType] == YES)
+	  *isDir = NO;
+    }
+
+  return YES;
+}
+
 @end /* NSSavePanel (PrivateMethods) */
 
 //
@@ -460,11 +494,6 @@ static BOOL _gs_display_reading_progress = NO;
   _delegateHasShowFilenameFilter = NO;
   _delegateHasValidNameFilter = NO;
 
-  if ([self respondsToSelector: @selector(_shouldShowExtension:isDir:)])
-    _selfHasShowExtensionFilter = YES;
-  else 
-    _selfHasShowExtensionFilter = NO;
-  
   [self _getOriginalSize];
   return self;
 }
@@ -670,43 +699,42 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
-  if (path == nil || filename == nil)
-    [NSException raise: NSInvalidArgumentException
-		format: @"NSSavePanel runModalForDirectory:file: "
-		 @"does not accept nil arguments."];
-
-  ASSIGN (_directory, path);
-  ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
-  [_browser setPath: _fullFileName];
-
-  [self _selectCellName:filename];
-  [[_form cellAtIndex: 0] setStringValue: filename];
-  [_form selectTextAtIndex:0];
-  [_form setNeedsDisplay: YES];
-
-  if([self isKindOfClass:[NSOpenPanel class]] == NO)
-    {
-      if([filename isEqual:@""] == NO)
-	[_okButton setEnabled:YES];
-    }
-
-  /*
-   * We need to take care of the possibility of 
-   * the panel being aborted.  We return NSCancelButton 
-   * in that case.
-   */
-  _OKButtonPressed = NO;
-
-  [self browser: _browser
-	selectCellWithString: [[_browser selectedCell] stringValue] 
-	inColumn: [_browser selectedColumn]];
-
+  [self _setupForDirectory: path file: filename];
   [NSApp runModalForWindow: self];
 
   if (_OKButtonPressed)
     return NSOKButton;
   else 
     return NSCancelButton;
+}
+
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)filename
+	    relativeToWindow: (NSWindow*)window
+{
+  [self _setupForDirectory: path file: filename];
+  [NSApp runModalForWindow: self
+	 relativeToWindow: window];
+
+  if (_OKButtonPressed)
+    return NSOKButton;
+  else 
+    return NSCancelButton;
+}
+
+- (void) beginSheetForDirectory: (NSString *)path
+			   file: (NSString *)filename
+		 modalForWindow: (NSWindow *)docWindow
+		  modalDelegate: (id)delegate
+		 didEndSelector: (SEL)didEndSelector
+		    contextInfo: (void *)contextInfo
+{
+  [self _setupForDirectory: path file: filename];
+  [NSApp beginSheet: self
+	 modalForWindow: docWindow
+	 modalDelegate: delegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
 }
 
 - (NSString*) directory
@@ -733,6 +761,11 @@ static BOOL _gs_display_reading_progress = NO;
     return _fullFileName;
   else
     return [_fullFileName stringByAppendingPathExtension: _requiredFileType];
+}
+
+- (NSURL *) URL
+{
+  return [NSURL fileURLWithPath: [self filename]];
 }
 
 - (void) cancel: (id)sender
@@ -1077,16 +1110,7 @@ createRowsForColumn: (int)column
 			      shouldShowFilename: pathAndFile];
 	}
 
-      if (_treatsFilePackagesAsDirectories == NO && isDir == YES && exists
-	  && ![extension isEqualToString: @""])
-	{
-	  // Ones with more chance first
-	  if ([self isMemberOfClass: [NSSavePanel class]] == YES)
-	    if ([extension isEqualToString: _requiredFileType] == YES)
-	      isDir = NO;
-	}
-
-      if (_selfHasShowExtensionFilter && exists)
+      if (exists)
 	{
 	  exists = [self _shouldShowExtension: extension isDir: &isDir];
 	}
