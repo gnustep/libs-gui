@@ -1,3 +1,8 @@
+2003-05-02  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/Gui/GNUmakefile: Remove GNUSTEP_MAKEFILES.
+	* Source/DocMakefile: Idem.
+
 2003-05-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFProducer.h
