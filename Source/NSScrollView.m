@@ -507,7 +507,6 @@ static Class rulerViewClass = nil;
 
 - (void) tile
 {
-  
   NSSize contentSize;
   float scrollerWidth = [NSScroller scrollerWidth];
   NSRect contentRect;
@@ -524,7 +523,7 @@ static Class rulerViewClass = nil;
       headerViewHeight = [[_headerClipView documentView] frame].size.height;
     }
 
-  if ((_hasCornerView == YES) && (_hasHorizScroller == YES))
+  if (_hasCornerView == YES)
     {
       cornerView = [(NSTableView *)[_contentView documentView] cornerView];
       if (headerViewHeight == 0)
@@ -556,6 +555,11 @@ static Class rulerViewClass = nil;
   contentRect.origin.x = borderThickness;
   contentRect.origin.y = borderThickness;
 
+  if (_rFlags.flipped_view)
+    {
+      contentRect.origin.y += headerViewHeight;
+    }
+
   if (_hasVertScroller)
     {
       vertScrollerRect.origin.x = _bounds.origin.x + borderThickness;
@@ -581,7 +585,6 @@ static Class rulerViewClass = nil;
 
       if (_rFlags.flipped_view)
 	{
-	  contentRect.origin.y += headerViewHeight; 
 	  horizScrollerRect.origin.y += headerViewHeight;
 	  horizScrollerRect.origin.y += contentRect.size.height + 1;
 	}
