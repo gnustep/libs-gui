@@ -470,7 +470,6 @@ static NSNotificationCenter *nc = nil;
  */
 + (void) initialize
 {
-  NSLog (@"NSWindow initialize");
   if (self == [NSWindow class])
     {
       NSDebugLog(@"Initialize NSWindow class\n");
