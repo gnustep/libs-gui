@@ -158,6 +158,7 @@ GSFusedSilicaContext.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
+GSSlideView.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
