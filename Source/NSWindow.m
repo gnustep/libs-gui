@@ -3046,7 +3046,9 @@ resetCursorRectsForView(NSView *theView)
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
   if (_delegate)
-    [nc removeObserver: _delegate name: nil object: self];
+    {
+      [nc removeObserver: _delegate name: nil object: self];
+    }
   _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
