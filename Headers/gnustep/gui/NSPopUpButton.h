@@ -96,7 +96,6 @@
 - (NSRectEdge)preferredEdge;
 - (void)setTitle:(NSString *)aString;
 - (void)synchronizeTitleAndSelectedItem;
-- (void)_popup:(NSNotification*)notification;
 - (void)mouseDown:(NSEvent *)theEvent;
 
 - (id) initWithCoder: (NSCoder*)aDecoder;
