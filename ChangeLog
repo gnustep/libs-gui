@@ -12,7 +12,7 @@
 	associated with a NSPopUpButton (This seems like a hack - nib2gmodel
 	may not be correctly connecting NSPopUpButton with its NSMenu).
 
-Mon Sep 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+1999-09-14  David Lazaro Saz  <khelekir@encomix.es>
 
 	* Source/NSScrollView.m ([NSScrollView -drawRect:]): Corrected problem
 	with the vertical black line of a scrollview being displaced 1 pixel
