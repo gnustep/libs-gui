@@ -359,10 +359,6 @@ typedef enum _NSSelectionAffinity {
 
 
 @interface NSText(GNUstepExtension)
-// GNU extension (override it if you want other characters treated 
-// as newline characters)
-+ (NSString*) newlineString;	
-
 // GNU extension
 - (void) replaceRange: (NSRange)range 
  withAttributedString: (NSAttributedString*)attrString;
