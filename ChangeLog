@@ -49,7 +49,6 @@
 	little more parallel to base Documentation makefile.
 	* Documentation/GNUmakefile.postamble: Remove stray backslash.
 
->>>>>>> 1.2290
 2004-06-21  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m:
