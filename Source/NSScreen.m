@@ -77,7 +77,6 @@ _screenNumbers(int *count)
 {
   float			x, y, w, h;
   NSGraphicsContext	*ctxt = GSCurrentContext();
-  int			bitsPerPixel = 0;
 
   self = [super init];
 
@@ -117,6 +116,17 @@ _screenNumbers(int *count)
   return self;
 }
 
+- (BOOL) isEqual: (id)anObject
+{
+  if (anObject == self)
+    return YES;
+  if ([anObject isKindOfClass: self->isa] == NO)
+    return NO;
+  if (_screenNumber == ((NSScreen *)anObject)->_screenNumber)
+    return YES;
+  return NO;
+}
+
 /*
  * Reading Screen Information
  */
@@ -132,7 +142,7 @@ _screenNumbers(int *count)
 
 - (NSDictionary*) deviceDescription
 {
-  NSMutableDictionary	*devDesc = [[NSDictionary alloc] init];
+  NSMutableDictionary	*devDesc;
   int			bps = 0;
   NSSize		screenResolution;
   NSString		*colorSpaceName = nil;
@@ -143,7 +153,7 @@ _screenNumbers(int *count)
    */
 
   // Set the screen number in the current object.
-  devDesc = [NSMutableDictionary new];
+  devDesc = [NSMutableDictionary dictionary];
   [devDesc setObject: [NSNumber numberWithInt: _screenNumber]
 	      forKey: @"NSScreenNumber"];
 
@@ -233,7 +243,7 @@ _screenNumbers(int *count)
   mainScreen = [[NSScreen alloc] _initWithScreenNumber: windows[0]];
   NSZoneFree(NSDefaultMallocZone(), windows); // free the list
 
-  return mainScreen;
+  return AUTORELEASE(mainScreen);
 }
 
 + (NSScreen*) deepestScreen
@@ -265,7 +275,6 @@ _screenNumbers(int *count)
 + (NSArray*) screens
 {
   int count = 0, index = 0, *windows = 0;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSMutableArray *screenArray = [NSMutableArray array];
 
   // Get the number of screens.
@@ -281,7 +290,7 @@ _screenNumbers(int *count)
       NSScreen *screen = nil;
       
       screen = [[NSScreen alloc] _initWithScreenNumber: windows[index]];
-      [screenArray addObject: screen];
+      [screenArray addObject: AUTORELEASE(screen)];
     }
 
   NSZoneFree(NSDefaultMallocZone(), windows); // free the list

@@ -1,3 +1,10 @@
+2000-04-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSScreen.m (-deviceDescription): Use autoreleased dictionary.
+	(+mainScreen): Autorelease screen.
+	(+screens): Likewise.
+	(-isEqual:): Implement.
+
 2000-04-25 Richard Frith-Macdonald <rfm@gnu.org>
 
 	Patch by Gregory John Casamento <borgheron@yahoo.com> edited to
