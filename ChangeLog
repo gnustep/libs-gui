@@ -1,3 +1,9 @@
+Thu Apr  1 20:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSStringDrawing.m: improved paragraph style handling and
+	added slight optimisation to restore (barely) tolerable performance.
+	Further optimisation to wait until it all works properly.
+
 1999-04-01  Adam Fedor  <fedor@gnu.org>
 
 	* Model/test.m (main): Change GSContext to NSGraphicContext
