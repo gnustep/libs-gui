@@ -101,7 +101,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
    <p>
    You can use NSDocumentController to get a list of all open
    documents, the current document (The one whose window is Key) and
-   other information about these documents. It also remebers the most 
+   other information about these documents. It also remembers the most 
    recently opened documents (through the user default key
     NSRecentDocuments). .
    </p>
@@ -729,7 +729,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 // The number of remembered recent documents
 #define MAX_DOCS 5
 
-- (void)noteNewRecentDocument:(NSDocument *)aDocument
+- (void) noteNewRecentDocument: (NSDocument *)aDocument
 {
   NSString *fileName = [aDocument fileName];
   NSURL *anURL = [NSURL fileURLWithPath: fileName];
@@ -741,6 +741,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 - (void) noteNewRecentDocumentURL: (NSURL *)anURL
 {
   unsigned index = [_recentDocuments indexOfObject: anURL];
+  NSMutableArray *a;
 
   if (index != NSNotFound)
     {
@@ -753,13 +754,22 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     }
 
   [_recentDocuments addObject: anURL];
+  
+  a = [_recentDocuments mutableCopy];
+  index = [a count];
+  while (index-- > 0)
+    {
+      [a replaceObjectAtIndex: index withObject:
+	[[a objectAtIndex: index] absoluteString]];
+    }
   [[NSUserDefaults standardUserDefaults] 
-    setObject: _recentDocuments forKey: NSRecentDocuments];
+    setObject: a forKey: NSRecentDocuments];
+  RELEASE(a);
 }
 
 - (NSArray *) recentDocumentURLs
 {
-    return _recentDocuments;
+  return _recentDocuments;
 }
 
 @end

@@ -1,3 +1,8 @@
+2002-11-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSDocumentController.m: Don't try to store NSURL objects in
+	defaults system.
+
 2002-11-08  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSSavePanel.m ([NSSavePanel -_shouldShowExtension:isDir:]): 
