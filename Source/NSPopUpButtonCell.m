@@ -200,13 +200,16 @@ static NSImage *_pbc_image[2];
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
   id <NSMenuItem> anItem;
-  int count = [_menu numberOfItems];
-  int i = [self indexOfItemWithTitle: title];
+  int i, count;
+  
+  i = [self indexOfItemWithTitle: title];
 
   if (-1 != i)
     {
       [self removeItemAtIndex: i];
     }
+
+  count = [_menu numberOfItems];
 
   if (index < 0)
     index = 0;
