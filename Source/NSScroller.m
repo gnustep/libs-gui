@@ -57,7 +57,7 @@ static NSButtonCell* rightCell = nil;
 static NSButtonCell* knobCell = nil;
 
 static const float scrollerWidth = 18;
-static const float buttonsWidth = 16;
+static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 static NSColor *scrollBarColor = nil;
 
@@ -73,6 +73,10 @@ static NSColor *scrollBarColor = nil;
     }
 }
 
+/**
+ *  Subclasses can override this to provide different scrollbar width.  But
+ *  you may need to also override -drawParts .
+ */
 + (float) scrollerWidth
 {
   return scrollerWidth;
@@ -266,6 +270,12 @@ static NSColor *scrollBarColor = nil;
   return [self initWithFrame: NSZeroRect];
 }
 
+/**
+ *  Cache images for scroll arrows and knob.  If you override +scrollerWidth
+ *  you may need to override this as well (to provide images for the new
+ *  width).  However, if you do so, you must currently also override
+ *  -drawArrow:highlight: and -drawKnob: .
+ */
 - (void) drawParts
 {
   /*
@@ -338,6 +348,7 @@ static NSColor *scrollBarColor = nil;
 {
   NSSize	frameSize = _frame.size;
   float		size = (_isHorizontal ? frameSize.width : frameSize.height);
+  int		buttonsWidth = [isa scrollerWidth] - buttonsOffset;
 
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
@@ -911,6 +922,7 @@ static NSColor *scrollBarColor = nil;
   NSRect scrollerFrame = _frame;
   float x = 1, y = 1;
   float width, height;
+  float buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
   float buttonsSize = 2 * buttonsWidth + 2;
   NSUsableScrollerParts usableParts;
   /*

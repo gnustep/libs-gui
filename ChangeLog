@@ -1,3 +1,9 @@
+2005-03-05 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSScroller.m (-checkSpaceForParts, -rectForPart:) Calculate
+	buttonsWidth variable dynamically based on +scrollerWidth (supports
+	width override by subclass).
+
 2005-03-05 10:53 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDataLink.h
