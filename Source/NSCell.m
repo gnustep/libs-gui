@@ -51,6 +51,8 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSTextView.h>
+#include <AppKit/NSTextContainer.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSAttributedString.h>
 
@@ -151,6 +153,7 @@ static NSColor	*shadowCol;
   //_cell.is_continuous = NO;
   //_cell.state = 0;
   _action_mask = NSLeftMouseUpMask;
+  _menu = [isa defaultMenu];
 
   return self;
 }
@@ -176,6 +179,7 @@ static NSColor	*shadowCol;
   //_cell.is_selectable = NO;
   //_cell.is_continuous = NO;
   _action_mask = NSLeftMouseUpMask;
+  _menu = [isa defaultMenu];
 
   return self;
 }
@@ -215,37 +219,40 @@ static NSColor	*shadowCol;
 
 - (double) doubleValue
 {
-  if (_cell.contents_is_attributed_string == NO)
+  if ((_cell.has_valid_object_value == YES) &&
+      ([_objectValue respondsToSelector: @selector(doubleValue)]))
     {
-      return [_contents doubleValue];
+      return [_objectValue doubleValue];
     }
   else
     {
-      return [[(NSAttributedString *)_contents string] doubleValue];
+      return [[self stringValue] doubleValue];
     }
 }
 
 - (float) floatValue
 {
-  if (_cell.contents_is_attributed_string == NO)
+  if ((_cell.has_valid_object_value == YES) &&
+      ([_objectValue respondsToSelector: @selector(floatValue)]))
     {
-      return [_contents floatValue];
+      return [_objectValue floatValue];
     }
   else
     {
-      return [[(NSAttributedString *)_contents string] floatValue];      
+      return [[self stringValue] floatValue];
     }
 }
 
 - (int) intValue
 {
-  if (_cell.contents_is_attributed_string == NO)
+  if ((_cell.has_valid_object_value == YES) &&
+      ([_objectValue respondsToSelector: @selector(intValue)]))
     {
-      return [_contents intValue];
+      return [_objectValue intValue];
     }
   else
     {
-      return [[(NSAttributedString *)_contents string] intValue];
+      return [[self stringValue] intValue];
     }
 }
 
@@ -253,11 +260,12 @@ static NSColor	*shadowCol;
 {
   if (_cell.contents_is_attributed_string == NO)
     {
+      // If we have a formatter this is also the string of the _objectValue
       return _contents;
     }
   else
     {
-      return AUTORELEASE ([[(NSAttributedString *)_contents string] copy]);
+      return [(NSAttributedString *)_contents string];
     }
 }
 
@@ -713,6 +721,7 @@ static NSColor	*shadowCol;
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
+  // This does not have any influence on attributed strings
   _cell.text_align = mode;
 }
 
@@ -728,7 +737,13 @@ static NSColor	*shadowCol;
 
 - (void) setFont: (NSFont*)fontObject
 {
+  // This does not have any influence on attributed strings
   ASSIGN (_font, fontObject);
+
+  if (_cell.type != NSTextCellType)
+    {
+      _cell.type = NSTextCellType;
+    }
 }
 
 - (void) setSelectable: (BOOL)flag
@@ -793,10 +808,10 @@ static NSColor	*shadowCol;
       NSDictionary *attributes;
       NSAttributedString *attrStr;
 
-      attributes = AUTORELEASE ([self _nonAutoreleasedTypingAttributes]);
+      attributes = [self _nonAutoreleasedTypingAttributes];
       attrStr = [_formatter attributedStringForObjectValue: _objectValue 
 			    withDefaultAttributes: attributes];
-
+      RELEASE(attributes);
       if (attrStr != nil)
 	{
 	  return attrStr;
@@ -813,10 +828,11 @@ static NSColor	*shadowCol;
       NSDictionary *dict;
       NSAttributedString *attrStr;
 
-      dict = AUTORELEASE ([self _nonAutoreleasedTypingAttributes]);
+      dict = [self _nonAutoreleasedTypingAttributes];
       attrStr = [[NSAttributedString alloc] initWithString: _contents 
 					    attributes: dict];
-      return AUTORELEASE (attrStr);
+      RELEASE(dict);
+      return AUTORELEASE(attrStr);
     }
 }
 
@@ -1071,16 +1087,7 @@ static NSColor	*shadowCol;
 - (NSString*) mnemonic
 {
   unsigned int location = [self mnemonicLocation];
-  NSString *c;
-
-  if (_cell.contents_is_attributed_string)
-    {
-      c = AUTORELEASE ([[(NSAttributedString *)_contents string] copy]);
-    }
-  else
-    {
-      c = _contents;
-    }
+  NSString *c = [self stringValue];
 
   if ((location == NSNotFound) || location >= [c length])
     return @"";
@@ -1468,21 +1475,16 @@ static NSColor	*shadowCol;
     {
       case NSTextCellType:
 	{
-	  if (_cell.contents_is_attributed_string)
+	  NSAttributedString *attrStr;
+
+	  attrStr = [self attributedStringValue];
+	  if ([attrStr length] != 0)
 	    {
-	      s = [(NSAttributedString *)_contents size];
+	      s = [attrStr size];
 	    }
 	  else
 	    {
-	      if ((_contents != nil) 
-		  && ([_contents isEqualToString: @""] == NO))
-		{
-		  s = [self _sizeText: _contents];
-		}
-	      else 
-		{
-		  s = [self _sizeText: @"A"];
-		}
+	      s = [self _sizeText: @"A"];
 	    }
 	}
 	break;
@@ -1597,16 +1599,11 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-	if (_cell.contents_is_attributed_string)
-	  {
-	    [self _drawAttributedText: (NSAttributedString *)_contents  
-		  inFrame: cellFrame];
-	  }
-	else
-	  {
-	    [self _drawText: _contents inFrame: cellFrame];
-	  }
-	 break;
+        {
+	  [self _drawAttributedText: [self attributedStringValue]
+		inFrame: cellFrame];
+	}
+	break;
 
       case NSImageCellType:
 	if (_cell_image)
@@ -1697,6 +1694,31 @@ static NSColor	*shadowCol;
     }
 }
 
+
+- (void) _setupTextWithFrame: (NSRect)aRect
+		      inView: (NSView*)controlView
+		      editor: (NSText*)textObject
+{
+  NSRect titleRect = [self titleRectForBounds: aRect];
+  NSSize maxSize = NSMakeSize(3000, titleRect.size.height);
+  NSClipView *cv = [[NSClipView alloc] 
+		       initWithFrame: titleRect];
+  NSTextContainer *ct = [(NSTextView*)textObject textContainer];
+
+  [controlView addSubview: cv];
+  RELEASE(cv);
+  [cv setAutoresizesSubviews: NO];
+  [cv setDocumentView: textObject];
+  [textObject setFrame: [cv bounds]];
+  [textObject setHorizontallyResizable: YES];
+  [textObject setVerticallyResizable: NO];
+  [textObject setMaxSize: maxSize];
+  [textObject setMinSize: titleRect.size];
+  [ct setContainerSize: maxSize];
+  [ct setHeightTracksTextView: NO];
+  [ct setWidthTracksTextView: NO];
+}
+
 /*
  * Editing Text
  */
@@ -1709,32 +1731,9 @@ static NSColor	*shadowCol;
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
-  {
-    NSClipView *cv = [[NSClipView alloc] 
-		       initWithFrame:
-			 [self titleRectForBounds: aRect]];
-    [controlView addSubview: cv];
-    RELEASE(cv);
-    [cv setAutoresizesSubviews: NO];
-    [cv setDocumentView: textObject];
-    [textObject setFrame: [cv bounds]];
-    [textObject setHorizontallyResizable: YES];
-    [textObject setVerticallyResizable: NO];
-    [textObject 
-      setMaxSize: 
-	NSMakeSize (3000,
-		    [self titleRectForBounds: aRect].size.height)];
-    [textObject 
-      setMinSize: 
-	[self titleRectForBounds: aRect].size];
-    [[textObject textContainer] 
-      setContainerSize: 
-	NSMakeSize (3000,
-		    [self titleRectForBounds: aRect].size.height)];
-    [[textObject textContainer] setHeightTracksTextView: NO];
-    [[textObject textContainer] setWidthTracksTextView: NO];
-
-  }
+  [self _setupTextWithFrame: aRect
+	inView: controlView
+	editor: textObject];
 
   if (_formatter != nil)
     {
@@ -1773,6 +1772,7 @@ static NSColor	*shadowCol;
 - (void) endEditing: (NSText*)textObject
 {
   NSClipView *cv;
+
   [textObject setDelegate: nil];
   cv = (NSClipView*)[textObject superview];
   [textObject removeFromSuperview];
@@ -1789,31 +1789,9 @@ static NSColor	*shadowCol;
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
-  {
-    NSClipView *cv = [[NSClipView alloc] 
-		       initWithFrame:
-			 [self titleRectForBounds: aRect]];
-    [controlView addSubview: cv];
-    RELEASE(cv);
-    [cv setAutoresizesSubviews: NO];
-    [cv setDocumentView: textObject];
-    [textObject setFrame: [cv bounds]];
-    [textObject setHorizontallyResizable: YES];
-    [textObject setVerticallyResizable: NO];
-    [textObject 
-      setMaxSize: 
-	NSMakeSize (3000,
-		    [self titleRectForBounds: aRect].size.height)];
-    [textObject 
-      setMinSize: 
-	[self titleRectForBounds: aRect].size];
-    [[textObject textContainer] 
-      setContainerSize: 
-	NSMakeSize (3000,
-		    [self titleRectForBounds: aRect].size.height)];
-    [[textObject textContainer] setWidthTracksTextView: NO];
-    [[textObject textContainer] setWidthTracksTextView: NO];
-  }
+  [self _setupTextWithFrame: aRect
+	inView: controlView
+	editor: textObject];
 
   if (_formatter != nil)
     {
