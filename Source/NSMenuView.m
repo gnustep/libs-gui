@@ -1101,10 +1101,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
               candidateMenu = [_menu supermenu];
               while (candidateMenu  
                      && !NSMouseInRect (locationInScreenCoordinates, 
-                                        [[candidateMenu window] frame], 
-                                        NO) // not found yet
-                     && (! ([candidateMenu isTornOff] 
-                            && ![candidateMenu isTransient]))  // no root of display tree
+																				[[candidateMenu window] frame], 
+																				NO) // not found yet
+										 && (! ([candidateMenu isTornOff] 
+														&& ![candidateMenu isTransient]))  // no root of display tree
                      && [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
@@ -1114,11 +1114,18 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                   && NSMouseInRect (locationInScreenCoordinates,
                                     [[candidateMenu window] frame], NO))
                 {
-                  // The call to fetch attachedMenu is not needed.  But putting
-                  // it here avoids flicker when we go back to an ancester meu
-                  // and the attached menu is alreay correct.
+                  // The call to fetch attachedMenu is not needed. But putting
+                  // it here avoids flicker when we go back to an ancestor 
+									// menu and the attached menu is already correct.
                   [[[candidateMenu attachedMenu] menuRepresentation]
                     detachSubmenu];
+
+									// Reset highlighted index for this menu.
+ 									// This way if we return to this submenu later there 
+									// won't be a highlighted item.
+									[[[candidateMenu attachedMenu] menuRepresentation]
+ 										setHighlightedItemIndex: -1];
+
                   return [[candidateMenu menuRepresentation]
                     trackWithEvent: original];
                 }
