@@ -172,9 +172,8 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   [_bottomView addSubview: _prompt];
   [_prompt release];
 
-  // The gmodel says (44, 40, 226, 22), but that makes the upper border 
-  // clipped. 
   _form = [[NSTextField alloc] initWithFrame: NSMakeRect (48, 39, 251, 21)];
+  [_form setDelegate: self];
   [_form setEditable: YES];
   [_form setBordered: NO];
   [_form setBezeled: YES];
@@ -196,7 +195,7 @@ static NSSavePanel *_gs_gui_save_panel = nil;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_setHomeDirectory)];
-    //    [_form setNextView: button];
+    // [_form setNextKeyView: button];
     [button setAutoresizingMask: 1];
     [button setTag: NSFileHandlingPanelHomeButton];
     [_bottomView addSubview: button];
@@ -246,7 +245,7 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   [_okButton setImagePosition: NSNoImage]; 
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
-  //    [_okButton setNextView: _form];
+  //    [_okButton setNextKeyView: _form];
   [_okButton setAutoresizingMask: 1];
   [_okButton setTag: NSFileHandlingPanelOKButton];
   [_bottomView addSubview: _okButton];
@@ -762,6 +761,26 @@ selectCellWithString: (NSString *)title
   atRow:(int)row
   column:(int)column
 {
+}
+@end
+
+//
+// NSTextField delegate methods
+//
+@interface NSSavePanel (TextFieldDelegate)
+- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
+@end
+@implementation NSSavePanel (TextFieldDelegate)
+- (void) controlTextDidEndEditing: (NSNotification *)aNotification
+{
+  if ([aNotification object] == _form)
+    {
+      NSString *s;
+      
+      s = [self directory];
+      s = [s stringByAppendingPathComponent: [_form stringValue]];
+      ASSIGN (_fullFileName, s);
+    }
 }
 @end /* NSSavePanel */
 
