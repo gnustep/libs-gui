@@ -1263,6 +1263,11 @@ static NSNotificationCenter *nc;
       NSDebugLLog (@"NSMenu", @"displaying transient while it is transient");
       return;
     }
+
+  if (_needsSizing)
+    {
+      [self sizeToFit];
+    }
   
   _oldHiglightedIndex = [[self menuRepresentation] highlightedItemIndex];
   _transient = YES;
@@ -1297,10 +1302,6 @@ static NSNotificationCenter *nc;
   [contentView addSubview: _view];
 
   [_view update];
-  if (_needsSizing)
-    {
-      [self sizeToFit];
-    }
   
   [_bWindow orderFront: self];
 }
