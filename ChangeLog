@@ -1,3 +1,22 @@
+2002-04-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Images/common_RightTabStop.tiff
+	* Images/common_LeftTabStop.tiff
+	* Images/common_CenterTabStop.tiff
+	* Images/common_DecimalTabStop.tiff
+	* Images/GNUmakefile
+	Added new icons for tab stop display in ruler views and install
+	them from the make file.
+	* Source/NSRulerView.m
+	Added method [mouseDown:]. Added safety check for unchanged client
+	view in [setClientView:]. In [drawHashMarksAndLabelsInRect:] use
+	[NSFont smallSystemFontSize] instead of hard coded size.
+	* Source/NSRulerMarker.m
+	Corrected [drawRect:].
+	* Source/NSTextView.m
+	In [updateRuler] set the client view of the ruler view.
+	
+
 2002-04-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (initialize_gnustep_backend): Better
