@@ -100,15 +100,7 @@ static Class defaultCellClass = nil;
 
   [self insertRow:index];
   [self putCell:new_cell atRow:index column:0];
-  [new_cell release];
-  
-  [self setValidateSize: YES];
-  
-  [[NSNotificationCenter defaultCenter] 
-    addObserver: self 
-    selector: @selector(_setTitleWidthNeedsUpdate:)
-    name: _NSFormCellDidChangeTitleWidthNotification
-    object: new_cell];
+  RELEASE (new_cell);
   
   return new_cell;
 }
@@ -121,6 +113,26 @@ static Class defaultCellClass = nil;
     object: [self cellAtRow:index column:0]];
   
   [self removeRow:index];
+}
+
+/* Overriding this method allows decoding stuff to be inherited
+   simpler by NSForm */
+- (void) putCell: (NSCell*)newCell  atRow: (int)row  column: (int)column 
+{
+  if (column > 0)
+    {
+      NSLog (@"Warning: NSForm: tried to add a cell in a column > 0");
+      return;
+    }
+  [super putCell: newCell  atRow: row  column: column];
+  
+  [self setValidateSize: YES];
+  
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_setTitleWidthNeedsUpdate:)
+    name: _NSFormCellDidChangeTitleWidthNotification
+    object: newCell];
 }
 
 - (void)dealloc
