@@ -1,3 +1,8 @@
+Sun Mar  7  6:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-removeFromSuperview]) Fixed error invalidating
+	coordinates of a view - returned if there was no superview.
+
 Fri Mar  5 16:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: Added three new methods to

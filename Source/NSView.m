@@ -55,7 +55,6 @@
 //
 //  Class variables
 //
-static NSString	*viewThreadKey = @"NSViewThreadKey";
 static NSAffineTransform	*flip = nil;
 
 static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
@@ -257,11 +256,12 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSMutableArray	*views;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
+
   if (!super_view)      // if no superview then just return
     return;
 
-  if (coordinates_valid)
-    (*invalidateImp)(self, invalidateSel);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   views = [super_view subviews];
@@ -275,11 +275,12 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   NSMutableArray	*views;
   NSWindow		*win;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
+
   if (!super_view)	// if no superview then just return
     return;
 
-  if (coordinates_valid)
-    (*invalidateImp)(self, invalidateSel);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   views = [super_view subviews];
