@@ -94,8 +94,7 @@ static NSString *attachmentString()
   if (attach == nil)
     {
       unichar ch = NSAttachmentCharacter;
-      attach = [NSString stringWithCharacters: &ch 
-			 length: 1];
+      attach = RETAIN([NSString stringWithCharacters: &ch length: 1]);
     }
   return attach;
 }

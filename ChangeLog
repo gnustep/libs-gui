@@ -1,3 +1,8 @@
+2000-06-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: attachmentString() - retain newly
+	created string.
+ 
 2000-06-26  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextAttachment.h
