@@ -7,8 +7,11 @@
       <email address="rfm@gnu.org"/>
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
-    <version>0.1</version>
-    <date>28 February, 2000</date>
+    <author name="James Dessart">
+        <email address="skwirl@cam.org"/>
+    </author>
+    <version>0.2</version>
+    <date>11 March, 2000</date>
   </head>
   <body>
     <chapter>
@@ -17,172 +20,232 @@
         <declared>AppKit/NSSlider.h</declared>
         <conform>NSCoding</conform>
           <desc>
+                <p>An NSSlider displays, and allows control of, some value in the application.
+                It represents a continuous stream of values of type <code>float</code>, which
+                can be retrieved by the method <code>floatValue</code> and set by the method
+                <code>setFloatValue:</code>.</p>
+
+                <p>The OPENSTEP API describes this control as being continuous, but the current
+                GNUstep implementation defaults to non-continuous.  This can be set by the 
+                inherited method <code>setContinuous:</code>, by passing <code>YES</code>.</p>
+
+                <p>Although methods for adding and managing a title are provided, the slider's
+                knob can cover this title, so it is recommended that a label be added near the
+                slider, for identification.</p>
+
+                <p>As with many controls, NSSlider relies on its cell counterpart, NSSliderCell.
+                For more information, please see the specification for NSSliderCell.</p>
+
+                <p>Use of an NSSlider to do the role of an NSScroller is not recommended.  A
+                scroller is intended to represent the visible portion of a view, whereas a slider
+                is intended to represent some value.</p>
           </desc>
         <method type="BOOL">
           <sel>acceptsFirstMouse:</sel>
           <arg type="NSEvent*">mouseDownEvent</arg>
           <desc>
+                <p>Returns <code>YES</code> by default.  This will allow the first click sent to 
+                the slider, when in an inactive window, to both bring the window into focus and 
+                manipulate the slider.</p>
           </desc>
         </method>
         <method type="BOOL">
           <sel>allowsTickMarkValuesOnly</sel>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="double">
           <sel>altIncrementValue</sel>
           <desc>
+                <p>Returns the value by which the slider will be incremented if the user holds down
+                the ALT key.</p>
           </desc>
         </method>
         <method type="double">
           <sel>closestTickMarkValueToValue:</sel>
           <arg type="double">aValue</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="NSImage*">
           <sel>image</sel>
           <desc>
+                <p>Returns the image drawn in the slider's track.  Returns <code>nil</code> if 
+                this has not been set.</p>
           </desc>
         </method>
         <method type="int">
           <sel>indexOfTickMarkAtPoint:</sel>
           <arg type="NSPoint">point</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="int">
           <sel>isVertical</sel>
           <desc>
+                <p>Returns whether or not the slider is vertical.  If, for some reason, this cannot
+                be determined, for such reasons as the slider is not yet displayed, this method
+                returns -1.  Generally, a slider is considered vertical if its height is greater
+                than its width.</p>
           </desc>
         </method>
         <method type="float">
           <sel>knobThickness</sel>
           <desc>
+                <p>Returns the thickness of the slider's knob.  This value is in pixels, and is the
+                 size of the knob along the slider's track.</p>
           </desc>
         </method>
         <method type="double">
           <sel>maxValue</sel>
           <desc>
+                <p>Returns the maximum value that the slider represents.</p>
           </desc>
         </method>
         <method type="double">
           <sel>minValue</sel>
           <desc>
+                <p>Returns the minimum value that the slider represents.</p>
           </desc>
         </method>
         <method type="int">
           <sel>numberOfTickMarks</sel>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="NSRect">
           <sel>rectOfTickMarkAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setAllowsTickMarkValuesOnly:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setAltIncrementValue:</sel>
           <arg type="double">increment</arg>
           <desc>
+                <p>Sets the value by which the slider will be be incremented when with the
+                ALT key down to <var>increment</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setImage:</sel>
           <arg type="NSImage*">barImage</arg>
           <desc>
+                <p>Sets the image to be displayed in the slider's track to <var>barImage</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setKnobThickness:</sel>
           <arg type="float">thickness</arg>
           <desc>
+                <p>Sets the thickness of the knob to <var>thickness</var>, in pixels.  This value
+                sets the amount of space which the knob takes up in the slider's track.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setMaxValue:</sel>
           <arg type="double">maxValue</arg>
           <desc>
+                <p>Sets the maximum value that the sliders represents to <var>maxValue</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setMinValue:</sel>
           <arg type="double">minValue</arg>
           <desc>
+                <p>Sets the minimum value that the slider represents to <var>minValue</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setNumberOfTickMarks:</sel>
           <arg type="int">numberOfTickMarks</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setTickMarkPosition:</sel>
           <arg type="NSTickMarkPosition">position</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setTitle:</sel>
           <arg type="NSString*">barTitle</arg>
           <desc>
+                <p>Sets the title of the slider to <var>barTitle</var>.  This title is displayed 
+                on the slider's track, behind the knob.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleCell:</sel>
           <arg type="NSCell*">titleCell</arg>
           <desc>
+                <p>Sets the cell used to draw the title to <var>titleCell</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleColor:</sel>
           <arg type="NSColor*">color</arg>
           <desc>
+                <p>Sets the colour with which the title will be drawn to <var>color</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleFont:</sel>
           <arg type="NSFont*">font</arg>
           <desc>
+                <p>Sets the font with which the title will be drawm to <var>font</var>.</p>
           </desc>
         </method>
         <method type="NSTickMarkPosition">
           <sel>tickMarkPosition</sel>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="double">
           <sel>tickMarkValueAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+                <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="NSString*">
           <sel>title</sel>
           <desc>
+                <p>Returns the title of the slider as an <code>NSString</code>.</p>
           </desc>
         </method>
         <method type="id">
           <sel>titleCell</sel>
           <desc>
+                <p>Returns the cell used to draw the title.</p>
           </desc>
         </method>
         <method type="NSColor*">
           <sel>titleColor</sel>
           <desc>
+                <p>Returns the colour used to draw the title.</p>
           </desc>
         </method>
         <method type="NSFont*">
           <sel>titleFont</sel>
           <desc>
+                <p>Returns the font used to draw the title.</p>
           </desc>
         </method>
       </class>
