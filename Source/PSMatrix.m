@@ -251,8 +251,8 @@ static const float pi = 3.1415926535897932384626433;
 {
   NSSize new;
 
-  new.width = A * size.width + C * size.height + TX;
-  new.height = B * size.width + D * size.height + TY;
+  new.width = A * size.width + C * size.height;
+  new.height = B * size.width + D * size.height;
 
   return new;
 }
@@ -263,8 +263,8 @@ static const float pi = 3.1415926535897932384626433;
 
   new.origin.x = A * rect.origin.x + C * rect.origin.y + TX;
   new.origin.y = B * rect.origin.x + D * rect.origin.y + TY;
-  new.size.width = A * rect.size.width + C * rect.size.height + TX;
-  new.size.height = B * rect.size.width + D * rect.size.height + TY;
+  new.size.width = A * rect.size.width + C * rect.size.height;
+  new.size.height = B * rect.size.width + D * rect.size.height;
 
   return new;
 }

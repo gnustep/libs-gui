@@ -1,3 +1,23 @@
+Tue Oct 21 16:21:06 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	Fixed display optimization and the scrolling behavior in the presence
+	of optimizations.
+	* Source/NSView.m (_collectInvalidatedRectanglesInArray): Changed the
+	order in which the matrices are multiplyied to be able to correctly
+	convert the rectangles between views.
+	* Source/NSWindow.m (_collectFlushRectangles): Changed the matrices
+	that are passed to _collectInvalidatedRectanglesInArray:originMatrix:
+	sizeMatrix: to be the identity matrix.
+	* Source/PSMatrix.m (sizeInMatrixSpace:): Removed adding TX and TY to
+	the new size.
+	(rectInMatrixSpace:): Likewise.
+	* Source/NSClipView.m (-viewFrameChanged:): Update the bounds origin.
+	* Source/NSScrollView.m (reflectScrolledClipView:): Changed the
+	'documentRect' name of the variable to 'documentFrame' to better match
+	its usage.
+	* Source/NSScroller.m: Delete unnecessary commented out portions of
+	code.
+
 Mon Oct 20 14:32:55 1997  Scott Christley  <scottc@net-community.com>
 
 	* Fill out NSBox implementation.

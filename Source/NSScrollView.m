@@ -263,10 +263,11 @@ static Class rulerViewClass = nil;
 
 - (void)reflectScrolledClipView:(NSClipView*)aClipView
 {
-  NSRect documentRect = NSZeroRect;
+  NSRect documentFrame = NSZeroRect;
   NSRect clipViewBounds = NSZeroRect;
   float floatValue;
   float knobProportion;
+  id documentView;
 
   if (_knobMoved)
     return;
@@ -275,18 +276,18 @@ static Class rulerViewClass = nil;
 
   if (_contentView) {
     clipViewBounds = [_contentView bounds];
-    if ([_contentView documentView])
-      documentRect = [_contentView documentRect]; 
+    if ((documentView = [_contentView documentView]))
+      documentFrame = [documentView frame];
   }
 
   if (_hasVertScroller) {
-    if (documentRect.size.height <= clipViewBounds.size.height)
+    if (documentFrame.size.height <= clipViewBounds.size.height)
       [_vertScroller setEnabled:NO];
     else {
       [_vertScroller setEnabled:YES];
-      knobProportion = clipViewBounds.size.height / documentRect.size.height;
+      knobProportion = clipViewBounds.size.height / documentFrame.size.height;
       floatValue = clipViewBounds.origin.y
-		  / (documentRect.size.height - clipViewBounds.size.height);
+		  / (documentFrame.size.height - clipViewBounds.size.height);
       if (![_contentView isFlipped])
 	floatValue = 1 - floatValue;
       [_vertScroller setFloatValue:floatValue knobProportion:knobProportion];
@@ -294,16 +295,17 @@ static Class rulerViewClass = nil;
   }
 
   if (_hasHorizScroller) {
-    if (documentRect.size.width <= clipViewBounds.size.width)
+    if (documentFrame.size.width <= clipViewBounds.size.width)
       [_horizScroller setEnabled:NO];
     else {
       [_horizScroller setEnabled:YES];
-      knobProportion = clipViewBounds.size.width / documentRect.size.width;
+      knobProportion = clipViewBounds.size.width / documentFrame.size.width;
       floatValue = clipViewBounds.origin.x
-		   / (documentRect.size.width - clipViewBounds.size.width);
+		   / (documentFrame.size.width - clipViewBounds.size.width);
       [_horizScroller setFloatValue:floatValue knobProportion:knobProportion];
     }
   }
+  [self setNeedsDisplay:YES];
 }
 
 - (void)setHorizontalRulerView:(NSRulerView*)aRulerView

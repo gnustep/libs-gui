@@ -903,23 +903,24 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   PSMatrix* copyOfSizeMatrix;
   NSView* subview = _subviewsThatNeedDisplay;
 
+  copyOfOriginMatrix = [originMatrix copy];
+  copyOfSizeMatrix = [sizeMatrix copy];
+  [copyOfOriginMatrix concatenateWith:frameMatrix];
+  [copyOfOriginMatrix concatenateWith:boundsMatrix];
+  [copyOfSizeMatrix concatenateWith:boundsMatrix];
+
 //  NSLog (@"_collectInvalidatedRectanglesInArray");
 
   while (subview) {
     NSRect subviewFrame;
     NSRect intersection;
 
-    /* Create copies of the original matrices passed by superview */
-    copyOfOriginMatrix = [originMatrix copy];
-    copyOfSizeMatrix = [sizeMatrix copy];
-
-    /* Concatenate the matrices copies with the subview matrices */
-    [copyOfOriginMatrix concatenateWith:subview->frameMatrix];
-    [copyOfOriginMatrix concatenateWith:subview->boundsMatrix];
-    [copyOfSizeMatrix concatenateWith:subview->boundsMatrix];
-
     if (subview->needs_display) {
       subviewFrame = subview->invalidatedRectangle;
+
+      /* Compute the origin of the invalidated rectangle into receiver's
+	 coordinates. */
+      subviewFrame = [self convertRect:subviewFrame fromView:subview];
 
       /* If the subview is rotated compute its bounding rectangle and use this
 	  one instead of the invalidated rectangle. */
@@ -932,6 +933,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       intersection = NSIntersectionRect (bounds, subviewFrame);
       if (intersection.origin.x || intersection.origin.y
 	  || intersection.size.width || intersection.size.height) {
+	NSDebugLog (@"intersection (%@) = ((%6.2f, %6.2f), (%6.2f, %6.2f))",
+	    NSStringFromClass(isa),
+	    intersection.origin.x, intersection.origin.y,
+	    intersection.size.width, intersection.size.height);
 	/* Convert the intersection rectangle to the window coordinates */
 	intersection.origin
 	    = [copyOfOriginMatrix pointInMatrixSpace:intersection.origin];
@@ -939,17 +944,22 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 	    = [copyOfSizeMatrix sizeInMatrixSpace:intersection.size];
 
 	[array addObject:[NSValue valueWithRect:intersection]];
+	NSDebugLog (@"intersection in window coords = ((%6.2f, %6.2f), (%6.2f, %6.2f))",
+	    intersection.origin.x, intersection.origin.y,
+	    intersection.size.width, intersection.size.height);
       }
     }
-    else
+    else {
       [subview _collectInvalidatedRectanglesInArray:array
 		originMatrix:copyOfOriginMatrix
 		sizeMatrix:copyOfSizeMatrix];
+    }
 
-    [copyOfOriginMatrix release];
-    [copyOfSizeMatrix release];
     subview = subview->_nextSiblingSubviewThatNeedsDisplay;
   }
+
+  [copyOfOriginMatrix release];
+  [copyOfSizeMatrix release];
 }
 
 - (NSRect)_boundingRectFor:(NSRect)rect
@@ -1125,7 +1135,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       m = (TrackingRectangle *)[tracking_rects objectAtIndex:i];
       if ([m tag] == tag)
 	{
-	  //[m release];
 	  [tracking_rects removeObjectAtIndex:i];
 	  return;
 	}

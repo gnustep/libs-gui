@@ -176,6 +176,7 @@
 
 - (void)viewFrameChanged:(NSNotification*)aNotification
 {
+  [self setBoundsOrigin:[self constrainScrollPoint:bounds.origin]];
   [[self superview] reflectScrolledClipView:self];
 }
 

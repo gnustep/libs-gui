@@ -668,9 +668,8 @@ static BOOL _needsFlushWindows = YES;
 //  NSLog (@"_collectFlushRectangles");
   [_flushRectangles removeAllObjects];
 
-  originMatrix = [[content_view _frameMatrix] copy];
-  [originMatrix concatenateWith:[content_view _boundsMatrix]];
-  sizeMatrix = [[content_view _boundsMatrix] copy];
+  originMatrix = [PSMatrix new];
+  sizeMatrix = [PSMatrix new];
 
   [content_view _collectInvalidatedRectanglesInArray:_flushRectangles
 		originMatrix:originMatrix

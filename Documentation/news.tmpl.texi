@@ -21,7 +21,7 @@ Flushing of windows occurs only in rectangles that get displayed not in the
 whole window.
 
 @item
-Rotation and scalation of views have been finally implemented. The code
+Rotation and scaling of views have been finally implemented. The code
 requires backend support for changing the state of the graphics context
 accordingly.
 
@@ -38,6 +38,9 @@ NSScroller has been completely reworked to gain speed by using timer events.
 @item
 NSSlider has been implemented. Thanks to Frank Knobloch for supporting this
 and the NSScrollView implementation.
+
+@item
+NSBox has been implemented.
 
 @item
 The library has been ported to work under Solaris with the native DPS and the

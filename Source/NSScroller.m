@@ -214,9 +214,7 @@ static NSButtonCell* knobCell = nil;
   else
     _floatValue = aFloat;
 
-#if 1
   [self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
-#endif
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -230,13 +228,6 @@ static NSButtonCell* knobCell = nil;
     _knobProportion = ratio;
 
   [self setFloatValue:aFloat];
-
-#if 1
-  [self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
-#else
-  [self display];
-  [[self window] flushWindow];
-#endif
 }
 
 - (void)setFrame:(NSRect)frameRect
