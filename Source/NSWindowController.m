@@ -34,7 +34,19 @@
 
 - (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner
 {
-  [self initWithWindow: nil];
+  if (windowNibName == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"attempt to init NSWindowController with nil windowNibName"];
+    }
+
+  if (owner == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"attempt to init NSWindowController with nil owner"];
+    }
+
+  self = [self initWithWindow: nil];
   ASSIGN (_windowNibName, windowNibName);
   _owner = owner;
   return self;
@@ -42,7 +54,7 @@
 
 - (id) initWithWindow: (NSWindow *)window
 {
-  [super init];
+  self = [super init];
 
   ASSIGN (_window, window);
   _windowFrameAutosaveName = @"";
@@ -59,7 +71,7 @@
 
 - (id) init
 {
-  return [self initWithWindowNibName: nil];
+  return [self initWithWindow: nil];
 }
 
 - (void) dealloc
@@ -147,7 +159,7 @@
 	{
 	  [_window setWindowController: nil];
 	}
-
+      
       /*
        * If the window is set to isReleasedWhenClosed, it will release
        * itself, so nil out our reference so we don't release it again
@@ -158,10 +170,9 @@
        * crashes if isReleaseWhenClosed is set.
        */
       if ([_window isReleasedWhenClosed])
-        {
-          _window = nil;
-        }
-      
+	{
+	  _window = nil;
+	}
       [_document _removeWindowController: self];
     }
 }
