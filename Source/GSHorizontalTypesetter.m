@@ -36,7 +36,14 @@
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextAttachment.h"
 
+
+/*
+Note that unless the user creates extra instances, there will only be one
+instance of GSHorizontalTypesetter for all text typesetting, so we can
+cache fairly aggressively without having to worry about memory consumption.
+*/
 
 
 @implementation GSHorizontalTypesetter
@@ -69,6 +76,7 @@ static GSHorizontalTypesetter *shared;
 
 typedef struct GSHorizontalTypesetter_glyph_cache_s
 {
+  /* These fields are filled in by the caching: */
   NSGlyph g;
   int char_index;
 
@@ -81,9 +89,10 @@ typedef struct GSHorizontalTypesetter_glyph_cache_s
       int superscript;
     } attributes;
 
+  /* These fields are filled in during layout: */
   BOOL nominal;
-  NSPoint pos; /* relative to the baseline */
-  float width;
+  NSPoint pos;    /* relative to the line's baseline */
+  NSSize size;    /* height is used only for attachments */
   BOOL dont_show, outside_line_frag;
 } glyph_cache_t;
 
@@ -242,11 +251,11 @@ been cached.
 	  if (gi > 0)
 	    {
 	      g->pos = g[-1].pos;
-	      g->pos.x += g[-1].width;
+	      g->pos.x += g[-1].size.width;
 	    }
 	  else
 	    g->pos = NSMakePoint(0,0);
-	  g->width = 0;
+	  g->size.width = 0;
 	  return gi + 1 + cache_base;
 	}
       gi--;
@@ -339,8 +348,28 @@ typedef struct
 
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
-  NSRect rect,remain;
-  float line_height,max_line_height,baseline;
+  NSRect rect, remain;
+
+  /* Baseline and line height handling. */
+  float line_height;     /* Current line height. */
+  float max_line_height; /* Maximum line height (usually from the paragraph style). */
+  float baseline;        /* Baseline position (0 is top of line-height, positive is down). */
+  float ascender;        /* Amount of space we want above the baseline (always>=0). */
+  float descender;       /* Amount of space we want below the baseline (always>=0). */
+  /*
+  These are values for the line as a whole. We start out by initializing
+  for the first glyph on the line and then update these as we add more
+  glyphs.
+
+  If we need to increase the line height, we jump back to 'restart:' and
+  rebuild our array of line frag rects.
+
+  (TODO (optimization): if we're dealing with a "simple rectangular
+  text container", we should try to extend the existing line frag in place
+  before jumping back to do all the expensive checking).
+
+  Normally, baseline==ascender.
+  */
 
   line_frag_t *line_frags = NULL;
   int num_line_frags = 0;
@@ -352,6 +381,7 @@ typedef struct
   if (!cache_length && at_end)
     return 2;
 
+  /* Set up our initial baseline info. */
   {
     float min = [curParagraphStyle minimumLineHeight];
     max_line_height = [curParagraphStyle maximumLineHeight];
@@ -361,7 +391,13 @@ typedef struct
       max_line_height = min;
 
     line_height = [cache->font defaultLineHeightForFont];
-    baseline = ([cache->font ascender] + [cache->font descender] + line_height) / 2.0;
+    ascender = [cache->font ascender];
+    descender = [cache->font descender];
+
+#define COMPUTE_BASELINE  baseline = ascender
+
+    COMPUTE_BASELINE;
+
     if (line_height < min)
       line_height = min;
 
@@ -370,8 +406,23 @@ typedef struct
   }
 
   /* If we find out that we need to increase the line height, we have to
-     start over. The increased line height might give _completely_ different
-     line frag rects, so we can't reuse much of the layout information. */
+  start over. The increased line height might give _completely_ different
+  line frag rects, so we can't reuse the layout information. */
+
+
+#define WANT_LINE_HEIGHT(h) \
+  do { \
+    float __new_height = (h); \
+    if (max_line_height > 0 && __new_height > max_line_height) \
+      __new_height = max_line_height; \
+    if (__new_height > line_height) \
+      { \
+	line_height = __new_height; \
+	COMPUTE_BASELINE; \
+	goto restart; \
+      } \
+  } while (0)
+
 restart:
 //	printf("start: at (%g %g)  line_height = %g, baseline = %g\n",curPoint.x,curPoint.y,line_height,baseline);
   {
@@ -391,6 +442,14 @@ restart:
 		      line_height + [curParagraphStyle lineSpacing]);
   }
 
+  /*
+  Build a list of all line frag rects for this line.
+
+  TODO: it's very convenient to do this in advance, but it might be
+  inefficient, and in theory, we might end up with an insane number of line
+  rects (eg. a text container with "hole"-columns every 100 points and
+  width 1e8)
+  */
   num_line_frags = 0;
   if (line_frags)
     {
@@ -424,25 +483,42 @@ restart:
       return 1;
     }
 
+
   {
     unsigned int i = 0;
-    NSFont *f = cache->font;
     glyph_cache_t *g;
+
+    NSPoint p;
+    
+    NSFont *f = cache->font;
+    float f_ascender = [f ascender], f_descender = [f descender];
+
     NSGlyph last_glyph = NSNullGlyph;
-    NSPoint last_p,p;
+    NSPoint last_p;
 
     unsigned int first_glyph;
     line_frag_t *lf = line_frags;
     int lfi = 0;
+
+    BOOL prev_was_attachment;
 
 
     last_p = p = NSMakePoint(0,0);
 
     g = cache;
     first_glyph = 0;
+    prev_was_attachment = NO;
+    /*
+    Main glyph layout loop.
+    */
     while (1)
       {
-      relayout:
+/*printf("at %3i+%2i, glyph %08x, char %04x (%i)\n",
+	cache_base,i,
+	g->g,
+	[[curTextStorage string] characterAtIndex: g->char_index],g->char_index);*/
+
+	/* Update the cache. */
 	if (i >= cache_length)
 	  {
 	    if (at_end)
@@ -452,33 +528,70 @@ restart:
 	      break;
 	    g = cache + i;
 	  }
+
+	/*
+	At this point:
+
+	  p is the current point (sortof); the point where a nominally
+	  spaced glyph would be placed.
+
+	  g is the current glyph. i is the current glyph index, relative to
+	  the start of the cache.
+
+	  last_p and last_glyph are used for kerning and hold the previous
+	  glyph and its position. If there's no previous glyph (for kerning
+	  purposes), last_glyph is NSNullGlyph and last_p is undefined.
+
+	  lf and lfi track the current line frag rect. first_glyph is the
+	  first glyph in the current line frag rect.
+
+	Note that the variables tracking the previous glyph shouldn't be
+	updated until we know that the current glyph will fit in the line
+	frag rect.
+
+	*/
+
+	/* If there's a font change, check if the baseline or line height
+	needs adjusting. We update the ascender and descender too, even
+	though there might not actually be any glyphs for this font.
+	(TODO?) */
 	if (g->font != f)
 	  {
-	    float new_height;
+	    float new_height, new_ascender, new_descender;
 	    f = g->font;
+	    f_ascender = [f ascender];
+	    f_descender = [f descender];
 	    last_glyph = NSNullGlyph;
+
 	    new_height = [f defaultLineHeightForFont];
-	    if (max_line_height > 0 && new_height > max_line_height)
-	      new_height = max_line_height;
-	    if (new_height > line_height)
-	      {
-		line_height = new_height;
-		baseline = ([cache->font ascender] + [cache->font descender] + line_height) / 2.0;
-		goto restart;
-	      }
+	    new_ascender = [f ascender];
+	    new_descender = [f descender];
+
+	    if (new_ascender > ascender)
+	      ascender = new_ascender;
+	    if (new_descender > descender)
+	      descender = new_descender;
+
+	    COMPUTE_BASELINE;
+
+	    WANT_LINE_HEIGHT(new_height);
 	  }
 
 	if (g->g == NSControlGlyph)
 	  {
 	    unichar ch = [[curTextStorage string] characterAtIndex: g->char_index];
 
+	    /* TODO: need to handle other control characters */
+
 	    g->pos = p;
-	    g->width = 0;
+	    g->size.width = 0;
 	    g->dont_show = YES;
-	    g->nominal = YES;
+	    g->nominal = !prev_was_attachment;
 	    i++;
 	    g++;
 	    last_glyph = NSNullGlyph;
+
+	    prev_was_attachment = NO;
 
 	    if (ch == 0xa)
 	      break;
@@ -486,27 +599,132 @@ restart:
 	    continue;
 	  }
 
-	g->nominal = YES;
-	if (g->attributes.explicit_kern)
-	  p.x += g->attributes.kern;
-	/* TODO: this is a major bottleneck */
-/*	else if (last_glyph)
+
+	/* Set up glyph information. */
+
+	/*
+	TODO:
+	Currently, the attributes of the attachment character (eg. font)
+	affect the layout. Think hard about this.
+	*/
+	g->nominal = !prev_was_attachment;
+
+	if (g->attributes.explicit_kern &&
+	    g->attributes.kern != 0)
 	  {
-	    p = [f positionOfGlyph: g->g
-		 precededByGlyph: last_glyph
-		 isNominal: &g->nominal];
-	    p.x += last_p.x;
-	    p.y += last_p.y;
-	  }*/
+	    p.x += g->attributes.kern;
+	    g->nominal = NO;
+	  }
 
+	/* Baseline adjustments. */
+	{
+	  float y = 0;
 
-	last_p = g->pos = p;
-	g->width = [f advancementForGlyph: g->g].width;
-	p.x += g->width;
+	  /* Attributes are up-side-down in our coordinate system. */
+	  if (g->attributes.superscript)
+	    {
+	      y -= g->attributes.superscript * [f xHeight];
+	    }
+	  if (g->attributes.baseline_offset)
+	    {
+	      y -= g->attributes.baseline_offset;
+	    }
+
+	  if (y != p.y)
+	    {
+	      p.y = y;
+	      g->nominal = NO;
+	    }
+
+	  /* The y==0 case is taken care of when the font is changed. */
+	  if (y < 0 && f_ascender - y > ascender)
+	    ascender = f_ascender - y;
+	  if (y > 0 && f_descender + y > descender)
+	    descender = f_descender + y;
+
+	  COMPUTE_BASELINE;
+	  WANT_LINE_HEIGHT(ascender + descender);
+	}
+
+	if (g->g == GSAttachmentGlyph)
+	  {
+	    NSTextAttachment *attach = [curTextStorage attribute: NSAttachmentAttributeName
+		atIndex: g->char_index
+		effectiveRange: NULL];
+	    NSTextAttachmentCell *cell = [attach attachmentCell];
+	    NSRect r;
+
+	    if (!cell)
+	      {
+		g->pos = p;
+		g->size = NSMakeSize(0,0);
+		g->dont_show = YES;
+		g->nominal = YES;
+		i++;
+		g++;
+		last_glyph = NSNullGlyph;
+		continue;
+	      }
+
+	    r = [cell cellFrameForTextContainer: curTextContainer
+		  proposedLineFragment: lf->rect
+		  glyphPosition: p
+		  characterIndex: g->char_index];
+
+	    printf("cell at %i, (%g %g) in (%g %g)+(%g %g), got rect (%g %g)+(%g %g)\n",
+	      g->char_index,p.x,p.y,
+	      lf->rect.origin.x,lf->rect.origin.y,
+	      lf->rect.size.width,lf->rect.size.height,
+	      r.origin.x,r.origin.y,
+	      r.size.width,r.size.height);
+
+	    /* For some obscure reason, the rectangle we get is up-side-down
+	    compared to everything else here, and has it's origin in p.
+	    (Makes sense from the cell's pov, though.) */
+
+	    if (-NSMinY(r) > descender)
+	      descender = -NSMinY(r);
+
+	    if (NSMaxY(r) > ascender)
+	      ascender = NSMaxY(r);
+
+	    /* Update ascender and descender. Adjust line height and
+	    baseline if necessary. */
+	    COMPUTE_BASELINE;
+	    WANT_LINE_HEIGHT(ascender + descender);
+
+	    g->size = r.size;
+	    g->pos.x = p.x + r.origin.x;
+	    g->pos.y = p.y + r.origin.y;
+
+	    p.x = g->pos.x + g->size.width;
+
+	    /* An attachment is always in a point range of its own. */
+	    g->nominal = NO;
+	  }
+	else
+	  {
+	    /* TODO: this is a major bottleneck */
+/*	    if (last_glyph)
+	      {
+		p = [f positionOfGlyph: g->g
+		      precededByGlyph: last_glyph
+		      isNominal: &g->nominal];
+		p.x += last_p.x;
+		p.y += last_p.y;
+	      }*/
+
+	    last_p = g->pos = p;
+	    g->size = [f advancementForGlyph: g->g]; /* only width is used */
+	    p.x += g->size.width;
+	  }
+
+	/* Did the glyph fit in the line frag rect? */
 	if (p.x > lf->rect.size.width)
 	  {
+	    /* It didn't. Try to break the line. */
 	    switch ([curParagraphStyle lineBreakMode])
-	      {
+	      { /* TODO: implement all modes */
 	      default:
 	      case NSLineBreakByCharWrapping:
 	      char_wrapping:
@@ -521,8 +739,8 @@ restart:
 	      }
 
 	    /* We force at least one glyph into each line frag rect. This
-	       ensures that typesetting will never get stuck (ie. if the text
-	       container is to narrow to fit even a single glyph). */
+	    ensures that typesetting will never get stuck (ie. if the text
+	    container is to narrow to fit even a single glyph). */
 	    if (lf->last_glyph <= first_glyph)
 	      lf->last_glyph = i + 1;
 
@@ -530,23 +748,37 @@ restart:
 	    i = lf->last_glyph;
 	    g = cache + i;
 	    /* The -1 is always valid since there's at least one glyph in the
-	       line frag rect (see above). */
-	    lf->last_used = g[-1].pos.x + g[-1].width;
+	    line frag rect (see above). */
+	    lf->last_used = g[-1].pos.x + g[-1].size.width;
 	    last_glyph = NSNullGlyph;
+	    prev_was_attachment = NO;
 
 	    lf++;
 	    lfi++;
 	    if (lfi == num_line_frags)
 	      break;
 	    first_glyph = i;
-	    goto relayout;
 	  }
-
-	last_glyph = g->g;
-	i++;
-	g++;
+	else
+	  {
+	    /* Move to next glyph. */
+	    last_glyph = g->g;
+	    if (last_glyph == GSAttachmentGlyph)
+	      {
+		last_glyph = NSNullGlyph;
+		prev_was_attachment = YES;
+	      }
+	    else
+	      {
+		prev_was_attachment = NO;
+	      }
+	    i++;
+	    g++;
+	  }
       }
+    /* Basic layout is done. */
 
+    /* Take care of the alignments. */
     if (lfi != num_line_frags)
       {
 	lf->last_glyph = i;
@@ -574,17 +806,18 @@ restart:
 	newParagraph = NO;
       }
 
+    /* Layout is complete. Package it and give it to the layout manager. */
     [curLayoutManager setTextContainer: curTextContainer
-		      forGlyphRange: NSMakeRange(cache_base,i)];
+		      forGlyphRange: NSMakeRange(cache_base, i)];
     curGlyph = i + cache_base;
     {
       line_frag_t *lf;
       NSPoint p;
-      unsigned int i,j;
+      unsigned int i, j;
       glyph_cache_t *g;
       NSRect used_rect;
 
-      for (lf = line_frags,i = 0,g = cache;lfi >= 0;lfi--,lf++)
+      for (lf = line_frags, i = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
 	  used_rect.origin.x = g->pos.x + lf->rect.origin.x;
 	  used_rect.size.width = lf->last_used - g->pos.x;
@@ -596,6 +829,7 @@ restart:
 			    forGlyphRange: NSMakeRange(cache_base + i,lf->last_glyph - i)
 			    usedRect: used_rect];
 	  p = g->pos;
+	  /* TODO: probably don't need to call unless the flags are YES */
 	  [curLayoutManager setDrawsOutsideLineFragment: g->outside_line_frag
 			    forGlyphAtIndex: cache_base + i];
 	  [curLayoutManager setNotShownAttribute: g->dont_show
@@ -607,7 +841,12 @@ restart:
 	      if (!g->nominal && i != j)
 		{
 		  [curLayoutManager setLocation: p
-				    forStartOfGlyphRange: NSMakeRange(cache_base + j,i - j)];
+				    forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
+		  if (g[-1].g == GSAttachmentGlyph)
+		    {
+		      [curLayoutManager setAttachmentSize: g[-1].size
+			forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+		    }
 		  p = g->pos;
 		  p.y += baseline;
 		  j = i;
@@ -619,6 +858,11 @@ restart:
 	    {
 	      [curLayoutManager setLocation: p
 				forStartOfGlyphRange: NSMakeRange(cache_base + j,i - j)];
+	      if (g[-1].g == GSAttachmentGlyph)
+		{
+		  [curLayoutManager setAttachmentSize: g[-1].size
+		    forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+		}
 	    }
 	}
     }
@@ -632,8 +876,8 @@ restart:
       line_frags = NULL;
     }
 
-  /* if we're really at the end, we should probably set the extra line frag
-     stuff here */
+  /* TODO: if we're really at the end, we should probably set the extra
+  line frag stuff here */
   if (newParagraph)
     return 3;
   else

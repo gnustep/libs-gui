@@ -72,12 +72,47 @@ enum {
 - (void)highlight:(BOOL)flag 
 	withFrame:(NSRect)cellFrame 
 	   inView:(NSView *)controlView;
+
+
+/** The old way of placing the cell. The text system will never call
+these directly (TODO: make sure it doesn't), but other things might. The
+class implements the new method by calling these, so subclasses can
+easily change behavior by overriding these. **/
+
 - (NSSize)cellSize;
+
+/* Returns the offset from the current point when typesetting to the lower
+left corner of the cell. The class returns (0,0). Positive y is probably
+up. (TODO) */
 - (NSPoint)cellBaselineOffset;
-- (NSRect)cellFrameForTextContainer:(NSTextContainer *)textContainer 
-	       proposedLineFragment:(NSRect)lineFrag
-		      glyphPosition:(NSPoint)position 
-		     characterIndex:(unsigned)charIndex;
+
+
+/** The new way of placing the cell. **/
+
+/* Returns the rectangle in which the cell should be drawn. The rectangle
+is relative to the current point when typesetting. Positive y is probably
+up. (TODO)
+
+lineFrag is the line frag rect that this cell might be placed in, and
+position is the current position in that line frag rect (positive y is
+probably down (TODO)). Note that the line frag rect and glyph position
+may not be where the cell is actually placed.
+
+Note that this might be called many times for the same attachment. Eg. if
+you return a rectangle that won't fit in the proposed line frag rect, the
+typesetter might try to adjust things so it will fit. It will then send
+this message with a new proposed line frag rect and glyph position. Thus,
+great care must be taken when using the line frag rect to calculate the
+returned rectangle to prevent the typesetting process from getting stuck.
+
+The class uses -cellSize and -cellBaselineOffset to return a rect.
+*/
+-(NSRect) cellFrameForTextContainer: (NSTextContainer *)textContainer
+	       proposedLineFragment: (NSRect)lineFrag
+		      glyphPosition: (NSPoint)position
+		     characterIndex: (unsigned int)charIndex;
+
+
 - (BOOL)wantsToTrackMouse;
 - (BOOL)wantsToTrackMouseForEvent:(NSEvent *)theEvent 
 			   inRect:(NSRect)cellFrame 

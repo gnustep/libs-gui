@@ -1,3 +1,26 @@
+2003-01-31 21:59  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h,
+	Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Implement [GSLayoutManager
+	-setAttachmentSize:forGlyphRange:].
+
+	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
+	Implement drawing of attachments.
+
+	* Headers/gnustep/gui/NSFont.h: Add GSAttachmentGlyph to mark
+	attachments in a glyph context.
+
+	* Source/GSHorizontalLayoutManager.m: Cleanups and comments.
+	(-layoutLineNewParagraph:): Rewrite line height and baseline
+	handling. Implement typesetting of attachments.
+
+	* Headers/gnustep/gui/NSTextAttachment.h: Add documentation.
+
+	* Source/NSTextAttachment.m (-cellFrameForTextContainer:
+	proposedLineFragment:glyphPosition:characterIndex:): Return the
+	correct position.
+
 Thu Jan 30 16:31:16 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GNUmakefile (NSMenuItem.m_FILE_FLAGS): Use -Wno-protocol

@@ -75,8 +75,7 @@
 {
   NSRect aRect;
   
-  // FIXME: We ignore the proposedLineFragment
-  aRect.origin = position;
+  aRect.origin = [self cellBaselineOffset];
   aRect.size = [self cellSize];
   return aRect;
 }

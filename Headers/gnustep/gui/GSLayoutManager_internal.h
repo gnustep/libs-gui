@@ -56,7 +56,7 @@ typedef struct GSLayoutManager_glyph_run_head_s
   /* char_length must always be accurate. glyph_length is the number of
   valid glyphs counting from the start. For a level 0 head, it's the number
   of glyphs in that run. */
-  int glyph_length,char_length;
+  int glyph_length, char_length;
 
   /* Glyph generation is complete for all created runs. */
   unsigned int complete:1;
@@ -135,25 +135,34 @@ typedef struct GSLayoutManager_glyph_run_s
 /* All positions and lengths in glyphs */
 typedef struct
 {
-  unsigned int pos,length;
+  unsigned int pos, length;
   NSPoint p;
 } linefrag_point_t;
 
 typedef struct
 {
-  NSRect rect,used_rect;
-  unsigned int pos,length;
+  unsigned int pos, length;
+  NSSize size;
+} linefrag_attachment_t;
+
+typedef struct
+{
+  NSRect rect, used_rect;
+  unsigned int pos, length;
 
   linefrag_point_t *points;
   int num_points;
+
+  linefrag_attachment_t *attachments;
+  int num_attachments;
 } linefrag_t;
 
 typedef struct GSLayoutManager_textcontainer_s
 {
   NSTextContainer *textContainer;
 
-  BOOL started,complete;
-  unsigned int pos,length;
+  BOOL started, complete;
+  unsigned int pos, length;
 
   linefrag_t *linefrags;
   int num_linefrags;
@@ -199,7 +208,7 @@ run, i is the glyph index in the run. */
 
 /* Steps forward to the next glyph. If there is no next glyph, r will be
 the last run and i==r->head.glyph_length. */
-#define GLYPH_STEP_FORWARD(r,i,pos,cpos) \
+#define GLYPH_STEP_FORWARD(r, i, pos, cpos) \
   { \
     i++; \
     while (i==r->head.glyph_length) \
@@ -219,7 +228,7 @@ the last run and i==r->head.glyph_length. */
 
 /* Steps backward to the previous glyph. If there is no previous glyph, r
 will be the first glyph and i==-1. */
-#define GLYPH_STEP_BACKWARD(r,i,pos,cpos) \
+#define GLYPH_STEP_BACKWARD(r, i, pos, cpos) \
   { \
     i--; \
     while (i<0 && r->prev) \
@@ -238,11 +247,11 @@ condition holds. r, i, pos, and cpos must be simple variables. When done, r,
 i, pos, and cpos will be set for the first glyph for which the condition
 doesn't hold. If there is no such glyph, r is the last run and
 i==r->head.glyph_length. */
-#define GLYPH_SCAN_FORWARD(r,i,pos,cpos,condition) \
+#define GLYPH_SCAN_FORWARD(r, i, pos, cpos, condition) \
   { \
     while (condition) \
       { \
-	GLYPH_STEP_FORWARD(r,i,pos,cpos) \
+	GLYPH_STEP_FORWARD(r, i, pos, cpos) \
 	if (i==r->head.glyph_length) \
 	  break; \
       } \
@@ -251,18 +260,18 @@ i==r->head.glyph_length. */
 /* Scan backward. r, i, pos, and cpos will be set to the first glyph for
 which condition doesn't hold. If there is no such glyph, r is the first run
 and i==-1. */
-#define GLYPH_SCAN_BACKWARD(r,i,pos,cpos,condition) \
+#define GLYPH_SCAN_BACKWARD(r, i, pos, cpos, condition) \
   { \
     while (condition) \
       { \
-	GLYPH_STEP_BACKWARD(r,i,pos,cpos) \
+	GLYPH_STEP_BACKWARD(r, i, pos, cpos) \
 	if (i==-1) \
 	  break; \
       } \
   }
 
 glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
-	glyph_run_head_t *glyphs,unsigned int *glyph_pos,unsigned int *char_pos);
+	glyph_run_head_t *glyphs, unsigned int *glyph_pos, unsigned int *char_pos);
 #define run_for_glyph_index GSLayoutManager_run_for_glyph_index
 
 #endif

@@ -41,6 +41,7 @@ typedef unsigned int NSGlyph;
 
 enum {
   NSControlGlyph = 0x00ffffff,
+  GSAttachmentGlyph = 0x00fffffe,
   NSNullGlyph = 0x0
 };
 

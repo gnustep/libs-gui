@@ -203,10 +203,6 @@ subclassing). */
 	forGlyphAtIndex: (unsigned int)glyphIndex;
 
 
-- (void) setAttachmentSize: (NSSize)attachmentSize 
-	forGlyphRange: (NSRange)glyphRange; /* not OPENSTEP */
-
-
 /* Returns the font actually used for a range of glyphs. This isn't
 necessarily the font specified by NSFontAttributeName; both the typesetter
 and the layout manager can substitute a different font (the typesetter might
@@ -257,6 +253,9 @@ manager might be substituting screen fonts. */
 
 - (void) setLocation: (NSPoint)location 
 	forStartOfGlyphRange: (NSRange)glyphRange;
+
+- (void) setAttachmentSize: (NSSize)attachmentSize 
+	forGlyphRange: (NSRange)glyphRange; /* not OPENSTEP */
 
 
 - (NSTextContainer *) textContainerForGlyphAtIndex: (unsigned int)glyphIndex

@@ -697,6 +697,9 @@ container */
   linefrag_t *lf;
   linefrag_point_t *lp;
 
+  linefrag_attachment_t *la;
+  int la_i;
+
   NSPoint p;
   unsigned int g;
 
@@ -714,6 +717,8 @@ container */
   NSGlyph gbuf[GBUF_SIZE];
   int gbuf_len;
   NSPoint gbuf_point;
+
+  NSView *controlView = nil;
 
 
   if (!range.length)
@@ -740,6 +745,9 @@ container */
       NSLog(@"%s: can't find line frag rect for glyph (internal error)", __PRETTY_FUNCTION__);
       return;
     }
+
+  la = lf->attachments;
+  la_i = 0;
 
   j = 0;
   lp = lf->points;
@@ -784,6 +792,8 @@ container */
 	      lf++;
 	      j = 0;
 	      lp = lf->points;
+	      la = lf->attachments;
+	      la_i = 0;
 	    }
 	  p = lp->p;
 	  p.x += lf->rect.origin.x + containerOrigin.x;
@@ -827,6 +837,58 @@ container */
 	}
       if (!glyph->isNotShown && glyph->g && glyph->g != NSControlGlyph)
 	{
+	  if (glyph->g == GSAttachmentGlyph)
+	    {
+	      /* Silently ignore if we don't have any size information for
+	      it. */
+	      if (g >= range.location && la)
+		{
+		  unsigned int char_index =
+		    [self characterRangeForGlyphRange: NSMakeRange(g,1)
+				     actualGlyphRange: NULL].location;
+		  NSObject<NSTextAttachmentCell> *cell = [[_textStorage attribute: NSAttachmentAttributeName
+			atIndex: char_index
+			effectiveRange: NULL] attachmentCell];
+		  NSRect cellFrame;
+
+		  if (!controlView)
+		    controlView = [tc->textContainer textView];
+
+		  while (la->pos != g && la_i < lf->num_attachments)
+		    {
+		      la++;
+		      la_i++;
+		    }
+		  if (la_i >= lf->num_attachments)
+		    continue;
+
+		  cellFrame.origin = p;
+		  cellFrame.size = la->size;
+		  cellFrame.origin.y -= cellFrame.size.height;
+
+		  /* Drawing the cell might mess up our state. */
+		  /* TODO:
+		  optimize this. probably cheaper to not save and
+		  explicitly reset just the stuff we actually use, or to
+		  collect attachments and draw them in bunches of eg. 4
+
+		  should they really be drawn in our coordinate system?
+		  */
+		  [cell drawWithFrame: cellFrame
+		    inView: controlView
+		    characterIndex: char_index
+		    layoutManager: self];
+		  [f set];
+		  if (color)
+		    [color set];
+		  else
+		    {
+		      DPSsetgray(ctxt, 0.0);
+		      DPSsetalpha(ctxt, 1.0);
+		    }
+		}
+	      continue;
+	    }
 	  if (g >= range.location)
 	    {
 	      if (!gbuf_len)
@@ -860,6 +922,7 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
       GSShowGlyphs(ctxt, gbuf, gbuf_len);
       DPSnewpath(ctxt);
     }
+
 #undef GBUF_SIZE
 }
 

@@ -1257,13 +1257,6 @@ it should still be safe. might lose opportunities to merge runs, though.
   return 0;
 }
 
--(void) setAttachmentSize: (NSSize)size
-	    forGlyphRange: (NSRange)range
-{
-  NSLog(@"%s not implemented yet", __PRETTY_FUNCTION__);
-  /* TODO!! */
-}
-
 @end
 
 
@@ -1287,8 +1280,13 @@ it should still be safe. might lose opportunities to merge runs, though.
       if (tc->linefrags)
 	{
 	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags; j++, lf++)
-	    if (lf->points)
-	      free(lf->points);
+	    {
+	      if (lf->points)
+		free(lf->points);
+	      if (lf->attachments)
+		free(lf->attachments);
+	    }
+
 	  free(tc->linefrags);
 	}
       tc->linefrags = NULL;
@@ -1651,6 +1649,53 @@ forStartOfGlyphRange: (NSRange)glyphRange
     layout_char = glyphs->char_length;
   else
     layout_char = [self characterIndexForGlyphAtIndex: layout_glyph];
+}
+
+
+-(void) setAttachmentSize: (NSSize)size
+	    forGlyphRange: (NSRange)glyphRange
+{
+  textcontainer_t *tc;
+  int i;
+  linefrag_t *lf;
+  linefrag_attachment_t *la;
+
+  SETUP_STUFF
+
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    {
+      if (tc->pos <= glyphRange.location &&
+	  tc->pos + tc->length >= glyphRange.location + glyphRange.length)
+	break;
+    }
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: text container not set for range", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
+    {
+      if (lf->pos <= glyphRange.location &&
+	  lf->pos + lf->length >= glyphRange.location + glyphRange.length)
+	break;
+    }
+  if (i == tc->num_linefrags)
+    {
+      NSLog(@"%s: line fragment rect not set for range", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  /* TODO: we do no sanity checking of attachment size ranges. might want
+  to consider doing it */
+  lf->attachments = realloc(lf->attachments,
+		      sizeof(linefrag_attachment_t) * (lf->num_attachments + 1));
+  la = &lf->attachments[lf->num_attachments++];
+
+  memset(la, 0, sizeof(linefrag_attachment_t));
+  la->pos = glyphRange.location;
+  la->length = glyphRange.length;
+  la->size = size;
 }
 
 #undef SETUP_STUFF
