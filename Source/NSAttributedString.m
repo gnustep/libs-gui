@@ -455,97 +455,79 @@ static Class converter_class(NSString *format, BOOL producer)
 		   format: @"RangeError in method -nextWordFromIndex:forward:"];
     }
 
+  /* Please note that we consider ' a valid word separator.  This is
+     what Emacs does and is perfectly correct.  If you want to change
+     the word separators, the right approach is to use a different
+     character set for word separators - the following code should be
+     unchanged whatever characters you use to separate words.  */
   cache_init ();
 
   if (isForward)
     {
+      /* What we want to do is: move forward to the next chunk of word
+	 separator characters, skip them all, and return the location
+	 just after them.  */
+
+      if (location == length)
+	{
+	  return length;
+	}
+
+      /* Move forward to the next word-separator.  */
       range = NSMakeRange (location, length - location);
       range = [str rangeOfCharacterFromSet: wordBreakCSet
 		                   options: NSLiteralSearch
                           	     range: range];
-      /*
-       * If we found an apostrophe in the middle of a word,
-       * we have to skip forward.
-       */
-      if (location > 0)
-	{
-	  while (range.length > 0
-	    && range.location > 0 && range.location < length - 1
-	    && [str characterAtIndex: range.location] == '\''
-	    && [wordCSet characterIsMember:
-	      [str characterAtIndex: range.location - 1]]
-	    && [wordCSet characterIsMember:
-	      [str characterAtIndex: range.location + 1]])
-	    {
-	      location = range.location + 1;
-	      range = NSMakeRange (location, length - location);
-	      range = [str rangeOfCharacterFromSet: wordBreakCSet
-		options: NSLiteralSearch range: range];
-	    }
-	}
-
-      if (range.length == 0)
+      if (range.location == NSNotFound)
 	{
 	  return length;
 	}
-      
+      /* rangeOfCharacterFromSet:options:range: only returns the range
+	 of the first word-separator character ... we want to skip
+	 them all!  So we need to search again, this time for the
+	 first non-word-separator character, and return the first such
+	 character.  */
       range = NSMakeRange (range.location, length - range.location);
       range = [str rangeOfCharacterFromSet: wordCSet
-				   options: NSLiteralSearch
-				     range: range];
-      if (range.length == 0)
+		                   options: NSLiteralSearch
+                          	     range: range];
+      if (range.location == NSNotFound)
 	{
 	  return length;
 	}
-      
+
       return range.location;
     }
   else
     {
-      BOOL inWord;
+      /* What we want to do is: move backward to the next chunk of
+	 non-word separator characters, skip them all, and return the
+	 location just at the beginning of the chunk.  */
 
-      inWord = [wordCSet characterIsMember: [str characterAtIndex: location]];
-      if (inWord == NO && location > 0
-	&& location > 0 && location < length - 1
-	&& [str characterAtIndex: location] == '\''
-	&& [wordCSet characterIsMember:
-	  [str characterAtIndex: location - 1]]
-	&& [wordCSet characterIsMember:
-	  [str characterAtIndex: location + 1]])
+      if (location == 0)
 	{
-	  inWord = YES;
+	  return 0;
 	}
-      
+
+      /* Move backward to the next non-word separator.  */
       range = NSMakeRange (0, location);
+      range = [str rangeOfCharacterFromSet: wordCSet
+		                   options: NSBackwardsSearch | NSLiteralSearch
+		                     range: range];
+      if (range.location == NSNotFound)
+	{
+	  return 0;
+	}
 
-      if (inWord == NO)
-	{
-	  range = [str rangeOfCharacterFromSet: wordCSet
-		       options: NSBackwardsSearch | NSLiteralSearch
-		       range: range];
-	  if (range.length == 0)
-	    {
-	      return 0;
-	    }
-	  
-	  range = NSMakeRange (0, range.location);
-	}
+      /* rangeOfCharacterFromSet:options:range: only returns the range
+	 of the first non-word-separator character ... we want to skip
+	 them all!  So we need to search again, this time for the
+	 first word-separator character. */
+      range = NSMakeRange (0, range.location);
       range = [str rangeOfCharacterFromSet: wordBreakCSet
-		   options: NSBackwardsSearch | NSLiteralSearch
-		   range: range];
-      while (range.length > 0
-	&& range.location > 0 && range.location < length - 1
-	&& [str characterAtIndex: range.location] == '\''
-	&& [wordCSet characterIsMember:
-	  [str characterAtIndex: range.location - 1]]
-	&& [wordCSet characterIsMember:
-	  [str characterAtIndex: range.location + 1]])
-	{
-	  range = NSMakeRange (0, range.location - 1);
-	  range = [str rangeOfCharacterFromSet: wordBreakCSet
-	    options: NSBackwardsSearch|NSLiteralSearch range: range];
-	}
-      if (range.length == 0)
+		                   options: NSBackwardsSearch | NSLiteralSearch
+                          	     range: range];
+      if (range.location == NSNotFound)
 	{
 	  return 0;
 	}
