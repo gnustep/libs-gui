@@ -1539,6 +1539,10 @@ static NSTextFieldCell *titleCell;
       else
 	r.origin.y = scrollerWidth + bs.width;
     }
+  else
+    {
+      r.origin.y += bs.width;
+    }
 
   // Padding : _columnSize.width is rounded in "tile" method
   if (column == _lastVisibleColumn)
@@ -1615,6 +1619,7 @@ static NSTextFieldCell *titleCell;
   else
     {
       _scrollerRect = NSZeroRect;
+      _columnSize.height -= 2 * bs.width;
     }
 
   num = _lastVisibleColumn - _firstVisibleColumn + 1;
@@ -2076,6 +2081,7 @@ static NSTextFieldCell *titleCell;
       NSPoint p1,p2;
       NSRect  browserRect;
       int     i, visibleColumns;
+      float   hScrollerWidth = _hasHorizontalScroller ? scrollerWidth : 0;
       
       // Columns borders
       browserRect = NSMakeRect(0, 0, rect.size.width, rect.size.height);
@@ -2086,16 +2092,19 @@ static NSTextFieldCell *titleCell;
       for (i = 1; i < visibleColumns; i++)
 	{
 	  p1 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), 
-			   _columnSize.height + scrollerWidth + 2);
+			   _columnSize.height + hScrollerWidth + 2);
 	  p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1),
-			   scrollerWidth + 2);
+			   hScrollerWidth + 2);
 	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
 	}
-      
+
       // Horizontal scroller border
-      p1 = NSMakePoint(2, scrollerWidth + 2);
-      p2 = NSMakePoint(rect.size.width - 2, scrollerWidth + 2);
-      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+      if (_hasHorizontalScroller)
+	{
+	  p1 = NSMakePoint(2, hScrollerWidth + 2);
+	  p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
+	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+	}
     }
 }
 
