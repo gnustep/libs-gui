@@ -1,3 +1,10 @@
+2004-07-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPanel.m:
+	* Source/NSAlert.m:
+	Moved class GSAlertPanel and alert functions from NSPanel.m to
+	NSAlert.m. 
+	
 2004-07-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GNUmakefile:
