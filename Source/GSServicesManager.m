@@ -207,6 +207,9 @@ NSRegisterServicesProvider(id provider, NSString *name)
 {
 }
 
+/*
+ * Obsolete ... prefer forwardInvocation now.
+ */
 - forward: (SEL)aSel :(arglist_t)frame
 {
   NSString      *selName = NSStringFromSelector(aSel);
@@ -228,9 +231,40 @@ NSRegisterServicesProvider(id provider, NSString *name)
     return [delegate performv: aSel :frame];
 
   [NSException raise: NSGenericException
-	      format: @"method %s not implemented", sel_get_name(aSel)];
+	      format: @"method %@ not implemented", selName];
   return nil;
 }
+
+- (void) forwardInvocation: (NSInvocation*)anInvocation
+{
+  SEL		aSel = [anInvocation selector];
+  NSString      *selName = NSStringFromSelector(aSel);
+  id            delegate;
+
+  /*
+   *    If the selector matches the correct form for a services request,
+   *    send the message to the services provider.
+   */
+  if ([selName hasSuffix: @":userData:error:"])
+    {
+      [anInvocation invokeWithTarget: servicesProvider];
+      return;
+    }
+
+  /*
+   *    If tha applications delegate can handle the message - forward to it.
+   */
+  delegate = [[NSApplication sharedApplication] delegate];
+  if ([delegate respondsToSelector: aSel] == YES)
+    {
+      [anInvocation invokeWithTarget: delegate];
+      return;
+    }
+
+  [NSException raise: NSGenericException
+	      format: @"method %@ not implemented", selName];
+}
+
 
 - (BOOL) application: (NSApplication*)theApp
 	    openFile: (NSString*)file
