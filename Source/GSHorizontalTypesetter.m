@@ -455,7 +455,7 @@ Return values 0, 1, 2 are mostly the same as from
 		  break;
 		}
 
-	      if (NSEqualRects(r, NSZeroRect) || NSMaxY(r) + shift.height > container_height)
+	      if (NSIsEmptyRect(r) || NSMaxY(r) + shift.height > container_height)
 		break;
 
 	      g = g2;
@@ -511,7 +511,7 @@ Return values 0, 1, 2 are mostly the same as from
 	    movementDirection: NSLineMoveDown
 	    remainingRect: &remain];
 
-      if (!NSEqualRects(r, NSZeroRect))
+      if (!NSIsEmptyRect(r))
 	{
 	  r2 = r;
 	  r2.size.width = 1;
@@ -544,9 +544,19 @@ Return values 0, 1, 2 are mostly the same as from
       line_height = max_line_height;
   }
 
-  /* If we find out that we need to increase the line height, we have to
+  /*
+  If we find out that we need to increase the line height, we have to
   start over. The increased line height might give _completely_ different
-  line frag rects, so we can't reuse the layout information. */
+  line frag rects, so we can't reuse the layout information.
+
+  OPT: However, we could recreate the line frag rects and see if they
+  match before throwing away layout information, since most of the time
+  they will be equivalent.
+
+  Also, in the very common case of a simple rectangular text container, we
+  can always extend the current line frag rects as long as they don't extend
+  past the bottom of the container.
+  */
 
 
 #define WANT_LINE_HEIGHT(h) \
@@ -610,7 +620,8 @@ restart:
   if (!line_frags_num)
     {
       if (curPoint.y == 0.0 &&
-	  line_height > [curTextContainer containerSize].height)
+	  line_height > [curTextContainer containerSize].height &&
+	  [curTextContainer containerSize].height > 0.0)
 	{
 	  /* Try to make sure each container contains at least one line frag
 	  rect by shrinking our line height. */

@@ -1,3 +1,9 @@
+2003-06-15 16:26  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m: Use NSIsEmptyRect instead of
+	comparing for equality with NSZeroRect.
+	(-layoutLineNewParagraph:): Handle text containers with no area.
+
 2003-06-15 14:57  Alexander Malmberg <alexander@malmberg.org>
 
 	* configure.ac: Don't add GNUSTEP_HDIR/GNUSTEP_LDIR to
