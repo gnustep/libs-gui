@@ -29,20 +29,15 @@ include ../config.make
 include ../Version
 
 SUBPROJECTS = $(BUILD_GSND)
-APP_NAME = md5Digest
 TOOL_NAME = make_services set_show_service gopen
-SERVICE_NAME = example GSspell
+SERVICE_NAME = GSspell
 
 # The source files to be compiled
-md5Digest_OBJC_FILES = md5Digest.m 
-
 gopen_OBJC_FILES = gopen.m
 
 make_services_OBJC_FILES = make_services.m 
 
 set_show_service_OBJC_FILES = set_show_service.m 
-
-example_OBJC_FILES = example.m 
 
 GSspell_OBJC_FILES = GSspell.m
 
@@ -52,7 +47,6 @@ include GNUmakefile.preamble
 
 GNUSTEP_MAKE_SERVICES=./$(GNUSTEP_OBJ_DIR)/make_services
 
-include $(GNUSTEP_MAKEFILES)/application.make
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/service.make
 include $(GNUSTEP_MAKEFILES)/aggregate.make

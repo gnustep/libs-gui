@@ -1,3 +1,9 @@
+2003-11-19 17:06  Alexander Malmberg <alexander@malmberg.org>
+
+	* Tools/GNUmakefile, Tools/example.m, Tools/exampleInfo.plist,
+	Tools/md5Digest.m: Move example.service and md5Digest.app to
+	usr-apps/examples/gui/ExampleService/.
+
 2003-11-19  Adam Fedor  <fedor@gnu.org>
 
 	* Window Focus fixes.
