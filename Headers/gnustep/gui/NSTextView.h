@@ -31,6 +31,7 @@
 #ifndef _GNUstep_H_NSTextView
 #define _GNUstep_H_NSTextView
 
+#include <AppKit/NSDragging.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextAttachment.h>
 #include <AppKit/NSRulerView.h>

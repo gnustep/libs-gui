@@ -34,8 +34,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSBitmapImageRep.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/DPSOperators.h>
+#include <AppKit/GSDisplayServer.h>
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;
@@ -100,9 +99,9 @@ static NSMutableDictionary *cursorDict = nil;
   if (_hot_spot.y >= [rep pixelsHigh])
     _hot_spot.y = [rep pixelsHigh]-1;
 
-  DPSimagecursor(GSCurrentContext(), _hot_spot.x, _hot_spot.y, 
-		 [rep pixelsWide], [rep pixelsHigh],
-		 [rep samplesPerPixel], [rep bitmapData], &c);
+  [GSCurrentServer() imagecursor: _hot_spot 
+		 : [rep pixelsWide] : [rep pixelsHigh]
+		 : [rep samplesPerPixel] : [rep bitmapData] : &c];
   _cid = c;
 }
 
@@ -111,7 +110,7 @@ static NSMutableDictionary *cursorDict = nil;
  */
 + (void) hide
 {
-  DPShidecursor(GSCurrentContext());
+  [GSCurrentServer() hidecursor];
 }
 
 + (void) pop
@@ -141,7 +140,7 @@ static NSMutableDictionary *cursorDict = nil;
 
 + (void) unhide
 {
-  DPSshowcursor(GSCurrentContext());  
+  [GSCurrentServer() showcursor];
 }
 
 /*
@@ -156,7 +155,7 @@ static NSMutableDictionary *cursorDict = nil;
       void *c;
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
-      DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
+      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
       [cursor _setCid: c];
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
@@ -178,7 +177,7 @@ static NSMutableDictionary *cursorDict = nil;
       void *c;
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
-      DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
+      [GSCurrentServer() standardcursor: GSIBeamCursor : &c];
       [cursor _setCid: c];
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
@@ -195,8 +194,9 @@ static NSMutableDictionary *cursorDict = nil;
       void *c;
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
-      DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
-      DPSsetcursorcolor(GSCurrentContext (), 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, c);
+      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+      [GSCurrentServer() setcursorcolor: [NSColor greenColor] 
+      	                               : [NSColor blackColor] : c];
       [cursor _setCid: c];
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
@@ -243,14 +243,7 @@ backgroundColorHint:(NSColor *)bg
       bg = [bg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
       fg = [fg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
       NSLog(@"fg color is %@", fg);
-      DPSsetcursorcolor(GSCurrentContext (), 
-			[fg redComponent],
-			[fg greenComponent],
-			[fg blueComponent],
-			[bg redComponent],
-			[bg greenComponent],
-			[bg blueComponent],
-			_cid);
+      [GSCurrentServer() setcursorcolor: fg : bg : _cid];
     }
   return cursor;
 }
@@ -344,7 +337,7 @@ backgroundColorHint:(NSColor *)bg
   gnustep_gui_current_cursor = self;
   if (_cid)
     {
-      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, _cid);
+      [GSCurrentServer() setcursorcolor: nil : nil : _cid];
     }
 }
 

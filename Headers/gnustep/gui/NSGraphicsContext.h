@@ -30,24 +30,20 @@
 #define _NSGraphicsContext_h_INCLUDE
 
 #include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
 #include <Foundation/NSMapTable.h>
-#include <Foundation/NSSet.h>
 
-#include <AppKit/NSDragging.h>
 #include <AppKit/AppKitDefines.h>
 
 @class NSDate;
 @class NSDictionary;
-@class NSEvent;
 @class NSMutableArray;
 @class NSMutableData;
+@class NSMutableSet;
 @class NSString;
 @class NSView;
 @class NSWindow;
-@class NSGraphicsContext;
 @class NSFont;
-
+@class NSSet;
 
 /*
  * Backing Store Types
@@ -84,11 +80,26 @@ typedef enum _NSCompositingOperation
 
 typedef int NSWindowDepth;
 
+/* Image interpolation */
+typedef enum _NSImageInterpolation
+{
+  NSImageInterpolationDefault,
+  NSImageInterpolationNone,
+  NSImageInterpolationLow,
+  NSImageInterpolationHigh
+} NSImageInterpolation;
+
 #ifndef	STRICT_OPENSTEP
+
+typedef enum _GSTextDrawingMode
+{
+  GSTextFill,
+  GSTextStroke,
+  GSTextClip
+} GSTextDrawingMode;
 
 // We have to load this after the NSCompositingOperation are defined!!!
 #include <AppKit/GSMethodTable.h>
-
 
 /*
  * Window ordering
@@ -112,6 +123,18 @@ typedef enum _GSWindowInputState
 
 } GSWindowInputState;
 
+/* Color spaces */
+typedef enum _GSColorSpace
+{
+  GSDeviceGray,
+  GSDeviceRGB,
+  GSDeviceCMYK,
+  GSCalibratedGray,
+  GSCalibratedRGB,
+  GSCIELab,
+  GSICC
+} GSColorSpace;
+
 @interface NSGraphicsContext : NSObject
 {
   /* Make the one public instance variable first in the object so that, if we
@@ -124,31 +147,36 @@ typedef enum _GSWindowInputState
   NSDictionary		*context_info;
   NSMutableData		*context_data;
   NSMutableArray	*focus_stack;
-  NSMutableArray	*event_queue;
-  NSMapTable		*drag_types;
   NSMutableSet          *usedFonts;
+  NSImageInterpolation  _interp;
+  BOOL                  _antialias;
 }
-
-+ (NSGraphicsContext*) currentContext;
-+ (void) setCurrentContext: (NSGraphicsContext*)context;
 
 + (BOOL) currentContextDrawingToScreen;
 + (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes;
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow;
+
 + (void) restoreGraphicsState;
 + (void) saveGraphicsState;
 + (void) setGraphicsState: (int)graphicsState;
++ (void) setCurrentContext: (NSGraphicsContext*)context;
++ (NSGraphicsContext*) currentContext;
 
 - (NSDictionary *) attributes;
-- (void)flushGraphics;
-- (void *)graphicsPort;
+- (void *) graphicsPort;
 
-- (void) flush;
 - (BOOL) isDrawingToScreen;
+- (void) flushGraphics;
 - (void) restoreGraphicsState;
 - (void) saveGraphicsState;
-- (void) wait;
-+ (void) waitAllContexts;
+
+- (void *) focusStack;
+- (void) setFocusStack: (void *)stack;
+
+- (void) setImageInterpolation: (NSImageInterpolation)interpolation;
+- (NSImageInterpolation) imageInterpolation;
+- (void) setShouldAntialias: (BOOL)antialias;
+- (BOOL) shouldAntialias;
 
 @end
 
@@ -157,10 +185,10 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
-+ (NSGraphicsContext*) defaultContextWithInfo: (NSDictionary*)info;
+
 - (id) initWithContextInfo: (NSDictionary*)info;
 - (void) destroyContext;
-- (NSMutableData*) mutableData;
+
 /*
  * Focus management methods - lock and unlock should only be used by NSView
  * in it's implementation of lockFocus and unlockFocus.
@@ -169,381 +197,192 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect;
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush;
 
-/*
- *	Drag and drop support etc
- */
-- (BOOL) _addDragTypes: (NSArray*)types toWindow: (NSWindow *)win;
-- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
-- (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win;
-- (id <NSDraggingInfo>)_dragInfo;
-- (BOOL) _slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to;
-
 /* Private methods for printing */
 - (void) useFont: (NSString *)fontName;
 - (void) resetUsedFonts;
 - (NSSet *) usedFonts;
+
+/* Private backend methods */
+- (void) contextDevice: (int)num;
 @end
 #endif
 
 
-
 /*
  *	GNUstep drawing engine extensions - these are the methods actually
  *	called when one of the inline PostScript functions (like PSlineto())
  *	is called.
  */
-
 @interface NSGraphicsContext (Ops)
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k ;
-- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k ;
+- (void) DPScurrentalpha: (float*)a;
+- (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k;
+- (void) DPScurrentgray: (float*)gray;
+- (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b;
+- (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b;
+- (void) DPSsetalpha: (float)a;
+- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k;
+- (void) DPSsetgray: (float)gray;
+- (void) DPSsethsbcolor: (float)h : (float)s : (float)b;
+- (void) DPSsetrgbcolor: (float)r : (float)g : (float)b;
+
+- (void) GSSetFillColorspace: (NSDictionary *)dict;
+- (void) GSSetStrokeColorspace: (NSDictionary *)dict;
+- (void) GSSetFillColor: (float *)values;
+- (void) GSSetStrokeColor: (float *)values;
+
 /* ----------------------------------------------------------------------- */
-/* Data operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSclear;
-- (void) DPScleartomark;
-- (void) DPScopy: (int)n ;
-- (void) DPScount: (int*)n ;
-- (void) DPScounttomark: (int*)n ;
-- (void) DPSdup;
-- (void) DPSexch;
-- (void) DPSexecstack;
-- (void) DPSget;
-- (void) DPSindex: (int)i ;
-- (void) DPSmark;
-- (void) DPSmatrix;
-- (void) DPSnull;
-- (void) DPSpop;
-- (void) DPSput;
-- (void) DPSroll: (int)n : (int)j ;
+- (void) DPSashow: (float)x : (float)y : (const char*)s;
+- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay 
+		      : (const char*)s;
+- (void) DPScharpath: (const char*)s : (int)b;
+- (void) DPSshow: (const char*)s;
+- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s;
+- (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size;
+- (void) DPSxyshow: (const char*)s : (const float*)numarray : (int)size;
+- (void) DPSyshow: (const char*)s : (const float*)numarray : (int)size;
+
+- (void) GSSetCharacterSpacing: (float)extra;
+- (void) GSSetFont: (NSFont*)font;
+- (void) GSSetFontSize: (float)size;
+- (NSAffineTransform *) GSGetTextCTM;
+- (NSPoint) GSGetTextPosition;
+- (void) GSSetTextCTM: (NSAffineTransform *)ctm;
+- (void) GSSetTextDrawingMode: (GSTextDrawingMode)mode;
+- (void) GSSetTextPosition: (NSPoint)loc;
+- (void) GSShowText: (const char *)string : (size_t) length;
+- (void) GSShowGlyphs: (const NSGlyph *)glyphs : (size_t) length;
+
 /* ----------------------------------------------------------------------- */
-/* Font operations */
+/* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-- (void) DPSFontDirectory;
-- (void) DPSISOLatin1Encoding;
-- (void) DPSSharedFontDirectory;
-- (void) DPSStandardEncoding;
-- (void) DPScurrentcacheparams;
-- (void) DPScurrentfont;
-- (void) DPSdefinefont;
-- (void) DPSfindfont: (const char*)name ;
-- (void) DPSmakefont;
-- (void) DPSscalefont: (float)size ;
-- (void) DPSselectfont: (const char*)name : (float)scale ;
-- (void) DPSsetfont: (int)f ;
-- (void) DPSundefinefont: (const char*)name ;
-- (void) setFont: (NSFont*) font;
-/* ----------------------------------------------------------------------- */
-/* Gstate operations */
-/* ----------------------------------------------------------------------- */
-- (void) DPSconcat: (const float*)m ;
-- (void) DPScurrentdash;
-- (void) DPScurrentflat: (float*)flatness ;
-- (void) DPScurrentgray: (float*)gray ;
-- (void) DPScurrentgstate: (int)gst ;
-- (void) DPScurrenthalftone;
-- (void) DPScurrenthalftonephase: (float*)x : (float*)y ;
-- (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b ;
-- (void) DPScurrentlinecap: (int*)linecap ;
-- (void) DPScurrentlinejoin: (int*)linejoin ;
-- (void) DPScurrentlinewidth: (float*)width ;
-- (void) DPScurrentmatrix;
-- (void) DPScurrentmiterlimit: (float*)limit ;
-- (void) DPScurrentpoint: (float*)x : (float*)y ;
-- (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b ;
-- (void) DPScurrentscreen;
-- (void) DPScurrentstrokeadjust: (int*)b ;
-- (void) DPScurrenttransfer;
-- (void) DPSdefaultmatrix;
+- (void) DPScurrentgstate: (int)gst;
 - (void) DPSgrestore;
-- (void) DPSgrestoreall;
 - (void) DPSgsave;
 - (void) DPSgstate;
 - (void) DPSinitgraphics;
-- (void) DPSinitmatrix;
-- (void) DPSrotate: (float)angle ;
-- (void) DPSscale: (float)x : (float)y ;
-- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset ;
-- (void) DPSsetflat: (float)flatness ;
-- (void) DPSsetgray: (float)gray ;
-- (void) DPSsetgstate: (int)gst ;
-- (void) DPSsethalftone;
-- (void) DPSsethalftonephase: (float)x : (float)y ;
-- (void) DPSsethsbcolor: (float)h : (float)s : (float)b ;
-- (void) DPSsetlinecap: (int)linecap ;
-- (void) DPSsetlinejoin: (int)linejoin ;
-- (void) DPSsetlinewidth: (float)width ;
-- (void) DPSsetmatrix;
-- (void) DPSsetmiterlimit: (float)limit ;
-- (void) DPSsetrgbcolor: (float)r : (float)g : (float)b ;
-- (void) DPSsetscreen;
-- (void) DPSsetstrokeadjust: (int)b ;
-- (void) DPSsettransfer;
-- (void) DPStranslate: (float)x : (float)y ;
+- (void) DPSsetgstate: (int)gst;
+
+- (int)  GSDefineGState;
+- (void) GSUndefineGState: (int)gst;
+- (void) GSReplaceGState: (int)gst;
+
 /* ----------------------------------------------------------------------- */
-/* I/O  operations */
+/* Gstate operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSflush;
+- (void) DPScurrentflat: (float*)flatness;
+- (void) DPScurrentlinecap: (int*)linecap;
+- (void) DPScurrentlinejoin: (int*)linejoin;
+- (void) DPScurrentlinewidth: (float*)width;
+- (void) DPScurrentmiterlimit: (float*)limit;
+- (void) DPScurrentpoint: (float*)x : (float*)y;
+- (void) DPScurrentstrokeadjust: (int*)b;
+- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset;
+- (void) DPSsetflat: (float)flatness;
+- (void) DPSsethalftonephase: (float)x : (float)y;
+- (void) DPSsetlinecap: (int)linecap;
+- (void) DPSsetlinejoin: (int)linejoin;
+- (void) DPSsetlinewidth: (float)width;
+- (void) DPSsetmiterlimit: (float)limit;
+- (void) DPSsetstrokeadjust: (int)b;
+
 /* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSconcatmatrix;
-- (void) DPSdtransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 ;
-- (void) DPSidentmatrix;
-- (void) DPSidtransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 ;
-- (void) DPSinvertmatrix;
-- (void) DPSitransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 ;
-- (void) DPStransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 ;
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-- (void) DPSdefineuserobject;
-- (void) DPSexecuserobject: (int)index ;
-- (void) DPSundefineuserobject: (int)index ;
-- (void) DPSgetboolean: (int*)it ;
-- (void) DPSgetchararray: (int)size : (char*)s ;
-- (void) DPSgetfloat: (float*)it ;
-- (void) DPSgetfloatarray: (int)size : (float*)a ;
-- (void) DPSgetint: (int*)it ;
-- (void) DPSgetintarray: (int)size : (int*)a ;
-- (void) DPSgetstring: (char*)s ;
-- (void) DPSsendboolean: (int)it ;
-- (void) DPSsendchararray: (const char*)s : (int)size ;
-- (void) DPSsendfloat: (float)it ;
-- (void) DPSsendfloatarray: (const float*)a : (int)size ;
-- (void) DPSsendint: (int)it ;
-- (void) DPSsendintarray: (const int*)a : (int)size ;
-- (void) DPSsendstring: (const char*)s ;
+- (void) DPSconcat: (const float*)m;
+- (void) DPSinitmatrix;
+- (void) DPSrotate: (float)angle;
+- (void) DPSscale: (float)x : (float)y;
+- (void) DPStranslate: (float)x : (float)y;
+
+- (NSAffineTransform *) GSCurrentCTM;
+- (void) GSSetCTM: (NSAffineTransform *)ctm;
+- (void) GSConcatCTM: (NSAffineTransform *)ctm;
+
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSashow: (float)x : (float)y : (const char*)s ;
-- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char*)s ;
-- (void) DPScopypage;
-- (void) DPSeofill;
-- (void) DPSerasepage;
-- (void) DPSfill;
-- (void) DPSimage;
-- (void) DPSimagemask;
-- (void) DPScolorimage;
-- (void) DPSalphaimage;
-- (void) DPSkshow: (const char*)s ;
-- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h ;
-- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h ;
-- (void) DPSshow: (const char*)s ;
-- (void) DPSshowpage;
-- (void) DPSstroke;
-- (void) DPSstrokepath;
-- (void) DPSueofill: (const char*)nums : (int)n : (const char*)ops : (int)l ;
-- (void) DPSufill: (const char*)nums : (int)n : (const char*)ops : (int)l ;
-- (void) DPSustroke: (const char*)nums : (int)n : (const char*)ops : (int)l ;
-- (void) DPSustrokepath: (const char*)nums : (int)n : (const char*)ops : (int)l ;
-- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s ;
-- (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size ;
-- (void) DPSxyshow: (const char*)s : (const float*)numarray : (int)size ;
-- (void) DPSyshow: (const char*)s : (const float*)numarray : (int)size ;
-/* ----------------------------------------------------------------------- */
-/* Path operations */
-/* ----------------------------------------------------------------------- */
-- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 : (float)angle2 ;
-- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 : (float)angle2 ;
-- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r ;
-- (void) DPSarcto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r : (float*)xt1 : (float*)yt1 : (float*)xt2 : (float*)yt2 ;
-- (void) DPScharpath: (const char*)s : (int)b ;
+- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 
+	       : (float)angle2;
+- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 
+		: (float)angle2;
+- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r;
 - (void) DPSclip;
-- (void) DPSclippath;
 - (void) DPSclosepath;
-- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)x3 : (float)y3 ;
+- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
+		   : (float)x3 : (float)y3;
 - (void) DPSeoclip;
-- (void) DPSeoviewclip;
+- (void) DPSeofill;
+- (void) DPSfill;
 - (void) DPSflattenpath;
 - (void) DPSinitclip;
-- (void) DPSinitviewclip;
-- (void) DPSlineto: (float)x : (float)y ;
-- (void) DPSmoveto: (float)x : (float)y ;
+- (void) DPSlineto: (float)x : (float)y;
+- (void) DPSmoveto: (float)x : (float)y;
 - (void) DPSnewpath;
-- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury ;
-- (void) DPSpathforall;
-- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)x3 : (float)y3 ;
-- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h ;
-- (void) DPSrectviewclip: (float)x : (float)y : (float)w : (float)h ;
+- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury;
+- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
+		    : (float)x3 : (float)y3;
+- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h;
+- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h;
+- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h;
 - (void) DPSreversepath;
-- (void) DPSrlineto: (float)x : (float)y ;
-- (void) DPSrmoveto: (float)x : (float)y ;
-- (void) DPSsetbbox: (float)llx : (float)lly : (float)urx : (float)ury ;
-- (void) DPSviewclip;
-- (void) DPSviewclippath;
+- (void) DPSrlineto: (float)x : (float)y;
+- (void) DPSrmoveto: (float)x : (float)y;
+- (void) DPSstroke;
 
-/* ----------------------------------------------------------------------- */
-/* System system ops */
-/* ----------------------------------------------------------------------- */
-- (void) DPSrestore ;
-- (void) DPSsave ;
+- (void) GSSendBezierPath: (NSBezierPath *)path;
+- (void) GSRectClipList: (const NSRect *)rects : (int) count;
+- (void) GSRectFillList: (const NSRect *)rects : (int) count;
 
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentdrawingfunction: (int*)function ;
-- (void) DPScurrentgcdrawable: (void**)gc : (void**)draw : (int*)x : (int*)y ;
-- (void) DPScurrentgcdrawablecolor: (void**)gc : (void**)draw : (int*)x : (int*)y : (int*)colorInfo ;
-- (void) DPScurrentoffset: (int*)x : (int*)y ;
-- (void) DPSsetdrawingfunction: (int)function ;
-- (void) DPSsetgcdrawable: (void*)gc : (void*)draw : (int)x : (int)y ;
-- (void) DPSsetgcdrawablecolor: (void*)gc : (void*)draw : (int)x : (int)y : (const int*)colorInfo ;
-- (void) DPSsetoffset: (short int)x : (short int)y ;
-- (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int*)success ;
-- (void) DPScapturegstate: (int*)gst ;
+- (void) DPScurrentgcdrawable: (void**)gc : (void**)draw : (int*)x : (int*)y;
+- (void) DPScurrentoffset: (int*)x : (int*)y;
+- (void) DPSsetgcdrawable: (void*)gc : (void*)draw : (int)x : (int)y;
+- (void) DPSsetoffset: (short int)x : (short int)y;
 
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h : (int)gstateNum : (float)dx : (float)dy : (int)op;
+- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h 
+		     : (int)gstateNum : (float)dx : (float)dy : (int)op;
 - (void) DPScompositerect: (float)x : (float)y : (float)w : (float)h : (int)op;
-- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h : (int)gstateNum
- : (float)dx : (float)dy : (float)delta;
-- (void) DPSreadimage;
-- (void) DPSsetalpha: (float)a;
-- (void) DPScurrentalpha: (float*)a;
+- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
+		    : (int)gstateNum : (float)dx : (float)dy : (float)delta;
 
-/*-------------------------------------------------------------------------*/
-/* Window Extensions Ops */
-/*-------------------------------------------------------------------------*/
-- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int*) num ;
-- (void) DPStermwindow: (int) num ;
-- (void) DPSstylewindow: (int) style : (int) num ;
-- (void) DPStitlewindow: (const char*) window_title : (int) num ;
-- (void) DPSminiwindow: (int) num ;
-- (void) DPSwindowdevice: (int) num ;
-- (void) DPSwindowdeviceround: (int) num ;
-- (void) DPScurrentwindow: (int*) num ;
-- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum ;
-- (void) DPSmovewindow: (float) x : (float) y : (int) num ;
-- (void) DPSupdatewindow: (int) win ;
-- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win ;
-- (void) DPSfrontwindow: (int*) num ;
-- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float*) lx : (float*) ly : (int*) winFound : (int*) didFind ;
-- (void) DPScurrentwindowbounds: (int) num : (float*) x : (float*) y : (float*) w : (float*) h ;
-- (void) DPSsetexposurecolor;
-- (void) DPSsetsendexposed: (int) truth : (int) num ;
-- (void) DPSsetautofill: (int) truth : (int) num ;
-- (void) DPScurrentwindowalpha: (int) win : (int*) alpha ;
-- (void) DPScountscreenlist: (int) context : (int*) count ;
-- (void) DPSscreenlist: (int) context : (int) count : (int*) windows ;
-- (void) DPSsetowner: (int) owner : (int) win ;
-- (void) DPScurrentowner: (int) win : (int*) owner ;
-- (void) DPSsetwindowtype: (int) type : (int) win ;
-- (void) DPSsetwindowlevel: (int) level : (int) win ;
-- (void) DPScurrentwindowlevel: (int) win : (int*) level ;
-- (void) DPScountwindowlist: (int) context : (int*) count ;
-- (void) DPSwindowlist: (int) context : (int) count : (int*) windows ;
-- (void) DPSsetwindowdepthlimit: (int) limit : (int) win ;
-- (void) DPScurrentwindowdepthlimit: (int) win : (int*) limit ;
-- (void) DPScurrentwindowdepth: (int) win : (int*) depth ;
-- (void) DPSsetdefaultdepthlimit: (int) limit ;
-- (void) DPScurrentdefaultdepthlimit: (int*) limit ;
-- (void) DPSsetmaxsize: (float) width : (float) height : (int) win ;
-- (void) DPSsetminsize: (float) width : (float) height : (int) win ;
-- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win ;
-- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win ;
-- (void) DPScapturemouse: (int) win ;
-- (void) DPSreleasemouse;
-- (void) DPSsetinputfocus: (int) win ;
-- (void) DPShidecursor;
-- (void) DPSshowcursor;
-- (void) DPSstandardcursor: (int) style : (void**) cid ;
-- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char*) image : (void**) cid ;
-- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void*) cid ;
-- (void) DPSstyleoffsets: (float*) l : (float*) r : (float*) t : (float*) b : (int) style ;
-- (void) DPSdocedited: (int) edited : (int) window ;
+- (void) GSDrawImage: (NSRect)rect : (void *)imageref;
 
 /* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-- (NSEvent*) DPSGetEventMatchingMask: (unsigned)mask
-			  beforeDate: (NSDate*)limit
-			      inMode: (NSString*)mode
-			     dequeue: (BOOL)flag;
-- (void) DPSDiscardEventsMatchingMask: (unsigned)mask
-			  beforeEvent: (NSEvent*)limit;
-- (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag;
-- (void) DPSmouselocation: (float*)x : (float*)y;
-- (void) DPSsetinputstate: (int)window : (int)state;
-
-- (void) DPScurrentserverdevice: (void **)serverptr;
-- (void) DPScurrentwindowdevice: (int)win : (void **)windowptr;
-
-/* ----------------------------------------------------------------------- */
-/* Client functions */
+/* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 - (void) DPSPrintf: (char *)fmt : (va_list)args;
 - (void) DPSWriteData: (char *)buf : (unsigned int)count;
 
 @end
 
-/* Common graphics functions */
-@interface NSGraphicsContext (NSGraphics) 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
-/* initialize the backend */
-+ (void) initializeBackend;
-
-/*
- * Rectangle Drawing Functions
- */
-- (void) NSEraseRect: (NSRect) aRect;
-- (void) NSHighlightRect: (NSRect) aRect;
-- (void) NSRectClip: (NSRect) aRect;
-- (void) NSRectClipList: (const NSRect *)rects : (int) count;
-- (void) NSRectFill: (NSRect) aRect;
-- (void) NSRectFillList: (const NSRect *)rects : (int) count;
-- (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
-				:(int) count;
-- (void) NSRectFillUsingOperation: (NSRect) aRect : (NSCompositingOperation) op;
-
-/*
- * Draw a Bordered Rectangle
- */
-- (void) NSDottedFrameRect: (const NSRect) aRect;
-- (void) NSFrameRect: (const NSRect) aRect;
-- (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth;
-
-
-/*
- * Read the Color at a Screen Position
- */
+@interface NSGraphicsContext (NSGraphics) 
 - (NSColor *) NSReadPixel: (NSPoint) location;
 
-/*
- * Copy an image
- */
-- (void) NSCopyBitmapFromGState: (int) srcGstate:  (NSRect) srcRect 
-			       : (NSRect) destRect;
-- (void) NSCopyBits: (int) srcGstate : (NSRect) srcRect : (NSPoint) destPoint;
-
-/*
- * Render Bitmap Images
- */
+/* Soon to be obsolete */
 - (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
 		     : (int) bitsPerSample : (int) samplesPerPixel 
 		     : (int) bitsPerPixel : (int) bytesPerRow : (BOOL) isPlanar
 		     : (BOOL) hasAlpha : (NSString *) colorSpaceName
 		     : (const unsigned char *const [5]) data;
 
-/*
- * Play the System Beep
- */
 - (void) NSBeep;
 
 /* Context helper wraps */
-- (unsigned int) GSWDefineAsUserObj;
 - (void) GSWSetViewIsFlipped: (BOOL) flipped;
 - (BOOL) GSWViewIsFlipped;
-- (NSWindowDepth) GSWindowDepthForScreen: (int) screen;
-- (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen;
-- (NSSize) GSResolutionForScreen: (int) screen;
 
 @end
 
@@ -552,12 +391,6 @@ APPKIT_EXPORT NSString *NSGraphicsContextDestinationAttributeName;
 APPKIT_EXPORT NSString *NSGraphicsContextPDFFormat;
 APPKIT_EXPORT NSString *NSGraphicsContextPSFormat;
 APPKIT_EXPORT NSString *NSGraphicsContextRepresentationFormatAttributeName;
-
-APPKIT_EXPORT NSString *NSImageInterpolationDefault;
-APPKIT_EXPORT NSString *NSImageInterpolationNone;
-APPKIT_EXPORT NSString *NSImageInterpolationLow;
-APPKIT_EXPORT NSString *NSImageInterpolationHigh;
-
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
 

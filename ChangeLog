@@ -1,6 +1,35 @@
+2002-03-27  Adam Fedor  <fedor@gnu.org>
+
+	* Splitup backend into Server and Graphics Contexts. Revise list
+	of graphics operators for better functionality.
+	* Headers/gnustep/gui/GSDisplayServer.h: New file.
+	* Headers/gnustep/gui/DPSOperators.h: Revised set of operators.
+	* Headers/gnustep/gui/PSOperators.h: Likewise.
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphics.h: Un-inline/revise functions.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Update for MacOSX
+	compatibility, move server methods to GSDisplayServer, Revise list 
+	of operators.
+	* Source/GSDisplayServer.m: New file.
+	* Source/Functions.m: Move uninlined functions from NSGraphics.h here.
+	* Source/NSAffineTransform.m (-set): Update to new method.
+	* Source/NSApplication.m: Load gnustep-back backend by default.
+	Update for new server class.
+	* Source/NSCursor: Use new methods from server.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSImageRep.m: Likewise.
+	* Source/NSScreen.m: Likewise.
+	* Source/NSView.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Source/NSWorkspace.m: Likewise.
+	* Source/NSGraphicsContext.m: Move server methods, revised list
+	of operators
+
 Thu Mar 28 03:43:49 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Source/libgnustep-gui.def: Removed __objc_class_name_GSTransparentView.
+	* Source/libgnustep-gui.def: Removed
+	__objc_class_name_GSTransparentView.
 
 2002-03-27  Gregory John Casamento <greg_casamento@yahoo.com>
 

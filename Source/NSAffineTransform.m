@@ -261,7 +261,7 @@ static NSAffineTransformStruct identityTransform = {
   m[3] = matrix.m22;
   m[4] = matrix.tx;
   m[5] = matrix.ty;
-  PSsetmatrix(m);
+  GSSetCTM(GSCurrentContext(), self);
 }
 
 - (void) setTransformStruct: (NSAffineTransformStruct)val

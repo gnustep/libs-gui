@@ -32,220 +32,149 @@
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentcmykcolor(GSCTXT *ctxt, float *c, float *m, float *y, float *k)
+DPScurrentalpha(GSCTXT *ctxt, float* a)
+__attribute__((unused));
+
+static inline void
+DPScurrentcmykcolor(GSCTXT *ctxt, float* c, float* m, float* y, float* k)
+__attribute__((unused));
+
+static inline void
+DPScurrentgray(GSCTXT *ctxt, float* gray)
+__attribute__((unused));
+
+static inline void
+DPScurrenthsbcolor(GSCTXT *ctxt, float* h, float* s, float* b)
+__attribute__((unused));
+
+static inline void
+DPScurrentrgbcolor(GSCTXT *ctxt, float* r, float* g, float* b)
+__attribute__((unused));
+
+static inline void
+DPSsetalpha(GSCTXT *ctxt, float a)
 __attribute__((unused));
 
 static inline void
 DPSsetcmykcolor(GSCTXT *ctxt, float c, float m, float y, float k)
 __attribute__((unused));
 
-/* ----------------------------------------------------------------------- */
-/* Data operations */
-/* ----------------------------------------------------------------------- */
 static inline void
-DPSclear(GSCTXT *ctxt)
+DPSsetgray(GSCTXT *ctxt, float gray)
 __attribute__((unused));
 
 static inline void
-DPScleartomark(GSCTXT *ctxt)
+DPSsethsbcolor(GSCTXT *ctxt, float h, float s, float b)
 __attribute__((unused));
 
 static inline void
-DPScopy(GSCTXT *ctxt, int n)
+DPSsetrgbcolor(GSCTXT *ctxt, float r, float g, float b)
+__attribute__((unused));
+
+
+static inline void
+GSSetFillColorspace(GSCTXT *ctxt, NSDictionary * dict)
 __attribute__((unused));
 
 static inline void
-DPScount(GSCTXT *ctxt, int *n)
+GSSetStrokeColorspace(GSCTXT *ctxt, NSDictionary * dict)
 __attribute__((unused));
 
 static inline void
-DPScounttomark(GSCTXT *ctxt, int *n)
+GSSetFillColor(GSCTXT *ctxt, float * values)
 __attribute__((unused));
 
 static inline void
-DPSdup(GSCTXT *ctxt)
+GSSetStrokeColor(GSCTXT *ctxt, float * values)
 __attribute__((unused));
 
-static inline void
-DPSexch(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSexecstack(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSget(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSindex(GSCTXT *ctxt, int i)
-__attribute__((unused));
-
-static inline void
-DPSmark(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSmatrix(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSnull(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSpop(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSput(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSroll(GSCTXT *ctxt, int n, int j)
-__attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
-/* Font operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSFontDirectory(GSCTXT *ctxt)
+DPSashow(GSCTXT *ctxt, float x, float y, const char* s)
 __attribute__((unused));
 
 static inline void
-DPSISOLatin1Encoding(GSCTXT *ctxt)
+DPSawidthshow(GSCTXT *ctxt, float cx, float cy, int c, float ax, float ay, const char* s)
 __attribute__((unused));
 
 static inline void
-DPSSharedFontDirectory(GSCTXT *ctxt)
+DPScharpath(GSCTXT *ctxt, const char* s, int b)
 __attribute__((unused));
 
 static inline void
-DPSStandardEncoding(GSCTXT *ctxt)
+DPSshow(GSCTXT *ctxt, const char* s)
 __attribute__((unused));
 
 static inline void
-DPScurrentcacheparams(GSCTXT *ctxt)
+DPSwidthshow(GSCTXT *ctxt, float x, float y, int c, const char* s)
 __attribute__((unused));
 
 static inline void
-DPScurrentfont(GSCTXT *ctxt)
+DPSxshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 __attribute__((unused));
 
 static inline void
-DPSdefinefont(GSCTXT *ctxt)
+DPSxyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 __attribute__((unused));
 
 static inline void
-DPSfindfont(GSCTXT *ctxt, const char *name)
+DPSyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
+__attribute__((unused));
+
+
+static inline void
+GSSetCharacterSpacing(GSCTXT *ctxt, float extra)
 __attribute__((unused));
 
 static inline void
-DPSmakefont(GSCTXT *ctxt)
+GSSetFont(GSCTXT *ctxt, NSFont* font)
 __attribute__((unused));
 
 static inline void
-DPSscalefont(GSCTXT *ctxt, float size)
+GSSetFontSize(GSCTXT *ctxt, float size)
+__attribute__((unused));
+
+static inline NSAffineTransform *
+GSGetTextCTM(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline NSPoint
+GSGetTextPosition(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSselectfont(GSCTXT *ctxt, const char *name, float scale)
+GSSetTextCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 __attribute__((unused));
 
 static inline void
-DPSsetfont(GSCTXT *ctxt, int f)
+GSSetTextDrawingMode(GSCTXT *ctxt, GSTextDrawingMode mode)
 __attribute__((unused));
 
 static inline void
-DPSundefinefont(GSCTXT *ctxt, const char *name)
+GSSetTextPosition(GSCTXT *ctxt, NSPoint loc)
 __attribute__((unused));
+
+static inline void
+GSShowText(GSCTXT *ctxt, const char * string, size_t length)
+__attribute__((unused));
+
+static inline void
+GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
+__attribute__((unused));
+
 
 /* ----------------------------------------------------------------------- */
-/* Gstate operations */
+/* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSconcat(GSCTXT *ctxt, const float m[])
-__attribute__((unused));
-
-static inline void
-DPScurrentdash(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPScurrentflat(GSCTXT *ctxt, float *flatness)
-__attribute__((unused));
-
-static inline void
-DPScurrentgray(GSCTXT *ctxt, float *gray)
-__attribute__((unused));
-
 static inline void
 DPScurrentgstate(GSCTXT *ctxt, int gst)
 __attribute__((unused));
 
 static inline void
-DPScurrenthalftone(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPScurrenthalftonephase(GSCTXT *ctxt, float *x, float *y)
-__attribute__((unused));
-
-static inline void
-DPScurrenthsbcolor(GSCTXT *ctxt, float *h, float *s, float *b)
-__attribute__((unused));
-
-static inline void
-DPScurrentlinecap(GSCTXT *ctxt, int *linecap)
-__attribute__((unused));
-
-static inline void
-DPScurrentlinejoin(GSCTXT *ctxt, int *linejoin)
-__attribute__((unused));
-
-static inline void
-DPScurrentlinewidth(GSCTXT *ctxt, float *width)
-__attribute__((unused));
-
-static inline void
-DPScurrentmatrix(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPScurrentmiterlimit(GSCTXT *ctxt, float *limit)
-__attribute__((unused));
-
-static inline void
-DPScurrentpoint(GSCTXT *ctxt, float *x, float *y)
-__attribute__((unused));
-
-static inline void
-DPScurrentrgbcolor(GSCTXT *ctxt, float *r, float *g, float *b)
-__attribute__((unused));
-
-static inline void
-DPScurrentscreen(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPScurrentstrokeadjust(GSCTXT *ctxt, int *b)
-__attribute__((unused));
-
-static inline void
-DPScurrenttransfer(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSdefaultmatrix(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
 DPSgrestore(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSgrestoreall(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
@@ -261,19 +190,55 @@ DPSinitgraphics(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSinitmatrix(GSCTXT *ctxt)
+DPSsetgstate(GSCTXT *ctxt, int gst)
+__attribute__((unused));
+
+
+static inline int
+GSDefineGState(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSrotate(GSCTXT *ctxt, float angle)
+GSUndefineGState(GSCTXT *ctxt, int gst)
 __attribute__((unused));
 
 static inline void
-DPSscale(GSCTXT *ctxt, float x, float y)
+GSReplaceGState(GSCTXT *ctxt, int gst)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
+/* Gstate operations */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPScurrentflat(GSCTXT *ctxt, float* flatness)
 __attribute__((unused));
 
 static inline void
-DPSsetdash(GSCTXT *ctxt, const float pat[], int size, float offset)
+DPScurrentlinecap(GSCTXT *ctxt, int* linecap)
+__attribute__((unused));
+
+static inline void
+DPScurrentlinejoin(GSCTXT *ctxt, int* linejoin)
+__attribute__((unused));
+
+static inline void
+DPScurrentlinewidth(GSCTXT *ctxt, float* width)
+__attribute__((unused));
+
+static inline void
+DPScurrentmiterlimit(GSCTXT *ctxt, float* limit)
+__attribute__((unused));
+
+static inline void
+DPScurrentpoint(GSCTXT *ctxt, float* x, float* y)
+__attribute__((unused));
+
+static inline void
+DPScurrentstrokeadjust(GSCTXT *ctxt, int* b)
+__attribute__((unused));
+
+static inline void
+DPSsetdash(GSCTXT *ctxt, const float* pat, int size, float offset)
 __attribute__((unused));
 
 static inline void
@@ -281,23 +246,7 @@ DPSsetflat(GSCTXT *ctxt, float flatness)
 __attribute__((unused));
 
 static inline void
-DPSsetgray(GSCTXT *ctxt, float gray)
-__attribute__((unused));
-
-static inline void
-DPSsetgstate(GSCTXT *ctxt, int gst)
-__attribute__((unused));
-
-static inline void
-DPSsethalftone(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
 DPSsethalftonephase(GSCTXT *ctxt, float x, float y)
-__attribute__((unused));
-
-static inline void
-DPSsethsbcolor(GSCTXT *ctxt, float h, float s, float b)
 __attribute__((unused));
 
 static inline void
@@ -313,247 +262,53 @@ DPSsetlinewidth(GSCTXT *ctxt, float width)
 __attribute__((unused));
 
 static inline void
-DPSsetmatrix(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
 DPSsetmiterlimit(GSCTXT *ctxt, float limit)
-__attribute__((unused));
-
-static inline void
-DPSsetrgbcolor(GSCTXT *ctxt, float r, float g, float b)
-__attribute__((unused));
-
-static inline void
-DPSsetscreen(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
 DPSsetstrokeadjust(GSCTXT *ctxt, int b)
 __attribute__((unused));
 
+
+/* ----------------------------------------------------------------------- */
+/* Matrix operations */
+/* ----------------------------------------------------------------------- */
 static inline void
-DPSsettransfer(GSCTXT *ctxt)
+DPSconcat(GSCTXT *ctxt, const float* m)
+__attribute__((unused));
+
+static inline void
+DPSinitmatrix(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSrotate(GSCTXT *ctxt, float angle)
+__attribute__((unused));
+
+static inline void
+DPSscale(GSCTXT *ctxt, float x, float y)
 __attribute__((unused));
 
 static inline void
 DPStranslate(GSCTXT *ctxt, float x, float y)
 __attribute__((unused));
 
-/* ----------------------------------------------------------------------- */
-/* I/O Operations operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSflush(GSCTXT *ctxt)
-__attribute__((unused));
 
-/* ----------------------------------------------------------------------- */
-/* Matrix operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSconcatmatrix(GSCTXT *ctxt)
+static inline NSAffineTransform *
+GSCurrentCTM(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSdtransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
+GSSetCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 __attribute__((unused));
 
 static inline void
-DPSidentmatrix(GSCTXT *ctxt)
+GSConcatCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 __attribute__((unused));
 
-static inline void
-DPSidtransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-__attribute__((unused));
-
-static inline void
-DPSinvertmatrix(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSitransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-__attribute__((unused));
-
-static inline void
-DPStransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-__attribute__((unused));
-
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSdefineuserobject(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSexecuserobject(GSCTXT *ctxt, int index)
-__attribute__((unused));
-
-static inline void
-DPSundefineuserobject(GSCTXT *ctxt, int index)
-__attribute__((unused));
-
-static inline void
-DPSgetboolean(GSCTXT *ctxt, int *it)
-__attribute__((unused));
-
-static inline void
-DPSgetchararray(GSCTXT *ctxt, int size, char s[])
-__attribute__((unused));
-
-static inline void
-DPSgetfloat(GSCTXT *ctxt, float *it)
-__attribute__((unused));
-
-static inline void
-DPSgetfloatarray(GSCTXT *ctxt, int size, float a[])
-__attribute__((unused));
-
-static inline void
-DPSgetint(GSCTXT *ctxt, int *it)
-__attribute__((unused));
-
-static inline void
-DPSgetintarray(GSCTXT *ctxt, int size, int a[])
-__attribute__((unused));
-
-static inline void
-DPSgetstring(GSCTXT *ctxt, char *s)
-__attribute__((unused));
-
-static inline void
-DPSsendboolean(GSCTXT *ctxt, int it)
-__attribute__((unused));
-
-static inline void
-DPSsendchararray(GSCTXT *ctxt, const char s[], int size)
-__attribute__((unused));
-
-static inline void
-DPSsendfloat(GSCTXT *ctxt, float it)
-__attribute__((unused));
-
-static inline void
-DPSsendfloatarray(GSCTXT *ctxt, const float a[], int size)
-__attribute__((unused));
-
-static inline void
-DPSsendint(GSCTXT *ctxt, int it)
-__attribute__((unused));
-
-static inline void
-DPSsendintarray(GSCTXT *ctxt, const int a[], int size)
-__attribute__((unused));
-
-static inline void
-DPSsendstring(GSCTXT *ctxt, const char *s)
-__attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSashow(GSCTXT *ctxt, float x, float y, const char *s)
-__attribute__((unused));
-
-static inline void
-DPSawidthshow(GSCTXT *ctxt, float cx, float cy, int c, float ax, float ay, const char *s)
-__attribute__((unused));
-
-static inline void
-DPScopypage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSeofill(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSerasepage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSfill(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSimage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSimagemask(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPScolorimage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSalphaimage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSkshow(GSCTXT *ctxt, const char *s)
-__attribute__((unused));
-
-static inline void
-DPSrectfill(GSCTXT *ctxt, float x, float y, float w, float h)
-__attribute__((unused));
-
-static inline void
-DPSrectstroke(GSCTXT *ctxt, float x, float y, float w, float h)
-__attribute__((unused));
-
-static inline void
-DPSshow(GSCTXT *ctxt, const char *s)
-__attribute__((unused));
-
-static inline void
-DPSshowpage(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSstroke(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSstrokepath(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSueofill(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-__attribute__((unused));
-
-static inline void
-DPSufill(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-__attribute__((unused));
-
-static inline void
-DPSustroke(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-__attribute__((unused));
-
-static inline void
-DPSustrokepath(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-__attribute__((unused));
-
-static inline void
-DPSwidthshow(GSCTXT *ctxt, float x, float y, int c, const char *s)
-__attribute__((unused));
-
-static inline void
-DPSxshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-__attribute__((unused));
-
-static inline void
-DPSxyshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-__attribute__((unused));
-
-static inline void
-DPSyshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-__attribute__((unused));
-
-/* ----------------------------------------------------------------------- */
-/* Path operations */
 /* ----------------------------------------------------------------------- */
 static inline void
 DPSarc(GSCTXT *ctxt, float x, float y, float r, float angle1, float angle2)
@@ -568,19 +323,7 @@ DPSarct(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float r)
 __attribute__((unused));
 
 static inline void
-DPSarcto(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float r, float *xt1, float *yt1, float *xt2, float *yt2)
-__attribute__((unused));
-
-static inline void
-DPScharpath(GSCTXT *ctxt, const char *s, int b)
-__attribute__((unused));
-
-static inline void
 DPSclip(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSclippath(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
@@ -596,7 +339,11 @@ DPSeoclip(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSeoviewclip(GSCTXT *ctxt)
+DPSeofill(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSfill(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
@@ -605,10 +352,6 @@ __attribute__((unused));
 
 static inline void
 DPSinitclip(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSinitviewclip(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
@@ -624,11 +367,7 @@ DPSnewpath(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
-DPSpathbbox(GSCTXT *ctxt, float *llx, float *lly, float *urx, float *ury)
-__attribute__((unused));
-
-static inline void
-DPSpathforall(GSCTXT *ctxt)
+DPSpathbbox(GSCTXT *ctxt, float* llx, float* lly, float* urx, float* ury)
 __attribute__((unused));
 
 static inline void
@@ -640,7 +379,11 @@ DPSrectclip(GSCTXT *ctxt, float x, float y, float w, float h)
 __attribute__((unused));
 
 static inline void
-DPSrectviewclip(GSCTXT *ctxt, float x, float y, float w, float h)
+DPSrectfill(GSCTXT *ctxt, float x, float y, float w, float h)
+__attribute__((unused));
+
+static inline void
+DPSrectstroke(GSCTXT *ctxt, float x, float y, float w, float h)
 __attribute__((unused));
 
 static inline void
@@ -656,49 +399,32 @@ DPSrmoveto(GSCTXT *ctxt, float x, float y)
 __attribute__((unused));
 
 static inline void
-DPSsetbbox(GSCTXT *ctxt, float llx, float lly, float urx, float ury)
+DPSstroke(GSCTXT *ctxt)
+__attribute__((unused));
+
+
+static inline void
+GSSendBezierPath(GSCTXT *ctxt, NSBezierPath * path)
 __attribute__((unused));
 
 static inline void
-DPSviewclip(GSCTXT *ctxt)
+GSRectClipList(GSCTXT *ctxt, const NSRect * rects, int count)
 __attribute__((unused));
 
 static inline void
-DPSviewclippath(GSCTXT *ctxt)
+GSRectFillList(GSCTXT *ctxt, const NSRect * rects, int count)
 __attribute__((unused));
 
-/* ----------------------------------------------------------------------- */
-/* System ops */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSrestore(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSsave(GSCTXT *ctxt)
-__attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentdrawingfunction(GSCTXT *ctxt, int *function)
+DPScurrentgcdrawable(GSCTXT *ctxt, void** gc, void** draw, int* x, int* y)
 __attribute__((unused));
 
 static inline void
-DPScurrentgcdrawable(GSCTXT *ctxt, void* *gc, void* *draw, int *x, int *y)
-__attribute__((unused));
-
-static inline void
-DPScurrentgcdrawablecolor(GSCTXT *ctxt, void* *gc, void* *draw, int *x, int *y, int colorInfo[])
-__attribute__((unused));
-
-static inline void
-DPScurrentoffset(GSCTXT *ctxt, int *x, int *y)
-__attribute__((unused));
-
-static inline void
-DPSsetdrawingfunction(GSCTXT *ctxt, int function)
+DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
 __attribute__((unused));
 
 static inline void
@@ -706,297 +432,84 @@ DPSsetgcdrawable(GSCTXT *ctxt, void* gc, void* draw, int x, int y)
 __attribute__((unused));
 
 static inline void
-DPSsetgcdrawablecolor(GSCTXT *ctxt, void* gc, void* draw, int x, int y, const int colorInfo[])
-__attribute__((unused));
-
-static inline void
 DPSsetoffset(GSCTXT *ctxt, short int x, short int y)
 __attribute__((unused));
 
-static inline void
-DPSsetrgbactual(GSCTXT *ctxt, double r, double g, double b, int *success)
-__attribute__((unused));
-
-static inline void
-DPScapturegstate(GSCTXT *ctxt, int *gst)
-__attribute__((unused));
 
 /*-------------------------------------------------------------------------*/
-/* Graphics Extension Ops */
+/* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-static inline void 
+static inline void
 DPScomposite(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
 __attribute__((unused));
 
-static inline void 
+static inline void
 DPScompositerect(GSCTXT *ctxt, float x, float y, float w, float h, int op)
 __attribute__((unused));
 
-static inline void 
+static inline void
 DPSdissolve(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
 __attribute__((unused));
 
-static inline void 
-DPSreadimage(GSCTXT *ctxt)
-__attribute__((unused));
 
-static inline void 
-DPSsetalpha(GSCTXT *ctxt, float a)
-__attribute__((unused));
-
-static inline void 
-DPScurrentalpha(GSCTXT *ctxt, float *alpha)
+static inline void
+GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
-/* Window ops extensions */
+/* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSwindow(GSCTXT *ctxt, float x, float y, float w, float h, int type, int * num)
+DPSPrintf(GSCTXT *ctxt, char * fmt, ...)
 __attribute__((unused));
 
 static inline void
-DPStermwindow(GSCTXT *ctxt, int num)
+DPSWriteData(GSCTXT *ctxt, char * buf, unsigned int count)
 __attribute__((unused));
-
-static inline void
-DPSstylewindow(GSCTXT *ctxt, int style, int num)
-__attribute__((unused));
-
-static inline void
-DPStitlewindow(GSCTXT *ctxt, const char * window_title, int num)
-__attribute__((unused));
-
-static inline void
-DPSminiwindow(GSCTXT *ctxt, int num)
-__attribute__((unused));
-
-static inline void
-DPSwindowdevice(GSCTXT *ctxt, int num)
-__attribute__((unused));
-
-static inline void
-DPSwindowdeviceround(GSCTXT *ctxt, int num)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindow(GSCTXT *ctxt, int * num)
-__attribute__((unused));
-
-static inline void
-DPSorderwindow(GSCTXT *ctxt, int op, int otherWin, int winNum)
-__attribute__((unused));
-
-static inline void
-DPSmovewindow(GSCTXT *ctxt, float x, float y, int num)
-__attribute__((unused));
-
-static inline void
-DPSupdatewindow(GSCTXT *ctxt, int win)
-__attribute__((unused));
-
-static inline void
-DPSplacewindow(GSCTXT *ctxt, float x, float y, float w, float h, int win)
-__attribute__((unused));
-
-static inline void
-DPSfrontwindow(GSCTXT *ctxt, int * num)
-__attribute__((unused));
-
-static inline void
-DPSfindwindow(GSCTXT *ctxt, float x, float y, int op, int otherWin, float * lx, float * ly, int * winFound, int * didFind)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowbounds(GSCTXT *ctxt, int num, float * x, float * y, float * w, float * h)
-__attribute__((unused));
-
-static inline void
-DPSsetexposurecolor(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSsetsendexposed(GSCTXT *ctxt, int truth, int num)
-__attribute__((unused));
-
-static inline void
-DPSsetautofill(GSCTXT *ctxt, int truth, int num)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowalpha(GSCTXT *ctxt, int win, int * alpha)
-__attribute__((unused));
-
-static inline void
-DPScountscreenlist(GSCTXT *ctxt, int context, int * count)
-__attribute__((unused));
-
-static inline void
-DPSscreenlist(GSCTXT *ctxt, int context, int count, int * windows)
-__attribute__((unused));
-
-static inline void
-DPSsetowner(GSCTXT *ctxt, int owner, int win)
-__attribute__((unused));
-
-static inline void
-DPScurrentowner(GSCTXT *ctxt, int win, int * owner)
-__attribute__((unused));
-
-static inline void
-DPSsetwindowtype(GSCTXT *ctxt, int type, int win)
-__attribute__((unused));
-
-static inline void
-DPSsetwindowlevel(GSCTXT *ctxt, int level, int win)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowlevel(GSCTXT *ctxt, int win, int * level)
-__attribute__((unused));
-
-static inline void
-DPScountwindowlist(GSCTXT *ctxt, int context, int * count)
-__attribute__((unused));
-
-static inline void
-DPSwindowlist(GSCTXT *ctxt, int context, int count, int * windows)
-__attribute__((unused));
-
-static inline void
-DPSsetwindowdepthlimit(GSCTXT *ctxt, int limit, int win)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowdepthlimit(GSCTXT *ctxt, int win, int * limit)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowdepth(GSCTXT *ctxt, int win, int * depth)
-__attribute__((unused));
-
-static inline void
-DPSsetdefaultdepthlimit(GSCTXT *ctxt, int limit)
-__attribute__((unused));
-
-static inline void
-DPScurrentdefaultdepthlimit(GSCTXT *ctxt, int * limit)
-__attribute__((unused));
-
-static inline void
-DPSsetmaxsize(GSCTXT *ctxt, float width, float height, int win)
-__attribute__((unused));
-
-static inline void
-DPSsetminsize(GSCTXT *ctxt, float width, float height, int win)
-__attribute__((unused));
-
-static inline void
-DPSsetresizeincrements(GSCTXT *ctxt, float width, float height, int win)
-__attribute__((unused));
-
-static inline void
-DPSflushwindowrect(GSCTXT *ctxt, float x, float y, float w, float h, int win)
-__attribute__((unused));
-
-static inline void
-DPScapturemouse(GSCTXT *ctxt, int win)
-__attribute__((unused));
-
-static inline void
-DPSreleasemouse(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSsetinputfocus(GSCTXT *ctxt, int win)
-__attribute__((unused));
-
-static inline void
-DPShidecursor(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSshowcursor(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSstandardcursor(GSCTXT *ctxt, int style, void ** cid)
-__attribute__((unused));
-
-static inline void
-DPSimagecursor(GSCTXT *ctxt, float hotx, float hoty, float w, float h, int colors, const char * image, void ** cid)
-__attribute__((unused));
-
-static inline void
-DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg, float bb, void * cid)
-__attribute__((unused));
-
-static inline void
-DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
-__attribute__((unused));
-
-static inline void
-DPSdocedited(GSCTXT *ctxt, int edited, int window)
-__attribute__((unused));
-
-/* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-static inline NSEvent*
-DPSGetEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
-__attribute__((unused));
-
-static inline NSEvent*
-DPSPeekEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
-__attribute__((unused));
-
-static inline void
-DPSDiscardEvents(GSCTXT *ctxt, unsigned mask, NSEvent* limit)
-__attribute__((unused));
-
-static inline void
-DPSPostEvent(GSCTXT *ctxt, NSEvent* anEvent, BOOL atStart)
-__attribute__((unused));
-
-static inline void
-DPSmouselocation(GSCTXT *ctxt, float *x, float *y)
-__attribute__((unused));
-
-static inline void
-DPSsetinputstate(GSCTXT *ctxt, int window, int state)
-__attribute__((unused));
-
-static inline void
-DPScurrentserverdevice(GSCTXT *ctxt, void **serverptr)
-__attribute__((unused));
-
-static inline void
-DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
-__attribute__((unused));
-
-/* ----------------------------------------------------------------------- */
-/* Client functions */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSPrintf(GSCTXT *ctxt, char *fmt, ...)
-__attribute__((unused));
-
-static inline void
-DPSWriteData(GSCTXT *ctxt,  char *buf, unsigned int count)
-__attribute__((unused));
-
-/***************************************************************************/
-/* Definitions */
-/***************************************************************************/
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentcmykcolor(GSCTXT *ctxt, float *c, float *m, float *y, float *k)
+DPScurrentalpha(GSCTXT *ctxt, float* a)
+{
+  (ctxt->methods->DPScurrentalpha_)
+    (ctxt, @selector(DPScurrentalpha:), a);
+}
+
+static inline void
+DPScurrentcmykcolor(GSCTXT *ctxt, float* c, float* m, float* y, float* k)
 {
   (ctxt->methods->DPScurrentcmykcolor____)
     (ctxt, @selector(DPScurrentcmykcolor::::), c, m, y, k);
+}
+
+static inline void
+DPScurrentgray(GSCTXT *ctxt, float* gray)
+{
+  (ctxt->methods->DPScurrentgray_)
+    (ctxt, @selector(DPScurrentgray:), gray);
+}
+
+static inline void
+DPScurrenthsbcolor(GSCTXT *ctxt, float* h, float* s, float* b)
+{
+  (ctxt->methods->DPScurrenthsbcolor___)
+    (ctxt, @selector(DPScurrenthsbcolor:::), h, s, b);
+}
+
+static inline void
+DPScurrentrgbcolor(GSCTXT *ctxt, float* r, float* g, float* b)
+{
+  (ctxt->methods->DPScurrentrgbcolor___)
+    (ctxt, @selector(DPScurrentrgbcolor:::), r, g, b);
+}
+
+static inline void
+DPSsetalpha(GSCTXT *ctxt, float a)
+{
+  (ctxt->methods->DPSsetalpha_)
+    (ctxt, @selector(DPSsetalpha:), a);
 }
 
 static inline void
@@ -1006,246 +519,191 @@ DPSsetcmykcolor(GSCTXT *ctxt, float c, float m, float y, float k)
     (ctxt, @selector(DPSsetcmykcolor::::), c, m, y, k);
 }
 
-/* ----------------------------------------------------------------------- */
-/* Data operations */
-/* ----------------------------------------------------------------------- */
 static inline void
-DPSclear(GSCTXT *ctxt)
+DPSsetgray(GSCTXT *ctxt, float gray)
 {
-  (ctxt->methods->DPSclear)
-    (ctxt, @selector(DPSclear));
+  (ctxt->methods->DPSsetgray_)
+    (ctxt, @selector(DPSsetgray:), gray);
 }
 
 static inline void
-DPScleartomark(GSCTXT *ctxt)
+DPSsethsbcolor(GSCTXT *ctxt, float h, float s, float b)
 {
-  (ctxt->methods->DPScleartomark)
-    (ctxt, @selector(DPScleartomark));
+  (ctxt->methods->DPSsethsbcolor___)
+    (ctxt, @selector(DPSsethsbcolor:::), h, s, b);
 }
 
 static inline void
-DPScopy(GSCTXT *ctxt, int n)
+DPSsetrgbcolor(GSCTXT *ctxt, float r, float g, float b)
 {
-  (ctxt->methods->DPScopy_)
-    (ctxt, @selector(DPScopy:), n);
+  (ctxt->methods->DPSsetrgbcolor___)
+    (ctxt, @selector(DPSsetrgbcolor:::), r, g, b);
+}
+
+
+static inline void
+GSSetFillColorspace(GSCTXT *ctxt, NSDictionary * dict)
+{
+  (ctxt->methods->GSSetFillColorspace_)
+    (ctxt, @selector(GSSetFillColorspace:), dict);
 }
 
 static inline void
-DPScount(GSCTXT *ctxt, int *n)
+GSSetStrokeColorspace(GSCTXT *ctxt, NSDictionary * dict)
 {
-  (ctxt->methods->DPScount_)
-    (ctxt, @selector(DPScount:), n);
+  (ctxt->methods->GSSetStrokeColorspace_)
+    (ctxt, @selector(GSSetStrokeColorspace:), dict);
 }
 
 static inline void
-DPScounttomark(GSCTXT *ctxt, int *n)
+GSSetFillColor(GSCTXT *ctxt, float * values)
 {
-  (ctxt->methods->DPScounttomark_)
-    (ctxt, @selector(DPScounttomark:), n);
+  (ctxt->methods->GSSetFillColor_)
+    (ctxt, @selector(GSSetFillColor:), values);
 }
 
 static inline void
-DPSdup(GSCTXT *ctxt)
+GSSetStrokeColor(GSCTXT *ctxt, float * values)
 {
-  (ctxt->methods->DPSdup)
-    (ctxt, @selector(DPSdup));
+  (ctxt->methods->GSSetStrokeColor_)
+    (ctxt, @selector(GSSetStrokeColor:), values);
 }
 
-static inline void
-DPSexch(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSexch)
-    (ctxt, @selector(DPSexch));
-}
-
-static inline void
-DPSexecstack(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSexecstack)
-    (ctxt, @selector(DPSexecstack));
-}
-
-static inline void
-DPSget(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSget)
-    (ctxt, @selector(DPSget));
-}
-
-static inline void
-DPSindex(GSCTXT *ctxt, int i)
-{
-  (ctxt->methods->DPSindex_)
-    (ctxt, @selector(DPSindex:), i);
-}
-
-static inline void
-DPSmark(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSmark)
-    (ctxt, @selector(DPSmark));
-}
-
-static inline void
-DPSmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSmatrix)
-    (ctxt, @selector(DPSmatrix));
-}
-
-static inline void
-DPSnull(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSnull)
-    (ctxt, @selector(DPSnull));
-}
-
-static inline void
-DPSpop(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSpop)
-    (ctxt, @selector(DPSpop));
-}
-
-static inline void
-DPSput(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSput)
-    (ctxt, @selector(DPSput));
-}
-
-static inline void
-DPSroll(GSCTXT *ctxt, int n, int j)
-{
-  (ctxt->methods->DPSroll__)
-    (ctxt, @selector(DPSroll::), n, j);
-}
 
 /* ----------------------------------------------------------------------- */
-/* Font operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSFontDirectory(GSCTXT *ctxt)
+DPSashow(GSCTXT *ctxt, float x, float y, const char* s)
 {
-  (ctxt->methods->DPSFontDirectory)
-    (ctxt, @selector(DPSFontDirectory));
+  (ctxt->methods->DPSashow___)
+    (ctxt, @selector(DPSashow:::), x, y, s);
 }
 
 static inline void
-DPSISOLatin1Encoding(GSCTXT *ctxt)
+DPSawidthshow(GSCTXT *ctxt, float cx, float cy, int c, float ax, float ay, const char* s)
 {
-  (ctxt->methods->DPSISOLatin1Encoding)
-    (ctxt, @selector(DPSISOLatin1Encoding));
+  (ctxt->methods->DPSawidthshow______)
+    (ctxt, @selector(DPSawidthshow::::::), cx, cy, c, ax, ay, s);
 }
 
 static inline void
-DPSSharedFontDirectory(GSCTXT *ctxt)
+DPScharpath(GSCTXT *ctxt, const char* s, int b)
 {
-  (ctxt->methods->DPSSharedFontDirectory)
-    (ctxt, @selector(DPSSharedFontDirectory));
+  (ctxt->methods->DPScharpath__)
+    (ctxt, @selector(DPScharpath::), s, b);
 }
 
 static inline void
-DPSStandardEncoding(GSCTXT *ctxt)
+DPSshow(GSCTXT *ctxt, const char* s)
 {
-  (ctxt->methods->DPSStandardEncoding)
-    (ctxt, @selector(DPSStandardEncoding));
+  (ctxt->methods->DPSshow_)
+    (ctxt, @selector(DPSshow:), s);
 }
 
 static inline void
-DPScurrentcacheparams(GSCTXT *ctxt)
+DPSwidthshow(GSCTXT *ctxt, float x, float y, int c, const char* s)
 {
-  (ctxt->methods->DPScurrentcacheparams)
-    (ctxt, @selector(DPScurrentcacheparams));
+  (ctxt->methods->DPSwidthshow____)
+    (ctxt, @selector(DPSwidthshow::::), x, y, c, s);
 }
 
 static inline void
-DPScurrentfont(GSCTXT *ctxt)
+DPSxshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
-  (ctxt->methods->DPScurrentfont)
-    (ctxt, @selector(DPScurrentfont));
+  (ctxt->methods->DPSxshow___)
+    (ctxt, @selector(DPSxshow:::), s, numarray, size);
 }
 
 static inline void
-DPSdefinefont(GSCTXT *ctxt)
+DPSxyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
-  (ctxt->methods->DPSdefinefont)
-    (ctxt, @selector(DPSdefinefont));
+  (ctxt->methods->DPSxyshow___)
+    (ctxt, @selector(DPSxyshow:::), s, numarray, size);
 }
 
 static inline void
-DPSfindfont(GSCTXT *ctxt, const char *name)
+DPSyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
-  (ctxt->methods->DPSfindfont_)
-    (ctxt, @selector(DPSfindfont:), name);
+  (ctxt->methods->DPSyshow___)
+    (ctxt, @selector(DPSyshow:::), s, numarray, size);
+}
+
+
+static inline void
+GSSetCharacterSpacing(GSCTXT *ctxt, float extra)
+{
+  (ctxt->methods->GSSetCharacterSpacing_)
+    (ctxt, @selector(GSSetCharacterSpacing:), extra);
 }
 
 static inline void
-DPSmakefont(GSCTXT *ctxt)
+GSSetFont(GSCTXT *ctxt, NSFont* font)
 {
-  (ctxt->methods->DPSmakefont)
-    (ctxt, @selector(DPSmakefont));
+  (ctxt->methods->GSSetFont_)
+    (ctxt, @selector(GSSetFont:), font);
 }
 
 static inline void
-DPSscalefont(GSCTXT *ctxt, float size)
+GSSetFontSize(GSCTXT *ctxt, float size)
 {
-  (ctxt->methods->DPSscalefont_)
-    (ctxt, @selector(DPSscalefont:), size);
+  (ctxt->methods->GSSetFontSize_)
+    (ctxt, @selector(GSSetFontSize:), size);
+}
+
+static inline NSAffineTransform *
+GSGetTextCTM(GSCTXT *ctxt)
+{
+  return (ctxt->methods->GSGetTextCTM)
+    (ctxt, @selector(GSGetTextCTM));
+}
+
+static inline NSPoint
+GSGetTextPosition(GSCTXT *ctxt)
+{
+  return (ctxt->methods->GSGetTextPosition)
+    (ctxt, @selector(GSGetTextPosition));
 }
 
 static inline void
-DPSselectfont(GSCTXT *ctxt, const char *name, float scale)
+GSSetTextCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 {
-  (ctxt->methods->DPSselectfont__)
-    (ctxt, @selector(DPSselectfont::), name, scale);
+  (ctxt->methods->GSSetTextCTM_)
+    (ctxt, @selector(GSSetTextCTM:), ctm);
 }
 
 static inline void
-DPSsetfont(GSCTXT *ctxt, int f)
+GSSetTextDrawingMode(GSCTXT *ctxt, GSTextDrawingMode mode)
 {
-  (ctxt->methods->DPSsetfont_)
-    (ctxt, @selector(DPSsetfont:), f);
+  (ctxt->methods->GSSetTextDrawingMode_)
+    (ctxt, @selector(GSSetTextDrawingMode:), mode);
 }
 
 static inline void
-DPSundefinefont(GSCTXT *ctxt, const char *name)
+GSSetTextPosition(GSCTXT *ctxt, NSPoint loc)
 {
-  (ctxt->methods->DPSundefinefont_)
-    (ctxt, @selector(DPSundefinefont:), name);
+  (ctxt->methods->GSSetTextPosition_)
+    (ctxt, @selector(GSSetTextPosition:), loc);
 }
+
+static inline void
+GSShowText(GSCTXT *ctxt, const char * string, size_t length)
+{
+  (ctxt->methods->GSShowText__)
+    (ctxt, @selector(GSShowText::), string, length);
+}
+
+static inline void
+GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
+{
+  (ctxt->methods->GSShowGlyphs__)
+    (ctxt, @selector(GSShowGlyphs::), glyphs, length);
+}
+
 
 /* ----------------------------------------------------------------------- */
-/* Gstate operations */
+/* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSconcat(GSCTXT *ctxt, const float m[])
-{
-  (ctxt->methods->DPSconcat_)
-    (ctxt, @selector(DPSconcat:), m);
-}
-
-static inline void
-DPScurrentdash(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScurrentdash)
-    (ctxt, @selector(DPScurrentdash));
-}
-
-static inline void
-DPScurrentflat(GSCTXT *ctxt, float *flatness)
-{
-  (ctxt->methods->DPScurrentflat_)
-    (ctxt, @selector(DPScurrentflat:), flatness);
-}
-
-static inline void
-DPScurrentgray(GSCTXT *ctxt, float *gray)
-{
-  (ctxt->methods->DPScurrentgray_)
-    (ctxt, @selector(DPScurrentgray:), gray);
-}
-
 static inline void
 DPScurrentgstate(GSCTXT *ctxt, int gst)
 {
@@ -1254,115 +712,10 @@ DPScurrentgstate(GSCTXT *ctxt, int gst)
 }
 
 static inline void
-DPScurrenthalftone(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScurrenthalftone)
-    (ctxt, @selector(DPScurrenthalftone));
-}
-
-static inline void
-DPScurrenthalftonephase(GSCTXT *ctxt, float *x, float *y)
-{
-  (ctxt->methods->DPScurrenthalftonephase__)
-    (ctxt, @selector(DPScurrenthalftonephase::), x, y);
-}
-
-static inline void
-DPScurrenthsbcolor(GSCTXT *ctxt, float *h, float *s, float *b)
-{
-  (ctxt->methods->DPScurrenthsbcolor___)
-    (ctxt, @selector(DPScurrenthsbcolor:::), h, s, b);
-}
-
-static inline void
-DPScurrentlinecap(GSCTXT *ctxt, int *linecap)
-{
-  (ctxt->methods->DPScurrentlinecap_)
-    (ctxt, @selector(DPScurrentlinecap:), linecap);
-}
-
-static inline void
-DPScurrentlinejoin(GSCTXT *ctxt, int *linejoin)
-{
-  (ctxt->methods->DPScurrentlinejoin_)
-    (ctxt, @selector(DPScurrentlinejoin:), linejoin);
-}
-
-static inline void
-DPScurrentlinewidth(GSCTXT *ctxt, float *width)
-{
-  (ctxt->methods->DPScurrentlinewidth_)
-    (ctxt, @selector(DPScurrentlinewidth:), width);
-}
-
-static inline void
-DPScurrentmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScurrentmatrix)
-    (ctxt, @selector(DPScurrentmatrix));
-}
-
-static inline void
-DPScurrentmiterlimit(GSCTXT *ctxt, float *limit)
-{
-  (ctxt->methods->DPScurrentmiterlimit_)
-    (ctxt, @selector(DPScurrentmiterlimit:), limit);
-}
-
-static inline void
-DPScurrentpoint(GSCTXT *ctxt, float *x, float *y)
-{
-  (ctxt->methods->DPScurrentpoint__)
-    (ctxt, @selector(DPScurrentpoint::), x, y);
-}
-
-static inline void
-DPScurrentrgbcolor(GSCTXT *ctxt, float *r, float *g, float *b)
-{
-  (ctxt->methods->DPScurrentrgbcolor___)
-    (ctxt, @selector(DPScurrentrgbcolor:::), r, g, b);
-}
-
-static inline void
-DPScurrentscreen(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScurrentscreen)
-    (ctxt, @selector(DPScurrentscreen));
-}
-
-static inline void
-DPScurrentstrokeadjust(GSCTXT *ctxt, int *b)
-{
-  (ctxt->methods->DPScurrentstrokeadjust_)
-    (ctxt, @selector(DPScurrentstrokeadjust:), b);
-}
-
-static inline void
-DPScurrenttransfer(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScurrenttransfer)
-    (ctxt, @selector(DPScurrenttransfer));
-}
-
-static inline void
-DPSdefaultmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSdefaultmatrix)
-    (ctxt, @selector(DPSdefaultmatrix));
-}
-
-static inline void
 DPSgrestore(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSgrestore)
     (ctxt, @selector(DPSgrestore));
-}
-
-static inline void
-DPSgrestoreall(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSgrestoreall)
-    (ctxt, @selector(DPSgrestoreall));
 }
 
 static inline void
@@ -1387,28 +740,88 @@ DPSinitgraphics(GSCTXT *ctxt)
 }
 
 static inline void
-DPSinitmatrix(GSCTXT *ctxt)
+DPSsetgstate(GSCTXT *ctxt, int gst)
 {
-  (ctxt->methods->DPSinitmatrix)
-    (ctxt, @selector(DPSinitmatrix));
+  (ctxt->methods->DPSsetgstate_)
+    (ctxt, @selector(DPSsetgstate:), gst);
+}
+
+
+static inline int
+GSDefineGState(GSCTXT *ctxt)
+{
+  return (ctxt->methods->GSDefineGState)
+    (ctxt, @selector(GSDefineGState));
 }
 
 static inline void
-DPSrotate(GSCTXT *ctxt, float angle)
+GSUndefineGState(GSCTXT *ctxt, int gst)
 {
-  (ctxt->methods->DPSrotate_)
-    (ctxt, @selector(DPSrotate:), angle);
+  (ctxt->methods->GSUndefineGState_)
+    (ctxt, @selector(GSUndefineGState:), gst);
 }
 
 static inline void
-DPSscale(GSCTXT *ctxt, float x, float y)
+GSReplaceGState(GSCTXT *ctxt, int gst)
 {
-  (ctxt->methods->DPSscale__)
-    (ctxt, @selector(DPSscale::), x, y);
+  (ctxt->methods->GSReplaceGState_)
+    (ctxt, @selector(GSReplaceGState:), gst);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Gstate operations */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPScurrentflat(GSCTXT *ctxt, float* flatness)
+{
+  (ctxt->methods->DPScurrentflat_)
+    (ctxt, @selector(DPScurrentflat:), flatness);
 }
 
 static inline void
-DPSsetdash(GSCTXT *ctxt, const float pat[], int size, float offset)
+DPScurrentlinecap(GSCTXT *ctxt, int* linecap)
+{
+  (ctxt->methods->DPScurrentlinecap_)
+    (ctxt, @selector(DPScurrentlinecap:), linecap);
+}
+
+static inline void
+DPScurrentlinejoin(GSCTXT *ctxt, int* linejoin)
+{
+  (ctxt->methods->DPScurrentlinejoin_)
+    (ctxt, @selector(DPScurrentlinejoin:), linejoin);
+}
+
+static inline void
+DPScurrentlinewidth(GSCTXT *ctxt, float* width)
+{
+  (ctxt->methods->DPScurrentlinewidth_)
+    (ctxt, @selector(DPScurrentlinewidth:), width);
+}
+
+static inline void
+DPScurrentmiterlimit(GSCTXT *ctxt, float* limit)
+{
+  (ctxt->methods->DPScurrentmiterlimit_)
+    (ctxt, @selector(DPScurrentmiterlimit:), limit);
+}
+
+static inline void
+DPScurrentpoint(GSCTXT *ctxt, float* x, float* y)
+{
+  (ctxt->methods->DPScurrentpoint__)
+    (ctxt, @selector(DPScurrentpoint::), x, y);
+}
+
+static inline void
+DPScurrentstrokeadjust(GSCTXT *ctxt, int* b)
+{
+  (ctxt->methods->DPScurrentstrokeadjust_)
+    (ctxt, @selector(DPScurrentstrokeadjust:), b);
+}
+
+static inline void
+DPSsetdash(GSCTXT *ctxt, const float* pat, int size, float offset)
 {
   (ctxt->methods->DPSsetdash___)
     (ctxt, @selector(DPSsetdash:::), pat, size, offset);
@@ -1422,38 +835,10 @@ DPSsetflat(GSCTXT *ctxt, float flatness)
 }
 
 static inline void
-DPSsetgray(GSCTXT *ctxt, float gray)
-{
-  (ctxt->methods->DPSsetgray_)
-    (ctxt, @selector(DPSsetgray:), gray);
-}
-
-static inline void
-DPSsetgstate(GSCTXT *ctxt, int gst)
-{
-  (ctxt->methods->DPSsetgstate_)
-    (ctxt, @selector(DPSsetgstate:), gst);
-}
-
-static inline void
-DPSsethalftone(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSsethalftone)
-    (ctxt, @selector(DPSsethalftone));
-}
-
-static inline void
 DPSsethalftonephase(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSsethalftonephase__)
     (ctxt, @selector(DPSsethalftonephase::), x, y);
-}
-
-static inline void
-DPSsethsbcolor(GSCTXT *ctxt, float h, float s, float b)
-{
-  (ctxt->methods->DPSsethsbcolor___)
-    (ctxt, @selector(DPSsethsbcolor:::), h, s, b);
 }
 
 static inline void
@@ -1478,31 +863,10 @@ DPSsetlinewidth(GSCTXT *ctxt, float width)
 }
 
 static inline void
-DPSsetmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSsetmatrix)
-    (ctxt, @selector(DPSsetmatrix));
-}
-
-static inline void
 DPSsetmiterlimit(GSCTXT *ctxt, float limit)
 {
   (ctxt->methods->DPSsetmiterlimit_)
     (ctxt, @selector(DPSsetmiterlimit:), limit);
-}
-
-static inline void
-DPSsetrgbcolor(GSCTXT *ctxt, float r, float g, float b)
-{
-  (ctxt->methods->DPSsetrgbcolor___)
-    (ctxt, @selector(DPSsetrgbcolor:::), r, g, b);
-}
-
-static inline void
-DPSsetscreen(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSsetscreen)
-    (ctxt, @selector(DPSsetscreen));
 }
 
 static inline void
@@ -1512,11 +876,36 @@ DPSsetstrokeadjust(GSCTXT *ctxt, int b)
     (ctxt, @selector(DPSsetstrokeadjust:), b);
 }
 
+
+/* ----------------------------------------------------------------------- */
+/* Matrix operations */
+/* ----------------------------------------------------------------------- */
 static inline void
-DPSsettransfer(GSCTXT *ctxt)
+DPSconcat(GSCTXT *ctxt, const float* m)
 {
-  (ctxt->methods->DPSsettransfer)
-    (ctxt, @selector(DPSsettransfer));
+  (ctxt->methods->DPSconcat_)
+    (ctxt, @selector(DPSconcat:), m);
+}
+
+static inline void
+DPSinitmatrix(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSinitmatrix)
+    (ctxt, @selector(DPSinitmatrix));
+}
+
+static inline void
+DPSrotate(GSCTXT *ctxt, float angle)
+{
+  (ctxt->methods->DPSrotate_)
+    (ctxt, @selector(DPSrotate:), angle);
+}
+
+static inline void
+DPSscale(GSCTXT *ctxt, float x, float y)
+{
+  (ctxt->methods->DPSscale__)
+    (ctxt, @selector(DPSscale::), x, y);
 }
 
 static inline void
@@ -1526,370 +915,31 @@ DPStranslate(GSCTXT *ctxt, float x, float y)
     (ctxt, @selector(DPStranslate::), x, y);
 }
 
-/* ----------------------------------------------------------------------- */
-/* I/O Operations operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSflush(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSflush)
-    (ctxt, @selector(DPSflush));
-}
 
-/* ----------------------------------------------------------------------- */
-/* Matrix operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSconcatmatrix(GSCTXT *ctxt)
+static inline NSAffineTransform *
+GSCurrentCTM(GSCTXT *ctxt)
 {
-  (ctxt->methods->DPSconcatmatrix)
-    (ctxt, @selector(DPSconcatmatrix));
+  return (ctxt->methods->GSCurrentCTM)
+    (ctxt, @selector(GSCurrentCTM));
 }
 
 static inline void
-DPSdtransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
+GSSetCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 {
-  (ctxt->methods->DPSdtransform____)
-    (ctxt, @selector(DPSdtransform::::), x1, y1, x2, y2);
+  (ctxt->methods->GSSetCTM_)
+    (ctxt, @selector(GSSetCTM:), ctm);
 }
 
 static inline void
-DPSidentmatrix(GSCTXT *ctxt)
+GSConcatCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
 {
-  (ctxt->methods->DPSidentmatrix)
-    (ctxt, @selector(DPSidentmatrix));
+  (ctxt->methods->GSConcatCTM_)
+    (ctxt, @selector(GSConcatCTM:), ctm);
 }
 
-static inline void
-DPSidtransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-{
-  (ctxt->methods->DPSidtransform____)
-    (ctxt, @selector(DPSidtransform::::), x1, y1, x2, y2);
-}
-
-static inline void
-DPSinvertmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSinvertmatrix)
-    (ctxt, @selector(DPSinvertmatrix));
-}
-
-static inline void
-DPSitransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-{
-  (ctxt->methods->DPSitransform____)
-    (ctxt, @selector(DPSitransform::::), x1, y1, x2, y2);
-}
-
-static inline void
-DPStransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
-{
-  (ctxt->methods->DPStransform____)
-    (ctxt, @selector(DPStransform::::), x1, y1, x2, y2);
-}
-
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSdefineuserobject(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSdefineuserobject)
-    (ctxt, @selector(DPSdefineuserobject));
-}
-
-static inline void
-DPSexecuserobject(GSCTXT *ctxt, int index)
-{
-  (ctxt->methods->DPSexecuserobject_)
-    (ctxt, @selector(DPSexecuserobject), index);
-}
-
-static inline void
-DPSundefineuserobject(GSCTXT *ctxt, int index)
-{
-  (ctxt->methods->DPSundefineuserobject_)
-    (ctxt, @selector(DPSundefineuserobject:), index);
-}
-
-static inline void
-DPSgetboolean(GSCTXT *ctxt, int *it)
-{
-  (ctxt->methods->DPSgetboolean_)
-    (ctxt, @selector(DPSgetboolean:), it);
-}
-
-static inline void
-DPSgetchararray(GSCTXT *ctxt, int size, char s[])
-{
-  (ctxt->methods->DPSgetchararray__)
-    (ctxt, @selector(DPSgetchararray::), size, s);
-}
-
-static inline void
-DPSgetfloat(GSCTXT *ctxt, float *it)
-{
-  (ctxt->methods->DPSgetfloat_)
-    (ctxt, @selector(DPSgetfloat:), it);
-}
-
-static inline void
-DPSgetfloatarray(GSCTXT *ctxt, int size, float a[])
-{
-  (ctxt->methods->DPSgetfloatarray__)
-    (ctxt, @selector(DPSgetfloatarray::), size, a);
-}
-
-static inline void
-DPSgetint(GSCTXT *ctxt, int *it)
-{
-  (ctxt->methods->DPSgetint_)
-    (ctxt, @selector(DPSgetint:), it);
-}
-
-static inline void
-DPSgetintarray(GSCTXT *ctxt, int size, int a[])
-{
-  (ctxt->methods->DPSgetintarray__)
-    (ctxt, @selector(DPSgetintarray::), size, a);
-}
-
-static inline void
-DPSgetstring(GSCTXT *ctxt, char *s)
-{
-  (ctxt->methods->DPSgetstring_)
-    (ctxt, @selector(DPSgetstring:), s);
-}
-
-static inline void
-DPSsendboolean(GSCTXT *ctxt, int it)
-{
-  (ctxt->methods->DPSsendboolean_)
-    (ctxt, @selector(DPSsendboolean:), it);
-}
-
-static inline void
-DPSsendchararray(GSCTXT *ctxt, const char s[], int size)
-{
-  (ctxt->methods->DPSsendchararray__)
-    (ctxt, @selector(DPSsendchararray::), s, size);
-}
-
-static inline void
-DPSsendfloat(GSCTXT *ctxt, float it)
-{
-  (ctxt->methods->DPSsendfloat_)
-    (ctxt, @selector(DPSsendfloat:), it);
-}
-
-static inline void
-DPSsendfloatarray(GSCTXT *ctxt, const float a[], int size)
-{
-  (ctxt->methods->DPSsendfloatarray__)
-    (ctxt, @selector(DPSsendfloatarray::), a, size);
-}
-
-static inline void
-DPSsendint(GSCTXT *ctxt, int it)
-{
-  (ctxt->methods->DPSsendint_)
-    (ctxt, @selector(DPSsendint:), it);
-}
-
-static inline void
-DPSsendintarray(GSCTXT *ctxt, const int a[], int size)
-{
-  (ctxt->methods->DPSsendintarray__)
-    (ctxt, @selector(DPSsendintarray::), a, size);
-}
-
-static inline void
-DPSsendstring(GSCTXT *ctxt, const char *s)
-{
-  (ctxt->methods->DPSsendstring_)
-    (ctxt, @selector(DPSsendstring:), s);
-}
 
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSashow(GSCTXT *ctxt, float x, float y, const char *s)
-{
-  (ctxt->methods->DPSashow___)
-    (ctxt, @selector(DPSashow:::), x, y, s);
-}
-
-static inline void
-DPSawidthshow(GSCTXT *ctxt, float cx, float cy, int c, float ax, float ay, const char *s)
-{
-  (ctxt->methods->DPSawidthshow______)
-    (ctxt, @selector(DPSawidthshow::::::), cx, cy, c, ax, ay, s);
-}
-
-static inline void
-DPScopypage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScopypage)
-    (ctxt, @selector(DPScopypage));
-}
-
-static inline void
-DPSeofill(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSeofill)
-    (ctxt, @selector(DPSeofill));
-}
-
-static inline void
-DPSerasepage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSerasepage)
-    (ctxt, @selector(DPSerasepage));
-}
-
-static inline void
-DPSfill(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSfill)
-    (ctxt, @selector(DPSfill));
-}
-
-static inline void
-DPSimage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSimage)
-    (ctxt, @selector(DPSimage));
-}
-
-static inline void
-DPSimagemask(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSimagemask)
-    (ctxt, @selector(DPSimagemask));
-}
-
-static inline void
-DPScolorimage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPScolorimage)
-    (ctxt, @selector(DPScolorimage));
-}
-
-static inline void
-DPSalphaimage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSalphaimage)
-    (ctxt, @selector(DPSalphaimage));
-}
-
-static inline void
-DPSkshow(GSCTXT *ctxt, const char *s)
-{
-  (ctxt->methods->DPSkshow_)
-    (ctxt, @selector(DPSkshow:), s);
-}
-
-static inline void
-DPSrectfill(GSCTXT *ctxt, float x, float y, float w, float h)
-{
-  (ctxt->methods->DPSrectfill____)
-    (ctxt, @selector(DPSrectfill::::), x, y, w, h);
-}
-
-static inline void
-DPSrectstroke(GSCTXT *ctxt, float x, float y, float w, float h)
-{
-  (ctxt->methods->DPSrectstroke____)
-    (ctxt, @selector(DPSrectstroke::::), x, y, w, h);
-}
-
-static inline void
-DPSshow(GSCTXT *ctxt, const char *s)
-{
-  (ctxt->methods->DPSshow_)
-    (ctxt, @selector(DPSshow:), s);
-}
-
-static inline void
-DPSshowpage(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSshowpage)
-    (ctxt, @selector(DPSshowpage));
-}
-
-static inline void
-DPSstroke(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSstroke)
-    (ctxt, @selector(DPSstroke));
-}
-
-static inline void
-DPSstrokepath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSstrokepath)
-    (ctxt, @selector(DPSstrokepath));
-}
-
-static inline void
-DPSueofill(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-{
-  (ctxt->methods->DPSueofill____)
-    (ctxt, @selector(DPSueofill::::), nums, n, ops, l);
-}
-
-static inline void
-DPSufill(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-{
-  (ctxt->methods->DPSufill____)
-    (ctxt, @selector(DPSufill::::), nums, n, ops, l);
-}
-
-static inline void
-DPSustroke(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-{
-  (ctxt->methods->DPSustroke____)
-    (ctxt, @selector(DPSustroke::::), nums, n, ops, l);
-}
-
-static inline void
-DPSustrokepath(GSCTXT *ctxt, const char nums[], int n, const char ops[], int l)
-{
-  (ctxt->methods->DPSustrokepath____)
-    (ctxt, @selector(DPSustrokepath::::), nums, n, ops, l);
-}
-
-static inline void
-DPSwidthshow(GSCTXT *ctxt, float x, float y, int c, const char *s)
-{
-  (ctxt->methods->DPSwidthshow____)
-    (ctxt, @selector(DPSwidthshow::::), x, y, c, s);
-}
-
-static inline void
-DPSxshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-{
-  (ctxt->methods->DPSxshow___)
-    (ctxt, @selector(DPSxshow:::), s, numarray, size);
-}
-
-static inline void
-DPSxyshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-{
-  (ctxt->methods->DPSxyshow___)
-    (ctxt, @selector(DPSxyshow:::), s, numarray, size);
-}
-
-static inline void
-DPSyshow(GSCTXT *ctxt, const char *s, const float numarray[], int size)
-{
-  (ctxt->methods->DPSyshow___)
-    (ctxt, @selector(DPSyshow:::), s, numarray, size);
-}
-
-/* ----------------------------------------------------------------------- */
-/* Path operations */
 /* ----------------------------------------------------------------------- */
 static inline void
 DPSarc(GSCTXT *ctxt, float x, float y, float r, float angle1, float angle2)
@@ -1913,31 +963,10 @@ DPSarct(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float r)
 }
 
 static inline void
-DPSarcto(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float r, float *xt1, float *yt1, float *xt2, float *yt2)
-{
-  (ctxt->methods->DPSarcto_________)
-    (ctxt, @selector(DPSarcto:::::::::), x1, y1, x2, y2, r, xt1, yt1, xt2, yt2);
-}
-
-static inline void
-DPScharpath(GSCTXT *ctxt, const char *s, int b)
-{
-  (ctxt->methods->DPScharpath__)
-    (ctxt, @selector(DPScharpath::), s, b);
-}
-
-static inline void
 DPSclip(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSclip)
     (ctxt, @selector(DPSclip));
-}
-
-static inline void
-DPSclippath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSclippath)
-    (ctxt, @selector(DPSclippath));
 }
 
 static inline void
@@ -1962,10 +991,17 @@ DPSeoclip(GSCTXT *ctxt)
 }
 
 static inline void
-DPSeoviewclip(GSCTXT *ctxt)
+DPSeofill(GSCTXT *ctxt)
 {
-  (ctxt->methods->DPSeoviewclip)
-    (ctxt, @selector(DPSeoviewclip));
+  (ctxt->methods->DPSeofill)
+    (ctxt, @selector(DPSeofill));
+}
+
+static inline void
+DPSfill(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSfill)
+    (ctxt, @selector(DPSfill));
 }
 
 static inline void
@@ -1980,13 +1016,6 @@ DPSinitclip(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSinitclip)
     (ctxt, @selector(DPSinitclip));
-}
-
-static inline void
-DPSinitviewclip(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSinitviewclip)
-    (ctxt, @selector(DPSinitviewclip));
 }
 
 static inline void
@@ -2011,17 +1040,10 @@ DPSnewpath(GSCTXT *ctxt)
 }
 
 static inline void
-DPSpathbbox(GSCTXT *ctxt, float *llx, float *lly, float *urx, float *ury)
+DPSpathbbox(GSCTXT *ctxt, float* llx, float* lly, float* urx, float* ury)
 {
   (ctxt->methods->DPSpathbbox____)
     (ctxt, @selector(DPSpathbbox::::), llx, lly, urx, ury);
-}
-
-static inline void
-DPSpathforall(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSpathforall)
-    (ctxt, @selector(DPSpathforall));
 }
 
 static inline void
@@ -2039,10 +1061,17 @@ DPSrectclip(GSCTXT *ctxt, float x, float y, float w, float h)
 }
 
 static inline void
-DPSrectviewclip(GSCTXT *ctxt, float x, float y, float w, float h)
+DPSrectfill(GSCTXT *ctxt, float x, float y, float w, float h)
 {
-  (ctxt->methods->DPSrectviewclip____)
-    (ctxt, @selector(DPSrectviewclip::::), x, y, w, h);
+  (ctxt->methods->DPSrectfill____)
+    (ctxt, @selector(DPSrectfill::::), x, y, w, h);
+}
+
+static inline void
+DPSrectstroke(GSCTXT *ctxt, float x, float y, float w, float h)
+{
+  (ctxt->methods->DPSrectstroke____)
+    (ctxt, @selector(DPSrectstroke::::), x, y, w, h);
 }
 
 static inline void
@@ -2067,62 +1096,50 @@ DPSrmoveto(GSCTXT *ctxt, float x, float y)
 }
 
 static inline void
-DPSsetbbox(GSCTXT *ctxt, float llx, float lly, float urx, float ury)
+DPSstroke(GSCTXT *ctxt)
 {
-  (ctxt->methods->DPSsetbbox____)
-    (ctxt, @selector(DPSsetbbox::::), llx, lly, urx, ury);
+  (ctxt->methods->DPSstroke)
+    (ctxt, @selector(DPSstroke));
+}
+
+
+static inline void
+GSSendBezierPath(GSCTXT *ctxt, NSBezierPath * path)
+{
+  (ctxt->methods->GSSendBezierPath_)
+    (ctxt, @selector(GSSendBezierPath:), path);
 }
 
 static inline void
-DPSviewclip(GSCTXT *ctxt)
+GSRectClipList(GSCTXT *ctxt, const NSRect * rects, int count)
 {
-  (ctxt->methods->DPSviewclip)
-    (ctxt, @selector(DPSviewclip));
+  (ctxt->methods->GSRectClipList__)
+    (ctxt, @selector(GSRectClipList::), rects, count);
 }
 
 static inline void
-DPSviewclippath(GSCTXT *ctxt)
+GSRectFillList(GSCTXT *ctxt, const NSRect * rects, int count)
 {
-  (ctxt->methods->DPSviewclippath)
-    (ctxt, @selector(DPSviewclippath));
+  (ctxt->methods->GSRectFillList__)
+    (ctxt, @selector(GSRectFillList::), rects, count);
 }
+
 
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentdrawingfunction(GSCTXT *ctxt, int *function)
-{
-  (ctxt->methods->DPScurrentdrawingfunction_)
-    (ctxt, @selector(DPScurrentdrawingfunction:), function);
-}
-
-static inline void
-DPScurrentgcdrawable(GSCTXT *ctxt, void* *gc, void* *draw, int *x, int *y)
+DPScurrentgcdrawable(GSCTXT *ctxt, void** gc, void** draw, int* x, int* y)
 {
   (ctxt->methods->DPScurrentgcdrawable____)
     (ctxt, @selector(DPScurrentgcdrawable::::), gc, draw, x, y);
 }
 
 static inline void
-DPScurrentgcdrawablecolor(GSCTXT *ctxt, void* *gc, void* *draw, int *x, int *y, int colorInfo[])
-{
-  (ctxt->methods->DPScurrentgcdrawablecolor_____)
-    (ctxt, @selector(DPScurrentgcdrawablecolor:::::), gc, draw, x, y, colorInfo);
-}
-
-static inline void
-DPScurrentoffset(GSCTXT *ctxt, int *x, int *y)
+DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
 {
   (ctxt->methods->DPScurrentoffset__)
     (ctxt, @selector(DPScurrentoffset::), x, y);
-}
-
-static inline void
-DPSsetdrawingfunction(GSCTXT *ctxt, int function)
-{
-  (ctxt->methods->DPSsetdrawingfunction_)
-    (ctxt, @selector(DPSsetdrawingfunction:), function);
 }
 
 static inline void
@@ -2133,493 +1150,51 @@ DPSsetgcdrawable(GSCTXT *ctxt, void* gc, void* draw, int x, int y)
 }
 
 static inline void
-DPSsetgcdrawablecolor(GSCTXT *ctxt, void* gc, void* draw, int x, int y, const int colorInfo[])
-{
-  (ctxt->methods->DPSsetgcdrawablecolor_____)
-    (ctxt, @selector(DPSsetgcdrawablecolor:::::), gc, draw, x, y, colorInfo);
-}
-
-static inline void
 DPSsetoffset(GSCTXT *ctxt, short int x, short int y)
 {
   (ctxt->methods->DPSsetoffset__)
     (ctxt, @selector(DPSsetoffset::), x, y);
 }
 
-static inline void
-DPSsetrgbactual(GSCTXT *ctxt, double r, double g, double b, int *success)
-{
-  (ctxt->methods->DPSsetrgbactual____)
-    (ctxt, @selector(DPSsetrgbactual::::), r, g, b, success);
-}
-
-static inline void
-DPScapturegstate(GSCTXT *ctxt, int *gst)
-{
-  (ctxt->methods->DPScapturegstate_)
-    (ctxt, @selector(DPScapturegstate:), gst);
-}
 
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-static inline void 
+static inline void
 DPScomposite(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
 {
   (ctxt->methods->DPScomposite________)
     (ctxt, @selector(DPScomposite::::::::), x, y, w, h, gstateNum, dx, dy, op);
 }
 
-static inline void 
+static inline void
 DPScompositerect(GSCTXT *ctxt, float x, float y, float w, float h, int op)
 {
   (ctxt->methods->DPScompositerect_____)
     (ctxt, @selector(DPScompositerect:::::), x, y, w, h, op);
 }
 
-static inline void 
+static inline void
 DPSdissolve(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
 {
   (ctxt->methods->DPSdissolve________)
     (ctxt, @selector(DPSdissolve::::::::), x, y, w, h, gstateNum, dx, dy, delta);
 }
 
-static inline void 
-DPSreadimage(GSCTXT *ctxt)
+
+static inline void
+GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
 {
-  (ctxt->methods->DPSreadimage)
-    (ctxt, @selector(DPSreadimage));
+  (ctxt->methods->GSDrawImage__)
+    (ctxt, @selector(GSDrawImage::), rect, imageref);
 }
 
-static inline void 
-DPSsetalpha(GSCTXT *ctxt, float a)
-{
-  (ctxt->methods->DPSsetalpha_)
-    (ctxt, @selector(DPSsetalpha:), a);
-}
-
-static inline void 
-DPScurrentalpha(GSCTXT *ctxt, float *a)
-{
-  (ctxt->methods->DPScurrentalpha_)
-    (ctxt, @selector(DPScurrentalpha:), a);
-}
 
 /* ----------------------------------------------------------------------- */
-/* System ops */
+/* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSrestore(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSrestore)
-    (ctxt, @selector(DPSrestore));
-}
-
-static inline void
-DPSsave(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSsave)
-    (ctxt, @selector(DPSsave));
-}
-
-/* ----------------------------------------------------------------------- */
-/* Window ops extensions */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSwindow(GSCTXT *ctxt, float x, float y, float w, float h, int type, int * num)
-{
-  (ctxt->methods->DPSwindow______)
-    (ctxt, @selector(DPSwindow::::::), x, y, w, h, type, num);
-}
-
-static inline void
-DPStermwindow(GSCTXT *ctxt, int num)
-{
-  (ctxt->methods->DPStermwindow_)
-    (ctxt, @selector(DPStermwindow:), num);
-}
-
-static inline void
-DPSstylewindow(GSCTXT *ctxt, int style, int num)
-{
-  (ctxt->methods->DPSstylewindow__)
-    (ctxt, @selector(DPSstylewindow::), style, num);
-}
-
-static inline void
-DPStitlewindow(GSCTXT *ctxt, const char * window_title, int num)
-{
-  (ctxt->methods->DPStitlewindow__)
-    (ctxt, @selector(DPStitlewindow::), window_title, num);
-}
-
-static inline void
-DPSminiwindow(GSCTXT *ctxt, int num)
-{
-  (ctxt->methods->DPSminiwindow_)
-    (ctxt, @selector(DPSminiwindow:), num);
-}
-
-static inline void
-DPSwindowdevice(GSCTXT *ctxt, int num)
-{
-  (ctxt->methods->DPSwindowdevice_)
-    (ctxt, @selector(DPSwindowdevice:), num);
-}
-
-static inline void
-DPSwindowdeviceround(GSCTXT *ctxt, int num)
-{
-  (ctxt->methods->DPSwindowdeviceround_)
-    (ctxt, @selector(DPSwindowdeviceround:), num);
-}
-
-static inline void
-DPScurrentwindow(GSCTXT *ctxt, int * num)
-{
-  (ctxt->methods->DPScurrentwindow_)
-    (ctxt, @selector(DPScurrentwindow:), num);
-}
-
-static inline void
-DPSorderwindow(GSCTXT *ctxt, int op, int otherWin, int winNum)
-{
-  (ctxt->methods->DPSorderwindow___)
-    (ctxt, @selector(DPSorderwindow:::), op, otherWin, winNum);
-}
-
-static inline void
-DPSmovewindow(GSCTXT *ctxt, float x, float y, int num)
-{
-  (ctxt->methods->DPSmovewindow___)
-    (ctxt, @selector(DPSmovewindow:::), x, y, num);
-}
-
-static inline void
-DPSupdatewindow(GSCTXT *ctxt, int win)
-{
-  (ctxt->methods->DPSupdatewindow_)
-    (ctxt, @selector(DPSupdatewindow:), win);
-}
-
-static inline void
-DPSplacewindow(GSCTXT *ctxt, float x, float y, float w, float h, int win)
-{
-  (ctxt->methods->DPSplacewindow_____)
-    (ctxt, @selector(DPSplacewindow:::::), x, y, w, h, win);
-}
-
-static inline void
-DPSfrontwindow(GSCTXT *ctxt, int * num)
-{
-  (ctxt->methods->DPSfrontwindow_)
-    (ctxt, @selector(DPSfrontwindow:), num);
-}
-
-static inline void
-DPSfindwindow(GSCTXT *ctxt, float x, float y, int op, int otherWin, float * lx, float * ly, int * winFound, int * didFind)
-{
-  (ctxt->methods->DPSfindwindow________)
-    (ctxt, @selector(DPSfindwindow::::::::), x, y, op, otherWin, lx, ly, winFound, didFind);
-}
-
-static inline void
-DPScurrentwindowbounds(GSCTXT *ctxt, int num, float * x, float * y, float * w, float * h)
-{
-  (ctxt->methods->DPScurrentwindowbounds_____)
-    (ctxt, @selector(DPScurrentwindowbounds:::::), num, x, y, w, h);
-}
-
-static inline void
-DPSsetexposurecolor(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSsetexposurecolor)
-    (ctxt, @selector(DPSsetexposurecolor));
-}
-
-static inline void
-DPSsetsendexposed(GSCTXT *ctxt, int truth, int num)
-{
-  (ctxt->methods->DPSsetsendexposed__)
-    (ctxt, @selector(DPSsetsendexposed::), truth, num);
-}
-
-static inline void
-DPSsetautofill(GSCTXT *ctxt, int truth, int num)
-{
-  (ctxt->methods->DPSsetautofill__)
-    (ctxt, @selector(DPSsetautofill::), truth, num);
-}
-
-static inline void
-DPScurrentwindowalpha(GSCTXT *ctxt, int win, int * alpha)
-{
-  (ctxt->methods->DPScurrentwindowalpha__)
-    (ctxt, @selector(DPScurrentwindowalpha::), win, alpha);
-}
-
-static inline void
-DPScountscreenlist(GSCTXT *ctxt, int context, int * count)
-{
-  (ctxt->methods->DPScountscreenlist__)
-    (ctxt, @selector(DPScountscreenlist::), context, count);
-}
-
-static inline void
-DPSscreenlist(GSCTXT *ctxt, int context, int count, int * windows)
-{
-  (ctxt->methods->DPSscreenlist___)
-    (ctxt, @selector(DPSscreenlist:::), context, count, windows);
-}
-
-static inline void
-DPSsetowner(GSCTXT *ctxt, int owner, int win)
-{
-  (ctxt->methods->DPSsetowner__)
-    (ctxt, @selector(DPSsetowner::), owner, win);
-}
-
-static inline void
-DPScurrentowner(GSCTXT *ctxt, int win, int * owner)
-{
-  (ctxt->methods->DPScurrentowner__)
-    (ctxt, @selector(DPScurrentowner::), win, owner);
-}
-
-static inline void
-DPSsetwindowtype(GSCTXT *ctxt, int type, int win)
-{
-  (ctxt->methods->DPSsetwindowtype__)
-    (ctxt, @selector(DPSsetwindowtype::), type, win);
-}
-
-static inline void
-DPSsetwindowlevel(GSCTXT *ctxt, int level, int win)
-{
-  (ctxt->methods->DPSsetwindowlevel__)
-    (ctxt, @selector(DPSsetwindowlevel::), level, win);
-}
-
-static inline void
-DPScurrentwindowlevel(GSCTXT *ctxt, int win, int * level)
-{
-  (ctxt->methods->DPScurrentwindowlevel__)
-    (ctxt, @selector(DPScurrentwindowlevel::), win, level);
-}
-
-static inline void
-DPScountwindowlist(GSCTXT *ctxt, int context, int * count)
-{
-  (ctxt->methods->DPScountwindowlist__)
-    (ctxt, @selector(DPScountwindowlist::), context, count);
-}
-
-static inline void
-DPSwindowlist(GSCTXT *ctxt, int context, int count, int * windows)
-{
-  (ctxt->methods->DPSwindowlist___)
-    (ctxt, @selector(DPSwindowlist:::), context, count, windows);
-}
-
-static inline void
-DPSsetwindowdepthlimit(GSCTXT *ctxt, int limit, int win)
-{
-  (ctxt->methods->DPSsetwindowdepthlimit__)
-    (ctxt, @selector(DPSsetwindowdepthlimit::), limit, win);
-}
-
-static inline void
-DPScurrentwindowdepthlimit(GSCTXT *ctxt, int win, int * limit)
-{
-  (ctxt->methods->DPScurrentwindowdepthlimit__)
-    (ctxt, @selector(DPScurrentwindowdepthlimit::), win, limit);
-}
-
-static inline void
-DPScurrentwindowdepth(GSCTXT *ctxt, int win, int * depth)
-{
-  (ctxt->methods->DPScurrentwindowdepth__)
-    (ctxt, @selector(DPScurrentwindowdepth::), win, depth);
-}
-
-static inline void
-DPSsetdefaultdepthlimit(GSCTXT *ctxt, int limit)
-{
-  (ctxt->methods->DPSsetdefaultdepthlimit_)
-    (ctxt, @selector(DPSsetdefaultdepthlimit:), limit);
-}
-
-static inline void
-DPScurrentdefaultdepthlimit(GSCTXT *ctxt, int * limit)
-{
-  (ctxt->methods->DPScurrentdefaultdepthlimit_)
-    (ctxt, @selector(DPScurrentdefaultdepthlimit:), limit);
-}
-
-static inline void
-DPSsetmaxsize(GSCTXT *ctxt, float width, float height, int win)
-{
-  (ctxt->methods->DPSsetmaxsize___)
-    (ctxt, @selector(DPSsetmaxsize:::), width, height, win);
-}
-
-static inline void
-DPSsetminsize(GSCTXT *ctxt, float width, float height, int win)
-{
-  (ctxt->methods->DPSsetminsize___)
-    (ctxt, @selector(DPSsetminsize:::), width, height, win);
-}
-
-static inline void
-DPSsetresizeincrements(GSCTXT *ctxt, float width, float height, int win)
-{
-  (ctxt->methods->DPSsetresizeincrements___)
-    (ctxt, @selector(DPSsetresizeincrements:::), width, height, win);
-}
-
-static inline void
-DPSflushwindowrect(GSCTXT *ctxt, float x, float y, float w, float h, int win)
-{
-  (ctxt->methods->DPSflushwindowrect_____)
-    (ctxt, @selector(DPSflushwindowrect:::::), x, y, w, h, win);
-}
-
-static inline void
-DPScapturemouse(GSCTXT *ctxt, int win)
-{
-  (ctxt->methods->DPScapturemouse_)
-    (ctxt, @selector(DPScapturemouse:), win);
-}
-
-static inline void
-DPSreleasemouse(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSreleasemouse)
-    (ctxt, @selector(DPSreleasemouse));
-}
-
-static inline void
-DPSsetinputfocus(GSCTXT *ctxt, int win)
-{
-  (ctxt->methods->DPSsetinputfocus_)
-    (ctxt, @selector(DPSsetinputfocus:), win);
-}
-
-static inline void
-DPShidecursor(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPShidecursor)
-    (ctxt, @selector(DPShidecursor));
-}
-
-static inline void
-DPSshowcursor(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSshowcursor)
-    (ctxt, @selector(DPSshowcursor));
-}
-
-static inline void
-DPSstandardcursor(GSCTXT *ctxt, int style, void ** cid)
-{
-  (ctxt->methods->DPSstandardcursor__)
-    (ctxt, @selector(DPSstandardcursor::), style, cid);
-}
-
-static inline void
-DPSimagecursor(GSCTXT *ctxt, float hotx, float hoty, float w, float h, int colors, const char * image, void ** cid)
-{
-  (ctxt->methods->DPSimagecursor_______)
-    (ctxt, @selector(DPSimagecursor:::::::), hotx, hoty, w, h, colors, image, cid);
-}
-
-static inline void
-DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg, float bb, void * cid)
-{
-  (ctxt->methods->DPSsetcursorcolor_______)
-    (ctxt, @selector(DPSsetcursorcolor:::::::), fr, fg, fb, br, bg, bb, cid);
-}
-
-static inline void
-DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
-{
-  (ctxt->methods->DPSstyleoffsets_____)
-    (ctxt, @selector(DPSstyleoffsets:::::), l, r, t, b, style);
-}
-
-static inline void
-DPSdocedited(GSCTXT *ctxt, int edited, int window)
-{
-  (ctxt->methods->DPSdocedited__)
-    (ctxt, @selector(DPSdocedited::), edited, window);
-}
-
-/* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-static inline NSEvent*
-DPSGetEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
-{
-  return (ctxt->methods->DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
-    (ctxt, @selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:),
-    mask, limit, mode, YES);
-}
-
-static inline NSEvent*
-DPSPeekEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
-{
-  return (ctxt->methods->DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
-    (ctxt, @selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:),
-    mask, limit, mode, NO);
-}
-
-static inline void
-DPSDiscardEvents(GSCTXT *ctxt, unsigned mask, NSEvent* limit)
-{
-  (ctxt->methods->DPSDiscardEventsMatchingMask_beforeEvent_)
-    (ctxt, @selector(DPSDiscardEventsMatchingMask:beforeEvent:), mask, limit);
-}
-
-static inline void
-DPSPostEvent(GSCTXT *ctxt, NSEvent* anEvent, BOOL atStart)
-{
-  (ctxt->methods->DPSPostEvent_atStart_)
-    (ctxt, @selector(DPSPostEvent:atStart:), anEvent, atStart);
-}
-
-static inline void
-DPSmouselocation(GSCTXT *ctxt, float *x, float *y)
-{
-  (ctxt->methods->DPSmouselocation__)
-    (ctxt, @selector(DPSmouselocation::), x, y);
-}
-
-static inline void
-DPSsetinputstate(GSCTXT *ctxt, int window, int state)
-{
-  (ctxt->methods->DPSsetinputstate__)
-    (ctxt, @selector(DPSsetinputstate::), window, state);
-}
-
-static inline void
-DPScurrentserverdevice(GSCTXT *ctxt, void **serverptr)
-{
-  (ctxt->methods->DPScurrentserverdevice_)
-    (ctxt, @selector(DPScurrentserverdevice:), serverptr);
-}
-
-static inline void
-DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
-{
-  (ctxt->methods->DPScurrentwindowdevice__)
-    (ctxt, @selector(DPScurrentwindowdevice::), win, windowptr);
-}
-
-/* ----------------------------------------------------------------------- */
-/* Client functions */
-/* ----------------------------------------------------------------------- */
-static inline void
-DPSPrintf(GSCTXT *ctxt, char *fmt, ...)
+DPSPrintf(GSCTXT *ctxt, char * fmt, ...)
 {
   va_list ap;
 
@@ -2631,7 +1206,7 @@ DPSPrintf(GSCTXT *ctxt, char *fmt, ...)
 }
 
 static inline void
-DPSWriteData(GSCTXT *ctxt,  char *buf, unsigned int count)
+DPSWriteData(GSCTXT *ctxt, char * buf, unsigned int count)
 {
   (ctxt->methods->DPSWriteData__)
     (ctxt, @selector(DPSWriteData::), buf, count);

@@ -105,61 +105,14 @@ APPKIT_DECLARE BOOL NSPlanarFromDepth(NSWindowDepth depth);
 APPKIT_DECLARE void NSCountWindows(int *count);
 APPKIT_DECLARE void NSWindowList(int size, int list[]);
 
-static inline void
-NSEraseRect(NSRect aRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSEraseRect_)
-    (ctxt, @selector(NSEraseRect:), aRect);
-}
-
-static inline void 
-NSHighlightRect(NSRect aRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSHighlightRect_)
-    (ctxt, @selector(NSHighlightRect:), aRect);
-}
-
-static inline void
-NSRectClip(NSRect aRect)      
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectClip_)
-    (ctxt, @selector(NSRectClip:), aRect);
-}
-
-static inline void
-NSRectClipList(const NSRect *rects, int count)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectClipList__)
-    (ctxt, @selector(NSRectClipList::), rects, count);
-}
-
-static inline void
-NSRectFill(NSRect aRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectFill_)
-    (ctxt, @selector(NSRectFill:), aRect);
-}
-
-static inline void
-NSRectFillList(const NSRect *rects, int count)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectFillList__)
-    (ctxt, @selector(NSRectFillList::), rects, count);
-}
-
-static inline void
-NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count) 
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectFillListWithGrays___)
-    (ctxt, @selector(NSRectFillListWithGrays:::), rects, grays, count);
-}
+APPKIT_EXPORT void NSEraseRect(NSRect aRect);
+APPKIT_EXPORT void NSHighlightRect(NSRect aRect);
+APPKIT_EXPORT void NSRectClip(NSRect aRect);
+APPKIT_EXPORT void NSRectClipList(const NSRect *rects, int count);
+APPKIT_EXPORT void NSRectFill(NSRect aRect);
+APPKIT_EXPORT void NSRectFillList(const NSRect *rects, int count);
+APPKIT_EXPORT void NSRectFillListWithGrays(const NSRect *rects,
+					   const float *grays,int count);
 
 APPKIT_DECLARE NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
 			const NSRectEdge * sides, 
@@ -178,30 +131,9 @@ NSDrawBezel(const NSRect aRect, const NSRect clipRect)
   NSDrawGrayBezel(aRect, clipRect);
 }
 
-static inline void
-NSDottedFrameRect(NSRect aRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDottedFrameRect_)
-    (ctxt, @selector(NSDottedFrameRect:), aRect);
-}
-
-static inline void
-NSFrameRect(const NSRect aRect)  
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSFrameRect_)
-    (ctxt, @selector(NSFrameRect:), aRect);
-}
-
-static inline void
-NSFrameRectWithWidth(const NSRect aRect, float frameWidth)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSFrameRectWithWidth__)
-    (ctxt, @selector(NSFrameRectWithWidth::), aRect, frameWidth);
-}
-
+APPKIT_EXPORT void NSDottedFrameRect(NSRect aRect);
+APPKIT_EXPORT void NSFrameRect(const NSRect aRect); 
+APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 
 static inline NSColor*
 NSReadPixel(NSPoint location)
@@ -211,21 +143,10 @@ NSReadPixel(NSPoint location)
     (ctxt, @selector(NSReadPixel:), location);
 }
 
-static inline void
-NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSCopyBitmapFromGState___)
-    (ctxt, @selector(NSCopyBitmapFromGState:::), srcGstate, srcRect, destRect);
-}
-
-static inline void
-NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSCopyBits___)
-    (ctxt, @selector(NSCopyBits:::), srcGstate, srcRect, destPoint);
-}
+APPKIT_EXPORT void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, 
+					  NSRect destRect);
+APPKIT_EXPORT void NSCopyBits(int srcGstate, NSRect srcRect, 
+			      NSPoint destPoint);
 
 static inline void 
 NSDrawBitmap(NSRect rect,
@@ -263,13 +184,6 @@ NSBeep(void)
     (ctxt, @selector(NSBeep));
 }
 
-static inline unsigned int 
-GSWDefineAsUserObj(NSGraphicsContext *ctxt)
-{
-  return (ctxt->methods->GSWDefineAsUserObj)
-    (ctxt, @selector(GSWDefineAsUserObj));
-}
-
 static inline void
 GSWSetViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
 {
@@ -282,27 +196,6 @@ GSWViewIsFlipped(NSGraphicsContext *ctxt)
 {
   return (ctxt->methods->GSWViewIsFlipped)
     (ctxt, @selector(GSWViewIsFlipped));
-}
-
-static inline NSWindowDepth
-GSWindowDepthForScreen(NSGraphicsContext *ctxt, int screen_num)
-{
-  return (ctxt->methods->GSWindowDepthForScreen_)
-    (ctxt, @selector(GSWindowDepthForScreen:), screen_num);
-}
-
-static inline const NSWindowDepth*
-GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
-{
-  return (ctxt->methods->GSAvailableDepthsForScreen_)
-    (ctxt, @selector(GSAvailableDepthsForScreen:), screen_num);
-}
-
-static inline NSSize
-GSResolutionForScreen(NSGraphicsContext *ctxt, int screen_num)
-{
-  return (ctxt->methods->GSResolutionForScreen_)
-    (ctxt, @selector(GSResolutionForScreen:), screen_num);
 }
 
 #ifndef	NO_GNUSTEP
@@ -328,17 +221,12 @@ APPKIT_DECLARE void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
 APPKIT_DECLARE void NSRectFillListWithColors(const NSRect *rects, 
 					     NSColor **colors, int count);
 
-static inline void
-NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op) 
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSRectFillUsingOperation__)
-    (ctxt, @selector(NSRectFillUsingOperation::), aRect, op);
-}
-
-APPKIT_DECLARE void NSRectFillListUsingOperation(const NSRect *rects, int count, 
+APPKIT_DECLARE void NSRectFillUsingOperation(NSRect aRect, 
+					     NSCompositingOperation op);
+APPKIT_DECLARE void NSRectFillListUsingOperation(const NSRect *rects, 
+						 int count, 
 						 NSCompositingOperation op);
-APPKIT_DECLARE void NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
+APPKIT_DECLARE void NSRectFillListWithColorsUsingOperation(const NSRect *rects,
 							   NSColor **colors, 
 							   int num, 
 							   NSCompositingOperation op);

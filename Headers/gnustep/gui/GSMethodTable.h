@@ -25,7 +25,11 @@
 #define _GSMethodTable_h_INCLUDE
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
+#include <AppKit/NSFont.h>
 
+@class NSAffineTransform;
+@class NSBezierPath;
 @class NSDate;
 @class NSEvent;
 @class NSGraphicsContext;
@@ -37,367 +41,223 @@ typedef struct {
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
+  void (*DPScurrentalpha_)
+        (NSGraphicsContext*, SEL, float*);
   void (*DPScurrentcmykcolor____)
-	(NSGraphicsContext*, SEL, float*, float*, float*, float*);
+        (NSGraphicsContext*, SEL, float*, float*, float*, float*);
+  void (*DPScurrentgray_)
+        (NSGraphicsContext*, SEL, float*);
+  void (*DPScurrenthsbcolor___)
+        (NSGraphicsContext*, SEL, float*, float*, float*);
+  void (*DPScurrentrgbcolor___)
+        (NSGraphicsContext*, SEL, float*, float*, float*);
+  void (*DPSsetalpha_)
+        (NSGraphicsContext*, SEL, float);
   void (*DPSsetcmykcolor____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float);
+  void (*DPSsetgray_)
+        (NSGraphicsContext*, SEL, float);
+  void (*DPSsethsbcolor___)
+        (NSGraphicsContext*, SEL, float, float, float);
+  void (*DPSsetrgbcolor___)
+        (NSGraphicsContext*, SEL, float, float, float);
+
+  void (*GSSetFillColorspace_)
+        (NSGraphicsContext*, SEL, NSDictionary *);
+  void (*GSSetStrokeColorspace_)
+        (NSGraphicsContext*, SEL, NSDictionary *);
+  void (*GSSetFillColor_)
+        (NSGraphicsContext*, SEL, float *);
+  void (*GSSetStrokeColor_)
+        (NSGraphicsContext*, SEL, float *);
+
 /* ----------------------------------------------------------------------- */
-/* Data operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
-  void (*DPSclear)
-	(NSGraphicsContext*, SEL);
-  void (*DPScleartomark)
-	(NSGraphicsContext*, SEL);
-  void (*DPScopy_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPScount_)
-	(NSGraphicsContext*, SEL, int*);
-  void (*DPScounttomark_)
-	(NSGraphicsContext*, SEL, int*);
-  void (*DPSdup)
-	(NSGraphicsContext*, SEL);
-  void (*DPSexch)
-	(NSGraphicsContext*, SEL);
-  void (*DPSexecstack)
-	(NSGraphicsContext*, SEL);
-  void (*DPSget)
-	(NSGraphicsContext*, SEL);
-  void (*DPSindex_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSmark)
-	(NSGraphicsContext*, SEL);
-  void (*DPSmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSnull)
-	(NSGraphicsContext*, SEL);
-  void (*DPSpop)
-	(NSGraphicsContext*, SEL);
-  void (*DPSput)
-	(NSGraphicsContext*, SEL);
-  void (*DPSroll__)
-	(NSGraphicsContext*, SEL, int, int);
+  void (*DPSashow___)
+        (NSGraphicsContext*, SEL, float, float, const char*);
+  void (*DPSawidthshow______)
+        (NSGraphicsContext*, SEL, float, float, int, float, float, const char*);
+  void (*DPScharpath__)
+        (NSGraphicsContext*, SEL, const char*, int);
+  void (*DPSshow_)
+        (NSGraphicsContext*, SEL, const char*);
+  void (*DPSwidthshow____)
+        (NSGraphicsContext*, SEL, float, float, int, const char*);
+  void (*DPSxshow___)
+        (NSGraphicsContext*, SEL, const char*, const float*, int);
+  void (*DPSxyshow___)
+        (NSGraphicsContext*, SEL, const char*, const float*, int);
+  void (*DPSyshow___)
+        (NSGraphicsContext*, SEL, const char*, const float*, int);
+
+  void (*GSSetCharacterSpacing_)
+        (NSGraphicsContext*, SEL, float);
+  void (*GSSetFont_)
+        (NSGraphicsContext*, SEL, NSFont*);
+  void (*GSSetFontSize_)
+        (NSGraphicsContext*, SEL, float);
+  NSAffineTransform * (*GSGetTextCTM)
+        (NSGraphicsContext*, SEL);
+  NSPoint (*GSGetTextPosition)
+        (NSGraphicsContext*, SEL);
+  void (*GSSetTextCTM_)
+        (NSGraphicsContext*, SEL, NSAffineTransform *);
+  void (*GSSetTextDrawingMode_)
+        (NSGraphicsContext*, SEL, GSTextDrawingMode);
+  void (*GSSetTextPosition_)
+        (NSGraphicsContext*, SEL, NSPoint);
+  void (*GSShowText__)
+        (NSGraphicsContext*, SEL, const char *, size_t);
+  void (*GSShowGlyphs__)
+        (NSGraphicsContext*, SEL, const NSGlyph *, size_t);
+
 /* ----------------------------------------------------------------------- */
-/* Font operations */
+/* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-  void (*DPSFontDirectory)
-	(NSGraphicsContext*, SEL);
-  void (*DPSISOLatin1Encoding)
-	(NSGraphicsContext*, SEL);
-  void (*DPSSharedFontDirectory)
-	(NSGraphicsContext*, SEL);
-  void (*DPSStandardEncoding)
-	(NSGraphicsContext*, SEL);
-  void (*DPScurrentcacheparams)
-	(NSGraphicsContext*, SEL);
-  void (*DPScurrentfont)
-	(NSGraphicsContext*, SEL);
-  void (*DPSdefinefont)
-	(NSGraphicsContext*, SEL);
-  void (*DPSfindfont_)
-	(NSGraphicsContext*, SEL, const char*);
-  void (*DPSmakefont)
-	(NSGraphicsContext*, SEL);
-  void (*DPSscalefont_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSselectfont__)
-	(NSGraphicsContext*, SEL, const char*, float);
-  void (*DPSsetfont_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSundefinefont_)
-	(NSGraphicsContext*, SEL, const char*);
+  void (*DPScurrentgstate_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSgrestore)
+        (NSGraphicsContext*, SEL);
+  void (*DPSgsave)
+        (NSGraphicsContext*, SEL);
+  void (*DPSgstate)
+        (NSGraphicsContext*, SEL);
+  void (*DPSinitgraphics)
+        (NSGraphicsContext*, SEL);
+  void (*DPSsetgstate_)
+        (NSGraphicsContext*, SEL, int);
+
+  int (*GSDefineGState)
+        (NSGraphicsContext*, SEL);
+  void (*GSUndefineGState_)
+        (NSGraphicsContext*, SEL, int);
+  void (*GSReplaceGState_)
+        (NSGraphicsContext*, SEL, int);
+
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
-  void (*DPSconcat_)
-	(NSGraphicsContext*, SEL, const float *);
-  void (*DPScurrentdash)
-	(NSGraphicsContext*, SEL);
   void (*DPScurrentflat_)
-	(NSGraphicsContext*, SEL, float*);
-  void (*DPScurrentgray_)
-	(NSGraphicsContext*, SEL, float*);
-  void (*DPScurrentgstate_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPScurrenthalftone)
-	(NSGraphicsContext*, SEL);
-  void (*DPScurrenthalftonephase__)
-	(NSGraphicsContext*, SEL, float*, float*);
-  void (*DPScurrenthsbcolor___)
-	(NSGraphicsContext*, SEL, float*, float*, float*);
+        (NSGraphicsContext*, SEL, float*);
   void (*DPScurrentlinecap_)
-	(NSGraphicsContext*, SEL, int*);
+        (NSGraphicsContext*, SEL, int*);
   void (*DPScurrentlinejoin_)
-	(NSGraphicsContext*, SEL, int*);
+        (NSGraphicsContext*, SEL, int*);
   void (*DPScurrentlinewidth_)
-	(NSGraphicsContext*, SEL, float*);
-  void (*DPScurrentmatrix)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float*);
   void (*DPScurrentmiterlimit_)
-	(NSGraphicsContext*, SEL, float*);
+        (NSGraphicsContext*, SEL, float*);
   void (*DPScurrentpoint__)
-	(NSGraphicsContext*, SEL, float*, float*);
-  void (*DPScurrentrgbcolor___)
-	(NSGraphicsContext*, SEL, float*, float*, float*);
-  void (*DPScurrentscreen)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float*, float*);
   void (*DPScurrentstrokeadjust_)
-	(NSGraphicsContext*, SEL, int*);
-  void (*DPScurrenttransfer)
-	(NSGraphicsContext*, SEL);
-  void (*DPSdefaultmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSgrestore)
-	(NSGraphicsContext*, SEL);
-  void (*DPSgrestoreall)
-	(NSGraphicsContext*, SEL);
-  void (*DPSgsave)
-	(NSGraphicsContext*, SEL);
-  void (*DPSgstate)
-	(NSGraphicsContext*, SEL);
-  void (*DPSinitgraphics)
-	(NSGraphicsContext*, SEL);
-  void (*DPSinitmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSrotate_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSscale__)
-	(NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, int*);
   void (*DPSsetdash___)
-	(NSGraphicsContext*, SEL, const float*, int, float);
+        (NSGraphicsContext*, SEL, const float*, int, float);
   void (*DPSsetflat_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSsetgray_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSsetgstate_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSsethalftone)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float);
   void (*DPSsethalftonephase__)
-	(NSGraphicsContext*, SEL, float, float);
-  void (*DPSsethsbcolor___)
-	(NSGraphicsContext*, SEL, float, float, float);
+        (NSGraphicsContext*, SEL, float, float);
   void (*DPSsetlinecap_)
-	(NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, int);
   void (*DPSsetlinejoin_)
-	(NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, int);
   void (*DPSsetlinewidth_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSsetmatrix)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float);
   void (*DPSsetmiterlimit_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSsetrgbcolor___)
-	(NSGraphicsContext*, SEL, float, float, float);
-  void (*DPSsetscreen)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float);
   void (*DPSsetstrokeadjust_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSsettransfer)
-	(NSGraphicsContext*, SEL);
-  void (*DPStranslate__)
-	(NSGraphicsContext*, SEL, float, float);
-/* ----------------------------------------------------------------------- */
-/* I/O operations */
-/* ----------------------------------------------------------------------- */
-  void (*DPSflush)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, int);
+
 /* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
-  void (*DPSconcatmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSdtransform____)
-	(NSGraphicsContext*, SEL, float, float, float*, float*);
-  void (*DPSidentmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSidtransform____)
-	(NSGraphicsContext*, SEL, float, float, float*, float*);
-  void (*DPSinvertmatrix)
-	(NSGraphicsContext*, SEL);
-  void (*DPSitransform____)
-	(NSGraphicsContext*, SEL, float, float, float*, float*);
-  void (*DPStransform____)
-	(NSGraphicsContext*, SEL, float, float, float*, float*);
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-  void (*DPSdefineuserobject)
-	(NSGraphicsContext*, SEL);
-  void (*DPSexecuserobject_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSundefineuserobject_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSgetboolean_)
-	(NSGraphicsContext*, SEL, int*);
-  void (*DPSgetchararray__)
-	(NSGraphicsContext*, SEL, int, char*);
-  void (*DPSgetfloat_)
-	(NSGraphicsContext*, SEL, float*);
-  void (*DPSgetfloatarray__)
-	(NSGraphicsContext*, SEL, int, float*);
-  void (*DPSgetint_)
-	(NSGraphicsContext*, SEL, int*);
-  void (*DPSgetintarray__)
-	(NSGraphicsContext*, SEL, int, int*);
-  void (*DPSgetstring_)
-	(NSGraphicsContext*, SEL, char*);
-  void (*DPSsendboolean_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSsendchararray__)
-	(NSGraphicsContext*, SEL, const char*, int);
-  void (*DPSsendfloat_)
-	(NSGraphicsContext*, SEL, float);
-  void (*DPSsendfloatarray__)
-	(NSGraphicsContext*, SEL, const float*, int);
-  void (*DPSsendint_)
-	(NSGraphicsContext*, SEL, int);
-  void (*DPSsendintarray__)
-	(NSGraphicsContext*, SEL, const int*, int);
-  void (*DPSsendstring_)
-	(NSGraphicsContext*, SEL, const char*);
+  void (*DPSconcat_)
+        (NSGraphicsContext*, SEL, const float*);
+  void (*DPSinitmatrix)
+        (NSGraphicsContext*, SEL);
+  void (*DPSrotate_)
+        (NSGraphicsContext*, SEL, float);
+  void (*DPSscale__)
+        (NSGraphicsContext*, SEL, float, float);
+  void (*DPStranslate__)
+        (NSGraphicsContext*, SEL, float, float);
+
+  NSAffineTransform * (*GSCurrentCTM)
+        (NSGraphicsContext*, SEL);
+  void (*GSSetCTM_)
+        (NSGraphicsContext*, SEL, NSAffineTransform *);
+  void (*GSConcatCTM_)
+        (NSGraphicsContext*, SEL, NSAffineTransform *);
+
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-  void (*DPSashow___)
-	(NSGraphicsContext*, SEL, float, float, const char*);
-  void (*DPSawidthshow______)
-	(NSGraphicsContext*, SEL, float, float, int, float, float, const char*);
-  void (*DPScopypage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSeofill)
-	(NSGraphicsContext*, SEL);
-  void (*DPSerasepage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSfill)
-	(NSGraphicsContext*, SEL);
-  void (*DPSimage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSimagemask)
-	(NSGraphicsContext*, SEL);
-  void (*DPScolorimage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSalphaimage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSkshow_)
-	(NSGraphicsContext*, SEL, const char*);
-  void (*DPSrectfill____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
-  void (*DPSrectstroke____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
-  void (*DPSshow_)
-	(NSGraphicsContext*, SEL, const char*);
-  void (*DPSshowpage)
-	(NSGraphicsContext*, SEL);
-  void (*DPSstroke)
-	(NSGraphicsContext*, SEL);
-  void (*DPSstrokepath)
-	(NSGraphicsContext*, SEL);
-  void (*DPSueofill____)
-	(NSGraphicsContext*, SEL, const char*, int, const char*, int);
-  void (*DPSufill____)
-	(NSGraphicsContext*, SEL, const char*, int, const char*, int);
-  void (*DPSustroke____)
-	(NSGraphicsContext*, SEL, const char*, int, const char*, int);
-  void (*DPSustrokepath____)
-	(NSGraphicsContext*, SEL, const char*, int, const char*, int);
-  void (*DPSwidthshow____)
-	(NSGraphicsContext*, SEL, float, float, int, const char*);
-  void (*DPSxshow___)
-	(NSGraphicsContext*, SEL, const char*, const float*, int);
-  void (*DPSxyshow___)
-	(NSGraphicsContext*, SEL, const char*, const float*, int);
-  void (*DPSyshow___)
-	(NSGraphicsContext*, SEL, const char*, const float*, int);
-/* ----------------------------------------------------------------------- */
-/* Path operations */
-/* ----------------------------------------------------------------------- */
   void (*DPSarc_____)
-	(NSGraphicsContext*, SEL, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float, float);
   void (*DPSarcn_____)
-	(NSGraphicsContext*, SEL, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float, float);
   void (*DPSarct_____)
-	(NSGraphicsContext*, SEL, float, float, float, float, float);
-  void (*DPSarcto_________)
-	(NSGraphicsContext*, SEL, float, float, float, float, float, float*, float*, float*, float*);
-  void (*DPScharpath__)
-	(NSGraphicsContext*, SEL, const char*, int);
+        (NSGraphicsContext*, SEL, float, float, float, float, float);
   void (*DPSclip)
-	(NSGraphicsContext*, SEL);
-  void (*DPSclippath)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPSclosepath)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPScurveto______)
-	(NSGraphicsContext*, SEL, float, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float, float, float);
   void (*DPSeoclip)
-	(NSGraphicsContext*, SEL);
-  void (*DPSeoviewclip)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
+  void (*DPSeofill)
+        (NSGraphicsContext*, SEL);
+  void (*DPSfill)
+        (NSGraphicsContext*, SEL);
   void (*DPSflattenpath)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPSinitclip)
-	(NSGraphicsContext*, SEL);
-  void (*DPSinitviewclip)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPSlineto__)
-	(NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, float, float);
   void (*DPSmoveto__)
-	(NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, float, float);
   void (*DPSnewpath)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPSpathbbox____)
-	(NSGraphicsContext*, SEL, float*, float*, float*, float*);
-  void (*DPSpathforall)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float*, float*, float*, float*);
   void (*DPSrcurveto______)
-	(NSGraphicsContext*, SEL, float, float, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float, float, float);
   void (*DPSrectclip____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
-  void (*DPSrectviewclip____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
+        (NSGraphicsContext*, SEL, float, float, float, float);
+  void (*DPSrectfill____)
+        (NSGraphicsContext*, SEL, float, float, float, float);
+  void (*DPSrectstroke____)
+        (NSGraphicsContext*, SEL, float, float, float, float);
   void (*DPSreversepath)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL);
   void (*DPSrlineto__)
-	(NSGraphicsContext*, SEL, float, float);
+        (NSGraphicsContext*, SEL, float, float);
   void (*DPSrmoveto__)
-	(NSGraphicsContext*, SEL, float, float);
-  void (*DPSsetbbox____)
-	(NSGraphicsContext*, SEL, float, float, float, float);
-  void (*DPSviewclip)
-	(NSGraphicsContext*, SEL);
-  void (*DPSviewclippath)
-	(NSGraphicsContext*, SEL);
-/* ----------------------------------------------------------------------- */
-/* System ops */
-/* ----------------------------------------------------------------------- */
-  void (*DPSrestore)
-	(NSGraphicsContext*, SEL);
-  void (*DPSsave)
-	(NSGraphicsContext*, SEL);
+        (NSGraphicsContext*, SEL, float, float);
+  void (*DPSstroke)
+        (NSGraphicsContext*, SEL);
+
+  void (*GSSendBezierPath_)
+        (NSGraphicsContext*, SEL, NSBezierPath *);
+  void (*GSRectClipList__)
+        (NSGraphicsContext*, SEL, const NSRect *, int);
+  void (*GSRectFillList__)
+        (NSGraphicsContext*, SEL, const NSRect *, int);
 
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-  void (*DPScurrentdrawingfunction_)
-	(NSGraphicsContext*, SEL, int*);
   void (*DPScurrentgcdrawable____)
-	(NSGraphicsContext*, SEL, void**, void**, int*, int*);
-  void (*DPScurrentgcdrawablecolor_____)
-	(NSGraphicsContext*, SEL, void**, void**, int*, int*, int*);
+        (NSGraphicsContext*, SEL, void**, void**, int*, int*);
   void (*DPScurrentoffset__)
-	(NSGraphicsContext*, SEL, int*, int*);
-  void (*DPSsetdrawingfunction_)
-	(NSGraphicsContext*, SEL, int);
+        (NSGraphicsContext*, SEL, int*, int*);
   void (*DPSsetgcdrawable____)
-	(NSGraphicsContext*, SEL, void*, void*, int, int);
-  void (*DPSsetgcdrawablecolor_____)
-	(NSGraphicsContext*, SEL, void*, void*, int, int, const int*);
+        (NSGraphicsContext*, SEL, void*, void*, int, int);
   void (*DPSsetoffset__)
-	(NSGraphicsContext*, SEL, short int, short int);
-  void (*DPSsetrgbactual____)
-	(NSGraphicsContext*, SEL, double, double, double, int*);
-  void (*DPScapturegstate_)
-	(NSGraphicsContext*, SEL, int*);
+        (NSGraphicsContext*, SEL, short int, short int);
 
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
@@ -408,174 +268,32 @@ typedef struct {
         (NSGraphicsContext*, SEL, float, float, float, float, int);
   void (*DPSdissolve________)
         (NSGraphicsContext*, SEL, float, float, float, float, int, float, float, float);
-  void (*DPSreadimage)
-        (NSGraphicsContext*, SEL);
-  void (*DPSsetalpha_)
-        (NSGraphicsContext*, SEL, float);
-  void (*DPScurrentalpha_)
-        (NSGraphicsContext*, SEL, float*);
 
-/*-------------------------------------------------------------------------*/
-/* Window Extensions Ops */
-/*-------------------------------------------------------------------------*/
-  void (*DPSwindow______)
-        (NSGraphicsContext*, SEL, float, float, float, float, int, int *);
-  void (*DPStermwindow_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPSstylewindow__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPStitlewindow__)
-        (NSGraphicsContext*, SEL, const char *, int);
-  void (*DPSminiwindow_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPSwindowdevice_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPSwindowdeviceround_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPScurrentwindow_)
-        (NSGraphicsContext*, SEL, int *);
-  void (*DPSorderwindow___)
-        (NSGraphicsContext*, SEL, int, int, int);
-  void (*DPSmovewindow___)
-        (NSGraphicsContext*, SEL, float, float, int);
-  void (*DPSupdatewindow_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPSplacewindow_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, int);
-  void (*DPSfrontwindow_)
-        (NSGraphicsContext*, SEL, int *);
-  void (*DPSfindwindow________)
-        (NSGraphicsContext*, SEL, float, float, int, int, float *, float *, int *, int *);
-  void (*DPScurrentwindowbounds_____)
-        (NSGraphicsContext*, SEL, int, float *, float *, float *, float *);
-  void (*DPSsetexposurecolor)
-        (NSGraphicsContext*, SEL);
-  void (*DPSsetsendexposed__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPSsetautofill__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPScurrentwindowalpha__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPScountscreenlist__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPSscreenlist___)
-        (NSGraphicsContext*, SEL, int, int, int *);
-  void (*DPSsetowner__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPScurrentowner__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPSsetwindowtype__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPSsetwindowlevel__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPScurrentwindowlevel__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPScountwindowlist__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPSwindowlist___)
-        (NSGraphicsContext*, SEL, int, int, int *);
-  void (*DPSsetwindowdepthlimit__)
-        (NSGraphicsContext*, SEL, int, int);
-  void (*DPScurrentwindowdepthlimit__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPScurrentwindowdepth__)
-        (NSGraphicsContext*, SEL, int, int *);
-  void (*DPSsetdefaultdepthlimit_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPScurrentdefaultdepthlimit_)
-        (NSGraphicsContext*, SEL, int *);
-  void (*DPSsetmaxsize___)
-        (NSGraphicsContext*, SEL, float, float, int);
-  void (*DPSsetminsize___)
-        (NSGraphicsContext*, SEL, float, float, int);
-  void (*DPSsetresizeincrements___)
-        (NSGraphicsContext*, SEL, float, float, int);
-  void (*DPSflushwindowrect_____)
-        (NSGraphicsContext*, SEL, float, float, float, float, int);
-  void (*DPScapturemouse_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPSreleasemouse)
-        (NSGraphicsContext*, SEL);
-  void (*DPSsetinputfocus_)
-        (NSGraphicsContext*, SEL, int);
-  void (*DPShidecursor)
-        (NSGraphicsContext*, SEL);
-  void (*DPSshowcursor)
-        (NSGraphicsContext*, SEL);
-  void (*DPSstandardcursor__)
-        (NSGraphicsContext*, SEL, int, void **);
-  void (*DPSimagecursor_______)
-        (NSGraphicsContext*, SEL, float, float, float, float, int, const char *, void **);
-  void (*DPSsetcursorcolor_______)
-        (NSGraphicsContext*, SEL, float, float, float, float, float, float, void *);
-  void (*DPSstyleoffsets_____)
-        (NSGraphicsContext*, SEL, float*, float*, float*, float*, int);
-  void (*DPSdocedited__)
-        (NSGraphicsContext*, SEL, int, int);
-/* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-  NSEvent* (*DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
-	(NSGraphicsContext*, SEL, unsigned, NSDate*, NSString*, BOOL);
-  void (*DPSDiscardEventsMatchingMask_beforeEvent_)
-	(NSGraphicsContext*, SEL, unsigned, NSEvent*);
-  void (*DPSPostEvent_atStart_)
-	(NSGraphicsContext*, SEL, NSEvent*, BOOL);
-  void (*DPSmouselocation__)
-	(NSGraphicsContext*, SEL, float*, float*);
-  void (*DPSsetinputstate__)
-	(NSGraphicsContext*, SEL, int, int);
-
-  void (*DPScurrentserverdevice_)
-	(NSGraphicsContext*, SEL, void **);
-  void (*DPScurrentwindowdevice__)
-	(NSGraphicsContext*, SEL, int, void **);
-
+  void (*GSDrawImage__)
+        (NSGraphicsContext*, SEL, NSRect, void *);
 
 /* ----------------------------------------------------------------------- */
-/* Client functions */
+/* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
   void (*DPSPrintf__)
         (NSGraphicsContext*, SEL, char *, va_list);
-
   void (*DPSWriteData__)
         (NSGraphicsContext*, SEL, char *, unsigned int);
 
+/* ----------------------------------------------------------------------- */
+/* NSGraphics Ops */	
+/* ----------------------------------------------------------------------- */
+  NSColor * (*NSReadPixel_)
+        (NSGraphicsContext*, SEL, NSPoint);
 
-/*
- * Rectangle Drawing Functions
- */
+  void (*NSBeep)
+        (NSGraphicsContext*, SEL);
 
-  void (*NSEraseRect_)(NSGraphicsContext*, SEL, NSRect aRect);
-  void (*NSHighlightRect_)(NSGraphicsContext*, SEL, NSRect aRect);
-  void (*NSRectClip_)(NSGraphicsContext*, SEL, NSRect aRect);
-  void (*NSRectClipList__)(NSGraphicsContext*, SEL, const NSRect *rects, int count);
-  void (*NSRectFill_)(NSGraphicsContext*, SEL, NSRect aRect);
-  void (*NSRectFillList__)(NSGraphicsContext*, SEL, const NSRect *rects, int count);
-  void (*NSRectFillListWithGrays___)(NSGraphicsContext*, SEL, const NSRect *rects, 
-			     const float *grays, int count);
-  void (*NSRectFillUsingOperation__)(NSGraphicsContext*, SEL, 
-				     NSRect aRect, NSCompositingOperation op);
-
-/*
- * Draw a Bordered Rectangle
- */
-  void (*NSDottedFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
-  void (*NSFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
-  void (*NSFrameRectWithWidth__)(NSGraphicsContext*, SEL, const NSRect aRect, float frameWidth);
-
-
-/*
- * Read the Color at a Screen Position
- */
-  NSColor *(*NSReadPixel_)(NSGraphicsContext*, SEL, NSPoint location);
-
-/*
- * Copy an image
- */
-  void (*NSCopyBitmapFromGState___)(NSGraphicsContext*, SEL, int srcGstate, NSRect srcRect, 
-				    NSRect destRect);
-  void (*NSCopyBits___)(NSGraphicsContext*, SEL, int srcGstate, NSRect srcRect, NSPoint destPoint);
+/* Context helper wraps */
+  void (*GSWSetViewIsFlipped_)
+        (NSGraphicsContext*, SEL, BOOL);
+  BOOL (*GSWViewIsFlipped)
+        (NSGraphicsContext*, SEL);
 
 /*
  * Render Bitmap Images
@@ -591,22 +309,6 @@ typedef struct {
                   BOOL hasAlpha, 
                   NSString *colorSpaceName, 
                   const unsigned char *const data[5]);
-
-/*
- * Play the System Beep
- */
-  void (*NSBeep)(NSGraphicsContext*, SEL);
-
-
-/* Context helper wraps */
-  unsigned int (*GSWDefineAsUserObj)(NSGraphicsContext*, SEL);
-  BOOL (*GSWViewIsFlipped)(NSGraphicsContext*, SEL);
-  void (*GSWSetViewIsFlipped_)(NSGraphicsContext*, SEL, BOOL flipped);
-  NSWindowDepth (*GSWindowDepthForScreen_)(NSGraphicsContext*, SEL, int screen);
-
-  const NSWindowDepth *(*GSAvailableDepthsForScreen_)(NSGraphicsContext*, SEL,
-						       int screen);
-  NSSize (*GSResolutionForScreen_)(NSGraphicsContext*, SEL, int screen);
 
 } gsMethodTable;
 

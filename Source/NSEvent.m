@@ -46,6 +46,7 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/GSDisplayServer.h>
 
 /*
  *	gstep-base has a faster mechanism to get the current thread.
@@ -236,10 +237,7 @@ static Class eventClass;
  */
 + (NSPoint) mouseLocation
 {
-  float x, y;
-
-  PSmouselocation(&x, &y);
-  return NSMakePoint(x, y);
+  return [GSCurrentServer() mouselocation];
 }
 
 + (NSEvent*) otherEventWithType: (NSEventType)type

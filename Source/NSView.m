@@ -49,6 +49,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSSet.h>
 
+#include <AppKit/GSDisplayServer.h>
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/GSVersion.h>
 #include <AppKit/NSAffineTransform.h>
@@ -642,16 +643,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   if (_rFlags.has_draginfo)
     {
-      NSGraphicsContext	*ctxt = GSCurrentContext();
       NSArray		*t = GSGetDragTypes(self);
 
       if (_window != nil)
 	{
-	  [ctxt _removeDragTypes: t fromWindow: _window];
+	  [GSDisplayServer removeDragTypes: t fromWindow: _window];
 	}
       if (newWindow != nil)
 	{
-	  [ctxt _addDragTypes: t toWindow: newWindow];
+	  [GSDisplayServer addDragTypes: t toWindow: newWindow];
 	}
     }
 
@@ -1396,7 +1396,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) releaseGState
 {
   if (_allocate_gstate && _gstate)
-    PSundefineuserobject(_gstate);
+    GSUndefineGState(GSCurrentContext(), _gstate);
   _gstate = 0;
   /* Note that the next time we lock focus, we'll realloc a gstate (if
      _allocate_gstate). This seems to make sense, and also allows us
@@ -1506,7 +1506,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (_allocate_gstate)
 	{
 	  DPSgstate(ctxt);
-	  _gstate = GSWDefineAsUserObj(ctxt);
+	  _gstate = GSDefineGState(ctxt);
 	  /* Balance the previous gsave and install our own gstate */
 	  DPSgrestore(ctxt);
 	  DPSsetgstate(ctxt, _gstate);
@@ -2571,12 +2571,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _rFlags.has_draginfo = 1;
   if (_window != nil)
     {
-      NSGraphicsContext	*ctxt = GSCurrentContext();
 
-      [ctxt _addDragTypes: t toWindow: _window];
+      [GSDisplayServer addDragTypes: t toWindow: _window];
       if (o != nil)
 	{
-	  [ctxt _removeDragTypes: o fromWindow: _window];
+	  [GSDisplayServer removeDragTypes: o fromWindow: _window];
 	}
     }
   TEST_RELEASE(o);
@@ -2588,10 +2587,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       if (_window != nil)
 	{
-	  NSGraphicsContext	*ctxt = GSCurrentContext();
 	  NSArray		*t = GSGetDragTypes(self);
 
-	  [ctxt _removeDragTypes: t fromWindow: _window];
+	  [GSDisplayServer removeDragTypes: t fromWindow: _window];
 	}
       GSRemoveDragTypes(self);
       _rFlags.has_draginfo = 0;

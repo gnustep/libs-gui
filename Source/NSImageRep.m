@@ -55,8 +55,6 @@ static Class NSImageRep_class = NULL;
      them can load in data from an external source. */
   if (self == [NSImageRep class])
     {
-      id obj;
-
       NSImageRep_class = self;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
       [imageReps addObject: [NSBitmapImageRep class]];
@@ -434,6 +432,7 @@ static Class NSImageRep_class = NULL;
 {
   BOOL ok, reset;
   NSGraphicsContext *ctxt;
+  NSAffineTransform *ctm;
 
   if (_size.width == 0 && _size.height == 0)
     return NO;
@@ -445,13 +444,13 @@ static Class NSImageRep_class = NULL;
     {
       if ([[ctxt focusView] isFlipped])
 	aPoint.y -= _size.height;
-      DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
+      ctm = GSCurrentCTM(ctxt);
       DPStranslate(ctxt, aPoint.x, aPoint.y);
       reset = 1;
     }
   ok = [self draw];
   if (reset)
-    DPSsetmatrix(ctxt);
+    GSSetCTM(ctxt, ctm);
   return ok;
 }
 
@@ -460,6 +459,7 @@ static Class NSImageRep_class = NULL;
   NSSize scale;
   BOOL ok;
   NSGraphicsContext *ctxt;
+  NSAffineTransform *ctm;
 
   NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
 	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
@@ -471,11 +471,11 @@ static Class NSImageRep_class = NULL;
 		     NSHeight(aRect) / _size.height);
   if ([[ctxt focusView] isFlipped])
     aRect.origin.y -= NSHeight(aRect);
-  DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
+  ctm = GSCurrentCTM(ctxt);
   DPStranslate(ctxt, NSMinX(aRect), NSMinY(aRect));
   DPSscale(ctxt, scale.width, scale.height);
   ok = [self draw];
-  DPSsetmatrix(ctxt);
+  GSSetCTM(ctxt, ctm);
   return ok;
 }
 

@@ -33,6 +33,7 @@
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSDragging.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSWindow.h>

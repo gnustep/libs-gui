@@ -31,8 +31,7 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSInterfaceStyle.h>
 #include <AppKit/NSGraphicsContext.h>
-#include <AppKit/DPSOperators.h>
-#include <AppKit/NSGraphics.h>
+#include <AppKit/GSDisplayServer.h>
 #include <AppKit/AppKitExceptions.h>
 
 @interface NSScreen (Private)
@@ -63,17 +62,15 @@ static NSMutableArray *screenArray = nil;
 + (NSArray*) screens
 {
   int count = 0, index = 0;
-  int *windows = NULL;
-  NSGraphicsContext	*ctxt;
+  NSArray *screens;
+  GSDisplayServer *srv;
 
   if (screenArray != nil)
     return screenArray;
 
-  ctxt = [NSApp context];
-  // Get the number of screens.
-  DPScountscreenlist(ctxt, 0, &count);
-
-  // If the list is empty quit...
+  srv = GSCurrentServer();
+  screens = [srv screenList];
+  count = [screens count];
   if (count == 0)
     {
       // something is wrong. This shouldn't happen.
@@ -82,9 +79,6 @@ static NSMutableArray *screenArray = nil;
       return nil;
     }
 
-  windows = NSZoneMalloc(NSDefaultMallocZone(), (count+1)*sizeof(int));
-  DPSscreenlist(ctxt, 0, count, windows);
-
   screenArray = [NSMutableArray new];
 
   // Iterate over the list
@@ -92,13 +86,11 @@ static NSMutableArray *screenArray = nil;
     {
       NSScreen *screen = nil;
       
-      screen = [[NSScreen alloc] _initWithScreenNumber: windows[index]];
+      screen = [[NSScreen alloc] _initWithScreenNumber: 
+      			[[screens objectAtIndex: index] intValue]];
       [screenArray addObject: AUTORELEASE(screen)];
     }
 
-  // free the list
-  NSZoneFree(NSDefaultMallocZone(), windows);
-  
   return [NSArray arrayWithArray: screenArray];
 }
 
@@ -149,8 +141,9 @@ static NSMutableArray *screenArray = nil;
 // Get all of the infomation for a given screen.
 - (id) _initWithScreenNumber: (int)screen
 {
-  float			x, y, w, h;
-  NSGraphicsContext	*ctxt = [NSApp context];
+  GSDisplayServer *srv;
+
+  srv = GSCurrentServer();
 
   self = [super init];
 
@@ -167,25 +160,17 @@ static NSMutableArray *screenArray = nil;
       return nil;
     }
 
-  if (ctxt == nil)
+  if (srv == nil)
     {
       NSLog(@"Internal error: No current context\n");
       RELEASE(self);
       return nil;
     }
 
-  if ([ctxt isDrawingToScreen] == NO)
-    {
-      NSLog(@"Internal error: trying to find screen with wrong context\n");
-      RELEASE(self);
-      return nil;
-    }
-  
   // Fill in all of the i-vars with appropriate values.
   _screenNumber = screen;
-  DPScurrentwindowbounds(ctxt, _screenNumber, &x, &y, &w, &h);
-  _frame = NSMakeRect(x, y, w, h);
-  _depth = GSWindowDepthForScreen(ctxt, _screenNumber);
+  _frame = [srv boundsForScreen: _screenNumber];
+  _depth = [srv windowDepthForScreen: _screenNumber];
   _supportedWindowDepths = NULL;
 
   return self;
@@ -240,8 +225,7 @@ static NSMutableArray *screenArray = nil;
 	      forKey: NSDeviceSize];
 
   // Add the NSDeviceResolution dictionary item
-  screenResolution = GSResolutionForScreen([NSApp context], 
-					   _screenNumber);
+  screenResolution = [GSCurrentServer() resolutionForScreen: _screenNumber];
   [devDesc setObject: [NSValue valueWithSize: screenResolution]
 	      forKey: NSDeviceResolution];
 
@@ -265,8 +249,9 @@ static NSMutableArray *screenArray = nil;
   // store it for the future.
   if (_supportedWindowDepths == NULL)
     {
-      _supportedWindowDepths = (NSWindowDepth*)GSAvailableDepthsForScreen(
-	  [NSApp context], _screenNumber);
+      _supportedWindowDepths = 
+        (NSWindowDepth*)[GSCurrentServer()
+			       availableDepthsForScreen: _screenNumber];
 
       // Check the results
       if (_supportedWindowDepths == NULL)

@@ -36,6 +36,7 @@
 #include <Foundation/NSData.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSSet.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
@@ -46,7 +47,7 @@
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
-NSZone *_globalGSZone = NULL;
+static NSZone *_globalGSZone = NULL;
 
 /* The current concrete class */
 static Class defaultNSGraphicsContextClass = NULL;
@@ -88,6 +89,21 @@ NSGraphicsContext	*GSCurrentContext()
 + (gsMethodTable *) _initializeMethodTable;
 @end
 
+/**
+  <unit>
+  <heading>NSGraphicsContext</heading>
+
+  <p>This is an abstract class which provides a framework for a device
+  independant drawing. 
+  </p>
+  
+  <p>In addition, this class provides methods to perform the actual
+  drawing. As a convenience, you can also access these through various
+  function interfaces. One is a Display Postscript interface using PS
+  and DPS opeterations. Another is a Quartz interface (not yet written).
+  </p>
+
+  </unit> */
 @implementation NSGraphicsContext 
 
 + (void) initialize
@@ -108,11 +124,20 @@ NSGraphicsContext	*GSCurrentContext()
     }
 }
 
++ (void) initializeBackend
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/** Set the concrete subclass that will provide the device dependant
+    implementation.
+*/
 + (void) setDefaultContextClass: (Class)defaultContextClass
 {
   defaultNSGraphicsContextClass = defaultContextClass;
 }
 
+/** Set the current context that will handle drawing. */
 + (void) setCurrentContext: (NSGraphicsContext *)context
 {
 #ifdef GNUSTEP_BASE_LIBRARY
@@ -129,21 +154,25 @@ NSGraphicsContext	*GSCurrentContext()
 #endif
 }
 
+/** Returns the current context. Also see the convienience function
+    GSCurrentContext() */
 + (NSGraphicsContext *) currentContext
 {
   return GSCurrentContext();
 }
 
+/** Returns YES if the current context is a display context */
 + (BOOL) currentContextDrawingToScreen
 {
   return [GSCurrentContext() isDrawingToScreen];
 }
 
-+ defaultContextWithInfo: (NSDictionary *)info
-{
-  return [self graphicsContextWithAttributes: info];
-}
-
+/** 
+    <p>Create a graphics context with attributes, which contains key/value
+    pairs which describe the specifics of how the context is to
+    be initialized. 
+    </p>
+    */
 + (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
 {
   NSGraphicsContext *ctxt;
@@ -160,6 +189,9 @@ NSGraphicsContext	*GSCurrentContext()
   return AUTORELEASE(ctxt);
 }
 
+/**
+   Create graphics context with attributes speficied by aWindow's
+   device description. */
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
 {
   return [self graphicsContextWithAttributes: [aWindow deviceDescription]];
@@ -185,8 +217,6 @@ NSGraphicsContext	*GSCurrentContext()
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
-  DESTROY(event_queue);
-  NSFreeMapTable(drag_types);
   [super dealloc];
 }
 
@@ -214,10 +244,6 @@ NSGraphicsContext	*GSCurrentContext()
   ASSIGN(context_info, info);
   focus_stack = [[NSMutableArray allocWithZone: [self zone]]
 			initWithCapacity: 1];
-  event_queue = [[NSMutableArray allocWithZone: [self zone]]
-			initWithCapacity: 32];
-  drag_types = NSCreateMapTable(NSIntMapKeyCallBacks,
-                NSObjectMapValueCallBacks, 0);
   usedFonts = nil;
 
   /*
@@ -244,7 +270,6 @@ NSGraphicsContext	*GSCurrentContext()
 
 - (void)flushGraphics
 {
-  [self flush];
 }
 
 - (void *)graphicsPort
@@ -252,18 +277,9 @@ NSGraphicsContext	*GSCurrentContext()
   return NULL;
 }
 
-- (void) flush
-{
-}
-
 - (BOOL) isDrawingToScreen
 {
   return NO;
-}
-
-- (NSMutableData*) mutableData
-{
-  return context_data;
 }
 
 - (void) restoreGraphicsState
@@ -274,12 +290,34 @@ NSGraphicsContext	*GSCurrentContext()
 {
 }
 
-- (void) wait
+- (void *) focusStack
 {
+  return focus_stack;
 }
 
-+ (void) waitAllContexts
+- (void) setFocusStack: (void *)stack
 {
+  ASSIGN(focus_stack, stack);
+}
+
+- (void) setImageInterpolation: (NSImageInterpolation)interpolation
+{
+  _interp = interpolation;
+}
+
+- (NSImageInterpolation) imageInterpolation
+{
+  return _interp;
+}
+
+- (void) setShouldAntialias: (BOOL)antialias
+{
+  _antialias = antialias;
+}
+
+- (BOOL) shouldAntialias
+{
+  return _antialias;
 }
 
 - (NSView*) focusView
@@ -295,100 +333,6 @@ NSGraphicsContext	*GSCurrentContext()
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush
 {
   [focus_stack removeLastObject];
-}
-
-/*
- *      Drag and drop support
- */
-
-/*
- * Add (increment count by 1) each drag type to those registered
- * for the window.  If this results in a change to the types registered
- * in the counted set, return YES, otherwise return NO.
- * Subclasses should override this method, call 'super' and take
- * appropriate action if the method returns 'YES'.
- */
-- (BOOL) _addDragTypes: (NSArray*)types toWindow: (NSWindow *)win
-{
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)win);
-  NSEnumerator *drag_enum = [types objectEnumerator];
-  id            type;
-  unsigned	originalCount;
-
-  /*
-   * Make sure the set exists.
-   */
-  if (old == nil)
-    {
-      old = [NSCountedSet new];
-      NSMapInsert(drag_types, (void*)win, (void*)(gsaddr)old);
-      RELEASE(old);
-    }
-  originalCount = [old count];
-
-  while ((type = [drag_enum nextObject]))
-    {
-      [old addObject: type];
-    }
-  if ([old count] == originalCount)
-    return NO;
-  return YES;
-}
-
-/*
- * Remove (decrement count by 1) each drag type from those registered
- * for the window.  If this results in a change to the types registered
- * in the counted set, return YES, otherwise return NO.
- * If given 'nil' as the array of types, remove ALL.
- * Subclasses should override this method, call 'super' and take
- * appropriate action if the method returns 'YES'.
- */
-- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win
-{
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)win);
-  NSEnumerator *drag_enum = [types objectEnumerator];
-
-  if (types == nil)
-    {
-      if (old == nil)
-	return NO;
-      NSMapRemove(drag_types, (void*)win);
-      return YES;
-    }
-  else if (old == nil)
-    {
-      return NO;
-    }
-  else
-    {
-      unsigned	originalCount = [old count];
-      id o;
-
-      while ((o = [drag_enum nextObject]))
-	{
-	  [old removeObject: o];
-	}
-      if ([old count] == originalCount)
-	return NO;
-      return YES;
-    }
-}
-
-- (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win
-{
-  return (NSCountedSet*)NSMapGet(drag_types, (void *)win);
-}
-
-- (id <NSDraggingInfo>)_dragInfo
-{
-  [self subclassResponsibility: _cmd];
-  return nil;
-}
-
-- (BOOL) _slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to
-{
-  [self subclassResponsibility: _cmd];
-  return NO;
 }
 
 - (void) useFont: (NSString*)name
@@ -413,6 +357,11 @@ NSGraphicsContext	*GSCurrentContext()
   return usedFonts;
 }
 
+/* Private backend methods */
+- (void) contextDevice: (int)num
+{
+}
+
 @end
 
 @implementation NSGraphicsContext (Private)
@@ -429,269 +378,47 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
+  methodTable.DPScurrentalpha_ =
+    GET_IMP(@selector(DPScurrentalpha:));
   methodTable.DPScurrentcmykcolor____ =
     GET_IMP(@selector(DPScurrentcmykcolor::::));
-  methodTable.DPSsetcmykcolor____ =
-    GET_IMP(@selector(DPSsetcmykcolor::::));
-/* ----------------------------------------------------------------------- */
-/* Data operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSclear =
-    GET_IMP(@selector(DPSclear));
-  methodTable.DPScleartomark =
-    GET_IMP(@selector(DPScleartomark));
-  methodTable.DPScopy_ =
-    GET_IMP(@selector(DPScopy:));
-  methodTable.DPScount_ =
-    GET_IMP(@selector(DPScount:));
-  methodTable.DPScounttomark_ =
-    GET_IMP(@selector(DPScounttomark:));
-  methodTable.DPSdup =
-    GET_IMP(@selector(DPSdup));
-  methodTable.DPSexch =
-    GET_IMP(@selector(DPSexch));
-  methodTable.DPSexecstack =
-    GET_IMP(@selector(DPSexecstack));
-  methodTable.DPSget =
-    GET_IMP(@selector(DPSget));
-  methodTable.DPSindex_ =
-    GET_IMP(@selector(DPSindex:));
-  methodTable.DPSmark =
-    GET_IMP(@selector(DPSmark));
-  methodTable.DPSmatrix =
-    GET_IMP(@selector(DPSmatrix));
-  methodTable.DPSnull =
-    GET_IMP(@selector(DPSnull));
-  methodTable.DPSpop =
-    GET_IMP(@selector(DPSpop));
-  methodTable.DPSput =
-    GET_IMP(@selector(DPSput));
-  methodTable.DPSroll__ =
-    GET_IMP(@selector(DPSroll::));
-/* ----------------------------------------------------------------------- */
-/* Font operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSFontDirectory =
-    GET_IMP(@selector(DPSFontDirectory));
-  methodTable.DPSISOLatin1Encoding =
-    GET_IMP(@selector(DPSISOLatin1Encoding));
-  methodTable.DPSSharedFontDirectory =
-    GET_IMP(@selector(DPSSharedFontDirectory));
-  methodTable.DPSStandardEncoding =
-    GET_IMP(@selector(DPSStandardEncoding));
-  methodTable.DPScurrentcacheparams =
-    GET_IMP(@selector(DPScurrentcacheparams));
-  methodTable.DPScurrentfont =
-    GET_IMP(@selector(DPScurrentfont));
-  methodTable.DPSdefinefont =
-    GET_IMP(@selector(DPSdefinefont));
-  methodTable.DPSfindfont_ =
-    GET_IMP(@selector(DPSfindfont:));
-  methodTable.DPSmakefont =
-    GET_IMP(@selector(DPSmakefont));
-  methodTable.DPSscalefont_ =
-    GET_IMP(@selector(DPSscalefont:));
-  methodTable.DPSselectfont__ =
-    GET_IMP(@selector(DPSselectfont::));
-  methodTable.DPSsetfont_ =
-    GET_IMP(@selector(DPSsetfont:));
-  methodTable.DPSundefinefont_ =
-    GET_IMP(@selector(DPSundefinefont:));
-/* ----------------------------------------------------------------------- */
-/* Gstate operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSconcat_ =
-    GET_IMP(@selector(DPSconcat:));
-  methodTable.DPScurrentdash =
-    GET_IMP(@selector(DPScurrentdash));
-  methodTable.DPScurrentflat_ =
-    GET_IMP(@selector(DPScurrentflat:));
   methodTable.DPScurrentgray_ =
     GET_IMP(@selector(DPScurrentgray:));
-  methodTable.DPScurrentgstate_ =
-    GET_IMP(@selector(DPScurrentgstate:));
-  methodTable.DPScurrenthalftone =
-    GET_IMP(@selector(DPScurrenthalftone));
-  methodTable.DPScurrenthalftonephase__ =
-    GET_IMP(@selector(DPScurrenthalftonephase::));
   methodTable.DPScurrenthsbcolor___ =
     GET_IMP(@selector(DPScurrenthsbcolor:::));
-  methodTable.DPScurrentlinecap_ =
-    GET_IMP(@selector(DPScurrentlinecap:));
-  methodTable.DPScurrentlinejoin_ =
-    GET_IMP(@selector(DPScurrentlinejoin:));
-  methodTable.DPScurrentlinewidth_ =
-    GET_IMP(@selector(DPScurrentlinewidth:));
-  methodTable.DPScurrentmatrix =
-    GET_IMP(@selector(DPScurrentmatrix));
-  methodTable.DPScurrentmiterlimit_ =
-    GET_IMP(@selector(DPScurrentmiterlimit:));
-  methodTable.DPScurrentpoint__ =
-    GET_IMP(@selector(DPScurrentpoint::));
   methodTable.DPScurrentrgbcolor___ =
     GET_IMP(@selector(DPScurrentrgbcolor:::));
-  methodTable.DPScurrentscreen =
-    GET_IMP(@selector(DPScurrentscreen));
-  methodTable.DPScurrentstrokeadjust_ =
-    GET_IMP(@selector(DPScurrentstrokeadjust:));
-  methodTable.DPScurrenttransfer =
-    GET_IMP(@selector(DPScurrenttransfer));
-  methodTable.DPSdefaultmatrix =
-    GET_IMP(@selector(DPSdefaultmatrix));
-  methodTable.DPSgrestore =
-    GET_IMP(@selector(DPSgrestore));
-  methodTable.DPSgrestoreall =
-    GET_IMP(@selector(DPSgrestoreall));
-  methodTable.DPSgsave =
-    GET_IMP(@selector(DPSgsave));
-  methodTable.DPSgstate =
-    GET_IMP(@selector(DPSgstate));
-  methodTable.DPSinitgraphics =
-    GET_IMP(@selector(DPSinitgraphics));
-  methodTable.DPSinitmatrix =
-    GET_IMP(@selector(DPSinitmatrix));
-  methodTable.DPSrotate_ =
-    GET_IMP(@selector(DPSrotate:));
-  methodTable.DPSscale__ =
-    GET_IMP(@selector(DPSscale::));
-  methodTable.DPSsetdash___ =
-    GET_IMP(@selector(DPSsetdash:::));
-  methodTable.DPSsetflat_ =
-    GET_IMP(@selector(DPSsetflat:));
+  methodTable.DPSsetalpha_ =
+    GET_IMP(@selector(DPSsetalpha:));
+  methodTable.DPSsetcmykcolor____ =
+    GET_IMP(@selector(DPSsetcmykcolor::::));
   methodTable.DPSsetgray_ =
     GET_IMP(@selector(DPSsetgray:));
-  methodTable.DPSsetgstate_ =
-    GET_IMP(@selector(DPSsetgstate:));
-  methodTable.DPSsethalftone =
-    GET_IMP(@selector(DPSsethalftone));
-  methodTable.DPSsethalftonephase__ =
-    GET_IMP(@selector(DPSsethalftonephase::));
   methodTable.DPSsethsbcolor___ =
     GET_IMP(@selector(DPSsethsbcolor:::));
-  methodTable.DPSsetlinecap_ =
-    GET_IMP(@selector(DPSsetlinecap:));
-  methodTable.DPSsetlinejoin_ =
-    GET_IMP(@selector(DPSsetlinejoin:));
-  methodTable.DPSsetlinewidth_ =
-    GET_IMP(@selector(DPSsetlinewidth:));
-  methodTable.DPSsetmatrix =
-    GET_IMP(@selector(DPSsetmatrix));
-  methodTable.DPSsetmiterlimit_ =
-    GET_IMP(@selector(DPSsetmiterlimit:));
   methodTable.DPSsetrgbcolor___ =
     GET_IMP(@selector(DPSsetrgbcolor:::));
-  methodTable.DPSsetscreen =
-    GET_IMP(@selector(DPSsetscreen));
-  methodTable.DPSsetstrokeadjust_ =
-    GET_IMP(@selector(DPSsetstrokeadjust:));
-  methodTable.DPSsettransfer =
-    GET_IMP(@selector(DPSsettransfer));
-  methodTable.DPStranslate__ =
-    GET_IMP(@selector(DPStranslate::));
+
+  methodTable.GSSetFillColorspace_ =
+    GET_IMP(@selector(GSSetFillColorspace:));
+  methodTable.GSSetStrokeColorspace_ =
+    GET_IMP(@selector(GSSetStrokeColorspace:));
+  methodTable.GSSetFillColor_ =
+    GET_IMP(@selector(GSSetFillColor:));
+  methodTable.GSSetStrokeColor_ =
+    GET_IMP(@selector(GSSetStrokeColor:));
+
 /* ----------------------------------------------------------------------- */
-/* I/O operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSflush =
-    GET_IMP(@selector(DPSflush));
-/* ----------------------------------------------------------------------- */
-/* Matrix operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSconcatmatrix =
-    GET_IMP(@selector(DPSconcatmatrix));
-  methodTable.DPSdtransform____ =
-    GET_IMP(@selector(DPSdtransform::::));
-  methodTable.DPSidentmatrix =
-    GET_IMP(@selector(DPSidentmatrix));
-  methodTable.DPSidtransform____ =
-    GET_IMP(@selector(DPSidtransform::::));
-  methodTable.DPSinvertmatrix =
-    GET_IMP(@selector(DPSinvertmatrix));
-  methodTable.DPSitransform____ =
-    GET_IMP(@selector(DPSitransform::::));
-  methodTable.DPStransform____ =
-    GET_IMP(@selector(DPStransform::::));
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSdefineuserobject =
-    GET_IMP(@selector(DPSdefineuserobject));
-  methodTable.DPSexecuserobject_ =
-    GET_IMP(@selector(DPSexecuserobject:));
-  methodTable.DPSundefineuserobject_ =
-    GET_IMP(@selector(DPSundefineuserobject:));
-  methodTable.DPSgetboolean_ =
-    GET_IMP(@selector(DPSgetboolean:));
-  methodTable.DPSgetchararray__ =
-    GET_IMP(@selector(DPSgetchararray::));
-  methodTable.DPSgetfloat_ =
-    GET_IMP(@selector(DPSgetfloat:));
-  methodTable.DPSgetfloatarray__ =
-    GET_IMP(@selector(DPSgetfloatarray::));
-  methodTable.DPSgetint_ =
-    GET_IMP(@selector(DPSgetint:));
-  methodTable.DPSgetintarray__ =
-    GET_IMP(@selector(DPSgetintarray::));
-  methodTable.DPSgetstring_ =
-    GET_IMP(@selector(DPSgetstring:));
-  methodTable.DPSsendboolean_ =
-    GET_IMP(@selector(DPSsendboolean:));
-  methodTable.DPSsendchararray__ =
-    GET_IMP(@selector(DPSsendchararray::));
-  methodTable.DPSsendfloat_ =
-    GET_IMP(@selector(DPSsendfloat:));
-  methodTable.DPSsendfloatarray__ =
-    GET_IMP(@selector(DPSsendfloatarray::));
-  methodTable.DPSsendint_ =
-    GET_IMP(@selector(DPSsendint:));
-  methodTable.DPSsendintarray__ =
-    GET_IMP(@selector(DPSsendintarray::));
-  methodTable.DPSsendstring_ =
-    GET_IMP(@selector(DPSsendstring:));
-/* ----------------------------------------------------------------------- */
-/* Paint operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
   methodTable.DPSashow___ =
     GET_IMP(@selector(DPSashow:::));
   methodTable.DPSawidthshow______ =
     GET_IMP(@selector(DPSawidthshow::::::));
-  methodTable.DPScopypage =
-    GET_IMP(@selector(DPScopypage));
-  methodTable.DPSeofill =
-    GET_IMP(@selector(DPSeofill));
-  methodTable.DPSerasepage =
-    GET_IMP(@selector(DPSerasepage));
-  methodTable.DPSfill =
-    GET_IMP(@selector(DPSfill));
-  methodTable.DPSimage =
-    GET_IMP(@selector(DPSimage));
-  methodTable.DPSimagemask =
-    GET_IMP(@selector(DPSimagemask));
-  methodTable.DPScolorimage =
-    GET_IMP(@selector(DPScolorimage));
-  methodTable.DPSalphaimage =
-    GET_IMP(@selector(DPSalphaimage));
-  methodTable.DPSkshow_ =
-    GET_IMP(@selector(DPSkshow:));
-  methodTable.DPSrectfill____ =
-    GET_IMP(@selector(DPSrectfill::::));
-  methodTable.DPSrectstroke____ =
-    GET_IMP(@selector(DPSrectstroke::::));
+  methodTable.DPScharpath__ =
+    GET_IMP(@selector(DPScharpath::));
   methodTable.DPSshow_ =
     GET_IMP(@selector(DPSshow:));
-  methodTable.DPSshowpage =
-    GET_IMP(@selector(DPSshowpage));
-  methodTable.DPSstroke =
-    GET_IMP(@selector(DPSstroke));
-  methodTable.DPSstrokepath =
-    GET_IMP(@selector(DPSstrokepath));
-  methodTable.DPSueofill____ =
-    GET_IMP(@selector(DPSueofill::::));
-  methodTable.DPSufill____ =
-    GET_IMP(@selector(DPSufill::::));
-  methodTable.DPSustroke____ =
-    GET_IMP(@selector(DPSustroke::::));
-  methodTable.DPSustrokepath____ =
-    GET_IMP(@selector(DPSustrokepath::::));
   methodTable.DPSwidthshow____ =
     GET_IMP(@selector(DPSwidthshow::::));
   methodTable.DPSxshow___ =
@@ -700,8 +427,108 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSxyshow:::));
   methodTable.DPSyshow___ =
     GET_IMP(@selector(DPSyshow:::));
+
+  methodTable.GSSetCharacterSpacing_ =
+    GET_IMP(@selector(GSSetCharacterSpacing:));
+  methodTable.GSSetFont_ =
+    GET_IMP(@selector(GSSetFont:));
+  methodTable.GSSetFontSize_ =
+    GET_IMP(@selector(GSSetFontSize:));
+  methodTable.GSGetTextCTM =
+    GET_IMP(@selector(GSGetTextCTM));
+  methodTable.GSGetTextPosition =
+    GET_IMP(@selector(GSGetTextPosition));
+  methodTable.GSSetTextCTM_ =
+    GET_IMP(@selector(GSSetTextCTM:));
+  methodTable.GSSetTextDrawingMode_ =
+    GET_IMP(@selector(GSSetTextDrawingMode:));
+  methodTable.GSSetTextPosition_ =
+    GET_IMP(@selector(GSSetTextPosition:));
+  methodTable.GSShowText__ =
+    GET_IMP(@selector(GSShowText::));
+  methodTable.GSShowGlyphs__ =
+    GET_IMP(@selector(GSShowGlyphs::));
+
 /* ----------------------------------------------------------------------- */
-/* Path operations */
+/* Gstate Handling */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPScurrentgstate_ =
+    GET_IMP(@selector(DPScurrentgstate:));
+  methodTable.DPSgrestore =
+    GET_IMP(@selector(DPSgrestore));
+  methodTable.DPSgsave =
+    GET_IMP(@selector(DPSgsave));
+  methodTable.DPSgstate =
+    GET_IMP(@selector(DPSgstate));
+  methodTable.DPSinitgraphics =
+    GET_IMP(@selector(DPSinitgraphics));
+  methodTable.DPSsetgstate_ =
+    GET_IMP(@selector(DPSsetgstate:));
+
+  methodTable.GSDefineGState =
+    GET_IMP(@selector(GSDefineGState));
+  methodTable.GSUndefineGState_ =
+    GET_IMP(@selector(GSUndefineGState:));
+  methodTable.GSReplaceGState_ =
+    GET_IMP(@selector(GSReplaceGState:));
+
+/* ----------------------------------------------------------------------- */
+/* Gstate operations */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPScurrentflat_ =
+    GET_IMP(@selector(DPScurrentflat:));
+  methodTable.DPScurrentlinecap_ =
+    GET_IMP(@selector(DPScurrentlinecap:));
+  methodTable.DPScurrentlinejoin_ =
+    GET_IMP(@selector(DPScurrentlinejoin:));
+  methodTable.DPScurrentlinewidth_ =
+    GET_IMP(@selector(DPScurrentlinewidth:));
+  methodTable.DPScurrentmiterlimit_ =
+    GET_IMP(@selector(DPScurrentmiterlimit:));
+  methodTable.DPScurrentpoint__ =
+    GET_IMP(@selector(DPScurrentpoint::));
+  methodTable.DPScurrentstrokeadjust_ =
+    GET_IMP(@selector(DPScurrentstrokeadjust:));
+  methodTable.DPSsetdash___ =
+    GET_IMP(@selector(DPSsetdash:::));
+  methodTable.DPSsetflat_ =
+    GET_IMP(@selector(DPSsetflat:));
+  methodTable.DPSsethalftonephase__ =
+    GET_IMP(@selector(DPSsethalftonephase::));
+  methodTable.DPSsetlinecap_ =
+    GET_IMP(@selector(DPSsetlinecap:));
+  methodTable.DPSsetlinejoin_ =
+    GET_IMP(@selector(DPSsetlinejoin:));
+  methodTable.DPSsetlinewidth_ =
+    GET_IMP(@selector(DPSsetlinewidth:));
+  methodTable.DPSsetmiterlimit_ =
+    GET_IMP(@selector(DPSsetmiterlimit:));
+  methodTable.DPSsetstrokeadjust_ =
+    GET_IMP(@selector(DPSsetstrokeadjust:));
+
+/* ----------------------------------------------------------------------- */
+/* Matrix operations */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPSconcat_ =
+    GET_IMP(@selector(DPSconcat:));
+  methodTable.DPSinitmatrix =
+    GET_IMP(@selector(DPSinitmatrix));
+  methodTable.DPSrotate_ =
+    GET_IMP(@selector(DPSrotate:));
+  methodTable.DPSscale__ =
+    GET_IMP(@selector(DPSscale::));
+  methodTable.DPStranslate__ =
+    GET_IMP(@selector(DPStranslate::));
+
+  methodTable.GSCurrentCTM =
+    GET_IMP(@selector(GSCurrentCTM));
+  methodTable.GSSetCTM_ =
+    GET_IMP(@selector(GSSetCTM:));
+  methodTable.GSConcatCTM_ =
+    GET_IMP(@selector(GSConcatCTM:));
+
+/* ----------------------------------------------------------------------- */
+/* Paint operations */
 /* ----------------------------------------------------------------------- */
   methodTable.DPSarc_____ =
     GET_IMP(@selector(DPSarc:::::));
@@ -709,28 +536,22 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSarcn:::::));
   methodTable.DPSarct_____ =
     GET_IMP(@selector(DPSarct:::::));
-  methodTable.DPSarcto_________ =
-    GET_IMP(@selector(DPSarcto:::::::::));
-  methodTable.DPScharpath__ =
-    GET_IMP(@selector(DPScharpath::));
   methodTable.DPSclip =
     GET_IMP(@selector(DPSclip));
-  methodTable.DPSclippath =
-    GET_IMP(@selector(DPSclippath));
   methodTable.DPSclosepath =
     GET_IMP(@selector(DPSclosepath));
   methodTable.DPScurveto______ =
     GET_IMP(@selector(DPScurveto::::::));
   methodTable.DPSeoclip =
     GET_IMP(@selector(DPSeoclip));
-  methodTable.DPSeoviewclip =
-    GET_IMP(@selector(DPSeoviewclip));
+  methodTable.DPSeofill =
+    GET_IMP(@selector(DPSeofill));
+  methodTable.DPSfill =
+    GET_IMP(@selector(DPSfill));
   methodTable.DPSflattenpath =
     GET_IMP(@selector(DPSflattenpath));
   methodTable.DPSinitclip =
     GET_IMP(@selector(DPSinitclip));
-  methodTable.DPSinitviewclip =
-    GET_IMP(@selector(DPSinitviewclip));
   methodTable.DPSlineto__ =
     GET_IMP(@selector(DPSlineto::));
   methodTable.DPSmoveto__ =
@@ -739,270 +560,83 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSnewpath));
   methodTable.DPSpathbbox____ =
     GET_IMP(@selector(DPSpathbbox::::));
-  methodTable.DPSpathforall =
-    GET_IMP(@selector(DPSpathforall));
   methodTable.DPSrcurveto______ =
     GET_IMP(@selector(DPSrcurveto::::::));
   methodTable.DPSrectclip____ =
     GET_IMP(@selector(DPSrectclip::::));
-  methodTable.DPSrectviewclip____ =
-    GET_IMP(@selector(DPSrectviewclip::::));
+  methodTable.DPSrectfill____ =
+    GET_IMP(@selector(DPSrectfill::::));
+  methodTable.DPSrectstroke____ =
+    GET_IMP(@selector(DPSrectstroke::::));
   methodTable.DPSreversepath =
     GET_IMP(@selector(DPSreversepath));
   methodTable.DPSrlineto__ =
     GET_IMP(@selector(DPSrlineto::));
   methodTable.DPSrmoveto__ =
     GET_IMP(@selector(DPSrmoveto::));
-  methodTable.DPSsetbbox____ =
-    GET_IMP(@selector(DPSsetbbox::::));
-  methodTable.DPSviewclip =
-    GET_IMP(@selector(DPSviewclip));
-  methodTable.DPSviewclippath =
-    GET_IMP(@selector(DPSviewclippath));
-/* ----------------------------------------------------------------------- */
-/* System system ops */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSrestore =
-    GET_IMP(@selector(DPSrestore));
-  methodTable.DPSsave =
-    GET_IMP(@selector(DPSsave));
+  methodTable.DPSstroke =
+    GET_IMP(@selector(DPSstroke));
+
+  methodTable.GSSendBezierPath_ =
+    GET_IMP(@selector(GSSendBezierPath:));
+  methodTable.GSRectClipList__ =
+    GET_IMP(@selector(GSRectClipList::));
+  methodTable.GSRectFillList__ =
+    GET_IMP(@selector(GSRectFillList::));
+
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-  methodTable.DPScurrentdrawingfunction_ =
-    GET_IMP(@selector(DPScurrentdrawingfunction:));
   methodTable.DPScurrentgcdrawable____ =
     GET_IMP(@selector(DPScurrentgcdrawable::::));
-  methodTable.DPScurrentgcdrawablecolor_____ =
-    GET_IMP(@selector(DPScurrentgcdrawablecolor:::::));
   methodTable.DPScurrentoffset__ =
     GET_IMP(@selector(DPScurrentoffset::));
-  methodTable.DPSsetdrawingfunction_ =
-    GET_IMP(@selector(DPSsetdrawingfunction:));
   methodTable.DPSsetgcdrawable____ =
     GET_IMP(@selector(DPSsetgcdrawable::::));
-  methodTable.DPSsetgcdrawablecolor_____ =
-    GET_IMP(@selector(DPSsetgcdrawablecolor:::::));
   methodTable.DPSsetoffset__ =
     GET_IMP(@selector(DPSsetoffset::));
-  methodTable.DPSsetrgbactual____ =
-    GET_IMP(@selector(DPSsetrgbactual::::));
-  methodTable.DPScapturegstate_ =
-    GET_IMP(@selector(DPScapturegstate:));
+
 /*-------------------------------------------------------------------------*/
-/* Graphics Extension Ops */
+/* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-  methodTable.DPScomposite________ = 
+  methodTable.DPScomposite________ =
     GET_IMP(@selector(DPScomposite::::::::));
-  methodTable.DPScompositerect_____ = 
+  methodTable.DPScompositerect_____ =
     GET_IMP(@selector(DPScompositerect:::::));
-  methodTable.DPSdissolve________ = 
+  methodTable.DPSdissolve________ =
     GET_IMP(@selector(DPSdissolve::::::::));
-  methodTable.DPSreadimage = 
-    GET_IMP(@selector(DPSreadimage));
-  methodTable.DPSsetalpha_ = 
-    GET_IMP(@selector(DPSsetalpha:));
-  methodTable.DPScurrentalpha_ = 
-    GET_IMP(@selector(DPScurrentalpha:));
-/*-------------------------------------------------------------------------*/
-/* Window Extension Ops */
-/*-------------------------------------------------------------------------*/
-  methodTable.DPSwindow______ = 
-    GET_IMP(@selector(DPSwindow::::::));
-  methodTable.DPStermwindow_ = 
-    GET_IMP(@selector(DPStermwindow:));
-  methodTable.DPSstylewindow__ = 
-    GET_IMP(@selector(DPSstylewindow::));
-  methodTable.DPStitlewindow__ = 
-    GET_IMP(@selector(DPStitlewindow::));
-  methodTable.DPSminiwindow_ = 
-    GET_IMP(@selector(DPSminiwindow:));
-  methodTable.DPSwindowdevice_ = 
-    GET_IMP(@selector(DPSwindowdevice:));
-  methodTable.DPSwindowdeviceround_ = 
-    GET_IMP(@selector(DPSwindowdeviceround:));
-  methodTable.DPScurrentwindow_ = 
-    GET_IMP(@selector(DPScurrentwindow:));
-  methodTable.DPSorderwindow___ = 
-    GET_IMP(@selector(DPSorderwindow:::));
-  methodTable.DPSmovewindow___ = 
-    GET_IMP(@selector(DPSmovewindow:::));
-  methodTable.DPSupdatewindow_ = 
-    GET_IMP(@selector(DPSupdatewindow:));
-  methodTable.DPSplacewindow_____ = 
-    GET_IMP(@selector(DPSplacewindow:::::));
-  methodTable.DPSfrontwindow_ = 
-    GET_IMP(@selector(DPSfrontwindow:));
-  methodTable.DPSfindwindow________ = 
-    GET_IMP(@selector(DPSfindwindow::::::::));
-  methodTable.DPScurrentwindowbounds_____ = 
-    GET_IMP(@selector(DPScurrentwindowbounds:::::));
-  methodTable.DPSsetexposurecolor = 
-    GET_IMP(@selector(DPSsetexposurecolor));
-  methodTable.DPSsetsendexposed__ = 
-    GET_IMP(@selector(DPSsetsendexposed::));
-  methodTable.DPSsetautofill__ = 
-    GET_IMP(@selector(DPSsetautofill::));
-  methodTable.DPScurrentwindowalpha__ = 
-    GET_IMP(@selector(DPScurrentwindowalpha::));
-  methodTable.DPScountscreenlist__ = 
-    GET_IMP(@selector(DPScountscreenlist::));
-  methodTable.DPSscreenlist___ = 
-    GET_IMP(@selector(DPSscreenlist:::));
-  methodTable.DPSsetowner__ = 
-    GET_IMP(@selector(DPSsetowner::));
-  methodTable.DPScurrentowner__ = 
-    GET_IMP(@selector(DPScurrentowner::));
-  methodTable.DPSsetwindowtype__ = 
-    GET_IMP(@selector(DPSsetwindowtype::));
-  methodTable.DPSsetwindowlevel__ = 
-    GET_IMP(@selector(DPSsetwindowlevel::));
-  methodTable.DPScurrentwindowlevel__ = 
-    GET_IMP(@selector(DPScurrentwindowlevel::));
-  methodTable.DPScountwindowlist__ = 
-    GET_IMP(@selector(DPScountwindowlist::));
-  methodTable.DPSwindowlist___ = 
-    GET_IMP(@selector(DPSwindowlist:::));
-  methodTable.DPSsetwindowdepthlimit__ = 
-    GET_IMP(@selector(DPSsetwindowdepthlimit::));
-  methodTable.DPScurrentwindowdepthlimit__ = 
-    GET_IMP(@selector(DPScurrentwindowdepthlimit::));
-  methodTable.DPScurrentwindowdepth__ = 
-    GET_IMP(@selector(DPScurrentwindowdepth::));
-  methodTable.DPSsetdefaultdepthlimit_ = 
-    GET_IMP(@selector(DPSsetdefaultdepthlimit:));
-  methodTable.DPScurrentdefaultdepthlimit_ = 
-    GET_IMP(@selector(DPScurrentdefaultdepthlimit:));
-  methodTable.DPSsetmaxsize___ = 
-    GET_IMP(@selector(DPSsetmaxsize:::));
-  methodTable.DPSsetminsize___ = 
-    GET_IMP(@selector(DPSsetminsize:::));
-  methodTable.DPSsetresizeincrements___ = 
-    GET_IMP(@selector(DPSsetresizeincrements:::));
-  methodTable.DPSflushwindowrect_____ = 
-    GET_IMP(@selector(DPSflushwindowrect:::::));
-  methodTable.DPScapturemouse_ = 
-    GET_IMP(@selector(DPScapturemouse:));
-  methodTable.DPSreleasemouse = 
-    GET_IMP(@selector(DPSreleasemouse));
-  methodTable.DPSsetinputfocus_ = 
-    GET_IMP(@selector(DPSsetinputfocus:));
-  methodTable.DPShidecursor = 
-    GET_IMP(@selector(DPShidecursor));
-  methodTable.DPSshowcursor = 
-    GET_IMP(@selector(DPSshowcursor));
-  methodTable.DPSstandardcursor__ = 
-    GET_IMP(@selector(DPSstandardcursor::));
-  methodTable.DPSimagecursor_______ = 
-    GET_IMP(@selector(DPSimagecursor:::::::));
-  methodTable.DPSsetcursorcolor_______ = 
-    GET_IMP(@selector(DPSsetcursorcolor:::::::));
-  methodTable.DPSstyleoffsets_____ = 
-    GET_IMP(@selector(DPSstyleoffsets:::::));
-  methodTable.DPSdocedited__ = 
-    GET_IMP(@selector(DPSdocedited::));
-/* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-  methodTable.DPSGetEventMatchingMask_beforeDate_inMode_dequeue_ = 
-    GET_IMP(@selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:));
-  methodTable.DPSDiscardEventsMatchingMask_beforeEvent_ = 
-    GET_IMP(@selector(DPSDiscardEventsMatchingMask:beforeEvent:));
-  methodTable.DPSPostEvent_atStart_ = 
-    GET_IMP(@selector(DPSPostEvent:atStart:));
-  methodTable.DPSmouselocation__ = 
-    GET_IMP(@selector(DPSmouselocation::));
-  methodTable.DPSsetinputstate__ = 
-    GET_IMP(@selector(DPSsetinputstate::));
 
-  methodTable.DPScurrentserverdevice_ = 
-    GET_IMP(@selector(DPScurrentserverdevice:));
-  methodTable.DPScurrentwindowdevice__ = 
-    GET_IMP(@selector(DPScurrentwindowdevice::));
+  methodTable.GSDrawImage__ =
+    GET_IMP(@selector(GSDrawImage::));
 
 /* ----------------------------------------------------------------------- */
-/* Client functions */
+/* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
-  methodTable.DPSPrintf__ = 
+  methodTable.DPSPrintf__ =
     GET_IMP(@selector(DPSPrintf::));
-  methodTable.DPSWriteData__ = 
+  methodTable.DPSWriteData__ =
     GET_IMP(@selector(DPSWriteData::));
 
-/*
- * Rectangle Drawing Functions
- */
-
-  methodTable.NSEraseRect_ = 
-    GET_IMP(@selector(NSEraseRect:));
-  methodTable.NSHighlightRect_ =
-    GET_IMP(@selector(NSHighlightRect:));
-  methodTable.NSRectClip_ = 
-    GET_IMP(@selector(NSRectClip:));
-  methodTable.NSRectClipList__ = 
-    GET_IMP(@selector(NSRectClipList::));
-  methodTable.NSRectFill_ = 
-    GET_IMP(@selector(NSRectFill:));
-  methodTable.NSRectFillList__ = 
-    GET_IMP(@selector(NSRectFillList::));
-  methodTable.NSRectFillListWithGrays___ = 
-    GET_IMP(@selector(NSRectFillListWithGrays:::));
-  methodTable.NSRectFillUsingOperation__ = 
-    GET_IMP(@selector(NSRectFillUsingOperation::));
-  
-/*
- * Draw a Bordered Rectangle
- */
-
-  methodTable.NSDottedFrameRect_ = 
-    GET_IMP(@selector(NSDottedFrameRect:));
-  methodTable.NSFrameRect_ = 
-    GET_IMP(@selector(NSFrameRect:));
-  methodTable.NSFrameRectWithWidth__ = 
-    GET_IMP(@selector(NSFrameRectWithWidth::));
-
-
-/*
- * Read the Color at a Screen Position
- */
-
-  methodTable.NSReadPixel_ = 
+/* ----------------------------------------------------------------------- */
+/* NSGraphics Ops */	
+/* ----------------------------------------------------------------------- */
+  methodTable.NSReadPixel_ =
     GET_IMP(@selector(NSReadPixel:));
 
-/*
- * Copy an image
- */
+  methodTable.NSBeep =
+    GET_IMP(@selector(NSBeep));
 
-  methodTable.NSCopyBitmapFromGState___ = 
-    GET_IMP(@selector(NSCopyBitmapFromGState:::));
-  methodTable.NSCopyBits___ = 
-    GET_IMP(@selector(NSCopyBits:::));
+/* Context helper wraps */
+  methodTable.GSWSetViewIsFlipped_ =
+    GET_IMP(@selector(GSWSetViewIsFlipped:));
+  methodTable.GSWViewIsFlipped =
+    GET_IMP(@selector(GSWViewIsFlipped));
 
 /*
  * Render Bitmap Images
  */
-
   methodTable.NSDrawBitmap___________ = 
     GET_IMP(@selector(NSDrawBitmap:::::::::::));
-
-/*
- * Play the System Beep
- */
-  methodTable.NSBeep = 
-    GET_IMP(@selector(NSBeep));
-
-/* Context helper wraps */
-  methodTable.GSWDefineAsUserObj = 
-    GET_IMP(@selector(GSWDefineAsUserObj));
-  methodTable.GSWViewIsFlipped = 
-    GET_IMP(@selector(GSWViewIsFlipped));
-  methodTable.GSWSetViewIsFlipped_ = 
-    GET_IMP(@selector(GSWSetViewIsFlipped:));
-  methodTable.GSWindowDepthForScreen_ = 
-    GET_IMP(@selector(GSWindowDepthForScreen:));
-  methodTable.GSAvailableDepthsForScreen_ = 
-    GET_IMP(@selector(GSAvailableDepthsForScreen:));
-  methodTable.GSResolutionForScreen_ = 
-    GET_IMP(@selector(GSResolutionForScreen:));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
@@ -1024,198 +658,12 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
+- (void) DPScurrentalpha: (float *)a
+{
+  [self subclassResponsibility: _cmd];
+}
+
 - (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Data operations */
-/* ----------------------------------------------------------------------- */
-- (void) DPSclear 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScleartomark 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScopy: (int)n 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScount: (int *)n 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScounttomark: (int *)n 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSdup 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSexch 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSexecstack 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSget 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSindex: (int)i 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSmark 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSnull 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSpop 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSput 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSroll: (int)n : (int)j 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Font operations */
-/* ----------------------------------------------------------------------- */
-
-- (void) DPSdefineresource: (const char *)category 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSfindresource: (const char *)key : (const char *)category 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSFontDirectory 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSISOLatin1Encoding 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSSharedFontDirectory 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSStandardEncoding 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentcacheparams 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentfont 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSdefinefont 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSfindfont: (const char *)name 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSmakefont 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSscalefont: (float)size 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSselectfont: (const char *)name : (float)scale 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetfont: (int)f 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSundefinefont: (const char *)name 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) setFont: (NSFont*) font
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Gstate operations */
-/* ----------------------------------------------------------------------- */
-
-- (void) DPSconcat: (const float*)m 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentdash 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentflat: (float*)flatness 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1225,52 +673,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentgstate: (int)gst 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrenthalftone 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrenthalftonephase: (float*)x : (float*)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentlinecap: (int *)linecap 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentlinejoin: (int *)linejoin 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentlinewidth: (float*)width 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentmiterlimit: (float*)limit 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentpoint: (float*)x : (float*)y 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1280,72 +683,12 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentscreen 
+- (void) DPSsetalpha: (float)a
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentstrokeadjust: (int *)b 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrenttransfer 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSdefaultmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgrestore 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgrestoreall 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgsave 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgstate 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSinitgraphics 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSinitmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrotate: (float)angle 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSscale: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetflat: (float)flatness 
+- (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1355,47 +698,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetgstate: (int)gst 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsethalftone 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsethalftonephase: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (void) DPSsethsbcolor: (float)h : (float)s : (float)b 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetlinecap: (int)linecap 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetlinejoin: (int)linejoin 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetlinewidth: (float)width 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetmiterlimit: (float)limit 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1405,166 +708,29 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetscreen 
+- (void) GSSetFillColorspace: (NSDictionary *)dict
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetstrokeadjust: (int)b 
+- (void) GSSetStrokeColorspace: (NSDictionary *)dict
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsettransfer 
+- (void) GSSetFillColor: (float *)values
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPStranslate: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Matrix operations */
-/* ----------------------------------------------------------------------- */
-- (void) DPSflush
+- (void) GSSetStrokeColor: (float *)values
 {
   [self subclassResponsibility: _cmd];
 }
 
 /* ----------------------------------------------------------------------- */
-/* Matrix operations */
+/* Text operations */
 /* ----------------------------------------------------------------------- */
-
-- (void) DPSconcatmatrix
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSdtransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSidentmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSidtransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSinvertmatrix 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSitransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPStransform: (float)x1 : (float)y1 : (float*)x2 : (float*)y2 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Opstack operations */
-/* ----------------------------------------------------------------------- */
-
-- (void)DPSdefineuserobject
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void)DPSexecuserobject: (int)index
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void)DPSundefineuserobject: (int)index
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetboolean: (int *)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetchararray: (int)size : (char *)s 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetfloat: (float*)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetfloatarray: (int)size : (float*)a 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetint: (int *)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetintarray: (int)size : (int *)a 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSgetstring: (char *)s 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendboolean: (int)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendchararray: (const char *)s : (int)size 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendfloat: (float)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendfloatarray: (const float*)a : (int)size 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendint: (int)it 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendintarray: (const int *)a : (int)size 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsendstring: (const char *)s 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* Paint operations */
-/* ----------------------------------------------------------------------- */
-
 - (void) DPSashow: (float)x : (float)y : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
@@ -1575,97 +741,12 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScopypage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSeofill 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSerasepage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSfill 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSimage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSimagemask 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScolorimage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSalphaimage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSkshow: (const char *)s 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h 
+- (void) DPScharpath: (const char *)s : (int)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
 - (void) DPSshow: (const char *)s 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSshowpage 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSstroke 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSstrokepath 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSueofill: (const char *)nums : (int)n : (const char *)ops : (int)l 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSufill: (const char *)nums : (int)n : (const char *)ops : (int)l 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSustroke: (const char *)nums   : (int)n : (const char *)ops : (int)l 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSustrokepath: (const char *)nums : (int)n : (const char *)ops : (int)l 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1690,160 +771,363 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/* ----------------------------------------------------------------------- */
-/* Path operations */
-/* ----------------------------------------------------------------------- */
-
-- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 : (float)angle2 
+- (void) GSSetCharacterSpacing: (float)extra
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 : (float)angle2 
+- (void) GSSetFont: (NSFont*)font
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r 
+- (void) GSSetFontSize: (float)size
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarcto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r : (float*)xt1 : (float*)yt1 : (float*)xt2 : (float*)yt2 
+- (NSAffineTransform *) GSGetTextCTM
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+
+- (NSPoint) GSGetTextPosition
+{
+  [self subclassResponsibility: _cmd];
+  return NSMakePoint(0,0);
+}
+
+- (void) GSSetTextCTM: (NSAffineTransform *)ctm
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScharpath: (const char *)s : (int)b 
+- (void) GSSetTextDrawingMode: (GSTextDrawingMode)mode
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSclip 
+- (void) GSSetTextPosition: (NSPoint)loc
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSclippath 
+- (void) GSShowText: (const char *)string : (size_t) length
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSclosepath 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)x3 : (float)y3 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSeoclip 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSeoviewclip 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSflattenpath 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSinitclip 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSinitviewclip 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSlineto: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSmoveto: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSnewpath 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSpathforall 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)x3 : (float)y3 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrectviewclip: (float)x : (float)y : (float)w : (float)h 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSreversepath 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrlineto: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSrmoveto: (float)x : (float)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetbbox: (float)llx : (float)lly : (float)urx : (float)ury 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSviewclip 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSviewclippath 
+- (void) GSShowGlyphs: (const NSGlyph *)glyphs : (size_t) length
 {
   [self subclassResponsibility: _cmd];
 }
 
 /* ----------------------------------------------------------------------- */
-/* System ops */
+/* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 
-- (void) DPSrestore
+- (void) DPScurrentgstate: (int)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsave
+- (void) DPSgrestore
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSgsave
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSgstate
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSinitgraphics
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetgstate: (int)gst
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (int)  GSDefineGState
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+
+- (void) GSUndefineGState: (int)gst
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) GSReplaceGState: (int)gst
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* Gstate operations */
+/* ----------------------------------------------------------------------- */
+- (void) DPScurrentflat: (float*)flatness
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentlinecap: (int*)linecap
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentlinejoin: (int*)linejoin
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentlinewidth: (float*)width
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentmiterlimit: (float*)limit
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentpoint: (float*)x : (float*)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentstrokeadjust: (int*)b
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetdash: (const float*)pat : (int)size : (float)offset
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetflat: (float)flatness
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsethalftonephase: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetlinecap: (int)linecap
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetlinejoin: (int)linejoin
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetlinewidth: (float)width
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetmiterlimit: (float)limit
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetstrokeadjust: (int)b
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* Matrix operations */
+/* ----------------------------------------------------------------------- */
+- (void) DPSconcat: (const float*)m
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSinitmatrix
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrotate: (float)angle
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSscale: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPStranslate: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (NSAffineTransform *) GSCurrentCTM
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+
+- (void) GSSetCTM: (NSAffineTransform *)ctm
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) GSConcatCTM: (NSAffineTransform *)ctm
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* Paint operations */
+/* ----------------------------------------------------------------------- */
+- (void) DPSarc: (float)x : (float)y : (float)r : (float)angle1 
+	       : (float)angle2
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 
+		: (float)angle2
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSclip
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSclosepath
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
+		   : (float)x3 : (float)y3
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSeoclip
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSeofill
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSfill
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSflattenpath
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSinitclip
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSlineto: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSmoveto: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSnewpath
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSpathbbox: (float*)llx : (float*)lly : (float*)urx : (float*)ury
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrcurveto: (float)x1 : (float)y1 : (float)x2 : (float)y2 
+		    : (float)x3 : (float)y3
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrectclip: (float)x : (float)y : (float)w : (float)h
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSreversepath
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrlineto: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSrmoveto: (float)x : (float)y
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSstroke
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) GSSendBezierPath: (NSBezierPath *)path
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) GSRectClipList: (const NSRect *)rects : (int) count
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) GSRectFillList: (const NSRect *)rects : (int) count
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1851,19 +1135,7 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-
-- (void) DPScurrentdrawingfunction: (int *)function
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (void) DPScurrentgcdrawable: (void **)gc : (void **)draw : (int *)x : (int *)y
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentgcdrawablecolor: (void **)gc : (void **)draw : (int *)x 
-				  : (int *)y : (int *)colorInfo
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1873,18 +1145,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetdrawingfunction: (int) function
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (void) DPSsetgcdrawable: (void *)gc : (void *)draw : (int)x : (int)y
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetgcdrawablecolor: (void *)gc : (void *)draw : (int)x : (int)y
-				  : (const int *)colorInfo
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1894,20 +1155,11 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int *)success
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScapturegstate: (int *)gst
-{
-  [self subclassResponsibility: _cmd];
-}
-
 /*-------------------------------------------------------------------------*/
 /* Graphics Extension Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h : (int)gstateNum : (float)dx : (float)dy : (int)op
+- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h 
+		     : (int)gstateNum : (float)dx : (float)dy : (int)op
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1917,603 +1169,13 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h : (int)gstateNum
- : (float)dx : (float)dy : (float)delta
+- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
+		    : (int)gstateNum : (float)dx : (float)dy : (float)delta
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSreadimage
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetalpha: (float)a
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentalpha: (float *)a
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/*-------------------------------------------------------------------------*/
-/* Window Extension Ops */
-/*-------------------------------------------------------------------------*/
-- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPStermwindow: (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSstylewindow: (int) style : (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPStitlewindow: (const char *) window_title : (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSminiwindow: (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSwindowdevice: (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSwindowdeviceround: (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindow: (int *) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSmovewindow: (float) x : (float) y : (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSupdatewindow: (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSfrontwindow: (int *) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetexposurecolor
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetsendexposed: (int) truth : (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetautofill: (int) truth : (int) num
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowalpha: (int) win : (int *) alpha
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScountscreenlist: (int) context : (int *) count
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSscreenlist: (int) context : (int) count : (int *) windows
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetowner: (int) owner : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentowner: (int) win : (int *) owner
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetwindowtype: (int) type : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetwindowlevel: (int) level : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowlevel: (int) win : (int *) level
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScountwindowlist: (int) context : (int *) count
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSwindowlist: (int) context : (int) count : (int *) windows
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetwindowdepthlimit: (int) limit : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowdepth: (int) win : (int *) depth
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetdefaultdepthlimit: (int) limit
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentdefaultdepthlimit: (int *) limit
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetmaxsize: (float) width : (float) height : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetminsize: (float) width : (float) height : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScapturemouse: (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSreleasemouse
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetinputfocus: (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPShidecursor
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSshowcursor
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSstandardcursor: (int) style : (void **) cid
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSstyleoffsets: (float *) l : (float *) r : (float *) t : (float *) b : (int) style
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSdocedited: (int) edited : (int) window
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/* ----------------------------------------------------------------------- */
-/* GNUstep Event and other I/O extensions */
-/* ----------------------------------------------------------------------- */
-- (NSEvent*) DPSGetEventMatchingMask: (unsigned)mask
-			  beforeDate: (NSDate*)limit
-			      inMode: (NSString*)mode
-			     dequeue: (BOOL)flag
-{
-  unsigned	pos = 0;	/* Position in queue scanned so far	*/
-  NSRunLoop	*loop = nil;
-
-  do
-    {
-      unsigned	count = [event_queue count];
-      NSEvent	*event;
-      unsigned	i = 0;
-
-      if (count == 0)
-	{
-	  event = nil;
-	}
-      else if (mask == NSAnyEventMask)
-	{
-	  /*
-	   * Special case - if the mask matches any event, we just get the
-	   * first event on the queue.
-	   */
-	  event = [event_queue objectAtIndex: 0];
-	}
-      else
-	{
-	  event = nil;
-	  /*
-	   * Scan the queue from the last position we have seen, up to the end.
-	   */
-	  if (count > pos)
-	    {
-	      unsigned	end = count - pos;
-	      NSRange	r = NSMakeRange(pos, end);
-	      NSEvent	*events[end];
-
-	      [event_queue getObjects: events range: r];
-	      for (i = 0; i < end; i++)
-		{
-		  BOOL	matched = NO;
-
-		  switch ([events[i] type])
-		    {
-		      case NSLeftMouseDown:
-			if (mask & NSLeftMouseDownMask)
-			  matched = YES;
-			break;
-
-		      case NSLeftMouseUp:
-			if (mask & NSLeftMouseUpMask)
-			  matched = YES;
-			break;
-
-		      case NSOtherMouseDown:
-			if (mask & NSOtherMouseDownMask)
-			  matched = YES;
-			break;
-
-		      case NSOtherMouseUp:
-			if (mask & NSOtherMouseUpMask)
-			  matched = YES;
-			break;
-
-		      case NSRightMouseDown:
-			if (mask & NSRightMouseDownMask)
-			  matched = YES;
-			break;
-
-		      case NSRightMouseUp:
-			if (mask & NSRightMouseUpMask)
-			  matched = YES;
-			break;
-
-		      case NSMouseMoved:
-			if (mask & NSMouseMovedMask)
-			  matched = YES;
-			break;
-
-		      case NSMouseEntered:
-			if (mask & NSMouseEnteredMask)
-			  matched = YES;
-			break;
-
-		      case NSMouseExited:
-			if (mask & NSMouseExitedMask)
-			  matched = YES;
-			break;
-
-		      case NSLeftMouseDragged:
-			if (mask & NSLeftMouseDraggedMask)
-			  matched = YES;
-			break;
-
-		      case NSOtherMouseDragged:
-			if (mask & NSOtherMouseDraggedMask)
-			  matched = YES;
-			break;
-
-		      case NSRightMouseDragged:
-			if (mask & NSRightMouseDraggedMask)
-			  matched = YES;
-			break;
-
-		      case NSKeyDown:
-			if (mask & NSKeyDownMask)
-			  matched = YES;
-			break;
-
-		      case NSKeyUp:
-			if (mask & NSKeyUpMask)
-			  matched = YES;
-			break;
-
-		      case NSFlagsChanged:
-			if (mask & NSFlagsChangedMask)
-			  matched = YES;
-			break;
-
-		      case NSAppKitDefined:
-			if (mask & NSAppKitDefinedMask)
-			  matched = YES;
-			break;
-
-		      case NSSystemDefined:
-			if (mask & NSSystemDefinedMask)
-			  matched = YES;
-			break;
-
-		      case NSApplicationDefined:
-			if (mask & NSApplicationDefinedMask)
-			  matched = YES;
-			break;
-
-		      case NSPeriodic:
-			if (mask & NSPeriodicMask)
-			  matched = YES;
-			break;
-
-		      case NSCursorUpdate:
-			if (mask & NSCursorUpdateMask)
-			  matched = YES;
-			break;
-
-		      default:
-			break;
-		    }
-		  if (matched)
-		    {
-		      event = events[i];
-		      break;
-		    }
-		}
-	    }
-	}
-
-      /*
-       * Note the positon we have read up to.
-       */
-      pos += i;
-
-      /*
-       * If we found a matching event, we (depending on the flag) de-queue it.
-       * We return the event RETAINED - the caller must release it.
-       */
-      if (event)
-	{
-	  RETAIN(event);
-	  if (flag)
-	    {
-	      [event_queue removeObjectAtIndex: pos];
-	    }
-	  return AUTORELEASE(event);
-	}
-      if (loop == nil)
-	loop = [NSRunLoop currentRunLoop];
-    }
-  while ([loop runMode: mode beforeDate: limit] == YES);
-
-  return nil;	/* No events in specified time	*/
-}
-
-- (void) DPSDiscardEventsMatchingMask: (unsigned)mask
-			  beforeEvent: (NSEvent*)limit
-{
-  unsigned		index = [event_queue count];
-
-  /*
-   *	If there is a range to use - remove all the matching events in it
-   *    which were created before the specified event.
-   */
-  if (index > 0)
-    {
-      NSTimeInterval	when = [limit timestamp];
-      NSEvent		*events[index];
-
-      [event_queue getObjects: events];
-
-      while (index-- > 0)
-	{
-	  NSEvent	*event = events[index];
-
-	  if ([event timestamp] < when)
-	    {	
-	      BOOL	shouldRemove = NO;
-
-	      if (mask == NSAnyEventMask)
-		{
-		  shouldRemove = YES;
-		}
-	      else
-		{
-		  switch ([event type])
-		    {
-		      case NSLeftMouseDown:
-			if (mask & NSLeftMouseDownMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSLeftMouseUp:
-			if (mask & NSLeftMouseUpMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSOtherMouseDown:
-			if (mask & NSOtherMouseDownMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSOtherMouseUp:
-			if (mask & NSOtherMouseUpMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSRightMouseDown:
-			if (mask & NSRightMouseDownMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSRightMouseUp:
-			if (mask & NSRightMouseUpMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSMouseMoved:
-			if (mask & NSMouseMovedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSMouseEntered:
-			if (mask & NSMouseEnteredMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSMouseExited:
-			if (mask & NSMouseExitedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSLeftMouseDragged:
-			if (mask & NSLeftMouseDraggedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSOtherMouseDragged:
-			if (mask & NSOtherMouseDraggedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSRightMouseDragged:
-			if (mask & NSRightMouseDraggedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSKeyDown:
-			if (mask & NSKeyDownMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSKeyUp:
-			if (mask & NSKeyUpMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSFlagsChanged:
-			if (mask & NSFlagsChangedMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSPeriodic:
-			if (mask & NSPeriodicMask)
-			  shouldRemove = YES;
-			break;
-
-		      case NSCursorUpdate:
-			if (mask & NSCursorUpdateMask)
-			  shouldRemove = YES;
-			break;
-
-		      default:
-			break;
-		    }
-		}
-	      if (shouldRemove)
-		[event_queue removeObjectAtIndex: index];
-	    }
-	}
-    }
-}
-
-- (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag
-{
-  if (flag)
-    [event_queue insertObject: anEvent atIndex: 0];
-  else
-    [event_queue addObject: anEvent];
-}
-
-- (void) DPSmouselocation: (float*)x : (float*)y 
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPSsetinputstate: (int)window : (int)state
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentserverdevice: (void **)serverptr
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) DPScurrentwindowdevice: (int)win : (void **)windowptr
+- (void) GSDrawImage: (NSRect) rect: (void *) imageref
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2533,127 +1195,10 @@ NSGraphicsContext	*GSCurrentContext()
 
 @end
 
-@implementation NSGraphicsContext (NSGraphics)
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
-+ (void) initializeBackend
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/*
- * Rectangle Drawing Functions
- */
-- (void) NSEraseRect: (NSRect) aRect
-{
-  DPSgsave(self);
-  DPSsetgray(self, 1.0);
-  NSRectFill(aRect);
-  DPSgrestore(self);
-}
-
-- (void) NSHighlightRect: (NSRect) aRect
-{
-  DPScompositerect(self, NSMinX(aRect), NSMinY(aRect), 
-		   NSWidth(aRect), NSHeight(aRect), 
-		   NSCompositeHighlight);
-  [[[self focusView] window] flushWindow];
-}
-
-- (void) NSRectClip: (NSRect) aRect
-{
-  DPSrectclip(self, NSMinX(aRect), NSMinY(aRect), 
-	      NSWidth(aRect), NSHeight(aRect));
-  DPSnewpath(self);
-}
-
-- (void) NSRectClipList: (const NSRect *)rects : (int) count
-{
-  int i;
-  NSRect union_rect;
-
-  if (count == 0)
-    return;
-
-  /* 
-     The specification is not clear if the union of the rects 
-     should produce the new clip rect or if the outline of all rects 
-     should be used as clip path.
-  */
-  union_rect = rects[0];
-  for (i = 1; i < count; i++)
-    union_rect = NSUnionRect(union_rect, rects[i]);
-
-  NSRectClip(union_rect);
-}
-
-- (void) NSRectFill: (NSRect) aRect
-{
-  DPSrectfill(self, NSMinX(aRect), NSMinY(aRect), 
-	      NSWidth(aRect), NSHeight(aRect));
-}
-
-- (void) NSRectFillList: (const NSRect *)rects : (int) count
-{
-  int i;
-  
-  for (i = 0; i < count; i++)
-    DPSrectfill(self,  NSMinX(rects[i]), NSMinY(rects[i]), 
-		NSWidth(rects[i]), NSHeight(rects[i]));
-}
-
-- (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
-				: (int) count
-{
-  int i;
-
-  for (i = 0; i < count; i++)
-    {
-      DPSsetgray(self, grays[i]);
-      DPSrectfill(self,  NSMinX(rects[i]), NSMinY(rects[i]), 
-		  NSWidth(rects[i]), NSHeight(rects[i]));
-    }
-}
-
-- (void) NSRectFillUsingOperation: (NSRect)aRect : (NSCompositingOperation)op
-{
-  // FIXME: 
-  NSRectFill(aRect);
-}
-
-
-/*
- * Draw a Bordered Rectangle
- */
-
-- (void) NSDottedFrameRect: (const NSRect) aRect
-{
-  float dot_dash[] = {1.0, 1.0};
-
-  DPSsetgray(self, 0.0);
-  DPSsetlinewidth(self, 1.0);
-  // FIXME
-  DPSsetdash(self, dot_dash, 2, 0.0);
-  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
-		NSWidth(aRect), NSHeight(aRect));
-}
-
-- (void) NSFrameRect: (const NSRect) aRect
-{
-  DPSsetlinewidth(self, 1.0);
-  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
-		NSWidth(aRect), NSHeight(aRect));
-}
-
-- (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth
-{
-  DPSsetlinewidth(self, frameWidth);
-  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
-		NSWidth(aRect), NSHeight(aRect));
-}
-
-
+@implementation NSGraphicsContext (NSGraphics)
 /*
  * Read the Color at a Screen Position
  */
@@ -2662,22 +1207,6 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
   return nil;
 }
-
-
-/*
- * Copy an image
- */
-- (void) NSCopyBitmapFromGState: (int) srcGstate:  (NSRect) srcRect 
-			       : (NSRect) destRect
-{
-  [self subclassResponsibility: _cmd];
-}
-
-- (void) NSCopyBits: (int) srcGstate : (NSRect) srcRect : (NSPoint) destPoint
-{
-  [self subclassResponsibility: _cmd];
-}
-
 
 /*
  * Render Bitmap Images
@@ -2691,21 +1220,12 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-
 /*
  * Play the System Beep
  */
 - (void) NSBeep
 {
   [self subclassResponsibility: _cmd];
-}
-
-
-/* Context helper wraps */
-- (unsigned int) GSWDefineAsUserObj
-{
-  [self subclassResponsibility: _cmd];
-  return 0;
 }
 
 - (void) GSWSetViewIsFlipped: (BOOL) flipped
@@ -2715,26 +1235,6 @@ NSGraphicsContext	*GSCurrentContext()
 - (BOOL) GSWViewIsFlipped
 {
   return [[self focusView] isFlipped];
-}
-
-- (NSWindowDepth) GSWindowDepthForScreen: (int) screen
-{
-  [self subclassResponsibility: _cmd];
-  return 0;
-}
-
-
-- (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen
-{
-  [self subclassResponsibility: _cmd];
-  return NULL;
-}
-
-- (NSSize) GSResolutionForScreen: (int) screen
-{
-  // This is a fixed value for screens.
-  // All screens I checked under OS4.2 report 72.
-  return NSMakeSize(72, 72);
 }
 
 @end

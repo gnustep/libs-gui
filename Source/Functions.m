@@ -35,6 +35,7 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSView.h>
 #include <AppKit/DPSOperators.h>
 
 char **NSArgv = NULL;
@@ -298,9 +299,86 @@ NSPlanarFromDepth(NSWindowDepth depth)
   return planar;
 }
 
+/* Graphic Ops */
+void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect)
+{
+}
+
+void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
+{
+  float x, y, w, h;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  x = NSMinX(srcRect);
+  y = NSMinY(srcRect);
+  w = NSWidth(srcRect);
+  h = NSHeight(srcRect);
+
+  DPScomposite(ctxt, x, y, w, h, srcGstate, destPoint.x, destPoint.y,
+	       NSCompositeCopy);
+}
+
 /*
  * Rectangle Drawing 
  */
+void NSEraseRect(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
+  DPSsetgray(ctxt, 1.0);
+  NSRectFill(aRect);
+  DPSgrestore(ctxt);
+}
+
+void NSHighlightRect(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
+		   NSWidth(aRect), NSHeight(aRect), 
+		   NSCompositeHighlight);
+  [[[ctxt focusView] window] flushWindow];
+}
+
+void NSRectClip(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSrectclip(ctxt, NSMinX(aRect), NSMinY(aRect), 
+	      NSWidth(aRect), NSHeight(aRect));
+  DPSnewpath(ctxt);
+}
+
+void NSRectClipList(const NSRect *rects, int count)
+{
+  int i;
+  NSRect union_rect;
+
+  if (count == 0)
+    return;
+
+  /* 
+     The specification is not clear if the union of the rects 
+     should produce the new clip rect or if the outline of all rects 
+     should be used as clip path.
+  */
+  union_rect = rects[0];
+  for (i = 1; i < count; i++)
+    union_rect = NSUnionRect(union_rect, rects[i]);
+
+  NSRectClip(union_rect);
+}
+
+void NSRectFill(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSrectfill(ctxt, NSMinX(aRect), NSMinY(aRect), 
+	      NSWidth(aRect), NSHeight(aRect));
+}
+
+void NSRectFillList(const NSRect *rects, int count)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  GSRectFillList(ctxt, rects, count);
+}
 
 void 
 NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count)
@@ -313,6 +391,28 @@ NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count)
       NSRectFill(rects[i]);
     }
 }
+
+void NSRectFillListWithGrays(const NSRect *rects, const float *grays, 
+			     int count)
+{
+  int i;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  for (i = 0; i < count; i++)
+    {
+      DPSsetgray(ctxt, grays[i]);
+      DPSrectfill(ctxt,  NSMinX(rects[i]), NSMinY(rects[i]), 
+		  NSWidth(rects[i]), NSHeight(rects[i]));
+    }
+}
+
+void NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
+		   NSWidth(aRect), NSHeight(aRect), op);
+}
+
 
 void 
 NSRectFillListUsingOperation(const NSRect *rects, int count, 
@@ -341,6 +441,37 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
     }
 }
 
+/*
+ * Draw a Bordered Rectangle
+ */
+void NSDottedFrameRect(const NSRect aRect)
+{
+  float dot_dash[] = {1.0, 1.0};
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  DPSsetgray(ctxt, 0.0);
+  DPSsetlinewidth(ctxt, 1.0);
+  // FIXME
+  DPSsetdash(ctxt, dot_dash, 2, 0.0);
+  DPSrectstroke(ctxt,  NSMinX(aRect), NSMinY(aRect), 
+		NSWidth(aRect), NSHeight(aRect));
+}
+
+void NSFrameRect(const NSRect aRect)
+{
+  NSFrameRectWithWidth(aRect, 1.0);
+}
+
+void NSFrameRectWithWidth(const NSRect aRect, float frameWidth)
+{
+  float width;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPScurrentlinewidth(ctxt, &width);
+  DPSsetlinewidth(ctxt, frameWidth);
+  DPSrectstroke(ctxt,  NSMinX(aRect), NSMinY(aRect), 
+		NSWidth(aRect), NSHeight(aRect));
+  DPSsetlinewidth(ctxt, width);
+}
 
 //*****************************************************************************
 //

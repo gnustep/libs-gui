@@ -28,6 +28,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <AppKit/NSDragging.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontPanel.h>
 #include <AppKit/NSFontManager.h>

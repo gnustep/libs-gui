@@ -505,7 +505,7 @@ setNSFont(NSString* key, NSFont* font)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  [ctxt setFont: self];
+  [ctxt GSSetFont: self];
   [ctxt useFont: fontName];
 }
 

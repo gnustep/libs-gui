@@ -62,8 +62,8 @@
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSHelpManager.h>
-#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/GSDisplayServer.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -136,7 +136,7 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 	    }
 	  if (w != nil && [w isVisible] == YES)
 	    {
-	      [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
+	      [GSServerForWindow(w) setinputfocus: [w windowNumber]];
 	    }
 	}
     }
@@ -497,10 +497,9 @@ static NSNotificationCenter *nc = nil;
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  NSGraphicsContext	*context = GSCurrentContext();
   float	t, b, l, r;
 
-  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  [GSCurrentServer() styleoffsets: &l : &r : &t : &b : aStyle];
   aRect.size.width -= (l + r);
   aRect.size.height -= (t + b);
   aRect.origin.x += l;
@@ -511,10 +510,9 @@ static NSNotificationCenter *nc = nil;
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  NSGraphicsContext	*context = GSCurrentContext();
   float	t, b, l, r;
 
-  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  [GSCurrentServer() styleoffsets: &l : &r : &t : &b : aStyle];
   aRect.size.width += (l + r);
   aRect.size.height += (t + b);
   aRect.origin.x -= l;
@@ -525,11 +523,10 @@ static NSNotificationCenter *nc = nil;
 + (NSRect) minFrameWidthWithTitle: (NSString*)aTitle
 			styleMask: (unsigned int)aStyle
 {
-  NSGraphicsContext	*context = GSCurrentContext();
   float	t, b, l, r;
   NSRect	f = NSZeroRect;
 
-  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  [GSCurrentServer() styleoffsets: &l : &r : &t : &b : aStyle];
   f.size.width = l + r;
   f.size.height = t + b;
   /*
@@ -627,16 +624,16 @@ static NSNotificationCenter *nc = nil;
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
    */
-  [context _removeDragTypes: nil fromWindow: self];
+  [GSServerForWindow(self) removeDragTypes: nil fromWindow: self];
 
   if (_gstate)
     {
-      DPSundefineuserobject(context, _gstate);
+      GSUndefineGState(context, _gstate);
     }
   
   if (_windowNum)
     {
-      DPStermwindow(context, _windowNum);
+      [GSServerForWindow(self) termwindow: _windowNum];
       NSMapRemove(windowmaps, (void*)_windowNum);
     }
   [super dealloc];
@@ -645,33 +642,31 @@ static NSNotificationCenter *nc = nil;
 - (void) _initBackendWindow: (NSRect)frame
 {
   id dragTypes;
-  NSGraphicsContext	*context = GSCurrentContext();
+  NSGraphicsContext *context = GSCurrentContext();
+  GSDisplayServer *srv = GSCurrentServer();
 
   /* If we were deferred or one shot, out drag types may not have
      been registered properly in the backend. Remove them then re-add
      them when we create the window */
-  dragTypes = [context _dragTypesForWindow: self];
+  dragTypes = [srv dragTypesForWindow: self];
   if (dragTypes)
     {
       // As this is the original entry, it will change soon. 
       // We use a copy to reregister the same types later on.
       dragTypes = [dragTypes copy];
-      [context _removeDragTypes: dragTypes fromWindow: self];
+      [srv removeDragTypes: dragTypes fromWindow: self];
     }
 
   frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
 
-  DPSwindow(context, NSMinX(frame), NSMinY(frame),
-	    NSWidth(frame), NSHeight(frame),
-	    _backingType, &_windowNum);
-  DPSstylewindow(context, _styleMask, _windowNum);
-  DPSsetwindowlevel(context, [self level], _windowNum);
+  _windowNum = [srv window: frame : _backingType : _styleMask];
+  [srv setwindowlevel: [self level] : _windowNum];
 
   // Set window in new _gstate
   DPSgsave(context);
-  DPSwindowdevice(context, _windowNum);
+  [srv windowdevice: _windowNum];
   DPSgstate(context);
-  _gstate = GSWDefineAsUserObj(context);
+  _gstate = GSDefineGState(context);
   DPSgrestore(context);
   NSMapInsert (windowmaps, (void*)_windowNum, self);
 
@@ -686,14 +681,14 @@ static NSNotificationCenter *nc = nil;
   if (dragTypes)
     {
       NSDebugLLog(@"NSWindow", @"Resetting drag types for window");
-      [context _addDragTypes: dragTypes toWindow: self];
+      [srv addDragTypes: dragTypes toWindow: self];
       // Free our local copy.
       RELEASE(dragTypes);
     }
 
   /* Other stuff we need to do for deferred windows */
   if (_windowTitle != nil)
-    DPStitlewindow(GSCurrentContext(), [_windowTitle lossyCString], _windowNum);
+    [srv titlewindow: _windowTitle : _windowNum];
   if (!NSEqualSizes(_minimumSize, NSZeroSize))
     [self setMinSize: _minimumSize];
   if (!NSEqualSizes(_maximumSize, NSZeroSize))
@@ -890,7 +885,7 @@ static NSNotificationCenter *nc = nil;
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
       if (_windowNum > 0)
-	DPStitlewindow(GSCurrentContext(), [aString lossyCString], _windowNum);
+	[GSServerForWindow(self) titlewindow: aString : _windowNum];
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
@@ -911,7 +906,7 @@ static NSNotificationCenter *nc = nil;
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
       if (_windowNum > 0)
-	DPStitlewindow(GSCurrentContext(), [aString lossyCString], _windowNum);
+	[GSServerForWindow(self) titlewindow: aString : _windowNum];
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
@@ -1132,8 +1127,8 @@ static NSNotificationCenter *nc = nil;
 	[_firstResponder becomeKeyWindow];
 
       _f.is_key = YES;
-      DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarKey);
-      DPSsetinputfocus(GSCurrentContext(), _windowNum);
+      [GSServerForWindow(self) setinputstate: GSTitleBarKey : _windowNum];
+      [GSServerForWindow(self) setinputfocus: _windowNum];
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
       NSDebugLLog(@"NSWindow", @"%@ is now key window", [self title]);
@@ -1147,7 +1142,7 @@ static NSNotificationCenter *nc = nil;
       _f.is_main = YES;
       if (_f.is_key == NO)
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarMain);
+	  [GSServerForWindow(self) setinputstate: GSTitleBarMain : _windowNum];
 	}
       [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
       NSDebugLLog(@"NSWindow", @"%@ is now main window", [self title]);
@@ -1271,7 +1266,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
-  NSGraphicsContext *context = GSCurrentContext();
+  GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
 
   if (place == NSWindowOut)
@@ -1313,7 +1308,7 @@ static NSNotificationCenter *nc = nil;
 	  display = YES;
 	}
     }
-  DPSorderwindow(context, place, otherWin, _windowNum);
+  [srv orderwindow: place : otherWin : _windowNum];
   if (display)
     [self display];
 
@@ -1355,8 +1350,8 @@ static NSNotificationCenter *nc = nil;
 	}
       if ([self isKeyWindow] == YES)
 	{
-	  DPSsetinputstate(context, _windowNum, GSTitleBarKey);
-	  DPSsetinputfocus(context, _windowNum);
+	  [srv setinputstate: GSTitleBarKey : _windowNum];
+	  [srv setinputfocus: _windowNum];
 	}
       _f.visible = YES;
     }
@@ -1374,11 +1369,12 @@ static NSNotificationCenter *nc = nil;
 
       if (_f.is_main == YES)
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarMain);
+	  [GSServerForWindow(self) setinputstate: GSTitleBarMain : _windowNum];
 	}
       else
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarNormal);
+	  [GSServerForWindow(self) setinputstate: GSTitleBarNormal 
+			    : _windowNum];
 	}
       [self discardCursorRects];
 
@@ -1393,11 +1389,13 @@ static NSNotificationCenter *nc = nil;
       _f.is_main = NO;
       if (_f.is_key == YES)
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarKey);
+	  [GSServerForWindow(self) setinputstate: GSTitleBarKey 
+			    : _windowNum];
 	}
       else
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarNormal);
+	  [GSServerForWindow(self) setinputstate: GSTitleBarNormal 
+			    : _windowNum];
 	}
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
@@ -1415,11 +1413,12 @@ static NSNotificationCenter *nc = nil;
 {
   if (_windowLevel != newLevel)
     {
-      NSGraphicsContext	*context = GSCurrentContext();
-
       _windowLevel = newLevel;
       if (_windowNum > 0)
-	DPSsetwindowlevel(context, _windowLevel, _windowNum);
+	{
+	  GSDisplayServer *srv = GSServerForWindow(self);
+	  [srv setwindowlevel: _windowLevel : _windowNum];
+	}
     }
 }
 
@@ -1572,8 +1571,7 @@ static NSNotificationCenter *nc = nil;
    * We will recieve an event to tell us when the resize is done.
    */
   if(_windowNum)
-    DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
-		   frameRect.size.width, frameRect.size.height, _windowNum);
+    [GSServerForWindow(self) placewindow: frameRect : _windowNum];
   else
     {
       _frame = frameRect;
@@ -1612,7 +1610,7 @@ static NSNotificationCenter *nc = nil;
     aSize.height = 1;
   _minimumSize = aSize;
   if (_windowNum > 0)
-    DPSsetminsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
+    [GSServerForWindow(self) setminsize: aSize : _windowNum];
 }
 
 - (void) setMaxSize: (NSSize)aSize
@@ -1626,7 +1624,7 @@ static NSNotificationCenter *nc = nil;
     aSize.height = 10000;
   _maximumSize = aSize;
   if (_windowNum > 0)
-    DPSsetmaxsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
+    [GSServerForWindow(self) setmaxsize: aSize : _windowNum];
 }
 
 - (NSSize) resizeIncrements
@@ -1638,8 +1636,7 @@ static NSNotificationCenter *nc = nil;
 {
   _increments = aSize;
   if (_windowNum > 0)
-    DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height,
-			   _windowNum);
+    [GSServerForWindow(self) setresizeincrements: aSize : _windowNum];
 }
 
 - (NSSize) aspectRatio
@@ -1658,11 +1655,11 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
-  NSGraphicsContext	*context = GSCurrentContext();
+  GSDisplayServer *srv = GSCurrentServer();
   NSPoint		screenPoint;
   float			t, b, l, r;
 
-  DPSstyleoffsets(context, &l, &r, &t, &b, _styleMask);
+  [srv styleoffsets: &l : &r : &t : &b : _styleMask];
   screenPoint.x = _frame.origin.x + basePoint.x + l;
   screenPoint.y = _frame.origin.y + basePoint.y + b;
 
@@ -1671,11 +1668,11 @@ static NSNotificationCenter *nc = nil;
 
 - (NSPoint) convertScreenToBase: (NSPoint)screenPoint
 {
-  NSGraphicsContext	*context = GSCurrentContext();
+  GSDisplayServer *srv = GSCurrentServer();
   NSPoint 		basePoint;
   float			t, b, l, r;
 
-  DPSstyleoffsets(context, &l, &r, &t, &b, _styleMask);
+  [srv styleoffsets: &l : &r : &t : &b : _styleMask];
   basePoint.x = screenPoint.x - _frame.origin.x - l;
   basePoint.y = screenPoint.y - _frame.origin.y - b;
 
@@ -1737,7 +1734,7 @@ static NSNotificationCenter *nc = nil;
       [self enableFlushWindow];
       [self flushWindowIfNeeded];
     }
-  [GSCurrentContext() flush];
+  [GSCurrentContext() flushGraphics];
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
@@ -1758,7 +1755,7 @@ static NSNotificationCenter *nc = nil;
   // do nothing if backing is not buffered
   if (_backingType == NSBackingStoreNonretained)
     {
-      [context flush];
+      [context flushGraphics];
       return;
     }
 
@@ -1790,10 +1787,8 @@ static NSNotificationCenter *nc = nil;
     }
 
   if (_windowNum)
-    DPSflushwindowrect(context,
-		       NSMinX(_rectNeedingFlush), NSMinY(_rectNeedingFlush),
-		       NSWidth(_rectNeedingFlush), NSHeight(_rectNeedingFlush),
-		       _windowNum);
+    [GSServerForWindow(self) flushwindowrect: _rectNeedingFlush
+		      : _windowNum];
   _f.needs_flush = NO;
   _rectNeedingFlush = NSZeroRect;
 }
@@ -2123,7 +2118,7 @@ resetCursorRectsForView(NSView *theView)
       RELEASE(v);
     }
   [self _lossOfKeyOrMainWindow];
-  DPSminiwindow(GSCurrentContext(), _windowNum);
+  [GSServerForWindow(self) miniwindow: _windowNum];
   _f.visible = NO;
   
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
@@ -2227,7 +2222,7 @@ resetCursorRectsForView(NSView *theView)
 	  [NSApp updateWindowsItem: self];
 	}
       if (_windowNum)
-	DPSdocedited(GSCurrentContext(), flag, _windowNum);
+	[GSServerForWindow(self) docedited: flag : _windowNum];
     }
 }
 
@@ -2386,7 +2381,7 @@ resetCursorRectsForView(NSView *theView)
 {
   NSPoint	p;
 
-  DPSmouselocation(GSCurrentContext(), &p.x, &p.y);
+  p = [GSCurrentServer() mouselocation];
   p = [self convertScreenToBase: p];
   return p;
 }
@@ -2625,9 +2620,8 @@ resetCursorRectsForView(NSView *theView)
       NSGraphicsContext	*context = GSCurrentContext();
       DPSgsave(context);
       DPSsetgstate(context, _gstate);
-      DPSupdatewindow(context, _windowNum);
-      DPScurrentgstate(context, _gstate);
-      DPSpop(context);
+      [GSServerForWindow(self) windowdevice: _windowNum];
+      GSReplaceGState(context, _gstate);
       DPSgrestore(context);
     }
 
@@ -2962,7 +2956,7 @@ resetCursorRectsForView(NSView *theView)
 		{
 		  v = _contentView;
 		}
-	      dragInfo = [GSCurrentContext() _dragInfo];
+	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      if (_lastDragView == v)
 		{
 		  isEntry = NO;
@@ -3024,7 +3018,7 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitDraggingExit:
 	      NSDebugLLog(@"NSDragging", @"GSAppKitDraggingExit");
-	      dragInfo = [GSCurrentContext() _dragInfo];
+	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      if (_lastDragView && _f.accepts_drag)
 		{
 		  NSDebugLLog(@"NSDragging", @"Dragging exit");
@@ -3037,7 +3031,7 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitDraggingDrop:
 	      NSDebugLLog(@"NSDragging", @"GSAppKitDraggingDrop");
-	      dragInfo = [GSCurrentContext() _dragInfo];
+	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      if (_lastDragView && _f.accepts_drag)
 		{
                   action = NO;
@@ -3217,7 +3211,7 @@ resetCursorRectsForView(NSView *theView)
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {
-  id dragView = [GSCurrentContext() _dragInfo];
+  id dragView = [GSServerForWindow(self) dragInfo];
 
   [NSApp preventWindowOrdering];
   [dragView dragImage: anImage
@@ -3838,12 +3832,12 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) _captureMouse: sender
 {
-  DPScapturemouse(GSCurrentContext(), _windowNum);
+  [GSCurrentServer() capturemouse: _windowNum];
 }
 
 - (void) _releaseMouse: sender
 {
-  DPSreleasemouse(GSCurrentContext());
+  [GSCurrentServer() releasemouse];
 }
 
 - (void) setContentViewSize: (NSSize)aSize

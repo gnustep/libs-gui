@@ -51,6 +51,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/GSServicesManager.h>
+#include <AppKit/GSDisplayServer.h>
 
 #define PosixExecutePermission	(0111)
 
@@ -1002,7 +1003,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	       from: (NSPoint)fromPoint
 		 to: (NSPoint)toPoint
 {
-  [GSCurrentContext() _slideImage: image from: fromPoint to: toPoint];
+  [GSCurrentServer() slideImage: image from: fromPoint to: toPoint];
 }
 
 /*

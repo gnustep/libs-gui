@@ -606,7 +606,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) recache
 {
-  unsigned i, count;
+  unsigned i;
 
   i = [_reps count];
   while(i--) 

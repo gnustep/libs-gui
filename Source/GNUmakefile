@@ -148,6 +148,7 @@ NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
 GSComboSupport.m \
+GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
@@ -296,6 +297,7 @@ AppKitExceptions.h \
 DPSOperators.h \
 GMAppKit.h \
 GMArchiver.h \
+GSDisplayServer.h \
 GSFontInfo.h \
 GSMemoryPanel.h \
 GSInfoPanel.h \

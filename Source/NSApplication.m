@@ -51,7 +51,7 @@
 #endif
 
 #include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/GSDisplayServer.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSPopUpButton.h>
@@ -67,7 +67,6 @@
 #include <AppKit/GSServicesManager.h>
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/IMLoading.h>
-#include <AppKit/DPSOperators.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpManager.h>
@@ -147,7 +146,7 @@ NSBundle *GSGuiBundle ()
   return guiBundle;
 }
 
-@interface GSBackend : NSGraphicsContext
+@interface GSBackend : NSObject
 {}
 + (void) initializeBackend;
 @end
@@ -172,7 +171,7 @@ initialize_gnustep_backend(void)
 	/* What backend ? */
 	bundleName = [defs stringForKey: @"GSBackend"];
 	if ( bundleName == nil )
-	  bundleName = @"libgnustep-xgps.bundle";
+	  bundleName = @"libgnustep-back.bundle";
 	else
 	  bundleName = [bundleName stringByAppendingString: @".bundle"];
 	NSDebugFLLog(@"BackendBundle", @"Looking for %@", bundleName);
@@ -494,6 +493,8 @@ static NSCell* tileCell = nil;
  */
 - (id) init
 {
+  GSDisplayServer *srv;
+
   if (NSApp != nil && NSApp != self)
     {
       RELEASE(self);
@@ -519,10 +520,11 @@ static NSCell* tileCell = nil;
     /* Initialize the backend here. */
     initialize_gnustep_backend();
 
-    /* Create our context. This is equivalent to connecting to
-       our window server, so if someone wants to query information that might
-       require the backend, they just need to instantiate a sharedApplication
-    */
+    /* Connect to our window server */
+    srv = [GSDisplayServer serverWithAttributes: nil];
+    [GSDisplayServer setCurrentServer: srv];
+
+    /* Create a default context. */
     _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
     [NSGraphicsContext setCurrentContext: _default_context];
 
@@ -723,6 +725,7 @@ static NSCell* tileCell = nil;
 
 - (void) dealloc
 {
+  GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
   NSDebugLog(@"Freeing NSApplication\n");
 
   [nc removeObserver: self];
@@ -753,6 +756,9 @@ static NSCell* tileCell = nil;
 
   /* Destroy the default context, this will free it */
   [_default_context destroyContext];
+
+  /* Close the server */
+  [srv closeServer];
 
   [super dealloc];
 }
@@ -832,7 +838,8 @@ static NSCell* tileCell = nil;
 	{
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
-	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
+	  [GSServerForWindow(_app_icon_window)
+	          setinputfocus: [_app_icon_window windowNumber]];
 	}
       for (i = 0; i < count; i++)
 	{
@@ -1099,7 +1106,7 @@ See Also: -runModalForWindow:
 - (int) runModalSession: (NSModalSession)theSession
 {
   NSAutoreleasePool	*pool;
-  NSGraphicsContext	*ctxt;
+  GSDisplayServer	*srv;
   BOOL		found = NO;
   NSEvent	*event;
   NSDate	*limit;
@@ -1123,7 +1130,7 @@ See Also: -runModalForWindow:
     }
 
   // Use the default context for all events.
-  ctxt = _default_context;
+  srv = GSCurrentServer();
 
   /*
    * Set a limit date in the distant future so we wait until we get an
@@ -1133,14 +1140,14 @@ See Also: -runModalForWindow:
   limit = [NSDate distantFuture];
   do
     {
-      event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
+      event = DPSGetEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
       if (event != nil)
 	{
 	  NSWindow	*eventWindow = [event window];
 
 	  if (eventWindow == theSession->window || [eventWindow worksWhenModal])
 	    {
-	      DPSPostEvent(ctxt, event, YES);
+	      DPSPostEvent(srv, event, YES);
 	      found = YES;
 	    }
 	  else if ([event type] == NSAppKitDefined)
@@ -1161,7 +1168,7 @@ See Also: -runModalForWindow:
     {
       IF_NO_GC(pool = [arpClass new]);
 
-      event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
+      event = DPSGetEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
       if (event != nil)
 	{
 	  NSWindow	*eventWindow = [event window];
@@ -1241,7 +1248,7 @@ See -runModalForWindow:
        * add dummy event to queue to assure loop cycles
        * at least one more time
        */
-      DPSPostEvent(_default_context, null_event, NO);
+      DPSPostEvent(GSCurrentServer(), null_event, NO);
     }
 }
 
@@ -1377,7 +1384,7 @@ See -runModalForWindow:
 - (void) discardEventsMatchingMask: (unsigned int)mask
 		       beforeEvent: (NSEvent *)lastEvent
 {
-  DPSDiscardEvents(_default_context, mask, lastEvent);
+  DPSDiscardEvents(GSCurrentServer(), mask, lastEvent);
 }
 
 - (NSEvent*) nextEventMatchingMask: (unsigned int)mask
@@ -1391,9 +1398,9 @@ See -runModalForWindow:
     expiration = [NSDate distantFuture];
 
   if (flag)
-    event = DPSGetEvent(_default_context, mask, expiration, mode);
+    event = DPSGetEvent(GSCurrentServer(), mask, expiration, mode);
   else
-    event = DPSPeekEvent(_default_context, mask, expiration, mode);
+    event = DPSPeekEvent(GSCurrentServer(), mask, expiration, mode);
 
   if (event)
     {
@@ -1425,7 +1432,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
-  DPSPostEvent(_default_context, event, flag);
+  DPSPostEvent(GSCurrentServer(), event, flag);
 }
 
 /*
@@ -1597,7 +1604,8 @@ delegate.
 	{
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
-	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
+	  [GSServerForWindow(_app_icon_window) 
+			    setinputfocus: [_app_icon_window windowNumber]];
 	}
       for (i = 0; i < count; i++)
 	{
@@ -2383,7 +2391,8 @@ delegate.
   RELEASE(iv);
 
   [_app_icon_window orderFrontRegardless];
-  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
+  [GSServerForWindow(_app_icon_window) 	
+  	setinputfocus: [_app_icon_window windowNumber]];
   return self;
 }
 
@@ -2604,7 +2613,8 @@ delegate.
        */
       if ([self keyWindow] == nil)
 	{
-	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
+	  [GSServerForWindow(_app_icon_window)
+	          setinputfocus: [_app_icon_window windowNumber]];
 	}
     }
 }
