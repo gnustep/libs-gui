@@ -314,6 +314,9 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
               NSLog(@"bad app NSTypes (type not a dictionary) - %@\n", app);
               return;
             }
+	  /*
+	   * Set 't' to the dictionary defining a particular file type.
+	   */
           t = (NSDictionary*)o1;
           o1 = [t objectForKey: @"NSUnixExtensions"];
           if (o1 == nil)
@@ -341,7 +344,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
                 }
               if ([d objectForKey: app] == NO)
                 {
-                  [d setObject: o0 forKey: app];
+                  [d setObject: t forKey: app];
                 } 
             }
         }
