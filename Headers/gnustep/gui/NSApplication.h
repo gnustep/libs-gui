@@ -45,7 +45,10 @@
 @class NSMenuItem;
 @class NSImage;
 @class NSWindow;
-@class NSDPSContext;
+#ifdef NO_GNUSTEP
+#define GPSDrawContext NSDPSContext
+#endif
+@class GPSDrawContext;
 
 typedef struct _NSModalSession *NSModalSession;
 
@@ -214,7 +217,7 @@ extern NSString *NSEventTrackingRunLoopMode;
 //
 // Getting the display postscript context
 //
-- (NSDPSContext *)context;
+- (GPSDrawContext *)context;
 
 //
 // Reporting an exception

@@ -203,7 +203,7 @@
 		 (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),
 		 (int)NSHeight(r));
       [self _fillRect: r];
-      [[NSDPSContext currentContext] flush];
+      [[GPSDrawContext currentContext] flush];
       oldRect=r;
       e=[[NSApplication sharedApplication] 
 	  nextEventMatchingMask:eventMask

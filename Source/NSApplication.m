@@ -44,7 +44,7 @@
 # include <Foundation/NSConnection.h>
 #endif
 
-#include <AppKit/NSDPSContext.h>
+#include <AppKit/GPSDrawContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPanel.h>
@@ -62,10 +62,6 @@
 static BOOL gnustep_gui_app_is_in_dealloc;
 static NSEvent *null_event;										
 static id NSApp;
-
-#define ASSIGN(a, b)	[b retain]; \
-						[a release]; \
-						a = b;
 
 @implementation NSApplication
 
@@ -971,9 +967,9 @@ int i;
 	return nil;
 }
 
-- (NSDPSContext *)context							// return the DPS context
+- (GPSDrawContext *)context							// return the DPS context
 {
-    return [NSDPSContext currentContext];
+    return [GPSDrawContext currentContext];
 }
 													// Reporting an exception
 - (void)reportException:(NSException *)anException

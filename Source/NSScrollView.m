@@ -33,11 +33,6 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSWindow.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSScrollView
 
 static Class rulerViewClass = nil;

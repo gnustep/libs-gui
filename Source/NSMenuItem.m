@@ -33,11 +33,6 @@
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>
 
-#define ASSIGN(variable, value) \
-  [value retain]; \
-  [variable release]; \
-  variable = value;
-
 static BOOL usesUserKeyEquivalents = YES;
 
 @implementation NSMenuItem

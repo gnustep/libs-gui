@@ -41,10 +41,6 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
 
-#define ASSIGN(a, b) 	[b retain]; \
-						[a release]; \
-						a = b;
-
 @implementation NSCell
 
 //

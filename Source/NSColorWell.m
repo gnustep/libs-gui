@@ -30,11 +30,6 @@
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSColorWell
 
 //

@@ -31,7 +31,7 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
-#include <AppKit/NSDPSContext.h>
+#include <AppKit/GPSDrawContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>

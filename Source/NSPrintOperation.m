@@ -141,12 +141,12 @@ toData:(NSMutableData *)data
 //
 // Managing the DPS Context
 //
-- (NSDPSContext *)createContext
+- (GPSDrawContext *)createContext
 {
   return nil;
 }
 
-- (NSDPSContext *)context
+- (GPSDrawContext *)context
 {
   return nil;
 }

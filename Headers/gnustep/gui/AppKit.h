@@ -32,7 +32,11 @@
 //
 // Display Postscript System
 //
+#ifndef NO_GNUSTEP
+#include <AppKit/GPSOperators.h>
+#else
 #include <AppKit/DPSOperators.h>
+#endif
 
 //
 // Foundation

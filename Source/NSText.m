@@ -67,10 +67,6 @@ extern BOOL	NSEqualRanges(NSRange range1, NSRange range2);	// should define in b
 
 #define HUGE 1e99
 
-#define ASSIGN(variable, value) [value retain]; \
-								[variable release]; \
-								variable = value;
-
 enum {
     NSBackspaceKey			= 8,
     NSCarriageReturnKey			= 13,

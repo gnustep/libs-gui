@@ -1,3 +1,22 @@
+Mon Nov 16 15:13:39 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Preliminary implementation of a device independant drawing
+	engine.
+	* Headers/gnustep/gui/GPSDefinitions.h: New file.
+	* Headers/gnustep/gui/GPSDrawContext.h: Likewise.
+	* Headers/gnustep/gui/GPSDrawContextOps.h: Likewise.
+	* Headers/gnustep/gui/GPSOperators.h: Likewise.
+	* Headers/gnustep/gui/gpsdefs.h: Likewise.
+	* Headers/gnustep/gui/gpsops.h: Likewise.
+	* Source/GPSDrawContext.m: Likewise.
+	* Source/gpsops.m: Likewise.
+	* Headers/gnustep/gui/DPSOperators.h: Revert to old imp.
+	* Headers/gnustep/gui/NS*: Change NSDPSContext to GPSDrawContext.
+	* Source/NS*: Likewise. 
+	* Source/externs.m: Add new externs.
+
+	* Source/NS*: Remove ASSIGN definitions.
+
 Thu Nov 12 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* GNUmakefile rearrange subprojects so that Source is built first.

@@ -34,11 +34,6 @@
 #include <Foundation/NSDictionary.h>
 #include <AppKit/NSDPSContext.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 //
 // DPS exceptions
 //
@@ -114,7 +109,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 
 - (void)dealloc
 {
-  [context_data release];
+  DESTROY(context_data);
   [chained_child release];
   [super dealloc];
 }

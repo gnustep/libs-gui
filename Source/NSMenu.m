@@ -39,11 +39,6 @@
 #include <AppKit/NSMenu.h>
 #include <math.h>
 
-#define ASSIGN(variable, value) \
-  [value retain]; \
-  [variable release]; \
-  variable = value;
-
 #ifdef MAX
 # undef MAX
 #endif

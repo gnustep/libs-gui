@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
 
-#include <AppKit/NSDPSContext.h>
+#include <AppKit/GPSDrawContext.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSBitmapImageRep.h>

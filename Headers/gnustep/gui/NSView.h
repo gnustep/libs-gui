@@ -33,7 +33,7 @@
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
 
-#include <AppKit/NSDPSContext.h>
+#include <AppKit/GPSDrawContext.h>
 #include <AppKit/NSResponder.h>
 
 @class NSString;

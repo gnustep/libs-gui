@@ -41,11 +41,6 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSGraphics.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSColor
 
 // Class variables

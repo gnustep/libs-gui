@@ -42,10 +42,6 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 
-#define ASSIGN(a, b) 	[b retain]; \
-						[a release]; \
-						a = b;
-
 //
 // NSButtonCell implementation
 //

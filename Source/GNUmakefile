@@ -37,6 +37,7 @@ LIBRARY_NAME=libgnustep-gui
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = libgnustep-gui.m \
+GPSDrawContext.m \
 NSActionCell.m \
 NSApplication.m \
 NSAttributedString.m \
@@ -62,7 +63,6 @@ NSCustomImageRep.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
-NSDPSContext.m \
 NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapper.m \
@@ -109,6 +109,7 @@ NSWindowView.m \
 NSWorkspace.m \
 TrackingRectangle.m \
 PSMatrix.m \
+gpsops.m \
 tiff.m \
 externs.m
 
@@ -121,6 +122,10 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
 
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
+AppKit/GPSDrawContext.h \
+AppKit/GPSDrawContextOps.h \
+AppKit/GPSDefinitions.h \
+AppKit/GPSOperations.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \
 AppKit/NSAttributedString.h \
@@ -201,10 +206,12 @@ AppKit/NSWindow.h \
 AppKit/NSWindowView.h \
 AppKit/NSWorkspace.h \
 AppKit/TrackingRectangle.h \
-AppKit/nsimage-tiff.h \
 AppKit/PSMatrix.h \
 AppKit/NSDPSContext.h \
-AppKit/DPSOperators.h
+AppKit/DPSOperators.h \
+AppKit/nsimage-tiff.h \
+AppKit/gpsdefs.h \
+AppKit/gpsops.h
 
 
 -include GNUmakefile.preamble

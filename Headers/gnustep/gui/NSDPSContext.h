@@ -29,72 +29,25 @@
 #ifndef _GNUstep_H_NSDPSContext
 #define _GNUstep_H_NSDPSContext
 
+/* Define this to avoid including redefinitions of ps functions introduced
+   by GPSDrawContext (and gpsdefs.h) */
+#define _gpsdefs_h_INCLUDE
+
 #include <Foundation/NSObject.h>
 #include <AppKit/DPSOperators.h>
+#include <AppKit/GPSDrawContext.h>
 #include <stdarg.h>
 
 @class NSData;
 @class NSMutableData;
 
 //
-// Backing Store Types
-//
-typedef enum _NSBackingStoreType {
-  NSBackingStoreRetained,
-  NSBackingStoreNonretained,
-  NSBackingStoreBuffered
-} NSBackingStoreType;
-
-//
-// Compositing operators
-//
-typedef enum _NSCompositingOperation {
-  NSCompositeClear,
-  NSCompositeCopy,
-  NSCompositeSourceOver,
-  NSCompositeSourceIn,
-  NSCompositeSourceOut,
-  NSCompositeSourceAtop,
-  NSCompositeDataOver,
-  NSCompositeDataIn,
-  NSCompositeDataOut,
-  NSCompositeDataAtop,
-  NSCompositeXOR,
-  NSCompositePlusDarker,
-  NSCompositeHighlight,
-  NSCompositePlusLighter
-} NSCompositingOperation;
-
-//
-// Window ordering
-//
-typedef enum _NSWindowOrderingMode {
-  NSWindowAbove,
-  NSWindowBelow,
-  NSWindowOut
-} NSWindowOrderingMode;
-
-//
-// NSDPSContextNotification
-// Circular dependency between protocol and class
-//
-@class NSDPSContext;
-@protocol NSDPSContextNotification
-
-//
-// Synchronizing Application and Display Postscript Server Execution
-//
-- (void)contextFinishedExecuting:(NSDPSContext *)context;
-
-@end
-
-//
 // NSDPSContext class interface
 //
-@interface NSDPSContext : NSObject
+@interface NSDPSContext : GPSDrawContext
 {
   // Attributes
-  NSMutableData *context_data;
+  // NSMutableData *context_data; /* Defined in GPSDrawContext */
   BOOL is_screen_context;
   DPSErrorProc error_proc;
   DPSTextProc text_proc;
@@ -198,21 +151,5 @@ typedef enum _NSWindowOrderingMode {
 - (void)setSynchronized:(BOOL)flag;
 
 @end
-
-
-extern NSString *DPSPostscriptErrorException;
-extern NSString *DPSNameTooLongException;
-extern NSString *DPSResultTagCheckException;
-extern NSString *DPSResultTypeCheckException;
-extern NSString *DPSInvalidContextException;
-extern NSString *DPSSelectException;
-extern NSString *DPSConnectionClosedException;
-extern NSString *DPSReadException;
-extern NSString *DPSWriteException;
-extern NSString *DPSInvalidFDException;
-extern NSString *DPSInvalidTEException;
-extern NSString *DPSInvalidPortException;
-extern NSString *DPSOutOfMemoryException;
-extern NSString *DPSCantConnectException;
 
 #endif /* _GNUstep_H_NSDPSContext */

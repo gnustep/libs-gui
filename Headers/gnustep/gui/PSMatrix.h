@@ -35,7 +35,7 @@
   float rotationAngle;
 }
 
-+ matrixFrom:(float[6])matrix;
++ matrixFrom:(const float[6])matrix;
 - (void)translateToPoint:(NSPoint)point;
 - (void)rotateByAngle:(float)angle;
 - (void)scaleBy:(float)sx :(float)sy;
@@ -57,10 +57,13 @@
 - (NSSize)sizeInMatrixSpace:(NSSize)size;
 - (NSRect)rectInMatrixSpace:(NSRect)rect;
 
+- (void) setMatrix: (const float[6])replace;
+- (void) getMatrix: (float[6])replace;
+
 @end
 
 @interface PSMatrix (BackendMethods)
-- (void)set;
+- (void) set;
 @end
 
 /* Private definitions */

@@ -319,3 +319,33 @@ NSString *NSAttachmentAttributeName = 		@"NSAttachmentAttributeName";
 NSString *NSLigatureAttributeName = 		@"NSLigatureAttributeName";			
 NSString *NSBaselineOffsetAttributeName = 	@"NSBaselineOffsetAttributeName";   	 
 NSString *NSKernAttributeName = 			@"NSKernAttributeName";        
+/* Drawing engine externs */
+
+GPSDrawContext *_currentGPSContext;
+
+NSString *DPSconfigurationerror = @"DPSconfigurationerror";
+NSString *DPSinvalidaccess = @"DPSinvalidaccess";
+NSString *DPSinvalidcontext = @"DPSinvalidcontext";
+NSString *DPSinvalidexit = @"DPSinvalidexit";
+NSString *DPSinvalidfileaccess = @"DPSinvalidfileaccess";
+NSString *DPSinvalidfont = @"DPSinvalidfont";
+NSString *DPSinvalidid = @"DPSinvalidid";
+NSString *DPSinvalidrestore = @"DPSinvalidrestore";
+NSString *DPSinvalidparam = @"DPSinvalidparam";
+NSString *DPSioerror = @"DPSioerror";
+NSString *DPSlimitcheck = @"DPSlimitcheck";
+NSString *DPSnocurrentpoint = @"DPSnocurrentpoint";
+NSString *DPSnulloutput = @"DPSnulloutput";
+NSString *DPSrangecheck = @"DPSrangecheck";
+NSString *DPSstackoverflow = @"DPSstackoverflow";
+NSString *DPSstackunderflow = @"DPSstackunderflow";
+NSString *DPStypecheck = @"DPStypecheck";
+NSString *DPSundefined = @"DPSundefined";
+NSString *DPSundefinedfilename = @"DPSundefinedfilename";
+NSString *DPSundefinedresource = @"DPSundefinedresource";
+NSString *DPSundefinedresult = @"DPSundefinedresult";
+NSString *DPSunmatchedmark = @"DPSunmatchedmark";
+NSString *DPSunregistered = @"DPSunregistered";
+NSString *DPSVMerror = @"DPSVMerror";
+
+

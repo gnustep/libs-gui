@@ -32,11 +32,6 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSGraphics.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSClipView
 
 - init

@@ -37,11 +37,6 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSScroller
 
 /* Class variables */

@@ -33,10 +33,6 @@
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextStorage.h>
 
-#define ASSIGN(variable, value) [value retain]; \
-								[variable release]; \
-								variable = value;
-
 // classes needed are: NSRulerView NSTextContainer NSLayoutManager
 
 @implementation NSTextView

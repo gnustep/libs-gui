@@ -39,7 +39,10 @@
 @class NSView;
 @class NSPrintInfo;
 @class NSPrintPanel;
-@class NSDPSContext;
+#ifdef NO_GNUSTEP
+#define GPSDrawContext NSDPSContext
+#endif
+@class GPSDrawContext;
 
 typedef enum _NSPrintingPageOrder {
   NSDescendingPageOrder,
@@ -99,8 +102,8 @@ typedef enum _NSPrintingPageOrder {
 //
 // Managing the DPS Context
 //
-- (NSDPSContext *)createContext;
-- (NSDPSContext *)context;
+- (GPSDrawContext *)createContext;
+- (GPSDrawContext *)context;
 - (void)destroyContext;
 
 //

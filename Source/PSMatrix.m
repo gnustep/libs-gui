@@ -43,7 +43,7 @@ static const float pi = 3.1415926535897932384626433;
 
 @implementation PSMatrix
 
-+ matrixFrom:(float[6])_matrix
++ matrixFrom: (const float[6])_matrix
 {
   PSMatrix* m = [[self alloc] autorelease];
 
@@ -275,4 +275,18 @@ static const float pi = 3.1415926535897932384626433;
 				    A, B, C, D, TX, TY];
 }
 
+- (void) setMatrix: (const float[6])replace
+{
+ memcpy (matrix, replace, sizeof (matrix));
+ rotationAngle = atan2(replace[2], replace[0]);
+ rotationAngle *= 180.0 / M_PI;
+
+}
+
+- (void) getMatrix: (float[6])replace
+{
+ memcpy (replace, matrix, sizeof (matrix));
+}
+
 @end /* PSMatrix */
+

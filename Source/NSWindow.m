@@ -51,11 +51,6 @@
 #include <AppKit/PSMatrix.h>
 #include <AppKit/NSWindowView.h>
 
-#define ASSIGN(a, b)	[b retain]; \
-						[a release]; \
-						a = b;
-
-
 //*****************************************************************************
 //
 // 		NSWindow 

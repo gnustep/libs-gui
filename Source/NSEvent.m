@@ -41,7 +41,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/NSDPSContext.h>
+#include <AppKit/GPSDrawContext.h>
 
 @implementation NSEvent
 
@@ -68,7 +68,7 @@ static NSString	*timerKey = @"NSEventTimersKey";
 						   modifierFlags:(unsigned int)flags
 						   timestamp:(NSTimeInterval)time
 						   windowNumber:(int)windowNum
-						   context:(NSDPSContext *)context	
+						   context:(GPSDrawContext *)context	
 						   eventNumber:(int)eventNum
 						   trackingNumber:(int)trackingNum
 						   userData:(void *)userData
@@ -97,7 +97,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 					 modifierFlags:(unsigned int)flags
 					 timestamp:(NSTimeInterval)time
 					 windowNumber:(int)windowNum
-					 context:(NSDPSContext *)context	
+					 context:(GPSDrawContext *)context	
 					 characters:(NSString *)keys	
 					 charactersIgnoringModifiers:(NSString *)ukeys
 					 isARepeat:(BOOL)repeatKey	
@@ -129,7 +129,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 						modifierFlags:(unsigned int)flags
 						timestamp:(NSTimeInterval)time
 						windowNumber:(int)windowNum 
-						context:(NSDPSContext *)context 
+						context:(GPSDrawContext *)context 
 						eventNumber:(int)eventNum	
 						clickCount:(int)clickNum	
 						pressure:(float)pressureValue
@@ -160,7 +160,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 						modifierFlags:(unsigned int)flags
 						timestamp:(NSTimeInterval)time
 						windowNumber:(int)windowNum 
-						context:(NSDPSContext *)context 
+						context:(GPSDrawContext *)context 
 						subtype:(short)subType	
 						data1:(int)data1	
 						data2:(int)data2
@@ -284,7 +284,7 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 //
 // Getting General Event Information
 //
-- (NSDPSContext *)context
+- (GPSDrawContext *)context
 {
 	return event_context;
 }

@@ -47,11 +47,6 @@
 /* Define the following symbol when NSView will support flipped views */
 //#define HAS_FLIPPED_VIEWS 1
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 #ifdef MIN
 # undef MIN
 #endif
@@ -1419,17 +1414,17 @@ static MPoint anchor = {0, 0};
 - (NSMatrixMode)mode						{ return mode; }
 - (void)setCellClass:(Class)class			{ cellClass = class; }
 - (Class)cellClass							{ return cellClass; }
-- (void)setPrototype:(NSCell*)aCell			{ ASSIGN(cellPrototype, aCell) }
+- (void)setPrototype:(NSCell*)aCell			{ ASSIGN(cellPrototype, aCell); }
 - (id)prototype								{ return cellPrototype; }
 - (NSSize)cellSize							{ return cellSize; }
 - (NSSize)intercellSpacing					{ return intercell; }
-- (void)setBackgroundColor:(NSColor*)c		{ ASSIGN(backgroundColor, c) }
+- (void)setBackgroundColor:(NSColor*)c		{ ASSIGN(backgroundColor, c); }
 - (NSColor*)backgroundColor					{ return backgroundColor; }
-- (void)setCellBackgroundColor:(NSColor*)c 	{ ASSIGN(cellBackgroundColor, c) }
+- (void)setCellBackgroundColor:(NSColor*)c 	{ ASSIGN(cellBackgroundColor, c); }
 - (NSColor*)cellBackgroundColor				{ return cellBackgroundColor; }
-- (void)setDelegate:(id)object				{ ASSIGN(delegate, object) }
+- (void)setDelegate:(id)object				{ ASSIGN(delegate, object); }
 - (id)delegate								{ return delegate; }
-- (void)setTarget:anObject					{ ASSIGN(target, anObject) }
+- (void)setTarget:anObject					{ ASSIGN(target, anObject); }
 - (id)target								{ return target; }
 - (void)setAction:(SEL)sel					{ action = sel; }
 - (SEL)action								{ return action; }

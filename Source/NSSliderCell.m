@@ -30,11 +30,6 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
-
 @implementation NSSliderCell
 
 - init

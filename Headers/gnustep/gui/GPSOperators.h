@@ -1,12 +1,12 @@
 /* 
-   DPSOperators.h
+   GPSOperators.h
 
-   Display Postscript operators and functions
+   GNUstep device-independant operators and functions
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1998 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: September 1995
+   Author:  Adam Fedor <fedor@gnu.org>
+   Date: Nov 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -26,10 +26,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#ifndef _GNUstep_H_DPSOperators
-#define _GNUstep_H_DPSOperators
+#ifndef _GNUstep_H_GPSOperators
+#define _GNUstep_H_GPSOperators
 
-#include <DPS/dpsclient.h>
-#include <DPS/psops.h>
+#include <AppKit/gpsdefs.h>
+#include <AppKit/gpsops.h>
 
-#endif /* _GNUstep_H_DPSOperators */
+#endif /* _GNUstep_H_GPSOperators */
