@@ -35,6 +35,7 @@
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSFileManager.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSDictionary.h>
@@ -268,43 +269,56 @@ static NSDictionary* nsmapping = nil;
   return self;
 }
 
-- init
+- (id) init
 {
-  [self initWithSize: NSMakeSize(0, 0)];
+  self = [self initWithSize: NSMakeSize(0, 0)];
   return self;
 }
 
-- initByReferencingFile: (NSString *)fileName
+- (id) initByReferencingFile: (NSString *)fileName
 {
-  [self init];
-  _flags.dataRetained = NO;
-  // FIXME: Should this be an exception? What else should happen?
-  if (![self useFromFile:fileName])
-    [NSException raise: NSGenericException
-      format: @"Cannot find image representation for image %s", 
-      [fileName cString]];
+  id	o = self;
+
+  if ((self = [self init]) == o)
+    {
+      _flags.dataRetained = NO;
+      if (![self useFromFile:fileName])
+	{
+	  [self release];
+	  return nil;
+	}
+    }
   return self;
 }
 
-- initWithContentsOfFile: (NSString *)fileName
+- (id) initWithContentsOfFile: (NSString *)fileName
 {
-  [self init];
-  _flags.dataRetained = YES;
-  // FIXME: Should this be an exception? What else should happen ?
-  if (![self useFromFile:fileName])
-    [NSException raise: NSGenericException
-      format: @"Cannot find image representation for image %s", 
-      [fileName cString]];
+  id	o = self;
+
+  if ((self = [self init]) == o)
+    {
+      _flags.dataRetained = YES;
+      if (![self useFromFile:fileName])
+	{
+	  [self release];
+	  return nil;
+	}
+    }
   return self;
 }
 
-- initWithData: (NSData *)data;
+- (id) initWithData: (NSData *)data;
 {
-  [self init];
-  // FIXME: Should this be an exception? What else should happen ?
-  if (![self loadFromData: data])
-    [NSException raise: NSGenericException
-      format: @"Cannot find image representation for data"]; 
+  id	o = self;
+
+  if ((self = [self init]) == o)
+    {
+      if (![self loadFromData: data])
+	{
+	  [self release];
+	  return nil;
+	}
+    }
   return self;
 }
 
@@ -675,11 +689,17 @@ static NSDictionary* nsmapping = nil;
   return (array) ? YES : NO;
 }
 
-- (BOOL)useFromFile: (NSString *)fileName
+- (BOOL) useFromFile: (NSString *)fileName
 {
-  NSArray*   array;
-  NSString*  ext;
-  rep_data_t repd;
+  NSArray	*array;
+  NSString	*ext;
+  rep_data_t	repd;
+  NSFileManager *manager = [NSFileManager defaultManager];
+
+  if ([manager fileExistsAtPath: fileName] == NO)
+    {
+      return NO;
+    }
 
   ext = [fileName pathExtension];
   if (!ext)

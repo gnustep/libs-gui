@@ -1,5 +1,9 @@
 Thu Mar 25 20:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Source/NSImage.m: Incorporated fixes suggested by dave@turbocat.de
+
+Thu Mar 25 20:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
 	Mostly fixes to cope with case where tracking rectangles are
 	removed from a window while an event that refers to them is still
 	in the queue.
