@@ -36,8 +36,7 @@
 # before-distclean::
 
 # Things to do after distcleaning
-after-distclean::
-	rm -f GNUmakefile.local
+# after-distclean::
 
 # Things to do before checking
 # before-check::
