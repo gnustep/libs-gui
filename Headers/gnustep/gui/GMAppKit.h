@@ -80,4 +80,10 @@
 @interface NSWindow (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSPanel (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSSavePanel (GMArchiverMethods) <ModelCoding>
+@end
+
 #endif /* _GNUstep_H_GMAppKit */
