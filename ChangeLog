@@ -1,3 +1,8 @@
+2003-06-15 02:35  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSNibTemplates.h, Source/NSBundleAdditions.m:
+	Remove unused GSFontProxy class.
+
  2003-06-08  David Ayers  <d.ayers@inode.at>
  	
 	* Headers/gnustep/gui/IMConnectors.h: Change syntax of include <>

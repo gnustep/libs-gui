@@ -295,9 +295,6 @@ Class gmodel_class(void)
 		  id	obj;
 		  
 		  // font fallback and automatic translation...
-#if 0
-		  [unarchiver decodeClassName: @"NSFont" asClassName: @"GSFontProxy"];
-#endif
 		  // [unarchiver decodeClassName: @"NSString" asClassName: @"GSStringProxy"];
 
 		  NSDebugLog(@"Invoking unarchiver");
@@ -1564,24 +1561,6 @@ Class gmodel_class(void)
   ASSIGN(_template, template);
 }
 @end
-
-#if 0
-// Font proxy...
-@implementation GSFontProxy
-- (id) initWithCoder: (NSCoder *)aDecoder
-{
-  id result = [super initWithCoder: aDecoder];
-  NSDebugLog(@"Inside font proxy...");
-  if(result == nil)
-    {
-      NSDebugLog(@"Couldn't find the font specified, so supply a system font instead.");
-      result = [NSFont systemFontOfSize: [NSFont systemFontSize]];
-    }
-
-  return result;
-}
-@end
-#endif
 
 // String proxy for dynamic translation...
 /*
