@@ -55,7 +55,8 @@ common_RadioOn.tiff \
 common_RadioOff.tiff \
 common_SwitchOn.tiff \
 common_SwitchOff.tiff \
-common_ret.tiff
+common_ret.tiff \
+common_Dimple.tiff
 
 installdirs:
 	$(srcdir)/../mkinstalldirs $(libdir) $(gnustep_libdir) $(imagedir)

@@ -229,7 +229,6 @@ NSTextFieldCell$(oext) \
 NSView$(oext) \
 NSWindow$(oext) \
 NSWorkspace$(oext) \
-Functions$(oext) \
 TrackingRectangle$(oext) \
 tiff$(oext)
 

@@ -19,9 +19,10 @@ Tue Mar  4 09:28:57 1997  GNUstep Development  <gnustep@net-community.com>
 	* Source/NSFontManager.m: Likewise.
 	* Source/NSResponder.m: Likewise.
 	* Source/tiff.m: Likewise.
-	* Source/Makefile.in: Remove LogFile.h and LogFile.m.
+	* Source/Makefile.in: Remove LogFile and Functions.
 
 	* Source/NSFont.m (getFont): Return font not font name.
+	* Images/Makefile.in: Install common_Dimple.tiff.
 
 Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 
