@@ -1,3 +1,9 @@
+1998-11-22  03:44  Lyndon Tremblay  <tremblay2@home.com>
+
+	* GMAppKit.m: [-_unconditionallyResetNeedsDisplayInAllViews] 
+	     was not working, message could not be found, commented 
+	       out calls to it.  Fixed NSBrowser loading.
+
 1998-11-20  16:32  Lyndon Tremblay  <tremblay2@home.com>
 
 	* GMAppKit.m: Fixed browser loading
