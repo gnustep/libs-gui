@@ -44,11 +44,86 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
+#include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 
 #define stringify_it(X) #X
 #define	mkpath(X) stringify_it(X) "/Tools"
 
+static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
+
+@interface	_GSWorkspaceCenter: NSNotificationCenter
+{
+  NSDistributedNotificationCenter	*remote;
+}
+- (void) _handleRemoteNotification: (NSNotification*)aNotification;
+@end
+
+@implementation	_GSWorkspaceCenter
+
+- (void) dealloc
+{
+  [remote removeObserver: self name: nil object: GSWorkspaceNotification];
+  RELEASE(remote);
+  [super dealloc];
+}
+
+- (id) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      remote = RETAIN([NSDistributedNotificationCenter defaultCenter]);
+      [remote addObserver: self
+		 selector: @selector(_handleRemoteNotification:)
+		     name: nil
+		   object: GSWorkspaceNotification];
+    }
+  return self;
+}
+
+/*
+ * Post notification both locally and remotely.
+ */
+- (void) postNotification: (NSNotification*)aNotification
+{
+  NSNotification	*rem;
+
+  rem = [NSNotification notificationWithName: [aNotification name]
+				      object: GSWorkspaceNotification
+				    userInfo: [aNotification userInfo]];
+  [remote postNotification: rem];
+  [super postNotification: aNotification];
+}
+
+- (void) postNotificationName: (NSString*)name 
+		       object: (id)object
+{
+  [self postNotification: [NSNotification notificationWithName: name
+							object: object]];
+}
+
+- (void) postNotificationName: (NSString*)name 
+		       object: (id)object
+		     userInfo: (NSDictionary*)info
+{
+  [self postNotification: [NSNotification notificationWithName: name
+							object: object
+						      userInfo: info]];
+}
+
+/*
+ * Forward a notification from a remote application to observers in this
+ * application.
+ */
+- (void) _handleRemoteNotification: (NSNotification*)aNotification
+{
+  [super postNotification: aNotification];
+}
+
+@end
+
+
 
 @implementation	NSWorkspace
 
@@ -92,7 +167,7 @@ static NSString			*_rootPath = @"/";
 
       beenHere = YES;
 
-      workspaceCenter = [NSNotificationCenter new];
+      workspaceCenter = [_GSWorkspaceCenter new];
       iconMap = [NSMutableDictionary new];
 
       /*
