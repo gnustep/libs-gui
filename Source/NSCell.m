@@ -1945,7 +1945,10 @@ static NSColor	*shadowCol;
   flag = _cell.is_selectable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   // This used to be is_continuous, which has been replaced.
-  //flag = _cell.is_continuous;
+  /* Ayers 20.03.2003: But we must continue to encode it for backward
+     compatibility or current releases will have undefined behavior when
+     decoding archives (i.e. .gorm files) encoded by this version. */
+  flag = [self isContinuous];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.allows_mixed_state;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];

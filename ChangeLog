@@ -1,3 +1,8 @@
+2003-03-20  David Ayers  <d.ayers@inode.at>
+
+	* Source/NSCell.m ([NSCell encodeWithCoder:]): Reinsert encoding
+	of isContinuous to insure backward compatiblity of archives.
+
 2003-03-20  Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m 
