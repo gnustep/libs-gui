@@ -1,3 +1,9 @@
+Mon Jun 25 09:59:43 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/AppKit.h: Do not include NSLayoutManager.h,
+	NSTextContainer.h and NSTextStorage.h if STRICT_OPENSTEP is
+	defined (suggested by Pascal Bourguignon <pjb@informatimago.com>).
+
 2001-06-23  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSSpellChecker.m updated to use the guesses browser.  
