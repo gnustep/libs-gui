@@ -1,3 +1,14 @@
+Sun Feb  3 11:53:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-transpose:]): New method.  Bound to
+	Control-t.
+	* Headers/gnustep/gui/NSTextView.h: Declare transpose:.  Removed
+	category.
+	* KeyBindings/DefaultKeyBindings.dict: List rewritten to reflect
+	the OpenStep keybindings.  Work in progress - many keybindings
+	commented out for now, but this is the list of keybindings we
+	eventually want to get to.
+
 2002-02-03  Fred Kiefer <FredKiefer@gmx.de>, Richard <rfm@gnu.org>
 
 	* Source/NSView.m: ([removeSubview:]) call ([setNeedsDisplay:NO]) in
