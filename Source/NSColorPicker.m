@@ -31,6 +31,7 @@
 #include <Foundation/NSBundle.h>
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSColorPicker.h"
+#include "AppKit/NSImage.h"
 
 @implementation NSColorPicker
 

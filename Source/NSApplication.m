@@ -1905,7 +1905,7 @@ image.
       count = [itemArray count];
       for (i = 0; i < count; i++)
 	{
-	  id	win = [[itemArray objectAtIndex: i] target];
+	  id	win = [(NSMenuItem*)[itemArray objectAtIndex: i] target];
 
 	  if ([win isKindOfClass: [NSWindow class]])
 	    {
@@ -2103,7 +2103,7 @@ image.
       count = [itemArray count];
       while (count-- > 0)
 	{
-	  id item = [itemArray objectAtIndex: count];
+	  NSMenuItem *item = [itemArray objectAtIndex: count];
 
 	  if ([item target] == aWindow)
 	    {
@@ -2173,7 +2173,7 @@ image.
   count = [itemArray count];
   for (i = 0; i < count; i++)
     {
-      id	item = [itemArray objectAtIndex: i];
+      NSMenuItem *item = [itemArray objectAtIndex: i];
       
       if ([item target] == aWindow)
 	{
@@ -2262,7 +2262,7 @@ image.
       count = [itemArray count];
       for (i = 0; i < count; i++)
 	{
-	  id	item = [itemArray objectAtIndex: i];
+	  NSMenuItem *item = [itemArray objectAtIndex: i];
 
 	  if ([item target] == aWindow)
 	    {

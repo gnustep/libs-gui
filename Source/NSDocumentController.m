@@ -224,7 +224,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
       return nil; // raise exception?
     }
   
-  return [[_types objectAtIndex:0] objectForKey:NSNameKey];
+  return [(NSDictionary*)[_types objectAtIndex:0] objectForKey:NSNameKey];
 }
 
 - (void) addDocument: (NSDocument *)document

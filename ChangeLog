@@ -1,5 +1,28 @@
 2003-09-01  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSAttributedString.m
+	[readFromURL:options:documentAttributes:] corrected the handling
+	to type "text", where [NSString alloc] was missing.
+	* Source/NSBundleAdditions.m
+	Removed unused global currentVersion.
+	* Headers/AppKit/NSCell.h
+	Corrected type of method _nonAutoreleasedTypingAttributes
+	* Headers/AppKit/NSInputManager.h
+	Added protocol NSTextInput to ivar _currentClient.
+	* Headers/AppKit/NSTextFieldCell.h
+	Removed uneeded and inconsistent method declarations.
+	* Source/NSApplciation.m
+	* Source/NSBezierPath.m
+	* Source/NSClipView.m
+	* Source/NSDocumentController.m
+	* Source/NSInputManager.m
+	* Source/NSMenuItem.m
+	* Source/NSSavePanel.m
+	* Source/NSTableView.m
+	Removed new GCC 3.4 warnings from Alexander Malmbergs list.
+	
+2003-09-01  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBitmapImageRep.m
 	[canInitWithData:], [imageRepsWithData:] and [initWithData:]
 	protect against data being nil. [imageRepsWithFile:] check if the

@@ -30,15 +30,14 @@
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSColor.h"
-#include "AppKit/NSWindow.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 
 #include <math.h>
 
 DEFINE_RINT_IF_MISSING
-
-@class NSTableView;
 
 /*
  * Return the biggest integral (in device space) rect contained in rect. 

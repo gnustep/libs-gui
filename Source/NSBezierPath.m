@@ -97,7 +97,7 @@ static float default_miter_limit = 10.0;
     }    
 }
 
-+ (id)bezierPath
++ (NSBezierPath *)bezierPath
 {
   return AUTORELEASE ([[NSBezierPath_concrete_class alloc] init]);
 }

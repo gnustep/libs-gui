@@ -229,7 +229,7 @@ static Class imageClass;
 
 - (NSString*) userKeyEquivalent
 {
-  NSString *userKeyEquivalent = [[[[NSUserDefaults standardUserDefaults]
+  NSString *userKeyEquivalent = [(NSDictionary*)[[[NSUserDefaults standardUserDefaults]
 				      persistentDomainForName: NSGlobalDomain]
 				     objectForKey: @"NSCommandKeys"]
 				    objectForKey: _title];

@@ -23,6 +23,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSException.h>
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSInputManager.h"
 #include "AppKit/NSInputServer.h"

@@ -1175,7 +1175,7 @@ selectCellWithString: (NSString*)title
 // NSSavePanel browser delegate methods
 //
 @interface NSSavePanel (_BrowserDelegate)
-- (void) browser: (id)sender
+- (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
         inMatrix: (NSMatrix*)matrix;
 
@@ -1207,7 +1207,7 @@ static int compareFilenames (id elem1, id elem2, void *context)
 
 
 @implementation NSSavePanel (_BrowserDelegate)
-- (void) browser: (id)sender
+- (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
 {
