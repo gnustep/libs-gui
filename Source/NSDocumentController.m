@@ -42,8 +42,8 @@ static NSString *NSRoleKey              = @"NSRole";
 static NSString *NSHumanReadableNameKey = @"NSHumanReadableName";
 static NSString *NSUnixExtensionsKey    = @"NSUnixExtensions";
 static NSString *NSDOSExtensionsKey     = @"NSDOSExtensions";
-static NSString *NSMacOSTypesKey        = @"NSMacOSTypes";
-static NSString *NSMIMETypesKey         = @"NSMIMETypes";
+//static NSString *NSMacOSTypesKey        = @"NSMacOSTypes";
+//static NSString *NSMIMETypesKey         = @"NSMIMETypes";
 static NSString *NSDocumentClassKey     = @"NSDocumentClass";
 
 #define TYPE_INFO(name) TypeInfoForName(_types, name)
@@ -98,7 +98,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 	
   ASSIGN (_types, [customDict objectForKey: NSTypesKey]);
   _documents = [[NSMutableArray alloc] init];
-  // FIXME: Should fill this list form some stored values
+  // FIXME: Should fill this list from some stored values
   _recentDocuments = [[NSMutableArray alloc] init];
   [self setShouldCreateUI:YES];
   
@@ -214,6 +214,9 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 	}
     }
   
+  // remember this document as opened
+  [self noteNewRecentDocument: document];
+
   if (display && [self shouldCreateUI])
     {
       [document showWindows];
@@ -227,9 +230,6 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   // Should we only do this if [url isFileURL] is YES?
   NSDocument *document = [self documentForFileName: [url path]];
   
-  // remember this document as opened
-  [self noteNewRecentDocumentURL: url];
-
   if (document == nil)
     {
       NSString *type = [self typeFromFileExtension: 
@@ -250,6 +250,9 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
         }
     }
   
+  // remember this document as opened
+  [self noteNewRecentDocumentURL: url];
+
   if (display && [self shouldCreateUI])
     {
       [document showWindows];
@@ -366,6 +369,13 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return YES;
 }
 
+- (void)closeAllDocumentsWithDelegate:(id)delegate 
+		  didCloseAllSelector:(SEL)didAllCloseSelector 
+			  contextInfo:(void *)contextInfo
+{
+//FIXME
+}
+
 - (BOOL) reviewUnsavedDocumentsWithAlertTitle: (NSString *)title 
 				  cancellable: (BOOL)cancellable
 {
@@ -393,6 +403,16 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     default:			return NO;
     }
 }
+
+- (void)reviewUnsavedDocumentsWithAlertTitle:(NSString *)title 
+				 cancellable:(BOOL)cancellable 
+				    delegate:(id)delegate
+			didReviewAllSelector:(SEL)didReviewAllSelector 
+				 contextInfo:(void *)contextInfo
+{
+// FIXME
+}
+
 
 #ifdef OPENSTEP_ONLY
 /*
@@ -476,8 +496,8 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
       return directory;
     }
 
-  //FIXME -- need to remember last saved directory, and return that here.
-  //Only return NSHomeDirectory if nothing's been saved yet.
+  //FIXME -- need to remember last opened directory, and return that here.
+  //Only return NSHomeDirectory if nothing's been opened yet.
   return NSHomeDirectory ();
 }
 
@@ -528,6 +548,12 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     {
       return [self hasEditedDocuments];
       }
+  return YES;
+}
+
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
+{
+  // FIXME
   return YES;
 }
 
@@ -584,6 +610,15 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 // The number of remembered recent documents
 #define MAX_DOCS 5
 
+- (void)noteNewRecentDocument:(NSDocument *)aDocument
+{
+  NSString *fileName = [aDocument fileName];
+  NSURL *anURL = [NSURL fileURLWithPath: fileName];
+
+  if (anURL != nil)
+    [self noteNewRecentDocumentURL: anURL];
+}
+
 - (void) noteNewRecentDocumentURL: (NSURL *)anURL
 {
   unsigned index = [_recentDocuments indexOfObject: anURL];
@@ -611,7 +646,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 @implementation NSDocumentController (Private)
 static NSString *NSEditorRole = @"Editor";
 static NSString *NSViewerRole = @"Viewer";
-static NSString *NSNoRole     = @"None";
+//static NSString *NSNoRole     = @"None";
 
 - (NSArray *) _editorAndViewerTypesForClass: (Class)documentClass
 {
