@@ -45,17 +45,17 @@
 /* Maximum number of planes */
 #define MAX_PLANES 5
 
-/* Backend protocol - methods that must be implemented by the backend to
-   complete the class */
-@protocol NXBitmapImageRepBackend
-- (BOOL) draw;
+/* Backend methods (optional) */
+@interface NSBitmapImageRep (Backend)
++ (NSArray *) _wrasterFileTypes;
+- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber;
 @end
 
 @implementation NSBitmapImageRep 
 
 /* Given a TIFF image (from the libtiff library), load the image information
    into our data structure.  Reads the specified image. */
-- _initFromImage: (TIFF *)image number: (int)imageNumber
+- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber
 {
   NSString* space;
   NSTiffInfo* info;
@@ -64,6 +64,7 @@
   info = NSTiffGetInfo(imageNumber, image);
   if (!info) 
     {
+      RELEASE(self);
       NSLog(@"Tiff read invalid TIFF info in directory %d", imageNumber);
       return nil;
     }
@@ -99,11 +100,17 @@
 
   if (NSTiffRead(image, info, [self bitmapData]))
     {
+      RELEASE(self);
       NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
       return nil;
     }
 
   return self;
+}
+
+- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber
+{
+  return nil;
 }
 
 + (id) imageRepWithData: (NSData *)tiffData
@@ -135,11 +142,48 @@
   for (i = 0; i < images; i++)
     {
       NSBitmapImageRep* imageRep;
-      imageRep = [[[self class] alloc] _initFromImage: image number: i];
+      imageRep = [[[self class] alloc] _initFromTIFFImage: image number: i];
       if (imageRep)
 	[array addObject: AUTORELEASE(imageRep)];
     }
   NSTiffClose(image);
+
+  return array;
+}
+
+/* A special method used mostly when we have the wraster library in the
+   backend, which can read several more image formats */
++ (NSArray*) imageRepsWithFile: (NSString *)filename
+{
+  NSString *ext;
+  int	   images;
+  NSMutableArray *array;
+  NSBitmapImageRep* imageRep;
+
+  /* Don't use this for TIFF images, use the regular ...Data methods */
+  ext = [filename pathExtension];
+  if (!ext)
+    {
+      NSLog(@"Extension missing from filename - '%@'", filename);
+      return nil;
+    }
+  if ([[self imageUnfilteredFileTypes] indexOfObject: ext] != NSNotFound)
+    {
+      NSData* data = [NSData dataWithContentsOfFile: filename];
+      return [self imageRepsWithData: data];
+    }
+
+  array = [NSMutableArray arrayWithCapacity: 2];
+  images = 0;
+  do
+    {
+      imageRep = [[[self class] alloc] _initFromWrasterFile: filename 
+				                     number: images];
+      if (imageRep)
+	[array addObject: AUTORELEASE(imageRep)];
+      images++;
+    }
+  while (imageRep);
 
   return array;
 }
@@ -153,10 +197,12 @@
   image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
   if (image == 0)
     {
-      [NSException raise:NSTIFFException format: @"Read invalid TIFF data"];
+      RELEASE(self);
+      NSLog(@"Tiff read invalid TIFF info from data");
+      return nil;
     }
 
-  [self _initFromImage:image number: -1];
+  [self _initFromTIFFImage:image number: -1];
   NSTiffClose(image);
   return self;
 }
@@ -280,9 +326,23 @@
   return [[pasteboard types] containsObject: NSTIFFPboardType]; 
 }
 
++ (NSArray *) _wrasterFileTypes
+{
+  return nil;
+}
+
 + (NSArray *) imageFileTypes
 {
-  return [self imageUnfilteredFileTypes];
+  NSArray *wtypes = [self _wrasterFileTypes];
+  if (wtypes)
+    {
+      wtypes = AUTORELEASE([wtypes mutableCopy]);
+      [(NSMutableArray *)wtypes addObjectsFromArray: 
+			   [self imageUnfilteredFileTypes]];
+    }
+  else
+    wtypes = [self imageUnfilteredFileTypes];
+  return wtypes;
 }
 
 + (NSArray *) imagePasteboardTypes

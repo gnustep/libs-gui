@@ -82,23 +82,32 @@ static NSMutableArray*	imageReps = NULL;
   // FIXME: Should this be an exception? Should we even check this?
   if (!ext)
     {
-      NSLog(@"extension missing from filename - '%@'", filename);
+      NSLog(@"Extension missing from filename - '%@'", filename);
       return nil;
     }
-  array = [NSMutableArray arrayWithCapacity: 1];
 
+  array = nil;
   count = [imageReps count];
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
       if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
 	{
-	  NSData* data = [NSData dataWithContentsOfFile: filename];
+	  NSData* data;
 
+
+	  if ([rep respondsToSelector: @selector(imageRepsWithFile:)])
+	    array = [rep imageRepsWithFile: filename];
+	  if ([array count] > 0)
+	    break;
+
+	  data = [NSData dataWithContentsOfFile: filename];
 	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	    array = [rep imageRepsWithData: data];
 	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	    [array addObject: [rep imageRepWithData: data]];
+	    array = [rep imageRepWithData: data];
+	  if ([array count] > 0)
+	    break;
 	}
     }
   return (NSArray *)array;

@@ -285,8 +285,11 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   TIFFGetField(image, TIFFTAG_JPEGQUALITY, &info->quality);
   TIFFGetField(image, TIFFTAG_SUBFILETYPE, &info->subfileType);
   TIFFGetField(image, TIFFTAG_EXTRASAMPLES, &info->extraSamples, &sample_info);
-  if (info->extraSamples == EXTRASAMPLE_ASSOCALPHA && sample_info)
-    info->extraSamples = sample_info[0];
+  info->extraSamples = (info->extraSamples == 1 
+			&& ((sample_info[0] == EXTRASAMPLE_ASSOCALPHA) 
+			    || (sample_info[0] == EXTRASAMPLE_UNASSALPHA)));
+  info->assocAlpha = (info->extraSamples == 1 
+		      && sample_info[0] == EXTRASAMPLE_ASSOCALPHA);
 
   /* If the following tags aren't present then use the TIFF defaults. */
   TIFFGetFieldDefaulted(image, TIFFTAG_BITSPERSAMPLE, &info->bitsPerSample);

@@ -1,3 +1,17 @@
+2000-04-18  Adam Fedor  <fedor@gnu.org>
+
+	* Hooks for using backend libraries to read images.
+	* Source/NSBitmapImageRep.m (-_initFromWrasterFile:number:): New stub
+	for backends.
+	(+imageRepsWithFile:): New method.
+	(+_wrasterFileTypes): New stub for backend.
+	(+imageFileTypes): Include wraster file types.
+	* Source/NSImageRep.m (+imageRepsWithContentsOfFile:): Check/use if
+	rep implements +imageRepsWithFile.
+
+	* Headers/gnustep/gui/nsimage-tiff.h: Add field for associated alpha.
+	* Source/tiff.m: Set it.
+
 2000-04-17  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
 	* Headers/gnustep/gui/NSColorPanel.h: New ivars for panel objects.
