@@ -346,11 +346,14 @@ static NSColor	*shadowCol;
 	case NSCellChangesContents: return _cell.;  
 	case NSCellIsInsetButton: return _cell.;
 */
-	case NSCellHasOverlappingImage: return _cell.image_position == NSImageOverlaps;
-	case NSCellHasImageHorizontal: return (_cell.image_position == NSImageRight) ||
-					   (_cell.image_position == NSImageLeft);
-	case NSCellHasImageOnLeftOrBottom: return (_cell.image_position == NSImageBelow) ||
-					       (_cell.image_position == NSImageLeft);
+	case NSCellHasOverlappingImage: 
+	  return _cell.image_position == NSImageOverlaps;
+	case NSCellHasImageHorizontal: 
+	  return (_cell.image_position == NSImageRight) ||
+	    (_cell.image_position == NSImageLeft);
+	case NSCellHasImageOnLeftOrBottom: 
+	  return (_cell.image_position == NSImageBelow) ||
+	    (_cell.image_position == NSImageLeft);
 	default:
       }
 
@@ -375,6 +378,7 @@ static NSColor	*shadowCol;
     {
       case NSTextCellType:
 	ASSIGN (_contents, @"title");
+	// Doc says we should set the font too.
 	break;
       case NSImageCellType:
 	TEST_RELEASE (_cell_image);
@@ -969,6 +973,7 @@ static NSColor	*shadowCol;
 
 - (void) setRepresentedObject: (id)anObject
 {
+  /* Ahm - not nice - RETAIN here could cause retain cycles - anyway. */
   ASSIGN (_represented_object, anObject);
 }
 
@@ -1344,7 +1349,7 @@ static NSColor	*shadowCol;
   [controlView lockFocus];
 
   /* TODO: Enable this when NSDottedFrameRect is implemented.
-  if (_cell.show_first_responder && [[cellFrame window] firstResponder] == cellFrame)
+     if (_cell.show_first_responder && [controlView isFirstResponder])
     NSDottedFrameRect(cellFrame);
   */
 
@@ -1377,7 +1382,9 @@ static NSColor	*shadowCol;
       case NSNullCellType:
          break;
     }
-  // TODO: We don't do any highlighting
+  // NB: We don't do any highlighting to make it easier for subclasses
+  // to reuse this code while doing their own custom highlighting and
+  // prettyfying
   [controlView unlockFocus];
 }
 
@@ -1511,19 +1518,19 @@ static NSColor	*shadowCol;
  */
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSCell *c = (NSCell*)NSCopyObject(self, 0, zone);
+  NSCell *c = (NSCell*)NSCopyObject (self, 0, zone);
 
+  /* Hmmm. */
   c->_contents = [_contents copyWithZone: zone];
-  c->_typingAttributes = [_typingAttributes mutableCopyWithZone: zone];
-  c->_objectValue = [_objectValue copyWithZone: zone]; 
-  /* Attention! This are now retained */
-  c->_menu = RETAIN(_menu);
-  c->_cell_image = RETAIN(_cell_image);
-  c->_represented_object = RETAIN(_represented_object);
-
-  /* Attention! The formatter is retained, *not* copied, 
-     as per NSFormatter spec */
-  c->_formatter = RETAIN (_formatter);
+  /* Because of performance issues (and because so the doc says) only
+     pointers to the objects are copied.  We need to RETAIN them all
+     though. */
+  TEST_RETAIN (_typingAttributes);
+  TEST_RETAIN (_objectValue);
+  TEST_RETAIN (_menu);
+  TEST_RETAIN (_cell_image);
+  TEST_RETAIN (_formatter);
+  TEST_RETAIN (_represented_object);
 
   return c;
 }
