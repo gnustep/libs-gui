@@ -1,3 +1,11 @@
+Tue Jan 25 14:52:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Contributed by Fred Kiefer:
+	* Source/NSFontManager.m: Almost complete rewrite.
+	* Source/NSFontPanel.m: Begun work of fixing, rewriting.
+	* Headers/AppKit/NSFontManager.h: Corresponding rewrite.
+	* Headers/AppKit/NSFontPanel.h: Idem.
+	
 Mon Jan 24 23:45:30 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Implemented a standard Info Panel for GNUstep.  To make everyone
