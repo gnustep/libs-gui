@@ -67,6 +67,7 @@ static NSButtonCell* knobCell = nil;
 - (SEL)action								{ return _action; }
 - (void)setTarget:(id)target				{ ASSIGN(_target, target); }
 - (id)target								{ return _target; }
+- (BOOL)isOpaque							{ return YES; }
 
 - initWithFrame:(NSRect)frameRect
 {

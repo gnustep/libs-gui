@@ -398,7 +398,6 @@ static Class menuCellClass = nil;
 
 - (void)submenuAction:(id)sender
 {
-  // SUBCLASS
 }
 
 - (NSMenu*)attachedMenu

@@ -350,25 +350,16 @@ enum {							// resized when the view's superview is resized
 
 @class PSMatrix;
 
+//
+// GNUstep extensions
+//											 
 @interface NSView (PrivateMethods)
-/* If the view is rotated returns the bounding box of the rect in the "normal"
-   coordinates */
-- (NSRect)_boundingRectFor:(NSRect)rect;
-
-- (void)_recursivelyResetNeedsDisplayInAllViews;
-- (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view;
-- (void)_displayNeededViews;
-- (void)_unconditionallyResetNeedsDisplayInAllViews;
-
-/* Collects into `array' the invalid rectangles that need to be displayed. All
-   the rectangles are expressed in the window coordinates and not of the views
-   they come from. */
-- (void)_collectInvalidatedRectanglesInArray:(NSMutableArray*)array
-  originMatrix:(PSMatrix*)matrix1
-  sizeMatrix:(PSMatrix*)matrix2;
-
+											// If the view is rotated returns
+- (NSRect)_boundingRectFor:(NSRect)rect;	// the bounding box of the rect in 
+											// the "normal" coordinates
 - (PSMatrix*)_frameMatrix;
 - (PSMatrix*)_boundsMatrix;
+
 @end
 
 

@@ -56,6 +56,9 @@
 
 #include <AppKit/IMLoading.h>
 
+#define CONVEY(a, b)	[b retain]; \
+						[a release]; \
+						a = b;
 //
 // Class variables
 //
@@ -550,7 +553,7 @@ BOOL match = NO;										// which matches mask
 					[event retain];
 					[event_queue removeObjectAtIndex:i];
 					}									
-				ASSIGN(current_event, event);			 
+				CONVEY(current_event, event);			 
 		
 				return event;							// return an event from
       			}										// the queue which 
@@ -1174,7 +1177,7 @@ BOOL result = YES;
 
 + (void)setNullEvent:(NSEvent *)e
 {
-	ASSIGN(null_event, e);
+	CONVEY(null_event, e);
 }
 
 + (NSEvent *)getNullEvent;

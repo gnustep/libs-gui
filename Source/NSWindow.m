@@ -424,8 +424,7 @@ NSRect n = frame;										// center the window
 	[self setFrame:n display:YES];
 }
 
-- (NSRect)constrainFrameRect:(NSRect)frameRect
-					toScreen:screen
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:screen
 {
 	return NSZeroRect;
 }
@@ -501,13 +500,23 @@ NSPoint basePoint;
 {
 	if (needs_display) 
 		{
-		[[content_view superview] _displayNeededViews];
+		[[content_view superview] displayIfNeeded];
 		needs_display = NO;
 		}
 }
 
-- (void)enableFlushWindow					{ disable_flush_window = NO; }
-- (void)flushWindow							{}		// implemented in back end											
+- (void)update
+{
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+	if(is_autodisplay && needs_display)					// if autodisplay is
+		{												// enabled and window
+		[self displayIfNeeded];							// display
+		[self flushWindowIfNeeded];
+    	}
+
+	[nc postNotificationName: NSWindowDidUpdateNotification object: self];
+}
 
 - (void)flushWindowIfNeeded
 {
@@ -518,50 +527,14 @@ NSPoint basePoint;
 		}
 }
 
-- (void)_collectFlushRectangles
-{
-PSMatrix* originMatrix;
-PSMatrix* sizeMatrix;
-
-	if (disable_flush_window || backing_type == NSBackingStoreNonretained)
-		return;
-
-	NSDebugLog (@"_collectFlushRectangles");
-	[_flushRectangles removeAllObjects];
-
-	originMatrix = [PSMatrix new];
-	sizeMatrix = [PSMatrix new];
-
-	[[content_view superview] 
-					_collectInvalidatedRectanglesInArray:_flushRectangles
-					originMatrix:originMatrix
-					sizeMatrix:sizeMatrix];
-
-	[originMatrix release];
-	[sizeMatrix release];
-}
-
+- (void)flushWindow							{}		// implemented in back end											
+- (void)enableFlushWindow					{ disable_flush_window = NO; }
 - (BOOL)isAutodisplay						{ return is_autodisplay; }
 - (BOOL)isFlushWindowDisabled				{ return disable_flush_window; }
 - (void)setAutodisplay:(BOOL)flag			{ is_autodisplay = flag; }
 - (void)setViewsNeedDisplay:(BOOL)flag		{ needs_display = flag; }
-
-- (void)update
-{
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-	if(is_autodisplay && needs_display)					// if autodisplay is
-		{												// enabled
-		[self _collectFlushRectangles];
-		[self displayIfNeeded];
-		[self flushWindowIfNeeded];
-    	}
-
-	[nc postNotificationName: NSWindowDidUpdateNotification object: self];
-}
-
-- (void)useOptimizedDrawing:(BOOL)flag		{ optimize_drawing = flag; }
 - (BOOL)viewsNeedDisplay					{ return needs_display; }
+- (void)useOptimizedDrawing:(BOOL)flag		{ optimize_drawing = flag; }
 
 - (BOOL)canStoreColor
 {
@@ -571,11 +544,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		return NO;
 }
 
-- (NSScreen *)deepestScreen					
-{ 
-	return [NSScreen deepestScreen]; 
-}
-
+- (NSScreen *)deepestScreen					{ return [NSScreen deepestScreen];}
 - (NSWindowDepth)depthLimit					{ return depth_limit; }
 - (BOOL)hasDynamicDepthLimit				{ return dynamic_depth_limit; }
 - (NSScreen *)screen						{ return [NSScreen mainScreen]; }
@@ -756,10 +725,9 @@ NSApplication *theApp = [NSApplication sharedApplication];
   													// Make responder the first
 	first_responder = aResponder;					// responder
 
-													// Notify responder that it 
-	[first_responder becomeFirstResponder];			// has become the first
-													// responder
-	return YES;
+	[first_responder becomeFirstResponder];			// Notify responder that it
+													// has become the first
+	return YES;										// responder
 }
 
 - (NSPoint)mouseLocationOutsideOfEventStream
@@ -786,8 +754,7 @@ NSApplication *theApp = [NSApplication sharedApplication];
 											  dequeue:deqFlag];
 }
 
-- (void)postEvent:(NSEvent *)event
-		  atStart:(BOOL)flag
+- (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
 	[[NSApplication sharedApplication] postEvent:event atStart:flag];
 }

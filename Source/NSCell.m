@@ -602,9 +602,9 @@ NSString* _string;
 }
 
 - (void)stopTracking:(NSPoint)lastPoint
-		  at:(NSPoint)stopPoint
-	      inView:(NSView *)controlView
-		  mouseIsUp:(BOOL)flag
+				  at:(NSPoint)stopPoint
+				  inView:(NSView *)controlView
+				  mouseIsUp:(BOOL)flag
 {
 }
 

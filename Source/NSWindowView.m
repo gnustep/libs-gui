@@ -8,6 +8,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: November 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: November 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -34,6 +36,7 @@
 //
 // The backend will have to fill in the implementation
 //
+- (BOOL)isOpaque								{ return YES; }
 
 @end
 

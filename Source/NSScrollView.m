@@ -269,11 +269,11 @@ NSPoint point;
 	if (!_knobMoved)										
 		{													// if scrolling via 
 		[self reflectScrolledClipView:_contentView];		// buttons update
-		if (scroller == _vertScroller) 						// scroller pos to
-			[_vertScroller displayIfNeeded];				// reflect clipview
-		else
-			[_horizScroller displayIfNeeded];
-		[window flushWindow];
+//		if (scroller == _vertScroller) 						// scroller pos to
+//			[_vertScroller displayIfNeeded];				// reflect clipview
+//		else
+//			[_horizScroller displayIfNeeded];
+//		[window flushWindow];
 		}
 }
 
@@ -288,8 +288,8 @@ id documentView;
 	if(aClipView != _contentView)							// aClipView is not 
 		return;												// our content view
 
-	if (_knobMoved)									// is this really needed? 
-		return;										// FAR FIX ME ?
+//	if (_knobMoved)									// is this really needed? 
+//		return;										// FAR FIX ME ?
 
 	NSDebugLog (@"reflectScrolledClipView:");
 
@@ -312,6 +312,7 @@ id documentView;
 				floatValue = 1 - floatValue;
 			[_vertScroller setFloatValue:floatValue 
 						   knobProportion:knobProportion];
+			[_vertScroller displayIfNeededIgnoringOpacity];				
 			}
 		}
 
@@ -328,10 +329,12 @@ id documentView;
 							clipViewBounds.size.width);
       		[_horizScroller setFloatValue:floatValue 
 							knobProportion:knobProportion];
+			[_horizScroller displayIfNeededIgnoringOpacity];
     		}
   		}
 
 //  [self setNeedsDisplay:YES];			// not needed by XRAW causes flicker
+	[window flushWindow];
 }
 
 - (void)setHorizontalRulerView:(NSRulerView*)aRulerView
@@ -430,23 +433,24 @@ id documentView;
   return [_contentView documentCursor];
 }
 
-- (NSBorderType)borderType			{ return _borderType; }
-- (NSScroller*)verticalScroller			{ return _vertScroller; }
-- (BOOL)hasVerticalScroller			{ return _hasVertScroller; }
-- (BOOL)hasHorizontalRuler			{ return _hasHorizRuler; }
-- (NSSize)contentSize			{ return [_contentView bounds].size; }
-- (NSView*)contentView			{ return _contentView; }
-- (NSRulerView*)horizontalRulerView		{ return _horizRuler; }
-- (BOOL)hasVerticalRuler			{ return _hasVertRuler; }
-- (NSRulerView*)verticalRulerView		{ return _vertRuler; }
-- (BOOL)rulersVisible				{ return _rulersVisible; }
-- (void)setLineScroll:(float)aFloat		{ _lineScroll = aFloat; }
-- (float)lineScroll				{ return _lineScroll; }
-- (void)setPageScroll:(float)aFloat		{ _pageScroll = aFloat; }
-- (float)pageScroll				{ return _pageScroll; }
+- (BOOL)isOpaque							{ return YES; }
+- (NSBorderType)borderType					{ return _borderType; }
+- (NSScroller*)verticalScroller				{ return _vertScroller; }
+- (BOOL)hasVerticalScroller					{ return _hasVertScroller; }
+- (BOOL)hasHorizontalRuler					{ return _hasHorizRuler; }
+- (NSSize)contentSize					{ return [_contentView bounds].size; }
+- (NSView*)contentView						{ return _contentView; }
+- (NSRulerView*)horizontalRulerView			{ return _horizRuler; }
+- (BOOL)hasVerticalRuler					{ return _hasVertRuler; }
+- (NSRulerView*)verticalRulerView			{ return _vertRuler; }
+- (BOOL)rulersVisible						{ return _rulersVisible; }
+- (void)setLineScroll:(float)aFloat			{ _lineScroll = aFloat; }
+- (float)lineScroll							{ return _lineScroll; }
+- (void)setPageScroll:(float)aFloat			{ _pageScroll = aFloat; }
+- (float)pageScroll							{ return _pageScroll; }
 - (void)setScrollsDynamically:(BOOL)flag	{ _scrollsDynamically = flag; }
-- (BOOL)scrollsDynamically			{ return _scrollsDynamically; }
-- (NSScroller*)horizontalScroller		{ return _horizScroller; }
-- (BOOL)hasHorizontalScroller			{ return _hasHorizScroller; }
+- (BOOL)scrollsDynamically					{ return _scrollsDynamically; }
+- (NSScroller*)horizontalScroller			{ return _horizScroller; }
+- (BOOL)hasHorizontalScroller				{ return _hasHorizScroller; }
 
 @end

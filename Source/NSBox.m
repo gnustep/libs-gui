@@ -56,31 +56,34 @@
 //
 - initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
+	[super initWithFrame:frameRect];
+	
+	cell = [[NSTextFieldCell alloc] initTextCell:@"Title"];
+	[cell setAlignment: NSCenterTextAlignment];
+	[cell setBordered: NO];
+	[cell setEditable: NO];
+	[cell setDrawsBackground: YES];
+	[cell setBackgroundColor: [window backgroundColor]];
+	offsets.width = 5;
+	offsets.height = 5;
+	border_rect = bounds;
+	border_type = NSLineBorder;
+	title_position = NSAtTop;
+	title_rect = NSZeroRect;
+	ASSIGN(content_view, [NSView new]);
+	[super addSubview:content_view];
 
-  cell = [[NSTextFieldCell alloc] initTextCell:@"Title"];
-  [cell setAlignment: NSCenterTextAlignment];
-  [cell setBordered: NO];
-  [cell setEditable: NO];
-  [cell setDrawsBackground: YES];
-  [cell setBackgroundColor: [window backgroundColor]];
-  offsets.width = 5;
-  offsets.height = 5;
-  border_rect = bounds;
-  border_type = NSLineBorder;
-  title_position = NSAtTop;
-  title_rect = NSZeroRect;
-  content_view = [NSView new];
-  [super addSubview:content_view];
-
-  return self;
+	return self;
 }
 
 - (void)dealloc
 {
-  if (cell) [cell release];
-  if (content_view) [content_view release];
-  [super dealloc];
+	if (cell) 
+		[cell release];
+	if (content_view) 
+		[content_view release];
+
+	[super dealloc];
 }
 
 //

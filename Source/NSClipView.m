@@ -197,6 +197,7 @@
   [super_view reflectScrolledClipView:self];
 }
 
+- (BOOL)isOpaque								{ return YES; }
 - (id)documentView								{ return _documentView; }
 - (void)setCopiesOnScroll:(BOOL)flag			{ _copiesOnScroll = flag; }
 - (BOOL)copiesOnScroll							{ return _copiesOnScroll; }

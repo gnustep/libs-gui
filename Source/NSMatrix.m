@@ -999,7 +999,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 #if HAS_FLIPPED_VIEWS
        forPoint:rect.origin
 #else
-       forPoint:NSMakePoint (rect.origin.x, rect.origin.y + rect.size.height)
+      forPoint:NSMakePoint (rect.origin.x, rect.origin.y + rect.size.height)
 #endif
 	  above:NO right:NO
 	isBetweenCells:NULL];
@@ -1018,8 +1018,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   if (col1 < 0)
     col1 = 0;
 
-//  NSLog (@"display cells between (%d, %d) and (%d, %d)",
-//	 row1, col1, row2, col2);
+//NSLog (@"display cells between (%d, %d) and (%d, %d)",row1,col1, row2, col2);
 
   /* Draw the cells within the drawing rectangle. */
   intRect = upperLeftRect = [self cellFrameAtRow:row1 column:col1];
@@ -1468,12 +1467,12 @@ static MPoint anchor = {0, 0};
 
    Note that the cell numbering is flipped relative to the coordinate system.
  */
-- (BOOL)_getRow:(int*)row
-  column:(int*)column
-  forPoint:(NSPoint)point
-  above:(BOOL)aboveRequired
-  right:(BOOL)rightRequired
-  isBetweenCells:(BOOL*)isBetweenCells
+- (BOOL)_getRow:(int*)row 
+		 column:(int*)column
+		 forPoint:(NSPoint)point
+		 above:(BOOL)aboveRequired
+		 right:(BOOL)rightRequired
+		 isBetweenCells:(BOOL*)isBetweenCells
 {
   BOOL rowReady = NO, colReady = NO;
   BOOL betweenRows = NO, betweenCols = NO;

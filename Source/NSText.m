@@ -770,7 +770,10 @@ typedef enum
 -(void) setSelectedRange:(NSRange)range
 {	BOOL	didLock=NO;
 
-	if([self window] && [[self class] focusView] != self)
+	if(![self window])
+		return;
+
+	if([[self class] focusView] != self)
 	{	[self lockFocus];
 		didLock=YES;
 	}
