@@ -1321,7 +1321,7 @@ static NSNotificationCenter *nc = nil;
       /* Windows need to be constrained when displayed or resized - but only
 	 titled windows are constrained. Also, and this is the tricky part,
          don't constrain if we are merely unhidding the window or if it's
-         already visible and is just begin reordered. */
+         already visible and is just being reordered. */	    
       if ((_styleMask & NSTitledWindowMask)
 	  && [NSApp isHidden] == NO
 	  && _f.visible == NO)
@@ -1517,7 +1517,14 @@ static NSNotificationCenter *nc = nil;
     {
       frameRect.origin.y -= difference;
     }
-  
+  else if (NSMaxY (frameRect) < NSMinY (screenRect))
+    {
+      float diff1 = NSMinY (frameRect) - NSMinY (screenRect);
+      /* move bottom inside the screen, but keep top inside screen */
+      frameRect.origin.y -= MAX(difference, diff1);
+      difference = NSMaxY (frameRect) - NSMaxY (screenRect);
+    }
+
   /* If the window is resizable, resize it (if needed) so that the
      bottom edge is on the screen too */
   if (_styleMask & NSResizableWindowMask)
