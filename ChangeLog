@@ -1,7 +1,8 @@
 Tue Jan  5 18:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         Source/NSMatrix.m: bugfix growing matrix - from stark@easynet.fr
-        Source/NSApplication.m: Added [+new] as a synonym for the
+        Source/NSApplication.m: Modified -init method to return the shared
+        application object so that +new is effectively a synonym for the
         [+sharedApplication] method - from stark@easynet.fr
 
 Tue Dec 22 12:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
