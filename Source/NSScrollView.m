@@ -510,10 +510,10 @@ static Class rulerViewClass = nil;
   float horizLinePosition, horizLineLength = [self bounds].size.width;
   float borderThickness = 0;
 
-  fprintf (stderr,
-      "NSScrollView drawRect: origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-				rect.origin.x, rect.origin.y,
-				rect.size.width, rect.size.height);
+//  fprintf (stderr,
+//      "NSScrollView drawRect: origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+//				rect.origin.x, rect.origin.y,
+//				rect.size.width, rect.size.height);
 
   PSgsave ();
   switch ([self borderType])

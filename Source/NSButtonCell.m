@@ -42,6 +42,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSColor.h>
 
 
 
@@ -121,10 +122,11 @@
 
 - (void)setAlternateTitle:(NSString *)aString
 {
-NSString* _string = [aString copy];
+  NSString* _string = [aString copy];
 
-	ASSIGN(altContents, _string);
-	[self setState:[self state]];						// update our state
+  ASSIGN(altContents, _string);
+  [_string release];
+  [self setState:[self state]];						// update our state
 }
 
 //
@@ -300,10 +302,173 @@ NSString* _string = [aString copy];
 //
 // Displaying
 //
+- (NSColor *)textColor
+{
+  if (([self state] && ([self showsStateBy] & NSChangeGrayCellMask))
+      || ([self isHighlighted] && ([self highlightsBy] & NSChangeGrayCellMask))) 
+    return [NSColor lightGrayColor];
+  return [NSColor blackColor];
+}
+
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-	control_view = controlView;				// Save last view cell was drawn to
+  float backgroundGray = NSLightGray;
+
+  // do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame))
+    return;
+
+  PSgsave ();
+
+//fprintf(stderr,"XRButtonCell drawWithFrame \n");
+
+  // Save last view drawn to
+  [self setControlView: controlView];
+
+  // determine the background color
+  if ([self state])
+    {
+      if ( [self showsStateBy] 
+           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) ) 
+        backgroundGray = NSWhite;
+    }
+
+  if ([self isHighlighted])
+    {
+      if ( [self highlightsBy]
+           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) ) 
+        backgroundGray = NSWhite;
+    }
+
+  // set cell's background color
+  [[NSColor colorWithCalibratedWhite:backgroundGray alpha:1.0] set];
+  NSRectFill(cellFrame);
+
+  // draw the border if needed
+  if ([self isBordered])
+    {
+      if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask)) 
+        {
+          NSDrawGrayBezel (cellFrame, cellFrame);		
+          cellFrame = NSInsetRect (cellFrame, 2, 2);
+        }
+      else
+        {
+          NSDrawButton (cellFrame, cellFrame);
+          cellFrame = NSInsetRect (cellFrame, 2, 2);
+        }
+    }
+
+//  NSRectClip (cellFrame);
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  PSgrestore ();
 }
+
+- (void)drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  BOOL showAlternate = NO;
+  unsigned int mask;
+  NSImage *imageToDisplay;
+  NSString *titleToDisplay;
+  NSSize imageSize = {0, 0};
+  NSRect rect;
+
+  cellFrame = NSInsetRect (cellFrame, xDist, yDist);
+
+  // Determine the image and the title that will be 
+  // displayed. If the NSContentsCellMask is set the 
+  // image and title are swapped only if state is 1 or 
+  // if highlighting is set (when a button is pushed it's 
+  // content is changed to the face of reversed state).
+  if ([self isHighlighted])
+    mask = [self highlightsBy];
+  else
+    mask = [self showsStateBy];
+  if (mask & NSContentsCellMask) 
+    showAlternate = [self state];                     
+
+  if (showAlternate || [self isHighlighted]) 
+    {
+      imageToDisplay = [self alternateImage];
+      titleToDisplay = [self alternateTitle];
+      if (!titleToDisplay)
+        titleToDisplay = [self title];
+    }
+  else 
+    {
+      imageToDisplay = [self image];
+      titleToDisplay = [self title];
+    }
+
+  if (imageToDisplay)
+    imageSize = [imageToDisplay size];
+  rect = NSMakeRect (cellFrame.origin.x, cellFrame.origin.y,
+                     imageSize.width, imageSize.height);
+
+  switch ([self imagePosition]) 
+    {
+      case NSNoImage:                           
+           // draw title only
+           [self _drawText: titleToDisplay inFrame: cellFrame];
+           break;
+
+      case NSImageOnly:                        
+           // draw image only
+           [self _drawImage: imageToDisplay inFrame: cellFrame];
+           break;
+
+      case NSImageLeft:                   
+           // draw image to the left of the title
+           rect.origin = cellFrame.origin;
+           rect.size.width = imageSize.width;
+           rect.size.height = cellFrame.size.height;
+           [self _drawImage: imageToDisplay inFrame: rect];
+
+           // draw title
+           rect.origin.x += imageSize.width + xDist;
+           rect.size.width = cellFrame.size.width - imageSize.width - xDist;
+           [self _drawText: titleToDisplay inFrame: rect];
+           break;
+
+      case NSImageRight:                 
+           // draw image to the right of the title
+           rect.origin.x = NSMaxX (cellFrame) - imageSize.width;
+           rect.origin.y = cellFrame.origin.y;
+           rect.size.width = imageSize.width;
+           rect.size.height = cellFrame.size.height;
+           [self _drawImage:imageToDisplay inFrame:rect];
+  
+           // draw title
+           rect.origin = cellFrame.origin;
+           rect.size.width = cellFrame.size.width - imageSize.width - xDist;
+           rect.size.height = cellFrame.size.height;
+           [self _drawText: titleToDisplay inFrame: rect];
+           break;
+      case NSImageBelow:                      
+           // draw image below title
+           cellFrame.size.height /= 2;
+           [self _drawImage: imageToDisplay inFrame: cellFrame];
+           cellFrame.origin.y += cellFrame.size.height;
+           [self _drawText: titleToDisplay inFrame: cellFrame];
+           break;
+                                                                                                              
+      case NSImageAbove:                                                                     
+           // draw image above title
+           cellFrame.size.height /= 2;
+           [self _drawText: titleToDisplay inFrame: cellFrame];
+           cellFrame.origin.y += cellFrame.size.height;
+           [self _drawImage: imageToDisplay inFrame: cellFrame];
+           break;
+                                                                                                             
+      case NSImageOverlaps:
+           // draw title over the image
+           [self _drawImage: imageToDisplay inFrame: cellFrame];
+           [self _drawText: titleToDisplay inFrame: cellFrame];
+           break;
+    }
+}
+
 
 - (id)copyWithZone:(NSZone*)zone
 {

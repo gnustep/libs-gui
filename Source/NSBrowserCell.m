@@ -256,7 +256,7 @@ NSImage *image = nil;
   	[_browserText drawWithFrame:title_rect inView: controlView];
 
 	if (image)											// Draw the image
-    	[self _displayImage:image inFrame:image_rect];
+    	[self _drawImage:image inFrame:image_rect];
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView

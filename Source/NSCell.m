@@ -41,6 +41,7 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSColor.h>
 
 
 
@@ -236,14 +237,14 @@ NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
 
 - (void)setStringValue:(NSString *)aString
 {
-NSString* _string;
+  NSString* _string;
 
-	if (!aString)
-		_string = @"";
-	else
-		_string = [aString copy];
+  if (!aString)
+    _string = @"";
+  else
+    _string = [[aString copy] autorelease];
 
-	ASSIGN(contents, _string);
+  ASSIGN(contents, _string);
 }
 
 //
@@ -414,36 +415,135 @@ NSString* _string;
 - (NSView *)controlView						{ return control_view; }
 - (void)setControlView:(NSView*)view		{ control_view = view; }
 
+- (NSColor *)textColor
+{
+  if ([self isEnabled])
+    return [NSColor blackColor];
+  else
+    return [NSColor darkGrayColor];
+}
+
+- (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
+{
+  NSColor *textColor;
+  NSFont *font;
+  float titleWidth;
+  float titleHeight;
+  
+  if (!title)
+    return;
+
+  textColor = [self textColor];
+
+  font = [self font];
+  if (!font)
+    [NSException raise:NSInvalidArgumentException
+        format:@"Request to draw a text cell but no font specified!"];
+  titleWidth = [font widthOfString: title];
+  titleHeight = [font pointSize];
+
+  // Determine the y position of the text
+  cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
+  cellFrame.size.height = titleHeight;
+
+  // Determine the x position of text
+  switch ([self alignment])
+    {
+      // ignore the justified and natural alignments
+      case NSLeftTextAlignment:
+      case NSJustifiedTextAlignment:
+      case NSNaturalTextAlignment:
+	break;
+      case NSRightTextAlignment:
+        if (titleWidth < NSWidth (cellFrame))
+          {
+            float shift = NSWidth (cellFrame) - titleWidth;
+            cellFrame.origin.x += shift;
+            cellFrame.size.width -= shift;
+          }
+	break;
+      case NSCenterTextAlignment:
+        if (titleWidth < NSWidth (cellFrame))
+          {
+            float shift = (NSWidth (cellFrame) - titleWidth) / 2;
+            cellFrame.origin.x += shift;
+            cellFrame.size.width -= shift;
+          }
+    }
+
+  [font set];
+  [textColor set];
+  [title drawInRect:cellFrame withAttributes: nil];
+}
+
+// Draw image centered in frame.
+- (void) _drawImage: (NSImage *) image inFrame: (NSRect) cellFrame
+{
+  NSSize size;
+  NSPoint position;
+
+  if (!image)
+    return;
+
+  size = [image size];
+  position.x = NSMidX (cellFrame) - size.width / 2;
+  position.y = NSMidY (cellFrame) - size.height / 2;
+  [image compositeToPoint: position operation: NSCompositeCopy];
+}
+
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
+  cellFrame = NSInsetRect (cellFrame, xDist, yDist);
+
   switch ([self type])
     {
       case NSTextCellType:
-        {
-          NSText *fieldEditor;
-          fieldEditor = [[controlView window] fieldEditor: YES forObject: self];
-          [fieldEditor setString: [self stringValue]];
-          [fieldEditor setAlignment: [self alignment]];
-          [fieldEditor setFont: [self font]];
-          [fieldEditor setDrawsBackground: NO];
-          if ([self isEnabled])
-            [fieldEditor setTextColor: [NSColor blackColor]];
-          else
-            [fieldEditor setTextColor: [NSColor darkGrayColor]];
-          [fieldEditor setFrame: cellFrame];
-          [controlView addSubview: fieldEditor];
-          break;
-        }
+           [self _drawText: [self stringValue] inFrame: cellFrame];
+           break;
       case NSImageCellType:
-          [self _displayImage:cell_image inFrame:cellFrame];
-          break;
+           [self _drawImage: [self image] inFrame: cellFrame];
+           break;
       case NSNullCellType:
           break;
     }
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
-{													// implemented in back end
+- (void)drawWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  NSDebugLog (@"NSCell drawWithFrame:inView:");
+
+  // We apply a clipping rectangle so save the graphics state
+  PSgsave ();
+
+  // Save last view drawn to
+  [self setControlView: controlView];
+
+  // Clear the cell frame
+  if ([self isOpaque])							
+    {
+      [[NSColor lightGrayColor] set];
+      NSRectFill(cellFrame);
+    }
+
+  // draw the border if needed
+  if ([self isBordered])
+    {
+      if ([self isBezeled]) 
+        {
+          NSDrawWhiteBezel (cellFrame, cellFrame);
+          cellFrame = NSInsetRect (cellFrame, 2, 2);
+        }
+      else 
+        {
+          NSFrameRect (cellFrame);
+          cellFrame = NSInsetRect (cellFrame, 1, 1);
+        }
+    }
+
+  NSRectClip (cellFrame);
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  PSgrestore ();
 }
 
 - (BOOL)isHighlighted					{ return cell_highlighted; }
@@ -794,8 +894,19 @@ NSCell* c = [[isa allocWithZone: zone] init];
 @implementation NSCell (GNUstepBackend)
 
 + (NSSize)sizeForBorderType:(NSBorderType)aType
-{													// Returns the size of a
-	return NSZeroSize;								// border
+{
+  // Returns the size of a border
+  switch (aType)					
+    {
+      case NSLineBorder:
+        return NSMakeSize(1, 1);
+      case NSGrooveBorder:
+      case NSBezelBorder:
+        return NSMakeSize(2, 2);
+      case NSNoBorder:
+      default:
+        return NSZeroSize;
+    }
 }
 
 @end

@@ -1,3 +1,10 @@
+Mon Feb 15 12:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBrowserCell.m: Code by Benhur to handle flipped views
+	* Source/NSButtonCell.m: ditto
+	* Source/NSCell.m: ditto
+	* Source/NSScrollView.m: ditto
+
 1999-02-13 Michael Hanni <mhanni@sprintmail.com>
 
 	* Small change to gui/Tools/GNUmakefile.preamble to allow for easy
