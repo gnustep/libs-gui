@@ -1,3 +1,8 @@
+2001-04-23  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSMatrix.m ([NSMatrix -_mouseDownNonListMode:]): does not
+	performSelector is the mouse goes up in cell.
+
 2001-04-22  Georg Fleischmann
 
 	* gui/Source/GSTextStorage.m:

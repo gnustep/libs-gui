@@ -2092,13 +2092,6 @@ static SEL getSel;
 	}
       [self sendAction];
     }
-  else if (_selectedCell != nil && ([_selectedCell target] == nil))
-    {
-      // selected cell has no target so send single
-      // click action to matrix's (self's) target
-      if (_target)
-	[_target performSelector: _action withObject: self];
-    }
 }
 
 
