@@ -1,3 +1,10 @@
+Thu Oct 21  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSPopUpButton.m ([-selectItemAtIndex:]): Mark the button
+ 	as needing redisplay when the selected item is changed.  This is
+ 	effective, but temporary.  Replace it by a call to
+ 	synchronizeTitleAndSelectedItem as soon as the latter works.
+
 Tue Oct 19 11:33:46 1999  Lyndon Tremblay  <humasect@coolmail.com>
 
 	* Source/NSMenuView.m: ([-sizeToFit]) added handling for title width.
