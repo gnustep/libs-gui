@@ -53,16 +53,10 @@
 /* A menu's title is an instance of this class */
 @class NSButton;
 
-@interface GSCloseButton : NSButton
-{
-}
-
-@end
-
 @interface NSMenuWindowTitleView : NSView
 {
   NSMenu *menu;
-  GSCloseButton *button;
+  NSButton *button;
 }
 
 - (void) addCloseButton;
@@ -1533,7 +1527,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 		    (_frame.size.height - imageSize.height) / 2},
 		  { imageSize.height, imageSize.width } };
 
-  button = [[GSCloseButton alloc] initWithFrame: rect];
+  button = [[NSButton alloc] initWithFrame: rect];
+  [button setRefusesFirstResponder: YES];
+  [button setButtonType: NSMomentaryChangeButton];
+  [button setImagePosition: NSImageOnly];
+  [button setBordered: NO];
+  [button setAutoresizingMask: NSViewMinXMargin];
   [button setImage: closeImage];
   [button setAlternateImage: closeHImage];
   [button setTarget: menu];
@@ -1569,22 +1568,3 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 @end /* NSMenuWindowTitleView */
 
-@implementation GSCloseButton
-
-- (id) initWithFrame: (NSRect) rect
-{
-  self = [super initWithFrame: rect];
-  [self setButtonType: NSMomentaryChangeButton];
-  [self setImagePosition: NSImageOnly];
-  [self setBordered: NO];
-  [self setAutoresizingMask: NSViewMinXMargin];
-
-  return self;
-}
-
-- (BOOL) acceptsFirstResponder
-{
-  return NO;
-}
-
-@end
