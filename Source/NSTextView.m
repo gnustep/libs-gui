@@ -177,18 +177,13 @@ static NSNotificationCenter *nc;
   textStorage = [[NSTextStorage alloc] init];
 
   layoutManager = [[NSLayoutManager alloc] init];
-  /*
-    [textStorage addLayoutManager: layoutManager];
-    RELEASE (layoutManager);
-  */
+
+  [textStorage addLayoutManager: layoutManager];
+  RELEASE (layoutManager);
 
   textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
   [layoutManager addTextContainer: textContainer];
   RELEASE (textContainer);
-
-  /* FIXME: The following two lines should go *before* */
-  [textStorage addLayoutManager: layoutManager];
-  RELEASE (layoutManager);
 
   /* The situation at this point is as follows: 
 
