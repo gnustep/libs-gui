@@ -42,7 +42,9 @@
  */
 typedef enum {
   GSGlyphDrawsOutsideLineFragment,
-  GSGlyphIsNotShown
+  GSGlyphIsNotShown,
+  GSGlyphGeneration,
+  GSGlyphInscription,
 } GSGlyphAttributes;
 
 /*
@@ -54,6 +56,8 @@ typedef	struct {
   unsigned offset:24;			// characters in from start of chunk
   unsigned drawsOutsideLineFragment:1;	// glyph bigger than fragment?
   unsigned isNotShown:1;		// glyph invisible (space, tab etc)
+  unsigned inscription:3;		// NSGlyphInscription info
+  unsigned generation:3;		// Other attributes
 } GSGlyphAttrs;
 
 
@@ -1864,6 +1868,14 @@ invalidatedRange.length);
 	  attrs.isNotShown = 1;
 	}
     }
+  else if (attribute == GSGlyphGeneration)
+    {
+      attrs.generation = anInt;
+    }
+  else if (attribute == GSGlyphInscription)
+    {
+      attrs.inscription = anInt;
+    }
   _SetAttrs(&s, attrs);
 }
 
@@ -1904,8 +1916,16 @@ invalidatedRange.length);
 	}
       else
 	{
-	  return 0;
+	  return 1;
 	}
+    }
+  else if (attribute == GSGlyphGeneration)
+    {
+      return attrs.generation;
+    }
+  else if (attribute == GSGlyphInscription)
+    {
+      return attrs.inscription;
     }
 
   return 0;
