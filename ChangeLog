@@ -1,3 +1,13 @@
+2000-05-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSTabViewItem.h
+	* Source/NSTabViewItem.m
+	Adopted to programming standard. In [drawLabel:inRect:] use string
+	drawing method instead of PSshow().
+	* Source/NSMenu.m
+	For NSMenuWindowTitleView [drawRect:] use string
+	drawing method instead of PSshow().
+	
 2001-05-05  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSSavePanel.m ([NSSavePanel -browser:createRowsForColumn:
@@ -7,7 +17,7 @@
 	currentEvent. Fix to prevent theEvent to become nil.
 	Do not allow empty selection in NSRadioModeMatrix.
 
-2000-05-01  Fred Kiefer <FredKiefer@gmx.de>
+2000-05-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/GSMethodTable.h: 
 	* Headers/gnustep/gui/NSGraphics.h
