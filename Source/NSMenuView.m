@@ -486,7 +486,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   unsigned i;
   unsigned howMany = [_itemCells count];
-  unsigned wideTitleView = 1;
+	unsigned wideTitleView = 1;
   float    neededImageAndTitleWidth = 0.0;
   float    neededKeyEquivalentWidth = 0.0;
   float    neededStateImageWidth = 0.0;
@@ -550,21 +550,22 @@ _addLeftBorderOffsetToRect(NSRect aRect)
             anImageAndTitleWidth = anImageWidth;
           break;
         }
-      anImageAndTitleWidth += aStateImageWidth;
       
       if (aStateImageWidth > neededStateImageWidth)
         neededStateImageWidth = aStateImageWidth;
       
       if (anImageAndTitleWidth > neededImageAndTitleWidth)
-        {
-          neededImageAndTitleWidth = anImageAndTitleWidth;
-          wideTitleView = 0;
-        }
-      
+				 	neededImageAndTitleWidth = anImageAndTitleWidth;
+		
       if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
         neededKeyEquivalentWidth = aKeyEquivalentWidth;
       
-      // Popup menu has only one item with nibble image
+			// Title view width less than item's left part width
+			if ((anImageAndTitleWidth + aStateImageWidth) 
+					> neededImageAndTitleWidth)
+				wideTitleView = 0;
+
+      // Popup menu has only one item with nibble or arrow image
       if (anImageWidth)
         popupImageWidth = anImageWidth;
     }
@@ -573,36 +574,43 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   _stateImageWidth = neededStateImageWidth;
   _imageAndTitleWidth = neededImageAndTitleWidth;
   _keyEqWidth = neededKeyEquivalentWidth;
-  
+
+	accumulatedOffset = _horizontalEdgePad;
   if (howMany)
     {
-      // Calculate the offsets and cache them.
-      if (neededStateImageWidth)
-        {
-          _stateImageOffset = accumulatedOffset += _horizontalEdgePad;
-          accumulatedOffset += neededStateImageWidth;
-        }
-      
-      _imageAndTitleOffset = accumulatedOffset += _horizontalEdgePad;
-      accumulatedOffset += neededImageAndTitleWidth;
-      
-      if (neededKeyEquivalentWidth)
-        {
-          _keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
-          accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad;
-        }
-      else
-        {
-          if (wideTitleView && [_menu supermenu] != nil)
-            accumulatedOffset += 15 + 3 + 2;
-          else
-            accumulatedOffset += 3 * _horizontalEdgePad;
-        }
+			// Calculate the offsets and cache them.
+			if (neededStateImageWidth)
+				{
+					_stateImageOffset = accumulatedOffset;
+					accumulatedOffset += neededStateImageWidth += _horizontalEdgePad;
+				}
+
+			if (neededImageAndTitleWidth)
+				{
+					_imageAndTitleOffset = accumulatedOffset;
+					accumulatedOffset += neededImageAndTitleWidth;
+				}
+
+			if (wideTitleView)
+				{
+					_keyEqOffset = accumulatedOffset = neededImageAndTitleWidth
+						+ (3 * _horizontalEdgePad);
+				}
+			else
+				{
+					_keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
+				}
+			accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
+
+			if ([_menu supermenu] != nil && neededKeyEquivalentWidth < 8)
+				{
+					accumulatedOffset += 8 - neededKeyEquivalentWidth;
+				}
     }
   else
     {
-      accumulatedOffset += 5 + neededImageAndTitleWidth + 3 + 2;
-      if (wideTitleView && [_menu supermenu] != nil)
+      accumulatedOffset += neededImageAndTitleWidth + 3 + 2;
+      if ([_menu supermenu] != nil)
         accumulatedOffset += 15;
     }
   
