@@ -112,6 +112,7 @@
 - (void) rightMouseDown: (NSEvent*)theEvent;
 - (void) rightMouseDragged: (NSEvent*)theEvent;
 - (void) rightMouseUp: (NSEvent*)theEvent;
+- (void) scrollWheel: (NSEvent *)theEvent;
 
 /*
  * Services menu support
