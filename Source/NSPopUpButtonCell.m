@@ -275,7 +275,8 @@ static NSImage *_pbc_image[2];
 	{
 	  [_selectedItem setState: NSOffState];
 	}
-      [_selectedItem setImage: nil];
+      if ([_selectedItem image] == _pbc_image[_pbcFlags.pullsDown])
+  	[_selectedItem setImage: nil];
     }
 
   _selectedItem = item;
@@ -286,7 +287,8 @@ static NSImage *_pbc_image[2];
         {
 	  [_selectedItem setState: NSOnState];
         }
-      [_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
+      if ([_selectedItem image] == nil)
+	[_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
     }
 
   /* Set the item in the menu */
