@@ -1,4 +1,12 @@
-Web Dec  1  8:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Wen Dec  1 11:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Removed spurious setNeedsDisplay when changing
+	the contentView of a window - it's up to the programmer to do that.
+	* Source/NSView.m: Removed many spurious setNeedsDisplay calls when
+	altering the view hierarchy - it's up to the programmer to do a
+	single call at the end of the work.
+
+Wen Dec  1  8:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Applied and modified/rewrote patch by Jonathan Gapen
 	* Headers/gnustep/gui/NSImage.h: Moved excess BOOL ivar to _flags.

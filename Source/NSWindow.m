@@ -373,7 +373,6 @@ static NSMapTable* windowmaps = NULL;
 		[[wv subviews] count]);
 
   [content_view setNextResponder: self];
-  [content_view setNeedsDisplay: YES];		    // Make sure we redraw.
 }
 
 /*
@@ -682,6 +681,16 @@ static NSMapTable* windowmaps = NULL;
       unsigned	i;
       NSWindow	*w;
 
+      if (_rFlags.needs_display == YES)
+	{
+	  /*
+	   * Don't keep trying to update the window while it is ordered out
+	   */
+	  [[NSRunLoop currentRunLoop]
+             cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+                            target: self
+                          argument: nil];
+	}
       if ([self isKeyWindow])
 	{
 	  [self resignKeyWindow];
@@ -743,7 +752,25 @@ static NSMapTable* windowmaps = NULL;
 	    }
 	}
     }
-
+  else
+    {
+      if (_rFlags.needs_display == NO)
+	{
+	  /*
+	   * Once we are ordered back in, we will want to update the window
+	   * whenever there is anything to do.
+	   */
+	  [[NSRunLoop currentRunLoop]
+		 performSelector: @selector(_handleWindowNeedsDisplay:)
+			  target: self
+			argument: nil
+			   order: 600000 
+			   modes: [NSArray arrayWithObjects:
+					   NSDefaultRunLoopMode,
+					   NSModalPanelRunLoopMode,
+					   NSEventTrackingRunLoopMode, nil]];
+	}
+    }
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
 
@@ -1108,7 +1135,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) _handleWindowNeedsDisplay: (id)bogus
 {
-    [self displayIfNeeded];
+  [self displayIfNeeded];
 }
 
 - (void) setViewsNeedDisplay: (BOOL)flag

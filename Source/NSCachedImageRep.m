@@ -48,6 +48,16 @@
 {
   [super initDefaults];
   [self setExcludedFromWindowsMenu: YES];
+  [self setAutodisplay: NO];
+}
+- (void) display
+{
+}
+- (void) displayIfNeeded
+{
+}
+- (void) setViewsNeedDisplay: (BOOL)f
+{
 }
 @end
 
