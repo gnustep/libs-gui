@@ -1,3 +1,8 @@
+Fri Sep  3 22:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSAttributedString.m: implemented (untested) most of the
+	missing methods, and fixed a few memory leaks.
+
 Thu Sep  2 16:42:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSWorkspace.m: Trivial fix to pass app when opening files.
