@@ -127,6 +127,22 @@ static NSParagraphStyle	*defaultStyle = nil;
   return defaultStyle;
 }
 
++ (void) initialize
+{
+  if (self == [NSParagraphStyle class])
+    {
+      /* Set the class version to 2, as the writing direction is now 
+	 stored in the encoding */
+      [self setVersion: 2];
+    }
+}
+
++ (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language
+{
+  // FIXME
+  return NSWritingDirectionNaturalDirection;
+}
+
 - (void) dealloc
 {
   if (self == defaultStyle)
@@ -150,6 +166,7 @@ static NSParagraphStyle	*defaultStyle = nil;
   _minimumLineHeight = 0.0;
   _paragraphSpacing = 0.0;
   _tailIndent = 0.0;
+  _baseDirection = NSWritingDirectionNaturalDirection;
   _tabStops = [[NSMutableArray allocWithZone: [self zone]] 
 		initWithCapacity: 12];
   return self;
@@ -240,6 +257,11 @@ static NSParagraphStyle	*defaultStyle = nil;
   return _lineBreakMode;
 }
 
+- (NSWritingDirection) baseWritingDirection
+{
+  return _baseDirection;
+}
+
 - (id) copyWithZone: (NSZone*)aZone
 {
   if (NSShouldRetainWithZone (self, aZone) == YES)
@@ -306,6 +328,11 @@ static NSParagraphStyle	*defaultStyle = nil;
 	}
     }
 
+  if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
+    {
+      [aCoder decodeValueOfObjCType: @encode(int) at: &_baseDirection];
+    }
+
   return self;
 }
 
@@ -349,6 +376,8 @@ static NSParagraphStyle	*defaultStyle = nil;
 			      count: count
 				 at: types];
     }
+
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_baseDirection];
 }
 
 
@@ -370,6 +399,7 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_maximumLineHeight);
   C(_alignment);
   C(_lineBreakMode);
+  C(_baseDirection);
 #undef C
 
   return [_tabStops isEqualToArray: other->_tabStops];
@@ -443,6 +473,11 @@ static NSParagraphStyle	*defaultStyle = nil;
   _maximumLineHeight = aFloat;
 }
 
+- (void) setBaseWritingDirection: (NSWritingDirection)direction
+{
+  _baseDirection = direction;
+}
+
 - (void) addTabStop: (NSTextTab*)anObject
 {
   unsigned	count = [_tabStops count];
@@ -506,6 +541,7 @@ static NSParagraphStyle	*defaultStyle = nil;
   _minimumLineHeight = p->_minimumLineHeight;
   _paragraphSpacing = p->_paragraphSpacing;
   _tailIndent = p->_tailIndent;
+  _baseDirection = p->_baseDirection;
 }
 
 - (id) copyWithZone: (NSZone*)aZone
