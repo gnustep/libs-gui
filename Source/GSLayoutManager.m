@@ -51,6 +51,20 @@ static int random_level(void)
 }
 
 
+/*
+Private method used internally by GSLayoutManager for sanity checking.
+*/
+@interface NSTextStorage (GSLayoutManager_sanity_checking)
+-(unsigned int) _editCount;
+@end
+@implementation NSTextStorage (GSLayoutManager_sanity_checking)
+-(unsigned int) _editCount;
+{
+  return _editCount;
+}
+@end
+
+
 /***** Glyph handling *****/
 
 @implementation GSLayoutManager (glyphs_helpers)
@@ -559,6 +573,23 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 {
   int length;
   BOOL dummy;
+
+
+  /*
+  Trying to do anything here while the text storage has unprocessed edits
+  (ie. an edit count>0) breaks things badly, and in strange ways. Thus, we
+  detect this and raise an exception.
+  */
+  if ([_textStorage _editCount])
+    {
+      [NSException raise: NSGenericException
+	      format: @"Glyph generation was triggered for a layout manager "
+		      @"while the text storage it was attached to had "
+		      @"unprocessed editing. This is not allowed. Glyph "
+		      @"generation may be triggered only at points where "
+		      @"calls to -beginEditing and -endEditing are "
+		      @"balanced."];
+    }
 
   if (!_textStorage)
     return;

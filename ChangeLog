@@ -1,3 +1,9 @@
+2003-04-06 15:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-_generateGlyphsUpToCharacter:): Make
+	sure that all editing of the text storage has been processed before
+	trying to generate glyhps for it.
+
 2003-04-05 12:58  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFontPanel.m (-_initWithoutGModel): Make preview active
