@@ -1,3 +1,11 @@
+2004-10-31 12:04 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* GNUmakefile.postamble: Removed the after-clean clean section
+	which is attempting to remove directories which existed prior to
+	the change which moved all of the headers.  While this is not
+	causing an issue on Linux, some other environments fail when 
+	attempting to "make distclean".
+
 2004-10-30  Alex Perez  <aperez@student.santarosa.edu>
 
 	* Headers/AppKit/NSImage.h (+_standardImageWithName:): New method.
@@ -16,10 +24,10 @@
 2004-10-24  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/NSWorkspace.m (-appIconForApp:): Fixed code to be more
-	generic by using -[NSBundle pathForImageResource:]. Now the method works
-	with NSIcon value not path based like "MyApplication.tiff".
+	generic by using -[NSBundle pathForImageResource:]. Now the method
+	works with NSIcon value not path based like "MyApplication.tiff".
 
-2004-10-22  08:26 Gregory John Casamento <greg_casamento@yahoo.com>
+2004-10-22 08:26 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSStepperCell.m: Corrected issue with [NSStepperCell
 	initWithCoder:] for encoding issue with gcc 3.4.

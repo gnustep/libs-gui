@@ -66,12 +66,12 @@ before-install:: $(INSTALL_ROOT_DIR)$(GNUSTEP_MAKEFILES)/Additional
 # before-clean::
 
 # Things to do after cleaning
-after-clean::
-	cd Headers ; cd gnustep ; cd gui ; rm -f *~
-	cd Headers ; cd gnustep ; \
-	  if [ -d dps ]; then \
-	    cd dps ; rm -f *~; \
-	  fi
+#after-clean::
+#	cd Headers ; cd gnustep ; cd gui ; rm -f *~
+#	cd Headers ; cd gnustep ; \
+#	  if [ -d dps ]; then \
+#	    cd dps ; rm -f *~; \
+#	  fi
 
 # Things to do before distcleaning
 # before-distclean::
