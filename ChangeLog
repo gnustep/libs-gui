@@ -1,3 +1,20 @@
+2001-08-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSApplication.h
+	Removed [showHelp:] and [activateContextHelpMode:] as they are
+	declared in NSHelpManager.h
+	* Source/NSApplication.m
+	Removed [showHelp:] and [activateContextHelpMode:] as they are
+	implemented in NSHelpManager.m. Use [showHelp:] in old method [].
+	* Source/NSHelpManager.m
+	In [NSApplication showHelp:] added a check for the existence of
+	the help file.
+	* Headers/gnustep/gui/GSHelpManagerPanel.h
+	Added Header, changed includes and removed [init] method.
+	* Source/GSHelpManagerPanel.m
+	Added Header, changed includes, small restructuring of [init] and
+	removed [isFloatingPanel].
+	
 2001-08-04  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSGraphicsContext.h
