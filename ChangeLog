@@ -1,3 +1,21 @@
+2003-07-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFConsumerFunctions.h
+	Added function GSRTFunicode().
+	* TextConverters/RTF/RTFConsumer.m
+	Added method [RTFConsumer appendString:] with code coming from
+	GSRTFmangleText(). Use this in GSRTFmangleText() and new function
+	GSRTFunicode(). Corrected GSRTFmangleText() to convert the input
+	from NSISOLatin1StringEncoding, as this is what our current RTF
+	exporter produces.
+	* TextConverters/RTF/rtfScanner.c
+	Define RTFunichar token.
+	* TextConverters/RTF/rtfGrammer.y
+	Added rule to read unicode character from RTF input.
+	* TextConverters/RTF/rtfGrammer.tab.c
+	* TextConverters/RTF/rtfGrammer.tab.h
+	Regenerated.
+
 2003-07-14  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/GSServicesManager.h: removed a function
