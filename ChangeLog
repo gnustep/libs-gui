@@ -1,3 +1,9 @@
+2004-08-08 01:19  Chad Hardin <cehardin@mac.com>
+
+	* Source/NSPageLayout.m: Ensure that the units on the panel
+	are set.  Using -viewWithTag:, I had to make sure I called
+	the view immediately above the view I was loking for.
+
 2004-08-08 00:43  Chad Hardin <cehardin@mac.com>
 
 	* config.make.in: Added CUPS specific make variables.

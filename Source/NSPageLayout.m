@@ -50,6 +50,7 @@
 #include "AppKit/NSPageLayout.h"
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSTabView.h"
+#include "AppKit/NSTabViewItem.h"
 #include "AppKit/NSPrinter.h"
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSPrinting.h"
@@ -501,7 +502,7 @@ enum {
     for( n = 100; n <= 105; n++ )
       {
         NSTextField *textField;
-        textField = [tabView viewWithTag: n];
+        textField = [[[tabView tabViewItemAtIndex:1] view] viewWithTag: n];
         [textField setStringValue: measurementString];
       }
     //doing the above puts selects the 2nd tab, we don't want that.
