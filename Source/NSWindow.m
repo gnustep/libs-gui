@@ -1012,6 +1012,7 @@ many times.
 - (void) setBackgroundColor: (NSColor*)color
 {
   ASSIGN(_backgroundColor, color);
+  [_wv setBackgroundColor: color];
 }
 
 - (void) setRepresentedFilename: (NSString*)aString
@@ -1493,10 +1494,7 @@ many times.
 	{
 	  NSRect nframe = [self constrainFrameRect: _frame
 				          toScreen: [self screen]];
-	  if (_windowNum)
-	    [self setFrame: nframe display: NO];
-	  else
-	    _frame = nframe;
+	  [self setFrame: nframe display: NO];
 	}
       // create deferred window
       if (_windowNum == 0)
@@ -1696,7 +1694,7 @@ many times.
     {
       frameRect.origin.y -= difference;
     }
-  else if (NSMaxY (frameRect) < NSMinY (screenRect))
+  else if (NSMinY (frameRect) < NSMinY (screenRect))
     {
       float diff1 = NSMinY (frameRect) - NSMinY (screenRect);
       /* move bottom inside the screen, but keep top inside screen */
@@ -3116,26 +3114,30 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 	      
 	    case GSAppKitWindowResized:
-	      _frame.size.width = (float)[theEvent data1];
-	      _frame.size.height = (float)[theEvent data2];
-	      /* Resize events always move the frame origin. The new origin
-		 is stored in the event location field */
-	      _frame.origin = [theEvent locationInWindow];
-	      if (_autosaveName != nil)
-		{
-		  [self saveFrameUsingName: _autosaveName];
-		}
 	      {
-		NSRect	rect = _frame;
-		
-		rect.origin = NSZeroPoint;
-		[_wv setFrame: rect];
+		NSRect newFrame;
+
+		newFrame.size.width = [theEvent data1];
+		newFrame.size.height = [theEvent data2];
+		/* Resize events always move the frame origin. The new origin
+		   is stored in the event location field. */
+		newFrame.origin = [theEvent locationInWindow];
+
+		_frame = newFrame;
+		newFrame.origin = NSZeroPoint;
+		[_wv setFrame: newFrame];
 		[_wv setNeedsDisplay: YES];
+
+		if (_autosaveName != nil)
+		  {
+		    [self saveFrameUsingName: _autosaveName];
+		  }
+
+		[self _processResizeEvent];
+		[nc postNotificationName: NSWindowDidResizeNotification
+				  object: self];
+		break;
 	      }
-	      [self _processResizeEvent];
-	      [nc postNotificationName: NSWindowDidResizeNotification
-		                object: self];
-	      break;
 
 	    case GSAppKitWindowClose:
 	      [self performClose: NSApp];
@@ -4078,6 +4080,8 @@ resetCursorRectsForView(NSView *theView)
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setAcceptsMouseMovedEvents: flag];
 
+      /* _miniaturizedImage has already been set by -_initDefaults. */
+      DESTROY(_miniaturizedImage);
       [aDecoder decodeValueOfObjCType: @encode(id)
 				   at: &_miniaturizedImage];
       [aDecoder decodeValueOfObjCType: @encode(id)

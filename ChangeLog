@@ -1,3 +1,18 @@
+2004-07-28 19:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSWindowDecorationView.h, Source/GSWindowDecorationView.m
+	(-setBackgroundColor:): New method.
+	* Source/NSWindow.m (-setBackgroundColor:): Pass the call along to
+	_wv.
+	(-orderWindow:relativeTo:): Use -setFrame:display: to change the
+	frame after contstraining it.
+	(-constrainFrameRect:toScreen:): Fix the check of whether the bottom
+	of the window is off the screen.
+	(-_sendEvent:becomesKeyOnlyIfNeeded:): Clean up handling of
+	GSAppKitWindowResized.
+	(-initWithCoder:): Destroy _miniaturizedImage before setting it to
+	the decoded image.
+
 2004-07-27  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Headers/Additions/GNUstepGUI/GSToolbarView.h:

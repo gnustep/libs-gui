@@ -223,6 +223,11 @@ Returns the content rect for a given window frame.
     [GSServerForWindow(window) docedited: documentEdited : windowNumber];
 }
 
+-(void) setBackgroundColor: (NSColor *)color
+{
+  [self setNeedsDisplayInRect: contentRect];
+}
+
 
 - (BOOL) isOpaque
 {

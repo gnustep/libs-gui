@@ -75,6 +75,7 @@ windowNumber will be 0.
 -(void) setTitle: (NSString *)title;
 -(void) setInputState: (int)state;
 -(void) setDocumentEdited: (BOOL)flag;
+-(void) setBackgroundColor: (NSColor *)color;
 @end
 
 
