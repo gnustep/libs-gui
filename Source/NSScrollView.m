@@ -483,7 +483,7 @@ static Class rulerViewClass = nil;
   NSRect horizScrollerRect = NSZeroRect;
   float borderThickness = 0;
 
-  switch ([self borderType])
+  switch (_borderType)
     {
       case NSNoBorder:
 	break;
@@ -538,11 +538,11 @@ static Class rulerViewClass = nil;
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
   float scrollerWidth = [NSScroller scrollerWidth];
-  float horizLinePosition, horizLineLength = [self bounds].size.width;
+  float horizLinePosition, horizLineLength = bounds.size.width;
   float borderThickness = 0;
 
   DPSgsave(ctxt);
-  switch ([self borderType])
+  switch (_borderType)
     {
       case NSNoBorder:
 	break;
@@ -573,7 +573,7 @@ static Class rulerViewClass = nil;
       horizLinePosition = scrollerWidth + borderThickness;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
       DPSmoveto(ctxt, horizLinePosition, borderThickness);
-      DPSrlineto(ctxt, 0, [self bounds].size.height - 2 * borderThickness - 1);
+      DPSrlineto(ctxt, 0, bounds.size.height - 2 * borderThickness - 1);
       DPSstroke(ctxt);
     }
 
@@ -582,7 +582,7 @@ static Class rulerViewClass = nil;
       float	ypos = scrollerWidth + borderThickness + 1;
 
       if (_rFlags.flipped_view)
-	ypos = [self bounds].size.height - ypos;
+	ypos = bounds.size.height - ypos;
       DPSmoveto(ctxt, horizLinePosition, ypos);
       DPSrlineto(ctxt, horizLineLength - 1, 0);
       DPSstroke(ctxt);
