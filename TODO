@@ -6,6 +6,9 @@ Written by Michael Hanni <mhanni@sprintmail.com> Mon Jul 19 1999
 completly empty in GNUstep. Almost EVERY class in the GNU AppKit still
 needs work, but you should already know that. ;-)
 
+(Updated by Lyndon Tremblay <humasect@coolmail.com> [October 18 1999],
+ in the curly brackets)
+
 NSBezierPath
 ============
 
@@ -18,7 +21,8 @@ NSComboBox
 	NSComboBox
 	NSComboBoxCell
 
-	Not taken...
+	{Someone seems to be working at it, according to the Testing/ test, still in
+	progress}
 
 NSDataLink*:
 ============
@@ -37,7 +41,7 @@ NSDocument:
 	NSDocumentController
 
 	These classes should be worked on in conjunction with
-	NSWindowController.
+	NSWindowController. {Code exists, no info on how complete they are}
 
 NSHelpManager:
 ==============
@@ -53,7 +57,7 @@ NSInputManager/Server:
 	NSInputManager
 	NSInputServer
 
-	No one. Could be a nice way of cleaning up the event code.
+	No one. Could be a nice way of cleaning up the event code. {No documentation found}
 
 NSPrint*:
 =========
@@ -90,7 +94,7 @@ NSSecureText*:
 	NSSecureTextField
       	NSSecureTextFieldCell
 
-	Still open for work. Should be straight forward.
+	{Tooken by Lyndon Tremblay <humasect@coolmail.com>, only touching up left}
 
 NSSpell*:
 =========
@@ -132,6 +136,7 @@ NSText:
 
         NSTextTab, NSTextAttachment, and NSTextAttachmentCell should be
         easy tasks that would make excellent first time projects.
+		{No documentation found of how NSTextTab should work}
 
 	These people are the ones to talk to:
 
@@ -161,7 +166,8 @@ NSWindowController:
 	NSWindowController
 
 	No one has taken this. Should be written at the same time as
-	NSDocumentController.
+	NSDocumentController. {Same as NSDocument*, code is there, not sure how complete
+	it is}
 
 Misc:
 =====
