@@ -62,9 +62,18 @@ extern NSString *NSFontPboard;
 extern NSString *NSGeneralPboard;
 extern NSString *NSRulerPboard;
 
+//
+// Pasteboard Exceptions
+//
+extern NSString *NSPasteboardCommunicationException;
+
+
 @interface NSPasteboard : NSObject
 {
-  // Attributes
+    NSString*	name;		// The name of this pasteboard.
+    int		changeCount;	// What we think the current count is.
+    id		target;		// Proxy to the object in the server.
+    BOOL	useHistory;	// Want strict OPENSTEP?
 }
 
 //
@@ -127,6 +136,10 @@ extern NSString *NSRulerPboard;
   provideDataForType:(NSString *)type;
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender;
 
+@end
+
+@interface NSPasteboard (GNUstepExtensions)
+- (void)setChangeCount: (int)changeCount;
 @end
 
 //
