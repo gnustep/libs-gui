@@ -500,7 +500,6 @@ extern NSSize NSTokenSize;
 - (void) performDeminiaturize: sender;
 - (void) performHide: sender;
 - (void) performUnhide: sender;
-- (void) setContentViewSize: (NSSize)aSize;
 - (void) _setVisible: (BOOL)flag;
 
 @end

@@ -1327,17 +1327,16 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSRect             workRect = rect;
-
+  NSRect             workRect = [self bounds];
 
   // Draw the dark gray upper left lines.
   DPSgsave(ctxt);
-    DPSsetlinewidth(ctxt, 1);
-    DPSsetgray(ctxt, 0.333);
-    DPSmoveto(ctxt, workRect.origin.x, workRect.origin.y);
-    DPSrlineto(ctxt, 0, workRect.size.height);
-    DPSrlineto(ctxt, workRect.size.width, 0);
-    DPSstroke(ctxt);
+  DPSsetlinewidth(ctxt, 1);
+  DPSsetgray(ctxt, 0.333);
+  DPSmoveto(ctxt, workRect.origin.x, workRect.origin.y);
+  DPSrlineto(ctxt, 0, workRect.size.height);
+  DPSrlineto(ctxt, workRect.size.width, 0);
+  DPSstroke(ctxt);
   DPSgrestore(ctxt);
 
   // Draw the title box's button.

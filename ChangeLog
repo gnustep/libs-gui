@@ -1,3 +1,8 @@
+Fri Mar 03 05:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenu.m:([NSMenuWindowTitleView -drawRect:]) fixed to draw
+	contents in bounds rather than given rect.
+	
 Fri Mar  3 02:25:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindow.m ([-performZoom:]), ([-zoom:]): Added methods
