@@ -1,3 +1,28 @@
+Fri Mar 14 18:23:18 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+
+	* Flush the view's window after a redraw.
+	* Source/NSButton.m (-mouseDown:): Likewise.
+	* Source/NSCell.m (-trackMouse:inRect:ofView:untilMouseUp:): Likewise.
+	* Source/NSView.m (-display): Likewise.
+
+	* Source/NSControl.m (-updateCell:): Don't redraw imediately the cell,
+	just mark it as needs display.
+	* Source/NSControl.m (-updateCellInside:): Likewise.
+	* Source/NSFont.m (getFont): Renamed the variables to better match the
+	code.
+	* Source/NSImage.m (+imageNamed:): After creating an image don't set it
+	into the nameDict dictionary; this operation was already made in
+	-setName:.
+	* Source/NSResponder.m (-noResponderFor:): Commented out the NSBeep()
+	call to make possible to build the GUI library as a shared library
+	under OpenStep 4.x. The code should be in the backend libraries.
+	* Source/NSScroller.m (-initWithFrame:): Fixed the code that sets up
+	our cell to use an autoreleased cell.
+	* Source/NSView.m (-initWithFrame:): Make a view opaque by default.
+	* Source/NSView.m (-displayIfNeeded): After display mark the view as
+	clean.
+	* Source/NSView.m (-displayIfNeededIgnoringOpacity): Likewise.
+
 Wed Mar  5 17:43:34 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Headers/gnustep/gui/nsimage-tiff.h: Include gnustep-gui config.
