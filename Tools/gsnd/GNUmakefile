@@ -1,7 +1,7 @@
 #
-#  Tools level makefile for GNUstep GUI Library
+#  Tools level makefile for gsnd
 #
-#  Copyright (C) 1997 Free Software Foundation, Inc.
+#  Copyright (C) 2002 Free Software Foundation, Inc.
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -20,40 +20,30 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
-
 GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
-GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
-include ../config.make
 
-include ../Version
-
-SUBPROJECTS = $(BUILD_GSND)
-TOOL_NAME = make_services set_show_service gopen
-SERVICE_NAME = example GSspell
+# The applications to be compiled
+TOOL_NAME = gsnd
 
 # The source files to be compiled
-gopen_OBJC_FILES = gopen.m
+gsnd_OBJC_FILES = gsnd.m
 
-make_services_OBJC_FILES = make_services.m 
+ifeq (mingw32, $(GNUSTEP_TARGET_OS))
+  gsnd_C_FILES = portaudio/pa_common/pa_lib.c \
+                 portaudio/pa_win_ds/dsound_wrapper.c \
+                 portaudio/pa_win_ds/pa_dsound.c
+else
+  gsnd_C_FILES = portaudio/pa_common/pa_lib.c \
+                 portaudio/pa_unix_oss/pa_unix_oss.c \
+                 portaudio/pa_common/pa_trace.c
+endif
 
-set_show_service_OBJC_FILES = set_show_service.m 
-
-example_OBJC_FILES = example.m 
-
-GSspell_OBJC_FILES = GSspell.m
-
-include GNUmakefile.preamble
+-include GNUmakefile.preamble
 
 -include GNUmakefile.local
 
-GNUSTEP_MAKE_SERVICES=./$(GNUSTEP_OBJ_DIR)/make_services
-
 include $(GNUSTEP_MAKEFILES)/tool.make
-include $(GNUSTEP_MAKEFILES)/service.make
-include $(GNUSTEP_MAKEFILES)/aggregate.make
 
--include GNUmakefile.local.service
-include GNUmakefile.postamble
+-include GNUmakefile.postamble

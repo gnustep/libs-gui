@@ -124,6 +124,7 @@ NSSecureTextField.m \
 NSSelection.m \
 NSSlider.m \
 NSSliderCell.m \
+NSSound.m  \
 NSSpellChecker.m \
 NSSpellServer.m \
 NSSplitView.m \

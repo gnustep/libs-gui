@@ -1,3 +1,12 @@
+2002-07-30  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Check for autofile header/libs.
+	* Source/NSBundleAdditions.m (pathForSoundResource:): New.
+	* Source/NSSound.m: New file
+	* Headers/gnustep/gui/NSSound.h: Idem.
+	* Tools/gsnd: New server tool. (Implementation from
+	Enrico Sersale).
+
 2002-07-18  Gregory John Casamento <greg_casamento@yahoo.com>
 	
 	* NSBundleAdditions.m: (-[awakeWithContext:])  Corrected

@@ -210,6 +210,19 @@ ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS"
 ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 
 #--------------------------------------------------------------------
+# NSSound
+#--------------------------------------------------------------------
+AC_CHECK_HEADERS(audiofile.h)
+audio_ok=no
+BUILD_GSND=
+AC_CHECK_LIB(audiofile, main, audio_ok=yes, audio_ok=no)
+if test $audio_ok = yes; then
+  ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
+  BUILD_GSND=gsnd
+fi
+AC_SUBST(BUILD_GSND)
+
+#--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 AC_MSG_CHECKING(for the version of gnustep-gui we are compiling)

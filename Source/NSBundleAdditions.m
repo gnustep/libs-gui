@@ -47,6 +47,7 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSSound.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSNibConnector.h>
@@ -415,6 +416,31 @@ Class gmodel_class(void)
     }
 
   return nil;
+}
+
+- (NSString *)pathForSoundResource:(NSString *)name
+{
+  NSString *ext = [name pathExtension];
+  NSString *path = nil;
+
+  if ((ext == nil) || [ext isEqualToString:@""])
+    {
+      NSArray	*types = [NSSound soundUnfilteredFileTypes];
+      unsigned	c = [types count];
+      unsigned	i;
+
+      for (i = 0; path == nil && i < c; i++)
+	{
+	  ext = [types objectAtIndex: i];
+	  path = [self pathForResource: name ofType: ext];
+	}
+    }
+  else
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
+    }
+  return path;
 }
 
 - (BOOL) loadNibFile: (NSString*)fileName

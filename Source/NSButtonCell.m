@@ -47,6 +47,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSSound.h>
 #include <AppKit/PSOperators.h>
 
 @implementation NSButtonCell
