@@ -84,7 +84,7 @@
   if (count < 2)
     return;
 
-  [window setAcceptsMouseMovedEvents: YES];
+  [_window setAcceptsMouseMovedEvents: YES];
   vis = [self visibleRect];
 
   /* find out which divider it is */
@@ -152,7 +152,7 @@
   if (_isVertical == NO)
     {
       divVertical = _dividerWidth;
-      divHorizontal = NSWidth(frame);
+      divHorizontal = NSWidth(_frame);
       /* set the default limits on the dragging */
       minCoord = NSMinY(bigRect) + divVertical;
       maxCoord = NSHeight(bigRect) + NSMinY(bigRect) - divVertical;
@@ -160,7 +160,7 @@
   else
     {
       divHorizontal = _dividerWidth;
-      divVertical = NSHeight(frame);
+      divVertical = NSHeight(_frame);
       /* set the default limits on the dragging */
       minCoord = NSMinX(bigRect) + divHorizontal;
       maxCoord = NSWidth(bigRect) + NSMinX(bigRect) - divHorizontal;
@@ -296,10 +296,10 @@
 	     (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
 	     (int)NSHeight(r1));
 
-  [window invalidateCursorRectsForView: self];
+  [_window invalidateCursorRectsForView: self];
 
 RETURN_LABEL:
-  [window setAcceptsMouseMovedEvents: NO];
+  [_window setAcceptsMouseMovedEvents: NO];
   [self setNeedsDisplay: YES];
 
   [self display];
@@ -316,7 +316,7 @@ RETURN_LABEL:
 		     respondsToSelector:
 		       @selector(splitView:resizeSubviewsWithOldSize:)])
     {
-      [_delegate splitView: self resizeSubviewsWithOldSize: frame.size];
+      [_delegate splitView: self resizeSubviewsWithOldSize: _frame.size];
     }
   else
     {	/* split the area up evenly */
@@ -336,7 +336,7 @@ RETURN_LABEL:
       [subs getObjects: views];
       if (_isVertical == NO)
 	{
-	  newTotal = NSHeight(bounds) - _dividerWidth*(count - 1);
+	  newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -355,7 +355,7 @@ RETURN_LABEL:
 		newHeight = floor(newHeight);
 	      else
 		newHeight = ceil(newHeight);
-	      newSize = NSMakeSize(NSWidth(bounds), newHeight);
+	      newSize = NSMakeSize(NSWidth(_bounds), newHeight);
 	      running -= newHeight;
 	      newPoint = NSMakePoint(0.0, running);
 	      running -= _dividerWidth;
@@ -365,7 +365,7 @@ RETURN_LABEL:
 	}
       else
 	{
-	  newTotal = NSWidth(bounds) - _dividerWidth*(count - 1);
+	  newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -383,7 +383,7 @@ RETURN_LABEL:
 		newWidth = floor(newWidth);
 	      else
 		newWidth = ceil(newWidth);
-	      newSize = NSMakeSize(newWidth, NSHeight(bounds));
+	      newSize = NSMakeSize(newWidth, NSHeight(_bounds));
 	      newPoint = NSMakePoint(running, 0.0);
 	      running += newWidth + _dividerWidth;
 	      [views[i] setFrameSize: newSize];
@@ -540,7 +540,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   [super resizeWithOldSuperviewSize: oldSize];
   [self adjustSubviews];
-  [window invalidateCursorRectsForView: self];
+  [_window invalidateCursorRectsForView: self];
 }
 
 - (id) delegate

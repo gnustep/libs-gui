@@ -318,7 +318,7 @@ static Class cellClass;
 {
   if (_cell == aCell)
     {
-      [_cell drawWithFrame: bounds inView: self];
+      [_cell drawWithFrame: _bounds inView: self];
     }
 }
 
@@ -326,7 +326,7 @@ static Class cellClass;
 {
   if (_cell == aCell)
     {
-      [_cell drawInteriorWithFrame: bounds 
+      [_cell drawInteriorWithFrame: _bounds 
 	    inView: self];
     }
 }
@@ -438,7 +438,7 @@ static Class cellClass;
   else
     oldActionMask = [_cell sendActionOn: NSPeriodicMask];
 
-  [window _captureMouse: self];
+  [_window _captureMouse: self];
 
   e = theEvent;
   while (!done) 		// loop until mouse goes up
@@ -447,20 +447,20 @@ static Class cellClass;
       location = [self convertPoint: location fromView: nil];
       // ask the cell to track the mouse only
       // if the mouse is within the cell
-      if ((location.x >= 0) && (location.x < bounds.size.width) &&
-		      (location.y >= 0 && location.y < bounds.size.height))
+      if ((location.x >= 0) && (location.x < _bounds.size.width) &&
+		      (location.y >= 0 && location.y < _bounds.size.height))
 	{
-	  [_cell highlight: YES withFrame: bounds inView: self];
-	  [window flushWindow];
+	  [_cell highlight: YES withFrame: _bounds inView: self];
+	  [_window flushWindow];
 	  if ([_cell trackMouse: e
-		     inRect: bounds
+		     inRect: _bounds
 		     ofView: self
 		     untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]])
 	    done = mouseUp = YES;
 	  else
 	    {
-	      [_cell highlight: NO withFrame: bounds inView: self];
-	      [window flushWindow];
+	      [_cell highlight: NO withFrame: _bounds inView: self];
+	      [_window flushWindow];
 	    }
 	}
 
@@ -476,13 +476,13 @@ static Class cellClass;
 	done = YES;
     }
 
-  [window _releaseMouse: self];
+  [_window _releaseMouse: self];
 
   if (mouseUp)
     {
 //      	[cell setState: ![cell state]];
-      [_cell highlight: NO withFrame: bounds inView: self];
-      [window flushWindow];
+      [_cell highlight: NO withFrame: _bounds inView: self];
+      [_window flushWindow];
     }
 
   [_cell sendActionOn: oldActionMask];
@@ -493,7 +493,7 @@ static Class cellClass;
 
 - (void) resetCursorRects
 {
-  [_cell resetCursorRect: bounds inView: self];
+  [_cell resetCursorRect: _bounds inView: self];
 }
 
 - (BOOL) ignoresMultiClick

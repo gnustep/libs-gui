@@ -66,10 +66,10 @@
   [_cell setBordered: NO];
   [_cell setEditable: NO];
   [_cell setDrawsBackground: YES];
-  [_cell setBackgroundColor: [window backgroundColor]];
+  [_cell setBackgroundColor: [_window backgroundColor]];
   _offsets.width = 5;
   _offsets.height = 5;
-  _border_rect = bounds;
+  _border_rect = _bounds;
   _border_type = NSGrooveBorder;
   _title_position = NSAtTop;
   _title_rect = NSZeroRect;
@@ -216,13 +216,13 @@
 {
   // First calc the sizes to see how much we are off by
   NSRect r = [self calcSizesAllowingNegative: YES];
-  NSRect f = frame;
+  NSRect f = _frame;
 
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
 	@"illegal content frame supplied");
 
-  if (super_view)
-    r = [super_view convertRect: r fromView: self];
+  if (_super_view)
+    r = [_super_view convertRect: r fromView: self];
   
   // Add the difference to the frame
   f.size.width = f.size.width + (contentFrame.size.width - r.size.width);
@@ -283,9 +283,9 @@
 	f.size.width = titleSize.width;
     }
   
-  if (super_view != nil)
-    [self setFrameFromContentFrame: [self convertRect: f toView: super_view]];
-  else // super_view == nil
+  if (_super_view != nil)
+    [self setFrameFromContentFrame: [self convertRect: f toView: _super_view]];
+  else // _super_view == nil
     [self setFrameFromContentFrame: f]; 
 }
 
@@ -320,9 +320,9 @@
 //
 - (void) drawRect: (NSRect)rect
 {
-  rect = NSIntersectionRect(bounds, rect);
+  rect = NSIntersectionRect(_bounds, rect);
   // Fill inside
-  [[window backgroundColor] set];
+  [[_window backgroundColor] set];
   NSRectFill(rect);
 
   // Draw border
@@ -345,7 +345,7 @@
   // Draw title
   if (_title_position != NSNoTitle)
     {
-      [_cell setBackgroundColor: [window backgroundColor]];
+      [_cell setBackgroundColor: [_window backgroundColor]];
       [_cell drawWithFrame: _title_rect inView: self];
     }
 }
@@ -382,7 +382,7 @@
 			       at: &_title_position];
 
   // The content view is our only sub_view
-  if ([sub_views count] == 0)
+  if ([_sub_views count] == 0)
     {
   
       NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
@@ -392,11 +392,11 @@
     }
   else 
     {
-      if ([sub_views count] != 1)
+      if ([_sub_views count] != 1)
 	{
 	  NSLog (@"Warning: Encoded NSBox with more than one content view!");
 	}
-      _content_view = [sub_views objectAtIndex: 0];
+      _content_view = [_sub_views objectAtIndex: 0];
       // The following also computes _title_rect and _border_rect.
       [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
     }
@@ -416,7 +416,7 @@
     case NSNoTitle: 
       {
 	NSSize borderSize = _sizeForBorderType (_border_type);
-	_border_rect = bounds;
+	_border_rect = _bounds;
 	_title_rect = NSZeroRect;
 
 	// Add the offsets to the border rect
@@ -440,7 +440,7 @@
 	titleSize.height += 1;
 
 	// Adjust border rect by title cell
-	_border_rect = bounds;
+	_border_rect = _bounds;
 	_border_rect.size.height -= titleSize.height + borderSize.height;
 
 	// Add the offsets to the border rect
@@ -452,10 +452,10 @@
 	  - (2 * borderSize.height);
 
 	// center the title cell
-	c = (bounds.size.width - titleSize.width) / 2;
+	c = (_bounds.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	_title_rect.origin.x = bounds.origin.x + c;
-	_title_rect.origin.y = bounds.origin.y + _border_rect.size.height
+	_title_rect.origin.x = _bounds.origin.x + c;
+	_title_rect.origin.y = _bounds.origin.y + _border_rect.size.height
 	  + borderSize.height;
 	_title_rect.size = titleSize;
 
@@ -472,7 +472,7 @@
 	titleSize.height += 1;
 
 	// Adjust border rect by title cell
-	_border_rect = bounds;
+	_border_rect = _bounds;
 
 	// Add the offsets to the border rect
 	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
@@ -505,7 +505,7 @@
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	_border_rect = bounds;
+	_border_rect = _bounds;
 
 	// Adjust by the title size
 	_border_rect.size.height -= titleSize.height / 2;
@@ -541,7 +541,7 @@
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	_border_rect = bounds;
+	_border_rect = _bounds;
 
 	// Adjust by the title size
 	_border_rect.origin.y += titleSize.height / 2;
@@ -579,7 +579,7 @@
 	titleSize.height += 1;
 
 	// Adjust by the title
-	_border_rect = bounds;
+	_border_rect = _bounds;
 	_border_rect.origin.y += titleSize.height + borderSize.height;
 	_border_rect.size.height -= titleSize.height + borderSize.height;
 
@@ -610,7 +610,7 @@
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	_border_rect = bounds;
+	_border_rect = _bounds;
 
 	// Add the offsets to the border rect
 	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;

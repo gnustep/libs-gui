@@ -89,12 +89,12 @@
   _rFlags.flipped_view = [self isFlipped];
 
   /* TODO: invoke superview's reflectScrolledClipView: ? */
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) resetCursorRects
 {
-  [self addCursorRect: bounds cursor: _cursor];
+  [self addCursorRect: _bounds cursor: _cursor];
 }
 
 - (void) scrollToPoint: (NSPoint)point
@@ -104,7 +104,7 @@
 
 - (void) setBoundsOrigin: (NSPoint)point
 {
-  NSRect originalBounds = bounds;
+  NSRect originalBounds = _bounds;
   NSRect newBounds = originalBounds;
   NSRect intersection;
 
@@ -116,7 +116,7 @@
   if (_documentView == nil)
     return;
 
-  if (_copiesOnScroll && window)
+  if (_copiesOnScroll && _window)
     {
       // copy the portion of the view that is common before and after scrolling.
       // then tell docview to draw the exposed parts.
@@ -200,7 +200,7 @@
       [_documentView setNeedsDisplayInRect: 
 	[self convertRect: newBounds toView: _documentView]];
     }
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (NSPoint) constrainScrollPoint: (NSPoint)proposedNewOrigin
@@ -209,24 +209,24 @@
   NSPoint	new = proposedNewOrigin;
 
   if (_documentView == nil)
-    return bounds.origin;
+    return _bounds.origin;
 
   documentFrame = [_documentView frame];
-  if (documentFrame.size.width <= bounds.size.width)
+  if (documentFrame.size.width <= _bounds.size.width)
     new.x = documentFrame.origin.x;
   else if (proposedNewOrigin.x <= documentFrame.origin.x)
     new.x = documentFrame.origin.x;
   else if (proposedNewOrigin.x
-	   >= documentFrame.size.width - bounds.size.width)
-    new.x = documentFrame.size.width - bounds.size.width;
+	   >= documentFrame.size.width - _bounds.size.width)
+    new.x = documentFrame.size.width - _bounds.size.width;
 
-  if (documentFrame.size.height <= bounds.size.height)
+  if (documentFrame.size.height <= _bounds.size.height)
     new.y = documentFrame.origin.y;
   else if (proposedNewOrigin.y <= documentFrame.origin.y)
     new.y = documentFrame.origin.y;
   else if (proposedNewOrigin.y
-           >= documentFrame.size.height - bounds.size.height)
-    new.y = documentFrame.size.height - bounds.size.height;
+           >= documentFrame.size.height - _bounds.size.height)
+    new.y = documentFrame.size.height - _bounds.size.height;
 
   // make it an integer coordinate in device space
   // to avoid some nice effects when scrolling
@@ -245,10 +245,10 @@
   NSRect rect;
 
   if (_documentView == nil)
-    return bounds;
+    return _bounds;
 
   documentFrame = [_documentView frame];
-  clipViewBounds = bounds;
+  clipViewBounds = _bounds;
   rect.origin = documentFrame.origin;
   rect.size.width = MAX(documentFrame.size.width, clipViewBounds.size.width);
   rect.size.height = MAX(documentFrame.size.height, clipViewBounds.size.height);
@@ -266,7 +266,7 @@
     return NSZeroRect;
 
   documentBounds = [_documentView bounds];
-  clipViewBounds = [self convertRect: bounds toView: _documentView];
+  clipViewBounds = [self convertRect: _bounds toView: _documentView];
   rect = NSIntersectionRect(documentBounds, clipViewBounds);
 
   return rect;
@@ -285,49 +285,49 @@
 
 - (void) viewBoundsChanged: (NSNotification*)aNotification
 {
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) viewFrameChanged: (NSNotification*)aNotification
 {
-  [self setBoundsOrigin: [self constrainScrollPoint: bounds.origin]];
-  [super_view reflectScrolledClipView: self];
+  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) scaleUnitSquareToSize: (NSSize)newUnitSize
 {
   [super scaleUnitSquareToSize: newUnitSize];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setBoundsSize: (NSSize)aSize
 {
   [super setBoundsSize: aSize];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setFrameSize: (NSSize)aSize
 {
   [super setFrameSize: aSize];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setFrameOrigin: (NSPoint)aPoint
 {
   [super setFrameOrigin: aPoint];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setFrame: (NSRect)rect
 {
   [super setFrame: rect];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) translateOriginToPoint: (NSPoint)aPoint
 {
   [super translateOriginToPoint: aPoint];
-  [super_view reflectScrolledClipView: self];
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (BOOL) isOpaque

@@ -80,7 +80,7 @@
  */
 - (void) drawRect: (NSRect)rect
 {
-  NSRect aRect = bounds;
+  NSRect aRect = _bounds;
   
   if (NSIntersectsRect(aRect, rect) == NO)
     return;

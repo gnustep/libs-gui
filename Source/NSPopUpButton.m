@@ -310,14 +310,14 @@ Class _nspopupbuttonCellClass = 0;
       object: self];
 
   // Attach the popUp
-  [_cell attachPopUpWithFrame: bounds
+  [_cell attachPopUpWithFrame: _bounds
 	inView: self];
 
   // Process events; we start menu events processing by converting 
   // this event to the menu window, and sending it there. 
   e = [NSEvent mouseEventWithType: [theEvent type]
 	       location: [[mr window] convertScreenToBase: 
-					[window convertBaseToScreen: 
+					[_window convertBaseToScreen: 
 						  [theEvent locationInWindow]]]
 	       modifierFlags: [theEvent modifierFlags]
 	       timestamp: [theEvent timestamp]

@@ -676,8 +676,8 @@ static SEL getSel = @selector(objectAtIndex:);
   float	approxColsWidth = approxCol * (cellSize.width + intercell.width);
 
   /* First check the limit cases */
-  beyondCols = (point.x > bounds.size.width || point.x < 0);
-  beyondRows = (point.y > bounds.size.height || point.y < 0);
+  beyondCols = (point.x > _bounds.size.width || point.x < 0);
+  beyondRows = (point.y > _bounds.size.height || point.y < 0);
 
   /* Determine if the point is inside the cell */
   betweenRows = !(point.y > approxRowsHeight
@@ -1130,17 +1130,17 @@ static SEL getSel = @selector(objectAtIndex:);
   // This is a compromise -- and fully OpenStep compliant.
   NSSelectionDirection s =  NSDirectSelection;
 
-  if (window)
-    s = [window keyViewSelectionDirection];
+  if (_window)
+    s = [_window keyViewSelectionDirection];
 
   switch (s)
     {
-      // window selecting backwards
+      // _window selecting backwards
     case NSSelectingPrevious:
       [self _selectPreviousSelectableCellBeforeRow: numRows
 	    column: numCols];
       break;
-      // Window selecting forward
+      // _Window selecting forward
     case NSSelectingNext:
       [self _selectNextSelectableCellAfterRow: -1
 	    column: -1];
@@ -1184,7 +1184,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   // Now _textObject == nil
   {
-    NSText *t = [window fieldEditor: YES
+    NSText *t = [_window fieldEditor: YES
 			forObject: self];
 
     if ([t superview] != nil)
@@ -1278,7 +1278,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		       column: _selectedColumn])
 		break;
 	    }
-	  [window selectKeyViewFollowingView: self];
+	  [_window selectKeyViewFollowingView: self];
 	  break;
 	case NSBacktabTextMovement:
 	  if (_tabKeyTraversesCells)
@@ -1287,7 +1287,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		       column: _selectedColumn])
 		break;
 	    }
-	  [window selectKeyViewPrecedingView: self];
+	  [_window selectKeyViewPrecedingView: self];
 	  break;
 	}
     }
@@ -1598,7 +1598,7 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       [_selectedCell setState: NSOffState];
       [self drawCellAtRow: _selectedRow column: _selectedColumn];
-      [window flushWindow];
+      [_window flushWindow];
       selectedCells[_selectedRow][_selectedColumn] = NO;
       _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
@@ -1635,7 +1635,7 @@ static SEL getSel = @selector(objectAtIndex:);
               [self highlightCell: YES
                             atRow: highlightedRow
                            column: highlightedColumn];
-              [window flushWindow];
+              [_window flushWindow];
             }
 
           mouseUpInCell = [mouseCell trackMouse: theEvent
@@ -1649,7 +1649,7 @@ static SEL getSel = @selector(objectAtIndex:);
                             atRow: highlightedRow
                            column: highlightedColumn];
               highlightedCell = nil;
-              [window flushWindow];
+              [_window flushWindow];
             }
         }
       else
@@ -1661,7 +1661,7 @@ static SEL getSel = @selector(objectAtIndex:);
                             atRow: highlightedRow
                            column: highlightedColumn];
               highlightedCell = nil;
-              [window flushWindow];
+              [_window flushWindow];
             }
         }
 
@@ -1683,7 +1683,7 @@ static SEL getSel = @selector(objectAtIndex:);
       if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
 	{
 	  [_selectedCell setState: NSOnState];
-	  [window flushWindow];
+	  [_window flushWindow];
 	}
       else
 	{
@@ -1702,7 +1702,7 @@ static SEL getSel = @selector(objectAtIndex:);
       [self highlightCell: NO
 		    atRow: highlightedRow
 		   column: highlightedColumn];
-      [window flushWindow];
+      [_window flushWindow];
     }
 }
 
@@ -1748,13 +1748,13 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       if ([cells[row][column] isSelectable])
 	{
-	  NSText* t = [window fieldEditor: YES forObject: self];
+	  NSText* t = [_window fieldEditor: YES forObject: self];
 
 	  if ([t superview] != nil)
 	    {
 	      if ([t resignFirstResponder] == NO)
 		{
-		  if ([window makeFirstResponder: window] == NO)
+		  if ([_window makeFirstResponder: _window] == NO)
 		    return;
 		}
 	    }
@@ -1841,7 +1841,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    _selectedRow = row;
 		    _selectedColumn = column;
 		    [aCell highlight: YES withFrame: rect inView: self];
-		    [window flushWindow];
+		    [_window flushWindow];
 
 		    if ([aCell trackMouse: lastEvent
 				      inRect: rect
@@ -1851,7 +1851,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 		    [aCell setState: 0];
 		    [aCell highlight: NO withFrame: rect inView: self];
-		    [window flushWindow];
+		    [_window flushWindow];
 		    break;
 
 		  case NSRadioModeMatrix:
@@ -1878,7 +1878,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    [aCell setState: 1];
 		    [aCell highlight: YES withFrame: rect inView: self];
 		    selectedCells[row][column] = YES;
-		    [window flushWindow];
+		    [_window flushWindow];
 		    break;
 
 		  case NSListModeMatrix:
@@ -1913,7 +1913,7 @@ static SEL getSel = @selector(objectAtIndex:);
 					    withFrame: rect
 					       inView: self];
 			      selectedCells[row][column]=YES;
-			      [window flushWindow];
+			      [_window flushWindow];
 			      break;
 			    }
 			}
@@ -1923,7 +1923,7 @@ static SEL getSel = @selector(objectAtIndex:);
 			anchor: INDEX_FROM_POINT(anchor)
 			highlight: YES];
 
-		      [window flushWindow];
+		      [_window flushWindow];
 		      _selectedCell = aCell;
 		      _selectedRow = row;
 		      _selectedColumn = column;
@@ -1980,7 +1980,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	  [_selectedCell highlight: NO withFrame: rect inView: self];
       case NSListModeMatrix:
 	[self setNeedsDisplayInRect: rect];
-	[window flushWindow];
+	[_window flushWindow];
       case NSHighlightModeMatrix:
       case NSTrackModeMatrix:
 	break;
@@ -2328,7 +2328,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  NSSize oldBoundsSize = bounds.size;
+  NSSize oldBoundsSize = _bounds.size;
   NSSize newBoundsSize;
   NSSize change;
   int nc = numCols;
@@ -2336,7 +2336,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   [super resizeWithOldSuperviewSize: oldSize];
 
-  newBoundsSize = bounds.size;
+  newBoundsSize = _bounds.size;
 
   change.height = newBoundsSize.height - oldBoundsSize.height;
   change.width = newBoundsSize.width - oldBoundsSize.width;
@@ -2441,7 +2441,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (NSText *) currentEditor
 {
-  if (_textObject && ([window firstResponder] == _textObject))
+  if (_textObject && ([_window firstResponder] == _textObject))
     return _textObject;
   else
     return nil;

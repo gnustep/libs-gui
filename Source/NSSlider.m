@@ -168,7 +168,7 @@ static Class cellClass;
    * that represents an exposed part of this view, it will try to draw the
    * slider knob positioned in that rectangle ... which is wrong.
    */
-  [_cell drawWithFrame: bounds inView: self];
+  [_cell drawWithFrame: _bounds inView: self];
 }
 
 - (float)_floatValueForMousePoint: (NSPoint)point knobRect: (NSRect)knobRect
@@ -264,8 +264,8 @@ static Class cellClass;
 	      if (floatValue != oldFloatValue)
 		{
 		  [theCell setFloatValue: floatValue];
-		  [theCell drawWithFrame: bounds inView: self];
-		  [window flushWindow];
+		  [theCell drawWithFrame: _bounds inView: self];
+		  [_window flushWindow];
 		  if (isContinuous)
 		    [target performSelector: action withObject: self];
 		  oldFloatValue = floatValue;
@@ -297,8 +297,8 @@ static Class cellClass;
       if ([theCell isContinuous])
 	[[theCell target] performSelector: [theCell action]
 			       withObject: self];
-      [theCell drawWithFrame: bounds inView: self];
-      [window flushWindow];
+      [theCell drawWithFrame: _bounds inView: self];
+      [_window flushWindow];
     }
 
   [self trackKnob: theEvent knobRect: rect];

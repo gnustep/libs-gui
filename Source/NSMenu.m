@@ -1412,10 +1412,10 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 	  done = YES; 
 	  break;
 	case NSLeftMouseDragged:   
-	  location = [window mouseLocationOutsideOfEventStream];
+	  location = [_window mouseLocationOutsideOfEventStream];
 	  if (NSEqualPoints(location, lastLocation) == NO)
 	    {
-	      NSPoint origin = [window frame].origin;
+	      NSPoint origin = [_window frame].origin;
 
 	      origin.x += (location.x - lastLocation.x);
 	      origin.y += (location.y - lastLocation.y);
@@ -1460,8 +1460,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
       NSImage* closeImage = [NSImage imageNamed: @"common_Close"];
       NSImage* closeHImage = [NSImage imageNamed: @"common_CloseH"];
       NSSize imageSize = [closeImage size];
-      NSRect rect = { { frame.size.width - imageSize.width - 4,
-                      (frame.size.height - imageSize.height) / 2},
+      NSRect rect = { { _frame.size.width - imageSize.width - 4,
+                      (_frame.size.height - imageSize.height) / 2},
                       { imageSize.height, imageSize.width } };
       int mask = NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin;
 

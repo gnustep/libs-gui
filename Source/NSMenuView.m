@@ -176,7 +176,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 	  [aCell highlight: NO withFrame: aRect inView: self];
 
-	  [window flushWindow];
+	  [_window flushWindow];
 
 	  menuv_highlightedItemIndex = -1;
 	}
@@ -191,7 +191,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 	  [aCell highlight: NO withFrame: aRect inView: self];
 
-	  [window flushWindow];
+	  [_window flushWindow];
 	}
 
       if (index != menuv_highlightedItemIndex)
@@ -206,7 +206,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 	      [aCell highlight: YES withFrame: aRect inView: self];
 
-	      [window flushWindow];
+	      [_window flushWindow];
 	    }
 
 	  // Set ivar to new index.
@@ -540,8 +540,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 - (NSRect) innerRect
 {
-  NSRect aRect = {{bounds.origin.x + 1, bounds.origin.y},
-		  {bounds.size.width - 1, bounds.size.height}};
+  NSRect aRect = {{_bounds.origin.x + 1, _bounds.origin.y},
+		  {_bounds.size.width - 1, _bounds.size.height}};
 
   return aRect;
 }
@@ -554,9 +554,9 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     [self sizeToFit];
 
   if (index == 0)
-    theRect.origin.y = bounds.size.height - cellSize.height;
+    theRect.origin.y = _bounds.size.height - cellSize.height;
   else
-    theRect.origin.y = bounds.size.height - (cellSize.height * (index + 1));
+    theRect.origin.y = _bounds.size.height - (cellSize.height * (index + 1));
   theRect.origin.x = 1;
   theRect.size = cellSize;
 
@@ -570,12 +570,12 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   // simple math. (NOTE: if we get horizontal methods we will have to do
   // this. Very much like NSTabView.
 
-  return (   point.x <  frame.origin.x
-	  || point.x >  frame.size.width + frame.origin.x
-	  || point.y <= frame.origin.y
-	  || point.y >  frame.size.height + frame.origin.y) ?
+  return (   point.x <  _frame.origin.x
+	  || point.x >  _frame.size.width + _frame.origin.x
+	  || point.y <= _frame.origin.y
+	  || point.y >  _frame.size.height + _frame.origin.y) ?
           -1 : 
-          (frame.size.height - point.y) / cellSize.height;
+          (_frame.size.height - point.y) / cellSize.height;
 }
 
 - (void) setNeedsDisplayForItemAtIndex: (int)index
@@ -623,7 +623,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   
   // Get the frameRect
   r = [NSMenuWindow frameRectForContentRect: screenRect
-		       styleMask: [window styleMask]];
+		       styleMask: [_window styleMask]];
   
   // Update position,if needed, using the preferredEdge;
   // It seems we should be calling [self resizeWindowWithMaxHeight:];
@@ -631,7 +631,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   // TODO
 
   // Set the window frame
-  [window setFrame: r 
+  [_window setFrame: r 
 	  display: YES]; 
 }
 
@@ -650,8 +650,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   DPSgsave(ctxt);
     DPSsetlinewidth(ctxt, 1);
     DPSsetgray(ctxt, 0.333);
-    DPSmoveto(ctxt, bounds.origin.x, bounds.origin.y);
-    DPSrlineto(ctxt, 0, bounds.size.height);
+    DPSmoveto(ctxt, _bounds.origin.x, _bounds.origin.y);
+    DPSrlineto(ctxt, 0, _bounds.size.height);
     DPSstroke(ctxt);
   DPSgrestore(ctxt);
 
@@ -749,7 +749,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
       
   do
     {
-      location     = [window mouseLocationOutsideOfEventStream];
+      location     = [_window mouseLocationOutsideOfEventStream];
       index        = [self indexOfItemAtPoint: location];
 
       if (index != menuv_highlightedItemIndex)
@@ -760,11 +760,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  if ([menuv_menu isPartlyOffScreen])
 	    {
-	      NSPoint pointerLoc = [window convertBaseToScreen: location];
+	      NSPoint pointerLoc = [_window convertBaseToScreen: location];
 
 	      // TODO: Why 1 in the Y axis?
 	      if (pointerLoc.x == 0 || pointerLoc.y == 1
-		|| pointerLoc.x == [[window screen] frame].size.width - 1)
+		|| pointerLoc.x == [[_window screen] frame].size.width - 1)
 		[menuv_menu shiftOnScreen];
 	    }
 
@@ -818,7 +818,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  NSWindow	*w;
 
-	  location = [window convertBaseToScreen: location];
+	  location = [_window convertBaseToScreen: location];
 
 	  /*
 	   * If the mouse is back in the supermenu, we return NO so that

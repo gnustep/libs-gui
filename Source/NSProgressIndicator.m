@@ -153,18 +153,18 @@
 
    // Draw the Bezel
    if (isBezeled)
-      NSDrawGrayBezel(bounds,rect);
+      NSDrawGrayBezel(_bounds,rect);
 
    // Calc the inside rect to be drawn
    if (isBezeled)
    {
-      r = NSMakeRect(NSMinX(bounds) + 2.0,
-		     NSMinY(bounds) + 2.0,
-		     NSWidth(bounds) - 4.0,
-		     NSHeight(bounds) - 4.0);
+      r = NSMakeRect(NSMinX(_bounds) + 2.0,
+		     NSMinY(_bounds) + 2.0,
+		     NSWidth(_bounds) - 4.0,
+		     NSHeight(_bounds) - 4.0);
    }
    else
-      r = bounds;
+      r = _bounds;
 
    if (isIndeterminate)		// Draw indeterminate
    {
@@ -261,10 +261,10 @@
 
 - (void)_update
 {
-   if (window != nil)
-      if ([window isVisible])
+   if (_window != nil)
+      if ([_window isVisible])
       {
-	 [window display];
+	 [_window display];
 	 [GSCurrentContext() flush];
       }
 }

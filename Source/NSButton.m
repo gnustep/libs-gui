@@ -254,7 +254,7 @@ id _nsbuttonCellClass = nil;
 
 - (void) highlight: (BOOL)flag
 {
-  [_cell highlight: flag withFrame: bounds inView: self];
+  [_cell highlight: flag withFrame: _bounds inView: self];
 }
 
 //

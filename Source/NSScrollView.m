@@ -473,7 +473,7 @@ static Class rulerViewClass = nil;
 
 - (void) tile
 {
-  NSSize contentSize = [isa contentSizeForFrameSize: bounds.size
+  NSSize contentSize = [isa contentSizeForFrameSize: _bounds.size
 			      hasHorizontalScroller: _hasHorizScroller
 				hasVerticalScroller: _hasVertScroller
 					 borderType: _borderType];
@@ -503,10 +503,10 @@ static Class rulerViewClass = nil;
 
   if (_hasVertScroller)
     {
-      vertScrollerRect.origin.x = bounds.origin.x + borderThickness;
-      vertScrollerRect.origin.y = bounds.origin.y + borderThickness;
+      vertScrollerRect.origin.x = _bounds.origin.x + borderThickness;
+      vertScrollerRect.origin.y = _bounds.origin.y + borderThickness;
       vertScrollerRect.size.width = scrollerWidth;
-      vertScrollerRect.size.height = bounds.size.height - 2 * borderThickness;
+      vertScrollerRect.size.height = _bounds.size.height - 2 * borderThickness;
 
       contentRect.origin.x += scrollerWidth + 1;
     }
@@ -514,7 +514,7 @@ static Class rulerViewClass = nil;
   if (_hasHorizScroller)
     {
       horizScrollerRect.origin.x = contentRect.origin.x;
-      horizScrollerRect.origin.y = bounds.origin.y + borderThickness;
+      horizScrollerRect.origin.y = _bounds.origin.y + borderThickness;
       horizScrollerRect.size.width = contentRect.size.width;
       horizScrollerRect.size.height = scrollerWidth;
 
@@ -538,7 +538,7 @@ static Class rulerViewClass = nil;
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
   float scrollerWidth = [NSScroller scrollerWidth];
-  float horizLinePosition, horizLineLength = bounds.size.width;
+  float horizLinePosition, horizLineLength = _bounds.size.width;
   float borderThickness = 0;
 
   DPSgsave(ctxt);
@@ -573,7 +573,7 @@ static Class rulerViewClass = nil;
       horizLinePosition = scrollerWidth + borderThickness;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
       DPSmoveto(ctxt, horizLinePosition, borderThickness);
-      DPSrlineto(ctxt, 0, bounds.size.height - 2 * borderThickness - 1);
+      DPSrlineto(ctxt, 0, _bounds.size.height - 2 * borderThickness - 1);
       DPSstroke(ctxt);
     }
 
@@ -582,7 +582,7 @@ static Class rulerViewClass = nil;
       float	ypos = scrollerWidth + borderThickness + 1;
 
       if (_rFlags.flipped_view)
-	ypos = bounds.size.height - ypos;
+	ypos = _bounds.size.height - ypos;
       DPSmoveto(ctxt, horizLinePosition, ypos);
       DPSrlineto(ctxt, horizLineLength - 1, 0);
       DPSstroke(ctxt);

@@ -115,13 +115,13 @@
 //
 - (void) selectText: (id)sender
 {
-  if ([self isSelectable] && (super_view != nil))
+  if ([self isSelectable] && (_super_view != nil))
     {
       if (_text_object)
 	[_text_object selectAll: self];
       else
 	{
-	  NSText *t = [window fieldEditor: YES 
+	  NSText *t = [_window fieldEditor: YES 
 			      forObject: self];
 
 	  if ([t superview] != nil)
@@ -130,7 +130,7 @@
 	  
 	  //  [NSCursor hide];
 	  _text_object = [_cell setUpFieldEditorAttributes: t];
-	  [_cell selectWithFrame: bounds
+	  [_cell selectWithFrame: _bounds
 		inView: self
 		editor: _text_object
 		delegate: self
@@ -271,13 +271,13 @@
   if (_text_object)
     return;
 
-  t = [window fieldEditor: YES forObject: self];
+  t = [_window fieldEditor: YES forObject: self];
 
   if ([t superview] != nil)
     {
       if ([t resignFirstResponder] == NO)
 	{
-	  if ([window makeFirstResponder: window] == NO)
+	  if ([_window makeFirstResponder: _window] == NO)
 	    return;
 	}
     }
@@ -286,7 +286,7 @@
   //  [NSCursor hide];
   
   _text_object = [_cell setUpFieldEditorAttributes: t];
-  [_cell editWithFrame: bounds
+  [_cell editWithFrame: _bounds
 	inView: self
 	editor: _text_object
 	delegate: self
@@ -322,7 +322,7 @@
 
 - (NSText *) currentEditor
 {
-  if (_text_object && ([window firstResponder] == _text_object))
+  if (_text_object && ([_window firstResponder] == _text_object))
     return _text_object;
   else
     return nil;
@@ -383,10 +383,10 @@
 	  [self sendAction: [self action] to: [self target]];
 	  break;
 	case NSTabTextMovement:
-	  [window selectKeyViewFollowingView: self];
+	  [_window selectKeyViewFollowingView: self];
 	  break;
 	case NSBacktabTextMovement:
-	  [window selectKeyViewPrecedingView: self];
+	  [_window selectKeyViewPrecedingView: self];
 	  break;
 	}
     }

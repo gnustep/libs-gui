@@ -236,7 +236,7 @@
 
 - (NSRect)contentRect
 {
-  NSRect cRect = frame;
+  NSRect cRect = _frame;
 
   cRect.origin.x = 0;
   cRect.origin.y = 0;
@@ -268,7 +268,7 @@
   NSRect previousRect;
   int previousState = 0;
 
-  rect = NSIntersectionRect(bounds, rect);
+  rect = NSIntersectionRect(_bounds, rect);
 
   DPSgsave(ctxt);
 
@@ -542,6 +542,11 @@
   DPSgrestore(ctxt);
 }
 
+- (BOOL) isOpaque
+{
+  return NO;
+}
+
 // Event handling.
 
 - (NSTabViewItem *)tabViewItemAtPoint:(NSPoint)point
@@ -572,7 +577,7 @@
 
   //  [self setNeedsDisplay:YES];
 
-//  [window update];
+//  [_window update];
 
   return [super hitTest:aPoint];
 }

@@ -119,9 +119,9 @@
   NSAssert(columnIndex > 0, NSInternalInconsistencyException);
   NSAssert(columnIndex < [columns count], NSInternalInconsistencyException);
 
-  rect.origin.x = bounds.origin.x;
-  rect.origin.y = bounds.origin.y;
-  rect.size.height = bounds.size.height;
+  rect.origin.x = _bounds.origin.x;
+  rect.origin.y = _bounds.origin.y;
+  rect.size.height = _bounds.size.height;
   
   for (i = 0; i < columnIndex; i++)
     {
