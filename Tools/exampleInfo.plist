@@ -9,6 +9,7 @@
 	default = "Open URL";
 	English = "Open URL";
 	Italian = "Apri URL";
+	German = "URL öffnen";
       };
       NSKeyEquivalent = {
 	default = O;
@@ -28,6 +29,7 @@
 	default = "To lower";
 	English = "To lower";
 	Italian = "Rendi minuscolo";
+	German = "Klein schreiben";
       };
       NSKeyEquivalent = {
 	default = L;
@@ -47,6 +49,7 @@
 	default = "To upper";
 	English = "To upper";
 	Italian = "Rendi maiuscolo";
+	German = "Groß schreiben";
       };
       NSKeyEquivalent = {
 	default = U;
