@@ -268,7 +268,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		   * release these objects.   Instantiating a window manually or loading in a .gorm 
 		   * file are equivalent processes.  These objects need to be released in their 
 		   * respective controllers.  If the developer has used the "NSTopLevelObjects" feature, 
-		   * then he will get the objects back in an array which he mearly must release in
+		   * then he will get the objects back in an array which he merely must release in
 		   * order to release the objects held within.  GJC
 		   */
 		  if([key isEqualToString: @"NSOwner"] == NO)
