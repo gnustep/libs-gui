@@ -81,6 +81,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
 - (void)dealloc
 {
+  if (_is_active)
+    [self deactivate];
+
   TEST_RELEASE(_the_color);
   [self unregisterDraggedTypes];
   [super dealloc];
