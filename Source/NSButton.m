@@ -30,7 +30,6 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSApplication.h>
-#include <gnustep/gui/LogFile.h>
 
 //
 // class variables

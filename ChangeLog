@@ -1,3 +1,28 @@
+Tue Mar  4 09:28:57 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Headers/gnustep/gui/NSEvent.h: Include needed header file.
+	* Headers/gnustep/gui/NSNibLoading.h: Likewise.
+	* Headers/gnustep/gui/NSPasteboard.h: Likewise.
+	* Headers/gnustep/gui/NSSpellServer.h: Likewise.
+
+	* Remove internal NSLog() implementation.
+	* Source/Functions.m: Remove file.
+	* Headers/gnustep/gui/LogFile.h: Remove file.
+	* Headers/gnustep/gui/NSWindow.h: Remove include file.
+	* Source/LogFile.m: Remove file.
+	* Source/NSActionCell.m: Remove include file.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSButton.m: Likewise.
+	* Source/NSCell.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSFontManager.m: Likewise.
+	* Source/NSResponder.m: Likewise.
+	* Source/tiff.m: Likewise.
+	* Source/Makefile.in: Remove LogFile.h and LogFile.m.
+
+	* Source/NSFont.m (getFont): Return font not font name.
+
 Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 
 	* Source/NSButton.m: New methods -setAlignment: and -alignment,

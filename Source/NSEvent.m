@@ -28,7 +28,6 @@
 
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
-#include <gnustep/gui/LogFile.h>
 
 @implementation NSEvent
 

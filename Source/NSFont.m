@@ -64,10 +64,10 @@ static NSMutableSet* fontsUsed = nil;
 static NSFont* getFont(NSString* key, NSString* defaultFont, float fontSize)
 {
   NSString* fontName;
-
+  
   fontName = [[NSUserDefaults standardUserDefaults] objectForKey:key];
   if (!fontName)
-    fontName = defaultFont;
+     return [NSFont fontWithName: defaultFont size: fontSize];
 
   return [NSFont fontWithName:fontName size:fontSize];
 }

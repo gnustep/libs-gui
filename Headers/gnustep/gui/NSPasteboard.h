@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSPasteboard
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSString.h>
 
 @class NSString;
 @class NSArray;

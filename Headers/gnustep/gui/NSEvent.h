@@ -31,6 +31,7 @@
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
+#include <Foundation/NSDate.h>
 
 @class NSString;
 

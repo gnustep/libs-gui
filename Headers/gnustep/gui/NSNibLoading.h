@@ -29,6 +29,7 @@
 #define _GNUstep_H_NSNibLoading
 
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSDictionary.h>
 
 @interface NSObject (NSNibAwaking)
 

@@ -29,7 +29,6 @@
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSGraphics.h>
-#include <gnustep/gui/LogFile.h>
 
 @implementation NSResponder
 

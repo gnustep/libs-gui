@@ -33,7 +33,6 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/LogFile.h>
 
 @class NSString;
 @class NSArray;

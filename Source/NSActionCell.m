@@ -29,7 +29,6 @@
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSControl.h>
-#include <AppKit/LogFile.h>
 
 @implementation NSActionCell
 

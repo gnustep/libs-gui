@@ -58,7 +58,6 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
 #include <gnustep/gui/config.h>
-#include <gnustep/gui/LogFile.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -250,7 +249,7 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
 
 #define READ_SCANLINE(sample) \
 	if ( TIFFReadScanline( image, buf, row, sample ) < 0 ) { \
-	    fprintf(stderr, "tiff: bad data read on line %d\n", row ); \
+	    NSLog(@"tiff: bad data read on line %d\n", row ); \
 	    error = 1; \
 	    break; \
 	} \
@@ -351,7 +350,7 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
     case PHOTOMETRIC_RGB:
       if (newinfo->planarConfig == PLANARCONFIG_CONTIG) 
 	{
-	  NSLog(@"PHOTOMETRIC_RGB: CONTIG\n");
+	  NSDebugLog(@"PHOTOMETRIC_RGB: CONTIG\n");
 	  for ( row = 0; row < newinfo->height; ++row ) 
 	    {
 	      READ_SCANLINE(0)
@@ -364,7 +363,7 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
 	} 
       else 
 	{
-	  NSLog(@"PHOTOMETRIC_RGB: NOT CONTIG\n");
+	  NSDebugLog(@"PHOTOMETRIC_RGB: NOT CONTIG\n");
 	  for (i = 0; i < newinfo->samplesPerPixel; i++)
 	    for ( row = 0; row < newinfo->height; ++row ) 
 	      {

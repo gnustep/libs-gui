@@ -30,7 +30,6 @@
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
-#include <gnustep/gui/LogFile.h>
 
 //
 // Class variables

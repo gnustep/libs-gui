@@ -33,7 +33,6 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/LogFile.h>
 
 @implementation NSCell
 

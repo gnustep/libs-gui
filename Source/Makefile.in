@@ -85,15 +85,12 @@ INIT_FILE_OBJ=$(INIT_FILE)$(oext)
 include $(srcdir)/../Version
 
 GNUSTEP1_HEADERS = gui/AppKit.h \
-gui/Functions.h \
-gui/LogFile.h \
 gui/NSActionCell.h \
 gui/NSApplication.h \
 gui/NSBitmapImageRep.h \
 gui/NSBox.h \
 gui/NSBrowser.h \
 gui/NSBrowserCell.h \
-gui/NSBundle.h \
 gui/NSButton.h \
 gui/NSButtonCell.h \
 gui/NSCStringText.h \
@@ -121,6 +118,7 @@ gui/NSFontManager.h \
 gui/NSFontPanel.h \
 gui/NSForm.h \
 gui/NSFormCell.h \
+gui/NSGraphics.h \
 gui/NSHelpPanel.h \
 gui/NSImage.h \
 gui/NSImageRep.h \
@@ -233,7 +231,6 @@ NSWindow$(oext) \
 NSWorkspace$(oext) \
 Functions$(oext) \
 TrackingRectangle$(oext) \
-LogFile$(oext) \
 tiff$(oext)
 
 OBJS = $(OBJS_WITHOUT_INIT)

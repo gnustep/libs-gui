@@ -29,7 +29,6 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
-#include <AppKit/LogFile.h>
 
 //
 // Class variables

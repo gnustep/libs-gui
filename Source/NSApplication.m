@@ -38,7 +38,6 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuCell.h>
-#include <AppKit/LogFile.h>
 
 //
 // Class variables

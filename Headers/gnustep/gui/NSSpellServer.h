@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSSpellServer
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSArray.h>
 
 @interface NSSpellServer : NSObject
 
