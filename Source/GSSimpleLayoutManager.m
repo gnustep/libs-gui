@@ -102,11 +102,10 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
 - (NSString*) description
 {
-  return [[NSDictionary dictionaryWithObjectsAndKeys:
-			  NSStringFromRange(glyphRange), @"GlyphRange",
-			  NSStringFromRect(lineFragmentRect), @"LineFragmentRect",
-			  nil]
-	   description];
+  return [NSString stringWithFormat: @"_GNULineLayoutInfo with glyphRange: %@, lineFragmentRect: %@, usedRect: %@",
+		   NSStringFromRange (glyphRange), 		   
+		   NSStringFromRect (lineFragmentRect),
+		   NSStringFromRect (usedRect)];
 }
 
 @end
@@ -292,8 +291,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   float x;
   unsigned start;
   _GNULineLayoutInfo *currentInfo;
-  NSRect rect;
-
+  
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakePoint(0, 0);
@@ -302,15 +300,17 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   currentInfo = [_lineLayoutInformation 
 		    objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
 					     index]];
-  if (index >= NSMaxRange(currentInfo->glyphRange))
-    return NSMakePoint(NSMaxX(currentInfo->usedRect), 0);
-
+  if (index >= NSMaxRange (currentInfo->glyphRange))
+    {
+      return NSMakePoint (NSMaxX (currentInfo->usedRect), 0);
+    }
+  
   start = currentInfo->glyphRange.location;
-  rect = currentInfo->lineFragmentRect;
-  x = [self _sizeOfRange: NSMakeRange(start, index-start)].width;
+  x = [self _sizeOfRange: (NSMakeRange (start, index - start))].width;
 
+  /* NB: As per specs, we return the location relative to the glyph's
+     line fragment rectangle */
   return NSMakePoint(x, 0);
-//  return NSMakePoint(rect.origin.x + x, rect.origin.y);
 }
 
 - (NSRect)boundingRectForGlyphRange:(NSRange)aRange 
