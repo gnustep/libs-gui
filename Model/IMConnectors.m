@@ -31,6 +31,15 @@
 #include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
 
+#ifndef GNUSTEP_BASE_LIBRARY
+/* Define here so we can compile on OPENSTEP and MacOSX.
+although this function will never be used there */
+BOOL
+GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
+{
+}
+#endif
+
 @implementation IMConnector
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver

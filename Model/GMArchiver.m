@@ -720,7 +720,9 @@ static NSMutableDictionary* classToAliasMappings = nil;
   decodeAsName = [classToAliasMappings objectForKey: className];
   if ( decodeAsName )
   {
+#if GNU_GUI_LIBRARY
     NSDebugLLog(@"GMArchiver", @"%@ to be decoded as %@", className, decodeAsName);
+#endif
     className = decodeAsName;
   }
   class = NSClassFromString(className);
