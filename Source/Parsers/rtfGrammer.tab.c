@@ -43,31 +43,33 @@
 #define	RTFmarginButtom	284
 #define	RTFfirstLineIndent	285
 #define	RTFleftIndent	286
-#define	RTFalignCenter	287
-#define	RTFalignLeft	288
-#define	RTFalignRight	289
-#define	RTFstyle	290
-#define	RTFbold	291
-#define	RTFitalic	292
-#define	RTFunderline	293
-#define	RTFunderlineStop	294
-#define	RTFsubscript	295
-#define	RTFsuperscript	296
-#define	RTFtabulator	297
-#define	RTFparagraph	298
-#define	RTFdefaultParagraph	299
-#define	RTFfcharset	300
-#define	RTFfprq	301
-#define	RTFcpg	302
-#define	RTFOtherStatement	303
-#define	RTFfontListStart	304
-#define	RTFfamilyNil	305
-#define	RTFfamilyRoman	306
-#define	RTFfamilySwiss	307
-#define	RTFfamilyModern	308
-#define	RTFfamilyScript	309
-#define	RTFfamilyDecor	310
-#define	RTFfamilyTech	311
+#define	RTFrightIndent	287
+#define	RTFalignCenter	288
+#define	RTFalignLeft	289
+#define	RTFalignRight	290
+#define	RTFstyle	291
+#define	RTFbold	292
+#define	RTFitalic	293
+#define	RTFunderline	294
+#define	RTFunderlineStop	295
+#define	RTFsubscript	296
+#define	RTFsuperscript	297
+#define	RTFtabulator	298
+#define	RTFtabstop	299
+#define	RTFparagraph	300
+#define	RTFdefaultParagraph	301
+#define	RTFfcharset	302
+#define	RTFfprq	303
+#define	RTFcpg	304
+#define	RTFOtherStatement	305
+#define	RTFfontListStart	306
+#define	RTFfamilyNil	307
+#define	RTFfamilyRoman	308
+#define	RTFfamilySwiss	309
+#define	RTFfamilyModern	310
+#define	RTFfamilyScript	311
+#define	RTFfamilyDecor	312
+#define	RTFfamilyTech	313
 
 #line 35 "Parsers/rtfGrammer.y"
 
@@ -137,11 +139,11 @@ typedef
 
 
 
-#define	YYFINAL		107
+#define	YYFINAL		110
 #define	YYFLAG		-32768
-#define	YYNTBASE	60
+#define	YYNTBASE	62
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 311 ? yytranslate[x] : 83)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 313 ? yytranslate[x] : 85)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -153,10 +155,10 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,    59,     2,     2,     2,     2,     2,     2,     2,     2,
+     2,    61,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,    57,     2,    58,     2,     2,     2,     2,     2,
+     2,     2,    59,     2,    60,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -175,7 +177,7 @@ static const char yytranslate[] = {     0,
     26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
     36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
     46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56
+    56,    57,    58
 };
 
 #if YYDEBUG != 0
@@ -185,47 +187,47 @@ static const short yyprhs[] = {     0,
     55,    61,    62,    68,    69,    75,    76,    82,    83,    89,
     92,    94,    96,    98,   100,   102,   104,   106,   108,   110,
    112,   114,   116,   118,   120,   122,   124,   126,   128,   130,
-   132,   134,   136,   138,   143,   144,   147,   152,   157,   158,
-   161,   164,   167,   170,   172,   174,   176,   178,   180,   182,
-   184,   189,   190,   193,   198,   200
+   132,   134,   136,   138,   140,   142,   144,   149,   150,   153,
+   158,   163,   164,   167,   170,   173,   176,   178,   180,   182,
+   184,   186,   188,   190,   195,   196,   199,   204,   206
 };
 
 static const short yyrhs[] = {    -1,
-     0,    57,    61,     4,    63,    64,    62,    58,     0,     5,
-     0,     6,     0,     7,     0,     8,     0,     0,    64,    75,
-     0,    64,    80,     0,    64,    74,     0,    64,     3,     0,
-    64,    65,     0,     0,    57,    66,    64,    58,     0,     0,
-    57,    67,     9,    64,    58,     0,     0,    57,    68,    10,
-    64,    58,     0,     0,    57,    69,    11,    64,    58,     0,
-     0,    57,    70,    12,    64,    58,     0,     0,    57,    71,
-    13,    64,    58,     0,     0,    57,    72,    14,    64,    58,
-     0,     0,    57,    73,    15,    64,    58,     0,    57,    58,
+     0,    59,    63,     4,    65,    66,    64,    60,     0,     5,
+     0,     6,     0,     7,     0,     8,     0,     0,    66,    77,
+     0,    66,    82,     0,    66,    76,     0,    66,     3,     0,
+    66,    67,     0,     0,    59,    68,    66,    60,     0,     0,
+    59,    69,     9,    66,    60,     0,     0,    59,    70,    10,
+    66,    60,     0,     0,    59,    71,    11,    66,    60,     0,
+     0,    59,    72,    12,    66,    60,     0,     0,    59,    73,
+    13,    66,    60,     0,     0,    59,    74,    14,    66,    60,
+     0,     0,    59,    75,    15,    66,    60,     0,    59,    60,
      0,    22,     0,    23,     0,    24,     0,    25,     0,    26,
      0,    27,     0,    28,     0,    29,     0,    30,     0,    31,
-     0,    32,     0,    33,     0,    34,     0,    35,     0,    19,
-     0,    20,     0,    40,     0,    41,     0,    36,     0,    37,
-     0,    38,     0,    39,     0,    48,     0,    57,    49,    76,
-    58,     0,     0,    76,    77,     0,    76,    57,    77,    58,
-     0,    22,    79,    78,     3,     0,     0,    78,    45,     0,
-    78,    46,     0,    78,    47,     0,    78,    65,     0,    50,
-     0,    51,     0,    52,     0,    53,     0,    54,     0,    55,
-     0,    56,     0,    57,    21,    81,    58,     0,     0,    81,
-    82,     0,    16,    17,    18,     3,     0,     3,     0,    59,
-     0
+     0,    32,     0,    44,     0,    33,     0,    34,     0,    35,
+     0,    46,     0,    36,     0,    19,     0,    20,     0,    41,
+     0,    42,     0,    37,     0,    38,     0,    39,     0,    40,
+     0,    50,     0,    59,    51,    78,    60,     0,     0,    78,
+    79,     0,    78,    59,    79,    60,     0,    22,    81,    80,
+     3,     0,     0,    80,    47,     0,    80,    48,     0,    80,
+    49,     0,    80,    67,     0,    52,     0,    53,     0,    54,
+     0,    55,     0,    56,     0,    57,     0,    58,     0,    59,
+    21,    83,    60,     0,     0,    83,    84,     0,    16,    17,
+    18,     3,     0,     3,     0,    61,     0
 };
 
 #endif
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   142,   142,   143,   145,   146,   147,   148,   151,   152,   153,
-   154,   155,   156,   159,   159,   160,   160,   161,   161,   162,
-   162,   163,   163,   164,   164,   165,   165,   166,   166,   167,
-   175,   182,   189,   196,   203,   210,   217,   224,   231,   238,
-   245,   246,   247,   248,   249,   256,   263,   270,   277,   284,
-   291,   298,   299,   306,   309,   310,   311,   317,   321,   322,
-   323,   324,   325,   329,   331,   332,   333,   334,   335,   336,
-   344,   347,   348,   352,   357,   367
+   144,   144,   145,   147,   148,   149,   150,   153,   154,   155,
+   156,   157,   158,   161,   161,   162,   162,   163,   163,   164,
+   164,   165,   165,   166,   166,   167,   167,   168,   168,   169,
+   177,   184,   191,   198,   205,   212,   219,   226,   233,   240,
+   247,   254,   261,   262,   263,   264,   265,   266,   273,   280,
+   287,   294,   301,   308,   315,   316,   323,   326,   327,   328,
+   334,   338,   339,   340,   341,   342,   346,   348,   349,   350,
+   351,   352,   353,   361,   364,   365,   369,   374,   384
 };
 #endif
 
@@ -237,27 +239,27 @@ static const char * const yytname[] = {   "$","error","$undefined.","RTFtext",
 "RTFfootnote","RTFheader","RTFfooter","RTFpict","RTFred","RTFgreen","RTFblue",
 "RTFcolorbg","RTFcolorfg","RTFcolortable","RTFfont","RTFfontSize","RTFpaperWidth",
 "RTFpaperHeight","RTFmarginLeft","RTFmarginRight","RTFmarginTop","RTFmarginButtom",
-"RTFfirstLineIndent","RTFleftIndent","RTFalignCenter","RTFalignLeft","RTFalignRight",
-"RTFstyle","RTFbold","RTFitalic","RTFunderline","RTFunderlineStop","RTFsubscript",
-"RTFsuperscript","RTFtabulator","RTFparagraph","RTFdefaultParagraph","RTFfcharset",
-"RTFfprq","RTFcpg","RTFOtherStatement","RTFfontListStart","RTFfamilyNil","RTFfamilyRoman",
-"RTFfamilySwiss","RTFfamilyModern","RTFfamilyScript","RTFfamilyDecor","RTFfamilyTech",
-"'{'","'}'","'\\'","rtfFile","@1","@2","rtfCharset","rtfIngredients","rtfBlock",
-"@3","@4","@5","@6","@7","@8","@9","@10","rtfStatement","rtfFontList","rtfFonts",
-"rtfFontStatement","rtfFontAttrs","rtfFontFamily","rtfColorDef","rtfColors",
+"RTFfirstLineIndent","RTFleftIndent","RTFrightIndent","RTFalignCenter","RTFalignLeft",
+"RTFalignRight","RTFstyle","RTFbold","RTFitalic","RTFunderline","RTFunderlineStop",
+"RTFsubscript","RTFsuperscript","RTFtabulator","RTFtabstop","RTFparagraph","RTFdefaultParagraph",
+"RTFfcharset","RTFfprq","RTFcpg","RTFOtherStatement","RTFfontListStart","RTFfamilyNil",
+"RTFfamilyRoman","RTFfamilySwiss","RTFfamilyModern","RTFfamilyScript","RTFfamilyDecor",
+"RTFfamilyTech","'{'","'}'","'\\'","rtfFile","@1","@2","rtfCharset","rtfIngredients",
+"rtfBlock","@3","@4","@5","@6","@7","@8","@9","@10","rtfStatement","rtfFontList",
+"rtfFonts","rtfFontStatement","rtfFontAttrs","rtfFontFamily","rtfColorDef","rtfColors",
 "rtfColorStatement", NULL
 };
 #endif
 
 static const short yyr1[] = {     0,
-    61,    62,    60,    63,    63,    63,    63,    64,    64,    64,
-    64,    64,    64,    66,    65,    67,    65,    68,    65,    69,
-    65,    70,    65,    71,    65,    72,    65,    73,    65,    65,
-    74,    74,    74,    74,    74,    74,    74,    74,    74,    74,
-    74,    74,    74,    74,    74,    74,    74,    74,    74,    74,
-    74,    74,    74,    75,    76,    76,    76,    77,    78,    78,
-    78,    78,    78,    79,    79,    79,    79,    79,    79,    79,
-    80,    81,    81,    82,    82,    -1
+    63,    64,    62,    65,    65,    65,    65,    66,    66,    66,
+    66,    66,    66,    68,    67,    69,    67,    70,    67,    71,
+    67,    72,    67,    73,    67,    74,    67,    75,    67,    67,
+    76,    76,    76,    76,    76,    76,    76,    76,    76,    76,
+    76,    76,    76,    76,    76,    76,    76,    76,    76,    76,
+    76,    76,    76,    76,    76,    76,    77,    78,    78,    78,
+    79,    80,    80,    80,    80,    80,    81,    81,    81,    81,
+    81,    81,    81,    82,    83,    83,    84,    84,    -1
 };
 
 static const short yyr2[] = {     0,
@@ -266,143 +268,147 @@ static const short yyr2[] = {     0,
      5,     0,     5,     0,     5,     0,     5,     0,     5,     2,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
      1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-     1,     1,     1,     4,     0,     2,     4,     4,     0,     2,
-     2,     2,     2,     1,     1,     1,     1,     1,     1,     1,
-     4,     0,     2,     4,     1,     1
+     1,     1,     1,     1,     1,     1,     4,     0,     2,     4,
+     4,     0,     2,     2,     2,     2,     1,     1,     1,     1,
+     1,     1,     1,     4,     0,     2,     4,     1,     1
 };
 
 static const short yydefact[] = {     0,
      1,     0,     0,     4,     5,     6,     7,     8,     2,    12,
-    45,    46,    31,    32,    33,    34,    35,    36,    37,    38,
-    39,    40,    41,    42,    43,    44,    49,    50,    51,    52,
-    47,    48,    53,    14,     0,    13,    11,     9,    10,    72,
-    55,    30,     8,     0,     0,     0,     0,     0,     0,     0,
-     3,     0,     0,     0,     8,     8,     8,     8,     8,     8,
-     8,    75,     0,    71,    73,     0,     0,    54,    56,    15,
-     0,     0,     0,     0,     0,     0,     0,     0,    64,    65,
-    66,    67,    68,    69,    70,    59,     0,    17,    19,    21,
-    23,    25,    27,    29,     0,     0,    57,    74,    58,    60,
-    61,    62,    14,    63,     0,     0,     0
+    48,    49,    31,    32,    33,    34,    35,    36,    37,    38,
+    39,    40,    41,    43,    44,    45,    47,    52,    53,    54,
+    55,    50,    51,    42,    46,    56,    14,     0,    13,    11,
+     9,    10,    75,    58,    30,     8,     0,     0,     0,     0,
+     0,     0,     0,     3,     0,     0,     0,     8,     8,     8,
+     8,     8,     8,     8,    78,     0,    74,    76,     0,     0,
+    57,    59,    15,     0,     0,     0,     0,     0,     0,     0,
+     0,    67,    68,    69,    70,    71,    72,    73,    62,     0,
+    17,    19,    21,    23,    25,    27,    29,     0,     0,    60,
+    77,    61,    63,    64,    65,    14,    66,     0,     0,     0
 };
 
-static const short yydefgoto[] = {   105,
-     2,    35,     8,     9,    36,    43,    44,    45,    46,    47,
-    48,    49,    50,    37,    38,    53,    69,    96,    86,    39,
-    52,    65
+static const short yydefgoto[] = {   108,
+     2,    38,     8,     9,    39,    46,    47,    48,    49,    50,
+    51,    52,    53,    40,    41,    56,    72,    99,    89,    42,
+    55,    68
 };
 
-static const short yypact[] = {   -56,
--32768,    -2,    44,-32768,-32768,-32768,-32768,-32768,   318,-32768,
+static const short yypact[] = {   -58,
+-32768,    -2,    85,-32768,-32768,-32768,-32768,-32768,   333,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,   358,   -55,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,    -4,     4,     7,     3,    26,    29,    38,
--32768,   316,   -16,    -3,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,    27,-32768,-32768,   -43,    57,-32768,-32768,-32768,
-    37,    77,   117,   157,   197,   237,   277,    63,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,    24,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,    80,     1,-32768,-32768,-32768,-32768,
--32768,-32768,   278,-32768,    84,    86,-32768
+-32768,-32768,-32768,-32768,-32768,-32768,   375,   -57,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,    -4,     5,    -5,     6,
+    33,    38,    36,-32768,    37,   -15,    -3,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,    65,-32768,-32768,   -44,    32,
+-32768,-32768,-32768,    39,    81,   123,   165,   207,   249,   291,
+    68,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,    27,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,    52,     1,-32768,
+-32768,-32768,-32768,-32768,-32768,   334,-32768,    88,    94,-32768
 };
 
 static const short yypgoto[] = {-32768,
--32768,-32768,-32768,   333,    -9,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,    21,-32768,-32768,-32768,
+-32768,-32768,-32768,   345,     3,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,    25,-32768,-32768,-32768,
 -32768,-32768
 };
 
 
-#define	YYLAST		416
+#define	YYLAST		435
 
 
 static const short yytable[] = {    10,
-     1,     3,    51,    99,    55,    66,    79,    80,    81,    82,
-    83,    84,    85,    56,    58,    11,    12,    57,    13,    14,
+     1,     3,    54,   102,    58,    60,    69,    82,    83,    84,
+    85,    86,    87,    88,    59,    11,    12,    61,    13,    14,
     15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,    59,    10,
-    67,    68,    60,    78,    33,   100,   101,   102,     4,     5,
-     6,     7,    61,    34,    70,    11,    12,   103,    13,    14,
+    25,    26,    27,    28,    29,    30,    31,    32,    33,    65,
+    34,    10,    35,    70,    71,    62,    36,   103,   104,   105,
+    64,    63,    66,    69,   101,    37,    73,    11,    12,   106,
+    13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+    33,    81,    34,    10,    35,    98,   100,   109,    36,     4,
+     5,     6,     7,   110,    90,     0,    67,    37,    91,    11,
+    12,   107,    13,    14,    15,    16,    17,    18,    19,    20,
+    21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+    31,    32,    33,     0,    34,    10,    35,     0,     0,     0,
+    36,     0,     0,     0,     0,     0,     0,     0,     0,    37,
+    92,    11,    12,     0,    13,    14,    15,    16,    17,    18,
+    19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+    29,    30,    31,    32,    33,     0,    34,    10,    35,     0,
+     0,     0,    36,     0,     0,     0,     0,     0,     0,     0,
+     0,    37,    93,    11,    12,     0,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,     0,    34,    10,
+    35,     0,     0,     0,    36,     0,     0,     0,     0,     0,
+     0,     0,     0,    37,    94,    11,    12,     0,    13,    14,
     15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,    66,    10,
-    95,    97,    98,   106,    33,   107,   104,    87,     0,     0,
-     0,     0,     0,    34,    88,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,     0,    10,
-     0,     0,     0,     0,    33,     0,     0,     0,     0,     0,
-     0,     0,     0,    34,    89,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,     0,    10,
-     0,     0,     0,     0,    33,     0,     0,     0,     0,     0,
-     0,     0,     0,    34,    90,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,     0,    10,
-     0,     0,     0,     0,    33,     0,     0,     0,     0,     0,
-     0,     0,     0,    34,    91,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,     0,    10,
-     0,     0,     0,     0,    33,     0,     0,     0,     0,     0,
-     0,     0,     0,    34,    92,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,     0,    10,
-     0,     0,     0,     0,    33,     0,   -16,   -18,   -20,   -22,
-   -24,   -26,   -28,    34,    93,    11,    12,     0,    13,    14,
-    15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-    25,    26,    27,    28,    29,    30,    31,    32,    62,     0,
-    10,     0,     0,     0,    33,     0,     0,     0,     0,     0,
-     0,    63,     0,    34,    94,    42,    11,    12,     0,    13,
-    14,    15,    16,    17,    18,    19,    20,    21,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,     0,
-     0,     0,     0,     0,     0,    33,   -16,   -18,   -20,   -22,
-   -24,   -26,   -28,    64,    34,    54,     0,     0,    40,     0,
-     0,     0,     0,     0,     0,     0,     0,    71,    72,    73,
-    74,    75,    76,    77,     0,     0,     0,     0,     0,     0,
-     0,     0,     0,     0,     0,     0,    41,     0,     0,     0,
-     0,     0,     0,     0,     0,    42
+    25,    26,    27,    28,    29,    30,    31,    32,    33,     0,
+    34,    10,    35,     0,     0,     0,    36,     0,     0,     0,
+     0,     0,     0,     0,     0,    37,    95,    11,    12,     0,
+    13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+    33,     0,    34,    10,    35,     0,     0,     0,    36,     0,
+     0,     0,     0,     0,     0,     0,     0,    37,    96,    11,
+    12,     0,    13,    14,    15,    16,    17,    18,    19,    20,
+    21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+    31,    32,    33,     0,    34,    10,    35,     0,     0,     0,
+    36,     0,   -16,   -18,   -20,   -22,   -24,   -26,   -28,    37,
+    97,    11,    12,     0,    13,    14,    15,    16,    17,    18,
+    19,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+    29,    30,    31,    32,    33,     0,    34,     0,    35,     0,
+     0,     0,    36,   -16,   -18,   -20,   -22,   -24,   -26,   -28,
+    57,    37,     0,    45,     0,    43,     0,     0,     0,     0,
+     0,     0,    74,    75,    76,    77,    78,    79,    80,     0,
+     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+     0,     0,     0,     0,     0,    44,     0,     0,     0,     0,
+     0,     0,     0,     0,    45
 };
 
 static const short yycheck[] = {     3,
-    57,     4,    58,     3,     9,    22,    50,    51,    52,    53,
-    54,    55,    56,    10,    12,    19,    20,    11,    22,    23,
+    59,     4,    60,     3,     9,    11,    22,    52,    53,    54,
+    55,    56,    57,    58,    10,    19,    20,    12,    22,    23,
     24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    13,     3,
-    57,    58,    14,    17,    48,    45,    46,    47,     5,     6,
-     7,     8,    15,    57,    58,    19,    20,    57,    22,    23,
+    34,    35,    36,    37,    38,    39,    40,    41,    42,     3,
+    44,     3,    46,    59,    60,    13,    50,    47,    48,    49,
+    15,    14,    16,    22,     3,    59,    60,    19,    20,    59,
+    22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+    32,    33,    34,    35,    36,    37,    38,    39,    40,    41,
+    42,    17,    44,     3,    46,    18,    60,     0,    50,     5,
+     6,     7,     8,     0,    70,    -1,    60,    59,    60,    19,
+    20,    99,    22,    23,    24,    25,    26,    27,    28,    29,
+    30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
+    40,    41,    42,    -1,    44,     3,    46,    -1,    -1,    -1,
+    50,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    59,
+    60,    19,    20,    -1,    22,    23,    24,    25,    26,    27,
+    28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+    38,    39,    40,    41,    42,    -1,    44,     3,    46,    -1,
+    -1,    -1,    50,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+    -1,    59,    60,    19,    20,    -1,    22,    23,    24,    25,
+    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
+    36,    37,    38,    39,    40,    41,    42,    -1,    44,     3,
+    46,    -1,    -1,    -1,    50,    -1,    -1,    -1,    -1,    -1,
+    -1,    -1,    -1,    59,    60,    19,    20,    -1,    22,    23,
     24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    22,     3,
-    18,    58,     3,     0,    48,     0,    96,    67,    -1,    -1,
-    -1,    -1,    -1,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    -1,     3,
-    -1,    -1,    -1,    -1,    48,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    -1,     3,
-    -1,    -1,    -1,    -1,    48,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    -1,     3,
-    -1,    -1,    -1,    -1,    48,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    -1,     3,
-    -1,    -1,    -1,    -1,    48,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,    -1,     3,
-    -1,    -1,    -1,    -1,    48,    -1,     9,    10,    11,    12,
-    13,    14,    15,    57,    58,    19,    20,    -1,    22,    23,
-    24,    25,    26,    27,    28,    29,    30,    31,    32,    33,
-    34,    35,    36,    37,    38,    39,    40,    41,     3,    -1,
-     3,    -1,    -1,    -1,    48,    -1,    -1,    -1,    -1,    -1,
-    -1,    16,    -1,    57,    58,    58,    19,    20,    -1,    22,
-    23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-    33,    34,    35,    36,    37,    38,    39,    40,    41,    -1,
-    -1,    -1,    -1,    -1,    -1,    48,     9,    10,    11,    12,
-    13,    14,    15,    58,    57,    43,    -1,    -1,    21,    -1,
-    -1,    -1,    -1,    -1,    -1,    -1,    -1,    55,    56,    57,
-    58,    59,    60,    61,    -1,    -1,    -1,    -1,    -1,    -1,
-    -1,    -1,    -1,    -1,    -1,    -1,    49,    -1,    -1,    -1,
-    -1,    -1,    -1,    -1,    -1,    58
+    34,    35,    36,    37,    38,    39,    40,    41,    42,    -1,
+    44,     3,    46,    -1,    -1,    -1,    50,    -1,    -1,    -1,
+    -1,    -1,    -1,    -1,    -1,    59,    60,    19,    20,    -1,
+    22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+    32,    33,    34,    35,    36,    37,    38,    39,    40,    41,
+    42,    -1,    44,     3,    46,    -1,    -1,    -1,    50,    -1,
+    -1,    -1,    -1,    -1,    -1,    -1,    -1,    59,    60,    19,
+    20,    -1,    22,    23,    24,    25,    26,    27,    28,    29,
+    30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
+    40,    41,    42,    -1,    44,     3,    46,    -1,    -1,    -1,
+    50,    -1,     9,    10,    11,    12,    13,    14,    15,    59,
+    60,    19,    20,    -1,    22,    23,    24,    25,    26,    27,
+    28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+    38,    39,    40,    41,    42,    -1,    44,    -1,    46,    -1,
+    -1,    -1,    50,     9,    10,    11,    12,    13,    14,    15,
+    46,    59,    -1,    60,    -1,    21,    -1,    -1,    -1,    -1,
+    -1,    -1,    58,    59,    60,    61,    62,    63,    64,    -1,
+    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+    -1,    -1,    -1,    -1,    -1,    51,    -1,    -1,    -1,    -1,
+    -1,    -1,    -1,    -1,    60
 };
 #define YYPURE 1
 
@@ -906,99 +912,99 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 142 "Parsers/rtfGrammer.y"
+#line 144 "Parsers/rtfGrammer.y"
 { GSRTFstart(ctxt); ;
     break;}
 case 2:
-#line 142 "Parsers/rtfGrammer.y"
+#line 144 "Parsers/rtfGrammer.y"
 { GSRTFstop(ctxt); ;
     break;}
 case 4:
-#line 145 "Parsers/rtfGrammer.y"
+#line 147 "Parsers/rtfGrammer.y"
 { yyval.number = 1; ;
     break;}
 case 5:
-#line 146 "Parsers/rtfGrammer.y"
+#line 148 "Parsers/rtfGrammer.y"
 { yyval.number = 2; ;
     break;}
 case 6:
-#line 147 "Parsers/rtfGrammer.y"
+#line 149 "Parsers/rtfGrammer.y"
 { yyval.number = 3; ;
     break;}
 case 7:
-#line 148 "Parsers/rtfGrammer.y"
+#line 150 "Parsers/rtfGrammer.y"
 { yyval.number = 4; ;
     break;}
 case 12:
-#line 155 "Parsers/rtfGrammer.y"
+#line 157 "Parsers/rtfGrammer.y"
 { GSRTFmangleText(ctxt, yyvsp[0].text); free((void *)yyvsp[0].text); ;
     break;}
 case 14:
-#line 159 "Parsers/rtfGrammer.y"
+#line 161 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, NO); ;
     break;}
 case 15:
-#line 159 "Parsers/rtfGrammer.y"
+#line 161 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, NO); ;
     break;}
 case 16:
-#line 160 "Parsers/rtfGrammer.y"
+#line 162 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 17:
-#line 160 "Parsers/rtfGrammer.y"
+#line 162 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 18:
-#line 161 "Parsers/rtfGrammer.y"
+#line 163 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 19:
-#line 161 "Parsers/rtfGrammer.y"
+#line 163 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 20:
-#line 162 "Parsers/rtfGrammer.y"
+#line 164 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 21:
-#line 162 "Parsers/rtfGrammer.y"
+#line 164 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 22:
-#line 163 "Parsers/rtfGrammer.y"
+#line 165 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 23:
-#line 163 "Parsers/rtfGrammer.y"
+#line 165 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 24:
-#line 164 "Parsers/rtfGrammer.y"
+#line 166 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 25:
-#line 164 "Parsers/rtfGrammer.y"
+#line 166 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 26:
-#line 165 "Parsers/rtfGrammer.y"
+#line 167 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 27:
-#line 165 "Parsers/rtfGrammer.y"
+#line 167 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 28:
-#line 166 "Parsers/rtfGrammer.y"
+#line 168 "Parsers/rtfGrammer.y"
 { GSRTFopenBlock(ctxt, YES); ;
     break;}
 case 29:
-#line 166 "Parsers/rtfGrammer.y"
+#line 168 "Parsers/rtfGrammer.y"
 { GSRTFcloseBlock(ctxt, YES); ;
     break;}
 case 31:
-#line 175 "Parsers/rtfGrammer.y"
+#line 177 "Parsers/rtfGrammer.y"
 { int font;
 		    
 						  if (yyvsp[0].cmd.isEmpty)
@@ -1008,7 +1014,7 @@ case 31:
 						  GSRTFfontNumber(ctxt, font); ;
     break;}
 case 32:
-#line 182 "Parsers/rtfGrammer.y"
+#line 184 "Parsers/rtfGrammer.y"
 { int size;
 
 						  if (yyvsp[0].cmd.isEmpty)
@@ -1018,7 +1024,7 @@ case 32:
 						  GSRTFfontSize(ctxt, size); ;
     break;}
 case 33:
-#line 189 "Parsers/rtfGrammer.y"
+#line 191 "Parsers/rtfGrammer.y"
 { int width; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1028,7 +1034,7 @@ case 33:
 						  GSRTFpaperWidth(ctxt, width);;
     break;}
 case 34:
-#line 196 "Parsers/rtfGrammer.y"
+#line 198 "Parsers/rtfGrammer.y"
 { int height; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1038,7 +1044,7 @@ case 34:
 						  GSRTFpaperHeight(ctxt, height);;
     break;}
 case 35:
-#line 203 "Parsers/rtfGrammer.y"
+#line 205 "Parsers/rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1048,7 +1054,7 @@ case 35:
 						  GSRTFmarginLeft(ctxt, margin);;
     break;}
 case 36:
-#line 210 "Parsers/rtfGrammer.y"
+#line 212 "Parsers/rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1058,7 +1064,7 @@ case 36:
 						  GSRTFmarginRight(ctxt, margin); ;
     break;}
 case 37:
-#line 217 "Parsers/rtfGrammer.y"
+#line 219 "Parsers/rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1068,7 +1074,7 @@ case 37:
 						  GSRTFmarginTop(ctxt, margin); ;
     break;}
 case 38:
-#line 224 "Parsers/rtfGrammer.y"
+#line 226 "Parsers/rtfGrammer.y"
 { int margin; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1078,7 +1084,7 @@ case 38:
 						  GSRTFmarginButtom(ctxt, margin); ;
     break;}
 case 39:
-#line 231 "Parsers/rtfGrammer.y"
+#line 233 "Parsers/rtfGrammer.y"
 { int indent; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1088,7 +1094,7 @@ case 39:
 						  GSRTFfirstLineIndent(ctxt, indent); ;
     break;}
 case 40:
-#line 238 "Parsers/rtfGrammer.y"
+#line 240 "Parsers/rtfGrammer.y"
 { int indent; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1098,23 +1104,47 @@ case 40:
 						  GSRTFleftIndent(ctxt, indent);;
     break;}
 case 41:
-#line 245 "Parsers/rtfGrammer.y"
-{ GSRTFalignCenter(ctxt); ;
+#line 247 "Parsers/rtfGrammer.y"
+{ int indent; 
+		
+		                                  if (yyvsp[0].cmd.isEmpty)
+						      indent = 0;
+						  else
+						      indent = yyvsp[0].cmd.parameter;
+						  GSRTFrightIndent(ctxt, indent);;
     break;}
 case 42:
-#line 246 "Parsers/rtfGrammer.y"
-{ GSRTFalignLeft(ctxt); ;
+#line 254 "Parsers/rtfGrammer.y"
+{ int location; 
+		
+		                                  if (yyvsp[0].cmd.isEmpty)
+						      location = 0;
+						  else
+						      location = yyvsp[0].cmd.parameter;
+						  GSRTFtabstop(ctxt, location);;
     break;}
 case 43:
-#line 247 "Parsers/rtfGrammer.y"
-{ GSRTFalignRight(ctxt); ;
+#line 261 "Parsers/rtfGrammer.y"
+{ GSRTFalignCenter(ctxt); ;
     break;}
 case 44:
-#line 248 "Parsers/rtfGrammer.y"
-{ GSRTFstyle(ctxt, yyvsp[0].cmd.parameter); ;
+#line 262 "Parsers/rtfGrammer.y"
+{ GSRTFalignLeft(ctxt); ;
     break;}
 case 45:
-#line 249 "Parsers/rtfGrammer.y"
+#line 263 "Parsers/rtfGrammer.y"
+{ GSRTFalignRight(ctxt); ;
+    break;}
+case 46:
+#line 264 "Parsers/rtfGrammer.y"
+{ GSRTFdefaultParagraph(ctxt); ;
+    break;}
+case 47:
+#line 265 "Parsers/rtfGrammer.y"
+{ GSRTFstyle(ctxt, yyvsp[0].cmd.parameter); ;
+    break;}
+case 48:
+#line 266 "Parsers/rtfGrammer.y"
 { int color; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1123,8 +1153,8 @@ case 45:
 						      color = yyvsp[0].cmd.parameter;
 						  GSRTFcolorbg(ctxt, color); ;
     break;}
-case 46:
-#line 256 "Parsers/rtfGrammer.y"
+case 49:
+#line 273 "Parsers/rtfGrammer.y"
 { int color; 
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1133,8 +1163,8 @@ case 46:
 						      color = yyvsp[0].cmd.parameter;
 						  GSRTFcolorfg(ctxt, color); ;
     break;}
-case 47:
-#line 263 "Parsers/rtfGrammer.y"
+case 50:
+#line 280 "Parsers/rtfGrammer.y"
 { int script;
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1143,8 +1173,8 @@ case 47:
 						      script = yyvsp[0].cmd.parameter;
 						  GSRTFsubscript(ctxt, script); ;
     break;}
-case 48:
-#line 270 "Parsers/rtfGrammer.y"
+case 51:
+#line 287 "Parsers/rtfGrammer.y"
 { int script;
 		
 		                                  if (yyvsp[0].cmd.isEmpty)
@@ -1153,8 +1183,8 @@ case 48:
 						      script = yyvsp[0].cmd.parameter;
 						  GSRTFsuperscript(ctxt, script); ;
     break;}
-case 49:
-#line 277 "Parsers/rtfGrammer.y"
+case 52:
+#line 294 "Parsers/rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1163,8 +1193,8 @@ case 49:
 						      on = NO;
 						  GSRTFbold(ctxt, on); ;
     break;}
-case 50:
-#line 284 "Parsers/rtfGrammer.y"
+case 53:
+#line 301 "Parsers/rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1173,8 +1203,8 @@ case 50:
 						      on = NO;
 						  GSRTFitalic(ctxt, on); ;
     break;}
-case 51:
-#line 291 "Parsers/rtfGrammer.y"
+case 54:
+#line 308 "Parsers/rtfGrammer.y"
 { BOOL on;
 
 		                                  if (yyvsp[0].cmd.isEmpty || yyvsp[0].cmd.parameter)
@@ -1183,63 +1213,63 @@ case 51:
 						      on = NO;
 						  GSRTFunderline(ctxt, on); ;
     break;}
-case 52:
-#line 298 "Parsers/rtfGrammer.y"
+case 55:
+#line 315 "Parsers/rtfGrammer.y"
 { GSRTFunderline(ctxt, NO); ;
     break;}
-case 53:
-#line 299 "Parsers/rtfGrammer.y"
+case 56:
+#line 316 "Parsers/rtfGrammer.y"
 { GSRTFgenericRTFcommand(ctxt, yyvsp[0].cmd); ;
     break;}
-case 58:
-#line 317 "Parsers/rtfGrammer.y"
+case 61:
+#line 334 "Parsers/rtfGrammer.y"
 { GSRTFregisterFont(ctxt, yyvsp[0].text, yyvsp[-2].number, yyvsp[-3].cmd.parameter);
                                                           free((void *)yyvsp[0].text); ;
     break;}
-case 64:
-#line 330 "Parsers/rtfGrammer.y"
+case 67:
+#line 347 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyNil - RTFfamilyNil; ;
     break;}
-case 65:
-#line 331 "Parsers/rtfGrammer.y"
+case 68:
+#line 348 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyRoman - RTFfamilyNil; ;
     break;}
-case 66:
-#line 332 "Parsers/rtfGrammer.y"
+case 69:
+#line 349 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilySwiss - RTFfamilyNil; ;
     break;}
-case 67:
-#line 333 "Parsers/rtfGrammer.y"
+case 70:
+#line 350 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyModern - RTFfamilyNil; ;
     break;}
-case 68:
-#line 334 "Parsers/rtfGrammer.y"
+case 71:
+#line 351 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyScript - RTFfamilyNil; ;
     break;}
-case 69:
-#line 335 "Parsers/rtfGrammer.y"
+case 72:
+#line 352 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyDecor - RTFfamilyNil; ;
     break;}
-case 70:
-#line 336 "Parsers/rtfGrammer.y"
+case 73:
+#line 353 "Parsers/rtfGrammer.y"
 { yyval.number = RTFfamilyTech - RTFfamilyNil; ;
     break;}
-case 74:
-#line 353 "Parsers/rtfGrammer.y"
+case 77:
+#line 370 "Parsers/rtfGrammer.y"
 { 
 		       GSRTFaddColor(ctxt, yyvsp[-3].cmd.parameter, yyvsp[-2].cmd.parameter, yyvsp[-1].cmd.parameter);
 		       free((void *)yyvsp[0].text);
 		     ;
     break;}
-case 75:
-#line 358 "Parsers/rtfGrammer.y"
+case 78:
+#line 375 "Parsers/rtfGrammer.y"
 { 
 		       GSRTFaddDefaultColor(ctxt);
 		       free((void *)yyvsp[0].text);
 		     ;
     break;}
-case 76:
-#line 367 "Parsers/rtfGrammer.y"
+case 79:
+#line 384 "Parsers/rtfGrammer.y"
 { yylsp[0].first_line; ;
     break;}
 }
@@ -1440,7 +1470,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 370 "Parsers/rtfGrammer.y"
+#line 387 "Parsers/rtfGrammer.y"
 
 
 /*	some C code here	*/

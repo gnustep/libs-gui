@@ -185,10 +185,12 @@ LexKeyword	RTFcommands[]={
 	"ql",	        token(RTFalignLeft),
 	"qr",	        token(RTFalignRight),
 	"red",		token(RTFred),
+	"ri",		token(RTFrightIndent),
 	"rtf",		token(RTFstart),
 	"s",	        token(RTFstyle),
 	"stylesheet",   token(RTFstylesheet),
 	"tab",	        token(RTFtabulator),
+	"tx",	        token(RTFtabstop),
 	"ul",		token(RTFunderline),
 	"ulnone",	token(RTFunderlineStop),
 	"up",	        token(RTFsuperscript)
@@ -339,7 +341,7 @@ int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide v
       if (probeCommand(lctxt) == YES)
 	{
 	  readCommand(lctxt, lvalp, &token);
-	  if (token == RTFparagraph || token == RTFdefaultParagraph)
+	  if (token == RTFparagraph)
 	    {	      
 		// release is up to the consumer
 		cv = calloc(1, 2);

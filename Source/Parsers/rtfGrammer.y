@@ -103,6 +103,7 @@ typedef void	* GSRTFctxt;
 %token <cmd> RTFmarginButtom
 %token <cmd> RTFfirstLineIndent
 %token <cmd> RTFleftIndent
+%token <cmd> RTFrightIndent
 %token <cmd> RTFalignCenter
 %token <cmd> RTFalignLeft
 %token <cmd> RTFalignRight
@@ -114,6 +115,7 @@ typedef void	* GSRTFctxt;
 %token <cmd> RTFsubscript
 %token <cmd> RTFsuperscript
 %token <cmd> RTFtabulator
+%token <cmd> RTFtabstop
 %token <cmd> RTFparagraph
 %token <cmd> RTFdefaultParagraph
 %token <cmd> RTFfcharset
@@ -242,9 +244,24 @@ rtfStatement: RTFfont				{ int font;
 						  else
 						      indent = $1.parameter;
 						  GSRTFleftIndent(ctxt, indent);}
+		|	RTFrightIndent		{ int indent; 
+		
+		                                  if ($1.isEmpty)
+						      indent = 0;
+						  else
+						      indent = $1.parameter;
+						  GSRTFrightIndent(ctxt, indent);}
+		|	RTFtabstop		{ int location; 
+		
+		                                  if ($1.isEmpty)
+						      location = 0;
+						  else
+						      location = $1.parameter;
+						  GSRTFtabstop(ctxt, location);}
 		|	RTFalignCenter		{ GSRTFalignCenter(ctxt); }
 		|	RTFalignLeft		{ GSRTFalignLeft(ctxt); }
 		|	RTFalignRight		{ GSRTFalignRight(ctxt); }
+		|	RTFdefaultParagraph	{ GSRTFdefaultParagraph(ctxt); }
 		|	RTFstyle		{ GSRTFstyle(ctxt, $1.parameter); }
 		|	RTFcolorbg		{ int color; 
 		

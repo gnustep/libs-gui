@@ -88,12 +88,18 @@ void GSRTFmarginButtom(void *ctxt, int margin);
 void GSRTFfirstLineIndent(void *ctxt, int indent);
 /* set left indent */
 void GSRTFleftIndent(void *ctxt, int indent);
+/* set right indent */
+void GSRTFrightIndent(void *ctxt, int indent);
+/* set tabstop */
+void GSRTFtabstop(void *ctxt, int location);
 /* set center alignment */
 void GSRTFalignCenter(void *ctxt);
 /* set left alignment */
 void GSRTFalignLeft(void *ctxt);
 /* set right alignment */
 void GSRTFalignRight(void *ctxt);
+/* set default paragraph style */
+void GSRTFdefaultParagraph(void *ctxt);
 /* set paragraph style */
 void GSRTFstyle(void *ctxt, int style);
 /* Add a colour to the colour table*/

@@ -52,11 +52,6 @@ readNSString(StringContext *ctxt)
     ? [ctxt->string characterAtIndex:ctxt->position++]: EOF;
 }
 
-/*
-  we must implement from the rtfConsumerSkeleton.h file (Supporting files)
-  this includes the yacc error handling and output
-*/
-
 // Hold the attributs of the current run
 @interface RTFAttribute: NSObject <NSCopying>
 {
@@ -74,6 +69,10 @@ readNSString(StringContext *ctxt)
 }
 
 - (NSFont*) currentFont;
+- (NSNumber*) script;
+- (NSNumber*) underline;
+- (void) resetParagraphStyle;
+- (void) resetFont;
 
 @end
 
@@ -81,16 +80,8 @@ readNSString(StringContext *ctxt)
 
 - (id) init
 {
-  NSFont *font = [NSFont userFontOfSize:12];
-
-  ASSIGN(fontName, [font familyName]);
-  fontSize = 12.0;
-  italic = NO;
-  bold = NO;
-  underline = NO;
-  script = 0;
-  paragraph = [NSMutableParagraphStyle defaultParagraphStyle];
-  changed = YES;
+  [self resetFont];
+  [self resetParagraphStyle];
 
   return self;
 }
@@ -150,7 +141,52 @@ readNSString(StringContext *ctxt)
 					    traits: traits
 					    weight: weight
 					    size: fontSize];
+  if (font == nil)
+    {
+	NSDebugMLLog(@"RTFParser", 
+		     @"Could not find font %@ size %f traits %d weight %d", 
+		     fontName, fontSize, traits, weight);
+	font = [NSFont userFontOfSize: fontSize];
+    }
+
   return font;
+}
+
+- (NSNumber*) script
+{
+  return [NSNumber numberWithInt: script];
+}
+
+- (NSNumber*) underline
+{
+  if (underline)
+    return [NSNumber numberWithInt: NSSingleUnderlineStyle];
+  else
+    return nil;
+}
+
+- (void) resetParagraphStyle
+{
+  ASSIGN(paragraph, [NSMutableParagraphStyle defaultParagraphStyle]);
+
+  changed = YES;
+}
+
+- (void) resetFont
+{
+  NSFont *font = [NSFont userFontOfSize:12];
+
+  ASSIGN(fontName, [font familyName]);
+  fontSize = 12.0;
+  italic = NO;
+  bold = NO;
+
+  underline = NO;
+  script = 0;
+  DESTROY(fgColour);
+  DESTROY(bgColour);
+
+  changed = YES;
 }
  
 @end
@@ -163,15 +199,15 @@ readNSString(StringContext *ctxt)
   NSMutableArray *colours;
   NSMutableArray *attrs;
   NSMutableAttributedString *result;
-  int textPosition;
   int ignore;
 }
 
 - (NSDictionary*) documentAttributes;
+- (NSAttributedString*) result;
+
 - (RTFAttribute*) attr;
 - (void) push;
 - (void) pop;
-- (NSAttributedString*) result;
 
 @end
 
@@ -179,16 +215,12 @@ readNSString(StringContext *ctxt)
 
 - (id) init
 {
-  RTFAttribute *attr = [RTFAttribute new];
-
-  textPosition = 0;
   ignore = 0;  
-  result = [[NSMutableAttributedString alloc] init];
-  ASSIGN(documentAttributes, [NSMutableDictionary dictionary]);
-  ASSIGN(fonts, [NSMutableDictionary dictionary]);
-  ASSIGN(attrs, [NSMutableArray array]);
-  ASSIGN(colours, [NSMutableArray array]);
-  [attrs addObject: attr];
+  result = nil;
+  documentAttributes = nil;
+  fonts = nil;
+  attrs = nil;
+  colours = nil;
 
   return self;
 }
@@ -207,6 +239,20 @@ readNSString(StringContext *ctxt)
 {
   RETAIN(documentAttributes);
   return AUTORELEASE(documentAttributes);
+}
+
+- (void) reset
+{
+  RTFAttribute *attr = [RTFAttribute new];
+
+  ignore = 0;  
+  DESTROY(result);
+  result = [[NSMutableAttributedString alloc] init];
+  ASSIGN(documentAttributes, [NSMutableDictionary dictionary]);
+  ASSIGN(fonts, [NSMutableDictionary dictionary]);
+  ASSIGN(attrs, [NSMutableArray array]);
+  ASSIGN(colours, [NSMutableArray array]);
+  [attrs addObject: attr];
 }
 
 - (RTFAttribute*) attr
@@ -240,9 +286,8 @@ readNSString(StringContext *ctxt)
 			    initWithData: rtfData
 			    encoding: NSASCIIStringEncoding];
 
-  // Has this RFTConsumer allready been used? Is so, reset!
-  if (textPosition)
-    [self init];
+  // Reset this RFTConsumer, as it might already have been used!
+  [self reset];
 
   initStringContext(&stringCtxt, rtfString);
   lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readNSString);
@@ -268,7 +313,7 @@ readNSString(StringContext *ctxt)
 #define	COLOURS	((RTFConsumer *)ctxt)->colours
 #define	RESULT	((RTFConsumer *)ctxt)->result
 #define	IGNORE	((RTFConsumer *)ctxt)->ignore
-#define	TEXTPOSITION ((RTFConsumer *)ctxt)->textPosition
+#define	TEXTPOSITION [RESULT length]
 #define DOCUMENTATTRIBUTES ((RTFConsumer*)ctxt)->documentAttributes
 
 #define	CTXT	[((RTFConsumer *)ctxt) attr]
@@ -288,20 +333,23 @@ readNSString(StringContext *ctxt)
 #define TOPMARGIN @"TopMargin"
 #define BUTTOMMARGIN @"ButtomMargin"
 
+/*
+  we must implement from the rtfConsumerFunctions.h file (Supporting files)
+  this includes the yacc error handling and output
+*/
+
 /* handle errors (this is the yacc error mech)	*/
 void GSRTFerror(const char *msg)
 {
   [NSException raise:NSInvalidArgumentException 
-	       format:@"Syntax error in RTF:%s", msg];
+	       format:@"Syntax error in RTF: %s", msg];
 }
 
 void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
 {
-  NSLog(@"encountered rtf cmd:%s", cmd.name);
-  if (cmd.isEmpty) 
-      NSLog(@" argument is empty\n");
-  else
-      NSLog(@" argument is %d\n", cmd.parameter);
+  NSDebugLLog(@"RTFParser", @"encountered rtf cmd:%s", cmd.name);
+  if (!cmd.isEmpty) 
+    NSDebugLLog(@"RTFParser", @" argument is %d\n", cmd.parameter);
 }
 
 //Start: we're doing some initialization
@@ -338,26 +386,33 @@ void GSRTFmangleText(void *ctxt, const char *text)
 {
   int  oldPosition = TEXTPOSITION;
   int  textlen = strlen(text); 
-  int  newPosition = oldPosition + textlen;
   NSRange insertionRange = NSMakeRange(oldPosition,0);
-  NSDictionary *attributes;
-  NSFont *font;
+  NSMutableDictionary *attributes;
 
   if (!IGNORE && textlen)
     {
-      TEXTPOSITION = newPosition;
-      
       [RESULT replaceCharactersInRange: insertionRange 
 	      withString: [NSString stringWithCString:text]];
 
       if (CHANGED)
         {
-	  font = [CTXT currentFont];
-	  attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-					 font, NSFontAttributeName, 
-				     SCRIPT, NSSuperscriptAttributeName,
-				     PARAGRAPH, NSParagraphStyleAttributeName,
-				     nil];
+	  attributes = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+						[CTXT currentFont], NSFontAttributeName,
+					    PARAGRAPH, NSParagraphStyleAttributeName,
+					    nil];
+	  if (UNDERLINE)
+	    [attributes setObject: [CTXT underline]
+			forKey: NSUnderlineStyleAttributeName];
+	  if (SCRIPT)
+	    [attributes setObject: [CTXT script]
+			forKey: NSSuperscriptAttributeName];
+	  if (FGCOLOUR != nil)
+	    [attributes setObject: FGCOLOUR 
+			forKey: NSForegroundColorAttributeName];
+	  if (BGCOLOUR != nil)
+	    [attributes setObject: BGCOLOUR 
+			forKey: NSBackgroundColorAttributeName];
+
 	  [RESULT setAttributes: attributes range: 
 		      NSMakeRange(oldPosition, textlen)];
 	  CHANGED = NO;
@@ -373,8 +428,8 @@ void GSRTFregisterFont(void *ctxt, const char *fontName,
 
   if (!fontName || !*fontName)
     {	
-      [NSException raise:NSInvalidArgumentException 
-		   format:@"Error in RTF (font omitted?), position:%d",
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Error in RTF (font omitted?), position:%d",
 		   TEXTPOSITION];
     }
   // exclude trailing ';' from fontName
@@ -510,6 +565,33 @@ void GSRTFleftIndent(void *ctxt, int indent)
     }
 }
 
+void GSRTFrightIndent(void *ctxt, int indent)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float findent = twips2points(indent);
+
+  // for attributed strings only positiv indent is allowed
+  if ((findent >= 0.0) && ([para tailIndent] != findent))
+    {
+      [para setTailIndent: findent];
+      CHANGED = YES;
+    }
+}
+
+void GSRTFtabstop(void *ctxt, int location)
+{
+/*
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float flocation = twips2points(location);
+
+  if (flocation >= 0.0))
+    {
+      //[para addTab: flocation];
+      CHANGED = YES;
+    }
+*/
+}
+
 void GSRTFalignCenter(void *ctxt)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
@@ -541,6 +623,12 @@ void GSRTFalignRight(void *ctxt)
       [para setAlignment: NSRightTextAlignment];
       CHANGED = YES;
     }
+}
+
+void GSRTFdefaultParagraph(void *ctxt)
+{
+  GSRTFmangleText(ctxt, "\n");
+  [CTXT resetParagraphStyle];
 }
 
 void GSRTFstyle(void *ctxt, int style)
