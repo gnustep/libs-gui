@@ -1,3 +1,7 @@
+Wed Mar 08 17:09:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: ([-setLevel:]) implemented.
+
 Wed Mar 08 115:4500 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Removed a fixup that should no longer be needed now that the

@@ -1143,7 +1143,11 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setLevel: (int)newLevel
 {
+  NSGraphicsContext	*context = GSCurrentContext();
+
   window_level = newLevel;
+  DPSsetwindowlevel(context, window_level, window_num);
+  [self orderFront: self];
 }
 
 /*
@@ -3135,9 +3139,13 @@ resetCursorRectsForView(NSView *theView)
       aSize = [aDecoder decodeSize];
       [self setMaxSize: aSize];
 
+      /*
+       * Set window to the correct level without displaying it.
+       */
       [aDecoder decodeValueOfObjCType: @encode(int)
 				   at: &anInt];
-      [self setLevel: anInt];
+      window_level = anInt;
+      DPSsetwindowlevel(GSCurrentContext(), window_level, window_num);
 
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setExcludedFromWindowsMenu: flag];
