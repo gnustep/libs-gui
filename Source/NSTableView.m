@@ -4,7 +4,7 @@
    Copyright (C) 2000 Free Software Foundation, Inc.
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
-   Date: March 2000
+   Date: March 2000, June 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -33,7 +33,9 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderView.h>
+#import <AppKit/NSText.h>
 #import <AppKit/NSTextFieldCell.h>
+#import <AppKit/NSWindow.h>
 #import <AppKit/PSOperators.h>
 
 @interface GSTableCornerView : NSView
@@ -507,33 +509,161 @@ byExtendingSelection: (BOOL) flag
  * Editing Cells 
  */
 
+- (BOOL) abortEditing
+{ 
+  if (_textObject)
+    {
+      [_textObject setString: @""];
+      [_editedCell endEditing: _textObject];
+      RELEASE (_editedCell);
+      [self setNeedsDisplayInRect: 
+	      [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
+      _editedRow = -1;
+      _editedColumn = -1;
+      _editedCell = nil;
+      _textObject = nil;
+      return YES;
+    }
+  else
+    return NO;
+}
+
+- (NSText *) currentEditor
+{
+  if (_textObject && ([_window firstResponder] == _textObject))
+    return _textObject;
+  else
+    return nil;
+}
+
+- (void) validateEditing
+{ 
+  if (_textObject)
+    {
+      [_editedCell setStringValue: [_textObject text]];
+
+      if (_del_editable)
+	{
+	  [_delegate tableView: self 
+		     setObjectValue: [_editedCell objectValue]  
+		     forTableColumn: [_tableColumns objectAtIndex: 
+						      _editedColumn]
+		     row: _editedRow];
+	}
+    }
+}			
+
 - (void) editColumn: (int) columnIndex 
 		row: (int) rowIndex 
 	  withEvent: (NSEvent *) theEvent 
 	     select: (BOOL) flag
 {
-  // TODO
-  return;
+  NSText *t;
+  NSTableColumn *tb;
+  NSRect drawingRect;
+
+  // We refuse to edit cells if the delegate can not accept results 
+  // of editing.
+  if (_del_editable == NO)
+    {
+      return;
+    }
+  
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
+
+  if (rowIndex < 0 || rowIndex >= _numberOfRows 
+      || columnIndex < 0 || columnIndex >= _numberOfColumns)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Row/column out of index in edit"];
+    }
+  
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+
+  // Now (_textObject == nil)
+  
+  t = [_window fieldEditor: YES  forObject: self];
+  
+  if ([t superview] != nil)
+    if ([t resignFirstResponder] == NO)
+      return;
+  
+  _editedRow = rowIndex;
+  _editedColumn = columnIndex;
+
+  // Prepare the cell
+  tb = [_tableColumns objectAtIndex: columnIndex];
+  // NB: need to be released when no longer used
+  _editedCell = [[tb dataCell] copy];
+  [_editedCell setEditable: YES];
+  [_editedCell setObjectValue: [_dataSource tableView: self
+					    objectValueForTableColumn: tb
+					    row: rowIndex]];
+
+  // We really want the correct background color!
+  if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
+    {
+      [(NSTextFieldCell *)_editedCell setBackgroundColor: _backgroundColor];
+    }
+  else
+    {
+      [t setBackgroundColor: _backgroundColor];
+    }
+  
+  // But of course the delegate can mess it up if it wants
+  if (_del_responds)
+    {
+      [_delegate tableView: self   willDisplayCell: _editedCell 
+		 forTableColumn: tb   row: rowIndex];
+    }
+
+  _textObject = [_editedCell setUpFieldEditorAttributes: t];
+
+  // Now edit it
+  drawingRect = [self frameOfCellAtColumn: columnIndex
+		      row: rowIndex];
+
+  if (flag)
+    {
+      [_editedCell selectWithFrame: drawingRect
+		   inView: self
+		   editor: _textObject
+		   delegate: self
+		   start: 0
+		   length: [[_editedCell stringValue] length]];
+    }
+  else
+    {
+      [_editedCell editWithFrame: drawingRect
+		   inView: self
+		   editor: _textObject
+		   delegate: self
+		   event: theEvent];
+    }
+  return;    
 }
 
 - (int) editedRow
 {
-  // TODO
-  return -1;
+  return _editedRow;  
 }
 
 - (int) editedColumn
 {
-  // TODO
-  return -1;
+  return _editedColumn;
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint location = [theEvent locationInWindow];
   NSTableColumn *tb;
-  int clickCount;  
-  
+  int clickCount;
+
   //
   // Pathological case -- ignore mouse down
   //
@@ -544,16 +674,16 @@ byExtendingSelection: (BOOL) flag
     }
   
   clickCount = [theEvent clickCount];
-  
+
   if (clickCount > 2)
     return;
-  
+
   // Determine row and column which were clicked
   location = [self convertPoint: location  fromView: nil];
   _clickedRow = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
 
-  // Selection 
+  // Selection
   if (clickCount == 1)
     {
       // TODO: Selection
@@ -568,14 +698,18 @@ byExtendingSelection: (BOOL) flag
       if ([_delegate tableView: self shouldEditTableColumn: tb 
 		     row: _clickedRow] == NO)
 	{
-	  // Send double-action
+	  // Send double-action but don't edit
 	  [self sendAction: _doubleAction to: _target];
+	  return;
 	}
     }
 
-  // TODO: Edit the cell
+  // Delegate said its OK to edit column.  Go on, do it.
+  [self editColumn: _clickedColumn
+	row: _clickedRow
+	withEvent: theEvent 
+	select: NO];
 }
-
 
 /* 
  * Auxiliary Components 
@@ -978,21 +1112,25 @@ byExtendingSelection: (BOOL) flag
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
-      tb = [_tableColumns objectAtIndex: i];
-      cell = [tb dataCell];
-      if (_del_responds)
+      if (i != _editedColumn || rowIndex != _editedRow)
 	{
-	  [_delegate tableView: self   willDisplayCell: cell 
-		     forTableColumn: tb   row: rowIndex];
+	  tb = [_tableColumns objectAtIndex: i];
+	  cell = [tb dataCell];
+	  if (_del_responds)
+	    {
+	      [_delegate tableView: self   willDisplayCell: cell 
+			 forTableColumn: tb   row: rowIndex];
+	    }
+	  [cell setObjectValue: [_dataSource tableView: self
+					     objectValueForTableColumn: tb
+					     row: rowIndex]]; 
+	  drawingRect = [self frameOfCellAtColumn: i
+			      row: rowIndex];
+	  [cell drawWithFrame: drawingRect inView: self];
 	}
-      [cell setObjectValue: [_dataSource tableView: self
-					 objectValueForTableColumn: tb
-					 row: rowIndex]]; 
-      drawingRect = [self frameOfCellAtColumn: i
-			  row: rowIndex];
-      [cell drawWithFrame: drawingRect inView: self];
     }
 }
+
 
 - (void) drawGridInClipRect: (NSRect)aRect
 {
@@ -1192,34 +1330,120 @@ byExtendingSelection: (BOOL) flag
  * Text delegate methods 
  */
 
-- (BOOL) textShouldBeginEditing: (NSText *)textObject
-{
-  // TODO
-  return NO;
-}
-
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  // TODO
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSMutableDictionary *d;
+
+  d = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidBeginEditingNotification
+      object: self
+      userInfo: d];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  // TODO
-}
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSMutableDictionary *d;
 
-- (BOOL) textShouldEndEditing: (NSText *)textObject
-{
-  // TODO
-  return YES;
+
+  // MacOS-X asks us to inform the cell if possible.
+  if ((_editedCell != nil) && [_editedCell respondsToSelector: 
+						 @selector(textDidChange:)])
+    [_editedCell textDidChange: aNotification];
+
+  d = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
+  [nc postNotificationName: NSControlTextDidChangeNotification
+      object: self
+      userInfo: d];
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  // TODO
-  return;
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSMutableDictionary *d;
+  id textMovement;
+
+  [self validateEditing];
+
+  d = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidEndEditingNotification
+      object: self
+      userInfo: d];
+
+  [_editedCell endEditing: [aNotification object]];
+  [self setNeedsDisplayInRect: 
+	  [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
+  _textObject = nil;
+  _editedCell = nil;
+  RELEASE (_editedCell);
+  _editedColumn = -1;
+  _editedRow = -1;
+
+  textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
+  if (textMovement)
+    {
+      switch ([(NSNumber *)textMovement intValue])
+	{
+	case NSReturnTextMovement:
+	  // Send action ?
+	  break;
+	case NSTabTextMovement:
+	  // TODO
+	  /*	  if([self _selectNextSelectableCellAfterRow: _editedRow
+		   column: _editedColumn])
+	    {
+	      break;
+	      }*/  
+	  [_window selectKeyViewFollowingView: self];
+	  break;
+	case NSBacktabTextMovement:
+	  // TODO
+	  /*
+	  if([self _selectPreviousSelectableCellBeforeRow: _editedRow
+		   column: _editedColumn])
+	    break;
+	  */
+	  [_window selectKeyViewPrecedingView: self];
+	  break;
+	}
+    }
 }
 
+- (BOOL) textShouldBeginEditing: (NSText *)textObject
+{
+  if (_delegate && [_delegate respondsToSelector:
+				@selector(control:textShouldBeginEditing:)])
+    return [_delegate control: self
+		      textShouldBeginEditing: textObject];
+  else
+    return YES;
+}
+
+- (BOOL) textShouldEndEditing: (NSText *)aTextObject
+{
+  if ([_delegate respondsToSelector:
+		   @selector(control:textShouldEndEditing:)])
+    {
+      if ([_delegate control: self
+		     textShouldEndEditing: aTextObject] == NO)
+	{
+	  NSBeep ();
+	  return NO;
+	}
+      
+      return YES;
+    }
+
+  return [_editedCell isEntryAcceptable: [aTextObject text]];
+}
 
 /* 
  * Persistence 
@@ -1274,6 +1498,8 @@ byExtendingSelection: (BOOL) flag
   /* Cache */
   sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
   _del_responds = [_delegate respondsToSelector: sel];     
+  sel = @selector(tableView:setObjectValue:forTableColumn:row:);
+  _del_editable = [_delegate respondsToSelector: sel];
 }
 
 - (id) delegate
