@@ -51,7 +51,6 @@
 @class NSFont;
 
 
-
 /*
  * Backing Store Types
  */
@@ -125,6 +124,7 @@ typedef enum _GSWindowInputState
   NSMutableArray	*focus_stack;
   NSMutableArray	*event_queue;
   NSMapTable		*drag_types;
+  NSMutableSet          *usedFonts;
 }
 
 + (NSGraphicsContext*) currentContext;
@@ -147,6 +147,7 @@ typedef enum _GSWindowInputState
 - (void) saveGraphicsState;
 - (void) wait;
 + (void) waitAllContexts;
+
 @end
 
 #ifndef	NO_GNUSTEP
@@ -175,6 +176,10 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (id <NSDraggingInfo>)_dragInfo;
 - (void) _postExternalEvent: (NSEvent*)event;
 
+/* Private methods for printing */
+- (void) useFont: (NSString *)fontName;
+- (void) resetUsedFonts;
+- (NSSet *) usedFonts;
 @end
 #endif
 

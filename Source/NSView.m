@@ -76,11 +76,6 @@ struct NSWindow_struct
   @defs(NSWindow)
 };
 
-@interface NSFont (NSViewFonts)
-+ (void) resetUsedFonts;
-+ (NSSet *) usedFonts;
-@end
-
 @implementation NSView
 
 /*
@@ -2900,7 +2895,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [self endSetup];
     }
 
-  [NSFont resetUsedFonts];
+  [ctxt resetUsedFonts];
   /* Make sure we set the visible rect so everything is printed. */
   [self _rebuildCoordinates];
   _visibleRect = _bounds;
@@ -2975,7 +2970,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	pages = ceil((float)pages / nup);
       DPSPrintf(ctxt, "%%%%Pages: %d\n", pages);
     }
-  fontNames = [NSFont usedFonts];
+  fontNames = [ctxt usedFonts];
   if (fontNames && [fontNames count])
     {
       NSString *name;

@@ -216,6 +216,7 @@ NSGraphicsContext	*GSCurrentContext()
 			initWithCapacity: 32];
   drag_types = NSCreateMapTable(NSIntMapKeyCallBacks,
                 NSObjectMapValueCallBacks, 0);
+  usedFonts = nil;
 
   /*
    * The classMethodTable dictionary and the list of all contexts must both
@@ -385,6 +386,28 @@ NSGraphicsContext	*GSCurrentContext()
 - (void) _postExternalEvent: (NSEvent *)event
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (void) useFont: (NSString*)name
+{
+  if ([self isDrawingToScreen] == YES)
+    return;
+
+  if (usedFonts == nil)
+    usedFonts = RETAIN([NSMutableSet setWithCapacity: 2]);
+
+  [usedFonts addObject: name];
+}
+
+- (void) resetUsedFonts
+{
+  if (usedFonts)
+    [usedFonts removeAllObjects];
+}
+
+- (NSSet *) usedFonts
+{
+  return usedFonts;
 }
 
 @end

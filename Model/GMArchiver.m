@@ -926,7 +926,7 @@ static NSMutableDictionary* classToAliasMappings = nil;
 {
   NSString* selectorName = [self decodeStringWithName: name];
 
-  return selectorName ? NSSelectorFromString (selectorName) : NULL;
+  return selectorName ? NSSelectorFromString (selectorName) : (SEL)0;
 }
 
 - (char) decodeCharWithName: (NSString*)name

@@ -1,3 +1,14 @@
+2001-11-19  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSGraphicsContext.h: Add usedFonts ivar.
+	New methods for caching used fonts.
+	* Source/NSGraphicsContect.m (-useFont): Moved from NSFont.
+	(-resetUsedFonts, -usedFonts): Likewise.
+	* Source/NSFont.m (+useFont:): Use them.
+	* Source/NSView.m (-endDocument): Likewise.
+	
+	* Model/GMArchiver.m (-decodeSelectorWithName:): Use correct 0 value.
+
 2001-11-18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Tools/gopen.m: added a tool which works like the OPENSTEP 4.2/Mach 
