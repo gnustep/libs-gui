@@ -2,6 +2,7 @@ Tue Nov 30 19:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Rewrote ([-encodeWithCoder:]) and
 	([-initWithCoder:]) so they actually work (more or less).
+	Fixed ([-setExcludedFromWindowsMenu:]) to update windows menu.
 
 Tue Nov 30 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -2248,7 +2248,20 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setExcludedFromWindowsMenu: (BOOL)flag
 {
-  _f.menu_exclude = flag;
+  if (_f.menu_exclude != flag)
+    {
+      _f.menu_exclude = flag;
+      if (_f.menu_exclude == NO)
+	{
+	  [NSApp addWindowsItem: self
+			  title: window_title
+		       filename: [window_title isEqual: represented_filename]];
+	}
+      else
+	{
+	  [NSApp removeWindowsItem: self];
+	}
+    }
 }
 
 - (id) validRequestorForSendType: (NSString *)sendType
