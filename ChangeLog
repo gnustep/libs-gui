@@ -1,3 +1,8 @@
+Tue Feb 29 16:34:49 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gsdoc/Introduction.gsdoc: New file - beginning of
+	a short overview/introduction of the GNUstep GUI API.
+
 Tue Feb 29 07:04:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSFontManager.m: fixes and tiyups - mostly from Fred Keifer.
