@@ -80,9 +80,6 @@ after-clean::
 after-distclean:: remove-header-links
 	rm -f config.status config.log config.cache TAGS config.mak gui.make
 
-configure: configure.in
-	autoreconf
-
 gui.make: gui.make.in configure
 	./configure
 
