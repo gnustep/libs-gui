@@ -1,3 +1,14 @@
+Sat Jun 22 14:34:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSView.m ([-_rebuildCoordinates]): Use -invert, not
+	-inverse, to invert a NSAffineTransform.
+
+Sat Jun 22 14:26:06 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSAffineTransform.h,
+	* Source/NSAffineTransform.m ([-scaleBy::]):
+	Method removed.  Better use the standard scaleXBy:yBy: instead.
+	
 2002-06-22  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-finishLaunching): Revert last change.
