@@ -312,8 +312,20 @@ static Class	colorClass;
 
   if (image)
     {
+      NSSize size;
+      NSPoint position;
+
       [image setBackgroundColor: backColor];
-      [self _drawImage: image inFrame: image_rect];
+      size = [image size];
+      position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([control_view isFlipped])
+	position.y += size.height;
+      [image compositeToPoint: position operation: NSCompositeCopy];
     }
 }
 

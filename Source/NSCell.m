@@ -176,11 +176,11 @@ static Class	cellClass;
   
   // Get border size
   if (cell_bordered)
-    borderSize = [callClass sizeForBorderType: NSLineBorder];
+    borderSize = [cellClass sizeForBorderType: NSLineBorder];
   else if (cell_bezeled)
-    borderSize = [callClass sizeForBorderType: NSBezelBorder];
+    borderSize = [cellClass sizeForBorderType: NSBezelBorder];
   else
-    borderSize = [callClass sizeForBorderType: NSNoBorder];
+    borderSize = [cellClass sizeForBorderType: NSNoBorder];
 
   // Get Content Size
   switch (cell_type)
@@ -220,11 +220,11 @@ static Class	cellClass;
 
   // Get border size
   if (cell_bordered)
-    borderSize = [callClass sizeForBorderType: NSLineBorder];
+    borderSize = [cellClass sizeForBorderType: NSLineBorder];
   else if (cell_bezeled)
-    borderSize = [callClass sizeForBorderType: NSBezelBorder];
+    borderSize = [cellClass sizeForBorderType: NSBezelBorder];
   else
-    borderSize = [callClass sizeForBorderType: NSNoBorder];
+    borderSize = [cellClass sizeForBorderType: NSNoBorder];
   
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
