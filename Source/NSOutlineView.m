@@ -1441,7 +1441,7 @@ static NSImage *unexpandable  = nil;
   NSLog(@"performDragOperation");
   if ([_dataSource 
 	respondsToSelector: 
-	  @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+	  @selector(outlineView:acceptDrop:proposedItem:proposedChildIndex:)])
     {
       id item;
       int childIndex;
@@ -1470,9 +1470,9 @@ static NSImage *unexpandable  = nil;
 
       return [_dataSource 
 	       outlineView: self
-		 validateDrop: sender
-		 proposedItem: item
-		 proposedChildIndex: childIndex];
+	       acceptDrop: sender
+	       proposedItem: item
+	       proposedChildIndex: childIndex];
     }
   else
     return NO;
