@@ -1,28 +1,28 @@
 2003-03-23 Serg Stoyan <stoyan@on.com.ua>
-  * Source/NSMenuView.m: Removed horizontal menu related code.
-  (setHorizontal:): Removed.
-  (isHorizontal:): Removed.
-  (_addLeftBorderOffsetToRect): Removed isHorizontal parameter.
-  (setMenu:): Place [self setNeedsSizing: YES] before [self update].
-  (update): Removed title view removal, because it's not always known 
-  owner of menu at this point. Remove title view creating.
-  (sizeToFit:): Reformatting.
-  (innerRect:): Idem.
-  (setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
-  Title view removal code placed here, because this is only place where
-  non-titled menu can appear.
-  (initWithFrame:): Removed comment about _leftBorderOffset for popups,
-  because we use _leftBorderOffset for regular and popups now. Title view
-  creating added.
-  (rectOfItemAtIndex:): Removed comment about _leftBorderOffset for popups.
-  (indexOfItemAtPoint:): Idem. Add left border offset for popups too. Correct
-  calling of _addLeftBorderOffsetToRect.
-  (setNeedsDisplayForItemAtIndex:): Idem.
-  (rightMouseDown:): Ddded comment.
+	* Source/NSMenuView.m: Removed horizontal menu related code.
+	(setHorizontal:): Removed.
+	(isHorizontal:): Removed.
+	(_addLeftBorderOffsetToRect): Removed isHorizontal parameter.
+	(setMenu:): Place [self setNeedsSizing: YES] before [self update].
+	(update): Removed title view removal, because it's not always known 
+	owner of menu at this point. Remove title view creating.
+	(sizeToFit:): Reformatting.
+	(innerRect:): Idem.
+	(setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
+	Title view removal code placed here, because this is only place where
+	non-titled menu can appear.
+	(initWithFrame:): Removed comment about _leftBorderOffset for popups,
+	because we use _leftBorderOffset for regular and popups now. Title view
+	creating added.
+	(rectOfItemAtIndex:): Removed comment about _leftBorderOffset for popups.
+	(indexOfItemAtPoint:): Idem. Add left border offset for popups too. Correct
+	calling of _addLeftBorderOffsetToRect.
+	(setNeedsDisplayForItemAtIndex:): Idem.
+	(rightMouseDown:): Ddded comment.
 
-  * Headers/NSMenuView.h
-  (setHorizontal:): Removed.
-  (isHorizontal:): Removed.
+	* Headers/NSMenuView.h
+	(setHorizontal:): Removed.
+	(isHorizontal:): Removed.
 
 2003-03-22  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
