@@ -185,7 +185,7 @@
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv = [self controlView];
+  NSView	*cv = [NSView focusView];
 
   [self highlight: YES withFrame: [cv frame] inView: cv];
   if (action)
