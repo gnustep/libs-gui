@@ -211,27 +211,16 @@ NSApplication	*NSApp = nil;
    *	Now check to see if we were launched with arguments asking to
    *	open a file.  We permit some variations on the default name.
    */
-  filePath = [defs stringForKey: @"-GSFilePath"];
-  if (filePath == nil)
-    filePath = [defs stringForKey: @"--GSFilePath"];
-  if (filePath == nil)
-    filePath = [defs stringForKey: @"GSFilePath"];
-  if (filePath != nil)
+  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil)
     {
       if ([delegate respondsToSelector: @selector(application:openFile:)])
 	{
 	  [delegate application: self openFile: filePath];
 	}
     }
-  else
+  else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
-      filePath = [defs stringForKey: @"-GSTempPath"];
-      if (filePath == nil)
-	filePath = [defs stringForKey: @"--GSTempPath"];
-      if (filePath == nil)
-	filePath = [defs stringForKey: @"GSTempPath"];
-      if (filePath != nil
-        && [delegate respondsToSelector: @selector(application:openTempFile:)])
+      if ([delegate respondsToSelector: @selector(application:openTempFile:)])
 	{
 	  [delegate application: self openTempFile: filePath];
 	}
@@ -1114,8 +1103,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
   ASSIGN(main_menu, aMenu);
 
-  [main_menu setTitle:
-    [[[NSProcessInfo processInfo] processName] lastPathComponent]];
+  [main_menu setTitle: [[NSProcessInfo processInfo] processName]];
   [main_menu sizeToFit];
   /*
    * Find a menucell with the title Windows this is the default windows menu

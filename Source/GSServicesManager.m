@@ -192,7 +192,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
   if (servicesProvider != anObject)
     {
-      appName = [[[NSProcessInfo processInfo] processName] lastPathComponent];
+      appName = [[NSProcessInfo processInfo] processName];
       NSRegisterServicesProvider(anObject, appName);
     }
 }
@@ -391,7 +391,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   NSString          *appName;
 
-  appName = [[[NSProcessInfo processInfo] processName] lastPathComponent];
+  appName = [[NSProcessInfo processInfo] processName];
   [timer invalidate];
   NSUnregisterServicesProvider(appName);
   [languages release];
@@ -825,7 +825,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSString      *appName;
   BOOL          registered;
 
-  appName = [[[NSProcessInfo processInfo] processName] lastPathComponent];
+  appName = [[NSProcessInfo processInfo] processName];
   NS_DURING
     {
       NSRegisterServicesProvider(self, appName);
