@@ -64,7 +64,7 @@
 @end
 
 
-@interface NSMenuItem : NSButtonCell //<NSMenuItem>
+@interface NSMenuItem : NSButtonCell <NSMenuItem>
 {
   id representedObject;
   BOOL hasSubmenu;
