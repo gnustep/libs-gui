@@ -29,12 +29,10 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <gnustep/gui/config.h>
-#include <math.h>
-
 #include <Foundation/NSException.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSCell.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSRulerView.h>
@@ -49,6 +47,7 @@
  * Class variables
  */
 static Class rulerViewClass = nil;
+static float scrollerWidth;
 
 /*
  * Class methods
@@ -58,6 +57,8 @@ static Class rulerViewClass = nil;
   if (self == [NSScrollView class])
     {
       NSDebugLog(@"Initialize NSScrollView class\n");
+      [self setRulerViewClass: [NSRulerView class]];
+      scrollerWidth = [NSScroller scrollerWidth];
       [self setVersion: 1];
     }
 }
@@ -78,6 +79,7 @@ static Class rulerViewClass = nil;
 			borderType: (NSBorderType)borderType
 {
   NSSize size = frameSize;
+  NSSize border = _sizeForBorderType(borderType);
 
   /*
    * Substract 1 from the width and height of
@@ -86,31 +88,15 @@ static Class rulerViewClass = nil;
    */
   if (hFlag)
     {
-      size.height -= [NSScroller scrollerWidth];
-      size.height -= 1;
+      size.height -= scrollerWidth + 1;
     }
   if (vFlag)
     {
-      size.width -= [NSScroller scrollerWidth];
-      size.width -= 1;
+      size.width -= scrollerWidth + 1;
     }
 
-  switch (borderType)
-    {
-      case NSNoBorder:
-	break;
-
-      case NSLineBorder:
-	size.width -= 2;
-	size.height -= 2;
-	break;
-
-      case NSBezelBorder:
-      case NSGrooveBorder:
-	size.width -= 4;
-	size.height -= 4;
-	break;
-    }
+  size.width -= 2*border.width;
+  size.height -= 2*border.height;
 
   return size;
 }
@@ -121,6 +107,7 @@ static Class rulerViewClass = nil;
 			borderType: (NSBorderType)borderType
 {
   NSSize size = contentSize;
+  NSSize border = _sizeForBorderType(borderType);
 
   /*
    * Add 1 to the width and height for the line that separates the
@@ -128,31 +115,15 @@ static Class rulerViewClass = nil;
    */
   if (hFlag)
     {
-      size.height += [NSScroller scrollerWidth];
-      size.height += 1;
+      size.height += scrollerWidth + 1;
     }
   if (vFlag)
     {
-      size.width += [NSScroller scrollerWidth];
-      size.width += 1;
+      size.width += scrollerWidth + 1;
     }
 
-  switch (borderType)
-    {
-      case NSNoBorder:
-	break;
-
-      case NSLineBorder:
-	size.width += 2;
-	size.height += 2;
-	break;
-
-      case NSBezelBorder:
-      case NSGrooveBorder:
-	size.width += 4;
-	size.height += 4;
-	break;
-    }
+  size.width += 2*border.width;
+  size.height += 2*border.height;
 
   return size;
 }
@@ -162,8 +133,11 @@ static Class rulerViewClass = nil;
  */
 - (id) initWithFrame: (NSRect)rect
 {
-  [super initWithFrame: rect];
-  [self setContentView: AUTORELEASE([NSClipView new])];
+  NSClipView *clipView = [NSClipView new];
+
+  self = [super initWithFrame: rect];
+  [self setContentView: clipView];
+  RELEASE(clipView);
   _hLineScroll = 10;
   _hPageScroll = 10;
   _vLineScroll = 10;
@@ -182,8 +156,6 @@ static Class rulerViewClass = nil;
 
 - (void) dealloc
 {
-  TEST_RELEASE(_contentView);
-
   TEST_RELEASE(_horizScroller);
   TEST_RELEASE(_vertScroller);
   TEST_RELEASE(_horizRuler);
@@ -205,11 +177,11 @@ static Class rulerViewClass = nil;
   if ([aView isKindOfClass: [NSView class]] == NO)
     [NSException raise: NSInvalidArgumentException
 		format: @"Attempt to set non-view object as content view"];
+
   if (aView != _contentView)
     {
       NSView *docView = [aView documentView];
 
-      RETAIN(aView);
       [_contentView removeFromSuperview];
       _contentView = aView;
       [self addSubview: _contentView];
@@ -227,7 +199,6 @@ static Class rulerViewClass = nil;
     {
       _contentView = nil;
       [super removeSubview: aView];
-      RELEASE(aView);
       [self tile];
     }
   else
@@ -263,7 +234,12 @@ static Class rulerViewClass = nil;
   if (_hasHorizScroller)
     {
       if (!_horizScroller)
-	[self setHorizontalScroller: AUTORELEASE([NSScroller new])];
+        {
+	  NSScroller *scroller = [NSScroller new];
+
+	  [self setHorizontalScroller: scroller];
+	  RELEASE(scroller);
+	}
       [self addSubview: _horizScroller];
     }
   else
@@ -300,7 +276,10 @@ static Class rulerViewClass = nil;
     {
       if (!_vertScroller)
 	{
-	  [self setVerticalScroller: AUTORELEASE([NSScroller new])];
+	  NSScroller *scroller = [NSScroller new];
+
+	  [self setVerticalScroller: scroller];
+	  RELEASE(scroller);
 	  if (_contentView && !_contentView->_rFlags.flipped_view)
 	    [_vertScroller setFloatValue: 1];
 	}
@@ -310,6 +289,11 @@ static Class rulerViewClass = nil;
     [_vertScroller removeFromSuperview];
 
   [self tile];
+}
+
+- (void) scrollWheel: (NSEvent *)theEvent
+{
+  // FIXME
 }
 
 - (void) _doScroll: (NSScroller*)scroller
@@ -502,36 +486,77 @@ static Class rulerViewClass = nil;
   
 }
 
-- (void) setHorizontalRulerView: (NSRulerView*)aRulerView	// FIX ME
+- (void) setHorizontalRulerView: (NSRulerView*)aRulerView
 {
   ASSIGN(_horizRuler, aRulerView);
 }
 
-- (void) setHasHorizontalRuler: (BOOL)flag			// FIX ME
+- (void) setHasHorizontalRuler: (BOOL)flag
 {
   if (_hasHorizRuler == flag)
     return;
 
   _hasHorizRuler = flag;
+  if (_hasHorizRuler)
+    {
+      if (!_horizRuler)
+	{
+	  NSRulerView *rulerView = [rulerViewClass new];
+
+	  [self setHorizontalRulerView: rulerView];
+	  RELEASE(rulerView);
+	}
+    }
+  else
+    [_horizRuler removeFromSuperview];
 }
 
-- (void) setVerticalRulerView: (NSRulerView*)ruler		// FIX ME
+- (void) setVerticalRulerView: (NSRulerView*)ruler
 {
   ASSIGN(_vertRuler, ruler);
 }
 
-- (void) setHasVerticalRuler: (BOOL)flag			// FIX ME
+- (void) setHasVerticalRuler: (BOOL)flag
 {
   if (_hasVertRuler == flag)
     return;
 
   _hasVertRuler = flag;
+  if (_hasVertRuler)
+    {
+      if (!_vertRuler)
+	{
+	  NSRulerView *rulerView = [rulerViewClass new];
+
+	  [self setVerticalRulerView: rulerView];
+	  RELEASE(rulerView);
+	}
+    }
+  else
+    [_vertRuler removeFromSuperview];
 }
 
 - (void) setRulersVisible: (BOOL)flag
 {
-  // FIX ME
+  if (_rulersVisible == flag)
+    return;
+
   _rulersVisible = flag;
+  if (flag)
+    {
+      if (_hasVertRuler)
+	[self addSubview: _vertRuler];
+      if (_hasHorizRuler)
+	[self addSubview: _horizRuler];
+    }
+  else 
+    {
+      if (_hasVertRuler)
+	[_vertRuler removeFromSuperview];
+      if (_hasHorizRuler)
+	[_horizRuler removeFromSuperview];
+    }
+  [self tile];
 }
 
 - (void) setFrame: (NSRect)rect
@@ -549,11 +574,8 @@ static Class rulerViewClass = nil;
 - (void) tile
 {
   NSSize contentSize;
-  float scrollerWidth = [NSScroller scrollerWidth];
   NSRect contentRect;
-  NSRect vertScrollerRect = NSZeroRect;
-  NSRect horizScrollerRect = NSZeroRect;
-  float borderThickness = 0;
+  NSSize border = _sizeForBorderType(_borderType);
   /* NSTableView related vars */
   float headerViewHeight = 0;
   NSView *cornerView = nil;
@@ -577,24 +599,8 @@ static Class rulerViewClass = nil;
 		     hasVerticalScroller: _hasVertScroller
 		     borderType: _borderType];
   contentRect = NSMakeRect (0, 0, contentSize.width, contentSize.height);
-
-  switch (_borderType)
-    {
-      case NSNoBorder:
-	break;
-
-      case NSLineBorder:
-	borderThickness = 1;
-	break;
-
-      case NSBezelBorder:
-      case NSGrooveBorder:
-	borderThickness = 2;
-	break;
-    }
-
-  contentRect.origin.x = borderThickness;
-  contentRect.origin.y = borderThickness;
+  contentRect.origin.x = border.width;
+  contentRect.origin.y = border.height;
 
   if (_rFlags.flipped_view)
     {
@@ -603,11 +609,13 @@ static Class rulerViewClass = nil;
 
   if (_hasVertScroller)
     {
-      vertScrollerRect.origin.x = _bounds.origin.x + borderThickness;
-      vertScrollerRect.origin.y = _bounds.origin.y + borderThickness;
+      NSRect vertScrollerRect = NSZeroRect;
+
+      vertScrollerRect.origin.x = _bounds.origin.x + border.width;
+      vertScrollerRect.origin.y = _bounds.origin.y + border.height;
       vertScrollerRect.size.width = scrollerWidth;
       vertScrollerRect.size.height = fakeBoundsSize.height 
-	- 2 * borderThickness;
+	- 2 * border.height;
 
       contentRect.origin.x += scrollerWidth + 1;
 
@@ -615,12 +623,15 @@ static Class rulerViewClass = nil;
 	{
 	  vertScrollerRect.origin.y += headerViewHeight;
 	}
+      [_vertScroller setFrame: vertScrollerRect];
     }
 
   if (_hasHorizScroller)
     {
+      NSRect horizScrollerRect = NSZeroRect;
+
       horizScrollerRect.origin.x = contentRect.origin.x;
-      horizScrollerRect.origin.y = _bounds.origin.y + borderThickness;
+      horizScrollerRect.origin.y = _bounds.origin.y + border.height;
       horizScrollerRect.size.width = contentRect.size.width;
       horizScrollerRect.size.height = scrollerWidth;
 
@@ -633,6 +644,7 @@ static Class rulerViewClass = nil;
 	{
 	  contentRect.origin.y += scrollerWidth + 1;
 	}
+      [_horizScroller setFrame: horizScrollerRect];
     }
 
   if (_hasHeaderView)
@@ -642,12 +654,12 @@ static Class rulerViewClass = nil;
       rect.origin.x = contentRect.origin.x;
       if (_rFlags.flipped_view)
 	{
-	  rect.origin.y = _bounds.origin.y + borderThickness;
+	  rect.origin.y = _bounds.origin.y + border.height;
 	}
       else
 	{
 	  rect.origin.y = NSMaxY (_bounds);
-	  rect.origin.y -= headerViewHeight + borderThickness;
+	  rect.origin.y -= headerViewHeight + border.height;
 	}
       rect.size.width = contentRect.size.width;
       rect.size.height = headerViewHeight;
@@ -658,29 +670,27 @@ static Class rulerViewClass = nil;
     {
       NSPoint origin;
 
-      origin.x = _bounds.origin.x + borderThickness;
+      origin.x = _bounds.origin.x + border.width;
       if (_rFlags.flipped_view)
 	{
-	  origin.y = _bounds.origin.y + borderThickness;
+	  origin.y = _bounds.origin.y + border.height;
 	}
       else
 	{
-	  origin.y = NSMaxY (_bounds) - headerViewHeight - borderThickness;
+	  origin.y = NSMaxY (_bounds) - headerViewHeight - border.height;
 	}
       [cornerView setFrameOrigin: origin];
     }
 
-  [_horizScroller setFrame: horizScrollerRect];
-  [_vertScroller setFrame: vertScrollerRect];
+  // FIXME: The Rulers should be positioned too
   [_contentView setFrame: contentRect];
 }
 
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
-  float scrollerWidth = [NSScroller scrollerWidth];
   float horizLinePosition, horizLineLength = _bounds.size.width;
-  float borderThickness = 0;
+  NSSize border = _sizeForBorderType(_borderType);
   float headerViewHeight = 0;
 
   if (_hasHeaderView == YES)
@@ -701,53 +711,50 @@ static Class rulerViewClass = nil;
 	break;
 
       case NSLineBorder:
-	borderThickness = 1;
 	[[NSColor controlDarkShadowColor] set];
 	NSFrameRect(_bounds);
 	break;
 
       case NSBezelBorder:
-	borderThickness = 2;
 	NSDrawGrayBezel(_bounds, rect);
 	break;
 
       case NSGrooveBorder:
-	borderThickness = 2;
 	NSDrawGroove(_bounds, rect);
 	break;
     }
 
-  horizLinePosition = borderThickness;
+  horizLinePosition = border.width;
 
   DPSsetlinewidth(ctxt, 1);
   DPSsetgray(ctxt, 0);
   if (_hasVertScroller)
     {
-      horizLinePosition = scrollerWidth + borderThickness;
-      horizLineLength -= scrollerWidth + 2 * borderThickness;
-      DPSmoveto(ctxt, horizLinePosition, borderThickness);
+      horizLinePosition = scrollerWidth + border.width;
+      horizLineLength -= scrollerWidth + 2 * border.width;
+      DPSmoveto(ctxt, horizLinePosition, border.height);
       if (_rFlags.flipped_view)
 	{
 	  DPSrmoveto(ctxt, 0, headerViewHeight);
 	}
       DPSrlineto(ctxt, 0, _bounds.size.height - headerViewHeight 
-		 - 2 * borderThickness - 1);
+		 - 2 * border.height - 1);
       DPSstroke(ctxt);
       if ((_hasHeaderView == YES) && (_hasCornerView == NO)) 
 	{
-	  float yStart = borderThickness + headerViewHeight - 1;
+	  float yStart = border.height + headerViewHeight - 1;
 
 	  if (_rFlags.flipped_view == NO)
 	    yStart = _bounds.size.height - yStart;
 	  DPSmoveto(ctxt, horizLinePosition, yStart); 
-	  DPSlineto(ctxt, borderThickness, yStart);
+	  DPSlineto(ctxt, border.width, yStart);
 	  DPSstroke(ctxt);
 	}
     }
 
   if (_hasHorizScroller)
     {
-      float	ypos = scrollerWidth + borderThickness + 1;
+      float ypos = scrollerWidth + border.height + 1;
 
       if (_rFlags.flipped_view)
 	ypos = _bounds.size.height - ypos;
