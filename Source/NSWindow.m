@@ -47,6 +47,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWindowController.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSButtonCell.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
@@ -54,7 +55,6 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/GSTrackingRect.h>
-#include <AppKit/NSSliderCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSCursor.h>
