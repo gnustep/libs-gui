@@ -1,7 +1,7 @@
 /*
    NSWorkspace.m
 
-   Description...
+   Workspace class
 
    Copyright (C) 1996-1999, 2001 Free Software Foundation, Inc.
 
@@ -47,10 +47,10 @@
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
-#include <AppKit/NSPanel.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSScreen.h>
 #include <AppKit/GSServicesManager.h>
-
-#define stringify_it(X) #X
 
 #define PosixExecutePermission	(0111)
 
@@ -148,6 +148,29 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 
 
+@interface NSWorkspace (Private)
+
+// Icon handling
+- (NSImage*) _extIconForApp: (NSString *)appName info: (NSDictionary *)extInfo;
+- (NSImage*) _getImageWithName: (NSString *)name
+		     alternate: (NSString *)alternate;
+- (NSImage *) folderImage;
+- (NSImage *) unknownFiletypeImage;
+- (NSImage *) rootImage;
+- (NSImage*) _iconForExtension: (NSString*)ext;
+- (BOOL) _extension: (NSString*)ext
+               role: (NSString*)role
+	        app: (NSString**)app
+	    andInfo: (NSDictionary**)inf;
+
+// application communication
+- (BOOL) _launchApplication: (NSString *)appName
+		  arguments: (NSArray *)args;
+- (id) _connectApplication: (NSString *)appName;
+- (id) _workspaceApplication;
+
+@end
+
 @implementation	NSWorkspace
 
 static NSWorkspace		*sharedWorkspace = nil;
@@ -157,7 +180,7 @@ static NSDictionary		*applications = nil;
 
 static NSString			*extPrefPath = nil;
 static NSDictionary		*extPreferences = nil;
-
+// FIXME: Won't work for MINGW
 static NSString			*_rootPath = @"/";
 
 /*
@@ -167,9 +190,9 @@ static NSString			*_rootPath = @"/";
 {
   if (self == [NSWorkspace class])
     {
-      static BOOL	beenHere;
+      static BOOL	beenHere = NO;
       NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSString		*home;
+      NSString		*service;
       NSData		*data;
       NSDictionary	*dict;
 
@@ -183,14 +206,14 @@ static NSString			*_rootPath = @"/";
 	}
 
       beenHere = YES;
-
-      home = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
-               NSUserDomainMask, YES) objectAtIndex: 0];
+      service = [[NSSearchPathForDirectoriesInDomains(
+	  NSUserDirectory, NSUserDomainMask, YES) objectAtIndex: 0]
+		    stringByAppendingPathComponent: @"Services"];
 
       /*
        *	Load file extension preferences.
        */
-      extPrefPath = [[home stringByAppendingPathComponent: @"Services"] 
+      extPrefPath = [service
 			stringByAppendingPathComponent: @".GNUstepExtPrefs"];
       RETAIN(extPrefPath);
       if ([mgr isReadableFileAtPath: extPrefPath] == YES)
@@ -207,7 +230,7 @@ static NSString			*_rootPath = @"/";
       /*
        *	Load cached application information.
        */
-      appListPath = [[home stringByAppendingPathComponent: @"Services"] 
+      appListPath = [service
 			stringByAppendingPathComponent: @".GNUstepAppList"];
       RETAIN(appListPath);
       if ([mgr isReadableFileAtPath: appListPath] == YES)
@@ -281,296 +304,6 @@ static NSString			*_rootPath = @"/";
   return self;
 }
 
-static NSImage*
-extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
-{
-  NSString	*file = [typeInfo objectForKey: @"NSIcon"];
-
-  if (file)
-    {
-      if ([file isAbsolutePath] == NO)
-	{
-	  NSString *iconPath;
-	  NSBundle *bundle;
-
-	  bundle = [ws bundleForApp: appName];
-	  iconPath = [bundle pathForImageResource: file];
-	  /*
-	   * If the icon is not in the Resources of the app, try looking
-	   * directly in the app wrapper.
-	   */
-	  if (iconPath == nil)
-	    {
-	      iconPath = [[bundle bundlePath] stringByAppendingPathComponent: file];
-	    }
-	  file = iconPath;
-	}
-      if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
-	{
-	  return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: file]);
-	}
-    }
-  return nil;
-}
-
-- (NSImage*) _getImageWithName: (NSString *)name
-		     alternate: (NSString *)alternate
-{
-  NSImage	*image = nil;
-
-  image = [NSImage imageNamed: name];
-  if (image == nil)
-    image = [NSImage imageNamed: alternate];
-  return image;
-}
-
-/** Returns the default icon to display for a directory */
-- (NSImage *) folderImage
-{
-  static NSImage *image = nil;
-
-  if (image == nil)
-    {
-      image = RETAIN([self _getImageWithName: @"Folder.tiff"
-				   alternate: @"common_Folder.tiff"]);
-    }
-
-  return image;
-}
-
-/** Returns the default icon to display for a directory */
-- (NSImage *) unknownFiletypeImage
-{
-  static NSImage *image = nil;
-
-  if (image == nil)
-    {
-      image = RETAIN([self _getImageWithName: @"Unknown.tiff"
-				   alternate: @"common_Unknown.tiff"]);
-    }
-
-  return image;
-}
-
-/** Returns the default icon to display for a directory */
-- (NSImage *)rootImage
-{
-  static NSImage *image = nil;
-
-  if (image == nil)
-    {
-      image = RETAIN([self _getImageWithName: @"Root_PC.tiff"
-				   alternate: @"common_Root_PC.tiff"]);
-    }
-
-  return image;
-}
-
-- (NSImage*) _iconForExtension: (NSString*)ext
-{
-  NSImage	*icon = nil;
-
-  if (ext == nil || [ext isEqualToString: @""])
-    return nil;
-  /*
-   * extensions are case-insensitive - convert to lowercase.
-   */
-  ext = [ext lowercaseString];
-  if ((icon = [_iconMap objectForKey: ext]) == nil)
-    {
-      NSDictionary	*prefs;
-      NSDictionary	*extInfo;
-      NSString		*iconPath;
-
-      /*
-       * If there is a user-specified preference for an image -
-       * try to use that one.
-       */
-      prefs = [extPreferences objectForKey: ext];
-      iconPath = [prefs objectForKey: @"Icon"];
-      if (iconPath)
-	{
-	  icon = [[NSImage alloc] initWithContentsOfFile: iconPath];
-	  AUTORELEASE(icon);
-	}
-
-      if (icon == nil && (extInfo = [self infoForExtension: ext]) != nil)
-	{
-	  NSDictionary	*typeInfo;
-	  NSString	*appName;
-
-	  /*
-	   * If there are any application preferences given, try to use the
-	   * icon for this file that is used by the preferred app.
-	   */
-	  if (prefs)
-	    {
-	      if ((appName = [extInfo objectForKey: @"Editor"]) != nil)
-		{
-		  typeInfo = [extInfo objectForKey: appName];
-		  icon = extIconForApp(self, appName, typeInfo);
-		}
-	      if (icon == nil
-		&& (appName = [extInfo objectForKey: @"Viewer"]) != nil)
-		{
-		  typeInfo = [extInfo objectForKey: appName];
-		  icon = extIconForApp(self, appName, typeInfo);
-		}
-	    }
-
-	  if (icon == nil)
-	    {
-	      NSEnumerator	*enumerator;
-
-	      /*
-	       * Still no icon - try all the apps that handle this file
-	       * extension.
-	       */
-	      enumerator = [extInfo keyEnumerator];
-	      while (icon == nil && (appName = [enumerator nextObject]) != nil)
-		{
-		  typeInfo = [extInfo objectForKey: appName];
-		  icon = extIconForApp(self, appName, typeInfo);
-		}
-	    }
-	}
-
-      /*
-       * Nothing found at all - use the unknowntype icon.
-       */
-      if (icon == nil)
-	{
-	  icon = [self unknownFiletypeImage];
-	}
-
-      /*
-       * Set the icon in the cache for next time.
-       */
-      if (icon != nil)
-	[_iconMap setObject: icon forKey: ext];
-    }
-  return icon;
-}
-
-- (BOOL) _extension: (NSString*)ext
-               role: (NSString*)role
-	        app: (NSString**)app
-	    andInfo: (NSDictionary**)inf
-{
-  NSEnumerator	*enumerator;
-  NSString      *appName = nil;
-  NSDictionary	*apps;
-  NSDictionary	*prefs;
-  NSDictionary	*info;
-
-  ext = [ext lowercaseString];
-  apps = [self infoForExtension: ext];
-  if (apps == nil || [apps count] == 0)
-    return NO;
-
-  /*
-   *	Look for the name of the preferred app in this role.
-   *	A 'nil' roll is a wildcard - find the preferred Editor or Viewer.
-   */
-  prefs = [extPreferences objectForKey: ext];
-
-  if (role == nil || [role isEqualToString: @"Editor"])
-    {
-      appName = [prefs objectForKey: @"Editor"];
-      if (appName != nil)
-	{
-	  info = [apps objectForKey: appName];
-	  if (info != nil)
-	    {
-	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
-	      return YES;
-	    }
-	}
-    }
-  if (role == nil || [role isEqualToString: @"Viewer"])
-    {
-      appName = [prefs objectForKey: @"Viewer"];
-      if (appName != nil)
-	{
-	  info = [apps objectForKey: appName];
-	  if (info != nil)
-	    {
-	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
-	      return YES;
-	    }
-	}
-    }
-
-  /*
-   * Go through the dictionary of apps that know about this file type and
-   * determine the best application to open the file by examining the
-   * type information for each app.
-   * The 'NSRole' field specifies what the app can do with the file - if it
-   * is missing, we assume an 'Editor' role.
-   */
-  enumerator = [apps keyEnumerator];
-
-  if (role == nil)
-    {
-      BOOL	found = NO;
-
-      /*
-       * If the requested role is 'nil', we can accept an app that is either
-       * an Editor (preferred) or a Viewer.
-       */
-      while ((appName = [enumerator nextObject]) != nil)
-	{
-	  NSString	*str;
-
-	  info = [apps objectForKey: appName];
-	  str = [info objectForKey: @"NSRole"];
-	  if (str == nil || [str isEqualToString: @"Editor"])
-	    {
-	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
-	      return YES;
-	    }
-	  else if ([str isEqualToString: @"Viewer"])
-	    {
-	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
-	      found = YES;
-	    }
-	}
-      return found;
-    }
-  else
-    {
-      while ((appName = [enumerator nextObject]) != nil)
-	{
-	  NSString	*str;
-
-	  info = [apps objectForKey: appName];
-	  str = [info objectForKey: @"NSRole"];
-	  if ((str == nil && [role isEqualToString: @"Editor"])
-	    || [str isEqualToString: role])
-	    {
-	      if (app != 0)
-		*app = appName;
-	      if (inf != 0)
-		*inf = info;
-	      return YES;
-	    }
-	}
-      return NO;
-    }
-}
-
 /*
  * Opening Files
  */
@@ -584,7 +317,14 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	       at: (NSPoint)point
 	   inView: (NSView *)aView
 {
-  /* FIXME - should do animation here */
+  NSWindow *win = [aView window];
+  NSPoint screenLoc = [win convertBaseToScreen:
+			[aView convertPoint: point toView: nil]];
+  NSSize screenSize = [[win screen] frame].size;
+  NSPoint screenCenter = NSMakePoint(screenSize.width / 2, 
+				     screenSize.height / 2);
+
+  [self slideImage: anImage from: screenLoc to: screenCenter];
   return [self openFile: fullPath];
 }
 
@@ -594,39 +334,11 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   return [self openFile: fullPath withApplication: appName andDeactivate: YES];
 }
 
-- (BOOL) _launchApplication: (NSString *)appName
-		  arguments: (NSArray *)args
-{
-  NSString	*path;
-  NSDictionary  *userinfo;
-
-  path = [self locateApplicationBinary: appName];
-  if (path == nil)
-    return NO;
-
-  // App being launched, send NSWorkspaceWillLaunchApplicationNotification
-  userinfo = [NSDictionary dictionaryWithObject:
-    [[appName lastPathComponent] stringByDeletingPathExtension]
-    forKey: @"NSApplicationName"];
-  [_workspaceCenter
-    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-    object: self
-    userInfo: userinfo];
-
-  if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
-    return NO;
-
-  // The NSWorkspaceDidLaunchApplicationNotification will be send by the
-  // started application itself.
-  return YES;
-}
-
 - (BOOL) openFile: (NSString *)fullPath
   withApplication: (NSString *)appName
     andDeactivate: (BOOL)flag
 {
-  NSString      *port;
-  id            app = nil;
+  id app;
 
   if (appName == nil)
     {
@@ -634,29 +346,12 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   
       if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
         {
-	  NSRunAlertPanel(nil,
-		[NSString stringWithFormat: 
-			      @"No known applications for file extension '%@'", ext],
-			  @"Continue", nil, nil);
+	  NSWarnLog(@"No known applications for file extension '%@'", ext);
 	  return NO;
 	}
     }
 
-  port = [appName stringByDeletingPathExtension];
-  /*
-   *	Try to contact a running application.
-   */
-  NS_DURING
-    {
-      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-                                                              host: @""];
-    }
-  NS_HANDLER
-    {
-      app = nil;		/* Fatal error in DO	*/
-    }
-  NS_ENDHANDLER
-
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
       NSArray *args;
@@ -675,26 +370,55 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	}
       NS_HANDLER
 	{
-	  NSRunAlertPanel(nil,
-	    [NSString stringWithFormat: 
-		@"Failed to contact '%@' to open file", port],
-		@"Continue", nil, nil);
+	  NSWarnLog(@"Failed to contact '%@' to open file", appName);
 	  return NO;
 	}
       NS_ENDHANDLER
     }
 
   if (flag)
-    [[NSApplication sharedApplication] deactivate];
+    [NSApp deactivate];
 
   return YES;
 }
 
 - (BOOL) openTempFile: (NSString *)fullPath
 {
-  // FIXME: Should make sure that the target app knows this is a temp file
-  // by using GSTempPath.
-  return [self openFile: fullPath];
+  id app;
+  NSString *appName;
+  NSString *ext = [fullPath pathExtension];
+  
+  if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
+    {
+      NSWarnLog(@"No known applications for file extension '%@'", ext);
+      return NO;
+    }
+
+  app = [self _connectApplication: appName];
+  if (app == nil)
+    {
+      NSArray *args;
+
+      args = [NSArray arrayWithObjects: @"-GSTempPath", fullPath, nil];
+      return [self _launchApplication: appName arguments: args];
+    }
+  else
+    {
+      NS_DURING
+	{
+	  [app application: NSApp openTempFile: fullPath];
+	}
+      NS_HANDLER
+	{
+	  NSWarnLog(@"Failed to contact '%@' to open temp file", appName);
+	  return NO;
+	}
+      NS_ENDHANDLER
+    }
+
+  [NSApp deactivate];
+
+  return YES;
 }
 
 - (BOOL)openURL:(NSURL *)url
@@ -714,15 +438,30 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 		        files: (NSArray *)files
 			  tag: (int *)tag
 {
-  // FIXME
-  return NO;
+  id app = [self _workspaceApplication];
+
+  if (app == nil)
+    return NO;
+  else
+    // Send the request on to the Workspace application
+    return [app performFileOperation: operation
+		       source: source
+		  destination: destination
+		        files: files
+			  tag: tag];
 }
 
 - (BOOL) selectFile: (NSString *)fullPath
 inFileViewerRootedAtPath: (NSString *)rootFullpath
 {
-  // FIXME
-  return NO;
+  id app = [self _workspaceApplication];
+
+  if (app == nil)
+    return NO;
+  else
+    // Send the request on to the Workspace application
+    return [app selectFile: fullPath
+		inFileViewerRootedAtPath: rootFullpath];
 }
 
 /*
@@ -1007,8 +746,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    */
   if (path == nil)
     {
-      path = [[NSString alloc] initWithFormat: @"%s/Tools/make_services",
-			       stringify_it(GNUSTEP_INSTALL_PREFIX)];
+      path = RETAIN([[NSSearchPathForDirectoriesInDomains(
+	  GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
+		 stringByAppendingPathComponent: @"make_services"]);
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
@@ -1061,27 +801,12 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
 {
-  NSString      *port;
-  id            app = nil;
+  id app;
 
-  port = [appName stringByDeletingPathExtension];
-  /*
-   *	Try to contact a running application.
-   */
-  NS_DURING
-    {
-      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-                                                              host: @""];
-    }
-  NS_HANDLER
-    {
-      app = nil;		/* Fatal error in DO	*/
-    }
-  NS_ENDHANDLER
-
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
-	return [self _launchApplication: appName arguments: nil];
+      return [self _launchApplication: appName arguments: nil];
     }
 
   return YES;
@@ -1476,6 +1201,369 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   extPreferences = map;
   data = [NSSerializer serializePropertyList: extPreferences];
   [data writeToFile: extPrefPath atomically: YES];
+}
+
+@end
+
+@implementation NSWorkspace (Private)
+
+- (NSImage*) _extIconForApp: (NSString *)appName info: (NSDictionary *)extInfo
+{
+  NSDictionary	*typeInfo = [extInfo objectForKey: appName];
+  NSString *file = [typeInfo objectForKey: @"NSIcon"];
+
+  if (file)
+    {
+      if ([file isAbsolutePath] == NO)
+	{
+	  NSString *iconPath;
+	  NSBundle *bundle;
+
+	  bundle = [self bundleForApp: appName];
+	  iconPath = [bundle pathForImageResource: file];
+	  /*
+	   * If the icon is not in the Resources of the app, try looking
+	   * directly in the app wrapper.
+	   */
+	  if (iconPath == nil)
+	    {
+	      iconPath = [[bundle bundlePath] stringByAppendingPathComponent: file];
+	    }
+	  file = iconPath;
+	}
+      if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
+	{
+	  return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: file]);
+	}
+    }
+  return nil;
+}
+
+- (NSImage*) _getImageWithName: (NSString *)name
+		     alternate: (NSString *)alternate
+{
+  NSImage	*image = nil;
+
+  image = [NSImage imageNamed: name];
+  if (image == nil)
+    image = [NSImage imageNamed: alternate];
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *) folderImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = RETAIN([self _getImageWithName: @"Folder.tiff"
+				   alternate: @"common_Folder.tiff"]);
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *) unknownFiletypeImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = RETAIN([self _getImageWithName: @"Unknown.tiff"
+				   alternate: @"common_Unknown.tiff"]);
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *) rootImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = RETAIN([self _getImageWithName: @"Root_PC.tiff"
+				   alternate: @"common_Root_PC.tiff"]);
+    }
+
+  return image;
+}
+
+- (NSImage*) _iconForExtension: (NSString*)ext
+{
+  NSImage	*icon = nil;
+
+  if (ext == nil || [ext isEqualToString: @""])
+    return nil;
+  /*
+   * extensions are case-insensitive - convert to lowercase.
+   */
+  ext = [ext lowercaseString];
+  if ((icon = [_iconMap objectForKey: ext]) == nil)
+    {
+      NSDictionary	*prefs;
+      NSDictionary	*extInfo;
+      NSString		*iconPath;
+
+      /*
+       * If there is a user-specified preference for an image -
+       * try to use that one.
+       */
+      prefs = [extPreferences objectForKey: ext];
+      iconPath = [prefs objectForKey: @"Icon"];
+      if (iconPath)
+	{
+	  icon = [[NSImage alloc] initWithContentsOfFile: iconPath];
+	  AUTORELEASE(icon);
+	}
+
+      if (icon == nil && (extInfo = [self infoForExtension: ext]) != nil)
+	{
+	  NSString	*appName;
+
+	  /*
+	   * If there are any application preferences given, try to use the
+	   * icon for this file that is used by the preferred app.
+	   */
+	  if (prefs)
+	    {
+	      if ((appName = [extInfo objectForKey: @"Editor"]) != nil)
+		{
+		  icon = [self _extIconForApp: appName info: extInfo];
+		}
+	      if (icon == nil
+		&& (appName = [extInfo objectForKey: @"Viewer"]) != nil)
+		{
+		  icon = [self _extIconForApp: appName info: extInfo];
+		}
+	    }
+
+	  if (icon == nil)
+	    {
+	      NSEnumerator	*enumerator;
+
+	      /*
+	       * Still no icon - try all the apps that handle this file
+	       * extension.
+	       */
+	      enumerator = [extInfo keyEnumerator];
+	      while (icon == nil && (appName = [enumerator nextObject]) != nil)
+		{
+		  icon = [self _extIconForApp: appName info: extInfo];
+		}
+	    }
+	}
+
+      /*
+       * Nothing found at all - use the unknowntype icon.
+       */
+      if (icon == nil)
+	{
+	  icon = [self unknownFiletypeImage];
+	}
+
+      /*
+       * Set the icon in the cache for next time.
+       */
+      if (icon != nil)
+	[_iconMap setObject: icon forKey: ext];
+    }
+  return icon;
+}
+
+- (BOOL) _extension: (NSString*)ext
+               role: (NSString*)role
+	        app: (NSString**)app
+	    andInfo: (NSDictionary**)inf
+{
+  NSEnumerator	*enumerator;
+  NSString      *appName = nil;
+  NSDictionary	*apps;
+  NSDictionary	*prefs;
+  NSDictionary	*info;
+
+  ext = [ext lowercaseString];
+  apps = [self infoForExtension: ext];
+  if (apps == nil || [apps count] == 0)
+    return NO;
+
+  /*
+   *	Look for the name of the preferred app in this role.
+   *	A 'nil' roll is a wildcard - find the preferred Editor or Viewer.
+   */
+  prefs = [extPreferences objectForKey: ext];
+
+  if (role == nil || [role isEqualToString: @"Editor"])
+    {
+      appName = [prefs objectForKey: @"Editor"];
+      if (appName != nil)
+	{
+	  info = [apps objectForKey: appName];
+	  if (info != nil)
+	    {
+	      if (app != 0)
+		*app = appName;
+	      if (inf != 0)
+		*inf = info;
+	      return YES;
+	    }
+	}
+    }
+  if (role == nil || [role isEqualToString: @"Viewer"])
+    {
+      appName = [prefs objectForKey: @"Viewer"];
+      if (appName != nil)
+	{
+	  info = [apps objectForKey: appName];
+	  if (info != nil)
+	    {
+	      if (app != 0)
+		*app = appName;
+	      if (inf != 0)
+		*inf = info;
+	      return YES;
+	    }
+	}
+    }
+
+  /*
+   * Go through the dictionary of apps that know about this file type and
+   * determine the best application to open the file by examining the
+   * type information for each app.
+   * The 'NSRole' field specifies what the app can do with the file - if it
+   * is missing, we assume an 'Editor' role.
+   */
+  enumerator = [apps keyEnumerator];
+
+  if (role == nil)
+    {
+      BOOL	found = NO;
+
+      /*
+       * If the requested role is 'nil', we can accept an app that is either
+       * an Editor (preferred) or a Viewer.
+       */
+      while ((appName = [enumerator nextObject]) != nil)
+	{
+	  NSString	*str;
+
+	  info = [apps objectForKey: appName];
+	  str = [info objectForKey: @"NSRole"];
+	  if (str == nil || [str isEqualToString: @"Editor"])
+	    {
+	      if (app != 0)
+		*app = appName;
+	      if (inf != 0)
+		*inf = info;
+	      return YES;
+	    }
+	  else if ([str isEqualToString: @"Viewer"])
+	    {
+	      if (app != 0)
+		*app = appName;
+	      if (inf != 0)
+		*inf = info;
+	      found = YES;
+	    }
+	}
+      return found;
+    }
+  else
+    {
+      while ((appName = [enumerator nextObject]) != nil)
+	{
+	  NSString	*str;
+
+	  info = [apps objectForKey: appName];
+	  str = [info objectForKey: @"NSRole"];
+	  if ((str == nil && [role isEqualToString: @"Editor"])
+	    || [str isEqualToString: role])
+	    {
+	      if (app != 0)
+		*app = appName;
+	      if (inf != 0)
+		*inf = info;
+	      return YES;
+	    }
+	}
+      return NO;
+    }
+}
+
+- (BOOL) _launchApplication: (NSString *)appName
+		  arguments: (NSArray *)args
+{
+  NSString	*path;
+  NSDictionary  *userinfo;
+
+  path = [self locateApplicationBinary: appName];
+  if (path == nil)
+    return NO;
+
+  // App being launched, send NSWorkspaceWillLaunchApplicationNotification
+  userinfo = [NSDictionary dictionaryWithObject:
+    [[appName lastPathComponent] stringByDeletingPathExtension]
+    forKey: @"NSApplicationName"];
+  [_workspaceCenter
+    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+    object: self
+    userInfo: userinfo];
+
+  if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
+    return NO;
+
+  // The NSWorkspaceDidLaunchApplicationNotification will be send by the
+  // started application itself.
+  return YES;
+}
+
+- (id) _connectApplication: (NSString *)appName
+{
+  NSString *port;
+  id app = nil;
+
+  port = [appName stringByDeletingPathExtension];
+  /*
+   *	Try to contact a running application.
+   */
+  NS_DURING
+    {
+      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+                                                              host: @""];
+    }
+  NS_HANDLER
+    {
+      /* Fatal error in DO	*/
+      app = nil;
+    }
+  NS_ENDHANDLER
+
+  return app;
+}
+
+- (id) _workspaceApplication
+{
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+  NSString *appName;
+  id app;
+
+  /* What Workspace application? */
+  appName = [defs stringForKey: @"Workspace"];
+  if (appName == nil)
+    appName = @"GSWorkspace";
+
+  app = [self _connectApplication: appName];
+  if (app == nil)
+    {
+      if (![self _launchApplication: appName arguments: nil])
+	return nil;
+      app = [self _connectApplication: appName];
+    }
+
+  return app;
 }
 
 @end
