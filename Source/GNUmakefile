@@ -176,6 +176,8 @@ AppKit/NSPrintOperation.h \
 AppKit/NSPrintPanel.h \
 AppKit/NSPrinter.h \
 AppKit/NSResponder.h \
+AppKit/NSRulerMarker.h \
+AppKit/NSRulerView.h \
 AppKit/NSSavePanel.h \
 AppKit/NSScreen.h \
 AppKit/NSScrollView.h \
