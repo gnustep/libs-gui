@@ -143,6 +143,9 @@ NSGraphicsContext	*GSCurrentContext();
  *	Misc window management support.
  */
 - (BOOL) _setFrame: (NSRect)frameRect forWindow: (int)winNum;
+- (void) _orderWindow: (NSWindowOrderingMode)place
+	   relativeTo: (int)otherWin
+	    forWindow: (int)winNum;
 
 @end
 #endif

@@ -550,19 +550,33 @@ static NSRecursiveLock	*windowsLock;
 }
 
 - (void) orderBack: (id)sender
-{}	// implemented in back end
+{
+  [self orderWindow: NSWindowBelow relativeTo: 0];
+}
 
 - (void) orderFront: (id)sender
-{}
+{
+  if ([NSApp isActive] == YES)
+    {
+      [self orderWindow: NSWindowAbove relativeTo: 0];
+    }
+}
 
 - (void) orderFrontRegardless
-{}
+{
+  [self orderWindow: NSWindowAbove relativeTo: 0];
+}
 
 - (void) orderOut: (id)sender
-{}
+{
+  [self orderWindow: NSWindowOut relativeTo: 0];
+}
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
+  [GSCurrentContext() _orderWindow: place
+			relativeTo: otherWin
+			 forWindow: [self windowNumber]];
 }
 
 - (void) resignKeyWindow

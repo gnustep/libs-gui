@@ -1,10 +1,19 @@
+Tue Jul  6 19:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSGraphicsContext.h: Added new method to perform
+	window ordering.
+	* Source/NSGraphicsContext.m: Dummy implementation of
+	(_orderWindow:relativeTo:forWindow:])
+	* Source/NSWindow.m: Use new method to implement all window
+	ordering methods.
+
 Tue Jul  6 16:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSMenuView.m: In ([-trackWithEvent:]) fixed indexing bug when mouse
-	dragged off bottom of menu and released, also reformatted to GNU
-	coding style. Added copyright notice.
-	* NSMenu.m: Added copyright notice.
-	* NSMenuItemCell.m: Added copyright notice.
+	* Source/NSMenuView.m: In ([-trackWithEvent:]) fixed indexing bug
+	when mouse dragged off bottom of menu and released, also
+	reformatted to GNU coding style. Added copyright notice.
+	* Source/NSMenu.m: Added copyright notice.
+	* Source/NSMenuItemCell.m: Added copyright notice.
 
 Tue Jul  6 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
