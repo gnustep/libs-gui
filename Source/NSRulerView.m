@@ -50,7 +50,6 @@ DEFINE_RINT_IF_MISSING
 #define BIG_MARK_SIZE 6
 #define LABEL_MARK_SIZE 11
 
-#define BASE_LINE_LOCATION 0
 #define RULER_THICKNESS 16
 #define MARKER_THICKNESS 15
 
@@ -264,7 +263,7 @@ static NSMutableDictionary *units = nil;
 		   format: @"Unknown measurement unit %@", uName];
     }
   ASSIGN(_unit, newUnit);
-  [self setNeedsDisplay: YES];
+  [self invalidateHashMarks];
 }
 
 - (NSString *) measurementUnits
@@ -286,7 +285,7 @@ static NSMutableDictionary *units = nil;
   /* NB: We should not RETAIN the clientView.  */
   _clientView = aView;
   [self setMarkers: nil];
-  [self setNeedsDisplay: YES];
+  [self invalidateHashMarks];
 }
 
 - (BOOL) isOpaque
@@ -314,7 +313,7 @@ static NSMutableDictionary *units = nil;
 - (void) setOriginOffset: (float)offset
 {
   _originOffset = offset;
-  [self setNeedsDisplay: YES];
+  [self invalidateHashMarks];
 }
 
 - (float) originOffset
@@ -615,17 +614,21 @@ static NSMutableDictionary *units = nil;
 - (void) drawHashMarksAndLabelsInRect: (NSRect)aRect
 {
   NSView *docView;
+  NSRect docBounds;
+  NSRect baselineRect;
+  NSRect visibleBaselineRect;
+  float firstBaselineLocation;
   float firstVisibleLocation;
-  float visibleLength;
+  float lastVisibleLocation;
   int firstVisibleMark;
   int lastVisibleMark;
   int mark;
   int firstVisibleLabel;
   int lastVisibleLabel;
   int label;
-  NSRect baseLineRect;
   float baselineLocation = [self baselineLocation];
   NSPoint zeroPoint;
+  float zeroLocation;
   NSBezierPath *path;
   NSFont *font = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
   NSDictionary *attr = [[NSDictionary alloc] 
@@ -635,47 +638,53 @@ static NSMutableDictionary *units = nil;
 			       nil];
 
   docView = [_scrollView documentView];
-  
-  zeroPoint = [self convertPoint: NSMakePoint(_originOffset, _originOffset) 
-		    fromView: docView];
+  docBounds = [docView bounds];
 
+  /* Calculate the location of 'zero' hash mark */
+  // _originOffset is an offset from document bounds origin, in doc coords
+  zeroPoint.x = docBounds.origin.x + _originOffset;
+  zeroPoint.y = docBounds.origin.y + _originOffset;
+  zeroPoint = [self convertPoint: zeroPoint fromView: docView];
   if (_orientation == NSHorizontalRuler)
     {
-      _zeroLocation = zeroPoint.x;
+      zeroLocation = zeroPoint.x;
     }
   else
     {
-      _zeroLocation = zeroPoint.y;
+      zeroLocation = zeroPoint.y;
     }
 
   [self _verifyCachedValues];
-  baseLineRect = [self convertRect: [docView bounds]  fromView: docView];
 
+  /* Calculate the base line (corresponds to the document bounds) */
+  baselineRect = [self convertRect: docBounds  fromView: docView];
   if (_orientation == NSHorizontalRuler) 
     {
-      baseLineRect.origin.y = baselineLocation; 
-      baseLineRect.size.height = 1;
-      baseLineRect = NSIntersectionRect(baseLineRect, aRect);
-      firstVisibleLocation = NSMinX(baseLineRect);
-      visibleLength = NSWidth(baseLineRect);
+      baselineRect.origin.y = baselineLocation; 
+      baselineRect.size.height = 1;
+      firstBaselineLocation = NSMinX(baselineRect);
+      visibleBaselineRect = NSIntersectionRect(baselineRect, aRect);
+      firstVisibleLocation = NSMinX(visibleBaselineRect);
+      lastVisibleLocation = NSMaxX(visibleBaselineRect);
     }
   else 
     {
-      baseLineRect.origin.x = baselineLocation;
-      baseLineRect.size.width = 1;
-      baseLineRect = NSIntersectionRect(baseLineRect, aRect);
-      firstVisibleLocation = NSMinY(baseLineRect);
-      visibleLength = NSHeight(baseLineRect);
+      baselineRect.origin.x = baselineLocation;
+      baselineRect.size.width = 1;
+      firstBaselineLocation = NSMinY(baselineRect);
+      visibleBaselineRect = NSIntersectionRect(baselineRect, aRect);
+      firstVisibleLocation = NSMinY(visibleBaselineRect);
+      lastVisibleLocation = NSMaxY(visibleBaselineRect);
     }
 
   /* draw the base line */
   [[NSColor blackColor] set];
-  NSRectFill(baseLineRect);
+  NSRectFill(visibleBaselineRect);
 
   /* draw hash marks */
-  firstVisibleMark = floor((firstVisibleLocation - _zeroLocation)
+  firstVisibleMark = ceil((firstVisibleLocation - zeroLocation)
                           / _markDistance);
-  lastVisibleMark = floor((firstVisibleLocation + visibleLength - _zeroLocation) 
+  lastVisibleMark = floor((lastVisibleLocation - zeroLocation) 
                           / _markDistance);
   path = [NSBezierPath new];
   
@@ -683,7 +692,7 @@ static NSMutableDictionary *units = nil;
     {
       float markLocation;
 
-      markLocation = _zeroLocation + mark * _markDistance;
+      markLocation = zeroLocation + mark * _markDistance;
       if (_orientation == NSHorizontalRuler)
         {
 	  [path moveToPoint: NSMakePoint(markLocation, baselineLocation)];
@@ -715,15 +724,24 @@ static NSMutableDictionary *units = nil;
 
   /* draw labels */
   /* FIXME: shouldn't be using NSCell to draw labels? */
-  firstVisibleLabel = floor((firstVisibleLocation - _zeroLocation)
+  firstVisibleLabel = floor((firstVisibleLocation - zeroLocation)
                           / (_marksToLabel * _markDistance));
-  lastVisibleLabel = floor((firstVisibleLocation + visibleLength - _zeroLocation) 
+  lastVisibleLabel = floor((lastVisibleLocation - zeroLocation) 
                           / (_marksToLabel * _markDistance));
+  /* firstVisibleLabel can be to the left of the visible ruler area.
+     This is OK because just part of the label can be visible to the left
+     when scrolling. However, it should not be drawn if outside of the
+     baseline. */
+  if (zeroLocation + firstVisibleLabel * _marksToLabel * _markDistance
+      < firstBaselineLocation)
+    {
+      firstVisibleLabel++;
+    }
   
   for (label = firstVisibleLabel; label <= lastVisibleLabel; label++)
     {
-      float labelLocation = _zeroLocation + label * _marksToLabel * _markDistance;
-      float labelValue = (labelLocation - _zeroLocation) / _unitToRuler;
+      float labelLocation = zeroLocation + label * _marksToLabel * _markDistance;
+      float labelValue = (labelLocation - zeroLocation) / _unitToRuler;
       NSString *labelString = [NSString stringWithFormat: _labelFormat, labelValue];
       NSSize size = [labelString sizeWithAttributes: attr];
       NSPoint labelPosition;
@@ -759,6 +777,7 @@ static NSMutableDictionary *units = nil;
 - (void) invalidateHashMarks
 {
   _cacheIsValid = NO;
+  [self setNeedsDisplay:YES];
 }
 
 - (void) setScrollView: (NSScrollView *)scrollView

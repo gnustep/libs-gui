@@ -73,7 +73,7 @@ typedef enum {
   int   _marksToBigMark;
   int   _marksToMidMark;
   int   _marksToLabel;
-  float _zeroLocation;
+  float _UNUSED;
   float _unitToRuler;
   NSString *_labelFormat;
 }

@@ -1,3 +1,17 @@
+2003-04-25  Benhur Stein <benhur@inf.ufsm.br>
+
+	* Source/NSRulerView.m:
+	Removed unused macro BASE_LINE_LOCATION.
+	(setMeasurementUnits:, setClientView:, setOriginOffset:): Add call
+	to invalidateHashMarks, remove call to setNeedsDisplay:.
+	(invalidateHashMarks): Add call to setNeedsDisplay:.
+	(drawHashMarksAndLabelsInRect:): Changed calculation of location
+	of zero hash mark. Changed use of _zeroLocation ivar into
+	zeroLocation local variable. Limited display of hashs and
+	marks to baseline.
+	* Headers/gnustep/gui/NSRulerView.h: Renamed unused ivar
+	_zeroLocation to _UNUSED.
+
 2003-03-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m
