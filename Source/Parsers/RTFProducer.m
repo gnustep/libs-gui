@@ -95,14 +95,46 @@
 
 @implementation RTFProducer
 
-+ (NSData*) RTFDFromAttributedString: (NSAttributedString*) aText
-		  documentAttributes: (NSDictionary*)dict
++ (NSFileWrapper*) produceRTFD: (NSAttributedString*) aText
+	documentAttributes: (NSDictionary*)dict
 {
   RTFProducer *new = [self new];
-  NSData *data = [[new RTFDStringFromAttributedString: aText
-		       documentAttributes: dict]
-    dataUsingEncoding: NSISOLatin1StringEncoding];
+  NSData *data;
+  NSFileWrapper *wrapper;
 
+  data = [[new RTFDStringFromAttributedString: aText
+	       documentAttributes: dict]
+	     dataUsingEncoding: NSISOLatin1StringEncoding];
+
+  if ([aText containsAttachments])
+    {
+      NSMutableDictionary *fileDict = [NSMutableDictionary dictionary];
+      NSFileWrapper *txt = [[NSFileWrapper alloc]
+			     initRegularFileWithContents: data];
+
+      [fileDict setObject: txt forKey: @"TXT.rtf"];
+      RELEASE(txt);
+      // FIXME: We have to add the attachments to the directory file wrapper
+
+      wrapper = [[NSFileWrapper alloc] initDirectoryWithFileWrappers: fileDict];
+    }
+  else
+      wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: data];
+
+
+  RELEASE(new);
+  return AUTORELEASE(wrapper);
+}
+
++ (NSData*) produceRTF: (NSAttributedString*) aText
+    documentAttributes: (NSDictionary*)dict
+{
+  RTFProducer *new = [self new];
+  NSData *data;
+
+  data = [[new RTFDStringFromAttributedString: aText
+	       documentAttributes: dict]
+	     dataUsingEncoding: NSISOLatin1StringEncoding];
   RELEASE(new);
   return data;
 }

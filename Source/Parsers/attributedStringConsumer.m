@@ -206,17 +206,10 @@ readNSString(StringContext *ctxt)
  
 @end
 
-@interface RTFConsumer: NSObject
-{
-@public
-  NSMutableDictionary *documentAttributes;
-  NSMutableDictionary *fonts;
-  NSMutableArray *colours;
-  NSMutableArray *attrs;
-  NSMutableAttributedString *result;
-  int ignore;
-}
+@interface RTFConsumer (Private)
 
+- (NSAttributedString*) parseRTF: (NSData *)rtfData 
+	      documentAttributes: (NSDictionary **)dict;
 - (NSDictionary*) documentAttributes;
 - (NSAttributedString*) result;
 
@@ -227,6 +220,45 @@ readNSString(StringContext *ctxt)
 @end
 
 @implementation RTFConsumer
+
++ (NSAttributedString*) parseRTFD: (NSFileWrapper *)wrapper
+	   documentAttributes: (NSDictionary **)dict
+{
+  RTFConsumer *consumer = [RTFConsumer new];
+  NSAttributedString *text = nil;
+
+  if ([wrapper isRegularFile])
+    text = [consumer parseRTF: [wrapper regularFileContents]
+		     documentAttributes: dict];
+  else if ([wrapper isDirectory])
+    {
+      NSDictionary *files = [wrapper fileWrappers];
+      NSFileWrapper *contents;
+
+      //FIXME: We should store the files in the consumer
+      // We try to read the main file in the directory
+      if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
+	text = [consumer parseRTF: [contents regularFileContents]
+			 documentAttributes: dict];
+    }
+
+  RELEASE(consumer);
+
+  return text;
+}
+
++ (NSAttributedString*) parseRTF: (NSData *)rtfData 
+	       documentAttributes: (NSDictionary **)dict
+{
+  RTFConsumer *consumer = [RTFConsumer new];
+  NSAttributedString *text;
+
+  text = [consumer parseRTF: rtfData
+		   documentAttributes: dict];
+  RELEASE(consumer);
+
+  return text;
+}
 
 - (id) init
 {
@@ -249,6 +281,10 @@ readNSString(StringContext *ctxt)
   RELEASE(documentAttributes);
   [super dealloc];
 }
+
+@end
+
+@implementation RTFConsumer (Private)
 
 - (NSDictionary*) documentAttributes
 {
@@ -776,16 +812,4 @@ void GSRTFparagraph(void *ctxt)
 {
   GSRTFmangleText(ctxt, "\n");
   CTXT->tabChanged = NO;
-}
-
-NSAttributedString *parseRTFintoAttributedString(NSData *rtfData, 
-						 NSDictionary **dict)
-{
-  RTFConsumer *consumer = [RTFConsumer new];
-  NSAttributedString *result;
-
-  result = [consumer parseRTF: rtfData documentAttributes: dict];
-  RELEASE(consumer);
-
-  return result;
 }

@@ -27,7 +27,22 @@
 #ifndef _rtfConsumer_h_INCLUDE
 #define _rtfConsumer_h_INCLUDE
 
-NSAttributedString *parseRTFintoAttributedString(NSData *rtfData, 
-						 NSDictionary **dict);
+@interface RTFConsumer: NSObject
+{
+@public
+  NSMutableDictionary *documentAttributes;
+  NSMutableDictionary *fonts;
+  NSMutableArray *colours;
+  NSMutableArray *attrs;
+  NSMutableAttributedString *result;
+  int ignore;
+}
+
++ (NSAttributedString*) parseRTF: (NSData *)rtfData 
+	      documentAttributes: (NSDictionary **)dict;
++ (NSAttributedString*) parseRTFD: (NSFileWrapper *)rtfFile 
+	       documentAttributes: (NSDictionary **)dict;
+
+@end
 
 #endif

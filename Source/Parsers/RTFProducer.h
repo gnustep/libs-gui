@@ -43,7 +43,10 @@
 */
 }
 
-+ (NSData*) RTFDFromAttributedString: (NSAttributedString*) aText
-		  documentAttributes: (NSDictionary*)dict;
++ (NSData*) produceRTF: (NSAttributedString*) aText
+    documentAttributes: (NSDictionary*)dict;
++ (NSFileWrapper*) produceRTFD: (NSAttributedString*) aText
+	    documentAttributes: (NSDictionary*)dict;
+
 
 @end
