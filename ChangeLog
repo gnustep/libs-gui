@@ -1,3 +1,9 @@
+2003-01-26 21:16  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-textStorage:edited:range:changeInLength:invalidatedRange:): Tell
+	the text views to resize when their text has changed.
+
 2003-01-26 21:08  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m

@@ -995,6 +995,7 @@ TODO: not really clear what these should do
 	  g < textcontainers[i].pos + textcontainers[i].length)
         continue;
 
+      [[textcontainers[i].textContainer textView] sizeToFit]; /* TODO? */
       [[textcontainers[i].textContainer textView] setNeedsDisplay: YES];
     }
 }
