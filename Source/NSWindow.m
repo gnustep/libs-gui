@@ -3034,16 +3034,13 @@ resetCursorRectsForView(NSView *theView)
 	switch (type)
 	  {
 	    case NSLeftMouseDragged:
-	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      [v mouseDragged: theEvent];
+              [_lastView mouseDragged: theEvent];
 	      break;
 	    case NSOtherMouseDragged:
-	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      [v otherMouseDragged: theEvent];
+              [_lastView otherMouseDragged: theEvent];
 	      break;
 	    case NSRightMouseDragged:
-	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      [v rightMouseDragged: theEvent];
+  	      [_lastView rightMouseDragged: theEvent];
 	      break;
 	    default:
 	      if (_f.accepts_mouse_moved)
