@@ -51,88 +51,7 @@ static Class NSBezierPath_concrete_class = nil;
 
 @end
 
-
-@interface PathElement : NSObject <NSCopying>
-{
-@public
-  NSPoint points[3];
-  NSBezierPathElement type;
-}
-
-+ (PathElement *)closePathElement;
-+ (PathElement *)movePathElement:(NSPoint)aPoint;
-+ (PathElement *)linePathElement:(NSPoint)aPoint;
-+ (PathElement *)curvePathElement:(NSPoint)aPoint
-		    controlPoint1:(NSPoint)controlPoint1
-		    controlPoint2:(NSPoint)controlPoint2;
-
-@end
-
-
-@interface GSBezierPath : NSBezierPath
-{
-  NSMutableArray *pathElements;
-}
-
-- (void)calculateDraftPolygon: (int*)pc withPoints: (NSPoint*)draftPolygon;
-
-@end
-
-
-@implementation PathElement
-
-+ (PathElement *)closePathElement
-{
-  PathElement *elem = [self alloc];
-	
-  elem->type = NSClosePathBezierPathElement;
-
-  return elem;
-}
-
-+ (PathElement *)movePathElement:(NSPoint)aPoint
-{
-  PathElement *elem = [self alloc];
-	
-  elem->type = NSMoveToBezierPathElement;
-  elem->points[0] = aPoint;
-
-  return elem;
-}
-
-+ (PathElement *)linePathElement:(NSPoint)aPoint
-{
-  PathElement *elem = [self alloc];
-	
-  elem->type = NSLineToBezierPathElement;
-  elem->points[0] = aPoint;
-
-  return elem;
-}
-
-+ (PathElement *)curvePathElement:(NSPoint)aPoint
-		    controlPoint1:(NSPoint)controlPoint1
-		    controlPoint2:(NSPoint)controlPoint2
-{
-  PathElement *elm = [self alloc];
-	
-  elm->type = NSCurveToBezierPathElement;
-  elm->points[0] = controlPoint1;
-  elm->points[1] = controlPoint2;
-  elm->points[2] = aPoint;
-
-  return elm;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-  PathElement *element = (PathElement *)NSCopyObject (self, 0, zone);
-	
-  return element;
-}
-
-@end
-
+@class GSBezierPath;
 
 @implementation NSBezierPath
 
@@ -599,7 +518,6 @@ static Class NSBezierPath_concrete_class = nil;
 - (NSBezierPath *)bezierPathByFlatteningPath
 {
   NSBezierPath *path = [isa bezierPath];
-  NSBezierPath *path2;
   NSBezierPathElement type;
   NSPoint pts[3];
   NSPoint coeff[4];
@@ -608,7 +526,7 @@ static Class NSBezierPath_concrete_class = nil;
   BOOL first = YES;
 
   count = [self elementCount];
-  for(i = count - 1; i >= 0; i--) 
+  for(i = 0; i < count; i++) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
       switch(type) 
@@ -628,13 +546,11 @@ static Class NSBezierPath_concrete_class = nil;
 		}
 	      break;
 	  case NSCurveToBezierPathElement:
-	      path2 = [isa bezierPath];
 	      coeff[0] = p;
 	      coeff[1] = pts[0];
 	      coeff[2] = pts[1];
 	      coeff[3] = pts[2];
-      	      flatten(coeff, [self flatness], path2);
-	      [path appendBezierPath: path2];
+      	      flatten(coeff, [self flatness], path);
 	      p = pts[2];
 	      if (first)
 	        {
@@ -1337,23 +1253,53 @@ static Class NSBezierPath_concrete_class = nil;
 @end
 
 
+typedef struct _PathElement
+{
+  NSBezierPathElement type;
+  NSPoint points[3];
+} PathElement;
+
+//#define GSUNION_TYPES GSUNION_OBJ
+#define GSI_ARRAY_TYPES       0
+#define GSI_ARRAY_EXTRA       PathElement
+
+#define GSI_ARRAY_NO_RETAIN
+#define GSI_ARRAY_NO_RELEASE
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <base/GSIArray.h>
+
+@interface GSBezierPath : NSBezierPath
+{
+  GSIArray pathElements;
+  BOOL flat;
+}
+
+- (void)calculateDraftPolygon: (int*)pc withPoints: (NSPoint*)draftPolygon;
+
+@end
 
 @implementation GSBezierPath
 
 - (id)init
 {
+  NSZone *zone;
+
   self = [super init];
-  if(self) 
-    {
-      pathElements = [[NSMutableArray alloc] initWithCapacity: 1];
-    }
-  
+  zone = GSObjCZone(self);
+  pathElements = NSZoneMalloc(zone, sizeof(GSIArray_t));
+  GSIArrayInitWithZoneAndCapacity(pathElements, zone, 8);
+  flat = YES;
+
   return self;
 }
 
 - (void)dealloc
 {
-  RELEASE(pathElements);
+  GSIArrayEmpty(pathElements);
+  NSZoneFree(GSObjCZone(self), pathElements);
   [super dealloc];
 }
 
@@ -1362,17 +1308,21 @@ static Class NSBezierPath_concrete_class = nil;
 //
 - (void)moveToPoint:(NSPoint)aPoint
 {
-  PathElement *elm = [PathElement movePathElement: aPoint];
-	
-  [pathElements addObject: elm];
+  PathElement elem;
+  
+  elem.type = NSMoveToBezierPathElement;
+  elem.points[0] = aPoint;
+  GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }
 
 - (void)lineToPoint:(NSPoint)aPoint
 {
-  PathElement *elm = [PathElement linePathElement: aPoint];
-
-  [pathElements addObject: elm];
+  PathElement elem;
+  
+  elem.type = NSLineToBezierPathElement;
+  elem.points[0] = aPoint;
+  GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }
 
@@ -1380,25 +1330,30 @@ static Class NSBezierPath_concrete_class = nil;
 		 controlPoint1:(NSPoint)controlPoint1
 		 controlPoint2:(NSPoint)controlPoint2
 {
-  PathElement *elm = [PathElement curvePathElement: aPoint
-				  controlPoint1: controlPoint1
-				  controlPoint2: controlPoint2];
+  PathElement elem;
+  
+  elem.type = NSCurveToBezierPathElement;
+  elem.points[0] = controlPoint1;
+  elem.points[1] = controlPoint2;
+  elem.points[2] = aPoint;
+  GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
+  flat = NO;
 
-  [pathElements addObject: elm];
   INVALIDATE_CACHE();
 }
 
 - (void)closePath
 {
-  PathElement *elm = [PathElement closePathElement];
+  PathElement elem;
 
-  [pathElements addObject: elm];
+  elem.type = NSClosePathBezierPathElement;
+  GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }
 
 - (void)removeAllPoints
 {
-  [pathElements removeAllObjects];
+  GSIArrayRemoveAllItems(pathElements);
   INVALIDATE_CACHE();
 }
 
@@ -1407,27 +1362,26 @@ static Class NSBezierPath_concrete_class = nil;
 //
 - (int)elementCount
 {
-  return [pathElements count];
+  return GSIArrayCount(pathElements);
 }
 
 - (NSBezierPathElement)elementAtIndex:(int)index
 		     associatedPoints:(NSPoint *)points
 {
-  PathElement *elm = [pathElements objectAtIndex: index];
-  NSBezierPathElement type = elm->type;
-  NSPoint *p = elm->points;
+  PathElement elm = GSIArrayItemAtIndex(pathElements, index).ext;
+  NSBezierPathElement type = elm.type;
 	
-  if(points != NULL) 
+  if (points != NULL) 
     {
       if(type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) 
         {
-	  points[0] = p[0];
+	  points[0] = elm.points[0];
 	} 
       else if(type == NSCurveToBezierPathElement) 
         {
-	  points[0] = p[0];
-	  points[1] = p[1];
-	  points[2] = p[2];
+	  points[0] = elm.points[0];
+	  points[1] = elm.points[1];
+	  points[2] = elm.points[2];
 	}
     }
   
@@ -1436,19 +1390,19 @@ static Class NSBezierPath_concrete_class = nil;
 
 - (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index
 {
-  PathElement *elm = [pathElements objectAtIndex: index];
-  NSBezierPathElement type = elm->type;
+  PathElement elm = GSIArrayItemAtIndex(pathElements, index).ext;
+  NSBezierPathElement type = elm.type;
   
   switch(type) 
     {
       case NSMoveToBezierPathElement:
       case NSLineToBezierPathElement:
-	  elm->points[0] = points[0];
+	  elm.points[0] = points[0];
 	  break;
       case NSCurveToBezierPathElement:
-	  elm->points[0] = points[0];
-	  elm->points[1] = points[1];
-	  elm->points[2] = points[2];
+	  elm.points[0] = points[0];
+	  elm.points[1] = points[1];
+	  elm.points[2] = points[2];
 	  break;
       case NSClosePathBezierPathElement:
 	  break;
@@ -1456,7 +1410,19 @@ static Class NSBezierPath_concrete_class = nil;
 	  break;
     }
 
+  GSIArraySetItemAtIndex(pathElements, (GSIArrayItem)elm, index);
   INVALIDATE_CACHE();
+}
+
+//
+// Path modifications.
+//
+- (NSBezierPath *)bezierPathByFlatteningPath
+{
+  if (flat)
+    return self;
+
+  return [super bezierPathByFlatteningPath];
 }
 
 //
@@ -1466,7 +1432,7 @@ static Class NSBezierPath_concrete_class = nil;
 {
   GSBezierPath *path = [super copyWithZone: zone];
 	
-  path->pathElements = [pathElements copy];
+  path->pathElements = GSIArrayCopyWithZone(pathElements, zone);
 
   return path;
 }
@@ -1536,22 +1502,20 @@ static Class NSBezierPath_concrete_class = nil;
 // FIXME: This does not handle multiple segments!
 - (void)calculateDraftPolygon: (int*)pc withPoints: (NSPoint*)draftPolygon
 {
-  PathElement *elm;
   NSBezierPathElement bpt;
-  NSPoint p, *pts;
+  NSPoint p, pts[3];
   double x, y, t, k = 0.25;
   int i;
   int pcount;
+  int count = [self elementCount];
 
-  if(![pathElements count])
+  if(!count)
     return;
 		
   pcount = 0;
-  for(i = 0; i < [pathElements count]; i++) 
+  for(i = 0; i < count; i++) 
     {
-      elm = [pathElements objectAtIndex: i];
-      bpt = elm->type;
-      pts = elm->points;
+      bpt = [self elementAtIndex: i associatedPoints: pts];
       
       if(bpt == NSMoveToBezierPathElement || bpt == NSLineToBezierPathElement) 
         {
@@ -1637,8 +1601,9 @@ static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path)
   x1_0 = coeff[1].x - coeff[0].x;
   y1_0 = coeff[1].y - coeff[0].y;
   z3_0_dot = x3_0 * x3_0 + y3_0 * y3_0;
+
   if (z3_0_dot < 0.001)
-      flat = YES;
+    flat = YES;
   else
     {
       max_perp_sq = flatness * flatness * z3_0_dot;
@@ -1681,14 +1646,14 @@ static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path)
       bleft[1].y = (coeff[0].y + coeff[1].y) / 2;
       bleft[2].x = (coeff[0].x + 2*coeff[1].x + coeff[2].x) / 4;
       bleft[2].y = (coeff[0].y + 2*coeff[1].y + coeff[2].y) / 4;
-      bleft[3].x = (coeff[0].x + 3*(coeff[1].x + coeff[2].x) + coeff[3].x) / 6;
-      bleft[3].y = (coeff[0].y + 3*(coeff[1].y + coeff[2].y) + coeff[3].y) / 6;
+      bleft[3].x = (coeff[0].x + 3*(coeff[1].x + coeff[2].x) + coeff[3].x) / 8;
+      bleft[3].y = (coeff[0].y + 3*(coeff[1].y + coeff[2].y) + coeff[3].y) / 8;
       bright[0].x =  bleft[3].x;
       bright[0].y =  bleft[3].y;
       bright[1].x = (coeff[3].x + 2*coeff[2].x + coeff[1].x) / 4;
       bright[1].y = (coeff[3].y + 2*coeff[2].y + coeff[1].y) / 4;
-      bright[2].x = (coeff[2].x + coeff[1].x) / 2;
-      bright[2].y = (coeff[2].y + coeff[1].y) / 2;
+      bright[2].x = (coeff[3].x + coeff[2].x) / 2;
+      bright[2].y = (coeff[3].y + coeff[2].y) / 2;
       bright[3] = coeff[3];
 
       flatten(bleft, flatness, path);
