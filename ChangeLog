@@ -1,3 +1,11 @@
+Wed Oct  2 11:26:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m
+	([-shouldChangeTextInRange:replacementString:]): Immediately
+	return NO if not editable; do not send out textShouldBeginEditing:
+	and textDidBeginEditingNotification unless the textview is already
+	first responder (Patch by David Ayers <d.ayers@inode.at>).
+
 2002-10-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-gtInfoForFile:application:type:])

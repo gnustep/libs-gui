@@ -2242,10 +2242,36 @@ replacing the selection.
     [self unregisterDraggedTypes];
 }
 
+/*
+ * If the receiver is first responder, this method is responsible for
+ * checking with the delegate, whether textShouldBeginEditing: and to
+ * post the NSTextDidBeginEditingNotification, if it should.  This
+ * method returns NO immediately, if the corresponding text field is
+ * not editable. This insures that no user action can accidentally
+ * edit the contents.  
+ */
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	       replacementString: (NSString*)replacementString
 {
-  if (BEGAN_EDITING == NO)
+  if (_tf.is_editable == NO)
+    return NO;
+
+  /* We need to send the textShouldBeginEditing: /
+     textDidBeginEditingNotification only once; and we need to send it
+     when the textview is firstResponder.  This is particular
+     important for text field editors, which are set up and whose
+     text, colors, background, etc are configured (potentially causing
+     calls to this method) before their delegate is set up and they
+     are made first responder - we want no textDidBeginEditing
+     notification to be sent out at that stage, because it would be
+     lost (the control is not yet the delegate).  Instead, once the
+     field editor has a delegate (the control) and is made first
+     responder, we want to send out the textDidBeginEditing
+     notification (which will cause the control to send out the
+     NSControlTextDidBeginEditingNotification) at the first user
+     input.  
+  */
+  if (BEGAN_EDITING == NO && [_window firstResponder] == self)
     {
       if (([_delegate respondsToSelector: @selector(textShouldBeginEditing:)])
 	  && ([_delegate textShouldBeginEditing: _notifObject] == NO))
