@@ -142,8 +142,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   [self initWithFrame: NSZeroRect];
 	
-  if (_menu)
-    [_menu setTornOff: YES];
+  if (_attachedMenu)
+    [_attachedMenu setTornOff: YES];
   
   return self;
 }
@@ -151,11 +151,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) dealloc
 {
   // We must remove the menu view from the menu list of observers.
-  if (_menu != nil)
+  if (_attachedMenu != nil)
     {
       [[NSNotificationCenter defaultCenter] removeObserver: self  
 					    name: nil
-					    object: _menu];
+					    object: _attachedMenu];
     }
 
   /* Clean the pointer to us stored into the _itemCells.  */
@@ -175,33 +175,33 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   NSNotificationCenter	*theCenter = [NSNotificationCenter defaultCenter];
 
-  if (_menu != nil)
+  if (_attachedMenu != nil)
     {
       // Remove this menu view from the old menu list of observers.
-      [theCenter removeObserver: self  name: nil  object: _menu];
+      [theCenter removeObserver: self  name: nil  object: _attachedMenu];
     }
 
   /* menu is retaining us, so we should not be retaining menu.  */
-  _menu = menu;
-  _items_link = [_menu itemArray];
+  _attachedMenu = menu;
+  _items_link = [_attachedMenu itemArray];
 
-  if (_menu != nil)
+  if (_attachedMenu != nil)
     {
       // Add this menu view to the menu's list of observers.
       [theCenter addObserver: self
 		    selector: @selector(itemChanged:)
 		        name: NSMenuDidChangeItemNotification
-                      object: _menu];
+                      object: _attachedMenu];
 
       [theCenter addObserver: self
 		    selector: @selector(itemAdded:)
 		        name: NSMenuDidAddItemNotification
-                      object: _menu];
+                      object: _attachedMenu];
 
       [theCenter addObserver: self
                     selector: @selector(itemRemoved:)
                         name: NSMenuDidRemoveItemNotification
-                      object: _menu];
+                      object: _attachedMenu];
     }
 
   // Force menu view's layout to be recalculated.
@@ -212,7 +212,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSMenu*) menu
 {
-  return _menu;
+  return _attachedMenu;
 }
 
 - (void) setHorizontal: (BOOL)flag
@@ -307,22 +307,22 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSMenuView*) attachedMenuView
 {
-  return [[_menu attachedMenu] menuRepresentation];
+  return [[_attachedMenu attachedMenu] menuRepresentation];
 }
 
 - (NSMenu*) attachedMenu
 {
-  return [_menu attachedMenu];
+  return [_attachedMenu attachedMenu];
 }
 
 - (BOOL) isAttached
 {
-  return [_menu isAttached];
+  return [_attachedMenu isAttached];
 }
 
 - (BOOL) isTornOff
 {
-  return [_menu isTornOff];
+  return [_attachedMenu isTornOff];
 }
 
 - (void) setHorizontalEdgePadding: (float)pad
@@ -413,7 +413,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) detachSubmenu
 {
-  NSMenu     *attachedMenu = [_menu attachedMenu];
+  NSMenu     *attachedMenu = [_attachedMenu attachedMenu];
   NSMenuView *attachedMenuView;
 
   if (!attachedMenu)
@@ -424,7 +424,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   [attachedMenuView detachSubmenu];
 
   NSDebugLLog (@"NSMenu", @"detach submenu: %@ from: %@",
-               attachedMenu, _menu);
+               attachedMenu, _attachedMenu);
   
   if ([attachedMenu isTransient])
     {
@@ -453,7 +453,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
   attachableMenu = [[_items_link objectAtIndex: index] submenu];
 
-  if ([attachableMenu isTornOff] || [_menu isTransient])
+  if ([attachableMenu isTornOff] || [_attachedMenu isTransient])
     {
       NSDebugLLog (@"NSMenu",  @"Will open transient: %@", attachableMenu);
       [attachableMenu displayTransient];
@@ -473,14 +473,14 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   NSDebugLLog (@"NSMenu", @"update called on menu view");
 
-  if (![_menu _ownedByPopUp] && !_titleView)
+  if (![_attachedMenu _ownedByPopUp] && !_titleView)
     {
       // Add title view. If this menu not owned by popup
       _titleView = [[NSMenuWindowTitleView alloc] init];
       [self addSubview: _titleView];
       RELEASE(_titleView);
     }
-  else if ([_menu _ownedByPopUp] && _titleView)
+  else if ([_attachedMenu _ownedByPopUp] && _titleView)
     {
       // Remove title view if this menu owned by popup
       [_titleView removeFromSuperview];
@@ -489,17 +489,17 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
   if ((_titleView != nil) && ([_titleView menu] == nil))
     {
-      [_titleView setMenu: _menu];
+      [_titleView setMenu: _attachedMenu];
     }
 
   // Resize it anyway.
   [self sizeToFit];
 
   // Just quit here if we are a popup.
-  if ([_menu _ownedByPopUp])
+  if ([_attachedMenu _ownedByPopUp])
     return;
   
-  if ([_menu isTornOff] && ![_menu isTransient])
+  if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
     {
       [_titleView addCloseButton];
     }
@@ -532,7 +532,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   float    menuBarHeight = 0.0;
 
   // Popup menu doesn't need title bar
-  if (![_menu _ownedByPopUp] && _titleView)
+  if (![_attachedMenu _ownedByPopUp] && _titleView)
     {
       menuBarHeight = [[self class] menuBarHeight];
       neededImageAndTitleWidth = [_titleView titleSize].width;
@@ -638,7 +638,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         }
       accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
       
-      if ([_menu supermenu] != nil && neededKeyEquivalentWidth < 8)
+      if ([_attachedMenu supermenu] != nil && neededKeyEquivalentWidth < 8)
         {
           accumulatedOffset += 8 - neededKeyEquivalentWidth;
         }
@@ -646,12 +646,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   else
     {
       accumulatedOffset += neededImageAndTitleWidth + 3 + 2;
-      if ([_menu supermenu] != nil)
+      if ([_attachedMenu supermenu] != nil)
         accumulatedOffset += 15;
     }
   
   // Calculate frame size.
-  if (![_menu _ownedByPopUp])
+  if (![_attachedMenu _ownedByPopUp])
     {
       // Add the border width: 1 for left, 2 for right sides
       _cellSize.width = accumulatedOffset + 3;
@@ -824,7 +824,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  == GSWindowMakerInterfaceStyle)
 	{
 	  NSRect aRect = [self rectOfItemAtIndex: 
-	    [_menu indexOfItemWithSubmenu: aSubmenu]];
+	    [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
 	  NSPoint subOrigin = [_window convertBaseToScreen: 
 	    NSMakePoint(aRect.origin.x, aRect.origin.y)];
 
@@ -841,7 +841,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   else
     {
       NSRect aRect = [self rectOfItemAtIndex: 
-                       [_menu indexOfItemWithSubmenu: aSubmenu]];
+                       [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
       NSPoint subOrigin = [_window convertBaseToScreen: 
 	                            NSMakePoint(NSMinX(aRect),
 		                    NSMinY(aRect))];
@@ -959,7 +959,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
  */
 - (void) performActionWithHighlightingForItemAtIndex: (int)index
 {
-  NSMenu     *candidateMenu = _menu;
+  NSMenu     *candidateMenu = _attachedMenu;
   NSMenuView *targetMenuView;
   int        indexToHighlight = index;
   int        oldHighlightedIndex;
@@ -992,9 +992,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   [[NSRunLoop currentRunLoop] 
     runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
 
-  [_menu performActionForItemAtIndex: index];
+  [_attachedMenu performActionForItemAtIndex: index];
 
-  if (![_menu _ownedByPopUp])
+  if (![_attachedMenu _ownedByPopUp])
     {
       [targetMenuView setHighlightedItemIndex: oldHighlightedIndex];
     }
@@ -1062,7 +1062,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
            * 1 - if menus is only partly visible and the mouse is at the
            *     edge of the screen we move the menu so it will be visible.
            */ 
-          if ([_menu isPartlyOffScreen])
+          if ([_attachedMenu isPartlyOffScreen])
             {
               NSPoint pointerLoc = [_window convertBaseToScreen: location];
               /*
@@ -1073,7 +1073,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
               if (pointerLoc.x == 0 || pointerLoc.y == 1
                   || pointerLoc.x == [[_window screen] frame].size.width - 1
                   || pointerLoc.y == [[_window screen] frame].size.height)
-                [_menu shiftOnScreen];
+                [_attachedMenu shiftOnScreen];
             }
 
 
@@ -1119,7 +1119,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                *          We are a non-transient attached menu
                *          We are a root: isTornOff of AppMenu
                */
-              candidateMenu = [_menu supermenu];
+              candidateMenu = [_attachedMenu supermenu];
               while (candidateMenu  
                      && !NSMouseInRect (locationInScreenCoordinates, 
                                         [[candidateMenu window] frame], 
@@ -1152,17 +1152,17 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                 }
 
               // 3b - Check if we enter the attached submenu
-              windowUnderMouse = [[_menu attachedMenu] window];
+              windowUnderMouse = [[_attachedMenu attachedMenu] window];
               if (windowUnderMouse != nil
                   && NSMouseInRect (locationInScreenCoordinates,
                                     [windowUnderMouse frame], NO))
                 {
-                  BOOL wasTransient = [_menu isTransient];
+                  BOOL wasTransient = [_attachedMenu isTransient];
                   BOOL subMenuResult;
 
                   subMenuResult
                     = [[self attachedMenuView] trackWithEvent: original];
-                  if (subMenuResult && wasTransient == [_menu isTransient])
+                  if (subMenuResult && wasTransient == [_attachedMenu isTransient])
                     {
                       [self detachSubmenu];
                     }
@@ -1234,7 +1234,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   // remove transient menus. --------------------------------------------
     {
-      NSMenu *currentMenu = _menu;
+      NSMenu *currentMenu = _attachedMenu;
 
       while (currentMenu && ![currentMenu isTransient])
         {
@@ -1262,7 +1262,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
 
   if (indexOfActionToExecute >= 0
-      && [_menu attachedMenu] != nil && [_menu attachedMenu] ==
+      && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
       [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
       if (subMenusNeedRemoving)
@@ -1273,7 +1273,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       return NO;
     }
 
-  [_menu performActionForItemAtIndex: indexOfActionToExecute];
+  [_attachedMenu performActionForItemAtIndex: indexOfActionToExecute];
 
   /*
    * Remove highlighting.
@@ -1308,7 +1308,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
    * Only for non transient menus do we want
    * to remember the position.
    */ 
-  restorePosition = ![_menu isTransient];
+  restorePosition = ![_attachedMenu isTransient];
 
   if (restorePosition)
     { // store old position;
@@ -1333,7 +1333,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           
           origin.x += (originalTopLeft.x - currentTopLeft.x);
           origin.y += (originalTopLeft.y - currentTopLeft.y);
-          [_menu nestedSetFrameOrigin: origin];
+          [_attachedMenu nestedSetFrameOrigin: origin];
         }
     }
 }
@@ -1345,7 +1345,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (BOOL) performKeyEquivalent: (NSEvent *)theEvent
 {
-  return [_menu performKeyEquivalent: theEvent];
+  return [_attachedMenu performKeyEquivalent: theEvent];
 }
 
 

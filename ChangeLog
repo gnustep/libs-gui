@@ -1,3 +1,10 @@
+2003-07-23 22:23  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSResponder.h: Make _menu private.
+
+	* Headers/gnustep/gui/NSMenuView.h: Add _attachedMenu ivar.
+	* Source/NSMenuView.m: Use it.
+
 2003-07-22  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSOpenGLView.m ([NSOpenGLView -initWithFrame:]): Implemented

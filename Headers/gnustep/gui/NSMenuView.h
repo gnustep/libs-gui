@@ -96,6 +96,12 @@
   id             _items_link;
   int            _leftBorderOffset;
   id             _titleView;
+
+  /*
+  Private and not named '_menu' to avoid confusion and further problems
+  with NSResponder's menu.
+  */
+  NSMenu        *_attachedMenu;
 }
 
 /***********************************************************************

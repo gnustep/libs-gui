@@ -47,7 +47,15 @@
   NSInterfaceStyle	_interface_style;
 #endif
   NSResponder		*_next_responder;
-  NSMenu                *_menu;  
+
+  /*
+  Due to interface brain-damage, but NSResponder and NSMenuView have -menu
+  and -setMenu: methods, but for different menus. Thus, to prevent (future,
+  there have already been some) problems and confusion, this ivar is
+  private (iow, it can't be accidentally used in NSMenuView).
+  */
+@private
+  NSMenu                *_menu;
   /*
    * Flags for internal use by NSResponder and it's subclasses.
    */
