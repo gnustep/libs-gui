@@ -341,15 +341,24 @@ has blocked and waited for events.
 @end
 
 static NSCell	*tileCell = nil;
+static BOOL      useWindowmakerIconBackground = NO;
 
 @implementation NSMiniWindowView
 
 + (void) initialize
 {
-  NSImage *tileImage = [NSImage imageNamed: @"common_MiniWindowTile"];
-
-  tileCell = [[NSCell alloc] initImageCell: tileImage];
-  [tileCell setBordered: NO];
+  NSImage *tileImage;
+  if ([[NSUserDefaults standardUserDefaults]
+	  boolForKey: @"GSUseWindowmakerIconBackground"])
+    {
+      useWindowmakerIconBackground = YES;       
+    }
+  else
+    {
+      tileImage = [NSImage imageNamed: @"common_Tile"];
+      tileCell = [[NSCell alloc] initImageCell: tileImage];
+      [tileCell setBordered: NO];
+    }
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -365,8 +374,19 @@ static NSCell	*tileCell = nil;
 }
 
 - (void) drawRect: (NSRect)rect
-{                                                
-  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+{   
+  if (useWindowmakerIconBackground)
+    {
+      PScompositerect(_bounds.origin.x,
+		      _bounds.origin.y,
+		      _bounds.size.width,
+		      _bounds.size.height,
+		      NSCompositeClear);
+    }
+  else
+    {
+      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+    }
   [imageCell drawWithFrame: NSMakeRect(8,4,48,48) inView: self];
   [titleCell drawWithFrame: NSMakeRect(1,52,62,11) inView: self];
 }
@@ -453,7 +473,8 @@ static NSCell	*tileCell = nil;
       [titleCell setEditable: NO];
       [titleCell setBordered: NO];
       [titleCell setAlignment: NSCenterTextAlignment];
-      [titleCell setDrawsBackground: NO];
+      [titleCell setDrawsBackground: YES];
+      [titleCell setBackgroundColor: [NSColor blackColor]];
       [titleCell setTextColor: [NSColor whiteColor]];
       [titleCell setFont: [NSFont systemFontOfSize: 8]];
     }

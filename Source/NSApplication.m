@@ -66,6 +66,7 @@
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSNibLoading.h"
 #include "AppKit/NSPageLayout.h"
+#include "AppKit/PSOperators.h"
 
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSServicesManager.h"
@@ -342,16 +343,26 @@ NSApplication	*NSApp = nil;
 // Class variables
 static NSCell* dragCell = nil;
 static NSCell* tileCell = nil;
+static BOOL useWindowmakerIconBackground = NO;
 
 + (void) initialize
 {
   NSImage	*defImage = [NSImage imageNamed: @"GNUstep"];
-  NSImage	*tileImage = [NSImage imageNamed: @"common_Tile"];
+  NSImage	*tileImage;
 
   dragCell = [[NSCell alloc] initImageCell: defImage];
   [dragCell setBordered: NO];
-  tileCell = [[NSCell alloc] initImageCell: tileImage];
-  [tileCell setBordered: NO];
+  if ([[NSUserDefaults standardUserDefaults]
+	  boolForKey: @"GSUseWindowmakerIconBackground"])
+    {
+      useWindowmakerIconBackground = YES; 
+    }
+  else
+    {
+      tileImage = [NSImage imageNamed: @"common_Tile"];
+      tileCell = [[NSCell alloc] initImageCell: tileImage];
+      [tileCell setBordered: NO];
+    }
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -379,7 +390,19 @@ static NSCell* tileCell = nil;
 
 - (void) drawRect: (NSRect)rect
 {
-  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+  if (useWindowmakerIconBackground)
+    {
+      PScompositerect(_bounds.origin.x,
+      		      _bounds.origin.y,
+		      _bounds.size.width,
+		      _bounds.size.height,
+		      NSCompositeClear);
+    }
+  else
+    {
+      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+    }
+  
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
   if ([NSApp isHidden])
     {

@@ -1,3 +1,14 @@
+2004-07-23 01:54  Matt Rice <ratmice@yahoo.com>
+
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document
+	GSUseWindowmakerIconBackground.
+	* Source/NSApplication.m ([NSAppIconView +initialize],
+	[NSAppIconView -drawRect:]): If the GSUseWindowmakerIconBackground
+	default is YES, do a clear composite of the background instead
+	of using the tile.
+	* Source/NSWindow.m ([NSMiniWindowView +initialize],
+	[NSMiniWindowView -drawRect:]): Idem.
+
 2004-07-22 04:46  Chad Hardin <cehardin@mac.com>
 
 	* Headers/AppKit/NSPageLayout.h: Changed to MVC and a whole new UI.
