@@ -94,31 +94,34 @@ typedef enum _NSSelectionAffinity {
 
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
 {	
-  // Attributes
   id _delegate;
+  // content
+  NSTextStorage	*_textStorage;
+  
+  // Attributes
   struct GSTextFlagsType {
+    unsigned is_field_editor: 1;
     unsigned is_editable: 1;
-    unsigned is_rich_text: 1;
     unsigned is_selectable: 1;
+    unsigned is_rich_text: 1;
     unsigned imports_graphics: 1;
-    unsigned uses_font_panel: 1;
+    unsigned draws_background: 1;
     unsigned is_horizontally_resizable: 1;
     unsigned is_vertically_resizable: 1;
+    unsigned uses_font_panel: 1;
+    unsigned uses_ruler: 1;
     unsigned is_ruler_visible: 1;
-    unsigned is_field_editor: 1;
-    unsigned draws_background: 1;
+    unsigned smart_insert_delete: 1;
   } _tf;
-  NSTextAlignment _alignment;
-  NSColor *_background_color;
-  NSColor *_text_color;
-  NSFont *_default_font;
   NSRange _selected_range;
+  NSColor *_caret_color;
   NSSize _minSize;
   NSSize _maxSize;
   NSMutableDictionary *_typingAttributes;
-  
-  // content
-  NSTextStorage	*_textStorage;
+  NSTextAlignment _alignment;
+  NSFont *_default_font;
+  NSColor *_background_color;
+  NSColor *_text_color;
   
   int _spellCheckerDocumentTag;
   
