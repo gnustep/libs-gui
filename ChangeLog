@@ -1,3 +1,21 @@
+2000-08-27  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSFontPanel.m:
+	Changed to tags for all subviews to prepare for the switch to
+	gmodel. [panelConvertFont:] corrected to not return nil.
+	* Header/gnustep/gui/NSFontPanel.h
+	Removed ivars for subviews.
+	* Source/NSFontManager.m
+	[convertWeight:ofFont:] better conversion.
+	* Source/NSView.m:
+	[viewWithTag:] corrected bug in optimisation for first sub-level.
+	* Header/gnustep/gui/NSLayoutManager.h
+	* Source/NSLayoutManager.m
+	Started cleanup of code.
+	* Source/NSTextStorage.c
+	[edited:range:changeInLength:] and [processEditing] corrected
+	reported range.
+	
 Sun Aug 27 19:11:59 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-initWithFrame:]): Bug fix in
