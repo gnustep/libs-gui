@@ -33,8 +33,8 @@
 #error "The OpenStep specification does not define an NSTextContainer class."
 #endif
 
-#import <Foundation/Foundation.h>
-#import <AppKit/NSTextView.h>
+#include <Foundation/Foundation.h>
+#include <AppKit/NSTextView.h>
 
 typedef enum {
   NSLineSweepLeft,
