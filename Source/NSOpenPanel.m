@@ -48,33 +48,39 @@
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSOpenPanel.h>
 
-/*
- * TODO: Test Everything More, debug, make sure all delegate's methods 
- * are used; simplify, arrange so no code is repeated between NSOpenPanel 
- * and NSSavePanel; check better prompts, titles, textfield stuff.
- *
- */
+static NSOpenPanel *_gs_gui_open_panel = nil;
 
 // Pacify the compiler
-@interface NSFileManager (SavePanelExtensions)
-- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
-@end 
-
-@interface NSSavePanel (PrivateMethods)
-- (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
+@interface NSSavePanel (_PrivateMethods)
+- (void) _resetDefaults;
 @end
 //
 
-static NSOpenPanel *_gs_gui_open_panel = nil;
-
-@interface NSOpenPanel (PrivateMethods)
-- (void) _enableOKButton;
+@interface NSOpenPanel (_PrivateMethods)
+- (void) _resetDefaults;
+- (BOOL) _shouldShowExtension: (NSString *)extension;
 @end
 
-@implementation NSOpenPanel (PrivateMethods)
-- (void) _enableOKButton
+@implementation NSOpenPanel (_PrivateMethods)
+- (void) _resetDefaults
 {
+  [super _resetDefaults];
+  [self setTitle: @"Open"];
+  [self setCanChooseFiles: YES];
+  [self setCanChooseDirectories: YES];
+  [self setAllowsMultipleSelection: NO];
   [_okButton setEnabled: YES];
+}
+// NB: Invoked only for files.
+- (BOOL) _shouldShowExtension: (NSString *)extension;
+{
+  if ((_fileTypes) && ([_fileTypes containsObject: extension] == NO))
+    return NO;
+  
+  if (_canChooseFiles == NO)
+    return NO;
+
+  return YES;
 }
 @end
 
@@ -99,19 +105,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   if (!_gs_gui_open_panel)
     _gs_gui_open_panel = [[NSOpenPanel alloc] init];
 
-  [_gs_gui_open_panel setDirectory: [[NSFileManager defaultManager] 
-				    currentDirectoryPath]];
-  [_gs_gui_open_panel setPrompt: @"Name:"];
-  [_gs_gui_open_panel setTitle: @"Open"];
-  [_gs_gui_open_panel setRequiredFileType: @""];
-  [_gs_gui_open_panel setTreatsFilePackagesAsDirectories: NO];
-  [_gs_gui_open_panel setDelegate: nil];
-  [_gs_gui_open_panel setAccessoryView: nil];
-  [_gs_gui_open_panel setCanChooseFiles: YES];
-  [_gs_gui_open_panel setCanChooseDirectories: YES];
-  [_gs_gui_open_panel setAllowsMultipleSelection: NO];
-  [_gs_gui_open_panel _enableOKButton];
-  
+  [_gs_gui_open_panel _resetDefaults];
+
   return _gs_gui_open_panel;
 }
 
@@ -122,6 +117,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   _canChooseFiles = YES;
   return self;
 }
+
+// dealloc is the same as NSSavePanel
 
 /*
  * Filtering Files
@@ -139,6 +136,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (void) setCanChooseDirectories: (BOOL)flag
 {
   _canChooseDirectories = flag;
+  // TODO: fix the following in NSBrowser
   [_browser setAllowsBranchSelection: flag];
 }
 
@@ -223,24 +221,30 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 {
   ASSIGN (_fileTypes, fileTypes);
 
+  if (path == nil)
+    {
+      if (_directory)
+	path = _directory; 
+      else
+	path= [[NSFileManager defaultManager] currentDirectoryPath];
+    }  
+
   if (name == nil)
     name = @"";
-
-  if (path == nil)
-    path = @"";
 
   if (_canChooseDirectories == NO)
     {
       BOOL isDir;
       NSString *file = [path stringByAppendingPathComponent: name];
-
-      if ((![[NSFileManager defaultManager] fileExistsAtPath: file
-					    isDirectory: &isDir]) 
+      
+      if (([[NSFileManager defaultManager] fileExistsAtPath: file
+					   isDirectory: &isDir] == NO) 
 	  || isDir)
 	[_okButton setEnabled: NO];
     }
-
-  return [self runModalForDirectory: path file: name];  
+  
+  return [self runModalForDirectory: path 
+	       file: name];  
 }
 
 /*
@@ -267,148 +271,48 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 //
 // NSOpenPanel browser delegate methods
 //
-@interface NSOpenPanel (BrowserDelegate)
-- (void) browser: (id)sender 
-createRowsForColumn: (int)column
-	inMatrix: (NSMatrix *)matrix;
-
+@interface NSOpenPanel (_BrowserDelegate)
 - (BOOL) browser: (NSBrowser *)sender
 selectCellWithString: (NSString *)title
 	inColumn: (int)column;
 @end
 
-@implementation NSOpenPanel (BrowserDelegate)
-- (void) browser: (id)sender 
-createRowsForColumn: (int)column
-	inMatrix: (NSMatrix *)matrix
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString	*path = [sender pathToColumn: column], *file;
-  NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
-  NSArray       *extArray = [NSArray arrayWithObjects: @"app", 
-		       @"bundle", @"debug", @"palette", @"profile", nil];
-  unsigned	i, count;
-  BOOL		exists, isDir;
-  NSBrowserCell *cell;
-  NSString      *theFile;
-  NSString      *theExtension;
-  unsigned int  addedRows = 0;
-  
-  // if array is empty, just return (nothing to display)
-  if ([files lastObject] == nil)
-    return;
-
-  if ([_fileTypes count] > 0)
-    {
-      extArray = [extArray arrayByAddingObjectsFromArray: _fileTypes];
-    }
-
-  // sort list of files to display
-  if (_delegateHasCompareFilter == YES)
-    {
-      int compare(id elem1, id elem2, void *context)
-      {
-	return (int)[_delegate panel: self
-		     compareFilename: elem1
-				with: elem2
-		       caseSensitive: YES];
-      }
-      files = [files sortedArrayUsingFunction: compare context: nil];
-    }
-  else
-    files = [files sortedArrayUsingSelector: @selector(compare:)];
-
-  count = [files count];
-  for (i = 0; i < count; i++)
-    {
-      theFile = [files objectAtIndex: i];
-      theExtension = [theFile pathExtension];
-
-      file = [path stringByAppendingPathComponent: theFile];
-      exists = [fm fileExistsAtPath: file
-		   isDirectory: &isDir];
-      
-      if (_treatsFilePackagesAsDirectories == NO && isDir == YES)
-	{
-	  if ([extArray containsObject: theExtension])
-	    isDir = NO;
-	}
-
-      if (isDir)
-	{
-	  [matrix insertRow: addedRows];
-	  cell = [matrix cellAtRow: addedRows column: 0];
-	  [cell setStringValue: theFile];
-	  [cell setLeaf: NO];
-	  addedRows++;
-	}
-      else
-	{
-	  if (_canChooseFiles == YES)
-	    {
-	      if (_fileTypes)
-		if ([_fileTypes containsObject: theExtension] == NO)
-		  continue;
-	      
-	      [matrix insertRow: addedRows];
-	      cell = [matrix cellAtRow: addedRows column: 0];
-	      [cell setStringValue: theFile];
-	      [cell setLeaf: YES];
-	      addedRows++;
-	    }
-	}
-      
-    }
-}
-
+@implementation NSOpenPanel (_BrowserDelegate)
 - (BOOL) browser: (NSBrowser *)sender
 selectCellWithString: (NSString *)title
 	inColumn: (int)column
 {
-  if (([_browser allowsMultipleSelection] == NO) 
-      || ([[_browser selectedCells] count] == 1))
+  NSMatrix *m;
+  NSArray *c;
+
+  m = [_browser matrixInColumn: column];
+  c = [m selectedCells];
+  
+  if ([c count] == 1)
     {
-      [self _setDirectory: [sender pathToColumn: [_browser lastColumn]] 
-				   updateBrowser: NO];
-      
-      ASSIGN (_fullFileName, [sender path]);
-      if (_canChooseDirectories)
+      BOOL isLeaf = [[c objectAtIndex: 0] isLeaf];
+
+      if (_canChooseDirectories == NO)
 	{
-	  if ([[sender selectedCell] isLeaf])
-	    {
-	      [[_form cellAtIndex: 0] setStringValue: title];
-	      [_form display];
-	    }
+	  [_okButton setEnabled: isLeaf];
+	  return [super browser: sender
+			selectCellWithString: title
+			inColumn: column];
 	}
-      else 
+      else // _canChooseDirectories
 	{
-	  if ([[sender selectedCell] isLeaf])
-	    {
-	      [[_form cellAtIndex: 0] setStringValue: title];
-	      [_form display];
-	      [_okButton setEnabled: YES];
-	    }
-	  else
-	    {
-	      [[_form cellAtIndex: 0] setStringValue: nil];
-	      [_form display];
-	      [_okButton setEnabled: NO];
-	    }
+	  BOOL ret;
+	  ret = [super browser: sender
+		       selectCellWithString: title
+		       inColumn: column];
+	  if (isLeaf == NO)
+	    ASSIGN (_fullFileName, _directory);
+	  return ret;
 	}
     }
-  else // Multiple Selection 
+  else // Multiple Selection, and it is not the first item of the selection
     {
-      // This will be useless when NSBrowser works.
-      // NSBrowser, when we ask not to allow to select 
-      // branches on multiple selections, should select only leaves
-      // when the user is doing a multiple selection.
-      // For now, use the following *unsatisfactory* hack.
-      // (unsatisfactory because if the user selects and then 
-      // deselects a directory, we don't re-enable the OK button).
-      if (_canChooseDirectories)      
-	if ([[sender selectedCell] isLeaf] == NO)
-	  [_okButton setEnabled: NO];
+      return YES;
     }
-  return YES;
 }
 @end
