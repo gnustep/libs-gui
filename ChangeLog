@@ -3,6 +3,11 @@
 	* configure.ac: Fix setting ADDITIONAL_INCLUDE_... in
 	audiofile section.
 
+2003-07-23  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/GSSpellPanel.gorm: Added to replace old .gmodel
+	* Source/NSSpellChecker.m: Updated to use .gorm file.
+	
 2003-07-23  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.8.8
