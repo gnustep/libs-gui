@@ -1343,6 +1343,12 @@ static float scrollerWidth;
         }
       _cornerView = aView;
     }
+  else if (_cornerView != nil)
+    {
+      [self removeSubview: _cornerView];
+      _cornerView = nil;
+      _hasCornerView = NO;
+    }
 }
 
 @end

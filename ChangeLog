@@ -1,3 +1,8 @@
+2004-09-25  Matt Rice <ratmice@yahoo.com>
+	
+	* Source/NSScrollView.m: Remove corner view when we have one, but no 
+	vertical scroller. (Fixes #10501).
+
 2004-09-24  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/GNUmakefile.postamble: Clean up files properly
