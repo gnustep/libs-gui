@@ -657,7 +657,6 @@ static Class rulerViewClass = nil;
   [_horizScroller setFrame: horizScrollerRect];
   [_vertScroller setFrame: vertScrollerRect];
   [_contentView setFrame: contentRect];
-  [self reflectScrolledClipView: (NSClipView*)_contentView];
 }
 
 - (void) drawRect: (NSRect)rect
