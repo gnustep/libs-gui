@@ -2372,6 +2372,8 @@ resetCursorRectsForView(NSView *theView)
 	      case GSAppKitWindowMoved:
 		frame.origin.x = (float)[theEvent data1];
 		frame.origin.y = (float)[theEvent data2];
+		NSDebugLLog(@"Moving", @"Move event: %d %@",
+		  window_num, NSStringFromPoint(frame.origin));
 		if (autosave_name != nil)
 		  {
 		    [self saveFrameUsingName: autosave_name];
@@ -2390,6 +2392,8 @@ resetCursorRectsForView(NSView *theView)
 		{
 		  NSRect	rect = frame;
 
+		  rect = [NSWindow contentRectForFrameRect: rect
+						 styleMask: style_mask];
 		  rect.origin = NSZeroPoint;
 		  [_wv setFrame: rect];
 		  [_wv setNeedsDisplay: YES];
@@ -2398,6 +2402,7 @@ resetCursorRectsForView(NSView *theView)
 		[nc postNotificationName: NSWindowDidResizeNotification
 				  object: self];
 		break;
+
 	      case GSAppKitWindowClose:
 		[self performClose: NSApp];
 		break;
