@@ -229,8 +229,9 @@ the last time or not, we wouldn't need to clear the cache every time */
 
 /*
 Should return the first glyph on the next line, which must be <=gi and
->=cache_base (TODO: not enough). Glyphs up to and including gi will have
-been cached.
+>=cache_base (TODO: not enough. actually, it probably is now. the wrapping
+logic below will fall back to char wrapping if necessary). Glyphs up to and
+including gi will have been cached.
 */
 -(unsigned int) breakLineByWordWrappingBefore: (unsigned int)gi
 {
@@ -244,7 +245,7 @@ been cached.
   while (gi > 0)
     {
       if (g->g == NSControlGlyph)
-	return gi;
+	return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
       if (ch == 0x20 || ch == 0x0a || ch == 0x0d /* TODO: paragraph/line separator */ )
 	{
@@ -709,9 +710,12 @@ restart:
 	    /* TODO: this is a major bottleneck */
 /*	    if (last_glyph)
 	      {
+		BOOL n;
 		p = [f positionOfGlyph: g->g
 		      precededByGlyph: last_glyph
-		      isNominal: &g->nominal];
+		      isNominal: &n];
+		if (!n)
+		  g->nominal = NO;
 		p.x += last_p.x;
 		p.y += last_p.y;
 	      }*/

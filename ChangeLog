@@ -1,3 +1,8 @@
+2003-02-09 18:34  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-breakLineByWordWrappingBefore:):
+	Return correct index when breaking at a control glyph.
+
 2003-02-09 18:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,
