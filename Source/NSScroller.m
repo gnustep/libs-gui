@@ -252,7 +252,7 @@ static const float buttonsWidth = 16;
 
 - (void) checkSpaceForParts
 {
-  NSSize	frameSize = frame.size;
+  NSSize	frameSize = _frame.size;
   float		size = (_isHorizontal ? frameSize.width : frameSize.height);
   float		scrollerWidth = [isa scrollerWidth];
 
@@ -357,8 +357,8 @@ static const float buttonsWidth = 16;
    */
   NSRect rect;
 
-  if (thePoint.x <= 0 || thePoint.x >= frame.size.width
-    || thePoint.y <= 0 || thePoint.y >= frame.size.height)
+  if (thePoint.x <= 0 || thePoint.x >= _frame.size.width
+    || thePoint.y <= 0 || thePoint.y >= _frame.size.height)
     return NSScrollerNoPart;
 
   rect = [self rectForPart: NSScrollerDecrementLine];
@@ -614,7 +614,7 @@ static const float buttonsWidth = 16;
       if (theCell)
 	{
 	  [theCell highlight: YES withFrame: rect inView: self];
-	  [window flushWindow];
+	  [_window flushWindow];
 
 	  NSDebugLog (@"tracking cell %x", theCell);
 
@@ -624,7 +624,7 @@ static const float buttonsWidth = 16;
 				untilMouseUp: YES];
 
 	  [theCell highlight: NO withFrame: rect inView: self];
-	  [window flushWindow];
+	  [_window flushWindow];
 	}
 
       if (shouldReturn)
@@ -648,8 +648,8 @@ static const float buttonsWidth = 16;
   NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
 	    rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
-  [[window backgroundColor] set];
-  NSRectFill (frame);
+  [[_window backgroundColor] set];
+  NSRectFill (_bounds);
 
   [self drawKnobSlot];
   [self drawKnob];
@@ -717,7 +717,7 @@ static const float buttonsWidth = 16;
 
 - (NSRect) rectForPart: (NSScrollerPart)partCode
 {
-  NSRect scrollerFrame = frame;
+  NSRect scrollerFrame = _frame;
   float x = 1, y = 1;
   float width, height;
   float buttonsSize = 2 * buttonsWidth + 2;
