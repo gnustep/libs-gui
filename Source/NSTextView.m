@@ -1597,6 +1597,12 @@ static NSNotificationCenter *nc;
 					  repeats: YES];
 	  RETAIN (_insertionPointTimer);
 	}
+      /* Ok - blinking has just been turned on.  Make sure we start
+       * the on/off/on/off blinking from the 'on', because in that way
+       * the user can see where the insertion point is as soon as
+       * possible.  
+       */
+      _drawInsertionPointNow = YES;
     }
   else
     {
