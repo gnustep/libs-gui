@@ -181,6 +181,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
 @interface	GSAlertPanel : NSPanel
 {
+  NSSize        originalSize;
   NSButton	*defButton;
   NSButton	*altButton;
   NSButton	*othButton;
@@ -275,6 +276,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 - (void) encodeWithModelArchiver: (GMArchiver *)archiver
 {
   [super encodeWithModelArchiver: archiver];
+  [archiver encodeSize: originalSize withName: @"OriginalSize"];
   [archiver encodeObject: defButton withName: @"DefaultButton"];
   [archiver encodeObject: altButton withName: @"AlternateButton"];
   [archiver encodeObject: othButton withName: @"OtherButton"];
@@ -304,6 +306,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
       NSRect	rect;
       NSBox	*box;
 
+      originalSize = r.size;
       [self setMaxSize: r.size];
       [self setMinSize: r.size];
       [self setTitle: @" "];
@@ -368,11 +371,11 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
       rect.size.height = 36.0;
       rect.size.width = 344.0;
-      rect.origin.y = 46.0;
+      rect.origin.y = 55.0; 
       rect.origin.x = 8.0;
       messageField = [[NSTextField alloc] initWithFrame: rect];
       [messageField setAutoresizingMask:
-		NSViewWidthSizable | NSViewHeightSizable | NSViewMaxYMargin];
+		      NSViewMinYMargin | NSViewMaxYMargin];
       [messageField setEditable: NO];
       [messageField setSelectable: NO];
       [messageField setBezeled: NO];
@@ -386,7 +389,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
       rect.origin.y = 121.0;
       rect.origin.x = 64.0;
       titleField = [[NSTextField alloc] initWithFrame: rect];
-      [titleField setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      [titleField setAutoresizingMask: NSViewMinYMargin];
       [titleField setEditable: NO];
       [titleField setSelectable: NO];
       [titleField setBezeled: NO];
@@ -401,6 +404,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 - (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
 {
   self = [super initWithModelUnarchiver: unarchiver];
+  originalSize = [unarchiver decodeSizeWithName: @"OriginalSize"];
   defButton = [[unarchiver decodeObjectWithName: @"DefaultButton"] retain];
   altButton = [[unarchiver decodeObjectWithName: @"AlternateButton"] retain];
   othButton = [[unarchiver decodeObjectWithName: @"OtherButton"] retain];
@@ -431,27 +435,33 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	    other: (NSString*)otherButton
 {
   NSView	*content = [self contentView];
-  float		maxX = NSMaxX([content bounds]) - 5;
-  float		diff;
+  float		button_origin;
+  float		excessWidth = 0;
+  float         width;
   NSRect	bRect;
+  NSSize        buttonSize = NSMakeSize (72, 24);
+  int           numberOfButtons = 0;
 
-  if ([icoButton superview] == nil)
+  /* First step, get minimum size needed for objects */
+  /* Put all the objects in the panel now, otherwise resizing the panel 
+     won't do the vertical position computations for us */
+  if ([icoButton superview] == nil) 
     [content addSubview: icoButton];
 
+  /* NB: Need to make all the buttons of the same size */
   if (defaultButton != nil)
     {
+      numberOfButtons++;
       [defButton setTitle: defaultButton];
       [defButton sizeToFit];
+      bRect = [defButton frame];
+      if (bRect.size.height > buttonSize.height)
+	buttonSize.height = bRect.size.height;
+      if (bRect.size.width > buttonSize.width)
+	buttonSize.width = bRect.size.width;
+      
       if ([defButton superview] == nil)
 	[content addSubview: defButton];
-
-      bRect = [defButton frame];
-      diff = maxX - NSMaxX(bRect);
-      bRect.origin.x += diff;
-      [defButton setFrame: bRect];
-      maxX = NSMinX(bRect) - 10;
-
-      [self makeFirstResponder: defButton];
     }
   else
     {
@@ -461,16 +471,17 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
   if (alternateButton != nil)
     {
+      numberOfButtons++;
       [altButton setTitle: alternateButton];
       [altButton sizeToFit];
+      bRect = [altButton frame];
+      if (bRect.size.height > buttonSize.height)
+	buttonSize.height = bRect.size.height;
+      if (bRect.size.width > buttonSize.width)
+	buttonSize.width = bRect.size.width;
+
       if ([altButton superview] == nil)
 	[content addSubview: altButton];
-
-      bRect = [altButton frame];
-      diff = maxX - NSMaxX(bRect);
-      bRect.origin.x += diff;
-      [altButton setFrame: bRect];
-      maxX = NSMinX(bRect) - 10;
     }
   else
     {
@@ -480,16 +491,17 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
   if (otherButton != nil)
     {
+      numberOfButtons++;
       [othButton setTitle: otherButton];
       [othButton sizeToFit];
+      bRect = [othButton frame];
+      if (bRect.size.height > buttonSize.height)
+	buttonSize.height = bRect.size.height;
+      if (bRect.size.width > buttonSize.width)
+	buttonSize.width = bRect.size.width;
+      
       if ([othButton superview] == nil)
 	[content addSubview: othButton];
-
-      bRect = [othButton frame];
-      diff = maxX - NSMaxX(bRect);
-      bRect.origin.x += diff;
-      [othButton setFrame: bRect];
-      maxX = NSMinX(bRect) - 10;
     }
   else
     {
@@ -497,10 +509,31 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	[othButton removeFromSuperview];
     }
 
+  if (numberOfButtons > 0)
+    {
+      // Compute total width taken up by buttons
+      // buttonSize: size of a button
+      // 10: spacing between buttons
+      // 5: spacing between last button and window border
+      width = (10 + buttonSize.width) * numberOfButtons;
+
+      // If needed, take note that we have to resize the panel
+      if (width - originalSize.width > excessWidth)
+	excessWidth = width - originalSize.width;
+
+      // Secondary TODO: Check also height.
+    }	
+
   if (message != nil)
     {
       [messageField setStringValue: message];
       [messageField sizeToFit];
+      // 5: spacing between text and window borders
+      width = [messageField frame].size.width + 10;
+
+      if (width - originalSize.width > excessWidth)
+	excessWidth = width - originalSize.width;
+
       if ([messageField superview] == nil)
 	[content addSubview: messageField];
     }
@@ -514,6 +547,8 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
     {
       [titleField setStringValue: title];
       [titleField sizeToFit];
+      // TODO: Check title dimension
+
       if ([titleField superview] == nil)
 	[content addSubview: titleField];
     }
@@ -521,6 +556,63 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
     {
       if ([titleField superview] != nil)
 	[titleField removeFromSuperview];
+    }
+
+  /* Second step, resize the panel to comfortable size */
+  if (excessWidth > 0)
+    {
+      NSSize s = NSMakeSize (originalSize.width + excessWidth, 
+			     originalSize.height + (excessWidth/2));
+      [self setMaxSize: s];
+      [self setMinSize: s];
+      [self setContentSize: s];
+    }
+  else
+    {
+      // Resize the panel to standard dimension
+      [self setMaxSize: originalSize];
+      [self setMinSize: originalSize];
+      [self setContentSize: originalSize];
+    }
+
+  /* Third step, now that the panel size is OK, move objects 
+     in the right position */
+  button_origin = [content bounds].size.width - 5 - buttonSize.width;
+
+  if (defaultButton != nil)
+    {
+      bRect.size = buttonSize;
+      bRect.origin.x = button_origin;
+      bRect.origin.y = [defButton frame].origin.y;
+      [defButton setFrame: bRect];
+      button_origin -= 10 + buttonSize.width;
+      
+      [self makeFirstResponder: defButton];
+    }
+  
+  if (alternateButton != nil)
+    {
+      bRect.size = buttonSize;
+      bRect.origin.x = button_origin;
+      bRect.origin.y = [altButton frame].origin.y;
+      [altButton setFrame: bRect];
+      button_origin -= 10 + buttonSize.width;
+    }
+  
+  if (otherButton != nil)
+    {
+      bRect.size = buttonSize;
+      bRect.origin.x = button_origin;
+      bRect.origin.y = [othButton frame].origin.y;
+      [othButton setFrame: bRect];
+    }
+  
+  if (message != nil)
+    {
+      // Center the message
+      bRect = [messageField frame];
+      bRect.origin.x = ([content frame].size.width - bRect.size.width) / 2;
+      [messageField setFrameOrigin: NSMakePoint (bRect.origin.x, bRect.origin.y)];
     }
 
   result = NSAlertErrorReturn;	/* If no button was pressed	*/
