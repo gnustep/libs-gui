@@ -1,3 +1,11 @@
+2004-07-24 22:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSToolbarItem.m: Use the predefined variables instead of
+	inline string literals for attribute names.
+	([GSToolbarButton -layout], [GSToolbarBackView -drawRect:],
+	[GSToolbarBackView -layout]): Release attrStr/attrString.
+	(-copyWithZone:): Return new, not self.
+
 2004-07-23 01:54  Matt Rice <ratmice@yahoo.com>
 
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document

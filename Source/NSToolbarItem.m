@@ -181,7 +181,7 @@ static NSFont *SmallFont = nil;
              
   // Adjust the layout in accordance with the label
 	
-  attr = [NSDictionary dictionaryWithObject: font forKey: @"NSFontAttributeName"];
+  attr = [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName];
   if (label == nil || [label isEqualToString: @""])
     label = @"Dummy";
   attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
@@ -212,6 +212,7 @@ static NSFont *SmallFont = nil;
       default:
 	; // Invalid
     }
+  DESTROY(attrStr);
       
   // Set the frame size to use the new layout
   
@@ -324,13 +325,14 @@ static NSFont *SmallFont = nil;
     {
       // We draw the label
       attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
-                                        @"NSFontAttributeName", 
+					   NSFontAttributeName,
 							 color,
-                             @"NSForegroundColorAttributeName",
+				NSForegroundColorAttributeName,
 						          nil];
       attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
       textX = (([self frame].size.width - _InsetItemTextX) - [attrString size].width) / 2;
       [attrString drawAtPoint: NSMakePoint(textX, _InsetItemTextY)];
+      DESTROY(attrString);
     }
 }
 
@@ -392,7 +394,7 @@ static NSFont *SmallFont = nil;
   
   // Adjust the layout in accordance with the label
  
-  attr = [NSDictionary dictionaryWithObject: _font forKey: @"NSFontAttributeName"];
+  attr = [NSDictionary dictionaryWithObject: _font forKey: NSFontAttributeName];
   if (label == nil || [label isEqualToString: @""])
     label = @"Dummy";
   attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
@@ -460,6 +462,7 @@ static NSFont *SmallFont = nil;
       [view setFrameOrigin: 
         NSMakePoint((layoutedWidth - [view frame].size.width) / 2, insetItemViewY)];
     }
+  DESTROY(attrStr);
 }
 
 - (NSToolbarItem *)toolbarItem
@@ -1157,7 +1160,8 @@ static NSFont *SmallFont = nil;
   [new setMinSize: NSMakeSize(_minSize.width, _minSize.height)];
   [new setMaxSize: NSMakeSize(_maxSize.width, _maxSize.height)];
 
-  return self;
+  return new;
 }
 
 @end
+
