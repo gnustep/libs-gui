@@ -323,7 +323,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
-      return NSMakeRect(0, 0, width, 12);
+      return NSMakeRect(0, 0, 0, 12);
     }
 
   i1 = [self lineLayoutIndexForGlyphIndex: aRange.location];
@@ -339,7 +339,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
       rect1 = NSUnionRect(rect1, currentInfo->usedRect);
     }
 
-  rect1.size.width = width - rect1.origin.x;
   return rect1;
 }
 
