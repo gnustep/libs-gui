@@ -55,7 +55,7 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   NSSize mcell_imageSize;
 
 @private
-  DrawingIMP _drawMethods[4];
+  NSColor *_backgroundColor;
 }
 
 - (void)setHighlighted:(BOOL)flag;

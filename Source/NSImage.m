@@ -628,7 +628,8 @@ static Class			cacheClass = 0;
 	    {
 	      [rep setOpaque: [repd->original isOpaque]];
 	    }
-	  NSDebugLLog(@"NSImage", @"Rendered rep %d", (int)rep);
+	  NSDebugLLog(@"NSImage", @"Rendered rep %d on background %@",
+	    (int)rep, repd->bg);
 	}
     }
   
@@ -887,6 +888,7 @@ static Class			cacheClass = 0;
 	  GSRepData	*partialCache = nil;
 	  GSRepData	*validCache = nil;
 	  GSRepData	*reps[count];
+          unsigned	partialCount = 0;
 	  unsigned	i;
 	  BOOL		opaque = [rep isOpaque];
 
@@ -896,7 +898,7 @@ static Class			cacheClass = 0;
 	   * Search the cached image reps for any whose original is our
 	   * 'best' image rep.  See if we can notice any invalidated
 	   * cache as we go - if we don't find a valid cache, we want to
-	   * re-use an invalidated one rather than createing a new one.
+	   * re-use an invalidated one rather than creating a new one.
 	   * NB. If the image rep is opaque, then any cached rep is valid
 	   * irrespective of the background color it was drawn with.
 	   */
@@ -904,7 +906,7 @@ static Class			cacheClass = 0;
 	    {
 	      GSRepData	*repd = reps[i];
 
-	      if (repd->original == rep)
+	      if (repd->original == rep && repd->rep != rep)
 		{
 		  if (repd->bg == nil)
 		    {
@@ -921,6 +923,7 @@ NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %d", repd->bg, _color, repd->rep);
 		    {
 NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
 		      partialCache = repd;
+		      partialCount++;
 		    }
 		}
 	    }
@@ -943,8 +946,13 @@ NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
 		}
 	      cacheRep = validCache->rep;
 	    }
-	  else if (partialCache != nil)
+	  else if (partialCache != nil && partialCount > 2)
 	    {
+	      /*
+	       * Only re-use partially correct caches if there are already
+	       * a few partial matches - otherwise we fall default to
+	       * creating a new cache.
+	       */
 	      if (NSImageForceCaching == NO && [rep isOpaque] == NO)
 		{
 		  if (invalidCache != nil)

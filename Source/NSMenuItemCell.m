@@ -46,12 +46,19 @@
 
 @implementation NSMenuItemCell
 
+static Class	colorClass = 0;		/* Cache color class.	*/
+static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
+static NSImage	*arrowImageH = nil;
+
+
 + (void) initialize
 {
   if (self == [NSMenuItemCell class])
     {
-      // Initial version
-      [self setVersion:2];
+      [self setVersion: 1];
+      colorClass = [NSColor class];
+      arrowImage = [[NSImage imageNamed: @"common_3DArrowRight"] copy];
+      arrowImageH = [[NSImage imageNamed: @"common_3DArrowRightH"] copy];
     }
 }
 
@@ -64,15 +71,6 @@
   _showAltStateMask = NSNoCellMask;
   _cell.image_position = NSNoImage;
   _cell.text_align = NSLeftTextAlignment;
-
-  _drawMethods[0] = (DrawingIMP)
-    [self methodForSelector:@selector(drawStateImageWithFrame:inView:)];
-  _drawMethods[1] = (DrawingIMP)
-    [self methodForSelector:@selector(drawImageWithFrame:inView:)];
-  _drawMethods[2] = (DrawingIMP)
-    [self methodForSelector:@selector(drawTitleWithFrame:inView:)];
-  _drawMethods[3] = (DrawingIMP)
-    [self methodForSelector:@selector(drawKeyEquivalentWithFrame:inView:)];
 
   return self;
 }
@@ -361,11 +359,12 @@
     }
 }
 
-- (void) drawImageWithFrame:(NSRect)cellFrame
-		    inView:(NSView *)controlView
+- (void) drawImageWithFrame: (NSRect)cellFrame
+		     inView: (NSView *)controlView
 {
-  NSSize   size;
-  NSPoint  position;
+  NSSize	size;
+  NSPoint	position;
+  NSColor	*backgroundColor = _backgroundColor;
 
   cellFrame = [self imageRectForBounds: cellFrame];
   size = [mcell_imageToDisplay size];
@@ -377,6 +376,26 @@
    */
   if ([controlView isFlipped])
     position.y += size.height;
+
+  if (backgroundColor == nil)
+    {
+      if (_cell.state)
+	{
+	  if (_showAltStateMask
+	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	    backgroundColor = [colorClass selectedMenuItemColor];
+	}
+      if (mcell_highlighted)
+	{
+	  if (_highlightsByMask
+	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	    backgroundColor = [colorClass selectedMenuItemColor];
+	}
+      if (backgroundColor == nil)
+	backgroundColor = [colorClass controlBackgroundColor];
+    }
+
+  [mcell_imageToDisplay setBackgroundColor: backgroundColor];
   [mcell_imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
 }
 
@@ -387,11 +406,16 @@
 
   if ([mcell_item hasSubmenu])
     {
-      NSSize   size;
-      NSPoint  position;
-      NSImage *arrowImage = [NSImage imageNamed:@"common_3DArrowRight"];
+      NSSize	size;
+      NSPoint	position;
+      NSColor	*backgroundColor = _backgroundColor;
+      NSImage	*imageToDraw;
 
-      size = [arrowImage size];
+      if (mcell_highlighted)
+	imageToDraw = arrowImageH;
+      else
+	imageToDraw = arrowImage;
+      size = [imageToDraw size];
       position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
       position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
       /*
@@ -400,7 +424,26 @@
        */
       if ([controlView isFlipped])
 	position.y += size.height;
-      [arrowImage  compositeToPoint: position operation: NSCompositeCopy];
+
+      if (backgroundColor == nil)
+	{
+	  if (_cell.state)
+	    {
+	      if (_showAltStateMask
+		& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+		backgroundColor = [colorClass selectedMenuItemColor];
+	    }
+	  if (mcell_highlighted)
+	    {
+	      if (_highlightsByMask
+		& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+		backgroundColor = [colorClass selectedMenuItemColor];
+	    }
+	  if (backgroundColor == nil)
+	    backgroundColor = [colorClass controlBackgroundColor];
+	}
+      [imageToDraw setBackgroundColor: backgroundColor];
+      [imageToDraw compositeToPoint: position operation: NSCompositeCopy];
     }
   else
     [self _drawText: [mcell_item keyEquivalent] inFrame: cellFrame];
@@ -413,12 +456,13 @@
   // Maybe somebody wants to support this (Lazaro).
 }
 
-- (void) drawStateImageWithFrame:(NSRect)cellFrame
-			 inView:(NSView *)controlView
+- (void) drawStateImageWithFrame: (NSRect)cellFrame
+			  inView: (NSView*)controlView
 {
-  NSSize   size;
-  NSPoint  position;
-  NSImage *imageToDisplay;
+  NSSize	size;
+  NSPoint	position;
+  NSImage	*imageToDisplay;
+  NSColor	*backgroundColor = _backgroundColor;
 
   cellFrame = [self stateImageRectForBounds: cellFrame];
 
@@ -447,6 +491,25 @@
    */
   if ([controlView isFlipped])
     position.y += size.height;
+
+  if (backgroundColor == nil)
+    {
+      if (_cell.state)
+	{
+	  if (_showAltStateMask
+	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	    backgroundColor = [colorClass selectedMenuItemColor];
+	}
+      if (mcell_highlighted)
+	{
+	  if (_highlightsByMask
+	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	    backgroundColor = [colorClass selectedMenuItemColor];
+	}
+      if (backgroundColor == nil)
+	backgroundColor = [colorClass controlBackgroundColor];
+    }
+  [imageToDisplay setBackgroundColor: _backgroundColor];
   [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
 }
 
@@ -491,7 +554,6 @@
 {
   BOOL	    showAlternate = NO;
   unsigned  mask;
-  NSColor  *backgroundColor = nil;
 
   // Transparent buttons never draw
   if (_buttoncell_is_transparent)
@@ -504,26 +566,29 @@
       && (_highlightsByMask & NSPushInCellMask))
     PStranslate(1., [controlView isFlipped] ? 1. : -1.);
 
-  // Determine the background color
+  /*
+   * Determine the background color and cache it in an ivar so that the
+   * low-level drawing methods don't need to do it again.
+   */
   if (_cell.state)
     {
       if (_showAltStateMask
-	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-	backgroundColor = [NSColor selectedMenuItemColor];
+	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	_backgroundColor = [colorClass selectedMenuItemColor];
     }
 
   if (mcell_highlighted)
     {
       if (_highlightsByMask
-	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-	backgroundColor = [NSColor selectedMenuItemColor];
+	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	_backgroundColor = [colorClass selectedMenuItemColor];
     }
 
-  if (backgroundColor == nil)
-    backgroundColor = [NSColor controlBackgroundColor];
+  if (_backgroundColor == nil)
+    _backgroundColor = [colorClass controlBackgroundColor];
 
   // Set cell's background color
-  [backgroundColor set];
+  [_backgroundColor set];
   NSRectFill(cellFrame);
 
   /*
@@ -560,28 +625,25 @@
   if (mcell_imageToDisplay)
     {
       mcell_imageWidth = [mcell_imageToDisplay size].width;
-      [mcell_imageToDisplay setBackgroundColor: backgroundColor];
     }
 
   // Draw the state image
   if (mcell_stateImageWidth > 0)
-    _drawMethods[0](self, @selector(drawStateImageWithFrame:inView:),
-		   cellFrame, controlView);
+    [self drawStateImageWithFrame: cellFrame inView: controlView];
 
   // Draw the image
   if (mcell_imageWidth > 0)
-    _drawMethods[1](self, @selector(drawImageWithFrame:inView:),
-		   cellFrame, controlView);
+    [self drawImageWithFrame: cellFrame inView: controlView];
 
   // Draw the title
   if (mcell_titleWidth > 0)
-    _drawMethods[2](self, @selector(drawTitleWithFrame:inView:),
-		   cellFrame, controlView);
+    [self drawTitleWithFrame: cellFrame inView: controlView];
 
   // Draw the key equivalent
   if (mcell_keyEquivalentWidth > 0)
-    _drawMethods[3](self, @selector(drawKeyEquivalentWithFrame:inView:),
-		   cellFrame, controlView);
+    [self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
+
+  _backgroundColor = nil;
 }
 
 //
@@ -597,8 +659,6 @@
     c->mcell_item = [mcell_item copyWithZone: zone];
   c->mcell_menuView = mcell_menuView;
   c->mcell_needs_sizing = mcell_needs_sizing;
-
-  memcpy(c->_drawMethods, _drawMethods, sizeof(DrawingIMP) * 4);
 
   return c;
 }
@@ -626,15 +686,6 @@
   mcell_menuView = [aDecoder decodeObject];
 
   mcell_needs_sizing = YES;
-
-  _drawMethods[0] = (DrawingIMP)
-    [self methodForSelector:@selector(drawStateImageWithFrame:inView:)];
-  _drawMethods[1] = (DrawingIMP)
-    [self methodForSelector:@selector(drawImageWithFrame:inView:)];
-  _drawMethods[2] = (DrawingIMP)
-    [self methodForSelector:@selector(drawTitleWithFrame:inView:)];
-  _drawMethods[3] = (DrawingIMP)
-    [self methodForSelector:@selector(drawKeyEquivalentWithFrame:inView:)];
 
   return self;
 }

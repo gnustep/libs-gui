@@ -1,3 +1,13 @@
+Tue Dec 14 11:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSMenuitemCell.h: Removed implementation cache ivars
+	and added an ivar for temporary storage of background color.
+	* Source/NSMenuItemCell.m: Removed draw implementation caching to
+	decrease memory footprint, but added color and image class caching
+	which will more than compensate in performance.  Also added use of
+	highlight version of menu arrow.
+	* Source/NSImage.m: minor image caching fixes and more debug statements.
+
 1999-12-13    <fedor@gnu.org>
 
 	* Source/NSWindow.m (-_processResizeEvent): Add DPScurrentgstate
