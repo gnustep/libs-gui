@@ -142,10 +142,32 @@ readNSString (StringContext *ctxt)
 					    size: fontSize];
   if (font == nil)
     {
-      NSDebugMLLog(@"RTFParser", 
-		   @"Could not find font %@ size %f traits %d weight %d", 
-		   fontName, fontSize, traits, weight);
-      font = [NSFont userFontOfSize: fontSize];
+      /* Before giving up and using a default font, we try if this is
+       * not the case of a font with a composite name, such as
+       * 'Helvetica-Light'.  In that case, even if we don't have
+       * exactly an 'Helvetica-Light' font family, we might have an
+       * 'Helvetica' one.  */
+      NSRange range = [fontName rangeOfString:@"-"];
+
+      if (range.location != NSNotFound)
+	{
+	  NSString *fontFamily = [fontName substringToIndex: range.location];
+
+	  font = [[NSFontManager sharedFontManager] fontWithFamily: fontFamily
+						    traits: traits
+						    weight: weight
+						    size: fontSize];
+	}
+      
+      if (font == nil)
+	{
+	  NSDebugMLLog(@"RTFParser", 
+		       @"Could not find font %@ size %f traits %d weight %d", 
+		       fontName, fontSize, traits, weight);
+
+	  /* Last resort, default font.  :-(  */
+	  font = [NSFont userFontOfSize: fontSize];
+	}
     }
   
   return font;
