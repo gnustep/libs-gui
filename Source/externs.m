@@ -112,6 +112,10 @@ const float NSGray = 0.5;
 const float NSLightGray = .667;
 const float NSWhite = 1;
 
+// NSColor notification
+NSString *NSSystemColorsDidChangeNotification =
+            @"NSSystemColorsDidChangeNotification";
+
 // NSColorList notifications
 NSString *NSColorListChangedNotification = @"NSColorListChange";
 
