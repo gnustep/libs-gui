@@ -256,6 +256,9 @@ NSGraphicsContext	*GSCurrentContext();
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+- (void) DPSdefineuserobject;
+- (void) DPSexecuserobject: (int)index ;
+- (void) DPSundefineuserobject: (int)index ;
 - (void) DPSgetboolean: (int *)it ;
 - (void) DPSgetchararray: (int)size : (char *)s ;
 - (void) DPSgetfloat: (float*)it ;

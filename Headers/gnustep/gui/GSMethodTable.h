@@ -220,6 +220,12 @@ typedef struct {
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+  void (*DPSdefineuserobject)
+	(NSGraphicsContext*, SEL);
+  void (*DPSexecuserobject_)
+	(NSGraphicsContext*, SEL, int);
+  void (*DPSundefineuserobject_)
+	(NSGraphicsContext*, SEL, int);
   void (*DPSgetboolean_)
 	(NSGraphicsContext*, SEL, int*);
   void (*DPSgetchararray__)

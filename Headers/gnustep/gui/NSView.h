@@ -87,6 +87,7 @@ enum {
   NSRect invalidRect;
   NSRect visibleRect;
   unsigned int autoresizingMask;
+  int gstate;
 
   BOOL is_rotated_from_base;
   BOOL is_rotated_or_scaled_from_base;
@@ -96,6 +97,8 @@ enum {
   BOOL post_bounds_changes;
   BOOL autoresize_subviews;
   BOOL coordinates_valid;
+  BOOL allocate_gstate;
+  BOOL renew_gstate;
 
   // Reserved for back-end use
   void *be_view_reserved;

@@ -1,3 +1,24 @@
+1999-06-16  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/DPSOperators.h: New functions
+	defineuserobject, execuserobject, and undefineuserobject for
+	dealing with gstates.
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h. Likewise.
+	* Headers/gnustep/gui/PSOperators.h: Likewise.
+	* Headers/gnustep/gui/GSWraps.h: Wrapper functions for PostScript
+	functionality.
+
+	* Source/NSAffineTransform.m (-concat): Implement.
+	(-set): Likewise.
+	
+	* Headers/gnustep/gui/NSView.h: New gstate ivars.
+	* Source/NSGraphicsContext.m: Move lockFocus code to NSView.
+	* Source/NSView.m (-lockFocusInRect:): New method implementing
+	proper gstate support.
+	(-lockFocus): Use it.
+	(-unlockFocusNeedsFlush): New method.
+	
 Wed Jun 16 22:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Images/common_Home.tiff: new file for save panel

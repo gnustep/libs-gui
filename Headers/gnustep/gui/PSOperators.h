@@ -386,6 +386,18 @@ __attribute__((unused));
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
 static inline void
+PSdefineuserobject()
+__attribute__((unused));
+
+static inline void
+PSexecuserobject(int index)
+__attribute__((unused));
+
+static inline void
+PSundefineuserobject(int index)
+__attribute__((unused));
+
+static inline void
 PSgetboolean(int *it)
 __attribute__((unused));
 
@@ -1241,6 +1253,24 @@ PStransform(float x1, float y1, float *x2, float *y2)
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+static inline void
+PSdefineuserobject()
+{
+  DPSdefineuserobject(DEFCTXT);
+}
+
+static inline void
+PSexecuserobject(int index)
+{
+  DPSexecuserobject(DEFCTXT, index);
+}
+
+static inline void
+PSundefineuserobject(int index)
+{
+  DPSundefineuserobject(DEFCTXT, index);
+}
+
 static inline void
 PSgetboolean(int *it)
 {

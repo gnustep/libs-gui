@@ -89,7 +89,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 {
   NSDebugLLog(@"NSOpenPanel", @"NSOpenPanel +allocWithZone");
   if( !gnustep_gui_open_panel)
-    gnustep_gui_open_panel = NSAllocateObject(self, 0, z);
+    gnustep_gui_open_panel = (NSOpenPanel *)NSAllocateObject(self, 0, z);
 
   return gnustep_gui_open_panel;
 }
@@ -117,7 +117,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
   allowsMultipleSelection=flag;
-  [browser setAllowsMultipleSelection: flag];
+  [_browser setAllowsMultipleSelection: flag];
 }
 
 - (BOOL) allowsMultipleSelection
@@ -147,7 +147,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 
 - (NSString*) filename
 {
-  return [browser path];
+  return [_browser path];
 }
 
 /*
@@ -159,13 +159,13 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
     return [NSArray arrayWithObject: [self filename]];
   else
     {
-      NSArray         *cells=[browser selectedCells];
+      NSArray         *cells=[_browser selectedCells];
       NSEnumerator    *cellEnum;
       id              currCell;
       NSMutableArray  *ret = [NSMutableArray array];
       NSString        *dir=[self directory];
 
-      for(cellEnum=[cells objectEnumerator];currCell=[cellEnum nextObject];)
+      for(cellEnum=[cells objectEnumerator];(currCell=[cellEnum nextObject]);)
 	{
 	  [ret addObject: [NSString
 		      stringWithFormat: @"%@/%@",dir,[currCell stringValue]]];
@@ -189,9 +189,9 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 			file: (NSString *)name
 			types: (NSArray *)fileTypes
 {
-  if (requiredTypes)
-    [requiredTypes autorelease];
-  requiredTypes = [fileTypes retain];
+  if (_requiredFileType)
+    [_requiredFileType autorelease];
+  _requiredFileType = [fileTypes retain];
 
   return [self runModalForDirectory: path file: name];
 }
@@ -228,7 +228,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
       while (sp != NULL)
     {
       *sp = '\0';
-      m = [NSMutableString stringWithCString: files];
+      m = (NSMutableString *)[NSMutableString stringWithCString: files];
       [m appendString: @"\\"];
       [m appendString: [NSString stringWithCString: p]];
       [the_filenames addObject: m];
@@ -237,7 +237,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
     }
       if (strchr(p, '\0'))
     {
-      m = [NSMutableString stringWithCString: files];
+      m = (NSMutableString *)[NSMutableString stringWithCString: files];
       [m appendString: @"\\"];
       [m appendString: [NSString stringWithCString: p]];
       [the_filenames addObject: m];

@@ -24,8 +24,10 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSCStringText.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/GSWraps.h>
 
 
 /*
@@ -70,22 +72,10 @@ void PSgrestore(void)
 void PSgsave(void)
 {}
 
-void GSfill() {}
-void GSsetgray() {}
-void GSnewpath() {}
-void GSgrestore() {}
-void GSrectfill() {}
-void GSsetlinewidth() {}
-void GSclosepath() {}
-void GSshow() {}
-void GStranslate() {}
-void GSmoveto() {}
-void GSgsave() {}
-void GSlineto() {}
-void GSstroke() {}
-void GSrlineto() {}
-void GSrectclip() {}
-
+/* Dummy wraps */
+void GSWSetMatrix(GSCTXT *ctxt, float m[6]) {}
+unsigned int GSWDefineAsUserObj(GSCTXT *ctxt) {return 0;}
+void GSWViewIsFlipped(GSCTXT *ctxt, BOOL flipped) {}
 
 @interface  GMModel : NSObject
 @end

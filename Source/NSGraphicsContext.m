@@ -84,11 +84,6 @@ NSGraphicsContext	*GSCurrentContext()
 + (gsMethodTable *) _initializeMethodTable;
 @end
 
-struct NSWindow_struct 
-{
-  @defs(NSWindow)
-};
-
 @implementation NSGraphicsContext 
 
 + (void) initialize
@@ -236,33 +231,11 @@ struct NSWindow_struct
 
 - (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect
 {
-  struct NSWindow_struct *window;
-
   [focus_stack addObject: aView];
-  window = (struct NSWindow_struct *)[aView window];
-  /* Add aView's visible Rect to its Window's area to be flushed */
-  if (NSIsEmptyRect(rect))
-    rect = [aView visibleRect];
-  rect = [aView convertRect: rect toView: nil];
-  [window->rectsBeingDrawn addObject: [NSValue valueWithRect: rect]];
 }
 
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush
 {
-  NSRect        rect;
-  struct	NSWindow_struct *window;
-  NSView	*v = [focus_stack lastObject];
-
-  NSAssert(v == aView, NSInvalidArgumentException);
-  /* Set Window's flush rect so our view is properly flushed */
-  window = (struct NSWindow_struct *)[aView window];
-  if (flush)
-    {
-      rect = [[window->rectsBeingDrawn lastObject] rectValue];
-      window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush, rect);
-      window->needs_flush = YES;
-    }
-  [window->rectsBeingDrawn removeLastObject];
   [focus_stack removeLastObject];
 }
 
@@ -551,6 +524,12 @@ struct NSWindow_struct
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+  methodTable.DPSdefineuserobject =
+    GET_IMP(@selector(DPSdefineuserobject));
+  methodTable.DPSexecuserobject_ =
+    GET_IMP(@selector(DPSexecuserobject:));
+  methodTable.DPSundefineuserobject_ =
+    GET_IMP(@selector(DPSundefineuserobject:));
   methodTable.DPSgetboolean_ =
     GET_IMP(@selector(DPSgetboolean:));
   methodTable.DPSgetchararray__ =
@@ -1203,6 +1182,21 @@ struct NSWindow_struct
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+
+- (void)DPSdefineuserobject
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void)DPSexecuserobject: (int)index
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void)DPSundefineuserobject: (int)index
+{
+  [self subclassResponsibility: _cmd];
+}
 
 - (void) DPSgetboolean: (int *)it 
 {

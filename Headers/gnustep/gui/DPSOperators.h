@@ -382,6 +382,18 @@ __attribute__((unused));
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
 static inline void
+DPSdefineuserobject(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSexecuserobject(GSCTXT *ctxt, int index)
+__attribute__((unused));
+
+static inline void
+DPSundefineuserobject(GSCTXT *ctxt, int index)
+__attribute__((unused));
+
+static inline void
 DPSgetboolean(GSCTXT *ctxt, int *it)
 __attribute__((unused));
 
@@ -1319,6 +1331,27 @@ DPStransform(GSCTXT *ctxt, float x1, float y1, float *x2, float *y2)
 /* ----------------------------------------------------------------------- */
 /* Opstack operations */
 /* ----------------------------------------------------------------------- */
+static inline void
+DPSdefineuserobject(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSdefineuserobject)
+    (ctxt, @selector(DPSdefineuserobject));
+}
+
+static inline void
+DPSexecuserobject(GSCTXT *ctxt, int index)
+{
+  (ctxt->methods->DPSexecuserobject_)
+    (ctxt, @selector(DPSexecuserobject), index);
+}
+
+static inline void
+DPSundefineuserobject(GSCTXT *ctxt, int index)
+{
+  (ctxt->methods->DPSundefineuserobject_)
+    (ctxt, @selector(DPSundefineuserobject:), index);
+}
+
 static inline void
 DPSgetboolean(GSCTXT *ctxt, int *it)
 {

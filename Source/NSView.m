@@ -48,8 +48,14 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/GSTrackingRect.h>
+#include <AppKit/GSWraps.h>
+#include <AppKit/PSOperators.h>
 #include <AppKit/NSAffineTransform.h>
 
+struct NSWindow_struct 
+{
+  @defs(NSWindow)
+};
 
 @implementation NSView
 
@@ -226,6 +232,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(tracking_rects);
   TEST_RELEASE(cursor_rects);
   [self unregisterDraggedTypes];
+  [self releaseGState];
 
   [super dealloc];
 }
@@ -1148,36 +1155,135 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) allocateGState
 {
-  // implemented by the back end
+  allocate_gstate = 1;
+  renew_gstate = 1;
 }
 
 - (void) releaseGState
 {
-  // implemented by the back end
+  if (allocate_gstate && gstate)
+    PSundefineuserobject(gstate);
+  gstate = 0;
+  allocate_gstate = 0;
 }
 
 - (int) gState
 {
-  return 0;
+  return gstate;
 }
 
 - (void) renewGState
 {
+  renew_gstate = 1;
 }
 
+/* Overridden by subclasses to setup custom gstate */
 - (void) setUpGState
 {
 }
 
+- (void) lockFocusInRect: (NSRect)rect
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  struct NSWindow_struct *window_t;
+  NSRect wrect;
+
+  [ctxt lockFocusView: self inRect: rect];
+  wrect = [self convertRect: rect toView: nil];
+  window_t = (struct NSWindow_struct *)window;
+  [window_t->rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+
+  DPSgsave(ctxt);
+  if (gstate)
+    {
+      DPSsetgstate(ctxt, gstate);
+      if (renew_gstate)
+	[self setUpGState];
+      renew_gstate = 0;
+      DPSgsave(ctxt);
+    }
+  else
+    {
+      int window_gstate;
+      NSAffineTransform *matrix;
+      float x, y, w, h;
+
+      window_gstate = [window gState];
+      NSAssert(window_gstate, NSInternalInconsistencyException);
+      DPSsetgstate(ctxt, window_gstate);
+      DPSgsave(ctxt);
+      matrix = [self _matrixToWindow];
+      [matrix concat];
+      
+      /*
+       * Clipping - set viewclip to the visible rectangle - which will never be
+       * greater than the bounds of the view.
+       * Set the standard clippath to an empty path.
+       */
+      if ([matrix isRotated])
+	[matrix boundingRectFor: rect result: &rect];
+
+      x = NSMinX(rect);
+      y = NSMinY(rect);
+      w = NSWidth(rect);
+      h = NSHeight(rect);
+      DPSrectviewclip(ctxt, x, y, w, h);
+
+      /* Allow subclases to make other modifications */
+      [self setUpGState];
+      renew_gstate = 0;
+      if (allocate_gstate)
+	{
+	  DPSgstate(ctxt);
+	  gstate = GSWDefineAsUserObj(ctxt);
+	  /* Balance the previous gsave and install our own gstate */
+	  DPSgrestore(ctxt);
+	  DPSsetgstate(ctxt, gstate);
+	  DPSgsave(ctxt);
+	}
+      else
+	{
+	  /* This is just temporary so subclasses have a gstate to do
+	     composite/disolve operations with */
+	  gstate = window_gstate;
+	}
+    }
+  GSWViewIsFlipped(ctxt, _rFlags.flipped_view);
+}
+
+- (void) unlockFocusNeedsFlush: (BOOL)flush
+{
+  NSRect        rect;
+  struct	NSWindow_struct *window_t;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  /* Restore our original gstate */
+  DPSgrestore(ctxt);
+  /* Restore gstate of nesting lockFocus (if any) */
+  DPSgrestore(ctxt);
+  if (!allocate_gstate)
+    gstate = 0;
+
+  window_t = (struct NSWindow_struct *)window;
+  if (flush)
+    {
+      rect = [[window_t->rectsBeingDrawn lastObject] rectValue];
+      window_t->rectNeedingFlush = 
+	NSUnionRect(window_t->rectNeedingFlush, rect);
+      window_t->needs_flush = YES;
+    }
+  [window_t->rectsBeingDrawn removeLastObject];
+  [ctxt unlockFocusView: self needsFlush: YES ];
+}
+
 - (void) lockFocus
 {
-  [GSCurrentContext() lockFocusView: self 
-			     inRect: [self visibleRect]];
+  [self lockFocusInRect: [self visibleRect]];
 }
 
 - (void) unlockFocus
 {
-  [GSCurrentContext() unlockFocusView: self needsFlush: YES ];
+  [self unlockFocusNeedsFlush: YES ];
 }
 
 - (BOOL) canDraw
@@ -1291,11 +1397,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (NSIsEmptyRect(redrawRect) == NO)
 	{
-	  NSGraphicsContext	*ctxt = GSCurrentContext();
-
-	  [ctxt lockFocusView: self inRect: redrawRect];
+	  [self lockFocusInRect: redrawRect];
 	  [self drawRect: redrawRect];
-	  [ctxt unlockFocusView: self needsFlush: YES];
+	  [self unlockFocusNeedsFlush: YES];
 	}
 
       if (_rFlags.has_subviews)
@@ -1397,14 +1501,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (NSIsEmptyRect(aRect) == NO)
     {
-      NSGraphicsContext *ctxt = GSCurrentContext();
-
       /*
        * Now we draw this view.
        */
-      [ctxt lockFocusView: self inRect: aRect];
+      [self lockFocusInRect: aRect];
       [self drawRect: aRect];
-      [ctxt unlockFocusView: self needsFlush: YES];
+      [self unlockFocusNeedsFlush: YES];
     }
 
   if (_rFlags.has_subviews)

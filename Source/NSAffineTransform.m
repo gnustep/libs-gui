@@ -101,8 +101,14 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) concat
 {
-//  PSconcat(self);
-[self subclassResponsibility: _cmd];
+  float m[6];
+  m[0] = matrix.m11;
+  m[1] = matrix.m12;
+  m[2] = matrix.m21;
+  m[3] = matrix.m22;
+  m[4] = matrix.tx;
+  m[5] = matrix.ty;
+  PSconcat(m);
 }
 
 - (id) init
@@ -240,8 +246,14 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) set
 {
-//  PSsetmatrix(self);
-[self subclassResponsibility: _cmd];
+  float m[6];
+  m[0] = matrix.m11;
+  m[1] = matrix.m12;
+  m[2] = matrix.m21;
+  m[3] = matrix.m22;
+  m[4] = matrix.tx;
+  m[5] = matrix.ty;
+  PSsetmatrix(m);
 }
 
 - (void) setTransformStruct: (NSAffineTransformStruct)val
