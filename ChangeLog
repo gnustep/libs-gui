@@ -1,3 +1,25 @@
+Sun Jan  7 03:28:14 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m
+	([-textStorage:edited:range:changeInLength:invalidatedRange:]),
+	([-invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:]):
+	Invoke [NSTextView -invalidateTextContainerOrigin].
+	* Source/NSLayoutManager.m ([-textContainerChangedTextView:]):
+	Implemented.
+	* Source/NSTextContainer.m ([-setTextView:]): Call
+	[NSLayoutManager -textContainerChangedTextView:] if appropriate;
+	do not remove frame change notifications for the old text view.
+	* Source/NSTextView.m ([-initWithFrame:textContainer:]): Set min
+	size to zero; do not modify existing text container flags; removed
+	unused call to sizeToFit.  ([-setHorizontallyResizable:]),
+	([-setVerticallyResizable:]): Removed most code.
+	([-setConstrainedFrameSize:]): Implemented.  ([-sizeToFit]):
+	Rewritten completely to use [-setConstrainedFrameSize:].
+	([-setTextContainer:]): Do not set the text container size.
+	([-invalidateTextContainerOrigin]): Implemented.
+	([-setFieldEditor:]): Set non horizontally nor vertically
+	resizable.
+	
 2001-01-03  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSFont.m: Minor optimisations - caching class and defaults.
