@@ -97,9 +97,9 @@ _new_label (NSString *value)
 -initWithStringArray: (NSArray *)array
 		font: (NSFont *)font;
 @end
+
 @implementation _GSLabelListView
-{
-}
+
 -initWithStringArray: (NSArray *)array
 		font: (NSFont *)font
 {
@@ -334,8 +334,11 @@ _new_label (NSString *value)
   iconButton = AUTORELEASE([[NSButton alloc] initWithFrame: f]); 
   [iconButton setImage: icon];
   [iconButton setBordered: NO];
-  [iconButton setEnabled: NO];
   [iconButton setImagePosition: NSImageOnly];
+  /* Clicking on the iconButton starts the GSMemoryPanel.  */
+  [iconButton setEnabled: YES];
+  [iconButton setTarget: NSApp];
+  [iconButton setAction: @selector(orderFrontSharedMemoryPanel:)];
 
   nameLabel = _new_label (name);
   [nameLabel setFont: [NSFont boldSystemFontOfSize: 32]];
