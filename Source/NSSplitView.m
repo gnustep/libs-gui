@@ -68,6 +68,7 @@
 {
   NSApplication	*app = [NSApplication sharedApplication];
   static NSRect	oldRect; //only one can be dragged at a time
+  static BOOL	lit = NO;
   NSPoint	p;
   NSEvent	*e;
   NSRect	r, r1, bigRect, vis;
@@ -245,18 +246,31 @@
 	  r.origin.x = p.x - (divHorizontal/2.);
 	  r.origin.y = NSMinY(vis);
 	}
-      NSDebugLog(@"drawing divider at x: %d, y: %d, w: %d, h: %d\n",
-			      (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),
-			      (int)NSHeight(r));
-      [_dividerColor set];
-      NSHighlightRect(r);
-      oldRect = r;
+      if (NSEqualRects(r, oldRect) == NO)
+	{
+	  NSDebugLog(@"drawing divider at x: %d, y: %d, w: %d, h: %d\n",
+	    (int)NSMinX(r), (int)NSMinY(r), (int)NSWidth(r), (int)NSHeight(r));
+	  [_dividerColor set];
+	  if (lit == YES)
+	    {
+	      NSHighlightRect(oldRect);
+	      lit = NO;
+	    }
+	  NSHighlightRect(r);
+	  lit = YES;
+	  oldRect = r;
+	}
       e = [app nextEventMatchingMask: eventMask
 			   untilDate: farAway
 			      inMode: NSEventTrackingRunLoopMode
 			     dequeue: YES];
+    }
+
+  if (lit == YES)
+    {
       [_dividerColor set];
       NSHighlightRect(oldRect);
+      lit = NO;
     }
 
   [self unlockFocus];

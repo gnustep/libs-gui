@@ -1,3 +1,8 @@
+2000-03-18  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSplitView.m: ([-mouseDown:]) only highlight/unhighlight
+	divider when actually necessary.
+
 Fri Mar 17 23:33:40 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	First alpha implementation of NSTableView.  Mouse interaction 
