@@ -32,7 +32,7 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSHelpManager.h>
-#include <objc/objc.h>
+#include <AppKit/NSInputManager.h>
 
 @implementation NSResponder
 
@@ -46,6 +46,10 @@
       NSDebugLog(@"Initialize NSResponder class\n");
 
       [self setVersion: 1];
+      
+      /* Gets the current input manager - this forces it to read the
+         key binding files at this stage.  */
+      [NSInputManager currentInputManager];
     }
 }
 
@@ -116,74 +120,8 @@
 
 - (void) interpretKeyEvents:(NSArray*)eventArray
 {
-  // FIXME: As NSInputManger is still missing this method is hard coded
-  NSEvent *theEvent;
-  NSEnumerator *eventEnum = [eventArray objectEnumerator];
-
-  while((theEvent = [eventEnum nextObject]) != nil)
-    {
-      NSString *characters = [theEvent characters];
-      unichar character = 0;
-
-      if ([characters length] > 0)
-	{
-	  character = [characters characterAtIndex: 0];
-	}
-      
-      switch (character)
-	{
-	case NSUpArrowFunctionKey:
-	  [self doCommandBySelector: @selector(moveUp:)];
-	  break;
-	case NSDownArrowFunctionKey:
-	  [self doCommandBySelector: @selector(moveDown:)];
-	  break;
-	case NSLeftArrowFunctionKey:
-	  [self doCommandBySelector: @selector(moveLeft:)];
-	  break;
-	case NSRightArrowFunctionKey:
-	  [self doCommandBySelector: @selector(moveRight:)];
-	  break;
-	case NSDeleteFunctionKey:
-	  [self doCommandBySelector: @selector(deleteForward:)];
-	  break;
-	case NSHomeFunctionKey:
-	  [self doCommandBySelector: @selector(moveToBeginningOfDocument:)];
-	  break;
-	case NSBeginFunctionKey:
-	  [self doCommandBySelector: @selector(moveToBeginningOfLine:)];
-	  break;
-	case NSEndFunctionKey:
-	  [self doCommandBySelector: @selector(moveToEndOfLine:)];
-	  break;
-	case NSPageUpFunctionKey:
-	  [self doCommandBySelector: @selector(pageUp:)];
-	  break;
-	case NSPageDownFunctionKey:
-	  [self doCommandBySelector: @selector(pageDown:)];
-	  break;
-	case NSBackspaceCharacter:
-	  [self doCommandBySelector: @selector(deleteBackward:)];
-	  break;
-	case NSTabCharacter:
-	  if ([theEvent modifierFlags] & NSShiftKeyMask)
-	    [self doCommandBySelector: @selector(insertBacktab:)];
-	  else
-	    [self doCommandBySelector: @selector(insertTab:)];
-	  break;
-	case NSEnterCharacter:
-	case NSFormFeedCharacter:
-	case NSCarriageReturnCharacter:
-	  [self doCommandBySelector: @selector(insertNewline:)];
-	  break;
-	case 0:
-	  /* Character to implement ?? */
-	  break;
-	default:
-	  // If the character(s) was not a special one, simply insert it.
-	  [self insertText: characters];
-	}  
-    }
+  [[NSInputManager currentInputManager] handleKeyboardEvents: eventArray
+					client: self];
 }
 
 - (void) flushBufferedKeyEvents
