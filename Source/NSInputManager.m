@@ -217,7 +217,7 @@ static NSInputManager *currentInputManager = nil;
 	}
       if (i == CHARACTER_TABLE_SIZE)
 	{
-	  NSLog (@"NSInputManager - unknown character '%@' ignored", c);
+	  NSLog (@"NSInputManager - unknown character '%@' ignored", name);
 	  return NO;
 	}
     }  
