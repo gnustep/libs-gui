@@ -202,11 +202,10 @@ static NSImage *_pbc_image[2];
 
 - (void) removeAllItems
 {
-  while ([_menu numberOfItems] > 1)
+  while ([_menu numberOfItems] > 0)
     {
       [_menu removeItemAtIndex: 0];
     }
-  [[_menu itemAtIndex: 0] setTitle: @""];
 }
 
 // Accessing the items
@@ -512,9 +511,33 @@ static NSImage *_pbc_image[2];
   if ([[controlView window] gState] == 0)
     return;
 
-  /* Get the NSMenuItemCell of the selected item */
-  aCell = [[_menu menuRepresentation] 
-           menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
+  /* 
+   * Get the NSMenuItemCell of the selected item, or create a temporary 
+   * NSMenuItemCell to at least draw our control if items array is empty.
+   */
+  if ([_menu numberOfItems] > 0)
+    {
+      aCell = [[_menu menuRepresentation] 
+	       menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
+    }
+  else
+    {
+      NSMenuItem *anItem = [NSMenuItem new];
+
+      [anItem setImage: _pbc_image[_pbcFlags.pullsDown]];
+      
+      aCell = [NSMenuItemCell new];
+      /* We need this menu item because NSMenuItemCell gets its contents 
+       * from the menuItem not from what is set in the cell
+       */
+      [aCell setMenuItem: anItem];
+      /* We need to set the menu view so we trigger the special case 
+       * popupbutton code in NSMenuItemCell
+       */
+      [aCell setMenuView: [_menu menuRepresentation]];
+
+      RELEASE(anItem);
+    }
 
   /* Turn off highlighting so the NSPopUpButton looks right */
   [aCell setHighlighted: NO];
@@ -526,6 +549,12 @@ static NSImage *_pbc_image[2];
 
   /* Rehighlight item for consistency */
   [aCell setHighlighted: YES];
+
+  /* Release the cell to restore balance if menu items array is empty*/
+  if ([_menu numberOfItems] == 0)
+    {
+      RELEASE (aCell);
+    }
 }
 
 /* FIXME: This needs to be removed in favor of allowing the cell to draw 
