@@ -1,3 +1,10 @@
+2001-10-28  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSStepper.m: 
+	* Source/NSStepperCell.m: Major rewrite so that it behaves properly
+	Now NSStepper does not contain a textfield anymore and can be linked
+	to any control using the take*ValueFrom: methods
+
 Thu Oct 25 16:42:00 2001  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSSelection.m implemented bodies of methods for NSSelection.
