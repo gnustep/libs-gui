@@ -1,3 +1,9 @@
+2003-06-26  Ludovic Marcotte <ludovic@Sophos.ca>
+
+	* Fixed the transparency of Images/common_ret.tiff
+	* Source/NSOutlineView (-setDataSource:) Modified to allow
+	  a nil data source.
+
 2003-06-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/GSLayoutManager.h

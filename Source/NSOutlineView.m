@@ -716,7 +716,7 @@ static NSImage *unexpandable  = nil;
 - (void) setDataSource: (id)anObject
 {
 #define CHECK_REQUIRED_METHOD(selector_name) \
-  if (![anObject respondsToSelector: @selector(selector_name)]) \
+  if (anObject && ![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
                  format: @"data source does not respond to %@", @#selector_name]
 
