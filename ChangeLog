@@ -1,3 +1,8 @@
+2003-10-29 02:22  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSServicesManager.m (-updateServicesMenu): Always enable
+	an item with a submenu.
+
 2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSavePanel.m: Change to have entire window accept DnD.

@@ -1252,13 +1252,20 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	  /*
 	   *	If there is no title mapping, this item must be a
 	   *	submenu - so we check the submenu items.
+	   *
+	   *	We always enable the submenu item itself. We do this
+	   *	to prevent confusion (if the user is trying to use
+	   *	a disabled item, it's clearer to show that item disabled
+	   *	than to hide it in a disabled submenu), and to encourage
+	   *	the user to explore the interface (it makes it possible
+	   *	to browse the service list at any time).
 	   */
 	  if (title == nil && [[item submenu] isKindOfClass: [NSMenu class]])
 	    {
 	      NSArray		*sub = [[item submenu] itemArray];
 	      unsigned		j;
 
-	      shouldBeEnabled = NO;
+	      shouldBeEnabled = YES;
 	      for (j = 0; j < [sub count]; j++)
 		{
 		  NSMenuItem	*subitem = [sub objectAtIndex: j];
@@ -1267,7 +1274,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 		  if ([self validateMenuItem: subitem] == YES)
 		    {
-		      shouldBeEnabled = YES;	/* Enabled menu */
 		      subShouldBeEnabled = YES;
 		    }
 		  if (subWasEnabled != subShouldBeEnabled)
