@@ -247,10 +247,10 @@ NSString *NSTextDidEndEditingNotification = @"NSTextDidEndEditingNotification";
 NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
 
 // NSTextView notifications
-NSString *NSTextDidChangeSelectionNotification =
-@"NSTextDidChangeSelectionNotification";
-NSString *NSTextWillChangeNotifyingTextViewNotification =
-@"NSTextWillChangeNotifyingTextViewNotification";
+NSString *NSTextViewDidChangeSelectionNotification =
+@"NSTextViewDidChangeSelectionNotification";
+NSString *NSTextViewWillChangeNotifyingTextViewNotification =
+@"NSTextViewWillChangeNotifyingTextViewNotification";
 
 // NSView notifications
 NSString *NSViewFocusDidChangeNotification
