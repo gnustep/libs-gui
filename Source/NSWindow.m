@@ -3518,11 +3518,6 @@ resetCursorRectsForView(NSView *theView)
     }
 
   /*
-   * Convert frame from flipped to normal coordinates.
-   */
-  fRect.origin.y -= fRect.size.height;
-
-  /*
    * Check and set frame.
    */
   if (_maximumSize.width > 0 && fRect.size.width > _maximumSize.width)
@@ -3574,7 +3569,7 @@ resetCursorRectsForView(NSView *theView)
   NSRect	sRect;
 
   fRect = _frame;
-  fRect.origin.y += fRect.size.height;	/* Make flipped	*/
+
   /*
    * FIXME - the screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock), but
