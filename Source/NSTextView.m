@@ -388,6 +388,8 @@ static NSNotificationCenter *nc;
   RELEASE (_caret_color);
   RELEASE (_typingAttributes);
 
+  /* FIXME - delegate notifications */
+
   [super dealloc];
 }
 
