@@ -1,3 +1,10 @@
+Sun Apr 21 12:57:36 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSWindow -encodeWithModelArchiver:]): If not
+	on gnustep-gui, always add NSTitledWindowMask to non NSBorderless
+	windows to work around a bug in OpenStep (patch by Georg
+	Fleischmann with changes).
+
 Sun Apr 21 11:44:01 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/libgnustep-gui.def: Added __objc_class_name_NSOutlineView.
