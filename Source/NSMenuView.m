@@ -120,14 +120,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
  */
 - (id) initWithFrame: (NSRect)aFrame
 {
-  NSRect r;
-  
   self = [super initWithFrame: aFrame];
 
-  _font = RETAIN([NSFont menuFontOfSize: 0.0]);
-  r = [_font boundingRectForFont];
-  /* Should make up 110, 20 for default font */
-  _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 5.);
+  [self setFont: [NSFont menuFontOfSize: 0.0]];
 
   _highlightedItemIndex = -1;
   _horizontalEdgePad = 4.;
@@ -156,20 +151,19 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) dealloc
 {
   // We must remove the menu view from the menu list of observers.
-  if ( _menu )
+  if (_menu != nil)
     {
       [[NSNotificationCenter defaultCenter] removeObserver: self  
 					    name: nil
 					    object: _menu];
     }
 
-  RELEASE(_font);
-
   /* Clean the pointer to us stored into the _itemCells.  */
   [_itemCells makeObjectsPerformSelector: @selector(setMenuView:)
 	      withObject: nil];
 
   RELEASE(_itemCells);
+  RELEASE(_font);
 
   [super dealloc];
 }
@@ -191,21 +185,24 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   _menu = menu;
   _items_link = [_menu itemArray];
 
-  // Add this menu view to the menu's list of observers.
-  [theCenter addObserver: self
-                selector: @selector(itemChanged:)
-                    name: NSMenuDidChangeItemNotification
-                  object: _menu];
+  if (_menu != nil)
+    {
+      // Add this menu view to the menu's list of observers.
+      [theCenter addObserver: self
+		    selector: @selector(itemChanged:)
+		        name: NSMenuDidChangeItemNotification
+                      object: _menu];
 
-  [theCenter addObserver: self
-                selector: @selector(itemAdded:)
-                    name: NSMenuDidAddItemNotification
-                  object: _menu];
+      [theCenter addObserver: self
+		    selector: @selector(itemAdded:)
+		        name: NSMenuDidAddItemNotification
+                      object: _menu];
 
-  [theCenter addObserver: self
-                selector: @selector(itemRemoved:)
-                    name: NSMenuDidRemoveItemNotification
-                  object: _menu];
+      [theCenter addObserver: self
+                    selector: @selector(itemRemoved:)
+                        name: NSMenuDidRemoveItemNotification
+                      object: _menu];
+    }
 
   // Force menu view's layout to be recalculated.
   [self setNeedsSizing: YES];
@@ -218,13 +215,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return _menu;
 }
 
-// FIXME: horizontal orientation related code shoul be removed
 - (void) setHorizontal: (BOOL)flag
 {
   _horizontal = flag;
 }
 
-// FIXME: horizontal orientation related code shoul be removed
 - (BOOL) isHorizontal
 {
   return _horizontal;
@@ -233,6 +228,16 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) setFont: (NSFont*)font
 {
   ASSIGN(_font, font);
+  if (_font != nil)
+    {
+      NSRect r;
+  
+      r = [_font boundingRectForFont];
+      /* Should make up 110, 20 for default font */
+      _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 5.);
+
+      [self setNeedsSizing: YES];
+    }
 }
 
 - (NSFont*) font
@@ -320,6 +325,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) setHorizontalEdgePadding: (float)pad
 {
   _horizontalEdgePad = pad;
+  [self setNeedsSizing: YES];
 }
 
 - (float) horizontalEdgePadding
@@ -469,7 +475,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       // Add title view. If this menu not owned by popup
       _titleView = [[NSMenuWindowTitleView alloc] init];
       [self addSubview: _titleView];
-      [_titleView release];
+      RELEASE(_titleView);
     }
   else if ([_menu _ownedByPopUp] && _titleView)
     {
@@ -478,9 +484,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       _titleView = nil;
     }
   
-  if ([_titleView menu] == nil && _titleView)
-    [_titleView setMenu: _menu];
-  
+  if ((_titleView != nil) && ([_titleView menu] == nil))
+    {
+      [_titleView setMenu: _menu];
+    }
+
   // Resize it anyway.
   [self sizeToFit];
 
@@ -531,15 +539,14 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       menuBarHeight += _leftBorderOffset;
     }
   
-  // TODO: Optimize this loop.
   for (i = 0; i < howMany; i++)
     {
-      float		    aStateImageWidth = 0.0;
-      float		    aTitleWidth = 0.0;
-      float		    anImageWidth = 0.0;
-      float		    anImageAndTitleWidth = 0.0;
-      float		    aKeyEquivalentWidth = 0.0;
-      NSMenuItemCell	*aCell = [_itemCells objectAtIndex: i];
+      float aStateImageWidth;
+      float aTitleWidth;
+      float anImageWidth;
+      float anImageAndTitleWidth;
+      float aKeyEquivalentWidth;
+      NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
       
       // State image area.
       aStateImageWidth = [aCell stateImageWidth];
@@ -651,7 +658,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
     }
 
-  // FIXME: horizontal orientation related code shoul be removed
   if (_horizontal == NO)
     {
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
@@ -721,7 +727,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSRect) innerRect
 {
-  // FIXME: horizontal orientation related code shoul be removed
   if (_horizontal == NO)
     {
       return NSMakeRect (_bounds.origin.x + _leftBorderOffset, 
@@ -748,9 +753,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
 
   /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
-	 * so we do not draw on the heavy line at origin.x = 0.
+   * so we do not draw on the heavy line at origin.x = 0.
    */
-  // FIXME: horizontal orientation related code shoul be removed
   if (_horizontal == NO)
     {
       theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
@@ -793,9 +797,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSRect aRect;
 
   aRect = [self rectOfItemAtIndex: index];
-
   aRect = _addLeftBorderOffsetToRect(aRect);
-
   [self setNeedsDisplayInRect: aRect];
 }
 
@@ -812,10 +814,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   else
     submenuFrame = NSZeroRect;
 
-  // FIXME: horizontal orientation related code shoul be removed
   if (_horizontal == NO)
     {
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", 
+				 [aSubmenu menuRepresentation])
 	  == GSWindowMakerInterfaceStyle)
 	{
 	  NSRect aRect = [self rectOfItemAtIndex: 
@@ -847,7 +849,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) resizeWindowWithMaxHeight: (float)maxHeight
 {
-  // set the menuview's window to max height in order to keep on screen?
+  // FIXME set the menuview's window to max height in order to keep on screen?
 }
 
 - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect 
@@ -880,7 +882,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       float f;
 
-      // FIXME: horizontal orientation related code shoul be removed
       if (_horizontal == NO)
 	{
 	  f = screenRect.size.height * (items - 1);
@@ -888,27 +889,23 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  screenFrame.origin.y -= f;
 	  screenFrame.size.width += _leftBorderOffset;
 	  screenFrame.origin.x -= _leftBorderOffset;
+	  // Compute position for popups, if needed
+	  if (selectedItemIndex != -1) 
+	    {
+	      screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	    }
 	}
       else
 	{
  	  f = screenRect.size.width * (items - 1);
  	  screenFrame.size.width += f;
+	  // Compute position for popups, if needed
+	  if (selectedItemIndex != -1) 
+	    {
+	      screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+	    }
 	}
     }  
-  
-  // Compute position for popups, if needed
-  if (selectedItemIndex != -1) 
-    {
-      // FIXME: horizontal orientation related code shoul be removed
-      if (_horizontal == NO)
-	{
-	  screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
-	}
-      else
-	{
-	  screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
-	}
-    }
   
   // Get the frameRect
   r = [NSWindow frameRectForContentRect: screenFrame
@@ -1137,7 +1134,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                 {
                   // The call to fetch attachedMenu is not needed. But putting
                   // it here avoids flicker when we go back to an ancestor 
-									// menu and the attached menu is already correct.
+		  // menu and the attached menu is already correct.
                   [[[candidateMenu attachedMenu] menuRepresentation]
                     detachSubmenu];
                   
@@ -1361,7 +1358,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   [encoder encodeObject: _itemCells];
   [encoder encodeObject: _font];
-  // FIXME: horizontal orientation related code shoul be removed
   [encoder encodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [encoder encodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
   [encoder encodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
@@ -1377,7 +1373,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	      withObject: self];
 
   [decoder decodeValueOfObjCType: @encode(id) at: &_font];
-  // FIXME: should be leaved even if horizontal menu code should be removed
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
   [decoder decodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
