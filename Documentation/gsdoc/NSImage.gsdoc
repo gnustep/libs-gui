@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSImage" next="NSImageCell" prev="NSHelpManager" up="NSActionCell">
+<gsdoc base="NSImage" up="Gui">
   <head>
     <title>NSImage</title>
     <author name="Adam Fedor">
@@ -12,6 +12,7 @@
     <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSImage class
@@ -21,43 +22,72 @@
         <conform>NSCoding</conform>
         <conform>NSCopying</conform>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="BOOL" factory="yes">
           <sel>canInitWithPasteboard:</sel>
           <arg type="NSPasteboard*">pasteboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*" factory="yes">
           <sel>imageFileTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id" factory="yes">
           <sel>imageNamed:</sel>
           <arg type="NSString*">aName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*" factory="yes">
           <sel>imagePasteboardTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*" factory="yes">
           <sel>imageUnfilteredFileTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*" factory="yes">
           <sel>imageUnfilteredPasteboardTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSData*">
           <sel>TIFFRepresentation</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSData*">
           <sel>TIFFRepresentationUsingCompression:</sel>
@@ -65,35 +95,59 @@
           <sel>factor:</sel>
           <arg type="float">aFloat</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addRepresentation:</sel>
           <arg type="NSImageRep*">imageRep</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addRepresentations:</sel>
           <arg type="NSArray*">imageRepArray</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSColor*">
           <sel>backgroundColor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImageRep*">
           <sel>bestRepresentationForDevice:</sel>
           <arg type="NSDictionary*">deviceDescription</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>cacheDepthMatchesImageDepth</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>compositeToPoint:</sel>
@@ -103,7 +157,11 @@
           <sel>operation:</sel>
           <arg type="NSCompositingOperation">op</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>compositeToPoint:</sel>
@@ -115,7 +173,11 @@
           <sel>fraction:</sel>
           <arg type="float">delta</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>compositeToPoint:</sel>
@@ -123,7 +185,11 @@
           <sel>operation:</sel>
           <arg type="NSCompositingOperation">op</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>compositeToPoint:</sel>
@@ -133,12 +199,20 @@
           <sel>fraction:</sel>
           <arg type="float">delta</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>delegate</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>dissolveToPoint:</sel>
@@ -146,7 +220,11 @@
           <sel>fraction:</sel>
           <arg type="float">aFloat</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>dissolveToPoint:</sel>
@@ -156,7 +234,11 @@
           <sel>fraction:</sel>
           <arg type="float">aFloat</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawAtPoint:</sel>
@@ -168,7 +250,11 @@
           <sel>fraction:</sel>
           <arg type="float">delta</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>drawInRect:</sel>
@@ -180,7 +266,11 @@
           <sel>fraction:</sel>
           <arg type="float">delta</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>drawRepresentation:</sel>
@@ -188,210 +278,361 @@
           <sel>inRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initByReferencingFile:</sel>
           <arg type="NSString*">fileName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithBitmapHandle:</sel>
           <arg type="void*">bitmap</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithContentsOfFile:</sel>
           <arg type="NSString*">fileName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithContentsOfURL:</sel>
           <arg type="NSURL*">anURL</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithData:</sel>
           <arg type="NSData*">data</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithIconHandle:</sel>
           <arg type="void*">icon</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithPasteboard:</sel>
           <arg type="NSPasteboard*">pasteboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithSize:</sel>
           <arg type="NSSize">aSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isCachedSeparately</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isDataRetained</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isFlipped</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isValid</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>lockFocus</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>lockFocusOnRepresentation:</sel>
           <arg type="NSImageRep*">imageRep</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>matchesOnMultipleResolution</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>name</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>prefersColorMatch</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>recache</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeRepresentation:</sel>
           <arg type="NSImageRep*">imageRep</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>representations</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>scalesWhenResized</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBackgroundColor:</sel>
           <arg type="NSColor*">aColor</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setCacheDepthMatchesImageDepth:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setCachedSeparately:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDataRetained:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
           <arg type="id">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFlipped:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMatchesOnMultipleResolution:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setName:</sel>
           <arg type="NSString*">string</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPrefersColorMatch:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setScalesWhenResized:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSize:</sel>
           <arg type="NSSize">aSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setUsesEPSOnResolutionMismatch:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSize">
           <sel>size</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>unlockFocus</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>usesEPSOnResolutionMismatch</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -402,13 +643,21 @@
       <category name="NSImageAdditions" class="NSBundle">
         <declared>AppKit/NSImage.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSString*">
           <sel>pathForImageResource:</sel>
           <arg type="NSString*">name</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -419,6 +668,7 @@
       <protocol name="GSImageDelegateProtocol">
         <declared>AppKit/NSImage.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSImage*">
           <sel>imageDidNotDraw:</sel>
@@ -426,8 +676,15 @@
           <sel>inRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
+        <standards>
+          <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+        </standards>
       </protocol>
     </chapter>
   </body>

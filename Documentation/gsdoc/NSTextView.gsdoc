@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSTextView" next="NSView" prev="NSTextContainer" up="NSDocumentController">
+<gsdoc base="NSTextView" up="Gui">
   <head>
     <title>NSTextView</title>
     <author name="Scott Christley">
@@ -28,9 +28,12 @@
         n.pero@mi.flashnet.it
       </email>
     </author>
-    <copy>1996, 1998, 2000 Free Software Foundation, Inc.</copy>
+    <copy>
+      1996, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+    </copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSTextView class
@@ -39,33 +42,54 @@
         <declared>AppKit/NSTextView.h</declared>
         <conform>NSTextInput</conform>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void" factory="yes">
           <sel>registerForServices</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>acceptableDragTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>alignJustified:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>changeColor:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>cleanUpAfterDragOperation</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>dragImageForSelectionWithEvent:</sel>
@@ -73,7 +97,11 @@
           <sel>origin:</sel>
           <arg type="NSPoint*">origin</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="unsigned int">
           <sel>dragOperationForDraggingInfo:</sel>
@@ -81,7 +109,11 @@
           <sel>type:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>dragSelectionWithEvent:</sel>
@@ -91,7 +123,11 @@
           <sel>slideBack:</sel>
           <arg type="BOOL">slideBack</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawInsertionPointInRect:</sel>
@@ -101,13 +137,21 @@
           <sel>turnedOn:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithFrame:</sel>
           <arg type="NSRect">frameRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithFrame:</sel>
@@ -115,47 +159,79 @@
           <sel>textContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>insertText:</sel>
           <arg type="NSString*">insertString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>invalidateTextContainerOrigin</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSLayoutManager*">
           <sel>layoutManager</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>loosenKerning:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>lowerBaseline:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pasteAsPlainText:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pasteAsRichText:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>preferredPasteboardTypeFromArray:</sel>
@@ -163,19 +239,31 @@
           <sel>restrictedToTypesFromArray:</sel>
           <arg type="NSArray*">allowedTypes</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>raiseBaseline:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>readSelectionFromPasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>readSelectionFromPasteboard:</sel>
@@ -183,18 +271,30 @@
           <sel>type:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>readablePasteboardTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>replaceTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>rulerView:</sel>
@@ -202,7 +302,11 @@
           <sel>didAddMarker:</sel>
           <arg type="NSRulerMarker*">marker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>rulerView:</sel>
@@ -210,7 +314,11 @@
           <sel>didMoveMarker:</sel>
           <arg type="NSRulerMarker*">aMarker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>rulerView:</sel>
@@ -218,7 +326,11 @@
           <sel>didRemoveMarker:</sel>
           <arg type="NSRulerMarker*">aMarker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>rulerView:</sel>
@@ -226,7 +338,11 @@
           <sel>handleMouseDown:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>rulerView:</sel>
@@ -234,7 +350,11 @@
           <sel>shouldAddMarker:</sel>
           <arg type="NSRulerMarker*">aMarker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>rulerView:</sel>
@@ -242,7 +362,11 @@
           <sel>shouldMoveMarker:</sel>
           <arg type="NSRulerMarker*">aMarker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>rulerView:</sel>
@@ -250,7 +374,11 @@
           <sel>shouldRemoveMarker:</sel>
           <arg type="NSRulerMarker*">aMarker</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>rulerView:</sel>
@@ -260,7 +388,11 @@
           <sel>atLocation:</sel>
           <arg type="float">location</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>rulerView:</sel>
@@ -270,7 +402,11 @@
           <sel>toLocation:</sel>
           <arg type="float">location</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>selectionRangeForProposedRange:</sel>
@@ -278,7 +414,11 @@
           <sel>granularity:</sel>
           <arg type="NSSelectionGranularity">granul</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAlignment:</sel>
@@ -286,13 +426,21 @@
           <sel>range:</sel>
           <arg type="NSRange">aRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setConstrainedFrameSize:</sel>
           <arg type="NSSize">desiredSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNeedsDisplayInRect:</sel>
@@ -300,112 +448,192 @@
           <sel>avoidAdditionalLayout:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setRulerVisible:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTextContainerInset:</sel>
           <arg type="NSSize">inset</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>shouldDrawInsertionPoint</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSTextContainer*">
           <sel>textContainer</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSize">
           <sel>textContainerInset</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPoint">
           <sel>textContainerOrigin</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSTextStorage*">
           <sel>textStorage</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>tightenKerning:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>toggleTraditionalCharacterShape:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>turnOffKerning:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>turnOffLigatures:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateDragTypeRegistration</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateFontPanel</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateRuler</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>useAllLigatures:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>useStandardKerning:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>useStandardLigatures:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>writablePasteboardTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>writeSelectionToPasteboard:</sel>
@@ -413,7 +641,11 @@
           <sel>type:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>writeSelectionToPasteboard:</sel>
@@ -421,8 +653,15 @@
           <sel>types:</sel>
           <arg type="NSArray*">types</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -434,6 +673,7 @@
       <category name="NSTextViewDelegate" class="NSObject">
         <declared>AppKit/NSTextView.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>textView:</sel>
@@ -443,7 +683,11 @@
           <sel>inRect:</sel>
           <arg type="NSRect">cellFrame</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textView:</sel>
@@ -455,7 +699,11 @@
           <sel>atIndex:</sel>
           <arg type="unsigned">charIndex</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>textView:</sel>
@@ -463,7 +711,11 @@
           <sel>clickedOnLink:</sel>
           <arg type="id">link</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>textView:</sel>
@@ -473,7 +725,11 @@
           <sel>atIndex:</sel>
           <arg type="unsigned">charIndex</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>textView:</sel>
@@ -481,7 +737,11 @@
           <sel>doCommandBySelector:</sel>
           <arg type="SEL">commandSelector</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textView:</sel>
@@ -491,7 +751,11 @@
           <sel>inRect:</sel>
           <arg type="NSRect">cellFrame</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textView:</sel>
@@ -503,7 +767,11 @@
           <sel>atIndex:</sel>
           <arg type="unsigned">charIndex</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textView:</sel>
@@ -515,7 +783,11 @@
           <sel>event:</sel>
           <arg type="NSEvent*">event</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textView:</sel>
@@ -529,7 +801,11 @@
           <sel>atIndex:</sel>
           <arg type="unsigned">charIndex</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>textView:</sel>
@@ -539,7 +815,11 @@
           <sel>replacementString:</sel>
           <arg type="NSString*">replacementString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>textView:</sel>
@@ -549,20 +829,35 @@
           <sel>toCharacterRange:</sel>
           <arg type="NSRange">newSelectedCharRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>textViewDidChangeSelection:</sel>
           <arg type="NSNotification*">notification</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSUndoManager*">
           <sel>undoManagerForTextView:</sel>
           <arg type="NSTextView*">view</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -574,12 +869,20 @@
       <category name="GSTextViewUpdateMultipleViews" class="NSTextView">
         <declared>AppKit/NSTextView.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>_updateMultipleTextViews</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -590,210 +893,363 @@
       <category name="NSSharing" class="NSTextView">
         <declared>AppKit/NSTextView.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="BOOL">
           <sel>allowsUndo</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSColor*">
           <sel>backgroundColor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>becomeFirstResponder</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>delegate</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>didChangeText</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>drawsBackground</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>importsGraphics</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSColor*">
           <sel>insertionPointColor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isContinuousSpellCheckingEnabled</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isEditable</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isFieldEditor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isRichText</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isRulerVisible</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isSelectable</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>markedRange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSDictionary*">
           <sel>markedTextAttributes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>rangeForUserCharacterAttributeChange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>rangeForUserParagraphAttributeChange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>rangeForUserTextChange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>resignFirstResponder</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>selectedRange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSDictionary*">
           <sel>selectedTextAttributes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSelectionAffinity">
           <sel>selectionAffinity</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSelectionGranularity">
           <sel>selectionGranularity</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAllowsUndo:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBackgroundColor:</sel>
           <arg type="NSColor*">color</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setContinuousSpellCheckingEnabled:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
           <arg type="id">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDrawsBackground:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setEditable:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFieldEditor:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setImportsGraphics:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setInsertionPointColor:</sel>
           <arg type="NSColor*">color</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMarkedTextAttributes:</sel>
           <arg type="NSDictionary*">attributeDictionary</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setRichText:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setRulerVisible:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSelectable:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSelectedRange:</sel>
           <arg type="NSRange">charRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSelectedRange:</sel>
@@ -803,43 +1259,71 @@
           <sel>stillSelecting:</sel>
           <arg type="BOOL">stillSelectingFlag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSelectedTextAttributes:</sel>
           <arg type="NSDictionary*">attributeDictionary</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSelectionGranularity:</sel>
           <arg type="NSSelectionGranularity">granularity</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSmartInsertDeleteEnabled:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTypingAttributes:</sel>
           <arg type="NSDictionary*">attrs</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setUsesFontPanel:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setUsesRuler:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>shouldChangeTextInRange:</sel>
@@ -847,18 +1331,30 @@
           <sel>replacementString:</sel>
           <arg type="NSString*">replacementString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>smartDeleteRangeForProposedRange:</sel>
           <arg type="NSRange">proposedCharRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>smartInsertDeleteEnabled</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>smartInsertForString:</sel>
@@ -870,39 +1366,67 @@
           <sel>afterString:</sel>
           <arg type="NSString**">afterString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>spellCheckerDocumentTag</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>toggleContinuousSpellChecking:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSDictionary*">
           <sel>typingAttributes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateInsertionPointStateAndRestartTimer:</sel>
           <arg type="BOOL">restartFlag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>usesFontPanel</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>usesRuler</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>validRequestorForSendType:</sel>
@@ -910,8 +1434,15 @@
           <sel>returnType:</sel>
           <arg type="NSString*">returnType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
   </body>

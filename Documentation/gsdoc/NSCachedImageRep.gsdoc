@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSCachedImageRep" next="NSCell" prev="NSButtonCell" up="NSActionCell">
+<gsdoc base="NSCachedImageRep" up="Gui">
   <head>
     <title>NSCachedImageRep</title>
     <author name="Adam Fedor">
@@ -12,6 +12,7 @@
     <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSCachedImageRep class
@@ -19,6 +20,7 @@
       <class name="NSCachedImageRep" super="NSImageRep">
         <declared>AppKit/NSCachedImageRep.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="id">
           <sel>initWithSize:</sel>
@@ -30,7 +32,11 @@
           <sel>alpha:</sel>
           <arg type="BOOL">alpha</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithWindow:</sel>
@@ -38,18 +44,33 @@
           <sel>rect:</sel>
           <arg type="NSRect">rect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>rect</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSWindow*">
           <sel>window</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

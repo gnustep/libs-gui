@@ -3,7 +3,9 @@
     <title>NSSlider</title>
   </head>
   <body>
-    <h1>NSSlider</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSSlider">NSSlider</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
@@ -17,8 +19,18 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>Class Description</h1>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Class Description</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">Class Description</a></h1>
     <p>
 
         An NSSlider displays, and allows control of, some value in
@@ -54,236 +66,356 @@
         the visible portion of a view, whereas a slider is intended
         to represent some value.
           </p>
-    <h2><a name="class$NSSlider">NSSlider</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSSlider.h<br />
+    <h2><a name="class$NSSlider">NSSlider</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSSlider.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>acceptsFirstMouse:</a></h3>
-    - (BOOL) <b>acceptsFirstMouse:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-acceptsFirstMouse:">-acceptsFirstMouse:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-allowsTickMarkValuesOnly">-allowsTickMarkValuesOnly</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-altIncrementValue">-altIncrementValue</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-closestTickMarkValueToValue:">-closestTickMarkValueToValue:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-image">-image</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-indexOfTickMarkAtPoint:">-indexOfTickMarkAtPoint:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-isVertical">-isVertical</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-knobThickness">-knobThickness</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-maxValue">-maxValue</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-minValue">-minValue</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-numberOfTickMarks">-numberOfTickMarks</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-rectOfTickMarkAtIndex:">-rectOfTickMarkAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setAllowsTickMarkValuesOnly:">-setAllowsTickMarkValuesOnly:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setAltIncrementValue:">-setAltIncrementValue:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setImage:">-setImage:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setKnobThickness:">-setKnobThickness:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setMaxValue:">-setMaxValue:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setMinValue:">-setMinValue:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setNumberOfTickMarks:">-setNumberOfTickMarks:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setTickMarkPosition:">-setTickMarkPosition:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setTitle:">-setTitle:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setTitleCell:">-setTitleCell:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setTitleColor:">-setTitleColor:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-setTitleFont:">-setTitleFont:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-tickMarkPosition">-tickMarkPosition</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-tickMarkValueAtIndex:">-tickMarkValueAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-title">-title</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-titleCell">-titleCell</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-titleColor">-titleColor</a></li>
+      <li><a rel="gsdoc" href="NSSlider.html#method$NSSlider-titleFont">-titleFont</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSSlider-acceptsFirstMouse:">acceptsFirstMouse:</a></h3>
+    - (BOOL) <b>acceptsFirstMouse:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns <code>YES</code> by default. This will
             allow the first click sent to the slider, when in an
             inactive window, to both bring the window into
             focus and manipulate the slider.
-              </p>
-    <hr />
-    <h3>allowsTickMarkValuesOnly</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-allowsTickMarkValuesOnly">allowsTickMarkValuesOnly</a></h3>
     - (BOOL) <b>allowsTickMarkValuesOnly</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>altIncrementValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-altIncrementValue">altIncrementValue</a></h3>
     - (double) <b>altIncrementValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the value by which the slider will be
             incremented if the user holds down the ALT key.
-              </p>
-    <hr />
-    <h3>closestTickMarkValueToValue:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-closestTickMarkValueToValue:">closestTickMarkValueToValue:</a></h3>
     - (double) <b>closestTickMarkValueToValue:</b> (double)aValue;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>image</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-image">image</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the image drawn in the slider's track.
             Returns <code>nil</code> if this has not been set.
-              </p>
-    <hr />
-    <h3>indexOfTickMarkAtPoint:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-indexOfTickMarkAtPoint:">indexOfTickMarkAtPoint:</a></h3>
     - (int) <b>indexOfTickMarkAtPoint:</b> (NSPoint)point;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isVertical</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-isVertical">isVertical</a></h3>
     - (int) <b>isVertical</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns whether or not the slider is vertical. If,
             for some reason, this cannot be determined, for such
             reasons as the slider is not yet displayed, this
             method returns -1. Generally, a slider is considered
             vertical if its height is greater than its width.
-              </p>
-    <hr />
-    <h3>knobThickness</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-knobThickness">knobThickness</a></h3>
     - (float) <b>knobThickness</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the thickness of the slider's knob. This
             value is in pixels, and is the size of the knob along
             the slider's track.
-              </p>
-    <hr />
-    <h3>maxValue</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-maxValue">maxValue</a></h3>
     - (double) <b>maxValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the maximum value that the slider
             represents.
-              </p>
-    <hr />
-    <h3>minValue</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-minValue">minValue</a></h3>
     - (double) <b>minValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the minimum value that the slider
             represents.
-              </p>
-    <hr />
-    <h3>numberOfTickMarks</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-numberOfTickMarks">numberOfTickMarks</a></h3>
     - (int) <b>numberOfTickMarks</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectOfTickMarkAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-rectOfTickMarkAtIndex:">rectOfTickMarkAtIndex:</a></h3>
     - (NSRect) <b>rectOfTickMarkAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsTickMarkValuesOnly:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setAllowsTickMarkValuesOnly:">setAllowsTickMarkValuesOnly:</a></h3>
     - (void) <b>setAllowsTickMarkValuesOnly:</b> (BOOL)flag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAltIncrementValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setAltIncrementValue:">setAltIncrementValue:</a></h3>
     - (void) <b>setAltIncrementValue:</b> (double)increment;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the value by which the slider will be
             incremented, when the ALT key is held down, to
             <var>increment</var>.
-              </p>
-    <hr />
-    <h3>setImage:</a></h3>
-    - (void) <b>setImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)backgroundImage;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setImage:">setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)backgroundImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the image to be displayed in the slider's track
             to <var>barImage</var>.
-              </p>
-    <hr />
-    <h3>setKnobThickness:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setKnobThickness:">setKnobThickness:</a></h3>
     - (void) <b>setKnobThickness:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the thickness of the knob to <var>thickness</var>
             , in pixels. This value sets the amount of space which
             the knob takes up in the slider's track.
-              </p>
-    <hr />
-    <h3>setMaxValue:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setMaxValue:">setMaxValue:</a></h3>
     - (void) <b>setMaxValue:</b> (double)aDouble;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the maximum value that the sliders represents to
             <var>maxValue</var>.
-              </p>
-    <hr />
-    <h3>setMinValue:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setMinValue:">setMinValue:</a></h3>
     - (void) <b>setMinValue:</b> (double)aDouble;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the minimum value that the slider represents to
             <var>minValue</var>.
-              </p>
-    <hr />
-    <h3>setNumberOfTickMarks:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setNumberOfTickMarks:">setNumberOfTickMarks:</a></h3>
     - (void) <b>setNumberOfTickMarks:</b> (int)numberOfTickMarks;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTickMarkPosition:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setTickMarkPosition:">setTickMarkPosition:</a></h3>
     - (void) <b>setTickMarkPosition:</b> (NSTickMarkPosition)position;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setTitle:">setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the title of the slider to <var>barTitle</var>.
             This title is displayed on the slider's track, behind
             the knob.
-              </p>
-    <hr />
-    <h3>setTitleCell:</a></h3>
-    - (void) <b>setTitleCell:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setTitleCell:">setTitleCell:</a></h3>
+    - (void) <b>setTitleCell:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the cell used to draw the title to
             <var>titleCell</var>.
-              </p>
-    <hr />
-    <h3>setTitleColor:</a></h3>
-    - (void) <b>setTitleColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setTitleColor:">setTitleColor:</a></h3>
+    - (void) <b>setTitleColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the colour with which the title will be drawn to
             <var>color</var>.
-              </p>
-    <hr />
-    <h3>setTitleFont:</a></h3>
-    - (void) <b>setTitleFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-setTitleFont:">setTitleFont:</a></h3>
+    - (void) <b>setTitleFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the font with which the title will be drawm to
             <var>font</var>.
-              </p>
-    <hr />
-    <h3>tickMarkPosition</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-tickMarkPosition">tickMarkPosition</a></h3>
     - (NSTickMarkPosition) <b>tickMarkPosition</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tickMarkValueAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-tickMarkValueAtIndex:">tickMarkValueAtIndex:</a></h3>
     - (double) <b>tickMarkValueAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>title</a></h3>
-    - (NSString*) <b>title</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-title">title</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>title</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the title of the slider as an
             <code>NSString</code>.
-              </p>
-    <hr />
-    <h3>titleCell</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-titleCell">titleCell</a></h3>
     - (id) <b>titleCell</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the cell used to draw the title.
-              </p>
-    <hr />
-    <h3>titleColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>titleColor</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-titleColor">titleColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>titleColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the colour used to draw the title.
-              </p>
-    <hr />
-    <h3>titleFont</a></h3>
-    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>titleFont</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSSlider-titleFont">titleFont</a></h3>
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>titleFont</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the font used to draw the title.
-              </p>
-    <hr />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

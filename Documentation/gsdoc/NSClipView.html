@@ -3,7 +3,9 @@
     <title>NSClipView</title>
   </head>
   <body>
-    <h1>NSClipView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSClipView">NSClipView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
@@ -17,197 +19,367 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSClipView class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSClipView(BackendMethods) category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSClipView class
-      </h1>
-    <h2><a name="class$NSClipView">NSClipView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
-    Declared: AppKit/NSClipView.h<br />
+      </a></h1>
+    <h2><a name="class$NSClipView">NSClipView</a> : <a rel="gsdoc" href="NSView.html#class$NSView">NSView</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSClipView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>acceptsFirstResponder</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-acceptsFirstResponder">-acceptsFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-autoscroll:">-autoscroll:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-constrainScrollPoint:">-constrainScrollPoint:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-copiesOnScroll">-copiesOnScroll</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-documentCursor">-documentCursor</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-documentRect">-documentRect</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-documentView">-documentView</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-documentVisibleRect">-documentVisibleRect</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-drawsBackground">-drawsBackground</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-isFlipped">-isFlipped</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-rotateByAngle:">-rotateByAngle:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-scaleUnitSquareToSize:">-scaleUnitSquareToSize:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-scrollToPoint:">-scrollToPoint:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setBoundsOrigin:">-setBoundsOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setBoundsRotation:">-setBoundsRotation:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setBoundsSize:">-setBoundsSize:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setCopiesOnScroll:">-setCopiesOnScroll:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setDocumentCursor:">-setDocumentCursor:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setDocumentView:">-setDocumentView:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setDrawsBackground:">-setDrawsBackground:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setFrameOrigin:">-setFrameOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setFrameRotation:">-setFrameRotation:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-setFrameSize:">-setFrameSize:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-translateOriginToPoint:">-translateOriginToPoint:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-viewBoundsChanged:">-viewBoundsChanged:</a></li>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView-viewFrameChanged:">-viewFrameChanged:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSClipView-acceptsFirstResponder">acceptsFirstResponder</a></h3>
     - (BOOL) <b>acceptsFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoscroll:</a></h3>
-    - (BOOL) <b>autoscroll:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-autoscroll:">autoscroll:</a></h3>
+    - (BOOL) <b>autoscroll:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>constrainScrollPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-constrainScrollPoint:">constrainScrollPoint:</a></h3>
     - (NSPoint) <b>constrainScrollPoint:</b> (NSPoint)proposedNewOrigin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>copiesOnScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-copiesOnScroll">copiesOnScroll</a></h3>
     - (BOOL) <b>copiesOnScroll</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentCursor</a></h3>
-    - (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*) <b>documentCursor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-documentCursor">documentCursor</a></h3>
+    - (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*) <b>documentCursor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-documentRect">documentRect</a></h3>
     - (NSRect) <b>documentRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentView</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-documentView">documentView</a></h3>
     - (id) <b>documentView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentVisibleRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-documentVisibleRect">documentVisibleRect</a></h3>
     - (NSRect) <b>documentVisibleRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isFlipped</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-isFlipped">isFlipped</a></h3>
     - (BOOL) <b>isFlipped</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rotateByAngle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-rotateByAngle:">rotateByAngle:</a></h3>
     - (void) <b>rotateByAngle:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scaleUnitSquareToSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-scaleUnitSquareToSize:">scaleUnitSquareToSize:</a></h3>
     - (void) <b>scaleUnitSquareToSize:</b> (NSSize)newUnitSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollToPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-scrollToPoint:">scrollToPoint:</a></h3>
     - (void) <b>scrollToPoint:</b> (NSPoint)point;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setBoundsOrigin:">setBoundsOrigin:</a></h3>
     - (void) <b>setBoundsOrigin:</b> (NSPoint)point;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsRotation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setBoundsRotation:">setBoundsRotation:</a></h3>
     - (void) <b>setBoundsRotation:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setBoundsSize:">setBoundsSize:</a></h3>
     - (void) <b>setBoundsSize:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCopiesOnScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setCopiesOnScroll:">setCopiesOnScroll:</a></h3>
     - (void) <b>setCopiesOnScroll:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDocumentCursor:</a></h3>
-    - (void) <b>setDocumentCursor:</b> (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*)aCursor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setDocumentCursor:">setDocumentCursor:</a></h3>
+    - (void) <b>setDocumentCursor:</b> (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*)aCursor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDocumentView:</a></h3>
-    - (void) <b>setDocumentView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setDocumentView:">setDocumentView:</a></h3>
+    - (void) <b>setDocumentView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setFrameOrigin:">setFrameOrigin:</a></h3>
     - (void) <b>setFrameOrigin:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameRotation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setFrameRotation:">setFrameRotation:</a></h3>
     - (void) <b>setFrameRotation:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-setFrameSize:">setFrameSize:</a></h3>
     - (void) <b>setFrameSize:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>translateOriginToPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-translateOriginToPoint:">translateOriginToPoint:</a></h3>
     - (void) <b>translateOriginToPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>viewBoundsChanged:</a></h3>
-    - (void) <b>viewBoundsChanged:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-viewBoundsChanged:">viewBoundsChanged:</a></h3>
+    - (void) <b>viewBoundsChanged:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>viewFrameChanged:</a></h3>
-    - (void) <b>viewFrameChanged:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSClipView-viewFrameChanged:">viewFrameChanged:</a></h3>
+    - (void) <b>viewFrameChanged:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSClipView(BackendMethods) category
-      </h1>
-    <h2><a href="#class$NSClipView">NSClipView</a>(<a name="category$NSClipView(BackendMethods)">BackendMethods</a>)</h2>
-    Declared: AppKit/NSClipView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSClipView">NSClipView</a>(<a name="category$NSClipView(BackendMethods)">BackendMethods</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSClipView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_translateToPoint:oldPoint:</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSClipView.html#method$NSClipView(BackendMethods)-_translateToPoint:oldPoint:">-_translateToPoint:oldPoint:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSClipView(BackendMethods)-_translateToPoint:oldPoint:">_translateToPoint:oldPoint:</a></h3>
     - (void) <b>_translateToPoint:</b> (NSPoint)point<b> oldPoint:</b> (NSPoint)oldPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSStringDrawing" up="Gui">
+  <head>
+    <title>NSStringAdditions</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <abstract>
+      Categories which add drawing capabilities to
+      NSAttributedString and NSString.
+    </abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSAttributedString(NSStringDrawing)
+        category
+      </heading>
+      <category name="NSStringDrawing" class="NSAttributedString">
+        <declared>AppKit/NSStringDrawing.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>drawAtPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawInRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawRange:</sel>
+          <arg type="NSRange">lineRange</arg>
+          <sel>atPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawRange:</sel>
+          <arg type="NSRange">lineRange</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>size</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>sizeRange:</sel>
+          <arg type="NSRange">lineRange</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSString(NSStringDrawing) category
+      </heading>
+      <category name="NSStringDrawing" class="NSString">
+        <declared>AppKit/NSStringDrawing.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>drawAtPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>withAttributes:</sel>
+          <arg type="NSDictionary*">attrs</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawInRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>withAttributes:</sel>
+          <arg type="NSDictionary*">attrs</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>sizeWithAttributes:</sel>
+          <arg type="NSDictionary*">attrs</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

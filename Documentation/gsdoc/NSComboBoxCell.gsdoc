@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSComboBoxCell" next="NSControl" prev="NSComboBox" up="NSActionCell">
+<gsdoc base="NSComboBoxCell" up="Gui">
   <head>
     <title>NSComboBoxCell</title>
     <author name="Gerrit van Dyk">
@@ -11,6 +11,7 @@
     <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSComboBoxCell class
@@ -18,56 +19,93 @@
       <class name="NSComboBoxCell" super="NSTextFieldCell">
         <declared>AppKit/NSComboBoxCell.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>addItemWithObjectValue:</sel>
           <arg type="id">object</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addItemsWithObjectValues:</sel>
           <arg type="NSArray*">objects</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>completedString:</sel>
           <arg type="NSString*">substring</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>completes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>dataSource</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>deselectItemAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>hasVerticalScroller</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>indexOfItemWithObjectValue:</sel>
           <arg type="id">object</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>indexOfSelectedItem</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>insertItemWithObjectValue:</sel>
@@ -75,142 +113,245 @@
           <sel>atIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSize">
           <sel>intercellSpacing</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>itemHeight</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>itemObjectValueAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>noteNumberOfItemsChanged</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>numberOfItems</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>numberOfVisibleItems</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>objectValueOfSelectedItem</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>objectValues</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>reloadData</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeAllItems</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeItemAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeItemWithObjectValue:</sel>
           <arg type="id">object</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollItemAtIndexToTop:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollItemAtIndexToVisible:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>selectItemAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>selectItemWithObjectValue:</sel>
           <arg type="id">object</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setCompletes:</sel>
           <arg type="BOOL">completes</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setDataSource:</sel>
           <arg type="id">aSource</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setHasVerticalScroller:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setIntercellSpacing:</sel>
           <arg type="NSSize">aSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setItemHeight:</sel>
           <arg type="float">itemHeight</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNumberOfVisibleItems:</sel>
           <arg type="int">visibleItems</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setUsesDataSource:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>usesDataSource</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -222,6 +363,7 @@
       <category name="NSComboBoxCellDataSource" class="NSObject">
         <declared>AppKit/NSComboBoxCell.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSString*">
           <sel>comboBoxCell:</sel>
@@ -229,7 +371,11 @@
           <sel>completedString:</sel>
           <arg type="NSString*">uncompletedString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="unsigned int">
           <sel>comboBoxCell:</sel>
@@ -237,7 +383,11 @@
           <sel>indexOfItemWithStringValue:</sel>
           <arg type="NSString*">string</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>comboBoxCell:</sel>
@@ -245,14 +395,25 @@
           <sel>objectValueForItemAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>numberOfItemsInComboBoxCell:</sel>
           <arg type="NSComboBoxCell*">comboBoxCell</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
   </body>

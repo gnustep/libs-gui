@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSBrowser" next="NSBrowserCell" prev="NSBox" up="NSActionCell">
+<gsdoc base="NSBrowser" up="Gui">
   <head>
     <title>NSBrowser</title>
     <author name="Scott Christley">
@@ -29,6 +29,7 @@
     <copy>1996, 1997 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSBrowser class
@@ -37,80 +38,137 @@
         <declared>AppKit/NSBrowser.h</declared>
         <conform>NSCoding</conform>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="Class" factory="yes">
           <sel>cellClass</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>acceptsArrowKeys</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>allowsBranchSelection</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>allowsEmptySelection</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>allowsMultipleSelection</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>cellPrototype</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>columnOfMatrix:</sel>
           <arg type="NSMatrix*">matrix</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>delegate</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayAllColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>doClick:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>doDoubleClick:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="SEL">
           <sel>doubleAction</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawTitle:</sel>
@@ -120,66 +178,114 @@
           <sel>ofColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>encodeWithCoder:</sel>
           <arg type="NSCoder*">aCoder</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>firstVisibleColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>frameOfColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>frameOfInsideOfColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>hasHorizontalScroller</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithCoder:</sel>
           <arg type="NSCoder*">aDecoder</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isLoaded</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isTitled</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>lastColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>lastVisibleColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>loadColumnZero</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>loadedCellAtRow:</sel>
@@ -187,90 +293,154 @@
           <sel>column:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="Class">
           <sel>matrixClass</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSMatrix*">
           <sel>matrixInColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>maxVisibleColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>minColumnWidth</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>numberOfVisibleColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>path</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>pathSeparator</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>pathToColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>reloadColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>reusesColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollColumnToVisible:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollColumnsLeftBy:</sel>
           <arg type="int">shiftAmount</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollColumnsRightBy:</sel>
           <arg type="int">shiftAmount</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollViaScroller:</sel>
           <arg type="NSScroller*">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>selectAll:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>selectRow:</sel>
@@ -278,163 +448,275 @@
           <sel>inColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>selectedCell</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>selectedCellInColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>selectedCells</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>selectedColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>selectedRowInColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>sendAction</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>sendsActionOnArrowKeys</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>separatesColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAcceptsArrowKeys:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAllowsBranchSelection:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAllowsEmptySelection:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAllowsMultipleSelection:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setCellClass:</sel>
           <arg type="Class">classId</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setCellPrototype:</sel>
           <arg type="NSCell*">aCell</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
           <arg type="id">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDoubleAction:</sel>
           <arg type="SEL">aSelector</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setHasHorizontalScroller:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setLastColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMatrixClass:</sel>
           <arg type="Class">classId</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMaxVisibleColumns:</sel>
           <arg type="int">columnCount</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMinColumnWidth:</sel>
           <arg type="int">columnWidth</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setPath:</sel>
           <arg type="NSString*">path</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPathSeparator:</sel>
           <arg type="NSString*">aString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setReusesColumns:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSendsActionOnArrowKeys:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSeparatesColumns:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTakesTitleFromPreviousColumn:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitle:</sel>
@@ -442,51 +724,90 @@
           <sel>ofColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitled:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>takesTitleFromPreviousColumn</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>tile</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>titleFrameOfColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>titleHeight</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>titleOfColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateScroller</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>validateVisibleColumns</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -498,29 +819,49 @@
       <category name="GNUstepExtensions" class="NSBrowser">
         <declared>AppKit/NSBrowser.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="BOOL">
           <sel>acceptsAlphaNumericalKeys</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>sendsActionOnAlphaNumericalKeys</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAcceptsAlphaNumericalKeys:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setSendsActionOnAlphaNumericalKeys:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -532,6 +873,7 @@
       <category name="NSBrowserDelegate" class="NSObject">
         <declared>AppKit/NSBrowser.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>browser:</sel>
@@ -541,7 +883,11 @@
           <sel>inMatrix:</sel>
           <arg type="NSMatrix*">matrix</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>browser:</sel>
@@ -549,7 +895,11 @@
           <sel>isColumnValid:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>browser:</sel>
@@ -557,7 +907,11 @@
           <sel>numberOfRowsInColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>browser:</sel>
@@ -567,7 +921,11 @@
           <sel>inColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>browser:</sel>
@@ -577,7 +935,11 @@
           <sel>inColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>browser:</sel>
@@ -585,7 +947,11 @@
           <sel>titleOfColumn:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>browser:</sel>
@@ -597,20 +963,35 @@
           <sel>column:</sel>
           <arg type="int">column</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>browserDidScroll:</sel>
           <arg type="NSBrowser*">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>browserWillScroll:</sel>
           <arg type="NSBrowser*">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
   </body>

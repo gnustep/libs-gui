@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSView" next="NSWindow" prev="NSTextView" up="NSDocumentController">
+<gsdoc base="NSView" up="Gui">
   <head>
     <title>NSView</title>
     <author name="Scott Christley">
@@ -29,6 +29,7 @@
     <copy>(C) 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>NSView</heading>
       <p>
@@ -57,7 +58,11 @@
         <method type="NSMenu*" factory="yes">
           <sel>defaultMenu</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSView*" factory="yes">
           <sel>focusView</sel>
@@ -65,6 +70,9 @@
             Return the view at the top of graphics contexts
             stack or <code>nil</code> if none is focused.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>acceptsFirstMouse:</sel>
@@ -74,6 +82,9 @@
             accept the first click received when in an inactive
             window, and <code>NO</code> otherwise.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addCursorRect:</sel>
@@ -81,7 +92,11 @@
           <sel>cursor:</sel>
           <arg type="NSCursor*">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addSubview:</sel>
@@ -89,6 +104,9 @@
           <desc>
             Adds <var>aView</var> as a subview of the receiver.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addSubview:</sel>
@@ -98,12 +116,20 @@
           <sel>relativeTo:</sel>
           <arg type="NSView*">otherView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>addToPageSetup</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSToolTipTag">
           <sel>addToolTipRect:</sel>
@@ -113,7 +139,11 @@
           <sel>userData:</sel>
           <arg type="void*">data</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSTrackingRectTag">
           <sel>addTrackingRect:</sel>
@@ -125,7 +155,11 @@
           <sel>assumeInside:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>adjustPageHeightNew:</sel>
@@ -137,7 +171,11 @@
           <sel>limit:</sel>
           <arg type="float">bottomLimit</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>adjustPageWidthNew:</sel>
@@ -149,13 +187,21 @@
           <sel>limit:</sel>
           <arg type="float">rightLimit</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>adjustScroll:</sel>
           <arg type="NSRect">newVisible</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>allocateGState</sel>
@@ -175,6 +221,9 @@
               method to set these custom parameters.
             </p>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>ancestorSharedWithView:</sel>
@@ -187,22 +236,37 @@
             <var>aView</var> if it is an ancestor of the
             receiver, otherwise returns <code>nil</code>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>autoresizesSubviews</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="unsigned int">
           <sel>autoresizingMask</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>autoscroll:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginDocument</sel>
@@ -225,6 +289,9 @@
             For an EPS operation, the beginSetup and endSetup
             methods aren't used.
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>beginPage:</sel>
@@ -236,7 +303,11 @@
           <sel>fonts:</sel>
           <arg type="NSString*">fontNames</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginPageInRect:</sel>
@@ -244,7 +315,11 @@
           <sel>atPlacement:</sel>
           <arg type="NSPoint">location</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>beginPageSetupRect:</sel>
@@ -252,7 +327,11 @@
           <sel>placement:</sel>
           <arg type="NSPoint">location</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginPrologueBBox:</sel>
@@ -270,38 +349,66 @@
           <sel>title:</sel>
           <arg type="NSString*">aTitle</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginSetup</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginTrailer</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>bounds</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>boundsRotation</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>canDraw</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>centerScanRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPoint">
           <sel>convertPoint:</sel>
@@ -309,7 +416,11 @@
           <sel>fromView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPoint">
           <sel>convertPoint:</sel>
@@ -317,7 +428,11 @@
           <sel>toView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>convertRect:</sel>
@@ -325,7 +440,11 @@
           <sel>fromView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>convertRect:</sel>
@@ -333,7 +452,11 @@
           <sel>toView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSize">
           <sel>convertSize:</sel>
@@ -341,7 +464,11 @@
           <sel>fromView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSSize">
           <sel>convertSize:</sel>
@@ -349,69 +476,117 @@
           <sel>toView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSData*">
           <sel>dataWithEPSInsideRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSData*">
           <sel>dataWithPDFInsideRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>didAddSubview:</sel>
           <arg type="NSView*">subview</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>discardCursorRects</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>display</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayIfNeeded</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayIfNeededIgnoringOpacity</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayIfNeededInRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayIfNeededInRectIgnoringOpacity:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayRect:</sel>
           <arg type="NSRect">rect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>displayRectIgnoringOpacity:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>dragFile:</sel>
@@ -423,7 +598,11 @@
           <sel>event:</sel>
           <arg type="NSEvent*">event</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>dragImage:</sel>
@@ -441,13 +620,21 @@
           <sel>slideBack:</sel>
           <arg type="BOOL">slideFlag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawPageBorderWithSize:</sel>
           <arg type="NSSize">borderSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawRect:</sel>
@@ -474,68 +661,119 @@
             is inside the rectangle which needs to be redrawn; this
             usually improves drawing performance considerably.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>drawSheetBorderWithSize:</sel>
           <arg type="NSSize">borderSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSScrollView*">
           <sel>enclosingScrollView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endDocument</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>endHeaderComments</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endPage</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endPageSetup</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endPrologue</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endSetup</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>endTrailer</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>fax:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>frame</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>frameRotation</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>gState</sel>
@@ -548,11 +786,18 @@
             allocateGState has not been called, then
             this method will
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>heightAdjustLimit</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>hitTest:</sel>
@@ -561,12 +806,19 @@
             Returns the subview, lowest in the receiver's
             hierarchy, which contains <var>aPoint</var>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithFrame:</sel>
           <arg type="NSRect">frameRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isDescendantOf:</sel>
@@ -575,32 +827,55 @@
             Returns <code>YES</code> if <var>aView</var> is an
             ancestor of the receiver.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isFlipped</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isOpaque</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isRotatedFromBase</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isRotatedOrScaledFromBase</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>knowsPageRange:</sel>
           <arg type="NSRange*">range</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>knowsPagesFirst:</sel>
@@ -608,29 +883,49 @@
           <sel>last:</sel>
           <arg type="int*">lastPageNum</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPoint">
           <sel>locationOfPrintRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>lockFocus</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>lockFocusIfCanDraw</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSMenu*">
           <sel>menuForEvent:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>mouse:</sel>
@@ -641,87 +936,150 @@
             Returns whether or not <var>aPoint</var> lies
             within <var>aRect</var>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>needsDisplay</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>nextKeyView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>nextValidKeyView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>opaqueAncestor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>performKeyEquivalent:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>performMnemonic:</sel>
           <arg type="NSString*">aString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>postsBoundsChangedNotifications</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>postsFrameChangedNotifications</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>previousKeyView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>previousValidKeyView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>print:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>printJobTitle</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>rectForPage:</sel>
           <arg type="int">page</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>reflectScrolledClipView:</sel>
           <arg type="NSClipView*">aClipView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>registerForDraggedTypes:</sel>
           <arg type="NSArray*">types</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>releaseGState</sel>
@@ -730,11 +1088,18 @@
             the next time the view is lockFocused, the gstate will
             be allocated again.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeAllToolTips</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>removeCursorRect:</sel>
@@ -742,7 +1107,11 @@
           <sel>cursor:</sel>
           <arg type="NSCursor*">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeFromSuperview</sel>
@@ -761,6 +1130,9 @@
               alters the rectangles needing display.
             </p>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeFromSuperviewWithoutNeedingDisplay</sel>
@@ -772,6 +1144,9 @@
             </ref>
             ] method.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>removeSubview:</sel>
@@ -800,13 +1175,21 @@
           <sel>removeToolTip:</sel>
           <arg type="NSToolTipTag">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>removeTrackingRect:</sel>
           <arg type="NSTrackingRectTag">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>renewGState</sel>
@@ -815,6 +1198,9 @@
             be set up again using setUpGState the next time the view
             is focused.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>replaceSubview:</sel>
@@ -825,35 +1211,58 @@
             Removes <var>oldView</var> from the receiver and
             places <var>newView</var> in its place.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>resetCursorRects</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>resizeSubviewsWithOldSize:</sel>
           <arg type="NSSize">oldSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>resizeWithOldSuperviewSize:</sel>
           <arg type="NSSize">oldSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>rotateByAngle:</sel>
           <arg type="float">angle</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scaleUnitSquareToSize:</sel>
           <arg type="NSSize">newSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollClipView:</sel>
@@ -861,13 +1270,21 @@
           <sel>toPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>scrollRect:</sel>
@@ -875,185 +1292,313 @@
           <sel>by:</sel>
           <arg type="NSSize">delta</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>scrollRectToVisible:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAutoresizesSubviews:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAutoresizingMask:</sel>
           <arg type="unsigned int">mask</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBounds:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBoundsOrigin:</sel>
           <arg type="NSPoint">newOrigin</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBoundsRotation:</sel>
           <arg type="float">angle</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBoundsSize:</sel>
           <arg type="NSSize">newSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFrame:</sel>
           <arg type="NSRect">frameRect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFrameOrigin:</sel>
           <arg type="NSPoint">newOrigin</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFrameRotation:</sel>
           <arg type="float">angle</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setFrameSize:</sel>
           <arg type="NSSize">newSize</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNeedsDisplay:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNeedsDisplayInRect:</sel>
           <arg type="NSRect">rect</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNextKeyView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPostsBoundsChangedNotifications:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPostsFrameChangedNotifications:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPreviousKeyView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setToolTip:</sel>
           <arg type="NSString*">string</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setUpGState</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>shouldDelayWindowOrderingForEvent:</sel>
           <arg type="NSEvent*">anEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>shouldDrawColor</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>sortSubviewsUsingFunction:</sel>
-          <arg type="int (*)(id,id,void*)">compare</arg>
+          <arg type="int(*)(id,id,void*)">compare</arg>
           <sel>context:</sel>
           <arg type="void*">context</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>subviews</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>superview</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>tag</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>toolTip</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>translateOriginToPoint:</sel>
           <arg type="NSPoint">point</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>unlockFocus</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>unregisterDraggedTypes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>viewDidMoveToSuperview</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>viewDidMoveToWindow</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>viewWillMoveToSuperview:</sel>
@@ -1062,6 +1607,9 @@
             Notifies the receiver that its superview is being
             changed to <var>newSuperview</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>viewWillMoveToWindow:</sel>
@@ -1074,34 +1622,56 @@
             the subviews know that they have also been removed from
             the window.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>viewWithTag:</sel>
           <arg type="int">aTag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>visibleRect</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>widthAdjustLimit</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>willRemoveSubview:</sel>
           <arg type="NSView*">subview</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSWindow*">
           <sel>window</sel>
           <desc>
             Returns the window in which the receiver resides.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>writeEPSInsideRect:</sel>
@@ -1109,7 +1679,11 @@
           <sel>toPasteboard:</sel>
           <arg type="NSPasteboard*">pasteboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>writePDFInsideRect:</sel>
@@ -1117,8 +1691,15 @@
           <sel>toPasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -1129,27 +1710,47 @@
       <category name="PrivateMethods" class="NSView">
         <declared>AppKit/NSView.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>_invalidateCoordinates</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSAffineTransform*">
           <sel>_matrixFromWindow</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSAffineTransform*">
           <sel>_matrixToWindow</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="void">
           <sel>_rebuildCoordinates</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
+        <standards>
+          <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+        </standards>
       </category>
     </chapter>
   </body>

@@ -1,0 +1,376 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSDrawer" up="Gui">
+  <head>
+    <title>NSDrawer</title>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
+    </author>
+    <abstract>The drawer class</abstract>
+    <copy>2001 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSDrawer class
+      </heading>
+      <class name="NSDrawer" super="NSResponder">
+        <declared>AppKit/NSDrawer.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>close</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>close:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>contentSize</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSView*">
+          <sel>contentView</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>delegate</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSRectEdge">
+          <sel>edge</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithContentSize:</sel>
+          <arg type="NSSize">contentSize</arg>
+          <sel>preferredEdge:</sel>
+          <arg type="NSRectEdge">edge</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="float">
+          <sel>leadingOffset</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>maxContentSize</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>minContentSize</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>open</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>open:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>openOnEdge:</sel>
+          <arg type="NSRectEdge">edge</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSWindow*">
+          <sel>parentWindow</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSRectEdge">
+          <sel>preferredEdge</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setContentSize:</sel>
+          <arg type="NSSize">size</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setContentView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setDelegate:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setLeadingOffset:</sel>
+          <arg type="float">offset</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMaxContentSize:</sel>
+          <arg type="NSSize">size</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMinContentSize:</sel>
+          <arg type="NSSize">size</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setParentWindow:</sel>
+          <arg type="NSWindow*">parent</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setPreferredEdge:</sel>
+          <arg type="NSRectEdge">preferredEdge</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setTrailingOffset:</sel>
+          <arg type="float">offset</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>state</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>toggle:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="float">
+          <sel>trailingOffset</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSDrawerDelegate class
+      </heading>
+      <class name="NSDrawerDelegate">
+        <declared>AppKit/NSDrawer.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>drawerDidClose:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawerDidOpen:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>drawerShouldClose:</sel>
+          <arg type="NSDrawer*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>drawerShouldOpen:</sel>
+          <arg type="NSDrawer*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawerWillClose:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawerWillOpen:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>drawerWillResizeContents:</sel>
+          <arg type="NSDrawer*">sender</arg>
+          <sel>toSize:</sel>
+          <arg type="NSSize">contentSize</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

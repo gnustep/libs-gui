@@ -3,7 +3,9 @@
     <title>NSFileWrapper</title>
   </head>
   <body>
-    <h1>NSFileWrapper</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSFileWrapper">NSFileWrapper</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
@@ -18,191 +20,339 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Hold a file's contents in dynamic memory.
-        </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSFileWrapper class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSFileWrapper class
-      </h1>
-    <h2><a name="class$NSFileWrapper">NSFileWrapper</a> : NSObject</h2>
-    Declared: AppKit/NSFileWrapper.h<br />
+      </a></h1>
+    <h2><a name="class$NSFileWrapper">NSFileWrapper</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSFileWrapper.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>addFileWithPath:</a></h3>
-    - (NSString*) <b>addFileWithPath:</b> (NSString*)path;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-addFileWithPath:">-addFileWithPath:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-addFileWrapper:">-addFileWrapper:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-addRegularFileWithContents:preferredFilename:">-addRegularFileWithContents:preferredFilename:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-addSymbolicLinkWithDestination:preferredFilename:">-addSymbolicLinkWithDestination:preferredFilename:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-fileAttributes">-fileAttributes</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-fileWrappers">-fileWrappers</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-filename">-filename</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-icon">-icon</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-initDirectoryWithFileWrappers:">-initDirectoryWithFileWrappers:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-initRegularFileWithContents:">-initRegularFileWithContents:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-initSymbolicLinkWithDestination:">-initSymbolicLinkWithDestination:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-initWithPath:">-initWithPath:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-initWithSerializedRepresentation:">-initWithSerializedRepresentation:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-isDirectory">-isDirectory</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-isRegularFile">-isRegularFile</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-isSymbolicLink">-isSymbolicLink</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-keyForFileWrapper:">-keyForFileWrapper:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-needsToBeUpdatedFromPath:">-needsToBeUpdatedFromPath:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-preferredFilename">-preferredFilename</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-regularFileContents">-regularFileContents</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-removeFileWrapper:">-removeFileWrapper:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-serializedRepresentation">-serializedRepresentation</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-setFileAttributes:">-setFileAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-setFilename:">-setFilename:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-setIcon:">-setIcon:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-setPreferredFilename:">-setPreferredFilename:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-symbolicLinkDestination">-symbolicLinkDestination</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-updateFromPath:">-updateFromPath:</a></li>
+      <li><a rel="gsdoc" href="NSFileWrapper.html#method$NSFileWrapper-writeToFile:atomically:updateFilenames:">-writeToFile:atomically:updateFilenames:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSFileWrapper-addFileWithPath:">addFileWithPath:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>addFileWithPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addFileWrapper:</a></h3>
-    - (NSString*) <b>addFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-addFileWrapper:">addFileWrapper:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>addFileWrapper:</b> (<a rel="gsdoc" href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addRegularFileWithContents:preferredFilename:</a></h3>
-    - (NSString*) <b>addRegularFileWithContents:</b> (NSData*)data<b> preferredFilename:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-addRegularFileWithContents:preferredFilename:">addRegularFileWithContents:preferredFilename:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>addRegularFileWithContents:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data<b> preferredFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addSymbolicLinkWithDestination:preferredFilename:</a></h3>
-    - (NSString*) <b>addSymbolicLinkWithDestination:</b> (NSString*)path<b> preferredFilename:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-addSymbolicLinkWithDestination:preferredFilename:">addSymbolicLinkWithDestination:preferredFilename:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>addSymbolicLinkWithDestination:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> preferredFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>fileAttributes</a></h3>
-    - (NSDictionary*) <b>fileAttributes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-fileAttributes">fileAttributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>fileAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>fileWrappers</a></h3>
-    - (NSDictionary*) <b>fileWrappers</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-fileWrappers">fileWrappers</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>fileWrappers</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>filename</a></h3>
-    - (NSString*) <b>filename</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-filename">filename</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>filename</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>icon</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>icon</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-icon">icon</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>icon</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initDirectoryWithFileWrappers:</a></h3>
-    - (id) <b>initDirectoryWithFileWrappers:</b> (NSDictionary*)docs;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-initDirectoryWithFileWrappers:">initDirectoryWithFileWrappers:</a></h3>
+    - (id) <b>initDirectoryWithFileWrappers:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)docs;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initRegularFileWithContents:</a></h3>
-    - (id) <b>initRegularFileWithContents:</b> (NSData*)data;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-initRegularFileWithContents:">initRegularFileWithContents:</a></h3>
+    - (id) <b>initRegularFileWithContents:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initSymbolicLinkWithDestination:</a></h3>
-    - (id) <b>initSymbolicLinkWithDestination:</b> (NSString*)path;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-initSymbolicLinkWithDestination:">initSymbolicLinkWithDestination:</a></h3>
+    - (id) <b>initSymbolicLinkWithDestination:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithPath:</a></h3>
-    - (id) <b>initWithPath:</b> (NSString*)path;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-initWithPath:">initWithPath:</a></h3>
+    - (id) <b>initWithPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithSerializedRepresentation:</a></h3>
-    - (id) <b>initWithSerializedRepresentation:</b> (NSData*)data;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-initWithSerializedRepresentation:">initWithSerializedRepresentation:</a></h3>
+    - (id) <b>initWithSerializedRepresentation:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isDirectory</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-isDirectory">isDirectory</a></h3>
     - (BOOL) <b>isDirectory</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRegularFile</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-isRegularFile">isRegularFile</a></h3>
     - (BOOL) <b>isRegularFile</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSymbolicLink</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-isSymbolicLink">isSymbolicLink</a></h3>
     - (BOOL) <b>isSymbolicLink</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyForFileWrapper:</a></h3>
-    - (NSString*) <b>keyForFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-keyForFileWrapper:">keyForFileWrapper:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>keyForFileWrapper:</b> (<a rel="gsdoc" href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>needsToBeUpdatedFromPath:</a></h3>
-    - (BOOL) <b>needsToBeUpdatedFromPath:</b> (NSString*)path;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-needsToBeUpdatedFromPath:">needsToBeUpdatedFromPath:</a></h3>
+    - (BOOL) <b>needsToBeUpdatedFromPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>preferredFilename</a></h3>
-    - (NSString*) <b>preferredFilename</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-preferredFilename">preferredFilename</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>preferredFilename</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>regularFileContents</a></h3>
-    - (NSData*) <b>regularFileContents</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-regularFileContents">regularFileContents</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>regularFileContents</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeFileWrapper:</a></h3>
-    - (void) <b>removeFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-removeFileWrapper:">removeFileWrapper:</a></h3>
+    - (void) <b>removeFileWrapper:</b> (<a rel="gsdoc" href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>serializedRepresentation</a></h3>
-    - (NSData*) <b>serializedRepresentation</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-serializedRepresentation">serializedRepresentation</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>serializedRepresentation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFileAttributes:</a></h3>
-    - (void) <b>setFileAttributes:</b> (NSDictionary*)attributes;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-setFileAttributes:">setFileAttributes:</a></h3>
+    - (void) <b>setFileAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributes;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFilename:</a></h3>
-    - (void) <b>setFilename:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-setFilename:">setFilename:</a></h3>
+    - (void) <b>setFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIcon:</a></h3>
-    - (void) <b>setIcon:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)icon;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-setIcon:">setIcon:</a></h3>
+    - (void) <b>setIcon:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)icon;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPreferredFilename:</a></h3>
-    - (void) <b>setPreferredFilename:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-setPreferredFilename:">setPreferredFilename:</a></h3>
+    - (void) <b>setPreferredFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>symbolicLinkDestination</a></h3>
-    - (NSString*) <b>symbolicLinkDestination</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-symbolicLinkDestination">symbolicLinkDestination</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>symbolicLinkDestination</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateFromPath:</a></h3>
-    - (BOOL) <b>updateFromPath:</b> (NSString*)path;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-updateFromPath:">updateFromPath:</a></h3>
+    - (BOOL) <b>updateFromPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writeToFile:atomically:updateFilenames:</a></h3>
-    - (BOOL) <b>writeToFile:</b> (NSString*)path<b> atomically:</b> (BOOL)atomicFlag<b> updateFilenames:</b> (BOOL)updateFilenamesFlag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSFileWrapper-writeToFile:atomically:updateFilenames:">writeToFile:atomically:updateFilenames:</a></h3>
+    - (BOOL) <b>writeToFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> atomically:</b> (BOOL)atomicFlag<b> updateFilenames:</b> (BOOL)updateFilenamesFlag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

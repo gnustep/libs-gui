@@ -3,7 +3,9 @@
     <title>NSColor</title>
   </head>
   <body>
-    <h1>NSColor</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSColor">NSColor</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -13,554 +15,966 @@
       </dd>
     </dl>
     <blockquote>
-The colorful color class    </blockquote>
-    <p>Copyright: (C) 1996, 1998 Free Software Foundation, Inc.</p>
-    <h1>
+      The colorful color class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996, 1998 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSColor class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSCoder(NSCoderAdditions) category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSColor class
-      </h1>
-    <h2><a name="class$NSColor">NSColor</a> : NSObject</h2>
-    Declared: AppKit/NSColor.h<br />
-    Conform: NSCoding<br />
-    Conform: NSCopying<br />
+      </a></h1>
+    <h2><a name="class$NSColor">NSColor</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSColor.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>blackColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>blackColor</b>;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+blackColor">+blackColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+blueColor">+blueColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+brownColor">+brownColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+clearColor">+clearColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorForControlTint:">+colorForControlTint:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorFromPasteboard:">+colorFromPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithCalibratedHue:saturation:brightness:alpha:">+colorWithCalibratedHue:saturation:brightness:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithCalibratedRed:green:blue:alpha:">+colorWithCalibratedRed:green:blue:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithCalibratedWhite:alpha:">+colorWithCalibratedWhite:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithCatalogName:colorName:">+colorWithCatalogName:colorName:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithDeviceCyan:magenta:yellow:black:alpha:">+colorWithDeviceCyan:magenta:yellow:black:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithDeviceHue:saturation:brightness:alpha:">+colorWithDeviceHue:saturation:brightness:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithDeviceRed:green:blue:alpha:">+colorWithDeviceRed:green:blue:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithDeviceWhite:alpha:">+colorWithDeviceWhite:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+colorWithPatternImage:">+colorWithPatternImage:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlBackgroundColor">+controlBackgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlColor">+controlColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlDarkShadowColor">+controlDarkShadowColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlHighlightColor">+controlHighlightColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlLightHighlightColor">+controlLightHighlightColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlShadowColor">+controlShadowColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+controlTextColor">+controlTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+cyanColor">+cyanColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+darkGrayColor">+darkGrayColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+disabledControlTextColor">+disabledControlTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+grayColor">+grayColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+greenColor">+greenColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+gridColor">+gridColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+headerColor">+headerColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+headerTextColor">+headerTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+highlightColor">+highlightColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+ignoresAlpha">+ignoresAlpha</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+keyboardFocusIndicatorColor">+keyboardFocusIndicatorColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+knobColor">+knobColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+lightGrayColor">+lightGrayColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+magentaColor">+magentaColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+orangeColor">+orangeColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+purpleColor">+purpleColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+redColor">+redColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+scrollBarColor">+scrollBarColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedControlColor">+selectedControlColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedControlTextColor">+selectedControlTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedKnobColor">+selectedKnobColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedMenuItemColor">+selectedMenuItemColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedMenuItemTextColor">+selectedMenuItemTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedTextBackgroundColor">+selectedTextBackgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+selectedTextColor">+selectedTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+setIgnoresAlpha:">+setIgnoresAlpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+shadowColor">+shadowColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+textBackgroundColor">+textBackgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+textColor">+textColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+whiteColor">+whiteColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+windowBackgroundColor">+windowBackgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+windowFrameColor">+windowFrameColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+windowFrameTextColor">+windowFrameTextColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor+yellowColor">+yellowColor</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-alphaComponent">-alphaComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-blackComponent">-blackComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-blendedColorWithFraction:ofColor:">-blendedColorWithFraction:ofColor:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-blueComponent">-blueComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-brightnessComponent">-brightnessComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-catalogNameComponent">-catalogNameComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-colorNameComponent">-colorNameComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-colorSpaceName">-colorSpaceName</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-colorUsingColorSpaceName:">-colorUsingColorSpaceName:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-colorUsingColorSpaceName:device:">-colorUsingColorSpaceName:device:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-colorWithAlphaComponent:">-colorWithAlphaComponent:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-cyanComponent">-cyanComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-drawSwatchInRect:">-drawSwatchInRect:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-getCyan:magenta:yellow:black:alpha:">-getCyan:magenta:yellow:black:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-getHue:saturation:brightness:alpha:">-getHue:saturation:brightness:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-getRed:green:blue:alpha:">-getRed:green:blue:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-getWhite:alpha:">-getWhite:alpha:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-greenComponent">-greenComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-highlightWithLevel:">-highlightWithLevel:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-hueComponent">-hueComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-localizedCatalogNameComponent">-localizedCatalogNameComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-localizedColorNameComponent">-localizedColorNameComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-magentaComponent">-magentaComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-patternImage">-patternImage</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-redComponent">-redComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-saturationComponent">-saturationComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-set">-set</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-shadowWithLevel:">-shadowWithLevel:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-whiteComponent">-whiteComponent</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-writeToPasteboard:">-writeToPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSColor-yellowComponent">-yellowComponent</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSColor+blackColor">blackColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>blackColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>blueColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>blueColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+blueColor">blueColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>blueColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>brownColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>brownColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+brownColor">brownColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>brownColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>clearColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>clearColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+clearColor">clearColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>clearColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorForControlTint:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorForControlTint:</b> (NSControlTint)controlTint;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorForControlTint:">colorForControlTint:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorForControlTint:</b> (NSControlTint)controlTint;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorFromPasteboard:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorFromPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorFromPasteboard:">colorFromPasteboard:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorFromPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithCalibratedHue:saturation:brightness:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedHue:</b> (float)hue<b> saturation:</b> (float)saturation<b> brightness:</b> (float)brightness<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithCalibratedHue:saturation:brightness:alpha:">colorWithCalibratedHue:saturation:brightness:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedHue:</b> (float)hue<b> saturation:</b> (float)saturation<b> brightness:</b> (float)brightness<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithCalibratedRed:green:blue:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedRed:</b> (float)red<b> green:</b> (float)green<b> blue:</b> (float)blue<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithCalibratedRed:green:blue:alpha:">colorWithCalibratedRed:green:blue:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedRed:</b> (float)red<b> green:</b> (float)green<b> blue:</b> (float)blue<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithCalibratedWhite:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedWhite:</b> (float)white<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithCalibratedWhite:alpha:">colorWithCalibratedWhite:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithCalibratedWhite:</b> (float)white<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithCatalogName:colorName:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithCatalogName:</b> (NSString*)listName<b> colorName:</b> (NSString*)colorName;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithCatalogName:colorName:">colorWithCatalogName:colorName:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithCatalogName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)listName<b> colorName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)colorName;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithDeviceCyan:magenta:yellow:black:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceCyan:</b> (float)cyan<b> magenta:</b> (float)magenta<b> yellow:</b> (float)yellow<b> black:</b> (float)black<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithDeviceCyan:magenta:yellow:black:alpha:">colorWithDeviceCyan:magenta:yellow:black:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceCyan:</b> (float)cyan<b> magenta:</b> (float)magenta<b> yellow:</b> (float)yellow<b> black:</b> (float)black<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithDeviceHue:saturation:brightness:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceHue:</b> (float)hue<b> saturation:</b> (float)saturation<b> brightness:</b> (float)brightness<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithDeviceHue:saturation:brightness:alpha:">colorWithDeviceHue:saturation:brightness:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceHue:</b> (float)hue<b> saturation:</b> (float)saturation<b> brightness:</b> (float)brightness<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithDeviceRed:green:blue:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceRed:</b> (float)red<b> green:</b> (float)green<b> blue:</b> (float)blue<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithDeviceRed:green:blue:alpha:">colorWithDeviceRed:green:blue:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceRed:</b> (float)red<b> green:</b> (float)green<b> blue:</b> (float)blue<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithDeviceWhite:alpha:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceWhite:</b> (float)white<b> alpha:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithDeviceWhite:alpha:">colorWithDeviceWhite:alpha:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithDeviceWhite:</b> (float)white<b> alpha:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithPatternImage:</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>colorWithPatternImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+colorWithPatternImage:">colorWithPatternImage:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithPatternImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlBackgroundColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlBackgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlBackgroundColor">controlBackgroundColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlBackgroundColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlColor">controlColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlDarkShadowColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlDarkShadowColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlDarkShadowColor">controlDarkShadowColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlDarkShadowColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlHighlightColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlHighlightColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlHighlightColor">controlHighlightColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlHighlightColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlLightHighlightColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlLightHighlightColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlLightHighlightColor">controlLightHighlightColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlLightHighlightColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlShadowColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlShadowColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlShadowColor">controlShadowColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlShadowColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>controlTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+controlTextColor">controlTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>controlTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cyanColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>cyanColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+cyanColor">cyanColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>cyanColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>darkGrayColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>darkGrayColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+darkGrayColor">darkGrayColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>darkGrayColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>disabledControlTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>disabledControlTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+disabledControlTextColor">disabledControlTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>disabledControlTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>grayColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>grayColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+grayColor">grayColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>grayColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>greenColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>greenColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+greenColor">greenColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>greenColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>gridColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>gridColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+gridColor">gridColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>gridColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>headerColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>headerColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+headerColor">headerColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>headerColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>headerTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>headerTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+headerTextColor">headerTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>headerTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlightColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>highlightColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+highlightColor">highlightColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>highlightColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>ignoresAlpha</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+ignoresAlpha">ignoresAlpha</a></h3>
     + (BOOL) <b>ignoresAlpha</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyboardFocusIndicatorColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>keyboardFocusIndicatorColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+keyboardFocusIndicatorColor">keyboardFocusIndicatorColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>keyboardFocusIndicatorColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>knobColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>knobColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+knobColor">knobColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>knobColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lightGrayColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>lightGrayColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+lightGrayColor">lightGrayColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>lightGrayColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>magentaColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>magentaColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+magentaColor">magentaColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>magentaColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>orangeColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>orangeColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+orangeColor">orangeColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>orangeColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>purpleColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>purpleColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+purpleColor">purpleColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>purpleColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>redColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>redColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+redColor">redColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>redColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollBarColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>scrollBarColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+scrollBarColor">scrollBarColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>scrollBarColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedControlColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedControlColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedControlColor">selectedControlColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedControlColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedControlTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedControlTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedControlTextColor">selectedControlTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedControlTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedKnobColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedKnobColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedKnobColor">selectedKnobColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedKnobColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedMenuItemColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedMenuItemColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedMenuItemColor">selectedMenuItemColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedMenuItemColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedMenuItemTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedMenuItemTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedMenuItemTextColor">selectedMenuItemTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedMenuItemTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedTextBackgroundColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedTextBackgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedTextBackgroundColor">selectedTextBackgroundColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedTextBackgroundColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>selectedTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+selectedTextColor">selectedTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>selectedTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIgnoresAlpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+setIgnoresAlpha:">setIgnoresAlpha:</a></h3>
     + (void) <b>setIgnoresAlpha:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shadowColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>shadowColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+shadowColor">shadowColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>shadowColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textBackgroundColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>textBackgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+textBackgroundColor">textBackgroundColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>textBackgroundColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+textColor">textColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>whiteColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>whiteColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+whiteColor">whiteColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>whiteColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>windowBackgroundColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>windowBackgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+windowBackgroundColor">windowBackgroundColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>windowBackgroundColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>windowFrameColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>windowFrameColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+windowFrameColor">windowFrameColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>windowFrameColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>windowFrameTextColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>windowFrameTextColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+windowFrameTextColor">windowFrameTextColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>windowFrameTextColor</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>yellowColor</a></h3>
-    + (<a href="#class$NSColor">NSColor</a>*) <b>yellowColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor+yellowColor">yellowColor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>yellowColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>alphaComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-alphaComponent">alphaComponent</a></h3>
     - (float) <b>alphaComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>blackComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-blackComponent">blackComponent</a></h3>
     - (float) <b>blackComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>blendedColorWithFraction:ofColor:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>blendedColorWithFraction:</b> (float)fraction<b> ofColor:</b> (<a href="#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-blendedColorWithFraction:ofColor:">blendedColorWithFraction:ofColor:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>blendedColorWithFraction:</b> (float)fraction<b> ofColor:</b> (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>blueComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-blueComponent">blueComponent</a></h3>
     - (float) <b>blueComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>brightnessComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-brightnessComponent">brightnessComponent</a></h3>
     - (float) <b>brightnessComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>catalogNameComponent</a></h3>
-    - (NSString*) <b>catalogNameComponent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-catalogNameComponent">catalogNameComponent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>catalogNameComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorNameComponent</a></h3>
-    - (NSString*) <b>colorNameComponent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-colorNameComponent">colorNameComponent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>colorNameComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorSpaceName</a></h3>
-    - (NSString*) <b>colorSpaceName</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-colorSpaceName">colorSpaceName</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>colorSpaceName</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorUsingColorSpaceName:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>colorUsingColorSpaceName:</b> (NSString*)colorSpace;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-colorUsingColorSpaceName:">colorUsingColorSpaceName:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorUsingColorSpaceName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)colorSpace;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorUsingColorSpaceName:device:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>colorUsingColorSpaceName:</b> (NSString*)colorSpace<b> device:</b> (NSDictionary*)deviceDescription;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-colorUsingColorSpaceName:device:">colorUsingColorSpaceName:device:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorUsingColorSpaceName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)colorSpace<b> device:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)deviceDescription;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorWithAlphaComponent:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>colorWithAlphaComponent:</b> (float)alpha;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-colorWithAlphaComponent:">colorWithAlphaComponent:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>colorWithAlphaComponent:</b> (float)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cyanComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-cyanComponent">cyanComponent</a></h3>
     - (float) <b>cyanComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawSwatchInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-drawSwatchInRect:">drawSwatchInRect:</a></h3>
     - (void) <b>drawSwatchInRect:</b> (NSRect)rect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getCyan:magenta:yellow:black:alpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-getCyan:magenta:yellow:black:alpha:">getCyan:magenta:yellow:black:alpha:</a></h3>
     - (void) <b>getCyan:</b> (float*)cyan<b> magenta:</b> (float*)magenta<b> yellow:</b> (float*)yellow<b> black:</b> (float*)black<b> alpha:</b> (float*)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getHue:saturation:brightness:alpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-getHue:saturation:brightness:alpha:">getHue:saturation:brightness:alpha:</a></h3>
     - (void) <b>getHue:</b> (float*)hue<b> saturation:</b> (float*)saturation<b> brightness:</b> (float*)brightness<b> alpha:</b> (float*)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getRed:green:blue:alpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-getRed:green:blue:alpha:">getRed:green:blue:alpha:</a></h3>
     - (void) <b>getRed:</b> (float*)red<b> green:</b> (float*)green<b> blue:</b> (float*)blue<b> alpha:</b> (float*)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getWhite:alpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-getWhite:alpha:">getWhite:alpha:</a></h3>
     - (void) <b>getWhite:</b> (float*)white<b> alpha:</b> (float*)alpha;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>greenComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-greenComponent">greenComponent</a></h3>
     - (float) <b>greenComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlightWithLevel:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>highlightWithLevel:</b> (float)level;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-highlightWithLevel:">highlightWithLevel:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>highlightWithLevel:</b> (float)level;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hueComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-hueComponent">hueComponent</a></h3>
     - (float) <b>hueComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>localizedCatalogNameComponent</a></h3>
-    - (NSString*) <b>localizedCatalogNameComponent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-localizedCatalogNameComponent">localizedCatalogNameComponent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>localizedCatalogNameComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>localizedColorNameComponent</a></h3>
-    - (NSString*) <b>localizedColorNameComponent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-localizedColorNameComponent">localizedColorNameComponent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>localizedColorNameComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>magentaComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-magentaComponent">magentaComponent</a></h3>
     - (float) <b>magentaComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>patternImage</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>patternImage</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-patternImage">patternImage</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>patternImage</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>redComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-redComponent">redComponent</a></h3>
     - (float) <b>redComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>saturationComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-saturationComponent">saturationComponent</a></h3>
     - (float) <b>saturationComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>set</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-set">set</a></h3>
     - (void) <b>set</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shadowWithLevel:</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>shadowWithLevel:</b> (float)level;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-shadowWithLevel:">shadowWithLevel:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>shadowWithLevel:</b> (float)level;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>whiteComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-whiteComponent">whiteComponent</a></h3>
     - (float) <b>whiteComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writeToPasteboard:</a></h3>
-    - (void) <b>writeToPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-writeToPasteboard:">writeToPasteboard:</a></h3>
+    - (void) <b>writeToPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>yellowComponent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSColor-yellowComponent">yellowComponent</a></h3>
     - (float) <b>yellowComponent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSCoder(NSCoderAdditions) category
-      </h1>
-    <h2>NSCoder(<a name="category$NSCoder(NSCoderAdditions)">NSCoderAdditions</a>)</h2>
-    Declared: AppKit/NSColor.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>(<a name="category$NSCoder(NSCoderAdditions)">NSCoderAdditions</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSColor.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>decodeNXColor</a></h3>
-    - (<a href="#class$NSColor">NSColor</a>*) <b>decodeNXColor</b>;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSColor.html#method$NSCoder(NSCoderAdditions)-decodeNXColor">-decodeNXColor</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSCoder(NSCoderAdditions)-decodeNXColor">decodeNXColor</a></h3>
+    - (<a rel="gsdoc" href="#class$NSColor">NSColor</a>*) <b>decodeNXColor</b>;<br />
+    <b>Standards:</b> NotMacOS-X, GNUstep, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSColorPicker" next="NSColorWell" prev="NSColorPanel" up="NSActionCell">
+<gsdoc base="NSColorPicker" up="Gui">
   <head>
     <title>NSColorPicker</title>
     <author name="Scott Christley">
@@ -19,6 +19,7 @@
     <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSColorPicker class
@@ -27,29 +28,46 @@
         <declared>AppKit/NSColorPicker.h</declared>
         <conform>NSColorPickingDefault</conform>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>alphaControlAddedOrRemoved:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>attachColorList:</sel>
           <arg type="NSColorList*">colorList</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSColorPanel*">
           <sel>colorPanel</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>detachColorList:</sel>
           <arg type="NSColorList*">colorList</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithPickerMask:</sel>
@@ -57,7 +75,11 @@
           <sel>colorPanel:</sel>
           <arg type="NSColorPanel*">colorPanel</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>insertNewButtonImage:</sel>
@@ -65,25 +87,44 @@
           <sel>in:</sel>
           <arg type="NSButtonCell*">newButtonCell</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>provideNewButtonImage</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMode:</sel>
           <arg type="int">mode</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>viewSizeChanged:</sel>
           <arg type="id">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSInterfaceStyle" up="Gui">
+  <head>
+    <title>NSInterfaceStyle</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1999 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>No contents found by autogsdoc</heading>
+      <p></p>
+    </chapter>
+  </body>
+</gsdoc>

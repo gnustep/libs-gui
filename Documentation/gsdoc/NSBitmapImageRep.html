@@ -3,7 +3,9 @@
     <title>NSBitmapImageRep.m</title>
   </head>
   <body>
-    <h1>NSBitmapImageRep.m</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSBitmapImageRep">NSBitmapImageRep.m</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
@@ -13,205 +15,381 @@
       </dd>
     </dl>
     <blockquote>
-Bitmap image representation.    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      Bitmap image representation.
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSBitmapImageRep class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSBitmapImageRep(GNUstepExtension)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSBitmapImageRep class
-      </h1>
-    <h2><a name="class$NSBitmapImageRep">NSBitmapImageRep</a> : <a href="NSImageRep.html#class$NSImageRep">NSImageRep</a></h2>
-    Declared: AppKit/NSBitmapImageRep.h<br />
+      </a></h1>
+    <h2><a name="class$NSBitmapImageRep">NSBitmapImageRep</a> : <a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSBitmapImageRep.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>TIFFRepresentationOfImageRepsInArray:</a></h3>
-    + (NSData*) <b>TIFFRepresentationOfImageRepsInArray:</b> (NSArray*)anArray;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+TIFFRepresentationOfImageRepsInArray:">+TIFFRepresentationOfImageRepsInArray:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+TIFFRepresentationOfImageRepsInArray:usingCompression:factor:">+TIFFRepresentationOfImageRepsInArray:usingCompression:factor:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+getTIFFCompressionTypes:count:">+getTIFFCompressionTypes:count:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+imageRepWithData:">+imageRepWithData:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+imageRepsWithData:">+imageRepsWithData:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+localizedNameForTIFFCompressionType:">+localizedNameForTIFFCompressionType:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep+representationOfImageRepsInArray:usingType:properties:">+representationOfImageRepsInArray:usingType:properties:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-TIFFRepresentation">-TIFFRepresentation</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-TIFFRepresentationUsingCompression:factor:">-TIFFRepresentationUsingCompression:factor:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-bitmapData">-bitmapData</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-bitsPerPixel">-bitsPerPixel</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-bytesPerPlane">-bytesPerPlane</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-bytesPerRow">-bytesPerRow</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-canBeCompressedUsing:">-canBeCompressedUsing:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-colorizeByMappingGray:toColor:blackMapping:whiteMapping:">-colorizeByMappingGray:toColor:blackMapping:whiteMapping:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-getBitmapDataPlanes:">-getBitmapDataPlanes:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-getCompression:factor:">-getCompression:factor:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:">-initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-initWithBitmapHandle:">-initWithBitmapHandle:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-initWithData:">-initWithData:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-initWithFocusedViewRect:">-initWithFocusedViewRect:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-initWithIconHandle:">-initWithIconHandle:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-isPlanar">-isPlanar</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-numberOfPlanes">-numberOfPlanes</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-representationUsingType:properties:">-representationUsingType:properties:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-samplesPerPixel">-samplesPerPixel</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-setCompression:factor:">-setCompression:factor:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-setProperty:withValue:">-setProperty:withValue:</a></li>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep-valueForProperty:">-valueForProperty:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+TIFFRepresentationOfImageRepsInArray:">TIFFRepresentationOfImageRepsInArray:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentationOfImageRepsInArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)anArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>TIFFRepresentationOfImageRepsInArray:usingCompression:factor:</a></h3>
-    + (NSData*) <b>TIFFRepresentationOfImageRepsInArray:</b> (NSArray*)anArray<b> usingCompression:</b> (NSTIFFCompression)type<b> factor:</b> (float)factor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+TIFFRepresentationOfImageRepsInArray:usingCompression:factor:">TIFFRepresentationOfImageRepsInArray:usingCompression:factor:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentationOfImageRepsInArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)anArray<b> usingCompression:</b> (NSTIFFCompression)type<b> factor:</b> (float)factor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getTIFFCompressionTypes:count:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+getTIFFCompressionTypes:count:">getTIFFCompressionTypes:count:</a></h3>
     + (void) <b>getTIFFCompressionTypes:</b> (const NSTIFFCompression**)list<b> count:</b> (int*)numTypes;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepWithData:</a></h3>
-    + (id) <b>imageRepWithData:</b> (NSData*)tiffData;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+imageRepWithData:">imageRepWithData:</a></h3>
+    + (id) <b>imageRepWithData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)tiffData;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepsWithData:</a></h3>
-    + (NSArray*) <b>imageRepsWithData:</b> (NSData*)tiffData;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+imageRepsWithData:">imageRepsWithData:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageRepsWithData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)tiffData;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>localizedNameForTIFFCompressionType:</a></h3>
-    + (NSString*) <b>localizedNameForTIFFCompressionType:</b> (NSTIFFCompression)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+localizedNameForTIFFCompressionType:">localizedNameForTIFFCompressionType:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>localizedNameForTIFFCompressionType:</b> (NSTIFFCompression)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>representationOfImageRepsInArray:usingType:properties:</a></h3>
-    + (NSData*) <b>representationOfImageRepsInArray:</b> (NSArray*)imageReps<b> usingType:</b> (NSBitmapImageFileType)storageType<b> properties:</b> (NSDictionary*)properties;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep+representationOfImageRepsInArray:usingType:properties:">representationOfImageRepsInArray:usingType:properties:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>representationOfImageRepsInArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)imageReps<b> usingType:</b> (NSBitmapImageFileType)storageType<b> properties:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)properties;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>TIFFRepresentation</a></h3>
-    - (NSData*) <b>TIFFRepresentation</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-TIFFRepresentation">TIFFRepresentation</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>TIFFRepresentationUsingCompression:factor:</a></h3>
-    - (NSData*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)type<b> factor:</b> (float)factor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-TIFFRepresentationUsingCompression:factor:">TIFFRepresentationUsingCompression:factor:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)type<b> factor:</b> (float)factor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bitmapData</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-bitmapData">bitmapData</a></h3>
     - (unsigned char*) <b>bitmapData</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bitsPerPixel</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-bitsPerPixel">bitsPerPixel</a></h3>
     - (int) <b>bitsPerPixel</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bytesPerPlane</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-bytesPerPlane">bytesPerPlane</a></h3>
     - (int) <b>bytesPerPlane</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bytesPerRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-bytesPerRow">bytesPerRow</a></h3>
     - (int) <b>bytesPerRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>canBeCompressedUsing:</a></h3>
-    - (BOOL) <b>canBeCompressedUsing:</b> (NSTIFFCompression)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-canBeCompressedUsing:">canBeCompressedUsing:</a></h3>
+    - (BOOL) <b>canBeCompressedUsing:</b> (NSTIFFCompression)compression;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorizeByMappingGray:toColor:blackMapping:whiteMapping:</a></h3>
-    - (void) <b>colorizeByMappingGray:</b> (float)midPoint<b> toColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)midPointColor<b> blackMapping:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)shadowColor<b> whiteMapping:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)lightColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-colorizeByMappingGray:toColor:blackMapping:whiteMapping:">colorizeByMappingGray:toColor:blackMapping:whiteMapping:</a></h3>
+    - (void) <b>colorizeByMappingGray:</b> (float)midPoint<b> toColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)midPointColor<b> blackMapping:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)shadowColor<b> whiteMapping:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)lightColor;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getBitmapDataPlanes:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-getBitmapDataPlanes:">getBitmapDataPlanes:</a></h3>
     - (void) <b>getBitmapDataPlanes:</b> (unsigned char**)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getCompression:factor:</a></h3>
-    - (void) <b>getCompression:</b> (NSTIFFCompression*)type<b> factor:</b> (float*)factor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-getCompression:factor:">getCompression:factor:</a></h3>
+    - (void) <b>getCompression:</b> (NSTIFFCompression*)compression<b> factor:</b> (float*)factor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:</a></h3>
-    - (id) <b>initWithBitmapDataPlanes:</b> (unsigned char**)planes<b> pixelsWide:</b> (int)width<b> pixelsHigh:</b> (int)height<b> bitsPerSample:</b> (int)bps<b> samplesPerPixel:</b> (int)spp<b> hasAlpha:</b> (BOOL)alpha<b> isPlanar:</b> (BOOL)isPlanar<b> colorSpaceName:</b> (NSString*)colorSpaceName<b> bytesPerRow:</b> (int)rowBytes<b> bitsPerPixel:</b> (int)pixelBits;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:">initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:</a></h3>
+    - (id) <b>initWithBitmapDataPlanes:</b> (unsigned char**)planes<b> pixelsWide:</b> (int)width<b> pixelsHigh:</b> (int)height<b> bitsPerSample:</b> (int)bps<b> samplesPerPixel:</b> (int)spp<b> hasAlpha:</b> (BOOL)alpha<b> isPlanar:</b> (BOOL)isPlanar<b> colorSpaceName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)colorSpaceName<b> bytesPerRow:</b> (int)rowBytes<b> bitsPerPixel:</b> (int)pixelBits;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithBitmapHandle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-initWithBitmapHandle:">initWithBitmapHandle:</a></h3>
     - (id) <b>initWithBitmapHandle:</b> (void*)bitmap;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithData:</a></h3>
-    - (id) <b>initWithData:</b> (NSData*)tiffData;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-initWithData:">initWithData:</a></h3>
+    - (id) <b>initWithData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)tiffData;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFocusedViewRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-initWithFocusedViewRect:">initWithFocusedViewRect:</a></h3>
     - (id) <b>initWithFocusedViewRect:</b> (NSRect)rect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithIconHandle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-initWithIconHandle:">initWithIconHandle:</a></h3>
     - (id) <b>initWithIconHandle:</b> (void*)icon;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isPlanar</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-isPlanar">isPlanar</a></h3>
     - (BOOL) <b>isPlanar</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfPlanes</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-numberOfPlanes">numberOfPlanes</a></h3>
     - (int) <b>numberOfPlanes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>representationUsingType:properties:</a></h3>
-    - (NSData*) <b>representationUsingType:</b> (NSBitmapImageFileType)storageType<b> properties:</b> (NSDictionary*)properties;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-representationUsingType:properties:">representationUsingType:properties:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>representationUsingType:</b> (NSBitmapImageFileType)storageType<b> properties:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)properties;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>samplesPerPixel</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-samplesPerPixel">samplesPerPixel</a></h3>
     - (int) <b>samplesPerPixel</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCompression:factor:</a></h3>
-    - (void) <b>setCompression:</b> (NSTIFFCompression)type<b> factor:</b> (float)factor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-setCompression:factor:">setCompression:factor:</a></h3>
+    - (void) <b>setCompression:</b> (NSTIFFCompression)compression<b> factor:</b> (float)factor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setProperty:withValue:</a></h3>
-    - (void) <b>setProperty:</b> (NSString*)property<b> withValue:</b> (id)value;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-setProperty:withValue:">setProperty:withValue:</a></h3>
+    - (void) <b>setProperty:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)property<b> withValue:</b> (id)value;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>valueForProperty:</a></h3>
-    - (id) <b>valueForProperty:</b> (NSString*)property;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBitmapImageRep-valueForProperty:">valueForProperty:</a></h3>
+    - (id) <b>valueForProperty:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)property;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSBitmapImageRep(GNUstepExtension)
         category
-      </h1>
-    <h2><a href="#class$NSBitmapImageRep">NSBitmapImageRep</a>(<a name="category$NSBitmapImageRep(GNUstepExtension)">GNUstepExtension</a>)</h2>
-    Declared: AppKit/NSBitmapImageRep.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSBitmapImageRep">NSBitmapImageRep</a>(<a name="category$NSBitmapImageRep(GNUstepExtension)">GNUstepExtension</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSBitmapImageRep.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>imageRepsWithFile:</a></h3>
-    + (NSArray*) <b>imageRepsWithFile:</b> (NSString*)filename;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSBitmapImageRep.html#method$NSBitmapImageRep(GNUstepExtension)+imageRepsWithFile:">+imageRepsWithFile:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSBitmapImageRep(GNUstepExtension)+imageRepsWithFile:">imageRepsWithFile:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageRepsWithFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

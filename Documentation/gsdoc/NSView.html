@@ -3,7 +3,9 @@
     <title>NSView</title>
   </head>
   <body>
-    <h1>NSView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSView">NSView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -28,11 +30,26 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       The view class which encapsulates all drawing functionality
-        </blockquote>
-    <p>Copyright: (C) (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>NSView</h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">NSView</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the NSView(PrivateMethods)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">NSView</a></h1>
     <p>
 
         NSView is an abstract class which provides facilities
@@ -55,129 +72,368 @@
         NSView and NSResponder can also be overridden to handle
         user generated events.
           </p>
-    <h2><a name="class$NSView">NSView</a> : <a href="NSResponder.html#class$NSResponder">NSResponder</a></h2>
-    Declared: AppKit/NSView.h<br />
+    <h2><a name="class$NSView">NSView</a> : <a rel="gsdoc" href="NSResponder.html#class$NSResponder">NSResponder</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>defaultMenu</a></h3>
-    + (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>defaultMenu</b>;<br />
+      
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView+defaultMenu">+defaultMenu</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView+focusView">+focusView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-acceptsFirstMouse:">-acceptsFirstMouse:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addCursorRect:cursor:">-addCursorRect:cursor:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addSubview:">-addSubview:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addSubview:positioned:relativeTo:">-addSubview:positioned:relativeTo:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addToPageSetup">-addToPageSetup</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addToolTipRect:owner:userData:">-addToolTipRect:owner:userData:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-addTrackingRect:owner:userData:assumeInside:">-addTrackingRect:owner:userData:assumeInside:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-adjustPageHeightNew:top:bottom:limit:">-adjustPageHeightNew:top:bottom:limit:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-adjustPageWidthNew:left:right:limit:">-adjustPageWidthNew:left:right:limit:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-adjustScroll:">-adjustScroll:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-allocateGState">-allocateGState</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-ancestorSharedWithView:">-ancestorSharedWithView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-autoresizesSubviews">-autoresizesSubviews</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-autoresizingMask">-autoresizingMask</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-autoscroll:">-autoscroll:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginDocument">-beginDocument</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginPage:label:bBox:fonts:">-beginPage:label:bBox:fonts:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginPageInRect:atPlacement:">-beginPageInRect:atPlacement:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginPageSetupRect:placement:">-beginPageSetupRect:placement:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:title:">-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:title:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginSetup">-beginSetup</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-beginTrailer">-beginTrailer</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-bounds">-bounds</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-boundsRotation">-boundsRotation</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-canDraw">-canDraw</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-centerScanRect:">-centerScanRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertPoint:fromView:">-convertPoint:fromView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertPoint:toView:">-convertPoint:toView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertRect:fromView:">-convertRect:fromView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertRect:toView:">-convertRect:toView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertSize:fromView:">-convertSize:fromView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-convertSize:toView:">-convertSize:toView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-dataWithEPSInsideRect:">-dataWithEPSInsideRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-dataWithPDFInsideRect:">-dataWithPDFInsideRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-didAddSubview:">-didAddSubview:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-discardCursorRects">-discardCursorRects</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-display">-display</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayIfNeeded">-displayIfNeeded</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayIfNeededIgnoringOpacity">-displayIfNeededIgnoringOpacity</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayIfNeededInRect:">-displayIfNeededInRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayIfNeededInRectIgnoringOpacity:">-displayIfNeededInRectIgnoringOpacity:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayRect:">-displayRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-displayRectIgnoringOpacity:">-displayRectIgnoringOpacity:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-dragFile:fromRect:slideBack:event:">-dragFile:fromRect:slideBack:event:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-dragImage:at:offset:event:pasteboard:source:slideBack:">-dragImage:at:offset:event:pasteboard:source:slideBack:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-drawPageBorderWithSize:">-drawPageBorderWithSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-drawRect:">-drawRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-drawSheetBorderWithSize:">-drawSheetBorderWithSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-enclosingScrollView">-enclosingScrollView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endDocument">-endDocument</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endHeaderComments">-endHeaderComments</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endPage">-endPage</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endPageSetup">-endPageSetup</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endPrologue">-endPrologue</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endSetup">-endSetup</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-endTrailer">-endTrailer</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-fax:">-fax:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-frame">-frame</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-frameRotation">-frameRotation</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-gState">-gState</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-heightAdjustLimit">-heightAdjustLimit</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-hitTest:">-hitTest:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-initWithFrame:">-initWithFrame:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-isDescendantOf:">-isDescendantOf:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-isFlipped">-isFlipped</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-isOpaque">-isOpaque</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-isRotatedFromBase">-isRotatedFromBase</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-isRotatedOrScaledFromBase">-isRotatedOrScaledFromBase</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-knowsPageRange:">-knowsPageRange:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-knowsPagesFirst:last:">-knowsPagesFirst:last:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-locationOfPrintRect:">-locationOfPrintRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-lockFocus">-lockFocus</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-lockFocusIfCanDraw">-lockFocusIfCanDraw</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-menuForEvent:">-menuForEvent:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-mouse:inRect:">-mouse:inRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-needsDisplay">-needsDisplay</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-nextKeyView">-nextKeyView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-nextValidKeyView">-nextValidKeyView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-opaqueAncestor">-opaqueAncestor</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-performKeyEquivalent:">-performKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-performMnemonic:">-performMnemonic:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-postsBoundsChangedNotifications">-postsBoundsChangedNotifications</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-postsFrameChangedNotifications">-postsFrameChangedNotifications</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-previousKeyView">-previousKeyView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-previousValidKeyView">-previousValidKeyView</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-print:">-print:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-printJobTitle">-printJobTitle</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-rectForPage:">-rectForPage:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-reflectScrolledClipView:">-reflectScrolledClipView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-registerForDraggedTypes:">-registerForDraggedTypes:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-releaseGState">-releaseGState</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeAllToolTips">-removeAllToolTips</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeCursorRect:cursor:">-removeCursorRect:cursor:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeFromSuperview">-removeFromSuperview</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeFromSuperviewWithoutNeedingDisplay">-removeFromSuperviewWithoutNeedingDisplay</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeSubview:">-removeSubview:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeToolTip:">-removeToolTip:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-removeTrackingRect:">-removeTrackingRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-renewGState">-renewGState</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-replaceSubview:with:">-replaceSubview:with:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-resetCursorRects">-resetCursorRects</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-resizeSubviewsWithOldSize:">-resizeSubviewsWithOldSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-resizeWithOldSuperviewSize:">-resizeWithOldSuperviewSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-rotateByAngle:">-rotateByAngle:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-scaleUnitSquareToSize:">-scaleUnitSquareToSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-scrollClipView:toPoint:">-scrollClipView:toPoint:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-scrollPoint:">-scrollPoint:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-scrollRect:by:">-scrollRect:by:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-scrollRectToVisible:">-scrollRectToVisible:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setAutoresizesSubviews:">-setAutoresizesSubviews:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setAutoresizingMask:">-setAutoresizingMask:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setBounds:">-setBounds:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setBoundsOrigin:">-setBoundsOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setBoundsRotation:">-setBoundsRotation:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setBoundsSize:">-setBoundsSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setFrame:">-setFrame:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setFrameOrigin:">-setFrameOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setFrameRotation:">-setFrameRotation:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setFrameSize:">-setFrameSize:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setNeedsDisplay:">-setNeedsDisplay:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setNeedsDisplayInRect:">-setNeedsDisplayInRect:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setNextKeyView:">-setNextKeyView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setPostsBoundsChangedNotifications:">-setPostsBoundsChangedNotifications:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setPostsFrameChangedNotifications:">-setPostsFrameChangedNotifications:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setPreviousKeyView:">-setPreviousKeyView:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setToolTip:">-setToolTip:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-setUpGState">-setUpGState</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-shouldDelayWindowOrderingForEvent:">-shouldDelayWindowOrderingForEvent:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-shouldDrawColor">-shouldDrawColor</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-sortSubviewsUsingFunction:context:">-sortSubviewsUsingFunction:context:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-subviews">-subviews</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-superview">-superview</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-tag">-tag</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-toolTip">-toolTip</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-translateOriginToPoint:">-translateOriginToPoint:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-unlockFocus">-unlockFocus</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-unregisterDraggedTypes">-unregisterDraggedTypes</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-viewDidMoveToSuperview">-viewDidMoveToSuperview</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-viewDidMoveToWindow">-viewDidMoveToWindow</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-viewWillMoveToSuperview:">-viewWillMoveToSuperview:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-viewWillMoveToWindow:">-viewWillMoveToWindow:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-viewWithTag:">-viewWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-visibleRect">-visibleRect</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-widthAdjustLimit">-widthAdjustLimit</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-willRemoveSubview:">-willRemoveSubview:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-window">-window</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-writeEPSInsideRect:toPasteboard:">-writeEPSInsideRect:toPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView-writePDFInsideRect:toPasteboard:">-writePDFInsideRect:toPasteboard:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSView+defaultMenu">defaultMenu</a></h3>
+    + (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>defaultMenu</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>focusView</a></h3>
-    + (<a href="#class$NSView">NSView</a>*) <b>focusView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView+focusView">focusView</a></h3>
+    + (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>focusView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Return the view at the top of graphics contexts
             stack or <code>nil</code> if none is focused.
-              </p>
-    <hr />
-    <h3>acceptsFirstMouse:</a></h3>
-    - (BOOL) <b>acceptsFirstMouse:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-acceptsFirstMouse:">acceptsFirstMouse:</a></h3>
+    - (BOOL) <b>acceptsFirstMouse:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns <code>YES</code> if the view object will
             accept the first click received when in an inactive
             window, and <code>NO</code> otherwise.
-              </p>
-    <hr />
-    <h3>addCursorRect:cursor:</a></h3>
-    - (void) <b>addCursorRect:</b> (NSRect)aRect<b> cursor:</b> (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*)anObject;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addCursorRect:cursor:">addCursorRect:cursor:</a></h3>
+    - (void) <b>addCursorRect:</b> (NSRect)aRect<b> cursor:</b> (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addSubview:</a></h3>
-    - (void) <b>addSubview:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addSubview:">addSubview:</a></h3>
+    - (void) <b>addSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Adds <var>aView</var> as a subview of the receiver.
-              </p>
-    <hr />
-    <h3>addSubview:positioned:relativeTo:</a></h3>
-    - (void) <b>addSubview:</b> (<a href="#class$NSView">NSView</a>*)aView<b> positioned:</b> (NSWindowOrderingMode)place<b> relativeTo:</b> (<a href="#class$NSView">NSView</a>*)otherView;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addSubview:positioned:relativeTo:">addSubview:positioned:relativeTo:</a></h3>
+    - (void) <b>addSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView<b> positioned:</b> (NSWindowOrderingMode)place<b> relativeTo:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)otherView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addToPageSetup</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addToPageSetup">addToPageSetup</a></h3>
     - (void) <b>addToPageSetup</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addToolTipRect:owner:userData:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addToolTipRect:owner:userData:">addToolTipRect:owner:userData:</a></h3>
     - (NSToolTipTag) <b>addToolTipRect:</b> (NSRect)aRect<b> owner:</b> (id)anObject<b> userData:</b> (void*)data;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addTrackingRect:owner:userData:assumeInside:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-addTrackingRect:owner:userData:assumeInside:">addTrackingRect:owner:userData:assumeInside:</a></h3>
     - (NSTrackingRectTag) <b>addTrackingRect:</b> (NSRect)aRect<b> owner:</b> (id)anObject<b> userData:</b> (void*)data<b> assumeInside:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>adjustPageHeightNew:top:bottom:limit:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-adjustPageHeightNew:top:bottom:limit:">adjustPageHeightNew:top:bottom:limit:</a></h3>
     - (void) <b>adjustPageHeightNew:</b> (float*)newBottom<b> top:</b> (float)oldTop<b> bottom:</b> (float)oldBottom<b> limit:</b> (float)bottomLimit;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>adjustPageWidthNew:left:right:limit:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-adjustPageWidthNew:left:right:limit:">adjustPageWidthNew:left:right:limit:</a></h3>
     - (void) <b>adjustPageWidthNew:</b> (float*)newRight<b> left:</b> (float)oldLeft<b> right:</b> (float)oldRight<b> limit:</b> (float)rightLimit;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>adjustScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-adjustScroll:">adjustScroll:</a></h3>
     - (NSRect) <b>adjustScroll:</b> (NSRect)newVisible;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allocateGState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-allocateGState">allocateGState</a></h3>
     - (void) <b>allocateGState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <p>
+      
+            
+    </p>
     <p>
 
+              Tell the view to maintain a private gstate object
+              which encapsulates all the information about
+              drawing, such as coordinate transforms, line
+              widths, etc. If you do not invoke this method, a
+              gstate object is constructed each time the view is
+              lockFocused. Allocating a private gstate may
+              improve the performance of views that are focused
+              a lot and have a lot of customized drawing parameters.
                 </p>
-    <hr />
-    <h3>ancestorSharedWithView:</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>ancestorSharedWithView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+    <p>
+      
+            
+    </p>
     <p>
 
+              View subclasses should override the setUpGstate
+              method to set these custom parameters.
+                </p>
+    <p>
+      
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-ancestorSharedWithView:">ancestorSharedWithView:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>ancestorSharedWithView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <p>
+      
             Returns <code>self</code> if <var>aView</var> is
             the receiver or <var>aView</var> is a subview of the
             receiver, the ancestor view shared by
             <var>aView</var> and the receiver, if any,
             <var>aView</var> if it is an ancestor of the
             receiver, otherwise returns <code>nil</code>.
-              </p>
-    <hr />
-    <h3>autoresizesSubviews</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-autoresizesSubviews">autoresizesSubviews</a></h3>
     - (BOOL) <b>autoresizesSubviews</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoresizingMask</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-autoresizingMask">autoresizingMask</a></h3>
     - (unsigned int) <b>autoresizingMask</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoscroll:</a></h3>
-    - (BOOL) <b>autoscroll:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-autoscroll:">autoscroll:</a></h3>
+    - (BOOL) <b>autoscroll:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginDocument</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginDocument">beginDocument</a></h3>
     - (void) <b>beginDocument</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
+      
             Writes header and job information for the PostScript
             document. This includes at a minimum, PostScript
             header information. It may also include job setup
@@ -195,192 +451,284 @@
             before or after writing the required information.
             For an EPS operation, the beginSetup and endSetup
             methods aren't used.
-              </p>
-    <hr />
-    <h3>beginPage:label:bBox:fonts:</a></h3>
-    - (void) <b>beginPage:</b> (int)ordinalNum<b> label:</b> (NSString*)aString<b> bBox:</b> (NSRect)pageRect<b> fonts:</b> (NSString*)fontNames;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginPage:label:bBox:fonts:">beginPage:label:bBox:fonts:</a></h3>
+    - (void) <b>beginPage:</b> (int)ordinalNum<b> label:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> bBox:</b> (NSRect)pageRect<b> fonts:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fontNames;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginPageInRect:atPlacement:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginPageInRect:atPlacement:">beginPageInRect:atPlacement:</a></h3>
     - (void) <b>beginPageInRect:</b> (NSRect)aRect<b> atPlacement:</b> (NSPoint)location;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginPageSetupRect:placement:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginPageSetupRect:placement:">beginPageSetupRect:placement:</a></h3>
     - (void) <b>beginPageSetupRect:</b> (NSRect)aRect<b> placement:</b> (NSPoint)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:title:</a></h3>
-    - (void) <b>beginPrologueBBox:</b> (NSRect)bBox<b> creationDate:</b> (NSString*)dateCreated<b> createdBy:</b> (NSString*)anApplication<b> fonts:</b> (NSString*)fontNames<b> forWhom:</b> (NSString*)user<b> pages:</b> (int)numPages<b> title:</b> (NSString*)aTitle;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:title:">beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:title:</a></h3>
+    - (void) <b>beginPrologueBBox:</b> (NSRect)bBox<b> creationDate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dateCreated<b> createdBy:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)anApplication<b> fonts:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fontNames<b> forWhom:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)user<b> pages:</b> (int)numPages<b> title:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aTitle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginSetup</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginSetup">beginSetup</a></h3>
     - (void) <b>beginSetup</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>beginTrailer</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-beginTrailer">beginTrailer</a></h3>
     - (void) <b>beginTrailer</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bounds</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-bounds">bounds</a></h3>
     - (NSRect) <b>bounds</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>boundsRotation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-boundsRotation">boundsRotation</a></h3>
     - (float) <b>boundsRotation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>canDraw</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-canDraw">canDraw</a></h3>
     - (BOOL) <b>canDraw</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>centerScanRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-centerScanRect:">centerScanRect:</a></h3>
     - (NSRect) <b>centerScanRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertPoint:fromView:</a></h3>
-    - (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint<b> fromView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertPoint:fromView:">convertPoint:fromView:</a></h3>
+    - (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint<b> fromView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertPoint:toView:</a></h3>
-    - (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint<b> toView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertPoint:toView:">convertPoint:toView:</a></h3>
+    - (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint<b> toView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertRect:fromView:</a></h3>
-    - (NSRect) <b>convertRect:</b> (NSRect)aRect<b> fromView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertRect:fromView:">convertRect:fromView:</a></h3>
+    - (NSRect) <b>convertRect:</b> (NSRect)aRect<b> fromView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertRect:toView:</a></h3>
-    - (NSRect) <b>convertRect:</b> (NSRect)aRect<b> toView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertRect:toView:">convertRect:toView:</a></h3>
+    - (NSRect) <b>convertRect:</b> (NSRect)aRect<b> toView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertSize:fromView:</a></h3>
-    - (NSSize) <b>convertSize:</b> (NSSize)aSize<b> fromView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertSize:fromView:">convertSize:fromView:</a></h3>
+    - (NSSize) <b>convertSize:</b> (NSSize)aSize<b> fromView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertSize:toView:</a></h3>
-    - (NSSize) <b>convertSize:</b> (NSSize)aSize<b> toView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-convertSize:toView:">convertSize:toView:</a></h3>
+    - (NSSize) <b>convertSize:</b> (NSSize)aSize<b> toView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dataWithEPSInsideRect:</a></h3>
-    - (NSData*) <b>dataWithEPSInsideRect:</b> (NSRect)aRect;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-dataWithEPSInsideRect:">dataWithEPSInsideRect:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataWithEPSInsideRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dataWithPDFInsideRect:</a></h3>
-    - (NSData*) <b>dataWithPDFInsideRect:</b> (NSRect)aRect;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-dataWithPDFInsideRect:">dataWithPDFInsideRect:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataWithPDFInsideRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>didAddSubview:</a></h3>
-    - (void) <b>didAddSubview:</b> (<a href="#class$NSView">NSView</a>*)subview;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-didAddSubview:">didAddSubview:</a></h3>
+    - (void) <b>didAddSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)subview;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>discardCursorRects</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-discardCursorRects">discardCursorRects</a></h3>
     - (void) <b>discardCursorRects</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>display</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-display">display</a></h3>
     - (void) <b>display</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayIfNeeded</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayIfNeeded">displayIfNeeded</a></h3>
     - (void) <b>displayIfNeeded</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayIfNeededIgnoringOpacity</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayIfNeededIgnoringOpacity">displayIfNeededIgnoringOpacity</a></h3>
     - (void) <b>displayIfNeededIgnoringOpacity</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayIfNeededInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayIfNeededInRect:">displayIfNeededInRect:</a></h3>
     - (void) <b>displayIfNeededInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayIfNeededInRectIgnoringOpacity:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayIfNeededInRectIgnoringOpacity:">displayIfNeededInRectIgnoringOpacity:</a></h3>
     - (void) <b>displayIfNeededInRectIgnoringOpacity:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayRect:">displayRect:</a></h3>
     - (void) <b>displayRect:</b> (NSRect)rect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayRectIgnoringOpacity:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-displayRectIgnoringOpacity:">displayRectIgnoringOpacity:</a></h3>
     - (void) <b>displayRectIgnoringOpacity:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragFile:fromRect:slideBack:event:</a></h3>
-    - (BOOL) <b>dragFile:</b> (NSString*)filename<b> fromRect:</b> (NSRect)rect<b> slideBack:</b> (BOOL)slideFlag<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-dragFile:fromRect:slideBack:event:">dragFile:fromRect:slideBack:event:</a></h3>
+    - (BOOL) <b>dragFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename<b> fromRect:</b> (NSRect)rect<b> slideBack:</b> (BOOL)slideFlag<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragImage:at:offset:event:pasteboard:source:slideBack:</a></h3>
-    - (void) <b>dragImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> at:</b> (NSPoint)viewLocation<b> offset:</b> (NSSize)initialOffset<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> pasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> source:</b> (id)sourceObject<b> slideBack:</b> (BOOL)slideFlag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-dragImage:at:offset:event:pasteboard:source:slideBack:">dragImage:at:offset:event:pasteboard:source:slideBack:</a></h3>
+    - (void) <b>dragImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> at:</b> (NSPoint)viewLocation<b> offset:</b> (NSSize)initialOffset<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> pasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> source:</b> (id)sourceObject<b> slideBack:</b> (BOOL)slideFlag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawPageBorderWithSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-drawPageBorderWithSize:">drawPageBorderWithSize:</a></h3>
     - (void) <b>drawPageBorderWithSize:</b> (NSSize)borderSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-drawRect:">drawRect:</a></h3>
     - (void) <b>drawRect:</b> (NSRect)rect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method is invoked to handle drawing inside the
             view. The default NSView's implementation does
             nothing; subclasses might override it to draw
@@ -401,84 +749,122 @@
             performance, you may want to redraw only what
             is inside the rectangle which needs to be redrawn; this
             usually improves drawing performance considerably.
-              </p>
-    <hr />
-    <h3>drawSheetBorderWithSize:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-drawSheetBorderWithSize:">drawSheetBorderWithSize:</a></h3>
     - (void) <b>drawSheetBorderWithSize:</b> (NSSize)borderSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>enclosingScrollView</a></h3>
-    - (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*) <b>enclosingScrollView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-enclosingScrollView">enclosingScrollView</a></h3>
+    - (<a rel="gsdoc" href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*) <b>enclosingScrollView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endDocument</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endDocument">endDocument</a></h3>
     - (void) <b>endDocument</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endHeaderComments</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endHeaderComments">endHeaderComments</a></h3>
     - (void) <b>endHeaderComments</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endPage</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endPage">endPage</a></h3>
     - (void) <b>endPage</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endPageSetup</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endPageSetup">endPageSetup</a></h3>
     - (void) <b>endPageSetup</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endPrologue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endPrologue">endPrologue</a></h3>
     - (void) <b>endPrologue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endSetup</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endSetup">endSetup</a></h3>
     - (void) <b>endSetup</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endTrailer</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-endTrailer">endTrailer</a></h3>
     - (void) <b>endTrailer</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>fax:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-fax:">fax:</a></h3>
     - (void) <b>fax:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frame</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-frame">frame</a></h3>
     - (NSRect) <b>frame</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frameRotation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-frameRotation">frameRotation</a></h3>
     - (float) <b>frameRotation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>gState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-gState">gState</a></h3>
     - (int) <b>gState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns an identifier that represents the view's
             gstate object, which is used to encapsulate drawing
             information about the view. Most of the time a
@@ -486,599 +872,937 @@
             is focused, so if the view is not currently focused or
             allocateGState has not been called, then
             this method will
-              </p>
-    <hr />
-    <h3>heightAdjustLimit</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-heightAdjustLimit">heightAdjustLimit</a></h3>
     - (float) <b>heightAdjustLimit</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hitTest:</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>hitTest:</b> (NSPoint)aPoint;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-hitTest:">hitTest:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>hitTest:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the subview, lowest in the receiver's
             hierarchy, which contains <var>aPoint</var>
-              </p>
-    <hr />
-    <h3>initWithFrame:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-initWithFrame:">initWithFrame:</a></h3>
     - (id) <b>initWithFrame:</b> (NSRect)frameRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isDescendantOf:</a></h3>
-    - (BOOL) <b>isDescendantOf:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-isDescendantOf:">isDescendantOf:</a></h3>
+    - (BOOL) <b>isDescendantOf:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns <code>YES</code> if <var>aView</var> is an
             ancestor of the receiver.
-              </p>
-    <hr />
-    <h3>isFlipped</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-isFlipped">isFlipped</a></h3>
     - (BOOL) <b>isFlipped</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isOpaque</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-isOpaque">isOpaque</a></h3>
     - (BOOL) <b>isOpaque</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRotatedFromBase</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-isRotatedFromBase">isRotatedFromBase</a></h3>
     - (BOOL) <b>isRotatedFromBase</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRotatedOrScaledFromBase</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-isRotatedOrScaledFromBase">isRotatedOrScaledFromBase</a></h3>
     - (BOOL) <b>isRotatedOrScaledFromBase</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>knowsPageRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-knowsPageRange:">knowsPageRange:</a></h3>
     - (BOOL) <b>knowsPageRange:</b> (NSRange*)range;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>knowsPagesFirst:last:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-knowsPagesFirst:last:">knowsPagesFirst:last:</a></h3>
     - (BOOL) <b>knowsPagesFirst:</b> (int*)firstPageNum<b> last:</b> (int*)lastPageNum;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>locationOfPrintRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-locationOfPrintRect:">locationOfPrintRect:</a></h3>
     - (NSPoint) <b>locationOfPrintRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lockFocus</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-lockFocus">lockFocus</a></h3>
     - (void) <b>lockFocus</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lockFocusIfCanDraw</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-lockFocusIfCanDraw">lockFocusIfCanDraw</a></h3>
     - (BOOL) <b>lockFocusIfCanDraw</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuForEvent:</a></h3>
-    - (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menuForEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-menuForEvent:">menuForEvent:</a></h3>
+    - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menuForEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouse:inRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-mouse:inRect:">mouse:inRect:</a></h3>
     - (BOOL) <b>mouse:</b> (NSPoint)aPoint<b> inRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns whether or not <var>aPoint</var> lies
             within <var>aRect</var>
-              </p>
-    <hr />
-    <h3>needsDisplay</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-needsDisplay">needsDisplay</a></h3>
     - (BOOL) <b>needsDisplay</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nextKeyView</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>nextKeyView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-nextKeyView">nextKeyView</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>nextKeyView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nextValidKeyView</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>nextValidKeyView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-nextValidKeyView">nextValidKeyView</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>nextValidKeyView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>opaqueAncestor</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>opaqueAncestor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-opaqueAncestor">opaqueAncestor</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>opaqueAncestor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performKeyEquivalent:</a></h3>
-    - (BOOL) <b>performKeyEquivalent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-performKeyEquivalent:">performKeyEquivalent:</a></h3>
+    - (BOOL) <b>performKeyEquivalent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performMnemonic:</a></h3>
-    - (BOOL) <b>performMnemonic:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-performMnemonic:">performMnemonic:</a></h3>
+    - (BOOL) <b>performMnemonic:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>postsBoundsChangedNotifications</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-postsBoundsChangedNotifications">postsBoundsChangedNotifications</a></h3>
     - (BOOL) <b>postsBoundsChangedNotifications</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>postsFrameChangedNotifications</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-postsFrameChangedNotifications">postsFrameChangedNotifications</a></h3>
     - (BOOL) <b>postsFrameChangedNotifications</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>previousKeyView</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>previousKeyView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-previousKeyView">previousKeyView</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>previousKeyView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>previousValidKeyView</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>previousValidKeyView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-previousValidKeyView">previousValidKeyView</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>previousValidKeyView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>print:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-print:">print:</a></h3>
     - (void) <b>print:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>printJobTitle</a></h3>
-    - (NSString*) <b>printJobTitle</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-printJobTitle">printJobTitle</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>printJobTitle</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectForPage:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-rectForPage:">rectForPage:</a></h3>
     - (NSRect) <b>rectForPage:</b> (int)page;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reflectScrolledClipView:</a></h3>
-    - (void) <b>reflectScrolledClipView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-reflectScrolledClipView:">reflectScrolledClipView:</a></h3>
+    - (void) <b>reflectScrolledClipView:</b> (<a rel="gsdoc" href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>registerForDraggedTypes:</a></h3>
-    - (void) <b>registerForDraggedTypes:</b> (NSArray*)types;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-registerForDraggedTypes:">registerForDraggedTypes:</a></h3>
+    - (void) <b>registerForDraggedTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>releaseGState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-releaseGState">releaseGState</a></h3>
     - (void) <b>releaseGState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Frees the gstate object, if there is one. Note that
             the next time the view is lockFocused, the gstate will
             be allocated again.
-              </p>
-    <hr />
-    <h3>removeAllToolTips</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeAllToolTips">removeAllToolTips</a></h3>
     - (void) <b>removeAllToolTips</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeCursorRect:cursor:</a></h3>
-    - (void) <b>removeCursorRect:</b> (NSRect)aRect<b> cursor:</b> (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*)anObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeCursorRect:cursor:">removeCursorRect:cursor:</a></h3>
+    - (void) <b>removeCursorRect:</b> (NSRect)aRect<b> cursor:</b> (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeFromSuperview</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeFromSuperview">removeFromSuperview</a></h3>
     - (void) <b>removeFromSuperview</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <p>
+      
+            
+    </p>
     <p>
 
+              Removes the receiver from its superviews list of
+              subviews, by invoking the superviews [
+              <a rel="gsdoc" href="#method$NSView-removeSubview:">
+                -removeSubview:
+              </a>
+
+              ] method, and marks the rectangle that the reciever
+              occupied in the superview as needing redisplay.
                 </p>
-    <hr />
-    <h3>removeFromSuperviewWithoutNeedingDisplay</a></h3>
-    - (void) <b>removeFromSuperviewWithoutNeedingDisplay</b>;<br />
+    <p>
+      
+            
+    </p>
     <p>
 
+              This is dangerous to use during display, since it
+              alters the rectangles needing display.
+                </p>
+    <p>
+      
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeFromSuperviewWithoutNeedingDisplay">removeFromSuperviewWithoutNeedingDisplay</a></h3>
+    - (void) <b>removeFromSuperviewWithoutNeedingDisplay</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <p>
+      
             Removes the receiver from its superviews list of
             subviews, by invoking the superviews [
-            <a href="#NSView-removeSubview:">
+            <a rel="gsdoc" href="#method$NSView-removeSubview:">
               -removeSubview:
             </a>
 
             ] method.
-              </p>
-    <hr />
-    <h3>removeSubview:</a></h3>
-    - (void) <b>removeSubview:</b> (<a href="#class$NSView">NSView</a>*)aSubview;<br />
-Standards: text p text p text<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeSubview:">removeSubview:</a></h3>
+    - (void) <b>removeSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aSubview;<br />
+    <b>Standards:</b> NotMacOS-X, NotOpenStep<br />
+    <p>
+      
+            
+    </p>
     <p>
 
+              Removes the view from the receivers list of
+              subviews and from the responder chain.
                 </p>
-    <hr />
-    <h3>removeToolTip:</a></h3>
+    <p>
+      
+            
+    </p>
+    <p>
+
+              Also invokes [aView
+              <a rel="gsdoc" href="#method$NSView-viewWillMoveToWindow:">
+                -viewWillMoveToWindow:
+              </a>
+
+              <code>nil</code>] to handle removal of aView (and
+              recursively, its children) from its window -
+              performing tidyup by invalidating cursor rects
+              etc.
+                </p>
+    <p>
+      
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeToolTip:">removeToolTip:</a></h3>
     - (void) <b>removeToolTip:</b> (NSToolTipTag)tag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeTrackingRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-removeTrackingRect:">removeTrackingRect:</a></h3>
     - (void) <b>removeTrackingRect:</b> (NSTrackingRectTag)tag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>renewGState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-renewGState">renewGState</a></h3>
     - (void) <b>renewGState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Invalidates the view's gstate object so it will
             be set up again using setUpGState the next time the view
             is focused.
-              </p>
-    <hr />
-    <h3>replaceSubview:with:</a></h3>
-    - (void) <b>replaceSubview:</b> (<a href="#class$NSView">NSView</a>*)oldView<b> with:</b> (<a href="#class$NSView">NSView</a>*)newView;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-replaceSubview:with:">replaceSubview:with:</a></h3>
+    - (void) <b>replaceSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)oldView<b> with:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)newView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Removes <var>oldView</var> from the receiver and
             places <var>newView</var> in its place.
-              </p>
-    <hr />
-    <h3>resetCursorRects</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-resetCursorRects">resetCursorRects</a></h3>
     - (void) <b>resetCursorRects</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>resizeSubviewsWithOldSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-resizeSubviewsWithOldSize:">resizeSubviewsWithOldSize:</a></h3>
     - (void) <b>resizeSubviewsWithOldSize:</b> (NSSize)oldSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>resizeWithOldSuperviewSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-resizeWithOldSuperviewSize:">resizeWithOldSuperviewSize:</a></h3>
     - (void) <b>resizeWithOldSuperviewSize:</b> (NSSize)oldSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rotateByAngle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-rotateByAngle:">rotateByAngle:</a></h3>
     - (void) <b>rotateByAngle:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scaleUnitSquareToSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-scaleUnitSquareToSize:">scaleUnitSquareToSize:</a></h3>
     - (void) <b>scaleUnitSquareToSize:</b> (NSSize)newSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollClipView:toPoint:</a></h3>
-    - (void) <b>scrollClipView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView<b> toPoint:</b> (NSPoint)aPoint;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-scrollClipView:toPoint:">scrollClipView:toPoint:</a></h3>
+    - (void) <b>scrollClipView:</b> (<a rel="gsdoc" href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView<b> toPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-scrollPoint:">scrollPoint:</a></h3>
     - (void) <b>scrollPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollRect:by:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-scrollRect:by:">scrollRect:by:</a></h3>
     - (void) <b>scrollRect:</b> (NSRect)aRect<b> by:</b> (NSSize)delta;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollRectToVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-scrollRectToVisible:">scrollRectToVisible:</a></h3>
     - (BOOL) <b>scrollRectToVisible:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoresizesSubviews:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setAutoresizesSubviews:">setAutoresizesSubviews:</a></h3>
     - (void) <b>setAutoresizesSubviews:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoresizingMask:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setAutoresizingMask:">setAutoresizingMask:</a></h3>
     - (void) <b>setAutoresizingMask:</b> (unsigned int)mask;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setBounds:">setBounds:</a></h3>
     - (void) <b>setBounds:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setBoundsOrigin:">setBoundsOrigin:</a></h3>
     - (void) <b>setBoundsOrigin:</b> (NSPoint)newOrigin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsRotation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setBoundsRotation:">setBoundsRotation:</a></h3>
     - (void) <b>setBoundsRotation:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBoundsSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setBoundsSize:">setBoundsSize:</a></h3>
     - (void) <b>setBoundsSize:</b> (NSSize)newSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrame:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setFrame:">setFrame:</a></h3>
     - (void) <b>setFrame:</b> (NSRect)frameRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setFrameOrigin:">setFrameOrigin:</a></h3>
     - (void) <b>setFrameOrigin:</b> (NSPoint)newOrigin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameRotation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setFrameRotation:">setFrameRotation:</a></h3>
     - (void) <b>setFrameRotation:</b> (float)angle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrameSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setFrameSize:">setFrameSize:</a></h3>
     - (void) <b>setFrameSize:</b> (NSSize)newSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNeedsDisplay:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setNeedsDisplay:">setNeedsDisplay:</a></h3>
     - (void) <b>setNeedsDisplay:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNeedsDisplayInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setNeedsDisplayInRect:">setNeedsDisplayInRect:</a></h3>
     - (void) <b>setNeedsDisplayInRect:</b> (NSRect)rect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNextKeyView:</a></h3>
-    - (void) <b>setNextKeyView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setNextKeyView:">setNextKeyView:</a></h3>
+    - (void) <b>setNextKeyView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPostsBoundsChangedNotifications:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setPostsBoundsChangedNotifications:">setPostsBoundsChangedNotifications:</a></h3>
     - (void) <b>setPostsBoundsChangedNotifications:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPostsFrameChangedNotifications:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setPostsFrameChangedNotifications:">setPostsFrameChangedNotifications:</a></h3>
     - (void) <b>setPostsFrameChangedNotifications:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPreviousKeyView:</a></h3>
-    - (void) <b>setPreviousKeyView:</b> (<a href="#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setPreviousKeyView:">setPreviousKeyView:</a></h3>
+    - (void) <b>setPreviousKeyView:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setToolTip:</a></h3>
-    - (void) <b>setToolTip:</b> (NSString*)string;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setToolTip:">setToolTip:</a></h3>
+    - (void) <b>setToolTip:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUpGState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-setUpGState">setUpGState</a></h3>
     - (void) <b>setUpGState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shouldDelayWindowOrderingForEvent:</a></h3>
-    - (BOOL) <b>shouldDelayWindowOrderingForEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-shouldDelayWindowOrderingForEvent:">shouldDelayWindowOrderingForEvent:</a></h3>
+    - (BOOL) <b>shouldDelayWindowOrderingForEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shouldDrawColor</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-shouldDrawColor">shouldDrawColor</a></h3>
     - (BOOL) <b>shouldDrawColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sortSubviewsUsingFunction:context:</a></h3>
-    - (void) <b>sortSubviewsUsingFunction:</b> (int (*)(id,id,void*))compare<b> context:</b> (void*)context;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-sortSubviewsUsingFunction:context:">sortSubviewsUsingFunction:context:</a></h3>
+    - (void) <b>sortSubviewsUsingFunction:</b> (int(*)(id,id,void*))compare<b> context:</b> (void*)context;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>subviews</a></h3>
-    - (NSArray*) <b>subviews</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-subviews">subviews</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>subviews</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>superview</a></h3>
-    - (<a href="#class$NSView">NSView</a>*) <b>superview</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-superview">superview</a></h3>
+    - (<a rel="gsdoc" href="#class$NSView">NSView</a>*) <b>superview</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tag</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-tag">tag</a></h3>
     - (int) <b>tag</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>toolTip</a></h3>
-    - (NSString*) <b>toolTip</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-toolTip">toolTip</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>toolTip</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>translateOriginToPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-translateOriginToPoint:">translateOriginToPoint:</a></h3>
     - (void) <b>translateOriginToPoint:</b> (NSPoint)point;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>unlockFocus</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-unlockFocus">unlockFocus</a></h3>
     - (void) <b>unlockFocus</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>unregisterDraggedTypes</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-unregisterDraggedTypes">unregisterDraggedTypes</a></h3>
     - (void) <b>unregisterDraggedTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>viewDidMoveToSuperview</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-viewDidMoveToSuperview">viewDidMoveToSuperview</a></h3>
     - (void) <b>viewDidMoveToSuperview</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>viewDidMoveToWindow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-viewDidMoveToWindow">viewDidMoveToWindow</a></h3>
     - (void) <b>viewDidMoveToWindow</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>viewWillMoveToSuperview:</a></h3>
-    - (void) <b>viewWillMoveToSuperview:</b> (<a href="#class$NSView">NSView</a>*)newSuper;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-viewWillMoveToSuperview:">viewWillMoveToSuperview:</a></h3>
+    - (void) <b>viewWillMoveToSuperview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)newSuper;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Notifies the receiver that its superview is being
             changed to <var>newSuperview</var>.
-              </p>
-    <hr />
-    <h3>viewWillMoveToWindow:</a></h3>
-    - (void) <b>viewWillMoveToWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)newWindow;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-viewWillMoveToWindow:">viewWillMoveToWindow:</a></h3>
+    - (void) <b>viewWillMoveToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)newWindow;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Notifies the receiver that it will now be a view
             of <var>newWindow</var>. Note, this method is also used
             when removing a view from a window (in which case,
             <var>newWindow</var> is <code>nil</code>) to let all
             the subviews know that they have also been removed from
             the window.
-              </p>
-    <hr />
-    <h3>viewWithTag:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-viewWithTag:">viewWithTag:</a></h3>
     - (id) <b>viewWithTag:</b> (int)aTag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>visibleRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-visibleRect">visibleRect</a></h3>
     - (NSRect) <b>visibleRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>widthAdjustLimit</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-widthAdjustLimit">widthAdjustLimit</a></h3>
     - (float) <b>widthAdjustLimit</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>willRemoveSubview:</a></h3>
-    - (void) <b>willRemoveSubview:</b> (<a href="#class$NSView">NSView</a>*)subview;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-willRemoveSubview:">willRemoveSubview:</a></h3>
+    - (void) <b>willRemoveSubview:</b> (<a rel="gsdoc" href="#class$NSView">NSView</a>*)subview;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>window</a></h3>
-    - (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-window">window</a></h3>
+    - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the window in which the receiver resides.
-              </p>
-    <hr />
-    <h3>writeEPSInsideRect:toPasteboard:</a></h3>
-    - (void) <b>writeEPSInsideRect:</b> (NSRect)rect<b> toPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-writeEPSInsideRect:toPasteboard:">writeEPSInsideRect:toPasteboard:</a></h3>
+    - (void) <b>writeEPSInsideRect:</b> (NSRect)rect<b> toPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writePDFInsideRect:toPasteboard:</a></h3>
-    - (void) <b>writePDFInsideRect:</b> (NSRect)aRect<b> toPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView-writePDFInsideRect:toPasteboard:">writePDFInsideRect:toPasteboard:</a></h3>
+    - (void) <b>writePDFInsideRect:</b> (NSRect)aRect<b> toPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the NSView(PrivateMethods)
         category
-      </h1>
-    <h2><a href="#class$NSView">NSView</a>(<a name="category$NSView(PrivateMethods)">PrivateMethods</a>)</h2>
-    Declared: AppKit/NSView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSView">NSView</a>(<a name="category$NSView(PrivateMethods)">PrivateMethods</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_invalidateCoordinates</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView(PrivateMethods)-_invalidateCoordinates">-_invalidateCoordinates</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView(PrivateMethods)-_matrixFromWindow">-_matrixFromWindow</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView(PrivateMethods)-_matrixToWindow">-_matrixToWindow</a></li>
+      <li><a rel="gsdoc" href="NSView.html#method$NSView(PrivateMethods)-_rebuildCoordinates">-_rebuildCoordinates</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSView(PrivateMethods)-_invalidateCoordinates">_invalidateCoordinates</a></h3>
     - (void) <b>_invalidateCoordinates</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_matrixFromWindow</a></h3>
-    - (<a href="NSAffineTransform.html#class$NSAffineTransform">NSAffineTransform</a>*) <b>_matrixFromWindow</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView(PrivateMethods)-_matrixFromWindow">_matrixFromWindow</a></h3>
+    - (<a rel="gsdoc" href="NSAffineTransform.html#class$NSAffineTransform">NSAffineTransform</a>*) <b>_matrixFromWindow</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_matrixToWindow</a></h3>
-    - (<a href="NSAffineTransform.html#class$NSAffineTransform">NSAffineTransform</a>*) <b>_matrixToWindow</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView(PrivateMethods)-_matrixToWindow">_matrixToWindow</a></h3>
+    - (<a rel="gsdoc" href="NSAffineTransform.html#class$NSAffineTransform">NSAffineTransform</a>*) <b>_matrixToWindow</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_rebuildCoordinates</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSView(PrivateMethods)-_rebuildCoordinates">_rebuildCoordinates</a></h3>
     - (void) <b>_rebuildCoordinates</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSSpellServer" next="NSSplitView" prev="NSSpellChecker" up="NSActionCell">
+<gsdoc base="NSSpellServer" up="Gui">
   <head>
     <title>NSSpellServer</title>
     <author name="Gregory John Casamento">
@@ -20,6 +20,7 @@
     <copy>2001, 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSSpellServer class
@@ -27,11 +28,16 @@
       <class name="NSSpellServer" super="NSObject">
         <declared>AppKit/NSSpellServer.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="id">
           <sel>delegate</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isWordInUserDictionaries:</sel>
@@ -39,7 +45,11 @@
           <sel>caseSensitive:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>registerLanguage:</sel>
@@ -47,19 +57,34 @@
           <sel>byVendor:</sel>
           <arg type="NSString*">vendor</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>run</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
           <arg type="id">anObject</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -71,6 +96,7 @@
       <category name="NSSpellServerDelegate" class="NSObject">
         <declared>AppKit/NSSpellServer.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>spellServer:</sel>
@@ -80,7 +106,11 @@
           <sel>inLanguage:</sel>
           <arg type="NSString*">language</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>spellServer:</sel>
@@ -90,7 +120,11 @@
           <sel>inLanguage:</sel>
           <arg type="NSString*">language</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>spellServer:</sel>
@@ -104,7 +138,11 @@
           <sel>countOnly:</sel>
           <arg type="BOOL">countOnly</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>spellServer:</sel>
@@ -114,8 +152,15 @@
           <sel>inLanguage:</sel>
           <arg type="NSString*">language</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
   </body>

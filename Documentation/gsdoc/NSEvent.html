@@ -3,7 +3,9 @@
     <title>NSEvent</title>
   </head>
   <body>
-    <h1>NSEvent</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSEvent">NSEvent</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -23,191 +25,344 @@
       </dd>
     </dl>
     <blockquote>
-The event class    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      The event class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSEvent class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSEvent class
-      </h1>
-    <h2><a name="class$NSEvent">NSEvent</a> : NSObject</h2>
-    Declared: AppKit/NSEvent.h<br />
-    Conform: NSCoding<br />
-    Conform: NSCopying<br />
+      </a></h1>
+    <h2><a name="class$NSEvent">NSEvent</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSEvent.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:</a></h3>
-    + (<a href="#class$NSEvent">NSEvent</a>*) <b>enterExitEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (NSGraphicsContext*)context<b> eventNumber:</b> (int)eventNum<b> trackingNumber:</b> (int)trackingNum<b> userData:</b> (void*)userData;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+mouseLocation">+mouseLocation</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:">+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+startPeriodicEventsAfterDelay:withPeriod:">+startPeriodicEventsAfterDelay:withPeriod:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+stopPeriodicEvents">+stopPeriodicEvents</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-characters">-characters</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-charactersIgnoringModifiers">-charactersIgnoringModifiers</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-clickCount">-clickCount</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-context">-context</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-data1">-data1</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-data2">-data2</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-deltaX">-deltaX</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-deltaY">-deltaY</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-deltaZ">-deltaZ</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-eventNumber">-eventNumber</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-isARepeat">-isARepeat</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-keyCode">-keyCode</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-locationInWindow">-locationInWindow</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-modifierFlags">-modifierFlags</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-pressure">-pressure</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-subtype">-subtype</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-timestamp">-timestamp</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-trackingNumber">-trackingNumber</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-type">-type</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-userData">-userData</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-window">-window</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-windowNumber">-windowNumber</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSEvent+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>enterExitEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> trackingNumber:</b> (int)trackingNum<b> userData:</b> (void*)userData;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></h3>
-    + (<a href="#class$NSEvent">NSEvent</a>*) <b>keyEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (NSGraphicsContext*)context<b> characters:</b> (NSString*)keys<b> charactersIgnoringModifiers:</b> (NSString*)ukeys<b> isARepeat:</b> (BOOL)repeatKey<b> keyCode:</b> (unsigned short)code;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>keyEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> characters:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)keys<b> charactersIgnoringModifiers:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)ukeys<b> isARepeat:</b> (BOOL)repeatKey<b> keyCode:</b> (unsigned short)code;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></h3>
-    + (<a href="#class$NSEvent">NSEvent</a>*) <b>mouseEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (NSGraphicsContext*)context<b> eventNumber:</b> (int)eventNum<b> clickCount:</b> (int)clickNum<b> pressure:</b> (float)pressureValue;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>mouseEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> clickCount:</b> (int)clickNum<b> pressure:</b> (float)pressureValue;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseLocation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+mouseLocation">mouseLocation</a></h3>
     + (NSPoint) <b>mouseLocation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></h3>
-    + (<a href="#class$NSEvent">NSEvent</a>*) <b>otherEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (NSGraphicsContext*)context<b> subtype:</b> (short)subType<b> data1:</b> (int)data1<b> data2:</b> (int)data2;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:">otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>otherEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> subtype:</b> (short)subType<b> data1:</b> (int)data1<b> data2:</b> (int)data2;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>startPeriodicEventsAfterDelay:withPeriod:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+startPeriodicEventsAfterDelay:withPeriod:">startPeriodicEventsAfterDelay:withPeriod:</a></h3>
     + (void) <b>startPeriodicEventsAfterDelay:</b> (NSTimeInterval)delaySeconds<b> withPeriod:</b> (NSTimeInterval)periodSeconds;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>stopPeriodicEvents</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+stopPeriodicEvents">stopPeriodicEvents</a></h3>
     + (void) <b>stopPeriodicEvents</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>characters</a></h3>
-    - (NSString*) <b>characters</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-characters">characters</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>characters</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>charactersIgnoringModifiers</a></h3>
-    - (NSString*) <b>charactersIgnoringModifiers</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-charactersIgnoringModifiers">charactersIgnoringModifiers</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>charactersIgnoringModifiers</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>clickCount</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-clickCount">clickCount</a></h3>
     - (int) <b>clickCount</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>context</a></h3>
-    - (NSGraphicsContext*) <b>context</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-context">context</a></h3>
+    - (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>data1</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-data1">data1</a></h3>
     - (int) <b>data1</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>data2</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-data2">data2</a></h3>
     - (int) <b>data2</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deltaX</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-deltaX">deltaX</a></h3>
     - (float) <b>deltaX</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deltaY</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-deltaY">deltaY</a></h3>
     - (float) <b>deltaY</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deltaZ</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-deltaZ">deltaZ</a></h3>
     - (float) <b>deltaZ</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>eventNumber</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-eventNumber">eventNumber</a></h3>
     - (int) <b>eventNumber</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isARepeat</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-isARepeat">isARepeat</a></h3>
     - (BOOL) <b>isARepeat</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyCode</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-keyCode">keyCode</a></h3>
     - (unsigned short) <b>keyCode</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>locationInWindow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-locationInWindow">locationInWindow</a></h3>
     - (NSPoint) <b>locationInWindow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>modifierFlags</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-modifierFlags">modifierFlags</a></h3>
     - (unsigned int) <b>modifierFlags</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pressure</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-pressure">pressure</a></h3>
     - (float) <b>pressure</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>subtype</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-subtype">subtype</a></h3>
     - (short) <b>subtype</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>timestamp</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-timestamp">timestamp</a></h3>
     - (NSTimeInterval) <b>timestamp</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>trackingNumber</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-trackingNumber">trackingNumber</a></h3>
     - (int) <b>trackingNumber</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>type</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-type">type</a></h3>
     - (NSEventType) <b>type</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>userData</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-userData">userData</a></h3>
     - (void*) <b>userData</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>window</a></h3>
-    - (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-window">window</a></h3>
+    - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>windowNumber</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-windowNumber">windowNumber</a></h3>
     - (int) <b>windowNumber</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

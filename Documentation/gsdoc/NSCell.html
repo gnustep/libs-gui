@@ -3,7 +3,9 @@
     <title>NSCell</title>
   </head>
   <body>
-    <h1>NSCell</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSCell">NSCell</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -13,746 +15,1286 @@
       </dd>
     </dl>
     <blockquote>
-The abstract cell class    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      The abstract cell class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSCell class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the NSCell(PrivateMethods)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSCell class
-      </h1>
-    <h2><a name="class$NSCell">NSCell</a> : NSObject</h2>
-    Declared: AppKit/NSCell.h<br />
-    Conform: NSCopying<br />
-    Conform: NSCoding<br />
+      </a></h1>
+    <h2><a name="class$NSCell">NSCell</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSCell.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>defaultMenu</a></h3>
-    + (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>defaultMenu</b>;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell+defaultMenu">+defaultMenu</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell+prefersTrackingUntilMouseUp">+prefersTrackingUntilMouseUp</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-acceptsFirstResponder">-acceptsFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-action">-action</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-alignment">-alignment</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-allowsEditingTextAttributes">-allowsEditingTextAttributes</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-allowsMixedState">-allowsMixedState</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-attributedStringValue">-attributedStringValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-calcDrawInfo:">-calcDrawInfo:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-cellAttribute:">-cellAttribute:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-cellSize">-cellSize</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-cellSizeForBounds:">-cellSizeForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-compare:">-compare:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-continueTracking:at:inView:">-continueTracking:at:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-controlView">-controlView</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-doubleValue">-doubleValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-drawInteriorWithFrame:inView:">-drawInteriorWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-drawWithFrame:inView:">-drawWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-drawingRectForBounds:">-drawingRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-editWithFrame:inView:editor:delegate:event:">-editWithFrame:inView:editor:delegate:event:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-encodeWithCoder:">-encodeWithCoder:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-endEditing:">-endEditing:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-entryType">-entryType</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-floatValue">-floatValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-font">-font</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-formatter">-formatter</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-getPeriodicDelay:interval:">-getPeriodicDelay:interval:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-hasValidObjectValue">-hasValidObjectValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-highlight:withFrame:inView:">-highlight:withFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-image">-image</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-imageRectForBounds:">-imageRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-importsGraphics">-importsGraphics</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-initImageCell:">-initImageCell:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-initTextCell:">-initTextCell:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-initWithCoder:">-initWithCoder:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-intValue">-intValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isBezeled">-isBezeled</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isBordered">-isBordered</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isContinuous">-isContinuous</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isEditable">-isEditable</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isEnabled">-isEnabled</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isEntryAcceptable:">-isEntryAcceptable:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isHighlighted">-isHighlighted</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isOpaque">-isOpaque</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isScrollable">-isScrollable</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-isSelectable">-isSelectable</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-keyEquivalent">-keyEquivalent</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-menu">-menu</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-menuForEvent:inRect:ofView:">-menuForEvent:inRect:ofView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-mnemonic">-mnemonic</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-mnemonicLocation">-mnemonicLocation</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-mouseDownFlags">-mouseDownFlags</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-nextState">-nextState</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-objectValue">-objectValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-performClick:">-performClick:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-refusesFirstResponder">-refusesFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-representedObject">-representedObject</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-resetCursorRect:inView:">-resetCursorRect:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-selectWithFrame:inView:editor:delegate:start:length:">-selectWithFrame:inView:editor:delegate:start:length:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-sendActionOn:">-sendActionOn:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-sendsActionOnEndEditing">-sendsActionOnEndEditing</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setAction:">-setAction:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setAlignment:">-setAlignment:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setAllowsEditingTextAttributes:">-setAllowsEditingTextAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setAllowsMixedState:">-setAllowsMixedState:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setAttributedStringValue:">-setAttributedStringValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setBezeled:">-setBezeled:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setBordered:">-setBordered:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setCellAttribute:to:">-setCellAttribute:to:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setContinuous:">-setContinuous:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setDoubleValue:">-setDoubleValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setEditable:">-setEditable:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setEnabled:">-setEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setEntryType:">-setEntryType:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setFloatValue:">-setFloatValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setFloatingPointFormat:left:right:">-setFloatingPointFormat:left:right:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setFont:">-setFont:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setFormatter:">-setFormatter:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setImage:">-setImage:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setImportsGraphics:">-setImportsGraphics:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setIntValue:">-setIntValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setMenu:">-setMenu:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setMnemonicLocation:">-setMnemonicLocation:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setNextState">-setNextState</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setObjectValue:">-setObjectValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setRefusesFirstResponder:">-setRefusesFirstResponder:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setRepresentedObject:">-setRepresentedObject:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setScrollable:">-setScrollable:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setSelectable:">-setSelectable:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setSendsActionOnEndEditing:">-setSendsActionOnEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setShowsFirstResponder:">-setShowsFirstResponder:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setState:">-setState:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setStringValue:">-setStringValue:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setTag:">-setTag:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setTarget:">-setTarget:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setTitleWithMnemonic:">-setTitleWithMnemonic:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setType:">-setType:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setUpFieldEditorAttributes:">-setUpFieldEditorAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-setWraps:">-setWraps:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-showsFirstResponder">-showsFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-startTrackingAt:inView:">-startTrackingAt:inView:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-state">-state</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-stopTracking:at:inView:mouseIsUp:">-stopTracking:at:inView:mouseIsUp:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-stringValue">-stringValue</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-tag">-tag</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-takeDoubleValueFrom:">-takeDoubleValueFrom:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-takeFloatValueFrom:">-takeFloatValueFrom:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-takeIntValueFrom:">-takeIntValueFrom:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-takeObjectValueFrom:">-takeObjectValueFrom:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-takeStringValueFrom:">-takeStringValueFrom:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-target">-target</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-titleRectForBounds:">-titleRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-trackMouse:inRect:ofView:untilMouseUp:">-trackMouse:inRect:ofView:untilMouseUp:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-type">-type</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell-wraps">-wraps</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSCell+defaultMenu">defaultMenu</a></h3>
+    + (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>defaultMenu</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>prefersTrackingUntilMouseUp</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell+prefersTrackingUntilMouseUp">prefersTrackingUntilMouseUp</a></h3>
     + (BOOL) <b>prefersTrackingUntilMouseUp</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>acceptsFirstResponder</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-acceptsFirstResponder">acceptsFirstResponder</a></h3>
     - (BOOL) <b>acceptsFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>action</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-action">action</a></h3>
     - (SEL) <b>action</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>alignment</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-alignment">alignment</a></h3>
     - (NSTextAlignment) <b>alignment</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsEditingTextAttributes</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-allowsEditingTextAttributes">allowsEditingTextAttributes</a></h3>
     - (BOOL) <b>allowsEditingTextAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsMixedState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-allowsMixedState">allowsMixedState</a></h3>
     - (BOOL) <b>allowsMixedState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>attributedStringValue</a></h3>
-    - (NSAttributedString*) <b>attributedStringValue</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-attributedStringValue">attributedStringValue</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*) <b>attributedStringValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>calcDrawInfo:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-calcDrawInfo:">calcDrawInfo:</a></h3>
     - (void) <b>calcDrawInfo:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellAttribute:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-cellAttribute:">cellAttribute:</a></h3>
     - (int) <b>cellAttribute:</b> (NSCellAttribute)aParameter;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellSize</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-cellSize">cellSize</a></h3>
     - (NSSize) <b>cellSize</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellSizeForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-cellSizeForBounds:">cellSizeForBounds:</a></h3>
     - (NSSize) <b>cellSizeForBounds:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>compare:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-compare:">compare:</a></h3>
     - (NSComparisonResult) <b>compare:</b> (id)otherCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>continueTracking:at:inView:</a></h3>
-    - (BOOL) <b>continueTracking:</b> (NSPoint)lastPoint<b> at:</b> (NSPoint)currentPoint<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-continueTracking:at:inView:">continueTracking:at:inView:</a></h3>
+    - (BOOL) <b>continueTracking:</b> (NSPoint)lastPoint<b> at:</b> (NSPoint)currentPoint<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>controlView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>controlView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-controlView">controlView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>controlView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doubleValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-doubleValue">doubleValue</a></h3>
     - (double) <b>doubleValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawInteriorWithFrame:inView:</a></h3>
-    - (void) <b>drawInteriorWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-drawInteriorWithFrame:inView:">drawInteriorWithFrame:inView:</a></h3>
+    - (void) <b>drawInteriorWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawWithFrame:inView:</a></h3>
-    - (void) <b>drawWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-drawWithFrame:inView:">drawWithFrame:inView:</a></h3>
+    - (void) <b>drawWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawingRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-drawingRectForBounds:">drawingRectForBounds:</a></h3>
     - (NSRect) <b>drawingRectForBounds:</b> (NSRect)theRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>editWithFrame:inView:editor:delegate:event:</a></h3>
-    - (void) <b>editWithFrame:</b> (NSRect)aRect<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView<b> editor:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject<b> delegate:</b> (id)anObject<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-editWithFrame:inView:editor:delegate:event:">editWithFrame:inView:editor:delegate:event:</a></h3>
+    - (void) <b>editWithFrame:</b> (NSRect)aRect<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView<b> editor:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject<b> delegate:</b> (id)anObject<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>encodeWithCoder:</a></h3>
-    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-encodeWithCoder:">encodeWithCoder:</a></h3>
+    - (void) <b>encodeWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aCoder;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>endEditing:</a></h3>
-    - (void) <b>endEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-endEditing:">endEditing:</a></h3>
+    - (void) <b>endEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>entryType</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-entryType">entryType</a></h3>
     - (int) <b>entryType</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>floatValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-floatValue">floatValue</a></h3>
     - (float) <b>floatValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>font</a></h3>
-    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-font">font</a></h3>
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>formatter</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-formatter">formatter</a></h3>
     - (id) <b>formatter</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getPeriodicDelay:interval:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-getPeriodicDelay:interval:">getPeriodicDelay:interval:</a></h3>
     - (void) <b>getPeriodicDelay:</b> (float*)delay<b> interval:</b> (float*)interval;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasValidObjectValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-hasValidObjectValue">hasValidObjectValue</a></h3>
     - (BOOL) <b>hasValidObjectValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlight:withFrame:inView:</a></h3>
-    - (void) <b>highlight:</b> (BOOL)lit<b> withFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-highlight:withFrame:inView:">highlight:withFrame:inView:</a></h3>
+    - (void) <b>highlight:</b> (BOOL)lit<b> withFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>image</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-image">image</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-imageRectForBounds:">imageRectForBounds:</a></h3>
     - (NSRect) <b>imageRectForBounds:</b> (NSRect)theRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>importsGraphics</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-importsGraphics">importsGraphics</a></h3>
     - (BOOL) <b>importsGraphics</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initImageCell:</a></h3>
-    - (id) <b>initImageCell:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-initImageCell:">initImageCell:</a></h3>
+    - (id) <b>initImageCell:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initTextCell:</a></h3>
-    - (id) <b>initTextCell:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-initTextCell:">initTextCell:</a></h3>
+    - (id) <b>initTextCell:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithCoder:</a></h3>
-    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-initWithCoder:">initWithCoder:</a></h3>
+    - (id) <b>initWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aDecoder;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>intValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-intValue">intValue</a></h3>
     - (int) <b>intValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isBezeled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isBezeled">isBezeled</a></h3>
     - (BOOL) <b>isBezeled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isBordered</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isBordered">isBordered</a></h3>
     - (BOOL) <b>isBordered</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isContinuous</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isContinuous">isContinuous</a></h3>
     - (BOOL) <b>isContinuous</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEditable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isEditable">isEditable</a></h3>
     - (BOOL) <b>isEditable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEnabled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isEnabled">isEnabled</a></h3>
     - (BOOL) <b>isEnabled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEntryAcceptable:</a></h3>
-    - (BOOL) <b>isEntryAcceptable:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isEntryAcceptable:">isEntryAcceptable:</a></h3>
+    - (BOOL) <b>isEntryAcceptable:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isHighlighted</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isHighlighted">isHighlighted</a></h3>
     - (BOOL) <b>isHighlighted</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isOpaque</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isOpaque">isOpaque</a></h3>
     - (BOOL) <b>isOpaque</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isScrollable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isScrollable">isScrollable</a></h3>
     - (BOOL) <b>isScrollable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSelectable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-isSelectable">isSelectable</a></h3>
     - (BOOL) <b>isSelectable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEquivalent</a></h3>
-    - (NSString*) <b>keyEquivalent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-keyEquivalent">keyEquivalent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>keyEquivalent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menu</a></h3>
-    - (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menu</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-menu">menu</a></h3>
+    - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menu</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuForEvent:inRect:ofView:</a></h3>
-    - (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menuForEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent<b> inRect:</b> (NSRect)cellFrame<b> ofView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-menuForEvent:inRect:ofView:">menuForEvent:inRect:ofView:</a></h3>
+    - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menuForEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent<b> inRect:</b> (NSRect)cellFrame<b> ofView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mnemonic</a></h3>
-    - (NSString*) <b>mnemonic</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-mnemonic">mnemonic</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>mnemonic</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mnemonicLocation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-mnemonicLocation">mnemonicLocation</a></h3>
     - (unsigned int) <b>mnemonicLocation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseDownFlags</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-mouseDownFlags">mouseDownFlags</a></h3>
     - (int) <b>mouseDownFlags</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nextState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-nextState">nextState</a></h3>
     - (int) <b>nextState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>objectValue</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-objectValue">objectValue</a></h3>
     - (id) <b>objectValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performClick:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-performClick:">performClick:</a></h3>
     - (void) <b>performClick:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>refusesFirstResponder</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-refusesFirstResponder">refusesFirstResponder</a></h3>
     - (BOOL) <b>refusesFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>representedObject</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-representedObject">representedObject</a></h3>
     - (id) <b>representedObject</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>resetCursorRect:inView:</a></h3>
-    - (void) <b>resetCursorRect:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-resetCursorRect:inView:">resetCursorRect:inView:</a></h3>
+    - (void) <b>resetCursorRect:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectWithFrame:inView:editor:delegate:start:length:</a></h3>
-    - (void) <b>selectWithFrame:</b> (NSRect)aRect<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView<b> editor:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject<b> delegate:</b> (id)anObject<b> start:</b> (int)selStart<b> length:</b> (int)selLength;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-selectWithFrame:inView:editor:delegate:start:length:">selectWithFrame:inView:editor:delegate:start:length:</a></h3>
+    - (void) <b>selectWithFrame:</b> (NSRect)aRect<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView<b> editor:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject<b> delegate:</b> (id)anObject<b> start:</b> (int)selStart<b> length:</b> (int)selLength;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendActionOn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-sendActionOn:">sendActionOn:</a></h3>
     - (int) <b>sendActionOn:</b> (int)mask;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendsActionOnEndEditing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-sendsActionOnEndEditing">sendsActionOnEndEditing</a></h3>
     - (BOOL) <b>sendsActionOnEndEditing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setAction:">setAction:</a></h3>
     - (void) <b>setAction:</b> (SEL)aSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAlignment:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setAlignment:">setAlignment:</a></h3>
     - (void) <b>setAlignment:</b> (NSTextAlignment)mode;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsEditingTextAttributes:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setAllowsEditingTextAttributes:">setAllowsEditingTextAttributes:</a></h3>
     - (void) <b>setAllowsEditingTextAttributes:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsMixedState:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setAllowsMixedState:">setAllowsMixedState:</a></h3>
     - (void) <b>setAllowsMixedState:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAttributedStringValue:</a></h3>
-    - (void) <b>setAttributedStringValue:</b> (NSAttributedString*)attribStr;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setAttributedStringValue:">setAttributedStringValue:</a></h3>
+    - (void) <b>setAttributedStringValue:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)attribStr;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBezeled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setBezeled:">setBezeled:</a></h3>
     - (void) <b>setBezeled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBordered:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setBordered:">setBordered:</a></h3>
     - (void) <b>setBordered:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellAttribute:to:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setCellAttribute:to:">setCellAttribute:to:</a></h3>
     - (void) <b>setCellAttribute:</b> (NSCellAttribute)aParameter<b> to:</b> (int)value;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setContinuous:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setContinuous:">setContinuous:</a></h3>
     - (void) <b>setContinuous:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDoubleValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setDoubleValue:">setDoubleValue:</a></h3>
     - (void) <b>setDoubleValue:</b> (double)aDouble;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setEditable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setEditable:">setEditable:</a></h3>
     - (void) <b>setEditable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setEnabled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setEnabled:">setEnabled:</a></h3>
     - (void) <b>setEnabled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setEntryType:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setEntryType:">setEntryType:</a></h3>
     - (void) <b>setEntryType:</b> (int)aType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFloatValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setFloatValue:">setFloatValue:</a></h3>
     - (void) <b>setFloatValue:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFloatingPointFormat:left:right:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setFloatingPointFormat:left:right:">setFloatingPointFormat:left:right:</a></h3>
     - (void) <b>setFloatingPointFormat:</b> (BOOL)autoRange<b> left:</b> (unsigned int)leftDigits<b> right:</b> (unsigned int)rightDigits;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFont:</a></h3>
-    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setFont:">setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFormatter:</a></h3>
-    - (void) <b>setFormatter:</b> (NSFormatter*)newFormatter;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setFormatter:">setFormatter:</a></h3>
+    - (void) <b>setFormatter:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSFormatter.html#class$NSFormatter">NSFormatter</a>*)newFormatter;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImage:</a></h3>
-    - (void) <b>setImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setImage:">setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImportsGraphics:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setImportsGraphics:">setImportsGraphics:</a></h3>
     - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIntValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setIntValue:">setIntValue:</a></h3>
     - (void) <b>setIntValue:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenu:</a></h3>
-    - (void) <b>setMenu:</b> (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setMenu:">setMenu:</a></h3>
+    - (void) <b>setMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMnemonicLocation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setMnemonicLocation:">setMnemonicLocation:</a></h3>
     - (void) <b>setMnemonicLocation:</b> (unsigned int)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNextState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setNextState">setNextState</a></h3>
     - (void) <b>setNextState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setObjectValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setObjectValue:">setObjectValue:</a></h3>
     - (void) <b>setObjectValue:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRefusesFirstResponder:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setRefusesFirstResponder:">setRefusesFirstResponder:</a></h3>
     - (void) <b>setRefusesFirstResponder:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRepresentedObject:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setRepresentedObject:">setRepresentedObject:</a></h3>
     - (void) <b>setRepresentedObject:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setScrollable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setScrollable:">setScrollable:</a></h3>
     - (void) <b>setScrollable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setSelectable:">setSelectable:</a></h3>
     - (void) <b>setSelectable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSendsActionOnEndEditing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setSendsActionOnEndEditing:">setSendsActionOnEndEditing:</a></h3>
     - (void) <b>setSendsActionOnEndEditing:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setShowsFirstResponder:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setShowsFirstResponder:">setShowsFirstResponder:</a></h3>
     - (void) <b>setShowsFirstResponder:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setState:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setState:">setState:</a></h3>
     - (void) <b>setState:</b> (int)value;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setStringValue:</a></h3>
-    - (void) <b>setStringValue:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setStringValue:">setStringValue:</a></h3>
+    - (void) <b>setStringValue:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setTag:">setTag:</a></h3>
     - (void) <b>setTag:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTarget:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setTarget:">setTarget:</a></h3>
     - (void) <b>setTarget:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitleWithMnemonic:</a></h3>
-    - (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setTitleWithMnemonic:">setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setType:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setType:">setType:</a></h3>
     - (void) <b>setType:</b> (NSCellType)aType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUpFieldEditorAttributes:</a></h3>
-    - (<a href="NSText.html#class$NSText">NSText</a>*) <b>setUpFieldEditorAttributes:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setUpFieldEditorAttributes:">setUpFieldEditorAttributes:</a></h3>
+    - (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*) <b>setUpFieldEditorAttributes:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setWraps:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-setWraps:">setWraps:</a></h3>
     - (void) <b>setWraps:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>showsFirstResponder</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-showsFirstResponder">showsFirstResponder</a></h3>
     - (BOOL) <b>showsFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>startTrackingAt:inView:</a></h3>
-    - (BOOL) <b>startTrackingAt:</b> (NSPoint)startPoint<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-startTrackingAt:inView:">startTrackingAt:inView:</a></h3>
+    - (BOOL) <b>startTrackingAt:</b> (NSPoint)startPoint<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>state</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-state">state</a></h3>
     - (int) <b>state</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>stopTracking:at:inView:mouseIsUp:</a></h3>
-    - (void) <b>stopTracking:</b> (NSPoint)lastPoint<b> at:</b> (NSPoint)stopPoint<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView<b> mouseIsUp:</b> (BOOL)flag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-stopTracking:at:inView:mouseIsUp:">stopTracking:at:inView:mouseIsUp:</a></h3>
+    - (void) <b>stopTracking:</b> (NSPoint)lastPoint<b> at:</b> (NSPoint)stopPoint<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView<b> mouseIsUp:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>stringValue</a></h3>
-    - (NSString*) <b>stringValue</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-stringValue">stringValue</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>stringValue</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tag</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-tag">tag</a></h3>
     - (int) <b>tag</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takeDoubleValueFrom:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-takeDoubleValueFrom:">takeDoubleValueFrom:</a></h3>
     - (void) <b>takeDoubleValueFrom:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takeFloatValueFrom:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-takeFloatValueFrom:">takeFloatValueFrom:</a></h3>
     - (void) <b>takeFloatValueFrom:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takeIntValueFrom:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-takeIntValueFrom:">takeIntValueFrom:</a></h3>
     - (void) <b>takeIntValueFrom:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takeObjectValueFrom:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-takeObjectValueFrom:">takeObjectValueFrom:</a></h3>
     - (void) <b>takeObjectValueFrom:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takeStringValueFrom:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-takeStringValueFrom:">takeStringValueFrom:</a></h3>
     - (void) <b>takeStringValueFrom:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>target</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-target">target</a></h3>
     - (id) <b>target</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-titleRectForBounds:">titleRectForBounds:</a></h3>
     - (NSRect) <b>titleRectForBounds:</b> (NSRect)theRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>trackMouse:inRect:ofView:untilMouseUp:</a></h3>
-    - (BOOL) <b>trackMouse:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent<b> inRect:</b> (NSRect)cellFrame<b> ofView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView<b> untilMouseUp:</b> (BOOL)flag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-trackMouse:inRect:ofView:untilMouseUp:">trackMouse:inRect:ofView:untilMouseUp:</a></h3>
+    - (BOOL) <b>trackMouse:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent<b> inRect:</b> (NSRect)cellFrame<b> ofView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView<b> untilMouseUp:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>type</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-type">type</a></h3>
     - (NSCellType) <b>type</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>wraps</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell-wraps">wraps</a></h3>
     - (BOOL) <b>wraps</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the NSCell(PrivateMethods)
         category
-      </h1>
-    <h2><a href="#class$NSCell">NSCell</a>(<a name="category$NSCell(PrivateMethods)">PrivateMethods</a>)</h2>
-    Declared: AppKit/NSCell.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSCell">NSCell</a>(<a name="category$NSCell(PrivateMethods)">PrivateMethods</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSCell.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_drawAttributedText:inFrame:</a></h3>
-    - (void) <b>_drawAttributedText:</b> (NSAttributedString*)title<b> inFrame:</b> (NSRect)cellFrame;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell(PrivateMethods)-_drawAttributedText:inFrame:">-_drawAttributedText:inFrame:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell(PrivateMethods)-_drawText:inFrame:">-_drawText:inFrame:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell(PrivateMethods)-_nonAutoreleasedTypingAttributes">-_nonAutoreleasedTypingAttributes</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell(PrivateMethods)-_sizeText:">-_sizeText:</a></li>
+      <li><a rel="gsdoc" href="NSCell.html#method$NSCell(PrivateMethods)-textColor">-textColor</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSCell(PrivateMethods)-_drawAttributedText:inFrame:">_drawAttributedText:inFrame:</a></h3>
+    - (void) <b>_drawAttributedText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)title<b> inFrame:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_drawText:inFrame:</a></h3>
-    - (void) <b>_drawText:</b> (NSString*)title<b> inFrame:</b> (NSRect)cellFrame;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell(PrivateMethods)-_drawText:inFrame:">_drawText:inFrame:</a></h3>
+    - (void) <b>_drawText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title<b> inFrame:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_nonAutoreleasedTypingAttributes</a></h3>
-    - (NSMutableDictionary*) <b>_nonAutoreleasedTypingAttributes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell(PrivateMethods)-_nonAutoreleasedTypingAttributes">_nonAutoreleasedTypingAttributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSMutableDictionary">NSMutableDictionary</a>*) <b>_nonAutoreleasedTypingAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_sizeText:</a></h3>
-    - (NSSize) <b>_sizeText:</b> (NSString*)title;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell(PrivateMethods)-_sizeText:">_sizeText:</a></h3>
+    - (NSSize) <b>_sizeText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCell(PrivateMethods)-textColor">textColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

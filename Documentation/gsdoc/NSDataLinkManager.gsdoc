@@ -1,0 +1,444 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSDataLinkManager" up="Gui">
+  <head>
+    <title>NSDataLinkManager</title>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSDataLinkManager class
+      </heading>
+      <class name="NSDataLinkManager" super="NSObject">
+        <declared>AppKit/NSDataLinkManager.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="BOOL">
+          <sel>addLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>addLinkAsMarker:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSDataLink*">
+          <sel>addLinkPreviouslyAt:</sel>
+          <arg type="NSSelection*">oldSelection</arg>
+          <sel>fromPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteboard</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>areLinkOutlinesVisible</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>breakAllLinks</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>copyToPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteboard</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <sel>cheapCopyAllowed:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManager:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <sel>didBreakLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>dataLinkManager:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <sel>isUpdateNeededForLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManager:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <sel>startTrackingLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManager:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <sel>stopTrackingLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManagerCloseDocument:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManagerDidEditLinks:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>dataLinkManagerRedrawLinkOutlines:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>dataLinkManagerTracksLinksIndividually:</sel>
+          <arg type="NSDataLinkManager*">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>delegate</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>delegateVerifiesLinks</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSEnumerator*">
+          <sel>destinationLinkEnumerator</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSDataLink*">
+          <sel>destinationLinkWithSelection:</sel>
+          <arg type="NSSelection*">destSel</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSString*">
+          <sel>filename</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>importFile:</sel>
+          <arg type="NSString*">filename</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithDelegate:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithDelegate:</sel>
+          <arg type="id">anObject</arg>
+          <sel>fromFile:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>interactsWithUser</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isEdited</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentClosed</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentEdited</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentReverted</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentSaved</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentSavedAs:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>noteDocumentSavedTo:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>pasteFromPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteboard</arg>
+          <sel>at:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setDelegateVerifiesLinks:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setInteractsWithUser:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setLinkOutlinesVisible:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>showSelection:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSEnumerator*">
+          <sel>sourceLinkEnumerator</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSWindow*">
+          <sel>windowForSelection:</sel>
+          <arg type="NSSelection*">selection</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>writeLinksToPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteboard</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

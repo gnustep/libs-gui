@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSSpellChecker" next="NSSpellServer" prev="NSSliderCell" up="NSActionCell">
+<gsdoc base="NSSpellChecker" up="Gui">
   <head>
     <title>NSSpellChecker</title>
     <author name="Gregory John Casamento">
@@ -20,6 +20,7 @@
     <copy>2001, 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSSpellChecker class
@@ -27,26 +28,43 @@
       <class name="NSSpellChecker" super="NSObject">
         <declared>AppKit/NSSpellChecker.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSSpellChecker*" factory="yes">
           <sel>sharedSpellChecker</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL" factory="yes">
           <sel>sharedSpellCheckerExists</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int" factory="yes">
           <sel>uniqueSpellDocumentTag</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>accessoryView</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>checkSpellingOfString:</sel>
@@ -54,7 +72,11 @@
           <sel>startingAt:</sel>
           <arg type="int">startingOffset</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>checkSpellingOfString:</sel>
@@ -70,13 +92,21 @@
           <sel>wordCount:</sel>
           <arg type="int*">wordCount</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>closeSpellDocumentWithTag:</sel>
           <arg type="int">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>countWordsInString:</sel>
@@ -84,13 +114,21 @@
           <sel>language:</sel>
           <arg type="NSString*">language</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>guessesForWord:</sel>
           <arg type="NSString*">word</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>ignoreWord:</sel>
@@ -98,24 +136,40 @@
           <sel>inSpellDocumentWithTag:</sel>
           <arg type="int">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>ignoredWordsInSpellDocumentWithTag:</sel>
           <arg type="int">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>language</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAccessoryView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setIgnoredWords:</sel>
@@ -123,31 +177,54 @@
           <sel>inSpellDocumentWithTag:</sel>
           <arg type="int">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setLanguage:</sel>
           <arg type="NSString*">aLanguage</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setWordFieldStringValue:</sel>
           <arg type="NSString*">aString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPanel*">
           <sel>spellingPanel</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateSpellingPanelWithMisspelledWord:</sel>
           <arg type="NSString*">word</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSSecureTextField" next="NSSlider" prev="NSScroller" up="NSActionCell">
+<gsdoc base="NSSecureTextField" up="Gui">
   <head>
     <title>NSSecureTextField</title>
     <author name="Gregory John Casamento">
@@ -14,6 +14,7 @@
     <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSSecureTextField class
@@ -21,7 +22,11 @@
       <class name="NSSecureTextField" super="NSTextField">
         <declared>AppKit/NSSecureTextField.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -32,18 +37,30 @@
       <class name="NSSecureTextFieldCell" super="NSTextFieldCell">
         <declared>AppKit/NSSecureTextField.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="BOOL">
           <sel>echosBullets</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setEchosBullets:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

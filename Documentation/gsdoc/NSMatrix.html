@@ -3,7 +3,9 @@
     <title>NSMatrix</title>
   </head>
   <body>
-    <h1>NSMatrix</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSMatrix">NSMatrix</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
@@ -13,634 +15,1083 @@
       </dd>
     </dl>
     <blockquote>
-Matrix class for grouping controls    </blockquote>
-    <p>Copyright: (C) 1996, 1997, 1999 Free Software Foundation, Inc.</p>
-    <h1>
+      Matrix class for grouping controls
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996, 1997, 1999 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSMatrix class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSMatrix class
-      </h1>
-    <h2><a name="class$NSMatrix">NSMatrix</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSMatrix.h<br />
-    Conform: NSCoding<br />
+      </a></h1>
+    <h2><a name="class$NSMatrix">NSMatrix</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMatrix.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>cellClass</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix+cellClass">+cellClass</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix+setCellClass:">+setCellClass:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-acceptsFirstMouse:">-acceptsFirstMouse:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-action">-action</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-addColumn">-addColumn</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-addColumnWithCells:">-addColumnWithCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-addRow">-addRow</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-addRowWithCells:">-addRowWithCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-allowsEmptySelection">-allowsEmptySelection</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-autosizesCells">-autosizesCells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellAtRow:column:">-cellAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellBackgroundColor">-cellBackgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellClass">-cellClass</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellFrameAtRow:column:">-cellFrameAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellSize">-cellSize</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cellWithTag:">-cellWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-cells">-cells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-deselectAllCells">-deselectAllCells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-deselectSelectedCell">-deselectSelectedCell</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-doubleAction">-doubleAction</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-drawCellAtRow:column:">-drawCellAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-drawsBackground">-drawsBackground</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-drawsCellBackground">-drawsCellBackground</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-errorAction">-errorAction</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-getNumberOfRows:columns:">-getNumberOfRows:columns:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-getRow:column:forPoint:">-getRow:column:forPoint:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-getRow:column:ofCell:">-getRow:column:ofCell:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-highlightCell:atRow:column:">-highlightCell:atRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-initWithFrame:">-initWithFrame:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:">-initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-initWithFrame:mode:prototype:numberOfRows:numberOfColumns:">-initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-insertColumn:">-insertColumn:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-insertColumn:withCells:">-insertColumn:withCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-insertRow:">-insertRow:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-insertRow:withCells:">-insertRow:withCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-intercellSpacing">-intercellSpacing</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-isAutoscroll">-isAutoscroll</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-isSelectionByRect">-isSelectionByRect</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-keyCell">-keyCell</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-makeCellAtRow:column:">-makeCellAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-mode">-mode</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-mouseDown:">-mouseDown:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-mouseDownFlags">-mouseDownFlags</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-nextText">-nextText</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-numberOfColumns">-numberOfColumns</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-numberOfRows">-numberOfRows</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-performKeyEquivalent:">-performKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-previousText">-previousText</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-prototype">-prototype</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-putCell:atRow:column:">-putCell:atRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-removeColumn:">-removeColumn:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-removeRow:">-removeRow:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-renewRows:columns:">-renewRows:columns:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-resetCursorRects">-resetCursorRects</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-scrollCellToVisibleAtRow:column:">-scrollCellToVisibleAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectAll:">-selectAll:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectCellAtRow:column:">-selectCellAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectCellWithTag:">-selectCellWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectText:">-selectText:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectTextAtRow:column:">-selectTextAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectedCell">-selectedCell</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectedCells">-selectedCells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectedColumn">-selectedColumn</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-selectedRow">-selectedRow</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sendAction">-sendAction</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sendAction:to:forAllCells:">-sendAction:to:forAllCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sendDoubleAction">-sendDoubleAction</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setAction:">-setAction:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setAllowsEmptySelection:">-setAllowsEmptySelection:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setAutoscroll:">-setAutoscroll:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setAutosizesCells:">-setAutosizesCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setCellBackgroundColor:">-setCellBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setCellClass:">-setCellClass:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setCellSize:">-setCellSize:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setDoubleAction:">-setDoubleAction:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setDrawsBackground:">-setDrawsBackground:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setDrawsCellBackground:">-setDrawsCellBackground:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setErrorAction:">-setErrorAction:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setIntercellSpacing:">-setIntercellSpacing:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setKeyCell:">-setKeyCell:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setMode:">-setMode:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setNextText:">-setNextText:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setPreviousText:">-setPreviousText:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setPrototype:">-setPrototype:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setScrollable:">-setScrollable:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setSelectionByRect:">-setSelectionByRect:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setSelectionFrom:to:anchor:highlight:">-setSelectionFrom:to:anchor:highlight:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setState:atRow:column:">-setState:atRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setTabKeyTraversesCells:">-setTabKeyTraversesCells:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-setValidateSize:">-setValidateSize:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sizeToCells">-sizeToCells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sortUsingFunction:context:">-sortUsingFunction:context:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-sortUsingSelector:">-sortUsingSelector:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-tabKeyTraversesCells">-tabKeyTraversesCells</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-textDidBeginEditing:">-textDidBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-textDidChange:">-textDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-textDidEndEditing:">-textDidEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-textShouldBeginEditing:">-textShouldBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSMatrix.html#method$NSMatrix-textShouldEndEditing:">-textShouldEndEditing:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSMatrix+cellClass">cellClass</a></h3>
     + (Class) <b>cellClass</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix+setCellClass:">setCellClass:</a></h3>
     + (void) <b>setCellClass:</b> (Class)classId;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>acceptsFirstMouse:</a></h3>
-    - (BOOL) <b>acceptsFirstMouse:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-acceptsFirstMouse:">acceptsFirstMouse:</a></h3>
+    - (BOOL) <b>acceptsFirstMouse:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>action</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-action">action</a></h3>
     - (SEL) <b>action</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-addColumn">addColumn</a></h3>
     - (void) <b>addColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addColumnWithCells:</a></h3>
-    - (void) <b>addColumnWithCells:</b> (NSArray*)cellArray;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-addColumnWithCells:">addColumnWithCells:</a></h3>
+    - (void) <b>addColumnWithCells:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)cellArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-addRow">addRow</a></h3>
     - (void) <b>addRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addRowWithCells:</a></h3>
-    - (void) <b>addRowWithCells:</b> (NSArray*)cellArray;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-addRowWithCells:">addRowWithCells:</a></h3>
+    - (void) <b>addRowWithCells:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)cellArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsEmptySelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-allowsEmptySelection">allowsEmptySelection</a></h3>
     - (BOOL) <b>allowsEmptySelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autosizesCells</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-autosizesCells">autosizesCells</a></h3>
     - (BOOL) <b>autosizesCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellAtRow:column:">cellAtRow:column:</a></h3>
     - (id) <b>cellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellBackgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>cellBackgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellBackgroundColor">cellBackgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>cellBackgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellClass</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellClass">cellClass</a></h3>
     - (Class) <b>cellClass</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellFrameAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellFrameAtRow:column:">cellFrameAtRow:column:</a></h3>
     - (NSRect) <b>cellFrameAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellSize</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellSize">cellSize</a></h3>
     - (NSSize) <b>cellSize</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellWithTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cellWithTag:">cellWithTag:</a></h3>
     - (id) <b>cellWithTag:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cells</a></h3>
-    - (NSArray*) <b>cells</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-cells">cells</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>cells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectAllCells</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-deselectAllCells">deselectAllCells</a></h3>
     - (void) <b>deselectAllCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectSelectedCell</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-deselectSelectedCell">deselectSelectedCell</a></h3>
     - (void) <b>deselectSelectedCell</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doubleAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-doubleAction">doubleAction</a></h3>
     - (SEL) <b>doubleAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawCellAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-drawCellAtRow:column:">drawCellAtRow:column:</a></h3>
     - (void) <b>drawCellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsCellBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-drawsCellBackground">drawsCellBackground</a></h3>
     - (BOOL) <b>drawsCellBackground</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>errorAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-errorAction">errorAction</a></h3>
     - (SEL) <b>errorAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getNumberOfRows:columns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-getNumberOfRows:columns:">getNumberOfRows:columns:</a></h3>
     - (void) <b>getNumberOfRows:</b> (int*)rowCount<b> columns:</b> (int*)columnCount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getRow:column:forPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-getRow:column:forPoint:">getRow:column:forPoint:</a></h3>
     - (BOOL) <b>getRow:</b> (int*)row<b> column:</b> (int*)column<b> forPoint:</b> (NSPoint)point;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getRow:column:ofCell:</a></h3>
-    - (BOOL) <b>getRow:</b> (int*)row<b> column:</b> (int*)column<b> ofCell:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-getRow:column:ofCell:">getRow:column:ofCell:</a></h3>
+    - (BOOL) <b>getRow:</b> (int*)row<b> column:</b> (int*)column<b> ofCell:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlightCell:atRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-highlightCell:atRow:column:">highlightCell:atRow:column:</a></h3>
     - (void) <b>highlightCell:</b> (BOOL)flag<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-initWithFrame:">initWithFrame:</a></h3>
     - (id) <b>initWithFrame:</b> (NSRect)frameRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:">initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:</a></h3>
     - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> mode:</b> (int)aMode<b> cellClass:</b> (Class)class<b> numberOfRows:</b> (int)rowsHigh<b> numberOfColumns:</b> (int)colsWide;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</a></h3>
-    - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> mode:</b> (int)aMode<b> prototype:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)prototype<b> numberOfRows:</b> (int)rowsHigh<b> numberOfColumns:</b> (int)colsWide;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-initWithFrame:mode:prototype:numberOfRows:numberOfColumns:">initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</a></h3>
+    - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> mode:</b> (int)aMode<b> prototype:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)prototype<b> numberOfRows:</b> (int)rowsHigh<b> numberOfColumns:</b> (int)colsWide;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-insertColumn:">insertColumn:</a></h3>
     - (void) <b>insertColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertColumn:withCells:</a></h3>
-    - (void) <b>insertColumn:</b> (int)column<b> withCells:</b> (NSArray*)cellArray;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-insertColumn:withCells:">insertColumn:withCells:</a></h3>
+    - (void) <b>insertColumn:</b> (int)column<b> withCells:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)cellArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertRow:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-insertRow:">insertRow:</a></h3>
     - (void) <b>insertRow:</b> (int)row;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertRow:withCells:</a></h3>
-    - (void) <b>insertRow:</b> (int)row<b> withCells:</b> (NSArray*)cellArray;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-insertRow:withCells:">insertRow:withCells:</a></h3>
+    - (void) <b>insertRow:</b> (int)row<b> withCells:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)cellArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>intercellSpacing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-intercellSpacing">intercellSpacing</a></h3>
     - (NSSize) <b>intercellSpacing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isAutoscroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-isAutoscroll">isAutoscroll</a></h3>
     - (BOOL) <b>isAutoscroll</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSelectionByRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-isSelectionByRect">isSelectionByRect</a></h3>
     - (BOOL) <b>isSelectionByRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyCell</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-keyCell">keyCell</a></h3>
     - (id) <b>keyCell</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>makeCellAtRow:column:</a></h3>
-    - (<a href="NSCell.html#class$NSCell">NSCell</a>*) <b>makeCellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-makeCellAtRow:column:">makeCellAtRow:column:</a></h3>
+    - (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*) <b>makeCellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mode</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-mode">mode</a></h3>
     - (NSMatrixMode) <b>mode</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseDown:</a></h3>
-    - (void) <b>mouseDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-mouseDown:">mouseDown:</a></h3>
+    - (void) <b>mouseDown:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseDownFlags</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-mouseDownFlags">mouseDownFlags</a></h3>
     - (int) <b>mouseDownFlags</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nextText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-nextText">nextText</a></h3>
     - (id) <b>nextText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-numberOfColumns">numberOfColumns</a></h3>
     - (int) <b>numberOfColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfRows</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-numberOfRows">numberOfRows</a></h3>
     - (int) <b>numberOfRows</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performKeyEquivalent:</a></h3>
-    - (BOOL) <b>performKeyEquivalent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-performKeyEquivalent:">performKeyEquivalent:</a></h3>
+    - (BOOL) <b>performKeyEquivalent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>previousText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-previousText">previousText</a></h3>
     - (id) <b>previousText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>prototype</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-prototype">prototype</a></h3>
     - (id) <b>prototype</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>putCell:atRow:column:</a></h3>
-    - (void) <b>putCell:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)newCell<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-putCell:atRow:column:">putCell:atRow:column:</a></h3>
+    - (void) <b>putCell:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)newCell<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-removeColumn:">removeColumn:</a></h3>
     - (void) <b>removeColumn:</b> (int)col;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeRow:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-removeRow:">removeRow:</a></h3>
     - (void) <b>removeRow:</b> (int)row;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>renewRows:columns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-renewRows:columns:">renewRows:columns:</a></h3>
     - (void) <b>renewRows:</b> (int)r<b> columns:</b> (int)c;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>resetCursorRects</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-resetCursorRects">resetCursorRects</a></h3>
     - (void) <b>resetCursorRects</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollCellToVisibleAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-scrollCellToVisibleAtRow:column:">scrollCellToVisibleAtRow:column:</a></h3>
     - (void) <b>scrollCellToVisibleAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectAll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectAll:">selectAll:</a></h3>
     - (void) <b>selectAll:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectCellAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectCellAtRow:column:">selectCellAtRow:column:</a></h3>
     - (void) <b>selectCellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectCellWithTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectCellWithTag:">selectCellWithTag:</a></h3>
     - (BOOL) <b>selectCellWithTag:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectText:">selectText:</a></h3>
     - (void) <b>selectText:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectTextAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectTextAtRow:column:">selectTextAtRow:column:</a></h3>
     - (id) <b>selectTextAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedCell</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectedCell">selectedCell</a></h3>
     - (id) <b>selectedCell</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedCells</a></h3>
-    - (NSArray*) <b>selectedCells</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectedCells">selectedCells</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>selectedCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectedColumn">selectedColumn</a></h3>
     - (int) <b>selectedColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-selectedRow">selectedRow</a></h3>
     - (int) <b>selectedRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sendAction">sendAction</a></h3>
     - (BOOL) <b>sendAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendAction:to:forAllCells:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sendAction:to:forAllCells:">sendAction:to:forAllCells:</a></h3>
     - (void) <b>sendAction:</b> (SEL)aSelector<b> to:</b> (id)anObject<b> forAllCells:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendDoubleAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sendDoubleAction">sendDoubleAction</a></h3>
     - (void) <b>sendDoubleAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setAction:">setAction:</a></h3>
     - (void) <b>setAction:</b> (SEL)sel;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsEmptySelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setAllowsEmptySelection:">setAllowsEmptySelection:</a></h3>
     - (void) <b>setAllowsEmptySelection:</b> (BOOL)f;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoscroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setAutoscroll:">setAutoscroll:</a></h3>
     - (void) <b>setAutoscroll:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutosizesCells:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setAutosizesCells:">setAutosizesCells:</a></h3>
     - (void) <b>setAutosizesCells:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)c;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)c;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellBackgroundColor:</a></h3>
-    - (void) <b>setCellBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)c;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setCellBackgroundColor:">setCellBackgroundColor:</a></h3>
+    - (void) <b>setCellBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)c;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setCellClass:">setCellClass:</a></h3>
     - (void) <b>setCellClass:</b> (Class)class;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setCellSize:">setCellSize:</a></h3>
     - (void) <b>setCellSize:</b> (NSSize)size;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDoubleAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setDoubleAction:">setDoubleAction:</a></h3>
     - (void) <b>setDoubleAction:</b> (SEL)sel;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsCellBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setDrawsCellBackground:">setDrawsCellBackground:</a></h3>
     - (void) <b>setDrawsCellBackground:</b> (BOOL)f;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setErrorAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setErrorAction:">setErrorAction:</a></h3>
     - (void) <b>setErrorAction:</b> (SEL)sel;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIntercellSpacing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setIntercellSpacing:">setIntercellSpacing:</a></h3>
     - (void) <b>setIntercellSpacing:</b> (NSSize)size;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setKeyCell:</a></h3>
-    - (void) <b>setKeyCell:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setKeyCell:">setKeyCell:</a></h3>
+    - (void) <b>setKeyCell:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMode:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setMode:">setMode:</a></h3>
     - (void) <b>setMode:</b> (NSMatrixMode)aMode;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNextText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setNextText:">setNextText:</a></h3>
     - (void) <b>setNextText:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPreviousText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setPreviousText:">setPreviousText:</a></h3>
     - (void) <b>setPreviousText:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPrototype:</a></h3>
-    - (void) <b>setPrototype:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setPrototype:">setPrototype:</a></h3>
+    - (void) <b>setPrototype:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setScrollable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setScrollable:">setScrollable:</a></h3>
     - (void) <b>setScrollable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectionByRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setSelectionByRect:">setSelectionByRect:</a></h3>
     - (void) <b>setSelectionByRect:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectionFrom:to:anchor:highlight:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setSelectionFrom:to:anchor:highlight:">setSelectionFrom:to:anchor:highlight:</a></h3>
     - (void) <b>setSelectionFrom:</b> (int)startPos<b> to:</b> (int)endPos<b> anchor:</b> (int)anchorPos<b> highlight:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setState:atRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setState:atRow:column:">setState:atRow:column:</a></h3>
     - (void) <b>setState:</b> (int)value<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTabKeyTraversesCells:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setTabKeyTraversesCells:">setTabKeyTraversesCells:</a></h3>
     - (void) <b>setTabKeyTraversesCells:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setValidateSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-setValidateSize:">setValidateSize:</a></h3>
     - (void) <b>setValidateSize:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sizeToCells</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sizeToCells">sizeToCells</a></h3>
     - (void) <b>sizeToCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sortUsingFunction:context:</a></h3>
-    - (void) <b>sortUsingFunction:</b> (int (*)(id element1,id element2,void*userData))comparator<b> context:</b> (void*)context;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sortUsingFunction:context:">sortUsingFunction:context:</a></h3>
+    - (void) <b>sortUsingFunction:</b> (int(*)(id element1,id element2,void*userData))comparator<b> context:</b> (void*)context;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sortUsingSelector:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-sortUsingSelector:">sortUsingSelector:</a></h3>
     - (void) <b>sortUsingSelector:</b> (SEL)comparator;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tabKeyTraversesCells</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-tabKeyTraversesCells">tabKeyTraversesCells</a></h3>
     - (BOOL) <b>tabKeyTraversesCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidBeginEditing:</a></h3>
-    - (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-textDidBeginEditing:">textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidChange:</a></h3>
-    - (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-textDidChange:">textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidEndEditing:</a></h3>
-    - (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-textDidEndEditing:">textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldBeginEditing:</a></h3>
-    - (BOOL) <b>textShouldBeginEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-textShouldBeginEditing:">textShouldBeginEditing:</a></h3>
+    - (BOOL) <b>textShouldBeginEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldEndEditing:</a></h3>
-    - (BOOL) <b>textShouldEndEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMatrix-textShouldEndEditing:">textShouldEndEditing:</a></h3>
+    - (BOOL) <b>textShouldEndEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

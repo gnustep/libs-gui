@@ -3,7 +3,9 @@
     <title>NSBrowser</title>
   </head>
   <body>
-    <h1>NSBrowser</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSBrowser">NSBrowser</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -28,590 +30,1043 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Control to display and select from hierarchal lists
-        </blockquote>
-    <p>Copyright: (C) 1996, 1997 Free Software Foundation, Inc.</p>
-    <h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996, 1997 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSBrowser class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSBrowser(GNUstepExtensions)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSObject(NSBrowserDelegate)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSBrowser class
-      </h1>
-    <h2><a name="class$NSBrowser">NSBrowser</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSBrowser.h<br />
-    Conform: NSCoding<br />
+      </a></h1>
+    <h2><a name="class$NSBrowser">NSBrowser</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSBrowser.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>cellClass</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser+cellClass">+cellClass</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-acceptsArrowKeys">-acceptsArrowKeys</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-addColumn">-addColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-allowsBranchSelection">-allowsBranchSelection</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-allowsEmptySelection">-allowsEmptySelection</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-allowsMultipleSelection">-allowsMultipleSelection</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-cellPrototype">-cellPrototype</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-columnOfMatrix:">-columnOfMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-displayAllColumns">-displayAllColumns</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-displayColumn:">-displayColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-doClick:">-doClick:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-doDoubleClick:">-doDoubleClick:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-doubleAction">-doubleAction</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-drawTitle:inRect:ofColumn:">-drawTitle:inRect:ofColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-encodeWithCoder:">-encodeWithCoder:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-firstVisibleColumn">-firstVisibleColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-frameOfColumn:">-frameOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-frameOfInsideOfColumn:">-frameOfInsideOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-hasHorizontalScroller">-hasHorizontalScroller</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-initWithCoder:">-initWithCoder:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-isLoaded">-isLoaded</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-isTitled">-isTitled</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-lastColumn">-lastColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-lastVisibleColumn">-lastVisibleColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-loadColumnZero">-loadColumnZero</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-loadedCellAtRow:column:">-loadedCellAtRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-matrixClass">-matrixClass</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-matrixInColumn:">-matrixInColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-maxVisibleColumns">-maxVisibleColumns</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-minColumnWidth">-minColumnWidth</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-numberOfVisibleColumns">-numberOfVisibleColumns</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-path">-path</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-pathSeparator">-pathSeparator</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-pathToColumn:">-pathToColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-reloadColumn:">-reloadColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-reusesColumns">-reusesColumns</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-scrollColumnToVisible:">-scrollColumnToVisible:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-scrollColumnsLeftBy:">-scrollColumnsLeftBy:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-scrollColumnsRightBy:">-scrollColumnsRightBy:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-scrollViaScroller:">-scrollViaScroller:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectAll:">-selectAll:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectRow:inColumn:">-selectRow:inColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectedCell">-selectedCell</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectedCellInColumn:">-selectedCellInColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectedCells">-selectedCells</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectedColumn">-selectedColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-selectedRowInColumn:">-selectedRowInColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-sendAction">-sendAction</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-sendsActionOnArrowKeys">-sendsActionOnArrowKeys</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-separatesColumns">-separatesColumns</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setAcceptsArrowKeys:">-setAcceptsArrowKeys:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setAllowsBranchSelection:">-setAllowsBranchSelection:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setAllowsEmptySelection:">-setAllowsEmptySelection:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setAllowsMultipleSelection:">-setAllowsMultipleSelection:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setCellClass:">-setCellClass:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setCellPrototype:">-setCellPrototype:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setDoubleAction:">-setDoubleAction:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setHasHorizontalScroller:">-setHasHorizontalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setLastColumn:">-setLastColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setMatrixClass:">-setMatrixClass:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setMaxVisibleColumns:">-setMaxVisibleColumns:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setMinColumnWidth:">-setMinColumnWidth:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setPath:">-setPath:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setPathSeparator:">-setPathSeparator:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setReusesColumns:">-setReusesColumns:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setSendsActionOnArrowKeys:">-setSendsActionOnArrowKeys:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setSeparatesColumns:">-setSeparatesColumns:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setTakesTitleFromPreviousColumn:">-setTakesTitleFromPreviousColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setTitle:ofColumn:">-setTitle:ofColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-setTitled:">-setTitled:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-takesTitleFromPreviousColumn">-takesTitleFromPreviousColumn</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-tile">-tile</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-titleFrameOfColumn:">-titleFrameOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-titleHeight">-titleHeight</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-titleOfColumn:">-titleOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-updateScroller">-updateScroller</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser-validateVisibleColumns">-validateVisibleColumns</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSBrowser+cellClass">cellClass</a></h3>
     + (Class) <b>cellClass</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>acceptsArrowKeys</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-acceptsArrowKeys">acceptsArrowKeys</a></h3>
     - (BOOL) <b>acceptsArrowKeys</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-addColumn">addColumn</a></h3>
     - (void) <b>addColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsBranchSelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-allowsBranchSelection">allowsBranchSelection</a></h3>
     - (BOOL) <b>allowsBranchSelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsEmptySelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-allowsEmptySelection">allowsEmptySelection</a></h3>
     - (BOOL) <b>allowsEmptySelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsMultipleSelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-allowsMultipleSelection">allowsMultipleSelection</a></h3>
     - (BOOL) <b>allowsMultipleSelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cellPrototype</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-cellPrototype">cellPrototype</a></h3>
     - (id) <b>cellPrototype</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>columnOfMatrix:</a></h3>
-    - (int) <b>columnOfMatrix:</b> (<a href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*)matrix;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-columnOfMatrix:">columnOfMatrix:</a></h3>
+    - (int) <b>columnOfMatrix:</b> (<a rel="gsdoc" href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*)matrix;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayAllColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-displayAllColumns">displayAllColumns</a></h3>
     - (void) <b>displayAllColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-displayColumn:">displayColumn:</a></h3>
     - (void) <b>displayColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doClick:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-doClick:">doClick:</a></h3>
     - (void) <b>doClick:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doDoubleClick:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-doDoubleClick:">doDoubleClick:</a></h3>
     - (void) <b>doDoubleClick:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doubleAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-doubleAction">doubleAction</a></h3>
     - (SEL) <b>doubleAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawTitle:inRect:ofColumn:</a></h3>
-    - (void) <b>drawTitle:</b> (NSString*)title<b> inRect:</b> (NSRect)aRect<b> ofColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-drawTitle:inRect:ofColumn:">drawTitle:inRect:ofColumn:</a></h3>
+    - (void) <b>drawTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title<b> inRect:</b> (NSRect)aRect<b> ofColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>encodeWithCoder:</a></h3>
-    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-encodeWithCoder:">encodeWithCoder:</a></h3>
+    - (void) <b>encodeWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aCoder;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>firstVisibleColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-firstVisibleColumn">firstVisibleColumn</a></h3>
     - (int) <b>firstVisibleColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frameOfColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-frameOfColumn:">frameOfColumn:</a></h3>
     - (NSRect) <b>frameOfColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frameOfInsideOfColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-frameOfInsideOfColumn:">frameOfInsideOfColumn:</a></h3>
     - (NSRect) <b>frameOfInsideOfColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasHorizontalScroller</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-hasHorizontalScroller">hasHorizontalScroller</a></h3>
     - (BOOL) <b>hasHorizontalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithCoder:</a></h3>
-    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-initWithCoder:">initWithCoder:</a></h3>
+    - (id) <b>initWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aDecoder;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isLoaded</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-isLoaded">isLoaded</a></h3>
     - (BOOL) <b>isLoaded</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isTitled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-isTitled">isTitled</a></h3>
     - (BOOL) <b>isTitled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lastColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-lastColumn">lastColumn</a></h3>
     - (int) <b>lastColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lastVisibleColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-lastVisibleColumn">lastVisibleColumn</a></h3>
     - (int) <b>lastVisibleColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>loadColumnZero</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-loadColumnZero">loadColumnZero</a></h3>
     - (void) <b>loadColumnZero</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>loadedCellAtRow:column:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-loadedCellAtRow:column:">loadedCellAtRow:column:</a></h3>
     - (id) <b>loadedCellAtRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>matrixClass</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-matrixClass">matrixClass</a></h3>
     - (Class) <b>matrixClass</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>matrixInColumn:</a></h3>
-    - (<a href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*) <b>matrixInColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-matrixInColumn:">matrixInColumn:</a></h3>
+    - (<a rel="gsdoc" href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*) <b>matrixInColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>maxVisibleColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-maxVisibleColumns">maxVisibleColumns</a></h3>
     - (int) <b>maxVisibleColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>minColumnWidth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-minColumnWidth">minColumnWidth</a></h3>
     - (int) <b>minColumnWidth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfVisibleColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-numberOfVisibleColumns">numberOfVisibleColumns</a></h3>
     - (int) <b>numberOfVisibleColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>path</a></h3>
-    - (NSString*) <b>path</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-path">path</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>path</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pathSeparator</a></h3>
-    - (NSString*) <b>pathSeparator</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-pathSeparator">pathSeparator</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>pathSeparator</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pathToColumn:</a></h3>
-    - (NSString*) <b>pathToColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-pathToColumn:">pathToColumn:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>pathToColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reloadColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-reloadColumn:">reloadColumn:</a></h3>
     - (void) <b>reloadColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reusesColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-reusesColumns">reusesColumns</a></h3>
     - (BOOL) <b>reusesColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollColumnToVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-scrollColumnToVisible:">scrollColumnToVisible:</a></h3>
     - (void) <b>scrollColumnToVisible:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollColumnsLeftBy:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-scrollColumnsLeftBy:">scrollColumnsLeftBy:</a></h3>
     - (void) <b>scrollColumnsLeftBy:</b> (int)shiftAmount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollColumnsRightBy:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-scrollColumnsRightBy:">scrollColumnsRightBy:</a></h3>
     - (void) <b>scrollColumnsRightBy:</b> (int)shiftAmount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollViaScroller:</a></h3>
-    - (void) <b>scrollViaScroller:</b> (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*)sender;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-scrollViaScroller:">scrollViaScroller:</a></h3>
+    - (void) <b>scrollViaScroller:</b> (<a rel="gsdoc" href="NSScroller.html#class$NSScroller">NSScroller</a>*)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectAll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectAll:">selectAll:</a></h3>
     - (void) <b>selectAll:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectRow:inColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectRow:inColumn:">selectRow:inColumn:</a></h3>
     - (void) <b>selectRow:</b> (int)row<b> inColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedCell</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectedCell">selectedCell</a></h3>
     - (id) <b>selectedCell</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedCellInColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectedCellInColumn:">selectedCellInColumn:</a></h3>
     - (id) <b>selectedCellInColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedCells</a></h3>
-    - (NSArray*) <b>selectedCells</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectedCells">selectedCells</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>selectedCells</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectedColumn">selectedColumn</a></h3>
     - (int) <b>selectedColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedRowInColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-selectedRowInColumn:">selectedRowInColumn:</a></h3>
     - (int) <b>selectedRowInColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-sendAction">sendAction</a></h3>
     - (BOOL) <b>sendAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendsActionOnArrowKeys</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-sendsActionOnArrowKeys">sendsActionOnArrowKeys</a></h3>
     - (BOOL) <b>sendsActionOnArrowKeys</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>separatesColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-separatesColumns">separatesColumns</a></h3>
     - (BOOL) <b>separatesColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAcceptsArrowKeys:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setAcceptsArrowKeys:">setAcceptsArrowKeys:</a></h3>
     - (void) <b>setAcceptsArrowKeys:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsBranchSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setAllowsBranchSelection:">setAllowsBranchSelection:</a></h3>
     - (void) <b>setAllowsBranchSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsEmptySelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setAllowsEmptySelection:">setAllowsEmptySelection:</a></h3>
     - (void) <b>setAllowsEmptySelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsMultipleSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setAllowsMultipleSelection:">setAllowsMultipleSelection:</a></h3>
     - (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setCellClass:">setCellClass:</a></h3>
     - (void) <b>setCellClass:</b> (Class)classId;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCellPrototype:</a></h3>
-    - (void) <b>setCellPrototype:</b> (<a href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setCellPrototype:">setCellPrototype:</a></h3>
+    - (void) <b>setCellPrototype:</b> (<a rel="gsdoc" href="NSCell.html#class$NSCell">NSCell</a>*)aCell;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDoubleAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setDoubleAction:">setDoubleAction:</a></h3>
     - (void) <b>setDoubleAction:</b> (SEL)aSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasHorizontalScroller:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setHasHorizontalScroller:">setHasHorizontalScroller:</a></h3>
     - (void) <b>setHasHorizontalScroller:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setLastColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setLastColumn:">setLastColumn:</a></h3>
     - (void) <b>setLastColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMatrixClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setMatrixClass:">setMatrixClass:</a></h3>
     - (void) <b>setMatrixClass:</b> (Class)classId;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMaxVisibleColumns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setMaxVisibleColumns:">setMaxVisibleColumns:</a></h3>
     - (void) <b>setMaxVisibleColumns:</b> (int)columnCount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMinColumnWidth:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setMinColumnWidth:">setMinColumnWidth:</a></h3>
     - (void) <b>setMinColumnWidth:</b> (int)columnWidth;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPath:</a></h3>
-    - (BOOL) <b>setPath:</b> (NSString*)path;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setPath:">setPath:</a></h3>
+    - (BOOL) <b>setPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPathSeparator:</a></h3>
-    - (void) <b>setPathSeparator:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setPathSeparator:">setPathSeparator:</a></h3>
+    - (void) <b>setPathSeparator:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setReusesColumns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setReusesColumns:">setReusesColumns:</a></h3>
     - (void) <b>setReusesColumns:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSendsActionOnArrowKeys:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setSendsActionOnArrowKeys:">setSendsActionOnArrowKeys:</a></h3>
     - (void) <b>setSendsActionOnArrowKeys:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSeparatesColumns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setSeparatesColumns:">setSeparatesColumns:</a></h3>
     - (void) <b>setSeparatesColumns:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTakesTitleFromPreviousColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setTakesTitleFromPreviousColumn:">setTakesTitleFromPreviousColumn:</a></h3>
     - (void) <b>setTakesTitleFromPreviousColumn:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitle:ofColumn:</a></h3>
-    - (void) <b>setTitle:</b> (NSString*)aString<b> ofColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setTitle:ofColumn:">setTitle:ofColumn:</a></h3>
+    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> ofColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-setTitled:">setTitled:</a></h3>
     - (void) <b>setTitled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>takesTitleFromPreviousColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-takesTitleFromPreviousColumn">takesTitleFromPreviousColumn</a></h3>
     - (BOOL) <b>takesTitleFromPreviousColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tile</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-tile">tile</a></h3>
     - (void) <b>tile</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleFrameOfColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-titleFrameOfColumn:">titleFrameOfColumn:</a></h3>
     - (NSRect) <b>titleFrameOfColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleHeight</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-titleHeight">titleHeight</a></h3>
     - (float) <b>titleHeight</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleOfColumn:</a></h3>
-    - (NSString*) <b>titleOfColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-titleOfColumn:">titleOfColumn:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>titleOfColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateScroller</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-updateScroller">updateScroller</a></h3>
     - (void) <b>updateScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>validateVisibleColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser-validateVisibleColumns">validateVisibleColumns</a></h3>
     - (void) <b>validateVisibleColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSBrowser(GNUstepExtensions)
         category
-      </h1>
-    <h2><a href="#class$NSBrowser">NSBrowser</a>(<a name="category$NSBrowser(GNUstepExtensions)">GNUstepExtensions</a>)</h2>
-    Declared: AppKit/NSBrowser.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>(<a name="category$NSBrowser(GNUstepExtensions)">GNUstepExtensions</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSBrowser.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>acceptsAlphaNumericalKeys</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser(GNUstepExtensions)-acceptsAlphaNumericalKeys">-acceptsAlphaNumericalKeys</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser(GNUstepExtensions)-sendsActionOnAlphaNumericalKeys">-sendsActionOnAlphaNumericalKeys</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser(GNUstepExtensions)-setAcceptsAlphaNumericalKeys:">-setAcceptsAlphaNumericalKeys:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSBrowser(GNUstepExtensions)-setSendsActionOnAlphaNumericalKeys:">-setSendsActionOnAlphaNumericalKeys:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSBrowser(GNUstepExtensions)-acceptsAlphaNumericalKeys">acceptsAlphaNumericalKeys</a></h3>
     - (BOOL) <b>acceptsAlphaNumericalKeys</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sendsActionOnAlphaNumericalKeys</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser(GNUstepExtensions)-sendsActionOnAlphaNumericalKeys">sendsActionOnAlphaNumericalKeys</a></h3>
     - (BOOL) <b>sendsActionOnAlphaNumericalKeys</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAcceptsAlphaNumericalKeys:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser(GNUstepExtensions)-setAcceptsAlphaNumericalKeys:">setAcceptsAlphaNumericalKeys:</a></h3>
     - (void) <b>setAcceptsAlphaNumericalKeys:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSendsActionOnAlphaNumericalKeys:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSBrowser(GNUstepExtensions)-setSendsActionOnAlphaNumericalKeys:">setSendsActionOnAlphaNumericalKeys:</a></h3>
     - (void) <b>setSendsActionOnAlphaNumericalKeys:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSObject(NSBrowserDelegate)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSBrowserDelegate)">NSBrowserDelegate</a>)</h2>
-    Declared: AppKit/NSBrowser.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSBrowserDelegate)">NSBrowserDelegate</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSBrowser.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>browser:createRowsForColumn:inMatrix:</a></h3>
-    - (void) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> createRowsForColumn:</b> (int)column<b> inMatrix:</b> (<a href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*)matrix;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:createRowsForColumn:inMatrix:">-browser:createRowsForColumn:inMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:isColumnValid:">-browser:isColumnValid:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:numberOfRowsInColumn:">-browser:numberOfRowsInColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:selectCellWithString:inColumn:">-browser:selectCellWithString:inColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:selectRow:inColumn:">-browser:selectRow:inColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:titleOfColumn:">-browser:titleOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browser:willDisplayCell:atRow:column:">-browser:willDisplayCell:atRow:column:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browserDidScroll:">-browserDidScroll:</a></li>
+      <li><a rel="gsdoc" href="NSBrowser.html#method$NSObject(NSBrowserDelegate)-browserWillScroll:">-browserWillScroll:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:createRowsForColumn:inMatrix:">browser:createRowsForColumn:inMatrix:</a></h3>
+    - (void) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> createRowsForColumn:</b> (int)column<b> inMatrix:</b> (<a rel="gsdoc" href="NSMatrix.html#class$NSMatrix">NSMatrix</a>*)matrix;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:isColumnValid:</a></h3>
-    - (BOOL) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> isColumnValid:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:isColumnValid:">browser:isColumnValid:</a></h3>
+    - (BOOL) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> isColumnValid:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:numberOfRowsInColumn:</a></h3>
-    - (int) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> numberOfRowsInColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:numberOfRowsInColumn:">browser:numberOfRowsInColumn:</a></h3>
+    - (int) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> numberOfRowsInColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:selectCellWithString:inColumn:</a></h3>
-    - (BOOL) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> selectCellWithString:</b> (NSString*)title<b> inColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:selectCellWithString:inColumn:">browser:selectCellWithString:inColumn:</a></h3>
+    - (BOOL) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> selectCellWithString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title<b> inColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:selectRow:inColumn:</a></h3>
-    - (BOOL) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> selectRow:</b> (int)row<b> inColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:selectRow:inColumn:">browser:selectRow:inColumn:</a></h3>
+    - (BOOL) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> selectRow:</b> (int)row<b> inColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:titleOfColumn:</a></h3>
-    - (NSString*) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> titleOfColumn:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:titleOfColumn:">browser:titleOfColumn:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> titleOfColumn:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browser:willDisplayCell:atRow:column:</a></h3>
-    - (void) <b>browser:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender<b> willDisplayCell:</b> (id)cell<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browser:willDisplayCell:atRow:column:">browser:willDisplayCell:atRow:column:</a></h3>
+    - (void) <b>browser:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender<b> willDisplayCell:</b> (id)cell<b> atRow:</b> (int)row<b> column:</b> (int)column;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browserDidScroll:</a></h3>
-    - (void) <b>browserDidScroll:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browserDidScroll:">browserDidScroll:</a></h3>
+    - (void) <b>browserDidScroll:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>browserWillScroll:</a></h3>
-    - (void) <b>browserWillScroll:</b> (<a href="#class$NSBrowser">NSBrowser</a>*)sender;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSBrowserDelegate)-browserWillScroll:">browserWillScroll:</a></h3>
+    - (void) <b>browserWillScroll:</b> (<a rel="gsdoc" href="#class$NSBrowser">NSBrowser</a>*)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

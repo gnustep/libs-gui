@@ -3,7 +3,9 @@
     <title>NSLayoutManager</title>
   </head>
   <body>
-    <h1>NSLayoutManager</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSLayoutManager">NSLayoutManager</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Jonathan Gapen(<a href="mailto:jagapen@smithlab.chem.wisc.edu"><code>
@@ -18,527 +20,935 @@
       </dd>
     </dl>
     <blockquote>
-The text layout manager class    </blockquote>
-    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
-    <h1>
+      The text layout manager class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1999 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSLayoutManager class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSLayoutManager(NSTextViewSupport)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSObject(NSLayoutManagerDelegate)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSLayoutManager class
-      </h1>
-    <h2><a name="class$NSLayoutManager">NSLayoutManager</a> : NSObject</h2>
-    Declared: AppKit/NSLayoutManager.h<br />
+      </a></h1>
+    <h2><a name="class$NSLayoutManager">NSLayoutManager</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSLayoutManager.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>addTextContainer:</a></h3>
-    - (void) <b>addTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)obj;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-addTextContainer:">-addTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-backgroundLayoutEnabled">-backgroundLayoutEnabled</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-boundingRectForGlyphRange:inTextContainer:">-boundingRectForGlyphRange:inTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-characterIndexForGlyphAtIndex:">-characterIndexForGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-characterRangeForGlyphRange:actualGlyphRange:">-characterRangeForGlyphRange:actualGlyphRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-deleteGlyphsInRange:">-deleteGlyphsInRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-drawsOutsideLineFragmentForGlyphAtIndex:">-drawsOutsideLineFragmentForGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-extraLineFragmentRect">-extraLineFragmentRect</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-extraLineFragmentTextContainer">-extraLineFragmentTextContainer</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-extraLineFragmentUsedRect">-extraLineFragmentUsedRect</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-firstUnlaidCharacterIndex">-firstUnlaidCharacterIndex</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-firstUnlaidGlyphIndex">-firstUnlaidGlyphIndex</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-getFirstUnlaidCharacterIndex:glyphIndex:">-getFirstUnlaidCharacterIndex:glyphIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-getGlyphs:range:">-getGlyphs:range:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphAtIndex:">-glyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphAtIndex:isValidIndex:">-glyphAtIndex:isValidIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphIndexForPoint:inTextContainer:">-glyphIndexForPoint:inTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:">-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphRangeForBoundingRect:inTextContainer:">-glyphRangeForBoundingRect:inTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:">-glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphRangeForCharacterRange:actualCharacterRange:">-glyphRangeForCharacterRange:actualCharacterRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-glyphRangeForTextContainer:">-glyphRangeForTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-init">-init</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-insertGlyph:atGlyphIndex:characterIndex:">-insertGlyph:atGlyphIndex:characterIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-insertTextContainer:atIndex:">-insertTextContainer:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-intAttribute:forGlyphAtIndex:">-intAttribute:forGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-invalidateDisplayForCharacterRange:">-invalidateDisplayForCharacterRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-invalidateDisplayForGlyphRange:">-invalidateDisplayForGlyphRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:">-invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:">-invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-lineFragmentRectForGlyphAtIndex:effectiveRange:">-lineFragmentRectForGlyphAtIndex:effectiveRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:">-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-locationForGlyphAtIndex:">-locationForGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-notShownAttributeForGlyphAtIndex:">-notShownAttributeForGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-numberOfGlyphs">-numberOfGlyphs</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-rangeOfNominallySpacedGlyphsContainingIndex:">-rangeOfNominallySpacedGlyphsContainingIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:">-rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:">-rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-removeTextContainerAtIndex:">-removeTextContainerAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-replaceGlyphAtIndex:withGlyph:">-replaceGlyphAtIndex:withGlyph:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-replaceTextStorage:">-replaceTextStorage:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setAttachmentSize:forGlyphRange:">-setAttachmentSize:forGlyphRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setBackgroundLayoutEnabled:">-setBackgroundLayoutEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setCharacterIndex:forGlyphAtIndex:">-setCharacterIndex:forGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setDrawsOutsideLineFragment:forGlyphAtIndex:">-setDrawsOutsideLineFragment:forGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setExtraLineFragmentRect:usedRect:textContainer:">-setExtraLineFragmentRect:usedRect:textContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setIntAttribute:value:forGlyphAtIndex:">-setIntAttribute:value:forGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setLineFragmentRect:forGlyphRange:usedRect:">-setLineFragmentRect:forGlyphRange:usedRect:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setLocation:forStartOfGlyphRange:">-setLocation:forStartOfGlyphRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setNotShownAttribute:forGlyphAtIndex:">-setNotShownAttribute:forGlyphAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setShowsControlCharacters:">-setShowsControlCharacters:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setShowsInvisibleCharacters:">-setShowsInvisibleCharacters:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setTextContainer:forGlyphRange:">-setTextContainer:forGlyphRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setTextStorage:">-setTextStorage:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-setUsesScreenFonts:">-setUsesScreenFonts:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-showsControlCharacters">-showsControlCharacters</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-showsInvisibleCharacters">-showsInvisibleCharacters</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-substituteFontForFont:">-substituteFontForFont:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textContainerChangedGeometry:">-textContainerChangedGeometry:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textContainerChangedTextView:">-textContainerChangedTextView:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textContainerForGlyphAtIndex:effectiveRange:">-textContainerForGlyphAtIndex:effectiveRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textContainers">-textContainers</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textStorage">-textStorage</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-textStorage:edited:range:changeInLength:invalidatedRange:">-textStorage:edited:range:changeInLength:invalidatedRange:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-usedRectForTextContainer:">-usedRectForTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager-usesScreenFonts">-usesScreenFonts</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSLayoutManager-addTextContainer:">addTextContainer:</a></h3>
+    - (void) <b>addTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)obj;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundLayoutEnabled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-backgroundLayoutEnabled">backgroundLayoutEnabled</a></h3>
     - (BOOL) <b>backgroundLayoutEnabled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>boundingRectForGlyphRange:inTextContainer:</a></h3>
-    - (NSRect) <b>boundingRectForGlyphRange:</b> (NSRange)glyphRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-boundingRectForGlyphRange:inTextContainer:">boundingRectForGlyphRange:inTextContainer:</a></h3>
+    - (NSRect) <b>boundingRectForGlyphRange:</b> (NSRange)glyphRange<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>characterIndexForGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-characterIndexForGlyphAtIndex:">characterIndexForGlyphAtIndex:</a></h3>
     - (unsigned) <b>characterIndexForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>characterRangeForGlyphRange:actualGlyphRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-characterRangeForGlyphRange:actualGlyphRange:">characterRangeForGlyphRange:actualGlyphRange:</a></h3>
     - (NSRange) <b>characterRangeForGlyphRange:</b> (NSRange)glyphRange<b> actualGlyphRange:</b> (NSRange*)actualGlyphRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deleteGlyphsInRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-deleteGlyphsInRange:">deleteGlyphsInRange:</a></h3>
     - (void) <b>deleteGlyphsInRange:</b> (NSRange)aRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsOutsideLineFragmentForGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-drawsOutsideLineFragmentForGlyphAtIndex:">drawsOutsideLineFragmentForGlyphAtIndex:</a></h3>
     - (BOOL) <b>drawsOutsideLineFragmentForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>extraLineFragmentRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-extraLineFragmentRect">extraLineFragmentRect</a></h3>
     - (NSRect) <b>extraLineFragmentRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>extraLineFragmentTextContainer</a></h3>
-    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>extraLineFragmentTextContainer</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-extraLineFragmentTextContainer">extraLineFragmentTextContainer</a></h3>
+    - (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>extraLineFragmentTextContainer</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>extraLineFragmentUsedRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-extraLineFragmentUsedRect">extraLineFragmentUsedRect</a></h3>
     - (NSRect) <b>extraLineFragmentUsedRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>firstUnlaidCharacterIndex</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-firstUnlaidCharacterIndex">firstUnlaidCharacterIndex</a></h3>
     - (unsigned) <b>firstUnlaidCharacterIndex</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>firstUnlaidGlyphIndex</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-firstUnlaidGlyphIndex">firstUnlaidGlyphIndex</a></h3>
     - (unsigned) <b>firstUnlaidGlyphIndex</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getFirstUnlaidCharacterIndex:glyphIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-getFirstUnlaidCharacterIndex:glyphIndex:">getFirstUnlaidCharacterIndex:glyphIndex:</a></h3>
     - (void) <b>getFirstUnlaidCharacterIndex:</b> (unsigned*)charIndex<b> glyphIndex:</b> (unsigned*)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getGlyphs:range:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-getGlyphs:range:">getGlyphs:range:</a></h3>
     - (unsigned) <b>getGlyphs:</b> (NSGlyph*)glyphArray<b> range:</b> (NSRange)glyphRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphAtIndex:">glyphAtIndex:</a></h3>
     - (NSGlyph) <b>glyphAtIndex:</b> (unsigned)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphAtIndex:isValidIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphAtIndex:isValidIndex:">glyphAtIndex:isValidIndex:</a></h3>
     - (NSGlyph) <b>glyphAtIndex:</b> (unsigned)index<b> isValidIndex:</b> (BOOL*)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphIndexForPoint:inTextContainer:</a></h3>
-    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphIndexForPoint:inTextContainer:">glyphIndexForPoint:inTextContainer:</a></h3>
+    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a></h3>
-    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> fractionOfDistanceThroughGlyph:</b> (float*)partialFraction;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:">glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a></h3>
+    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> fractionOfDistanceThroughGlyph:</b> (float*)partialFraction;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphRangeForBoundingRect:inTextContainer:</a></h3>
-    - (NSRange) <b>glyphRangeForBoundingRect:</b> (NSRect)aRect<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphRangeForBoundingRect:inTextContainer:">glyphRangeForBoundingRect:inTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForBoundingRect:</b> (NSRect)aRect<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a></h3>
-    - (NSRange) <b>glyphRangeForBoundingRectWithoutAdditionalLayout:</b> (NSRect)bounds<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:">glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForBoundingRectWithoutAdditionalLayout:</b> (NSRect)bounds<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphRangeForCharacterRange:actualCharacterRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphRangeForCharacterRange:actualCharacterRange:">glyphRangeForCharacterRange:actualCharacterRange:</a></h3>
     - (NSRange) <b>glyphRangeForCharacterRange:</b> (NSRange)charRange<b> actualCharacterRange:</b> (NSRange*)actualCharRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>glyphRangeForTextContainer:</a></h3>
-    - (NSRange) <b>glyphRangeForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-glyphRangeForTextContainer:">glyphRangeForTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>init</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-init">init</a></h3>
     - (id) <b>init</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertGlyph:atGlyphIndex:characterIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-insertGlyph:atGlyphIndex:characterIndex:">insertGlyph:atGlyphIndex:characterIndex:</a></h3>
     - (void) <b>insertGlyph:</b> (NSGlyph)aGlyph<b> atGlyphIndex:</b> (unsigned)glyphIndex<b> characterIndex:</b> (unsigned)charIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertTextContainer:atIndex:</a></h3>
-    - (void) <b>insertTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> atIndex:</b> (unsigned)index;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-insertTextContainer:atIndex:">insertTextContainer:atIndex:</a></h3>
+    - (void) <b>insertTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> atIndex:</b> (unsigned)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>intAttribute:forGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-intAttribute:forGlyphAtIndex:">intAttribute:forGlyphAtIndex:</a></h3>
     - (int) <b>intAttribute:</b> (int)attribute<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateDisplayForCharacterRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-invalidateDisplayForCharacterRange:">invalidateDisplayForCharacterRange:</a></h3>
     - (void) <b>invalidateDisplayForCharacterRange:</b> (NSRange)aRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateDisplayForGlyphRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-invalidateDisplayForGlyphRange:">invalidateDisplayForGlyphRange:</a></h3>
     - (void) <b>invalidateDisplayForGlyphRange:</b> (NSRange)aRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:">invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a></h3>
     - (void) <b>invalidateGlyphsForCharacterRange:</b> (NSRange)aRange<b> changeInLength:</b> (int)lengthChange<b> actualCharacterRange:</b> (NSRange*)actualRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:">invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a></h3>
     - (void) <b>invalidateLayoutForCharacterRange:</b> (NSRange)aRange<b> isSoft:</b> (BOOL)flag<b> actualCharacterRange:</b> (NSRange*)actualRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lineFragmentRectForGlyphAtIndex:effectiveRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-lineFragmentRectForGlyphAtIndex:effectiveRange:">lineFragmentRectForGlyphAtIndex:effectiveRange:</a></h3>
     - (NSRect) <b>lineFragmentRectForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)lineFragmentRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:">lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a></h3>
     - (NSRect) <b>lineFragmentUsedRectForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)lineFragmentRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>locationForGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-locationForGlyphAtIndex:">locationForGlyphAtIndex:</a></h3>
     - (NSPoint) <b>locationForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>notShownAttributeForGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-notShownAttributeForGlyphAtIndex:">notShownAttributeForGlyphAtIndex:</a></h3>
     - (BOOL) <b>notShownAttributeForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfGlyphs</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-numberOfGlyphs">numberOfGlyphs</a></h3>
     - (unsigned) <b>numberOfGlyphs</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rangeOfNominallySpacedGlyphsContainingIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-rangeOfNominallySpacedGlyphsContainingIndex:">rangeOfNominallySpacedGlyphsContainingIndex:</a></h3>
     - (NSRange) <b>rangeOfNominallySpacedGlyphsContainingIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:</a></h3>
-    - (NSRect*) <b>rectArrayForCharacterRange:</b> (NSRange)charRange<b> withinSelectedCharacterRange:</b> (NSRange)selChareRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:">rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:</a></h3>
+    - (NSRect*) <b>rectArrayForCharacterRange:</b> (NSRange)charRange<b> withinSelectedCharacterRange:</b> (NSRange)selChareRange<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:</a></h3>
-    - (NSRect*) <b>rectArrayForGlyphRange:</b> (NSRange)glyphRange<b> withinSelectedGlyphRange:</b> (NSRange)selectedGlyphRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:">rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:</a></h3>
+    - (NSRect*) <b>rectArrayForGlyphRange:</b> (NSRange)glyphRange<b> withinSelectedGlyphRange:</b> (NSRange)selectedGlyphRange<b> inTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeTextContainerAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-removeTextContainerAtIndex:">removeTextContainerAtIndex:</a></h3>
     - (void) <b>removeTextContainerAtIndex:</b> (unsigned)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>replaceGlyphAtIndex:withGlyph:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-replaceGlyphAtIndex:withGlyph:">replaceGlyphAtIndex:withGlyph:</a></h3>
     - (void) <b>replaceGlyphAtIndex:</b> (unsigned)index<b> withGlyph:</b> (NSGlyph)newGlyph;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>replaceTextStorage:</a></h3>
-    - (void) <b>replaceTextStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)newTextStorage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-replaceTextStorage:">replaceTextStorage:</a></h3>
+    - (void) <b>replaceTextStorage:</b> (<a rel="gsdoc" href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)newTextStorage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAttachmentSize:forGlyphRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setAttachmentSize:forGlyphRange:">setAttachmentSize:forGlyphRange:</a></h3>
     - (void) <b>setAttachmentSize:</b> (NSSize)attachmentSize<b> forGlyphRange:</b> (NSRange)glyphRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundLayoutEnabled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setBackgroundLayoutEnabled:">setBackgroundLayoutEnabled:</a></h3>
     - (void) <b>setBackgroundLayoutEnabled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCharacterIndex:forGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setCharacterIndex:forGlyphAtIndex:">setCharacterIndex:forGlyphAtIndex:</a></h3>
     - (void) <b>setCharacterIndex:</b> (unsigned)charIndex<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)aDelegate;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsOutsideLineFragment:forGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setDrawsOutsideLineFragment:forGlyphAtIndex:">setDrawsOutsideLineFragment:forGlyphAtIndex:</a></h3>
     - (void) <b>setDrawsOutsideLineFragment:</b> (BOOL)flag<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setExtraLineFragmentRect:usedRect:textContainer:</a></h3>
-    - (void) <b>setExtraLineFragmentRect:</b> (NSRect)aRect<b> usedRect:</b> (NSRect)usedRect<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setExtraLineFragmentRect:usedRect:textContainer:">setExtraLineFragmentRect:usedRect:textContainer:</a></h3>
+    - (void) <b>setExtraLineFragmentRect:</b> (NSRect)aRect<b> usedRect:</b> (NSRect)usedRect<b> textContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIntAttribute:value:forGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setIntAttribute:value:forGlyphAtIndex:">setIntAttribute:value:forGlyphAtIndex:</a></h3>
     - (void) <b>setIntAttribute:</b> (int)attribute<b> value:</b> (int)anInt<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setLineFragmentRect:forGlyphRange:usedRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setLineFragmentRect:forGlyphRange:usedRect:">setLineFragmentRect:forGlyphRange:usedRect:</a></h3>
     - (void) <b>setLineFragmentRect:</b> (NSRect)fragmentRect<b> forGlyphRange:</b> (NSRange)glyphRange<b> usedRect:</b> (NSRect)usedRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setLocation:forStartOfGlyphRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setLocation:forStartOfGlyphRange:">setLocation:forStartOfGlyphRange:</a></h3>
     - (void) <b>setLocation:</b> (NSPoint)aPoint<b> forStartOfGlyphRange:</b> (NSRange)glyphRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNotShownAttribute:forGlyphAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setNotShownAttribute:forGlyphAtIndex:">setNotShownAttribute:forGlyphAtIndex:</a></h3>
     - (void) <b>setNotShownAttribute:</b> (BOOL)flag<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setShowsControlCharacters:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setShowsControlCharacters:">setShowsControlCharacters:</a></h3>
     - (void) <b>setShowsControlCharacters:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setShowsInvisibleCharacters:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setShowsInvisibleCharacters:">setShowsInvisibleCharacters:</a></h3>
     - (void) <b>setShowsInvisibleCharacters:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTextContainer:forGlyphRange:</a></h3>
-    - (void) <b>setTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> forGlyphRange:</b> (NSRange)glyphRange;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setTextContainer:forGlyphRange:">setTextContainer:forGlyphRange:</a></h3>
+    - (void) <b>setTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> forGlyphRange:</b> (NSRange)glyphRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTextStorage:</a></h3>
-    - (void) <b>setTextStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setTextStorage:">setTextStorage:</a></h3>
+    - (void) <b>setTextStorage:</b> (<a rel="gsdoc" href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUsesScreenFonts:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-setUsesScreenFonts:">setUsesScreenFonts:</a></h3>
     - (void) <b>setUsesScreenFonts:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>showsControlCharacters</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-showsControlCharacters">showsControlCharacters</a></h3>
     - (BOOL) <b>showsControlCharacters</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>showsInvisibleCharacters</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-showsInvisibleCharacters">showsInvisibleCharacters</a></h3>
     - (BOOL) <b>showsInvisibleCharacters</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>substituteFontForFont:</a></h3>
-    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>substituteFontForFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)originalFont;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-substituteFontForFont:">substituteFontForFont:</a></h3>
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>substituteFontForFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)originalFont;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainerChangedGeometry:</a></h3>
-    - (void) <b>textContainerChangedGeometry:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textContainerChangedGeometry:">textContainerChangedGeometry:</a></h3>
+    - (void) <b>textContainerChangedGeometry:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainerChangedTextView:</a></h3>
-    - (void) <b>textContainerChangedTextView:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textContainerChangedTextView:">textContainerChangedTextView:</a></h3>
+    - (void) <b>textContainerChangedTextView:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainerForGlyphAtIndex:effectiveRange:</a></h3>
-    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainerForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)effectiveRange;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textContainerForGlyphAtIndex:effectiveRange:">textContainerForGlyphAtIndex:effectiveRange:</a></h3>
+    - (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainerForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)effectiveRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainers</a></h3>
-    - (NSArray*) <b>textContainers</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textContainers">textContainers</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>textContainers</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textStorage</a></h3>
-    - (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textStorage">textStorage</a></h3>
+    - (<a rel="gsdoc" href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textStorage:edited:range:changeInLength:invalidatedRange:</a></h3>
-    - (void) <b>textStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage<b> edited:</b> (unsigned)mask<b> range:</b> (NSRange)range<b> changeInLength:</b> (int)lengthChange<b> invalidatedRange:</b> (NSRange)invalidatedRange;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-textStorage:edited:range:changeInLength:invalidatedRange:">textStorage:edited:range:changeInLength:invalidatedRange:</a></h3>
+    - (void) <b>textStorage:</b> (<a rel="gsdoc" href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage<b> edited:</b> (unsigned)mask<b> range:</b> (NSRange)range<b> changeInLength:</b> (int)lengthChange<b> invalidatedRange:</b> (NSRange)invalidatedRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usedRectForTextContainer:</a></h3>
-    - (NSRect) <b>usedRectForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)container;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-usedRectForTextContainer:">usedRectForTextContainer:</a></h3>
+    - (NSRect) <b>usedRectForTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)container;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usesScreenFonts</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager-usesScreenFonts">usesScreenFonts</a></h3>
     - (BOOL) <b>usesScreenFonts</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSLayoutManager(NSTextViewSupport)
         category
-      </h1>
-    <h2><a href="#class$NSLayoutManager">NSLayoutManager</a>(<a name="category$NSLayoutManager(NSTextViewSupport)">NSTextViewSupport</a>)</h2>
-    Declared: AppKit/NSLayoutManager.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSLayoutManager">NSLayoutManager</a>(<a name="category$NSLayoutManager(NSTextViewSupport)">NSTextViewSupport</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSLayoutManager.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:</a></h3>
-    - (unsigned) <b>_charIndexForInsertionPointMovingFromY:</b> (float)position<b> bestX:</b> (float)wanted<b> up:</b> (BOOL)upFlag<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)tc;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:">-_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-drawBackgroundForGlyphRange:atPoint:">-drawBackgroundForGlyphRange:atPoint:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-drawGlyphsForGlyphRange:atPoint:">-drawGlyphsForGlyphRange:atPoint:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:">-drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-firstTextView">-firstTextView</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-hyphenationFactor">-hyphenationFactor</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-layoutManagerOwnsFirstResponderInWindow:">-layoutManagerOwnsFirstResponderInWindow:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:">-rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-rulerMarkersForTextView:paragraphStyle:ruler:">-rulerMarkersForTextView:paragraphStyle:ruler:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-setHyphenationFactor:">-setHyphenationFactor:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-textViewForBeginningOfSelection">-textViewForBeginningOfSelection</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSLayoutManager(NSTextViewSupport)-underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:">-underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:">_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:</a></h3>
+    - (unsigned) <b>_charIndexForInsertionPointMovingFromY:</b> (float)position<b> bestX:</b> (float)wanted<b> up:</b> (BOOL)upFlag<b> textContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)tc;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawBackgroundForGlyphRange:atPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-drawBackgroundForGlyphRange:atPoint:">drawBackgroundForGlyphRange:atPoint:</a></h3>
     - (void) <b>drawBackgroundForGlyphRange:</b> (NSRange)glyphsToShow<b> atPoint:</b> (NSPoint)origin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawGlyphsForGlyphRange:atPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-drawGlyphsForGlyphRange:atPoint:">drawGlyphsForGlyphRange:atPoint:</a></h3>
     - (void) <b>drawGlyphsForGlyphRange:</b> (NSRange)glyphsToShow<b> atPoint:</b> (NSPoint)origin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:">drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
     - (void) <b>drawUnderlineForGlyphRange:</b> (NSRange)glyphRange<b> underlineType:</b> (int)underlineVal<b> baselineOffset:</b> (float)baselineOffset<b> lineFragmentRect:</b> (NSRect)lineRect<b> lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange<b> containerOrigin:</b> (NSPoint)containerOrigin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>firstTextView</a></h3>
-    - (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>firstTextView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-firstTextView">firstTextView</a></h3>
+    - (<a rel="gsdoc" href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>firstTextView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hyphenationFactor</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-hyphenationFactor">hyphenationFactor</a></h3>
     - (float) <b>hyphenationFactor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>layoutManagerOwnsFirstResponderInWindow:</a></h3>
-    - (BOOL) <b>layoutManagerOwnsFirstResponderInWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-layoutManagerOwnsFirstResponderInWindow:">layoutManagerOwnsFirstResponderInWindow:</a></h3>
+    - (BOOL) <b>layoutManagerOwnsFirstResponderInWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>rulerAccessoryViewForTextView:</b> (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> enabled:</b> (BOOL)isEnabled;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:">rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>rulerAccessoryViewForTextView:</b> (<a rel="gsdoc" href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a rel="gsdoc" href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> enabled:</b> (BOOL)isEnabled;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerMarkersForTextView:paragraphStyle:ruler:</a></h3>
-    - (NSArray*) <b>rulerMarkersForTextView:</b> (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-rulerMarkersForTextView:paragraphStyle:ruler:">rulerMarkersForTextView:paragraphStyle:ruler:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>rulerMarkersForTextView:</b> (<a rel="gsdoc" href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a rel="gsdoc" href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHyphenationFactor:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-setHyphenationFactor:">setHyphenationFactor:</a></h3>
     - (void) <b>setHyphenationFactor:</b> (float)factor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textViewForBeginningOfSelection</a></h3>
-    - (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>textViewForBeginningOfSelection</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-textViewForBeginningOfSelection">textViewForBeginningOfSelection</a></h3>
+    - (<a rel="gsdoc" href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>textViewForBeginningOfSelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSLayoutManager(NSTextViewSupport)-underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:">underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
     - (void) <b>underlineGlyphRange:</b> (NSRange)glyphRange<b> underlineType:</b> (int)underlineVal<b> lineFragmentRect:</b> (NSRect)lineRect<b> lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange<b> containerOrigin:</b> (NSPoint)containerOrigin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSObject(NSLayoutManagerDelegate)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSLayoutManagerDelegate)">NSLayoutManagerDelegate</a>)</h2>
-    Declared: AppKit/NSLayoutManager.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSLayoutManagerDelegate)">NSLayoutManagerDelegate</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSLayoutManager.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>layoutManager:didCompleteLayoutForTextContainer:atEnd:</a></h3>
-    - (void) <b>layoutManager:</b> (<a href="#class$NSLayoutManager">NSLayoutManager</a>*)layoutManager<b> didCompleteLayoutForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)textContainer<b> atEnd:</b> (BOOL)layoutFinishedFlag;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSObject(NSLayoutManagerDelegate)-layoutManager:didCompleteLayoutForTextContainer:atEnd:">-layoutManager:didCompleteLayoutForTextContainer:atEnd:</a></li>
+      <li><a rel="gsdoc" href="NSLayoutManager.html#method$NSObject(NSLayoutManagerDelegate)-layoutManagerDidInvalidateLayout:">-layoutManagerDidInvalidateLayout:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSLayoutManagerDelegate)-layoutManager:didCompleteLayoutForTextContainer:atEnd:">layoutManager:didCompleteLayoutForTextContainer:atEnd:</a></h3>
+    - (void) <b>layoutManager:</b> (<a rel="gsdoc" href="#class$NSLayoutManager">NSLayoutManager</a>*)layoutManager<b> didCompleteLayoutForTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)textContainer<b> atEnd:</b> (BOOL)layoutFinishedFlag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>layoutManagerDidInvalidateLayout:</a></h3>
-    - (void) <b>layoutManagerDidInvalidateLayout:</b> (<a href="#class$NSLayoutManager">NSLayoutManager</a>*)sender;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSLayoutManagerDelegate)-layoutManagerDidInvalidateLayout:">layoutManagerDidInvalidateLayout:</a></h3>
+    - (void) <b>layoutManagerDidInvalidateLayout:</b> (<a rel="gsdoc" href="#class$NSLayoutManager">NSLayoutManager</a>*)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

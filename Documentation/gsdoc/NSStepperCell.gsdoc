@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSStepperCell" up="Gui">
+  <head>
+    <title>NSStepperCell</title>
+    <author name="Pierre-Yves Rivaille">
+      <email address="pyrivail@ens-lyon.fr">
+        pyrivail@ens-lyon.fr
+      </email>
+    </author>
+    <copy>2001 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSStepperCell class
+      </heading>
+      <class name="NSStepperCell" super="NSActionCell">
+        <declared>AppKit/NSStepperCell.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="BOOL">
+          <sel>autorepeat</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="double">
+          <sel>increment</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="double">
+          <sel>maxValue</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="double">
+          <sel>minValue</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAutorepeat:</sel>
+          <arg type="BOOL">newAutorepeat</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setIncrement:</sel>
+          <arg type="double">newIncrement</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMaxValue:</sel>
+          <arg type="double">newMaxValue</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMinValue:</sel>
+          <arg type="double">newMinValue</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setValueWraps:</sel>
+          <arg type="BOOL">newValueWraps</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>valueWraps</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSStepperCell(Private)
+        category
+      </heading>
+      <category name="Private" class="NSStepperCell">
+        <declared>AppKit/NSStepperCell.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>_drawText:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSRect">
+          <sel>downButtonRectWithFrame:</sel>
+          <arg type="NSRect">frame</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>highlight:</sel>
+          <arg type="BOOL">highlight</arg>
+          <sel>upButton:</sel>
+          <arg type="BOOL">upButton</arg>
+          <sel>withFrame:</sel>
+          <arg type="NSRect">frame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSRect">
+          <sel>upButtonRectWithFrame:</sel>
+          <arg type="NSRect">frame</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

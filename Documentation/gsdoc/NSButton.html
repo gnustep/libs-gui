@@ -3,7 +3,9 @@
     <title>NSButton</title>
   </head>
   <body>
-    <h1>NSButton</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSButton">NSButton</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -13,255 +15,447 @@
       </dd>
     </dl>
     <blockquote>
-The button class    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      The button class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSButton class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSButton class
-      </h1>
-    <h2><a name="class$NSButton">NSButton</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSButton.h<br />
+      </a></h1>
+    <h2><a name="class$NSButton">NSButton</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSButton.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>allowsMixedState</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-allowsMixedState">-allowsMixedState</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-alternateImage">-alternateImage</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-alternateTitle">-alternateTitle</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-attributedAlternateTitle">-attributedAlternateTitle</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-attributedTitle">-attributedTitle</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-bezelStyle">-bezelStyle</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-getPeriodicDelay:interval:">-getPeriodicDelay:interval:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-highlight:">-highlight:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-image">-image</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-imagePosition">-imagePosition</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-isBordered">-isBordered</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-isTransparent">-isTransparent</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-keyEquivalent">-keyEquivalent</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-keyEquivalentModifierMask">-keyEquivalentModifierMask</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-performClick:">-performClick:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-performKeyEquivalent:">-performKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setAllowsMixedState:">-setAllowsMixedState:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setAlternateImage:">-setAlternateImage:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setAlternateTitle:">-setAlternateTitle:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setAttributedAlternateTitle:">-setAttributedAlternateTitle:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setAttributedTitle:">-setAttributedTitle:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setBezelStyle:">-setBezelStyle:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setBordered:">-setBordered:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setButtonType:">-setButtonType:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setImage:">-setImage:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setImagePosition:">-setImagePosition:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setKeyEquivalent:">-setKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setKeyEquivalentModifierMask:">-setKeyEquivalentModifierMask:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setNextState">-setNextState</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setPeriodicDelay:interval:">-setPeriodicDelay:interval:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setShowsBorderOnlyWhileMouseInside:">-setShowsBorderOnlyWhileMouseInside:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setSound:">-setSound:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setState:">-setState:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setTitle:">-setTitle:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setTitleWithMnemonic:">-setTitleWithMnemonic:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-setTransparent:">-setTransparent:</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-showsBorderOnlyWhileMouseInside">-showsBorderOnlyWhileMouseInside</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-sound">-sound</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-state">-state</a></li>
+      <li><a rel="gsdoc" href="NSButton.html#method$NSButton-title">-title</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSButton-allowsMixedState">allowsMixedState</a></h3>
     - (BOOL) <b>allowsMixedState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>alternateImage</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>alternateImage</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-alternateImage">alternateImage</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>alternateImage</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>alternateTitle</a></h3>
-    - (NSString*) <b>alternateTitle</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-alternateTitle">alternateTitle</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>alternateTitle</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>attributedAlternateTitle</a></h3>
-    - (NSAttributedString*) <b>attributedAlternateTitle</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-attributedAlternateTitle">attributedAlternateTitle</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*) <b>attributedAlternateTitle</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>attributedTitle</a></h3>
-    - (NSAttributedString*) <b>attributedTitle</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-attributedTitle">attributedTitle</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*) <b>attributedTitle</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bezelStyle</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-bezelStyle">bezelStyle</a></h3>
     - (NSBezelStyle) <b>bezelStyle</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>getPeriodicDelay:interval:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-getPeriodicDelay:interval:">getPeriodicDelay:interval:</a></h3>
     - (void) <b>getPeriodicDelay:</b> (float*)delay<b> interval:</b> (float*)interval;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlight:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-highlight:">highlight:</a></h3>
     - (void) <b>highlight:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>image</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-image">image</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imagePosition</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-imagePosition">imagePosition</a></h3>
     - (NSCellImagePosition) <b>imagePosition</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isBordered</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-isBordered">isBordered</a></h3>
     - (BOOL) <b>isBordered</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isTransparent</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-isTransparent">isTransparent</a></h3>
     - (BOOL) <b>isTransparent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEquivalent</a></h3>
-    - (NSString*) <b>keyEquivalent</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-keyEquivalent">keyEquivalent</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>keyEquivalent</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEquivalentModifierMask</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-keyEquivalentModifierMask">keyEquivalentModifierMask</a></h3>
     - (unsigned int) <b>keyEquivalentModifierMask</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performClick:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-performClick:">performClick:</a></h3>
     - (void) <b>performClick:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performKeyEquivalent:</a></h3>
-    - (BOOL) <b>performKeyEquivalent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-performKeyEquivalent:">performKeyEquivalent:</a></h3>
+    - (BOOL) <b>performKeyEquivalent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsMixedState:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setAllowsMixedState:">setAllowsMixedState:</a></h3>
     - (void) <b>setAllowsMixedState:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAlternateImage:</a></h3>
-    - (void) <b>setAlternateImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setAlternateImage:">setAlternateImage:</a></h3>
+    - (void) <b>setAlternateImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAlternateTitle:</a></h3>
-    - (void) <b>setAlternateTitle:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setAlternateTitle:">setAlternateTitle:</a></h3>
+    - (void) <b>setAlternateTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAttributedAlternateTitle:</a></h3>
-    - (void) <b>setAttributedAlternateTitle:</b> (NSAttributedString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setAttributedAlternateTitle:">setAttributedAlternateTitle:</a></h3>
+    - (void) <b>setAttributedAlternateTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAttributedTitle:</a></h3>
-    - (void) <b>setAttributedTitle:</b> (NSAttributedString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setAttributedTitle:">setAttributedTitle:</a></h3>
+    - (void) <b>setAttributedTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBezelStyle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setBezelStyle:">setBezelStyle:</a></h3>
     - (void) <b>setBezelStyle:</b> (NSBezelStyle)bezelStyle;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBordered:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setBordered:">setBordered:</a></h3>
     - (void) <b>setBordered:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setButtonType:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setButtonType:">setButtonType:</a></h3>
     - (void) <b>setButtonType:</b> (NSButtonType)aType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImage:</a></h3>
-    - (void) <b>setImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setImage:">setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImagePosition:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setImagePosition:">setImagePosition:</a></h3>
     - (void) <b>setImagePosition:</b> (NSCellImagePosition)aPosition;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setKeyEquivalent:</a></h3>
-    - (void) <b>setKeyEquivalent:</b> (NSString*)aKeyEquivalent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setKeyEquivalent:">setKeyEquivalent:</a></h3>
+    - (void) <b>setKeyEquivalent:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aKeyEquivalent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setKeyEquivalentModifierMask:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setKeyEquivalentModifierMask:">setKeyEquivalentModifierMask:</a></h3>
     - (void) <b>setKeyEquivalentModifierMask:</b> (unsigned int)mask;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNextState</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setNextState">setNextState</a></h3>
     - (void) <b>setNextState</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPeriodicDelay:interval:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setPeriodicDelay:interval:">setPeriodicDelay:interval:</a></h3>
     - (void) <b>setPeriodicDelay:</b> (float)delay<b> interval:</b> (float)interval;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setShowsBorderOnlyWhileMouseInside:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setShowsBorderOnlyWhileMouseInside:">setShowsBorderOnlyWhileMouseInside:</a></h3>
     - (void) <b>setShowsBorderOnlyWhileMouseInside:</b> (BOOL)show;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSound:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setSound:">setSound:</a></h3>
     - (void) <b>setSound:</b> (NSSound*)aSound;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setState:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setState:">setState:</a></h3>
     - (void) <b>setState:</b> (int)value;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setTitle:">setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitleWithMnemonic:</a></h3>
-    - (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setTitleWithMnemonic:">setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTransparent:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-setTransparent:">setTransparent:</a></h3>
     - (void) <b>setTransparent:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>showsBorderOnlyWhileMouseInside</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-showsBorderOnlyWhileMouseInside">showsBorderOnlyWhileMouseInside</a></h3>
     - (BOOL) <b>showsBorderOnlyWhileMouseInside</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sound</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-sound">sound</a></h3>
     - (NSSound*) <b>sound</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>state</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-state">state</a></h3>
     - (int) <b>state</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>title</a></h3>
-    - (NSString*) <b>title</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSButton-title">title</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>title</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSOutlineView" up="Gui">
+  <head>
+    <title>NSOutlineView</title>
+    <author name="Gregory John Casamento">
+      <email address="greg_casamento@yahoo.com">
+        greg_casamento@yahoo.com
+      </email>
+    </author>
+    <abstract>The outline class.</abstract>
+    <copy>2001 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSOutlineView class
+      </heading>
+      <class name="NSOutlineView" super="NSTableView">
+        <declared>AppKit/NSOutlineView.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="BOOL">
+          <sel>autoResizesOutlineColumn</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>autosaveExpandedItems</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>collapseItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>collapseItem:</sel>
+          <arg type="id">item</arg>
+          <sel>collapseChildren:</sel>
+          <arg type="BOOL">collapseChildren</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>expandItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>expandItem:</sel>
+          <arg type="id">item</arg>
+          <sel>expandChildren:</sel>
+          <arg type="BOOL">expandChildren</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>indentationMarkerFollowsCell</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="float">
+          <sel>indentationPerLevel</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isExpandable:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isItemExpanded:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>itemAtRow:</sel>
+          <arg type="int">row</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>levelForItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>levelForRow:</sel>
+          <arg type="int">row</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSTableColumn*">
+          <sel>outlineTableColumn</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>reloadItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>reloadItem:</sel>
+          <arg type="id">item</arg>
+          <sel>reloadChildren:</sel>
+          <arg type="BOOL">reloadChildren</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>rowForItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAutoresizesOutlineColumn:</sel>
+          <arg type="BOOL">resize</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAutosaveExpandedItems:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setDropItem:</sel>
+          <arg type="id">item</arg>
+          <sel>dropChildIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setIndentationMarkerFollowsCell:</sel>
+          <arg type="BOOL">followsCell</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setIndentationPerLevel:</sel>
+          <arg type="float">newIndentLevel</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setOutlineTableColumn:</sel>
+          <arg type="NSTableColumn*">outlineTableColumn</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>shouldCollapseAutoExpandedItemsForDeposited:</sel>
+          <arg type="BOOL">deposited</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSOutlineViewDataSource)
+        category
+      </heading>
+      <category name="NSOutlineViewDataSource" class="NSObject">
+        <declared>AppKit/NSOutlineView.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>acceptDrop:</sel>
+          <arg type="id&lt;NSDraggingInfo&gt;">info</arg>
+          <sel>item:</sel>
+          <arg type="id">item</arg>
+          <sel>childIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>child:</sel>
+          <arg type="int">index</arg>
+          <sel>ofItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>isItemExpandable:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>itemForPersistentObject:</sel>
+          <arg type="id">object</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>numberOfChildrenOfItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>objectValueForTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <sel>byItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>persistentObjectForItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>setObjectView:</sel>
+          <arg type="id">object</arg>
+          <sel>forTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSDragOperation">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>validateDrop:</sel>
+          <arg type="id&lt;NSDraggingInfo&gt;">info</arg>
+          <sel>proposedItem:</sel>
+          <arg type="id">item</arg>
+          <sel>proposedChildIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>writeItems:</sel>
+          <arg type="NSArray*">items</arg>
+          <sel>toPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSOutlineViewDelegate)
+        category
+      </heading>
+      <category name="NSOutlineViewDelegate" class="NSObject">
+        <declared>AppKit/NSOutlineView.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">aOutlineView</arg>
+          <sel>shouldEditTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">aOutlineView</arg>
+          <sel>shouldSelectRow:</sel>
+          <arg type="int">rowIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">aOutlineView</arg>
+          <sel>shouldSelectTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">aOutlineView</arg>
+          <sel>willDisplayCell:</sel>
+          <arg type="id">aCell</arg>
+          <sel>forTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewColumnDidMove:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewColumnDidResize:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewItemDidCollapse:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewItemDidExpand:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewSelectionDidChange:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewSelectionIsChanging:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSWorkspace" prev="NSWindowController" up="NSActionCell">
+<gsdoc base="NSWorkspace" up="Gui">
   <head>
     <title>NSWorkspace</title>
     <author name="Scott Christley">
@@ -8,10 +8,21 @@
         scottc@net-community.com
       </email>
     </author>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
+    </author>
     <abstract>Workspace class</abstract>
     <copy>1996-1999, 2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSWorkspace class
@@ -19,38 +30,63 @@
       <class name="NSWorkspace" super="NSObject">
         <declared>AppKit/NSWorkspace.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSWorkspace*" factory="yes">
           <sel>sharedWorkspace</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>checkForRemovableMedia</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>extendPowerOffBy:</sel>
           <arg type="int">requested</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>fileSystemChanged</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>findApplications</sel>
           <desc>
+            Updates Registered Services and File Types
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>fullPathForApplication:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>getFileSystemInfoForPath:</sel>
@@ -66,7 +102,11 @@
           <sel>type:</sel>
           <arg type="NSString**">fileSystemType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>getInfoForFile:</sel>
@@ -76,42 +116,71 @@
           <sel>type:</sel>
           <arg type="NSString**">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>hideOtherApplications</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>iconForFile:</sel>
           <arg type="NSString*">aPath</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>iconForFileType:</sel>
           <arg type="NSString*">fileType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>iconForFiles:</sel>
           <arg type="NSArray*">pathArray</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isFilePackageAtPath:</sel>
           <arg type="NSString*">fullPath</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>launchApplication:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            Calls
+            <ref type="method" id="-launchApplication:showIcon:autolaunch:">-launchApplication:showIcon:autolaunch:</ref> with arguments set to show the icon but not set it up as an autolaunch.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>launchApplication:</sel>
@@ -121,49 +190,87 @@
           <sel>autolaunch:</sel>
           <arg type="BOOL">autolaunch</arg>
           <desc>
+            Launches the specified application (unless it is
+            alreeady running)
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>mountNewRemovableMedia</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>mountedLocalVolumePaths</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>mountedRemovableMedia</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>noteFileSystemChanged</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>noteFileSystemChanged:</sel>
           <arg type="NSString*">path</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>noteUserDefaultsChanged</sel>
           <desc>
+            Simply makes a note that the user defaults database
+            has changed.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSNotificationCenter*">
           <sel>notificationCenter</sel>
           <desc>
+            Returns the workspace notification center
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openFile:</sel>
           <arg type="NSString*">fullPath</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openFile:</sel>
@@ -175,7 +282,11 @@
           <sel>inView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openFile:</sel>
@@ -183,7 +294,11 @@
           <sel>withApplication:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openFile:</sel>
@@ -193,19 +308,31 @@
           <sel>andDeactivate:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openTempFile:</sel>
           <arg type="NSString*">fullPath</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>openURL:</sel>
           <arg type="NSURL*">url</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>performFileOperation:</sel>
@@ -219,7 +346,11 @@
           <sel>tag:</sel>
           <arg type="int*">tag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>selectFile:</sel>
@@ -227,7 +358,11 @@
           <sel>inFileViewerRootedAtPath:</sel>
           <arg type="NSString*">rootFullpath</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>slideImage:</sel>
@@ -237,19 +372,36 @@
           <sel>to:</sel>
           <arg type="NSPoint">toPoint</arg>
           <desc>
+            Animating an Image- slides it from one point on
+            the screen to another.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>unmountAndEjectDeviceAtPath:</sel>
           <arg type="NSString*">path</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>userDefaultsChanged</sel>
           <desc>
+            Returns a flag to say if the defaults database has
+            changed since the last time this method was called.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -260,18 +412,30 @@
       <category name="GNUstep" class="NSWorkspace">
         <declared>AppKit/NSWorkspace.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSImage*">
           <sel>appIconForApp:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            Returns the application icon for the given app. Or
+            null if none defined or <var>appName</var> is not a
+            valid application name.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSBundle*">
           <sel>bundleForApp:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            Returns the application bundle for the named
+            application.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>getBestAppInRole:</sel>
@@ -279,25 +443,57 @@
           <sel>forExtension:</sel>
           <arg type="NSString*">ext</arg>
           <desc>
+            Returns the 'best' application to open a file with
+            the specified extension using the given <var>role</var>
+            . If the <var>role</var> is <code>nil</code> then apps
+            which can edit are preferred but viewers are also
+            acceptable. Uses a user preferred app or picks
+            any good match.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>getBestIconForExtension:</sel>
           <arg type="NSString*">ext</arg>
           <desc>
+            Returns the path set for the icon matching the
+            image by
+            <ref type="method" id="-setBestIcon:forExtension:">
+              -setBestIcon:forExtension:
+            </ref>
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSDictionary*">
           <sel>infoForExtension:</sel>
           <arg type="NSString*">ext</arg>
           <desc>
+            Gets the applications cache (generated by the
+            make_services tool) and looks up the special
+            entry that contains a dictionary of all file
+            extensions recognised by GNUstep applications.
+            Then finds the dictionary of applications that can
+            handle our file and returns it.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>locateApplicationBinary:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
+            Requires the path to an application wrapper as an
+            argument, and returns the full path to the
+            executable.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBestApp:</sel>
@@ -307,7 +503,12 @@
           <sel>forExtension:</sel>
           <arg type="NSString*">ext</arg>
           <desc>
+            Sets up a user preference for which app should be used
+            to open files of the specified extension.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
         <method type="void">
           <sel>setBestIcon:</sel>
@@ -315,8 +516,16 @@
           <sel>forExtension:</sel>
           <arg type="NSString*">ext</arg>
           <desc>
+            Sets up a user preference for which icon should be
+            used to represent the specified file extension.
           </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
         </method>
+        <standards>
+          <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+        </standards>
       </category>
     </chapter>
   </body>

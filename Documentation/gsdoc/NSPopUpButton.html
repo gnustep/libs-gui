@@ -3,7 +3,9 @@
     <title>NSPopUpButton</title>
   </head>
   <body>
-    <h1>NSPopUpButton</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSPopUpButton">NSPopUpButton</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -18,213 +20,377 @@
       </dd>
     </dl>
     <blockquote>
-Popup list class    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      Popup list class
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSPopUpButton class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSPopUpButton class
-      </h1>
-    <h2><a name="class$NSPopUpButton">NSPopUpButton</a> : <a href="NSButton.html#class$NSButton">NSButton</a></h2>
-    Declared: AppKit/NSPopUpButton.h<br />
+      </a></h1>
+    <h2><a name="class$NSPopUpButton">NSPopUpButton</a> : <a rel="gsdoc" href="NSButton.html#class$NSButton">NSButton</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSPopUpButton.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>addItemWithTitle:</a></h3>
-    - (void) <b>addItemWithTitle:</b> (NSString*)title;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-addItemWithTitle:">-addItemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-addItemsWithTitles:">-addItemsWithTitles:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-autoenablesItems">-autoenablesItems</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfItem:">-indexOfItem:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfItemWithRepresentedObject:">-indexOfItemWithRepresentedObject:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfItemWithTag:">-indexOfItemWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfItemWithTarget:andAction:">-indexOfItemWithTarget:andAction:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfItemWithTitle:">-indexOfItemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-indexOfSelectedItem">-indexOfSelectedItem</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-initWithFrame:pullsDown:">-initWithFrame:pullsDown:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-insertItemWithTitle:atIndex:">-insertItemWithTitle:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-itemArray">-itemArray</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-itemAtIndex:">-itemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-itemTitleAtIndex:">-itemTitleAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-itemTitles">-itemTitles</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-itemWithTitle:">-itemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-lastItem">-lastItem</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-numberOfItems">-numberOfItems</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-preferredEdge">-preferredEdge</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-pullsDown">-pullsDown</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-removeAllItems">-removeAllItems</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-removeItemAtIndex:">-removeItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-removeItemWithTitle:">-removeItemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-selectItem:">-selectItem:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-selectItemAtIndex:">-selectItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-selectItemWithTitle:">-selectItemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-selectedItem">-selectedItem</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-setAutoenablesItems:">-setAutoenablesItems:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-setPreferredEdge:">-setPreferredEdge:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-setPullsDown:">-setPullsDown:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-setTitle:">-setTitle:</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-synchronizeTitleAndSelectedItem">-synchronizeTitleAndSelectedItem</a></li>
+      <li><a rel="gsdoc" href="NSPopUpButton.html#method$NSPopUpButton-titleOfSelectedItem">-titleOfSelectedItem</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSPopUpButton-addItemWithTitle:">addItemWithTitle:</a></h3>
+    - (void) <b>addItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addItemsWithTitles:</a></h3>
-    - (void) <b>addItemsWithTitles:</b> (NSArray*)itemTitles;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-addItemsWithTitles:">addItemsWithTitles:</a></h3>
+    - (void) <b>addItemsWithTitles:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)itemTitles;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoenablesItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-autoenablesItems">autoenablesItems</a></h3>
     - (BOOL) <b>autoenablesItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItem:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfItem:">indexOfItem:</a></h3>
     - (int) <b>indexOfItem:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithRepresentedObject:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfItemWithRepresentedObject:">indexOfItemWithRepresentedObject:</a></h3>
     - (int) <b>indexOfItemWithRepresentedObject:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfItemWithTag:">indexOfItemWithTag:</a></h3>
     - (int) <b>indexOfItemWithTag:</b> (int)tag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTarget:andAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfItemWithTarget:andAction:">indexOfItemWithTarget:andAction:</a></h3>
     - (int) <b>indexOfItemWithTarget:</b> (id)target<b> andAction:</b> (SEL)actionSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTitle:</a></h3>
-    - (int) <b>indexOfItemWithTitle:</b> (NSString*)title;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfItemWithTitle:">indexOfItemWithTitle:</a></h3>
+    - (int) <b>indexOfItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfSelectedItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-indexOfSelectedItem">indexOfSelectedItem</a></h3>
     - (int) <b>indexOfSelectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:pullsDown:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-initWithFrame:pullsDown:">initWithFrame:pullsDown:</a></h3>
     - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> pullsDown:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertItemWithTitle:atIndex:</a></h3>
-    - (void) <b>insertItemWithTitle:</b> (NSString*)title<b> atIndex:</b> (int)index;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-insertItemWithTitle:atIndex:">insertItemWithTitle:atIndex:</a></h3>
+    - (void) <b>insertItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title<b> atIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemArray</a></h3>
-    - (NSArray*) <b>itemArray</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-itemArray">itemArray</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>itemArray</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-itemAtIndex:">itemAtIndex:</a></h3>
     - (id) <b>itemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemTitleAtIndex:</a></h3>
-    - (NSString*) <b>itemTitleAtIndex:</b> (int)index;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-itemTitleAtIndex:">itemTitleAtIndex:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>itemTitleAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemTitles</a></h3>
-    - (NSArray*) <b>itemTitles</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-itemTitles">itemTitles</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>itemTitles</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemWithTitle:</a></h3>
-    - (id) <b>itemWithTitle:</b> (NSString*)title;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-itemWithTitle:">itemWithTitle:</a></h3>
+    - (id) <b>itemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lastItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-lastItem">lastItem</a></h3>
     - (id) <b>lastItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-numberOfItems">numberOfItems</a></h3>
     - (int) <b>numberOfItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>preferredEdge</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-preferredEdge">preferredEdge</a></h3>
     - (NSRectEdge) <b>preferredEdge</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pullsDown</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-pullsDown">pullsDown</a></h3>
     - (BOOL) <b>pullsDown</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeAllItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-removeAllItems">removeAllItems</a></h3>
     - (void) <b>removeAllItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-removeItemAtIndex:">removeItemAtIndex:</a></h3>
     - (void) <b>removeItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItemWithTitle:</a></h3>
-    - (void) <b>removeItemWithTitle:</b> (NSString*)title;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-removeItemWithTitle:">removeItemWithTitle:</a></h3>
+    - (void) <b>removeItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectItem:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-selectItem:">selectItem:</a></h3>
     - (void) <b>selectItem:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-selectItemAtIndex:">selectItemAtIndex:</a></h3>
     - (void) <b>selectItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectItemWithTitle:</a></h3>
-    - (void) <b>selectItemWithTitle:</b> (NSString*)title;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-selectItemWithTitle:">selectItemWithTitle:</a></h3>
+    - (void) <b>selectItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-selectedItem">selectedItem</a></h3>
     - (id) <b>selectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoenablesItems:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-setAutoenablesItems:">setAutoenablesItems:</a></h3>
     - (void) <b>setAutoenablesItems:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPreferredEdge:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-setPreferredEdge:">setPreferredEdge:</a></h3>
     - (void) <b>setPreferredEdge:</b> (NSRectEdge)edge;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPullsDown:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-setPullsDown:">setPullsDown:</a></h3>
     - (void) <b>setPullsDown:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-setTitle:">setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>synchronizeTitleAndSelectedItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-synchronizeTitleAndSelectedItem">synchronizeTitleAndSelectedItem</a></h3>
     - (void) <b>synchronizeTitleAndSelectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleOfSelectedItem</a></h3>
-    - (NSString*) <b>titleOfSelectedItem</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPopUpButton-titleOfSelectedItem">titleOfSelectedItem</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>titleOfSelectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

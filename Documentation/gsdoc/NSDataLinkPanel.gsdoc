@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSDataLinkPanel" up="Gui">
+  <head>
+    <title>NSDataLinkPanel</title>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSDataLinkPanel class
+      </heading>
+      <class name="NSDataLinkPanel" super="NSPanel">
+        <declared>AppKit/NSDataLinkPanel.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void" factory="yes">
+          <sel>getLink:</sel>
+          <arg type="NSDataLink**">link</arg>
+          <sel>manager:</sel>
+          <arg type="NSDataLinkManager**">linkManager</arg>
+          <sel>isMultiple:</sel>
+          <arg type="BOOL*">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <sel>manager:</sel>
+          <arg type="NSDataLinkManager*">linkManager</arg>
+          <sel>isMultiple:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSDataLinkPanel*" factory="yes">
+          <sel>sharedDataLinkPanel</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSView*">
+          <sel>accessoryView</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>getLink:</sel>
+          <arg type="NSDataLink**">link</arg>
+          <sel>manager:</sel>
+          <arg type="NSDataLinkManager**">linkManager</arg>
+          <sel>isMultiple:</sel>
+          <arg type="BOOL*">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pickedBreakAllLinks:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pickedBreakLink:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pickedOpenSource:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pickedUpdateDestination:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pickedUpdateMode:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAccessoryView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setLink:</sel>
+          <arg type="NSDataLink*">link</arg>
+          <sel>manager:</sel>
+          <arg type="NSDataLinkManager*">linkManager</arg>
+          <sel>isMultiple:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

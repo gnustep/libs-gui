@@ -3,7 +3,9 @@
     <title>NSMenuItemCell</title>
   </head>
   <body>
-    <h1>NSMenuItemCell</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSMenuItemCell">NSMenuItemCell</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
@@ -12,154 +14,282 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 1999 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSMenuItemCell class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSMenuItemCell class
-      </h1>
-    <h2><a name="class$NSMenuItemCell">NSMenuItemCell</a> : <a href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a></h2>
-    Declared: AppKit/NSMenuItemCell.h<br />
-    Conform: NSCopying<br />
-    Conform: NSCoding<br />
+      </a></h1>
+    <h2><a name="class$NSMenuItemCell">NSMenuItemCell</a> : <a rel="gsdoc" href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenuItemCell.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>calcSize</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-calcSize">-calcSize</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawBorderAndBackgroundWithFrame:inView:">-drawBorderAndBackgroundWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawImageWithFrame:inView:">-drawImageWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawKeyEquivalentWithFrame:inView:">-drawKeyEquivalentWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawSeparatorItemWithFrame:inView:">-drawSeparatorItemWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawStateImageWithFrame:inView:">-drawStateImageWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-drawTitleWithFrame:inView:">-drawTitleWithFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-imageRectForBounds:">-imageRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-imageWidth">-imageWidth</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-isHighlighted">-isHighlighted</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-keyEquivalentRectForBounds:">-keyEquivalentRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-keyEquivalentWidth">-keyEquivalentWidth</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-menuItem">-menuItem</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-menuView">-menuView</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-needsSizing">-needsSizing</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-setHighlighted:">-setHighlighted:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-setMenuItem:">-setMenuItem:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-setMenuView:">-setMenuView:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-setNeedsSizing:">-setNeedsSizing:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-stateImageRectForBounds:">-stateImageRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-stateImageWidth">-stateImageWidth</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-titleRectForBounds:">-titleRectForBounds:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItemCell.html#method$NSMenuItemCell-titleWidth">-titleWidth</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSMenuItemCell-calcSize">calcSize</a></h3>
     - (void) <b>calcSize</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawBorderAndBackgroundWithFrame:inView:</a></h3>
-    - (void) <b>drawBorderAndBackgroundWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawBorderAndBackgroundWithFrame:inView:">drawBorderAndBackgroundWithFrame:inView:</a></h3>
+    - (void) <b>drawBorderAndBackgroundWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawImageWithFrame:inView:</a></h3>
-    - (void) <b>drawImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawImageWithFrame:inView:">drawImageWithFrame:inView:</a></h3>
+    - (void) <b>drawImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawKeyEquivalentWithFrame:inView:</a></h3>
-    - (void) <b>drawKeyEquivalentWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawKeyEquivalentWithFrame:inView:">drawKeyEquivalentWithFrame:inView:</a></h3>
+    - (void) <b>drawKeyEquivalentWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawSeparatorItemWithFrame:inView:</a></h3>
-    - (void) <b>drawSeparatorItemWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawSeparatorItemWithFrame:inView:">drawSeparatorItemWithFrame:inView:</a></h3>
+    - (void) <b>drawSeparatorItemWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawStateImageWithFrame:inView:</a></h3>
-    - (void) <b>drawStateImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawStateImageWithFrame:inView:">drawStateImageWithFrame:inView:</a></h3>
+    - (void) <b>drawStateImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawTitleWithFrame:inView:</a></h3>
-    - (void) <b>drawTitleWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-drawTitleWithFrame:inView:">drawTitleWithFrame:inView:</a></h3>
+    - (void) <b>drawTitleWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-imageRectForBounds:">imageRectForBounds:</a></h3>
     - (NSRect) <b>imageRectForBounds:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageWidth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-imageWidth">imageWidth</a></h3>
     - (float) <b>imageWidth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isHighlighted</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-isHighlighted">isHighlighted</a></h3>
     - (BOOL) <b>isHighlighted</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEquivalentRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-keyEquivalentRectForBounds:">keyEquivalentRectForBounds:</a></h3>
     - (NSRect) <b>keyEquivalentRectForBounds:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>keyEquivalentWidth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-keyEquivalentWidth">keyEquivalentWidth</a></h3>
     - (float) <b>keyEquivalentWidth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuItem</a></h3>
-    - (NSMenuItem*) <b>menuItem</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-menuItem">menuItem</a></h3>
+    - (<a rel="gsdoc" href="NSMenuItem.html#class$NSMenuItem">NSMenuItem</a>*) <b>menuItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuView</a></h3>
-    - (<a href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*) <b>menuView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-menuView">menuView</a></h3>
+    - (<a rel="gsdoc" href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*) <b>menuView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>needsSizing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-needsSizing">needsSizing</a></h3>
     - (BOOL) <b>needsSizing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHighlighted:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-setHighlighted:">setHighlighted:</a></h3>
     - (void) <b>setHighlighted:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenuItem:</a></h3>
-    - (void) <b>setMenuItem:</b> (NSMenuItem*)item;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-setMenuItem:">setMenuItem:</a></h3>
+    - (void) <b>setMenuItem:</b> (<a rel="gsdoc" href="NSMenuItem.html#class$NSMenuItem">NSMenuItem</a>*)item;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenuView:</a></h3>
-    - (void) <b>setMenuView:</b> (<a href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*)menuView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-setMenuView:">setMenuView:</a></h3>
+    - (void) <b>setMenuView:</b> (<a rel="gsdoc" href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*)menuView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNeedsSizing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-setNeedsSizing:">setNeedsSizing:</a></h3>
     - (void) <b>setNeedsSizing:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>stateImageRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-stateImageRectForBounds:">stateImageRectForBounds:</a></h3>
     - (NSRect) <b>stateImageRectForBounds:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>stateImageWidth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-stateImageWidth">stateImageWidth</a></h3>
     - (float) <b>stateImageWidth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleRectForBounds:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-titleRectForBounds:">titleRectForBounds:</a></h3>
     - (NSRect) <b>titleRectForBounds:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>titleWidth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItemCell-titleWidth">titleWidth</a></h3>
     - (float) <b>titleWidth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

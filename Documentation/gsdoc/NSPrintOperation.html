@@ -3,7 +3,9 @@
     <title>NSPrintOperation</title>
   </head>
   <body>
-    <h1>NSPrintOperation</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSPrintOperation">NSPrintOperation</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -23,11 +25,22 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Controls generation of EPS, PDF or PS print jobs.
-        </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>Class Description</h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Class Description</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">Class Description</a></h1>
     <p>
 
         NSPrintOperation controls printing of an
@@ -41,71 +54,149 @@
         to the appropriate place, whether it be a printer, and
         PostScript file, or another output.
           </p>
-    <h2><a name="class$NSPrintOperation">NSPrintOperation</a> : NSObject</h2>
-    Declared: AppKit/NSPrintOperation.h<br />
+    <h2><a name="class$NSPrintOperation">NSPrintOperation</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSPrintOperation.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>EPSOperationWithView:insideRect:toData:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data;<br />
+      
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+EPSOperationWithView:insideRect:toData:">+EPSOperationWithView:insideRect:toData:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+EPSOperationWithView:insideRect:toData:printInfo:">+EPSOperationWithView:insideRect:toData:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+EPSOperationWithView:insideRect:toPath:printInfo:">+EPSOperationWithView:insideRect:toPath:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+PDFOperationWithView:insideRect:toData:">+PDFOperationWithView:insideRect:toData:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+PDFOperationWithView:insideRect:toData:printInfo:">+PDFOperationWithView:insideRect:toData:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+PDFOperationWithView:insideRect:toPath:printInfo:">+PDFOperationWithView:insideRect:toPath:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+currentOperation">+currentOperation</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+printOperationWithView:">+printOperationWithView:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+printOperationWithView:printInfo:">+printOperationWithView:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation+setCurrentOperation:">+setCurrentOperation:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-accessoryView">-accessoryView</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-cleanUpOperation">-cleanUpOperation</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-context">-context</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-createContext">-createContext</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-currentPage">-currentPage</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-deliverResult">-deliverResult</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-destroyContext">-destroyContext</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-initEPSOperationWithView:insideRect:toData:printInfo:">-initEPSOperationWithView:insideRect:toData:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-initWithView:printInfo:">-initWithView:printInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-isCopyingOperation">-isCopyingOperation</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-isEPSOperation">-isEPSOperation</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-pageOrder">-pageOrder</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-printInfo">-printInfo</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-printPanel">-printPanel</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-runOperation">-runOperation</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-runOperationModalForWindow:delegate:didRunSelector:contextInfo:">-runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-setAccessoryView:">-setAccessoryView:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-setPageOrder:">-setPageOrder:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-setPrintInfo:">-setPrintInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-setPrintPanel:">-setPrintPanel:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-setShowPanels:">-setShowPanels:</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-showPanels">-showPanels</a></li>
+      <li><a rel="gsdoc" href="NSPrintOperation.html#method$NSPrintOperation-view">-view</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSPrintOperation+EPSOperationWithView:insideRect:toData:">EPSOperationWithView:insideRect:toData:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSMutableData">NSMutableData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>EPSOperationWithView:insideRect:toData:printInfo:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+EPSOperationWithView:insideRect:toData:printInfo:">EPSOperationWithView:insideRect:toData:printInfo:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSMutableData">NSMutableData</a>*)data<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>EPSOperationWithView:insideRect:toPath:printInfo:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (NSString*)path<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+EPSOperationWithView:insideRect:toPath:printInfo:">EPSOperationWithView:insideRect:toPath:printInfo:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>PDFOperationWithView:insideRect:toData:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+PDFOperationWithView:insideRect:toData:">PDFOperationWithView:insideRect:toData:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSMutableData">NSMutableData</a>*)data;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>PDFOperationWithView:insideRect:toData:printInfo:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+PDFOperationWithView:insideRect:toData:printInfo:">PDFOperationWithView:insideRect:toData:printInfo:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSMutableData">NSMutableData</a>*)data<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>PDFOperationWithView:insideRect:toPath:printInfo:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (NSString*)path<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+PDFOperationWithView:insideRect:toPath:printInfo:">PDFOperationWithView:insideRect:toPath:printInfo:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>currentOperation</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>currentOperation</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+currentOperation">currentOperation</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>currentOperation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the NSPrintOperation object that is
             currently performing a print operation (if any).
-              </p>
-    <hr />
-    <h3>printOperationWithView:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+printOperationWithView:">printOperationWithView:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>printOperationWithView:printInfo:</a></h3>
-    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+printOperationWithView:printInfo:">printOperationWithView:printInfo:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCurrentOperation:</a></h3>
-    + (void) <b>setCurrentOperation:</b> (<a href="#class$NSPrintOperation">NSPrintOperation</a>*)operation;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation+setCurrentOperation:">setCurrentOperation:</a></h3>
+    + (void) <b>setCurrentOperation:</b> (<a rel="gsdoc" href="#class$NSPrintOperation">NSPrintOperation</a>*)operation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Set the current NSPrintOperation to the supplied
             <var>operation</var> object. As this is currently
             implemented, if a NSPrintOperation is
@@ -113,194 +204,246 @@
             lost (along with any associated context), so be
             careful to call this only when there is no current
             <var>operation</var>.
-              </p>
-    <hr />
-    <h3>accessoryView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-accessoryView">accessoryView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
+      
             Returns the accessory view used by the NSPrintPanel
             associated with the receiver.
-              </p>
-    <hr />
-    <h3>cleanUpOperation</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-cleanUpOperation">cleanUpOperation</a></h3>
     - (void) <b>cleanUpOperation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Called by the print operation and it has finished
             running a printing operation.
-              </p>
-    <hr />
-    <h3>context</a></h3>
-    - (<a href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-context">context</a></h3>
+    - (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the graphic contexts used by the print
             operation.
-              </p>
-    <hr />
-    <h3>createContext</a></h3>
-    - (<a href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>createContext</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-createContext">createContext</a></h3>
+    - (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>createContext</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method is used by the print operation to create a
             special graphics context for use while running the
             print operation.
-              </p>
-    <hr />
-    <h3>currentPage</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-currentPage">currentPage</a></h3>
     - (int) <b>currentPage</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the page currently being printing. Returns
             0 if no page is currently being printed
-              </p>
-    <hr />
-    <h3>deliverResult</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-deliverResult">deliverResult</a></h3>
     - (BOOL) <b>deliverResult</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Called by the print operation to deliver the results
             of the printing operation. This might include sending
             the output to a printer, a file or a previewing
             program. Returns <code>YES</code> if the output
             was delivered sucessfully.
-              </p>
-    <hr />
-    <h3>destroyContext</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-destroyContext">destroyContext</a></h3>
     - (void) <b>destroyContext</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method is used by the print operation to destroy
             the special graphic context used while running the
             print operation.
-              </p>
-    <hr />
-    <h3>initEPSOperationWithView:insideRect:toData:printInfo:</a></h3>
-    - (id) <b>initEPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-initEPSOperationWithView:insideRect:toData:printInfo:">initEPSOperationWithView:insideRect:toData:printInfo:</a></h3>
+    - (id) <b>initEPSOperationWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSMutableData">NSMutableData</a>*)data<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithView:printInfo:</a></h3>
-    - (id) <b>initWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-initWithView:printInfo:">initWithView:printInfo:</a></h3>
+    - (id) <b>initWithView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isCopyingOperation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-isCopyingOperation">isCopyingOperation</a></h3>
     - (BOOL) <b>isCopyingOperation</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEPSOperation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-isEPSOperation">isEPSOperation</a></h3>
     - (BOOL) <b>isEPSOperation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns <code>YES</code> if the receiver is
             performing an operation whose output is EPS
             format.
-              </p>
-    <hr />
-    <h3>pageOrder</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-pageOrder">pageOrder</a></h3>
     - (NSPrintingPageOrder) <b>pageOrder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the page order of printing.
-              </p>
-    <hr />
-    <h3>printInfo</a></h3>
-    - (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-printInfo">printInfo</a></h3>
+    - (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the NSPrintInfo object associated with the
             receiver.
-              </p>
-    <hr />
-    <h3>printPanel</a></h3>
-    - (<a href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*) <b>printPanel</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-printPanel">printPanel</a></h3>
+    - (<a rel="gsdoc" href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*) <b>printPanel</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the NSPrintPanel associated with the
             receiver.
-              </p>
-    <hr />
-    <h3>runOperation</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-runOperation">runOperation</a></h3>
     - (BOOL) <b>runOperation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Call this message to run the print operation on a
             view. This includes (optionally) displaying a print
             panel and working with the NSView to paginate and
             draw the contents of the view.
-              </p>
-    <hr />
-    <h3>runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a></h3>
-    - (void) <b>runOperationModalForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didRunSelector:</b> (SEL)didRunSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-runOperationModalForWindow:delegate:didRunSelector:contextInfo:">runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a></h3>
+    - (void) <b>runOperationModalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didRunSelector:</b> (SEL)didRunSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
+      
             Run a print operation modally with respect to a window.
-              </p>
-    <hr />
-    <h3>setAccessoryView:</a></h3>
-    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-setAccessoryView:">setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
+      
             Set the accessory view used by the NSPrintPanel
             associated with the receiver.
-              </p>
-    <hr />
-    <h3>setPageOrder:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-setPageOrder:">setPageOrder:</a></h3>
     - (void) <b>setPageOrder:</b> (NSPrintingPageOrder)order;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Set the page <var>order</var> used when printing.
-              </p>
-    <hr />
-    <h3>setPrintInfo:</a></h3>
-    - (void) <b>setPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-setPrintInfo:">setPrintInfo:</a></h3>
+    - (void) <b>setPrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Set the NSPrintInfo object associated with the
             receiver.
-              </p>
-    <hr />
-    <h3>setPrintPanel:</a></h3>
-    - (void) <b>setPrintPanel:</b> (<a href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*)panel;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-setPrintPanel:">setPrintPanel:</a></h3>
+    - (void) <b>setPrintPanel:</b> (<a rel="gsdoc" href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*)panel;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Sets the NSPrintPanel used by the receiver obtaining
             and displaying printing information from/to the user.
-              </p>
-    <hr />
-    <h3>setShowPanels:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-setShowPanels:">setShowPanels:</a></h3>
     - (void) <b>setShowPanels:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Use this to set whether a print panel is displayed
             during a printing operation. If set to
             <code>NO</code>, then the receiver uses information
             that was previously set and does not display any
             status information about the progress of the
             printing operation.
-              </p>
-    <hr />
-    <h3>showPanels</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-showPanels">showPanels</a></h3>
     - (BOOL) <b>showPanels</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns <code>YES</code> if the reciever display an
             NSPrintPanel and other information when
             running a print operation.
-              </p>
-    <hr />
-    <h3>view</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>view</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPrintOperation-view">view</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>view</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Return the view that is the being printed.
-              </p>
-    <hr />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

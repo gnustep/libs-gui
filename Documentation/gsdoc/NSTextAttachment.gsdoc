@@ -1,52 +1,282 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextAttachment" prev="NSText.html" next="NSTextAttachmentCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTextAttachment" up="Gui">
   <head>
     <title>NSTextAttachment</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Classes to represent text attachments.
+    </abstract>
+    <copy>2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
-      <heading>NSTextAttachment</heading>
+      <heading>
+        Software documentation for the NSTextAttachment class
+      </heading>
       <class name="NSTextAttachment" super="NSObject">
-        <declared>Gui/NSTextAttachment.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSTextAttachment.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
         <method type="id&lt;NSTextAttachmentCell&gt;">
           <sel>attachmentCell</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSFileWrapper*">
           <sel>fileWrapper</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithFileWrapper:</sel>
-          <arg type="NSFileWrapper*">aWrapper</arg>
+          <arg type="NSFileWrapper*">fileWrapper</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setAttachmentCell:</sel>
-          <arg type="id&lt;NSTextAttachmentCell&gt;">aCell</arg>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setFileWrapper:</sel>
-          <arg type="NSFileWrapper*">aWrapper</arg>
+          <arg type="NSFileWrapper*">fileWrapper</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
+        <standards>
+          <NotOpenStep /> <GNUstep /> <MacOS-X />
+        </standards>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTextAttachmentCell
+        class
+      </heading>
+      <class name="NSTextAttachmentCell" super="NSCell">
+        <declared>AppKit/NSTextAttachment.h</declared>
+        <conform>NSTextAttachmentCell</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <standards>
+          <NotOpenStep /> <GNUstep /> <MacOS-X />
+        </standards>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTextAttachmentCell
+        protocol
+      </heading>
+      <protocol name="NSTextAttachmentCell">
+        <declared>AppKit/NSTextAttachment.h</declared>
+        <conform>NSObject</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="NSTextAttachment*">
+          <sel>attachment</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSPoint">
+          <sel>cellBaselineOffset</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSRect">
+          <sel>cellFrameForTextContainer:</sel>
+          <arg type="NSTextContainer*">textContainer</arg>
+          <sel>proposedLineFragment:</sel>
+          <arg type="NSRect">lineFrag</arg>
+          <sel>glyphPosition:</sel>
+          <arg type="NSPoint">position</arg>
+          <sel>characterIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>cellSize</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>characterIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>drawWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>characterIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <sel>layoutManager:</sel>
+          <arg type="NSLayoutManager*">layoutManager</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>highlight:</sel>
+          <arg type="BOOL">flag</arg>
+          <sel>withFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAttachment:</sel>
+          <arg type="NSTextAttachment*">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>trackMouse:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>ofView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>atCharacterIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <sel>untilMouseUp:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>trackMouse:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>ofView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>untilMouseUp:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>wantsToTrackMouse</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>wantsToTrackMouseForEvent:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>ofView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>atCharacterIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <standards>
+          <NotOpenStep /> <GNUstep /> <MacOS-X />
+        </standards>
+      </protocol>
     </chapter>
   </body>
 </gsdoc>

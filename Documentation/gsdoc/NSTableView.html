@@ -3,7 +3,9 @@
     <title>NSTableView</title>
   </head>
   <body>
-    <h1>NSTableView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSTableView">NSTableView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
@@ -17,721 +19,1275 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 2000 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 2000 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSTableView class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSObject(NSTableDataSource)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSObject(NSTableViewDelegate)
+        category</a>
+        </li>
+        <li>
+          <a href="#004000000000">Software documentation for the NSTableView(GNUPrivate)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSTableView class
-      </h1>
-    <h2><a name="class$NSTableView">NSTableView</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSTableView.h<br />
+      </a></h1>
+    <h2><a name="class$NSTableView">NSTableView</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTableView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>addTableColumn:</a></h3>
-    - (void) <b>addTableColumn:</b> (NSTableColumn*)aColumn;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-addTableColumn:">-addTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-allowsColumnReordering">-allowsColumnReordering</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-allowsColumnResizing">-allowsColumnResizing</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-allowsColumnSelection">-allowsColumnSelection</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-allowsEmptySelection">-allowsEmptySelection</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-allowsMultipleSelection">-allowsMultipleSelection</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-autoresizesAllColumnsToFit">-autoresizesAllColumnsToFit</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-autosaveName">-autosaveName</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-autosaveTableColumns">-autosaveTableColumns</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-clickedColumn">-clickedColumn</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-clickedRow">-clickedRow</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-columnAtPoint:">-columnAtPoint:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-columnWithIdentifier:">-columnWithIdentifier:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-columnsInRect:">-columnsInRect:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-cornerView">-cornerView</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-dataSource">-dataSource</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-deselectAll:">-deselectAll:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-deselectColumn:">-deselectColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-deselectRow:">-deselectRow:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-doubleAction">-doubleAction</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-dragImageForRows:event:dragImageOffset:">-dragImageForRows:event:dragImageOffset:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-drawGridInClipRect:">-drawGridInClipRect:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-drawRow:clipRect:">-drawRow:clipRect:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-drawsGrid">-drawsGrid</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-editColumn:row:withEvent:select:">-editColumn:row:withEvent:select:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-editedColumn">-editedColumn</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-editedRow">-editedRow</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-frameOfCellAtColumn:row:">-frameOfCellAtColumn:row:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-gridColor">-gridColor</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-headerView">-headerView</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-highlightSelectionInClipRect:">-highlightSelectionInClipRect:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-highlightedTableColumn">-highlightedTableColumn</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-indicatorImageInTableColumn:">-indicatorImageInTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-intercellSpacing">-intercellSpacing</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-isColumnSelected:">-isColumnSelected:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-isRowSelected:">-isRowSelected:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-moveColumn:toColumn:">-moveColumn:toColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-noteNumberOfRowsChanged">-noteNumberOfRowsChanged</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-numberOfColumns">-numberOfColumns</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-numberOfRows">-numberOfRows</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-numberOfSelectedColumns">-numberOfSelectedColumns</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-numberOfSelectedRows">-numberOfSelectedRows</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-rectOfColumn:">-rectOfColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-rectOfRow:">-rectOfRow:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-reloadData">-reloadData</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-removeTableColumn:">-removeTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-rowAtPoint:">-rowAtPoint:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-rowHeight">-rowHeight</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-rowsInRect:">-rowsInRect:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-scrollColumnToVisible:">-scrollColumnToVisible:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-scrollRowToVisible:">-scrollRowToVisible:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectAll:">-selectAll:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectColumn:byExtendingSelection:">-selectColumn:byExtendingSelection:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectRow:byExtendingSelection:">-selectRow:byExtendingSelection:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectedColumn">-selectedColumn</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectedColumnEnumerator">-selectedColumnEnumerator</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectedRow">-selectedRow</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-selectedRowEnumerator">-selectedRowEnumerator</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAllowsColumnReordering:">-setAllowsColumnReordering:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAllowsColumnResizing:">-setAllowsColumnResizing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAllowsColumnSelection:">-setAllowsColumnSelection:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAllowsEmptySelection:">-setAllowsEmptySelection:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAllowsMultipleSelection:">-setAllowsMultipleSelection:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAutoresizesAllColumnsToFit:">-setAutoresizesAllColumnsToFit:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAutosaveName:">-setAutosaveName:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setAutosaveTableColumns:">-setAutosaveTableColumns:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setCornerView:">-setCornerView:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setDataSource:">-setDataSource:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setDoubleAction:">-setDoubleAction:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setDrawsGrid:">-setDrawsGrid:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setDropRow:dropOperation:">-setDropRow:dropOperation:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setFrame:">-setFrame:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setGridColor:">-setGridColor:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setHeaderView:">-setHeaderView:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setHighlightedTableColumn:">-setHighlightedTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setIndicatorImage:inTableColumn:">-setIndicatorImage:inTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setIntercellSpacing:">-setIntercellSpacing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setRowHeight:">-setRowHeight:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-setVerticalMotionCanBeginDrag:">-setVerticalMotionCanBeginDrag:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-sizeLastColumnToFit">-sizeLastColumnToFit</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-tableColumnWithIdentifier:">-tableColumnWithIdentifier:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-tableColumns">-tableColumns</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-textDidBeginEditing:">-textDidBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-textDidChange:">-textDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-textDidEndEditing:">-textDidEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-textShouldBeginEditing:">-textShouldBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-textShouldEndEditing:">-textShouldEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-tile">-tile</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView-verticalMotionCanBeginDrag">-verticalMotionCanBeginDrag</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTableView-addTableColumn:">addTableColumn:</a></h3>
+    - (void) <b>addTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsColumnReordering</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-allowsColumnReordering">allowsColumnReordering</a></h3>
     - (BOOL) <b>allowsColumnReordering</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsColumnResizing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-allowsColumnResizing">allowsColumnResizing</a></h3>
     - (BOOL) <b>allowsColumnResizing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsColumnSelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-allowsColumnSelection">allowsColumnSelection</a></h3>
     - (BOOL) <b>allowsColumnSelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsEmptySelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-allowsEmptySelection">allowsEmptySelection</a></h3>
     - (BOOL) <b>allowsEmptySelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsMultipleSelection</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-allowsMultipleSelection">allowsMultipleSelection</a></h3>
     - (BOOL) <b>allowsMultipleSelection</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoresizesAllColumnsToFit</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-autoresizesAllColumnsToFit">autoresizesAllColumnsToFit</a></h3>
     - (BOOL) <b>autoresizesAllColumnsToFit</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autosaveName</a></h3>
-    - (NSString*) <b>autosaveName</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-autosaveName">autosaveName</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>autosaveName</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autosaveTableColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-autosaveTableColumns">autosaveTableColumns</a></h3>
     - (BOOL) <b>autosaveTableColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>clickedColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-clickedColumn">clickedColumn</a></h3>
     - (int) <b>clickedColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>clickedRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-clickedRow">clickedRow</a></h3>
     - (int) <b>clickedRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>columnAtPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-columnAtPoint:">columnAtPoint:</a></h3>
     - (int) <b>columnAtPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>columnWithIdentifier:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-columnWithIdentifier:">columnWithIdentifier:</a></h3>
     - (int) <b>columnWithIdentifier:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>columnsInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-columnsInRect:">columnsInRect:</a></h3>
     - (NSRange) <b>columnsInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cornerView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>cornerView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-cornerView">cornerView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>cornerView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dataSource</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-dataSource">dataSource</a></h3>
     - (id) <b>dataSource</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectAll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-deselectAll:">deselectAll:</a></h3>
     - (void) <b>deselectAll:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-deselectColumn:">deselectColumn:</a></h3>
     - (void) <b>deselectColumn:</b> (int)columnIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectRow:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-deselectRow:">deselectRow:</a></h3>
     - (void) <b>deselectRow:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>doubleAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-doubleAction">doubleAction</a></h3>
     - (SEL) <b>doubleAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragImageForRows:event:dragImageOffset:</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForRows:</b> (NSArray*)dragRows<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)dragEvent<b> dragImageOffset:</b> (NSPoint*)dragImageOffset;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-dragImageForRows:event:dragImageOffset:">dragImageForRows:event:dragImageOffset:</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForRows:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)dragRows<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)dragEvent<b> dragImageOffset:</b> (NSPoint*)dragImageOffset;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawGridInClipRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-drawGridInClipRect:">drawGridInClipRect:</a></h3>
     - (void) <b>drawGridInClipRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawRow:clipRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-drawRow:clipRect:">drawRow:clipRect:</a></h3>
     - (void) <b>drawRow:</b> (int)rowIndex<b> clipRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsGrid</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-drawsGrid">drawsGrid</a></h3>
     - (BOOL) <b>drawsGrid</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>editColumn:row:withEvent:select:</a></h3>
-    - (void) <b>editColumn:</b> (int)columnIndex<b> row:</b> (int)rowIndex<b> withEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent<b> select:</b> (BOOL)flag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-editColumn:row:withEvent:select:">editColumn:row:withEvent:select:</a></h3>
+    - (void) <b>editColumn:</b> (int)columnIndex<b> row:</b> (int)rowIndex<b> withEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent<b> select:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>editedColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-editedColumn">editedColumn</a></h3>
     - (int) <b>editedColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>editedRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-editedRow">editedRow</a></h3>
     - (int) <b>editedRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frameOfCellAtColumn:row:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-frameOfCellAtColumn:row:">frameOfCellAtColumn:row:</a></h3>
     - (NSRect) <b>frameOfCellAtColumn:</b> (int)columnIndex<b> row:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>gridColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>gridColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-gridColor">gridColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>gridColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>headerView</a></h3>
-    - (<a href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*) <b>headerView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-headerView">headerView</a></h3>
+    - (<a rel="gsdoc" href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*) <b>headerView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlightSelectionInClipRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-highlightSelectionInClipRect:">highlightSelectionInClipRect:</a></h3>
     - (void) <b>highlightSelectionInClipRect:</b> (NSRect)clipRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>highlightedTableColumn</a></h3>
-    - (NSTableColumn*) <b>highlightedTableColumn</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-highlightedTableColumn">highlightedTableColumn</a></h3>
+    - (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*) <b>highlightedTableColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indicatorImageInTableColumn:</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>indicatorImageInTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-indicatorImageInTableColumn:">indicatorImageInTableColumn:</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>indicatorImageInTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>intercellSpacing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-intercellSpacing">intercellSpacing</a></h3>
     - (NSSize) <b>intercellSpacing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isColumnSelected:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-isColumnSelected:">isColumnSelected:</a></h3>
     - (BOOL) <b>isColumnSelected:</b> (int)columnIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRowSelected:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-isRowSelected:">isRowSelected:</a></h3>
     - (BOOL) <b>isRowSelected:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>moveColumn:toColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-moveColumn:toColumn:">moveColumn:toColumn:</a></h3>
     - (void) <b>moveColumn:</b> (int)columnIndex<b> toColumn:</b> (int)newIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>noteNumberOfRowsChanged</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-noteNumberOfRowsChanged">noteNumberOfRowsChanged</a></h3>
     - (void) <b>noteNumberOfRowsChanged</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-numberOfColumns">numberOfColumns</a></h3>
     - (int) <b>numberOfColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfRows</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-numberOfRows">numberOfRows</a></h3>
     - (int) <b>numberOfRows</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfSelectedColumns</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-numberOfSelectedColumns">numberOfSelectedColumns</a></h3>
     - (int) <b>numberOfSelectedColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfSelectedRows</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-numberOfSelectedRows">numberOfSelectedRows</a></h3>
     - (int) <b>numberOfSelectedRows</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectOfColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-rectOfColumn:">rectOfColumn:</a></h3>
     - (NSRect) <b>rectOfColumn:</b> (int)columnIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rectOfRow:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-rectOfRow:">rectOfRow:</a></h3>
     - (NSRect) <b>rectOfRow:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reloadData</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-reloadData">reloadData</a></h3>
     - (void) <b>reloadData</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeTableColumn:</a></h3>
-    - (void) <b>removeTableColumn:</b> (NSTableColumn*)aColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-removeTableColumn:">removeTableColumn:</a></h3>
+    - (void) <b>removeTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rowAtPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-rowAtPoint:">rowAtPoint:</a></h3>
     - (int) <b>rowAtPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rowHeight</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-rowHeight">rowHeight</a></h3>
     - (float) <b>rowHeight</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rowsInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-rowsInRect:">rowsInRect:</a></h3>
     - (NSRange) <b>rowsInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollColumnToVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-scrollColumnToVisible:">scrollColumnToVisible:</a></h3>
     - (void) <b>scrollColumnToVisible:</b> (int)columnIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollRowToVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-scrollRowToVisible:">scrollRowToVisible:</a></h3>
     - (void) <b>scrollRowToVisible:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectAll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectAll:">selectAll:</a></h3>
     - (void) <b>selectAll:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectColumn:byExtendingSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectColumn:byExtendingSelection:">selectColumn:byExtendingSelection:</a></h3>
     - (void) <b>selectColumn:</b> (int)columnIndex<b> byExtendingSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectRow:byExtendingSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectRow:byExtendingSelection:">selectRow:byExtendingSelection:</a></h3>
     - (void) <b>selectRow:</b> (int)rowIndex<b> byExtendingSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedColumn</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectedColumn">selectedColumn</a></h3>
     - (int) <b>selectedColumn</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedColumnEnumerator</a></h3>
-    - (NSEnumerator*) <b>selectedColumnEnumerator</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectedColumnEnumerator">selectedColumnEnumerator</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSEnumerator.html#class$NSEnumerator">NSEnumerator</a>*) <b>selectedColumnEnumerator</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedRow</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectedRow">selectedRow</a></h3>
     - (int) <b>selectedRow</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedRowEnumerator</a></h3>
-    - (NSEnumerator*) <b>selectedRowEnumerator</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-selectedRowEnumerator">selectedRowEnumerator</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSEnumerator.html#class$NSEnumerator">NSEnumerator</a>*) <b>selectedRowEnumerator</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsColumnReordering:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAllowsColumnReordering:">setAllowsColumnReordering:</a></h3>
     - (void) <b>setAllowsColumnReordering:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsColumnResizing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAllowsColumnResizing:">setAllowsColumnResizing:</a></h3>
     - (void) <b>setAllowsColumnResizing:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsColumnSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAllowsColumnSelection:">setAllowsColumnSelection:</a></h3>
     - (void) <b>setAllowsColumnSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsEmptySelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAllowsEmptySelection:">setAllowsEmptySelection:</a></h3>
     - (void) <b>setAllowsEmptySelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsMultipleSelection:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAllowsMultipleSelection:">setAllowsMultipleSelection:</a></h3>
     - (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoresizesAllColumnsToFit:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAutoresizesAllColumnsToFit:">setAutoresizesAllColumnsToFit:</a></h3>
     - (void) <b>setAutoresizesAllColumnsToFit:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutosaveName:</a></h3>
-    - (void) <b>setAutosaveName:</b> (NSString*)name;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAutosaveName:">setAutosaveName:</a></h3>
+    - (void) <b>setAutosaveName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutosaveTableColumns:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setAutosaveTableColumns:">setAutosaveTableColumns:</a></h3>
     - (void) <b>setAutosaveTableColumns:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCornerView:</a></h3>
-    - (void) <b>setCornerView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setCornerView:">setCornerView:</a></h3>
+    - (void) <b>setCornerView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDataSource:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setDataSource:">setDataSource:</a></h3>
     - (void) <b>setDataSource:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDoubleAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setDoubleAction:">setDoubleAction:</a></h3>
     - (void) <b>setDoubleAction:</b> (SEL)aSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsGrid:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setDrawsGrid:">setDrawsGrid:</a></h3>
     - (void) <b>setDrawsGrid:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDropRow:dropOperation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setDropRow:dropOperation:">setDropRow:dropOperation:</a></h3>
     - (void) <b>setDropRow:</b> (int)row<b> dropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFrame:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setFrame:">setFrame:</a></h3>
     - (void) <b>setFrame:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setGridColor:</a></h3>
-    - (void) <b>setGridColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setGridColor:">setGridColor:</a></h3>
+    - (void) <b>setGridColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHeaderView:</a></h3>
-    - (void) <b>setHeaderView:</b> (<a href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*)aHeaderView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setHeaderView:">setHeaderView:</a></h3>
+    - (void) <b>setHeaderView:</b> (<a rel="gsdoc" href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*)aHeaderView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHighlightedTableColumn:</a></h3>
-    - (void) <b>setHighlightedTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setHighlightedTableColumn:">setHighlightedTableColumn:</a></h3>
+    - (void) <b>setHighlightedTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIndicatorImage:inTableColumn:</a></h3>
-    - (void) <b>setIndicatorImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> inTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setIndicatorImage:inTableColumn:">setIndicatorImage:inTableColumn:</a></h3>
+    - (void) <b>setIndicatorImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> inTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIntercellSpacing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setIntercellSpacing:">setIntercellSpacing:</a></h3>
     - (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRowHeight:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setRowHeight:">setRowHeight:</a></h3>
     - (void) <b>setRowHeight:</b> (float)rowHeight;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setVerticalMotionCanBeginDrag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-setVerticalMotionCanBeginDrag:">setVerticalMotionCanBeginDrag:</a></h3>
     - (void) <b>setVerticalMotionCanBeginDrag:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sizeLastColumnToFit</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-sizeLastColumnToFit">sizeLastColumnToFit</a></h3>
     - (void) <b>sizeLastColumnToFit</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableColumnWithIdentifier:</a></h3>
-    - (NSTableColumn*) <b>tableColumnWithIdentifier:</b> (id)anObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-tableColumnWithIdentifier:">tableColumnWithIdentifier:</a></h3>
+    - (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*) <b>tableColumnWithIdentifier:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableColumns</a></h3>
-    - (NSArray*) <b>tableColumns</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-tableColumns">tableColumns</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>tableColumns</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidBeginEditing:</a></h3>
-    - (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-textDidBeginEditing:">textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidChange:</a></h3>
-    - (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-textDidChange:">textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidEndEditing:</a></h3>
-    - (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-textDidEndEditing:">textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldBeginEditing:</a></h3>
-    - (BOOL) <b>textShouldBeginEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-textShouldBeginEditing:">textShouldBeginEditing:</a></h3>
+    - (BOOL) <b>textShouldBeginEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldEndEditing:</a></h3>
-    - (BOOL) <b>textShouldEndEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-textShouldEndEditing:">textShouldEndEditing:</a></h3>
+    - (BOOL) <b>textShouldEndEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tile</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-tile">tile</a></h3>
     - (void) <b>tile</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>verticalMotionCanBeginDrag</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView-verticalMotionCanBeginDrag">verticalMotionCanBeginDrag</a></h3>
     - (BOOL) <b>verticalMotionCanBeginDrag</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSTableDataSource)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSTableDataSource)">NSTableDataSource</a>)</h2>
-    Declared: AppKit/NSTableView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSTableDataSource)">NSTableDataSource</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTableView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>numberOfRowsInTableView:</a></h3>
-    - (int) <b>numberOfRowsInTableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-numberOfRowsInTableView:">-numberOfRowsInTableView:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-tableView:acceptDrop:row:dropOperation:">-tableView:acceptDrop:row:dropOperation:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-tableView:objectValueForTableColumn:row:">-tableView:objectValueForTableColumn:row:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-tableView:setObjectValue:forTableColumn:row:">-tableView:setObjectValue:forTableColumn:row:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-tableView:validateDrop:proposedRow:proposedDropOperation:">-tableView:validateDrop:proposedRow:proposedDropOperation:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableDataSource)-tableView:writeRows:toPasteboard:">-tableView:writeRows:toPasteboard:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-numberOfRowsInTableView:">numberOfRowsInTableView:</a></h3>
+    - (int) <b>numberOfRowsInTableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:acceptDrop:row:dropOperation:</a></h3>
-    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> acceptDrop:</b> (id)info<b> row:</b> (int)row<b> dropOperation:</b> (NSTableViewDropOperation)operation;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-tableView:acceptDrop:row:dropOperation:">tableView:acceptDrop:row:dropOperation:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> acceptDrop:</b> (id)info<b> row:</b> (int)row<b> dropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:objectValueForTableColumn:row:</a></h3>
-    - (id) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> objectValueForTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-tableView:objectValueForTableColumn:row:">tableView:objectValueForTableColumn:row:</a></h3>
+    - (id) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> objectValueForTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:setObjectValue:forTableColumn:row:</a></h3>
-    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> setObjectValue:</b> (id)anObject<b> forTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-tableView:setObjectValue:forTableColumn:row:">tableView:setObjectValue:forTableColumn:row:</a></h3>
+    - (void) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> setObjectValue:</b> (id)anObject<b> forTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:validateDrop:proposedRow:proposedDropOperation:</a></h3>
-    - (NSDragOperation) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> validateDrop:</b> (id)info<b> proposedRow:</b> (int)row<b> proposedDropOperation:</b> (NSTableViewDropOperation)operation;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-tableView:validateDrop:proposedRow:proposedDropOperation:">tableView:validateDrop:proposedRow:proposedDropOperation:</a></h3>
+    - (NSDragOperation) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> validateDrop:</b> (id)info<b> proposedRow:</b> (int)row<b> proposedDropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:writeRows:toPasteboard:</a></h3>
-    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> writeRows:</b> (NSArray*)rows<b> toPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableDataSource)-tableView:writeRows:toPasteboard:">tableView:writeRows:toPasteboard:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> writeRows:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)rows<b> toPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSObject(NSTableViewDelegate)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSTableViewDelegate)">NSTableViewDelegate</a>)</h2>
-    Declared: AppKit/NSTableView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSTableViewDelegate)">NSTableViewDelegate</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTableView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>selectionShouldChangeInTableView:</a></h3>
-    - (BOOL) <b>selectionShouldChangeInTableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-selectionShouldChangeInTableView:">-selectionShouldChangeInTableView:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:didClickTableColumn:">-tableView:didClickTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:didDragTableColumn:">-tableView:didDragTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:mouseDownInHeaderOfTableColumn:">-tableView:mouseDownInHeaderOfTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:shouldEditTableColumn:row:">-tableView:shouldEditTableColumn:row:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:shouldSelectRow:">-tableView:shouldSelectRow:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:shouldSelectTableColumn:">-tableView:shouldSelectTableColumn:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableView:willDisplayCell:forTableColumn:row:">-tableView:willDisplayCell:forTableColumn:row:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableViewColumnDidMove:">-tableViewColumnDidMove:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableViewColumnDidResize:">-tableViewColumnDidResize:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableViewSelectionDidChange:">-tableViewSelectionDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSObject(NSTableViewDelegate)-tableViewSelectionIsChanging:">-tableViewSelectionIsChanging:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-selectionShouldChangeInTableView:">selectionShouldChangeInTableView:</a></h3>
+    - (BOOL) <b>selectionShouldChangeInTableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:didClickTableColumn:</a></h3>
-    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> didClickTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:didClickTableColumn:">tableView:didClickTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> didClickTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)tableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:didDragTableColumn:</a></h3>
-    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> didDragTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:didDragTableColumn:">tableView:didDragTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> didDragTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)tableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:mouseDownInHeaderOfTableColumn:</a></h3>
-    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> mouseDownInHeaderOfTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:mouseDownInHeaderOfTableColumn:">tableView:mouseDownInHeaderOfTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)tableView<b> mouseDownInHeaderOfTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)tableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:shouldEditTableColumn:row:</a></h3>
-    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldEditTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:shouldEditTableColumn:row:">tableView:shouldEditTableColumn:row:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldEditTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:shouldSelectRow:</a></h3>
-    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectRow:</b> (int)rowIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:shouldSelectRow:">tableView:shouldSelectRow:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectRow:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:shouldSelectTableColumn:</a></h3>
-    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:shouldSelectTableColumn:">tableView:shouldSelectTableColumn:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableView:willDisplayCell:forTableColumn:row:</a></h3>
-    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> willDisplayCell:</b> (id)aCell<b> forTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableView:willDisplayCell:forTableColumn:row:">tableView:willDisplayCell:forTableColumn:row:</a></h3>
+    - (void) <b>tableView:</b> (<a rel="gsdoc" href="#class$NSTableView">NSTableView</a>*)aTableView<b> willDisplayCell:</b> (id)aCell<b> forTableColumn:</b> (<a rel="gsdoc" href="NSTableColumn.html#class$NSTableColumn">NSTableColumn</a>*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableViewColumnDidMove:</a></h3>
-    - (void) <b>tableViewColumnDidMove:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableViewColumnDidMove:">tableViewColumnDidMove:</a></h3>
+    - (void) <b>tableViewColumnDidMove:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableViewColumnDidResize:</a></h3>
-    - (void) <b>tableViewColumnDidResize:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableViewColumnDidResize:">tableViewColumnDidResize:</a></h3>
+    - (void) <b>tableViewColumnDidResize:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableViewSelectionDidChange:</a></h3>
-    - (void) <b>tableViewSelectionDidChange:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableViewSelectionDidChange:">tableViewSelectionDidChange:</a></h3>
+    - (void) <b>tableViewSelectionDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tableViewSelectionIsChanging:</a></h3>
-    - (void) <b>tableViewSelectionIsChanging:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTableViewDelegate)-tableViewSelectionIsChanging:">tableViewSelectionIsChanging:</a></h3>
+    - (void) <b>tableViewSelectionIsChanging:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="004000000000">
         Software documentation for the NSTableView(GNUPrivate)
         category
-      </h1>
-    <h2><a href="#class$NSTableView">NSTableView</a>(<a name="category$NSTableView(GNUPrivate)">GNUPrivate</a>)</h2>
-    Declared: AppKit/NSTableView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSTableView">NSTableView</a>(<a name="category$NSTableView(GNUPrivate)">GNUPrivate</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTableView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_selectColumn:modifiers:</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView(GNUPrivate)-_selectColumn:modifiers:">-_selectColumn:modifiers:</a></li>
+      <li><a rel="gsdoc" href="NSTableView.html#method$NSTableView(GNUPrivate)-_sendDoubleActionForColumn:">-_sendDoubleActionForColumn:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTableView(GNUPrivate)-_selectColumn:modifiers:">_selectColumn:modifiers:</a></h3>
     - (void) <b>_selectColumn:</b> (int)columnIndex<b> modifiers:</b> (unsigned int)modifiers;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_sendDoubleActionForColumn:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTableView(GNUPrivate)-_sendDoubleActionForColumn:">_sendDoubleActionForColumn:</a></h3>
     - (void) <b>_sendDoubleActionForColumn:</b> (int)columnIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

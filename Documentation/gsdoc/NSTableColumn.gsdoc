@@ -1,242 +1,330 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc base="NSTableColumn" prev="NSTabViewItem.html" next="NSTableHeaderCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTableColumn" up="Gui">
   <head>
     <title>NSTableColumn</title>
     <author name="Nicola Pero">
-      <email address="n.pero@mi.flashnet.it"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
-      <heading>Description of NSTableColumn</heading>
+      <heading>Class Description</heading>
+      <p>
+        NSTableColumn objects represent columns in
+        NSTableViews.
+      </p>
+      <section>
+        <heading>The Column Identifier</heading>
         <p>
-          NSTableColumn objects represent columns in NSTableViews.  
+          Each NSTableColumn object is identified by an object,
+          called the column identifier. The reason is that,
+          after a column has been added to a table view, the user
+          might move the columns around, so there is a need to
+          identify the columns regardless of their position in
+          the table.
         </p>
-       <section>
-         <heading>The Column Identifier</heading>
-            <p>
-              Each NSTableColumn object is identified by an object, called 
- 	      the column identifier.  The reason is that, after a column has been 
-	      added to a table view, the user might move the columns around, so  
-	      there is a need to identify the columns regardless of their position 
-	      in the table.  
-            </p>
-            <p>
-              The identifier is typically a string describing the column.  
-	      This identifier object is never displayed to the user !   
-	      It is only used internally by the program to identify 
-	      the column - so yes, you may use a funny string for it 
-	      and nobody will know, except people reading the code. 
-            </p>
-        </section>
-        <section>
-          <heading>Information Stored in an NSTableColumn Object</heading>
-            <p>
-              An NSTableColumn object mainly keeps information about the width
-	      of the column, its minimum and maximum width; whether the column 
-	      can be edited or resized; and the cells used to draw the column 
-	      header and the data in the column.  You can change all these 
-	      attributes of the column by calling the appropriate methods.  
-	      Please note that the table column does not hold nor has access 
-	      to the data to be displayed in the column; this data is maintained 
-	      in the table view's data source, as described in the NSTableView 
-	      documentation.  A last hint: to set the title of a table column, 
-	      ask the table column for its header cell, and set the string value 
-	      of this header cell to the desired title.
-            </p>
-        </section>
-    </chapter>
-
-    <chapter>
-      <heading>NSTableColumn Reference</heading>
+        <p>
+          The identifier is typically a string describing the
+          column. This identifier object is never displayed to
+          the user ! It is only used internally by the program to
+          identify the column - so yes, you may use a funny
+          string for it and nobody will know, except people
+          reading the code.
+        </p>
+      </section>
+      <section>
+        <heading>
+          Information Stored in an NSTableColumn Object
+        </heading>
+        <p>
+          An NSTableColumn object mainly keeps information about the
+          width of the column, its minimum and maximum width;
+          whether the column can be edited or resized; and the
+          cells used to draw the column header and the data in
+          the column. You can change all these attributes of the
+          column by calling the appropriate methods. Please note
+          that the table column does not hold nor has access to
+          the data to be displayed in the column; this data is
+          maintained in the table view's data source, as
+          described in the NSTableView documentation. A last
+          hint: to set the title of a table column, ask the table
+          column for its header cell, and set the string value
+          of this header cell to the desired title.
+        </p>
+      </section>
       <class name="NSTableColumn" super="NSObject">
-        <declared>Gui/NSTableColumn.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-	    <p>
-              NSTableColumn objects represent columns in NSTableViews.  
-            </p>
-          </desc>
-   
-        <method type="id">
+        <declared>AppKit/NSTableColumn.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSCell*">
           <sel>dataCell</sel>
           <desc>
-	  Return the cell used to display data in the column.  The default 
-	  data cell is an NSTextFieldCell.
+            Return the cell used to display data in the column.
+            The default data cell is an NSTextFieldCell.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
-        <method type="id">
+        <method type="NSCell*">
+          <sel>dataCellForRow:</sel>
+          <arg type="int">row</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSCell*">
           <sel>headerCell</sel>
           <desc>
-	  Return the cell used to display the column title.  The default 
-	  header cell is an NSTableHeaderCell.
+            Return the cell used to display the column title.
+            The default header cell is an NSTableHeaderCell.
           </desc>
-        </method>
-        <method type="id">
-          <sel>initWithIdentifier:</sel>
-          <arg>anObject</arg>
-          <desc>
-	  Initialize the column.  anObject is an object used to identify 
-	  the column; it is usually a string, but might be any kind of object.  
-	  anObject is retained.
-          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>identifier</sel>
           <desc>
-	  Return the column identifier, an object used to identify the column.  
-	  This object is usually a string, but might be any kind of object.
+            Return the column identifier, an object used to
+            identify the column. This object is usually a
+            string, but might be any kind of object.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithIdentifier:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            Initialize the column. <var>anObject</var> is an
+            object used to identify the column; it is usually a
+            string, but might be any kind of object.
+            <var>anObject</var> is retained.
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isEditable</sel>
           <desc>
-	  Return whether data displayed in the column can be edited 
-	  by the user by double-cliking on them.
-	  </desc>
+            Return whether data displayed in the column can be
+            edited by the user by double-cliking on them.
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isResizable</sel>
           <desc>
-	  Return whether the column might be resized by the user by dragging 
-	  the column header border.
+            Return whether the column might be resized by the
+            user by dragging the column header border.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>maxWidth</sel>
           <desc>
-	  Return the column's max width.  The column can in no way be resized 
-	  to a width bigger than this max width.  The default max width is 
-	  100000.
+            Return the column's max width. The column can in no
+            way be resized to a width bigger than this max width.
+            The default max width is 100000.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>minWidth</sel>
           <desc>
-	  Return the column's min width.  The column can in no way be resized 
-	  to a width smaller than this min width.  The default min width is 
-	  zero.	  
+            Return the column's min width. The column can in no
+            way be resized to a width smaller than this min width.
+            The default min width is zero.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setDataCell:</sel>
           <arg type="NSCell*">aCell</arg>
           <desc>
-	  Set the cell used to display data in the column.  aCell can't be nil, 
-	  otherwise a warning will be generated and the method ignored.  The old 
-	  cell is released, the new one is retained.
-	  If you want to change the attributes in which a single row in a column 
-	  is displayed, you should better use a delegate for your 
-	  NSTableView implementing tableView:willDisplayCell:forTableColumn:row:. 
+            Set the cell used to display data in the column.
+            <var>aCell</var> can't be <code>nil</code>, otherwise
+            a warning will be generated and the method ignored. The
+            old cell is released, the new one is retained. If you
+            want to change the attributes in which a single row in
+            a column is displayed, you should better use a delegate
+            for your NSTableView implementing
+            tableView:willDisplayCell:forTableColumn:row:.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setEditable:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
-	  Set whether data in the column might be edited by the user by 
-	  double-cliking on them.
+            Set whether data in the column might be edited by the
+            user by double-cliking on them.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setHeaderCell:</sel>
           <arg type="NSCell*">aCell</arg>
           <desc>
-	  Set the cell used to display the column header.  aCell can't be nil, 
-	  otherwise a warning will be generated and the method call ignored.  
-	  The old cell is released, the new one is retained.
+            Set the cell used to display the column header.
+            <var>aCell</var> can't be <code>nil</code>, otherwise
+            a warning will be generated and the method call ignored.
+            The old cell is released, the new one is retained.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setIdentifier:</sel>
           <arg type="id">anObject</arg>
           <desc>
-	  Set the identifier used to identify the table.  The old identifier 
-	  is released, and the new one is retained.  
+            Set the identifier used to identify the table. The old
+            identifier is released, and the new one is
+            retained.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMaxWidth:</sel>
           <arg type="float">maxWidth</arg>
           <desc>
-	  Set the max width of the table column, eventually adjusting 
-	  the width of the column if it is bigger than the new max width.
-	  In no way a table column can be made bigger than its max width.
+            Set the max width of the table column, eventually
+            adjusting the width of the column if it is bigger
+            than the new max width. In no way a table column can
+            be made bigger than its max width.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMinWidth:</sel>
           <arg type="float">minWidth</arg>
           <desc>
-	  Set the min width of the table column, eventually adjusting 
-	  the width of the column if it is smaller than the new min width.
-	  In no way a table column can be made smaller than its min width.
+            Set the min width of the table column, eventually
+            adjusting the width of the column if it is
+            smaller than the new min width. In no way a table
+            column can be made smaller than its min width.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setResizable:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
-	  Set whether the user can resize the table column by dragging the 
-	  border of its header with the mouse.  The table column can be 
-	  resized programmatically regardless of this setting.
+            Set whether the user can resize the table column by
+            dragging the border of its header with the mouse.
+            The table column can be resized programmatically
+            regardless of this setting.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTableView:</sel>
           <arg type="NSTableView*">aTableView</arg>
           <desc>
-	  Set the table view corresponding to this table column. 
-	  This method is invoked internally by the table view, and you should 
-	  not call it directly; it is exposed because you may want to override 
-	  it in subclasses.  To use the table column in a table view, you should 
-	  use NSTableView's addTableColumn: instead.
+            Set the table view corresponding to this table column.
+            This method is invoked internally by the table view,
+            and you should not call it directly; it is exposed
+            because you may want to override it in subclasses.
+            To use the table column in a table view, you should use
+            NSTableView's addTableColumn: instead.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setWidth:</sel>
           <arg type="float">newWidth</arg>
           <desc>
-	  Set the width of the table column.  Before being resized, the new 
-	  width is constrained to the table column minimum and maximum width: 
-	  if newWidth is smaller than the table column's min width, 
-	  the table column is simply resized to its min width.  If newWidth 
-	  is bigger than the table column's max width, the table column 
-	  is simply resized to its max width.  Otherwise, it is resized 
-	  to newWidth.  If the width of the table was actually changed, 
-	  the table view (if any) is redisplayed (by calling tile), and 
-	  the NSTableViewColumnDidResizeNotification is posted on behalf 
-	  of the table view.
+            Set the width of the table column. Before being
+            resized, the new width is constrained to the table
+            column minimum and maximum width: if
+            <var>newWidth</var> is smaller than the table
+            column's min width, the table column is simply
+            resized to its min width. If <var>newWidth</var> is
+            bigger than the table column's max width, the table
+            column is simply resized to its max width.
+            Otherwise, it is resized to <var>newWidth</var>.
+            If the width of the table was actually changed, the
+            table view (if any) is redisplayed (by calling tile),
+            and the NSTableViewColumnDidResizeNotification is
+            posted on behalf of the table view.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>sizeToFit</sel>
           <desc>
-	  Change the width of the column to be just enough to display its 
-	  header; change the minimum width and maximum width to allow 
-	  the column to have this width (if the minimum width is bigger 
-	  than the column header width, it is reduced to it; if the maximum 
-	  width is smaller than the column header width, it is increased 
-	  to it).  
+            Change the width of the column to be just enough to
+            display its header; change the minimum width and
+            maximum width to allow the column to have this
+            width (if the minimum width is bigger than the column
+            header width, it is reduced to it; if the maximum
+            width is smaller than the column header width, it is
+            increased to it).
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSTableView*">
           <sel>tableView</sel>
           <desc>
-	  Return the table view the column belongs to, or nil if 
-	  the table column was not added to any table view.
+            Return the table view the column belongs to, or
+            <code>nil</code> if the table column was not added
+            to any table view.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>width</sel>
           <desc>
-	  Return the width of the table column.  
+            Return the width of the table column.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

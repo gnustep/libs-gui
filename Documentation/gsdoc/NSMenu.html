@@ -3,7 +3,9 @@
     <title>NSMenu</title>
   </head>
   <body>
-    <h1>NSMenu</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSMenu">NSMenu</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
@@ -32,377 +34,691 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 1999 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSMenu class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the NSMenu(GNUstepExtra)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSObject(NSMenuActionResponder)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSMenu class
-      </h1>
-    <h2><a name="class$NSMenu">NSMenu</a> : NSObject</h2>
-    Declared: AppKit/NSMenu.h<br />
-    Conform: NSCoding<br />
-    Conform: NSCopying<br />
+      </a></h1>
+    <h2><a name="class$NSMenu">NSMenu</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenu.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>menuZone</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu+menuZone">+menuZone</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu+popUpContextMenu:withEvent:forView:">+popUpContextMenu:withEvent:forView:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu+setMenuZone:">+setMenuZone:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-addItem:">-addItem:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-addItemWithTitle:action:keyEquivalent:">-addItemWithTitle:action:keyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-attachedMenu">-attachedMenu</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-autoenablesItems">-autoenablesItems</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-helpRequested:">-helpRequested:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItem:">-indexOfItem:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItemWithRepresentedObject:">-indexOfItemWithRepresentedObject:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItemWithSubmenu:">-indexOfItemWithSubmenu:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItemWithTag:">-indexOfItemWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItemWithTarget:andAction:">-indexOfItemWithTarget:andAction:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-indexOfItemWithTitle:">-indexOfItemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-initWithTitle:">-initWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-insertItem:atIndex:">-insertItem:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-insertItemWithTitle:action:keyEquivalent:atIndex:">-insertItemWithTitle:action:keyEquivalent:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-isAttached">-isAttached</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-isTornOff">-isTornOff</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-itemArray">-itemArray</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-itemAtIndex:">-itemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-itemChanged:">-itemChanged:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-itemWithTag:">-itemWithTag:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-itemWithTitle:">-itemWithTitle:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-locationForSubmenu:">-locationForSubmenu:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-menuChangedMessagesEnabled">-menuChangedMessagesEnabled</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-menuRepresentation">-menuRepresentation</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-numberOfItems">-numberOfItems</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-performActionForItemAtIndex:">-performActionForItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-performKeyEquivalent:">-performKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-removeItem:">-removeItem:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-removeItemAtIndex:">-removeItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setAutoenablesItems:">-setAutoenablesItems:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setMenuChangedMessagesEnabled:">-setMenuChangedMessagesEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setMenuRepresentation:">-setMenuRepresentation:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setSubmenu:forItem:">-setSubmenu:forItem:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setSupermenu:">-setSupermenu:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-setTitle:">-setTitle:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-sizeToFit">-sizeToFit</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-submenuAction:">-submenuAction:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-supermenu">-supermenu</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-title">-title</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu-update">-update</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSMenu+menuZone">menuZone</a></h3>
     + (NSZone*) <b>menuZone</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>popUpContextMenu:withEvent:forView:</a></h3>
-    + (void) <b>popUpContextMenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)menu<b> withEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> forView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)view;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu+popUpContextMenu:withEvent:forView:">popUpContextMenu:withEvent:forView:</a></h3>
+    + (void) <b>popUpContextMenu:</b> (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*)menu<b> withEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> forView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)view;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenuZone:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu+setMenuZone:">setMenuZone:</a></h3>
     + (void) <b>setMenuZone:</b> (NSZone*)zone;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addItem:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-addItem:">addItem:</a></h3>
     - (void) <b>addItem:</b> (id)newItem;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addItemWithTitle:action:keyEquivalent:</a></h3>
-    - (id) <b>addItemWithTitle:</b> (NSString*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (NSString*)keyEquiv;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-addItemWithTitle:action:keyEquivalent:">addItemWithTitle:action:keyEquivalent:</a></h3>
+    - (id) <b>addItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)keyEquiv;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>attachedMenu</a></h3>
-    - (<a href="#class$NSMenu">NSMenu</a>*) <b>attachedMenu</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-attachedMenu">attachedMenu</a></h3>
+    - (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*) <b>attachedMenu</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>autoenablesItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-autoenablesItems">autoenablesItems</a></h3>
     - (BOOL) <b>autoenablesItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>helpRequested:</a></h3>
-    - (void) <b>helpRequested:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-helpRequested:">helpRequested:</a></h3>
+    - (void) <b>helpRequested:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItem:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItem:">indexOfItem:</a></h3>
     - (int) <b>indexOfItem:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithRepresentedObject:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItemWithRepresentedObject:">indexOfItemWithRepresentedObject:</a></h3>
     - (int) <b>indexOfItemWithRepresentedObject:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithSubmenu:</a></h3>
-    - (int) <b>indexOfItemWithSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)anObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItemWithSubmenu:">indexOfItemWithSubmenu:</a></h3>
+    - (int) <b>indexOfItemWithSubmenu:</b> (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItemWithTag:">indexOfItemWithTag:</a></h3>
     - (int) <b>indexOfItemWithTag:</b> (int)aTag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTarget:andAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItemWithTarget:andAction:">indexOfItemWithTarget:andAction:</a></h3>
     - (int) <b>indexOfItemWithTarget:</b> (id)anObject<b> andAction:</b> (SEL)actionSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithTitle:</a></h3>
-    - (int) <b>indexOfItemWithTitle:</b> (NSString*)aTitle;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-indexOfItemWithTitle:">indexOfItemWithTitle:</a></h3>
+    - (int) <b>indexOfItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aTitle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithTitle:</a></h3>
-    - (id) <b>initWithTitle:</b> (NSString*)aTitle;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-initWithTitle:">initWithTitle:</a></h3>
+    - (id) <b>initWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aTitle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertItem:atIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-insertItem:atIndex:">insertItem:atIndex:</a></h3>
     - (void) <b>insertItem:</b> (id)newItem<b> atIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertItemWithTitle:action:keyEquivalent:atIndex:</a></h3>
-    - (id) <b>insertItemWithTitle:</b> (NSString*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (NSString*)charCode<b> atIndex:</b> (unsigned int)index;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-insertItemWithTitle:action:keyEquivalent:atIndex:">insertItemWithTitle:action:keyEquivalent:atIndex:</a></h3>
+    - (id) <b>insertItemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)charCode<b> atIndex:</b> (unsigned int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isAttached</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-isAttached">isAttached</a></h3>
     - (BOOL) <b>isAttached</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isTornOff</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-isTornOff">isTornOff</a></h3>
     - (BOOL) <b>isTornOff</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemArray</a></h3>
-    - (NSArray*) <b>itemArray</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-itemArray">itemArray</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>itemArray</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-itemAtIndex:">itemAtIndex:</a></h3>
     - (id) <b>itemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemChanged:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-itemChanged:">itemChanged:</a></h3>
     - (void) <b>itemChanged:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemWithTag:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-itemWithTag:">itemWithTag:</a></h3>
     - (id) <b>itemWithTag:</b> (int)aTag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemWithTitle:</a></h3>
-    - (id) <b>itemWithTitle:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-itemWithTitle:">itemWithTitle:</a></h3>
+    - (id) <b>itemWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>locationForSubmenu:</a></h3>
-    - (NSPoint) <b>locationForSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)aSubmenu;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-locationForSubmenu:">locationForSubmenu:</a></h3>
+    - (NSPoint) <b>locationForSubmenu:</b> (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*)aSubmenu;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuChangedMessagesEnabled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-menuChangedMessagesEnabled">menuChangedMessagesEnabled</a></h3>
     - (BOOL) <b>menuChangedMessagesEnabled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>menuRepresentation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-menuRepresentation">menuRepresentation</a></h3>
     - (id) <b>menuRepresentation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-numberOfItems">numberOfItems</a></h3>
     - (int) <b>numberOfItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performActionForItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-performActionForItemAtIndex:">performActionForItemAtIndex:</a></h3>
     - (void) <b>performActionForItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>performKeyEquivalent:</a></h3>
-    - (BOOL) <b>performKeyEquivalent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-performKeyEquivalent:">performKeyEquivalent:</a></h3>
+    - (BOOL) <b>performKeyEquivalent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItem:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-removeItem:">removeItem:</a></h3>
     - (void) <b>removeItem:</b> (id)anItem;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-removeItemAtIndex:">removeItemAtIndex:</a></h3>
     - (void) <b>removeItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAutoenablesItems:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setAutoenablesItems:">setAutoenablesItems:</a></h3>
     - (void) <b>setAutoenablesItems:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenuChangedMessagesEnabled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setMenuChangedMessagesEnabled:">setMenuChangedMessagesEnabled:</a></h3>
     - (void) <b>setMenuChangedMessagesEnabled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMenuRepresentation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setMenuRepresentation:">setMenuRepresentation:</a></h3>
     - (void) <b>setMenuRepresentation:</b> (id)menuRep;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSubmenu:forItem:</a></h3>
-    - (void) <b>setSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)aMenu<b> forItem:</b> (id)anItem;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setSubmenu:forItem:">setSubmenu:forItem:</a></h3>
+    - (void) <b>setSubmenu:</b> (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*)aMenu<b> forItem:</b> (id)anItem;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSupermenu:</a></h3>
-    - (void) <b>setSupermenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)supermenu;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setSupermenu:">setSupermenu:</a></h3>
+    - (void) <b>setSupermenu:</b> (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*)supermenu;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (NSString*)aTitle;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-setTitle:">setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aTitle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>sizeToFit</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-sizeToFit">sizeToFit</a></h3>
     - (void) <b>sizeToFit</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>submenuAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-submenuAction:">submenuAction:</a></h3>
     - (void) <b>submenuAction:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>supermenu</a></h3>
-    - (<a href="#class$NSMenu">NSMenu</a>*) <b>supermenu</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-supermenu">supermenu</a></h3>
+    - (<a rel="gsdoc" href="#class$NSMenu">NSMenu</a>*) <b>supermenu</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>title</a></h3>
-    - (NSString*) <b>title</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-title">title</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>title</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>update</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu-update">update</a></h3>
     - (void) <b>update</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the NSMenu(GNUstepExtra)
         category
-      </h1>
-    <h2><a href="#class$NSMenu">NSMenu</a>(<a name="category$NSMenu(GNUstepExtra)">GNUstepExtra</a>)</h2>
-    Declared: AppKit/NSMenu.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSMenu">NSMenu</a>(<a name="category$NSMenu(GNUstepExtra)">GNUstepExtra</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenu.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_ownedByPopUp</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-_ownedByPopUp">-_ownedByPopUp</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-_rightMouseDisplay:">-_rightMouseDisplay:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-_setOwnedByPopUp:">-_setOwnedByPopUp:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-close">-close</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-closeTransient">-closeTransient</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-display">-display</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-displayTransient">-displayTransient</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-isFollowTransient">-isFollowTransient</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-isPartlyOffScreen">-isPartlyOffScreen</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-nestedCheckOffScreen">-nestedCheckOffScreen</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-nestedSetFrameOrigin:">-nestedSetFrameOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-shiftOnScreen">-shiftOnScreen</a></li>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSMenu(GNUstepExtra)-window">-window</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-_ownedByPopUp">_ownedByPopUp</a></h3>
     - (BOOL) <b>_ownedByPopUp</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_rightMouseDisplay:</a></h3>
-    - (void) <b>_rightMouseDisplay:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-_rightMouseDisplay:">_rightMouseDisplay:</a></h3>
+    - (void) <b>_rightMouseDisplay:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>_setOwnedByPopUp:</a></h3>
-    - (void) <b>_setOwnedByPopUp:</b> (<a href="NSPopUpButtonCell.html#class$NSPopUpButtonCell">NSPopUpButtonCell</a>*)popUp;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-_setOwnedByPopUp:">_setOwnedByPopUp:</a></h3>
+    - (void) <b>_setOwnedByPopUp:</b> (<a rel="gsdoc" href="NSPopUpButtonCell.html#class$NSPopUpButtonCell">NSPopUpButtonCell</a>*)popUp;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>close</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-close">close</a></h3>
     - (void) <b>close</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>closeTransient</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-closeTransient">closeTransient</a></h3>
     - (void) <b>closeTransient</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>display</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-display">display</a></h3>
     - (void) <b>display</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>displayTransient</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-displayTransient">displayTransient</a></h3>
     - (void) <b>displayTransient</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isFollowTransient</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-isFollowTransient">isFollowTransient</a></h3>
     - (BOOL) <b>isFollowTransient</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isPartlyOffScreen</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-isPartlyOffScreen">isPartlyOffScreen</a></h3>
     - (BOOL) <b>isPartlyOffScreen</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nestedCheckOffScreen</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-nestedCheckOffScreen">nestedCheckOffScreen</a></h3>
     - (void) <b>nestedCheckOffScreen</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nestedSetFrameOrigin:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-nestedSetFrameOrigin:">nestedSetFrameOrigin:</a></h3>
     - (void) <b>nestedSetFrameOrigin:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shiftOnScreen</a></h3>
+      
+            Set the frame origin of the receiver to
+            <var>aPoint</var>. If a submenu of the receiver is
+            attached. The frame origin of the submenu is set
+            appropriately.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-shiftOnScreen">shiftOnScreen</a></h3>
     - (void) <b>shiftOnScreen</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>window</a></h3>
-    - (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenu(GNUstepExtra)-window">window</a></h3>
+    - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSObject(NSMenuActionResponder)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSMenuActionResponder)">NSMenuActionResponder</a>)</h2>
-    Declared: AppKit/NSMenu.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSMenuActionResponder)">NSMenuActionResponder</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenu.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>validateMenuItem:</a></h3>
-    - (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)aMenuItem;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenu.html#method$NSObject(NSMenuActionResponder)-validateMenuItem:">-validateMenuItem:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSMenuActionResponder)-validateMenuItem:">validateMenuItem:</a></h3>
+    - (BOOL) <b>validateMenuItem:</b> (<a rel="gsdoc" href="NSMenuItem.html#class$NSMenuItem">NSMenuItem</a>*)aMenuItem;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

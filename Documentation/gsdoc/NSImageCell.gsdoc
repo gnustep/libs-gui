@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSImageCell" next="NSImageRep" prev="NSImage" up="NSActionCell">
+<gsdoc base="NSImageCell" up="Gui">
   <head>
     <title>NSImageCell</title>
     <author name="Jonathan Gapen">
@@ -12,6 +12,7 @@
     <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSImageCell class
@@ -19,40 +20,68 @@
       <class name="NSImageCell" super="NSCell">
         <declared>AppKit/NSImageCell.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSImageAlignment">
           <sel>imageAlignment</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImageFrameStyle">
           <sel>imageFrameStyle</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSImageScaling">
           <sel>imageScaling</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setImageAlignment:</sel>
           <arg type="NSImageAlignment">anAlignment</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setImageFrameStyle:</sel>
           <arg type="NSImageFrameStyle">aFrameStyle</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setImageScaling:</sel>
           <arg type="NSImageScaling">scaling</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

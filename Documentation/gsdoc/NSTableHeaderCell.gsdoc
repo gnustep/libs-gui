@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSTableHeaderCell" next="NSTableHeaderView" prev="NSTabViewItem" up="NSActionCell">
+<gsdoc base="NSTableHeaderCell" up="Gui">
   <head>
     <title>NSTableHeaderCell</title>
     <author name="Nicola Pero">
@@ -11,6 +11,7 @@
     <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSTableHeaderCell class
@@ -18,7 +19,11 @@
       <class name="NSTableHeaderCell" super="NSTextFieldCell">
         <declared>AppKit/NSTableHeaderCell.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

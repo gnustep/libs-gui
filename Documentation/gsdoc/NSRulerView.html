@@ -3,7 +3,9 @@
     <title>NSRulerView</title>
   </head>
   <body>
-    <h1>NSRulerView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSRulerView">NSRulerView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
@@ -13,277 +15,501 @@
       </dd>
     </dl>
     <blockquote>
-The NSRulerView class.    </blockquote>
-    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
-    <h1>
+      The NSRulerView class.
+    </blockquote>
+    <p><b>Copyright:</b> (C) 2001 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSRulerView class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSObject(NSRulerViewClient)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSRulerView class
-      </h1>
-    <h2><a name="class$NSRulerView">NSRulerView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
-    Declared: AppKit/NSRulerView.h<br />
+      </a></h1>
+    <h2><a name="class$NSRulerView">NSRulerView</a> : <a rel="gsdoc" href="NSView.html#class$NSView">NSView</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSRulerView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a></h3>
-    + (void) <b>registerUnitWithName:</b> (NSString*)unitName<b> abbreviation:</b> (NSString*)abbreviation<b> unitToPointsConversionFactor:</b> (float)conversionFactor<b> stepUpCycle:</b> (NSArray*)stepUpCycle<b> stepDownCycle:</b> (NSArray*)stepDownCycle;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView+registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:">+registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-accessoryView">-accessoryView</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-addMarker:">-addMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-baselineLocation">-baselineLocation</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-clientView">-clientView</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-drawHashMarksAndLabelsInRect:">-drawHashMarksAndLabelsInRect:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-drawMarkersInRect:">-drawMarkersInRect:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-initWithScrollView:orientation:">-initWithScrollView:orientation:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-invalidateHashMarks">-invalidateHashMarks</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-isFlipped">-isFlipped</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-markers">-markers</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-measurementUnits">-measurementUnits</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-moveRulerlineFromLocation:toLocation:">-moveRulerlineFromLocation:toLocation:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-orientation">-orientation</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-originOffset">-originOffset</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-removeMarker:">-removeMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-requiredThickness">-requiredThickness</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-reservedThicknessForAccessoryView">-reservedThicknessForAccessoryView</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-reservedThicknessForMarkers">-reservedThicknessForMarkers</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-ruleThickness">-ruleThickness</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-scrollView">-scrollView</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setAccessoryView:">-setAccessoryView:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setClientView:">-setClientView:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setMarkers:">-setMarkers:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setMeasurementUnits:">-setMeasurementUnits:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setOrientation:">-setOrientation:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setOriginOffset:">-setOriginOffset:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setReservedThicknessForAccessoryView:">-setReservedThicknessForAccessoryView:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setReservedThicknessForMarkers:">-setReservedThicknessForMarkers:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setRuleThickness:">-setRuleThickness:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-setScrollView:">-setScrollView:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSRulerView-trackMarker:withMouseEvent:">-trackMarker:withMouseEvent:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSRulerView+registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:">registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a></h3>
+    + (void) <b>registerUnitWithName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)unitName<b> abbreviation:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)abbreviation<b> unitToPointsConversionFactor:</b> (float)conversionFactor<b> stepUpCycle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)stepUpCycle<b> stepDownCycle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)stepDownCycle;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>accessoryView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-accessoryView">accessoryView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addMarker:</a></h3>
-    - (void) <b>addMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-addMarker:">addMarker:</a></h3>
+    - (void) <b>addMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>baselineLocation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-baselineLocation">baselineLocation</a></h3>
     - (float) <b>baselineLocation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>clientView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>clientView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-clientView">clientView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>clientView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawHashMarksAndLabelsInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-drawHashMarksAndLabelsInRect:">drawHashMarksAndLabelsInRect:</a></h3>
     - (void) <b>drawHashMarksAndLabelsInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawMarkersInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-drawMarkersInRect:">drawMarkersInRect:</a></h3>
     - (void) <b>drawMarkersInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithScrollView:orientation:</a></h3>
-    - (id) <b>initWithScrollView:</b> (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)aScrollView<b> orientation:</b> (NSRulerOrientation)orientation;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-initWithScrollView:orientation:">initWithScrollView:orientation:</a></h3>
+    - (id) <b>initWithScrollView:</b> (<a rel="gsdoc" href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)aScrollView<b> orientation:</b> (NSRulerOrientation)orientation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateHashMarks</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-invalidateHashMarks">invalidateHashMarks</a></h3>
     - (void) <b>invalidateHashMarks</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isFlipped</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-isFlipped">isFlipped</a></h3>
     - (BOOL) <b>isFlipped</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>markers</a></h3>
-    - (NSArray*) <b>markers</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-markers">markers</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>markers</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>measurementUnits</a></h3>
-    - (NSString*) <b>measurementUnits</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-measurementUnits">measurementUnits</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>measurementUnits</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>moveRulerlineFromLocation:toLocation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-moveRulerlineFromLocation:toLocation:">moveRulerlineFromLocation:toLocation:</a></h3>
     - (void) <b>moveRulerlineFromLocation:</b> (float)oldLoc<b> toLocation:</b> (float)newLoc;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>orientation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-orientation">orientation</a></h3>
     - (NSRulerOrientation) <b>orientation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>originOffset</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-originOffset">originOffset</a></h3>
     - (float) <b>originOffset</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeMarker:</a></h3>
-    - (void) <b>removeMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-removeMarker:">removeMarker:</a></h3>
+    - (void) <b>removeMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>requiredThickness</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-requiredThickness">requiredThickness</a></h3>
     - (float) <b>requiredThickness</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reservedThicknessForAccessoryView</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-reservedThicknessForAccessoryView">reservedThicknessForAccessoryView</a></h3>
     - (float) <b>reservedThicknessForAccessoryView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reservedThicknessForMarkers</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-reservedThicknessForMarkers">reservedThicknessForMarkers</a></h3>
     - (float) <b>reservedThicknessForMarkers</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>ruleThickness</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-ruleThickness">ruleThickness</a></h3>
     - (float) <b>ruleThickness</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollView</a></h3>
-    - (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*) <b>scrollView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-scrollView">scrollView</a></h3>
+    - (<a rel="gsdoc" href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*) <b>scrollView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAccessoryView:</a></h3>
-    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setAccessoryView:">setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setClientView:</a></h3>
-    - (void) <b>setClientView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setClientView:">setClientView:</a></h3>
+    - (void) <b>setClientView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMarkers:</a></h3>
-    - (void) <b>setMarkers:</b> (NSArray*)markers;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setMarkers:">setMarkers:</a></h3>
+    - (void) <b>setMarkers:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)markers;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMeasurementUnits:</a></h3>
-    - (void) <b>setMeasurementUnits:</b> (NSString*)unitName;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setMeasurementUnits:">setMeasurementUnits:</a></h3>
+    - (void) <b>setMeasurementUnits:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)unitName;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setOrientation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setOrientation:">setOrientation:</a></h3>
     - (void) <b>setOrientation:</b> (NSRulerOrientation)orientation;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setOriginOffset:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setOriginOffset:">setOriginOffset:</a></h3>
     - (void) <b>setOriginOffset:</b> (float)offset;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setReservedThicknessForAccessoryView:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setReservedThicknessForAccessoryView:">setReservedThicknessForAccessoryView:</a></h3>
     - (void) <b>setReservedThicknessForAccessoryView:</b> (float)thickness;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setReservedThicknessForMarkers:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setReservedThicknessForMarkers:">setReservedThicknessForMarkers:</a></h3>
     - (void) <b>setReservedThicknessForMarkers:</b> (float)thickness;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRuleThickness:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setRuleThickness:">setRuleThickness:</a></h3>
     - (void) <b>setRuleThickness:</b> (float)thickness;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setScrollView:</a></h3>
-    - (void) <b>setScrollView:</b> (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)scrollView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-setScrollView:">setScrollView:</a></h3>
+    - (void) <b>setScrollView:</b> (<a rel="gsdoc" href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)scrollView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>trackMarker:withMouseEvent:</a></h3>
-    - (BOOL) <b>trackMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> withMouseEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSRulerView-trackMarker:withMouseEvent:">trackMarker:withMouseEvent:</a></h3>
+    - (BOOL) <b>trackMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> withMouseEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSRulerViewClient)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSRulerViewClient)">NSRulerViewClient</a>)</h2>
-    Declared: AppKit/NSRulerView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSRulerViewClient)">NSRulerViewClient</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSRulerView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>rulerView:didAddMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:didAddMarker:">-rulerView:didAddMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:didMoveMarker:">-rulerView:didMoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:didRemoveMarker:">-rulerView:didRemoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:handleMouseDown:">-rulerView:handleMouseDown:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:shouldAddMarker:">-rulerView:shouldAddMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:shouldMoveMarker:">-rulerView:shouldMoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:shouldRemoveMarker:">-rulerView:shouldRemoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:willAddMarker:atLocation:">-rulerView:willAddMarker:atLocation:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:willMoveMarker:toLocation:">-rulerView:willMoveMarker:toLocation:</a></li>
+      <li><a rel="gsdoc" href="NSRulerView.html#method$NSObject(NSRulerViewClient)-rulerView:willSetClientView:">-rulerView:willSetClientView:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:didAddMarker:">rulerView:didAddMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:didMoveMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:didMoveMarker:">rulerView:didMoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:didRemoveMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:didRemoveMarker:">rulerView:didRemoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:handleMouseDown:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:handleMouseDown:">rulerView:handleMouseDown:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldAddMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:shouldAddMarker:">rulerView:shouldAddMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldMoveMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:shouldMoveMarker:">rulerView:shouldMoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldRemoveMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:shouldRemoveMarker:">rulerView:shouldRemoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:willAddMarker:atLocation:</a></h3>
-    - (float) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:willAddMarker:atLocation:">rulerView:willAddMarker:atLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:willMoveMarker:toLocation:</a></h3>
-    - (float) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:willMoveMarker:toLocation:">rulerView:willMoveMarker:toLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:willSetClientView:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willSetClientView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)newClient;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSRulerViewClient)-rulerView:willSetClientView:">rulerView:willSetClientView:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willSetClientView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)newClient;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

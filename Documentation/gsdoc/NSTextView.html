@@ -3,7 +3,9 @@
     <title>NSTextView</title>
   </head>
   <body>
-    <h1>NSTextView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSTextView">NSTextView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -32,812 +34,1433 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1996, 1998, 2000 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 
+      1996, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+    </p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSTextView class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSObject(NSTextViewDelegate)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSTextView(GSTextViewUpdateMultipleViews)
+        category</a>
+        </li>
+        <li>
+          <a href="#004000000000">Software documentation for the NSTextView(NSSharing)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSTextView class
-      </h1>
-    <h2><a name="class$NSTextView">NSTextView</a> : <a href="NSText.html#class$NSText">NSText</a></h2>
-    Declared: AppKit/NSTextView.h<br />
-    Conform: <a href="NSInputManager.html#protocol$(NSTextInput)">NSTextInput</a><br />
+      </a></h1>
+    <h2><a name="class$NSTextView">NSTextView</a> : <a rel="gsdoc" href="NSText.html#class$NSText">NSText</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTextView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="NSInputManager.html#protocol$(NSTextInput)">NSTextInput</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>registerForServices</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView+registerForServices">+registerForServices</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-acceptableDragTypes">-acceptableDragTypes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-alignJustified:">-alignJustified:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-changeColor:">-changeColor:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-cleanUpAfterDragOperation">-cleanUpAfterDragOperation</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-dragImageForSelectionWithEvent:origin:">-dragImageForSelectionWithEvent:origin:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-dragOperationForDraggingInfo:type:">-dragOperationForDraggingInfo:type:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-dragSelectionWithEvent:offset:slideBack:">-dragSelectionWithEvent:offset:slideBack:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-drawInsertionPointInRect:color:turnedOn:">-drawInsertionPointInRect:color:turnedOn:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-initWithFrame:">-initWithFrame:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-initWithFrame:textContainer:">-initWithFrame:textContainer:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-insertText:">-insertText:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-invalidateTextContainerOrigin">-invalidateTextContainerOrigin</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-layoutManager">-layoutManager</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-loosenKerning:">-loosenKerning:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-lowerBaseline:">-lowerBaseline:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-pasteAsPlainText:">-pasteAsPlainText:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-pasteAsRichText:">-pasteAsRichText:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-preferredPasteboardTypeFromArray:restrictedToTypesFromArray:">-preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-raiseBaseline:">-raiseBaseline:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-readSelectionFromPasteboard:">-readSelectionFromPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-readSelectionFromPasteboard:type:">-readSelectionFromPasteboard:type:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-readablePasteboardTypes">-readablePasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-replaceTextContainer:">-replaceTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:didAddMarker:">-rulerView:didAddMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:didMoveMarker:">-rulerView:didMoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:didRemoveMarker:">-rulerView:didRemoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:handleMouseDown:">-rulerView:handleMouseDown:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:shouldAddMarker:">-rulerView:shouldAddMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:shouldMoveMarker:">-rulerView:shouldMoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:shouldRemoveMarker:">-rulerView:shouldRemoveMarker:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:willAddMarker:atLocation:">-rulerView:willAddMarker:atLocation:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-rulerView:willMoveMarker:toLocation:">-rulerView:willMoveMarker:toLocation:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-selectionRangeForProposedRange:granularity:">-selectionRangeForProposedRange:granularity:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setAlignment:range:">-setAlignment:range:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setConstrainedFrameSize:">-setConstrainedFrameSize:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setNeedsDisplayInRect:avoidAdditionalLayout:">-setNeedsDisplayInRect:avoidAdditionalLayout:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setRulerVisible:">-setRulerVisible:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setTextContainer:">-setTextContainer:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-setTextContainerInset:">-setTextContainerInset:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-shouldDrawInsertionPoint">-shouldDrawInsertionPoint</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-textContainer">-textContainer</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-textContainerInset">-textContainerInset</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-textContainerOrigin">-textContainerOrigin</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-textStorage">-textStorage</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-tightenKerning:">-tightenKerning:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-toggleTraditionalCharacterShape:">-toggleTraditionalCharacterShape:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-turnOffKerning:">-turnOffKerning:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-turnOffLigatures:">-turnOffLigatures:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-updateDragTypeRegistration">-updateDragTypeRegistration</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-updateFontPanel">-updateFontPanel</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-updateRuler">-updateRuler</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-useAllLigatures:">-useAllLigatures:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-useStandardKerning:">-useStandardKerning:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-useStandardLigatures:">-useStandardLigatures:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-writablePasteboardTypes">-writablePasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-writeSelectionToPasteboard:type:">-writeSelectionToPasteboard:type:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView-writeSelectionToPasteboard:types:">-writeSelectionToPasteboard:types:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTextView+registerForServices">registerForServices</a></h3>
     + (void) <b>registerForServices</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>acceptableDragTypes</a></h3>
-    - (NSArray*) <b>acceptableDragTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-acceptableDragTypes">acceptableDragTypes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>acceptableDragTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>alignJustified:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-alignJustified:">alignJustified:</a></h3>
     - (void) <b>alignJustified:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>changeColor:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-changeColor:">changeColor:</a></h3>
     - (void) <b>changeColor:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cleanUpAfterDragOperation</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-cleanUpAfterDragOperation">cleanUpAfterDragOperation</a></h3>
     - (void) <b>cleanUpAfterDragOperation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragImageForSelectionWithEvent:origin:</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForSelectionWithEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> origin:</b> (NSPoint*)origin;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-dragImageForSelectionWithEvent:origin:">dragImageForSelectionWithEvent:origin:</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForSelectionWithEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> origin:</b> (NSPoint*)origin;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragOperationForDraggingInfo:type:</a></h3>
-    - (unsigned int) <b>dragOperationForDraggingInfo:</b> (id)dragInfo<b> type:</b> (NSString*)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-dragOperationForDraggingInfo:type:">dragOperationForDraggingInfo:type:</a></h3>
+    - (unsigned int) <b>dragOperationForDraggingInfo:</b> (id)dragInfo<b> type:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dragSelectionWithEvent:offset:slideBack:</a></h3>
-    - (BOOL) <b>dragSelectionWithEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> offset:</b> (NSSize)mouseOffset<b> slideBack:</b> (BOOL)slideBack;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-dragSelectionWithEvent:offset:slideBack:">dragSelectionWithEvent:offset:slideBack:</a></h3>
+    - (BOOL) <b>dragSelectionWithEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> offset:</b> (NSSize)mouseOffset<b> slideBack:</b> (BOOL)slideBack;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawInsertionPointInRect:color:turnedOn:</a></h3>
-    - (void) <b>drawInsertionPointInRect:</b> (NSRect)rect<b> color:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color<b> turnedOn:</b> (BOOL)flag;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-drawInsertionPointInRect:color:turnedOn:">drawInsertionPointInRect:color:turnedOn:</a></h3>
+    - (void) <b>drawInsertionPointInRect:</b> (NSRect)rect<b> color:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color<b> turnedOn:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-initWithFrame:">initWithFrame:</a></h3>
     - (id) <b>initWithFrame:</b> (NSRect)frameRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithFrame:textContainer:</a></h3>
-    - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-initWithFrame:textContainer:">initWithFrame:textContainer:</a></h3>
+    - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> textContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertText:</a></h3>
-    - (void) <b>insertText:</b> (NSString*)insertString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-insertText:">insertText:</a></h3>
+    - (void) <b>insertText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)insertString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>invalidateTextContainerOrigin</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-invalidateTextContainerOrigin">invalidateTextContainerOrigin</a></h3>
     - (void) <b>invalidateTextContainerOrigin</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>layoutManager</a></h3>
-    - (<a href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*) <b>layoutManager</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-layoutManager">layoutManager</a></h3>
+    - (<a rel="gsdoc" href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*) <b>layoutManager</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>loosenKerning:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-loosenKerning:">loosenKerning:</a></h3>
     - (void) <b>loosenKerning:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lowerBaseline:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-lowerBaseline:">lowerBaseline:</a></h3>
     - (void) <b>lowerBaseline:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pasteAsPlainText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-pasteAsPlainText:">pasteAsPlainText:</a></h3>
     - (void) <b>pasteAsPlainText:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pasteAsRichText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-pasteAsRichText:">pasteAsRichText:</a></h3>
     - (void) <b>pasteAsRichText:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a></h3>
-    - (NSString*) <b>preferredPasteboardTypeFromArray:</b> (NSArray*)availableTypes<b> restrictedToTypesFromArray:</b> (NSArray*)allowedTypes;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-preferredPasteboardTypeFromArray:restrictedToTypesFromArray:">preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>preferredPasteboardTypeFromArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)availableTypes<b> restrictedToTypesFromArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)allowedTypes;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>raiseBaseline:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-raiseBaseline:">raiseBaseline:</a></h3>
     - (void) <b>raiseBaseline:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>readSelectionFromPasteboard:</a></h3>
-    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-readSelectionFromPasteboard:">readSelectionFromPasteboard:</a></h3>
+    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>readSelectionFromPasteboard:type:</a></h3>
-    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (NSString*)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-readSelectionFromPasteboard:type:">readSelectionFromPasteboard:type:</a></h3>
+    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>readablePasteboardTypes</a></h3>
-    - (NSArray*) <b>readablePasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-readablePasteboardTypes">readablePasteboardTypes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>readablePasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>replaceTextContainer:</a></h3>
-    - (void) <b>replaceTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-replaceTextContainer:">replaceTextContainer:</a></h3>
+    - (void) <b>replaceTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:didAddMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> didAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)marker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:didAddMarker:">rulerView:didAddMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> didAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)marker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:didMoveMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:didMoveMarker:">rulerView:didMoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:didRemoveMarker:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:didRemoveMarker:">rulerView:didRemoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:handleMouseDown:</a></h3>
-    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:handleMouseDown:">rulerView:handleMouseDown:</a></h3>
+    - (void) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldAddMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:shouldAddMarker:">rulerView:shouldAddMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldMoveMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:shouldMoveMarker:">rulerView:shouldMoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:shouldRemoveMarker:</a></h3>
-    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:shouldRemoveMarker:">rulerView:shouldRemoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:willAddMarker:atLocation:</a></h3>
-    - (float) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:willAddMarker:atLocation:">rulerView:willAddMarker:atLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerView:willMoveMarker:toLocation:</a></h3>
-    - (float) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-rulerView:willMoveMarker:toLocation:">rulerView:willMoveMarker:toLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a rel="gsdoc" href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectionRangeForProposedRange:granularity:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-selectionRangeForProposedRange:granularity:">selectionRangeForProposedRange:granularity:</a></h3>
     - (NSRange) <b>selectionRangeForProposedRange:</b> (NSRange)proposedCharRange<b> granularity:</b> (NSSelectionGranularity)granul;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAlignment:range:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setAlignment:range:">setAlignment:range:</a></h3>
     - (void) <b>setAlignment:</b> (NSTextAlignment)alignment<b> range:</b> (NSRange)aRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setConstrainedFrameSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setConstrainedFrameSize:">setConstrainedFrameSize:</a></h3>
     - (void) <b>setConstrainedFrameSize:</b> (NSSize)desiredSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNeedsDisplayInRect:avoidAdditionalLayout:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setNeedsDisplayInRect:avoidAdditionalLayout:">setNeedsDisplayInRect:avoidAdditionalLayout:</a></h3>
     - (void) <b>setNeedsDisplayInRect:</b> (NSRect)aRect<b> avoidAdditionalLayout:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRulerVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setRulerVisible:">setRulerVisible:</a></h3>
     - (void) <b>setRulerVisible:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTextContainer:</a></h3>
-    - (void) <b>setTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setTextContainer:">setTextContainer:</a></h3>
+    - (void) <b>setTextContainer:</b> (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTextContainerInset:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-setTextContainerInset:">setTextContainerInset:</a></h3>
     - (void) <b>setTextContainerInset:</b> (NSSize)inset;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shouldDrawInsertionPoint</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-shouldDrawInsertionPoint">shouldDrawInsertionPoint</a></h3>
     - (BOOL) <b>shouldDrawInsertionPoint</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainer</a></h3>
-    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainer</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-textContainer">textContainer</a></h3>
+    - (<a rel="gsdoc" href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainer</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainerInset</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-textContainerInset">textContainerInset</a></h3>
     - (NSSize) <b>textContainerInset</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textContainerOrigin</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-textContainerOrigin">textContainerOrigin</a></h3>
     - (NSPoint) <b>textContainerOrigin</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textStorage</a></h3>
-    - (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-textStorage">textStorage</a></h3>
+    - (<a rel="gsdoc" href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tightenKerning:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-tightenKerning:">tightenKerning:</a></h3>
     - (void) <b>tightenKerning:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>toggleTraditionalCharacterShape:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-toggleTraditionalCharacterShape:">toggleTraditionalCharacterShape:</a></h3>
     - (void) <b>toggleTraditionalCharacterShape:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>turnOffKerning:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-turnOffKerning:">turnOffKerning:</a></h3>
     - (void) <b>turnOffKerning:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>turnOffLigatures:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-turnOffLigatures:">turnOffLigatures:</a></h3>
     - (void) <b>turnOffLigatures:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateDragTypeRegistration</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-updateDragTypeRegistration">updateDragTypeRegistration</a></h3>
     - (void) <b>updateDragTypeRegistration</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateFontPanel</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-updateFontPanel">updateFontPanel</a></h3>
     - (void) <b>updateFontPanel</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateRuler</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-updateRuler">updateRuler</a></h3>
     - (void) <b>updateRuler</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>useAllLigatures:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-useAllLigatures:">useAllLigatures:</a></h3>
     - (void) <b>useAllLigatures:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>useStandardKerning:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-useStandardKerning:">useStandardKerning:</a></h3>
     - (void) <b>useStandardKerning:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>useStandardLigatures:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-useStandardLigatures:">useStandardLigatures:</a></h3>
     - (void) <b>useStandardLigatures:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writablePasteboardTypes</a></h3>
-    - (NSArray*) <b>writablePasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-writablePasteboardTypes">writablePasteboardTypes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>writablePasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writeSelectionToPasteboard:type:</a></h3>
-    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (NSString*)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-writeSelectionToPasteboard:type:">writeSelectionToPasteboard:type:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>writeSelectionToPasteboard:types:</a></h3>
-    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> types:</b> (NSArray*)types;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView-writeSelectionToPasteboard:types:">writeSelectionToPasteboard:types:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> types:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSTextViewDelegate)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSTextViewDelegate)">NSTextViewDelegate</a>)</h2>
-    Declared: AppKit/NSTextView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSTextViewDelegate)">NSTextViewDelegate</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTextView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>textView:clickedOnCell:inRect:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:clickedOnCell:inRect:">-textView:clickedOnCell:inRect:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:clickedOnCell:inRect:atIndex:">-textView:clickedOnCell:inRect:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:clickedOnLink:">-textView:clickedOnLink:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:clickedOnLink:atIndex:">-textView:clickedOnLink:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:doCommandBySelector:">-textView:doCommandBySelector:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:doubleClickedOnCell:inRect:">-textView:doubleClickedOnCell:inRect:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:doubleClickedOnCell:inRect:atIndex:">-textView:doubleClickedOnCell:inRect:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:draggedCell:inRect:event:">-textView:draggedCell:inRect:event:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:draggedCell:inRect:event:atIndex:">-textView:draggedCell:inRect:event:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:shouldChangeTextInRange:replacementString:">-textView:shouldChangeTextInRange:replacementString:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textView:willChangeSelectionFromCharacterRange:toCharacterRange:">-textView:willChangeSelectionFromCharacterRange:toCharacterRange:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-textViewDidChangeSelection:">-textViewDidChangeSelection:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSObject(NSTextViewDelegate)-undoManagerForTextView:">-undoManagerForTextView:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:clickedOnCell:inRect:">textView:clickedOnCell:inRect:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:clickedOnCell:inRect:atIndex:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:clickedOnCell:inRect:atIndex:">textView:clickedOnCell:inRect:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:clickedOnLink:</a></h3>
-    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:clickedOnLink:">textView:clickedOnLink:</a></h3>
+    - (BOOL) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:clickedOnLink:atIndex:</a></h3>
-    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link<b> atIndex:</b> (unsigned)charIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:clickedOnLink:atIndex:">textView:clickedOnLink:atIndex:</a></h3>
+    - (BOOL) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link<b> atIndex:</b> (unsigned)charIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:doCommandBySelector:</a></h3>
-    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doCommandBySelector:</b> (SEL)commandSelector;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:doCommandBySelector:">textView:doCommandBySelector:</a></h3>
+    - (BOOL) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> doCommandBySelector:</b> (SEL)commandSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:doubleClickedOnCell:inRect:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:doubleClickedOnCell:inRect:">textView:doubleClickedOnCell:inRect:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:doubleClickedOnCell:inRect:atIndex:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:doubleClickedOnCell:inRect:atIndex:">textView:doubleClickedOnCell:inRect:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:draggedCell:inRect:event:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:draggedCell:inRect:event:">textView:draggedCell:inRect:event:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:draggedCell:inRect:event:atIndex:</a></h3>
-    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atIndex:</b> (unsigned)charIndex;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:draggedCell:inRect:event:atIndex:">textView:draggedCell:inRect:event:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atIndex:</b> (unsigned)charIndex;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:shouldChangeTextInRange:replacementString:</a></h3>
-    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (NSString*)replacementString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:shouldChangeTextInRange:replacementString:">textView:shouldChangeTextInRange:replacementString:</a></h3>
+    - (BOOL) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)replacementString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textView:willChangeSelectionFromCharacterRange:toCharacterRange:</a></h3>
-    - (NSRange) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> willChangeSelectionFromCharacterRange:</b> (NSRange)oldSelectedCharRange<b> toCharacterRange:</b> (NSRange)newSelectedCharRange;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textView:willChangeSelectionFromCharacterRange:toCharacterRange:">textView:willChangeSelectionFromCharacterRange:toCharacterRange:</a></h3>
+    - (NSRange) <b>textView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)textView<b> willChangeSelectionFromCharacterRange:</b> (NSRange)oldSelectedCharRange<b> toCharacterRange:</b> (NSRange)newSelectedCharRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textViewDidChangeSelection:</a></h3>
-    - (void) <b>textViewDidChangeSelection:</b> (NSNotification*)notification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-textViewDidChangeSelection:">textViewDidChangeSelection:</a></h3>
+    - (void) <b>textViewDidChangeSelection:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>undoManagerForTextView:</a></h3>
-    - (NSUndoManager*) <b>undoManagerForTextView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSTextViewDelegate)-undoManagerForTextView:">undoManagerForTextView:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSUndoManager.html#class$NSUndoManager">NSUndoManager</a>*) <b>undoManagerForTextView:</b> (<a rel="gsdoc" href="#class$NSTextView">NSTextView</a>*)view;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSTextView(GSTextViewUpdateMultipleViews)
         category
-      </h1>
-    <h2><a href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(GSTextViewUpdateMultipleViews)">GSTextViewUpdateMultipleViews</a>)</h2>
-    Declared: AppKit/NSTextView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(GSTextViewUpdateMultipleViews)">GSTextViewUpdateMultipleViews</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTextView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>_updateMultipleTextViews</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(GSTextViewUpdateMultipleViews)-_updateMultipleTextViews">-_updateMultipleTextViews</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTextView(GSTextViewUpdateMultipleViews)-_updateMultipleTextViews">_updateMultipleTextViews</a></h3>
     - (void) <b>_updateMultipleTextViews</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="004000000000">
         Software documentation for the NSTextView(NSSharing)
         category
-      </h1>
-    <h2><a href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(NSSharing)">NSSharing</a>)</h2>
-    Declared: AppKit/NSTextView.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(NSSharing)">NSSharing</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTextView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>allowsUndo</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-allowsUndo">-allowsUndo</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-becomeFirstResponder">-becomeFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-didChangeText">-didChangeText</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-drawsBackground">-drawsBackground</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-importsGraphics">-importsGraphics</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-insertionPointColor">-insertionPointColor</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isContinuousSpellCheckingEnabled">-isContinuousSpellCheckingEnabled</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isEditable">-isEditable</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isFieldEditor">-isFieldEditor</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isRichText">-isRichText</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isRulerVisible">-isRulerVisible</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-isSelectable">-isSelectable</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-markedRange">-markedRange</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-markedTextAttributes">-markedTextAttributes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-rangeForUserCharacterAttributeChange">-rangeForUserCharacterAttributeChange</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-rangeForUserParagraphAttributeChange">-rangeForUserParagraphAttributeChange</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-rangeForUserTextChange">-rangeForUserTextChange</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-resignFirstResponder">-resignFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-selectedRange">-selectedRange</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-selectedTextAttributes">-selectedTextAttributes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-selectionAffinity">-selectionAffinity</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-selectionGranularity">-selectionGranularity</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setAllowsUndo:">-setAllowsUndo:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setContinuousSpellCheckingEnabled:">-setContinuousSpellCheckingEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setDrawsBackground:">-setDrawsBackground:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setEditable:">-setEditable:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setFieldEditor:">-setFieldEditor:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setImportsGraphics:">-setImportsGraphics:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setInsertionPointColor:">-setInsertionPointColor:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setMarkedTextAttributes:">-setMarkedTextAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setRichText:">-setRichText:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setRulerVisible:">-setRulerVisible:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSelectable:">-setSelectable:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSelectedRange:">-setSelectedRange:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSelectedRange:affinity:stillSelecting:">-setSelectedRange:affinity:stillSelecting:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSelectedTextAttributes:">-setSelectedTextAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSelectionGranularity:">-setSelectionGranularity:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setSmartInsertDeleteEnabled:">-setSmartInsertDeleteEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setTypingAttributes:">-setTypingAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setUsesFontPanel:">-setUsesFontPanel:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-setUsesRuler:">-setUsesRuler:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-shouldChangeTextInRange:replacementString:">-shouldChangeTextInRange:replacementString:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-smartDeleteRangeForProposedRange:">-smartDeleteRangeForProposedRange:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-smartInsertDeleteEnabled">-smartInsertDeleteEnabled</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-smartInsertForString:replacingRange:beforeString:afterString:">-smartInsertForString:replacingRange:beforeString:afterString:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-spellCheckerDocumentTag">-spellCheckerDocumentTag</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-toggleContinuousSpellChecking:">-toggleContinuousSpellChecking:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-typingAttributes">-typingAttributes</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-updateInsertionPointStateAndRestartTimer:">-updateInsertionPointStateAndRestartTimer:</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-usesFontPanel">-usesFontPanel</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-usesRuler">-usesRuler</a></li>
+      <li><a rel="gsdoc" href="NSTextView.html#method$NSTextView(NSSharing)-validRequestorForSendType:returnType:">-validRequestorForSendType:returnType:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-allowsUndo">allowsUndo</a></h3>
     - (BOOL) <b>allowsUndo</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>becomeFirstResponder</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-becomeFirstResponder">becomeFirstResponder</a></h3>
     - (BOOL) <b>becomeFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>didChangeText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-didChangeText">didChangeText</a></h3>
     - (void) <b>didChangeText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>importsGraphics</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-importsGraphics">importsGraphics</a></h3>
     - (BOOL) <b>importsGraphics</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertionPointColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>insertionPointColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-insertionPointColor">insertionPointColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>insertionPointColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isContinuousSpellCheckingEnabled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isContinuousSpellCheckingEnabled">isContinuousSpellCheckingEnabled</a></h3>
     - (BOOL) <b>isContinuousSpellCheckingEnabled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEditable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isEditable">isEditable</a></h3>
     - (BOOL) <b>isEditable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isFieldEditor</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isFieldEditor">isFieldEditor</a></h3>
     - (BOOL) <b>isFieldEditor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRichText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isRichText">isRichText</a></h3>
     - (BOOL) <b>isRichText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isRulerVisible</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isRulerVisible">isRulerVisible</a></h3>
     - (BOOL) <b>isRulerVisible</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSelectable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-isSelectable">isSelectable</a></h3>
     - (BOOL) <b>isSelectable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>markedRange</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-markedRange">markedRange</a></h3>
     - (NSRange) <b>markedRange</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>markedTextAttributes</a></h3>
-    - (NSDictionary*) <b>markedTextAttributes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-markedTextAttributes">markedTextAttributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>markedTextAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rangeForUserCharacterAttributeChange</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-rangeForUserCharacterAttributeChange">rangeForUserCharacterAttributeChange</a></h3>
     - (NSRange) <b>rangeForUserCharacterAttributeChange</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rangeForUserParagraphAttributeChange</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-rangeForUserParagraphAttributeChange">rangeForUserParagraphAttributeChange</a></h3>
     - (NSRange) <b>rangeForUserParagraphAttributeChange</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rangeForUserTextChange</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-rangeForUserTextChange">rangeForUserTextChange</a></h3>
     - (NSRange) <b>rangeForUserTextChange</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>resignFirstResponder</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-resignFirstResponder">resignFirstResponder</a></h3>
     - (BOOL) <b>resignFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedRange</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-selectedRange">selectedRange</a></h3>
     - (NSRange) <b>selectedRange</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectedTextAttributes</a></h3>
-    - (NSDictionary*) <b>selectedTextAttributes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-selectedTextAttributes">selectedTextAttributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>selectedTextAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectionAffinity</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-selectionAffinity">selectionAffinity</a></h3>
     - (NSSelectionAffinity) <b>selectionAffinity</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectionGranularity</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-selectionGranularity">selectionGranularity</a></h3>
     - (NSSelectionGranularity) <b>selectionGranularity</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsUndo:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setAllowsUndo:">setAllowsUndo:</a></h3>
     - (void) <b>setAllowsUndo:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setContinuousSpellCheckingEnabled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setContinuousSpellCheckingEnabled:">setContinuousSpellCheckingEnabled:</a></h3>
     - (void) <b>setContinuousSpellCheckingEnabled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setEditable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setEditable:">setEditable:</a></h3>
     - (void) <b>setEditable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFieldEditor:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setFieldEditor:">setFieldEditor:</a></h3>
     - (void) <b>setFieldEditor:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImportsGraphics:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setImportsGraphics:">setImportsGraphics:</a></h3>
     - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setInsertionPointColor:</a></h3>
-    - (void) <b>setInsertionPointColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setInsertionPointColor:">setInsertionPointColor:</a></h3>
+    - (void) <b>setInsertionPointColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMarkedTextAttributes:</a></h3>
-    - (void) <b>setMarkedTextAttributes:</b> (NSDictionary*)attributeDictionary;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setMarkedTextAttributes:">setMarkedTextAttributes:</a></h3>
+    - (void) <b>setMarkedTextAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributeDictionary;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRichText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setRichText:">setRichText:</a></h3>
     - (void) <b>setRichText:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRulerVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setRulerVisible:">setRulerVisible:</a></h3>
     - (void) <b>setRulerVisible:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSelectable:">setSelectable:</a></h3>
     - (void) <b>setSelectable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectedRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSelectedRange:">setSelectedRange:</a></h3>
     - (void) <b>setSelectedRange:</b> (NSRange)charRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectedRange:affinity:stillSelecting:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSelectedRange:affinity:stillSelecting:">setSelectedRange:affinity:stillSelecting:</a></h3>
     - (void) <b>setSelectedRange:</b> (NSRange)charRange<b> affinity:</b> (NSSelectionAffinity)affinity<b> stillSelecting:</b> (BOOL)stillSelectingFlag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectedTextAttributes:</a></h3>
-    - (void) <b>setSelectedTextAttributes:</b> (NSDictionary*)attributeDictionary;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSelectedTextAttributes:">setSelectedTextAttributes:</a></h3>
+    - (void) <b>setSelectedTextAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributeDictionary;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectionGranularity:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSelectionGranularity:">setSelectionGranularity:</a></h3>
     - (void) <b>setSelectionGranularity:</b> (NSSelectionGranularity)granularity;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSmartInsertDeleteEnabled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setSmartInsertDeleteEnabled:">setSmartInsertDeleteEnabled:</a></h3>
     - (void) <b>setSmartInsertDeleteEnabled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTypingAttributes:</a></h3>
-    - (void) <b>setTypingAttributes:</b> (NSDictionary*)attrs;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setTypingAttributes:">setTypingAttributes:</a></h3>
+    - (void) <b>setTypingAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attrs;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUsesFontPanel:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setUsesFontPanel:">setUsesFontPanel:</a></h3>
     - (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUsesRuler:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-setUsesRuler:">setUsesRuler:</a></h3>
     - (void) <b>setUsesRuler:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>shouldChangeTextInRange:replacementString:</a></h3>
-    - (BOOL) <b>shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (NSString*)replacementString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-shouldChangeTextInRange:replacementString:">shouldChangeTextInRange:replacementString:</a></h3>
+    - (BOOL) <b>shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)replacementString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>smartDeleteRangeForProposedRange:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-smartDeleteRangeForProposedRange:">smartDeleteRangeForProposedRange:</a></h3>
     - (NSRange) <b>smartDeleteRangeForProposedRange:</b> (NSRange)proposedCharRange;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>smartInsertDeleteEnabled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-smartInsertDeleteEnabled">smartInsertDeleteEnabled</a></h3>
     - (BOOL) <b>smartInsertDeleteEnabled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>smartInsertForString:replacingRange:beforeString:afterString:</a></h3>
-    - (void) <b>smartInsertForString:</b> (NSString*)aString<b> replacingRange:</b> (NSRange)charRange<b> beforeString:</b> (NSString**)beforeString<b> afterString:</b> (NSString**)afterString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-smartInsertForString:replacingRange:beforeString:afterString:">smartInsertForString:replacingRange:beforeString:afterString:</a></h3>
+    - (void) <b>smartInsertForString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> replacingRange:</b> (NSRange)charRange<b> beforeString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>**)beforeString<b> afterString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>**)afterString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>spellCheckerDocumentTag</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-spellCheckerDocumentTag">spellCheckerDocumentTag</a></h3>
     - (int) <b>spellCheckerDocumentTag</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>toggleContinuousSpellChecking:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-toggleContinuousSpellChecking:">toggleContinuousSpellChecking:</a></h3>
     - (void) <b>toggleContinuousSpellChecking:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>typingAttributes</a></h3>
-    - (NSDictionary*) <b>typingAttributes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-typingAttributes">typingAttributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>typingAttributes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>updateInsertionPointStateAndRestartTimer:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-updateInsertionPointStateAndRestartTimer:">updateInsertionPointStateAndRestartTimer:</a></h3>
     - (void) <b>updateInsertionPointStateAndRestartTimer:</b> (BOOL)restartFlag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usesFontPanel</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-usesFontPanel">usesFontPanel</a></h3>
     - (BOOL) <b>usesFontPanel</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usesRuler</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-usesRuler">usesRuler</a></h3>
     - (BOOL) <b>usesRuler</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>validRequestorForSendType:returnType:</a></h3>
-    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextView(NSSharing)-validRequestorForSendType:returnType:">validRequestorForSendType:returnType:</a></h3>
+    - (id) <b>validRequestorForSendType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)sendType<b> returnType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)returnType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

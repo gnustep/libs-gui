@@ -3,7 +3,9 @@
     <title>NSTextField</title>
   </head>
   <body>
-    <h1>NSTextField</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSTextField">NSTextField</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -23,221 +25,389 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Text field control class for text entry
-        </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSTextField class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSTextField class
-      </h1>
-    <h2><a name="class$NSTextField">NSTextField</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
-    Declared: AppKit/NSTextField.h<br />
+      </a></h1>
+    <h2><a name="class$NSTextField">NSTextField</a> : <a rel="gsdoc" href="NSControl.html#class$NSControl">NSControl</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSTextField.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>acceptsFirstResponder</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-acceptsFirstResponder">-acceptsFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-allowsEditingTextAttributes">-allowsEditingTextAttributes</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-drawsBackground">-drawsBackground</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-errorAction">-errorAction</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-importsGraphics">-importsGraphics</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-isBezeled">-isBezeled</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-isBordered">-isBordered</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-isEditable">-isEditable</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-isSelectable">-isSelectable</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-nextText">-nextText</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-previousText">-previousText</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-selectText:">-selectText:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setAllowsEditingTextAttributes:">-setAllowsEditingTextAttributes:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setBezeled:">-setBezeled:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setBordered:">-setBordered:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setDrawsBackground:">-setDrawsBackground:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setEditable:">-setEditable:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setErrorAction:">-setErrorAction:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setImportsGraphics:">-setImportsGraphics:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setNextText:">-setNextText:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setPreviousText:">-setPreviousText:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setSelectable:">-setSelectable:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setTextColor:">-setTextColor:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-setTitleWithMnemonic:">-setTitleWithMnemonic:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textColor">-textColor</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textDidBeginEditing:">-textDidBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textDidChange:">-textDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textDidEndEditing:">-textDidEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textShouldBeginEditing:">-textShouldBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTextField.html#method$NSTextField-textShouldEndEditing:">-textShouldEndEditing:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSTextField-acceptsFirstResponder">acceptsFirstResponder</a></h3>
     - (BOOL) <b>acceptsFirstResponder</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>allowsEditingTextAttributes</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-allowsEditingTextAttributes">allowsEditingTextAttributes</a></h3>
     - (BOOL) <b>allowsEditingTextAttributes</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>errorAction</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-errorAction">errorAction</a></h3>
     - (SEL) <b>errorAction</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>importsGraphics</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-importsGraphics">importsGraphics</a></h3>
     - (BOOL) <b>importsGraphics</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isBezeled</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-isBezeled">isBezeled</a></h3>
     - (BOOL) <b>isBezeled</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isBordered</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-isBordered">isBordered</a></h3>
     - (BOOL) <b>isBordered</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isEditable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-isEditable">isEditable</a></h3>
     - (BOOL) <b>isEditable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSelectable</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-isSelectable">isSelectable</a></h3>
     - (BOOL) <b>isSelectable</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>nextText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-nextText">nextText</a></h3>
     - (id) <b>nextText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>previousText</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-previousText">previousText</a></h3>
     - (id) <b>previousText</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-selectText:">selectText:</a></h3>
     - (void) <b>selectText:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAllowsEditingTextAttributes:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setAllowsEditingTextAttributes:">setAllowsEditingTextAttributes:</a></h3>
     - (void) <b>setAllowsEditingTextAttributes:</b> (BOOL)flag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBezeled:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setBezeled:">setBezeled:</a></h3>
     - (void) <b>setBezeled:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBordered:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setBordered:">setBordered:</a></h3>
     - (void) <b>setBordered:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setEditable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setEditable:">setEditable:</a></h3>
     - (void) <b>setEditable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setErrorAction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setErrorAction:">setErrorAction:</a></h3>
     - (void) <b>setErrorAction:</b> (SEL)aSelector;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImportsGraphics:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setImportsGraphics:">setImportsGraphics:</a></h3>
     - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNextText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setNextText:">setNextText:</a></h3>
     - (void) <b>setNextText:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPreviousText:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setPreviousText:">setPreviousText:</a></h3>
     - (void) <b>setPreviousText:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSelectable:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setSelectable:">setSelectable:</a></h3>
     - (void) <b>setSelectable:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTextColor:</a></h3>
-    - (void) <b>setTextColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setTextColor:">setTextColor:</a></h3>
+    - (void) <b>setTextColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setTitleWithMnemonic:</a></h3>
-    - (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-setTitleWithMnemonic:">setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textColor">textColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidBeginEditing:</a></h3>
-    - (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textDidBeginEditing:">textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidChange:</a></h3>
-    - (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textDidChange:">textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textDidEndEditing:</a></h3>
-    - (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textDidEndEditing:">textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldBeginEditing:</a></h3>
-    - (BOOL) <b>textShouldBeginEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textShouldBeginEditing:">textShouldBeginEditing:</a></h3>
+    - (BOOL) <b>textShouldBeginEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>textShouldEndEditing:</a></h3>
-    - (BOOL) <b>textShouldEndEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSTextField-textShouldEndEditing:">textShouldEndEditing:</a></h3>
+    - (BOOL) <b>textShouldEndEditing:</b> (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

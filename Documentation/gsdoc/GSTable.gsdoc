@@ -1,0 +1,290 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="GSTable" up="Gui">
+  <head>
+    <title>GSTable class documentation</title>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>The GSTable class (a GNU extension)</abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the GSTable class
+      </heading>
+      <class name="GSTable" super="NSView">
+        <declared>AppKit/GSTable.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>addColumn</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>addRow</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>init</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithNumberOfRows:</sel>
+          <arg type="int">rows</arg>
+          <sel>numberOfColumns:</sel>
+          <arg type="int">columns</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isXResizingEnabledForColumn:</sel>
+          <arg type="int">aColumn</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isYResizingEnabledForRow:</sel>
+          <arg type="int">aRow</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSSize">
+          <sel>minimumSize</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>numberOfColumns</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>numberOfRows</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>putView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>atRow:</sel>
+          <arg type="int">row</arg>
+          <sel>column:</sel>
+          <arg type="int">column</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>putView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>atRow:</sel>
+          <arg type="int">row</arg>
+          <sel>column:</sel>
+          <arg type="int">column</arg>
+          <sel>withMargins:</sel>
+          <arg type="float">margins</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>putView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>atRow:</sel>
+          <arg type="int">row</arg>
+          <sel>column:</sel>
+          <arg type="int">column</arg>
+          <sel>withMinXMargin:</sel>
+          <arg type="float">minXMargin</arg>
+          <sel>maxXMargin:</sel>
+          <arg type="float">maxXMargin</arg>
+          <sel>minYMargin:</sel>
+          <arg type="float">minYMargin</arg>
+          <sel>maxYMargin:</sel>
+          <arg type="float">maxYMargin</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>putView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>atRow:</sel>
+          <arg type="int">row</arg>
+          <sel>column:</sel>
+          <arg type="int">column</arg>
+          <sel>withXMargins:</sel>
+          <arg type="float">xMargins</arg>
+          <sel>yMargins:</sel>
+          <arg type="float">yMargins</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMaxXBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMaxYBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMinXBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMinYBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setXBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setXResizingEnabled:</sel>
+          <arg type="BOOL">aFlag</arg>
+          <sel>forColumn:</sel>
+          <arg type="int">aColumn</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setYBorder:</sel>
+          <arg type="float">aBorder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setYResizingEnabled:</sel>
+          <arg type="BOOL">aFlag</arg>
+          <sel>forRow:</sel>
+          <arg type="int">aRow</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>sizeToFit</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

@@ -3,7 +3,9 @@
     <title>NSPageLayout</title>
   </head>
   <body>
-    <h1>NSPageLayout</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSPageLayout">NSPageLayout</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
@@ -13,11 +15,22 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Standard panel for querying user about page layout.
-        </blockquote>
-    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
-    <h1>NSPageLayout</h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 2001 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">NSPageLayout</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">NSPageLayout</a></h1>
     <p>
 
         NSPageLayout provides a panel that allows the user
@@ -25,7 +38,9 @@
         data is formatted for printing. This includes information
         about the paper size and orientation. Typically you would
         create a page layout panel with the
-        pageLayout
+        <a rel="gsdoc" href="#method$(nil)+pageLayout">
+          +pageLayout
+        </a>
 
         class method. However, the best way to use the panel is
         to have the application call the runPageLayout: method in
@@ -34,127 +49,190 @@
         This method would be sent up the responder chain if the
         user clicked on a Page Layout menu item.
           </p>
-    <h2><a name="class$NSPageLayout">NSPageLayout</a> : <a href="NSPanel.html#class$NSPanel">NSPanel</a></h2>
-    Declared: AppKit/NSPageLayout.h<br />
+    <h2><a name="class$NSPageLayout">NSPageLayout</a> : <a rel="gsdoc" href="NSPanel.html#class$NSPanel">NSPanel</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSPageLayout.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>pageLayout</a></h3>
-    + (<a href="#class$NSPageLayout">NSPageLayout</a>*) <b>pageLayout</b>;<br />
+      
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout+pageLayout">+pageLayout</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-accessoryView">-accessoryView</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:">-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-convertOldFactor:newFactor:">-convertOldFactor:newFactor:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-pickedButton:">-pickedButton:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-pickedOrientation:">-pickedOrientation:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-pickedPaperSize:">-pickedPaperSize:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-pickedUnits:">-pickedUnits:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-printInfo">-printInfo</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-readPrintInfo">-readPrintInfo</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-runModal">-runModal</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-runModalWithPrintInfo:">-runModalWithPrintInfo:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-setAccessoryView:">-setAccessoryView:</a></li>
+      <li><a rel="gsdoc" href="NSPageLayout.html#method$NSPageLayout-writePrintInfo">-writePrintInfo</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSPageLayout+pageLayout">pageLayout</a></h3>
+    + (<a rel="gsdoc" href="#class$NSPageLayout">NSPageLayout</a>*) <b>pageLayout</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Creates and returns a shared instance of the
             NSPageLayout panel.
-              </p>
-    <hr />
-    <h3>accessoryView</a></h3>
-    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-accessoryView">accessoryView</a></h3>
+    - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Returns the accessory view for the page layout
             panel
-              </p>
-    <hr />
-    <h3>beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
-    - (void) <b>beginSheetWithPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)printInfo<b> modalForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:">beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
+    - (void) <b>beginSheetWithPrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)printInfo<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>convertOldFactor:newFactor:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-convertOldFactor:newFactor:">convertOldFactor:newFactor:</a></h3>
     - (void) <b>convertOldFactor:</b> (float*)old<b> newFactor:</b> (float*)new;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Convert the <var>old</var> value to a
             <var>new</var> one based on the current units. This
             method has been depreciated. It doesn't do anything
             useful
-              </p>
-    <hr />
-    <h3>pickedButton:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-pickedButton:">pickedButton:</a></h3>
     - (void) <b>pickedButton:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method has been depreciated. It doesn't do
             anything useful.
-              </p>
-    <hr />
-    <h3>pickedOrientation:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-pickedOrientation:">pickedOrientation:</a></h3>
     - (void) <b>pickedOrientation:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method has been depreciated. It doesn't do
             anything useful.
-              </p>
-    <hr />
-    <h3>pickedPaperSize:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-pickedPaperSize:">pickedPaperSize:</a></h3>
     - (void) <b>pickedPaperSize:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method has been depreciated. It doesn't do
             anything useful.
-              </p>
-    <hr />
-    <h3>pickedUnits:</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-pickedUnits:">pickedUnits:</a></h3>
     - (void) <b>pickedUnits:</b> (id)sender;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             This method has been depreciated. It doesn't do
             anything useful.
-              </p>
-    <hr />
-    <h3>printInfo</a></h3>
-    - (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-printInfo">printInfo</a></h3>
+    - (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Return the NSPrintInfo object that the receiver
             stores layout information into.
-              </p>
-    <hr />
-    <h3>readPrintInfo</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-readPrintInfo">readPrintInfo</a></h3>
     - (void) <b>readPrintInfo</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Updates the receiver panel with information from
             its NSPrintInfo object
-              </p>
-    <hr />
-    <h3>runModal</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-runModal">runModal</a></h3>
     - (int) <b>runModal</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Display the Page Layout panel in a modal loop.
             Saves any aquired information in the shared
             NSPrintInfo object. Returns NSCancelButton if
             the user clicks the Cancel button or NSOKButton
             otherwise.
-              </p>
-    <hr />
-    <h3>runModalWithPrintInfo:</a></h3>
-    - (int) <b>runModalWithPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)pInfo;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-runModalWithPrintInfo:">runModalWithPrintInfo:</a></h3>
+    - (int) <b>runModalWithPrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)pInfo;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Display the Page Layout panel in a modal loop.
             Saves any aquired information in the indicated
             NSPrintInfo object. Returns NSCancelButton if
             the user clicks the Cancel button or NSOKButton
             otherwise.
-              </p>
-    <hr />
-    <h3>setAccessoryView:</a></h3>
-    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-setAccessoryView:">setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Set the accessory view for the page layout panel
-              </p>
-    <hr />
-    <h3>writePrintInfo</a></h3>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSPageLayout-writePrintInfo">writePrintInfo</a></h3>
     - (void) <b>writePrintInfo</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
+      
             Writes any layout information set by the user to the
             receiver's NSPrintInfo object
-              </p>
-    <hr />
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

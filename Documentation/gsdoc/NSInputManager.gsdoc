@@ -1,16 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSInputManager" next="NSInputServer" prev="NSGraphicsContext" up="NSDocumentController">
+<gsdoc base="NSInputManager" up="Gui">
   <head>
     <title>NSInputManager</title>
-    <author name="Fred Kiefer">
-      <email address="FredKiefer@gmx.de">
-        FredKiefer@gmx.de
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
       </email>
     </author>
     <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSInputManager class
@@ -19,58 +20,78 @@
         <declared>AppKit/NSInputManager.h</declared>
         <conform>NSTextInput</conform>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSInputManager*" factory="yes">
           <sel>currentInputManager</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
-        <method type="void" factory="yes">
-          <sel>cycleToNextInputLanguage:</sel>
-          <arg type="id">sender</arg>
+        <method type="void">
+          <sel>handleKeyboardEvents:</sel>
+          <arg type="NSArray*">eventArray</arg>
+          <sel>client:</sel>
+          <arg type="id">client</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
-        </method>
-        <method type="void" factory="yes">
-          <sel>cycleToNextInputServerInLanguage:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>handleMouseEvent:</sel>
           <arg type="NSEvent*">theMouseEvent</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
-        <method type="NSImage*">
-          <sel>image</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSInputManager*">
+        <method type="id">
           <sel>initWithName:</sel>
           <arg type="NSString*">inputServerName</arg>
           <sel>host:</sel>
           <arg type="NSString*">hostName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>language</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>localizedInputManagerName</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>markedTextAbandoned:</sel>
           <arg type="id">client</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>markedTextSelectionChanged:</sel>
@@ -78,28 +99,42 @@
           <sel>client:</sel>
           <arg type="id">client</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
-        </method>
-        <method type="NSInputServer*">
-          <sel>server</sel>
-          <desc>
-          </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>wantsToDelayTextChangeNotifications</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>wantsToHandleMouseEvents</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>wantsToInterpretAllKeystrokes</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -109,56 +144,93 @@
       <protocol name="NSTextInput">
         <declared>AppKit/NSInputManager.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSAttributedString*">
           <sel>attributedSubstringFromRange:</sel>
           <arg type="NSRange">theRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="unsigned int">
           <sel>characterIndexForPoint:</sel>
           <arg type="NSPoint">thePoint</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="long">
           <sel>conversationIdentifier</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>doCommandBySelector:</sel>
           <arg type="SEL">aSelector</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>firstRectForCharacterRange:</sel>
           <arg type="NSRange">theRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>hasMarkedText</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>insertText:</sel>
           <arg type="id">aString</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>markedRange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSRange">
           <sel>selectedRange</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMarkedText:</sel>
@@ -166,18 +238,33 @@
           <sel>selectedRange:</sel>
           <arg type="NSRange">selRange</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>unmarkText</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>validAttributesForMarkedText</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </protocol>
     </chapter>
   </body>

@@ -3,7 +3,9 @@
     <title>NSComboBox</title>
   </head>
   <body>
-    <h1>NSComboBox</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSComboBox">NSComboBox</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Gerrit van Dyk(<a href="mailto:gerritvd@decillion.net"><code>
@@ -12,280 +14,523 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 1999 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSComboBox class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSObject(NSComboBoxDataSource)
+        category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        NSObject(NSComboBoxNotifications)
+        category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSComboBox class
-      </h1>
-    <h2><a name="class$NSComboBox">NSComboBox</a> : <a href="NSTextField.html#class$NSTextField">NSTextField</a></h2>
-    Declared: AppKit/NSComboBox.h<br />
+      </a></h1>
+    <h2><a name="class$NSComboBox">NSComboBox</a> : <a rel="gsdoc" href="NSTextField.html#class$NSTextField">NSTextField</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSComboBox.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>addItemWithObjectValue:</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-addItemWithObjectValue:">-addItemWithObjectValue:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-addItemsWithObjectValues:">-addItemsWithObjectValues:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-completes">-completes</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-dataSource">-dataSource</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-deselectItemAtIndex:">-deselectItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-hasVerticalScroller">-hasVerticalScroller</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-indexOfItemWithObjectValue:">-indexOfItemWithObjectValue:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-indexOfSelectedItem">-indexOfSelectedItem</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-insertItemWithObjectValue:atIndex:">-insertItemWithObjectValue:atIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-intercellSpacing">-intercellSpacing</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-itemHeight">-itemHeight</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-itemObjectValueAtIndex:">-itemObjectValueAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-noteNumberOfItemsChanged">-noteNumberOfItemsChanged</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-numberOfItems">-numberOfItems</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-numberOfVisibleItems">-numberOfVisibleItems</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-objectValueOfSelectedItem">-objectValueOfSelectedItem</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-objectValues">-objectValues</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-reloadData">-reloadData</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-removeAllItems">-removeAllItems</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-removeItemAtIndex:">-removeItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-removeItemWithObjectValue:">-removeItemWithObjectValue:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-scrollItemAtIndexToTop:">-scrollItemAtIndexToTop:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-scrollItemAtIndexToVisible:">-scrollItemAtIndexToVisible:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-selectItemAtIndex:">-selectItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-selectItemWithObjectValue:">-selectItemWithObjectValue:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setCompletes:">-setCompletes:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setDataSource:">-setDataSource:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setHasVerticalScroller:">-setHasVerticalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setIntercellSpacing:">-setIntercellSpacing:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setItemHeight:">-setItemHeight:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setNumberOfVisibleItems:">-setNumberOfVisibleItems:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-setUsesDataSource:">-setUsesDataSource:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSComboBox-usesDataSource">-usesDataSource</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSComboBox-addItemWithObjectValue:">addItemWithObjectValue:</a></h3>
     - (void) <b>addItemWithObjectValue:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addItemsWithObjectValues:</a></h3>
-    - (void) <b>addItemsWithObjectValues:</b> (NSArray*)objects;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-addItemsWithObjectValues:">addItemsWithObjectValues:</a></h3>
+    - (void) <b>addItemsWithObjectValues:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)objects;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>completes</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-completes">completes</a></h3>
     - (BOOL) <b>completes</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dataSource</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-dataSource">dataSource</a></h3>
     - (id) <b>dataSource</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>deselectItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-deselectItemAtIndex:">deselectItemAtIndex:</a></h3>
     - (void) <b>deselectItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasVerticalScroller</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-hasVerticalScroller">hasVerticalScroller</a></h3>
     - (BOOL) <b>hasVerticalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfItemWithObjectValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-indexOfItemWithObjectValue:">indexOfItemWithObjectValue:</a></h3>
     - (int) <b>indexOfItemWithObjectValue:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>indexOfSelectedItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-indexOfSelectedItem">indexOfSelectedItem</a></h3>
     - (int) <b>indexOfSelectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>insertItemWithObjectValue:atIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-insertItemWithObjectValue:atIndex:">insertItemWithObjectValue:atIndex:</a></h3>
     - (void) <b>insertItemWithObjectValue:</b> (id)object<b> atIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>intercellSpacing</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-intercellSpacing">intercellSpacing</a></h3>
     - (NSSize) <b>intercellSpacing</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemHeight</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-itemHeight">itemHeight</a></h3>
     - (float) <b>itemHeight</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>itemObjectValueAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-itemObjectValueAtIndex:">itemObjectValueAtIndex:</a></h3>
     - (id) <b>itemObjectValueAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>noteNumberOfItemsChanged</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-noteNumberOfItemsChanged">noteNumberOfItemsChanged</a></h3>
     - (void) <b>noteNumberOfItemsChanged</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-numberOfItems">numberOfItems</a></h3>
     - (int) <b>numberOfItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfVisibleItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-numberOfVisibleItems">numberOfVisibleItems</a></h3>
     - (int) <b>numberOfVisibleItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>objectValueOfSelectedItem</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-objectValueOfSelectedItem">objectValueOfSelectedItem</a></h3>
     - (id) <b>objectValueOfSelectedItem</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>objectValues</a></h3>
-    - (NSArray*) <b>objectValues</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-objectValues">objectValues</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>objectValues</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reloadData</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-reloadData">reloadData</a></h3>
     - (void) <b>reloadData</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeAllItems</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-removeAllItems">removeAllItems</a></h3>
     - (void) <b>removeAllItems</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-removeItemAtIndex:">removeItemAtIndex:</a></h3>
     - (void) <b>removeItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeItemWithObjectValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-removeItemWithObjectValue:">removeItemWithObjectValue:</a></h3>
     - (void) <b>removeItemWithObjectValue:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollItemAtIndexToTop:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-scrollItemAtIndexToTop:">scrollItemAtIndexToTop:</a></h3>
     - (void) <b>scrollItemAtIndexToTop:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollItemAtIndexToVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-scrollItemAtIndexToVisible:">scrollItemAtIndexToVisible:</a></h3>
     - (void) <b>scrollItemAtIndexToVisible:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectItemAtIndex:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-selectItemAtIndex:">selectItemAtIndex:</a></h3>
     - (void) <b>selectItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>selectItemWithObjectValue:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-selectItemWithObjectValue:">selectItemWithObjectValue:</a></h3>
     - (void) <b>selectItemWithObjectValue:</b> (id)object;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCompletes:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setCompletes:">setCompletes:</a></h3>
     - (void) <b>setCompletes:</b> (BOOL)completes;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDataSource:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setDataSource:">setDataSource:</a></h3>
     - (void) <b>setDataSource:</b> (id)aSource;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasVerticalScroller:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setHasVerticalScroller:">setHasVerticalScroller:</a></h3>
     - (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setIntercellSpacing:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setIntercellSpacing:">setIntercellSpacing:</a></h3>
     - (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setItemHeight:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setItemHeight:">setItemHeight:</a></h3>
     - (void) <b>setItemHeight:</b> (float)itemHeight;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setNumberOfVisibleItems:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setNumberOfVisibleItems:">setNumberOfVisibleItems:</a></h3>
     - (void) <b>setNumberOfVisibleItems:</b> (int)visibleItems;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUsesDataSource:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-setUsesDataSource:">setUsesDataSource:</a></h3>
     - (void) <b>setUsesDataSource:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usesDataSource</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSComboBox-usesDataSource">usesDataSource</a></h3>
     - (BOOL) <b>usesDataSource</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSComboBoxDataSource)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSComboBoxDataSource)">NSComboBoxDataSource</a>)</h2>
-    Declared: AppKit/NSComboBox.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSComboBoxDataSource)">NSComboBoxDataSource</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSComboBox.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>comboBox:completedString:</a></h3>
-    - (NSString*) <b>comboBox:</b> (<a href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> completedString:</b> (NSString*)aString;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxDataSource)-comboBox:completedString:">-comboBox:completedString:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxDataSource)-comboBox:indexOfItemWithStringValue:">-comboBox:indexOfItemWithStringValue:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxDataSource)-comboBox:objectValueForItemAtIndex:">-comboBox:objectValueForItemAtIndex:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxDataSource)-numberOfItemsInComboBox:">-numberOfItemsInComboBox:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxDataSource)-comboBox:completedString:">comboBox:completedString:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>comboBox:</b> (<a rel="gsdoc" href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> completedString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>comboBox:indexOfItemWithStringValue:</a></h3>
-    - (unsigned int) <b>comboBox:</b> (<a href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> indexOfItemWithStringValue:</b> (NSString*)string;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxDataSource)-comboBox:indexOfItemWithStringValue:">comboBox:indexOfItemWithStringValue:</a></h3>
+    - (unsigned int) <b>comboBox:</b> (<a rel="gsdoc" href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> indexOfItemWithStringValue:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>comboBox:objectValueForItemAtIndex:</a></h3>
-    - (id) <b>comboBox:</b> (<a href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> objectValueForItemAtIndex:</b> (int)index;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxDataSource)-comboBox:objectValueForItemAtIndex:">comboBox:objectValueForItemAtIndex:</a></h3>
+    - (id) <b>comboBox:</b> (<a rel="gsdoc" href="#class$NSComboBox">NSComboBox</a>*)aComboBox<b> objectValueForItemAtIndex:</b> (int)index;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>numberOfItemsInComboBox:</a></h3>
-    - (int) <b>numberOfItemsInComboBox:</b> (<a href="#class$NSComboBox">NSComboBox</a>*)aComboBox;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxDataSource)-numberOfItemsInComboBox:">numberOfItemsInComboBox:</a></h3>
+    - (int) <b>numberOfItemsInComboBox:</b> (<a rel="gsdoc" href="#class$NSComboBox">NSComboBox</a>*)aComboBox;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the
         NSObject(NSComboBoxNotifications)
         category
-      </h1>
-    <h2>NSObject(<a name="category$NSObject(NSComboBoxNotifications)">NSComboBoxNotifications</a>)</h2>
-    Declared: AppKit/NSComboBox.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSComboBoxNotifications)">NSComboBoxNotifications</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSComboBox.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>comboBoxSelectionDidChange:</a></h3>
-    - (void) <b>comboBoxSelectionDidChange:</b> (NSNotification*)notification;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxNotifications)-comboBoxSelectionDidChange:">-comboBoxSelectionDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxNotifications)-comboBoxSelectionIsChanging:">-comboBoxSelectionIsChanging:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxNotifications)-comboBoxWillDismiss:">-comboBoxWillDismiss:</a></li>
+      <li><a rel="gsdoc" href="NSComboBox.html#method$NSObject(NSComboBoxNotifications)-comboBoxWillPopUp:">-comboBoxWillPopUp:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxNotifications)-comboBoxSelectionDidChange:">comboBoxSelectionDidChange:</a></h3>
+    - (void) <b>comboBoxSelectionDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>comboBoxSelectionIsChanging:</a></h3>
-    - (void) <b>comboBoxSelectionIsChanging:</b> (NSNotification*)notification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxNotifications)-comboBoxSelectionIsChanging:">comboBoxSelectionIsChanging:</a></h3>
+    - (void) <b>comboBoxSelectionIsChanging:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>comboBoxWillDismiss:</a></h3>
-    - (void) <b>comboBoxWillDismiss:</b> (NSNotification*)notification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxNotifications)-comboBoxWillDismiss:">comboBoxWillDismiss:</a></h3>
+    - (void) <b>comboBoxWillDismiss:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>comboBoxWillPopUp:</a></h3>
-    - (void) <b>comboBoxWillPopUp:</b> (NSNotification*)notification;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSObject(NSComboBoxNotifications)-comboBoxWillPopUp:">comboBoxWillPopUp:</a></h3>
+    - (void) <b>comboBoxWillPopUp:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

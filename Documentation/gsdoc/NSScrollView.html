@@ -3,7 +3,9 @@
     <title>NSScrollView</title>
   </head>
   <body>
-    <h1>NSScrollView</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSScrollView">NSScrollView</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
@@ -22,326 +24,565 @@
       <dd>
       </dd>
     </dl>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSScrollView class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSScrollView class
-      </h1>
-    <h2><a name="class$NSScrollView">NSScrollView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
-    Declared: AppKit/NSScrollView.h<br />
+      </a></h1>
+    <h2><a name="class$NSScrollView">NSScrollView</a> : <a rel="gsdoc" href="NSView.html#class$NSView">NSView</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSScrollView.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView+contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:">+contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView+frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:">+frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView+rulerViewClass">+rulerViewClass</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView+setRulerViewClass:">+setRulerViewClass:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-borderType">-borderType</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-contentSize">-contentSize</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-contentView">-contentView</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-documentCursor">-documentCursor</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-documentView">-documentView</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-documentVisibleRect">-documentVisibleRect</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-drawsBackground">-drawsBackground</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-hasHorizontalRuler">-hasHorizontalRuler</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-hasHorizontalScroller">-hasHorizontalScroller</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-hasVerticalRuler">-hasVerticalRuler</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-hasVerticalScroller">-hasVerticalScroller</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-horizontalLineScroll">-horizontalLineScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-horizontalPageScroll">-horizontalPageScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-horizontalRulerView">-horizontalRulerView</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-horizontalScroller">-horizontalScroller</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-lineScroll">-lineScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-pageScroll">-pageScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-reflectScrolledClipView:">-reflectScrolledClipView:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-rulersVisible">-rulersVisible</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-scrollsDynamically">-scrollsDynamically</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setBorderType:">-setBorderType:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setContentView:">-setContentView:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setDocumentCursor:">-setDocumentCursor:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setDocumentView:">-setDocumentView:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setDrawsBackground:">-setDrawsBackground:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHasHorizontalRuler:">-setHasHorizontalRuler:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHasHorizontalScroller:">-setHasHorizontalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHasVerticalRuler:">-setHasVerticalRuler:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHasVerticalScroller:">-setHasVerticalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHorizontalLineScroll:">-setHorizontalLineScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHorizontalPageScroll:">-setHorizontalPageScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHorizontalRulerView:">-setHorizontalRulerView:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setHorizontalScroller:">-setHorizontalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setLineScroll:">-setLineScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setPageScroll:">-setPageScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setRulersVisible:">-setRulersVisible:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setScrollsDynamically:">-setScrollsDynamically:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setVerticalLineScroll:">-setVerticalLineScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setVerticalPageScroll:">-setVerticalPageScroll:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setVerticalRulerView:">-setVerticalRulerView:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-setVerticalScroller:">-setVerticalScroller:</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-tile">-tile</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-verticalLineScroll">-verticalLineScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-verticalPageScroll">-verticalPageScroll</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-verticalRulerView">-verticalRulerView</a></li>
+      <li><a rel="gsdoc" href="NSScrollView.html#method$NSScrollView-verticalScroller">-verticalScroller</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSScrollView+contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:">contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
     + (NSSize) <b>contentSizeForFrameSize:</b> (NSSize)frameSize<b> hasHorizontalScroller:</b> (BOOL)hFlag<b> hasVerticalScroller:</b> (BOOL)vFlag<b> borderType:</b> (NSBorderType)borderType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView+frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:">frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
     + (NSSize) <b>frameSizeForContentSize:</b> (NSSize)contentSize<b> hasHorizontalScroller:</b> (BOOL)hFlag<b> hasVerticalScroller:</b> (BOOL)vFlag<b> borderType:</b> (NSBorderType)borderType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulerViewClass</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView+rulerViewClass">rulerViewClass</a></h3>
     + (Class) <b>rulerViewClass</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRulerViewClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView+setRulerViewClass:">setRulerViewClass:</a></h3>
     + (void) <b>setRulerViewClass:</b> (Class)aClass;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>borderType</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-borderType">borderType</a></h3>
     - (NSBorderType) <b>borderType</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>contentSize</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-contentSize">contentSize</a></h3>
     - (NSSize) <b>contentSize</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>contentView</a></h3>
-    - (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*) <b>contentView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-contentView">contentView</a></h3>
+    - (<a rel="gsdoc" href="NSClipView.html#class$NSClipView">NSClipView</a>*) <b>contentView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentCursor</a></h3>
-    - (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*) <b>documentCursor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-documentCursor">documentCursor</a></h3>
+    - (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*) <b>documentCursor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentView</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-documentView">documentView</a></h3>
     - (id) <b>documentView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>documentVisibleRect</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-documentVisibleRect">documentVisibleRect</a></h3>
     - (NSRect) <b>documentVisibleRect</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawsBackground</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasHorizontalRuler</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-hasHorizontalRuler">hasHorizontalRuler</a></h3>
     - (BOOL) <b>hasHorizontalRuler</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasHorizontalScroller</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-hasHorizontalScroller">hasHorizontalScroller</a></h3>
     - (BOOL) <b>hasHorizontalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasVerticalRuler</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-hasVerticalRuler">hasVerticalRuler</a></h3>
     - (BOOL) <b>hasVerticalRuler</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasVerticalScroller</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-hasVerticalScroller">hasVerticalScroller</a></h3>
     - (BOOL) <b>hasVerticalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>horizontalLineScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-horizontalLineScroll">horizontalLineScroll</a></h3>
     - (float) <b>horizontalLineScroll</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>horizontalPageScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-horizontalPageScroll">horizontalPageScroll</a></h3>
     - (float) <b>horizontalPageScroll</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>horizontalRulerView</a></h3>
-    - (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>horizontalRulerView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-horizontalRulerView">horizontalRulerView</a></h3>
+    - (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>horizontalRulerView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>horizontalScroller</a></h3>
-    - (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>horizontalScroller</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-horizontalScroller">horizontalScroller</a></h3>
+    - (<a rel="gsdoc" href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>horizontalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lineScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-lineScroll">lineScroll</a></h3>
     - (float) <b>lineScroll</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pageScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-pageScroll">pageScroll</a></h3>
     - (float) <b>pageScroll</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>reflectScrolledClipView:</a></h3>
-    - (void) <b>reflectScrolledClipView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-reflectScrolledClipView:">reflectScrolledClipView:</a></h3>
+    - (void) <b>reflectScrolledClipView:</b> (<a rel="gsdoc" href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>rulersVisible</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-rulersVisible">rulersVisible</a></h3>
     - (BOOL) <b>rulersVisible</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scrollsDynamically</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-scrollsDynamically">scrollsDynamically</a></h3>
     - (BOOL) <b>scrollsDynamically</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBorderType:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setBorderType:">setBorderType:</a></h3>
     - (void) <b>setBorderType:</b> (NSBorderType)borderType;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setContentView:</a></h3>
-    - (void) <b>setContentView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setContentView:">setContentView:</a></h3>
+    - (void) <b>setContentView:</b> (<a rel="gsdoc" href="NSClipView.html#class$NSClipView">NSClipView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDocumentCursor:</a></h3>
-    - (void) <b>setDocumentCursor:</b> (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*)aCursor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setDocumentCursor:">setDocumentCursor:</a></h3>
+    - (void) <b>setDocumentCursor:</b> (<a rel="gsdoc" href="NSCursor.html#class$NSCursor">NSCursor</a>*)aCursor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDocumentView:</a></h3>
-    - (void) <b>setDocumentView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setDocumentView:">setDocumentView:</a></h3>
+    - (void) <b>setDocumentView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDrawsBackground:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasHorizontalRuler:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHasHorizontalRuler:">setHasHorizontalRuler:</a></h3>
     - (void) <b>setHasHorizontalRuler:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasHorizontalScroller:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHasHorizontalScroller:">setHasHorizontalScroller:</a></h3>
     - (void) <b>setHasHorizontalScroller:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasVerticalRuler:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHasVerticalRuler:">setHasVerticalRuler:</a></h3>
     - (void) <b>setHasVerticalRuler:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHasVerticalScroller:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHasVerticalScroller:">setHasVerticalScroller:</a></h3>
     - (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHorizontalLineScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHorizontalLineScroll:">setHorizontalLineScroll:</a></h3>
     - (void) <b>setHorizontalLineScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHorizontalPageScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHorizontalPageScroll:">setHorizontalPageScroll:</a></h3>
     - (void) <b>setHorizontalPageScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHorizontalRulerView:</a></h3>
-    - (void) <b>setHorizontalRulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHorizontalRulerView:">setHorizontalRulerView:</a></h3>
+    - (void) <b>setHorizontalRulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHorizontalScroller:</a></h3>
-    - (void) <b>setHorizontalScroller:</b> (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setHorizontalScroller:">setHorizontalScroller:</a></h3>
+    - (void) <b>setHorizontalScroller:</b> (<a rel="gsdoc" href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setLineScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setLineScroll:">setLineScroll:</a></h3>
     - (void) <b>setLineScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPageScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setPageScroll:">setPageScroll:</a></h3>
     - (void) <b>setPageScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setRulersVisible:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setRulersVisible:">setRulersVisible:</a></h3>
     - (void) <b>setRulersVisible:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setScrollsDynamically:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setScrollsDynamically:">setScrollsDynamically:</a></h3>
     - (void) <b>setScrollsDynamically:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setVerticalLineScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setVerticalLineScroll:">setVerticalLineScroll:</a></h3>
     - (void) <b>setVerticalLineScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setVerticalPageScroll:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setVerticalPageScroll:">setVerticalPageScroll:</a></h3>
     - (void) <b>setVerticalPageScroll:</b> (float)aFloat;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setVerticalRulerView:</a></h3>
-    - (void) <b>setVerticalRulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setVerticalRulerView:">setVerticalRulerView:</a></h3>
+    - (void) <b>setVerticalRulerView:</b> (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setVerticalScroller:</a></h3>
-    - (void) <b>setVerticalScroller:</b> (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-setVerticalScroller:">setVerticalScroller:</a></h3>
+    - (void) <b>setVerticalScroller:</b> (<a rel="gsdoc" href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>tile</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-tile">tile</a></h3>
     - (void) <b>tile</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>verticalLineScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-verticalLineScroll">verticalLineScroll</a></h3>
     - (float) <b>verticalLineScroll</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>verticalPageScroll</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-verticalPageScroll">verticalPageScroll</a></h3>
     - (float) <b>verticalPageScroll</b>;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>verticalRulerView</a></h3>
-    - (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>verticalRulerView</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-verticalRulerView">verticalRulerView</a></h3>
+    - (<a rel="gsdoc" href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>verticalRulerView</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>verticalScroller</a></h3>
-    - (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>verticalScroller</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSScrollView-verticalScroller">verticalScroller</a></h3>
+    - (<a rel="gsdoc" href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>verticalScroller</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

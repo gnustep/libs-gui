@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSHelpPanel" up="Gui">
+  <head>
+    <title>NSHelpPanel</title>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the NSHelpPanel class
+      </heading>
+      <class name="NSHelpPanel" super="NSPanel">
+        <declared>AppKit/NSHelpPanel.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void" factory="yes">
+          <sel>attachHelpFile:</sel>
+          <arg type="NSString*">filename</arg>
+          <sel>markerName:</sel>
+          <arg type="NSString*">markerName</arg>
+          <sel>to:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void" factory="yes">
+          <sel>detachHelpFrom:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setHelpDirectory:</sel>
+          <arg type="NSString*">helpDirectory</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSHelpPanel*" factory="yes">
+          <sel>sharedHelpPanel</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSHelpPanel*" factory="yes">
+          <sel>sharedHelpPanelWithDirectory:</sel>
+          <arg type="NSString*">helpDirectory</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>addSupplement:</sel>
+          <arg type="NSString*">helpDirectory</arg>
+          <sel>inPath:</sel>
+          <arg type="NSString*">supplementPath</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSString*">
+          <sel>helpDirectory</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="NSString*">
+          <sel>helpFile</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>print:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>showFile:</sel>
+          <arg type="NSString*">filename</arg>
+          <sel>atMarker:</sel>
+          <arg type="NSString*">markerName</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>showHelpAttachedTo:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotMacOS-X /> <GNUstep /> <OpenStep />
+          </standards>
+        </method>
+        <standards>
+          <NotMacOS-X /> <GNUstep /> <OpenStep />
+        </standards>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

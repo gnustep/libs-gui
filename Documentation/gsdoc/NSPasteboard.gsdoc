@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSPasteboard" next="NSPopUpButton" prev="NSParagraphStyle" up="NSActionCell">
+<gsdoc base="NSPasteboard" up="Gui">
   <head>
     <title>NSPasteboard</title>
     <author name="Richard Frith-Macdonald">
@@ -15,6 +15,7 @@
     <copy>1997,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>
         Software documentation for the NSPasteboard class
@@ -22,11 +23,16 @@
       <class name="NSPasteboard" super="NSObject">
         <declared>AppKit/NSPasteboard.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSPasteboard*" factory="yes">
           <sel>generalPasteboard</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardByFilteringData:</sel>
@@ -34,36 +40,60 @@
           <sel>ofType:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardByFilteringFile:</sel>
           <arg type="NSString*">filename</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardByFilteringTypesInPasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardWithName:</sel>
           <arg type="NSString*">aName</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardWithUniqueName</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*" factory="yes">
           <sel>typesFilterableTo:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>addTypes:</sel>
@@ -71,24 +101,40 @@
           <sel>owner:</sel>
           <arg type="id">newOwner</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>availableTypeFromArray:</sel>
           <arg type="NSArray*">types</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>changeCount</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSData*">
           <sel>dataForType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>declareTypes:</sel>
@@ -96,18 +142,30 @@
           <sel>owner:</sel>
           <arg type="id">newOwner</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>name</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>propertyListForType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>readFileContentsType:</sel>
@@ -115,17 +173,29 @@
           <sel>toFile:</sel>
           <arg type="NSString*">filename</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSFileWrapper*">
           <sel>readFileWrapper</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>releaseGlobally</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setData:</sel>
@@ -133,7 +203,11 @@
           <sel>forType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setPropertyList:</sel>
@@ -141,7 +215,11 @@
           <sel>forType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>setString:</sel>
@@ -149,31 +227,54 @@
           <sel>forType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>stringForType:</sel>
           <arg type="NSString*">dataType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSArray*">
           <sel>types</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>writeFileContents:</sel>
           <arg type="NSString*">filename</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>writeFileWrapper:</sel>
           <arg type="NSFileWrapper*">wrapper</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
     <chapter>
@@ -185,6 +286,7 @@
       <category name="NSPasteboardOwner" class="NSObject">
         <declared>AppKit/NSPasteboard.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="void">
           <sel>pasteboard:</sel>
@@ -192,7 +294,11 @@
           <sel>provideDataForType:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pasteboard:</sel>
@@ -202,14 +308,25 @@
           <sel>andVersion:</sel>
           <arg type="int">ver</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pasteboardChangedOwner:</sel>
           <arg type="NSPasteboard*">sender</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -221,25 +338,41 @@
       <category name="GNUstepExtensions" class="NSPasteboard">
         <declared>AppKit/NSPasteboard.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSString*" factory="yes">
           <sel>mimeTypeForPasteboardType:</sel>
           <arg type="NSString*">type</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSString*" factory="yes">
           <sel>pasteboardTypeForMimeType:</sel>
           <arg type="NSString*">mimeType</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setChangeCount:</sel>
           <arg type="int">count</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </category>
     </chapter>
     <chapter>
@@ -250,19 +383,31 @@
       <category name="NSPasteboard" class="NSURL">
         <declared>AppKit/NSPasteboard.h</declared>
         <desc>
+          <em>Description forthcoming.</em>
         </desc>
         <method type="NSURL*" factory="yes">
           <sel>URLFromPasteboard:</sel>
           <arg type="NSPasteboard*">pasteBoard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>writeToPasteboard:</sel>
           <arg type="NSPasteboard*">pasteBoard</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
+        <standards>
+          <NotOpenStep /> <GNUstep /> <MacOS-X />
+        </standards>
       </category>
     </chapter>
   </body>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSSlider" next="NSSliderCell" prev="NSPrintOperation" up="NSDocumentController">
+<gsdoc base="NSSlider" up="Gui">
   <head>
     <title>NSSlider</title>
     <author name="Ovidiu Predescu">
@@ -16,6 +16,7 @@
     <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>Class Description</heading>
       <p>
@@ -61,11 +62,18 @@
             inactive window, to both bring the window into
             focus and manipulate the slider.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>allowsTickMarkValuesOnly</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="double">
           <sel>altIncrementValue</sel>
@@ -73,12 +81,19 @@
             Returns the value by which the slider will be
             incremented if the user holds down the ALT key.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="double">
           <sel>closestTickMarkValueToValue:</sel>
           <arg type="double">aValue</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSImage*">
           <sel>image</sel>
@@ -86,12 +101,19 @@
             Returns the image drawn in the slider's track.
             Returns <code>nil</code> if this has not been set.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>indexOfTickMarkAtPoint:</sel>
           <arg type="NSPoint">point</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="int">
           <sel>isVertical</sel>
@@ -102,6 +124,9 @@
             method returns -1. Generally, a slider is considered
             vertical if its height is greater than its width.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="float">
           <sel>knobThickness</sel>
@@ -110,6 +135,9 @@
             value is in pixels, and is the size of the knob along
             the slider's track.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="double">
           <sel>maxValue</sel>
@@ -117,6 +145,9 @@
             Returns the maximum value that the slider
             represents.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="double">
           <sel>minValue</sel>
@@ -124,23 +155,38 @@
             Returns the minimum value that the slider
             represents.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>numberOfTickMarks</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSRect">
           <sel>rectOfTickMarkAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setAllowsTickMarkValuesOnly:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setAltIncrementValue:</sel>
@@ -150,6 +196,9 @@
             incremented, when the ALT key is held down, to
             <var>increment</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setImage:</sel>
@@ -158,6 +207,9 @@
             Sets the image to be displayed in the slider's track
             to <var>barImage</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setKnobThickness:</sel>
@@ -167,6 +219,9 @@
             , in pixels. This value sets the amount of space which
             the knob takes up in the slider's track.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMaxValue:</sel>
@@ -175,6 +230,9 @@
             Sets the maximum value that the sliders represents to
             <var>maxValue</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setMinValue:</sel>
@@ -183,18 +241,29 @@
             Sets the minimum value that the slider represents to
             <var>minValue</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setNumberOfTickMarks:</sel>
           <arg type="int">numberOfTickMarks</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setTickMarkPosition:</sel>
           <arg type="NSTickMarkPosition">position</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitle:</sel>
@@ -204,6 +273,9 @@
             This title is displayed on the slider's track, behind
             the knob.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitleCell:</sel>
@@ -212,6 +284,9 @@
             Sets the cell used to draw the title to
             <var>titleCell</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitleColor:</sel>
@@ -220,6 +295,9 @@
             Sets the colour with which the title will be drawn to
             <var>color</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setTitleFont:</sel>
@@ -228,17 +306,28 @@
             Sets the font with which the title will be drawm to
             <var>font</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSTickMarkPosition">
           <sel>tickMarkPosition</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="double">
           <sel>tickMarkValueAtIndex:</sel>
           <arg type="int">index</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSString*">
           <sel>title</sel>
@@ -246,25 +335,40 @@
             Returns the title of the slider as an
             <code>NSString</code>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>titleCell</sel>
           <desc>
             Returns the cell used to draw the title.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSColor*">
           <sel>titleColor</sel>
           <desc>
             Returns the colour used to draw the title.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSFont*">
           <sel>titleFont</sel>
           <desc>
             Returns the font used to draw the title.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

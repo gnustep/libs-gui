@@ -3,7 +3,9 @@
     <title>NSImageRep</title>
   </head>
   <body>
-    <h1>NSImageRep</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSImageRep">NSImageRep</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Adam Fedor(<a href="mailto:fedor@colorado.edu"><code>
@@ -13,229 +15,406 @@
       </dd>
     </dl>
     <blockquote>
-
+      
       Abstract representation of an image.
-        </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+    
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSImageRep class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSImageRep class
-      </h1>
-    <h2><a name="class$NSImageRep">NSImageRep</a> : NSObject</h2>
-    Declared: AppKit/NSImageRep.h<br />
-    Conform: NSCoding<br />
-    Conform: NSCopying<br />
+      </a></h1>
+    <h2><a name="class$NSImageRep">NSImageRep</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSImageRep.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>canInitWithData:</a></h3>
-    + (BOOL) <b>canInitWithData:</b> (NSData*)data;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+canInitWithData:">+canInitWithData:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+canInitWithPasteboard:">+canInitWithPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageFileTypes">+imageFileTypes</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imagePasteboardTypes">+imagePasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepClassForData:">+imageRepClassForData:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepClassForFileType:">+imageRepClassForFileType:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepClassForPasteboardType:">+imageRepClassForPasteboardType:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepWithContentsOfFile:">+imageRepWithContentsOfFile:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepWithContentsOfURL:">+imageRepWithContentsOfURL:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepWithPasteboard:">+imageRepWithPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepsWithContentsOfFile:">+imageRepsWithContentsOfFile:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepsWithContentsOfURL:">+imageRepsWithContentsOfURL:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageRepsWithPasteboard:">+imageRepsWithPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageUnfilteredFileTypes">+imageUnfilteredFileTypes</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+imageUnfilteredPasteboardTypes">+imageUnfilteredPasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+registerImageRepClass:">+registerImageRepClass:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+registeredImageRepClasses">+registeredImageRepClasses</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep+unregisterImageRepClass:">+unregisterImageRepClass:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-bitsPerSample">-bitsPerSample</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-colorSpaceName">-colorSpaceName</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-draw">-draw</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-drawAtPoint:">-drawAtPoint:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-drawInRect:">-drawInRect:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-hasAlpha">-hasAlpha</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-isOpaque">-isOpaque</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-pixelsHigh">-pixelsHigh</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-pixelsWide">-pixelsWide</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setAlpha:">-setAlpha:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setBitsPerSample:">-setBitsPerSample:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setColorSpaceName:">-setColorSpaceName:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setOpaque:">-setOpaque:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setPixelsHigh:">-setPixelsHigh:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setPixelsWide:">-setPixelsWide:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-setSize:">-setSize:</a></li>
+      <li><a rel="gsdoc" href="NSImageRep.html#method$NSImageRep-size">-size</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSImageRep+canInitWithData:">canInitWithData:</a></h3>
+    + (BOOL) <b>canInitWithData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>canInitWithPasteboard:</a></h3>
-    + (BOOL) <b>canInitWithPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+canInitWithPasteboard:">canInitWithPasteboard:</a></h3>
+    + (BOOL) <b>canInitWithPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageFileTypes</a></h3>
-    + (NSArray*) <b>imageFileTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageFileTypes">imageFileTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageFileTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imagePasteboardTypes</a></h3>
-    + (NSArray*) <b>imagePasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imagePasteboardTypes">imagePasteboardTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imagePasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepClassForData:</a></h3>
-    + (Class) <b>imageRepClassForData:</b> (NSData*)data;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepClassForData:">imageRepClassForData:</a></h3>
+    + (Class) <b>imageRepClassForData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepClassForFileType:</a></h3>
-    + (Class) <b>imageRepClassForFileType:</b> (NSString*)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepClassForFileType:">imageRepClassForFileType:</a></h3>
+    + (Class) <b>imageRepClassForFileType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepClassForPasteboardType:</a></h3>
-    + (Class) <b>imageRepClassForPasteboardType:</b> (NSString*)type;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepClassForPasteboardType:">imageRepClassForPasteboardType:</a></h3>
+    + (Class) <b>imageRepClassForPasteboardType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepWithContentsOfFile:</a></h3>
-    + (id) <b>imageRepWithContentsOfFile:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepWithContentsOfFile:">imageRepWithContentsOfFile:</a></h3>
+    + (id) <b>imageRepWithContentsOfFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepWithContentsOfURL:</a></h3>
-    + (id) <b>imageRepWithContentsOfURL:</b> (NSURL*)anURL;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepWithContentsOfURL:">imageRepWithContentsOfURL:</a></h3>
+    + (id) <b>imageRepWithContentsOfURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)anURL;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepWithPasteboard:</a></h3>
-    + (id) <b>imageRepWithPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepWithPasteboard:">imageRepWithPasteboard:</a></h3>
+    + (id) <b>imageRepWithPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepsWithContentsOfFile:</a></h3>
-    + (NSArray*) <b>imageRepsWithContentsOfFile:</b> (NSString*)filename;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepsWithContentsOfFile:">imageRepsWithContentsOfFile:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageRepsWithContentsOfFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepsWithContentsOfURL:</a></h3>
-    + (NSArray*) <b>imageRepsWithContentsOfURL:</b> (NSURL*)anURL;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepsWithContentsOfURL:">imageRepsWithContentsOfURL:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageRepsWithContentsOfURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)anURL;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageRepsWithPasteboard:</a></h3>
-    + (NSArray*) <b>imageRepsWithPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageRepsWithPasteboard:">imageRepsWithPasteboard:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageRepsWithPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageUnfilteredFileTypes</a></h3>
-    + (NSArray*) <b>imageUnfilteredFileTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageUnfilteredFileTypes">imageUnfilteredFileTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageUnfilteredFileTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageUnfilteredPasteboardTypes</a></h3>
-    + (NSArray*) <b>imageUnfilteredPasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+imageUnfilteredPasteboardTypes">imageUnfilteredPasteboardTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageUnfilteredPasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>registerImageRepClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+registerImageRepClass:">registerImageRepClass:</a></h3>
     + (void) <b>registerImageRepClass:</b> (Class)imageRepClass;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>registeredImageRepClasses</a></h3>
-    + (NSArray*) <b>registeredImageRepClasses</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+registeredImageRepClasses">registeredImageRepClasses</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>registeredImageRepClasses</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>unregisterImageRepClass:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep+unregisterImageRepClass:">unregisterImageRepClass:</a></h3>
     + (void) <b>unregisterImageRepClass:</b> (Class)imageRepClass;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bitsPerSample</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-bitsPerSample">bitsPerSample</a></h3>
     - (int) <b>bitsPerSample</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>colorSpaceName</a></h3>
-    - (NSString*) <b>colorSpaceName</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-colorSpaceName">colorSpaceName</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>colorSpaceName</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>draw</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-draw">draw</a></h3>
     - (BOOL) <b>draw</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawAtPoint:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-drawAtPoint:">drawAtPoint:</a></h3>
     - (BOOL) <b>drawAtPoint:</b> (NSPoint)aPoint;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawInRect:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-drawInRect:">drawInRect:</a></h3>
     - (BOOL) <b>drawInRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hasAlpha</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-hasAlpha">hasAlpha</a></h3>
     - (BOOL) <b>hasAlpha</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isOpaque</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-isOpaque">isOpaque</a></h3>
     - (BOOL) <b>isOpaque</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pixelsHigh</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-pixelsHigh">pixelsHigh</a></h3>
     - (int) <b>pixelsHigh</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pixelsWide</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-pixelsWide">pixelsWide</a></h3>
     - (int) <b>pixelsWide</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setAlpha:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setAlpha:">setAlpha:</a></h3>
     - (void) <b>setAlpha:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBitsPerSample:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setBitsPerSample:">setBitsPerSample:</a></h3>
     - (void) <b>setBitsPerSample:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setColorSpaceName:</a></h3>
-    - (void) <b>setColorSpaceName:</b> (NSString*)aString;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setColorSpaceName:">setColorSpaceName:</a></h3>
+    - (void) <b>setColorSpaceName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setOpaque:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setOpaque:">setOpaque:</a></h3>
     - (void) <b>setOpaque:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPixelsHigh:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setPixelsHigh:">setPixelsHigh:</a></h3>
     - (void) <b>setPixelsHigh:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPixelsWide:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setPixelsWide:">setPixelsWide:</a></h3>
     - (void) <b>setPixelsWide:</b> (int)anInt;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-setSize:">setSize:</a></h3>
     - (void) <b>setSize:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>size</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImageRep-size">size</a></h3>
     - (NSSize) <b>size</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -3,7 +3,9 @@
     <title>NSCursor</title>
   </head>
   <body>
-    <h1>NSCursor</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSCursor">NSCursor</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
@@ -18,166 +20,303 @@
       </dd>
     </dl>
     <blockquote>
-Holds an image to use as a cursor    </blockquote>
-    <p>Copyright: (C) 1996,1999,2001 Free Software Foundation, Inc.</p>
-    <h1>
+      Holds an image to use as a cursor
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996,1999,2001 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSCursor class</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSCursor class
-      </h1>
-    <h2><a name="class$NSCursor">NSCursor</a> : NSObject</h2>
-    Declared: AppKit/NSCursor.h<br />
-    Conform: NSCoding<br />
+      </a></h1>
+    <h2><a name="class$NSCursor">NSCursor</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSCursor.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>IBeamCursor</a></h3>
-    + (<a href="#class$NSCursor">NSCursor</a>*) <b>IBeamCursor</b>;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+IBeamCursor">+IBeamCursor</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+arrowCursor">+arrowCursor</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+currentCursor">+currentCursor</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+greenArrowCursor">+greenArrowCursor</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+hide">+hide</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+isHiddenUntilMouseMoves">+isHiddenUntilMouseMoves</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+pop">+pop</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+setHiddenUntilMouseMoves:">+setHiddenUntilMouseMoves:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor+unhide">+unhide</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-hotSpot">-hotSpot</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-image">-image</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-initWithImage:">-initWithImage:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:">-initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-initWithImage:hotSpot:">-initWithImage:hotSpot:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-isSetOnMouseEntered">-isSetOnMouseEntered</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-isSetOnMouseExited">-isSetOnMouseExited</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-mouseEntered:">-mouseEntered:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-mouseExited:">-mouseExited:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-pop">-pop</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-push">-push</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-set">-set</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-setHotSpot:">-setHotSpot:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-setImage:">-setImage:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-setOnMouseEntered:">-setOnMouseEntered:</a></li>
+      <li><a rel="gsdoc" href="NSCursor.html#method$NSCursor-setOnMouseExited:">-setOnMouseExited:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSCursor+IBeamCursor">IBeamCursor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSCursor">NSCursor</a>*) <b>IBeamCursor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>arrowCursor</a></h3>
-    + (<a href="#class$NSCursor">NSCursor</a>*) <b>arrowCursor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+arrowCursor">arrowCursor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSCursor">NSCursor</a>*) <b>arrowCursor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>currentCursor</a></h3>
-    + (<a href="#class$NSCursor">NSCursor</a>*) <b>currentCursor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+currentCursor">currentCursor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSCursor">NSCursor</a>*) <b>currentCursor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>greenArrowCursor</a></h3>
-    + (<a href="#class$NSCursor">NSCursor</a>*) <b>greenArrowCursor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+greenArrowCursor">greenArrowCursor</a></h3>
+    + (<a rel="gsdoc" href="#class$NSCursor">NSCursor</a>*) <b>greenArrowCursor</b>;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hide</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+hide">hide</a></h3>
     + (void) <b>hide</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isHiddenUntilMouseMoves</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+isHiddenUntilMouseMoves">isHiddenUntilMouseMoves</a></h3>
     + (BOOL) <b>isHiddenUntilMouseMoves</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pop</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+pop">pop</a></h3>
     + (void) <b>pop</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHiddenUntilMouseMoves:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+setHiddenUntilMouseMoves:">setHiddenUntilMouseMoves:</a></h3>
     + (void) <b>setHiddenUntilMouseMoves:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>unhide</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor+unhide">unhide</a></h3>
     + (void) <b>unhide</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>hotSpot</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-hotSpot">hotSpot</a></h3>
     - (NSPoint) <b>hotSpot</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>image</a></h3>
-    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-image">image</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithImage:</a></h3>
-    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-initWithImage:">initWithImage:</a></h3>
+    - (id) <b>initWithImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a></h3>
-    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> foregroundColorHint:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)fg<b> backgroundColorHint:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)bg<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:">initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a></h3>
+    - (id) <b>initWithImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> foregroundColorHint:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)fg<b> backgroundColorHint:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)bg<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithImage:hotSpot:</a></h3>
-    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-initWithImage:hotSpot:">initWithImage:hotSpot:</a></h3>
+    - (id) <b>initWithImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSetOnMouseEntered</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-isSetOnMouseEntered">isSetOnMouseEntered</a></h3>
     - (BOOL) <b>isSetOnMouseEntered</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isSetOnMouseExited</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-isSetOnMouseExited">isSetOnMouseExited</a></h3>
     - (BOOL) <b>isSetOnMouseExited</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseEntered:</a></h3>
-    - (void) <b>mouseEntered:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-mouseEntered:">mouseEntered:</a></h3>
+    - (void) <b>mouseEntered:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>mouseExited:</a></h3>
-    - (void) <b>mouseExited:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-mouseExited:">mouseExited:</a></h3>
+    - (void) <b>mouseExited:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>pop</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-pop">pop</a></h3>
     - (void) <b>pop</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>push</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-push">push</a></h3>
     - (void) <b>push</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>set</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-set">set</a></h3>
     - (void) <b>set</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setHotSpot:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-setHotSpot:">setHotSpot:</a></h3>
     - (void) <b>setHotSpot:</b> (NSPoint)spot;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setImage:</a></h3>
-    - (void) <b>setImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-setImage:">setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setOnMouseEntered:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-setOnMouseEntered:">setOnMouseEntered:</a></h3>
     - (void) <b>setOnMouseEntered:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setOnMouseExited:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSCursor-setOnMouseExited:">setOnMouseExited:</a></h3>
     - (void) <b>setOnMouseExited:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

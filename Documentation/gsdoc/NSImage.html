@@ -3,7 +3,9 @@
     <title>NSImage</title>
   </head>
   <body>
-    <h1>NSImage</h1>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSImage">NSImage</a></h1>
     <h3>Authors</h3>
     <dl>
       <dt>Adam Fedor(<a href="mailto:fedor@colorado.edu"><code>
@@ -13,401 +15,728 @@
       </dd>
     </dl>
     <blockquote>
-Load, manipulate and display images    </blockquote>
-    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-    <h1>
+      Load, manipulate and display images
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSImage class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSBundle(NSImageAdditions) category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the GSImageDelegateProtocol
+        protocol</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSImage class
-      </h1>
-    <h2><a name="class$NSImage">NSImage</a> : NSObject</h2>
-    Declared: AppKit/NSImage.h<br />
-    Conform: NSCoding<br />
-    Conform: NSCopying<br />
+      </a></h1>
+    <h2><a name="class$NSImage">NSImage</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSImage.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>canInitWithPasteboard:</a></h3>
-    + (BOOL) <b>canInitWithPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+canInitWithPasteboard:">+canInitWithPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+imageFileTypes">+imageFileTypes</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+imageNamed:">+imageNamed:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+imagePasteboardTypes">+imagePasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+imageUnfilteredFileTypes">+imageUnfilteredFileTypes</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage+imageUnfilteredPasteboardTypes">+imageUnfilteredPasteboardTypes</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-TIFFRepresentation">-TIFFRepresentation</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-TIFFRepresentationUsingCompression:factor:">-TIFFRepresentationUsingCompression:factor:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-addRepresentation:">-addRepresentation:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-addRepresentations:">-addRepresentations:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-bestRepresentationForDevice:">-bestRepresentationForDevice:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-cacheDepthMatchesImageDepth">-cacheDepthMatchesImageDepth</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-compositeToPoint:fromRect:operation:">-compositeToPoint:fromRect:operation:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-compositeToPoint:fromRect:operation:fraction:">-compositeToPoint:fromRect:operation:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-compositeToPoint:operation:">-compositeToPoint:operation:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-compositeToPoint:operation:fraction:">-compositeToPoint:operation:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-dissolveToPoint:fraction:">-dissolveToPoint:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-dissolveToPoint:fromRect:fraction:">-dissolveToPoint:fromRect:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-drawAtPoint:fromRect:operation:fraction:">-drawAtPoint:fromRect:operation:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-drawInRect:fromRect:operation:fraction:">-drawInRect:fromRect:operation:fraction:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-drawRepresentation:inRect:">-drawRepresentation:inRect:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initByReferencingFile:">-initByReferencingFile:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithBitmapHandle:">-initWithBitmapHandle:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithContentsOfFile:">-initWithContentsOfFile:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithContentsOfURL:">-initWithContentsOfURL:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithData:">-initWithData:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithIconHandle:">-initWithIconHandle:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithPasteboard:">-initWithPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-initWithSize:">-initWithSize:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-isCachedSeparately">-isCachedSeparately</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-isDataRetained">-isDataRetained</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-isFlipped">-isFlipped</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-isValid">-isValid</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-lockFocus">-lockFocus</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-lockFocusOnRepresentation:">-lockFocusOnRepresentation:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-matchesOnMultipleResolution">-matchesOnMultipleResolution</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-name">-name</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-prefersColorMatch">-prefersColorMatch</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-recache">-recache</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-removeRepresentation:">-removeRepresentation:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-representations">-representations</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-scalesWhenResized">-scalesWhenResized</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setCacheDepthMatchesImageDepth:">-setCacheDepthMatchesImageDepth:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setCachedSeparately:">-setCachedSeparately:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setDataRetained:">-setDataRetained:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setFlipped:">-setFlipped:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setMatchesOnMultipleResolution:">-setMatchesOnMultipleResolution:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setName:">-setName:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setPrefersColorMatch:">-setPrefersColorMatch:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setScalesWhenResized:">-setScalesWhenResized:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setSize:">-setSize:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-setUsesEPSOnResolutionMismatch:">-setUsesEPSOnResolutionMismatch:</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-size">-size</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-unlockFocus">-unlockFocus</a></li>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSImage-usesEPSOnResolutionMismatch">-usesEPSOnResolutionMismatch</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSImage+canInitWithPasteboard:">canInitWithPasteboard:</a></h3>
+    + (BOOL) <b>canInitWithPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageFileTypes</a></h3>
-    + (NSArray*) <b>imageFileTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage+imageFileTypes">imageFileTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageFileTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageNamed:</a></h3>
-    + (id) <b>imageNamed:</b> (NSString*)aName;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage+imageNamed:">imageNamed:</a></h3>
+    + (id) <b>imageNamed:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aName;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imagePasteboardTypes</a></h3>
-    + (NSArray*) <b>imagePasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage+imagePasteboardTypes">imagePasteboardTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imagePasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageUnfilteredFileTypes</a></h3>
-    + (NSArray*) <b>imageUnfilteredFileTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage+imageUnfilteredFileTypes">imageUnfilteredFileTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageUnfilteredFileTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>imageUnfilteredPasteboardTypes</a></h3>
-    + (NSArray*) <b>imageUnfilteredPasteboardTypes</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage+imageUnfilteredPasteboardTypes">imageUnfilteredPasteboardTypes</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>imageUnfilteredPasteboardTypes</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>TIFFRepresentation</a></h3>
-    - (NSData*) <b>TIFFRepresentation</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-TIFFRepresentation">TIFFRepresentation</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentation</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>TIFFRepresentationUsingCompression:factor:</a></h3>
-    - (NSData*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)comp<b> factor:</b> (float)aFloat;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-TIFFRepresentationUsingCompression:factor:">TIFFRepresentationUsingCompression:factor:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)comp<b> factor:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addRepresentation:</a></h3>
-    - (void) <b>addRepresentation:</b> (<a href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-addRepresentation:">addRepresentation:</a></h3>
+    - (void) <b>addRepresentation:</b> (<a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>addRepresentations:</a></h3>
-    - (void) <b>addRepresentations:</b> (NSArray*)imageRepArray;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-addRepresentations:">addRepresentations:</a></h3>
+    - (void) <b>addRepresentations:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)imageRepArray;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>backgroundColor</a></h3>
-    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-backgroundColor">backgroundColor</a></h3>
+    - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>bestRepresentationForDevice:</a></h3>
-    - (<a href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*) <b>bestRepresentationForDevice:</b> (NSDictionary*)deviceDescription;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-bestRepresentationForDevice:">bestRepresentationForDevice:</a></h3>
+    - (<a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*) <b>bestRepresentationForDevice:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)deviceDescription;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>cacheDepthMatchesImageDepth</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-cacheDepthMatchesImageDepth">cacheDepthMatchesImageDepth</a></h3>
     - (BOOL) <b>cacheDepthMatchesImageDepth</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>compositeToPoint:fromRect:operation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-compositeToPoint:fromRect:operation:">compositeToPoint:fromRect:operation:</a></h3>
     - (void) <b>compositeToPoint:</b> (NSPoint)aPoint<b> fromRect:</b> (NSRect)aRect<b> operation:</b> (NSCompositingOperation)op;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>compositeToPoint:fromRect:operation:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-compositeToPoint:fromRect:operation:fraction:">compositeToPoint:fromRect:operation:fraction:</a></h3>
     - (void) <b>compositeToPoint:</b> (NSPoint)aPoint<b> fromRect:</b> (NSRect)srcRect<b> operation:</b> (NSCompositingOperation)op<b> fraction:</b> (float)delta;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>compositeToPoint:operation:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-compositeToPoint:operation:">compositeToPoint:operation:</a></h3>
     - (void) <b>compositeToPoint:</b> (NSPoint)aPoint<b> operation:</b> (NSCompositingOperation)op;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>compositeToPoint:operation:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-compositeToPoint:operation:fraction:">compositeToPoint:operation:fraction:</a></h3>
     - (void) <b>compositeToPoint:</b> (NSPoint)aPoint<b> operation:</b> (NSCompositingOperation)op<b> fraction:</b> (float)delta;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>delegate</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dissolveToPoint:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-dissolveToPoint:fraction:">dissolveToPoint:fraction:</a></h3>
     - (void) <b>dissolveToPoint:</b> (NSPoint)aPoint<b> fraction:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>dissolveToPoint:fromRect:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-dissolveToPoint:fromRect:fraction:">dissolveToPoint:fromRect:fraction:</a></h3>
     - (void) <b>dissolveToPoint:</b> (NSPoint)aPoint<b> fromRect:</b> (NSRect)aRect<b> fraction:</b> (float)aFloat;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawAtPoint:fromRect:operation:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-drawAtPoint:fromRect:operation:fraction:">drawAtPoint:fromRect:operation:fraction:</a></h3>
     - (void) <b>drawAtPoint:</b> (NSPoint)point<b> fromRect:</b> (NSRect)srcRect<b> operation:</b> (NSCompositingOperation)op<b> fraction:</b> (float)delta;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawInRect:fromRect:operation:fraction:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-drawInRect:fromRect:operation:fraction:">drawInRect:fromRect:operation:fraction:</a></h3>
     - (void) <b>drawInRect:</b> (NSRect)dstRect<b> fromRect:</b> (NSRect)srcRect<b> operation:</b> (NSCompositingOperation)op<b> fraction:</b> (float)delta;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>drawRepresentation:inRect:</a></h3>
-    - (BOOL) <b>drawRepresentation:</b> (<a href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep<b> inRect:</b> (NSRect)aRect;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-drawRepresentation:inRect:">drawRepresentation:inRect:</a></h3>
+    - (BOOL) <b>drawRepresentation:</b> (<a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep<b> inRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initByReferencingFile:</a></h3>
-    - (id) <b>initByReferencingFile:</b> (NSString*)fileName;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initByReferencingFile:">initByReferencingFile:</a></h3>
+    - (id) <b>initByReferencingFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithBitmapHandle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithBitmapHandle:">initWithBitmapHandle:</a></h3>
     - (id) <b>initWithBitmapHandle:</b> (void*)bitmap;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithContentsOfFile:</a></h3>
-    - (id) <b>initWithContentsOfFile:</b> (NSString*)fileName;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithContentsOfFile:">initWithContentsOfFile:</a></h3>
+    - (id) <b>initWithContentsOfFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithContentsOfURL:</a></h3>
-    - (id) <b>initWithContentsOfURL:</b> (NSURL*)anURL;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithContentsOfURL:">initWithContentsOfURL:</a></h3>
+    - (id) <b>initWithContentsOfURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)anURL;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithData:</a></h3>
-    - (id) <b>initWithData:</b> (NSData*)data;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithData:">initWithData:</a></h3>
+    - (id) <b>initWithData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithIconHandle:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithIconHandle:">initWithIconHandle:</a></h3>
     - (id) <b>initWithIconHandle:</b> (void*)icon;<br />
+    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithPasteboard:</a></h3>
-    - (id) <b>initWithPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithPasteboard:">initWithPasteboard:</a></h3>
+    - (id) <b>initWithPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pasteboard;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>initWithSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-initWithSize:">initWithSize:</a></h3>
     - (id) <b>initWithSize:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isCachedSeparately</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-isCachedSeparately">isCachedSeparately</a></h3>
     - (BOOL) <b>isCachedSeparately</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isDataRetained</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-isDataRetained">isDataRetained</a></h3>
     - (BOOL) <b>isDataRetained</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isFlipped</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-isFlipped">isFlipped</a></h3>
     - (BOOL) <b>isFlipped</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>isValid</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-isValid">isValid</a></h3>
     - (BOOL) <b>isValid</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lockFocus</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-lockFocus">lockFocus</a></h3>
     - (void) <b>lockFocus</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>lockFocusOnRepresentation:</a></h3>
-    - (void) <b>lockFocusOnRepresentation:</b> (<a href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-lockFocusOnRepresentation:">lockFocusOnRepresentation:</a></h3>
+    - (void) <b>lockFocusOnRepresentation:</b> (<a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>matchesOnMultipleResolution</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-matchesOnMultipleResolution">matchesOnMultipleResolution</a></h3>
     - (BOOL) <b>matchesOnMultipleResolution</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>name</a></h3>
-    - (NSString*) <b>name</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-name">name</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>name</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>prefersColorMatch</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-prefersColorMatch">prefersColorMatch</a></h3>
     - (BOOL) <b>prefersColorMatch</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>recache</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-recache">recache</a></h3>
     - (void) <b>recache</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>removeRepresentation:</a></h3>
-    - (void) <b>removeRepresentation:</b> (<a href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-removeRepresentation:">removeRepresentation:</a></h3>
+    - (void) <b>removeRepresentation:</b> (<a rel="gsdoc" href="NSImageRep.html#class$NSImageRep">NSImageRep</a>*)imageRep;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>representations</a></h3>
-    - (NSArray*) <b>representations</b>;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-representations">representations</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>representations</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>scalesWhenResized</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-scalesWhenResized">scalesWhenResized</a></h3>
     - (BOOL) <b>scalesWhenResized</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setBackgroundColor:</a></h3>
-    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setBackgroundColor:">setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCacheDepthMatchesImageDepth:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setCacheDepthMatchesImageDepth:">setCacheDepthMatchesImageDepth:</a></h3>
     - (void) <b>setCacheDepthMatchesImageDepth:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setCachedSeparately:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setCachedSeparately:">setCachedSeparately:</a></h3>
     - (void) <b>setCachedSeparately:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDataRetained:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setDataRetained:">setDataRetained:</a></h3>
     - (void) <b>setDataRetained:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setDelegate:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setFlipped:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setFlipped:">setFlipped:</a></h3>
     - (void) <b>setFlipped:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setMatchesOnMultipleResolution:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setMatchesOnMultipleResolution:">setMatchesOnMultipleResolution:</a></h3>
     - (void) <b>setMatchesOnMultipleResolution:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setName:</a></h3>
-    - (BOOL) <b>setName:</b> (NSString*)string;<br />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setName:">setName:</a></h3>
+    - (BOOL) <b>setName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setPrefersColorMatch:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setPrefersColorMatch:">setPrefersColorMatch:</a></h3>
     - (void) <b>setPrefersColorMatch:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setScalesWhenResized:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setScalesWhenResized:">setScalesWhenResized:</a></h3>
     - (void) <b>setScalesWhenResized:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setSize:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setSize:">setSize:</a></h3>
     - (void) <b>setSize:</b> (NSSize)aSize;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>setUsesEPSOnResolutionMismatch:</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-setUsesEPSOnResolutionMismatch:">setUsesEPSOnResolutionMismatch:</a></h3>
     - (void) <b>setUsesEPSOnResolutionMismatch:</b> (BOOL)flag;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>size</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-size">size</a></h3>
     - (NSSize) <b>size</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>unlockFocus</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-unlockFocus">unlockFocus</a></h3>
     - (void) <b>unlockFocus</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h3>usesEPSOnResolutionMismatch</a></h3>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSImage-usesEPSOnResolutionMismatch">usesEPSOnResolutionMismatch</a></h3>
     - (BOOL) <b>usesEPSOnResolutionMismatch</b>;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
         Software documentation for the
         NSBundle(NSImageAdditions) category
-      </h1>
-    <h2>NSBundle(<a name="category$NSBundle(NSImageAdditions)">NSImageAdditions</a>)</h2>
-    Declared: AppKit/NSImage.h<br />
+      </a></h1>
+    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSBundle.html#class$NSBundle">NSBundle</a>(<a name="category$NSBundle(NSImageAdditions)">NSImageAdditions</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSImage.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>GNUstep</li>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>pathForImageResource:</a></h3>
-    - (NSString*) <b>pathForImageResource:</b> (NSString*)name;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSImage.html#method$NSBundle(NSImageAdditions)-pathForImageResource:">-pathForImageResource:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$NSBundle(NSImageAdditions)-pathForImageResource:">pathForImageResource:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>pathForImageResource:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
+    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
-
-              </p>
-    <hr />
-    <h1>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the GSImageDelegateProtocol
         protocol
-      </h1>
+      </a></h1>
     <h2><a name="protocol$(GSImageDelegateProtocol)">GSImageDelegateProtocol</a></h2>
-    Declared: AppKit/NSImage.h<br />
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSImage.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
     <p>
-
-            </p>
-    <h3>imageDidNotDraw:inRect:</a></h3>
-    - (<a href="#class$NSImage">NSImage</a>*) <b>imageDidNotDraw:</b> (id)sender<b> inRect:</b> (NSRect)aRect;<br />
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSImage.html#method$(GSImageDelegateProtocol)-imageDidNotDraw:inRect:">-imageDidNotDraw:inRect:</a></li>
+    </ul>
+<hr width="50%" align="left" />
+    <h3><a name="method$(GSImageDelegateProtocol)-imageDidNotDraw:inRect:">imageDidNotDraw:inRect:</a></h3>
+    - (<a rel="gsdoc" href="#class$NSImage">NSImage</a>*) <b>imageDidNotDraw:</b> (id)sender<b> inRect:</b> (NSRect)aRect;<br />
+    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
-
-              </p>
-    <hr />
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
   </body>
 </html>

@@ -1,0 +1,209 @@
+<html>
+  <head>
+    <title>NSAttributedStringAdditions</title>
+  </head>
+  <body>
+    <h1>NSAttributedStringAdditions</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+
+      Categories which add capabilities to
+      NSAttributedString
+        </blockquote>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the
+        NSAttributedString(AppKit) category
+      </h1>
+    <h2>NSAttributedString(<a name="category$NSAttributedString(AppKit)">AppKit</a>)</h2>
+    Declared: AppKit/NSAttributedString.h<br />
+    <p>
+
+            </p>
+    <h3>attributedStringWithAttachment:</a></h3>
+    + (NSAttributedString*) <b>attributedStringWithAttachment:</b> (NSTextAttachment*)attachment;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>RTFDFileWrapperFromRange:documentAttributes:</a></h3>
+    - (<a href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*) <b>RTFDFileWrapperFromRange:</b> (NSRange)range<b> documentAttributes:</b> (NSDictionary*)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>RTFDFromRange:documentAttributes:</a></h3>
+    - (NSData*) <b>RTFDFromRange:</b> (NSRange)range<b> documentAttributes:</b> (NSDictionary*)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>RTFFromRange:documentAttributes:</a></h3>
+    - (NSData*) <b>RTFFromRange:</b> (NSRange)range<b> documentAttributes:</b> (NSDictionary*)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>containsAttachments</a></h3>
+    - (BOOL) <b>containsAttachments</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>doubleClickAtIndex:</a></h3>
+    - (NSRange) <b>doubleClickAtIndex:</b> (unsigned)location;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fontAttributesInRange:</a></h3>
+    - (NSDictionary*) <b>fontAttributesInRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithHTML:baseURL:documentAttributes:</a></h3>
+    - (id) <b>initWithHTML:</b> (NSData*)data<b> baseURL:</b> (NSURL*)base<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithHTML:documentAttributes:</a></h3>
+    - (id) <b>initWithHTML:</b> (NSData*)data<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithPath:documentAttributes:</a></h3>
+    - (id) <b>initWithPath:</b> (NSString*)path<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithRTF:documentAttributes:</a></h3>
+    - (id) <b>initWithRTF:</b> (NSData*)data<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithRTFD:documentAttributes:</a></h3>
+    - (id) <b>initWithRTFD:</b> (NSData*)data<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithRTFDFileWrapper:documentAttributes:</a></h3>
+    - (id) <b>initWithRTFDFileWrapper:</b> (<a href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*)wrapper<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithURL:documentAttributes:</a></h3>
+    - (id) <b>initWithURL:</b> (NSURL*)url<b> documentAttributes:</b> (NSDictionary**)dict;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>lineBreakBeforeIndex:withinRange:</a></h3>
+    - (unsigned) <b>lineBreakBeforeIndex:</b> (unsigned)location<b> withinRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nextWordFromIndex:forward:</a></h3>
+    - (unsigned) <b>nextWordFromIndex:</b> (unsigned)location<b> forward:</b> (BOOL)isForward;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerAttributesInRange:</a></h3>
+    - (NSDictionary*) <b>rulerAttributesInRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSMutableAttributedString(AppKit)
+        category
+      </h1>
+    <h2>NSMutableAttributedString(<a name="category$NSMutableAttributedString(AppKit)">AppKit</a>)</h2>
+    Declared: AppKit/NSAttributedString.h<br />
+    <p>
+
+            </p>
+    <h3>applyFontTraits:range:</a></h3>
+    - (void) <b>applyFontTraits:</b> (NSFontTraitMask)traitMask<b> range:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fixAttachmentAttributeInRange:</a></h3>
+    - (void) <b>fixAttachmentAttributeInRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fixAttributesInRange:</a></h3>
+    - (void) <b>fixAttributesInRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fixFontAttributeInRange:</a></h3>
+    - (void) <b>fixFontAttributeInRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fixParagraphStyleAttributeInRange:</a></h3>
+    - (void) <b>fixParagraphStyleAttributeInRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readFromURL:options:documentAttributes:</a></h3>
+    - (BOOL) <b>readFromURL:</b> (NSURL*)url<b> options:</b> (NSDictionary*)options<b> documentAttributes:</b> (NSDictionary**)documentAttributes;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAlignment:range:</a></h3>
+    - (void) <b>setAlignment:</b> (NSTextAlignment)alignment<b> range:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>subscriptRange:</a></h3>
+    - (void) <b>subscriptRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>superscriptRange:</a></h3>
+    - (void) <b>superscriptRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unscriptRange:</a></h3>
+    - (void) <b>unscriptRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateAttachmentsFromPath:</a></h3>
+    - (void) <b>updateAttachmentsFromPath:</b> (NSString*)path;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

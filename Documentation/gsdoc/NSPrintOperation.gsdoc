@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSPrintOperation" next="NSPrintPanel" prev="NSPrintInfo" up="NSDocumentController">
+<gsdoc base="NSPrintOperation" up="Gui">
   <head>
     <title>NSPrintOperation</title>
     <author name="Scott Christley">
@@ -24,6 +24,7 @@
     <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>Class Description</heading>
       <p>
@@ -50,7 +51,11 @@
           <sel>toData:</sel>
           <arg type="NSMutableData*">data</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>EPSOperationWithView:</sel>
@@ -62,7 +67,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>EPSOperationWithView:</sel>
@@ -74,7 +83,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>PDFOperationWithView:</sel>
@@ -84,7 +97,11 @@
           <sel>toData:</sel>
           <arg type="NSMutableData*">data</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>PDFOperationWithView:</sel>
@@ -96,7 +113,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>PDFOperationWithView:</sel>
@@ -108,7 +129,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>currentOperation</sel>
@@ -116,12 +141,19 @@
             Returns the NSPrintOperation object that is
             currently performing a print operation (if any).
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>printOperationWithView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintOperation*" factory="yes">
           <sel>printOperationWithView:</sel>
@@ -129,7 +161,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void" factory="yes">
           <sel>setCurrentOperation:</sel>
@@ -143,6 +179,9 @@
             careful to call this only when there is no current
             <var>operation</var>.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>accessoryView</sel>
@@ -150,6 +189,9 @@
             Returns the accessory view used by the NSPrintPanel
             associated with the receiver.
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>cleanUpOperation</sel>
@@ -157,6 +199,9 @@
             Called by the print operation and it has finished
             running a printing operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSGraphicsContext*">
           <sel>context</sel>
@@ -164,6 +209,9 @@
             Returns the graphic contexts used by the print
             operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSGraphicsContext*">
           <sel>createContext</sel>
@@ -172,6 +220,9 @@
             special graphics context for use while running the
             print operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>currentPage</sel>
@@ -179,6 +230,9 @@
             Returns the page currently being printing. Returns
             0 if no page is currently being printed
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>deliverResult</sel>
@@ -189,6 +243,9 @@
             program. Returns <code>YES</code> if the output
             was delivered sucessfully.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>destroyContext</sel>
@@ -197,6 +254,9 @@
             the special graphic context used while running the
             print operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initEPSOperationWithView:</sel>
@@ -208,7 +268,11 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="id">
           <sel>initWithView:</sel>
@@ -216,12 +280,20 @@
           <sel>printInfo:</sel>
           <arg type="NSPrintInfo*">aPrintInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isCopyingOperation</sel>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>isEPSOperation</sel>
@@ -230,12 +302,18 @@
             performing an operation whose output is EPS
             format.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintingPageOrder">
           <sel>pageOrder</sel>
           <desc>
             Returns the page order of printing.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintInfo*">
           <sel>printInfo</sel>
@@ -243,6 +321,9 @@
             Returns the NSPrintInfo object associated with the
             receiver.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSPrintPanel*">
           <sel>printPanel</sel>
@@ -250,6 +331,9 @@
             Returns the NSPrintPanel associated with the
             receiver.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>runOperation</sel>
@@ -259,6 +343,9 @@
             panel and working with the NSView to paginate and
             draw the contents of the view.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>runOperationModalForWindow:</sel>
@@ -272,6 +359,9 @@
           <desc>
             Run a print operation modally with respect to a window.
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setAccessoryView:</sel>
@@ -280,6 +370,9 @@
             Set the accessory view used by the NSPrintPanel
             associated with the receiver.
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>setPageOrder:</sel>
@@ -287,6 +380,9 @@
           <desc>
             Set the page <var>order</var> used when printing.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPrintInfo:</sel>
@@ -295,6 +391,9 @@
             Set the NSPrintInfo object associated with the
             receiver.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setPrintPanel:</sel>
@@ -303,6 +402,9 @@
             Sets the NSPrintPanel used by the receiver obtaining
             and displaying printing information from/to the user.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setShowPanels:</sel>
@@ -315,6 +417,9 @@
             status information about the progress of the
             printing operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="BOOL">
           <sel>showPanels</sel>
@@ -323,13 +428,22 @@
             NSPrintPanel and other information when
             running a print operation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>view</sel>
           <desc>
             Return the view that is the being printed.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>

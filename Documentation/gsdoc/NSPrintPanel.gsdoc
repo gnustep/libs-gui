@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
-<gsdoc base="NSPrintPanel" next="NSPrinter" prev="NSPrintOperation" up="NSActionCell">
+<gsdoc base="NSPrintPanel" up="Gui">
   <head>
     <title>NSPrintPanel</title>
     <author name="Adam Fedor">
@@ -14,6 +14,7 @@
     <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
+    <front><contents /></front>
     <chapter>
       <heading>Class Description</heading>
       <p>
@@ -40,12 +41,18 @@
             Creates and returns a shared instance of the
             NSPrintPanel panel.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="NSView*">
           <sel>accessoryView</sel>
           <desc>
             Returns the accessory view for the print panel
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>beginSheetWithPrintInfo:</sel>
@@ -59,7 +66,11 @@
           <sel>contextInfo:</sel>
           <arg type="void*">contextInfo</arg>
           <desc>
+            <em>Description forthcoming.</em>
           </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
         </method>
         <method type="void">
           <sel>finalWritePrintInfo</sel>
@@ -68,6 +79,9 @@
             panel in the NSPrintInfo object from the current
             NSPrintOperation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pickedAllPages:</sel>
@@ -76,6 +90,9 @@
             This method has been depreciated. It doesn't do
             anything useful.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pickedButton:</sel>
@@ -84,6 +101,9 @@
             This method has been depreciated. It doesn't do
             anything useful.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>pickedLayoutList:</sel>
@@ -92,6 +112,9 @@
             This method has been depreciated. It doesn't do
             anything useful.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="int">
           <sel>runModal</sel>
@@ -102,6 +125,9 @@
             the user clicks the Cancel button or NSOKButton
             otherwise.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>setAccessoryView:</sel>
@@ -109,6 +135,9 @@
           <desc>
             Set the accessory view for the print panel
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
         <method type="void">
           <sel>updateFromPrintInfo</sel>
@@ -117,7 +146,13 @@
             the values stored in the NSPrintInfo object from the
             current NSPrintOperation.
           </desc>
+          <standards>
+            <GNUstep /> <MacOS-X /> <OpenStep />
+          </standards>
         </method>
+        <standards>
+          <GNUstep /> <MacOS-X /> <OpenStep />
+        </standards>
       </class>
     </chapter>
   </body>
