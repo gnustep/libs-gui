@@ -2211,7 +2211,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       y0 = NSMinY(lf->used_rect);
       x1 = NSMaxX(lf->used_rect);
       y1 = NSMaxY(lf->used_rect);
-      for (; i < tc->num_linefrags; i++, lf++)
+      for (i++, lf++; i < tc->num_linefrags; i++, lf++)
 	{
 	  if (NSMinX(lf->used_rect) < x0)
 	    x0 = NSMinX(lf->used_rect);
