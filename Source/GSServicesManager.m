@@ -64,7 +64,8 @@
  *	The GNUListener class is for talking to other applications.
  *	It is a proxy with some dangerous methods implemented in a
  *	harmless manner to reduce the chances of a malicious app
- *	messing with us.
+ *	messing with us.  This is responsible for forwarding service
+ *      requests and other communications with the outside world.
  */
 @interface      GNUListener : NSObject
 + (id) connectionBecameInvalid: (NSNotification*)notification;
@@ -192,6 +193,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 - forward: (SEL)aSel :(arglist_t)frame
 {
   NSString      *selName = NSStringFromSelector(aSel);
+  id            delegate;
 
   /*
    *    If the selector matches the correct form for a services request,
@@ -200,6 +202,13 @@ NSRegisterServicesProvider(id provider, NSString *name)
    */
   if ([selName hasSuffix: @":userData:error:"])
     return [servicesProvider performv: aSel :frame];
+
+  /*
+   *    If tha applications delegate can handle the message - forward to it.
+   */
+  delegate = [[NSApplication sharedApplication] delegate];
+  if ([delegate respondsToSelector: aSel] == YES)
+    return [delegate performv: aSel :frame];
 
   [NSException raise: NSGenericException
 	      format: @"method %s not implemented", sel_get_name(aSel)];
