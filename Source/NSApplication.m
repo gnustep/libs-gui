@@ -2228,20 +2228,24 @@ delegate.
 
   if (shouldTerminate)
     {
+      /* Use an autorelease pool, otherwise temporary objects created
+	 here would never be released, and might retain NSApp, and the
+	 DESTROY (NSApp) below would not deallocate it.  */
+      CREATE_AUTORELEASE_POOL (terminatePool);
       NSDictionary *userInfo;
       NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
-
+      
       _app_is_running = NO;
 
       [[self windows] makeObjectsPerformSelector: @selector(close)];
       
-      // Store our user information
+      /* Store our user information.  */
       [[NSUserDefaults standardUserDefaults] synchronize];
 
-      // Tell the Workspace that we really did terminate
+      /* Tell the Workspace that we really did terminate.  */
       userInfo = [NSDictionary dictionaryWithObject:
 	[[NSProcessInfo processInfo] processName] forKey: 
 				 @"NSApplicationName"];
@@ -2249,9 +2253,12 @@ delegate.
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
 		      object: workspace
 		    userInfo: userInfo];
-      // Free the memory of self
+      DESTROY (terminatePool);
+
+      /* Free the memory of self.  */
       DESTROY(NSApp);
-      // and stop the program
+
+      /* And stop the program.  */
       exit(0);
     }
 }
