@@ -34,32 +34,12 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
-prefix = $(GNUSTEP_INSTALLATION_DIR)
 
 PANELS = ColorPanel.gmodel SavePanel.gmodel
-
-before-install::
-	if [ ! -d $(prefix)/Library ]; then \
-		mkdir $(prefix)/Library; \
-	fi
-	if [ ! -d $(prefix)/Library/Model ]; then \
-		mkdir $(prefix)/Library/Model; \
-	fi
-	for f in $(PANELS); do \
-		$(INSTALL_DATA) $$f $(prefix)/Library/Model/; \
-	done
-
-before-uninstall::
-	for f in $(PANELS); do \
-		rm -f $(prefix)/Library/Model/$$f; \
-	done
-	rmdir $(prefix)/Library/Model
-
-clean::
 
 -include GNUmakefile.preamble
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/rules.make
 
--include GNUmakefile.postamble
+include GNUmakefile.postamble
