@@ -139,6 +139,11 @@ NSGraphicsContext	*GSCurrentContext();
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum;
 - (NSCountedSet*) _dragTypesForWindow: (int)winNum;
 
+/*
+ *	Misc window management support.
+ */
+- (BOOL) _setFrame: (NSRect)frameRect forWindow: (int)winNum;
+
 @end
 #endif
 

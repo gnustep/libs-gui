@@ -38,6 +38,9 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSSet.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSUserDefaults.h>
 
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
@@ -104,6 +107,8 @@ static SEL	ctSel = @selector(_checkTrackingRectangles:forEvent:);
 static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
+static NSMutableSet	*autosaveNames;
+static NSRecursiveLock	*windowsLock;
 
 /*
  * Class methods
@@ -117,11 +122,22 @@ static Class	responderClass;
       ccImp = [self instanceMethodForSelector: ccSel];
       ctImp = [self instanceMethodForSelector: ctSel];
       responderClass = [NSResponder class];
+      autosaveNames = [NSMutableSet new];
+      windowsLock = [NSRecursiveLock new];
     }
 }
 
-+ (void) removeFrameUsingName: (NSString *)name
++ (void) removeFrameUsingName: (NSString*)name
 {
+  if (name != nil)
+    {
+      NSString	*key;
+
+      key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+      [windowsLock lock];
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey: key];
+      [windowsLock unlock];
+    }
 }
 
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
@@ -270,7 +286,10 @@ static Class	responderClass;
   /* If window view has not been created, create it */
   if ((!content_view) || ([content_view superview] == nil))
     {
-      wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: frame];
+      NSRect	rect = frame;
+
+      rect.origin = NSZeroPoint;
+      wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: rect];
       [wv viewWillMoveToWindow: self];
     }
   else
@@ -613,26 +632,105 @@ static Class	responderClass;
 }
 
 - (void) setContentSize: (NSSize)aSize
-{}
+{
+  NSRect	r = frame;
+
+  r.size = aSize;
+  [self setFrame: r display: YES];
+}
 
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
-  frame = frameRect;
-  [nc postNotificationName: NSWindowDidResizeNotification object: self];
+  if (maximum_size.width > 0 && frameRect.size.width > maximum_size.width)
+    {
+      frameRect.size.width = maximum_size.width;
+    }
+  if (maximum_size.height > 0 && frameRect.size.height > maximum_size.height)
+    {
+      frameRect.size.height = maximum_size.height;
+    }
+  if (minimum_size.width > 0 && frameRect.size.width < minimum_size.width)
+    {
+      frameRect.size.width = minimum_size.width;
+    }
+  if (minimum_size.height > 0 && frameRect.size.height < minimum_size.height)
+    {
+      frameRect.size.height = minimum_size.height;
+    }
+
+  if (NSEqualSizes(frameRect.size, frame.size) == NO)
+    {
+      if ([delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+	{
+	  frameRect.size = [delegate windowWillResize: self
+					       toSize: frameRect.size];
+	}
+    }
+
+  if (NSEqualPoints(frame.origin, frameRect.origin) == NO)
+    [nc postNotificationName: NSWindowWillMoveNotification object: self];
+
+  /*
+   * Now we can tell the graphics context to do the actual resizing.
+   */
+  [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
 
   if (flag)
     [self display];
 }
 
-- (void) setFrameTopLeftPoint: (NSPoint)aPoint
+/*
+ *	Method called by graphics engine to notify window of a change to
+ *	it's real frame.
+ */
+- (void) _setFrame: (NSRect)newFrame
 {
+  if (NSEqualRects(frame, newFrame) == NO)
+    {
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+      NSRect			old = frame;
+
+      if (autosave_name != nil)
+	{
+	  [self saveFrameUsingName: autosave_name];
+	}
+      frame = newFrame;
+      if (NSEqualSizes(old.size, frame.size) == NO)
+	{
+	  if (content_view)
+	    {
+	      NSView	*wv = [content_view superview];			
+	      NSRect	rect = [self frame];	
+
+	      rect.origin = NSZeroPoint;
+	      [wv setFrame: rect];
+	      [wv setNeedsDisplay: YES];
+	    }
+	  [nc postNotificationName: NSWindowDidResizeNotification object: self];
+	}
+      if (NSEqualPoints(old.origin, frame.origin) == NO)
+	{
+	  [nc postNotificationName: NSWindowDidMoveNotification object: self];
+	}
+    }
 }
 
 - (void) setFrameOrigin: (NSPoint)aPoint
 {
-  frame.origin = aPoint;
+  NSRect	r = frame;
+
+  r.origin = aPoint;
+  [self setFrame: r display: YES];
+}
+
+- (void) setFrameTopLeftPoint: (NSPoint)aPoint
+{
+  NSRect	r = frame;
+
+  r.origin.y = aPoint.y + frame.size.height;
+  [self setFrame: r display: YES];
 }
 
 - (void) setMinSize: (NSSize)aSize
@@ -1507,8 +1605,8 @@ static Class	responderClass;
   menu_exclude = flag;
 }
 
-- validRequestorForSendType: (NSString *)sendType
-		 returnType: (NSString *)returnType
+- (id) validRequestorForSendType: (NSString *)sendType
+		      returnType: (NSString *)returnType
 {
   id result = nil;
 
@@ -1527,30 +1625,75 @@ static Class	responderClass;
  */
 - (NSString *) frameAutosaveName
 {
-  return nil;
+  return autosave_name;
 }
 
 - (void) saveFrameUsingName: (NSString *)name
 {
+  NSString	*key;
+  NSString	*obj;
+
+  key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+  obj = [self stringWithSavedFrame];
+  [windowsLock lock];
+  [[NSUserDefaults standardUserDefaults] setObject: obj forKey: key];
+  [windowsLock unlock];
 }
 
 - (BOOL) setFrameAutosaveName: (NSString *)name
 {
-  return NO;
+  if ([name isEqual: autosave_name])
+    {
+      return YES;		/* That's our name already.	*/
+    }
+
+  [windowsLock lock];
+  if ([autosaveNames member: name] != nil)
+    {
+      [windowsLock unlock];
+      return NO;		/* Name in use elsewhere.	*/
+    }
+  if (autosave_name != nil)
+    {
+      [autosaveNames removeObject: autosave_name];
+      autosave_name = nil;
+    }
+  if (name != nil && [name isEqual: @""] == NO)
+    {
+      name = [name copy];
+      [autosaveNames addObject: name];
+      autosave_name = name;
+      [name release];
+    }
+  [windowsLock unlock];
+  return YES;
 }
 
 - (void) setFrameFromString: (NSString *)string
 {
+  NSRect	rect = NSRectFromString(string);
+
+  [self setFrame: rect display: YES];
 }
 
 - (BOOL) setFrameUsingName: (NSString *)name
 {
-  return NO;
+  NSString	*key;
+  NSString	*obj;
+
+  key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+  [windowsLock lock];
+  obj = [[NSUserDefaults standardUserDefaults] objectForKey: key];
+  [windowsLock unlock];
+  if (obj == nil)
+    return NO;
+  [self setFrameFromString: obj];
+  return YES;
 }
 
 - (NSString *) stringWithSavedFrame
 {
-  return nil;
+  return NSStringFromRect(frame);
 }
 
 /*

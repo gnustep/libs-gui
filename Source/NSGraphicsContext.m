@@ -252,7 +252,7 @@ NSGraphicsContext	*GSCurrentContext()
  */
 - (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum
 {
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, winNum);
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
   unsigned	originalCount;
   unsigned	i = [types count];
 
@@ -288,7 +288,7 @@ NSGraphicsContext	*GSCurrentContext()
  */
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum
 {
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, winNum);
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
 
   if (types == nil)
     {
@@ -320,7 +320,16 @@ NSGraphicsContext	*GSCurrentContext()
 
 - (NSCountedSet*) _dragTypesForWindow: (int)winNum
 {
-  return (NSCountedSet*)NSMapGet(drag_types, winNum);
+  return (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
+}
+
+/*
+ *	Misc window management support.
+ */
+- (BOOL) _setFrame: (NSRect)frameRect forWindow: (int)winNum
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
 }
 
 @end

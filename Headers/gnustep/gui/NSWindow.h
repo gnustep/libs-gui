@@ -90,6 +90,7 @@ extern NSSize NSTokenSize;
   NSSize        minimum_size;
   NSSize        maximum_size;
   NSSize        increments;
+  NSString	*autosave_name;
   id            content_view;
   id            first_responder;
   id            original_responder;
@@ -458,6 +459,7 @@ extern NSSize NSTokenSize;
 + (NSWindow*) _windowWithTag: (int)windowNumber;
 
 - (void) setWindowNumber: (int)windowNum;
+- (void) _setFrame: (NSRect)newFrame;
 
 /*
  * Mouse capture/release
