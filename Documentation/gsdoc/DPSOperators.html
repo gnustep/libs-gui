@@ -1,0 +1,2317 @@
+<html><head>
+<title>DPSOperators</title>
+</head>
+<body>
+<a href="Gui.html">[Up]</a>
+<h1>DPSOperators</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Adam Fedor</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 21 April, 2000</p>
+<h2><a name="cont-0">DPSOperators</a></h2>
+<p>
+
+	DPSOperators declares functions that are used for drawing text
+	and graphics and low-level window and event operations. For
+	the most part the window and event functions are not meant to
+	be used in a normal application, it is better to use the
+	methods in the GNUstep GUI library that coorespond to these
+	functions. 
+      </p>
+<p>
+
+        All DPSOperator functions take as their first argument a
+        context opject of type NSGraphicsContext. To get the current
+	 context, one can use the function GSCurrentContext().
+      </p>
+<h2><a name="function-0">DPScurrentcmykcolor</a></h2>
+<b>Prototype:</b> void DPScurrentcmykcolor(GSCTXT * ctxt, float * c, float * m, float * y, float * k)<br>
+
+        
+<hr>
+<h2><a name="function-1">DPSsetcmykcolor</a></h2>
+<b>Prototype:</b> void DPSsetcmykcolor(GSCTXT * ctxt, float  c, float  m, float  y, float  k)<br>
+
+        
+<hr>
+<h2><a name="function-2">DPSclear</a></h2>
+<b>Prototype:</b> void DPSclear(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-3">DPScleartomark</a></h2>
+<b>Prototype:</b> void DPScleartomark(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-4">DPScopy</a></h2>
+<b>Prototype:</b> void DPScopy(GSCTXT * ctxt, int  n)<br>
+
+        
+<hr>
+<h2><a name="function-5">DPScount</a></h2>
+<b>Prototype:</b> void DPScount(GSCTXT * ctxt, int * n)<br>
+
+        
+<hr>
+<h2><a name="function-6">DPScounttomark</a></h2>
+<b>Prototype:</b> void DPScounttomark(GSCTXT * ctxt, int * n)<br>
+
+        
+<hr>
+<h2><a name="function-7">DPSdup</a></h2>
+<b>Prototype:</b> void DPSdup(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-8">DPSexch</a></h2>
+<b>Prototype:</b> void DPSexch(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-9">DPSexecstack</a></h2>
+<b>Prototype:</b> void DPSexecstack(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-10">DPSget</a></h2>
+<b>Prototype:</b> void DPSget(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-11">DPSindex</a></h2>
+<b>Prototype:</b> void DPSindex(GSCTXT * ctxt, int  i)<br>
+
+        
+<hr>
+<h2><a name="function-12">DPSmark</a></h2>
+<b>Prototype:</b> void DPSmark(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-13">DPSmatrix</a></h2>
+<b>Prototype:</b> void DPSmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-14">DPSnull</a></h2>
+<b>Prototype:</b> void DPSnull(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-15">DPSpop</a></h2>
+<b>Prototype:</b> void DPSpop(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-16">DPSput</a></h2>
+<b>Prototype:</b> void DPSput(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-17">DPSroll</a></h2>
+<b>Prototype:</b> void DPSroll(GSCTXT * ctxt, int  n, int  j)<br>
+
+        
+<hr>
+<h2><a name="function-18">DPSFontDirectory</a></h2>
+<b>Prototype:</b> void DPSFontDirectory(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-19">DPSISOLatin1Encoding</a></h2>
+<b>Prototype:</b> void DPSISOLatin1Encoding(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-20">DPSSharedFontDirectory</a></h2>
+<b>Prototype:</b> void DPSSharedFontDirectory(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-21">DPSStandardEncoding</a></h2>
+<b>Prototype:</b> void DPSStandardEncoding(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-22">DPScurrentcacheparams</a></h2>
+<b>Prototype:</b> void DPScurrentcacheparams(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-23">DPScurrentfont</a></h2>
+<b>Prototype:</b> void DPScurrentfont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-24">DPSdefinefont</a></h2>
+<b>Prototype:</b> void DPSdefinefont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-25">DPSfindfont</a></h2>
+<b>Prototype:</b> void DPSfindfont(GSCTXT * ctxt, const char * name)<br>
+
+        
+<hr>
+<h2><a name="function-26">DPSmakefont</a></h2>
+<b>Prototype:</b> void DPSmakefont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-27">DPSscalefont</a></h2>
+<b>Prototype:</b> void DPSscalefont(GSCTXT * ctxt, float  size)<br>
+
+        
+<hr>
+<h2><a name="function-28">DPSselectfont</a></h2>
+<b>Prototype:</b> void DPSselectfont(GSCTXT * ctxt, const char * name, float  scale)<br>
+
+        
+<hr>
+<h2><a name="function-29">DPSsetfont</a></h2>
+<b>Prototype:</b> void DPSsetfont(GSCTXT * ctxt, int  f)<br>
+
+        
+<hr>
+<h2><a name="function-30">DPSundefinefont</a></h2>
+<b>Prototype:</b> void DPSundefinefont(GSCTXT * ctxt, const char * name)<br>
+
+        
+<hr>
+<h2><a name="function-31">DPSconcat</a></h2>
+<b>Prototype:</b> void DPSconcat(GSCTXT * ctxt, const float  m[])<br>
+
+        
+<hr>
+<h2><a name="function-32">DPScurrentdash</a></h2>
+<b>Prototype:</b> void DPScurrentdash(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-33">DPScurrentflat</a></h2>
+<b>Prototype:</b> void DPScurrentflat(GSCTXT * ctxt, float * flatness)<br>
+
+        
+<hr>
+<h2><a name="function-34">DPScurrentgray</a></h2>
+<b>Prototype:</b> void DPScurrentgray(GSCTXT * ctxt, float * gray)<br>
+
+        
+<hr>
+<h2><a name="function-35">DPScurrentgstate</a></h2>
+<b>Prototype:</b> void DPScurrentgstate(GSCTXT * ctxt, int  gst)<br>
+
+        
+<hr>
+<h2><a name="function-36">DPScurrenthalftone</a></h2>
+<b>Prototype:</b> void DPScurrenthalftone(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-37">DPScurrenthalftonephase</a></h2>
+<b>Prototype:</b> void DPScurrenthalftonephase(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-38">DPScurrenthsbcolor</a></h2>
+<b>Prototype:</b> void DPScurrenthsbcolor(GSCTXT * ctxt, float * h, float * s, float * b)<br>
+
+        
+<hr>
+<h2><a name="function-39">DPScurrentlinecap</a></h2>
+<b>Prototype:</b> void DPScurrentlinecap(GSCTXT * ctxt, int * linecap)<br>
+
+        
+<hr>
+<h2><a name="function-40">DPScurrentlinejoin</a></h2>
+<b>Prototype:</b> void DPScurrentlinejoin(GSCTXT * ctxt, int * linejoin)<br>
+
+        
+<hr>
+<h2><a name="function-41">DPScurrentlinewidth</a></h2>
+<b>Prototype:</b> void DPScurrentlinewidth(GSCTXT * ctxt, float * width)<br>
+
+        
+<hr>
+<h2><a name="function-42">DPScurrentmatrix</a></h2>
+<b>Prototype:</b> void DPScurrentmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-43">DPScurrentmiterlimit</a></h2>
+<b>Prototype:</b> void DPScurrentmiterlimit(GSCTXT * ctxt, float * limit)<br>
+
+        
+<hr>
+<h2><a name="function-44">DPScurrentpoint</a></h2>
+<b>Prototype:</b> void DPScurrentpoint(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-45">DPScurrentrgbcolor</a></h2>
+<b>Prototype:</b> void DPScurrentrgbcolor(GSCTXT * ctxt, float * r, float * g, float * b)<br>
+
+        
+<hr>
+<h2><a name="function-46">DPScurrentscreen</a></h2>
+<b>Prototype:</b> void DPScurrentscreen(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-47">DPScurrentstrokeadjust</a></h2>
+<b>Prototype:</b> void DPScurrentstrokeadjust(GSCTXT * ctxt, int * b)<br>
+
+        
+<hr>
+<h2><a name="function-48">DPScurrenttransfer</a></h2>
+<b>Prototype:</b> void DPScurrenttransfer(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-49">DPSdefaultmatrix</a></h2>
+<b>Prototype:</b> void DPSdefaultmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-50">DPSgrestore</a></h2>
+<b>Prototype:</b> void DPSgrestore(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-51">DPSgrestoreall</a></h2>
+<b>Prototype:</b> void DPSgrestoreall(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-52">DPSgsave</a></h2>
+<b>Prototype:</b> void DPSgsave(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-53">DPSgstate</a></h2>
+<b>Prototype:</b> void DPSgstate(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-54">DPSinitgraphics</a></h2>
+<b>Prototype:</b> void DPSinitgraphics(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-55">DPSinitmatrix</a></h2>
+<b>Prototype:</b> void DPSinitmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-56">DPSrotate</a></h2>
+<b>Prototype:</b> void DPSrotate(GSCTXT * ctxt, float  angle)<br>
+
+        
+<hr>
+<h2><a name="function-57">DPSscale</a></h2>
+<b>Prototype:</b> void DPSscale(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-58">DPSsetdash</a></h2>
+<b>Prototype:</b> void DPSsetdash(GSCTXT * ctxt, const float  pat[], int  size, float  offset)<br>
+
+        
+<hr>
+<h2><a name="function-59">DPSsetflat</a></h2>
+<b>Prototype:</b> void DPSsetflat(GSCTXT * ctxt, float  flatness)<br>
+
+        
+<hr>
+<h2><a name="function-60">DPSsetgray</a></h2>
+<b>Prototype:</b> void DPSsetgray(GSCTXT * ctxt, float  gray)<br>
+
+        
+<hr>
+<h2><a name="function-61">DPSsetgstate</a></h2>
+<b>Prototype:</b> void DPSsetgstate(GSCTXT * ctxt, int  gst)<br>
+
+        
+<hr>
+<h2><a name="function-62">DPSsethalftone</a></h2>
+<b>Prototype:</b> void DPSsethalftone(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-63">DPSsethalftonephase</a></h2>
+<b>Prototype:</b> void DPSsethalftonephase(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-64">DPSsethsbcolor</a></h2>
+<b>Prototype:</b> void DPSsethsbcolor(GSCTXT * ctxt, float  h, float  s, float  b)<br>
+
+        
+<hr>
+<h2><a name="function-65">DPSsetlinecap</a></h2>
+<b>Prototype:</b> void DPSsetlinecap(GSCTXT * ctxt, int  linecap)<br>
+
+        
+<hr>
+<h2><a name="function-66">DPSsetlinejoin</a></h2>
+<b>Prototype:</b> void DPSsetlinejoin(GSCTXT * ctxt, int  linejoin)<br>
+
+        
+<hr>
+<h2><a name="function-67">DPSsetlinewidth</a></h2>
+<b>Prototype:</b> void DPSsetlinewidth(GSCTXT * ctxt, float  width)<br>
+
+        
+<hr>
+<h2><a name="function-68">DPSsetmatrix</a></h2>
+<b>Prototype:</b> void DPSsetmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-69">DPSsetmiterlimit</a></h2>
+<b>Prototype:</b> void DPSsetmiterlimit(GSCTXT * ctxt, float  limit)<br>
+
+        
+<hr>
+<h2><a name="function-70">DPSsetrgbcolor</a></h2>
+<b>Prototype:</b> void DPSsetrgbcolor(GSCTXT * ctxt, float  r, float  g, float  b)<br>
+
+        
+<hr>
+<h2><a name="function-71">DPSsetscreen</a></h2>
+<b>Prototype:</b> void DPSsetscreen(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-72">DPSsetstrokeadjust</a></h2>
+<b>Prototype:</b> void DPSsetstrokeadjust(GSCTXT * ctxt, int  b)<br>
+
+        
+<hr>
+<h2><a name="function-73">DPSsettransfer</a></h2>
+<b>Prototype:</b> void DPSsettransfer(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-74">DPStranslate</a></h2>
+<b>Prototype:</b> void DPStranslate(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-75">DPSflush</a></h2>
+<b>Prototype:</b> void DPSflush(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-76">DPSconcatmatrix</a></h2>
+<b>Prototype:</b> void DPSconcatmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-77">DPSdtransform</a></h2>
+<b>Prototype:</b> void DPSdtransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-78">DPSidentmatrix</a></h2>
+<b>Prototype:</b> void DPSidentmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-79">DPSidtransform</a></h2>
+<b>Prototype:</b> void DPSidtransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-80">DPSinvertmatrix</a></h2>
+<b>Prototype:</b> void DPSinvertmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-81">DPSitransform</a></h2>
+<b>Prototype:</b> void DPSitransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-82">DPStransform</a></h2>
+<b>Prototype:</b> void DPStransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-83">DPSdefineuserobject</a></h2>
+<b>Prototype:</b> void DPSdefineuserobject(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-84">DPSexecuserobject</a></h2>
+<b>Prototype:</b> void DPSexecuserobject(GSCTXT * ctxt, int  index)<br>
+
+        
+<hr>
+<h2><a name="function-85">DPSundefineuserobject</a></h2>
+<b>Prototype:</b> void DPSundefineuserobject(GSCTXT * ctxt, int  index)<br>
+
+        
+<hr>
+<h2><a name="function-86">DPSgetboolean</a></h2>
+<b>Prototype:</b> void DPSgetboolean(GSCTXT * ctxt, int * it)<br>
+
+        
+<hr>
+<h2><a name="function-87">DPSgetchararray</a></h2>
+<b>Prototype:</b> void DPSgetchararray(GSCTXT * ctxt, int  size, char  s[])<br>
+
+        
+<hr>
+<h2><a name="function-88">DPSgetfloat</a></h2>
+<b>Prototype:</b> void DPSgetfloat(GSCTXT * ctxt, float * it)<br>
+
+        
+<hr>
+<h2><a name="function-89">DPSgetfloatarray</a></h2>
+<b>Prototype:</b> void DPSgetfloatarray(GSCTXT * ctxt, int  size, float  a[])<br>
+
+        
+<hr>
+<h2><a name="function-90">DPSgetint</a></h2>
+<b>Prototype:</b> void DPSgetint(GSCTXT * ctxt, int * it)<br>
+
+        
+<hr>
+<h2><a name="function-91">DPSgetintarray</a></h2>
+<b>Prototype:</b> void DPSgetintarray(GSCTXT * ctxt, int  size, int  a[])<br>
+
+        
+<hr>
+<h2><a name="function-92">DPSgetstring</a></h2>
+<b>Prototype:</b> void DPSgetstring(GSCTXT * ctxt, char * s)<br>
+
+        
+<hr>
+<h2><a name="function-93">DPSsendboolean</a></h2>
+<b>Prototype:</b> void DPSsendboolean(GSCTXT * ctxt, int  it)<br>
+
+        
+<hr>
+<h2><a name="function-94">DPSsendchararray</a></h2>
+<b>Prototype:</b> void DPSsendchararray(GSCTXT * ctxt, const char  s[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-95">DPSsendfloat</a></h2>
+<b>Prototype:</b> void DPSsendfloat(GSCTXT * ctxt, float  it)<br>
+
+        
+<hr>
+<h2><a name="function-96">DPSsendfloatarray</a></h2>
+<b>Prototype:</b> void DPSsendfloatarray(GSCTXT * ctxt, const float  a[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-97">DPSsendint</a></h2>
+<b>Prototype:</b> void DPSsendint(GSCTXT * ctxt, int  it)<br>
+
+        
+<hr>
+<h2><a name="function-98">DPSsendintarray</a></h2>
+<b>Prototype:</b> void DPSsendintarray(GSCTXT * ctxt, const int  a[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-99">DPSsendstring</a></h2>
+<b>Prototype:</b> void DPSsendstring(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-100">DPSashow</a></h2>
+<b>Prototype:</b> void DPSashow(GSCTXT * ctxt, float  x, float  y, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-101">DPSawidthshow</a></h2>
+<b>Prototype:</b> void DPSawidthshow(GSCTXT * ctxt, float  cx, float  cy, int  c, float  ax, float  ay, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-102">DPScopypage</a></h2>
+<b>Prototype:</b> void DPScopypage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-103">DPSeofill</a></h2>
+<b>Prototype:</b> void DPSeofill(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-104">DPSerasepage</a></h2>
+<b>Prototype:</b> void DPSerasepage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-105">DPSfill</a></h2>
+<b>Prototype:</b> void DPSfill(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-106">DPSimage</a></h2>
+<b>Prototype:</b> void DPSimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-107">DPSimagemask</a></h2>
+<b>Prototype:</b> void DPSimagemask(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-108">DPScolorimage</a></h2>
+<b>Prototype:</b> void DPScolorimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-109">DPSalphaimage</a></h2>
+<b>Prototype:</b> void DPSalphaimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-110">DPSkshow</a></h2>
+<b>Prototype:</b> void DPSkshow(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-111">DPSrectfill</a></h2>
+<b>Prototype:</b> void DPSrectfill(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-112">DPSrectstroke</a></h2>
+<b>Prototype:</b> void DPSrectstroke(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-113">DPSshow</a></h2>
+<b>Prototype:</b> void DPSshow(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-114">DPSshowpage</a></h2>
+<b>Prototype:</b> void DPSshowpage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-115">DPSstroke</a></h2>
+<b>Prototype:</b> void DPSstroke(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-116">DPSstrokepath</a></h2>
+<b>Prototype:</b> void DPSstrokepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-117">DPSueofill</a></h2>
+<b>Prototype:</b> void DPSueofill(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-118">DPSufill</a></h2>
+<b>Prototype:</b> void DPSufill(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-119">DPSustroke</a></h2>
+<b>Prototype:</b> void DPSustroke(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-120">DPSustrokepath</a></h2>
+<b>Prototype:</b> void DPSustrokepath(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-121">DPSwidthshow</a></h2>
+<b>Prototype:</b> void DPSwidthshow(GSCTXT * ctxt, float  x, float  y, int  c, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-122">DPSxshow</a></h2>
+<b>Prototype:</b> void DPSxshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-123">DPSxyshow</a></h2>
+<b>Prototype:</b> void DPSxyshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-124">DPSyshow</a></h2>
+<b>Prototype:</b> void DPSyshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-125">DPSarc</a></h2>
+<b>Prototype:</b> void DPSarc(GSCTXT * ctxt, float  x, float  y, float  r, float  angle1, float  angle2)<br>
+
+        
+<hr>
+<h2><a name="function-126">DPSarcn</a></h2>
+<b>Prototype:</b> void DPSarcn(GSCTXT * ctxt, float  x, float  y, float  r, float  angle1, float  angle2)<br>
+
+        
+<hr>
+<h2><a name="function-127">DPSarct</a></h2>
+<b>Prototype:</b> void DPSarct(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  r)<br>
+
+        
+<hr>
+<h2><a name="function-128">DPSarcto</a></h2>
+<b>Prototype:</b> void DPSarcto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  r, float * xt1, float * yt1, float * xt2, float * yt2)<br>
+
+        
+<hr>
+<h2><a name="function-129">DPScharpath</a></h2>
+<b>Prototype:</b> void DPScharpath(GSCTXT * ctxt, const char * s, int  b)<br>
+
+        
+<hr>
+<h2><a name="function-130">DPSclip</a></h2>
+<b>Prototype:</b> void DPSclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-131">DPSclippath</a></h2>
+<b>Prototype:</b> void DPSclippath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-132">DPSclosepath</a></h2>
+<b>Prototype:</b> void DPSclosepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-133">DPScurveto</a></h2>
+<b>Prototype:</b> void DPScurveto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  x3, float  y3)<br>
+
+        
+<hr>
+<h2><a name="function-134">DPSeoclip</a></h2>
+<b>Prototype:</b> void DPSeoclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-135">DPSeoviewclip</a></h2>
+<b>Prototype:</b> void DPSeoviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-136">DPSflattenpath</a></h2>
+<b>Prototype:</b> void DPSflattenpath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-137">DPSinitclip</a></h2>
+<b>Prototype:</b> void DPSinitclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-138">DPSinitviewclip</a></h2>
+<b>Prototype:</b> void DPSinitviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-139">DPSlineto</a></h2>
+<b>Prototype:</b> void DPSlineto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-140">DPSmoveto</a></h2>
+<b>Prototype:</b> void DPSmoveto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-141">DPSnewpath</a></h2>
+<b>Prototype:</b> void DPSnewpath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-142">DPSpathbbox</a></h2>
+<b>Prototype:</b> void DPSpathbbox(GSCTXT * ctxt, float * llx, float * lly, float * urx, float * ury)<br>
+
+        
+<hr>
+<h2><a name="function-143">DPSpathforall</a></h2>
+<b>Prototype:</b> void DPSpathforall(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-144">DPSrcurveto</a></h2>
+<b>Prototype:</b> void DPSrcurveto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  x3, float  y3)<br>
+
+        
+<hr>
+<h2><a name="function-145">DPSrectclip</a></h2>
+<b>Prototype:</b> void DPSrectclip(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-146">DPSrectviewclip</a></h2>
+<b>Prototype:</b> void DPSrectviewclip(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-147">DPSreversepath</a></h2>
+<b>Prototype:</b> void DPSreversepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-148">DPSrlineto</a></h2>
+<b>Prototype:</b> void DPSrlineto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-149">DPSrmoveto</a></h2>
+<b>Prototype:</b> void DPSrmoveto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-150">DPSsetbbox</a></h2>
+<b>Prototype:</b> void DPSsetbbox(GSCTXT * ctxt, float  llx, float  lly, float  urx, float  ury)<br>
+
+        
+<hr>
+<h2><a name="function-151">DPSviewclip</a></h2>
+<b>Prototype:</b> void DPSviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-152">DPSviewclippath</a></h2>
+<b>Prototype:</b> void DPSviewclippath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-153">DPScurrentdrawingfunction</a></h2>
+<b>Prototype:</b> void DPScurrentdrawingfunction(GSCTXT * ctxt, int * function)<br>
+
+        
+<hr>
+<h2><a name="function-154">DPScurrentgcdrawable</a></h2>
+<b>Prototype:</b> void DPScurrentgcdrawable(GSCTXT * ctxt, void* * gc, void* * draw, int * x, int * y)<br>
+
+        
+<hr>
+<h2><a name="function-155">DPScurrentgcdrawablecolor</a></h2>
+<b>Prototype:</b> void DPScurrentgcdrawablecolor(GSCTXT * ctxt, void* * gc, void* * draw, int * x, int * y, int  colorInfo[])<br>
+
+        
+<hr>
+<h2><a name="function-156">DPScurrentoffset</a></h2>
+<b>Prototype:</b> void DPScurrentoffset(GSCTXT * ctxt, int * x, int * y)<br>
+
+        
+<hr>
+<h2><a name="function-157">DPSsetdrawingfunction</a></h2>
+<b>Prototype:</b> void DPSsetdrawingfunction(GSCTXT * ctxt, int  function)<br>
+
+        
+<hr>
+<h2><a name="function-158">DPSsetgcdrawable</a></h2>
+<b>Prototype:</b> void DPSsetgcdrawable(GSCTXT * ctxt, void*  gc, void*  draw, int  x, int  y)<br>
+
+        
+<hr>
+<h2><a name="function-159">DPSsetgcdrawablecolor</a></h2>
+<b>Prototype:</b> void DPSsetgcdrawablecolor(GSCTXT * ctxt, void*  gc, void*  draw, int  x, int  y, const int  colorInfo[])<br>
+
+        
+<hr>
+<h2><a name="function-160">DPSsetoffset</a></h2>
+<b>Prototype:</b> void DPSsetoffset(GSCTXT * ctxt, short int  x, short int  y)<br>
+
+        
+<hr>
+<h2><a name="function-161">DPSsetrgbactual</a></h2>
+<b>Prototype:</b> void DPSsetrgbactual(GSCTXT * ctxt, double  r, double  g, double  b, int * success)<br>
+
+        
+<hr>
+<h2><a name="function-162">DPScapturegstate</a></h2>
+<b>Prototype:</b> void DPScapturegstate(GSCTXT * ctxt, int * gst)<br>
+
+        
+<hr>
+<h2><a name="function-163">DPScomposite</a></h2>
+<b>Prototype:</b> void DPScomposite(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  gstateNum, float  dx, float  dy, int  op)<br>
+
+        
+<hr>
+<h2><a name="function-164">DPScompositerect</a></h2>
+<b>Prototype:</b> void DPScompositerect(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  op)<br>
+
+        
+<hr>
+<h2><a name="function-165">DPSdissolve</a></h2>
+<b>Prototype:</b> void DPSdissolve(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  gstateNum, float  dx, float  dy, float  delta)<br>
+
+        
+<hr>
+<h2><a name="function-166">DPSreadimage</a></h2>
+<b>Prototype:</b> void DPSreadimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-167">DPSsetalpha</a></h2>
+<b>Prototype:</b> void DPSsetalpha(GSCTXT * ctxt, float  a)<br>
+
+        
+<hr>
+<h2><a name="function-168">DPScurrentalpha</a></h2>
+<b>Prototype:</b> void DPScurrentalpha(GSCTXT * ctxt, float * alpha)<br>
+
+        
+<hr>
+<h2><a name="function-169">DPSwindow</a></h2>
+<b>Prototype:</b> void DPSwindow(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  type, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-170">DPStermwindow</a></h2>
+<b>Prototype:</b> void DPStermwindow(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-171">DPSstylewindow</a></h2>
+<b>Prototype:</b> void DPSstylewindow(GSCTXT * ctxt, int  style, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-172">DPStitlewindow</a></h2>
+<b>Prototype:</b> void DPStitlewindow(GSCTXT * ctxt, const char *  window_title, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-173">DPSminiwindow</a></h2>
+<b>Prototype:</b> void DPSminiwindow(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-174">DPSwindowdevice</a></h2>
+<b>Prototype:</b> void DPSwindowdevice(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-175">DPSwindowdeviceround</a></h2>
+<b>Prototype:</b> void DPSwindowdeviceround(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-176">DPScurrentwindow</a></h2>
+<b>Prototype:</b> void DPScurrentwindow(GSCTXT * ctxt, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-177">DPSorderwindow</a></h2>
+<b>Prototype:</b> void DPSorderwindow(GSCTXT * ctxt, int  op, int  otherWin, int  winNum)<br>
+
+        
+<hr>
+<h2><a name="function-178">DPSmovewindow</a></h2>
+<b>Prototype:</b> void DPSmovewindow(GSCTXT * ctxt, float  x, float  y, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-179">DPSupdatewindow</a></h2>
+<b>Prototype:</b> void DPSupdatewindow(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-180">DPSplacewindow</a></h2>
+<b>Prototype:</b> void DPSplacewindow(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-181">DPSfrontwindow</a></h2>
+<b>Prototype:</b> void DPSfrontwindow(GSCTXT * ctxt, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-182">DPSfindwindow</a></h2>
+<b>Prototype:</b> void DPSfindwindow(GSCTXT * ctxt, float  x, float  y, int  op, int  otherWin, float *  lx, float *  ly, int *  winFound, int *  didFind)<br>
+
+        
+<hr>
+<h2><a name="function-183">DPScurrentwindowbounds</a></h2>
+<b>Prototype:</b> void DPScurrentwindowbounds(GSCTXT * ctxt, int  num, float *  x, float *  y, float *  w, float *  h)<br>
+
+        
+<hr>
+<h2><a name="function-184">DPSsetexposurecolor</a></h2>
+<b>Prototype:</b> void DPSsetexposurecolor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-185">DPSsetsendexposed</a></h2>
+<b>Prototype:</b> void DPSsetsendexposed(GSCTXT * ctxt, int  truth, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-186">DPSsetautofill</a></h2>
+<b>Prototype:</b> void DPSsetautofill(GSCTXT * ctxt, int  truth, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-187">DPScurrentwindowalpha</a></h2>
+<b>Prototype:</b> void DPScurrentwindowalpha(GSCTXT * ctxt, int  win, int *  alpha)<br>
+
+        
+<hr>
+<h2><a name="function-188">DPScountscreenlist</a></h2>
+<b>Prototype:</b> void DPScountscreenlist(GSCTXT * ctxt, int  context, int *  count)<br>
+
+        
+<hr>
+<h2><a name="function-189">DPSscreenlist</a></h2>
+<b>Prototype:</b> void DPSscreenlist(GSCTXT * ctxt, int  context, int  count, int *  windows)<br>
+
+        
+<hr>
+<h2><a name="function-190">DPSsetowner</a></h2>
+<b>Prototype:</b> void DPSsetowner(GSCTXT * ctxt, int  owner, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-191">DPScurrentowner</a></h2>
+<b>Prototype:</b> void DPScurrentowner(GSCTXT * ctxt, int  win, int *  owner)<br>
+
+        
+<hr>
+<h2><a name="function-192">DPSsetwindowtype</a></h2>
+<b>Prototype:</b> void DPSsetwindowtype(GSCTXT * ctxt, int  type, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-193">DPSsetwindowlevel</a></h2>
+<b>Prototype:</b> void DPSsetwindowlevel(GSCTXT * ctxt, int  level, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-194">DPScurrentwindowlevel</a></h2>
+<b>Prototype:</b> void DPScurrentwindowlevel(GSCTXT * ctxt, int  win, int *  level)<br>
+
+        
+<hr>
+<h2><a name="function-195">DPScountwindowlist</a></h2>
+<b>Prototype:</b> void DPScountwindowlist(GSCTXT * ctxt, int  context, int *  count)<br>
+
+        
+<hr>
+<h2><a name="function-196">DPSwindowlist</a></h2>
+<b>Prototype:</b> void DPSwindowlist(GSCTXT * ctxt, int  context, int  count, int *  windows)<br>
+
+        
+<hr>
+<h2><a name="function-197">DPSsetwindowdepthlimit</a></h2>
+<b>Prototype:</b> void DPSsetwindowdepthlimit(GSCTXT * ctxt, int  limit, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-198">DPScurrentwindowdepthlimit</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdepthlimit(GSCTXT * ctxt, int  win, int *  limit)<br>
+
+        
+<hr>
+<h2><a name="function-199">DPScurrentwindowdepth</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdepth(GSCTXT * ctxt, int  win, int *  depth)<br>
+
+        
+<hr>
+<h2><a name="function-200">DPSsetdefaultdepthlimit</a></h2>
+<b>Prototype:</b> void DPSsetdefaultdepthlimit(GSCTXT * ctxt, int  limit)<br>
+
+        
+<hr>
+<h2><a name="function-201">DPScurrentdefaultdepthlimit</a></h2>
+<b>Prototype:</b> void DPScurrentdefaultdepthlimit(GSCTXT * ctxt, int *  limit)<br>
+
+        
+<hr>
+<h2><a name="function-202">DPSsetmaxsize</a></h2>
+<b>Prototype:</b> void DPSsetmaxsize(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-203">DPSsetminsize</a></h2>
+<b>Prototype:</b> void DPSsetminsize(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-204">DPSsetresizeincrements</a></h2>
+<b>Prototype:</b> void DPSsetresizeincrements(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-205">DPSflushwindowrect</a></h2>
+<b>Prototype:</b> void DPSflushwindowrect(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-206">DPScapturemouse</a></h2>
+<b>Prototype:</b> void DPScapturemouse(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-207">DPSreleasemouse</a></h2>
+<b>Prototype:</b> void DPSreleasemouse(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-208">DPSsetinputfocus</a></h2>
+<b>Prototype:</b> void DPSsetinputfocus(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-209">DPShidecursor</a></h2>
+<b>Prototype:</b> void DPShidecursor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-210">DPSshowcursor</a></h2>
+<b>Prototype:</b> void DPSshowcursor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-211">DPSstandardcursor</a></h2>
+<b>Prototype:</b> void DPSstandardcursor(GSCTXT * ctxt, int  style, void **  cid)<br>
+
+        
+<hr>
+<h2><a name="function-212">DPSimagecursor</a></h2>
+<b>Prototype:</b> void DPSimagecursor(GSCTXT * ctxt, float  hotx, float  hoty, float  w, float  h, int  colors, const char *  image, void **  cid)<br>
+
+        
+<hr>
+<h2><a name="function-213">DPSsetcursorcolor</a></h2>
+<b>Prototype:</b> void DPSsetcursorcolor(GSCTXT * ctxt, float  fr, float  fg, float  fb, float  br, float  bg, float  bb, void *  cid)<br>
+
+        
+<hr>
+<h2><a name="function-214">DPSstyleoffsets</a></h2>
+<b>Prototype:</b> void DPSstyleoffsets(GSCTXT * ctxt, float * l, float * r, float * t, float * b, int  style)<br>
+
+        
+<hr>
+<h2><a name="function-215">DPSdocedited</a></h2>
+<b>Prototype:</b> void DPSdocedited(GSCTXT * ctxt, int  edited, int  window)<br>
+
+        
+<hr>
+<h2><a name="function-216">DPSGetEvent</a></h2>
+<b>Prototype:</b> NSEvent* DPSGetEvent(GSCTXT * ctxt, unsigned  mask, NSDate*  limit, NSString * mode)<br>
+
+        
+<hr>
+<h2><a name="function-217">DPSPeekEvent</a></h2>
+<b>Prototype:</b> NSEvent* DPSPeekEvent(GSCTXT * ctxt, unsigned  mask, NSDate*  limit, NSString * mode)<br>
+
+        
+<hr>
+<h2><a name="function-218">DPSDiscardEvents</a></h2>
+<b>Prototype:</b> void DPSDiscardEvents(GSCTXT * ctxt, unsigned  mask, NSEvent*  limit)<br>
+
+        
+<hr>
+<h2><a name="function-219">DPSPostEvent</a></h2>
+<b>Prototype:</b> void DPSPostEvent(GSCTXT * ctxt, NSEvent*  anEvent, BOOL  atStart)<br>
+
+        
+<hr>
+<h2><a name="function-220">DPSmouselocation</a></h2>
+<b>Prototype:</b> void DPSmouselocation(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-221">DPSsetinputstate</a></h2>
+<b>Prototype:</b> void DPSsetinputstate(GSCTXT * ctxt, int  window, int  state)<br>
+
+        
+<hr>
+<h2><a name="function-222">DPScurrentserverdevice</a></h2>
+<b>Prototype:</b> void DPScurrentserverdevice(GSCTXT * ctxt, void ** serverptr)<br>
+
+        
+<hr>
+<h2><a name="function-223">DPScurrentwindowdevice</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdevice(GSCTXT * ctxt, int  win, void ** windowptr)<br>
+
+        
+<hr>
+<h2><a name="function-224">DPScurrentcmykcolor</a></h2>
+<b>Prototype:</b> void DPScurrentcmykcolor(GSCTXT * ctxt, float * c, float * m, float * y, float * k)<br>
+
+        
+<hr>
+<h2><a name="function-225">DPSsetcmykcolor</a></h2>
+<b>Prototype:</b> void DPSsetcmykcolor(GSCTXT * ctxt, float  c, float  m, float  y, float  k)<br>
+
+        
+<hr>
+<h2><a name="function-226">DPSclear</a></h2>
+<b>Prototype:</b> void DPSclear(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-227">DPScleartomark</a></h2>
+<b>Prototype:</b> void DPScleartomark(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-228">DPScopy</a></h2>
+<b>Prototype:</b> void DPScopy(GSCTXT * ctxt, int  n)<br>
+
+        
+<hr>
+<h2><a name="function-229">DPScount</a></h2>
+<b>Prototype:</b> void DPScount(GSCTXT * ctxt, int * n)<br>
+
+        
+<hr>
+<h2><a name="function-230">DPScounttomark</a></h2>
+<b>Prototype:</b> void DPScounttomark(GSCTXT * ctxt, int * n)<br>
+
+        
+<hr>
+<h2><a name="function-231">DPSdup</a></h2>
+<b>Prototype:</b> void DPSdup(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-232">DPSexch</a></h2>
+<b>Prototype:</b> void DPSexch(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-233">DPSexecstack</a></h2>
+<b>Prototype:</b> void DPSexecstack(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-234">DPSget</a></h2>
+<b>Prototype:</b> void DPSget(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-235">DPSindex</a></h2>
+<b>Prototype:</b> void DPSindex(GSCTXT * ctxt, int  i)<br>
+
+        
+<hr>
+<h2><a name="function-236">DPSmark</a></h2>
+<b>Prototype:</b> void DPSmark(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-237">DPSmatrix</a></h2>
+<b>Prototype:</b> void DPSmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-238">DPSnull</a></h2>
+<b>Prototype:</b> void DPSnull(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-239">DPSpop</a></h2>
+<b>Prototype:</b> void DPSpop(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-240">DPSput</a></h2>
+<b>Prototype:</b> void DPSput(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-241">DPSroll</a></h2>
+<b>Prototype:</b> void DPSroll(GSCTXT * ctxt, int  n, int  j)<br>
+
+        
+<hr>
+<h2><a name="function-242">DPSFontDirectory</a></h2>
+<b>Prototype:</b> void DPSFontDirectory(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-243">DPSISOLatin1Encoding</a></h2>
+<b>Prototype:</b> void DPSISOLatin1Encoding(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-244">DPSSharedFontDirectory</a></h2>
+<b>Prototype:</b> void DPSSharedFontDirectory(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-245">DPSStandardEncoding</a></h2>
+<b>Prototype:</b> void DPSStandardEncoding(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-246">DPScurrentcacheparams</a></h2>
+<b>Prototype:</b> void DPScurrentcacheparams(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-247">DPScurrentfont</a></h2>
+<b>Prototype:</b> void DPScurrentfont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-248">DPSdefinefont</a></h2>
+<b>Prototype:</b> void DPSdefinefont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-249">DPSfindfont</a></h2>
+<b>Prototype:</b> void DPSfindfont(GSCTXT * ctxt, const char * name)<br>
+
+        
+<hr>
+<h2><a name="function-250">DPSmakefont</a></h2>
+<b>Prototype:</b> void DPSmakefont(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-251">DPSscalefont</a></h2>
+<b>Prototype:</b> void DPSscalefont(GSCTXT * ctxt, float  size)<br>
+
+        
+<hr>
+<h2><a name="function-252">DPSselectfont</a></h2>
+<b>Prototype:</b> void DPSselectfont(GSCTXT * ctxt, const char * name, float  scale)<br>
+
+        
+<hr>
+<h2><a name="function-253">DPSsetfont</a></h2>
+<b>Prototype:</b> void DPSsetfont(GSCTXT * ctxt, int  f)<br>
+
+        
+<hr>
+<h2><a name="function-254">DPSundefinefont</a></h2>
+<b>Prototype:</b> void DPSundefinefont(GSCTXT * ctxt, const char * name)<br>
+
+        
+<hr>
+<h2><a name="function-255">DPSconcat</a></h2>
+<b>Prototype:</b> void DPSconcat(GSCTXT * ctxt, const float  m[])<br>
+
+        
+<hr>
+<h2><a name="function-256">DPScurrentdash</a></h2>
+<b>Prototype:</b> void DPScurrentdash(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-257">DPScurrentflat</a></h2>
+<b>Prototype:</b> void DPScurrentflat(GSCTXT * ctxt, float * flatness)<br>
+
+        
+<hr>
+<h2><a name="function-258">DPScurrentgray</a></h2>
+<b>Prototype:</b> void DPScurrentgray(GSCTXT * ctxt, float * gray)<br>
+
+        
+<hr>
+<h2><a name="function-259">DPScurrentgstate</a></h2>
+<b>Prototype:</b> void DPScurrentgstate(GSCTXT * ctxt, int  gst)<br>
+
+        
+<hr>
+<h2><a name="function-260">DPScurrenthalftone</a></h2>
+<b>Prototype:</b> void DPScurrenthalftone(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-261">DPScurrenthalftonephase</a></h2>
+<b>Prototype:</b> void DPScurrenthalftonephase(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-262">DPScurrenthsbcolor</a></h2>
+<b>Prototype:</b> void DPScurrenthsbcolor(GSCTXT * ctxt, float * h, float * s, float * b)<br>
+
+        
+<hr>
+<h2><a name="function-263">DPScurrentlinecap</a></h2>
+<b>Prototype:</b> void DPScurrentlinecap(GSCTXT * ctxt, int * linecap)<br>
+
+        
+<hr>
+<h2><a name="function-264">DPScurrentlinejoin</a></h2>
+<b>Prototype:</b> void DPScurrentlinejoin(GSCTXT * ctxt, int * linejoin)<br>
+
+        
+<hr>
+<h2><a name="function-265">DPScurrentlinewidth</a></h2>
+<b>Prototype:</b> void DPScurrentlinewidth(GSCTXT * ctxt, float * width)<br>
+
+        
+<hr>
+<h2><a name="function-266">DPScurrentmatrix</a></h2>
+<b>Prototype:</b> void DPScurrentmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-267">DPScurrentmiterlimit</a></h2>
+<b>Prototype:</b> void DPScurrentmiterlimit(GSCTXT * ctxt, float * limit)<br>
+
+        
+<hr>
+<h2><a name="function-268">DPScurrentpoint</a></h2>
+<b>Prototype:</b> void DPScurrentpoint(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-269">DPScurrentrgbcolor</a></h2>
+<b>Prototype:</b> void DPScurrentrgbcolor(GSCTXT * ctxt, float * r, float * g, float * b)<br>
+
+        
+<hr>
+<h2><a name="function-270">DPScurrentscreen</a></h2>
+<b>Prototype:</b> void DPScurrentscreen(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-271">DPScurrentstrokeadjust</a></h2>
+<b>Prototype:</b> void DPScurrentstrokeadjust(GSCTXT * ctxt, int * b)<br>
+
+        
+<hr>
+<h2><a name="function-272">DPScurrenttransfer</a></h2>
+<b>Prototype:</b> void DPScurrenttransfer(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-273">DPSdefaultmatrix</a></h2>
+<b>Prototype:</b> void DPSdefaultmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-274">DPSgrestore</a></h2>
+<b>Prototype:</b> void DPSgrestore(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-275">DPSgrestoreall</a></h2>
+<b>Prototype:</b> void DPSgrestoreall(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-276">DPSgsave</a></h2>
+<b>Prototype:</b> void DPSgsave(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-277">DPSgstate</a></h2>
+<b>Prototype:</b> void DPSgstate(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-278">DPSinitgraphics</a></h2>
+<b>Prototype:</b> void DPSinitgraphics(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-279">DPSinitmatrix</a></h2>
+<b>Prototype:</b> void DPSinitmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-280">DPSrotate</a></h2>
+<b>Prototype:</b> void DPSrotate(GSCTXT * ctxt, float  angle)<br>
+
+        
+<hr>
+<h2><a name="function-281">DPSscale</a></h2>
+<b>Prototype:</b> void DPSscale(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-282">DPSsetdash</a></h2>
+<b>Prototype:</b> void DPSsetdash(GSCTXT * ctxt, const float  pat[], int  size, float  offset)<br>
+
+        
+<hr>
+<h2><a name="function-283">DPSsetflat</a></h2>
+<b>Prototype:</b> void DPSsetflat(GSCTXT * ctxt, float  flatness)<br>
+
+        
+<hr>
+<h2><a name="function-284">DPSsetgray</a></h2>
+<b>Prototype:</b> void DPSsetgray(GSCTXT * ctxt, float  gray)<br>
+
+        
+<hr>
+<h2><a name="function-285">DPSsetgstate</a></h2>
+<b>Prototype:</b> void DPSsetgstate(GSCTXT * ctxt, int  gst)<br>
+
+        
+<hr>
+<h2><a name="function-286">DPSsethalftone</a></h2>
+<b>Prototype:</b> void DPSsethalftone(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-287">DPSsethalftonephase</a></h2>
+<b>Prototype:</b> void DPSsethalftonephase(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-288">DPSsethsbcolor</a></h2>
+<b>Prototype:</b> void DPSsethsbcolor(GSCTXT * ctxt, float  h, float  s, float  b)<br>
+
+        
+<hr>
+<h2><a name="function-289">DPSsetlinecap</a></h2>
+<b>Prototype:</b> void DPSsetlinecap(GSCTXT * ctxt, int  linecap)<br>
+
+        
+<hr>
+<h2><a name="function-290">DPSsetlinejoin</a></h2>
+<b>Prototype:</b> void DPSsetlinejoin(GSCTXT * ctxt, int  linejoin)<br>
+
+        
+<hr>
+<h2><a name="function-291">DPSsetlinewidth</a></h2>
+<b>Prototype:</b> void DPSsetlinewidth(GSCTXT * ctxt, float  width)<br>
+
+        
+<hr>
+<h2><a name="function-292">DPSsetmatrix</a></h2>
+<b>Prototype:</b> void DPSsetmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-293">DPSsetmiterlimit</a></h2>
+<b>Prototype:</b> void DPSsetmiterlimit(GSCTXT * ctxt, float  limit)<br>
+
+        
+<hr>
+<h2><a name="function-294">DPSsetrgbcolor</a></h2>
+<b>Prototype:</b> void DPSsetrgbcolor(GSCTXT * ctxt, float  r, float  g, float  b)<br>
+
+        
+<hr>
+<h2><a name="function-295">DPSsetscreen</a></h2>
+<b>Prototype:</b> void DPSsetscreen(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-296">DPSsetstrokeadjust</a></h2>
+<b>Prototype:</b> void DPSsetstrokeadjust(GSCTXT * ctxt, int  b)<br>
+
+        
+<hr>
+<h2><a name="function-297">DPSsettransfer</a></h2>
+<b>Prototype:</b> void DPSsettransfer(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-298">DPStranslate</a></h2>
+<b>Prototype:</b> void DPStranslate(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-299">DPSflush</a></h2>
+<b>Prototype:</b> void DPSflush(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-300">DPSconcatmatrix</a></h2>
+<b>Prototype:</b> void DPSconcatmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-301">DPSdtransform</a></h2>
+<b>Prototype:</b> void DPSdtransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-302">DPSidentmatrix</a></h2>
+<b>Prototype:</b> void DPSidentmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-303">DPSidtransform</a></h2>
+<b>Prototype:</b> void DPSidtransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-304">DPSinvertmatrix</a></h2>
+<b>Prototype:</b> void DPSinvertmatrix(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-305">DPSitransform</a></h2>
+<b>Prototype:</b> void DPSitransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-306">DPStransform</a></h2>
+<b>Prototype:</b> void DPStransform(GSCTXT * ctxt, float  x1, float  y1, float * x2, float * y2)<br>
+
+        
+<hr>
+<h2><a name="function-307">DPSdefineuserobject</a></h2>
+<b>Prototype:</b> void DPSdefineuserobject(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-308">DPSexecuserobject</a></h2>
+<b>Prototype:</b> void DPSexecuserobject(GSCTXT * ctxt, int  index)<br>
+
+        
+<hr>
+<h2><a name="function-309">DPSundefineuserobject</a></h2>
+<b>Prototype:</b> void DPSundefineuserobject(GSCTXT * ctxt, int  index)<br>
+
+        
+<hr>
+<h2><a name="function-310">DPSgetboolean</a></h2>
+<b>Prototype:</b> void DPSgetboolean(GSCTXT * ctxt, int * it)<br>
+
+        
+<hr>
+<h2><a name="function-311">DPSgetchararray</a></h2>
+<b>Prototype:</b> void DPSgetchararray(GSCTXT * ctxt, int  size, char  s[])<br>
+
+        
+<hr>
+<h2><a name="function-312">DPSgetfloat</a></h2>
+<b>Prototype:</b> void DPSgetfloat(GSCTXT * ctxt, float * it)<br>
+
+        
+<hr>
+<h2><a name="function-313">DPSgetfloatarray</a></h2>
+<b>Prototype:</b> void DPSgetfloatarray(GSCTXT * ctxt, int  size, float  a[])<br>
+
+        
+<hr>
+<h2><a name="function-314">DPSgetint</a></h2>
+<b>Prototype:</b> void DPSgetint(GSCTXT * ctxt, int * it)<br>
+
+        
+<hr>
+<h2><a name="function-315">DPSgetintarray</a></h2>
+<b>Prototype:</b> void DPSgetintarray(GSCTXT * ctxt, int  size, int  a[])<br>
+
+        
+<hr>
+<h2><a name="function-316">DPSgetstring</a></h2>
+<b>Prototype:</b> void DPSgetstring(GSCTXT * ctxt, char * s)<br>
+
+        
+<hr>
+<h2><a name="function-317">DPSsendboolean</a></h2>
+<b>Prototype:</b> void DPSsendboolean(GSCTXT * ctxt, int  it)<br>
+
+        
+<hr>
+<h2><a name="function-318">DPSsendchararray</a></h2>
+<b>Prototype:</b> void DPSsendchararray(GSCTXT * ctxt, const char  s[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-319">DPSsendfloat</a></h2>
+<b>Prototype:</b> void DPSsendfloat(GSCTXT * ctxt, float  it)<br>
+
+        
+<hr>
+<h2><a name="function-320">DPSsendfloatarray</a></h2>
+<b>Prototype:</b> void DPSsendfloatarray(GSCTXT * ctxt, const float  a[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-321">DPSsendint</a></h2>
+<b>Prototype:</b> void DPSsendint(GSCTXT * ctxt, int  it)<br>
+
+        
+<hr>
+<h2><a name="function-322">DPSsendintarray</a></h2>
+<b>Prototype:</b> void DPSsendintarray(GSCTXT * ctxt, const int  a[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-323">DPSsendstring</a></h2>
+<b>Prototype:</b> void DPSsendstring(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-324">DPSashow</a></h2>
+<b>Prototype:</b> void DPSashow(GSCTXT * ctxt, float  x, float  y, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-325">DPSawidthshow</a></h2>
+<b>Prototype:</b> void DPSawidthshow(GSCTXT * ctxt, float  cx, float  cy, int  c, float  ax, float  ay, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-326">DPScopypage</a></h2>
+<b>Prototype:</b> void DPScopypage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-327">DPSeofill</a></h2>
+<b>Prototype:</b> void DPSeofill(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-328">DPSerasepage</a></h2>
+<b>Prototype:</b> void DPSerasepage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-329">DPSfill</a></h2>
+<b>Prototype:</b> void DPSfill(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-330">DPSimage</a></h2>
+<b>Prototype:</b> void DPSimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-331">DPSimagemask</a></h2>
+<b>Prototype:</b> void DPSimagemask(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-332">DPScolorimage</a></h2>
+<b>Prototype:</b> void DPScolorimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-333">DPSalphaimage</a></h2>
+<b>Prototype:</b> void DPSalphaimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-334">DPSkshow</a></h2>
+<b>Prototype:</b> void DPSkshow(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-335">DPSrectfill</a></h2>
+<b>Prototype:</b> void DPSrectfill(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-336">DPSrectstroke</a></h2>
+<b>Prototype:</b> void DPSrectstroke(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-337">DPSshow</a></h2>
+<b>Prototype:</b> void DPSshow(GSCTXT * ctxt, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-338">DPSshowpage</a></h2>
+<b>Prototype:</b> void DPSshowpage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-339">DPSstroke</a></h2>
+<b>Prototype:</b> void DPSstroke(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-340">DPSstrokepath</a></h2>
+<b>Prototype:</b> void DPSstrokepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-341">DPSueofill</a></h2>
+<b>Prototype:</b> void DPSueofill(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-342">DPSufill</a></h2>
+<b>Prototype:</b> void DPSufill(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-343">DPSustroke</a></h2>
+<b>Prototype:</b> void DPSustroke(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-344">DPSustrokepath</a></h2>
+<b>Prototype:</b> void DPSustrokepath(GSCTXT * ctxt, const char  nums[], int  n, const char  ops[], int  l)<br>
+
+        
+<hr>
+<h2><a name="function-345">DPSwidthshow</a></h2>
+<b>Prototype:</b> void DPSwidthshow(GSCTXT * ctxt, float  x, float  y, int  c, const char * s)<br>
+
+        
+<hr>
+<h2><a name="function-346">DPSxshow</a></h2>
+<b>Prototype:</b> void DPSxshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-347">DPSxyshow</a></h2>
+<b>Prototype:</b> void DPSxyshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-348">DPSyshow</a></h2>
+<b>Prototype:</b> void DPSyshow(GSCTXT * ctxt, const char * s, const float  numarray[], int  size)<br>
+
+        
+<hr>
+<h2><a name="function-349">DPSarc</a></h2>
+<b>Prototype:</b> void DPSarc(GSCTXT * ctxt, float  x, float  y, float  r, float  angle1, float  angle2)<br>
+
+        
+<hr>
+<h2><a name="function-350">DPSarcn</a></h2>
+<b>Prototype:</b> void DPSarcn(GSCTXT * ctxt, float  x, float  y, float  r, float  angle1, float  angle2)<br>
+
+        
+<hr>
+<h2><a name="function-351">DPSarct</a></h2>
+<b>Prototype:</b> void DPSarct(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  r)<br>
+
+        
+<hr>
+<h2><a name="function-352">DPSarcto</a></h2>
+<b>Prototype:</b> void DPSarcto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  r, float * xt1, float * yt1, float * xt2, float * yt2)<br>
+
+        
+<hr>
+<h2><a name="function-353">DPScharpath</a></h2>
+<b>Prototype:</b> void DPScharpath(GSCTXT * ctxt, const char * s, int  b)<br>
+
+        
+<hr>
+<h2><a name="function-354">DPSclip</a></h2>
+<b>Prototype:</b> void DPSclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-355">DPSclippath</a></h2>
+<b>Prototype:</b> void DPSclippath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-356">DPSclosepath</a></h2>
+<b>Prototype:</b> void DPSclosepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-357">DPScurveto</a></h2>
+<b>Prototype:</b> void DPScurveto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  x3, float  y3)<br>
+
+        
+<hr>
+<h2><a name="function-358">DPSeoclip</a></h2>
+<b>Prototype:</b> void DPSeoclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-359">DPSeoviewclip</a></h2>
+<b>Prototype:</b> void DPSeoviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-360">DPSflattenpath</a></h2>
+<b>Prototype:</b> void DPSflattenpath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-361">DPSinitclip</a></h2>
+<b>Prototype:</b> void DPSinitclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-362">DPSinitviewclip</a></h2>
+<b>Prototype:</b> void DPSinitviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-363">DPSlineto</a></h2>
+<b>Prototype:</b> void DPSlineto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-364">DPSmoveto</a></h2>
+<b>Prototype:</b> void DPSmoveto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-365">DPSnewpath</a></h2>
+<b>Prototype:</b> void DPSnewpath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-366">DPSpathbbox</a></h2>
+<b>Prototype:</b> void DPSpathbbox(GSCTXT * ctxt, float * llx, float * lly, float * urx, float * ury)<br>
+
+        
+<hr>
+<h2><a name="function-367">DPSpathforall</a></h2>
+<b>Prototype:</b> void DPSpathforall(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-368">DPSrcurveto</a></h2>
+<b>Prototype:</b> void DPSrcurveto(GSCTXT * ctxt, float  x1, float  y1, float  x2, float  y2, float  x3, float  y3)<br>
+
+        
+<hr>
+<h2><a name="function-369">DPSrectclip</a></h2>
+<b>Prototype:</b> void DPSrectclip(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-370">DPSrectviewclip</a></h2>
+<b>Prototype:</b> void DPSrectviewclip(GSCTXT * ctxt, float  x, float  y, float  w, float  h)<br>
+
+        
+<hr>
+<h2><a name="function-371">DPSreversepath</a></h2>
+<b>Prototype:</b> void DPSreversepath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-372">DPSrlineto</a></h2>
+<b>Prototype:</b> void DPSrlineto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-373">DPSrmoveto</a></h2>
+<b>Prototype:</b> void DPSrmoveto(GSCTXT * ctxt, float  x, float  y)<br>
+
+        
+<hr>
+<h2><a name="function-374">DPSsetbbox</a></h2>
+<b>Prototype:</b> void DPSsetbbox(GSCTXT * ctxt, float  llx, float  lly, float  urx, float  ury)<br>
+
+        
+<hr>
+<h2><a name="function-375">DPSviewclip</a></h2>
+<b>Prototype:</b> void DPSviewclip(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-376">DPSviewclippath</a></h2>
+<b>Prototype:</b> void DPSviewclippath(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-377">DPScurrentdrawingfunction</a></h2>
+<b>Prototype:</b> void DPScurrentdrawingfunction(GSCTXT * ctxt, int * function)<br>
+
+        
+<hr>
+<h2><a name="function-378">DPScurrentgcdrawable</a></h2>
+<b>Prototype:</b> void DPScurrentgcdrawable(GSCTXT * ctxt, void* * gc, void* * draw, int * x, int * y)<br>
+
+        
+<hr>
+<h2><a name="function-379">DPScurrentgcdrawablecolor</a></h2>
+<b>Prototype:</b> void DPScurrentgcdrawablecolor(GSCTXT * ctxt, void* * gc, void* * draw, int * x, int * y, int  colorInfo[])<br>
+
+        
+<hr>
+<h2><a name="function-380">DPScurrentoffset</a></h2>
+<b>Prototype:</b> void DPScurrentoffset(GSCTXT * ctxt, int * x, int * y)<br>
+
+        
+<hr>
+<h2><a name="function-381">DPSsetdrawingfunction</a></h2>
+<b>Prototype:</b> void DPSsetdrawingfunction(GSCTXT * ctxt, int  function)<br>
+
+        
+<hr>
+<h2><a name="function-382">DPSsetgcdrawable</a></h2>
+<b>Prototype:</b> void DPSsetgcdrawable(GSCTXT * ctxt, void*  gc, void*  draw, int  x, int  y)<br>
+
+        
+<hr>
+<h2><a name="function-383">DPSsetgcdrawablecolor</a></h2>
+<b>Prototype:</b> void DPSsetgcdrawablecolor(GSCTXT * ctxt, void*  gc, void*  draw, int  x, int  y, const int  colorInfo[])<br>
+
+        
+<hr>
+<h2><a name="function-384">DPSsetoffset</a></h2>
+<b>Prototype:</b> void DPSsetoffset(GSCTXT * ctxt, short int  x, short int  y)<br>
+
+        
+<hr>
+<h2><a name="function-385">DPSsetrgbactual</a></h2>
+<b>Prototype:</b> void DPSsetrgbactual(GSCTXT * ctxt, double  r, double  g, double  b, int * success)<br>
+
+        
+<hr>
+<h2><a name="function-386">DPScapturegstate</a></h2>
+<b>Prototype:</b> void DPScapturegstate(GSCTXT * ctxt, int * gst)<br>
+
+        
+<hr>
+<h2><a name="function-387">DPScomposite</a></h2>
+<b>Prototype:</b> void DPScomposite(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  gstateNum, float  dx, float  dy, int  op)<br>
+
+        
+<hr>
+<h2><a name="function-388">DPScompositerect</a></h2>
+<b>Prototype:</b> void DPScompositerect(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  op)<br>
+
+        
+<hr>
+<h2><a name="function-389">DPSdissolve</a></h2>
+<b>Prototype:</b> void DPSdissolve(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  gstateNum, float  dx, float  dy, float  delta)<br>
+
+        
+<hr>
+<h2><a name="function-390">DPSreadimage</a></h2>
+<b>Prototype:</b> void DPSreadimage(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-391">DPSsetalpha</a></h2>
+<b>Prototype:</b> void DPSsetalpha(GSCTXT * ctxt, float  a)<br>
+
+        
+<hr>
+<h2><a name="function-392">DPScurrentalpha</a></h2>
+<b>Prototype:</b> void DPScurrentalpha(GSCTXT * ctxt, float * a)<br>
+
+        
+<hr>
+<h2><a name="function-393">DPSwindow</a></h2>
+<b>Prototype:</b> void DPSwindow(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  type, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-394">DPStermwindow</a></h2>
+<b>Prototype:</b> void DPStermwindow(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-395">DPSstylewindow</a></h2>
+<b>Prototype:</b> void DPSstylewindow(GSCTXT * ctxt, int  style, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-396">DPStitlewindow</a></h2>
+<b>Prototype:</b> void DPStitlewindow(GSCTXT * ctxt, const char *  window_title, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-397">DPSminiwindow</a></h2>
+<b>Prototype:</b> void DPSminiwindow(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-398">DPSwindowdevice</a></h2>
+<b>Prototype:</b> void DPSwindowdevice(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-399">DPSwindowdeviceround</a></h2>
+<b>Prototype:</b> void DPSwindowdeviceround(GSCTXT * ctxt, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-400">DPScurrentwindow</a></h2>
+<b>Prototype:</b> void DPScurrentwindow(GSCTXT * ctxt, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-401">DPSorderwindow</a></h2>
+<b>Prototype:</b> void DPSorderwindow(GSCTXT * ctxt, int  op, int  otherWin, int  winNum)<br>
+
+        
+<hr>
+<h2><a name="function-402">DPSmovewindow</a></h2>
+<b>Prototype:</b> void DPSmovewindow(GSCTXT * ctxt, float  x, float  y, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-403">DPSupdatewindow</a></h2>
+<b>Prototype:</b> void DPSupdatewindow(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-404">DPSplacewindow</a></h2>
+<b>Prototype:</b> void DPSplacewindow(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-405">DPSfrontwindow</a></h2>
+<b>Prototype:</b> void DPSfrontwindow(GSCTXT * ctxt, int *  num)<br>
+
+        
+<hr>
+<h2><a name="function-406">DPSfindwindow</a></h2>
+<b>Prototype:</b> void DPSfindwindow(GSCTXT * ctxt, float  x, float  y, int  op, int  otherWin, float *  lx, float *  ly, int *  winFound, int *  didFind)<br>
+
+        
+<hr>
+<h2><a name="function-407">DPScurrentwindowbounds</a></h2>
+<b>Prototype:</b> void DPScurrentwindowbounds(GSCTXT * ctxt, int  num, float *  x, float *  y, float *  w, float *  h)<br>
+
+        
+<hr>
+<h2><a name="function-408">DPSsetexposurecolor</a></h2>
+<b>Prototype:</b> void DPSsetexposurecolor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-409">DPSsetsendexposed</a></h2>
+<b>Prototype:</b> void DPSsetsendexposed(GSCTXT * ctxt, int  truth, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-410">DPSsetautofill</a></h2>
+<b>Prototype:</b> void DPSsetautofill(GSCTXT * ctxt, int  truth, int  num)<br>
+
+        
+<hr>
+<h2><a name="function-411">DPScurrentwindowalpha</a></h2>
+<b>Prototype:</b> void DPScurrentwindowalpha(GSCTXT * ctxt, int  win, int *  alpha)<br>
+
+        
+<hr>
+<h2><a name="function-412">DPScountscreenlist</a></h2>
+<b>Prototype:</b> void DPScountscreenlist(GSCTXT * ctxt, int  context, int *  count)<br>
+
+        
+<hr>
+<h2><a name="function-413">DPSscreenlist</a></h2>
+<b>Prototype:</b> void DPSscreenlist(GSCTXT * ctxt, int  context, int  count, int *  windows)<br>
+
+        
+<hr>
+<h2><a name="function-414">DPSsetowner</a></h2>
+<b>Prototype:</b> void DPSsetowner(GSCTXT * ctxt, int  owner, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-415">DPScurrentowner</a></h2>
+<b>Prototype:</b> void DPScurrentowner(GSCTXT * ctxt, int  win, int *  owner)<br>
+
+        
+<hr>
+<h2><a name="function-416">DPSsetwindowtype</a></h2>
+<b>Prototype:</b> void DPSsetwindowtype(GSCTXT * ctxt, int  type, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-417">DPSsetwindowlevel</a></h2>
+<b>Prototype:</b> void DPSsetwindowlevel(GSCTXT * ctxt, int  level, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-418">DPScurrentwindowlevel</a></h2>
+<b>Prototype:</b> void DPScurrentwindowlevel(GSCTXT * ctxt, int  win, int *  level)<br>
+
+        
+<hr>
+<h2><a name="function-419">DPScountwindowlist</a></h2>
+<b>Prototype:</b> void DPScountwindowlist(GSCTXT * ctxt, int  context, int *  count)<br>
+
+        
+<hr>
+<h2><a name="function-420">DPSwindowlist</a></h2>
+<b>Prototype:</b> void DPSwindowlist(GSCTXT * ctxt, int  context, int  count, int *  windows)<br>
+
+        
+<hr>
+<h2><a name="function-421">DPSsetwindowdepthlimit</a></h2>
+<b>Prototype:</b> void DPSsetwindowdepthlimit(GSCTXT * ctxt, int  limit, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-422">DPScurrentwindowdepthlimit</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdepthlimit(GSCTXT * ctxt, int  win, int *  limit)<br>
+
+        
+<hr>
+<h2><a name="function-423">DPScurrentwindowdepth</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdepth(GSCTXT * ctxt, int  win, int *  depth)<br>
+
+        
+<hr>
+<h2><a name="function-424">DPSsetdefaultdepthlimit</a></h2>
+<b>Prototype:</b> void DPSsetdefaultdepthlimit(GSCTXT * ctxt, int  limit)<br>
+
+        
+<hr>
+<h2><a name="function-425">DPScurrentdefaultdepthlimit</a></h2>
+<b>Prototype:</b> void DPScurrentdefaultdepthlimit(GSCTXT * ctxt, int *  limit)<br>
+
+        
+<hr>
+<h2><a name="function-426">DPSsetmaxsize</a></h2>
+<b>Prototype:</b> void DPSsetmaxsize(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-427">DPSsetminsize</a></h2>
+<b>Prototype:</b> void DPSsetminsize(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-428">DPSsetresizeincrements</a></h2>
+<b>Prototype:</b> void DPSsetresizeincrements(GSCTXT * ctxt, float  width, float  height, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-429">DPSflushwindowrect</a></h2>
+<b>Prototype:</b> void DPSflushwindowrect(GSCTXT * ctxt, float  x, float  y, float  w, float  h, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-430">DPScapturemouse</a></h2>
+<b>Prototype:</b> void DPScapturemouse(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-431">DPSreleasemouse</a></h2>
+<b>Prototype:</b> void DPSreleasemouse(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-432">DPSsetinputfocus</a></h2>
+<b>Prototype:</b> void DPSsetinputfocus(GSCTXT * ctxt, int  win)<br>
+
+        
+<hr>
+<h2><a name="function-433">DPShidecursor</a></h2>
+<b>Prototype:</b> void DPShidecursor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-434">DPSshowcursor</a></h2>
+<b>Prototype:</b> void DPSshowcursor(GSCTXT * ctxt)<br>
+
+        
+<hr>
+<h2><a name="function-435">DPSstandardcursor</a></h2>
+<b>Prototype:</b> void DPSstandardcursor(GSCTXT * ctxt, int  style, void **  cid)<br>
+
+        
+<hr>
+<h2><a name="function-436">DPSimagecursor</a></h2>
+<b>Prototype:</b> void DPSimagecursor(GSCTXT * ctxt, float  hotx, float  hoty, float  w, float  h, int  colors, const char *  image, void **  cid)<br>
+
+        
+<hr>
+<h2><a name="function-437">DPSsetcursorcolor</a></h2>
+<b>Prototype:</b> void DPSsetcursorcolor(GSCTXT * ctxt, float  fr, float  fg, float  fb, float  br, float  bg, float  bb, void *  cid)<br>
+
+        
+<hr>
+<h2><a name="function-438">DPSstyleoffsets</a></h2>
+<b>Prototype:</b> void DPSstyleoffsets(GSCTXT * ctxt, float * l, float * r, float * t, float * b, int  style)<br>
+
+        
+<hr>
+<h2><a name="function-439">DPSdocedited</a></h2>
+<b>Prototype:</b> void DPSdocedited(GSCTXT * ctxt, int  edited, int  window)<br>
+
+        
+<hr>
+<h2><a name="function-440">DPSGetEvent</a></h2>
+<b>Prototype:</b> NSEvent* DPSGetEvent(GSCTXT * ctxt, unsigned  mask, NSDate*  limit, NSString * mode)<br>
+
+        
+<hr>
+<h2><a name="function-441">DPSPeekEvent</a></h2>
+<b>Prototype:</b> NSEvent* DPSPeekEvent(GSCTXT * ctxt, unsigned  mask, NSDate*  limit, NSString * mode)<br>
+
+        
+<hr>
+<h2><a name="function-442">DPSDiscardEvents</a></h2>
+<b>Prototype:</b> void DPSDiscardEvents(GSCTXT * ctxt, unsigned  mask, NSEvent*  limit)<br>
+
+        
+<hr>
+<h2><a name="function-443">DPSPostEvent</a></h2>
+<b>Prototype:</b> void DPSPostEvent(GSCTXT * ctxt, NSEvent*  anEvent, BOOL  atStart)<br>
+
+        
+<hr>
+<h2><a name="function-444">DPSmouselocation</a></h2>
+<b>Prototype:</b> void DPSmouselocation(GSCTXT * ctxt, float * x, float * y)<br>
+
+        
+<hr>
+<h2><a name="function-445">DPSsetinputstate</a></h2>
+<b>Prototype:</b> void DPSsetinputstate(GSCTXT * ctxt, int  window, int  state)<br>
+
+        
+<hr>
+<h2><a name="function-446">DPScurrentserverdevice</a></h2>
+<b>Prototype:</b> void DPScurrentserverdevice(GSCTXT * ctxt, void ** serverptr)<br>
+
+	  This is a backend specific function that returns a pointer
+	  to a variable which holds information about the window
+	  server. The type of information and the type of variable is
+	  dependant on the backend. For instance, under X-windows, the
+	  variable is the pointer to the X-Windows <var>Display*</var>
+	  type (Note the variable is a pointer, so you need to
+	  dereference <var>serverptr</var> to get the
+	  <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+        <var>Display*</var>
+	  type (Note the variable is a pointer, so you need to
+	  dereference <var>serverptr</var> to get the
+	  <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+        
+	  type (Note the variable is a pointer, so you need to
+	  dereference <var>serverptr</var> to get the
+	  <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+        <var>serverptr</var> to get the
+	  <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+         to get the
+	  <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+        <var>Display*</var> pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+         pointer.) This function should not be
+	  used in portable applications unless there is no doubt that
+	  it will be used on the intended backend.
+        
+<hr>
+<h2><a name="function-447">DPScurrentwindowdevice</a></h2>
+<b>Prototype:</b> void DPScurrentwindowdevice(GSCTXT * ctxt, int  win, void ** windowptr)<br>
+
+	  This is a backend specific function that returns a pointer
+	  to a variable which holds information about the current
+	  window device.
+	  The type of information and the type of variable is
+	  dependant on the backend. For instance, under X-windows, the
+	  variable is the pointer to the X-Windows Window
+	  type. This function should not be used in portable
+	  applications unless there is no doubt that it will be used
+	  on the intended backend.
+        
+<hr>
+</body>
+
+</html>

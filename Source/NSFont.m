@@ -200,6 +200,32 @@ void setNSFont(NSString* key, NSFont* font)
   [super dealloc];
 }
 
+- (BOOL) isEqual: (id)anObject
+{
+  int i;
+  float *obj_matrix;
+  if (anObject == self)
+    return YES;
+  if ([anObject isKindOfClass: self->isa] == NO)
+    return NO;
+  if ([[anObject fontName] isEqual: fontName] == NO)
+    return NO;
+  obj_matrix = [anObject matrix];
+  for (i = 0; i < 6; i++)
+    if (obj_matrix[i] != matrix[i])
+      return NO;
+  return YES;
+}
+
+- (unsigned) hash
+{
+  int i, sum;
+  sum = 0;
+  for (i = 0; i < 6; i++)
+    sum += matrix[i] * ((i+1) * 17);
+  return ([fontName hash] + sum);
+}
+
 //
 // Private method for NSFontManager
 //

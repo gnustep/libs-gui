@@ -126,6 +126,13 @@
         <item><uref url="NSWindowController.html">NSWindowController</uref></item>
         <item><uref url="NSWorkspace.html">NSWorkspace</uref></item>
       </list>
+      <p>
+        There is also documentation on various GUI functions.
+      </p>
+      <list>
+        <item><uref url="DPSOperators.html">DPSOperators</uref></item>
+      </list>
+
     </chapter>
   </body>
 </gsdoc>

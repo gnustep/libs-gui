@@ -1,3 +1,10 @@
+2000-04-24  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSFont.m (-isEqual:): Implement.
+	(hash): Likewise.
+
+	* Documentation/gsdoc/DPSOperators.gsdoc: New file.
+
 2000-04-24  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Parser/*: Updated the parser to support more of the RTF
