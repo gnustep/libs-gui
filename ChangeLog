@@ -1,3 +1,14 @@
+2000-03-27  Adam Fedor  <fedor@gnu.org>
+
+	* Changes to use "helper" class for getting backend
+	font information rather than poseAs classes.
+	* Headers/gnustep/gui/NSFont.h: New ivar.
+	* Headers/gnustep/gui/NSFontManager.h: New ivar.
+	* Source/NSFont.m: Changes to use GSFontInfo classes for
+	getting font information.
+	* Source/NSFontManager.m: Likewise for GSFontEnumerator.
+	* Source/GSFontInfo.m: New file.
+
 2000-03-27  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableView.m ([-tile]): Access ivar _frame.

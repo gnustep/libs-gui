@@ -329,7 +329,7 @@ NSGraphicsContext	*GSCurrentContext()
   return nil;
 }
 
-- (void) _postExternalEvent: (NSEvent *)event;
+- (void) _postExternalEvent: (NSEvent *)event
 {
   [self subclassResponsibility: _cmd];
 }

@@ -144,6 +144,7 @@ GSTrackingRect.m \
 GSServicesManager.m \
 tiff.m \
 externs.m \
+GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \

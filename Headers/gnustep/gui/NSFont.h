@@ -47,14 +47,11 @@ extern const float *NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding>
 {
-  // Font attributes
   NSString *fontName;
   float matrix[6];
-
   BOOL matrixExplicitlySet;
 
-  // Reserved for back-end use
-  void *be_font_reserved;
+  id fontInfo;
 }
 
 //

@@ -38,45 +38,8 @@
 #include <AppKit/NSFontPanel.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/GSFontInfo.h>
 
-
-@interface NSFontManager (GNUstepBackend)
-/*
- * A backend for this class must always implement the methods 
- * traitsOfFont: and weightOfFont: 
- * It can either implement the method _allFonts to return an array
- * of all the known fonts for the backend (as NSFont objects) or,
- * supply a differnt implementation of the methods that use this: 
- * availableFonts, availableFontFamilies, availableFontNamesWithTraits,
- * availableMembersOfFontFamily and  fontNamed: hasTraits: 
- * The second is the more efficent way and should be prefered.
- * A backend should also provide a better implementation for the method
- * fontWithFamily: traits: weight: size: 
- * And it can also provide differnt implemantions for the basic font 
- * conversion methods.
- * The idea is that the front end class defines an easy to subclass 
- * set of methods, so that a backend can start of with just a few methods but
- * can become as fast and flexible as it wants.
- */
-
-/*
- * Have the backend determine the fonts and families available
- * FIXME: This method should rather be part of a subclass initialize method
- */
-- (void) enumerateFontsAndFamilies;
-
-/*
- * The backend can use this method to check if a font
- * is accepted by the delegate. Otherwise it should not be listed.
- */
-- (BOOL) _includeFont: (NSString*)fontName;
-
-/*
- * List all the fonts as NSFont objects
- */
-- (NSArray*) _allFonts;
-
-@end
 
 /*
  * Class variables
@@ -125,8 +88,6 @@ static Class		fontPanelClass = Nil;
     {
       NSDebugLog(@"Initializing NSFontManager fonts\n");
       sharedFontManager = [[fontManagerClass alloc] init];
-      // enumerate the available fonts
-      [sharedFontManager enumerateFontsAndFamilies];
     }
   return sharedFontManager;
 }
@@ -136,10 +97,17 @@ static Class		fontPanelClass = Nil;
  */
 - (id) init
 {
+  if (sharedFontManager && self != sharedFontManager)
+    {
+      RELEASE(self);
+      return sharedFontManager;
+    }
   self = [super init];
 
   _action = @selector(changeFont:);
   _storedTag = NSNoFontChangeAction;
+  _fontEnumerator = RETAIN([GSFontEnumerator  
+			     sharedEnumeratorWithFontManager: self]);
 
   return self;
 }
@@ -148,7 +116,7 @@ static Class		fontPanelClass = Nil;
 {
   TEST_RELEASE(_selectedFont);
   TEST_RELEASE(_fontMenu);
-
+  TEST_RELEASE(_fontEnumerator);
   [super dealloc];
 }
 
@@ -157,41 +125,12 @@ static Class		fontPanelClass = Nil;
  */
 - (NSArray*) availableFonts
 {
-  int		i;
-  NSArray	*fontsList;
-  NSMutableArray *fontNames;
-
-  fontsList = [self _allFonts];
-  fontNames = [NSMutableArray arrayWithCapacity: [fontsList count]];
-
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      NSFont	*font = (NSFont*)[fontsList objectAtIndex: i];
-      NSString	*name = [font fontName];
-      
-      if ([self _includeFont: name])
-	[fontNames addObject: name];
-    }
-
-  return fontNames;
+  return [_fontEnumerator availableFonts];
 }
 
 - (NSArray*) availableFontFamilies
 {
-  int		i;
-  NSArray	*fontsList;
-  NSMutableSet	*fontFamilies;
-
-  fontsList = [self _allFonts];
-  fontFamilies = [NSMutableSet setWithCapacity: [fontsList count]];
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      NSFont *font = (NSFont*)[fontsList objectAtIndex: i];
-
-      [fontFamilies addObject: [font familyName]];
-    }
-
-  return [fontFamilies allObjects];
+  return [_fontEnumerator availableFontFamilies];
 }
 
 - (NSArray*) availableFontNamesWithTraits: (NSFontTraitMask)fontTraitMask
@@ -231,34 +170,7 @@ static Class		fontPanelClass = Nil;
  */
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
-  int i;
-  NSArray *fontsList = [self _allFonts];
-  NSMutableArray *fontDefs = [NSMutableArray array];
-
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      NSFont *font = (NSFont*)[fontsList objectAtIndex: i];
-
-      if ([[font familyName] isEqualToString: family])
-	{
-	  NSString *name = [font fontName];
-	  
-	  if ([self _includeFont: name])
-	    {
-	      NSMutableArray *fontDef = [NSMutableArray arrayWithCapacity: 4];
-	      [fontDef addObject: name];
-	      // TODO How do I get the font extention name?
-	      [fontDef addObject: @""];
-	      [fontDef addObject: [NSNumber numberWithInt: 
-		[self weightOfFont: font]]];
-	      [fontDef addObject: [NSNumber numberWithUnsignedInt: 
-		[self traitsOfFont: font]]];
-	      [fontDefs addObject: fontDef];
-	    }
-	}
-    }
-
-  return fontDefs;
+  return [_fontEnumerator availableMembersOfFontFamily: family];
 }
 
 - (NSString*) localizedNameForFamily: (NSString*)family 
@@ -753,14 +665,25 @@ static Class		fontPanelClass = Nil;
 //
 - (NSFontTraitMask) traitsOfFont: (NSFont*)fontObject
 {
-  // TODO
-  return 0;
+  GSFontInfo       *info;
+  NSFontTraitMask  mask = 0;
+
+  info = [GSFontInfo fontInfoForFontName: [fontObject fontName]
+		                  matrix: [fontObject matrix]];
+
+  if (info)
+    mask = [info traits];
+  return mask;
 }
 
 - (int) weightOfFont: (NSFont*)fontObject
 {
-  // TODO
-  return 5;
+  GSFontInfo       *info;
+
+  info = [GSFontInfo fontInfoForFontName: [fontObject fontName]
+		                  matrix: [fontObject matrix]];
+
+  return [info weight];
 }
 
 - (BOOL) fontNamed: (NSString*)typeface 
@@ -956,10 +879,6 @@ static Class		fontPanelClass = Nil;
 
 @implementation NSFontManager (GNUstepBackend)
 
-- (void) enumerateFontsAndFamilies
-{
-}
-
 /*
  * Ask delegate if to include a font
  */
@@ -970,17 +889,6 @@ static Class		fontPanelClass = Nil;
     return [_delegate fontManager: self willIncludeFont: fontName];
   else
     return YES;
-}
-
-- (NSArray*) _allFonts
-{
-  NSArray *fontsList;
-
-  NSLog(@"NSFontManager _allFonts called: This should not happen");
-  // Allocate the font list
-  fontsList = [NSMutableArray array];
-
-  return fontsList;
 }
 
 @end

@@ -34,6 +34,7 @@
 
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontManager.h>
+#include <AppKit/GSFontInfo.h>
 
 @implementation NSFont
 
@@ -158,13 +159,19 @@ void setNSFont(NSString* key, NSFont* font)
 }
 #endif
 
-/* The following method should be rewritten in the backend and it has to be
-   called as part of the implementation. */
+- initWithName:(NSString*)name matrix:(const float*)fontMatrix
+{
+  [fontsUsed addObject:name];
+  fontName = RETAIN(name);
+  memcpy(matrix, fontMatrix, sizeof(matrix));
+  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: name matrix: fontMatrix]);
+  return self;
+}
+
 + (NSFont*)fontWithName:(NSString*)name 
 		 matrix:(const float*)fontMatrix
 {
-  [fontsUsed addObject:name];
-  return nil;
+  return AUTORELEASE([[NSFont alloc] initWithName: name matrix: fontMatrix]);
 }
 
 + (NSFont*)fontWithName:(NSString*)name
@@ -188,7 +195,8 @@ void setNSFont(NSString* key, NSFont* font)
 //
 - (void)dealloc
 {
-  [fontName release];
+  RELEASE(fontName);
+  RELEASE(fontInfo);
   [super dealloc];
 }
 
@@ -197,50 +205,48 @@ void setNSFont(NSString* key, NSFont* font)
 //
 - (void)set
 {
+  [fontInfo set];
 }
 
 //
 // Querying the Font
 //
-- (float)pointSize			{ return matrix[3]; }
-- (NSString*)fontName			{ return fontName; }
-- (const float*)matrix			{ return matrix; }
+- (float)pointSize		{ return [fontInfo pointSize]; }
+- (NSString*)fontName		{ return fontName; }
+- (const float*)matrix		{ return matrix; }
 
-/* The backends should rewrite the following methods to provide a more
-   appropiate behavior than these. */
-
-- (NSString *)encodingScheme		{ return nil; }
-- (NSString*)familyName			{ return nil; }
-- (NSRect)boundingRectForFont		{ return NSZeroRect; }
-- (BOOL)isFixedPitch			{ return NO; }
-- (BOOL)isBaseFont			{ return YES; }
+- (NSString *)encodingScheme	{ return [fontInfo encodingScheme]; }
+- (NSString*)familyName		{ return [fontInfo familyName]; }
+- (NSRect)boundingRectForFont	{ return [fontInfo boundingRectForFont]; }
+- (BOOL)isFixedPitch		{ return [fontInfo isFixedPitch]; }
+- (BOOL)isBaseFont		{ return [fontInfo isBaseFont]; }
 
 /* Usually the display name of font is the font name. */
-- (NSString*)displayName		{ return fontName; }
+- (NSString*)displayName	{ return fontName; }
 
-- (NSDictionary*)afmDictionary		{ return nil; }
-- (NSString*)afmFileContents		{ return nil; }
-- (NSFont*)printerFont			{ return self; }
-- (NSFont*)screenFont			{ return self; }
-- (float)ascender			{ return 0.0; }
-- (float)descender			{ return 0.0; }
-- (float)capHeight			{ return 0.0; }
-- (float)italicAngle			{ return 0.0; }
-- (NSSize)maximumAdvancement		{ return NSZeroSize; }
-- (NSSize)minimumAdvancement		{ return NSZeroSize; }
-- (float)underlinePosition		{ return 0.0; }
-- (float)underlineThickness		{ return 0.0; }
-- (float)xHeight			{ return 0.0; }
+- (NSDictionary*)afmDictionary	{ return [fontInfo afmDictionary]; }
+- (NSString*)afmFileContents	{ return [fontInfo afmFileContents]; }
+- (NSFont*)printerFont		{ return self; }
+- (NSFont*)screenFont		{ return self; }
+- (float)ascender		{ return [fontInfo ascender]; }
+- (float)descender		{ return [fontInfo descender]; }
+- (float)capHeight		{ return [fontInfo capHeight]; }
+- (float)italicAngle		{ return [fontInfo italicAngle]; }
+- (NSSize)maximumAdvancement	{ return [fontInfo maximumAdvancement]; }
+- (NSSize)minimumAdvancement	{ return [fontInfo minimumAdvancement]; }
+- (float)underlinePosition	{ return [fontInfo underlinePosition]; }
+- (float)underlineThickness	{ return [fontInfo underlineThickness]; }
+- (float)xHeight		{ return [fontInfo xHeight]; }
 
 /* Computing font metrics attributes */
 - (float)widthOfString:(NSString*)string
 {
-  return 0;
+  return [fontInfo widthOfString: string];
 }
 
 - (float*)widths
 {
-  return NULL;
+  return [fontInfo widths];
 }
 
 /* The following methods have to implemented by backends */
@@ -250,29 +256,30 @@ void setNSFont(NSString* key, NSFont* font)
 //
 - (NSSize)advancementForGlyph:(NSGlyph)aGlyph
 {
-  return NSZeroSize;
+  return [fontInfo advancementForGlyph: aGlyph];
 }
 
 - (NSRect)boundingRectForGlyph:(NSGlyph)aGlyph
 {
-  return NSZeroRect;
+  return [fontInfo boundingRectForGlyph: aGlyph];
 }
 
 - (BOOL)glyphIsEncoded:(NSGlyph)aGlyph
 {
-  return NO;
+  return [fontInfo glyphIsEncoded: aGlyph ];
 }
 
 - (NSGlyph)glyphWithName:(NSString*)glyphName
 {
-  return -1;
+  return [fontInfo glyphWithName: glyphName ];
 }
 
 - (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
 	   precededByGlyph:(NSGlyph)prevGlyph
 		 isNominal:(BOOL *)nominal
 {
-  return NSZeroPoint;
+  return [fontInfo positionOfGlyph: curGlyph precededByGlyph: prevGlyph
+                         isNominal: nominal];
 }
 
 //

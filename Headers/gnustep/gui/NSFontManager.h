@@ -79,6 +79,7 @@ typedef enum {
   NSMenu *_fontMenu;
   NSFontTag _storedTag;
   NSFontTraitMask _trait;
+  id _fontEnumerator;
 }
 
 //
