@@ -1,3 +1,8 @@
+2004-02-12  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/GuiUser/KeyboardSetup.gsdoc: Update.
+	* Source/DocMakefile (GuiUser_AGSDOC_FILES): Add it.
+
 2004-02-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m: (-draggingUpdated:) Applied patch from

@@ -158,6 +158,7 @@ GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
 
 GuiUser_AGSDOC_FILES =	\
 	../Documentation/Gui/DefaultsSummary.gsdoc \
+	../Documentation/Gui/KeyboardSetup.gsdoc \
 	../Documentation/Gui/LanguageSetup.gsdoc
 
 #
