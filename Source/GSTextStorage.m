@@ -584,7 +584,7 @@ SANITY();
 	  info->loc = afterRangeLoc;
 	  arrayIndex--;
 	}
-      else if (effectiveRange.location < beginRangeLoc)
+      else if (NSMaxRange(effectiveRange) > afterRangeLoc)
 	{
 	  /*
 	   * The located range starts before our range.
