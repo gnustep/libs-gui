@@ -1,3 +1,10 @@
+2001-10-16  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTableView.m ([selectColumn:byExtendingSelection]):
+	Do not send NSTableViewSelectionDidChangeNotification when selection
+	is not changed (was not always working with flag=NO)
+	* Source/NSTableView.m ([selectRow:byExtendingSelection]): Likewise
+	
 2001-10-15  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/DPSOperators.h: New functions DPSPrintf, 
