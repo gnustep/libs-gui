@@ -27,6 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSRange.h>
 #include <Foundation/NSBundle.h>
@@ -34,9 +35,11 @@
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSParagraphStyle.h>
+#include <AppKit/NSPasteboard.h>
 #include <AppKit/NSTextAttachment.h>
-#include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSFileWrapper.h>
+#include <AppKit/NSFont.h>
 // For the colour name spaces
 #include <AppKit/NSGraphics.h>
 
@@ -205,6 +208,29 @@ static Class converter_class(NSString *format, BOOL producer)
 }
 
 @implementation NSAttributedString (AppKit)
+
++ (NSArray *) textFileTypes
+{
+  // FIXME
+  return [self textUnfilteredFileTypes];
+}
+
++ (NSArray *) textPasteboardTypes
+{
+  // FIXME
+  return [self textUnfilteredPasteboardTypes];
+}
+
++ (NSArray *) textUnfilteredFileTypes
+{
+  return [NSArray arrayWithObjects: @"txt",  @"rtf", @"rtfd", @"html", nil];
+}
+
++ (NSArray *) textUnfilteredPasteboardTypes
+{
+  return [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, 
+		  NSRTFDPboardType, NSHTMLPboardType, nil];
+}
 
 + (NSAttributedString *) attributedStringWithAttachment: 
                                             (NSTextAttachment *)attachment
