@@ -1,3 +1,9 @@
+2001-02-06  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuView.m: ([-mouseDown:]) modified code for checking
+	and repositioning of window to cope with situation where the window
+	changes its size as a result of the mouse down action.
+
 2001-02-04  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSColor.m

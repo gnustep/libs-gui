@@ -940,13 +940,18 @@
 {
   NSMenu	*masterMenu;
   NSMenuView	*masterMenuView;
-  NSPoint	originalLocation;
+  NSRect	currentFrame;
+  NSRect	originalFrame;
+  NSPoint	currentTopLeft;
+  NSPoint	originalTopLeft;
 
   menuv_keepAttachedMenus = YES;
 
   masterMenu = menuv_menu;
 
-  originalLocation = [[masterMenu window] frame].origin;
+  originalFrame = [[masterMenu window] frame];
+  originalTopLeft = originalFrame.origin;
+  originalTopLeft.y += originalFrame.size.height;
 
   masterMenuView = [masterMenu menuRepresentation];
 
@@ -958,9 +963,17 @@
 
   [NSEvent stopPeriodicEvents];
 
-  if (!NSEqualPoints(originalLocation, [[masterMenu window] frame].origin))
+  currentFrame = [[masterMenu window] frame];
+  currentTopLeft = currentFrame.origin;
+  currentTopLeft.y += currentFrame.size.height;
+
+  if (NSEqualPoints(currentTopLeft, originalTopLeft) == NO)
     {
-      [masterMenu nestedSetFrameOrigin: originalLocation];
+      NSPoint	origin = currentFrame.origin;
+
+      origin.x += (originalTopLeft.x - currentTopLeft.x);
+      origin.y += (originalTopLeft.y - currentTopLeft.y);
+      [masterMenu nestedSetFrameOrigin: origin];
       [masterMenu nestedCheckOffScreen];
     }
   masterMenuView->menuv_keepAttachedMenus = NO;
