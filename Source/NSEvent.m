@@ -311,7 +311,7 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
 - (NSWindow *)window
 {
-	return [NSWindow windowWithNumber:window_num];
+	return [NSWindow _windowWithTag:window_num];
 }
 
 - (int)windowNumber

@@ -408,7 +408,7 @@ extern NSSize NSTokenSize;
 //
 @interface NSWindow (GNUstepBackend)
 
-+ (NSWindow*)windowWithNumber:(int)windowNumber;
++ (NSWindow*)_windowWithTag:(int)windowNumber;
 
 //
 // Mouse capture/release

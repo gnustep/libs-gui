@@ -1,3 +1,8 @@
+Tue Dec 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSWindow.m rename windowWithNumber to _windowWithTag per backend
+	* NSEvent.m call to windowWithNumber.
+
 Tue Dec  1 09:58:20 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/NSWorkspace.m ([NSWorkspace -findApplications]): Check
