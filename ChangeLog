@@ -1,4 +1,9 @@
+2000-03-27  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTableView.m ([-tile]): Access ivar _frame.
+
 2000-03-25  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+
 	* Headers/gnustep/gui/NSColorPicker.h: Added ivar.
 	* Headers/gnustep/gui/NSImage.h: Added setFlipped/isFlipped methods.
 	* Source/NSBundleAdditions.m: Fixed bug in checking filename
@@ -8,10 +13,12 @@
 	* Source/NSImage.m: Initialize _flags.flipDraw in [-initWithSize:]
 
 2000-03-24  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+
 	* Source/NSFileWrapper.m: First implementation of NSFileWrapper
 	* Headers/gnustep/gui/NSFileWrapper.h: Added ivars and enum
 
 2000-03-21 22:00 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSText.m: Changed to use a text storage instead of an
 	attributed string.
 	* Source/NSTextStorage.m: Removed unnecessary method, changes
