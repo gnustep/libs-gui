@@ -44,6 +44,7 @@
 #include <AppKit/NSTextField.h>
 
 @class NSString;
+@class NSURL;
 
 enum {
   NSFileHandlingPanelImageButton,
@@ -79,7 +80,6 @@ enum {
   BOOL _delegateHasShowFilenameFilter;
   BOOL _delegateHasValidNameFilter;
   BOOL _delegateHasUserEnteredFilename;
-  BOOL _selfHasShowExtensionFilter;
 
   // YES when we stopped because the user pressed 'OK'
   BOOL _OKButtonPressed;
@@ -173,6 +173,20 @@ enum {
  */
 - (int) runModalForDirectory: (NSString *)path file: (NSString *)filename;
 - (int) runModal;
+
+#ifndef	STRICT_OPENSTEP
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)name
+	    relativeToWindow: (NSWindow*)window;
+- (void) beginSheetForDirectory: (NSString *)path
+			   file: (NSString *)name
+		 modalForWindow: (NSWindow *)docWindow
+		  modalDelegate: (id)delegate
+		 didEndSelector: (SEL)didEndSelector
+		    contextInfo: (void *)contextInfo;
+
+- (NSURL *) URL;
+#endif
 
 /*
  * Reading Save Information
