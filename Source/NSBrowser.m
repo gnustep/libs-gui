@@ -1733,7 +1733,7 @@ static NSTextFieldCell *titleCell;
  * [NSObject-browser:createRowsForColumn:inMatrix:] but not both.  
  * If the delegate is active it must also respond to
  * [NSObject-browser:willDisplayCell:atRow:column:].  
- * If the delegate is not nil but does not meet these condictions,
+ * If the delegate is not nil but does not meet these conditions,
  * an NSBrowserIllegalDelegateException will be raised.
  */
 - (void) setDelegate: (id)anObject
