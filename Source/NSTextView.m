@@ -2551,6 +2551,51 @@ afterString in order over charRange. */
   [self setSelectedRange: NSMakeRange (newLocation, 0)];
 }
 
+- (void) moveBackwardAndModifySelection: (id)sender
+{
+  NSRange newRange;
+
+  /* Do nothing if we are at beginning of text.  */
+  if (_selected_range.location == 0)
+    {
+      return;
+    }
+
+  /* Turn to select by character.  */
+  [self setSelectionGranularity: NSSelectByCharacter];
+
+  /* Extend the selection on the left.  */
+  newRange = NSMakeRange (_selected_range.location - 1, 
+			  _selected_range.length + 1);
+
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
+- (void) moveForwardAndModifySelection: (id)sender
+{
+  unsigned int length = [_textStorage length];
+  NSRange newRange;
+
+  /* Do nothing if we are at end of text */
+  if (_selected_range.location == length)
+    return;
+
+  /* Turn to select by character.  */
+  [self setSelectionGranularity: NSSelectByCharacter];
+
+  /* Extend the selection on the right.  */
+  newRange = NSMakeRange (_selected_range.location, 
+			  _selected_range.length + 1);
+
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
 - (void) moveToBeginningOfDocument: (id)sender
 {
   [self setSelectedRange: NSMakeRange (0, 0)];
