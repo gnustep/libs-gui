@@ -150,6 +150,10 @@
 
 /* GNUstep Extensions.  */
 
+/* Can be called explicitly by applications to load in application-specific
+   keybindings for use by a specific input manager.  */
+- (void) loadBindingsFromFile: (NSString *)fullPath;
+
 /* Parses a key as found in a keybinding file.
    key is something like 'Control-f' or 'Control-Shift-LeftArrow'.
    Returns YES if the key could be parsed, NO if not.  If the key
