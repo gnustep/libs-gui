@@ -183,9 +183,9 @@
 
       </section>
       <section>
-        <heading>XGPS Backend Defaults</heading>
+        <heading>Backend Defaults</heading>
       <p>
-      Below is a list of defaults used to control the gnustep-xgps
+      Below is a list of defaults used to control the xlib-based
       backend. These defaults generally control system specific
       display and user interaction options which may not be available
       on all systems.
@@ -211,13 +211,13 @@
           limit the range of red, green, and blue values that could be used.
           </p>
 	  </desc>
-	  <term>GSBorderedBorderlessWindows</term>
+	  <term>GSAppOwnsMiniwindow</term>
 	  <desc>
           <p>
-          A boolean value which defaults to <code>NO</code>. Some Window
-          Managers and/or X servers put a border around windows that are
-          supposed to be borderless. Set this to <code>YES</code> if you
-          have odd problems of menus/windows moving when you click on them.
+          A boolean value which defaults to <code>YES</code>. Some window
+          managers control the miniaturized versions of windows themselves.
+          Set this default to <code>NO</code> to let the window manager
+          have it's way, otherwise, GNUstep will create a miniwindow.
           </p>
 	  </desc>
 	  <term>GSFontAntiAlias</term>
