@@ -488,33 +488,27 @@ static NSAffineTransformStruct identityTransform = {
   float y = rect.origin.y;
   float width = rect.size.width;
   float height = rect.size.height;
-  float xc[4];
-  float yc[4];
+  float xc[3];
+  float yc[3];
   float min_x;
   float max_x;
   float min_y;
   float max_y;
   int i;
 
-  if (B == 0  &&  C == 0)
-    {
-      *new = rect;
-      return;
-    }
-
-  xc[0] = A * x + C * y + TX;
-  yc[0] = B * x + D * y + TY;
-  xc[1] = xc[0] + A * width;
-  yc[1] = yc[0] + B * width;
-  xc[2] = xc[0] + C * height;
-  yc[2] = yc[0] + D * height;
-  xc[3] = xc[0] + A * width + C * height;
-  yc[3] = yc[0] + B * width + D * height;
+  max_x = A * x + C * y + TX;
+  max_y = B * x + D * y + TY;
+  xc[0] = max_x + A * width;
+  yc[0] = max_y + B * width;
+  xc[1] = max_x + C * height;
+  yc[1] = max_y + D * height;
+  xc[2] = max_x + A * width + C * height;
+  yc[2] = max_y + B * width + D * height;
   
-  min_x = max_x = xc[0];
-  min_y = max_y = yc[0];
+  min_x = max_x;
+  min_y = max_y;
   
-  for (i=1; i < 4; i++) 
+  for (i = 0; i < 3; i++) 
     {
       if (xc[i] < min_x)
 	min_x = xc[i];

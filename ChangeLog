@@ -1,3 +1,8 @@
+2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m (-boundingRectFor:result:): Further
+	corrections on last change.
+
 2005-02-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAffineTransform.m (-boundingRectFor:result:):
@@ -263,7 +268,7 @@
 
 2005-01-17  Fred Kiefer <FredKiefer@gmx.de>
 
-        * Source/NSBrowserCell.m (-setType:): New method, does nothing to
+	* Source/NSBrowserCell.m (-setType:): New method, does nothing to
 	allow image and text at once (MacOSX 10.2 behaviour).
 	(-drawInteriorWithFrame:inView:): Draw an image or alternate image,
 	if provided and draw the text as well.
