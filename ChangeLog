@@ -1,3 +1,31 @@
+Sat Dec 11 03:15:12 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMenu.m ([NSMenu -performActionForItemAtIndex:]): Fix: 
+	don't send action if there is no action.
+	* Source/NSMenuView.m ([-setWindowFrameForAttachingToRect:
+ 	onScreen:preferredEdge:popUpSelectedItem:]): Implemented (but
+ 	preferredEdge implementation still missing).  ([-trackWithEvent:]):
+ 	If the menu is a popup menu, don't unhighlight item when closing
+ 	(used internally by the popup button code to know which item was
+ 	selected without interfering with the normal target-action operation).
+	* Source/NSPopUpButton.m ([-initWithFrame:pullsDown:]): Removed
+ 	notification center code; set the pullsDown flag. ([-_popup:]):
+ 	Removed. ([-mouseDown:]): Rewritten. ([-selectItem:]): Fixed
+ 	bug/typo. ([-removeItemWithTitle:]): Fixed bug/typo.
+  	([-addItemsWithTitles:]): Fixed bug/typo.
+  	([-insertItemWithTitle:atIndex:]): Fixed bug/typo.
+	* Source/NSPopUpButtonCell.m ([-attachPopUpWithFrame:inView:]):
+ 	Rewritten. ([-performClickWithFrame:inView:]): Method still todo.
+	([-_popUpItemAction:]): Removed.  ([-addItemWithTitle:]): Set
+ 	item's target and action to the popupbutton's ones.
+  	([-insertItemWithTitle:atIndex:]): Do not set item's target and
+ 	action, as per spec.
+	* core/gui/Headers/AppKit/NSMenu.h: Removed declaration of 
+	unimplemented -initWithPopUpButton:
+	* Headers/AppKit/NSPopUpButton.h: Updated.  
+	* Headers/AppKit/NSPopUpButtonCell.h: Added copyright, protected 
+	from multiple inclusions.
+
 Thu Dec  9 05:47:09 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m ([-runModalForDirectory:path:filename]),
