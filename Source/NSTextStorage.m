@@ -26,6 +26,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSAttributedString.h>
+#include <Foundation/NSGAttributedString.h>
 #include <AppKit/NSTextStorage.h>
 
 @implementation NSTextStorage
@@ -66,6 +67,16 @@ static	Class	concrete;
 {
   layoutManagers = [[NSMutableArray alloc] initWithCapacity: 2];
   return self;
+}
+
+/*
+ * Return a string
+ */
+
+- (NSString*) string
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
 }
 
 /*
@@ -159,6 +170,7 @@ static	Class	concrete;
 - (void) processEditing
 {
   NSRange	r;
+  int i;
 
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
@@ -171,6 +183,26 @@ static	Class	concrete;
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];
+
+  /*
+   * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
+   * every layoutManager.
+   *
+   * FIXME, Michael: are the ranges used correct?
+   */
+
+  for (i=0;i<[layoutManagers count];i++)
+    {
+      id lManager = [layoutManagers objectAtIndex:i];
+
+      [lManager textStorage:self edited:editedMask range:editedRange
+	changeInLength:editedDelta invalidatedRange:r];
+    }
+
+  /*
+   * Why are we resetting the values?
+   */
+
   editedRange = NSMakeRange(0, 0);
   editedDelta = 0;
   editedMask = 0;

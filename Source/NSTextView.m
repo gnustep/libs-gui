@@ -146,12 +146,10 @@
 
 /* We override NSView's setNeedsDisplayInRect: */
 
-/*
 - (void)setNeedsDisplayInRect:(NSRect)aRect
 {
   [self setNeedsDisplayInRect:aRect avoidAdditionalLayout:NO];
 }
-*/
 
 - (BOOL)shouldDrawInsertionPoint
 {
@@ -915,12 +913,19 @@ container, returning the modified location. */
 
 - (void)insertText:(NSString *)aString
 {
+  NSLog(@"%@", aString);
+
   if (![aString isKindOfClass:[NSAttributedString class]])
     aString = [[[NSAttributedString alloc] initWithString:aString
 		attributes:[self typingAttributes]] autorelease];
 
   [textStorage replaceCharactersInRange:[self selectedRange]
        withAttributedString:(NSAttributedString *)aString];
+
+  [self setSelectedRange:NSMakeRange([self 
+    selectedRange].location+[aString length],0)];
+
+  NSLog(@"%@", [textStorage string]);
 }
 
 - (void)drawRect:(NSRect)aRect

@@ -5,6 +5,10 @@
 	* Source/GSServicesManager.m: minor temp debug NSlog.
 	* Source/NSMenuView.m: debug logs.
 	* Source/NSText.m: debug logs.
+	* Source/NSTextStorage.m: in processEditing: add code to notify
+	every layoutManager of editing done in textStorage.
+	Also fixed code to return the string. This makes debugging ohh so
+	much easier. ;-)
 
 	Look at core/Testing/gstextnetwork.app. That is the text
 	application for NSTextView/TextNetwork. Edit.app has been
