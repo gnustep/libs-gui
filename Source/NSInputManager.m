@@ -443,26 +443,23 @@ static NSMutableArray *_inputServerList = nil;
   NSString		*path	= nil;
   GSTIMKeyBindingTable	*table	= nil;
 
-  if ([self wantsToInterpretAllKeystrokes] == NO)
+  if ((path = [self standardKeyBindingAbsolutePath]) == nil)
     {
-      if ((path = [self standardKeyBindingAbsolutePath]) == nil)
-	{
-	  NSLog(@"%@: Couldn't read StandardKeyBinding.dict", self);
-	  return NO;
-	}
-      else
-	{
-	  dict = [[NSDictionary alloc] initWithContentsOfFile: path];
-	  [src addEntriesFromDictionary: dict];
-	  [dict release], dict = nil;
-	}
+      NSLog(@"%@: Couldn't read StandardKeyBinding.dict", self);
+      return NO;
+    }
+  else
+    {
+      dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+      [src addEntriesFromDictionary: dict];
+      [dict release], dict = nil;
+    }
 
-      if ((path = [self defaultKeyBindingAbsolutePath]))
-	{
-	  dict = [[NSDictionary alloc] initWithContentsOfFile: path];
-	  [src addEntriesFromDictionary: dict];
-	  [dict release], dict = nil;
-	}
+  if ((path = [self defaultKeyBindingAbsolutePath]))
+    {
+      dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+      [src addEntriesFromDictionary: dict];
+      [dict release], dict = nil;
     }
 
   if ((path = [serverInfo defaultKeyBindingsAbsolutePath]))
