@@ -1,3 +1,8 @@
+2003-12-25 00:03  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDataLinkPanel.m: Changed to use the correct method
+	to find and load the .gorm file for the panel.
+	
 2003-12-23 13:46  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Added a loop which retains only the

@@ -43,9 +43,9 @@ static NSDataLinkPanel *__sharedDataLinkPanel;
   NSDictionary *table;
 
   self = [super init];
-  panelPath = [NSBundle pathForGNUstepResource: @"GSDataLinkPanel"
-		       ofType: @"gorm"
-		       inDirectory: nil];
+  panelPath = [GSGuiBundle() pathForResource: @"GSDataLinkPanel" 
+			  ofType: @"gorm"
+			  inDirectory: nil];
   NSLog(@"Panel path=%@",panelPath);
   table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
   if ([NSBundle loadNibFile: panelPath 
