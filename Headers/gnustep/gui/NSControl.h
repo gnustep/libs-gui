@@ -152,17 +152,6 @@
 - (void)setIgnoresMultiClick:(BOOL)flag;
 
 //
-// Methods Implemented by the Delegate
-//
-- (BOOL)control:(NSControl *)control
-  textShouldBeginEditing:(NSText *)fieldEditor;
-- (BOOL)control:(NSControl *)control
-  textShouldEndEditing:(NSText *)fieldEditor;
-- (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
-- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
-- (void)controlTextDidChange:(NSNotification *)aNotification;
-
-//
 // NSCoding protocol
 //
 - (void)encodeWithCoder:aCoder;
@@ -173,5 +162,20 @@
 extern NSString *NSControlTextDidBeginEditingNotification;
 extern NSString *NSControlTextDidEndEditingNotification;
 extern NSString *NSControlTextDidChangeNotification;
+
+
+//
+// Methods Implemented by the Delegate
+//
+@interface NSObject (NSControlDelegate)
+- (BOOL)control:(NSControl *)control
+  textShouldBeginEditing:(NSText *)fieldEditor;
+- (BOOL)control:(NSControl *)control
+  textShouldEndEditing:(NSText *)fieldEditor;
+- (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
+- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
+- (void)controlTextDidChange:(NSNotification *)aNotification;
+@end
+
 
 #endif // _GNUstep_H_NSControl
