@@ -32,7 +32,6 @@ include $(GNUSTEP_MAKEFILES)/common.make
 DOCUMENT_NAME = Gui
 
 Gui_GSDOC_FILES = Gui.gsdoc \
-	$(Gui_AUTOGSDOC_FILES) \
 	Introduction.gsdoc \
 	DefaultsSummary.gsdoc \
 	NSBundleAdditions.gsdoc \
