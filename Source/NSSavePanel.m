@@ -100,9 +100,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 + (NSSavePanel *)savePanel
 {	
     if(!gnustep_gui_save_panel)	{
-	if (![GMModel loadIMFile :
-	     @"/usr/GNUstep/Library/Model/SavePanel.gmodel"
-	     owner:[_SavePanel alloc]]) {
+	if (![GMModel loadIMFile :@"SavePanel" owner:[_SavePanel alloc]]) {
 	    fprintf(stderr, "Cannot open save panel model file\n");
 	    exit(1);
 	}
