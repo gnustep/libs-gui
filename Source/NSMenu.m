@@ -97,10 +97,6 @@ static NSNotificationCenter *nc;
 
 - (NSString*) _locationKey
 {
-  if (_is_beholdenToPopUpButton == YES)
-    {
-      return nil;		/* Can't save	*/
-    }
   if (_superMenu == nil)
     {
       if ([NSApp mainMenu] == self)
@@ -301,7 +297,7 @@ static NSNotificationCenter *nc;
   [self insertItem: anItem atIndex: index];
 
   // For returns sake.
-  return anItem;
+  return AUTORELEASE(anItem);
 }
 
 - (void) addItem: (id <NSMenuItem>)newItem
@@ -964,13 +960,13 @@ static NSNotificationCenter *nc;
   unsigned i;
   unsigned count = [_items count];
 
+  [new setAutoenablesItems: _autoenable];
   for (i = 0; i < count; i++)
     {
       // This works because the copy on NSMenuItem sets the menu to nil!!!
       [new insertItem: [[_items objectAtIndex: i] copyWithZone: zone]
 	   atIndex: i];
     }
-  [new setAutoenablesItems: _autoenable];
   
   return new;
 }
@@ -1084,50 +1080,42 @@ static NSNotificationCenter *nc;
 
 - (void) display
 {
+  NSString *key;
+
   if (_changed)
     [self sizeToFit];
 
-  if (_is_beholdenToPopUpButton)
-    {
-      [_aWindow orderFront: nil];
-      return;
-    }
-
-  if (_superMenu && ![self isTornOff])      // query super menu for
-    {                                           // position
+  if (_superMenu && ![self isTornOff])
+    {                 
+      // query super menu for position
       [_aWindow setFrameOrigin: [_superMenu locationForSubmenu: self]];
       _superMenu->_attachedMenu = self;
     }
-  else
+  else if (nil != (key = [self _locationKey]))
     {
-      NSString	*key = [self _locationKey];
-      
-      if (key != nil)
-	{
-	  NSUserDefaults	*defaults;
-	  NSDictionary		*menuLocations;
-	  NSString		*location;
+      NSUserDefaults *defaults;
+      NSDictionary *menuLocations;
+      NSString *location;
 
-	  defaults = [NSUserDefaults standardUserDefaults];
-	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-	  location = [menuLocations objectForKey: key];
-	  if (location && [location isKindOfClass: [NSString class]])
-	    {
-	      [_aWindow setFrameFromString: location];
-	      /*
-	       * May need resize in case saved frame is out of sync
-	       * with number of items in menu.
-	       */
-	      [self sizeToFit];
-	    }
-	  else
-	    {
-	      NSPoint aPoint = {0, [[NSScreen mainScreen] frame].size.height
-							- [_aWindow frame].size.height};
-
-	      [_aWindow setFrameOrigin: aPoint];
-	      [_bWindow setFrameOrigin: aPoint];
-	    }
+      defaults = [NSUserDefaults standardUserDefaults];
+      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+      location = [menuLocations objectForKey: key];
+      if (location && [location isKindOfClass: [NSString class]])
+        {
+	  [_aWindow setFrameFromString: location];
+	  /*
+	   * May need resize in case saved frame is out of sync
+	   * with number of items in menu.
+	   */
+	  [self sizeToFit];
+	}
+      else
+        {
+	  NSPoint aPoint = {0, [[NSScreen mainScreen] frame].size.height
+			    - [_aWindow frame].size.height};
+	  
+	  [_aWindow setFrameOrigin: aPoint];
+	  [_bWindow setFrameOrigin: aPoint];
 	}
     }
 
@@ -1463,12 +1451,11 @@ static NSNotificationCenter *nc;
       menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
       if (menuLocations == nil)
 	{
-	  menuLocations = [[NSMutableDictionary alloc] initWithCapacity: 2];
+	  menuLocations = AUTORELEASE([[NSMutableDictionary alloc] initWithCapacity: 2]);
 	}
       locString = [[menu window] stringWithSavedFrame];
       [menuLocations setObject: locString forKey: key];
       [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-      RELEASE(menuLocations);
       [defaults synchronize];
     }
 }
