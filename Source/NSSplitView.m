@@ -78,15 +78,12 @@
   int		offset = 0, i, count = [subs count];
   float		divVertical, divHorizontal;
   NSDate	*farAway = [NSDate distantFuture];
-  unsigned	int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			      | NSLeftMouseDraggedMask | NSMouseMovedMask
-			      | NSPeriodicMask;
+  unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
     return;
 
-  [_window setAcceptsMouseMovedEvents: YES];
   vis = [self visibleRect];
 
   /* find out which divider it is */
@@ -102,7 +99,7 @@
       if (NSPointInRect(p, r))
 	{
 	  NSLog(@"NSSplitView got mouseDown in subview area");
-	  goto RETURN_LABEL;
+	  return;
 	}
       if (_isVertical == NO)
         {
@@ -121,7 +118,7 @@
 		   * This happens if user pressed exactly on the
 		   * top of the top subview
 		   */
-		  goto RETURN_LABEL;
+		  return;
 		}
 	      if (v)
 		r1 = [v frame];
@@ -147,7 +144,7 @@
 		   * This happens if user pressed exactly on the
 		   * left of the left subview
 		   */
-		  goto RETURN_LABEL;
+		  return;
 		}
 	      if (v)
 		r1 = [v frame];
@@ -211,8 +208,6 @@
   oldRect = NSZeroRect;
   [self lockFocus];
 
-  /* FIXME: Are these really needed? */
-  [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.1];
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
   [_dividerColor set];
@@ -226,8 +221,7 @@
   // user is moving the knob loop until left mouse up
   while ([e type] != NSLeftMouseUp)
     {
-      if ([e type] != NSPeriodic)
-	p = [self convertPoint: [e locationInWindow] fromView: nil];
+      p = [self convertPoint: [e locationInWindow] fromView: nil];
       if (_isVertical == NO)
 	{
 	  if (p.y < minCoord)
@@ -274,7 +268,6 @@
     }
 
   [self unlockFocus];
-  [NSEvent stopPeriodicEvents];
 
   /* resize the subviews accordingly */
   r = [prev frame];
@@ -324,8 +317,6 @@
   [self setNeedsDisplay: YES];
 
   [self display];
-RETURN_LABEL:
-  [_window setAcceptsMouseMovedEvents: NO];
 }
 
 - (void) adjustSubviews
