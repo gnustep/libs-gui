@@ -39,14 +39,14 @@
 
 @implementation NSScrollView
 
-//
-// Class variables
-//
+/*
+ * Class variables
+ */
 static Class rulerViewClass = nil;
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSScrollView class])
@@ -73,9 +73,11 @@ static Class rulerViewClass = nil;
 {
   NSSize size = frameSize;
 
-  // Substract 1 from the width and height of
-  // the line that separates the horizontal
-  // and vertical scroller from the clip view
+  /*
+   * Substract 1 from the width and height of
+   * the line that separates the horizontal
+   * and vertical scroller from the clip view
+   */
   if (hFlag)
     {
       size.height -= [NSScroller scrollerWidth];
@@ -114,9 +116,10 @@ static Class rulerViewClass = nil;
 {
   NSSize size = contentSize;
 
-  // Add 1 to the width and height for the
-  // line that separates the horizontal and
-  // vertical scroller from the clip view.
+  /*
+   * Add 1 to the width and height for the line that separates the
+   * horizontal and vertical scroller from the clip view.
+   */
   if (hFlag)
     {
       size.height += [NSScroller scrollerWidth];
@@ -148,13 +151,13 @@ static Class rulerViewClass = nil;
   return size;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];
-  [self setContentView: [[NSClipView new] autorelease]];
+  [self setContentView: AUTORELEASE([NSClipView new])];
   _lineScroll = 10;
   _pageScroll = 10;
   _borderType = NSBezelBorder;
@@ -171,12 +174,12 @@ static Class rulerViewClass = nil;
 
 - (void) dealloc
 {
-  [_contentView release];
+  TEST_RELEASE(_contentView);
 
-  [_horizScroller release];
-  [_vertScroller release];
-  [_horizRuler release];
-  [_vertRuler release];
+  TEST_RELEASE(_horizScroller);
+  TEST_RELEASE(_vertScroller);
+  TEST_RELEASE(_horizRuler);
+  TEST_RELEASE(_vertRuler);
 
   [super dealloc];
 }
@@ -198,8 +201,10 @@ static Class rulerViewClass = nil;
 {
   [_horizScroller removeFromSuperview];
 
-  // Do not add the scroller view to the subviews array yet;
-  // -setHasHorizontalScroller must be invoked first
+  /*
+   * Do not add the scroller view to the subviews array yet;
+   * -setHasHorizontalScroller must be invoked first
+   */
   ASSIGN(_horizScroller, aScroller);
   if (_horizScroller)
     {
@@ -219,7 +224,7 @@ static Class rulerViewClass = nil;
   if (_hasHorizScroller)
     {
       if (!_horizScroller)
-	[self setHorizontalScroller: [[NSScroller new] autorelease]];
+	[self setHorizontalScroller: AUTORELEASE([NSScroller new])];
       [self addSubview: _horizScroller];
     }
   else
@@ -232,8 +237,10 @@ static Class rulerViewClass = nil;
 {
   [_vertScroller removeFromSuperview];
 
-  // Do not add the scroller view to the subviews array yet;
-  // -setHasVerticalScroller must be invoked first
+  /*
+   * Do not add the scroller view to the subviews array yet;
+   * -setHasVerticalScroller must be invoked first
+   */
   ASSIGN(_vertScroller, aScroller);
   if (_vertScroller)
     {
@@ -254,7 +261,7 @@ static Class rulerViewClass = nil;
     {
       if (!_vertScroller)
 	{
-	  [self setVerticalScroller: [[NSScroller new] autorelease]];
+	  [self setVerticalScroller: AUTORELEASE([NSScroller new])];
 	  if (_contentView && !_contentView->_rFlags.flipped_view)
 	    [_vertScroller setFloatValue: 1];
 	}
@@ -268,16 +275,16 @@ static Class rulerViewClass = nil;
 
 - (void) _doScroll: (NSScroller*)scroller
 {
-  float floatValue = [scroller floatValue];
-  NSRect clipViewBounds = [_contentView bounds];
+  float		floatValue = [scroller floatValue];
+  NSRect	clipViewBounds = [_contentView bounds];
   NSScrollerPart hitPart = [scroller hitPart];
-  NSRect documentRect = [_contentView documentRect];
-  float amount = 0;
-  NSPoint point = clipViewBounds.origin;
+  NSRect	documentRect = [_contentView documentRect];
+  float		amount = 0;
+  NSPoint	point = clipViewBounds.origin;
 
   NSDebugLog (@"_doScroll: float value = %f", floatValue);
 
-  // do nothing if scroller is unknown
+  /* do nothing if scroller is unknown */
   if (scroller != _horizScroller && scroller != _vertScroller)
     return;
 
@@ -301,7 +308,7 @@ static Class rulerViewClass = nil;
 	return;
     }
 
-  if (!_knobMoved)				// button scrolling
+  if (!_knobMoved)	/* button scrolling */
     {
       if (scroller == _horizScroller)
 	{
@@ -311,8 +318,7 @@ static Class rulerViewClass = nil;
 	{
 	  if (!_contentView->_rFlags.flipped_view)
 	    {
-	      // If view is flipped
-	      // reverse the scroll direction
+	      /* If view is flipped reverse the scroll direction */
 	      amount = -amount;
 	    }
 	  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
@@ -320,7 +326,7 @@ static Class rulerViewClass = nil;
 	  point.y = clipViewBounds.origin.y + amount;
 	}
     }
-  else 	// knob scolling
+  else 	/* knob scolling */
     {
       if (scroller == _horizScroller)
 	{
@@ -394,12 +400,12 @@ static Class rulerViewClass = nil;
     }
 }
 
-- (void) setHorizontalRulerView: (NSRulerView*)aRulerView			// FIX ME
+- (void) setHorizontalRulerView: (NSRulerView*)aRulerView	// FIX ME
 {
   ASSIGN(_horizRuler, aRulerView);
 }
 
-- (void) setHasHorizontalRuler: (BOOL)flag						// FIX ME
+- (void) setHasHorizontalRuler: (BOOL)flag			// FIX ME
 {
   if (_hasHorizRuler == flag)
     return;
@@ -407,12 +413,12 @@ static Class rulerViewClass = nil;
   _hasHorizRuler = flag;
 }
 
-- (void) setVerticalRulerView: (NSRulerView*)ruler				// FIX ME
+- (void) setVerticalRulerView: (NSRulerView*)ruler		// FIX ME
 {
   ASSIGN(_vertRuler, ruler);
 }
 
-- (void) setHasVerticalRuler: (BOOL)flag							// FIX ME
+- (void) setHasVerticalRuler: (BOOL)flag			// FIX ME
 {
   if (_hasVertRuler == flag)
     return;
@@ -497,11 +503,7 @@ static Class rulerViewClass = nil;
   [_horizScroller setFrame: horizScrollerRect];
   [_vertScroller setFrame: vertScrollerRect];
   [_contentView setFrame: contentRect];
-#if 1
-  // [_contentView viewFrameChanged: nil];
-  // update scroller
   [self reflectScrolledClipView: (NSClipView*)_contentView];
-#endif
 }
 
 - (void) drawRect: (NSRect)rect
@@ -510,11 +512,6 @@ static Class rulerViewClass = nil;
   float scrollerWidth = [NSScroller scrollerWidth];
   float horizLinePosition, horizLineLength = [self bounds].size.width;
   float borderThickness = 0;
-
-//  fprintf (stderr,
-//      "NSScrollView drawRect: origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-//				rect.origin.x, rect.origin.y,
-//				rect.size.width, rect.size.height);
 
   DPSgsave(ctxt);
   switch ([self borderType])

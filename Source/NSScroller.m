@@ -46,13 +46,15 @@
 
 @implementation NSScroller
 
-//
-// Class variables
-//
-static NSButtonCell* upCell = nil;		// button cells used by
-static NSButtonCell* downCell = nil;		// scroller instances
-static NSButtonCell* leftCell = nil;		// to draw scroller
-static NSButtonCell* rightCell = nil;		// buttons and knob.
+/*
+ * Class variables
+ */
+
+/* button cells used by scroller instances to draw scroller buttons and knob. */
+static NSButtonCell* upCell = nil;
+static NSButtonCell* downCell = nil;
+static NSButtonCell* leftCell = nil;
+static NSButtonCell* rightCell = nil;
 static NSButtonCell* knobCell = nil;
 
 static const float scrollerWidth = 18;
@@ -69,9 +71,9 @@ static float slotWidthMinusKnobWidth;
 static NSRect slotRect = {{0,0},{0,0}};
 static BOOL preCalcValues = NO;
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSScroller class])
@@ -154,7 +156,9 @@ static BOOL preCalcValues = NO;
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  // determine the orientation of the scroller and adjust it's size accordingly
+  /*
+   * determine the orientation of the scroller and adjust it's size accordingly
+   */
   if (frameRect.size.width > frameRect.size.height)
     {
       _isHorizontal = YES;
@@ -194,7 +198,9 @@ static BOOL preCalcValues = NO;
 
 - (void) drawParts
 {
-  // Create the class variable button cells if they do not yet exist.
+  /*
+   * Create the class variable button cells if they do not yet exist.
+   */
   if (knobCell)
     return;
 
@@ -322,7 +328,9 @@ static BOOL preCalcValues = NO;
 
 - (void) setFrame: (NSRect)frameRect
 {
-  // determine the orientation of the scroller and adjust it's size accordingly
+  /*
+   * determine the orientation of the scroller and adjust it's size accordingly
+   */
   if (frameRect.size.width > frameRect.size.height)
     {
       _isHorizontal = YES;
@@ -354,7 +362,9 @@ static BOOL preCalcValues = NO;
 
 - (NSScrollerPart)testPart: (NSPoint)thePoint
 {
-  // return what part of the scroller the mouse hit
+  /*
+   * return what part of the scroller the mouse hit
+   */
   NSRect rect;
 
   if (thePoint.x <= 0 || thePoint.x >= frame.size.width
@@ -395,7 +405,9 @@ static BOOL preCalcValues = NO;
   float floatValue = 0;
   float position;
 
-  // Adjust point to lie within the knob slot
+  /*
+   * Adjust point to lie within the knob slot
+   */
   if (_isHorizontal)
     {
       float halfKnobRectWidth = knobRect.size.width / 2;
@@ -411,7 +423,9 @@ static BOOL preCalcValues = NO;
 	  else
 	    position = point.x;
 	}
-      // Compute float value given the knob size
+      /*
+       * Compute float value given the knob size
+       */
       floatValue = (position - (slotRect.origin.x + halfKnobRectWidth))
 		    / (slotRect.size.width - knobRect.size.width);
     }
@@ -430,7 +444,9 @@ static BOOL preCalcValues = NO;
 	  else
 	    position = point.y;
 	}
-      // Compute float value given the knob size
+      /*
+       * Compute float value given the knob size
+       */
       floatValue = (position - (slotRect.origin.y + halfKnobRectHeight)) /
 		  (slotRect.size.height - knobRect.size.height);
     }
@@ -537,18 +553,20 @@ static BOOL preCalcValues = NO;
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 			  | NSLeftMouseDraggedMask | NSMouseMovedMask
 			  | NSPeriodicMask;
-  NSApplication *app = [NSApplication sharedApplication];
-  NSPoint point, apoint;
-  float oldFloatValue = _floatValue;
-  float floatValue;
-  float	xoffset = 0;
-  float	yoffset = 0;
-  NSDate *theDistantFuture = [NSDate distantFuture];
-  NSEventType eventType;
-  NSRect knobRect = {{0,0},{0,0}};
-  int periodCount = 0;		// allows a forced update
+  NSPoint	point;
+  NSPoint	apoint;
+  float		oldFloatValue = _floatValue;
+  float		floatValue;
+  float		xoffset = 0;
+  float		yoffset = 0;
+  NSDate	*theDistantFuture = [NSDate distantFuture];
+  NSEventType	eventType;
+  NSRect	knobRect = {{0,0},{0,0}};
+  unsigned	periodCount = 0;
+  unsigned	flags = [theEvent modifierFlags];
+  BOOL		firstTime = YES;
 
-  [self _preCalcParts];			// pre calc scroller parts
+  [self _preCalcParts];
   preCalcValues = YES;
 
   knobRect = [self rectForPart: NSScrollerKnob];
@@ -574,7 +592,9 @@ static BOOL preCalcValues = NO;
     }
 
   _hitPart = NSScrollerKnob;
-  // set periodic events rate to achieve max of ~30fps
+  /*
+   * set periodic events rate to achieve max of ~30fps
+   */
   [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.03];
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
@@ -583,15 +603,20 @@ static BOOL preCalcValues = NO;
       if (eventType != NSPeriodic)
 	{
 	  apoint = [theEvent locationInWindow];
-	  // zero the periodic count whenever a real position event is received
+	  flags = [theEvent modifierFlags];
 	  periodCount = 0;
 	}
       else
 	{
-	  // if 6x periods have gone by w/o movement
-	  // check mouse and update if necessary
+	  /*
+	   * if 6x periods have gone by w/o movement
+	   * check mouse and update if necessary
+	   */
 	  if (periodCount == 6)
-	    apoint = [window mouseLocationOutsideOfEventStream];
+	    {
+	      apoint = [window mouseLocationOutsideOfEventStream];
+	      periodCount = 0;
+	    }
 
 	  point = [self convertPoint: apoint fromView: nil];
 	  point.x += xoffset;
@@ -599,6 +624,24 @@ static BOOL preCalcValues = NO;
 
 	  if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
 	    {
+	      if (firstTime)
+		{
+		  firstTime = NO;
+		}
+	      else if (flags & NSAlternateKeyMask)
+		{
+		  float	diff;
+
+		  diff = point.x - knobRect.origin.x;
+		  diff = diff * 3 / 4;
+		  xoffset -= diff;
+		  point.x -= diff;
+		  diff = point.y - knobRect.origin.y;
+		  diff = diff * 3 / 4;
+		  yoffset -= diff;
+		  point.y -= diff;
+		}
+
 	      floatValue = [self _floatValueForMousePointFromPreCalc: point];
 
 	      if (floatValue != oldFloatValue)
@@ -615,16 +658,18 @@ static BOOL preCalcValues = NO;
 		}
 	      knobRect.origin = point;
 	    }
-	  // avoid timing related scrolling hesitation by counting number of
-	  // periodic events since scroll pos was updated, when this reaches
-	  // 6x periodic rate an update is forced on next periodic event
+	  /*
+	   * avoid timing related scrolling hesitation by counting number of
+	   * periodic events since scroll pos was updated, when this reaches
+	   * 6x periodic rate an update is forced on next periodic event
+	   */
 	  periodCount++;
 	}
 
-      theEvent = [app nextEventMatchingMask: eventMask
-				  untilDate: theDistantFuture
-				     inMode: NSEventTrackingRunLoopMode
-				    dequeue: YES];
+      theEvent = [NSApp nextEventMatchingMask: eventMask
+				    untilDate: theDistantFuture
+				       inMode: NSEventTrackingRunLoopMode
+				      dequeue: YES];
     }
   [NSEvent stopPeriodicEvents];
 
@@ -633,13 +678,13 @@ static BOOL preCalcValues = NO;
 
 - (void) trackScrollButtons: (NSEvent*)theEvent
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+  NSApplication	*theApp = [NSApplication sharedApplication];
+  unsigned int	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 			  NSLeftMouseDraggedMask | NSMouseMovedMask;
-  NSPoint location;
-  BOOL shouldReturn = NO;
-  id theCell = nil;
-  NSRect rect;
+  NSPoint	location;
+  BOOL		shouldReturn = NO;
+  id		theCell = nil;
+  NSRect	rect;
 
   NSDebugLog (@"trackScrollButtons");
   do
@@ -698,9 +743,9 @@ static BOOL preCalcValues = NO;
   NSDebugLog (@"return from trackScrollButtons");
 }
 
-//
-//	draw the scroller
-//
+/*
+ *	draw the scroller
+ */
 - (void) drawRect: (NSRect)rect
 {
   NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
@@ -745,7 +790,9 @@ static BOOL preCalcValues = NO;
 {
   NSRect rect;
 
-  // in a modal loop we have already pre calc'd our parts
+  /*
+   * in a modal loop we have already pre calc'd our parts
+   */
   if (preCalcValues)
     rect = slotRect;
   else
@@ -769,7 +816,7 @@ static BOOL preCalcValues = NO;
 	[self drawArrow: NSScrollerDecrementArrow highlight: flag];
 	break;
 
-      default:	// No button currently hit for highlighting.
+      default:	/* No button currently hit for highlighting. */
 	break;
     }
 }
@@ -781,17 +828,21 @@ static BOOL preCalcValues = NO;
   float width, height;
   float buttonsSize = 2 * buttonsWidth + 2;
   NSUsableScrollerParts usableParts;
-										  // If the scroller is disabled then the scroller buttons and the
-  // knob are not displayed at all.
+										  /*
+   * If the scroller is disabled then the scroller buttons and the
+   * knob are not displayed at all.
+   */
   if (!_isEnabled)
     usableParts = NSNoScrollerParts;
   else
     usableParts = _usableParts;
 
-  // Assign to `width' and `height' values describing
-  // the width and height of the scroller regardless
-  // of its orientation.
-  // but keeps track of the scroller's orientation.
+  /*
+   * Assign to `width' and `height' values describing
+   * the width and height of the scroller regardless
+   * of its orientation.
+   * but keeps track of the scroller's orientation.
+   */
   if (_isHorizontal)
     {
       width = scrollerFrame.size.height - 2;
@@ -803,39 +854,45 @@ static BOOL preCalcValues = NO;
       height = scrollerFrame.size.height - 2;
     }
 
-  // The x, y, width and height values are computed below for the vertical
-  // scroller.  The height of the scroll buttons is assumed to be equal to
-  // the width.
+  /*
+   * The x, y, width and height values are computed below for the vertical
+   * scroller.  The height of the scroll buttons is assumed to be equal to
+   * the width.
+   */
   switch (partCode)
     {
       case NSScrollerKnob:
 	{
 	  float knobHeight, knobPosition, slotHeight;
-	  // If the scroller does not have parts or a knob return a zero rect.
-	  if (usableParts == NSNoScrollerParts ||
-	      usableParts == NSOnlyScrollerArrows)
+
+	  if (usableParts == NSNoScrollerParts
+	    || usableParts == NSOnlyScrollerArrows)
 	    return NSZeroRect;
-											  // calc the slot Height
-	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone ?
-			0 : buttonsSize);
+
+	  /* calc the slot Height */
+	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
+	    ?  0 : buttonsSize);
 	  knobHeight = _knobProportion * slotHeight;
 	  if (knobHeight < buttonsWidth)
 	    knobHeight = buttonsWidth;
-											  // calc knob's position
+
+	  /* calc knob's position */
 	  knobPosition = _floatValue * (slotHeight - knobHeight);
-	  knobPosition = (float)floor(knobPosition);	// avoid rounding error
-											  // calc actual position
+	  knobPosition = (float)floor(knobPosition);
+
+	  /* calc actual position */
 	  y += knobPosition + (_arrowsPosition == NSScrollerArrowsMaxEnd
-	      || _arrowsPosition == NSScrollerArrowsNone ?
-		0 : buttonsSize);
+	    || _arrowsPosition == NSScrollerArrowsNone ?  0 : buttonsSize);
 	  height = knobHeight;
 	  width = buttonsWidth;
 	  break;
 	}
 
       case NSScrollerKnobSlot:
-	// if the scroller does not have buttons the slot completely
-	// fills the scroller.
+	/*
+	 * if the scroller does not have buttons the slot completely
+	 * fills the scroller.
+	 */
 	if (usableParts == NSNoScrollerParts
 	  || _arrowsPosition == NSScrollerArrowsNone)
 	  {
@@ -850,7 +907,6 @@ static BOOL preCalcValues = NO;
 
       case NSScrollerDecrementLine:
       case NSScrollerDecrementPage:
-	// if scroller has no parts or knob then return a zero rect
 	if (usableParts == NSNoScrollerParts
 	  || _arrowsPosition == NSScrollerArrowsNone)
 	  {
