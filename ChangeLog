@@ -1,3 +1,8 @@
+2003-12-23 18:13  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (-_handleWindowNeedsDisplay:): Disable flushing
+	while displaying the window and flush after all displaying is done.
+
 2003-12-06 14:03  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-readSelectionFromPasteboard:type:,

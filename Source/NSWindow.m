@@ -116,7 +116,10 @@ has blocked and waited for events.
 {
   if (_f.is_autodisplay && _rFlags.needs_display)
     {
+      [self disableFlushWindow];
       [self displayIfNeeded];
+      [self enableFlushWindow];
+      [self flushWindowIfNeeded];
     }
   [[NSRunLoop currentRunLoop]
 	 performSelector: @selector(_handleWindowNeedsDisplay:)
