@@ -28,6 +28,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 #include <AppKit/NSLayoutManager.h>
+#include "GSSimpleLayoutManager.h"
 
 /*
  * A little utility function to determine the range of characters in a scanner
@@ -300,8 +301,34 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 
 
 
+@interface NSLayoutManager (Private)
+
+- (void) _doLayout;
+- (int) _rebuildLayoutForTextContainer: (NSTextContainer*)aContainer
+		  startingAtGlyphIndex: (int)glyphIndex;
+
+@end
+
+
+
 @implementation NSLayoutManager
 
++ (id) allocWithZone: (NSZone*)z
+{
+  // Return a simple layout manager as this is the only working subclass
+  if (self == [NSLayoutManager class])
+    {
+      return [GSSimpleLayoutManager allocWithZone: z];
+    }
+  else
+    {
+      return NSAllocateObject (self, 0, z);
+    }
+}
+
+// Designated Initializer.  Sets up this instance.  Finds the shared NSGlyphGenerator 
+// and the shared default NSTypesetter.  The NSLayoutManager starts off without a 
+// NSTextStorage
 - (id) init
 {
   [super init];
@@ -319,12 +346,21 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 
 - (void) dealloc
 {
+  RELEASE(_textContainers);
+
+  RELEASE(_containerRuns);
+  RELEASE(_fragmentRuns);
+  RELEASE(_locationRuns);
+
   [super dealloc];
 }
 
 //
 // Setting the text storage
 //
+// The set method generally should not be called directly, but you may want to override 
+// it.  Used to get and set the text storage.  The set method is called by the 
+// NSTextStorage's addTextStorageObserver/removeTextStorageObserver methods.
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
   unsigned length = [aTextStorage length];
@@ -344,6 +380,11 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return _textStorage;
 }
 
+// This method should be used instead of the primitive -setTextStorage: if you need to 
+// replace a NSLayoutManager's NSTextStorage with a new one leaving the rest of the 
+// web intact.  This method deals with all the work of making sure the NSLayoutManager 
+// doesn't get deallocated and transferring all the NSLayoutManager s on the old 
+// NSTextStorage to the new one.
 - (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
   NSArray *layoutManagers = [_textStorage layoutManagers];
@@ -369,6 +410,9 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return _textContainers;
 }
 
+// Add a container to the end of the array.  Must invalidate layout of all glyphs 
+// after the previous last container (ie glyphs that were not previously laid out 
+// because they would not fit anywhere).
 - (void) addTextContainer: (NSTextContainer*)obj
 {
   if ( [_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound )
@@ -378,12 +422,17 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   }
 }
 
+// Insert a container into the array before the container at index.  Must invalidate 
+// layout of all glyphs in the containers from the one previously at index to the 
+// last container.
 - (void) insertTextContainer: (NSTextContainer*)aTextContainer
 		     atIndex: (unsigned)index
 {
   [_textContainers insertObject: aTextContainer atIndex: index];
 }
 
+// Removes the container at index from the array.  Must invalidate layout of all 
+// glyphs in the container being removed and any containers which come after it.
 - (void) removeTextContainerAtIndex: (unsigned)index
 {
   [_textContainers removeObjectAtIndex: index];
@@ -392,6 +441,11 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //
 // Invalidating glyphs and layout
 //
+
+// This removes all glyphs for the old character range, adjusts the character 
+// indices of all the subsequent glyphs by the change in length, and invalidates 
+// the new character range.  If actualCharRange is non-NULL it will be set to 
+// the actual range invalidated after any necessary expansion.
 - (void) invalidateGlyphsForCharacterRange: (NSRange)aRange
 			    changeInLength: (int)lengthChange
 		      actualCharacterRange: (NSRange*)actualRange
@@ -405,6 +459,15 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
     }
 }
 
+// This invalidates the layout information (glyph location and rotation) for 
+// the given range of characters.  If flag is YES then this range is marked 
+// as a hard layout invalidation.  If NO, then the invalidation is soft.  
+// A hard invalid layout range indicates that layout information must be completely 
+// recalculated no matter what.  A soft invalid layout range means that there 
+// is already old layout info for the range in question, and if the NSLayoutManager 
+// is smart enough to figure out how to avoid doing the complete relayout, it may 
+// perform any optimization available.  If actualCharRange is non-NULL it will be 
+// set to the actual range invalidated after any necessary expansion.
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange*)actualRange
@@ -413,6 +476,11 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   [self _doLayout];
 }
 
+// Invalidates display for the glyph or character range given.  For the glyph 
+// range variant any part of the range that does not yet have glyphs generated 
+// is ignored.  For the character range variant, unlaid parts of the range are 
+// remembered and will definitely be redisplayed at some point later when the 
+// layout is available.  Neither method actually causes layout.
 - (void) invalidateDisplayForCharacterRange: (NSRange)aRange
 {
 }
@@ -421,6 +489,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 {
 }
 
+// Invalidates layout of all glyphs in container and all subsequent containers.
 - (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
 {
   unsigned first = 0;
@@ -434,10 +503,17 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 	actualCharacterRange: NULL];
 }
 
+// Called by NSTextContainer whenever its textView changes.  
+// Used to keep notifications in synch.
 - (void) textContainerChangedTextView: (NSTextContainer*)aContainer
 {
 }
 
+// Sent from processEditing in NSTextStorage. newCharRange is the range in the 
+// final string which was explicitly edited. invalidatedRange includes stuff 
+// which was changed as a result of attribute fixing. invalidatedRange is either 
+// equal to newCharRange or larger. Layout managers should not change the contents
+// of the text storage during the execution of this message.
 - (void) textStorage: (NSTextStorage*)aTextStorage
 	      edited: (unsigned)mask
 	       range: (NSRange)range
@@ -478,6 +554,8 @@ invalidatedRange.length);
 // Turning on/off background layout
 //
 
+// These methods allow you to set/query whether text gets laid out in the 
+// background when there's nothing else to do.
 - (void) setBackgroundLayoutEnabled: (BOOL)flag
 {
   _backgroundLayout = flag;
@@ -491,12 +569,22 @@ invalidatedRange.length);
 //
 // Accessing glyphs
 //
+// These methods are primitive.  They do not cause the bookkeeping of filling 
+// holes to happen.  They do not cause invalidation of other stuff.
+
+// Inserts a single glyph into the glyph stream at glyphIndex.  The character 
+// index which this glyph corresponds to is given by charIndex.
 - (void) insertGlyph: (NSGlyph)aGlyph
 	atGlyphIndex: (unsigned)glyphIndex
       characterIndex: (unsigned)charIndex
 {
 }
 
+// If there are any holes in the glyph stream this will cause glyph generation 
+// for all holes sequentially encountered until the desired index is available. 
+// The first variant raises a NSRangeError if the requested index is out of 
+// bounds, the second does not, but instead optionally returns a flag indicating 
+// whether the requested index exists.
 - (NSGlyph) glyphAtIndex: (unsigned)index
 {
   return NSNullGlyph;
@@ -509,21 +597,36 @@ invalidatedRange.length);
   return NSNullGlyph;
 }
 
+// Replaces the glyph currently at glyphIndex with newGlyph.  The character index 
+// of the glyph is assumed to remain the same (although it can, of coiurse, be set 
+// explicitly if needed).
 - (void) replaceGlyphAtIndex: (unsigned)index
 		   withGlyph: (NSGlyph)newGlyph
 {
 }
 
+// This causes glyph generation similarly to asking for a single glyph.  
+// It formats a sequence of NSGlyphs (unsigned long ints).  It does not include 
+// glyphs that aren't shown in the result but does zero-terminate the array.  
+// The memory passed in to the function should be large enough for at least 
+// glyphRange.length+1 elements.  The actual number of glyphs stuck into the 
+// array is returned (not counting the null-termination).
+// RM!!! check out the private method "_packedGlyphs:range:length:" if you need 
+// to send glyphs to the window server.  It returns a (conceptually) autoreleased
+// array of big-endian packeg glyphs.  Don't use this method to do that.
 - (unsigned) getGlyphs: (NSGlyph*)glyphArray
 		 range: (NSRange)glyphRange
 {
   return (unsigned)0;
 }
 
+// Removes all glyphs in the given range from the storage.
 - (void) deleteGlyphsInRange: (NSRange)aRange
 {
 }
 
+// If there are any holes in the glyph stream, this will cause all invalid 
+// character ranges to have glyphs generated for them.
 - (unsigned) numberOfGlyphs
 {
   return 0;
@@ -532,22 +635,42 @@ invalidatedRange.length);
 //
 // Mapping characters to glyphs
 //
+// Sets the index of the corresponding character for the glyph at the given glyphIndex.
 - (void) setCharacterIndex: (unsigned)charIndex
 	   forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
+// If there are any holes in the glyph stream this will cause glyph generation 
+// for all holes sequentially encountered until the desired index is available.
 - (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex
 {
   return 0;
 }
 
+// These two methods can cause glyph generation.
+// Returns the range of characters that generated the glyphs in the
+// given glyphRange.  actualGlyphRange, if not NULL, will be set to
+// the full range of glyphs that the character range returned generated. 
+// This range may be identical or slightly larger than the requested glyphRange. 
+// For instance, if the text storage contains the unichar (o-umlaut) and
+// the glyph store contains the two atomic glyphs "o" and (umlaut), and
+// if the glyphRange given encloses only the first or second glyph, the
+// actualGlyphRange will be set to enclose both glyphs.
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
 		       actualGlyphRange: (NSRange*)actualGlyphRange
 {
   return NSMakeRange(0, 0);
 }
 
+// Returns the range of glyphs that are generated from the unichars in
+// the given charRange.  actualCharRange, if not NULL, will be set to the
+// actual range of characters that fully define the glyph range returned. 
+// This range may be identical or slightly larger than the requested
+// characterRange.  For instance, if the text storage contains the unichars
+// "o" and (umlaut) and the glyph store contains the single precomposed glyph
+// (o-umlaut), and if the charcterRange given encloses only the first or
+// second unichar, the actualCharRange will be set to enclose both unichars.
 - (NSRange) glyphRangeForCharacterRange: (NSRange)charRange
 		   actualCharacterRange: (NSRange*)actualCharRange
 {
@@ -559,13 +682,33 @@ invalidatedRange.length);
 //
 
 // Each NSGlyph has an attribute field, yes?
-
+// This method is primitive.  It does not cause any invalidation of other stuff. 
+//  This method also will not cause glyph generation.  The glyph being set must 
+// already be there.
+// This method is used by the NSGlyphGenerator to set attributes.  It is not 
+// usually necessary for anyone but the glyph generator (and perhaps the 
+// typesetter) to call it.  It is provided as a public method so subclassers 
+// can extend it to accept other glyph attributes.  To add new glyph attributes
+// to the text system you basically need to do two things.  You need to write 
+// a rulebook which will generate the attributes (in rulebooks attributes are 
+// identified by integer tags).  Then you need to subclass NSLayoutManager to
+// provide someplace to store the new attribute and to override this method 
+// and -attribute:forGlyphAtIndex: to understand the integer tag which your
+// new rulebook is generating.  NSLayoutManager's implementation understands
+// the glyph attributes which it is prepared to remember.  Your override 
+// should pass any glyph attributes it does not understand up to the superclass's
+//  implementation.
 - (void) setIntAttribute: (int)attribute
 		   value: (int)anInt
 	 forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
+// This returns the value for the given glyph attribute at the glyph index
+// specified.  Most apps will not have much use for this info but the
+// typesetter and glyph generator might need to know about certain attributes.
+// You can override this method to know how to return any custom glyph 
+// attributes you want to support.
 - (int) intAttribute: (int)attribute
      forGlyphAtIndex: (unsigned)glyphIndex
 {
@@ -575,6 +718,16 @@ invalidatedRange.length);
 //
 // Handling layout for text containers 
 //
+// These methods are fairly primitive.  They do not cause any kind of 
+// invalidation to happen.  The glyphs being set must already exist.
+// This is not a hardship since the NSTypesetter will have had to ask for
+// the actual glyphs already by the time it goes to set this, and asking
+// for the glyphs causes the glyph to be generated if necessary.
+// Associates the given container with the given range of glyphs.  This method
+// should be called by the typesetter first (ie before setting line fragment
+// rect or any of the layout bits) for each range of glyphs it lays out. 
+// This method will set several key layout atttributes (like not shown and
+// draws outside line fragment) to their default values.
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 	    forGlyphRange: (NSRange)glyphRange
 {
@@ -586,6 +739,10 @@ invalidatedRange.length);
   [_containerRuns insertObject: theLine];
 }
 
+// All of these methods can cause glyph generation AND layout.
+// Returns the range of characters which have been laid into the
+// given container.  This is a less efficient method than the similar
+// -textContainerForGlyphAtIndex:effectiveRange:.
 - (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
 {
   int i;
@@ -617,6 +774,9 @@ aNewLine->glyphRange.length);
   return NSMakeRange(NSNotFound, 0);
 }
 
+// Returns the container in which the given glyph is laid and (optionally)
+// by reference the whole range of glyphs that are in that container. 
+// This will cause glyph generation AND layout as needed.
 - (NSTextContainer*) textContainerForGlyphAtIndex: (unsigned)glyphIndex
                                    effectiveRange: (NSRange*)effectiveRange
 {
@@ -636,6 +796,7 @@ aNewLine->glyphRange.length);
 //
 // Handling line fragment rectangles 
 //
+// Associates the given line fragment bounds with the given range of glyphs.
 - (void) setLineFragmentRect: (NSRect)fragmentRect
 	       forGlyphRange: (NSRange)glyphRange
 		    usedRect: (NSRect)usedRect
@@ -649,6 +810,9 @@ aNewLine->glyphRange.length);
   [_fragmentRuns insertObject: aNewLine];
 }
 
+// Returns the rect for the line fragment in which the given glyph
+// is laid and (optionally) by reference the whole range of glyphs
+// that are in that fragment.  This will cause glyph generation AND layout as needed.
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
 			    effectiveRange: (NSRange*)lineFragmentRange
 {
@@ -665,6 +829,10 @@ aNewLine->glyphRange.length);
   return NSZeroRect;
 }
 
+// Returns the usage rect for the line fragment in which the given
+// glyph is laid and (optionally) by reference the whole range of
+// glyphs that are in that fragment.  This will cause glyph generation
+// AND layout as needed.
 - (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
 				effectiveRange: (NSRange*)lineFragmentRange
 {
@@ -681,12 +849,18 @@ aNewLine->glyphRange.length);
   return NSZeroRect;
 }
 
+// Sets the bounds and container for the extra line fragment.  The extra line
+// fragment is used when the text backing ends with a hard line break or when
+// the text backing is totally empty to define the extra line which needs to
+// be displayed.  If the text backing does not end with a hard line break this
+// should be set to NSZeroRect and nil.
 - (void) setExtraLineFragmentRect: (NSRect)aRect
 			 usedRect: (NSRect)usedRect
 		    textContainer: (NSTextContainer*)aTextContainer
 {
 }
 
+// Return info about the extra line fragment.
 - (NSRect) extraLineFragmentRect 
 {
   return NSZeroRect;
@@ -702,11 +876,28 @@ aNewLine->glyphRange.length);
   return nil;
 }
 
+// Returns the container's currently used area.  This is the size that
+// the view would need to be in order to display all the stuff that is
+// currently laid into the container.  This causes no generation.
+- (NSRect)usedRectForTextContainer:(NSTextContainer *)container
+{
+  return NSZeroRect;
+}
+
+- (void)setAttachmentSize:(NSSize)attachmentSize 
+	    forGlyphRange:(NSRange)glyphRange
+{
+}
+
+// Used to indicate that a particular glyph for some reason marks outside
+// its line fragment bounding rect.  This can commonly happen if a fixed
+// line height is used (consider a 12 point line height and a 24 point glyph).
 - (void) setDrawsOutsideLineFragment: (BOOL)flag
 		     forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
+// Returns whether the glyph will make marks outside its line fragment's bounds.
 - (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned)glyphIndex
 {
   return NO;
@@ -716,6 +907,13 @@ aNewLine->glyphRange.length);
 // Layout of glyphs 
 //
 
+// Sets the location to draw the first glyph of the given range at. 
+// Setting the location for a glyph range implies that its first glyph
+// is NOT nominally spaced with respect to the previous glyph.  When all
+// is said and done all glyphs in the layoutManager should have been
+// included in a range passed to this method.  But only glyphs which
+// start a new nominal rtange should be at the start of such ranges. 
+// Glyph locations are given relative the their line fragment bounding rect's origin.
 - (void) setLocation: (NSPoint)aPoint
 forStartOfGlyphRange: (NSRange)glyphRange
 {
@@ -727,11 +925,23 @@ forStartOfGlyphRange: (NSRange)glyphRange
   [_locationRuns insertObject: aNewLine];
 }
 
+// Returns the location that the given glyph will draw at.  If this glyph
+// doesn't have an explicit location set for it (ie it is part of (but not
+// first in) a sequence of nominally spaced characters), the location is
+// calculated from the location of the last glyph with a location set. 
+// Glyph locations are relative the their line fragment bounding rect's
+// origin (see -lineFragmentForGlyphAtIndex:effectiveRange: below for
+// finding line fragment bounding rects).  This will cause glyph generation
+// AND layout as needed.
 - (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
 {
   return NSZeroPoint;
 }
 
+// Returns the range including the first glyph from glyphIndex on back
+// that has a location set and up to, but not including the next glyph
+// that has a location set.  This is a range of glyphs that can be shown
+// with a single postscript show operation.
 - (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
 {
   GSLineLayoutInfo	*theLine;
@@ -746,6 +956,22 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return NSMakeRange(NSNotFound, 0);
 }
 
+// Returns an array of NSRects and the number of rects by reference which
+// define the region in container that encloses the given range.  If a
+// selected range is given in the second argument, the rectangles returned
+// will be correct for drawing the selection.  Selection rectangles are
+// generally more complicated than enclosing rectangles and supplying a
+// selected range is the clue these methods use to determine whether to
+// go to the trouble of doing this special work. 
+// If the caller is interested in this more from an enclosing point of
+// view rather than a selection point of view pass {NSNotFound, 0} as 
+// the selected range.  This method works hard to do the minimum amount
+// of work required to answer the question.  The resulting array is owned
+// by the layoutManager and will be reused when either of these two methods
+// OR -boundingRectForGlyphRange:inTextContainer: is called.  Note that
+// one of these methods may be called indirectly.  The upshot is that if
+// you aren't going to use the rects right away, you should copy them to
+// another location.
 - (NSRect*) rectArrayForCharacterRange: (NSRange)charRange
           withinSelectedCharacterRange: (NSRange)selChareRange
                        inTextContainer: (NSTextContainer*)aTextContainer
@@ -788,6 +1014,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   (*rectCount) = (position - 1 + lastPosition - 1);
   return _cachedRectArray;
 */
+  return NULL;
 }
 
 - (NSRect*) rectArrayForGlyphRange: (NSRange)glyphRange
@@ -798,6 +1025,13 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _cachedRectArray;
 }
 
+// Returns the smallest bounding rect (in container coordinates) which
+// completely encloses the glyphs in the given glyphRange that are in
+// the given container.  If no container is given, then the container
+// of the first glyph is assumed.  Basically, the range is intersected
+// with the container's range before computing the bounding rect. 
+// This method can be used to translate glyph ranges into display rectangles
+// for invalidation.
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer*)aTextContainer
 {
@@ -833,6 +1067,13 @@ be redrawn when a range of glyphs changes. */
   return NSZeroRect;
 }
 
+// Returns the minimum contiguous glyph range that would need to be
+// displayed in order to draw all glyphs that fall (even partially)
+// within the bounding rect given.  This range might include glyphs
+// which do not fall into the rect at all.  At most this will return
+// the glyph range for the whole container.  The "WithoutFillingHoles"
+// variant will not generate glyphs or perform layout in attempting to
+// answer, and, thus, will potentially not be totally correct.
 - (NSRange) glyphRangeForBoundingRect: (NSRect)aRect
 		      inTextContainer: (NSTextContainer*)aTextContainer
 {
@@ -845,6 +1086,13 @@ be redrawn when a range of glyphs changes. */
   return NSMakeRange(0, 0);
 }
 
+// Returns the index of the glyph which under the given point which is
+// expressed in the given container's coordinate system.  If no glyph
+// is under the point the "nearest" glyph is returned where "nearest"
+// is defined in such a way that selection works like it should. 
+// See the implementation for details.  partialFraction, if provided,
+// is set to the fraction of the distance between the location of the
+// glyph returned and the location of the next glyph that the point is at.
 - (unsigned) glyphIndexForPoint: (NSPoint)aPoint
 		inTextContainer: (NSTextContainer*)aTextContainer
  fractionOfDistanceThroughGlyph: (float*)partialFraction
@@ -852,19 +1100,33 @@ be redrawn when a range of glyphs changes. */
   return 0;
 }
 
+- (unsigned)glyphIndexForPoint:(NSPoint)aPoint 
+	       inTextContainer:(NSTextContainer *)aTextContainer
+{
+  return [self glyphIndexForPoint: aPoint
+	       inTextContainer: aTextContainer
+	       fractionOfDistanceThroughGlyph: NULL];
+}
+
 //
 // Display of special glyphs 
 //
+// Some glyphs are not shown.  The typesetter decides which ones and
+// sets this attribute in layoutManager where the view can find it.
 - (void) setNotShownAttribute: (BOOL)flag
 	      forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
+// Some glyphs are not shown.  This will cause glyph generation and layout as needed..
 - (BOOL) notShownAttributeForGlyphAtIndex: (unsigned)glyphIndex
 {
   return YES;
 }
 
+// If YES, and the rulebooks and fonts in use support it, whitespace and other 
+// "invisible" unicodes will be shown with special glyphs (ie "." for space, 
+// the little CR icon for new lines, etc...)
 - (void) setShowsInvisibleCharacters: (BOOL)flag
 {
   _showsInvisibleChars = flag;
@@ -875,6 +1137,9 @@ be redrawn when a range of glyphs changes. */
   return _showsInvisibleChars;
 }
 
+// If YES, and the rulebooks and fonts in use support it, control characters 
+// will be rendered visibly (usually like "^M", but possibly with special 
+// glyphs if the the font and rulebook supports it).
 - (void) setShowsControlCharacters: (BOOL)flag
 {
   _showsControlChars = flag;
@@ -901,6 +1166,8 @@ be redrawn when a range of glyphs changes. */
 //
 // Finding unlaid characters/glyphs 
 //
+// Returns (by reference) the character index or glyph index or both
+// of the first unlaid character/glyph in the layout manager at this time.
 - (void) getFirstUnlaidCharacterIndex: (unsigned*)charIndex
 			   glyphIndex: (unsigned*)glyphIndex
 {
@@ -924,6 +1191,7 @@ be redrawn when a range of glyphs changes. */
 //
 // Using screen fonts 
 //
+// Sets whether this layoutManager will use screen fonts when it is possible to do so.
 - (void) setUsesScreenFonts: (BOOL)flag
 {
   _usesScreenFonts = flag;
@@ -934,6 +1202,14 @@ be redrawn when a range of glyphs changes. */
   return _usesScreenFonts;
 }
 
+// Returns a font to use in place of originalFont.  This method is used
+// to substitute screen fonts for regular fonts.  If screen fonts are
+// allowed AND no NSTextView managed by this layoutManager is scaled or
+// rotated AND a screen font is available for originalFont, it is returned,
+// otherwise originalFont is returned.  MF:??? This method will eventually
+// need to know or be told whether use of screen fonts is appropriate in a
+// given situation (ie screen font used might be enabled or disabled, we
+// might be printing, etc...).  This method causes no generation.
 - (NSFont*) substituteFontForFont: (NSFont*)originalFont
 {
   NSFont *replaceFont;
@@ -953,6 +1229,12 @@ be redrawn when a range of glyphs changes. */
 //
 // Handling rulers 
 //
+// These return, respectively, an array of text ruler objects for the
+// current selection and the accessory view that the text system uses
+// for ruler.  If you have turned off automatic ruler updating through
+// the use of setUsesRulers: so that you can do more complex things,
+// but you still want to display the appropriate text ruler objects
+// and/or accessory view, you can use these methods.
 - (NSView*) rulerAccessoryViewForTextView: (NSTextView*)aTextView
                            paragraphStyle: (NSParagraphStyle*)paragraphStyle
                                     ruler: (NSRulerView*)aRulerView
@@ -971,6 +1253,8 @@ be redrawn when a range of glyphs changes. */
 //
 // Managing the responder chain 
 //
+// Returns YES if the firstResponder of the given window is one of
+// the NSTextViews attached to this NSLayoutManager.
 - (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow*)aWindow
 {
   return NO;
@@ -981,6 +1265,9 @@ be redrawn when a range of glyphs changes. */
   return [[_textContainers objectAtIndex: 0] textView];
 }
 
+// This method is special in that it won't cause layout if the
+// beginning of the selected range is not yet laid out.  Other than
+// that this method could be done through other API.
 - (NSTextView*) textViewForBeginningOfSelection
 {
   return NULL;
@@ -994,6 +1281,15 @@ be redrawn when a range of glyphs changes. */
 {
 }
 
+// These methods are called by NSTextView to do drawing.  You can
+// override these if you think you can draw the stuff any better
+// (but not to change layout).  You can call them if you want, but
+// focus must already be locked on the destination view or MF:???image?.
+// -drawBackgroundGorGlyphRange:atPoint: should draw the background
+// color and selection and marked range aspects of the text display. 
+// -drawGlyphsForGlyphRange:atPoint: should draw the actual glyphs. 
+// The point in either method is the container origin in the currently
+// focused view's coordinates for the container the glyphs lie in.
 - (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
 			 atPoint: (NSPoint)containerOrigin
 {
@@ -1001,9 +1297,9 @@ be redrawn when a range of glyphs changes. */
 
   for (i=0;i<[_fragmentRuns count];i++)
     {
+/*
       GSLineLayoutInfo *info = [_fragmentRuns objectAtIndex: i];
 
-/*
       NSLog(@"i: %d glyphRange: (%d, %d) lineFragmentRect: (%f, %f) (%f, %f)",
 i,
 info->glyphRange.location,
@@ -1044,9 +1340,9 @@ aLine->lineFragmentRect.origin.x,
 aLine->lineFragmentRect.origin.y,
 aLine->lineFragmentRect.size.width,
 aLine->lineFragmentRect.size.height);
-*/
 
           NSEraseRect (aRect);
+*/
 	  [_textStorage drawRange: aLine->glyphRange inRect: aLine->lineFragmentRect];
         }
     }
@@ -1061,6 +1357,20 @@ aLine->lineFragmentRect.size.height);
 {
 }
 
+// The first of these methods actually draws an appropriate underline
+// for the glyph range given.  The second method potentailly breaks
+// the range it is given up into subranges and calls drawUnderline...
+// for ranges that should actually have the underline drawn.  As
+// examples of why there are two methods, consider two situations. 
+// First, in all cases you don't want to underline the leading and
+// trailing whitespace on a line.  The -underlineGlyphRange... method
+// is passed glyph ranges that have underlining turned on, but it will
+// then look for this leading and trailing white space and only pass
+// the ranges that should actually be underlined to -drawUnderline... 
+// Second, if the underlineType: indicates that only words, (ie no
+// whitespace), should be underlined, then -underlineGlyphRange... 
+// will carve the range it is passed up into words and only pass word
+// ranges to -drawUnderline.
 - (void) underlineGlyphRange: (NSRange)glyphRange
 	       underlineType: (int)underlineType
 	    lineFragmentRect: (NSRect)lineRect
@@ -1100,16 +1410,12 @@ Ghiradelli chocolate to he who puts all the pieces together : ) */
   NSScanner		*lineScanner;
   NSScanner		*paragraphScanner;
   BOOL lastLineForContainerReached = NO;
-  NSString *aString;
   int previousScanLocation;
   int previousParagraphLocation;
   int endScanLocation;
   int startIndex;
   NSRect firstProposedRect;
   NSRect secondProposedRect;
-  NSFont *default_font = [NSFont systemFontOfSize: 0];
-  int widthOfString;
-  NSSize rSize;
   NSCharacterSet *selectionParagraphGranularitySet = [NSCharacterSet characterSetWithCharactersInString: @"\n"];
   NSCharacterSet *selectionWordGranularitySet = [NSCharacterSet characterSetWithCharactersInString: @" "];
   NSCharacterSet *invSelectionWordGranularitySet = [selectionWordGranularitySet invertedSet];
@@ -1232,8 +1538,8 @@ numberWithInt: (int)[lineScanner scanLocation] + previousParagraphLocation - (be
                  }
 
 	      [lineScanner setScanLocation: previousScanLocation];
-	      indexToAdd = previousScanLocation + previousParagraphLocation
-- (beginLineIndex);
+	      indexToAdd = previousScanLocation + previousParagraphLocation 
+		  - (beginLineIndex);
 
 		NSLog(@"previousScanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d indexToAdd = %d",
 previousScanLocation,
