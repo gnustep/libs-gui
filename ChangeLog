@@ -1,3 +1,71 @@
+Sun Nov 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Huge improvements of NSTextField and related code.  
+		
+	Fix for nil target:
+	* Source/NSApplication.m ([-sendAction:to:from:]): Deal with nil 
+	targets as per spec.
+	
+	Corrected NSControl's delegate stuff: 
+	* Headers/AppKit/NSControl.h: Moved methods 'implemented by the
+ 	delegate' from the class interface to an informal protocol
+ 	definition.
+	* Source/NSControl.m: Removed implementation, which was nearly
+ 	void anyway, of 'methods implemented by delegate'.  They should be 
+ 	implemented by the delegate, not by the control.
+
+	Fix in NSControl:
+	* Source/NSControl.m ([-setStringValue:]): Abort editing, if any, 
+	before setting the value.
+	
+	Little fix in NSCell to allow abort/checking of entered text:
+	* Source/NSCell.m ([-endEditing:]): Do not set the cell's string
+ 	value to the text.  This should be done by the delegate specified 
+	in editWithFrame:inView:editor:delegate:event: upon receiving 
+	the -textDidEndEditing: message.
+
+	Fix to make setSelectable/setEditable work:
+	* Source/NSCell.m ([-setUpFieldEditorAttributes:]): set
+ 	editability/selectability of text object.
+
+	Fixed and simplified treating of border during editing; also, 
+	do not invoke setUpFieldEditorAttributes: in the cell; this 
+	has to be done by the control: 
+	* Source/NSCell.m ([-editWithFrame:inView:editor:delegate:event:]), 
+	([-selectWithFrame:inView:editor:delegate:start:length:]): Invoke 
+	cell's drawingRectForBounds: and other minor fixes.
+
+	Added full NSTextField's delegate support; added real RETURN, TAB,
+ 	Shift+TAB support; tons of fixes; major rewriting of much of
+ 	NSTextField:
+	* Headers/AppKit/NSTextField.h: Prefixed ivars with underscore, 
+	added ivar _text_object.
+	* Source/NSTextField.m ([-abortEditing]), ([-currentEditor]),
+	([-validateEditing]): Implemented. 
+	([-keyDown:]): Removed. 
+	([-acceptsFirstResponder]), ([-becomeFirstResponder]), 
+	([-mouseDown:]), ([-selectText:]), ([-setDelegate:]), 
+	([-textShouldEndEditing:]), ([-textShouldBeginEditing:]), 
+	([-textDidEndEditing:]), ([-textDidChange:]), 
+	([-textDidBeginEditing:]): Completely rewritten, often from scratch.
+	
+	* Source/NSTextField.m, Source/NSSecureTextField.m: Standardized
+ 	initialization.
+
+	Cleaned up NSText delegate stuff and fixed some nasty bugs during
+ 	the work:
+	* Source/NSText.m: Removed implementation of methods 'implemented
+ 	by the delegate'.  Moved the code around where needed.
+
+	Implemented method missing in NSWindow.
+	* Source/NSWindow.m ([NSWindow -endEditingFor:]): Implemented.
+	
+	Added in NSSavePanel support for editing the file name in the
+ 	textfield:
+	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): 
+	Set self as delegate to _form; 
+	([NSSavePanel -controlTextDidEndEditing:]): New method.
+
 Fri Nov 12  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* NSBrowser.m: [GSBrowserTitleCell] updated ivar draw_background
