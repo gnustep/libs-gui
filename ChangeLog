@@ -1,3 +1,8 @@
+Mon Jul 15 15:55:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([NSWindow +initialize]): Removed left-over
+	NSLog call.
+
 2002-07-14  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSTabView.h: Add missing method.
