@@ -139,25 +139,29 @@
 @implementation	NSNibOutletConnector
 - (void) establishConnection
 {
-  NSString	*selName;
-  SEL		sel;
+  if (_src != nil)
+    {
+      NSString	*selName;
+      SEL	sel;
 
-  selName = [NSString stringWithFormat: @"set%@:", [_tag capitalizedString]];
-  sel = NSSelectorFromString(selName);
+      selName = [NSString stringWithFormat: @"set%@:",
+	[_tag capitalizedString]];
+      sel = NSSelectorFromString(selName);
 	      
-  if ([_src respondsToSelector: sel])
-    {
-      [_src performSelector: sel withObject: _dst];
-    }
-  else
-    {
-      /*
-       * Use the GNUstep additional function to set the instance variable
-       * directly.
-       * FIXME - need some way to do this for libFoundation and Foundation
-       * based systems.
-       */
-      GSSetInstanceVariable(_src, _tag, (void*)&_dst); 
+      if ([_src respondsToSelector: sel])
+	{
+	  [_src performSelector: sel withObject: _dst];
+	}
+      else
+	{
+	  /*
+	   * Use the GNUstep additional function to set the instance variable
+	   * directly.
+	   * FIXME - need some way to do this for libFoundation and Foundation
+	   * based systems.
+	   */
+	  GSSetInstanceVariable(_src, _tag, (void*)&_dst); 
+	}
     }
 }
 @end
@@ -214,88 +218,13 @@
 	    {
 	      if ([obj isKindOfClass: [GSNibContainer class]])
 		{
-		  GSNibContainer	*container = obj;
-		  NSMutableDictionary	*nameTable = [container nameTable];
-		  NSMutableArray	*connections = [container connections];
-		  NSEnumerator		*enumerator;
-		  NSNibConnector	*connection;
-		  NSString		*key;
-		  NSArray		*visible;
-
+		  [obj awakeWithContext: context];
 		  /*
-		   *	Go through the table of objects in the nib and
-		   *	retain each one (except ones that are overridden
-		   *	by values from the 'context table' and retain them
-		   *	so they will persist after the container is gone.
-		   *	Add local entries into name table.
+		   *	Ok - it's all done now - just retain the nib container
+		   *	so tthat it will not be released when the unarchiver
+		   *	is released, and the nib contents will persist.
 		   */
-		  enumerator = [nameTable keyEnumerator];
-		  while ((key = [enumerator nextObject]) != nil)
-		    {
-		      if ([context objectForKey: key] == nil)
-			{
-			  RETAIN([nameTable objectForKey: key]);
-			}
-		    }
-		  [nameTable addEntriesFromDictionary: context];
-
-		  /*
-		   *	Now establish all connections by taking the names
-		   *	stored in the connection objects, and replaciong them
-		   *	with the corresponding values from the name table
-		   *	before telling the connections to establish themselves.
-		   */
-		  enumerator = [connections objectEnumerator];
-		  while ((connection = [enumerator nextObject]) != nil)
-		    {
-		      id	val;
-
-		      val = [nameTable objectForKey: [connection source]];
-		      [connection setSource: val];
-		      val = [nameTable objectForKey: [connection destination]];
-		      [connection setDestination: val];
-		      [connection establishConnection];
-		    }
-
-		  /*
-		   * Now tell all the objects that they have been loaded from
-		   * a nib.
-		   */
-		  enumerator = [nameTable keyEnumerator];
-		  while ((key = [enumerator nextObject]) != nil)
-		    {
-		      if ([context objectForKey: key] == nil)
-			{
-			  id	o;
-
-			  o = [nameTable objectForKey: key];
-			  if ([o respondsToSelector: @selector(awakeFromNib)])
-			    {
-			      [o awakeFromNib];
-			    }
-			}
-		    }
-		
-		  /*
-		   * See if there are objects that should be made visible.
-		   */
-		  visible = [nameTable objectForKey: @"NSVisible"];
-		  if (visible != nil
-		    && [visible isKindOfClass: [NSArray class]] == YES)
-		    {
-		      unsigned	pos = [visible count];
-
-		      while (pos-- > 0)
-			{
-			  [[visible objectAtIndex: pos] orderFront: self];
-			}
-		    }
-
-		  /*
-		   *	Ok - it's all done now - the nib container will
-		   *	be released when the unarchiver is released, so
-		   *	we will just be left with the real nib contents.
-		   */
+		  RETAIN(obj);
 		  loaded = YES;
 		}
 	      else
@@ -405,9 +334,89 @@
 
 
 /*
- *	The GSNibContainer class manages the internals os a nib file.
+ *	The GSNibContainer class manages the internals of a nib file.
  */
 @implementation GSNibContainer
+
+- (void) awakeWithContext: (NSDictionary*)context
+{
+  if (_isAwake == NO)
+    {
+      NSEnumerator	*enumerator;
+      NSNibConnector	*connection;
+      NSString		*key;
+      NSArray		*visible;
+
+      _isAwake = YES;
+      /*
+       *	Add local entries into name table.
+       */
+      if ([context count] > 0)
+	{
+	  [nameTable addEntriesFromDictionary: context];
+	}
+
+      /*
+       *	Now establish all connections by taking the names
+       *	stored in the connection objects, and replaciong them
+       *	with the corresponding values from the name table
+       *	before telling the connections to establish themselves.
+       */
+      enumerator = [connections objectEnumerator];
+      while ((connection = [enumerator nextObject]) != nil)
+	{
+	  id	val;
+
+	  val = [nameTable objectForKey: [connection source]];
+	  [connection setSource: val];
+	  val = [nameTable objectForKey: [connection destination]];
+	  [connection setDestination: val];
+	  [connection establishConnection];
+	}
+
+      /*
+       * Now tell all the objects that they have been loaded from
+       * a nib.
+       */
+      enumerator = [nameTable keyEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+	{
+	  if ([context objectForKey: key] == nil)
+	    {
+	      id	o;
+
+	      o = [nameTable objectForKey: key];
+	      if ([o respondsToSelector: @selector(awakeFromNib)])
+		{
+		  [o awakeFromNib];
+		}
+	    }
+	}
+    
+      /*
+       * See if there are objects that should be made visible.
+       */
+      visible = [nameTable objectForKey: @"NSVisible"];
+      if (visible != nil
+	&& [visible isKindOfClass: [NSArray class]] == YES)
+	{
+	  unsigned	pos = [visible count];
+
+	  while (pos-- > 0)
+	    {
+	      [[visible objectAtIndex: pos] orderFront: self];
+	    }
+	}
+
+      /*
+       * Now remove any objects added from the context dictionary.
+       */
+      if ([context count] > 0)
+	{
+	  [nameTable removeObjectsForKeys: [context allKeys]];
+	}
+    }
+}
 
 - (NSMutableArray*) connections
 {

@@ -1,3 +1,8 @@
+Mon Jan  3 18:35:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBundleAdditions.m: Added ([-awakeWithContext:]) method for
+	nib containers to wake up a newly unarchived nib.
+
 2000-01-03  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep.m ([NSBitmapImageRep -draw]): Use
