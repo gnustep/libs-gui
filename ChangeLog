@@ -1,3 +1,10 @@
+Thu Jun 17 16:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSTextContainer.m: New by jagapen@whitewater.chem.wisc.edu
+	* Headers/AppKit/NSTextContainer.h: rewrite by jagapen
+	* Source/GNUmakefile: Modified to build NSTextContainer and
+	NSTextStorage.
+
 1999-06-16  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/DPSOperators.h: New functions
