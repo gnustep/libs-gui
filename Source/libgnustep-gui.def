@@ -31,6 +31,7 @@
 LIBRARY libgnustep-gui
 EXPORTS
 __objc_class_name_GSComboWindow
+__objc_class_name_GSDisplayServer
 __objc_class_name_GSFontEnumerator
 __objc_class_name_GSFontInfo
 __objc_class_name_GSHbox

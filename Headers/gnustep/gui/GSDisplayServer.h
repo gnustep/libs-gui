@@ -45,8 +45,8 @@
 @class GSDisplayServer;
 
 #ifndef	NO_GNUSTEP
-GSDisplayServer * GSServerForWindow(NSWindow *window);
-GSDisplayServer * GSCurrentServer(void);
+APPKIT_DECLARE GSDisplayServer * GSServerForWindow(NSWindow *window);
+APPKIT_DECLARE GSDisplayServer * GSCurrentServer(void);
 
 @interface GSDisplayServer : NSObject
 {
@@ -92,7 +92,7 @@ GSDisplayServer * GSCurrentServer(void);
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style;
 - (void) termwindow: (int) win;
 - (void) stylewindow: (int) style : (int) win;
-- (void) windowbacking: (NSBackingStoreType)type;
+- (void) windowbacking: (NSBackingStoreType)type : (int) win;
 - (void) titlewindow: (NSString *) window_title : (int) win;
 - (void) miniwindow: (int) win;
 - (BOOL) appOwnsMiniwindow;

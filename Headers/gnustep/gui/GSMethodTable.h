@@ -115,13 +115,9 @@ typedef struct {
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-  void (*DPScurrentgstate_)
-        (NSGraphicsContext*, SEL, int);
   void (*DPSgrestore)
         (NSGraphicsContext*, SEL);
   void (*DPSgsave)
-        (NSGraphicsContext*, SEL);
-  void (*DPSgstate)
         (NSGraphicsContext*, SEL);
   void (*DPSinitgraphics)
         (NSGraphicsContext*, SEL);

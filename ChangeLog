@@ -1,3 +1,19 @@
+2002-04-10  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/AppKitExceptions.h: Add GNUstep exception.
+	* Source/externs.m: Idem.
+	* Headers/gnustep/gui/DPSOperators.h: Remove currentgstate, gstate
+	* Headers/gnustep/gui/PSOperators.h: Idem.
+	* Headers/gnustep/gui/GSMethodTable.h: Idem.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Idem.
+	* Source/NSGraphicsContext.m: Idem. Redefine subclassResponsibility
+	to through our own exception.
+
+	* Headers/gnustep/gui/GSDisplayServer.h: Prefix functions with
+	APPKIT_DECLARE. Fix windowbacking def.
+
+	* Source/libgnustep-gui.def: Add GSDisplayServer.
+
 Tue Apr  9 23:04:43 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTable.m ([-setFrame:], [-setFrameSize:]): New methods.

@@ -259,10 +259,8 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentgstate: (int)gst;
 - (void) DPSgrestore;
 - (void) DPSgsave;
-- (void) DPSgstate;
 - (void) DPSinitgraphics;
 - (void) DPSsetgstate: (int)gst;
 

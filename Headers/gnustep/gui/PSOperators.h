@@ -118,19 +118,11 @@ __attribute__((unused));
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentgstate(int gst)
-__attribute__((unused));
-
-static inline void
 PSgrestore()
 __attribute__((unused));
 
 static inline void
 PSgsave()
-__attribute__((unused));
-
-static inline void
-PSgstate()
 __attribute__((unused));
 
 static inline void
@@ -500,27 +492,15 @@ PSyshow(const char* s, const float* numarray, int size)
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 static inline void
-PScurrentgstate(int gst)
-{
-  DPScurrentgstate(DEFCTXT, gst);
-}
-
-static inline void
-PSgrestore()
-{
-  DPSgrestore(DEFCTXT);
-}
-
-static inline void
 PSgsave()
 {
   DPSgsave(DEFCTXT);
 }
 
 static inline void
-PSgstate()
+PSgrestore()
 {
-  DPSgstate(DEFCTXT);
+  DPSgrestore(DEFCTXT);
 }
 
 static inline void

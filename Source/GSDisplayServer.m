@@ -444,7 +444,7 @@ GSCurrentServer(void)
 }
 
 /** Changes window's the backing store to type */
-- (void) windowbacking: (NSBackingStoreType)type
+- (void) windowbacking: (NSBackingStoreType)type : (int) win
 {
   [self subclassResponsibility: _cmd];
 }

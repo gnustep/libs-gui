@@ -66,4 +66,8 @@ APPKIT_EXPORT NSString *NSWindowServerCommunicationException;
 APPKIT_EXPORT NSString *NSWordTablesReadException;
 APPKIT_EXPORT NSString *NSWordTablesWriteException;
 
+#ifndef	NO_GNUSTEP
+APPKIT_EXPORT NSString *GSWindowServerInternalException;
+#endif
+
 #endif /* __AppKit_AppKitExceptions_h__ */

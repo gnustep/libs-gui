@@ -39,6 +39,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
+#include "AppKit/AppKitExceptions.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSWindow.h"
@@ -463,14 +464,10 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-  methodTable.DPScurrentgstate_ =
-    GET_IMP(@selector(DPScurrentgstate:));
   methodTable.DPSgrestore =
     GET_IMP(@selector(DPSgrestore));
   methodTable.DPSgsave =
     GET_IMP(@selector(DPSgsave));
-  methodTable.DPSgstate =
-    GET_IMP(@selector(DPSgstate));
   methodTable.DPSinitgraphics =
     GET_IMP(@selector(DPSinitgraphics));
   methodTable.DPSsetgstate_ =
@@ -652,6 +649,16 @@ NSGraphicsContext	*GSCurrentContext()
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
   return mptr;
+}
+
+- (id) subclassResponsibility: (SEL)aSel
+{
+  [NSException raise: GSWindowServerInternalException
+    format: @"subclass %s(%s) should override %s", 
+	       object_get_class_name(self),
+	       GSObjCIsInstance(self) ? "instance" : "class",
+	       sel_get_name(aSel)];
+  return nil;
 }
 
 @end
@@ -876,12 +883,6 @@ NSGraphicsContext	*GSCurrentContext()
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 
-/** Depcreciated. Same as -GSReplaceGState: */
-- (void) DPScurrentgstate: (int)gst
-{
-  [self subclassResponsibility: _cmd];
-}
-
 /** Pops a previously saved gstate from the gstate stack and makes it
     current. Drawing information in the previously saved gstate
     becomes the current information */
@@ -894,13 +895,6 @@ NSGraphicsContext	*GSCurrentContext()
     gstate stack. This saves drawing information contained in the
     gstate, such as the current path, ctm and colors. */
 - (void) DPSgsave
-{
-  [self subclassResponsibility: _cmd];
-}
-
-/** Depreciated. Use -DPSDefineGState to create a gstate it and tag it
-    with a id tag. */
-- (void) DPSgstate
 {
   [self subclassResponsibility: _cmd];
 }

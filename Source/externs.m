@@ -73,6 +73,8 @@ NSString *NSWindowServerCommunicationException = @"WindowServerCommunication";
 NSString *NSWordTablesReadException = @"WordTablesRead";
 NSString *NSWordTablesWriteException = @"WordTablesWrite";
 
+NSString *GSWindowServerInternalException = @"WindowServerInternal";
+
 // Application notifications
 NSString *NSApplicationDidBecomeActiveNotification
               = @"ApplicationDidBecomeActive";

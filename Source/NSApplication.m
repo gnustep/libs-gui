@@ -104,7 +104,8 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
    * its a sever error, use a non-graphical exception handler
    */
   if (GSCurrentContext() == nil
-      || [[exception name] isEqual: NSWindowServerCommunicationException])
+      || [[exception name] isEqual: NSWindowServerCommunicationException]
+      || [[exception name] isEqual: GSWindowServerInternalException])
     {
       /* The following will raise again the exception using the base 
 	 library exception handler */

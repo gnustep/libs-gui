@@ -170,19 +170,11 @@ __attribute__((unused));
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentgstate(GSCTXT *ctxt, int gst)
-__attribute__((unused));
-
-static inline void
 DPSgrestore(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
 DPSgsave(GSCTXT *ctxt)
-__attribute__((unused));
-
-static inline void
-DPSgstate(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
@@ -705,13 +697,6 @@ GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentgstate(GSCTXT *ctxt, int gst)
-{
-  (ctxt->methods->DPScurrentgstate_)
-    (ctxt, @selector(DPScurrentgstate:), gst);
-}
-
-static inline void
 DPSgrestore(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSgrestore)
@@ -723,13 +708,6 @@ DPSgsave(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSgsave)
     (ctxt, @selector(DPSgsave));
-}
-
-static inline void
-DPSgstate(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSgstate)
-    (ctxt, @selector(DPSgstate));
 }
 
 static inline void
