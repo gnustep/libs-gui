@@ -1547,7 +1547,7 @@ static SEL getSel;
 {
   if ([_selectedCell isEntryAcceptable: [aTextObject text]] == NO)
     {
-      [self sendAction: _errorAction to: [self target]];
+      [self sendAction: _errorAction to: _target];
       return NO;
     }
 
@@ -2601,7 +2601,7 @@ static SEL getSel;
 
 - (void) setTarget: anObject
 {
-  ASSIGN(_target, anObject);
+  _target = anObject;
 }
 
 - (id) target
