@@ -728,10 +728,12 @@
 
   if (NSTiffRead(image, info, [self bitmapData]))
     {
+      OBJC_FREE(info);
       RELEASE(self);
       NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
       return nil;
     }
+  OBJC_FREE(info);
 
   return self;
 }
