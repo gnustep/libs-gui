@@ -129,11 +129,15 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void)_setOwnedByPopUp: (BOOL)flag
 {
-  menu_is_beholdenToPopUpButton = flag;
-
-  if (flag == YES)
+  if (menu_is_beholdenToPopUpButton != flag)
     {
-      [titleView removeFromSuperviewWithoutNeedingDisplay];
+      menu_is_beholdenToPopUpButton = flag;
+      if (flag == YES)
+	{
+	  [titleView removeFromSuperviewWithoutNeedingDisplay];
+	  [aWindow setLevel: NSPopUpMenuWindowLevel];
+	  [bWindow setLevel: NSPopUpMenuWindowLevel];
+	}
     }
 }
 

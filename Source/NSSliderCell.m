@@ -41,7 +41,7 @@
 
 - (id) init
 {
-  [self initImageCell: nil];
+  self = [self initImageCell: nil];
   _altIncrementValue = -1;
   _isVertical = -1;
   _minValue = 0;
@@ -56,8 +56,8 @@
 
 - (void) dealloc
 {
-  [_titleCell release];
-  [_knobCell release];
+  RELEASE(_titleCell);
+  RELEASE(_knobCell);
   [super dealloc];
 }
 
@@ -74,19 +74,21 @@
 
 - (NSRect) knobRectFlipped: (BOOL)flipped
 {
-  NSImage* image = [_knobCell image];
-  NSSize size;
-  NSPoint origin;
-  float floatValue = [self floatValue];
+  NSImage	*image = [_knobCell image];
+  NSSize	size;
+  NSPoint	origin;
+  float		floatValue = [self floatValue];
 
   if (_isVertical && flipped)
-    floatValue = _maxValue + _minValue - floatValue;
+    {
+      floatValue = _maxValue + _minValue - floatValue;
+    }
 
   floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
 
   size = [image size];
 
-  if (_isVertical)
+  if (_isVertical == YES)
     {
       origin = _trackRect.origin;
       origin.y += (_trackRect.size.height - size.height) * floatValue;
@@ -112,34 +114,39 @@
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
-  NSImage* image;
-  NSSize size;
+  BOOL		vertical = (cellFrame.size.height > cellFrame.size.width);
+  NSImage	*image;
+  NSSize	size;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
   [controlView lockFocus];
-  if (vertical != _isVertical) {
-    if (vertical) {
-      image = [NSImage imageNamed: @"common_SliderVert"];
-      size = [image size];
-      [_knobCell setImage: image];
-      [image setSize: NSMakeSize (cellFrame.size.width, size.height)];
+  if (vertical != _isVertical)
+    {
+      if (vertical == YES)
+	{
+	  image = [NSImage imageNamed: @"common_SliderVert"];
+	  size = [image size];
+	  [_knobCell setImage: image];
+	  [image setSize: NSMakeSize (cellFrame.size.width, size.height)];
+	}
+      else
+	{
+	  image = [NSImage imageNamed: @"common_SliderHoriz"];
+	  size = [image size];
+	  [_knobCell setImage: image];
+	  [image setSize: NSMakeSize (size.width, cellFrame.size.height)];
+	}
     }
-    else {
-      image = [NSImage imageNamed: @"common_SliderHoriz"];
-      size = [image size];
-      [_knobCell setImage: image];
-      [image setSize: NSMakeSize (size.width, cellFrame.size.height)];
-    }
-  }
   _isVertical = vertical;
 
   _trackRect = cellFrame;
 
   [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-  if (_titleCell)
-    [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
+  if (_titleCell == YES)
+    {
+      [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
+    }
   [self drawKnob];
   [controlView unlockFocus];
 }
@@ -151,18 +158,18 @@
 
 - (float) knobThickness
 {
-  NSImage* image = [_knobCell image];
-  NSSize size = [image size];
+  NSImage	*image = [_knobCell image];
+  NSSize	size = [image size];
 
   return _isVertical ? size.height : size.width;
 }
 
 - (void) setKnobThickness: (float)thickness
 {
-  NSImage* image = [_knobCell image];
-  NSSize size = [image size];
+  NSImage	*image = [_knobCell image];
+  NSSize	size = [image size];
 
-  if (_isVertical)
+  if (_isVertical == YES)
     size.height = thickness;
   else
     size.width = thickness;
@@ -258,6 +265,7 @@
 - (float) floatValue
 {
   float	aFloat = [super floatValue];
+
   if (aFloat < _minValue)
     return _minValue;
   else if (aFloat > _maxValue)

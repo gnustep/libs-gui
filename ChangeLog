@@ -1,3 +1,11 @@
+2000-04-13  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m: ([-_setOwnedBypopUp:]) set correct window level for
+	popup menu windows.
+	* Source/NSApplication.m: ([-beginModalSessionForWindow:]) set correct
+	window level for panels now that WindowMaker supports it.
+	* Source/NSSliderCell.m: Minor tidyups
+
 2000-04-12  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
 
 	* Model/GMAppKit.m: Added methods for NSSliderCell.
