@@ -32,8 +32,9 @@
 		
 2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
         
-	* Source/NSComboBoxCell.m: Fixed problems related to decoding an encoded
-	combo box previous version (Bug reported by Gregory Casamento).
+	* Source/NSComboBoxCell.m: Fixed problems related to decoding an
+	encoded combo box previous version (Bug reported by Gregory
+	Casamento).
 
 2004-05-29  Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -94,9 +95,9 @@
 	* Source/NSToolbarItem.m:
 	* Headers/AppKit/NSToolbarItem.h:
 	* Source/NSWindow+Toolbar.m:
-	Last part in the validation implementation, border taken in account by the 
-	layout process, lot of memory leaks fixed, selected item possibility 
-	implemented and other minor improvements.
+	Last part in the validation implementation, border taken in
+	account by the layout process, lot of memory leaks fixed, selected
+	item possibility implemented and other minor improvements.
 	
 2004-05-18  Quentin Mathe  <qmathe@club-internet.fr>
 
@@ -104,13 +105,15 @@
 	color is now no color), part of the toolbar validation mechanism
 	and other minor changes.
 	* Headers/GNUstepGUI/GSToolbarView.h: Same.
-	* Source/NSToolbarItem.m: Added part of the toolbar validation mechanism,
-	new menuFormRepresentation implementation to have the menu item titles
-	used as label with the text display mode and other minor changes.
+	* Source/NSToolbarItem.m: Added part of the toolbar validation
+	mechanism, new menuFormRepresentation implementation to have the
+	menu item titles used as label with the text display mode and
+	other minor changes.
 
 2004-05-14  Adam Fedor  <fedor@gnu.org>
 
-	* Source/NSDocumentController.m ([NSDocumentController -currentDirectory]): 
+	* Source/NSDocumentController.m 
+	([NSDocumentController -currentDirectory]): 
 	Conform to the documentation. (Fixes #7900).
 
 	* Tools/gsnd/gsnd.m: Rename variables starting with _, indent lines 
@@ -154,8 +157,8 @@
 
 2004-05-04  Enrico Sersale  <enrico@imago.ro>
 
-	* Source/NSWindow.m ([NSWindow -sendEvent:]): Doesn't makeKeyAndOrderFront
-  if _windowLevel == NSDesktopWindowLevel
+	* Source/NSWindow.m ([NSWindow -sendEvent:]): Doesn't
+	makeKeyAndOrderFront if _windowLevel == NSDesktopWindowLevel.
 
 2004-04-27  Adam Fedor  <fedor@gnu.org>
 
@@ -210,8 +213,8 @@
 
         With the help of Fred Kiefer and Alexander Malmberg, the modifications
 	below are mainly introduced to fix the fact -[NSCell performClick:] 
-	doesn't work correctly when the cell frame is not identical to the control 
-	frame which is displaying it :
+	doesn't work correctly when the cell frame is not identical to the
+	control frame which is displaying it :
         * Source/NSButton.m: Removed -performClick: method already present in
 	the superclass NSControl.
 	* Headers/AppKit/NSButton.h: Same.
@@ -224,8 +227,9 @@
 	* Headers/AppKit/NSCell.h: Same
 	* Source/NSControl.m: Modified -performClick: method to use the new
 	NSCell method -performClickWithFrame:inView:.
-        * Source/NSPopUpButtonCell.m: Modified -performClickWithFrame:inView: to
-	override the new method with the same name in the superclass NSCell.
+        * Source/NSPopUpButtonCell.m: Modified
+	-performClickWithFrame:inView: to override the new method with the
+	same name in the superclass NSCell.
 
 2004-04-02  Quentin Mathe <qmathe@club-internet.fr>
 
@@ -1431,7 +1435,8 @@
 
 2003-10-18  16:48  Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/NSOutlineView.m: Added full gsdoc documentation for this class.
+	* Source/NSOutlineView.m: Added full gsdoc documentation for this
+	class.
 	
 2003-10-17  Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -1736,8 +1741,10 @@
 2003-08-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindowController.m
-	Changed [setWindow:] to manage the notification connection to the window.
-	[initWithWindow:], [dealloc] and [_windowWillClose:] now use [setWindow:].
+	Changed [setWindow:] to manage the notification connection to the
+	window.
+	[initWithWindow:], [dealloc] and [_windowWillClose:] now use
+	[setWindow:].
 	[setDocument:] now no longer retains the document, as this is
 	already retaining the window controller. Simplified [loadWindow]
 	by using the method [windowNibPath].
@@ -2555,7 +2562,7 @@
 	helpers::glyphForCharacter:index:positions::, getGlyphs:range:,
 	characterRangeForGlyphRange:actualGlyphRange:,
 	glyphRangeForCharacterRange:actualCharacterRange:,
-	invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:, 
+	invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:,
 	insertTextContainer:atIndex:):
 	Removed compiler warning about signed/unsigned comparision. 
 
@@ -2785,14 +2792,17 @@
 
 	* Headers/gnustep/gui/NSDataLinkPanel.h: Added ivar declarations
 	for the data link panel.
-	* Source/NSDataLinkPanel.m: Added some implementations for panel methods.
-	* Source/NSDataLinkManager.m: Manages the data links for an application.
+	* Source/NSDataLinkPanel.m: Added some implementations for panel
+	methods.
+	* Source/NSDataLinkManager.m: Manages the data links for an
+	application.
 	added implementation for some methods.
-	* Headers/gnustep/gui/NSFontPanel.h: Added topView and bottomView and sizes
-	for use by accessory view code.
-	* Source/NSFontPanel.m: Added implementation for _getOriginalSize and also
-	for sertAccessoryView.  Previously the setAccessoryView method was causing
-	the accessory view to overlay the content view of the window.
+	* Headers/gnustep/gui/NSFontPanel.h: Added topView and bottomView
+	and sizes for use by accessory view code.
+	* Source/NSFontPanel.m: Added implementation for _getOriginalSize
+	and also for sertAccessoryView.  Previously the setAccessoryView
+	method was causing the accessory view to overlay the content view
+	of the window.
 	* Panels/GNUmakefile: added GSDataLinkPanel.gorm in the makefile.
 	* Source/NSBundleAdditions.m: Skeletal implementation of GSObjectData
 	class.
@@ -2912,7 +2922,8 @@
 	* Source/NSWorkspace.m: Add support for generic application icon.
 	Reduce private method name pollution a little.
 	* Images/common_UnknownApplication.tiff: copied from WM ...
-	* Images/common_UnknownTool.tiff: similar image for unix cmd-line tools.
+	* Images/common_UnknownTool.tiff: similar image for unix cmd-line
+	tools.
 	* Source/NSApplication.m: Add some user info to the launch
 	notification (provided by urbanek@host.sk).
 
@@ -2979,8 +2990,9 @@ Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 2003-04-28  Nicola Pero  <nicola@nicola.brainstorm.co.uk>
 
-	* Resources/GNUmakefile (gui-resources_RESOURCE_FILES_INSTALL_DIR): Define
-	using the full relative path.
+	* Resources/GNUmakefile
+	(gui-resources_RESOURCE_FILES_INSTALL_DIR): Define using the full
+	relative path.
 
 2003-04-27  Adam Fedor  <fedor@gnu.org>
 
@@ -3058,8 +3070,8 @@ Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	Moved the computation of the cell size into the method [setFont:]
 	and use this in [init]. Added call to [setNeedsSizing:] in
 	[setHorizontalEdgePadding:]. In [locationForSubmenu:] check for
-	the interface style of the submenu.  Also cleaned up up coding style and
-	comments in the whole file.
+	the interface style of the submenu.  Also cleaned up up coding
+	style and comments in the whole file.
 	* Headers/gnustep/gui/NSParagraphStyle.h
 	Added new ivar and methods from MacOSX to handle writing directions.
 	* Source/NSParagraphStyle.m
@@ -3327,7 +3339,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 2003-03-28  Serg Stoyan  <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m:
-	(displayTransient:): Call [self sizeToFit] before caclulating locations.
+	(displayTransient:): Call [self sizeToFit] before caclulating
+	locations.
 
 2003-04-04 02:46  Alexander Malmberg <alexander@malmberg.org>
 
@@ -3354,8 +3367,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMenu.m: renamed ivar _changed to _needsSizing.
 	([NSMenu -sizeToFit]): Changed call [_view update] to [_view sizeToFit]
-	([NSMenu -displayTransient]): call [NSMenuView-update] to ensure that the 
-	menuView knows it belongs to a transient menu
+	([NSMenu -displayTransient]): call [NSMenuView-update] to ensure
+	that the menuView knows it belongs to a transient menu.
 	([NSMenu -closeTransient]): call [NSMenuView-update] to ensue that the 
 	menuView knows it is not transient anymore.
 
@@ -3422,7 +3435,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSMenuView.m:
 	([NSMenuWindowTitleView createButton:]): Made imageSize an ivar and 
 	removed	declaration. Made rect setting with NSMakeRect().
-	([NSMenuWindowTitleView addCloseButton:]): Added button location update.
+	([NSMenuWindowTitleView addCloseButton:]): Added button location
+	update.
 	(initWithFrame:): Title adding moved int update method.
 	(setWindowFrameForAttachingToRect:): Title removing moved into update 
 	method. Call update instead sizeToFit.
@@ -3435,8 +3449,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	(sizeToFit:): Added NSMenuView update. Removed [_view sizeToFit], 
 	beacuse [_view update] calls it. Don't set window's origin if size less
 	than 1 (window is just created).
-	(display): Removed [self update] call (sizeToFit calls it). Reformatting.
-	Do not call setGeometry if menu is owned by popup.
+	(display): Removed [self update] call (sizeToFit calls
+	it). Reformatting.  Do not call setGeometry if menu is owned by popup.
 	(close): Removed [self update] call.
 	(closeTransient): ditto.
 	
@@ -3492,9 +3506,10 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	(initWithFrame:): Removed comment about _leftBorderOffset for popups,
 	because we use _leftBorderOffset for regular and popups now. Title view
 	creating added.
-	(rectOfItemAtIndex:): Removed comment about _leftBorderOffset for popups.
-	(indexOfItemAtPoint:): Idem. Add left border offset for popups too. Correct
-	calling of _addLeftBorderOffsetToRect.
+	(rectOfItemAtIndex:): Removed comment about _leftBorderOffset for
+	popups.
+	(indexOfItemAtPoint:): Idem. Add left border offset for popups
+	too. Correct calling of _addLeftBorderOffsetToRect.
 	(setNeedsDisplayForItemAtIndex:): Idem.
 	(rightMouseDown:): Ddded comment.
 
@@ -3504,8 +3519,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 2003-03-22  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
-	* Source/NSMenu.m ([NSMenu -display]): Added optimization of Michael Hanni
-	to only resize menu view when actually displayed.
+	* Source/NSMenu.m ([NSMenu -display]): Added optimization of
+	Michael Hanni to only resize menu view when actually displayed.
 	([NSMenu -setTitle:]): Idem
 	([NSMenu -sizeToFit:]): Fixed problem with jumping menus when items
 	are added.
@@ -3521,12 +3536,15 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	([NSMenuView -sizeToFit]): reformatted to conform to coding standard,
 	handle missing titleView.
 	([NSMenuView -setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:]): 
-	Reformatted to conform to coding standard.  Removed the code that removed the titleView.
-	That is handled by update.
+	Reformatted to conform to coding standard.  Removed the code that
+	removed the titleView.  That is handled by update.
 	([NSMenuView -drawRect:]): Reformatted to conform to coding standards.
-	([NSMenuWindowTitleView -init]): Reformatted to conform to coding standards.
-	([NSMenuWindowTitleView -dealloc]): new method to prevent leaking the close button.
-	([NSMenuWindowTitleView -titleSize]): Reformatted to conform to coding standard
+	([NSMenuWindowTitleView -init]): Reformatted to conform to coding
+	standards.
+	([NSMenuWindowTitleView -dealloc]): new method to prevent leaking
+	the close button.
+	([NSMenuWindowTitleView -titleSize]): Reformatted to conform to
+	coding standard
 	([NSMenuWindowTitleView -drawRect:]): idem
 	([NSMenuWindowTitleView -mouseDown:]): idem
 	([NSMenuWindowTitleView -createButton]): idem
@@ -3545,8 +3563,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	(setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
 	Remove title view. Take into account left top border while calculating 
 	screenFrame.
-	(drawRect:): Draw left top dark gray border for all types of menus with 
-	NSDrawTiledRects().
+	(drawRect:): Draw left top dark gray border for all types of menus
+	with NSDrawTiledRects().
 	
 2003-03-19  Fred Kiefer <FredKiefer@gmx.de>
 
@@ -3599,8 +3617,8 @@ Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	_horizontalEdgePad removed. Made cleanup.
 	(createButton): uses [NSButton setRefusesFirstResponder: YES] to avoid 
 	drawing dotted rectangle.
-	* Images/common_Close.tiff: Changed to look and feel like WindowMaker's 
-	close button.
+	* Images/common_Close.tiff: Changed to look and feel like
+	WindowMaker's close button.
 	* Images/common_CloseH.tiff: ditto.
 	* Images/common_3DArrowDown.tiff: Corrected position of light and 
 	dark sides of triangle.
@@ -5090,7 +5108,8 @@ Wed Dec 25 17:01:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	New method [_setupTextWithFrame:inView:editor:] with the common
 	text view setup from [editWithFrame:inView:editor:delegate:event:]
 	and [selectWithFrame:inView:editor:delegate:start:length:].
-	Calls to [setFont:] and [setAlignment:] switch the cell to NSTextCellType.
+	Calls to [setFont:] and [setAlignment:] switch the cell to
+	NSTextCellType.
 	* Source/NSButtonCell.m
 	Removed all direct usage of ivar _contents. Implemented
 	[attributedAlternateTitle] and use this in [cellSize] and 
@@ -5646,9 +5665,10 @@ Wed Sep 25 03:30:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	resource-set.make to install the files; added experimental
 	'strings' target which runs make_strings and updates the
 	Localizable.strings files.
-	* Resources/English.lproj/Localizable.strings: Updated using make strings.
-	* Resources/Italian.lproj/Localizable.strings: Updated using make strings,
-	then manually updated all translations; added missing ones.
+	* Resources/English.lproj/Localizable.strings: Updated using make
+	strings.
+	* Resources/Italian.lproj/Localizable.strings: Updated using make
+	strings, then manually updated all translations; added missing ones.
 
 Tue Sep 24 16:32:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
@@ -5780,7 +5800,8 @@ Mon Sep 23 15:23:23 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	Use _lastColumnLoaded instead of _lastVisibleColumn  in
 	[selectAll:]. Implemented MacOSX [drawTitleOfColumn:inRect:]. 
 	Optimized [matrixInColumn:] and use it where suitable.
-	Moved calls to [_adjustMatrixOfColumn:] inside of [_performLoadOfColumn:]
+	Moved calls to [_adjustMatrixOfColumn:] inside of
+	[_performLoadOfColumn:].
 	
 2002-09-15  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
@@ -5846,7 +5867,8 @@ Fri Sep 13 09:36:06 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	Don't ignore textContainer's inset.
 
 	* Source/GSSimpleLayoutManager.m
-	Replaced [-drawLinesInLineRange:] with [-drawLinesInLineRange:atPoint:].
+	Replaced [-drawLinesInLineRange:] with
+	[-drawLinesInLineRange:atPoint:].
 	Replaced [-drawSelectionAsRangeNoCaret:] with
 	[-drawSelectionAsRangeNoCaret:atPoint:].
 	Those replacements make it easier to take inset into account.
@@ -6382,12 +6404,13 @@ Sat Jun 22 17:26:18 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 Sat Jun 22 16:46:59 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Headers/gnustep/gui/NSInputManager.h ([-loadBindingsFromFile:]): Made it 
-	a public method.
+	* Headers/gnustep/gui/NSInputManager.h ([-loadBindingsFromFile:]):
+	Made it a public method.
 	* Source/NSInputManager.m ([-initWithName:host:]): Changed the way
 	in which keybindings loading is controlled via user defaults, now
 	simpler and more powerful.  Hopefully this is the final version.
-	* Documentation/gsdoc/DefaultsSummary.gsdoc: Documented the keybinding defaults.
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Documented the
+	keybinding defaults.
 	* Documentation/gsdoc/DefaultsSummary.html: Regenerated.
 
 Sat Jun 22 15:19:31 2002  Nicola Pero  <n.pero@mi.flashnet.it>
@@ -6424,7 +6447,8 @@ Sat Jun 22 14:59:36 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 Sat Jun 22 14:53:27 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Headers/gnustep/gui/NSAffineTransform.h ([-rotateByAngle:]): Method removed.
+	* Headers/gnustep/gui/NSAffineTransform.h ([-rotateByAngle:]):
+	Method removed.
 	* Source/NSAffineTransform.m Idem.
 	* Source/NSAffineTransform.m ([-setFrameRotation:]): Use
 	rotateByDegrees:, not rotateByAngle:
@@ -6436,7 +6460,8 @@ Sat Jun 22 14:52:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 Sat Jun 22 14:46:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Headers/gnustep/gui/NSAffineTransform.h ([+matrixFrom:]): Method removed.
+	* Headers/gnustep/gui/NSAffineTransform.h ([+matrixFrom:]): Method
+	removed.
 	* Source/NSAffineTransform.m: Idem.
 
 Sat Jun 22 14:34:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
@@ -6644,7 +6669,8 @@ Tue May 21 16:54:20 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	In initSystemColors() and systemColorWithName() replaced
 	implementation of system colours with named colours from a stored
 	colour list. Added conversion cache for named colours. This allows
-	easy configuration of system colours while keeping the same performance.
+	easy configuration of system colours while keeping the same
+	performance.
 	* Source/NSFont.m
 	Moved the caching of fonts from [initWithName:matrix:] to
 	[fontWithName:matrix:] so that unneeded fonts are no longer
@@ -6819,8 +6845,8 @@ Thu Apr 11 22:15:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	whole <Foundation/Foundation>, but rather use the minimum @class
 	and #include needed to have it parsed - so that everything
 	compiles faster.
-	* Headers/gnustep/gui/NSProgressIndicator.h: Added missing @class and #include
-	directives.
+	* Headers/gnustep/gui/NSProgressIndicator.h: Added missing @class
+	and #include directives.
 	* Headers/gnustep/gui/NSTextStorage.h: Added missing #include.
 	* Headers/gnustep/gui/NSTextView.m: Added missing @class.
 	* Source/GSComboSupport.m: Added missing #includes.
@@ -7212,7 +7238,8 @@ Tue Mar 26 14:33:24 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 Mon Mar 25 00:12:05 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Source/GSSimpleLayoutManager.m ([-setNeedsDisplayForLineRange:inTextContainer:]): 
+	* Source/GSSimpleLayoutManager.m
+	([-setNeedsDisplayForLineRange:inTextContainer:]):
 	Fixed typo introduced by me in last change (reported by Alexander
 	Malmberg).
 	
@@ -7566,7 +7593,8 @@ Wed Feb 27 23:16:47 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m
-	[_relocLayoutArray:offset:floatTrift:Change a NSLog() call to NSDebugLog().
+	[_relocLayoutArray:offset:floatTrift:Change a NSLog() call to
+	NSDebugLog().
 	* Source/NSLayoutManager.m
 	Implemented extra line fragment methods.
 	* Source/NSTextView.m
@@ -7578,12 +7606,14 @@ Wed Feb 27 19:58:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCStringText.m: Obsolete file removed.
 	* Headers/gnustep/gui/NSCStringText.h: Obsolete file removed.
-	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Removed NSCStringText.m
+	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Removed
+	NSCStringText.m.
 	(libgnustep-gui_HEADER_FILES): Removed NSCStringText.h.
 
 Wed Feb 27 18:59:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Headers/gnustep/gui/NSInputManager.h (_insertControlKeystrokes): New ivar.
+	* Headers/gnustep/gui/NSInputManager.h (_insertControlKeystrokes):
+	New ivar.
 	* Source/NSInputManager.m ([-initWithName:host:]):
 	Read the user default GSInsertControlKeystrokes and save it.
 	* Source/NSInputManager.m ([-handleKeyboardEvents:client:]): When
@@ -7768,7 +7798,8 @@ Sat Feb 23 12:11:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	changes -
 	* Source/NSMenuView.m ([-setMenu:]): Do not retain menu.
 	([-dealloc]): Do not release menu.
-	* Source/NSMenuItemCell.m ([-setMenuView:]): Do not retain the menu view.
+	* Source/NSMenuItemCell.m ([-setMenuView:]): Do not retain the
+	menu view.
 	([-dealloc]): Do not release the menu view.
 	([-copyWithZone:]): Set the menuView of the new cell to nil.
 	* Source/NSMenuItemCell.m ([+initialize]): Set version to 2.
@@ -7802,8 +7833,8 @@ Fri Feb 22 22:55:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	
 Fri Feb 22 21:03:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Headers/gnustep/gui/NSApplication.h (_runLoopPool): Store the main run loop
-	autorelease pool in a ivar.
+	* Headers/gnustep/gui/NSApplication.h (_runLoopPool): Store the
+	main run loop autorelease pool in a ivar.
 	* Source/NSApplication.m ([-run]): Use the _runLoopPool rather
 	than a local pool.  Also, check for recursive invocation, and
 	enclose into an autorelease pool the last instructions.
@@ -8439,7 +8470,8 @@ Fri Dec 21 14:37:45 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 	postDragEvent:]. 
 	Replaced most [NSScreen mainScreen] with [self screen].
 	* Headers/gnustep/gui/NSGraphicContext.h
-	Removed method [_postExternalEvents:]. Added method [GSResolutionForScreen:].
+	Removed method [_postExternalEvents:]. Added method
+	[GSResolutionForScreen:].
 	* Headers/gnustep/gui/NSGraphic.h
 	* Headers/gnustep/gui/GSMethodTable.h
 	Added GSResolutionForScreen.
@@ -8763,7 +8795,8 @@ Fri Nov 30 12:58:45 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 	* Source/NSWorkspace.m
 	A lot of cleanup. Implemented the new methods. [openFile:XXX] no
 	longer show alert panels, as this should be done by the caller.
-	[launchApplication:XXX] now checks if the application is already running.
+	[launchApplication:XXX] now checks if the application is already
+	running.
 	
 2001-11-25  Gregory John Casamento <greg_casamento@yahoo.com>
 
