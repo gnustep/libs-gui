@@ -1,3 +1,13 @@
+2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
+
+	* Source/NSPopUpButton.m:
+	(mouseDown:): Beep and return if menu items array is empty.
+	(keyDown:): ditto.
+	
+	* Source/NSPopUpButtonCell.m:
+	(removeAllItems:): Revert last change. Really remove all items.
+	(drawWithFrame:inView:): Draw temporary cell if no items in menu.
+
 2003-04-12  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSPopUpButtonCell.m:
