@@ -1,3 +1,15 @@
+2000-04-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-_updateBoundsMatrix): New method from
+	common code in other methods.
+	(-setFrame:): Use it. Also check if frame actually changed before
+	doing something.
+	(-scaleUnitSquareToSize): Use it.
+	(-setBounds): Likewise.
+	(-setBoundsSize:): Likewise.
+	(-resizeWithOldSuperviewSize:) Likewise. Also use setFrame to actually
+	set the frame (This is apparently what OpenStep 4.2 does).
+
 2000-04-24  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSFont.m (-isEqual:): Implement.

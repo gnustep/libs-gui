@@ -570,8 +570,44 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+- (void) _updateBoundsMatrix
+{
+  float sx;
+  float sy;
+  
+  if (_bounds.size.width == 0)
+    {
+      if (_frame.size.width == 0)
+	sx = 1;
+      else
+	sx = FLT_MAX;
+    }
+  else
+    {
+      sx = _frame.size.width / _bounds.size.width;
+    }
+  
+  if (_bounds.size.height == 0)
+    {
+      if (_frame.size.height == 0)
+	sy = 1;
+      else
+	sy = FLT_MAX;
+    }
+  else
+    {
+      sy = _frame.size.height / _bounds.size.height;
+    }
+  
+  [_boundsMatrix scaleTo: sx : sy];
+  if (sx != 1 || sy != 1)
+    _is_rotated_or_scaled_from_base = YES;
+}
+
 - (void) setFrame: (NSRect)frameRect
 {
+  BOOL	changedOrigin = NO;
+  BOOL	changedSize = NO;
   NSSize old_size = _frame.size;
 
   if (frameRect.size.width < 0)
@@ -584,19 +620,36 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       frameRect.size.height = 0;
     }
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
+
+  if (NSMinX(_frame) != NSMinX(frameRect) 
+      || NSMinY(_frame) != NSMinY(frameRect))
+    changedOrigin = YES;
+  if (NSWidth(_frame) != NSWidth(frameRect) 
+      || NSHeight(_frame) != NSHeight(frameRect))
+    changedSize = YES;
+  
   _frame = frameRect;
   _bounds.size = _frame.size;
-  [_frameMatrix setFrameOrigin: _frame.origin];
+  if (changedOrigin)
+    [_frameMatrix setFrameOrigin: _frame.origin];
 
-  [self resizeSubviewsWithOldSize: old_size];
-  if (_post_frame_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewFrameDidChangeNotification
-				  object: self];
+  if (changedSize && _is_rotated_or_scaled_from_base)
+    {
+      [self _updateBoundsMatrix];
+    }
+
+  if (changedSize || changedOrigin)
+    {
+      if (_coordinates_valid)
+	{
+	  (*invalidateImp)(self, invalidateSel);
+	}
+      [self resizeSubviewsWithOldSize: old_size];
+      if (_post_frame_changes)
+	[[NSNotificationCenter defaultCenter]
+	  postNotificationName: NSViewFrameDidChangeNotification
+	                object: self];
+    }
 }
 
 - (void) setFrameOrigin: (NSPoint)newOrigin
@@ -680,9 +733,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
-  float sx;
-  float sy;
-
   if (newSize.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -701,32 +751,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.size.height = _frame.size.height / newSize.height;
 
   _is_rotated_or_scaled_from_base = YES;
-
-  if (_bounds.size.width == 0)
-    {
-      if (_frame.size.width == 0)
-	sx = 1;
-      else
-	sx = FLT_MAX;
-    }
-  else
-    {
-      sx = _frame.size.width / _bounds.size.width;
-    }
-
-  if (_bounds.size.height == 0)
-    {
-      if (_frame.size.height == 0)
-	sy = 1;
-      else
-	sy = FLT_MAX;
-    }
-  else
-    {
-      sy = _frame.size.height / _bounds.size.height;
-    }
-
-  [_boundsMatrix scaleBy: sx : sy];
+  
+  [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -736,8 +762,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBounds: (NSRect)aRect
 {
-  float sx, sy;
-
   if (aRect.size.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -755,35 +779,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds = aRect;
   [_boundsMatrix
     setFrameOrigin: NSMakePoint(-_bounds.origin.x,-_bounds.origin.y)];
-
-  if (_bounds.size.width == 0)
-    {
-      if (_frame.size.width == 0)
-	sx = 1;
-      else
-	sx = FLT_MAX;
-    }
-  else
-    {
-      sx = _frame.size.width / _bounds.size.width;
-    }
-
-  if (_bounds.size.height == 0)
-    {
-      if (_frame.size.height == 0)
-	sy = 1;
-      else
-	sy = FLT_MAX;
-    }
-  else
-    {
-      sy = _frame.size.height / _bounds.size.height;
-    }
-
-  [_boundsMatrix scaleTo: sx : sy];
-
-  if (sx != 1 || sy != 1)
-    _is_rotated_or_scaled_from_base = YES;
+  [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -811,8 +807,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsSize: (NSSize)newSize
 {
-  float sx, sy;
-
   if (newSize.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -829,35 +823,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 
   _bounds.size = newSize;
-
-  if (_bounds.size.width == 0)
-    {
-      if (_frame.size.width == 0)
-	sx = 1;
-      else
-	sx = FLT_MAX;
-    }
-  else
-    {
-      sx = _frame.size.width / _bounds.size.width;
-    }
-
-  if (_bounds.size.height == 0)
-    {
-      if (_frame.size.height == 0)
-	sy = 1;
-      else
-	sy = FLT_MAX;
-    }
-  else
-    {
-      sy = _frame.size.height / _bounds.size.height;
-    }
-
-  [_boundsMatrix scaleTo: sx : sy];
-
-  if (sx != 1 || sy != 1)
-    _is_rotated_or_scaled_from_base = YES;
+  [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -1149,7 +1115,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   float		change;
   float		changePerOption;
   int		options = 0;
-  NSSize	old_size = _frame.size;
+  NSRect        newFrame, newBounds;
   NSSize	superViewFrameSize = [_super_view frame].size;
   BOOL		changedOrigin = NO;
   BOOL		changedSize = NO;
@@ -1157,6 +1123,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_autoresizingMask == NSViewNotSizable)
     return;
 
+  newFrame = _frame;
+  newBounds = _bounds;
   /*
    * determine if and how the X axis can be resized
    */
@@ -1177,18 +1145,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (_autoresizingMask & NSViewWidthSizable)
 	{
-	  float oldFrameWidth = _frame.size.width;
+	  float oldFrameWidth = newFrame.size.width;
 
-	  _frame.size.width += changePerOption;
+	  newFrame.size.width += changePerOption;
 	  if (_is_rotated_or_scaled_from_base)
-	    _bounds.size.width *= _frame.size.width/oldFrameWidth;
+	    newBounds.size.width *= newFrame.size.width/oldFrameWidth;
 	  else
-	    _bounds.size.width += changePerOption;
+	    newBounds.size.width += changePerOption;
 	  changedSize = YES;
 	}
       if (_autoresizingMask & NSViewMinXMargin)
 	{
-	  _frame.origin.x += changePerOption;
+	  newFrame.origin.x += changePerOption;
 	  changedOrigin = YES;
 	}
     }
@@ -1214,13 +1182,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (_autoresizingMask & NSViewHeightSizable)
 	{
-	  float oldFrameHeight = _frame.size.height;
+	  float oldFrameHeight = newFrame.size.height;
 
-	  _frame.size.height += changePerOption;
+	  newFrame.size.height += changePerOption;
 	  if (_is_rotated_or_scaled_from_base)
-	    _bounds.size.height *= _frame.size.height/oldFrameHeight;
+	    newBounds.size.height *= newFrame.size.height/oldFrameHeight;
 	  else
-	    _bounds.size.height += changePerOption;
+	    newBounds.size.height += changePerOption;
 	  changedSize = YES;
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
@@ -1229,7 +1197,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	    {
 	      if (_autoresizingMask & NSViewMaxYMargin)
 		{
-		  _frame.origin.y += changePerOption;
+		  newFrame.origin.y += changePerOption;
 		  changedOrigin = YES;
 		}
 	    }
@@ -1237,56 +1205,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	    {
 	      if (_autoresizingMask & NSViewMinYMargin)
 		{
-		  _frame.origin.y += changePerOption;
+		  newFrame.origin.y += changePerOption;
 		  changedOrigin = YES;
 		}
 	    }
 	}
     }
-
-  if (changedOrigin)
-    [_frameMatrix setFrameOrigin: _frame.origin];
-
+  [self setFrame: newFrame];
+  /* Since setFrame sets the bounds itself, reset it correctly */
+  _bounds = newBounds;
   if (changedSize && _is_rotated_or_scaled_from_base)
-    {
-      float sx;
-      float sy;
-
-      if (_bounds.size.width == 0)
-	{
-	  if (_frame.size.width == 0)
-	    sx = 1;
-	  else
-	    sx = FLT_MAX;
-	}
-      else
-	{
-	  sx = _frame.size.width / _bounds.size.width;
-	}
-
-      if (_bounds.size.height == 0)
-	{
-	  if (_frame.size.height == 0)
-	    sy = 1;
-	  else
-	    sy = FLT_MAX;
-	}
-      else
-	{
-	  sy = _frame.size.height / _bounds.size.height;
-	}
-
-      [_boundsMatrix scaleTo: sx : sy];
-    }
-
-  if (changedSize || changedOrigin)
-    {
-      if (_coordinates_valid)
-	{
-	  (*invalidateImp)(self, invalidateSel);
-	}
-      [self resizeSubviewsWithOldSize: old_size];
-    }
+    [self _updateBoundsMatrix];
 }
 
 - (void) allocateGState
@@ -1368,6 +1297,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       w = NSWidth(rect);
       h = NSHeight(rect);
       DPSrectviewclip(ctxt, x, y, w, h);
+
+      /* Add any scaling due to the bounds matrix */
+      //[_boundsMatrix concat];
 
       /* Allow subclases to make other modifications */
       [self setUpGState];
