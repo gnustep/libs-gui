@@ -1,0 +1,225 @@
+<html><head>
+ <title>User Defaults Summary for GNUstep Libraries</title>
+</head>
+<body>
+<h1>User Defaults Summary for GNUstep Libraries</h1>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Adam Fedor</a>
+<dd>
+</dl>
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">Defaults Summary</a></h2>
+<p>
+
+        This document contains a summary of available user default
+        values that one can set to control the operation of the GNUstep
+        libraries.
+      </p>
+<h3><a name ="cont-1">GUI Library Defaults</a></h3>
+<p>
+
+      Below is a list of defaults used to control the gnustep-gui library.
+      </p>
+<dl>
+<dt>GSBackend
+<dd>
+          <p>
+
+          A string containing the name of the backend bundle to use
+          for display specific GUI handling. The default is
+          "libgnustep-xgps.bundle". Currently the only other choice is
+          "libgnustep-xdps.bundle".
+          </p>
+
+	  
+<dt>GSBrowserCellFontify
+<dd>
+          <p>
+
+          A boolean value, <code>NO</code> by default.  When the feature is on,
+          NSBrowserCell draws non-leaf cells in bold system font.
+          For example, when the feature is on, in a SavePanel (or OpenPanel),
+          directory entries are drawn in bold, while simple files are drawn in
+          non bold.
+          </p>
+
+	  
+<dt>GSSavePanelShowProgress
+<dd>
+          <p>
+
+          A boolean value, <code>NO</code> by default.  When the
+          feature is on, the save panel and its subclasses (such as
+          the open panel) displays "Reading Directory ***.."
+          (progressively adding dots) in the window titlebar while
+          reading very big directories (more than 100 entries).  This
+          is meant to make things friendlier for slow computers. Not
+          well tested.
+          </p>
+
+	  
+<dt>GSLogWorkspaceTimeout
+<dd>
+          <p>
+
+          A boolean value that defaults to <code>NO</code>. This is a
+          obscure and probably not useful default. NSWorkspace tries
+          to receive distributed notifications, but if a distributed
+          objects server cannot be found or some other error occurs,
+          it raises an exception which normally terminates the
+          program. Setting this default causes NSWorkspace to just log
+          the problem without raising an exception.
+          </p>
+
+	  
+<dt>NSInterfaceStyleDefault
+<dd>
+          <p>
+
+          A string describing the interface style. Setting this may
+          change various aspects of how the library draws elements and
+          responds to user interaction. See the NSInterfaceStyle
+          documentation for more information.
+          </p>
+
+	  
+<dt>NSMenuInterfaceStyle
+<dd>
+          <p>
+
+          An interface style specific to menu operation. See
+          NSInterfaceStyleDefault.
+          </p>
+
+	  
+<dt>NSCommandKeys
+<dd>
+          <p>
+
+          A dictionary of command key equivalents for menu items. The
+          key contains the title of the menu item and the value is the
+          command key equivalent. For instance, one might set the
+          command key for the menu item "Copy" to "C".
+          </p>
+
+	  
+<dt>NSHost
+<dd>
+          <p>
+
+          Used by NSPasteboard to find the host on which the
+          pasteboard server is running.
+          </p>
+
+	  
+<dt>NSMeasurementUnit
+<dd>
+          <p>
+
+          A string describing the measurement unit for rulers (see the
+          NSRulerView class documentation). The default is
+          Centimeters. Other possible values are Inches, Points, and Picas.
+          </p>
+
+	  
+<dt><em>System Colors</em>
+<dd>
+          <p>
+
+          System colors may be set using the defaults system. System
+          colors are standard colors for drawing various GUI elements,
+          such as buttons, text, scroller, etc. The value is a
+          dictionary describing the color. The keys that can be
+          used for setting the system colors are described in the
+          documentation for NSColor.
+          </p>
+
+	  
+<dt><em>System Fonts</em>
+<dd>
+          <p>
+
+          System Fonts may be set using the defaults system. System
+          fonts are standard fonts for drawing text in GUI
+          elements. They include NSBoldFont, for instance. The value
+          is the name of the font to use. There is also a
+          cooresponding size key (e.g. NSBoldFontSize) for specifying
+          the point size of the font. The keys that can be used for
+          setting the system fonts are described in the documentation
+          for NSFont.
+          </p>
+
+	  
+</dl>
+<h3><a name ="cont-2">XGPS Backend Defaults</a></h3>
+<p>
+
+      Below is a list of defaults used to control the gnustep-xgps
+      backend. These defaults generally control system specific
+      display and user interaction options which may not be available
+      on all systems.
+      </p>
+<dl>
+<dt>NSDefaultVisual
+<dd>
+          <p>
+
+          An integer that specifies the X-Windows visual class to use
+          in the application. For instance one could display the
+          application using the PsuedoColor visual class by setting
+          the value to the id of this class. The default is the
+          X-Windows default visual class.
+          </p>
+
+	  
+<dt>NSColorsPerChannel
+<dd>
+          <p>
+
+          An integer which limits the maximum number of colors to
+          display, per channel. For a psuedo-color display, this would
+          limit the total number of colors that the application could
+          use (normally 256). For a true-color display, this would
+          limit the range of red, green, and blue values that could be used.
+          </p>
+
+	  
+<dt>XGPS-Shm
+<dd>
+          <p>
+
+          A boolean value which defaults to <code>YES</code> (as long as shared
+          memory is available). If set to <code>NO</code>, shared memory is not
+          used for various display specific operations.
+          </p>
+
+	  
+<dt>GSFontAntiAlias
+<dd>
+          <p>
+
+          A boolean value which defaults to <code>NO</code>. If set to
+          <code>YES</code> and the X-Windows system has the XFT
+          extension, then the application will use anti-aliased fonts
+          as provided by the X-Windows system.
+          </p>
+
+	  
+<dt>GraphicCompositing
+<dd>
+          <p>
+
+          A boolean value which defaults to <code>NO</code>. If set to
+          <code>YES</code>, then the application uses various tricks
+          to get alpha colors to work when compositing images. This
+          may slow down drawing of images, but it is generally
+          recommended anyway, particularly on fast systems.
+          </p>
+
+	  
+</dl>
+</body>
+
+ </html>

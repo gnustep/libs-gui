@@ -625,7 +625,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 - (void) rebuildServices
 {
   NSDictionary          *services;
-  NSUserDefaults        *defs;
   NSMutableArray        *newLang;
   NSMutableSet          *alreadyFound;
   NSMutableDictionary   *newServices;
@@ -634,8 +633,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   if (allServices == nil)
     return;
 
-  defs = [NSUserDefaults standardUserDefaults];
-  newLang = AUTORELEASE([[defs arrayForKey: @"Languages"] mutableCopy]);
+  newLang = AUTORELEASE([[NSUserDefaults userLanguages] mutableCopy]);
   if (newLang == nil)
     {
       newLang = [NSMutableArray arrayWithCapacity: 1];

@@ -131,6 +131,7 @@
       </p>
       <list>
         <item><uref url="DPSOperators.html">DPSOperators</uref></item>
+        <item><uref url="DefaultsSummary.html">Available User Defaults</uref></item>
       </list>
 
     </chapter>

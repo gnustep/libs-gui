@@ -1,3 +1,11 @@
+2001-11-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSServicesManager.m (-rebuildServices): Use userLanguages
+	method rather than getting NSLanguages default.
+
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: New file.
+	* Documentation/gsdoc/Gui.gsdoc: Include it.
+
 2001-11-27  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSClipView.m: Treat _documentView as a convienience
