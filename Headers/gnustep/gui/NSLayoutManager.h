@@ -108,15 +108,7 @@ typedef enum {
   float			_hyphenationFactor;
   NSTypesetter		*_typesetter;
 
-  /*
-    These three arrays must bekeppt in step. The size of all is 
-    _glyph_max_count with _glyph_count used entries.
-  */
-  unsigned _glyph_count; 
-  unsigned _glyph_max_count; 
-  NSGlyph *_glyphs;
-  unsigned *char_glyph_mapping;
-  unsigned *glyph_attrs;
+  void			*_glyphChunks;	// Private glyph storage.
   
   NSGlyphGenerator		*_glyphGenerator;
   NSStorage			*_containerUsedRects;

@@ -1,3 +1,9 @@
+2001-01-11  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSLayoutManager.h: Remove some unused ivars.
+	* Source/NSLayoutManager.m: Initial hacks for glyph management -
+	should have no effect on execution so far.
+
 Wed Jan 10 21:19:23 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m ([+initialize]): Save the default
