@@ -669,6 +669,7 @@ static SEL getSel = @selector(objectAtIndex:);
   BOOL	betweenCols;
   BOOL	beyondRows;
   BOOL	beyondCols;
+  BOOL nullMatrix = NO;
   int	approxRow = point.y / (cellSize.height + intercell.height);
   float	approxRowsHeight = approxRow * (cellSize.height + intercell.height);
   int	approxCol = point.x / (cellSize.width + intercell.width);
@@ -693,6 +694,11 @@ static SEL getSel = @selector(objectAtIndex:);
 	approxRow = 0;
       else if (approxRow >= numRows)
 	approxRow = numRows - 1;
+      if (numRows == 0)
+	{
+	  nullMatrix = YES;
+	  approxRow = 0;
+	}
       *row = approxRow;
     }
 
@@ -702,10 +708,15 @@ static SEL getSel = @selector(objectAtIndex:);
 	approxCol = 0;
       else if (approxCol >= numCols)
 	approxCol = numCols - 1;
+      if (numCols == 0)
+	{
+	  nullMatrix = YES;
+	  approxCol = 0;
+	}
       *column = approxCol;
     }
 
-  if (beyondRows || betweenRows || beyondCols || betweenCols)
+  if (beyondRows || betweenRows || beyondCols || betweenCols || nullMatrix)
     {
       return NO;
     }
