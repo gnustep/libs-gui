@@ -51,5 +51,5 @@ AC_SUBST(config_include)
 #--------------------------------------------------------------------
 # Write the Makefiles and configuration files
 #--------------------------------------------------------------------
-AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h)
+AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile)
 

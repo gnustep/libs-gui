@@ -1,0 +1,46 @@
+@c -*-texinfo-*-
+@chapter TODO
+
+@ifset TEXT-ONLY
+@include version.texi
+@end ifset
+
+@section Projects Looking for Volunteers
+
+If you think you can do one of these projects, please let me know.  Your
+help is greatly appreciated.  Send email to @email{scottc@@net-community.com}. 
+
+@itemize @bullet
+
+@item
+Write code!  The GNUstep GUI Library is far from complete, so there are
+plenty of areas awaiting contribution.
+
+@item
+Printing architecture.  Careful thoughts needs to go into how the
+printing capabilities can be done in the most portable way, possibly
+take into consideration systems that don't support the Display
+Ghostscript System and/or printing to non-Postscript printers.
+
+@item
+Drag and drop/pasteboard framework.  Is there a way this can be done so
+that all GNU programs can take advantage of it and not just GNUstep?
+That would be optimal because GNUstep and non-GNUstep programs would then
+be able to partially interoperate.
+
+@item
+Expand the image handling capabilities beyond OPENSTEP.  There is no
+reason why we must limit ourselves to EPS and TIFF bitmaps, we should
+have image representations for as many bitmap formats as possible;
+excluding GIF files which are currently restricted by patents.
+
+@item
+The spell server and checker; along with this would be to create an
+interface with the GNU Dictionary project.
+
+@item
+GNUstep window manager.  Though not part of the GUI Library per se, an X
+Window manager that gives the complete desktop the GNUstep look and feel
+would be a great thing to have.
+
+@end itemize

@@ -1,0 +1,242 @@
+@c -*- texinfo -*-
+@chapter Installation
+
+@ifset TEXT-ONLY
+@include version.texi
+@end ifset
+
+This file documents the installation of the GNUstep GUI 
+Library, @samp{libgnustep-gui}.  Copyright (C) 1996 Free Software
+Foundation, Inc.  You may copy, distribute, and modify it freely as long
+as you preserve this copyright notice and permission notice.
+
+This is version @value{GNUSTEP-GUI-VERSION} of the GNUstep GUI library.
+
+@section Installing @samp{libgnustep-gui}
+
+These notes are for a GNU system that can run @file{./configure}.  For
+Windows NT/95, if you have a working bash shell then you can follow
+these instructions; otherwise, follow the MediaBook Environment specific
+instructions below.
+
+Here is a quick-and-dirty example of installation commands:
+
+@example
+./configure --prefix=/usr/local
+make
+make install
+@end example
+
+Here are more detailed instructions.
+
+@enumerate
+@item
+Install @samp{gcc}.  The library requires gcc version
+@value{GNUSTEP-GUI-GCC-VERSION} or later.
+
+@item
+Install @samp{libgnustep-base}.  This library requires the classes in 
+the GNUstep Base Library.  You must also apply the Objective-C 
+Runtime patches to GCC which makes the runtime thread-safe, if
+your version of GCC lacks them.
+
+@item
+Configure the package for your system.  In the directory that this
+file is in, type @file{./configure}.  If you're using @file{csh} on an old
+version of System V, you might need to type @samp{sh configure} instead
+to prevent @samp{csh} from trying to execute @file{configure} itself.
+
+The @file{configure} shell script attempts to guess correct values for
+various system-dependent variables used during compilation, and
+creates the Makefile(s) (one in each subdirectory of the source
+directory).  In some packages it creates a C header file
+containing system-dependent definitions.  It also creates a file
+@file{config.status} that you can run in the future to recreate the
+current configuration.
+
+Running @file{configure} takes less than a minute or two.  While it is
+running, it prints some messages that tell what it is doing.  If
+you don't want to see the messages, run @file{configure} with its
+standard output redirected to @file{/dev/null}; for example:
+@smallexample
+./configure >/dev/null
+@end smallexample
+
+To compile the package in a different directory from the one
+containing the source code, you must use a version of make that
+supports the VPATH variable, such as GNU make.  @samp{cd} to the
+directory where you want the object files and executables to go and
+run @file{configure}.  @file{configure} automatically checks for the
+source code in the directory that @file{configure} is in and in
+@file{..}.  If for some reason @file{configure} is not in the source
+code directory that you are configuring, then it will report that it
+can't find the source code.  In that case, run @file{configure} with
+the option @samp{--srcdir=DIR}, where DIR is the directory that
+contains the source code.
+
+By default, @samp{make install} will install the package's files in
+/usr/local/bin, /usr/local/lib, /usr/local/man, etc.  You can specify
+an installation prefix other than /usr/local by giving
+@file{configure} the option @samp{--prefix=PATH}.  Alternately, you
+can do so by giving a value for the @samp{prefix} variable when you
+run @samp{make}, e.g.,
+@smallexample
+make prefix=/usr/gnu
+@end smallexample
+
+You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If
+you give @file{configure} the option @samp{--exec_prefix=PATH} or set
+the @samp{make} variable @samp{exec_prefix} to PATH, the package will
+use PATH as the prefix for installing programs and libraries.  Data
+files and documentation will still use the regular prefix.  Normally,
+all files are installed using the regular prefix.
+
+You can tell @file{configure} to figure out the configuration for your
+system, and record it in @file{config.status}, without actually
+configuring the package (creating Makefile(s) and perhaps a
+configuration header file).  To do this, give @file{configure} the
+@samp{--no-create} option.  Later, you can run @file{./config.status}
+to actually configure the package.  This option is useful mainly in
+@file{Makefile} rules for updating @file{config.status} and
+@file{Makefile}.  You can also give @file{config.status} the
+@samp{--recheck} option, which makes it re-run @file{configure} with
+the same arguments you used before.  This is useful if you change
+@file{configure}.
+
+@file{configure} ignores any other arguments that you give it.
+
+If your system requires unusual options for compilation or linking
+that @file{configure} doesn't know about, you can give
+@file{configure} initial values for some variables by setting them in
+the environment.  In Bourne-compatible shells, you can do that on the
+command line like this:
+@smallexample
+CC='gcc -traditional' DEFS=-D_POSIX_SOURCE ./configure
+@end smallexample
+     
+The @samp{make} variables that you might want to override with
+environment variables when running @file{configure} are:
+
+(For these variables, any value given in the environment overrides
+the value that `configure' would choose:)
+@table @samp
+
+@item CC
+C compiler program.  Default is @samp{cc}, or @samp{gcc} if @samp{gcc} is in
+your PATH.
+
+@item INSTALL
+Program to use to install files.  Default is @samp{install} if you
+have it, @samp{install.sh} otherwise.
+@end table
+
+(For these variables, any value given in the environment is added
+to the value that @file{configure} chooses:)
+@table @samp
+
+@item DEFS
+Configuration options, in the form @samp{-Dfoo -Dbar ...}
+
+@item LIBS
+Libraries to link with, in the form @samp{-lfoo -lbar ...}
+@end table
+
+If you need to do unusual things to compile the package, we
+encourage you to figure out how @file{configure.in} could check whether to
+do them, and mail diffs or instructions to the address given in
+the @file{README} so we can include them in the next release.
+
+@item
+Type @samp{make} to compile the package.  If you want, you can override
+the @samp{make} variables @samp{CFLAGS} and @samp{LDFLAGS} like this:
+@smallexample
+make CFLAGS=-O2 LDFLAGS=-s
+@end smallexample
+
+@item
+Type @samp{make install} to install the library, data files, header
+files, and documentation.
+
+@item
+You can remove the program binaries and object files from the
+source directory by typing @samp{make clean}.  To also remove the
+Makefile(s), and @file{config.status} (all the files that @file{configure}
+created), type @samp{make distclean}.
+
+The file @file{configure.in} is used as a template to create
+@file{configure} by a program called @file{autoconf}.  You will only
+need it if you want to regenerate @file{configure} using a newer
+version of @file{autoconf}.
+@end enumerate
+
+@section Installing in the MediaBook environment
+
+The MediaBook environment under Windows NT and Window 95 utilizes the
+native shell of the operating systems, so it does not require you to
+have a @samp{bash} or UNIX-like shell to configure and install the library.
+The MediaBook environment utilizes the @file{configure.bat} batch file to
+configure the package; it creates the @samp{Makefile(s)} by processing a
+@samp{Makefile.in} with its corresponding @samp{Makefile.sed.nt}.
+
+The MediaBook environment should have these environment variables
+defined for the installation to work.
+
+@table @strong
+@item MB_DEV
+The drive and directory of the development root.  For example
+it may be @samp{C:\MBCD\Development}; it is analogous to @samp{/usr/local}
+on UNIX systems.
+
+@item MB_H
+The directory name within the development root @samp{MB_DEV} where
+the header files are stored; e.g. @samp{Headers}.
+
+@item MB_LIB
+The directory name within the development root @samp{MB_DEV} where
+the library files are stored; this tends to be specific to
+the target operating system, e.g. @samp{Libraries\MS-WIN32}.
+@end table
+
+To install the headers and import libraries:
+
+@smallexample
+configure.bat
+make install
+@end smallexample
+
+Here are more detailed instructions.
+
+@enumerate
+@item
+Install @samp{gcc}.  The library requires gcc version
+@value{GNUSTEP-GUI-GCC-VERSION} or later.
+
+@item
+Install @samp{libgnustep-base}.  This library requires the classes in 
+the GNUstep Base Library.  You must also apply the Objective-C 
+Runtime patches to GCC which makes the runtime thread-safe, if
+your version of GCC lacks them.
+
+@item
+Configure the package for your system.  In the directory that this
+file is in, type @file{configure.bat}.
+
+The @file{configure.bat} batch file processes the @file{Makefile.in} templates
+with the corresponding @file{Makefile.sed.nt} sed script file to produce
+the resultant @file{Makefile(s)}.
+
+By default, @samp{make install} will install the package's header files
+into @samp{$(MB_DEV)\$(MB_H)} and the library files in
+@samp{$(MB_DEV)\$(MB_LIB)}.  You should have these environment variables
+defined before you run @samp{make}.  You can change the development root
+@samp{MB_DEV} by giving a value for the @samp{prefix} variable when you run
+@samp{make}, e.g.,
+@smallexample
+make prefix=C:\MBCD\MyDevelopment
+@end smallexample
+
+@item
+Type @samp{make install} to install the import libraries, header
+files, and documentation.
+@end enumerate

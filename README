@@ -1,32 +1,31 @@
-GNUstep GUI Library README
-**************************
+README
+******
 
-Here is some introductory info to get you started:
+This is version 0.1.0 of the GNUstep GUI library (`libgnustep-gui').
+
+   Here is some introductory info to get you started:
 
 Initial reading
 ===============
 
-   The file `ANNOUNCE' contains a very brief overview of the library.
-   It also tells you where to get the most recent version.
+   * The file `ANNOUNCE' contains a very brief overview of the library.
+     It also tells you where to get the most recent version.
 
-   The file `NEWS' has the library's feature history.
+   * The file `NEWS' has the library's feature history.
 
-   The file `INSTALL' gives instructions for installing the library.
+   * The file `INSTALL' gives instructions for installing the library.
 
 How can you help?
 =================
 
-   * Read the projects and  questions in the `TODO' file.  If you can
+   * Read the projects and questions in the `TODO' file.  If you can
      volunteer for any of the projects, or if you have any useful
      comments send me email!  <scottc@net-community.com>
 
    * Give me feedback!  Tell me what you like; tell me what you think
      could be better.  Send me bug reports.
 
-   * Donate classes.  If you write classes that fit in the GNUstep GUI
-     Library framework, I'd be happy to include them.
-
 Creators rejoice!
 Scott Christley
-scottc@net-community.com
+<scottc@net-community.com>
 

@@ -1,4 +1,27 @@
-Mon Aug 12 14:16:12 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Tue Sep  3 13:47:52 1996  GNUstep Development  <gnustep@ocbi.com>
+
+	Create initial documentation set.
+	* Documentation/Makefile.in: New file.
+	* Documentation/announce.texi.orig: New file.
+	* Documentation/faq.texi.orig: New file.
+	* Documentation/gnustep-gui.texi.orig: New file.
+	* Documentation/install.texi.orig: New file.
+	* Documentation/news.texi.orig: New file.
+	* Documentation/readme.texi.orig: New file.
+	* Documentation/status.texi.orig: New file.
+	* Documentation/todo.texi.orig: New file.
+	* ANNOUNCE: Now based upon Documentation/announce.texi.orig file.
+	* INSTALL: Now based upon Documentation/install.texi.orig file.
+	* NEWS: Now based upon Documentation/news.texi.orig file.
+	* README: Now based upon Documentation/readme.texi.orig file.
+	* FAQ: New file
+	* STATUS: New file
+	* TODO: New file
+	* configure.in (CONFIG_FILES): Add Documentation/Makefile.
+	* configure: Run autoconf for changes to configure.in.
+	* Version: Correct variable names.
+
+Mon Aug 12 14:16:12 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Headers/gnustep/gui/NSBitmapImageRep.h: Initial implementation
 	based upon Adam's Feodor work.
@@ -45,7 +68,7 @@ Wed Jul 10 17:11:53 1996  Scott Christley <scottc@net-community.com>
 	
 	* Source/Makefile.sed.nt: Disable debugging by default.
 
-Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Source/NSButton.m (mouseDown:): Correct cell state changes for
 	the different cell types.
@@ -57,7 +80,7 @@ Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 	* Source/NSWindow.m: Corrections to key and main window
 	notification and first responder handling.
 
-Fri Jun 21 11:09:50 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Fri Jun 21 11:09:50 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Headers/gnustep/gui/NSScreen.h: Add instance variables for
 	a screen's device dictionary and for the backend.
@@ -82,7 +105,7 @@ Wed Jun 19 14:25:46 1996  Scott Christley <scottc@net-community.com>
 	* Source/NSFont.m (MB_USER_FIXED_FONT, MB_USER_FONT): Rename
 	global variables to correspond with coding standards.
 
-Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Headers/gnustep/gui/NSApplication.h (-context): New method.
 	* Source/Makefile.sed.nt (install): Delete AppKit and DPSClient
@@ -95,7 +118,7 @@ Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 	* Source/NSView.m (+pushFocusView, +focusView): Remove
 	debugging information.
 
-Mon Jun  3 10:54:28 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Mon Jun  3 10:54:28 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Makefile.in (clean-top, distclean): Correct targets and clean
 	all header subdirectories.
