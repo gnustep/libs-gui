@@ -2,7 +2,7 @@
 
 @implementation NSAttributedString (AppKit)
 
-- (BOOL)containsAttachments
+- (BOOL) containsAttachments
 {
   // Currently there are no attachment in GNUstep.
   // FIXME.
@@ -11,10 +11,88 @@
 
 - (NSDictionary*) fontAttributesInRange: (NSRange)range
 {
+  NSDictionary	*all;
+  static SEL	sel = @selector(objectForKey:);
+  IMP		objForKey;
+  id		objects[8];
+  id		keys[8];
+  int		count = 0;
+
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -fontAttributesInRange:"];
+    }
+  all = [self attributesAtIndex: range.location
+		 effectiveRange: &range];
+
+  objForKey = [all methodForSelector: sel];
+
+  keys[count] = NSFontAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSForegroundColorAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSBackgroundColorAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSUnderlineStyleAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSSuperscriptAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSBaselineOffsetAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSKernAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  keys[count] = NSLigatureAttributeName;
+  objects[count] = (*objForKey)(all, sel, keys[count]);
+  if (objects[count] != nil)
+    count++;
+
+  return [NSDictionary dictionaryWithObjects: objects
+				     forKeys: keys
+				       count: count];
 }
 
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range
 {
+  id	style;
+
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -rulerAttributesInRange:"];
+    }
+
+  style = [self attribute: NSParagraphStyleAttributeName
+		  atIndex: range.location
+	   effectiveRange: &range];
+
+  if (style)
+    {
+      return [NSDictionary dictionaryWithObject: style
+					 forKey: NSParagraphStyleAttributeName];
+    }
+  return [NSDictionary dictionary];
 }
 
 - (unsigned) lineBreakBeforeIndex: (unsigned)location
@@ -23,9 +101,9 @@
   NSScanner *tScanner;
   unsigned int sL;
 
-  tScanner = [[NSScanner alloc] initWithString:[[self string]
-	substringWithRange:aRange]];
-  [tScanner scanUpToString:[NSText newlineString] intoString:NULL];
+  tScanner = [[NSScanner alloc] initWithString: [[self string]
+	substringWithRange: aRange]];
+  [tScanner scanUpToString: [NSText newlineString] intoString:NULL];
   sL = [tScanner scanLocation] + 2;
 
   [tScanner release];
@@ -95,55 +173,59 @@ documentAttributes: (NSDictionary**)dict
 }
 
 - (NSData*) RTFFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict
+      documentAttributes: (NSDictionary*)dict
 {
   return (NSData *)self;
 }
 
 - (NSData*) RTFDFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict
+       documentAttributes: (NSDictionary*)dict
 {
   return (NSData *)self;
 }
 
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict
+			 documentAttributes: (NSDictionary*)dict
 {
   return (NSFileWrapper *)self;
 }
 @end
 
 @implementation NSMutableAttributedString (AppKit)
-- (void)superscriptRange:(NSRange)range
+- (void) superscriptRange: (NSRange)range
 {
   id value;
   int sValue;
 
-  value = [self attribute:NSSuperscriptAttributeName
-		atIndex:range.location effectiveRange:&range];
+  value = [self attribute: NSSuperscriptAttributeName
+		  atIndex: range.location
+	   effectiveRange: &range];
 
   sValue = [value intValue];
 
   sValue++;
 
-  [self addAttribute:NSSuperscriptAttributeName value:[[NSNumber alloc]
-	initWithInt:sValue] range:range];
+  [self addAttribute: NSSuperscriptAttributeName
+	       value: [[NSNumber alloc] initWithInt: sValue]
+	       range: range];
 }
 
-- (void)subscriptRange:(NSRange)range
+- (void) subscriptRange: (NSRange)range
 {
   id value;
   int sValue;
 
-  value = [self attribute:NSSuperscriptAttributeName
-		atIndex:range.location effectiveRange:&range];
+  value = [self attribute: NSSuperscriptAttributeName
+		  atIndex: range.location
+	   effectiveRange: &range];
 
   sValue = [value intValue];
 
   sValue--;
 
-  [self addAttribute:NSSuperscriptAttributeName value:[[NSNumber alloc]
-	initWithInt:sValue] range:range];
+  [self addAttribute: NSSuperscriptAttributeName
+	       value: [[NSNumber alloc] initWithInt: sValue]
+	       range: range];
 }
 
 - (void)unscriptRange:(NSRange)range
