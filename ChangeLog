@@ -1,3 +1,9 @@
+2002-02-19  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTableView.m ([-setAutosaveTableColumns:]): 
+	sets the flag before trying to load from defaults.
+	(patch by Alexander Malmberg <alexander@malmberg.org>)
+
 Tue Feb 19 11:46:31 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTextView.m ([-dealloc]): RETAIN self before destroying

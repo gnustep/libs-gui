@@ -3964,13 +3964,18 @@ byExtendingSelection: (BOOL)flag
     {
       [_selectedColumns removeAllObjects];
       [_selectedRows removeAllObjects];
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _selectingColumns = NO;
       [nc postNotificationName: NSTableViewSelectionDidChangeNotification
 	  object: self];
     }
-
-  _selectedColumn = -1;
-  _selectedRow = -1;
-  _selectingColumns = NO;
+  else
+    {
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _selectingColumns = NO;
+    }
 }
 
 /* 
@@ -6211,6 +6216,7 @@ byExtendingSelection: (BOOL)flag
       return;
     }
 
+  _autosaveTableColumns = flag;
   if (flag)
     {
       [self _autoloadTableColumns];
@@ -6225,7 +6231,6 @@ byExtendingSelection: (BOOL)flag
 	  name: NSTableViewColumnDidResizeNotification
 	  object: self];    
     }
-  _autosaveTableColumns = flag;
 }
 
 /* 
