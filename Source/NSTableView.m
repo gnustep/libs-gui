@@ -6,6 +6,9 @@
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
    Date: March 2000, June 2000, August 2000, September 2000
    
+   Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+   Date: August 2001
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -1331,7 +1334,7 @@ byExtendingSelection: (BOOL)flag
   // Prepare the cell
   tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
-  _editedCell = [[tb dataCell] copy];
+  _editedCell = [[tb dataCellForRow: rowIndex] copy];
   [_editedCell setEditable: YES];
   [_editedCell setObjectValue: [_dataSource tableView: self
 					    objectValueForTableColumn: tb
@@ -2018,6 +2021,12 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
+- (void) setFrame: (NSRect) aRect
+{
+  [super setFrame: aRect];
+  [self sizeToFit];
+}
+
 - (void) sizeToFit
 {
   NSCell *cell;
@@ -2029,7 +2038,7 @@ byExtendingSelection: (BOOL)flag
   int row;
 
   _tilingDisabled = YES;
-  
+
   /* First Step */
   /* Resize Each Column to its Minimum Width */
   table_width = _bounds.origin.x;
@@ -2038,9 +2047,9 @@ byExtendingSelection: (BOOL)flag
     {
       // Compute min width of column 
       width = [[tb headerCell] cellSize].width;
-      cell = [tb dataCell];
       for (row = 0; row < _numberOfRows; row++)
 	{
+	  cell = [tb dataCellForRow: row];
 	  [cell setObjectValue: [_dataSource tableView: self
 					     objectValueForTableColumn: tb
 					     row: row]]; 
@@ -2274,7 +2283,7 @@ byExtendingSelection: (BOOL)flag
       if (i != _editedColumn || rowIndex != _editedRow)
 	{
 	  tb = [_tableColumns objectAtIndex: i];
-	  cell = [tb dataCell];
+	  cell = [tb dataCellForRow: rowIndex];
 	  if (_del_responds)
 	    {
 	      [_delegate tableView: self   willDisplayCell: cell 
@@ -2843,6 +2852,35 @@ byExtendingSelection: (BOOL)flag
   return self;
 }
 
+- (void) updateCell: (NSCell*)aCell
+{
+  int i, j;
+  NSTableColumn *tb;
+  if (aCell == nil)
+    return;
+  
+  for (i = 0; i < _numberOfColumns; i++)
+    {
+      tb = [_tableColumns objectAtIndex: i];
+      if ([tb dataCellForRow: -1] == aCell)
+	[self setNeedsDisplayInRect: [self rectOfColumn: i]];
+      else
+	{
+	  NSRect columnRect = [self rectOfColumn: i];
+	  NSRect rowRect;
+	  for (j = 0; j < _numberOfRows; j++)
+	    {
+	      if ([tb dataCellForRow: j] == aCell)
+		{
+		  rowRect = [self rectOfRow: j];
+		  [self setNeedsDisplayInRect:
+			  NSIntersectionRect(columnRect, rowRect)];
+		}
+	    }
+	}
+    }
+}
+
 - (void) _userResizedTableColumn: (int)index
 			   width: (float)width
 {
@@ -2853,103 +2891,7 @@ byExtendingSelection: (BOOL)flag
 {
   return _columnOrigins;
 }
-/*
-- (void) _userResizedTableColumn: (int)index
-		       leftWidth: (float)lwidth
-		      rightWidth: (float)rwidth
-{
-  [self _userResizedTableColumn: index
-	width:lwidth];
-}
 
-- (void) _userResizedTableColumn: (int)index
-			   width: (float)width
-{
-  int i;
-  //  NSRect oldColumnRect = [self rectOfColumn: index];
-  //  NSRect newColumnRect;
-  NSRect oldLeftRect, newLeftRect;
-  NSTableColumn *column = [_tableColumns objectAtIndex: index];
-  float deltaWidth = width - [column width];
-  NSImage *cache;
-  NSImageRep *rep;
-  
-  _tilingDisabled = YES;
-
-  oldLeftRect.origin.x = _columnOrigins[index+1];
-  oldLeftRect.origin.y = _bounds.origin.y;
-  oldLeftRect.size.height = _bounds.size.height;
-  oldLeftRect.size.width = (_bounds.size.width +
-			    _bounds.origin.x -
-			    oldLeftRect.origin.x);
-
-  newLeftRect = oldLeftRect;
-  oldLeftRect = NSIntersectionRect(oldLeftRect, 
-				   [self visibleRect]);
-
-  rep =
-    [[NSCachedImageRep allocWithZone:[self zone]] 
-       initWithSize:oldLeftRect.size 
-       depth:[NSWindow defaultDepthLimit] 
-       separate:YES 
-       alpha:NO];
-  cache = [[NSImage allocWithZone:[self zone]] 
-	    initWithSize:oldLeftRect.size];
-  [cache addRepresentation: rep];
-  [cache lockFocusOnRepresentation: rep];
-  PScomposite(NSMinX(oldLeftRect), NSMinY(oldLeftRect),
-	      NSWidth(oldLeftRect), NSHeight(oldLeftRect),
-	      [[self window] gState], 0.0, 0.0, NSCompositeCopy);
-  [cache unlockFocus];
-
-
-  newLeftRect.origin.x += deltaWidth;
-  [column setWidth: width];
-  
-  // we need to update :
-  //   _columnOrigins
-
-  for(i = index + 1; i < _numberOfColumns; i++)
-    {
-      _columnOrigins[i] += deltaWidth;
-    }
-  // to call :
-  //   setFrameSize on self
-  //   setFrameSize on _headerView
-  {
-    NSSize frameSize = _frame.size; // frameSize == [self frame].size
-    frameSize.width += deltaWidth;
-    [self setFrameSize: frameSize];
-    if (_headerView != nil)
-      {
-	[_headerView setFrameSize: 
-		       NSMakeSize (_frame.size.width,
-				   [_headerView frame].size.height)];
-	[_headerView setNeedsDisplay: YES];
-      }
-  }
-
-  // to copy what's needed
-  {
-    NSSize commonSize;
-    newLeftRect = NSIntersectionRect(newLeftRect, [self visibleRect]);
-    commonSize.width = MIN(NSWidth(newLeftRect), 
-			   NSWidth(oldLeftRect));
-    commonSize.height = NSHeight(newLeftRect);
-    [rep setSize: commonSize];
-    [self lockFocus];
-    [rep drawAtPoint: newLeftRect.origin];
-    [self unlockFocus];
-  }
-  [self setNeedsDisplay: NO];
-
-  // to call
-  //   drawRect where needed...
-  //  sleep(2);
-  _tilingDisabled = NO;
-}
-*/
-// Return YES on success; NO if no selectable cell found.
 -(BOOL) _editNextEditableCellAfterRow: (int)row
 			       column: (int)column
 {
