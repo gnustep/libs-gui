@@ -606,25 +606,19 @@ documentAttributes: (NSDictionary**)dict
       NSRange		found;
       unsigned		end;
 
-      /*
-       * Extend loc to take in entire paragraph if necessary.
-       */
+      // Extend loc to take in entire paragraph if necessary.
       r = [str lineRangeForRange: NSMakeRange(loc, 1)];
       end = NSMaxRange(r);
 
-      /*
-       * get the style in effect at the paragraph start.
-       */
+      // get the style in effect at the paragraph start.
       style = [self attribute: NSParagraphStyleAttributeName
-		      atIndex: r.location
-	       effectiveRange: &found];
+		    atIndex: r.location
+		    longestEffectiveRange: &found
+		    inRange: r];
       
-      if (NSMaxRange(found) < end)
+      if (style != nil && NSMaxRange(found) < end)
         {
-	  /*
-	   * Styles differ - add the old style to the remainder of the
-	   * range.
-	   */
+	  // Styles differ - add the old style to the remainder of the range.
 	  found.location = NSMaxRange(found);
 	  found.length = end - found.location;
 	  [self addAttribute: NSParagraphStyleAttributeName
