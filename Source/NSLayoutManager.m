@@ -1153,7 +1153,7 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
   for (i=0;i<[lines count];i++)
     {
-      NSRect aRect, *bRect;
+      NSRect aRect, bRect;
       float padding = [aContainer lineFragmentPadding];
       NSRange ourRange;
 
@@ -1175,9 +1175,10 @@ intValue]);
 
       // ask our textContainer to fix our lineFragment.
 
-      secondProposedRect = [aContainer lineFragmentRectForProposedRect:firstProposedRect
-                            sweepDirection: NULL
-                         movementDirection: NULL
+      secondProposedRect = [aContainer
+	lineFragmentRectForProposedRect: firstProposedRect
+                            sweepDirection: NSLineSweepLeft
+                         movementDirection: NSLineMoveLeft
 			     remainingRect: &bRect];
 
       // set the line fragmentRect for this range.

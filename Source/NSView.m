@@ -481,9 +481,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   super_view = newSuper;
 }
 
+/*
+ * NOTE - this method is used when removing a view from a window
+ * (in which case, newWindow is nil) to let all the subviews know
+ * that they have also been removed from the window.
+ */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  if (newWindow == window || !newWindow)
+  if (newWindow == window)
     return;
 
   if (_rFlags.has_draginfo)
@@ -493,7 +498,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (window != nil)
 	[ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
-      [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+      if (newWindow != nil)
+	[ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
     }
 
   window = newWindow;
