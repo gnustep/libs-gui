@@ -2,7 +2,7 @@
 
    <abstract>Control to display and select from hierarchal lists</abstract>
 
-   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 2002 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -12,6 +12,8 @@
    Date: November 1999
    Author:  Mirko Viviani <mirko.viviani@rccr.cremona.it>
    Date: September 2000
+   Author:  Fred Kiefer <FredKiefer@gmx.de>
+   Date: September 2002
 
    This file is part of the GNUstep GUI Library.
 
@@ -46,8 +48,7 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSMatrix.h>
-#include <AppKit/NSTextFieldCell.h>
-#include <AppKit/PSOperators.h>
+#include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSWindow.h>
 
@@ -72,7 +73,6 @@ static NSTextFieldCell *titleCell;
   BOOL _isLoaded;
   id _columnScrollView;
   id _columnMatrix;
-  int _numberOfRows;
   NSString *_columnTitle;
 }
 
@@ -82,8 +82,6 @@ static NSTextFieldCell *titleCell;
 - (id) columnScrollView;
 - (void) setColumnMatrix: (id)aMatrix;
 - (id) columnMatrix;
-- (void) setNumberOfRows: (int)num;
-- (int) numberOfRows;
 - (void) setColumnTitle: (NSString *)aString;
 - (NSString *) columnTitle;
 @end
@@ -137,16 +135,6 @@ static NSTextFieldCell *titleCell;
   return _columnMatrix;
 }
 
-- (void) setNumberOfRows: (int)num
-{
-  _numberOfRows = num;
-}
-
-- (int) numberOfRows
-{
-  return _numberOfRows;
-}
-
 - (void) setColumnTitle: (NSString *)aString
 {
   if (!aString)
@@ -162,15 +150,19 @@ static NSTextFieldCell *titleCell;
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isLoaded];
+  int dummy = 0;
+
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
   [aCoder encodeObject: _columnScrollView];
   [aCoder encodeObject: _columnMatrix];
-  [aCoder encodeValueOfObjCType: @encode(int) at:&_numberOfRows];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &dummy];
   [aCoder encodeObject: _columnTitle];
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
+  int dummy = 0;
+
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
   _columnScrollView = [aDecoder decodeObject];
   if (_columnScrollView)
@@ -178,7 +170,7 @@ static NSTextFieldCell *titleCell;
   _columnMatrix = [aDecoder decodeObject];
   if (_columnMatrix)
     RETAIN(_columnMatrix);
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &dummy];
   _columnTitle = [aDecoder decodeObject];
   if (_columnTitle)
     RETAIN(_columnTitle);
@@ -188,25 +180,10 @@ static NSTextFieldCell *titleCell;
 @end
 
 // NB: this is used in the NSFontPanel too
-@interface GSBrowserTitleCell: NSTextFieldCell
+@interface GSBrowserTitleCell: NSTableHeaderCell
 @end
 
 @implementation GSBrowserTitleCell
-- (id) initTextCell: (NSString *)aString
-{
-  [super initTextCell: aString];
-
-  [self setTextColor: [NSColor windowFrameTextColor]];
-  [self setBackgroundColor: [NSColor controlShadowColor]];
-  [self setFont: [NSFont titleBarFontOfSize: 0]];
-  [self setAlignment: NSCenterTextAlignment];
-  _cell.is_editable = NO;
-  _cell.is_bezeled = YES;
-  _textfieldcell_draws_background = YES;
-
-  return self;
-}
-
 - (void) drawWithFrame: (NSRect)cellFrame  inView: (NSView*)controlView
 {
   if (NSIsEmptyRect (cellFrame) || ![controlView window])
@@ -227,10 +204,7 @@ static NSTextFieldCell *titleCell;
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (int)column;
 - (void) _performLoadOfColumn: (int)column;
-- (void) _unloadFromColumn: (int)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
-- (void) _adjustMatrixOfColumn: (int)column;
-- (void) _setColumnSubviewsNeedDisplay;
 - (void) _setColumnTitlesNeedDisplay;
 @end
 
@@ -776,11 +750,8 @@ static NSTextFieldCell *titleCell;
   // Update and display title of column
   if (_isTitled)
     {
-      NSString *title = [self _getTitleOfColumn: column];
-      [self setTitle: title ofColumn: column];
-      [self drawTitle: title
-	    inRect: [self titleFrameOfColumn: column]
-	    ofColumn: column];
+      [self drawTitleOfColumn: column
+	    inRect: [self titleFrameOfColumn: column]];
     }
 
   // Display column
@@ -835,14 +806,56 @@ static NSTextFieldCell *titleCell;
 /** Sets the last column to column. */
 - (void) setLastColumn: (int)column
 {
-  if (column < -1)
+  int i, count, num;
+  id bc, sc;
+
+  if (column <= -1)
     {
       column = -1;
+      _isLoaded = NO;
     }
 
   _lastColumnLoaded = column;
-  [self _unloadFromColumn: column + 1];
-  [self _setColumnTitlesNeedDisplay];
+  // Unloads columns.
+  count = [_browserColumns count];
+  num = [self numberOfVisibleColumns];
+
+  for (i = column + 1; i < count; ++i)
+    {
+      bc = [_browserColumns objectAtIndex: i];
+      sc = [bc columnScrollView];
+
+      if ([bc isLoaded])
+	{
+	  // Make the column appear empty by removing the matrix
+	  if (sc)
+	    {
+	      [sc setDocumentView: nil];
+	      [sc setNeedsDisplay: YES];
+	    }
+	  [bc setIsLoaded: NO];
+	  [bc setColumnTitle: nil];
+	}
+
+      if (!_reusesColumns && i >= num)
+	{
+	  [sc removeFromSuperview];
+	  [_browserColumns removeObject: bc];
+	  count--;
+	  i--;
+	}
+    }
+  
+  // Scroll if needed.
+  if ((column < _lastVisibleColumn) && (_firstVisibleColumn > 0))
+    {
+      [self scrollColumnsLeftBy: _lastVisibleColumn - column];
+    }
+  else 
+    {
+      [self updateScroller];
+      [self _setColumnTitlesNeedDisplay];
+    }
 }
 
 /** Returns the index of the first visible column. */
@@ -947,6 +960,8 @@ static NSTextFieldCell *titleCell;
   
   // Perform the data load
   [self _performLoadOfColumn: column];
+  // set last column loaded
+  [self setLastColumn: column];
 
   // Restore the selected cells
   if (count > 0)
@@ -965,9 +980,6 @@ static NSTextFieldCell *titleCell;
 	}
       NSZoneFree (NSDefaultMallocZone (), selectedIndexes);
     }
-
-  // set last column loaded
-  [self setLastColumn: column];
 }
 
 
@@ -1117,18 +1129,18 @@ static NSTextFieldCell *titleCell;
 /** Returns the title displayed for the column at index column. */
 - (NSString *) titleOfColumn: (int)column
 {
-  id bc;
+  NSBrowserColumn *bc;
 
   bc = [_browserColumns objectAtIndex: column];
 
-  return [bc columnTitle];
+  return bc->_columnTitle;
 }
 
 /** Sets the title of the column at index column to aString. */
 - (void) setTitle: (NSString *)aString
 	 ofColumn: (int)column
 {
-  id bc;
+  NSBrowserColumn *bc;
 
   bc = [_browserColumns objectAtIndex: column];
 
@@ -1235,26 +1247,24 @@ static NSTextFieldCell *titleCell;
 /** Scrolls to make the column at index column visible. */
 - (void) scrollColumnToVisible: (int)column
 {
-  int i;
-
-  // If its the last visible column then we are there already
-  if (_lastVisibleColumn == column)
-    return;
-
   // If there are not enough columns to scroll with
   // then the column must be visible
   if (_lastColumnLoaded + 1 <= [self numberOfVisibleColumns])
     return;
 
-  i = _lastVisibleColumn - column;
-  if (i > 0)
-    [self scrollColumnsLeftBy: i];
-  else
-    [self scrollColumnsRightBy: (-i)];
+  // If its the last visible column then we are there already
+  if (_lastVisibleColumn < column)
+    {
+      [self scrollColumnsRightBy: (column - _lastVisibleColumn)];
+    } 
+  else if (_firstVisibleColumn > column)
+    {
+      [self scrollColumnsLeftBy: (_firstVisibleColumn - column)];
+    } 
 }
 
 /** Scrolls columns left by shiftAmount columns. */
-- (void)scrollColumnsLeftBy: (int)shiftAmount
+- (void) scrollColumnsLeftBy: (int)shiftAmount
 {
   // Cannot shift past the zero column
   if ((_firstVisibleColumn - shiftAmount) < 0)
@@ -1286,7 +1296,7 @@ static NSTextFieldCell *titleCell;
 }
 
 /** Scrolls columns right by shiftAmount columns. */
-- (void)scrollColumnsRightBy: (int)shiftAmount
+- (void) scrollColumnsRightBy: (int)shiftAmount
 {
   // Cannot shift past the last loaded column
   if ((shiftAmount + _lastVisibleColumn) > _lastColumnLoaded)
@@ -1348,7 +1358,7 @@ static NSTextFieldCell *titleCell;
 }
 
 /** Scrolls columns left or right based on an NSScroller. */
-- (void)scrollViaScroller: (NSScroller *)sender
+- (void) scrollViaScroller: (NSScroller *)sender
 {
   NSScrollerPart hit;
 
@@ -1375,12 +1385,10 @@ static NSTextFieldCell *titleCell;
       case NSScrollerKnob:
       case NSScrollerKnobSlot:
 	{
-	  int num = [self numberOfVisibleColumns];
 	  float f = [sender floatValue];
-	  float n = _lastColumnLoaded + 1 - num;
 
 	  _skipUpdateScroller = YES;
-	  [self scrollColumnToVisible: rintf(f * n) + num - 1];
+	  [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
 	  _skipUpdateScroller = NO;
 	}
       	break;
@@ -1397,13 +1405,13 @@ static NSTextFieldCell *titleCell;
  */
 
 /** Returns whether an NSScroller is used to scroll horizontally. */
-- (BOOL)hasHorizontalScroller
+- (BOOL) hasHorizontalScroller
 {
   return _hasHorizontalScroller;
 }
 
 /** Sets whether an NSScroller is used to scroll horizontally. */
-- (void)setHasHorizontalScroller: (BOOL)flag
+- (void) setHasHorizontalScroller: (BOOL)flag
 {
   if (_hasHorizontalScroller != flag)
     {
@@ -1423,7 +1431,7 @@ static NSTextFieldCell *titleCell;
  */
 
 /** Returns YES if the arrow keys are enabled. */
-- (BOOL)acceptsArrowKeys
+- (BOOL) acceptsArrowKeys
 {
   return _acceptsArrowKeys;
 }
@@ -1518,7 +1526,6 @@ static NSTextFieldCell *titleCell;
 {
   NSSize bs = _sizeForBorderType (NSBezelBorder);
   int i, num, columnCount, delta;
-  id bc, sc;
 
   _columnSize.height = _frame.size.height;
   
@@ -1606,6 +1613,9 @@ static NSTextFieldCell *titleCell;
   
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
     {
+      id bc, sc;
+      id matrix;
+
       bc = [_browserColumns objectAtIndex: i];
 
       if (!(sc = [bc columnScrollView]))
@@ -1615,7 +1625,19 @@ static NSTextFieldCell *titleCell;
 	}
 
       [sc setFrame: [self frameOfColumn: i]];
-      [self _adjustMatrixOfColumn: i];
+      matrix = [bc columnMatrix];
+      
+      // Adjust matrix to fit in scrollview if column has been loaded
+      if (matrix && [bc isLoaded])
+        {
+	  NSSize cs, ms;
+	  
+	  cs = [sc contentSize];
+	  ms = [matrix cellSize];
+	  ms.width = cs.width;
+	  [matrix setCellSize: ms];
+	  [sc setDocumentView: matrix];
+	}
     }
 
   if (columnCount != num)
@@ -1646,13 +1668,17 @@ static NSTextFieldCell *titleCell;
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
-  BOOL both = NO;
 
   if ([anObject respondsToSelector: 
 		  @selector(browser:numberOfRowsInColumn:)])
     {
       _passiveDelegate = YES;
       flag = YES;
+      if (![anObject respondsToSelector: 
+			 @selector(browser:willDisplayCell:atRow:column:)])
+	[NSException raise: NSBrowserIllegalDelegateException
+		     format: @"(Passive) Delegate does not respond to %s\n",
+		     "browser: willDisplayCell: atRow: column: "];
     }
 
   if ([anObject respondsToSelector: 
@@ -1663,26 +1689,19 @@ static NSTextFieldCell *titleCell;
       // If flag is already set
       // then delegate must respond to both methods
       if (flag)
-	both = YES;
+        {
+	  [NSException raise: NSBrowserIllegalDelegateException
+		       format: @"Delegate responds to both %s and %s\n",
+		       "browser: numberOfRowsInColumn: ",
+		       "browser: createRowsForColumn: inMatrix: "];
+	}
 
       flag = YES;
     }
 
-  if (_passiveDelegate && ![anObject respondsToSelector: 
-		  @selector(browser:willDisplayCell:atRow:column:)])
-    [NSException raise: NSBrowserIllegalDelegateException
-		 format: @"(Passive) Delegate does not respond to %s\n",
-		 "browser: willDisplayCell: atRow: column: "];
-
   if (!flag)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s or %s\n",
-		 "browser: numberOfRowsInColumn: ",
-		 "browser: createRowsForColumn: inMatrix: "];
-
-  if (both)
-    [NSException raise: NSBrowserIllegalDelegateException
-		 format: @"Delegate responds to both %s and %s\n",
 		 "browser: numberOfRowsInColumn: ",
 		 "browser: createRowsForColumn: inMatrix: "];
 
@@ -1825,14 +1844,11 @@ static NSTextFieldCell *titleCell;
   // Send the action to target
   [self sendAction];
 
-  // Marks titles band as needing display.
-  [self _setColumnTitlesNeedDisplay];
-
   RELEASE(selectedCells);
 }
 
 /** Responds to double-clicks in a column of the NSBrowser. */
-- (void)doDoubleClick: (id)sender
+- (void) doDoubleClick: (id)sender
 {
   // We have already handled the single click
   // so send the double action
@@ -1840,7 +1856,7 @@ static NSTextFieldCell *titleCell;
   [self sendAction: _doubleAction to: [self target]];
 }
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSBrowser class])
     {
@@ -1856,7 +1872,7 @@ static NSTextFieldCell *titleCell;
  */
 
 /** Setups browser with frame 'rect'. */
-- (id)initWithFrame: (NSRect)rect
+- (id) initWithFrame: (NSRect)rect
 {
   NSSize bs;
   //NSScroller *hs;
@@ -1915,7 +1931,7 @@ static NSTextFieldCell *titleCell;
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   RELEASE(_browserCellPrototype);
   RELEASE(_pathSeparator);
@@ -1962,7 +1978,7 @@ static NSTextFieldCell *titleCell;
  * Events handling 
  */
 
-- (void)drawRect: (NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
   NSRectClip(rect);
   [[_window backgroundColor] set];
@@ -1984,11 +2000,8 @@ static NSTextFieldCell *titleCell;
 	  NSRect titleRect = [self titleFrameOfColumn: i];
 	  if (NSIntersectsRect (titleRect, rect) == YES)
 	    {
-	      NSString *title;
-	      
-	      title = [self _getTitleOfColumn: i];
-	      [self setTitle: title ofColumn: i];
-	      [self drawTitle: title  inRect: titleRect  ofColumn: i];
+	      [self drawTitleOfColumn: i
+		    inRect: titleRect];
 	    }
 	}
     }
@@ -2020,11 +2033,11 @@ static NSTextFieldCell *titleCell;
 
 
 /* Override NSControl handler (prevents highlighting). */
-- (void)mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
 }
 
-- (void)moveLeft:(id)sender
+- (void) moveLeft: (id)sender
 {
   if (_acceptsArrowKeys)
     {
@@ -2053,7 +2066,7 @@ static NSTextFieldCell *titleCell;
     }
 }
 
-- (void)moveRight:(id)sender
+- (void) moveRight: (id)sender
 {
   if (_acceptsArrowKeys)
     {
@@ -2380,7 +2393,7 @@ static NSTextFieldCell *titleCell;
  */
 
 /** Returns YES if the alphanumerical keys are enabled. */
-- (BOOL)acceptsAlphaNumericalKeys
+- (BOOL) acceptsAlphaNumericalKeys
 {
   return _acceptsAlphaNumericalKeys;
 }
@@ -2416,57 +2429,7 @@ static NSTextFieldCell *titleCell;
  */
 @implementation NSBrowser (Private)
 
-- (void)_adjustMatrixOfColumn: (int)column
-{
-  NSBrowserColumn	*bc;
-  NSScrollView		*sc;
-  id			matrix;
-  NSSize		cs, ms;
-
-  if (column >= (int)[_browserColumns count])
-    return;
-
-  bc = [_browserColumns objectAtIndex: column];
-
-  sc = [bc columnScrollView];
-  matrix = [bc columnMatrix];
-
-  // Adjust matrix to fit in scrollview if column has been loaded
-  if (sc && matrix && [bc isLoaded])
-    {
-      cs = [sc contentSize];
-      ms = [matrix cellSize];
-      ms.width = cs.width;
-      [matrix setCellSize: ms];
-      [sc setDocumentView: matrix];
-    }
-}
-
-#if 0
-- (void)_adjustScrollerFrameOfColumn: (int)column force: (BOOL)flag
-{
-  // Only if we've loaded the first column
-  if ((_isLoaded) || (flag))
-    {
-      NSBrowserColumn *bc;
-      NSScrollView *sc;
-
-      if (column >= (int)[_browserColumns count])
-	return;
-
-      bc = [_browserColumns objectAtIndex: column];
-      sc = [bc columnScrollView];
-
-      // Set the scrollview frame
-      // Only set before the column has been loaded
-      // Or we are being forced
-      if (sc && ((![bc isLoaded]) || flag))
-	[sc setFrame: [self frameOfInsideOfColumn: column]];
-    }
-}
-#endif
-
-- (void)_remapColumnSubviews: (BOOL)fromFirst
+- (void) _remapColumnSubviews: (BOOL)fromFirst
 {
   id bc, sc;
   int i, count;
@@ -2543,11 +2506,22 @@ static NSTextFieldCell *titleCell;
 }
 
 /* Loads column 'column' (asking the delegate). */
-- (void)_performLoadOfColumn: (int)column
+- (void) _performLoadOfColumn: (int)column
 {
   id bc, sc, matrix;
-  NSRect matrixRect = {{0, 0}, {100, 100}};
-  NSSize matrixIntercellSpace = {0, 0};
+  int i, rows, cols;
+
+  if (_passiveDelegate)
+    {
+      // Ask the delegate for the number of rows
+      rows = [_browserDelegate browser: self numberOfRowsInColumn: column];
+      cols = 1;
+    }
+  else
+    {
+      rows = 0;
+      cols = 0;
+    }
 
   bc = [_browserColumns objectAtIndex: column];
 
@@ -2556,203 +2530,103 @@ static NSTextFieldCell *titleCell;
 
   matrix = [bc columnMatrix];
 
-  // Loading is different based upon passive/active delegate
-  if (_passiveDelegate)
+  if (_reusesColumns && matrix)
     {
-      // Ask the delegate for the number of rows
-      int i, n = [_browserDelegate browser: self numberOfRowsInColumn: column];
+      [matrix renewRows: rows columns: cols];
 
-      if (_reusesColumns && matrix)
-	{
-	  [matrix renewRows: n columns: 1];
-	  [sc setDocumentView: matrix];
-
-	  for (i = 0; i < n; i++)
-	    {
-	      [[matrix cellAtRow: i column: 0] setLoaded: NO];
-	      [self loadedCellAtRow: i column: column];
-	    }
-	}
-      else
-	{
-	  // create a new col matrix
-	  matrix = [[_browserMatrixClass alloc]
-		     initWithFrame: matrixRect
-		     mode: NSListModeMatrix
-		     prototype: _browserCellPrototype
-		     numberOfRows: n
-		     numberOfColumns: 1];
-	  [matrix setIntercellSpacing:matrixIntercellSpace];
-	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
-	  [matrix setAutoscroll: YES];
-	  if (!_allowsMultipleSelection)
-	    {
-	      [matrix setMode: NSRadioModeMatrix];
-	    }
-	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick:)];
-	  [matrix setDoubleAction: @selector(doDoubleClick:)];
-
-	  // set new col matrix and release old
-	  [bc setColumnMatrix: matrix];
-	  RELEASE (matrix);
-	  [sc setDocumentView: matrix];
-
-	  // Now loop through the cells and load each one
-	  {
-	    NSBrowserColumn *bc;
-	    id matrix;
-	    id aCell;
-	    bc = [_browserColumns objectAtIndex: column];
-	    matrix = [bc columnMatrix];
-	    if (_passiveDelegate || [_browserDelegate respondsToSelector: 
-							@selector(browser:willDisplayCell:atRow:column:)])
-	      {
-		SEL sel1 = @selector(browser:willDisplayCell:atRow:column:);
-		IMP imp1 = [_browserDelegate methodForSelector: sel1];
-		SEL sel2 = @selector(cellAtRow:column:);
-		IMP imp2 = [matrix methodForSelector: sel2];
-		for (i = 0; i < n; i++)
-		  {
-		    aCell = (*imp2)(matrix, sel2, i, 0);
-		    if (![aCell isLoaded])
-		      {
-			(*imp1)(_browserDelegate, sel1, self, aCell, i, 
-				column);
-			[aCell setLoaded: YES];
-		      }
-		  }
-	      }
-	  }
+      // Mark all the cells as unloaded
+      for (i = 0; i < rows; i++)
+        {
+	  [[matrix cellAtRow: i column: 0] setLoaded: NO];
 	}
     }
   else
     {
-      if (_reusesColumns && matrix)
-	{
-	  [matrix renewRows: 0 columns: 1];
-	  [sc setDocumentView: matrix];
+      NSRect matrixRect = {{0, 0}, {100, 100}};
+      NSSize matrixIntercellSpace = {0, 0};
 
-	  [_browserDelegate browser: self
-		createRowsForColumn: column
-			   inMatrix: matrix];
+      // create a new col matrix
+      matrix = [[_browserMatrixClass alloc]
+		   initWithFrame: matrixRect
+		   mode: NSListModeMatrix
+		   prototype: _browserCellPrototype
+		   numberOfRows: rows
+		   numberOfColumns: cols];
+      [matrix setIntercellSpacing: matrixIntercellSpace];
+      [matrix setAllowsEmptySelection: _allowsEmptySelection];
+      [matrix setAutoscroll: YES];
+      if (!_allowsMultipleSelection)
+        {
+	  [matrix setMode: NSRadioModeMatrix];
 	}
-      else
-	{
-	  // create a new col matrix
-	  matrix = [[_browserMatrixClass alloc]
-		     initWithFrame: matrixRect
-		     mode: NSRadioModeMatrix
-		     prototype: _browserCellPrototype
-		     numberOfRows: 0
-		     numberOfColumns: 0];
-	  [matrix setIntercellSpacing:matrixIntercellSpace];
-	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
-	  [matrix setAutoscroll: YES];
-	  if (_allowsMultipleSelection)
+      [matrix setTarget: self];
+      [matrix setAction: @selector(doClick:)];
+      [matrix setDoubleAction: @selector(doDoubleClick:)];
+      
+      // set new col matrix and release old
+      [bc setColumnMatrix: matrix];
+      RELEASE (matrix);
+    }
+  [sc setDocumentView: matrix];
+
+  // Loading is different based upon passive/active delegate
+  if (_passiveDelegate)
+    {
+      // Now loop through the cells and load each one
+      id aCell;
+      SEL sel1 = @selector(browser:willDisplayCell:atRow:column:);
+      IMP imp1 = [_browserDelegate methodForSelector: sel1];
+      SEL sel2 = @selector(cellAtRow:column:);
+      IMP imp2 = [matrix methodForSelector: sel2];
+      
+      for (i = 0; i < rows; i++)
+        {
+	  aCell = (*imp2)(matrix, sel2, i, 0);
+	  if (![aCell isLoaded])
 	    {
-	      [matrix setMode: NSListModeMatrix];
+	      (*imp1)(_browserDelegate, sel1, self, aCell, i, 
+		      column);
+	      [aCell setLoaded: YES];
 	    }
-	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick:)];
-	  [matrix setDoubleAction: @selector(doDoubleClick:)];
-
-	  // set new col matrix and release old
-	  [bc setColumnMatrix: matrix];
-	  RELEASE (matrix);
-	  [sc setDocumentView: matrix];
-
-	  // Tell the delegate to create the rows
-	  [_browserDelegate browser: self
-		createRowsForColumn: column
-			   inMatrix: matrix];
 	}
     }
+  else
+    {
+      // Tell the delegate to create the rows
+      [_browserDelegate browser: self
+			createRowsForColumn: column
+			inMatrix: matrix];
+    }
+
+  [sc setNeedsDisplay: YES];
+  [bc setIsLoaded: YES];
 
   /* Determine the height of a cell in the matrix, and set that as the 
      cellSize of the matrix.  */
   {
+    NSSize cs, ms;
     NSBrowserCell *b = [matrix cellAtRow: 0  column: 0]; 
-    
+
     if (b != nil)
       {
-	[matrix setCellSize: [b cellSize]];
+	ms = [b cellSize];
       }
+    else
+      {
+	ms = [matrix cellSize];
+      }
+    cs = [sc contentSize];
+    ms.width = cs.width;
+    [matrix setCellSize: ms];
   }
-  
-  [sc setNeedsDisplay: YES];
-  [bc setIsLoaded: YES];
-  [self _adjustMatrixOfColumn: column];
+
+  // Get the title even when untiteled, as this may change later.
+  [self setTitle: [self _getTitleOfColumn: column] ofColumn: column];
 }
 
-/* Unloads all columns from and including 'column'. */
-- (void)_unloadFromColumn: (int)column
+/* Get the title of a column. */
+- (NSString *) _getTitleOfColumn: (int)column
 {
-  int i, count, num;
-  id bc, sc;
-
-  // Unloads columns.
-  count = [_browserColumns count];
-  num = [self numberOfVisibleColumns];
-
-  for (i = column; i < count; ++i)
-    {
-      bc = [_browserColumns objectAtIndex: i];
-      sc = [bc columnScrollView];
-
-      if ([bc isLoaded])
-	{
-	  // Make the column appear empty by removing the matrix
-	  if (sc)
-	    {
-	      [sc setDocumentView: nil];
-	      [sc setNeedsDisplay: YES];
-	    }
-	  [bc setIsLoaded: NO];
-	}
-
-      if (!_reusesColumns && i >= num)
-	{
-	  [sc removeFromSuperview];
-	  [_browserColumns removeObject: bc];
-	  count--;
-	  i--;
-	}
-    }
-  
-  if (column == 0)
-    {
-      _isLoaded = NO;
-    }
-  
-  // Scrolls if needed.
-  if (column <= _lastVisibleColumn)
-    {
-      [self scrollColumnsLeftBy: _lastVisibleColumn - column + 1];
-    }
-  [self updateScroller];
-}
-
-/* Marks all visible columns as needing to be redrawn. */
-- (void)_setColumnSubviewsNeedDisplay
-{
-  int i;
-
-  for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
-    {
-      [[[_browserColumns objectAtIndex:i] columnScrollView] 
-	setNeedsDisplay:YES];
-    }
-}
-
-
-/* Marks all titles as needing to be redrawn. */
-- (NSString *)_getTitleOfColumn: (int)column
-{
-  // If not visible then nothing to display
-  if ((column < _firstVisibleColumn) || (column > _lastVisibleColumn))
-    return @"";
-
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector: 
 			  @selector(browser:titleOfColumn:)])
@@ -2821,7 +2695,7 @@ static NSTextFieldCell *titleCell;
 }
 
 /* Marks all titles as needing to be redrawn. */
-- (void)_setColumnTitlesNeedDisplay
+- (void) _setColumnTitlesNeedDisplay
 {
   if (_isTitled)
     {
