@@ -1166,88 +1166,88 @@ NSString *NSWindowWillMoveNotification;
   return nil;
 }
 
-- (void)windowDidBecomeKey:sender
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidBecomeKey:)])
-    return [delegate windowDidBecomeKey:sender];
+    return [delegate windowDidBecomeKey:aNotification];
 }
 
-- (void)windowDidBecomeMain:sender
+- (void)windowDidBecomeMain:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidBecomeMain:)])
-    return [delegate windowDidBecomeMain:sender];
+    return [delegate windowDidBecomeMain:aNotification];
 }
 
-- (void)windowDidChangeScreen:sender
+- (void)windowDidChangeScreen:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidChangeScreen:)])
-    return [delegate windowDidChangeScreen:sender];
+    return [delegate windowDidChangeScreen:aNotification];
 }
 
-- (void)windowDidDeminiaturize:sender
+- (void)windowDidDeminiaturize:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidDeminiaturize:)])
-    return [delegate windowDidDeminiaturize:sender];
+    return [delegate windowDidDeminiaturize:aNotification];
 }
 
-- (void)windowDidExpose:sender
+- (void)windowDidExpose:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidExpose:)])
-    return [delegate windowDidExpose:sender];
+    return [delegate windowDidExpose:aNotification];
 }
 
-- (void)windowDidMiniaturize:sender
+- (void)windowDidMiniaturize:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidMiniaturize:)])
-    return [delegate windowDidMiniaturize:sender];
+    return [delegate windowDidMiniaturize:aNotification];
 }
 
-- (void)windowDidMove:sender
+- (void)windowDidMove:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidMove:)])
-    return [delegate windowDidMove:sender];
+    return [delegate windowDidMove:aNotification];
 }
 
-- (void)windowDidResignKey:sender
+- (void)windowDidResignKey:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidResignKey:)])
-    return [delegate windowDidResignKey:sender];
+    return [delegate windowDidResignKey:aNotification];
 }
 
-- (void)windowDidResignMain:sender
+- (void)windowDidResignMain:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidResignMain:)])
-    return [delegate windowDidResignMain:sender];
+    return [delegate windowDidResignMain:aNotification];
 }
 
-- (void)windowDidResize:sender
+- (void)windowDidResize:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidResize:)])
-    return [delegate windowDidResize:sender];
+    return [delegate windowDidResize:aNotification];
 }
 
-- (void)windowDidUpdate:sender
+- (void)windowDidUpdate:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowDidUpdate:)])
-    return [delegate windowDidUpdate:sender];
+    return [delegate windowDidUpdate:aNotification];
 }
 
-- (void)windowWillClose:sender
+- (void)windowWillClose:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowWillClose:)])
-    return [delegate windowWillClose:sender];
+    return [delegate windowWillClose:aNotification];
 }
 
-- (void)windowWillMiniaturize:sender
+- (void)windowWillMiniaturize:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowWillMiniaturize:)])
-    return [delegate windowWillMiniaturize:sender];
+    return [delegate windowWillMiniaturize:aNotification];
 }
 
-- (void)windowWillMove:sender
+- (void)windowWillMove:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(windowWillMove:)])
-    return [delegate windowWillMove:sender];
+    return [delegate windowWillMove:aNotification];
 }
 
 //
@@ -1334,6 +1334,14 @@ NSString *NSWindowWillMoveNotification;
 - (void)releaseMouse: sender
 {
     // Do nothing, should be overridden by back-end
+}
+
+// Allow subclasses to init without the backend class
+// attempting to create an actual window
+- cleanInit
+{
+  [super init];
+  return self;
 }
 
 @end

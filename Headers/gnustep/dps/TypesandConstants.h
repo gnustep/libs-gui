@@ -31,12 +31,15 @@
 #ifndef _GNUstep_H_DPSTypes
 #define _GNUstep_H_DPSTypes
 
+// These are already defined in the DPSclient headers
+#ifndef HAVE_DPSCLIENT
 typedef void *DPSProgramEncoding;
 typedef void *DPSNameEncoding;
 typedef void *DPSTextProc;
 typedef void *DPSErrorProc;
 typedef void DPSBinObjSeqRec;
 typedef unsigned int DPSDefinedType;
+#endif /* HAVE_DPSCLIENT */
 
 //
 // Backing Store Types

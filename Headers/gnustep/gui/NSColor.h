@@ -36,6 +36,12 @@
 
 @class NSPasteboard;
 
+// What component should we take values from
+#define GNUSTEP_GUI_RGB_ACTIVE 1
+#define GNUSTEP_GUI_CMYK_ACTIVE 2
+#define GNUSTEP_GUI_HSB_ACTIVE 3
+#define GNUSTEP_GUI_WHITE_ACTIVE 4
+
 @interface NSColor : NSObject <NSCoding>
 
 {
@@ -59,11 +65,17 @@
     float black;
   } CMYK_component;
 
-  float alpha_component;
+  struct _GNU_HSB_component
+  {
+    float hue;
+    float saturation;
+    float brightness;
+  } HSB_component;
+
   float white_component;
-  float hue_component;
-  float brightness_component;
-  float saturation_component;
+
+  int active_component;
+  float alpha_component;
 
   BOOL is_clear;
 
@@ -76,11 +88,11 @@
 //
 + (NSColor *)colorWithCalibratedHue:(float)hue
 			 saturation:(float)saturation
-brightness:(float)brightness
-			 alpha:(float)alpha;
+			 brightness:(float)brightness
+			      alpha:(float)alpha;
 + (NSColor *)colorWithCalibratedRed:(float)red
 			      green:(float)green
-blue:(float)blue
+			       blue:(float)blue
 			      alpha:(float)alpha;
 + (NSColor *)colorWithCalibratedWhite:(float)white
 				alpha:(float)alpha;
@@ -88,16 +100,16 @@ blue:(float)blue
 			colorName:(NSString *)colorName;
 + (NSColor *)colorWithDeviceCyan:(float)cyan
 			 magenta:(float)magenta
-yellow:(float)yellow
-			 black:(float)black
-alpha:(float)alpha;
+			  yellow:(float)yellow
+			   black:(float)black
+			   alpha:(float)alpha;
 + (NSColor *)colorWithDeviceHue:(float)hue
 		     saturation:(float)saturation
-brightness:(float)brightness
-		     alpha:(float)alpha;
+		     brightness:(float)brightness
+			  alpha:(float)alpha;
 + (NSColor *)colorWithDeviceRed:(float)red
 			  green:(float)green
-blue:(float)blue
+			   blue:(float)blue
 			  alpha:(float)alpha;
 + (NSColor *)colorWithDeviceWhite:(float)white
 			    alpha:(float)alpha;
@@ -132,16 +144,16 @@ blue:(float)blue
 //
 - (void)getCyan:(float *)cyan
 	magenta:(float *)magenta
-yellow:(float *)yellow
-	black:(float *)black
-alpha:(float *)alpha;	
+	 yellow:(float *)yellow
+	  black:(float *)black
+	  alpha:(float *)alpha;	
 - (void)getHue:(float *)hue
     saturation:(float *)saturation
-brightness:(float *)brightness
-    alpha:(float *)alpha;
+    brightness:(float *)brightness
+	 alpha:(float *)alpha;
 - (void)getRed:(float *)red
 	 green:(float *)green
-blue:(float *)blue
+	  blue:(float *)blue
 	 alpha:(float *)alpha;
 - (void)getWhite:(float *)white
 	   alpha:(float *)alpha;

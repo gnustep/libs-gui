@@ -36,6 +36,7 @@
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSColor.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSClipView : NSView <NSCoding>
 

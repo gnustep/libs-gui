@@ -88,8 +88,8 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
 
   return [self initWithMutableData: data
 	       forDebugging: NO
-	       languageEncoding: NULL
-	       nameEncoding: NULL
+	       languageEncoding: dps_ascii
+	       nameEncoding: dps_strings
 	       textProc: NULL
 	       errorProc: NULL];
 }

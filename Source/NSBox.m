@@ -202,11 +202,6 @@
 //
 - (void)drawRect:(NSRect)rect
 {
-  NSColor *c = [NSColor redColor];
-
-  PSsetcolor(c);
-  PSrectstroke(border_rect.origin.x, border_rect.origin.y,
-	       border_rect.size.width, border_rect.size.height);
 }
 
 //

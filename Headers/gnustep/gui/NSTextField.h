@@ -35,6 +35,7 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSColor.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSTextField : NSControl <NSCoding>
 

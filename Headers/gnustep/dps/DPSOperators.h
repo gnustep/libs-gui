@@ -31,6 +31,13 @@
 #ifndef _GNUstep_H_DPSOperators
 #define _GNUstep_H_DPSOperators
 
+// Use the DPSclient library if we have it
+#ifdef HAVE_DPSCLIENT
+
+#include <DPS/dpsclient.h>
+
+#else
+
 #include <Foundation/NSObject.h>
 #include <DPSClient/TypesandConstants.h>
 #include <Foundation/NSGeometry.h>
@@ -130,4 +137,5 @@ PSrectstroke(float x, float y, float width, float height);
 void
 PSrectfill(float x, float y, float width, float height);
 
+#endif /* HAVE_DPSCLIENT */
 #endif /* _GNUstep_H_DPSOperators */

@@ -30,28 +30,30 @@
 
 #include <gnustep/gui/NSFont.h>
 #include <gnustep/gui/NSFontManager.h>
+#include <gnustep/gui/NSFontPrivate.h>
 
 NSFont *gnustep_gui_user_fixed_font;
 NSFont *gnustep_gui_user_font;
+NSString *gnustep_gui_system_family = @"";
 
 // Global Strings
-NSString *NSAFMAscender;
-NSString *NSAFMCapHeight;
-NSString *NSAFMCharacterSet;
-NSString *NSAFMDescender;
-NSString *NSAFMEncodingScheme;
-NSString *NSAFMFamilyName;
-NSString *NSAFMFontName;
-NSString *NSAFMFormatVersion;
-NSString *NSAFMFullName;
-NSString *NSAFMItalicAngle;
-NSString *NSAFMMappingScheme;
-NSString *NSAFMNotice;
-NSString *NSAFMUnderlinePosition;
-NSString *NSAFMUnderlineThickness;
-NSString *NSAFMVersion;
-NSString *NSAFMWeight;
-NSString *NSAFMXHeight;
+NSString *NSAFMAscender = @"AFMAscender";
+NSString *NSAFMCapHeight = @"AFMCapHeight";
+NSString *NSAFMCharacterSet = @"AFMCharacterSet";
+NSString *NSAFMDescender = @"AFMDescender";
+NSString *NSAFMEncodingScheme = @"AFMEncodingScheme";
+NSString *NSAFMFamilyName = @"AFMFamilyName";
+NSString *NSAFMFontName = @"AFMFontName";
+NSString *NSAFMFormatVersion = @"AFMFormatVersion";
+NSString *NSAFMFullName = @"AFMFullName";
+NSString *NSAFMItalicAngle = @"AFMItalicAngle";
+NSString *NSAFMMappingScheme = @"AFMMappingScheme";
+NSString *NSAFMNotice = @"AFMNotice";
+NSString *NSAFMUnderlinePosition = @"AFMUnderlinePosition";
+NSString *NSAFMUnderlineThickness = @"AFMUnderlineThickness";
+NSString *NSAFMVersion = @"AFMVersion";
+NSString *NSAFMWeight = @"AFMWeight";
+NSString *NSAFMXHeight = @"AFMXHeight";
 
 @implementation NSFont
 
@@ -77,7 +79,7 @@ NSString *NSAFMXHeight;
   NSFontManager *fm = [NSFontManager sharedFontManager];
   NSFont *f;
 
-  f = [fm fontWithFamily:@"Times New Roman" traits:NSBoldFontMask 
+  f = [fm fontWithFamily:gnustep_gui_system_family traits:NSBoldFontMask 
 	  weight:0 size:fontSize];
   return f;
 }
@@ -94,7 +96,8 @@ NSString *NSAFMXHeight;
   NSFontManager *fm = [NSFontManager sharedFontManager];
   NSFont *f;
 
-  f = [fm fontWithFamily:fontName traits:0 weight:0 size:fontSize];
+  // +++ We need to extract the family name from the font name
+  f = [fm fontWithFamily:fontName traits:0 weight:400 size:fontSize];
   return f;
 }
 
@@ -103,7 +106,8 @@ NSString *NSAFMXHeight;
   NSFontManager *fm = [NSFontManager sharedFontManager];
   NSFont *f;
 
-  f = [fm fontWithFamily:@"Times New Roman" traits:0 weight:0 size:fontSize];
+  f = [fm fontWithFamily:gnustep_gui_system_family traits:0 
+	  weight:400 size:fontSize];
   return f;
 }
 
@@ -138,6 +142,17 @@ NSString *NSAFMXHeight;
 //
 // Instance methods
 //
+- init
+{
+  [super init];
+
+  family_name = @"";
+  font_name = @"";
+  type_face = @"";
+
+  return self;
+}
+
 - (void)dealloc
 {
   [super dealloc];
@@ -178,11 +193,6 @@ NSString *NSAFMXHeight;
   return family_name;
 }
 
-- (void)setFamilyName:(NSString *)familyName
-{
-  family_name = familyName;
-}
-
 - (NSString *)fontName
 {
   return font_name;
@@ -203,42 +213,24 @@ NSString *NSAFMXHeight;
   return point_size;
 }
 
-- (void)setPointSize:(float)value
-{
-  point_size = value;
-}
-
 - (NSFont *)printerFont
 {
-  return nil;
+  return self;
 }
 
 - (NSFont *)screenFont
 {
-  return nil;
+  return self;
 }
 
 - (float)widthOfString:(NSString *)string
 {
-  /* bogus estimate */
-  if (string)
-    return (8.0 * (float)[string length]);
-  else
-    return 0;
+  return 0;
 }
 
 - (float *)widths
 {
   return NULL;
-}
-- (NSFontTraitMask)traits
-{
-  return font_traits;
-}
-
-- (void)setTraits:(NSFontTraitMask)traits
-{
-  font_traits = traits;
 }
 
 //
@@ -289,6 +281,103 @@ NSString *NSAFMXHeight;
   [aDecoder decodeValueOfObjCType: @encode(NSFontTraitMask) at: &font_traits];
 
   return self;
+}
+
+@end
+
+@implementation NSFont (GNUstepPrivate)
+
+- (void)setFamilyName:(NSString *)familyName
+{
+  NSMutableString *s = [NSMutableString stringWithCString: ""];
+
+  // New family name so new font name
+  // Format is family name, dash, typeface
+  family_name = familyName;
+  [s appendString: family_name];
+
+  if ([type_face compare: @""] != NSOrderedSame)
+    {
+      [s appendString: @"-"];
+      [s appendString: type_face];
+    }
+  font_name = s;
+}
+
+- (void)setFontName:(NSString *)fontName
+{
+  font_name = fontName;
+}
+
+- (void)setPointSize:(float)value
+{
+  point_size = value;
+}
+
+- (NSFontTraitMask)traits
+{
+  return font_traits;
+}
+
+- (void)setTraits:(NSFontTraitMask)traits
+{
+  // Only if the traits have changed
+  if (font_traits != traits)
+    {
+      // Figure out a new typeface
+      NSMutableString *s = [NSMutableString stringWithCString: ""];
+
+      // Bold
+      if (traits & NSBoldFontMask)
+	[s appendString: @"Bold"];
+
+      // +++ How do we determine whether to use Italic or Oblique?
+      if (traits & NSItalicFontMask)
+	[s appendString: @"Italic"];
+
+      [self setTypeface: s];
+    }
+  font_traits = traits;
+}
+
+- (int)weight
+{
+  return font_weight;
+}
+
+- (void)setWeight:(int)value
+{
+  NSFontTraitMask t = font_traits;
+
+  font_weight = value;
+  // Make the font bold or unbold based upon the weight
+  if (font_weight <= 400)
+    t = t ^ NSUnboldFontMask;
+  else
+    t = t ^ NSBoldFontMask;
+  [self setTraits:t];
+}
+
+- (NSString *)typeface
+{
+  return type_face;
+}
+
+- (void)setTypeface:(NSString *)str
+{
+  NSMutableString *s = [NSMutableString stringWithCString: ""];
+
+  // New typeface so new font name
+  // Format is family name, dash, typeface
+  type_face = str;
+  [s appendString: family_name];
+
+  if ([type_face compare: @""] != NSOrderedSame)
+    {
+      [s appendString: @"-"];
+      [s appendString: type_face];
+    }
+  font_name = s;
 }
 
 @end

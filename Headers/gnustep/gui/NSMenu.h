@@ -37,12 +37,17 @@
 #include <AppKit/NSMenuCell.h>
 #include <AppKit/NSMatrix.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSZone.h>
 
 @interface NSMenu : NSWindow <NSCoding>
 
 {
   // Attributes
   NSMutableArray *menu_items;
+  NSMenu *super_menu;
+  BOOL autoenables_items;
+  NSMatrix *menu_matrix;
+  BOOL is_torn_off;
 
   // Reserved for back-end use
   void *be_menu_reserved;
@@ -64,11 +69,11 @@
 //
 - (id)addItemWithTitle:(NSString *)aString
 		action:(SEL)aSelector
-keyEquivalent:(NSString *)charCode;
+	 keyEquivalent:(NSString *)charCode;
 - (id)insertItemWithTitle:(NSString *)aString
 		   action:(SEL)aSelector
-keyEquivalent:(NSString *)charCode
-		   atIndex:(unsigned int)index;
+	    keyEquivalent:(NSString *)charCode
+		  atIndex:(unsigned int)index;
 - (NSArray *)itemArray;
 - (NSMatrix *)itemMatrix;
 - (void)setItemMatrix:(NSMatrix *)aMatrix;

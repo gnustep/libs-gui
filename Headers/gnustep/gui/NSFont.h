@@ -40,8 +40,10 @@
   // Attributes
   NSString *family_name;
   NSString *font_name;
+  NSString *type_face;
   float point_size;
   NSFontTraitMask font_traits;
+  int font_weight;
 
   // Reserved for back-end use
   void *be_font_reserved;
@@ -75,18 +77,14 @@
 - (NSRect)boundingRectForFont;
 - (NSString *)displayName;
 - (NSString *)familyName;
-- (void)setFamilyName:(NSString *)familyName;
 - (NSString *)fontName;
 - (BOOL)isBaseFont;
 - (const float *)matrix;
 - (float)pointSize;
-- (void)setPointSize:(float)value;
 - (NSFont *)printerFont;
 - (NSFont *)screenFont;
 - (float)widthOfString:(NSString *)string;
 - (float *)widths;
-- (NSFontTraitMask)traits;
-- (void)setTraits:(NSFontTraitMask)traits;
 
 //
 // Manipulating Glyphs
@@ -96,7 +94,7 @@
 - (BOOL)glyphIsEncoded:(NSGlyph)aGlyph;
 - (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
 	   precededByGlyph:(NSGlyph)prevGlyph
-isNominal:(BOOL *)nominal;
+		 isNominal:(BOOL *)nominal;
 
 //
 // NSCoding protocol

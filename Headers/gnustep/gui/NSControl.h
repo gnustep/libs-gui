@@ -35,6 +35,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSCell.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSControl : NSView <NSCoding>
 

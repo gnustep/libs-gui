@@ -740,11 +740,6 @@ NSString *NSViewFocusChangedNotification;
 
 - (void)drawRect:(NSRect)rect
 {
-  NSColor *col;
-
-  col = [window backgroundColor];
-  PSsetcolor(col);
-  NSRectFill(rect);
 }
 
 - (NSRect)visibleRect
@@ -930,8 +925,8 @@ NSString *NSViewFocusChangedNotification;
 
 - (NSTrackingRectTag)addTrackingRect:(NSRect)aRect
 			       owner:(id)anObject
-userData:(void *)data
-			       assumeInside:(BOOL)flag
+			    userData:(void *)data
+			assumeInside:(BOOL)flag
 {
   NSTrackingRectTag t;
   int i, j;
@@ -964,19 +959,19 @@ userData:(void *)data
 //
 - (BOOL)dragFile:(NSString *)filename
 	fromRect:(NSRect)rect
-slideBack:(BOOL)slideFlag
-	event:(NSEvent *)event
+       slideBack:(BOOL)slideFlag
+	   event:(NSEvent *)event
 {
   return NO;
 }
 
 - (void)dragImage:(NSImage *)anImage
 	       at:(NSPoint)viewLocation
-offset:(NSSize)initialOffset
-	       event:(NSEvent *)event
-pasteboard:(NSPasteboard *)pboard
-	       source:(id)sourceObject
-slideBack:(BOOL)slideFlag
+	   offset:(NSSize)initialOffset
+	    event:(NSEvent *)event
+       pasteboard:(NSPasteboard *)pboard
+	   source:(id)sourceObject
+	slideBack:(BOOL)slideFlag
 {}
 
 - (void)registerForDraggedTypes:(NSArray *)newTypes
@@ -1008,14 +1003,14 @@ slideBack:(BOOL)slideFlag
 //
 - (void)adjustPageHeightNew:(float *)newBottom
 			top:(float)oldTop
-bottom:(float)oldBottom
-			limit:(float)bottomLimit
+		     bottom:(float)oldBottom
+		      limit:(float)bottomLimit
 {}
 
 - (void)adjustPageWidthNew:(float *)newRight
 		      left:(float)oldLeft
-right:(float)oldRight	 
-		      limit:(float)rightLimit
+		     right:(float)oldRight	 
+		     limit:(float)rightLimit
 {}
 
 - (float)heightAdjustLimit
@@ -1052,7 +1047,7 @@ right:(float)oldRight
 
 - (void)beginPage:(int)ordinalNum
 	    label:(NSString *)aString
-bBox:(NSRect)pageRect
+	     bBox:(NSRect)pageRect
 	    fonts:(NSString *)fontNames
 {}
 
@@ -1062,11 +1057,11 @@ bBox:(NSRect)pageRect
 
 - (void)beginPrologueBBox:(NSRect)boundingBox
 	     creationDate:(NSString *)dateCreated
-createdBy:(NSString *)anApplication
-	     fonts:(NSString *)fontNames
-forWhom:(NSString *)user
-	     pages:(int)numPages
-title:(NSString *)aTitle
+		createdBy:(NSString *)anApplication
+		    fonts:(NSString *)fontNames
+		  forWhom:(NSString *)user
+		    pages:(int)numPages
+		    title:(NSString *)aTitle
 {}
 
 - (void)beginSetup

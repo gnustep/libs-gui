@@ -36,6 +36,7 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSMatrix : NSControl <NSCoding>
 

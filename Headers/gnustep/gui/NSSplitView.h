@@ -34,6 +34,7 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSSplitView : NSView <NSCoding>
 
@@ -59,8 +60,8 @@
 //
 - (void)splitView:(NSSplitView *)splitView
 constrainMinCoordinate:(float *)min
-maxCoordinate:(float *)max
-ofSubviewAt:(int)offset;
+    maxCoordinate:(float *)max
+      ofSubviewAt:(int)offset;
 - (void)splitView:(NSSplitView *)sender
 resizeSubviewsWithOldSize:(NSSize)oldSize;
 - (void)splitViewDidResizeSubviews:(NSNotification *)notification;

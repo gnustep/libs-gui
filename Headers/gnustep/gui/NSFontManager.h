@@ -79,8 +79,8 @@
 		   ofFont:(NSFont *)fontObject;
 - (NSFont *)fontWithFamily:(NSString *)family
 		    traits:(NSFontTraitMask)traits
-weight:(int)weight
-		    size:(float)size;
+		    weight:(int)weight
+		      size:(float)size;
 
 //
 // Setting and Getting Parameters

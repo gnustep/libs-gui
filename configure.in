@@ -43,6 +43,41 @@ AC_LN_S
 AC_HEADER_STDC
 
 #--------------------------------------------------------------------
+# Look for the TIFF library
+#--------------------------------------------------------------------
+AC_CHECK_HEADERS(tiff.h, HAVE_TIFF=1, HAVE_TIFF=1)
+
+if test "x$HAVE_TIFF" = "x0"
+then
+   echo You must have the TIFF library installed.
+   echo The most recent version "(v3.4)" should be available at:
+   echo
+   echo ftp://ftp.sgi.com/graphics/tiff
+   echo
+   echo Configuration of the GNUstep GUI Library cannot continue.
+   exit 1
+fi
+AC_SUBST(HAVE_TIFF)
+
+#--------------------------------------------------------------------
+# Look for the DPSClient library
+#--------------------------------------------------------------------
+AC_CHECK_HEADERS(DPS/dpsclient.h, HAVE_DPSCLIENT=1, HAVE_DPSCLIENT=0)
+
+if test "x$HAVE_DPSCLIENT" = "x0"
+then
+   echo You must have the DPSClient library installed.
+   echo The most recent version "(R6)", patched for GNUstep,
+   echo should be available at:
+   echo
+   echo ftp://ftp.ocbi.com/pub/GNUstep
+   echo
+   echo Configuration of the GNUstep GUI Library cannot continue.
+   exit 1
+fi
+AC_SUBST(HAVE_DPSCLIENT)
+
+#--------------------------------------------------------------------
 # Operating system configuration
 #--------------------------------------------------------------------
 config_include=''

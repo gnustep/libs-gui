@@ -42,7 +42,7 @@ includedir = $(prefix)/include
 
 MAKEDEFINES =
 
-CC = @CC@ -g -DHAVE_LIBTIFF
+CC = @CC@ -g
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
 

@@ -42,6 +42,7 @@
 #include <AppKit/NSText.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSScreen.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSWindow : NSResponder <NSCoding>
 
@@ -99,14 +100,14 @@
 //
 - initWithContentRect:(NSRect)contentRect
 	    styleMask:(unsigned int)aStyle
-backing:(NSBackingStoreType)bufferingType
-	    defer:(BOOL)flag;
+	      backing:(NSBackingStoreType)bufferingType
+		defer:(BOOL)flag;
 
 - initWithContentRect:(NSRect)contentRect
 	    styleMask:(unsigned int)aStyle
-backing:(NSBackingStoreType)bufferingType
-	    defer:(BOOL)flag
-screen:aScreen;
+	      backing:(NSBackingStoreType)bufferingType
+		defer:(BOOL)flag
+	       screen:aScreen;
 
 //
 // Accessing the content view
@@ -271,8 +272,8 @@ screen:aScreen;
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask;
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 untilDate:(NSDate *)expiration
-inMode:(NSString *)mode
-			 dequeue:(BOOL)deqFlag;
+			    inMode:(NSString *)mode
+			   dequeue:(BOOL)deqFlag;
 - (void)postEvent:(NSEvent *)event
 	  atStart:(BOOL)flag;
 - (void)setAcceptsMouseMovedEvents:(BOOL)flag;
@@ -285,11 +286,11 @@ inMode:(NSString *)mode
 //
 - (void)dragImage:(NSImage *)anImage
 	       at:(NSPoint)baseLocation 
-offset:(NSSize)initialOffset
-	       event:(NSEvent *)event
-pasteboard:(NSPasteboard *)pboard
-	       source:sourceObject
-	       slideBack:(BOOL)slideFlag;
+	   offset:(NSSize)initialOffset
+	    event:(NSEvent *)event
+       pasteboard:(NSPasteboard *)pboard
+	   source:sourceObject
+	slideBack:(BOOL)slideFlag;
 - (void)registerForDraggedTypes:(NSArray *)newTypes;
 - (void)unregisterDraggedTypes;
 
@@ -332,20 +333,20 @@ pasteboard:(NSPasteboard *)pboard
 		    toSize:(NSSize)frameSize;
 - windowWillReturnFieldEditor:(NSWindow *)sender
 		     toObject:client;
-- (void)windowDidBecomeKey:sender;
-- (void)windowDidBecomeMain:sender;
-- (void)windowDidChangeScreen:sender;
-- (void)windowDidDeminiaturize:sender;
-- (void)windowDidExpose:sender;
-- (void)windowDidMiniaturize:sender;
-- (void)windowDidMove:sender;
-- (void)windowDidResignKey:sender;
-- (void)windowDidResignMain:sender;
-- (void)windowDidResize:sender;
-- (void)windowDidUpdate:sender;
-- (void)windowWillClose:sender;
-- (void)windowWillMiniaturize:sender;
-- (void)windowWillMove:sender;
+- (void)windowDidBecomeKey:(NSNotification *)aNotification;
+- (void)windowDidBecomeMain:(NSNotification *)aNotification;
+- (void)windowDidChangeScreen:(NSNotification *)aNotification;
+- (void)windowDidDeminiaturize:(NSNotification *)aNotification;
+- (void)windowDidExpose:(NSNotification *)aNotification;
+- (void)windowDidMiniaturize:(NSNotification *)aNotification;
+- (void)windowDidMove:(NSNotification *)aNotification;
+- (void)windowDidResignKey:(NSNotification *)aNotification;
+- (void)windowDidResignMain:(NSNotification *)aNotification;
+- (void)windowDidResize:(NSNotification *)aNotification;
+- (void)windowDidUpdate:(NSNotification *)aNotification;
+- (void)windowWillClose:(NSNotification *)aNotification;
+- (void)windowWillMiniaturize:(NSNotification *)aNotification;
+- (void)windowWillMove:(NSNotification *)aNotification;
 
 //
 // NSCoding methods
@@ -362,7 +363,10 @@ pasteboard:(NSPasteboard *)pboard
 - (void)captureMouse: sender;
 - (void)releaseMouse: sender;
 
+// Allow subclasses to init without the backend class
+// attempting to create an actual window
+- cleanInit;
+
 @end
 
 #endif // _GNUstep_H_NSWindow
-

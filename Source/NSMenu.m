@@ -29,8 +29,11 @@
 */ 
 
 #include <gnustep/gui/NSMenu.h>
+#include <gnustep/gui/NSMenuPrivate.h>
 #include <Foundation/NSLock.h>
 #include <gnustep/base/NSCoder.h>
+
+NSZone *gnustep_gui_nsmenu_zone = NULL;
 
 @implementation NSMenu
 
@@ -51,11 +54,13 @@
 //
 + (NSZone *)menuZone
 {
-  return NULL;
+  return gnustep_gui_nsmenu_zone;
 }
 
 + (void)setMenuZone:(NSZone *)zone
-{}
+{
+  gnustep_gui_nsmenu_zone = zone;
+}
 
 //
 // Instance methods
@@ -68,10 +73,19 @@
   return [self initWithTitle:@""];
 }
 
+// Default initializer
 - (id)initWithTitle:(NSString *)aTitle
 {
+  // Init our superclass but skip any of its backend implementation
+  [super cleanInit];
+
   window_title = aTitle;
   menu_items = [NSMutableArray array];
+  super_menu = nil;
+  autoenables_items = NO;
+  menu_matrix = nil;
+  is_torn_off = NO;
+
   return self;
 }
 
@@ -80,7 +94,7 @@
 //
 - (id)addItemWithTitle:(NSString *)aString
 		action:(SEL)aSelector
-keyEquivalent:(NSString *)charCode
+	 keyEquivalent:(NSString *)charCode
 {
   NSMenuCell *m;
   unsigned int mi;
@@ -94,8 +108,8 @@ keyEquivalent:(NSString *)charCode
 
 - (id)insertItemWithTitle:(NSString *)aString
 		   action:(SEL)aSelector
-keyEquivalent:(NSString *)charCode
-		   atIndex:(unsigned int)index
+	    keyEquivalent:(NSString *)charCode
+		  atIndex:(unsigned int)index
 {
   NSMenuCell *m;
   unsigned int mi;
@@ -114,11 +128,13 @@ keyEquivalent:(NSString *)charCode
 
 - (NSMatrix *)itemMatrix
 {
-  return nil;
+  return menu_matrix;
 }
 
 - (void)setItemMatrix:(NSMatrix *)aMatrix
-{}
+{
+  menu_matrix = aMatrix;
+}
 
 //
 // Finding Menu Items 
@@ -128,6 +144,7 @@ keyEquivalent:(NSString *)charCode
   int i, j;
   NSMenuCell *m, *found;
 
+  // Recursively find the menu cell with the tag
   found = nil;
   j = [menu_items count];
   for (i = 0;i < j; ++i)
@@ -159,6 +176,9 @@ keyEquivalent:(NSString *)charCode
 	  // Set the menucell's submenu
 	  [m setSubmenu:aMenu];
 
+	  // Tell the submenu we are its supermenu
+	  [aMenu setSupermenu: self];
+
 	  // Return the menucell
 	  return m;
 	}
@@ -174,17 +194,17 @@ keyEquivalent:(NSString *)charCode
 //
 - (NSMenu *)attachedMenu
 {
-  return nil;
+  return self;
 }
 
 - (BOOL)isAttached
 {
-  return NO;
+  return !is_torn_off;
 }
 
 - (BOOL)isTornOff
 {
-  return NO;
+  return is_torn_off;
 }
 
 - (NSPoint)locationForSubmenu:(NSMenu *)aSubmenu
@@ -197,7 +217,7 @@ keyEquivalent:(NSString *)charCode
 
 - (NSMenu *)supermenu
 {
-  return nil;
+  return super_menu;
 }
 
 //
@@ -205,11 +225,13 @@ keyEquivalent:(NSString *)charCode
 //
 - (BOOL)autoenablesItems
 {
-  return NO;
+  return autoenables_items;
 }
 
 - (void)setAutoenablesItems:(BOOL)flag
-{}
+{
+  autoenables_items = flag;
+}
 
 //
 // NSCoding protocol
@@ -228,6 +250,15 @@ keyEquivalent:(NSString *)charCode
   menu_items = [aDecoder decodeObject];
 
   return self;
+}
+
+@end
+
+@implementation NSMenu (GNUstepPrivate)
+
+- (void)setSupermenu:(NSMenu *)obj
+{
+  super_menu = obj;
 }
 
 @end

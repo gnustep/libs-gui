@@ -29,58 +29,32 @@
 */ 
 
 #include <gnustep/gui/NSColor.h>
+#include <gnustep/gui/NSColorPrivate.h>
 #include <gnustep/gui/NSView.h>
 
+// Class variables
+BOOL gnustep_gui_ignores_alpha;
+
 // Global strings
-NSString *NSCalibratedWhiteColorSpace; 
-NSString *NSCalibratedBlackColorSpace; 
-NSString *NSCalibratedRGBColorSpace;
-NSString *NSDeviceWhiteColorSpace;
-NSString *NSDeviceBlackColorSpace;
-NSString *NSDeviceRGBColorSpace;
-NSString *NSDeviceCMYKColorSpace;
-NSString *NSNamedColorSpace;
-NSString *NSCustomColorSpace;
+NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";
+NSString *NSCalibratedBlackColorSpace = @"NSCalibratedBlackColorSpace";
+NSString *NSCalibratedRGBColorSpace = @"NSCalibratedRGBColorSpace";
+NSString *NSDeviceWhiteColorSpace = @"NSDeviceWhiteColorSpace";
+NSString *NSDeviceBlackColorSpace = @"NSDeviceBlackColorSpace";
+NSString *NSDeviceRGBColorSpace = @"NSDeviceRGBColorSpace";
+NSString *NSDeviceCMYKColorSpace = @"NSDeviceCMYKColorSpace";
+NSString *NSNamedColorSpace = @"NSNamedColorSpace";
+NSString *NSCustomColorSpace = @"NSCustomColorSpace";
 
 // Global gray values
 const float NSBlack = 0;
-const float NSDarkGray = .502;
+const float NSDarkGray = .333;
+const float NSGray = 0.5;
+const float NSLightGray = .667;
 const float NSWhite = 1;
-const float NSLightGray = .753;
 
 @implementation NSColor
 
-////////////////////////////////////////////////////////////
-//
-// Internal methods
-//
-- (void)setRed:(float)value
-{
-  if (value < 0) value = 0;
-  if (value > 1) value = 1;
-  RGB_component.red = value;
-}
-
-- (void)setGreen:(float)value
-{
-  if (value < 0) value = 0;
-  if (value > 1) value = 1;
-  RGB_component.green = value;
-}
-
-- (void)setBlue:(float)value
-{
-  if (value < 0) value = 0;
-  if (value > 1) value = 1;
-  RGB_component.blue = value;
-}
-
-- (void)setClear:(BOOL)flag
-{
-  is_clear = flag;
-}
-
-////////////////////////////////////////////////////////////
 //
 // Class methods
 //
@@ -88,8 +62,11 @@ const float NSLightGray = .753;
 {
   if (self == [NSColor class])
     {
-      // Initial version
-      [self setVersion:1];
+      // Set the version number
+      [self setVersion:2];
+
+      // ignore alpha by default
+      gnustep_gui_ignores_alpha = YES;
     }
 }
 
@@ -101,7 +78,17 @@ const float NSLightGray = .753;
 			 brightness:(float)brightness
 			      alpha:(float)alpha
 {
-  return nil;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSCalibratedRGBColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_HSB_ACTIVE];
+  [c setHue: hue];
+  [c setSaturation: saturation];
+  [c setBrightness: brightness];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 + (NSColor *)colorWithCalibratedRed:(float)red
@@ -112,17 +99,28 @@ const float NSLightGray = .753;
   NSColor *c;
 
   c = [[[NSColor alloc] init] autorelease];
-  [c setRed:red];
-  [c setGreen:green];
-  [c setBlue:blue];
-  [c setClear:NO];
+  [c setColorSpaceName: NSCalibratedRGBColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_RGB_ACTIVE];
+  [c setRed: red];
+  [c setGreen: green];
+  [c setBlue: blue];
+  [c setAlpha: alpha];
+
   return c;
 }
 
 + (NSColor *)colorWithCalibratedWhite:(float)white
 				alpha:(float)alpha
 {
-  return nil;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSCalibratedWhiteColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_WHITE_ACTIVE];
+  [c setWhite: white];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 + (NSColor *)colorWithCatalogName:(NSString *)listName
@@ -137,7 +135,18 @@ const float NSLightGray = .753;
 			   black:(float)black
 			   alpha:(float)alpha
 {
-  return nil;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSDeviceCMYKColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_CMYK_ACTIVE];
+  [c setCyan: cyan];
+  [c setMagenta: magenta];
+  [c setYellow: yellow];
+  [c setBlack: black];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 + (NSColor *)colorWithDeviceHue:(float)hue
@@ -145,7 +154,17 @@ const float NSLightGray = .753;
 		     brightness:(float)brightness
 			  alpha:(float)alpha
 {
-  return nil;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSDeviceRGBColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_HSB_ACTIVE];
+  [c setHue: hue];
+  [c setSaturation: saturation];
+  [c setBrightness: brightness];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 + (NSColor *)colorWithDeviceRed:(float)red
@@ -153,13 +172,31 @@ const float NSLightGray = .753;
 			   blue:(float)blue
 			  alpha:(float)alpha
 {
-  return self;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSDeviceRGBColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_RGB_ACTIVE];
+  [c setRed: red];
+  [c setGreen: green];
+  [c setBlue: blue];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 + (NSColor *)colorWithDeviceWhite:(float)white
 			    alpha:(float)alpha
 {
-  return nil;
+  NSColor *c;
+
+  c = [[[NSColor alloc] init] autorelease];
+  [c setColorSpaceName: NSDeviceWhiteColorSpace];
+  [c setActiveComponent: GNUSTEP_GUI_WHITE_ACTIVE];
+  [c setWhite: white];
+  [c setAlpha: alpha];
+
+  return c;
 }
 
 //
@@ -167,10 +204,7 @@ const float NSLightGray = .753;
 //
 + (NSColor *)blackColor
 {
-  return [self colorWithCalibratedRed:0
-	       green:0
-	       blue:0
-	       alpha:1];
+  return [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
 }
 
 + (NSColor *)blueColor
@@ -178,7 +212,7 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:0
 	       green:0
 	       blue:1.0
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)brownColor
@@ -186,7 +220,7 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:0.6
 	       green:0.4
 	       blue:0.2
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)clearColor
@@ -195,33 +229,35 @@ const float NSLightGray = .753;
   c = [self colorWithCalibratedRed:0
 	    green:1.0
 	    blue:1.0
-	    alpha:1];
+	    alpha:1.0];
   [c setClear:YES];
   return c;
 }
 
 + (NSColor *)cyanColor
 {
+  // Why does OpenStep say RGB color space instead of CMYK?
   return [self colorWithCalibratedRed:0
 	       green:1.0
 	       blue:1.0
-	       alpha:1];
+	       alpha:1.0];
+#if 0
+  return [self colorWithCalibratedCyan: 1.0
+	       magenta:0
+	       yellow:0
+	       black:0
+	       alpha:1.0];
+#endif
 }
 
 + (NSColor *)darkGrayColor
 {
-  return [self colorWithCalibratedRed:0.502
-	       green:0.502
-	       blue:0.502
-	       alpha:1];
+  return [self colorWithCalibratedWhite: NSDarkGray alpha: 1.0];
 }
 
 + (NSColor *)grayColor
 {
-  return [self colorWithCalibratedRed:0.753
-	       green:0.753
-	       blue:0.753
-	       alpha:1];
+  return [self colorWithCalibratedWhite: NSGray alpha: 1.0];
 }
 
 + (NSColor *)greenColor
@@ -229,23 +265,28 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:0
 	       green:1.0
 	       blue:0
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)lightGrayColor
 {
-  return [self colorWithCalibratedRed:0.9
-	       green:0.9
-	       blue:0.9
-	       alpha:1];
+  return [self colorWithCalibratedWhite: NSLightGray alpha: 1];
 }
 
 + (NSColor *)magentaColor
 {
+  // Why does OpenStep say RGB color space instead of CMYK?
   return [self colorWithCalibratedRed:1.0
 	       green:0
 	       blue:1.0
-	       alpha:1];
+	       alpha:1.0];
+#if 0
+  return [self colorWithCalibratedCyan:0
+	       magenta:1.0
+	       yellow:0
+	       black:0
+	       alpha:1.0];
+#endif
 }
 
 + (NSColor *)orangeColor;
@@ -253,7 +294,7 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:1.0
 	       green:0.5
 	       blue:0
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)purpleColor;
@@ -261,7 +302,7 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:0.5
 	       green:0
 	       blue:0.5
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)redColor;
@@ -269,23 +310,28 @@ const float NSLightGray = .753;
   return [self colorWithCalibratedRed:1.0
 	       green:0
 	       blue:0
-	       alpha:1];
+	       alpha:1.0];
 }
 
 + (NSColor *)whiteColor;
 {
-  return [self colorWithCalibratedRed:1.0
-	       green:1.0
-	       blue:1.0
-	       alpha:1];
+  return [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
 }
 
 + (NSColor *)yellowColor
 {
+  // Why does OpenStep say RGB color space instead of CMYK?
   return [self colorWithCalibratedRed:1.0
 	       green:1.0
 	       blue:0
+	       alpha:1.0];
+#if 0
+  return [self colorWithCalibratedCyan:0
+	       magenta:0
+	       yellow:1.0
+	       black:0
 	       alpha:1];
+#endif
 }
 
 //
@@ -293,11 +339,13 @@ const float NSLightGray = .753;
 //
 + (BOOL)ignoresAlpha
 {
-  return YES;
+  return gnustep_gui_ignores_alpha;
 }
 
 + (void)setIgnoresAlpha:(BOOL)flag
-{}
+{
+  gnustep_gui_ignores_alpha = flag;
+}
 
 //
 // Copying and Pasting
@@ -311,6 +359,16 @@ const float NSLightGray = .753;
 //
 // Instance methods
 //
+- init
+{
+  [super init];
+
+  colorspace_name = @"";
+  catalog_name = @"";
+  color_name = @"";
+  return self;
+}
+
 //
 // Retrieving a Set of Components
 //
@@ -319,23 +377,65 @@ const float NSLightGray = .753;
 	 yellow:(float *)yellow
 	black:(float *)black
 	  alpha:(float *)alpha
-{}
+{
+  // Only set what is wanted
+  // If not a CMYK color then you get bogus values
+  if (cyan)
+    *cyan = CMYK_component.cyan;
+  if (magenta)
+    *magenta = CMYK_component.magenta;
+  if (yellow)
+    *yellow = CMYK_component.yellow;
+  if (black)
+    *black = CMYK_component.black;
+  if (alpha)
+    *alpha = alpha_component;
+}
 
 - (void)getHue:(float *)hue
     saturation:(float *)saturation
     brightness:(float *)brightness
 	 alpha:(float *)alpha
-{}
+{
+  // Only set what is wanted
+  // If not an HSB color then you get bogus values
+  if (hue)
+    *hue = HSB_component.hue;
+  if (saturation)
+    *saturation = HSB_component.saturation;
+  if (brightness)
+    *brightness = HSB_component.brightness;
+  if (alpha)
+    *alpha = alpha_component;
+}
 
 - (void)getRed:(float *)red
 	 green:(float *)green
 	  blue:(float *)blue
 	 alpha:(float *)alpha
-{}
+{
+  // Only set what is wanted
+  // If not an RGB color then you get bogus values
+  if (red)
+    *red = RGB_component.red;
+  if (green)
+    *green = RGB_component.green;
+  if (blue)
+    *blue = RGB_component.blue;
+  if (alpha)
+    *alpha = alpha_component;
+}
 
 - (void)getWhite:(float *)white
 	   alpha:(float *)alpha
-{}
+{
+  // Only set what is wanted
+  // If not a grayscale color then you get bogus values
+  if (white)
+    *white = white_component;
+  if (alpha)
+    *alpha = alpha_component;
+}
 
 //
 // Retrieving Individual Components
@@ -347,7 +447,7 @@ const float NSLightGray = .753;
 
 - (float)blackComponent
 {
-  return 0;
+  return CMYK_component.black;
 }
 
 - (float)blueComponent
@@ -357,22 +457,22 @@ const float NSLightGray = .753;
 
 - (float)brightnessComponent
 {
-  return 0;
+  return HSB_component.brightness;
 }
 
 - (NSString *)catalogNameComponent
 {
-  return nil;
+  return catalog_name;
 }
 
 - (NSString *)colorNameComponent
 {
-  return nil;
+  return color_name;
 }
 
 - (float)cyanComponent
 {
-  return 0;
+  return CMYK_component.cyan;
 }
 
 - (float)greenComponent
@@ -382,22 +482,24 @@ const float NSLightGray = .753;
 
 - (float)hueComponent
 {
-  return 0;
+  return HSB_component.hue;
 }
 
 - (NSString *)localizedCatalogNameComponent
 {
-  return nil;
+  // +++ how do we localize?
+  return catalog_name;
 }
 
 - (NSString *)localizedColorNameComponent
 {
-  return nil;
+  // +++ how do we localize?
+  return color_name;
 }
 
 - (float)magentaComponent
 {
-  return 0;
+  return CMYK_component.magenta;
 }
 
 - (float)redComponent
@@ -407,17 +509,17 @@ const float NSLightGray = .753;
 
 - (float)saturationComponent
 {
-  return 0;
+  return HSB_component.saturation;
 }
 
 - (float)whiteComponent
 {
-  return 0;
+  return white_component;
 }
 
 - (float)yellowComponent
 {
-  return 0;
+  return CMYK_component.yellow;
 }
 
 //
@@ -425,7 +527,7 @@ const float NSLightGray = .753;
 //
 - (NSString *)colorSpaceName
 {
-  return nil;
+  return colorspace_name;
 }
 
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace
@@ -484,24 +586,181 @@ const float NSLightGray = .753;
 {
   [super encodeWithCoder:aCoder];
 
+  // Version 1
   [aCoder encodeValueOfObjCType: "f" at: &RGB_component.red];
   [aCoder encodeValueOfObjCType: "f" at: &RGB_component.green];
   [aCoder encodeValueOfObjCType: "f" at: &RGB_component.blue];
   [aCoder encodeValueOfObjCType: "f" at: &alpha_component];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_clear];
+
+  // Version 2
+  [aCoder encodeObject: colorspace_name];
+  [aCoder encodeObject: catalog_name];
+  [aCoder encodeObject: color_name];
+  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.cyan];
+  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.magenta];
+  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.yellow];
+  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.black];
+  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.hue];
+  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.saturation];
+  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.brightness];
+  [aCoder encodeValueOfObjCType: "f" at: &white_component];
+  [aCoder encodeValueOfObjCType: "i" at: &active_component];
 }
 
 - initWithCoder:aDecoder
 {
+  NSString *s;
   [super initWithCoder:aDecoder];
 
+  // Version 1
   [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.red];
   [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.green];
   [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.blue];
   [aDecoder decodeValueOfObjCType: "f" at: &alpha_component];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_clear];
 
+  // Get our class name
+  s = [NSString stringWithCString: object_get_class_name(self)];
+
+  // Version 2
+  if ([aDecoder versionForClassName: s] > 1)
+    {
+      colorspace_name = [aDecoder decodeObject];
+      catalog_name = [aDecoder decodeObject];
+      color_name = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.cyan];
+      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.magenta];
+      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.yellow];
+      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.black];
+      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.hue];
+      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.saturation];
+      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.brightness];
+      [aDecoder decodeValueOfObjCType: "f" at: &white_component];
+      [aDecoder decodeValueOfObjCType: "i" at: &active_component];
+    }
+
   return self;
+}
+
+@end
+
+//
+// Private methods
+//
+@implementation NSColor (GNUstepPrivate)
+
+- (void)setColorSpaceName:(NSString *)str
+{
+  colorspace_name = str;
+}
+
+- (void)setCatalogName:(NSString *)str
+{
+  catalog_name = str;
+}
+
+- (void)setColorName:(NSString *)str
+{
+  color_name = str;
+}
+
+// RGB component values
+- (void)setRed:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  RGB_component.red = value;
+}
+
+- (void)setGreen:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  RGB_component.green = value;
+}
+
+- (void)setBlue:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  RGB_component.blue = value;
+}
+
+// CMYK component values
+- (void)setCyan:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  CMYK_component.cyan = value;
+}
+
+- (void)setMagenta:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  CMYK_component.magenta = value;
+}
+
+- (void)setYellow:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  CMYK_component.yellow = value;
+}
+
+- (void)setBlack:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  CMYK_component.black = value;
+}
+
+// HSB component values
+- (void)setHue:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  HSB_component.hue = value;
+}
+
+- (void)setSaturation:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  HSB_component.saturation = value;
+}
+
+- (void)setBrightness:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  HSB_component.brightness = value;
+}
+
+// Grayscale
+- (void)setWhite:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  white_component = value;
+}
+
+- (void)setAlpha:(float)value
+{
+  if (value < 0) value = 0;
+  if (value > 1) value = 1;
+  alpha_component = value;
+}
+
+- (void)setActiveComponent:(int)value
+{
+  active_component = value;
+}
+
+- (void)setClear:(BOOL)flag
+{
+  is_clear = flag;
 }
 
 @end

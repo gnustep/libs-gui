@@ -43,6 +43,7 @@
 #include <gnustep/base/Queue.h>
 #include <Foundation/NSCoder.h>
 #include <DPSClient/NSDPSContext.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSApplication : NSResponder <NSCoding>
 
@@ -222,20 +223,20 @@
 - (BOOL)application:sender openFileWithoutUI:(NSString *)filename;
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename;
 - (BOOL)application:(NSApplication *)app openTempFile:(NSString *)filename;
-- (void)applicationDidBecomeActive:sender;
-- (void)applicationDidFinishLaunching:sender;
-- (void)applicationDidHide:sender;
-- (void)applicationDidResignActive:sender;
-- (void)applicationDidUnhide:sender;
-- (void)applicationDidUpdate:sender;
+- (void)applicationDidBecomeActive:(NSNotification *)aNotification;
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
+- (void)applicationDidHide:(NSNotification *)aNotification;
+- (void)applicationDidResignActive:(NSNotification *)aNotification;
+- (void)applicationDidUnhide:(NSNotification *)aNotification;
+- (void)applicationDidUpdate:(NSNotification *)aNotification;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
 - (BOOL)applicationShouldTerminate:sender;
-- (void)applicationWillBecomeActive:sender;
-- (void)applicationWillFinishLaunching:sender;
-- (void)applicationWillHide:sender;
-- (void)applicationWillResignActive:sender;
-- (void)applicationWillUnhide:sender;
-- (void)applicationWillUpdate:sender;
+- (void)applicationWillBecomeActive:(NSNotification *)aNotification;
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
+- (void)applicationWillHide:(NSNotification *)aNotification;
+- (void)applicationWillResignActive:(NSNotification *)aNotification;
+- (void)applicationWillUnhide:(NSNotification *)aNotification;
+- (void)applicationWillUpdate:(NSNotification *)aNotification;
 
 //
 // NSCoding protocol

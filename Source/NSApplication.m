@@ -869,40 +869,40 @@ NSString *NSApplicationWillUpdateNotification;
   return result;
 }
 
-- (void)applicationDidBecomeActive:sender
+- (void)applicationDidBecomeActive:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidBecomeActive:)])
-    [delegate applicationDidBecomeActive:sender];
+    [delegate applicationDidBecomeActive:aNotification];
 }
 	
-- (void)applicationDidFinishLaunching:sender
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidFinishLaunching:)])
-    [delegate applicationDidFinishLaunching:sender];
+    [delegate applicationDidFinishLaunching:aNotification];
 }
 
-- (void)applicationDidHide:sender
+- (void)applicationDidHide:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidHide:)])
-    [delegate applicationDidHide:sender];
+    [delegate applicationDidHide:aNotification];
 }
 
-- (void)applicationDidResignActive:sender
+- (void)applicationDidResignActive:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidResignActive:)])
-    [delegate applicationDidResignActive:sender];
+    [delegate applicationDidResignActive:aNotification];
 }
 
-- (void)applicationDidUnhide:sender
+- (void)applicationDidUnhide:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidUnhide:)])
-    [delegate applicationDidUnhide:sender];
+    [delegate applicationDidUnhide:aNotification];
 }
 
-- (void)applicationDidUpdate:sender
+- (void)applicationDidUpdate:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationDidUpdate:)])
-    [delegate applicationDidUpdate:sender];
+    [delegate applicationDidUpdate:aNotification];
 }
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
@@ -925,40 +925,40 @@ NSString *NSApplicationWillUpdateNotification;
   return result;
 }
 
-- (void)applicationWillBecomeActive:sender
+- (void)applicationWillBecomeActive:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillBecomeActive:)])
-    [delegate applicationWillBecomeActive:sender];
+    [delegate applicationWillBecomeActive:aNotification];
 }
 
-- (void)applicationWillFinishLaunching:sender
+- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillFinishLaunching:)])
-    [delegate applicationWillFinishLaunching:sender];
+    [delegate applicationWillFinishLaunching:aNotification];
 }
 
-- (void)applicationWillHide:sender
+- (void)applicationWillHide:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillHide:)])
-    [delegate applicationWillHide:sender];
+    [delegate applicationWillHide:aNotification];
 }
 
-- (void)applicationWillResignActive:sender
+- (void)applicationWillResignActive:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillResignActive:)])
-    [delegate applicationWillResignActive:sender];
+    [delegate applicationWillResignActive:aNotification];
 }
 
-- (void)applicationWillUnhide:sender
+- (void)applicationWillUnhide:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillUnhide:)])
-    [delegate applicationWillUnhide:sender];
+    [delegate applicationWillUnhide:aNotification];
 }
 
-- (void)applicationWillUpdate:sender
+- (void)applicationWillUpdate:(NSNotification *)aNotification
 {
   if ([delegate respondsTo:@selector(applicationWillUpdate:)])
-    [delegate applicationWillUpdate:sender];
+    [delegate applicationWillUpdate:aNotification];
 }
 
 //

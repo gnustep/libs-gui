@@ -30,6 +30,7 @@
 
 #include <gnustep/gui/NSFontManager.h>
 #include <gnustep/gui/NSApplication.h>
+#include <gnustep/gui/NSFontPrivate.h>
 
 //
 // Class variables
@@ -133,6 +134,7 @@ id MB_THE_FONT_PANEL_FACTORY;
 - (NSFont *)convertFont:(NSFont *)fontObject
 		 toFace:(NSString *)typeface
 {
+  // +++ How to do this conversion?
   return fontObject;
 }
 
@@ -196,19 +198,41 @@ id MB_THE_FONT_PANEL_FACTORY;
 - (NSFont *)convertWeight:(BOOL)upFlag
 		   ofFont:(NSFont *)fontObject
 {
-  return fontObject;
+  int w = [fontObject weight];
+  NSFont *f = [fontObject mutableCopy];
+
+  // Weight are sort of arbitrary, so we will use
+  // 0 - light, 400 - normal, 700 - bold
+  if (upFlag)
+    {
+      if (w == 0)
+	w = 400;
+      else if (w == 400)
+	w = 700;
+    }
+  else
+    {
+      if (w == 700)
+	w = 400;
+      else if (w == 400)
+	w = 0;
+    }
+
+  [f setWeight: w];
+  return f;
 }
 
 - (NSFont *)fontWithFamily:(NSString *)family
 		    traits:(NSFontTraitMask)traits
-weight:(int)weight
-		    size:(float)size
+		    weight:(int)weight
+		      size:(float)size
 {
   int i, j;
   BOOL found = NO;
   NSString *name;
   NSFont *f;
 
+  // Make sure it is a legitimate family name
   j = [family_list count];
   for (i = 0;i < j; ++i)
     {
@@ -220,12 +244,14 @@ weight:(int)weight
 	}
     }
 
+  // Create the font
   if (found)
     {
       f = [[NSFont alloc] init];
-      [f setFamilyName:family];
-      [f setTraits:traits];
-      [f setPointSize:size];		
+      [f setFamilyName: family];
+      [f setTraits: traits];
+      [f setWeight: weight];
+      [f setPointSize: size];		
       return f;
     }
   else
@@ -296,11 +322,12 @@ weight:(int)weight
 
 - (NSFontTraitMask)traitsOfFont:(NSFont *)fontObject
 {
-  return 0;
+  return [fontObject traits];
 }
 
 - (int)weightOfFont:(NSFont *)fontObject
 {
+  return [fontObject weight];
 }
 
 //

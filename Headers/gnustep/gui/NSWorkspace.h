@@ -34,6 +34,7 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSWorkspace : NSObject
 

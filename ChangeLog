@@ -1,3 +1,56 @@
+Thu Sep 12 13:49:53 1996  GNUstep Development  <gnustep@ocbi.com>
+
+	* Headers/gnustep/gui/NSFontPrivate.h: New file.
+	* Headers/gnustep/gui/NSFont.h: Add typeface and weight variables.
+	* Source/NSFont.m: Fill out implementation.
+	* Source/NSFontManager.m: Likewise.
+	
+	* Headers/gnustep/gui/NSMenuPrivate.h: New file.
+	* Headers/gnustep/gui/NSMenu.h: Add instance variables to fill
+	out implementation.
+	* Source/NSMenu.m: Fill out implementation.
+
+	* Version (GNUSTEP_GUI_LIBTIFF): Required tiff library version.
+	(GNUSTEP_GUI_DPSCLIENT): Required DPSclient library version.
+	* configure: Run autoconf for configure.in changes.
+	* configure.in: Add check for tiff library.  Add check for
+	DPSclient library.
+	* Headers/gnustep/dps/DPSOperators.h: include in header
+	file from DPSclient library.
+	* Headers/gnustep/dps/NSDPSContext.h: Include DPS operators.
+	* Headers/gnustep/dps/TypesandConstants.h: Don't define some
+	typedefs if we have the DPSclient library.
+	* Headers/gnustep/gui/Functions.h (NSRectFill): Correct definition.
+	* Headers/gnustep/gui/config.h.in (HAVE_TIFF): Add definition for
+	tiff library.
+	(HAVE_DPSCLIENT): Add definition for DPSclient library.
+	* Headers/gnustep/gui/nsimage-tiff.h (HAVE_TIFF): Correct definition.
+	* Source/Makefile.in: Remove definition.
+	* Source/NSDPSContext.m: Specify default language and name encoding.
+	* Source/tiff.c: Delete include of non-existent header file.
+
+	* Source/Functions.m: Remove all function declarations that
+	belong in the backend implementation.
+	* Source/NSBox.m (-drawRect:): Remove use of DPS functions that
+	should be in backend.
+	* Source/NSView.m (-drawRect:): Likewise.
+
+	* Headers/gnustep/gui/NSApplication.h: Correct method definitions
+	that should be using NSNotification.
+	* Headers/gnustep/gui/NSWindow.h: Likewise.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Headers/gnustep/gui/NSClipView.h: Include NSNotification.
+	* Headers/gnustep/gui/NSControl.h: Likewise.
+	* Headers/gnustep/gui/NSMatrix.h: Likewise.
+	* Headers/gnustep/gui/NSSplitView.h: Likewise.
+	* Headers/gnustep/gui/NSTextField.h: Likewise.
+	* Headers/gnustep/gui/NSWorkspace.h: Likewise.
+
+	* Headers/gnustep/gui/NSColorPrivate.h: New file.
+	* Headers/gnustep/gui/NSColor.h: Implement HSB colors.
+	* Source/NSColor.m: Implement HSB, CMYK, and grayscale methods.
+
 Tue Sep  3 15:24:41 1996  Adam Fedor  <fedor@pulse.Colorado.edu>
 
 	* NSBitmapImageRep.h: "Hide" instance variable names.  

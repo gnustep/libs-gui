@@ -1,14 +1,12 @@
 /* 
-   config.h
+   NSFontPrivate.h
 
-   System dependent includes.
-
-   @configure_input@
+   Private methods for the font class.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Date: September 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -30,15 +28,23 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_AppKitConfig
-#define _GNUstep_H_AppKitConfig
+#ifndef _GNUstep_H_NSFontPrivate
+#define _GNUstep_H_NSFontPrivate
 
-#include <Foundation/NSGeometry.h>
+#include <gnustep/gui/NSFont.h>
 
-@config_include@
+@interface NSFont (GNUstepPrivate)
 
-#define HAVE_TIFF @HAVE_TIFF@
-#define HAVE_DPSCLIENT @HAVE_DPSCLIENT@
+- (void)setFamilyName:(NSString *)familyName;
+- (void)setFontName:(NSString *)fontName;
+- (void)setPointSize:(float)value;
+- (NSFontTraitMask)traits;
+- (void)setTraits:(NSFontTraitMask)traits;
+- (int)weight;
+- (void)setWeight:(int)value;
+- (NSString *)typeface;
+- (void)setTypeface:(NSString *)str;
 
-#endif /* _GNUstep_H_AppKitConfig */
+@end
 
+#endif /* _GNUstep_H_NSFontPrivate */

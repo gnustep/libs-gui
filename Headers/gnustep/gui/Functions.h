@@ -46,8 +46,7 @@ void NSEraseRect(NSRect aRect);
 void NSHighlightRect(NSRect aRect);
 void NSRectClip(NSRect aRect);
 void NSRectClipList(const NSRect *rects, int count);
-void NS__RectFill(id self, NSRect aRect);
-#define NSRectFill(ARECT) NS__RectFill(self,ARECT)
+void NSRectFill(NSRect aRect);
 void NSRectFillList(const NSRect *rects, int count);
 void NSRectFillListWithGrays(const NSRect *rects, 
 			     const float *grays, int count);

@@ -1,14 +1,12 @@
 /* 
-   config.h
+   NSColorPrivate.h
 
-   System dependent includes.
-
-   @configure_input@
+   Private methods for the color class
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Date: September 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -30,15 +28,40 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_AppKitConfig
-#define _GNUstep_H_AppKitConfig
+#ifndef _GNUstep_H_NSColorPrivate
+#define _GNUstep_H_NSColorPrivate
 
-#include <Foundation/NSGeometry.h>
+#include <gnustep/gui/NSColor.h>
 
-@config_include@
+@interface NSColor (GNUstepPrivate)
 
-#define HAVE_TIFF @HAVE_TIFF@
-#define HAVE_DPSCLIENT @HAVE_DPSCLIENT@
+- (void)setColorSpaceName:(NSString *)str;
+- (void)setCatalogName:(NSString *)str;
+- (void)setColorName:(NSString *)str;
 
-#endif /* _GNUstep_H_AppKitConfig */
+// RGB component values
+- (void)setRed:(float)value;
+- (void)setGreen:(float)value;
+- (void)setBlue:(float)value;
 
+// CMYK component values
+- (void)setCyan:(float)value;
+- (void)setMagenta:(float)value;
+- (void)setYellow:(float)value;
+- (void)setBlack:(float)value;
+
+// HSB component values
+- (void)setHue:(float)value;
+- (void)setSaturation:(float)value;
+- (void)setBrightness:(float)value;
+
+// Grayscale
+- (void)setWhite:(float)value;
+
+- (void)setAlpha:(float)value;
+- (void)setActiveComponent:(int)value;
+- (void)setClear:(BOOL)flag;
+
+@end
+
+#endif // _GNUstep_H_NSColorPrivate

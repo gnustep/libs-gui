@@ -1,14 +1,12 @@
 /* 
-   config.h
+   NSMenuPrivate.h
 
-   System dependent includes.
-
-   @configure_input@
+   Private methods for the menu class
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Date: September 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -22,23 +20,20 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
 
-   If you are interested in a warranty or support for this source code,
-   contact Scott Christley <scottc@net-community.com> for more information.
-   
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_AppKitConfig
-#define _GNUstep_H_AppKitConfig
+#ifndef _GNUstep_H_NSMenuPrivate
+#define _GNUstep_H_NSMenuPrivate
 
-#include <Foundation/NSGeometry.h>
+#include <gnustep/gui/NSMenu.h>
 
-@config_include@
+@interface NSMenu (GNUstepPrivate)
 
-#define HAVE_TIFF @HAVE_TIFF@
-#define HAVE_DPSCLIENT @HAVE_DPSCLIENT@
+- (void)setSupermenu:(NSMenu *)obj;
 
-#endif /* _GNUstep_H_AppKitConfig */
+@end
 
+#endif // _GNUstep_H_NSMenuPrivate

@@ -34,6 +34,7 @@
 #include <AppKit/stdappkit.h>
 #include <DPSClient/TypesandConstants.h>
 #include <Foundation/NSData.h>
+#include <DPSClient/DPSOperators.h>
 
 //
 // NSDPSContextNotification
