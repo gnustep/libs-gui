@@ -70,6 +70,7 @@
 #include <AppKit/NSDataLink.h>
 #include <AppKit/NSDataLinkManager.h>
 #include <AppKit/NSDataLinkPanel.h>
+#include <AppKit/NSDocument.h>
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSEPSImageRep.h>
