@@ -41,19 +41,21 @@
 # Things to do after compiling
 # after-all::
 
-# Things to do before installing
-before-install::
+$(INSTALL_DIR):
 	$(MKDIRS) $(INSTALL_DIR)
-	for file in $(RESOURCE_DIRS); do \
-	  $(MKDIRS) $(INSTALL_DIR)/$$file ; \
-	done
+
+# Things to do before installing
+before-install:: $(INSTALL_DIR)
 
 # Things to do after installing
 after-install::
-	for dirs in $(RESOURCE_DIRS); do \
+	for dirs in $(RESOURCE_DIRS); do          \
+	  if [ ! -d $(INSTALL_DIR)/$$dirs ]; then  \
+	    $(MKDIRS) $(INSTALL_DIR)/$$dirs ;     \
+	  fi;                                     \
 	  cp $$dirs/*ppd $(INSTALL_DIR)/$$dirs/ ; \
-	done
-	for file in $(RESOURCE_FILES); do \
+	done;                                     \
+	for file in $(RESOURCE_FILES); do         \
 	  $(INSTALL_DATA) $$file $(INSTALL_DIR) ; \
 	done
 
