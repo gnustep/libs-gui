@@ -10,9 +10,11 @@
 <dl>
 <dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
+<dt>James Dessart
+<dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
+<p>Version: 0.2</p>
+<p>Date: 8 April, 2000</p>
 <h2><a name="cont-0">NSView</a></h2>
 <h2><a name="NSView">NSView</a></h2>
 <p><b>Declared in:</b> AppKit/NSView.h</p>
@@ -20,6 +22,22 @@
 <p><b>Conforms to:</b> NSCoding
 </p>
 <hr>
+
+          <p>
+NSView is an abstract class which provides facilities for drawing in a window and
+          receiving events.  It is the superclass of many of the visual elements of the GUI.</p>
+
+
+          <p>
+In order to display itself, a view must be placed in a window (represented by an 
+          NSWindow object).  Within the window is a hierarchy of NSViews, headed by the window's 
+          content view.  Every other view in a window is a descendant of this view.</p>
+
+
+          <p>
+Subclasses can override <code>drawRect:</code> in order to implement their 
+          appearance.  Other methods of NSView and NSResponder can also be overridden to handle
+          user generated events.</p>
 
           
 <ul>
@@ -93,7 +111,7 @@
 <li><a href="NSView.html#method-67">-locationOfPrintRect:</a>
 <li><a href="NSView.html#method-68">-lockFocus</a>
 <li><a href="NSView.html#method-69">-menuForEvent:</a>
-<li><a href="NSView.html#method-70">-mouse:</a>
+<li><a href="NSView.html#method-70">-mouse:inRect:</a>
 <li><a href="NSView.html#method-71">-needsDisplay</a>
 <li><a href="NSView.html#method-72">-needsPanelToBecomeKey</a>
 <li><a href="NSView.html#method-73">-nextKeyView</a>
@@ -116,7 +134,7 @@
 <li><a href="NSView.html#method-90">-removeSubview:</a>
 <li><a href="NSView.html#method-91">-removeTrackingRect:</a>
 <li><a href="NSView.html#method-92">-renewGState</a>
-<li><a href="NSView.html#method-93">-replaceSubview:</a>
+<li><a href="NSView.html#method-93">-replaceSubview:with:</a>
 <li><a href="NSView.html#method-94">-resetCursorRects</a>
 <li><a href="NSView.html#method-95">-resizeSubviewsWithOldSize:</a>
 <li><a href="NSView.html#method-96">-resizeWithOldSuperviewSize:</a>
@@ -166,15 +184,25 @@
 <h2><a name="method-0">defaultMenu</a></h2>
 + (NSMenu*) <b>defaultMenu</b><br>
 
+          <p>
+As of yet, unimplemented.</p>
+
           
 <hr>
 <h2><a name="method-1">focusView</a></h2>
 + (NSView*) <b>focusView</b><br>
 
+          <p>
+Returns the view which currently has the focus.</p>
+
           
 <hr>
 <h2><a name="method-2">acceptsFirstMouse:</a></h2>
 - (BOOL) <b>acceptsFirstMouse:</b> (NSEvent*)theEvent<br>
+
+          <p>
+Returns <code>YES</code> if the view object will accept the first click
+          received when in an inactive window, and <code>NO</code> otherwise.</p>
 
           
 <hr>
@@ -185,6 +213,11 @@
 <hr>
 <h2><a name="method-4">addSubview:</a></h2>
 - (void) <b>addSubview:</b> (NSView*)aView<br>
+
+          <p>
+
+          Adds <var>aView</var> as a subview of the receiver.
+          </p>
 
           
 <hr>
@@ -225,6 +258,14 @@
 <hr>
 <h2><a name="method-12">ancestorSharedWithView:</a></h2>
 - (NSView*) <b>ancestorSharedWithView:</b> (NSView*)aView<br>
+
+          <p>
+
+          Returns <code>self</code> if <var>aView</var> is the receiver or <var>aView</var> is a 
+          subview of the receiver, the ancestor view shared by <var>aView</var> and the receiver, 
+          if any, <var>aView</var> if it is an ancestor of  the receiver, otherwise returns 
+          <code>nil</code>.
+          </p>
 
           
 <hr>
@@ -451,6 +492,10 @@
 <h2><a name="method-57">hitTest:</a></h2>
 - (NSView*) <b>hitTest:</b> (NSPoint)aPoint<br>
 
+          <p>
+Returns the subview, lowest in the receiver's hierarchy, which contains 
+          <var>aPoint</var></p>
+
           
 <hr>
 <h2><a name="method-58">initWithFrame:</a></h2>
@@ -465,6 +510,11 @@
 <hr>
 <h2><a name="method-60">isDescendantOf:</a></h2>
 - (BOOL) <b>isDescendantOf:</b> (NSView*)aView<br>
+
+          <p>
+
+          Returns <code>YES</code> if <var>aView</var> is an ancestor of the receiver.
+          </p>
 
           
 <hr>
@@ -511,10 +561,16 @@
 <h2><a name="method-69">menuForEvent:</a></h2>
 - (NSMenu*) <b>menuForEvent:</b> (NSEvent*)theEvent<br>
 
+          <p>
+As of yet, unimplemented.</p>
+
           
 <hr>
-<h2><a name="method-70">mouse:</a></h2>
-- (BOOL) <b>mouse:</b> (NSPoint)aPoint<br>
+<h2><a name="method-70">mouse:inRect:</a></h2>
+- (BOOL) <b>mouse:</b> (NSPoint)aPoint <b>inRect:</b> (NSRect)aRect<br>
+
+          <p>
+Returns whether or not <var>aPoint</var> lies within <var>aRect</var>.</p>
 
           
 <hr>
@@ -606,9 +662,7 @@
 <h2><a name="method-88">removeFromSuperview</a></h2>
 - (void) <b>removeFromSuperview</b><br>
 
-	    
-	    
-          <p>
+	    <p>
 
 	      Removes the receiver from its superviews list of subviews,
 	      by invoking the superviews [-removeSubview:] method, and
@@ -616,8 +670,7 @@
 	      superview as needing redisplay.
 	    </p>
 
-	    
-          <p>
+	    <p>
 
 	       This is dangerous to use during display, since it alters the
 	       rectangles needing display.
@@ -628,8 +681,7 @@
 <h2><a name="method-89">removeFromSuperviewWithoutNeedingDisplay</a></h2>
 - (void) <b>removeFromSuperviewWithoutNeedingDisplay</b><br>
 
-	    
-          <p>
+	    <p>
 
 	      Removes the receiver from its superviews list of subviews,
 	      by invoking the superviews [-removeSubview:] method.
@@ -641,16 +693,13 @@
 - (void) <b>removeSubview:</b> (NSView*)aView<br>
 Standards: NotMacOS-X NotOpenStep<br>
 
-	    
-	    
-          <p>
+	    <p>
 
 	      Removes the view from the receivers list of subviews
 	      and from the responder chain.
 	    </p>
 
-	    
-          <p>
+	    <p>
 
               Also invokes [aView -viewWillMoveToWindow: nil] to handle
 	      removal of aView (and recursively, its children) from its
@@ -669,8 +718,13 @@ Standards: NotMacOS-X NotOpenStep<br>
 
           
 <hr>
-<h2><a name="method-93">replaceSubview:</a></h2>
-- (void) <b>replaceSubview:</b> (NSView*)oldView<br>
+<h2><a name="method-93">replaceSubview:with:</a></h2>
+- (void) <b>replaceSubview:</b> (NSView*)oldView <b>with:</b> (NSView*)newView<br>
+
+          <p>
+
+          Removes <var>oldView</var> from the receiver and places <var>newView</var> in its place.
+          </p>
 
           
 <hr>
@@ -862,10 +916,17 @@ Standards: NotMacOS-X NotOpenStep<br>
 <h2><a name="method-131">viewWillMoveToSuperview:</a></h2>
 - (void) <b>viewWillMoveToSuperview:</b> (NSView*)newSuperview<br>
 
+          <p>
+Notifies the receiver that its superview is being changed to 
+          <var>newSuperview</var>.</p>
+
           
 <hr>
 <h2><a name="method-132">viewWillMoveToWindow:</a></h2>
 - (void) <b>viewWillMoveToWindow:</b> (NSWindow*)newWindow<br>
+
+          <p>
+Notifies the receiver that it will now be a view of <var>newWindow</var>.</p>
 
           
 <hr>
@@ -886,6 +947,11 @@ Standards: NotMacOS-X NotOpenStep<br>
 <hr>
 <h2><a name="method-136">window</a></h2>
 - (NSWindow*) <b>window</b><br>
+
+          <p>
+
+          Returns the window in which the receiver resides.
+          </p>
 
           
 <hr>

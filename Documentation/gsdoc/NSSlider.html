@@ -13,8 +13,8 @@
 <dt>James Dessart
 <dd>
 </dl>
-<p>Version: 0.2</p>
-<p>Date: 11 March, 2000</p>
+<p>Version: 0.2.1</p>
+<p>Date: 8 April, 2000</p>
 <h2><a name="cont-0">NSSlider</a></h2>
 <h2><a name="NSSlider">NSSlider</a></h2>
 <p><b>Declared in:</b> AppKit/NSSlider.h</p>
@@ -23,56 +23,31 @@
 </p>
 <hr>
 
-                
-
-                
-
-                
-
-                
-
-                
-          <p>
+                <p>
 An NSSlider displays, and allows control of, some value in the application.
                 It represents a continuous stream of values of type <code>float</code>, which
                 can be retrieved by the method <code>floatValue</code> and set by the method
                 <code>setFloatValue:</code>.</p>
 
 
-                
-
-                
-
-                
-
-                
-          <p>
-The OPENSTEP API describes this control as being continuous, but the current
-                GNUstep implementation defaults to non-continuous.  This can be set by the 
-                inherited method <code>setContinuous:</code>, by passing <code>YES</code>.</p>
+                <p>
+This control is a continuous control.  It sends its action message as long
+                as the user is manipulating it.  This can be changed by passing <code>NO</code>
+                to the <code>setContinuous:</code> message of a given NSSlider.</p>
 
 
-                
-
-                
-
-                
-          <p>
+                <p>
 Although methods for adding and managing a title are provided, the slider's
                 knob can cover this title, so it is recommended that a label be added near the
                 slider, for identification.</p>
 
 
-                
-
-                
-          <p>
+                <p>
 As with many controls, NSSlider relies on its cell counterpart, NSSliderCell.
                 For more information, please see the specification for NSSliderCell.</p>
 
 
-                
-          <p>
+                <p>
 Use of an NSSlider to do the role of an NSScroller is not recommended.  A
                 scroller is intended to represent the visible portion of a view, whereas a slider
                 is intended to represent some value.</p>
@@ -114,8 +89,7 @@ Use of an NSSlider to do the role of an NSScroller is not recommended.  A
 <h2><a name="method-0">acceptsFirstMouse:</a></h2>
 - (BOOL) <b>acceptsFirstMouse:</b> (NSEvent*)mouseDownEvent<br>
 
-                
-          <p>
+                <p>
 Returns <code>YES</code> by default.  This will allow the first click sent to 
                 the slider, when in an inactive window, to both bring the window into focus and 
                 manipulate the slider.</p>
@@ -125,8 +99,7 @@ Returns <code>YES</code> by default.  This will allow the first click sent to
 <h2><a name="method-1">allowsTickMarkValuesOnly</a></h2>
 - (BOOL) <b>allowsTickMarkValuesOnly</b><br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -134,8 +107,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-2">altIncrementValue</a></h2>
 - (double) <b>altIncrementValue</b><br>
 
-                
-          <p>
+                <p>
 Returns the value by which the slider will be incremented if the user holds down
                 the ALT key.</p>
 
@@ -144,8 +116,7 @@ Returns the value by which the slider will be incremented if the user holds down
 <h2><a name="method-3">closestTickMarkValueToValue:</a></h2>
 - (double) <b>closestTickMarkValueToValue:</b> (double)aValue<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -153,8 +124,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-4">image</a></h2>
 - (NSImage*) <b>image</b><br>
 
-                
-          <p>
+                <p>
 Returns the image drawn in the slider's track.  Returns <code>nil</code> if 
                 this has not been set.</p>
 
@@ -163,8 +133,7 @@ Returns the image drawn in the slider's track.  Returns <code>nil</code> if
 <h2><a name="method-5">indexOfTickMarkAtPoint:</a></h2>
 - (int) <b>indexOfTickMarkAtPoint:</b> (NSPoint)point<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -172,8 +141,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-6">isVertical</a></h2>
 - (int) <b>isVertical</b><br>
 
-                
-          <p>
+                <p>
 Returns whether or not the slider is vertical.  If, for some reason, this cannot
                 be determined, for such reasons as the slider is not yet displayed, this method
                 returns -1.  Generally, a slider is considered vertical if its height is greater
@@ -184,8 +152,7 @@ Returns whether or not the slider is vertical.  If, for some reason, this cannot
 <h2><a name="method-7">knobThickness</a></h2>
 - (float) <b>knobThickness</b><br>
 
-                
-          <p>
+                <p>
 Returns the thickness of the slider's knob.  This value is in pixels, and is the
                  size of the knob along the slider's track.</p>
 
@@ -194,8 +161,7 @@ Returns the thickness of the slider's knob.  This value is in pixels, and is the
 <h2><a name="method-8">maxValue</a></h2>
 - (double) <b>maxValue</b><br>
 
-                
-          <p>
+                <p>
 Returns the maximum value that the slider represents.</p>
 
           
@@ -203,8 +169,7 @@ Returns the maximum value that the slider represents.</p>
 <h2><a name="method-9">minValue</a></h2>
 - (double) <b>minValue</b><br>
 
-                
-          <p>
+                <p>
 Returns the minimum value that the slider represents.</p>
 
           
@@ -212,8 +177,7 @@ Returns the minimum value that the slider represents.</p>
 <h2><a name="method-10">numberOfTickMarks</a></h2>
 - (int) <b>numberOfTickMarks</b><br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -221,8 +185,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-11">rectOfTickMarkAtIndex:</a></h2>
 - (NSRect) <b>rectOfTickMarkAtIndex:</b> (int)index<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -230,8 +193,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-12">setAllowsTickMarkValuesOnly:</a></h2>
 - (void) <b>setAllowsTickMarkValuesOnly:</b> (BOOL)flag<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -239,18 +201,16 @@ As of yet, unimplemented.</p>
 <h2><a name="method-13">setAltIncrementValue:</a></h2>
 - (void) <b>setAltIncrementValue:</b> (double)increment<br>
 
-                
-          <p>
-Sets the value by which the slider will be be incremented when with the
-                ALT key down to <var>increment</var>.</p>
+                <p>
+Sets the value by which the slider will be incremented, when the
+                ALT key is held down, to <var>increment</var>.</p>
 
           
 <hr>
 <h2><a name="method-14">setImage:</a></h2>
 - (void) <b>setImage:</b> (NSImage*)barImage<br>
 
-                
-          <p>
+                <p>
 Sets the image to be displayed in the slider's track to <var>barImage</var>.</p>
 
           
@@ -258,8 +218,7 @@ Sets the image to be displayed in the slider's track to <var>barImage</var>.</p>
 <h2><a name="method-15">setKnobThickness:</a></h2>
 - (void) <b>setKnobThickness:</b> (float)thickness<br>
 
-                
-          <p>
+                <p>
 Sets the thickness of the knob to <var>thickness</var>, in pixels.  This value
                 sets the amount of space which the knob takes up in the slider's track.</p>
 
@@ -268,8 +227,7 @@ Sets the thickness of the knob to <var>thickness</var>, in pixels.  This value
 <h2><a name="method-16">setMaxValue:</a></h2>
 - (void) <b>setMaxValue:</b> (double)maxValue<br>
 
-                
-          <p>
+                <p>
 Sets the maximum value that the sliders represents to <var>maxValue</var>.</p>
 
           
@@ -277,8 +235,7 @@ Sets the maximum value that the sliders represents to <var>maxValue</var>.</p>
 <h2><a name="method-17">setMinValue:</a></h2>
 - (void) <b>setMinValue:</b> (double)minValue<br>
 
-                
-          <p>
+                <p>
 Sets the minimum value that the slider represents to <var>minValue</var>.</p>
 
           
@@ -286,8 +243,7 @@ Sets the minimum value that the slider represents to <var>minValue</var>.</p>
 <h2><a name="method-18">setNumberOfTickMarks:</a></h2>
 - (void) <b>setNumberOfTickMarks:</b> (int)numberOfTickMarks<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -295,8 +251,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-19">setTickMarkPosition:</a></h2>
 - (void) <b>setTickMarkPosition:</b> (NSTickMarkPosition)position<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -304,8 +259,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-20">setTitle:</a></h2>
 - (void) <b>setTitle:</b> (NSString*)barTitle<br>
 
-                
-          <p>
+                <p>
 Sets the title of the slider to <var>barTitle</var>.  This title is displayed 
                 on the slider's track, behind the knob.</p>
 
@@ -314,8 +268,7 @@ Sets the title of the slider to <var>barTitle</var>.  This title is displayed
 <h2><a name="method-21">setTitleCell:</a></h2>
 - (void) <b>setTitleCell:</b> (NSCell*)titleCell<br>
 
-                
-          <p>
+                <p>
 Sets the cell used to draw the title to <var>titleCell</var>.</p>
 
           
@@ -323,8 +276,7 @@ Sets the cell used to draw the title to <var>titleCell</var>.</p>
 <h2><a name="method-22">setTitleColor:</a></h2>
 - (void) <b>setTitleColor:</b> (NSColor*)color<br>
 
-                
-          <p>
+                <p>
 Sets the colour with which the title will be drawn to <var>color</var>.</p>
 
           
@@ -332,8 +284,7 @@ Sets the colour with which the title will be drawn to <var>color</var>.</p>
 <h2><a name="method-23">setTitleFont:</a></h2>
 - (void) <b>setTitleFont:</b> (NSFont*)font<br>
 
-                
-          <p>
+                <p>
 Sets the font with which the title will be drawm to <var>font</var>.</p>
 
           
@@ -341,8 +292,7 @@ Sets the font with which the title will be drawm to <var>font</var>.</p>
 <h2><a name="method-24">tickMarkPosition</a></h2>
 - (NSTickMarkPosition) <b>tickMarkPosition</b><br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -350,8 +300,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-25">tickMarkValueAtIndex:</a></h2>
 - (double) <b>tickMarkValueAtIndex:</b> (int)index<br>
 
-                
-          <p>
+                <p>
 As of yet, unimplemented.</p>
 
           
@@ -359,8 +308,7 @@ As of yet, unimplemented.</p>
 <h2><a name="method-26">title</a></h2>
 - (NSString*) <b>title</b><br>
 
-                
-          <p>
+                <p>
 Returns the title of the slider as an <code>NSString</code>.</p>
 
           
@@ -368,8 +316,7 @@ Returns the title of the slider as an <code>NSString</code>.</p>
 <h2><a name="method-27">titleCell</a></h2>
 - (id) <b>titleCell</b><br>
 
-                
-          <p>
+                <p>
 Returns the cell used to draw the title.</p>
 
           
@@ -377,8 +324,7 @@ Returns the cell used to draw the title.</p>
 <h2><a name="method-28">titleColor</a></h2>
 - (NSColor*) <b>titleColor</b><br>
 
-                
-          <p>
+                <p>
 Returns the colour used to draw the title.</p>
 
           
@@ -386,8 +332,7 @@ Returns the colour used to draw the title.</p>
 <h2><a name="method-29">titleFont</a></h2>
 - (NSFont*) <b>titleFont</b><br>
 
-                
-          <p>
+                <p>
 Returns the font used to draw the title.</p>
 
           

@@ -10,8 +10,8 @@
     <author name="James Dessart">
         <email address="skwirl@cam.org"/>
     </author>
-    <version>0.2</version>
-    <date>11 March, 2000</date>
+    <version>0.2.1</version>
+    <date>8 April, 2000</date>
   </head>
   <body>
     <chapter>
@@ -25,9 +25,9 @@
                 can be retrieved by the method <code>floatValue</code> and set by the method
                 <code>setFloatValue:</code>.</p>
 
-                <p>The OPENSTEP API describes this control as being continuous, but the current
-                GNUstep implementation defaults to non-continuous.  This can be set by the 
-                inherited method <code>setContinuous:</code>, by passing <code>YES</code>.</p>
+                <p>This control is a continuous control.  It sends its action message as long
+                as the user is manipulating it.  This can be changed by passing <code>NO</code>
+                to the <code>setContinuous:</code> message of a given NSSlider.</p>
 
                 <p>Although methods for adding and managing a title are provided, the slider's
                 knob can cover this title, so it is recommended that a label be added near the
@@ -135,8 +135,8 @@
           <sel>setAltIncrementValue:</sel>
           <arg type="double">increment</arg>
           <desc>
-                <p>Sets the value by which the slider will be be incremented when with the
-                ALT key down to <var>increment</var>.</p>
+                <p>Sets the value by which the slider will be incremented, when the
+                ALT key is held down, to <var>increment</var>.</p>
           </desc>
         </method>
         <method type="void">

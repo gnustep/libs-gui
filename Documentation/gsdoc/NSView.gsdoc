@@ -7,8 +7,11 @@
       <email address="rfm@gnu.org"/>
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
-    <version>0.1</version>
-    <date>28 February, 2000</date>
+    <author name="James Dessart">
+      <email address="skwirl@cam.org"/>
+    </author>
+    <version>0.2</version>
+    <date>8 April, 2000</date>
   </head>
   <body>
     <chapter>
@@ -17,21 +20,35 @@
         <declared>AppKit/NSView.h</declared>
         <conform>NSCoding</conform>
           <desc>
+          <p>NSView is an abstract class which provides facilities for drawing in a window and
+          receiving events.  It is the superclass of many of the visual elements of the GUI.</p>
+
+          <p>In order to display itself, a view must be placed in a window (represented by an 
+          NSWindow object).  Within the window is a hierarchy of NSViews, headed by the window's 
+          content view.  Every other view in a window is a descendant of this view.</p>
+
+          <p>Subclasses can override <code>drawRect:</code> in order to implement their 
+          appearance.  Other methods of NSView and NSResponder can also be overridden to handle
+          user generated events.</p>
           </desc>
         <method type="NSMenu*" factory="yes">
           <sel>defaultMenu</sel>
           <desc>
+          <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="NSView*" factory="yes">
           <sel>focusView</sel>
           <desc>
+          <p>Returns the view which currently has the focus.</p>
           </desc>
         </method>
         <method type="BOOL">
           <sel>acceptsFirstMouse:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+          <p>Returns <code>YES</code> if the view object will accept the first click
+          received when in an inactive window, and <code>NO</code> otherwise.</p>
           </desc>
         </method>
         <method type="void">
@@ -46,6 +63,9 @@
           <sel>addSubview:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+          <p>
+          Adds <var>aView</var> as a subview of the receiver.
+          </p>
           </desc>
         </method>
         <method type="void">
@@ -110,6 +130,12 @@
           <sel>ancestorSharedWithView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+          <p>
+          Returns <code>self</code> if <var>aView</var> is the receiver or <var>aView</var> is a 
+          subview of the receiver, the ancestor view shared by <var>aView</var> and the receiver, 
+          if any, <var>aView</var> if it is an ancestor of  the receiver, otherwise returns 
+          <code>nil</code>.
+          </p>
           </desc>
         </method>
         <method type="BOOL">
@@ -400,6 +426,8 @@
           <sel>hitTest:</sel>
           <arg type="NSPoint">aPoint</arg>
           <desc>
+          <p>Returns the subview, lowest in the receiver's hierarchy, which contains 
+          <var>aPoint</var></p>
           </desc>
         </method>
         <method type="id">
@@ -417,6 +445,9 @@
           <sel>isDescendantOf:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+          <p>
+          Returns <code>YES</code> if <var>aView</var> is an ancestor of the receiver.
+          </p>
           </desc>
         </method>
         <method type="BOOL">
@@ -466,12 +497,16 @@
           <sel>menuForEvent:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
+          <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="BOOL">
           <sel>mouse:</sel>
           <arg type="NSPoint">aPoint</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">aRect</arg>
           <desc>
+          <p>Returns whether or not <var>aPoint</var> lies within <var>aRect</var>.</p>
           </desc>
         </method>
         <method type="BOOL">
@@ -622,7 +657,12 @@
         <method type="void">
           <sel>replaceSubview:</sel>
           <arg type="NSView*">oldView</arg>
+          <sel>with:</sel>
+          <arg type="NSView*">newView</arg>
           <desc>
+          <p>
+          Removes <var>oldView</var> from the receiver and places <var>newView</var> in its place.
+          </p>
           </desc>
         </method>
         <method type="void">
@@ -848,12 +888,15 @@
           <sel>viewWillMoveToSuperview:</sel>
           <arg type="NSView*">newSuperview</arg>
           <desc>
+          <p>Notifies the receiver that its superview is being changed to 
+          <var>newSuperview</var>.</p>
           </desc>
         </method>
         <method type="void">
           <sel>viewWillMoveToWindow:</sel>
           <arg type="NSWindow*">newWindow</arg>
           <desc>
+          <p>Notifies the receiver that it will now be a view of <var>newWindow</var>.</p>
           </desc>
         </method>
         <method type="id">
@@ -875,6 +918,9 @@
         <method type="NSWindow*">
           <sel>window</sel>
           <desc>
+          <p>
+          Returns the window in which the receiver resides.
+          </p>
           </desc>
         </method>
         <method type="void">
