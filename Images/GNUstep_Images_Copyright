@@ -10,8 +10,8 @@ Copyright (C) 1997 Andrew Lindesay
 
 ----------------------------------------------------------------------------
 Current list of files covered by copyright.  There may be other files
-in the same directory as this notice, but this copyright notice only
-applies to these files:
+in the same directory as this notice, but this copyright notice applies
+to these files and possibly others:
 
 common_ArrowDown.tiff
 common_ArrowLeft.tiff
@@ -23,6 +23,8 @@ common_RadioOff.tiff
 common_SwitchOn.tiff
 common_SwitchOff.tiff
 common_ret.tiff
+
+Contact the GNUstep project (http://www.gnustep.org) for a complete list.
 
 ----------------------------------------------------------------------------
 
