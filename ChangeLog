@@ -11,8 +11,6 @@ Wed Mar 15 02:41:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	so that the @"" string gets simply the height of the font.
 	([-_drawText:title:cellFrame]): Idem, plus rewritten vertical
 	centering of text.
-	* Source/NSFormCell.m ([-cellSize]): Made code slightly smarter;
-	now it detects @"".
 
 	* Source/NSCell.m ([-setObjectValue:]): Temporary implementation 
 	working only with strings, images, and numbers.  This is 
