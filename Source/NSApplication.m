@@ -882,22 +882,25 @@ static NSCell* tileCell = nil;
 			    untilDate: [NSDate distantFuture]
 			       inMode: NSDefaultRunLoopMode
 			      dequeue: YES];
-      if (e)
-      {  NSEventType	type = [e type];
+      if (e != nil)
+	{
+	  NSEventType	type = [e type];
 
-        [self sendEvent: e];
+	  [self sendEvent: e];
 
-        // update (en/disable) the services menu's items
-        if (type != NSPeriodic && type != NSMouseMoved)
-        {
-          [listener updateServicesMenu];
-          [main_menu update];
-        }
-      }
+	  // update (en/disable) the services menu's items
+	  if (type != NSPeriodic && type != NSMouseMoved)
+	    {
+	      [listener updateServicesMenu];
+	      [main_menu update];
+	    }
+	}
 
       // send an update message to all visible windows
       if (windows_need_update)
-	[self updateWindows];
+	{
+	  [self updateWindows];
+	}
 
       RELEASE(pool);
     }
