@@ -179,14 +179,16 @@ static NSPrintPanel *shared_instance;
 /** Display the Print panel in a modal loop. Saves any aquired 
    information in the NSPrintInfo object for the current NSPrintOperation. 
    Returns NSCancelButton if the user clicks the Cancel button or 
-   NSOKButton otherwise.
+   NSOKButton otherwise. Unlike other panels, this one does not order
+   itself out after the modal session is finished. You must do that
+   yourself.
 */
 - (int)runModal
 {
   _picked = NSOKButton;
   [NSApp runModalForWindow: self];
   [_optionPanel orderOut: self];
-  [self orderOut: self];
+  /* Don't order ourselves out, let the NSPrintOperation do that */
   return (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton;
 }
 
@@ -240,10 +242,6 @@ static NSPrintPanel *shared_instance;
   else if (tag == NSPPPreviewButton)
     {
       _picked = NSPPPreviewButton;
-      NSRunAlertPanel(@"Sorry", @"Previewing of print file not implemented", 
-		      @"OK", NULL, NULL);
-      /* Don't stop the modal session */
-      return;
     }
   else if (tag ==NSFaxButton )
     {
@@ -623,4 +621,9 @@ static NSPrintPanel *shared_instance;
 
 }
 
+/* Private method for NSPrintOperation */
+- (void) _setStatusStringValue: (NSString *)string
+{
+  [CONTROL(self, NSPPStatusField) setStringValue: string ];
+}
 @end

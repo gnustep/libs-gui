@@ -34,17 +34,23 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSData.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSThread.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSTask.h>
+#include <Foundation/NSThread.h>
+#include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSPrinter.h>
 #include <AppKit/NSPrintPanel.h>
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
+#include <AppKit/NSWorkspace.h>
 #include <AppKit/PSOperators.h>
 
 #include <gnustep/base/GSLocale.h>
@@ -81,6 +87,11 @@ typedef struct _page_info_t {
 - (void) _print;
 
 @end
+
+@interface NSPrintPanel (Private)
+- (void) _setStatusStringValue: (NSString *)string;
+@end
+
 
 @interface NSView (NSPrintOperation)
 - (void) _displayPageInRect: (NSRect)pageRect
@@ -435,11 +446,12 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 //
 // Running a Print Operation
 //
-/** Called by the print operation and it has finished running a printing
+/** Called by the print operation after it has finished running a printing
     operation.
 */
 - (void)cleanUpOperation
 {
+  [[self printPanel] orderOut: self];
   _currentPage = 0;
   [NSPrintOperation setCurrentOperation: nil];
 }
@@ -454,10 +466,13 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   return NO;
 }
 
-/* Private method to run the printing operation */
+/* Private method to run the printing operation. Needs to create an
+   autoreleaes pool to make sure the print context is destroyed before
+   returning (which closes the print file.) */
 - (BOOL) _runOperation
 {
   BOOL result;
+  CREATE_AUTORELEASE_POOL(pool);
   NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
 
   [self createContext];
@@ -490,6 +505,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     }
   NS_ENDHANDLER
   [self destroyContext];
+  RELEASE(pool);
   return result;
 }
 
@@ -651,7 +667,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   _showPanels = NO;
   [self setPrintInfo: aPrintInfo];
 
-  ASSIGN(_path, @"/tmp/NSTempPrintFile");
+  _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
+  _path = [_path stringByAppendingString: 
+		   [[NSProcessInfo processInfo] globallyUniqueString]];
+  _path = [_path stringByAppendingPathExtension: @"ps"];
+  RETAIN(_path);
   _pathSet = NO;
   _currentPage = 0;
 
@@ -948,8 +968,9 @@ scaleRect(NSRect rect, double scale)
 			                  last: _currentPage 
 			                  info: &info];
 	}
-        NSDebugLLog(@"NSPrinting", @" current page %d, rect %@", 
-		    _currentPage, NSStringFromRect(pageRect));
+
+      NSDebugLLog(@"NSPrinting", @" current page %d, rect %@", 
+		  _currentPage, NSStringFromRect(pageRect));
       if (NSIsEmptyRect(pageRect))
 	break;
 
@@ -1028,7 +1049,6 @@ scaleRect(NSRect rect, double scale)
 	    label: label
 	    bBox: info.sheetBounds
 	    fonts: nil];
-      DPSPrintf(ctxt, "/__GSsheetsaveobject save def\n");
       if (info.orient == NSLandscapeOrientation)
 	{
 	  DPSrotate(ctxt, 90);
@@ -1095,7 +1115,6 @@ scaleRect(NSRect rect, double scale)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   if ([printOp isEPSOperation] == NO)
     DPSPrintf(ctxt, "showpage\n");
-  DPSPrintf(ctxt, "__GSsheetsaveobject restore\n");
   DPSPrintf(ctxt, "%%%%PageTrailer\n");
   DPSPrintf(ctxt, "\n");
 }
@@ -1143,16 +1162,88 @@ scaleRect(NSRect rect, double scale)
   return _context;
 }
 
-- (BOOL)deliverResult
+- (BOOL) _deliverSpooledResult
 {
-  // FIXME
+  int copies;
+  NSDictionary *dict;
+  NSTask *task;
+  NSString *name, *status;
+  NSMutableArray *args;
+  name = [[_printInfo printer] name];
+  status = [NSString stringWithFormat: @"Spooling to printer %@.", name];
+  [_printPanel _setStatusStringValue: status];
 
-/*
+  dict = [_printInfo dictionary];
+  args = [NSMutableArray array];
+  copies = [[dict objectForKey: NSPrintCopies] intValue];
+  if (copies > 1)
+    [args addObject: [NSString stringWithFormat: @"-#%0d", copies]];
+  if ([name isEqual: @"Unknown"] == NO)
+    {
+      [args addObject: @"-P"];
+      [args addObject: name];
+    }
+  [args addObject: _path];
+
+  task = [NSTask new];
+  [task setLaunchPath: @"lpr"];
+  [task setArguments: args];
+  [task launch];
+  [task waitUntilExit];
+  AUTORELEASE(task);
+  return YES;
+}
+
+- (BOOL) deliverResult
+{
+  BOOL success;
+  NSString *job;
+  
+  success = YES;
+  job = [_printInfo jobDisposition];
+  if ([job isEqual: NSPrintPreviewJob])
+    {
+      /* Check to see if there is a GNUstep app that can preview PS files.
+	 It's not likely at this point, so also check for a standards
+	 previewer, like gv.
+      */
+      NSTask *task;
+      NSString *preview;
+      NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+      [_printPanel _setStatusStringValue: @"Opening in previewer..."];
+      preview = [ws getBestAppInRole: @"Viewer" forExtension: @"ps"];
+      if (preview)
+	{
+	  [ws openFile: _path withApplication: preview];
+	}
+      else
+	{
+	  NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+	  preview = [def objectForKey: @"NSPreviewApp"];
+	  if (preview == nil || [preview length] == 0)
+	    preview = @"gv";
+	  task = [NSTask new];
+	  [task setLaunchPath: preview];
+	  [task setArguments: [NSArray arrayWithObject: _path]];
+	  [task launch];
+	  AUTORELEASE(task);
+	}
+    }
+  else if ([job isEqual: NSPrintSpoolJob])
+    {
+      sucess = [self _deliverSpooledResult];
+    }
+  else if ([job isEqual: NSPrintFaxJob])
+    {
+    }
+
+  /* We can't remove the temp file because the previewer might still be
+     using it, perhaps the printer is also?
   if (!_pathSet)
     [[NSFileManager defaultManager] removeFileAtPath: _path
 				    handler: nil];
-*/    
-  return YES;
+  */
+  return success;
 }
 
 @end
@@ -1232,7 +1323,6 @@ scaleRect(NSRect rect, double scale)
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
-  NSAutoreleasePool   *pool;
 
   if (_context)
     return _context;
@@ -1242,12 +1332,7 @@ scaleRect(NSRect rect, double scale)
   [info setObject: _path forKey: @"NSOutputFile"];
   [info setObject: NSGraphicsContextPSFormat
 	   forKey: NSGraphicsContextRepresentationFormatAttributeName];
-  /* We have to remove the autorelease from the context, because we need the
-     contents of the file before the next return to the run loop */
-  pool = [NSAutoreleasePool new];
   _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
-  [pool release];
-
   return _context;
 }
 

@@ -268,14 +268,18 @@ static NSMutableArray *screenArray = nil;
 {
   NSRect visFrame = _frame;
 
-  switch ([NSApp interfaceStyle])
+  switch (NSInterfaceStyleForKey(@"NSIntefaceStyle", nil))
     {
       case NSMacintoshInterfaceStyle:
 	// What is the size of the Mac menubar?
 	visFrame.size.height -= 25;
 	return visFrame;
-      case NSWindows95InterfaceStyle:
+      case GSWindowMakerInterfaceStyle:
       case NSNextStepInterfaceStyle:
+	visFrame.size.width -= 64;
+	return visFrame;
+      
+      case NSWindows95InterfaceStyle:
       case NSNoInterfaceStyle:
       default:
 	return _frame;

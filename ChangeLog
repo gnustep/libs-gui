@@ -1,3 +1,18 @@
+2002-10-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSScreen.m (-visibleFrame): Don't include dock
+	with NexT/WindowMaker styles (patch from Stefan <urbanek@host.sk>).
+
+2002-10-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPrintOperation.m (-cleanUpOperation): Order out print
+	panel.
+	(-_runOperation): Use autorelease pool around operation.
+	(-init): Create a proper, unique temp print file.
+	(-deliverResult): Implement for previewing, spooling.
+	* Source/NSPrintPanel.m (-runModel): Don't order self out.
+	(-_setStatusStringValue:) New private method.
+
 2002-10-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSTextField.m: ([-dealloc]) morph self to be an NSTextView
