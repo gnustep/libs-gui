@@ -50,6 +50,7 @@
 # include <Foundation/NSConnection.h>
 #endif
 
+#include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSDocumentController.h>
@@ -97,9 +98,11 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   NSSetUncaughtExceptionHandler (defaultUncaughtExceptionHandler);  
 
   /*
-   * If there is no graphics context to run the alert panel in, just
-   * quit.  */
-  if (GSCurrentContext() == nil)
+   * If there is no graphics context to run the alert panel in or
+   * its a sever error, use a non-graphical exception handler
+   */
+  if (GSCurrentContext() == nil
+      || [[exception name] isEqual: NSWindowServerCommunicationException])
     {
       /* The following will raise again the exception using the base 
 	 library exception handler */

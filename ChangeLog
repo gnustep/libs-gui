@@ -1,3 +1,16 @@
+2002-01-09  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): 
+	Use non-graphical handler when it is a WindowServer exception.
+
+	* Source/NSWindow.m (-orderWindow:relativeTo:): Constrain only
+	titled windows and only when not already visible.
+	* Source/NSWindow.m (-constrainFrameRect:toScreen:): Don't constrain
+	height less than minimum size.
+	(setFrame:display:): constrain frame on a resize.
+
+	* TextConverters/RTF/GNUmakefile.preamble: Look for library in Source.
+
 Wed Jan  9 12:07:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* configure.in: Abort with an error if GNUSTEP_SYSTEM_ROOT is not

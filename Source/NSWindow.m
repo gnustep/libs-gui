@@ -647,6 +647,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
+
   DPSwindow(context, NSMinX(frame), NSMinY(frame),
 	    NSWidth(frame), NSHeight(frame),
 	    _backingType, &_windowNum);
@@ -1272,15 +1273,27 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
-      NSRect nframe = [self constrainFrameRect:_frame toScreen:[self screen]];
+      /* Windows need to be constrained when displayed or resized - but only
+	 titled windows are constrained. Also, and this is the tricky part,
+         don't constrain if we are merely unhidding the window or if it's
+         already visible and is just begin reordered. */
+      if ((_styleMask & NSTitledWindowMask)
+	  && [NSApp isHidden] == NO
+	  && _f.visible == NO)
+	{
+	  NSRect nframe = [self constrainFrameRect: _frame 
+				          toScreen: [self screen]];
+	  if (_windowNum)
+	    [self setFrame: nframe display: NO];
+	  else
+	    _frame = nframe;
+	}
       // create deferred window
       if (_windowNum == 0)
 	{
 	  [self _initBackendWindow: _frame];
 	  display = YES;
 	}
-      else if (NSEqualRects(_frame, nframe) == NO)
-	[self setFrame: nframe display: NO];
     }
   DPSorderwindow(context, place, otherWin, _windowNum);
   if (display)
@@ -1465,6 +1478,8 @@ static NSNotificationCenter *nc = nil;
 	{
 	  frameRect.size.height -= difference;
 	}
+      if (frameRect.size.height < _minimumSize.height)
+	frameRect.size.height = _minimumSize.height;
     }
 
   return frameRect;
@@ -1516,6 +1531,14 @@ static NSNotificationCenter *nc = nil;
 
   if (NSEqualSizes(frameRect.size, _frame.size) == NO)
     {
+      /* Windows need to be constrained when displayed or resized - but only
+	 titled windows are constrained */
+      if (_styleMask & NSTitledWindowMask)
+	{
+	  frameRect = [self constrainFrameRect: frameRect 
+			              toScreen: [self screen]];
+	}
+
       if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
 	{
 	  frameRect.size = [_delegate windowWillResize: self
