@@ -210,29 +210,29 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
    */
   if (run->kern == 0)
     {
-      char	buf[run->glyphCount + 1];
       unsigned	i;
       NSStringEncoding enc = draw->enc;
 
       // glyph is an unicode char value
       // if the font has non-standard encoding we need to remap it.
-      if ((enc != NSASCIIStringEncoding) && 
-	  (enc != NSUnicodeStringEncoding))
+      unichar u[run->glyphCount];
+      char *r;
+      unsigned l = run->glyphCount;
+      unsigned s = 0;
+
+      for (i = 0; i < run->glyphCount; i++)
+        u[i] = run->glyphs[i].glyph;
+
+      if (GSFromUnicode((unsigned char**)&r, &s, u, l, enc,
+			     NSDefaultMallocZone(), GSUniTerminate) == NO)
         {
-	  // FIXME: This only works for 8-Bit characters
-	  for (i = 0; i < run->glyphCount; i++)
-	    {
-	      buf[i] = encode_unitochar(run->glyphs[i].glyph, enc);
-	    }
-	}
-      else 
-	  for (i = 0; i < run->glyphCount; i++)
-	    {
-	      buf[i] = run->glyphs[i].glyph;
-	    }
-      buf[i] = '\0';
+          [NSException raise: NSCharacterConversionException
+                      format: @"Can't convert to/from Unicode string."];
+        }
+
       DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
+      if (l)
+	DPSshow(draw->ctxt, r);
     }
   else
     {
