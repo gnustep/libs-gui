@@ -201,10 +201,9 @@ static Class imageCellClass;
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
   [_cell setHighlighted: NO];
-  // FIX - should update refresh image here
 }
 
-- (void) mouseDragged: (NSEvent*)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 {
   if ([self isEditable])
     {
@@ -230,7 +229,7 @@ static Class imageCellClass;
 	    }
 	}
     }
-  [super mouseDragged: theEvent];
+  [super mouseDown: theEvent];
 }
 
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
