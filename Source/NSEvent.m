@@ -204,7 +204,7 @@ static Class eventClass;
 {
   NSEvent	*e;
 
-  if ((type < NSMouseMoved || type > NSRightMouseDragged)
+  if ((type < NSLeftMosueDown || type > NSRightMouseDragged)
       && (type != NSScrollWheel))
     [NSException raise: NSInvalidArgumentException
 		format: @"mouseEvent with wrong type"];
