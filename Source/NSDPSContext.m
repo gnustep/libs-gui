@@ -32,7 +32,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
-#include <gnustep/dps/NSDPSContext.h>
+#include <AppKit/NSDPSContext.h>
 
 #define ASSIGN(a, b) \
   [b retain]; \

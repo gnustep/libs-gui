@@ -345,6 +345,26 @@ void __dummy_GMAppKit_functionForLinking() {}
 @end /* NSControl (GMArchiverMethods) */
 
 
+@implementation NSCStringText (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  return [super initWithModelUnarchiver:unarchiver];
+}
+
+- (Class)classForModelArchiver
+{
+  return [NSCStringText class];
+}
+
+@end /* NSCStringText (GMArchiverMethods) */
+
+
 @implementation NSFont (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
@@ -382,7 +402,11 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  return [NSImage imageNamed:[unarchiver decodeStringWithName:@"name"]];
+  id image = [NSImage imageNamed:[unarchiver decodeStringWithName:@"name"]];
+
+  if (!image)
+    image = [NSImage imageNamed:@"NSRadioButton"];
+  return image;
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -497,6 +521,27 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSMenu (GMArchiverMethods) */
+
+
+@implementation NSPopUpButton (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+//  [super encodeWithModelArchiver:archiver];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+//  return [super initWithModelUnarchiver:unarchiver];
+  return self;
+}
+
+- (Class)classForModelArchiver
+{
+  return [NSPopUpButton class];
+}
+
+@end /* NSPopUpButton (GMArchiverMethods) */
 
 
 @implementation NSResponder (GMArchiverMethods)

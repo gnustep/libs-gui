@@ -29,9 +29,8 @@
 #ifndef _GNUstep_H_NSDPSContext
 #define _GNUstep_H_NSDPSContext
 
-#include <DPSClient/TypesandConstants.h>
-#include <DPSClient/DPSOperators.h>
 #include <Foundation/NSObject.h>
+#include <AppKit/DPSOperators.h>
 
 @class NSData;
 @class NSMutableData;

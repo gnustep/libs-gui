@@ -30,16 +30,19 @@
 #include <stdio.h>
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSTimer.h>
+#include <Foundation/NSProcessInfo.h>
+#include <Foundation/NSFileManager.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
 # include <Foundation/NSConnection.h>
 #endif
 
-#include <DPSClient/NSDPSContext.h>
+#include <AppKit/NSDPSContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPanel.h>
@@ -48,6 +51,8 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
+
+#include <AppKit/IMLoading.h>
 
 //
 // Class variables
@@ -138,6 +143,21 @@ static id NSApp;
 - (void)finishLaunching
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSBundle* mainBundle = [NSBundle mainBundle];
+  NSString* resourcePath = [mainBundle resourcePath];
+  NSString* infoFilePath
+      = [resourcePath stringByAppendingPathComponent:@"Info-gnustep.plist"];
+  NSDictionary* infoDict = [[NSString stringWithContentsOfFile:infoFilePath]
+				propertyList];
+  NSString* mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
+
+  if (mainModelFile) {
+    if (![GMModel loadIMFile:mainModelFile
+			  owner:[NSApplication sharedApplication]])
+      NSLog (@"Cannot load the main model file '%@", mainModelFile);
+    else
+      NSLog (@"Model loading ready!");
+  }
 
   // notify that we will finish the launching
   [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
@@ -1120,3 +1140,16 @@ static id NSApp;
 {}
 
 @end
+
+
+/* Some utilities */
+NSString *NSOpenStepRootDirectory(void)
+{
+  NSString* root = [[[NSProcessInfo processInfo] environment]
+				objectForKey:@"GNUSTEP_SYSTEM_ROOT"];
+
+  if (!root)
+    root = @"/";
+
+  return root;
+}

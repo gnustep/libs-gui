@@ -127,3 +127,25 @@
   return [IMControlConnector class];
 }
 @end /* NSIBControlConnector */
+
+
+@implementation NSWindowTemplate (GMArchiverMethods)
+
+#ifdef DEBUG
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  NSLog (@"%@: %@", NSStringFromClass (isa), NSStringFromSelector (_cmd));
+  [super encodeWithModelArchiver:archiver];
+}
+#endif
+
+- (id)replacementObjectForModelArchiver:(GMArchiver*)archiver
+{
+#ifdef DEBUG
+  NSLog (@"realObject = %@", realObject);
+#endif
+  return realObject;
+}
+
+@end
+

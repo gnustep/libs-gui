@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSFontPanel
 #define _GNUstep_H_NSFontPanel
 
-#include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSDPSContext.h>
 #include <AppKit/NSPanel.h>
 
 @class NSFont;

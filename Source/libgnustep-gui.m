@@ -26,19 +26,31 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <Foundation/NSString.h>
-
+#include <Foundation/NSAutoreleasePool.h>
 #include <AppKit/NSApplication.h>
-#include <AppKit/NSFontManager.h>
-#include <AppKit/NSFont.h>
 
 char **NSArgv = NULL;
 
 //
 // The main entry point for X Windows
 //
-int
-GNUstepMain(int argc, char **argv)
+int NSApplicationMain(int argc, const char **argv)
 {
+  extern char** environ;
+
+#if LIB_FOUNDATION_LIBRARY
+  [NSProcessInfo initializeWithArguments:(char**)argv
+				   count:argc
+			     environment:environ];
+#endif
+
+  [NSAutoreleasePool new];
+
+#ifndef NX_CURRENT_COMPILER_RELEASE
+  initialize_gnustep_backend();
+#endif
+
+  [[NSApplication sharedApplication] run];
+
   return 0;
 }

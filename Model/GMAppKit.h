@@ -44,6 +44,9 @@
 @interface NSControl (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSCStringText (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSFont (GMArchiverMethods) <ModelCoding>
 @end
 
@@ -54,6 +57,9 @@
 @end
 
 @interface NSMenu (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSPopUpButton (GMArchiverMethods) <ModelCoding>
 @end
 
 @interface NSResponder (GMArchiverMethods) <ModelCoding>

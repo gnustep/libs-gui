@@ -39,7 +39,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
-#include <DPSClient/NSDPSContext.h>
+#include <AppKit/NSDPSContext.h>
 
 @implementation NSEvent
 

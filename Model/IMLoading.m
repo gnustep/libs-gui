@@ -25,6 +25,7 @@
 
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSFileManager.h>
 #include <extensions/GMArchiver.h>
 #include "IMLoading.h"
 #include "IMCustomObject.h"
@@ -58,9 +59,20 @@ BOOL _fileOwnerDecoded = NO;
 
 + (BOOL)loadIMFile:(NSString*)path owner:(id)owner
 {
-  GMUnarchiver* unarchiver = [GMUnarchiver unarchiverWithContentsOfFile:path];
+  NSBundle* mainBundle = [NSBundle mainBundle];
+  NSString* resourcePath = [mainBundle resourcePath];
+  GMUnarchiver* unarchiver;
   id previousNibOwner = _nibOwner;
   GMModel* decoded;
+
+  if (![path hasSuffix:@".gmodel"])
+    path = [path stringByAppendingPathExtension:@"gmodel"];
+  path = [resourcePath stringByAppendingPathComponent:path];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+    return NO;
+
+  NSLog (@"loading model file %@...", path);
+  unarchiver = [GMUnarchiver unarchiverWithContentsOfFile:path];
 
   if (!unarchiver)
     return NO;

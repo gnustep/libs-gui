@@ -56,4 +56,23 @@
 @interface NSIBControlConnector : NSIBConnector
 @end
 
+/* Classes used internally by NeXT's AppKit we don't want to appear in the
+   model file */
+@interface NSWindowTemplate : NSObject
+{
+    NSRect windowRect;
+    int windowStyleMask;
+    int windowBacking;
+    id windowTitle;
+    id viewClass;
+    id windowClass;
+    id windowView;
+    id realObject;
+    id extension;
+    NSSize minSize;
+    BOOL _wtFlags; /* Don't know the type of this ivar */
+    NSRect screenRect;
+}
+@end
+
 #endif /* _GNUstep_H_IBClasses */

@@ -54,7 +54,7 @@ object_set_instance_variable (id anObject,
 
     if (ivar.ivar_name && !strcmp (ivar.ivar_name, variableName)) {
       /* We found it! */
-      *((id*)(((char*)anObject) + ivar.ivar_offset)) = value;
+      *((void**)(((char*)anObject) + ivar.ivar_offset)) = value;
       break;
     }
   }
@@ -97,7 +97,7 @@ object_set_instance_variable (id anObject,
     [_source setTarget:_destination];
   }
   else
-    object_set_instance_variable (_source, "target", _destination);
+    object_set_instance_variable (_source, "target", [_destination retain]);
 
   if ([_source respondsToSelector:@selector(setAction:)]) {
 //    NSLog (@"%@: setting action to %@",
@@ -124,7 +124,7 @@ object_set_instance_variable (id anObject,
   if (setSelector && [_source respondsToSelector:setSelector])
     [_source performSelector:setSelector withObject:_destination];
   else
-    object_set_instance_variable(_source, [label cString], _destination);
+    object_set_instance_variable(_source, [label cString], [_destination retain]);
 }
 
 @end /* IMOutletConnector */

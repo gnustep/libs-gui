@@ -32,7 +32,7 @@
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
 
-#include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSDPSContext.h>
 #include <AppKit/NSResponder.h>
 
 @class NSString;

@@ -1,3 +1,49 @@
+Fri Jan  9 12:25:41 1998  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Headers/gnustep/gui/NSImageView.h: New file.
+	* Source/NSImageView.m: New file.
+	* Headers/gnustep/gui/NSApplication.h
+	(NSApplicationWillTerminateNotification): New notification.
+	(NSApplicationMain): New function.
+	(NSOpenStepRootDirectory): Likewise.
+
+	* Model/GMAppKit.h: New categories for NSCStringText and NSPopUpButton.
+	* Model/GMAppKit.m: Likewise.
+	(-[NSImage createObjectForModelUnarchiver:]): Return a dummy image in
+	case the image requested does not exist. This prevents a crash later.
+	* Model/IBClasses.h: Define the NSWindowTemplate class, which is used
+	internally by the NeXT's IB. I simply remove it from the generated
+	model file since it has no equivalent.
+	* Model/IBClasses.m (NSWindowTemplate): Remove all the instances that
+	appear in the NIB file and encode the window it points to.
+	* Model/IMConnectors.m: When assigning an object to an instance
+	variable directly retain the object automatically so it doesn't get
+	released accidentally.
+	* Model/IMLoading.m: Search for model files in the Resources directory
+	of the app wrapper. Automatically append the gmodel extension if not
+	present.
+	* Source/NSApplication.m (finishLaunching): Load the main model file if
+	any. Define the NSOpenStepRootDirectory to be the value of
+	GNUSTEP_SYSTEM_ROOT.
+	* Model/GNUmakefile: Define the GNUSTEP_INSTALLATION_DIR to be the
+	system root. Define the header files that get installed (in the AppKit
+	directory).
+
+	* Source/externs.m: Define the NSApplicationWillTerminateNotification
+	notification.
+	* Source/libgnustep-gui.m: Changed the name of the GNUstepMain function
+	to NSApplicationMain. Implement the NSApplicationMain function to do
+	something useful ;-).
+
+Mon Jan  5 15:15:34 1998  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Headers/gnustep/DPSClient/DPSOperators.h: Moved to the AppKit header
+	directory.
+	* Headers/gnustep/DPSClient/NSDPSContext.h: Likewise.
+	* Headers/gnustep/DPSClient/TypesandConstants.h: Removed.
+	* Headers/gnustep/AppKit/NSApplication.h (NSOpenStepRootDirectory):
+	New function.
+
 Wed Dec  3 14:12:35 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	Added the code to support the loading of model files (similar to nib

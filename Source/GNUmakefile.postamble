@@ -77,5 +77,3 @@ before-all:: header-links
 header-links:
 	-rm -rf ../Headers/AppKit
 	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
-	-rm -rf ../Headers/DPSClient
-	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient

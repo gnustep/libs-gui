@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
 
-#include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSDPSContext.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSBitmapImageRep.h>

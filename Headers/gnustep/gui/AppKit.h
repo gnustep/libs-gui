@@ -32,7 +32,7 @@
 //
 // Display Postscript System
 //
-#include <DPSClient/DPSOperators.h>
+#include <AppKit/DPSOperators.h>
 
 //
 // GNUstep GUI Library functions
@@ -103,6 +103,7 @@
 #include <AppKit/NSHelpPanel.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSImageRep.h>
+#include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>

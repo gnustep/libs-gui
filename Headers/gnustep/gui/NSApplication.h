@@ -314,6 +314,7 @@ extern NSString *NSApplicationDidUnhideNotification;
 extern NSString *NSApplicationDidUpdateNotification;
 extern NSString *NSApplicationWillBecomeActiveNotification;
 extern NSString *NSApplicationWillFinishLaunchingNotification;
+extern NSString* NSApplicationWillTerminateNotification;
 extern NSString *NSApplicationWillHideNotification;
 extern NSString *NSApplicationWillResignActiveNotification;
 extern NSString *NSApplicationWillUnhideNotification;
@@ -334,5 +335,10 @@ BOOL NSPerformService(NSString *item, NSPasteboard *pboard);
 // Force Services Menu to Update Based on New Services
 //
 void NSUpdateDynamicServices(void);
+
+
+int NSApplicationMain(int argc, const char **argv);
+
+NSString *NSOpenStepRootDirectory(void);
 
 #endif // _GNUstep_H_NSApplication

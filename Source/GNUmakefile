@@ -70,6 +70,7 @@ NSFormCell.m \
 NSHelpPanel.m \
 NSImage.m \
 NSImageRep.m \
+NSImageView.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuItem.m \
@@ -149,6 +150,7 @@ AppKit/NSGraphics.h \
 AppKit/NSHelpPanel.h \
 AppKit/NSImage.h \
 AppKit/NSImageRep.h \
+AppKit/NSImageView.h \
 AppKit/NSMatrix.h \
 AppKit/NSMenu.h \
 AppKit/NSMenuItem.h \
@@ -184,9 +186,8 @@ AppKit/NSWorkspace.h \
 AppKit/TrackingRectangle.h \
 AppKit/nsimage-tiff.h \
 AppKit/PSMatrix.h \
-DPSClient/NSDPSContext.h \
-DPSClient/DPSOperators.h \
-DPSClient/TypesandConstants.h
+AppKit/NSDPSContext.h \
+AppKit/DPSOperators.h
 
 
 -include GNUmakefile.preamble

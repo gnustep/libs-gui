@@ -87,6 +87,7 @@ NSString *NSApplicationWillBecomeActiveNotification
               = @"ApplicationWillBecomeActive";
 NSString *NSApplicationWillFinishLaunchingNotification 
               = @"ApplicationWillFinishLaunching";
+NSString *NSApplicationWillTerminateNotification = @"ApplicationWillTerminate";
 NSString *NSApplicationWillHideNotification = @"ApplicationWillHide";
 NSString *NSApplicationWillResignActiveNotification 
               = @"ApplicationWillResignActive";

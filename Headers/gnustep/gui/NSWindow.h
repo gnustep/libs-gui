@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
-#include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSDPSContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>

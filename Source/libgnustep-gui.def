@@ -30,7 +30,7 @@
 ;
 LIBRARY libgnustep-gui
 EXPORTS
-GNUstepMain
+NSApplicationMain
 __objc_class_name_NSActionCell
 __objc_category_name_NSApplication_GNUstepBackend
 __objc_class_name_NSApplication

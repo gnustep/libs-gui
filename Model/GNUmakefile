@@ -22,6 +22,8 @@
 #  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
+GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
+
 include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 
 LIBRARY_NAME = libgmodel
@@ -33,6 +35,9 @@ endif
 APP_NAME = test
 
 libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m
+libgmodel_HEADER_FILES_DIR = .
+libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui/AppKit
+libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h GMAppKit.h
 
 test_OBJC_FILES = test.m Controller.m
 
