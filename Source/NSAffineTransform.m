@@ -36,6 +36,14 @@
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/PSOperators.h>
 
+/* Private definitions */
+#define A matrix.m11
+#define B matrix.m12
+#define C matrix.m21
+#define D matrix.m22
+#define TX matrix.tx
+#define TY matrix.ty
+
 /* A Postscript matrix look like this:
 
   /  a  b  0 \

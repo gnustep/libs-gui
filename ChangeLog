@@ -1,3 +1,8 @@
+Tue Jul  6 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSAffineTransform.h: Removed macros
+	* Source/NSAffineTransform.m: Added macros
+
 Tue Jul  6 13:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSEvent.h: Added event subtypes for appkit events

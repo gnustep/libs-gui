@@ -92,15 +92,7 @@ typedef	struct {
 - (void) setMatrix: (const float[6])replace;
 - (void) getMatrix: (float[6])replace;
 
-/* Private definitions */
-#define A matrix.m11
-#define B matrix.m12
-#define C matrix.m21
-#define D matrix.m22
-#define TX matrix.tx
-#define TY matrix.ty
-
-#endif
 @end
+#endif
 
 #endif /* _GNUstep_H_NSAffineTransform */
