@@ -57,6 +57,8 @@ NSColorList.m \
 NSColorPanel.m \
 NSColorPicker.m \
 NSColorWell.m \
+NSComboBox.m \
+NSComboBoxCell.m \
 NSControl.m \
 NSCursor.m \
 NSCustomImageRep.m \
@@ -123,6 +125,7 @@ NSTextView.m \
 NSView.m \
 NSWindow.m \
 NSWorkspace.m \
+GSComboSupport.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
@@ -158,6 +161,8 @@ AppKit/NSColorPanel.h \
 AppKit/NSColorPicker.h \
 AppKit/NSColorPicking.h \
 AppKit/NSColorWell.h \
+AppKit/NSComboBox.h \
+AppKit/NSComboBoxCell.h \
 AppKit/NSControl.h \
 AppKit/NSCursor.h \
 AppKit/NSCustomImageRep.h \

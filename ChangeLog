@@ -1,3 +1,13 @@
+1999-09-09  Gerrit van Dyk <gerritvd@decillion.net>
+
+	* Headers/NSComboBox.h: Added NSComboBox
+	* Headers/NSComboBoxCell.h: Add NSComboBoxCell
+	* Headers/AppKit.h: Added NSComboBox,NSComboBoxCell
+	* Source/NSComboBox.m: Added NSComboBox.
+	* Source/NSComboBoxCell.m: Added NSComboBoxCell
+	* Source/GSComboSupport.hm: Private Classes used by ComboBoxes
+	* Images/NSComboArrow.tiff: down arrow on comboboxes
+
 1999-09-07  Michael Hanni   <mhanni@sprintmail.com>
 
 	* Source/NSTabView.m: some modifications to make tabs on the
@@ -92,7 +102,7 @@ Sun Aug 22 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSView.m: ([-viewWillMoveToWindow:]) fixed to call method
 	in subviews when new window is nil.
 
-1999-08-22  Gerrit van Dyk <gerritvd@decimax.com>
+1999-08-22  Gerrit van Dyk <gerritvd@decillion.net>
 
 	* Headers/NSProgressIndicator.h
 		  AppKit.h: Added ProgressIndicator

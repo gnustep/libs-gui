@@ -56,9 +56,11 @@
 // Controls
 @class NSControl, NSButton, NSTextField, NSScroller, NSBox, NSForm, NSMatrix;
 @class NSPopUpButton, NSProgressIndicator, NSSlider, NSBrowser, NSForm;
+@class NSComboBox;
 // Cells
 @class NSCell, NSActionCell, NSButtonCell, NSTextFieldCell, NSFormCell;
 @class NSSliderCell, NSMenuCell, NSBrowserCell, NSFormCell;
+@class NSComboBoxCell;
 @class NSEvent, NSCursor;
 @class NSColor, NSColorList, NSColorPanel, NSColorPicker, NSColorWell;
 @class NSImage, NSImageCell, NSImageRep, NSBitmapImageRep, NSCachedImageRep;
@@ -89,6 +91,8 @@
 #include <AppKit/NSColorPicker.h>
 #include <AppKit/NSColorPicking.h>
 #include <AppKit/NSColorWell.h>
+#include <AppKit/NSComboBox.h>
+#include <AppKit/NSComboBoxCell.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSCustomImageRep.h>
