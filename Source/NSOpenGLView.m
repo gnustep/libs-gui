@@ -116,6 +116,14 @@
   return glcontext;
 }
 
+
+-(id) initWithFrame: (NSRect)frameRect
+{  
+  return [self initWithFrame: frameRect
+	         pixelFormat: [[self class] defaultPixelFormat]];
+  
+}
+
 /** default initializer.  Can be passed [NSOpenGLContext defaultPixelFormat] 
     as second argument
 */

@@ -1,3 +1,8 @@
+2003-07-22  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSOpenGLView.m ([NSOpenGLView -initWithFrame:]): Implemented
+	(Patch from Damien Genet).
+
 2003-07-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Documentation/GNUmakefile.postamble: Tweak for make update.
