@@ -30,15 +30,16 @@
 #include <math.h>
 #include <tiff.h>
 
-#include <Foundation/NSException.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSBitmapImageRep.h"
+#include <Foundation/NSException.h>
+#include <Foundation/NSFileManager.h>
 #include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSBitmapImageRep.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSView.h"
 
 #include "nsimage-tiff.h"
 
@@ -59,6 +60,12 @@
 + (BOOL) canInitWithData: (NSData *)data
 {
   TIFF	*image = NULL;
+
+  if (data == nil)
+    {
+      return NO;
+    }
+
   image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
   if (image != NULL)
@@ -125,6 +132,11 @@
   TIFF		 *image;
   NSMutableArray *array;
 
+  if (tiffData == nil)
+    {
+      return nil;
+    }
+
   image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
   if (image == NULL)
     {
@@ -155,8 +167,14 @@
 {
   TIFF 	*image;
 
+  if (tiffData == nil)
+    {
+      RELEASE(self);
+      return nil;
+    }
+
   image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
-  if (image == 0)
+  if (image == NULL)
     {
       RELEASE(self);
       NSLog(@"Tiff read invalid TIFF info from data");
@@ -639,15 +657,21 @@
 @implementation NSBitmapImageRep (GNUstepExtension)
 
 /* A special method used mostly when we have the wraster library in the
-   backend, which can read several more image formats */
+   backend, which can read several more image formats. 
+   Don't use this for TIFF images, use the regular ...Data methods */
 + (NSArray*) imageRepsWithFile: (NSString *)filename
 {
   NSString *ext;
   int	   images;
   NSMutableArray *array;
   NSBitmapImageRep* imageRep;
+  NSFileManager *manager = [NSFileManager defaultManager];
 
-  /* Don't use this for TIFF images, use the regular ...Data methods */
+  if ([manager fileExistsAtPath: filename] == NO)
+    {
+      return nil;
+    }
+
   ext = [filename pathExtension];
   if (!ext)
     {
@@ -678,7 +702,14 @@
     }
   while (imageRep);
 
-  return array;
+  if ([array count] > 0)
+    {
+      return array;
+    }
+  else 
+    {
+      return nil;
+    }
 }
 
 /* Given a TIFF image (from the libtiff library), load the image information
