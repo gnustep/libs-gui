@@ -75,17 +75,21 @@
       </p>
       <deflist>
 	<term>NSApplication</term>
-	<desc>-preventWindowOrdering, -orderFrontColorPanel:,
-	-orderFrondDataLinkPanel:, -orderFrontHelpPanel:,
-	-runPageLayout: not implemented. In -activateIgnoringOtherApps:,
-	the flag is ignored.</desc>
+	<desc>-preventWindowOrdering not implemented.
+	In -activateIgnoringOtherApps:, the flag is ignored.</desc>
 	<term>NSBitmapImageRep</term>
-	<desc>-initWithFocusedViewRect: not implemented in art backend.
+	<desc>-initWithFocusedViewRect: not implemented in Windows backend.
 	+TIFFRepresentationOfImageRepsInArray:usingCompression:factor:
 	not fully implemented.</desc>
 	<term>NSCell</term>
 	<desc>-setFloatingPointFormat:left:right: not implemented.
 	-setEntryType: not complete.</desc>
+	<term>NSDataLink</term>
+	<desc>Mostly unimplemented.</desc>
+	<term>NSDataLinkManager</term>
+	<desc>Mostly unimplemented.</desc>
+	<term>NSDataLinkPanel</term>
+	<desc>-setAccessoryView:, NSCoding methods not implemented.</desc>
 	<term>NSEPSImageRep</term>
 	<desc>Cannot interpret/draw EPS images</desc>
 	<term>NSMatrix</term>
@@ -113,18 +117,13 @@
 	  NSFrameLinkRect.</desc>
       </deflist>
       <p>
-      The following OpenStep classes are not implemented. The usefulness
-      of these classes is marginal, so there is a very low priority on
-      implementing them. However, we would be pleased to accept
-      their contribution should anyone care to implement them and assign
-      the copyright to the Free Software Foundation.
+      The following OpenStep classes are not implemented. These classes
+      are either not very useful or have been replaced by classes with
+      better APIs.
       </p>
       <list>
 	<item>NSCStringText (Unecessary NEXTSTEP compatibility)</item>
 	<item>NSCoderAdditions (Unecessary NEXTSTEP compatibility)</item>
-	<item>NSDataLink</item>
-	<item>NSDataLinkManager</item>
-	<item>NSDataLinkPanel</item>
 	<item>NSHelpPanel (Replaced by NSHelpManager)</item>
 	<item>NSMenuCell (Replaced by NSMenuItem[Cell])</item>
       </list>

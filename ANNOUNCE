@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.9.3 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.9.4 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -27,22 +27,25 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.9.3'
+Noteworthy changes in version `0.9.4'
 =====================================
 
-   * Spell checker reimplemented using libaspell
+   * The printing classes have been completely reorganized to
+     accommodate different native printing systems (Thanks to Chad
+     Hardin).
 
-   * New NSComboBox implementation
+   * PPD files have been moved to a separate package.
 
-   * NSToolbar much improved
+   * NSToolbar now allows rearranging items.
 
-   * Binary incompatibilites from ivar additions in NSView and
-     subclasses.
+   * NSScroller, NSScrollView has a new ivar.
+
+   * Some improvement of NSDataLink classes.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The gstep-gui-0.9.3.tar.gz distribution file has been placed on
+The gstep-gui-0.9.4.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation

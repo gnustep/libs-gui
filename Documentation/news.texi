@@ -9,14 +9,15 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
-@section Noteworthy changes in version @samp{0.9.3}
+@section Noteworthy changes in version @samp{0.9.4}
 
 @itemize @bullet
 @item The printing classes have been completely reorganized to 
 accommodate different native printing systems (Thanks to Chad Hardin).
 @item PPD files have been moved to a separate package.
 @item NSToolbar now allows rearranging items.
-@item NSScroller has a new ivar.
+@item NSScroller, NSScrollView has a new ivar.
+@item Some improvement of NSDataLink classes.
 @end itemize
 
 @ifclear ANNOUNCE-ONLY

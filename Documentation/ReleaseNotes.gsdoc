@@ -19,7 +19,7 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
-	<heading>Version 0.9.5</heading>
+	<heading>Version 0.9.4</heading>
 	<p>
 	</p>
 	  <deflist>
@@ -57,9 +57,9 @@
 	      revamped to handle this, and the actual system-specific
 	      code is loaded from a bundle.
 	    </desc>
-	    <term>NSScroller class size change</term>
+	    <term>NSScroller, NSScrollView class size change</term>
 	    <desc>
-	      A new ivar was added to the NSScroller class.
+	      A new ivar was added to the NSScroller and NSScrollView classes.
 	    </desc>
 	  </deflist>
       </section>

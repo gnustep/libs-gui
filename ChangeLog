@@ -1,3 +1,10 @@
+2004-09-24  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.9.4
+
+	* Documentation/General/OpenStepCompliance.gsdoc: Updates
+	* Documentation/ReleaseNotes.gsdoc, Documentation/news.texi: Idem.
+
 2004-09-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-initWithCoder:): Added keyed decoding of

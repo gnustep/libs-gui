@@ -1,16 +1,16 @@
 @c -*- texinfo -*-
 @chapter Installation
-
 @node Top, Introduction, (dir), (dir)
 @include version.texi
+
 
 @menu
 * Introduction::                
 * Configuration::               
 * Compilation::                 
 * Installing::                  
+* Post-Installation::           
 @end menu
-
 
 @node Introduction, Configuration, Top, Top
 @section Introduction
@@ -46,7 +46,7 @@ can use with make are @samp{debug=yes} to make a debugging version of
 the library and @samp{shared=no} to make a static version of the
 library. See the gstep-make package for more information on these options.
 
-@node Installing,  , Compilation, Top
+@node Installing, Post-Installation, Compilation, Top
 @section Installing
 
 To install, type
@@ -54,5 +54,17 @@ To install, type
 @example
 make install
 @end example
+
+@node Post-Installation,  , Installing, Top
+@section Post Installation
+
+GNUstep gui comes with a tool called @samp{make_services} which builds
+a list of installed applications and services. This list is used to find
+services for the services menu, for instance. This tool should be run
+after a new service or application is installed in the system. Theoretically,
+a workspace application, such as GWorkspace, should do this automatically.
+But this is not done at the current time. You might consider running this
+service automatically, perhaps in a login script, to make sure the service
+and application lists are updated regularly.
 
 @bye

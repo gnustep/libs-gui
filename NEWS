@@ -1,7 +1,22 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.3'.
+The currently released version of the library is `0.9.4'.
+
+Noteworthy changes in version `0.9.4'
+=====================================
+
+   * The printing classes have been completely reorganized to
+     accommodate different native printing systems (Thanks to Chad
+     Hardin).
+
+   * PPD files have been moved to a separate package.
+
+   * NSToolbar now allows rearranging items.
+
+   * NSScroller, NSScrollView has a new ivar.
+
+   * Some improvement of NSDataLink classes.
 
 Noteworthy changes in version `0.9.3'
 =====================================
