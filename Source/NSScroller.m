@@ -369,7 +369,7 @@ static NSColor *scrollBarColor = nil;
     {
       return;
     }
-  
+
   _isEnabled = flag;
   _cacheValid = NO;
   [self setNeedsDisplay: YES];
@@ -417,23 +417,44 @@ static NSColor *scrollBarColor = nil;
       /* Most likely our trackKnob method initiated this via NSScrollView */
       return;
     }
+
   if (ratio < 0)
     {
-      _knobProportion = 0;
+      _pendingKnobProportion = 0;
     }
   else if (ratio > 1)
     {
-      _knobProportion = 1;
+      _pendingKnobProportion = 1;
     }
   else
     {
-      _knobProportion = ratio;
+      _pendingKnobProportion = ratio;
+    }
+    
+  if (_hitPart == NSScrollerNoPart)
+    {
+      _knobProportion = _pendingKnobProportion;
+      _pendingKnobProportion = 0;
     }
 
-  /* Make sure we mark ourselves as needing redisplay.  */
-  _floatValue = -1;
+  // Handle the case when parts should disappear
+  if (_knobProportion == 1)
+    {
+      [self setEnabled: NO];
+    }
+  else
+    {
+      [self setEnabled: YES];
+    }
   
-  [self setFloatValue: aFloat];
+  // Don't set float value if knob is being dragged
+  if (_hitPart != NSScrollerKnobSlot && _hitPart != NSScrollerKnob)
+    {
+      /* Make sure we mark ourselves as needing redisplay.  */
+      _floatValue = -1;
+
+      [self setFloatValue: aFloat];
+    }
 }
 
 - (void) setFrame: (NSRect)frameRect
@@ -567,23 +588,6 @@ static NSColor *scrollBarColor = nil;
     {
       case NSScrollerIncrementLine:
       case NSScrollerDecrementLine:
-	/*
-	 * A hit on a scroller button should be a page movement
-	 * if the alt key is pressed.
-	 */
-	if ([theEvent modifierFlags] & NSAlternateKeyMask)
-	  {
-	    if (_hitPart == NSScrollerIncrementLine)
-	      {
-		_hitPart = NSScrollerIncrementPage;
-	      }
-	    else
-	      {
-		_hitPart = NSScrollerDecrementPage;
-	      }
-	  }
-	/* Fall through to next case */
-
       case NSScrollerIncrementPage:
       case NSScrollerDecrementPage:
 	[self trackScrollButtons: theEvent];
@@ -612,6 +616,14 @@ static NSColor *scrollBarColor = nil;
     }
 
   _hitPart = NSScrollerNoPart;
+  if (_pendingKnobProportion)
+    {
+      [self setFloatValue: _floatValue knobProportion: _pendingKnobProportion];
+    }
+  else
+    {
+      [self setNeedsDisplay:YES];
+    }
 }
 
 - (void) trackKnob: (NSEvent*)theEvent
@@ -802,7 +814,7 @@ static NSColor *scrollBarColor = nil;
   static NSRect rectForPartIncrementLine;
   static NSRect rectForPartDecrementLine;
   static NSRect rectForPartKnobSlot;
-  
+
   if (_cacheValid == NO)
     {
       rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
@@ -867,7 +879,7 @@ static NSColor *scrollBarColor = nil;
       rect = [self rectForPart: NSScrollerKnobSlot];
     }
 
-    [scrollBarColor set];
+  [scrollBarColor set];
   NSRectFill (rect);
 }
 
@@ -940,7 +952,9 @@ static NSColor *scrollBarColor = nil;
 
 	  if (usableParts == NSNoScrollerParts
 	    || usableParts == NSOnlyScrollerArrows)
-	    return NSZeroRect;
+	    {
+	      return NSZeroRect;
+	    }
 
 	  /* calc the slot Height */
 	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
@@ -952,11 +966,12 @@ static NSColor *scrollBarColor = nil;
 
 	  /* calc knob's position */
 	  knobPosition = _floatValue * (slotHeight - knobHeight);
-	  knobPosition = (float)floor(knobPosition);
+	  knobPosition = (float)floorf(knobPosition);
+
 
 	  /* calc actual position */
-	  y += knobPosition + (_arrowsPosition == NSScrollerArrowsMaxEnd
-			       || _arrowsPosition == NSScrollerArrowsNone 
+	  y += knobPosition + ((_arrowsPosition == NSScrollerArrowsMaxEnd
+			       || _arrowsPosition == NSScrollerArrowsNone)
 			       ?  0 : buttonsSize);
 	  height = knobHeight;
 	  width = buttonsWidth;
