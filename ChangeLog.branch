@@ -1,3 +1,26 @@
+2004-05-21  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Add marked text support to NSTextView.
+
+	* Headers/AppKit/NSTextView.h: Add the new ivar _markedRange.
+	* Source/AppKit/NSTextView.m (#include): Add
+	  <Foundation/NsUserDefaults.h> and "AppKit/NSInputServer.h".
+	  (@interface NSTextView (GNUstepPrivate)): Add the declaration of
+	  the method -_markedTextDefaultAttributes.
+	  (global variable): Add the new static global variable
+	  _markedRangeNotMarked.
+	* (-initWithFrame:textContainer:): Initialize _markedRange and
+	  _markedTextAttributes.
+	* (-markedRange): Give an implementation.
+	* (-setMarkedText:selectedRagne:): Give an implementation.
+	* (-hasMarkedText): Give an implementation.
+	* (-unmarkText): Give an implementation.
+	* (-validAttributesForMarkedText): Give an implementation.
+	* (-mouseDown:): Add some code supporing marked test.
+	* (-colorFromObject:): New method, helper for
+	  _markedTextDefaultAttributes.
+	* (-_markedTextDefaultAttibutes): New method.
+
 2004-05-05  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* Source/GSTIMKeyBindingTable.m (-compileBindings::): Modified to
