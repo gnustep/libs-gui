@@ -1,3 +1,15 @@
+Mon Oct  8 15:05:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindowController.m ([-setDocument:]): Set the window to
+	be released when closed if document is non nil, and not to be if
+	document is nil.
+	([-loadWindow]): Idem after loading the nib.
+	([-initWithWindow:]): Call setDocument: nil.
+
+	* Source/NSWindowController.m ([-_windowWillClose:]): Do nothing
+	if the window is not to be released when closed (suggestion by
+	Ludovic Marcotte <ludovic@Sophos.ca>).
+	
 2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m
