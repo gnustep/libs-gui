@@ -73,6 +73,7 @@ extern NSString *NSPasteboardCommunicationException;
     NSString*	name;		// The name of this pasteboard.
     int		changeCount;	// What we think the current count is.
     id		target;		// Proxy to the object in the server.
+    id		owner;		// Local pasteboard owner.
     BOOL	useHistory;	// Want strict OPENSTEP?
 }
 
@@ -133,12 +134,17 @@ extern NSString *NSPasteboardCommunicationException;
 // Methods Implemented by the Owner 
 //
 - (void)pasteboard:(NSPasteboard *)sender
-  provideDataForType:(NSString *)type;
+provideDataForType:(NSString *)type;
+- (void)pasteboard:(NSPasteboard *)sender
+provideDataForType:(NSString *)type
+	andVersion:(int)ver;
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender;
 
 @end
 
 @interface NSPasteboard (GNUstepExtensions)
+- (id)askOwner:(id)obj toProvideDataForType:(NSString*)t;
+- (id)askOwner:(id)obj toProvideDataForType:(NSString*)t andVersion:(int)v;
 - (void)setChangeCount: (int)changeCount;
 @end
 
