@@ -347,13 +347,7 @@
 		      || (NSMaxY(r) < NSMinY(oldRect)))
 		    // the two rects don't intersect
 		    {
-		      DPScompositerect(GSCurrentContext(), 
-				       NSMinX(oldRect), 
-				       NSMinY(oldRect), 
-				       NSWidth(oldRect), 
-				       NSHeight(oldRect), 
-				       NSCompositeHighlight);
-		      //		      NSHighlightRect(oldRect);
+		      NSHighlightRect(oldRect);
 		      NSHighlightRect(r);
 		    }
 		  else
@@ -375,14 +369,7 @@
 			  onRect.size.height = 
 			    NSMaxY(r) - NSMaxY(oldRect);
 
-			  //			  NSHighlightRect(onRect);
-			  DPScompositerect(GSCurrentContext(), 
-					   NSMinX(onRect), 
-					   NSMinY(onRect), 
-					   NSWidth(onRect), 
-					   NSHeight(onRect), 
-					   NSCompositeHighlight);
-
+			  NSHighlightRect(onRect);
 			  NSHighlightRect(offRect);
 
 			  //NSLog(@"on : %@", NSStringFromRect(onRect));
@@ -406,14 +393,7 @@
 			  onRect.size.height = 
 			    NSMinY(oldRect) - NSMinY(r);
 
-			  //			  NSHighlightRect(onRect);
-			  DPScompositerect(GSCurrentContext(), 
-					   NSMinX(onRect), 
-					   NSMinY(onRect), 
-					   NSWidth(onRect), 
-					   NSHeight(onRect), 
-					   NSCompositeHighlight);
-
+			  NSHighlightRect(onRect);
 			  NSHighlightRect(offRect);
 
 			  //NSLog(@"on : %@", NSStringFromRect(onRect));
@@ -429,12 +409,7 @@
 		      || (NSMaxX(r) < NSMinX(oldRect)))
 		    // the two rects don't intersect
 		    {
-		      DPScompositerect(GSCurrentContext(), 
-				       NSMinX(oldRect), 
-				       NSMinY(oldRect), 
-				       NSWidth(oldRect), 
-				       NSHeight(oldRect), 
-				       NSCompositeHighlight);
+		      NSHighlightRect (oldRect);
 		      NSHighlightRect(r);
 		    }
 		  else
@@ -456,13 +431,7 @@
 			  onRect.size.width = 
 			    NSMaxX(r) - NSMaxX(oldRect);
 
-			  DPScompositerect(GSCurrentContext(), 
-					   NSMinX(onRect), 
-					   NSMinY(onRect), 
-					   NSWidth(onRect), 
-					   NSHeight(onRect), 
-					   NSCompositeHighlight);
-			  //			  NSHighlightRect(onRect);
+			  NSHighlightRect(onRect);
 			  NSHighlightRect(offRect);
 			}
 		      else
@@ -481,14 +450,7 @@
 			  onRect.size.width = 
 			    NSMinX(oldRect) - NSMinX(r);
 
-			  DPScompositerect(GSCurrentContext(), 
-					   NSMinX(onRect), 
-					   NSMinY(onRect), 
-					   NSWidth(onRect), 
-					   NSHeight(onRect), 
-					   NSCompositeHighlight);
-
-			  //			  NSHighlightRect(onRect);
+			  NSHighlightRect(onRect);
 			  NSHighlightRect(offRect);
 			}
 		    }
@@ -499,6 +461,7 @@
 	    {
 	      NSHighlightRect(r);
 	    }
+	  [_window flushWindow];
 	  /*
 	  if (lit == YES)
 	    {
