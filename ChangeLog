@@ -1,3 +1,8 @@
+2003-03-07  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSMenu.m: ([-_updateUserDefaults:]) Do not store location
+	for attached menus.
+
 2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenu.m: ([-_updateUserDefaults:]) restore saved menu
