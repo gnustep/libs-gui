@@ -6,7 +6,8 @@
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
-            Fabien Vallon <fabien.vallon@fr.alcove.com>
+            Fabien Vallon <fabien.vallon@fr.alcove.com>,
+	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
    
    This file is part of the GNUstep GUI Library.
@@ -39,10 +40,10 @@
 @class NSString;
 @class NSDictionary;
 @class NSMutableDictionary;
-@class NSToolbar;
 @class NSImage;
 @class NSMenuItem;
 @class NSView;
+@class GSToolbar;
 
 /*
  * Constants
@@ -66,11 +67,11 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   NSImage *_image;
 
   // toolbar
-  NSToolbar *_toolbar;
+  GSToolbar *_toolbar;
   NSString *_toolTip;
   id _view;
   NSView *_backView;
-  BOOL _updated;
+  BOOL _modified;
 
   // size
   NSSize _maxSize;
@@ -116,7 +117,7 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 - (int) tag;
 - (id) target;
 - (NSString *) toolTip;
-- (NSToolbar *) toolbar;
+- (GSToolbar *) toolbar;
 - (NSView *) view;
 - (void) setAction: (SEL)action;
 - (void) setEnabled: (BOOL)enabled;

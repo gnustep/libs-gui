@@ -1,6 +1,7 @@
 2004-04-13  Quentin Mathe <qmathe@club-internet.fr>
 
-       * Source/NSToolbarItem.m: 
+       * Source/NSToolbarItem.m:
+       * Source/NSToolbarItem.h: 
        * Source/NSToolbar.m:
        * Headers/AppKit/NSToolbar.h:
        * Source/GSToolbar.m:
