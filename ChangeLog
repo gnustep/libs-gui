@@ -1,3 +1,7 @@
+2002-11-24 20:58  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSMenu.h: Declare NSMutableArray.
+
 2002-11-24 01:10  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSSpellChecker (-_launchSpellCheckerForLanguage:): Don't

@@ -42,6 +42,7 @@
 @class NSPopUpButtonCell;
 @class NSView;
 @class NSWindow;
+@class NSMutableArray;
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
