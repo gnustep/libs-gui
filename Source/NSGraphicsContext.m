@@ -263,6 +263,16 @@ struct NSWindow_struct
   [focus_stack removeLastObject];
 }
 
+- (NSPoint) convertBaseToScreen: (NSPoint)point
+{
+  return point;
+}
+
+- (NSPoint) convertScreenToBase: (NSPoint)point
+{
+  return point;
+}
+
 @end
 
 @implementation NSGraphicsContext (Private)

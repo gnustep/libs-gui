@@ -129,6 +129,10 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect;
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush;
 
+/* Convert to/from base coordinates of root window */
+- (NSPoint) convertBaseToScreen: (NSPoint)point;
+- (NSPoint) convertScreenToBase: (NSPoint)point;
+
 @end
 #endif
 
