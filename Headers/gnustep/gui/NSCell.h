@@ -32,6 +32,9 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 
+// For tint
+#include <AppKit/NSColor.h>
+// For text alignment
 #include <AppKit/NSText.h>
 
 @class NSString;
@@ -109,6 +112,11 @@ enum {
   NSOnState			= 1,
   NSMixedState			= -1
 };
+
+typedef enum _NSControlSize {
+    NSRegularControlSize,
+    NSSmallControlSize
+} NSControlSize;
 
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
