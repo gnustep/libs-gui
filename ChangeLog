@@ -1,3 +1,8 @@
+Mon Dec  7 12:15:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/make_services.m: Serialize cache info in compact format
+	(uniquing dictionary key strings) for better performance.
+
 Sun Dec  6 20:35:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSWorkspace.m: Fixed error in application cache path setup.

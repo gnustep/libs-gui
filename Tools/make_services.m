@@ -80,6 +80,8 @@ main(int argc, char** argv)
       exit(0);
     }
 
+  [NSSerializer shouldBeCompact: YES];
+
   serviceMap = [NSMutableDictionary dictionaryWithCapacity: 64];
   filterMap = [NSMutableDictionary dictionaryWithCapacity: 66];
   printMap = [NSMutableDictionary dictionaryWithCapacity: 8];
