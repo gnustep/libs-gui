@@ -7,6 +7,8 @@
 	(-browser:isColumnValid:): Give the delegate the complete path to
 	each file.
 
+	Fixes bug #10553.
+
 2005-01-14 09:25 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Minor change.  The init method now sets the
