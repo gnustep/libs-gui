@@ -40,7 +40,7 @@
 
 #define	points2twips(a)	((a)*20.0)
 
-@interface RTFProducer (Private)
+@interface RTFDProducer (Private)
 
 - (NSString*) headerString;
 - (NSString*) trailerString;
@@ -49,12 +49,12 @@
 			  documentAttributes: (NSDictionary*)dict;
 @end
 
-@implementation RTFProducer
+@implementation RTFDProducer
 
-+ (NSFileWrapper*) produceRTFD: (NSAttributedString*) aText
-	documentAttributes: (NSDictionary*)dict
++ (NSFileWrapper*) produceFileFrom: (NSAttributedString*) aText
+		documentAttributes: (NSDictionary*)dict
 {
-  RTFProducer *new = [self new];
+  RTFDProducer *new = [self new];
   NSData *data;
   NSFileWrapper *wrapper;
 
@@ -82,17 +82,11 @@
   return AUTORELEASE(wrapper);
 }
 
-+ (NSData*) produceRTF: (NSAttributedString*) aText
-    documentAttributes: (NSDictionary*)dict
++ (NSData*) produceDataFrom: (NSAttributedString*) aText
+	 documentAttributes: (NSDictionary*)dict
 {
-  RTFProducer *new = [self new];
-  NSData *data;
-
-  data = [[new RTFDStringFromAttributedString: aText
-	       documentAttributes: dict]
-	     dataUsingEncoding: NSISOLatin1StringEncoding];
-  RELEASE(new);
-  return data;
+  return [[self produceFileFrom: aText
+		documentAttributes: dict] serializedRepresentation];
 }
 
 - (id)init
@@ -129,7 +123,32 @@
 
 @end
 
-@implementation RTFProducer (Private)
+@implementation RTFProducer
+
++ (NSData*) produceDataFrom: (NSAttributedString*) aText
+	 documentAttributes: (NSDictionary*)dict
+{
+  RTFProducer *new = [self new];
+  NSData *data;
+
+  data = [[new RTFDStringFromAttributedString: aText
+	       documentAttributes: dict]
+	     dataUsingEncoding: NSISOLatin1StringEncoding];
+  RELEASE(new);
+  return data;
+}
+
++ (NSFileWrapper*) produceFileFrom: (NSAttributedString*) aText
+		documentAttributes: (NSDictionary*)dict
+{
+  return [[NSFileWrapper alloc] initRegularFileWithContents: 
+				    [self produceDataFrom: aText
+					  documentAttributes: dict]];
+}
+
+@end
+
+@implementation RTFDProducer (Private)
 
 - (NSString*) fontTable
 {
