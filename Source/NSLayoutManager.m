@@ -558,7 +558,7 @@ container */
 {
   NSTextContainer *textContainer;
   glyph_run_t *glyph_run;
-  unsigned int glyph_pos, char_pos;
+  unsigned int glyph_pos, char_pos, first_char_pos;
   int i, j;
   NSRect *rects;
   int count;
@@ -593,6 +593,7 @@ container */
   glyph_run = run_for_glyph_index(range.location, glyphs, &glyph_pos, &char_pos);
   i = range.location - glyph_pos;
   last_color = nil;
+  first_char_pos = char_pos;
   while (1)
     {
       rects = [self rectArrayForGlyphRange:
@@ -622,6 +623,7 @@ container */
 		}
 	    }
 	}
+
       glyph_pos += glyph_run->head.glyph_length;
       char_pos += glyph_run->head.char_length;
       i = 0;
@@ -629,6 +631,56 @@ container */
       if (i + glyph_pos >= range.location + range.length)
 	break;
     }
+
+  if (!_selected_range.length || _selected_range.location == NSNotFound)
+    return;
+
+  if (_selected_range.location >= char_pos ||
+      _selected_range.location + _selected_range.length <= first_char_pos)
+    {
+      return;
+    }
+
+  /* The selection (might) intersect our glyph range. */
+  {
+    NSRange r = [self glyphRangeForCharacterRange: _selected_range
+		  actualCharacterRange: NULL];
+    NSRange sel = r;
+
+    if (r.location < range.location)
+      {
+	r.length -= range.location - r.location;
+	r.location = range.location;
+      }
+    if (r.location + r.length > range.location + range.length)
+      {
+	r.length = range.location + range.length - r.location;
+      }
+    if (r.length <= 0)
+      return;
+
+    /* TODO: use the text view's selected text attributes */
+    color = [NSColor selectedTextBackgroundColor];
+    if (!color)
+      return;
+
+    rects = [self rectArrayForGlyphRange: r
+	      withinSelectedGlyphRange: sel
+	      inTextContainer: textContainer
+	      rectCount: &count];
+
+    if (count)
+      {
+	[color set];
+	for (j = 0; j < count; j++, rects++)
+	  {
+	    DPSrectfill(ctxt,
+			rects->origin.x + containerOrigin.x,
+			rects->origin.y + containerOrigin.y,
+			rects->size.width, rects->size.height);
+	  }
+      }
+  }
 }
 
 

@@ -1,3 +1,8 @@
+2003-01-27 00:01  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-drawBackgroundForGlyphRange:atPoint:):
+	Draw background for the selected range.
+
 2003-01-26 21:16  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
