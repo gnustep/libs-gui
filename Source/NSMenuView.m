@@ -279,7 +279,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 //
 // Notification Methods
 //
-- (void)itemChanged: (NSNotification *)notification
+- (void) itemChanged: (NSNotification *)notification
 {
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
 		intValue];
@@ -291,7 +291,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (void)itemAdded: (NSNotification *)notification
+- (void) itemAdded: (NSNotification *)notification
 {
   int         index  = [[[notification userInfo]
 			  objectForKey: @"NSMenuItemIndex"] intValue];
@@ -314,13 +314,22 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (void)itemRemoved: (NSNotification *)notification
+- (void) itemRemoved: (NSNotification *)notification
 {
+  int wasHighlighted = [self highlightedItemIndex];
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
 		intValue];
 
+  if (index <= wasHighlighted)
+    {
+      [self setHighlightedItemIndex: -1];
+    }
   [menuv_itemCells removeObjectAtIndex: index];
 
+  if (wasHighlighted > index)
+    {
+      [self setHighlightedItemIndex: --wasHighlighted];
+    }
   // Mark the menu view as needing to be resized.
   [self setNeedsSizing: YES];
 }

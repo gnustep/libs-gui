@@ -1,9 +1,16 @@
-Fri Dec  3 10:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Fri Dec  3 11:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-updateWindowsItem:]) modified to show
 	document state image with new menus.
+	([-changeWindowsitem:title:filename:]) updated to understand filename
+	format and discard path info.
 	* Source/NSMenuView.m: Implement ([-setNeedsDisplayForItemAtIndex:])
+	and fixed ([-itemRemoved:]) to update the highlighted item properly
+	and avoid a crash.
 	* Source/NSMenuItemCell.m: Fix so that images are drawn.
+	* Source/NSWindow.m: ([-setTitle:]), ([-setRepresentedFilename:]),
+	([-setTitleWithRepresentedFilename:]), ([-setMiniwindowTitle:])
+	rewritten to conform to documented behavior.
 
 Fri Dec  3 05:21:40 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
