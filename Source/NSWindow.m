@@ -67,7 +67,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
       NSDebugLog(@"Initialize NSWindow class\n");
 
       // Initial version
-      [self setVersion:1];
+      [self setVersion:2];
     }
 }
 
@@ -1343,6 +1343,24 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
   [aCoder encodeValueOfObjCType:"I" at: &style_mask];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
+
+  // Version 2
+  [aCoder encodeSize:minimum_size];
+  [aCoder encodeSize:maximum_size];
+  [aCoder encodeObject:miniaturized_image];
+  [aCoder encodeValueOfObjCType:@encode(NSBackingStoreType) at: &backing_type];
+  [aCoder encodeValueOfObjCType:@encode(int) at: &window_level];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_one_shot];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_autodisplay];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &optimize_drawing];
+  [aCoder encodeValueOfObjCType:@encode(NSWindowDepth) at: &depth_limit];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &dynamic_depth_limit];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &cursor_rects_enabled];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_released_when_closed];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &disable_flush_window];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &hides_on_deactivate];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &accepts_mouse_moved];
+
   NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
@@ -1371,6 +1389,24 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
   [aDecoder decodeValueOfObjCType:"I" at: &style_mask];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
+
+  // Version 2
+  minimum_size = [aDecoder decodeSize];
+  maximum_size = [aDecoder decodeSize];
+  miniaturized_image = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType:@encode(NSBackingStoreType) 
+	    at: &backing_type];
+  [aDecoder decodeValueOfObjCType:@encode(int) at: &window_level];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_one_shot];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_autodisplay];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &optimize_drawing];
+  [aDecoder decodeValueOfObjCType:@encode(NSWindowDepth) at: &depth_limit];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &dynamic_depth_limit];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &cursor_rects_enabled];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_released_when_closed];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &disable_flush_window];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &hides_on_deactivate];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &accepts_mouse_moved];
 
   // Register ourselves with the Application object
   // +++ we shouldn't do this because coding may not be done?

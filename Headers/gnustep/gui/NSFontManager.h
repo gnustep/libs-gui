@@ -55,11 +55,6 @@
 + (NSFontManager *)sharedFontManager;
 
 //
-// Initialization
-//
-- (void)enumerateFamilies;
-
-//
 // Converting Fonts
 //
 - (NSFont *)convertFont:(NSFont *)fontObject;
@@ -114,6 +109,15 @@
 // Methods Implemented by the Delegate
 //
 - (BOOL)fontManager:(id)sender willIncludeFont:(NSString *)fontName;
+
+@end
+
+@interface NSFontManager (GNUstepBackend)
+
+//
+// Have the backend determine the fonts and families available
+//
+- (void)enumerateFontsAndFamilies;
 
 @end
 

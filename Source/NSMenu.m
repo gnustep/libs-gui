@@ -44,7 +44,7 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
   if (self == [NSMenu class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion:2];
     }
 }
 
@@ -78,21 +78,22 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
   NSApplication *theApp = [NSApplication sharedApplication];
 
   // Init our superclass but skip any of its backend implementation
-  [super cleanInit];
+  [super init];
 
   window_title = aTitle;
   menu_items = [NSMutableArray array];
   super_menu = nil;
   autoenables_items = NO;
-  //  [self setContentView:[[NSView alloc] initWithFrame:frame]];
+
   menu_matrix = [[NSMatrix alloc] initWithFrame: NSZeroRect];
   [menu_matrix setCellClass: [NSMenuCell class]];
   [menu_matrix setIntercellSpacing: NSZeroSize];
-  [self setContentView: menu_matrix];
+  //  [self setContentView: menu_matrix];
+
   is_torn_off = NO;
 
   // Register ourselves with the Application object
-  [theApp addWindowsItem:self title:window_title filename:NO];
+  //  [theApp addWindowsItem:self title:window_title filename:NO];
 
   return self;
 }
@@ -249,6 +250,13 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
   [super encodeWithCoder:aCoder];
 
   [aCoder encodeObject: menu_items];
+
+  // Version 2
+  [aCoder encodeObject: window_title];
+  [aCoder encodeObjectReference: super_menu withName: @"SuperMenu"];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &autoenables_items];
+  [aCoder encodeObject: menu_matrix];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_torn_off];
 }
 
 - initWithCoder:aDecoder
@@ -256,6 +264,13 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
   [super initWithCoder:aDecoder];
 
   menu_items = [aDecoder decodeObject];
+
+  // Version 2
+  window_title = [aDecoder decodeObject];
+  [aDecoder decodeObjectAt: &super_menu withName: NULL];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &autoenables_items];
+  menu_matrix = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_torn_off];
 
   return self;
 }

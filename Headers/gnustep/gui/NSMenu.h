@@ -37,10 +37,11 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSZone.h>
 
-@interface NSMenu : NSWindow <NSCoding>
+@interface NSMenu : NSObject <NSCoding>
 
 {
   // Attributes
+  NSString *window_title;
   NSMutableArray *menu_items;
   NSMenu *super_menu;
   BOOL autoenables_items;

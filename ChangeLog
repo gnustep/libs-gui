@@ -1,3 +1,18 @@
+Thu Dec 05 09:56:25 1996  Scott Christley  <scottc@net-community.com>
+
+	* Headers/gnustep/gui/NSMenu.h: Newer release of OpenStep
+	specification indicates NSMenu subclasses from NSObject.
+	* Headers/gnustep/gui/NSFontManager.h (-enumerateFontsAndFamilies):
+	New method that backend must implement.
+	(-enumerateFamilies): Delete old method.
+	* Source/NSColor.m: Reverse usage of global variables for common
+	colors as it causes havoc with archiving.
+	* Source/NSFont.m: Encode additional instance variables.
+	* Source/NSFontManager.m: Rename global variables.
+	(-enumerateFamilies): Replaced by -enumerateFontsAndFamilies.
+	* Source/NSMenu.m: Encode additional instance variables.
+	* Source/NSWindow.m: Likewise.
+
 Fri Oct 18 12:56:14 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* SUPPORT: New file.

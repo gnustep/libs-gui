@@ -33,10 +33,10 @@
 //
 // Class variables
 //
-NSFontManager *MB_THE_FONT_MANAGER;
-NSFontPanel *MB_THE_FONT_PANEL;
-id MB_THE_FONT_MANAGER_FACTORY;
-id MB_THE_FONT_PANEL_FACTORY;
+NSFontManager *GNUSTEP_GUI_FONT_MANAGER;
+NSFontPanel *GNUSTEP_GUI_FONT_PANEL;
+id GNUSTEP_GUI_FONT_MANAGER_FACTORY;
+id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 
 @implementation NSFontManager
 
@@ -63,20 +63,22 @@ id MB_THE_FONT_PANEL_FACTORY;
 //
 + (void)setFontManagerFactory:(Class)classId
 {
-  MB_THE_FONT_MANAGER_FACTORY = classId;
+  GNUSTEP_GUI_FONT_MANAGER_FACTORY = classId;
 }
 
 + (void)setFontPanelFactory:(Class)classId
 {
-  MB_THE_FONT_PANEL_FACTORY = classId;
+  GNUSTEP_GUI_FONT_PANEL_FACTORY = classId;
 }
 
 + (NSFontManager *)sharedFontManager
 {
-  if (!MB_THE_FONT_MANAGER)
-    MB_THE_FONT_MANAGER = [[NSFontManager alloc] init];
-  [MB_THE_FONT_MANAGER enumerateFamilies];
-  return MB_THE_FONT_MANAGER;
+  if (!GNUSTEP_GUI_FONT_MANAGER)
+    {
+      GNUSTEP_GUI_FONT_MANAGER = [[NSFontManager alloc] init];
+      [GNUSTEP_GUI_FONT_MANAGER enumerateFontsAndFamilies];
+    }
+  return GNUSTEP_GUI_FONT_MANAGER;
 }
 
 //
@@ -89,19 +91,11 @@ id MB_THE_FONT_PANEL_FACTORY;
   // Allocate the font list
   font_list = [NSMutableArray array];
 
+  // Allocate the family list
+  family_list = [NSMutableArray array];
+  family_metrics = [NSMutableArray array];
+
   return self;
-}
-
-- (void)enumerateFamilies
-{
-  if (!family_list)
-    {
-      // Allocate the family list
-      family_list = [NSMutableArray array];
-      family_metrics = [NSMutableArray array];
-
-      // Enumerate the available font families
-    }
 }
 
 //
@@ -281,9 +275,9 @@ id MB_THE_FONT_PANEL_FACTORY;
 
 - (NSFontPanel *)fontPanel:(BOOL)create
 {
-  if ((!MB_THE_FONT_PANEL) && (create))
-    MB_THE_FONT_PANEL = [[NSFontPanel alloc] init];
-  return MB_THE_FONT_PANEL;
+  if ((!GNUSTEP_GUI_FONT_PANEL) && (create))
+    GNUSTEP_GUI_FONT_PANEL = [[NSFontPanel alloc] init];
+  return GNUSTEP_GUI_FONT_PANEL;
 }
 
 - (BOOL)isEnabled
@@ -358,6 +352,14 @@ id MB_THE_FONT_PANEL_FACTORY;
     return [delegate fontManager:self willIncludeFont:fontName];
   else
     return YES;
+}
+
+@end
+
+@implementation NSFontManager (GNUstepBackend)
+
+- (void)enumerateFontsAndFamilies
+{
 }
 
 @end

@@ -65,7 +65,7 @@ NSString *NSAFMXHeight = @"AFMXHeight";
       NSDebugLog(@"Initialize NSFont class\n");
 
       // Initial version
-      [self setVersion:1];
+      [self setVersion:2];
     }
 }
 
@@ -267,6 +267,10 @@ NSString *NSAFMXHeight = @"AFMXHeight";
   [aCoder encodeObject: font_name];
   [aCoder encodeValueOfObjCType: "f" at: &point_size];
   [aCoder encodeValueOfObjCType: @encode(NSFontTraitMask) at: &font_traits];
+
+  // Version 2
+  //[aCoder encodeObject: type_face];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &font_weight];
 }
 
 - initWithCoder:aDecoder
@@ -277,6 +281,10 @@ NSString *NSAFMXHeight = @"AFMXHeight";
   font_name = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: "f" at: &point_size];
   [aDecoder decodeValueOfObjCType: @encode(NSFontTraitMask) at: &font_traits];
+
+  // Version 2
+  //type_face = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &font_weight];
 
   return self;
 }
