@@ -263,6 +263,9 @@ NSApplication	*NSApp = nil;
 - (void) _initDefaults
 {
   [super _initDefaults];
+  // Set the title of the window to the process name. Even as the
+  // window shows no title bar, the window manager may show it.
+  [self setTitle: [[NSProcessInfo processInfo] processName]];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
   _windowLevel = NSDockWindowLevel;
