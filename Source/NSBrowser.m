@@ -1046,7 +1046,7 @@
       [_horizontalScroller setEnabled: YES];
     }
 
-  [self setNeedsDisplay: YES];
+  [self setNeedsDisplayInRect: _scrollerRect];
 }
 
 //
@@ -1466,6 +1466,11 @@
       // Draw the horizontal scroller border
       NSDrawGrayBezel (scrollerBorderRect, rect);
     }
+}
+
+- (BOOL) isOpaque
+{
+  return NO;
 }
 
 //
