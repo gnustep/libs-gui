@@ -22,7 +22,7 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <string.h>
 
 #include <Foundation/NSString.h>
@@ -46,7 +46,7 @@
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSPrintOperation.h"
 #include "AppKit/PSOperators.h"
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 

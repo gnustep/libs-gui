@@ -24,7 +24,7 @@
 */
 
 #include <math.h>
-#include "gnustep/gui/config.h"
+#include "config.h"
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>

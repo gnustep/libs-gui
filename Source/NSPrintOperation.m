@@ -30,7 +30,7 @@
 */ 
 
 #include <math.h>
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSData.h>

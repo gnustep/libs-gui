@@ -1,3 +1,210 @@
+2003-07-31  David Ayers  <d.ayers@inode.at>
+
+	* Created tag 'pre-header-reorg-20030731'.
+	
+	* Headers/Additions/GNUstepGUI: New directory.
+	* Headers/AppKit: Ditto.
+	* Headers/gnustep/gui: Obsoleted.
+
+	* Headers/Additions/GNUstepGUI/GMAppKit.h: Moved here from
+	Headers/gnustep/gui.
+	* Headers/Additions/GNUstepGUI/GMArchiver.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSFontInfo.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSFusedSilica.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSHbox.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSHorizontalTypesetter.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSInfoPanel.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSMemoryPanel.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSMethodTable.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSPasteboardServer.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSTable.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSTextConverter.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSTrackingRect.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSTypesetter.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSVbox.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSVersion.h: Ditto.
+	* Headers/Additions/GNUstepGUI/GSVersion.h.in: Ditto.
+	* Headers/Additions/GNUstepGUI/IMConnectors.h: Ditto.
+	* Headers/Additions/GNUstepGUI/IMCustomObject.h: Ditto.
+	* Headers/Additions/GNUstepGUI/IMLoading.h: Ditto.
+	* Headers/Additions/GNUstepGUI/.cvsignore: Ditto.
+
+	* Headers/AppKit/AppKit.h: Ditto.
+	* Headers/AppKit/AppKitDefines.h: Ditto.
+	* Headers/AppKit/AppKitExceptions.h: Ditto.
+	* Headers/AppKit/DPSOperators.h: Ditto.
+	* Headers/AppKit/NSActionCell.h: Ditto.
+	* Headers/AppKit/NSAffineTransform.h: Ditto.
+	* Headers/AppKit/NSApplication.h: Ditto.
+	* Headers/AppKit/NSAttributedString.h: Ditto.
+	* Headers/AppKit/NSBezierPath.h: Ditto.
+	* Headers/AppKit/NSBitmapImageRep.h: Ditto.
+	* Headers/AppKit/NSBox.h: Ditto.
+	* Headers/AppKit/NSBrowser.h: Ditto.
+	* Headers/AppKit/NSBrowserCell.h: Ditto.
+	* Headers/AppKit/NSButton.h: Ditto.
+	* Headers/AppKit/NSButtonCell.h: Ditto.
+	* Headers/AppKit/NSCachedImageRep.h: Ditto.
+	* Headers/AppKit/NSCell.h: Ditto.
+	* Headers/AppKit/NSClipView.h: Ditto.
+	* Headers/AppKit/NSColor.h: Ditto.
+	* Headers/AppKit/NSColorList.h: Ditto.
+	* Headers/AppKit/NSColorPanel.h: Ditto.
+	* Headers/AppKit/NSColorPicker.h: Ditto.
+	* Headers/AppKit/NSColorPicking.h: Ditto.
+	* Headers/AppKit/NSColorWell.h: Ditto.
+	* Headers/AppKit/NSComboBox.h: Ditto.
+	* Headers/AppKit/NSComboBoxCell.h: Ditto.
+	* Headers/AppKit/NSControl.h: Ditto.
+	* Headers/AppKit/NSCursor.h: Ditto.
+	* Headers/AppKit/NSCustomImageRep.h: Ditto.
+	* Headers/AppKit/NSDataLink.h: Ditto.
+	* Headers/AppKit/NSDataLinkManager.h: Ditto.
+	* Headers/AppKit/NSDataLinkPanel.h: Ditto.
+	* Headers/AppKit/NSDocument.h: Ditto.
+	* Headers/AppKit/NSDocumentController.h: Ditto.
+	* Headers/AppKit/NSDocumentFrameworkPrivate.h: Ditto.
+	* Headers/AppKit/NSDragging.h: Ditto.
+	* Headers/AppKit/NSDrawer.h: Ditto.
+	* Headers/AppKit/NSEPSImageRep.h: Ditto.
+	* Headers/AppKit/NSEvent.h: Ditto.
+	* Headers/AppKit/NSFileWrapper.h: Ditto.
+	* Headers/AppKit/NSFont.h: Ditto.
+	* Headers/AppKit/NSFontManager.h: Ditto.
+	* Headers/AppKit/NSFontPanel.h: Ditto.
+	* Headers/AppKit/NSForm.h: Ditto.
+	* Headers/AppKit/NSFormCell.h: Ditto.
+	* Headers/AppKit/NSGraphics.h: Ditto.
+	* Headers/AppKit/NSGraphicsContext.h: Ditto.
+	* Headers/AppKit/NSHelpManager.h: Ditto.
+	* Headers/AppKit/NSHelpPanel.h: Ditto.
+	* Headers/AppKit/NSImage.h: Ditto.
+	* Headers/AppKit/NSImageCell.h: Ditto.
+	* Headers/AppKit/NSImageRep.h: Ditto.
+	* Headers/AppKit/NSImageView.h: Ditto.
+	* Headers/AppKit/NSInputManager.h: Ditto.
+	* Headers/AppKit/NSInputServer.h: Ditto.
+	* Headers/AppKit/NSInterfaceStyle.h: Ditto.
+	* Headers/AppKit/NSLayoutManager.h: Ditto.
+	* Headers/AppKit/NSMatrix.h: Ditto.
+	* Headers/AppKit/NSMenu.h: Ditto.
+	* Headers/AppKit/NSMenuItem.h: Ditto.
+	* Headers/AppKit/NSMenuItemCell.h: Ditto.
+	* Headers/AppKit/NSMenuView.h: Ditto.
+	* Headers/AppKit/NSNibConnector.h: Ditto.
+	* Headers/AppKit/NSNibDeclarations.h: Ditto.
+	* Headers/AppKit/NSNibLoading.h: Ditto.
+	* Headers/AppKit/NSOpenGL.h: Ditto.
+	* Headers/AppKit/NSOpenGLView.h: Ditto.
+	* Headers/AppKit/NSOpenPanel.h: Ditto.
+	* Headers/AppKit/NSOutlineView.h: Ditto.
+	* Headers/AppKit/NSPageLayout.h: Ditto.
+	* Headers/AppKit/NSPanel.h: Ditto.
+	* Headers/AppKit/NSParagraphStyle.h: Ditto.
+	* Headers/AppKit/NSPasteboard.h: Ditto.
+	* Headers/AppKit/NSPopUpButton.h: Ditto.
+	* Headers/AppKit/NSPopUpButtonCell.h: Ditto.
+	* Headers/AppKit/NSPrintInfo.h: Ditto.
+	* Headers/AppKit/NSPrintOperation.h: Ditto.
+	* Headers/AppKit/NSPrintPanel.h: Ditto.
+	* Headers/AppKit/NSPrinter.h: Ditto.
+	* Headers/AppKit/NSProgressIndicator.h: Ditto.
+	* Headers/AppKit/NSResponder.h: Ditto.
+	* Headers/AppKit/NSRulerMarker.h: Ditto.
+	* Headers/AppKit/NSRulerView.h: Ditto.
+	* Headers/AppKit/NSSavePanel.h: Ditto.
+	* Headers/AppKit/NSScreen.h: Ditto.
+	* Headers/AppKit/NSScrollView.h: Ditto.
+	* Headers/AppKit/NSScroller.h: Ditto.
+	* Headers/AppKit/NSSecureTextField.h: Ditto.
+	* Headers/AppKit/NSSelection.h: Ditto.
+	* Headers/AppKit/NSSlider.h: Ditto.
+	* Headers/AppKit/NSSliderCell.h: Ditto.
+	* Headers/AppKit/NSSound.h: Ditto.
+	* Headers/AppKit/NSSpellChecker.h: Ditto.
+	* Headers/AppKit/NSSpellProtocol.h: Ditto.
+	* Headers/AppKit/NSSpellServer.h: Ditto.
+	* Headers/AppKit/NSSplitView.h: Ditto.
+	* Headers/AppKit/NSStepper.h: Ditto.
+	* Headers/AppKit/NSStepperCell.h: Ditto.
+	* Headers/AppKit/NSStringDrawing.h: Ditto.
+	* Headers/AppKit/NSTabView.h: Ditto.
+	* Headers/AppKit/NSTabViewItem.h: Ditto.
+	* Headers/AppKit/NSTableColumn.h: Ditto.
+	* Headers/AppKit/NSTable* HeaderCell.h: Ditto.
+	* Headers/AppKit/NSTable* HeaderView.h: Ditto.
+	* Headers/AppKit/NSTableView.h: Ditto.
+	* Headers/AppKit/NSText.h: Ditto.
+	* Headers/AppKit/NSTextAttachment.h: Ditto.
+	* Headers/AppKit/NSTextContainer.h: Ditto.
+	* Headers/AppKit/NSTextField.h: Ditto.
+	* Headers/AppKit/NSTextFieldCell.h: Ditto.
+	* Headers/AppKit/NSTextStorage.h: Ditto.
+	* Headers/AppKit/NSTextView.h: Ditto.
+	* Headers/AppKit/NSToolbar.h: Ditto.
+	* Headers/AppKit/NSToolbarItem.h: Ditto.
+	* Headers/AppKit/NSUserInterfaceValidation.h: Ditto.
+	* Headers/AppKit/NSView.h: Ditto.
+	* Headers/AppKit/NSWindow.h: Ditto.
+	* Headers/AppKit/NSWindowController.h: Ditto.
+	* Headers/AppKit/NSWorkspace.h: Ditto.
+	* Headers/AppKit/PSOperators.h: Ditto.
+
+	* configure.ac: Update to new header structure.
+	* configure: Regenerated.
+	* GNUmakefile.postamble: Remove handling of header-links and
+	update to new header structure.
+
+	* Source/GNUmakefile: Update to new header structure.
+	Install gnustep specific headers in GNUstepGUI by splitting
+	libgnustep-gui_HEADER_FILES into APPKIT_HEADERS and GUI_HEADERS.
+	Include CompatibilityHeaders.make makefile fragement.
+
+	* Source/GNUmakefile.preamble: Update to new header structure.
+	* Source/CompatibilityHeaders.make: New file which installs dummy
+	headers in the place of the old headers, warning about obsoleting
+	the old location and includeing the header from its new location.
+	
+	* Source/GNUmakefile.postamble: Install AppKit Headers manually.
+	* Source/*.[hm]: Update includes for new header structure.
+	* Source/GSGuiPrivate.h: Moved here from Headers/gnustep/gui.
+	* Source/GSFusedSilica.h: Ditto.
+	* Source/nsimage-tiff.h: Ditto.
+
+	* Tools/GNUmakefile.preamble: Update to new header structure.
+	* Tools/example.m: Remove include of config.h.
+	
+	* ColorPickers/GNUmakefile: Update to new header structure.
+	* ColorPickers/*.[hm]: Ditto.
+
+	* TextConverters/RTF/GNUmakefile.preamble: Update to new header
+	structure.
+	* TextConverters/RTF/*.[hm]: Ditto.
+
+	* Documentation/gnustep-gui.texi: Update to new header structure.
+	* Documentation/Gui/Gui.gsdoc: Remmove gnustep additions.
+	* Documentation/GuiAdditions/.cvsignore: New file.
+	* Documentation/GuiAdditions/GNUmakefile: Ditto.
+	* Documentation/GuiAdditions/GuiAdditions.gsdoc: Ditto.
+
+	* Model/GNUmakefile: Update to new header structure.
+	* GNUmakefile.postamble: Ditto.
+	* Model/*.[hm]: Ditto.
+
+	* Resources/GNUmakefile: Update to new header structure.
+
+	* Source/DocMakefile: Update to new header structure.
+	Added GuiAdditions to DOCUMENT_NAME. 
+	Split AUTOGSDOC_HEADERS into AUTOGSDOC_HEADERS_GUI and
+	AUTOGSDOC_HEADERS_GUIADD.
+	
+	
 2003-07-31  Michael Hanni  <mhanni@yahoo.com>
 
         * Source/NSBrowserCell.m (drawInteriorWithFrame:inView:): Remove

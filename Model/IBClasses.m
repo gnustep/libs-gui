@@ -29,7 +29,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 #endif
-#include <gnustep/gui/GMArchiver.h>
+#include <GNUstepGUI/GMArchiver.h>
 
 #ifdef __APPLE__
 #import <AppKit/NSNibConnector.h>
@@ -40,7 +40,7 @@
 #include "IBClasses.h"
 #include "Translator.h"
 #include "IMConnectors.h"
-#include "gnustep/gui/IMCustomObject.h"
+#include "GNUstepGUI/IMCustomObject.h"
 
 //#define DEBUG
 

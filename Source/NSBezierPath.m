@@ -33,7 +33,7 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/PSOperators.h"
-#include "AppKit/GSFontInfo.h"
+#include "GNUstepGUI/GSFontInfo.h"
 
 #include <math.h>
 
@@ -1434,7 +1434,7 @@ typedef struct _PathElement
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <gnustep/base/GSIArray.h>
+#include <GNUstepBase/GSIArray.h>
 
 @interface GSBezierPath : NSBezierPath
 {

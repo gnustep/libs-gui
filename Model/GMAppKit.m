@@ -23,7 +23,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include "gnustep/gui/GMAppKit.h"
+#include "GNUstepGUI/GMAppKit.h"
 
 #ifndef AUTORELEASE
 #define AUTORELEASE(object)	[object autorelease]

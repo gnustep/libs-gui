@@ -43,8 +43,8 @@ endif
 
 libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m \
 	GMArchiver.m
-libgmodel_HEADER_FILES_DIR = ../Headers/gnustep/gui
-libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui
+libgmodel_HEADER_FILES_DIR = ../Headers/Additions/GNUstepGUI
+libgmodel_HEADER_FILES_INSTALL_DIR = /GNUstepGUI
 libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h \
 	GMAppKit.h GMArchiver.h
 
@@ -71,7 +71,7 @@ endif
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS = -I../Headers
+ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions -I../Headers
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker

@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
@@ -38,8 +38,8 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSFontManager.h"
 #include "AppKit/NSView.h"
-#include "gnustep/gui/GSFontInfo.h"
-#include "gnustep/gui/GSFusedSilicaContext.h"
+#include "GNUstepGUI/GSFontInfo.h"
+#include "GSFusedSilicaContext.h"
 
 
 @interface NSFont (Private)

@@ -28,7 +28,7 @@
 
 // See GSHbox.m for comments
 // This file is derived from GSVbox.m
-#include "gnustep/gui/GSVbox.h"
+#include "GNUstepGUI/GSVbox.h"
 #include "AppKit/NSBox.h"
 
 @implementation GSVbox: GSTable

@@ -43,7 +43,7 @@
 // For the colour name spaces
 #include "AppKit/NSGraphics.h"
 
-#include "gnustep/gui/GSTextConverter.h"
+#include "GNUstepGUI/GSTextConverter.h"
 
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;

@@ -28,7 +28,7 @@
 #include <Foundation/NSString.h>
 
 #include <Foundation/NSDebug.h>
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 #include "AppKit/NSOpenGL.h"
 
 

@@ -517,7 +517,7 @@
 </chapter>
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSWorkspace.h"
@@ -544,8 +544,8 @@
 #include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
-#include "gnustep/gui/GSServicesManager.h"
-#include "gnustep/gui/GSPasteboardServer.h"
+#include "GNUstepGUI/GSServicesManager.h"
+#include "GNUstepGUI/GSPasteboardServer.h"
 
 static NSString	*contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";

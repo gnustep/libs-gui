@@ -34,7 +34,7 @@
 */
 
 #include <math.h>                  // (float)rintf(float x)
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>

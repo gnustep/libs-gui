@@ -29,7 +29,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <stdio.h>
 
 #include <Foundation/NSArray.h>
@@ -67,10 +67,10 @@
 #include "AppKit/NSNibLoading.h"
 #include "AppKit/NSPageLayout.h"
 
-#include "gnustep/gui/GSDisplayServer.h"
-#include "gnustep/gui/GSServicesManager.h"
-#include "gnustep/gui/GSGuiPrivate.h"
-#include "gnustep/gui/GSInfoPanel.h"
+#include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSServicesManager.h"
+#include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSInfoPanel.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;

@@ -30,7 +30,7 @@
     using the rect information.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSUserDefaults.h>

@@ -184,32 +184,13 @@ ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
 endif
 
-libgnustep-gui_HEADER_FILES_DIR = ../Headers/AppKit
-libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
+libgnustep-gui_HEADER_FILES_DIR = ../Headers/Additions/GNUstepGUI
+libgnustep-gui_HEADER_FILES_INSTALL_DIR = /GNUstepGUI
 
-libgnustep-gui_HEADER_FILES = \
+APPKIT_HEADERS = \
 AppKit.h \
-GSVersion.h \
 AppKitDefines.h \
 AppKitExceptions.h \
-DPSOperators.h \
-GMAppKit.h \
-GMArchiver.h \
-GSFontInfo.h \
-GSMemoryPanel.h \
-GSInfoPanel.h \
-GSMethodTable.h \
-GSPasteboardServer.h \
-GSServicesManager.h \
-GSTextConverter.h \
-GSTrackingRect.h \
-GSHelpManagerPanel.h \
-GSNibTemplates.h \
-GSDisplayServer.h \
-GSFusedSilica.h \
-GSTable.h \
-GSHbox.h \
-GSVbox.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSApplication.h \
@@ -315,9 +296,6 @@ NSView.h \
 NSWindow.h \
 NSWindowController.h \
 NSWorkspace.h \
-IMConnectors.h \
-IMCustomObject.h \
-IMLoading.h \
 NSAttributedString.h \
 NSColorPicking.h \
 NSDocumentFrameworkPrivate.h \
@@ -328,11 +306,40 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
-PSOperators.h \
+DPSOperators.h \
+PSOperators.h 
+
+GUI_HEADERS = \
+GSVersion.h \
+GMAppKit.h \
+GMArchiver.h \
+GSFontInfo.h \
+GSMemoryPanel.h \
+GSInfoPanel.h \
+GSMethodTable.h \
+GSPasteboardServer.h \
+GSServicesManager.h \
+GSTextConverter.h \
+GSTrackingRect.h \
+GSHelpManagerPanel.h \
+GSNibTemplates.h \
+GSDisplayServer.h \
+GSFusedSilica.h \
+GSTable.h \
+GSHbox.h \
+GSVbox.h \
+IMConnectors.h \
+IMCustomObject.h \
+IMLoading.h \
 GSLayoutManager.h \
 GSLayoutManager_internal.h \
 GSTypesetter.h \
 GSHorizontalTypesetter.h
+
+libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
+
+HEADERS_INSTALL = ${APPKIT_HEADERS} \
+                  ${GUI_HEADERS}
 
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def
@@ -344,3 +351,5 @@ include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/library.make
 
 include GNUmakefile.postamble
+
+include CompatibilityHeaders.make

@@ -35,8 +35,8 @@
 /* just for NSAttachmentCharacter */
 #include "AppKit/NSTextAttachment.h"
 
-#include "gnustep/gui/GSTypesetter.h"
-#include "gnustep/gui/GSLayoutManager_internal.h"
+#include "GNUstepGUI/GSTypesetter.h"
+#include "GNUstepGUI/GSLayoutManager_internal.h"
 
 
 

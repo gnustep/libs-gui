@@ -26,7 +26,7 @@
 
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
@@ -41,7 +41,7 @@
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSSavePanel.h"
 #include "AppKit/NSView.h"
-#include "AppKit/GSGuiPrivate.h"
+#include "GSGuiPrivate.h"
 
 static NSPrintPanel *shared_instance;
 

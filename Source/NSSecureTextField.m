@@ -28,7 +28,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSException.h>
 #include "AppKit/NSSecureTextField.h"
 #include "AppKit/NSImage.h"

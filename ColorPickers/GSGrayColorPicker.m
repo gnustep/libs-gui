@@ -26,7 +26,7 @@
 
 #include "GSGrayColorPicker.h"
 
-#include <AppKit/GSHbox.h>
+#include <GNUstepGUI/GSHbox.h>
 
 @implementation GSGrayColorPicker
 

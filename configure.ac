@@ -34,7 +34,7 @@ fi
 #--------------------------------------------------------------------
 AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
 
-AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
+AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
 
 #--------------------------------------------------------------------
 # Determine the host, build, and target systems
@@ -285,7 +285,7 @@ static double rint(double a)     \
 #endif
 ])
 
-AC_CONFIG_FILES([config.make gui.make Headers/gnustep/gui/GSVersion.h])
+AC_CONFIG_FILES([config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h])
 AC_OUTPUT
 
 

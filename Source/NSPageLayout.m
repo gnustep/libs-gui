@@ -42,7 +42,7 @@
 #include "AppKit/NSPrintInfo.h"
 #include "AppKit/NSPageLayout.h"
 #include "AppKit/NSPrinter.h"
-#include "gnustep/gui/GSGuiPrivate.h"
+#include "GSGuiPrivate.h"
 
 static NSPageLayout *shared_instance;
 

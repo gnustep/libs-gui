@@ -37,7 +37,7 @@
 #include "AppKit/NSHelpManager.h"
 #include "AppKit/NSGraphics.h"
 
-#include "gnustep/gui/GSHelpManagerPanel.h"
+#include "GNUstepGUI/GSHelpManagerPanel.h"
 
 @implementation NSBundle (NSHelpManager)
 

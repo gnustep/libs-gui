@@ -1,0 +1,93 @@
+/* 
+   NSOpenPanel.h
+
+   Standard panel for opening files
+
+   Copyright (C) 1996 Free Software Foundation, Inc.
+
+   Author:  Scott Christley <scottc@net-community.com>
+   Date: 1996
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+   Source by Daniel Bðhringer integrated into Scott Christley's preliminary
+   implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
+
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: 1999
+
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/ 
+
+#ifndef _GNUstep_H_NSOpenPanel
+#define _GNUstep_H_NSOpenPanel
+
+#include <AppKit/NSSavePanel.h>
+
+@class NSString;
+@class NSArray;
+
+@interface NSOpenPanel : NSSavePanel <NSCoding>
+{
+  NSArray *_fileTypes;
+  BOOL _canChooseDirectories;
+  BOOL _canChooseFiles;
+}
+// Accessing the NSOpenPanel shared instance
++ (NSOpenPanel *) openPanel;
+
+// Running an NSOpenPanel 
+- (int) runModalForTypes: (NSArray *)fileTypes;
+- (int) runModalForDirectory: (NSString *)path
+                        file: (NSString *)name
+                       types: (NSArray *)fileTypes;
+
+#ifndef	STRICT_OPENSTEP
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)name
+		       types: (NSArray *)fileTypes
+	    relativeToWindow: (NSWindow*)window;
+- (void) beginSheetForDirectory: (NSString *)path
+			   file: (NSString *)name
+			  types: (NSArray *)fileTypes
+		 modalForWindow: (NSWindow *)docWindow
+		  modalDelegate: (id)delegate
+		 didEndSelector: (SEL)didEndSelector
+		    contextInfo: (void *)contextInfo;
+#endif
+
+- (NSArray *) filenames;
+
+#ifndef	STRICT_OPENSTEP
+- (NSArray *) URLs; 
+#endif
+
+// Filtering Files 
+- (BOOL) canChooseDirectories;
+- (BOOL) canChooseFiles;
+- (void) setCanChooseDirectories: (BOOL)flag;
+- (void) setCanChooseFiles: (BOOL)flag;
+#ifndef	STRICT_OPENSTEP
+- (void) setResolvesAliases: (BOOL)flag; 
+- (BOOL) resolvesAliases; 
+#endif
+
+- (BOOL) allowsMultipleSelection;
+- (void) setAllowsMultipleSelection: (BOOL)flag;
+@end
+
+#endif // _GNUstep_H_NSOpenPanel

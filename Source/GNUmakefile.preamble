@@ -61,7 +61,7 @@ ADDITIONAL_OBJCFLAGS = -Wall
 # ADDITIONAL_CFLAGS =
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I../Headers
+ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers
 
 # Additional LDFLAGS to pass to the linker
 # ADDITIONAL_LDFLAGS = 
@@ -74,7 +74,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers
 #
 
 # Additional directories to be created during installation
-# ADDITIONAL_INSTALL_DIRS = 
+ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/AppKit
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker

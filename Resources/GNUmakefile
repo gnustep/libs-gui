@@ -52,4 +52,4 @@ strings_HEADER_FILES =
 after-strings::
 	make_strings -L "$(gui-resources_LANGUAGES)" \
 	  $(addprefix ../Source/,$(strings_OBJC_FILES)) \
-	  $(addprefix ../Headers/gnustep/gui/,$(strings_HEADER_FILES))
+	  $(addprefix ../Headers/Additions/GNUstepGUI/,$(strings_HEADER_FILES))

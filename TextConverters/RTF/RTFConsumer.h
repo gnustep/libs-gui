@@ -26,7 +26,7 @@
 #ifndef _rtfConsumer_h_INCLUDE
 #define _rtfConsumer_h_INCLUDE
 
-#include <AppKit/GSTextConverter.h>
+#include <GNUstepGUI/GSTextConverter.h>
 
 @class NSMutableDictionary;
 @class NSMutableArray;

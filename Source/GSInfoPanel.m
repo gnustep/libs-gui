@@ -30,7 +30,7 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSTextField.h"
-#include "gnustep/gui/GSInfoPanel.h"
+#include "GNUstepGUI/GSInfoPanel.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>

@@ -23,9 +23,9 @@
 #
 
 before-libgmodel-all:: \
-		$(addprefix ../Headers/gnustep/gui/, $(libgmodel_HEADER_FILES))
+		$(addprefix ../Headers/Additions/GNUstepGUI/, $(libgmodel_HEADER_FILES))
 
-../Headers/gnustep/gui/%.h: %.h
+../Headers/Additions/GNUstepGUI/%.h: %.h
 	cp $^ $@
 
 # Additional dependencies

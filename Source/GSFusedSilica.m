@@ -24,7 +24,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
    */
 
-#include "gnustep/gui/GSFusedSilicaContext.h"
+#include "GSFusedSilicaContext.h"
 #include "AppKit/NSAffineTransform.h"
 #include <Foundation/NSDictionary.h>
 

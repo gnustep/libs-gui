@@ -52,7 +52,7 @@
 #include "AppKit/NSStringDrawing.h"
 #include "AppKit/NSParagraphStyle.h"
 
-#include "gnustep/gui/GSSimpleLayoutManager.h"
+#include "GNUstepGUI/GSSimpleLayoutManager.h"
 
 #define HUGE 1e7
 

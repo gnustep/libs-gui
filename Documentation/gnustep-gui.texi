@@ -327,7 +327,7 @@ The feature is experimental in all senses: it could be unstable.
 Inherits from: @code{GSTable: NSView: NSResponder: NSObject}@*
 Conforms to:  @code{NSCoding} (from @code{NSResponder})@*
 @ @ @ @ @ @ @ @code{NSObject} (from @code{NSObject})@*
-Declared in: @file{AppKit/GSHbox.h}
+Declared in: @file{GNUstepGUI/GSHbox.h}
 @end display
 
 @code{GSHbox} is a GNUstep GUI extension to the OpenStep specification. 
@@ -645,7 +645,7 @@ Return the number of views (separators included) in the GSHbox.
 @b{Inherits from:} @code{NSView: NSResponder: NSObject}@*
 @b{Conforms to:}  @code{NSCoding} (from @code{NSResponder}),
 @code{NSObject} (from @code{NSObject})@*
-@b{Declared in:} @file{AppKit/GSTable.h}
+@b{Declared in:} @file{GNUstepGUI/GSTable.h}
 @end display
 
 @code{GSTable} is a GNUstep GUI extension to the OpenStep specification. 
@@ -1008,7 +1008,7 @@ Return the number of columns in the @code{GSTable}.
 @b{Inherits from:} @code{GSTable: NSView: NSResponder: NSObject}@*
 @b{Conforms to:}  @code{NSCoding} (from @code{NSResponder}), 
 @code{NSObject} (from @code{NSObject})@*
-@b{Declared in:} @file{AppKit/GSVbox.h}
+@b{Declared in:} @file{GNUstepGUI/GSVbox.h}
 @end display
 
 @code{GSVbox} is a GNUstep GUI extension to the OpenStep specification. 

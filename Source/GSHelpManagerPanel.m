@@ -32,7 +32,7 @@
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
 
-#include "gnustep/gui/GSHelpManagerPanel.h"
+#include "GNUstepGUI/GSHelpManagerPanel.h"
 
 @implementation GSHelpManagerPanel
 

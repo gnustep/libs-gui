@@ -62,7 +62,7 @@
 #define GSI_MAP_VTYPES	GSUNION_INT
 #define	GSI_MAP_NOCLEAN	1
 
-#include <gnustep/base/GSIMap.h>
+#include <GNUstepBase/GSIMap.h>
 
 static NSDictionary	*blank;
 static NSLock		*attrLock = nil;

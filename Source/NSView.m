@@ -31,7 +31,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <math.h>
 #include <float.h>
 
@@ -65,9 +65,9 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/PSOperators.h"
-#include "gnustep/gui/GSDisplayServer.h"
-#include "gnustep/gui/GSTrackingRect.h"
-#include "gnustep/gui/GSVersion.h"
+#include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSTrackingRect.h"
+#include "GNUstepGUI/GSVersion.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -79,7 +79,7 @@
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <gnustep/base/GSIArray.h>
+#include <GNUstepBase/GSIArray.h>
 
 #define	nKV(O)	((GSIArray)(O->_nextKeyView))
 #define	pKV(O)	((GSIArray)(O->_previousKeyView))

@@ -27,7 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSClassDescription.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
@@ -55,8 +55,8 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
-#include "gnustep/gui/GSNibTemplates.h"
-#include "AppKit/IMLoading.h"
+#include "GNUstepGUI/GSNibTemplates.h"
+#include "GNUstepGUI/IMLoading.h"
 
 //
 // For the template classes since they need to know about any and all subclasses

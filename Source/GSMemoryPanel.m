@@ -25,9 +25,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/GSMemoryPanel.h"
-#include "gnustep/gui/GSHbox.h"
-#include "gnustep/gui/GSVbox.h"
+#include "GNUstepGUI/GSMemoryPanel.h"
+#include "GNUstepGUI/GSHbox.h"
+#include "GNUstepGUI/GSVbox.h"
 
 enum {
   OrderByClassName,

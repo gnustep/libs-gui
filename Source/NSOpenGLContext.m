@@ -27,7 +27,7 @@
 
 #include <Foundation/NSDebug.h>
 #include "AppKit/NSOpenGL.h"
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 @implementation NSOpenGLContext
 + _classContext

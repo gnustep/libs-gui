@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSString.h>
@@ -38,7 +38,7 @@
 #include "AppKit/NSFontPanel.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItem.h"
-#include "gnustep/gui/GSFontInfo.h"
+#include "GNUstepGUI/GSFontInfo.h"
 
 
 /*

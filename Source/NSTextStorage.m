@@ -28,7 +28,7 @@
 #include <Foundation/NSDebug.h>
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
-#include "gnustep/gui/GSLayoutManager.h"
+#include "GNUstepGUI/GSLayoutManager.h"
 
 @implementation NSTextStorage
 

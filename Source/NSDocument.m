@@ -37,7 +37,7 @@
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSDocumentFrameworkPrivate.h"
 
-#include "gnustep/gui/GSGuiPrivate.h"
+#include "GSGuiPrivate.h"
 
 @implementation NSDocument
 

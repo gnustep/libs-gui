@@ -30,7 +30,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
@@ -68,8 +68,8 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSCachedImageRep.h"
 #include "AppKit/NSToolbar.h"
-#include "gnustep/gui/GSTrackingRect.h"
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSTrackingRect.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 

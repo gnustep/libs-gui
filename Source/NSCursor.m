@@ -36,7 +36,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSBitmapImageRep.h"
 
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;

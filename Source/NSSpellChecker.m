@@ -29,7 +29,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSDictionary.h>
@@ -50,8 +50,8 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSPanel.h"
-#include "gnustep/gui/GSGuiPrivate.h"
-#include "gnustep/gui/GSServicesManager.h"
+#include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSServicesManager.h"
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);

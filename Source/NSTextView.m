@@ -45,7 +45,7 @@
 
 #include "AppKit/NSTextView.h"
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>

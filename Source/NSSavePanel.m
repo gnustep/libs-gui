@@ -52,7 +52,7 @@
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSWorkspace.h"
 
-#include "gnustep/gui/GSGuiPrivate.h"
+#include "GSGuiPrivate.h"
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4

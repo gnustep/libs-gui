@@ -36,7 +36,7 @@
 #
 
 # Things to do before compiling
-before-all:: header-links
+# before-all::
 
 # Things to do after compiling
 # after-all::
@@ -77,7 +77,7 @@ after-clean::
 # before-distclean::
 
 # Things to do after distcleaning
-after-distclean:: remove-header-links
+after-distclean::
 	rm -f config.status config.log config.cache TAGS config.mak gui.make
 
 gui.make: gui.make.in
@@ -92,28 +92,6 @@ config.make: config.make.in
 # Things to do after checking
 # after-check::
 
-.PHONY: header-links remove-header-links
+.PHONY:
 
-ifeq ($(GNUSTEP_TARGET_OS), mingw32)
-header-links: $(HEADER_LINK_DEPENDS)
-	-rm -rf Headers/AppKit
-	-rm -rf Headers/DPSClient
-	-mkdir Headers/AppKit
-	-mkdir Headers/DPSClient
-	cp -f Headers/gnustep/gui/*.h Headers/AppKit
-	cp -f Headers/gnustep/gui/*.h Headers/DPSClient
-remove-header-links:
-	-rm -rf Headers/AppKit
-	-rm -rf Headers/DPSClient
-
-else
-header-links: $(HEADER_LINK_DEPENDS)
-	-rm -rf Headers/AppKit
-	-rm -rf Headers/DPSClient
-	$(LN_S) gnustep/gui Headers/AppKit
-	$(LN_S) gnustep/gui Headers/DPSClient
-remove-header-links:
-	-rm -f Headers/AppKit
-	-rm -f Headers/DPSClient
-endif
 

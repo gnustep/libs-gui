@@ -26,8 +26,8 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
-#include <AppKit/GSVbox.h>
-#include <AppKit/GSHbox.h>
+#include <GNUstepGUI/GSVbox.h>
+#include <GNUstepGUI/GSHbox.h>
 #include "GSRGBColorPicker.h"
 #include "GSHSBColorPicker.h"
 #include "GSCMYKColorPicker.h"
@@ -274,8 +274,8 @@
 #include "GSStandardColorPicker.h"
 
 
-#include <AppKit/GSVbox.h>
-#include <AppKit/GSHbox.h>
+#include <GNUstepGUI/GSVbox.h>
+#include <GNUstepGUI/GSHbox.h>
 
 
 #define KNOB_WIDTH 6

@@ -34,7 +34,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSWindow.h"
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 #include "GSSlideView.h"
 

@@ -37,26 +37,36 @@
 
 # Things to do before compiling
 ifeq ($(doc),yes)
-before-all:: 
+before-all:: $(GNUSTEP_TARGET_DIR)/config.h
 	cp ../Documentation/Gui/Gui.gsdoc .
 
 # Things to do after compiling
 after-all::
 	$(RM) Gui.gsdoc
 	if test -d Gui; then rmdir Gui; fi;
+else
+before-all:: $(GNUSTEP_TARGET_DIR)/config.h
 endif
 
 # Things to do before installing
 # before-install::
 
 # Things to do after installing
-# after-install::
+after-install::
+	for file in $(APPKIT_HEADERS); do \
+	  $(INSTALL_DATA) ../Headers/AppKit/$$file \
+	  $(GNUSTEP_HEADERS)/AppKit/$$file ; \
+	done
 
+#
 # Things to do before uninstalling
 # before-uninstall::
 
 # Things to do after uninstalling
-# after-uninstall::
+after-uninstall::
+	for file in $(APPKIT_HEADERS); do \
+	  rm -f $(GNUSTEP_HEADERS)/AppKit/$$file ; \
+	done
 
 # Things to do before cleaning
 # before-clean::
@@ -69,7 +79,9 @@ endif
 
 # Things to do after distcleaning
 after-distclean::
-	rm -f GNUmakefile.local
+	rm -f GNUmakefile.local 
+	rm -rf $(GNUSTEP_TARGET_DIR)/config.h
+	rm -rf ../Headers/Additions/GNUstepGUI/config.h
 
 # Things to do before checking
 # before-check::
@@ -79,6 +91,21 @@ after-distclean::
 
 #
 # GNUstep GUI Library specific targets
+
+#
+# The config.h file is specific to a target
+#
+$(GNUSTEP_TARGET_DIR)/config.h: ../config.status
+	$(MKDIRS) $(GNUSTEP_TARGET_DIR)
+	-mv ../Headers/Additions/GNUstepGUI/config.h $(GNUSTEP_TARGET_DIR)
+	-touch $(GNUSTEP_TARGET_DIR)/config.h
+
+#
+#       Files that need a rebuild if config.h is changed.
+#
+
+$(GNUSTEP_OBJ_DIR)/*.o \
+	: $(GNUSTEP_TARGET_DIR)/config.h
 
 #
 # Make list of class names for DLL exports. I'm not sure how to make this

@@ -31,7 +31,7 @@
 #ifndef _GNUstep_H_RTFDProducer
 #define _GNUstep_H_RTFDProducer
 
-#include <AppKit/GSTextConverter.h>
+#include <GNUstepGUI/GSTextConverter.h>
 //#include "GSTextConverter.h"
 
 @class NSAttributedString;

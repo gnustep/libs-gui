@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSFileManager.h>
@@ -41,7 +41,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/IMLoading.h"
+#include "GNUstepGUI/IMLoading.h"
 
 #define MAX_ALPHA_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;

@@ -33,7 +33,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 #include "GSSlideView.h"
 #include <math.h>
 

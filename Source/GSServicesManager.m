@@ -24,7 +24,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
@@ -56,7 +56,7 @@
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSDocumentController.h"
 
-#include "gnustep/gui/GSServicesManager.h"
+#include "GNUstepGUI/GSServicesManager.h"
 
 static GSServicesManager	*manager = nil;
 

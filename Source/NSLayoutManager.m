@@ -105,7 +105,7 @@ first. Remaining cases, highest priority first:
 #include <math.h>
 
 #include "AppKit/NSLayoutManager.h"
-#include "gnustep/gui/GSLayoutManager_internal.h"
+#include "GNUstepGUI/GSLayoutManager_internal.h"
 
 #include <Foundation/NSException.h>
 #include "AppKit/NSColor.h"

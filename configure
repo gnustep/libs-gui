@@ -1233,7 +1233,7 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"
 ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
 
-ac_config_headers="$ac_config_headers Headers/gnustep/gui/config.h"
+ac_config_headers="$ac_config_headers Headers/Additions/GNUstepGUI/config.h"
 
 
 #--------------------------------------------------------------------
@@ -3434,7 +3434,7 @@ echo "${ECHO_T}$GNUSTEP_GUI_VERSION" >&6
 
 
 
-ac_config_files="$ac_config_files config.make gui.make Headers/gnustep/gui/GSVersion.h"
+ac_config_files="$ac_config_files config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3908,8 +3908,8 @@ do
   # Handling of arguments.
   "config.make" ) CONFIG_FILES="$CONFIG_FILES config.make" ;;
   "gui.make" ) CONFIG_FILES="$CONFIG_FILES gui.make" ;;
-  "Headers/gnustep/gui/GSVersion.h" ) CONFIG_FILES="$CONFIG_FILES Headers/gnustep/gui/GSVersion.h" ;;
-  "Headers/gnustep/gui/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS Headers/gnustep/gui/config.h" ;;
+  "Headers/Additions/GNUstepGUI/GSVersion.h" ) CONFIG_FILES="$CONFIG_FILES Headers/Additions/GNUstepGUI/GSVersion.h" ;;
+  "Headers/Additions/GNUstepGUI/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS Headers/Additions/GNUstepGUI/config.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

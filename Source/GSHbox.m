@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/GSHbox.h"
+#include "GNUstepGUI/GSHbox.h"
 // For the separator
 #include "AppKit/NSBox.h"
 

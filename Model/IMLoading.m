@@ -32,9 +32,9 @@
 #include <Foundation/NSPathUtilities.h>
 #endif
 
-#include "gnustep/gui/GMArchiver.h"
-#include "gnustep/gui/IMLoading.h"
-#include "gnustep/gui/IMCustomObject.h"
+#include "GNUstepGUI/GMArchiver.h"
+#include "GNUstepGUI/IMLoading.h"
+#include "GNUstepGUI/IMCustomObject.h"
 
 /* For awakeFromNib */
 #include <AppKit/NSNibLoading.h>

@@ -37,7 +37,7 @@ BUNDLE_NAME = StandardPicker NamedPicker WheelPicker
 
 BUNDLE_INSTALL_DIR = $(GNUSTEP_LIBRARY)/ColorPickers
 
-ADDITIONAL_INCLUDE_DIRS += -I../Headers -I../Headers/gnustep
+ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers
 
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Models/$(GNUSTEP_OBJ_DIR)
 

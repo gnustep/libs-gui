@@ -31,8 +31,8 @@
  */
 
 #include <AppKit/AppKit.h>
-#include "gnustep/gui/GMArchiver.h"
-#include "gnustep/gui/IMLoading.h"
+#include "GNUstepGUI/GMArchiver.h"
+#include "GNUstepGUI/IMLoading.h"
 #include "IBClasses.h"
 #include "Translator.h"
 

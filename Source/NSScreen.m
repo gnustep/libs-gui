@@ -32,7 +32,7 @@
 #include "AppKit/NSInterfaceStyle.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/AppKitExceptions.h"
-#include "gnustep/gui/GSDisplayServer.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 @interface NSScreen (Private)
 - (id) _initWithScreenNumber: (int)screen;

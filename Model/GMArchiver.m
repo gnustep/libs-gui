@@ -47,7 +47,7 @@
 #define RETAIN(object)          [object retain]
 #endif
 
-#include <gnustep/gui/GMArchiver.h>
+#include <GNUstepGUI/GMArchiver.h>
 
 @interface GMClassInfo : NSObject
 {

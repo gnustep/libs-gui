@@ -32,7 +32,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
-#include <AppKit/GSHbox.h>
+#include <GNUstepGUI/GSHbox.h>
 
 
 @interface GSColorWheel : NSView

@@ -26,12 +26,12 @@
 #include <string.h>
 
 #ifndef NeXT_Foundation_LIBRARY
-#include <gnustep/base/GSObjCRuntime.h>
+#include <GNUstepBase/GSObjCRuntime.h>
 #endif
 #include <Foundation/NSObjCRuntime.h>
 #include <AppKit/NSActionCell.h>
-#include <gnustep/gui/GMArchiver.h>
-#include "gnustep/gui/IMCustomObject.h"
+#include <GNUstepGUI/GMArchiver.h>
+#include "GNUstepGUI/IMCustomObject.h"
 #include "IMConnectors.h"
 
 @implementation IMConnector

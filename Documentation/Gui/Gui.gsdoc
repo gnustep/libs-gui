@@ -139,15 +139,6 @@
         <item><uref url="NSWindowController.html">NSWindowController</uref></item>
         <item><uref url="NSWorkspace.html">NSWorkspace</uref></item>
       </list>
-      <p>
-        Documentation on non-OpenStep, non-MacOSX, and private classes
-      </p>
-      <list>
-        <item><uref url="GSDisplayServer.html">GSDisplayServer</uref></item>
-        <item><uref url="GSHbox.html">GSHbox</uref></item>
-        <item><uref url="GSTable.html">GSTable</uref></item>
-        <item><uref url="GSVbox.html">GSVbox</uref></item>
-      </list>
 
     </chapter>
   </body>

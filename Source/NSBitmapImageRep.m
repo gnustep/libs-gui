@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <stdlib.h>
 #include <math.h>
 #include <tiff.h>
@@ -40,7 +40,7 @@
 #include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/AppKitExceptions.h"
 
-#include "gnustep/gui/nsimage-tiff.h"
+#include "nsimage-tiff.h"
 
 /* Maximum number of planes */
 #define MAX_PLANES 5

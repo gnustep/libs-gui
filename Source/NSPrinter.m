@@ -35,7 +35,7 @@
  * (This is not required in the OpenStep standard, but could be useful).
  */
 
-#include "gnustep/gui/config.h"
+#include "config.h"
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
