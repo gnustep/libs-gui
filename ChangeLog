@@ -1,3 +1,11 @@
+2003-02-22  Benhur Stein <benhur@inf.ufsm.br>
+
+	* Source/NSView.m (-displayIfNeededInRectIgnoringOpacity:): Disable
+	and re-enable flushing here.
+	(-displayRectIgnoringOpacity:): And here.
+	* Source/NSWindow.m ([NSWindow -display]): Instead of here.
+	([NSWindow -update]): And here.
+
 2003-02-23 01:59  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,

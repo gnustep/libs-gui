@@ -1828,6 +1828,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSRect	neededRect;
       NSRect	redrawRect;
 
+      [_window disableFlushWindow];
       if (_coordinates_valid == NO)
 	{
 	  [self _rebuildCoordinates];
@@ -1919,7 +1920,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	{
 	  _rFlags.needs_display = NO;
 	}
-      [_window flushWindow];
+      [_window enableFlushWindow];
+      [_window flushWindowIfNeeded];
     }
 }
 
@@ -1952,6 +1954,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       return;
     }
+
+  [_window disableFlushWindow];
   if (_coordinates_valid == NO)
     {
       [self _rebuildCoordinates];
@@ -2045,7 +2049,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       _rFlags.needs_display = NO;
     }
-  [_window flushWindow];
+  [_window enableFlushWindow];
+  [_window flushWindowIfNeeded];
 }
 
 /**

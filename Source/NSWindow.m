@@ -1806,10 +1806,7 @@ static NSNotificationCenter *nc = nil;
    */
   [_firstResponder becomeFirstResponder];
 
-  [self disableFlushWindow];
   [_wv display];
-  [self enableFlushWindow];
-  [self flushWindowIfNeeded];
   [self discardCachedImage];
 }
 
@@ -1829,12 +1826,8 @@ static NSNotificationCenter *nc = nil;
    */
   if (_f.is_autodisplay && _rFlags.needs_display)
     {
-      [self disableFlushWindow];
       [self displayIfNeeded];
-      [self enableFlushWindow];
-      [self flushWindowIfNeeded];
     }
-  [GSCurrentContext() flushGraphics];
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
@@ -1842,7 +1835,6 @@ static NSNotificationCenter *nc = nil;
 {
   if (_disableFlushWindow == 0 && _f.needs_flush == YES)
     {
-      _f.needs_flush = NO;
       [self flushWindow];
     }
 }
