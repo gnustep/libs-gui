@@ -183,7 +183,7 @@ yCenterInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
   return MAX(NSMidY(outerRect) - innerSize.height/2.0, 0.0);
 }
 
-rtatic inline float
+static inline float
 yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 {
   if (flipped)
