@@ -1,3 +1,7 @@
+2001-11-15  Laurent Julliard <laurent@julliard-online.org>
+	
+	* Source/NSBrowser.m: NSBrowser encoder and decoder added
+
 2001-11-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFontManager.m
