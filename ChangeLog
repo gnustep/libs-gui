@@ -1,3 +1,9 @@
+Thu Apr 11 08:54:16 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSTable.m ([+new]): New method working around a bug in
+	OSX ... with this, except for #include fixups, the box code work
+	on OSX.  (Suggested by Helge Hess).
+
 2002-04-10  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/config.h.bot: New file implements RINT defs.
