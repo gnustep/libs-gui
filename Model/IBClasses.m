@@ -32,7 +32,7 @@
 #import "IBClasses.h"
 #import "Translator.h"
 #import "IMConnectors.h"
-#import "IMCustomObject.h"
+#import "AppKit/IMCustomObject.h"
 
 //#define DEBUG
 

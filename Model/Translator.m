@@ -33,7 +33,7 @@
 #import <Foundation/NSNotification.h>
 #import <AppKit/AppKit.h>
 #import <extensions/GMArchiver.h>
-#import "IMLoading.h"
+#import "AppKit/IMLoading.h"
 #import "IBClasses.h"
 #import "Translator.h"
 

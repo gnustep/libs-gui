@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-#import "IMLoading.h"
+#import "AppKit/IMLoading.h"
 
 @interface MyView : NSView
 @end

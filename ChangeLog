@@ -1,3 +1,9 @@
+Wed May 13 15:59:32 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Model/IBClasses.m: Fix header includes.
+	* Translator.m: Likewise.
+	* test.m: Likewise.
+
 Mon Apr  6 16:38:40 1998  Scott Christley  <scottc@net-community.com>
 
 	* Documentation/status.tmpl.texi: Update.
