@@ -1,9 +1,9 @@
 #
 #  Resources makefile for gnustep-gui
-#  Copyright (C) 2001 Free Software Foundation, Inc.
+#  Copyright (C) 2001, 2002 Free Software Foundation, Inc.
 #
 #  Written by: Nicola Pero <n.pero@mi.flashnet.it>
-#  Date: December 2001
+#  Date: December 2001, September 2002
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -26,36 +26,28 @@ GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
-gnustep_gui_resources = $(GNUSTEP_RESOURCES)/gnustep-gui/Resources
+RESOURCE_SET_NAME = gui-resources
+gui-resources_RESOURCE_FILES_INSTALL_DIR = \
+  Libraries/Resources/gnustep-gui/Resources
+gui-resources_LANGUAGES = English Italian
+gui-resources_LOCALIZED_RESOURCE_FILES = Localizable.strings
 
-LANGUAGES = English Italian
+include $(GNUSTEP_MAKEFILES)/resource-set.make
 
-LOCALIZED_RESOURCE_FILES = Localizable.strings
+# The following code is so that by typing 'make strings', all the
+# Localizable.strings files are updated for the new localizable
+# strings in the source code.  This stuff will definitely be supported
+# directly by gnustep-make itself.
 
-include $(GNUSTEP_MAKEFILES)/rules.make
+# The list of OBJC_FILES containing localizable strings
+strings_OBJC_FILES = \
+ NSApplication.m \
+ NSDocument.m
 
-$(gnustep_gui_resources):
-	$(MKDIRS) $@
+# The list of HEADER_FILES containing localizable strings
+strings_HEADER_FILES = 
 
-before-install:: $(gnustep_gui_resources)
-
-after-uninstall::
-	rm -rf $(gnustep_gui_resources)
-
-after-install::
-	@(echo "Installing localized resources..."; \
-	for l in $(LANGUAGES); do \
-	  if [ -d $$l.lproj ]; then \
-	    $(MKDIRS) $(gnustep_gui_resources)/$$l.lproj; \
-	    for f in $(LOCALIZED_RESOURCE_FILES); do \
-	      if [ -f $$l.lproj/$$f ]; then \
-	        $(INSTALL_DATA) $$l.lproj/$$f \
-	                        $(gnustep_gui_resources)/$$l.lproj; \
-	      fi; \
-	    done; \
-	  else \
-	    echo "Warning: $$l.proj not found!"; \
-	  fi; \
-	done)
-
-
+strings:
+	make_strings -L "$(gui-resources_LANGUAGES)" \
+	  $(addprefix ../Source/,$(strings_OBJC_FILES)) \
+	  $(addprefix ../Headers/gnustep/gui/,$(strings_HEADER_FILES))
