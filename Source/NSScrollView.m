@@ -395,6 +395,19 @@ static float scrollerWidth;
       [_headerClipView scrollToPoint: scrollTo];
     }
   [_contentView scrollToPoint: point];
+
+  if (_rulersVisible == YES)
+    {
+      if (_hasHorizRuler)
+	{
+	  [_horizRuler setNeedsDisplay: YES];
+	}
+      if (_hasVertRuler)
+	{
+	  [_vertRuler setNeedsDisplay: YES];
+	}
+    }
+  
 }
 
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
@@ -487,7 +500,26 @@ static float scrollerWidth;
 
 - (void) setHorizontalRulerView: (NSRulerView *)aRulerView
 {
+  if (_rulersVisible && _horizRuler != nil)
+    {
+      [_horizRuler removeFromSuperview];
+    }
+  
   ASSIGN(_horizRuler, aRulerView);
+  
+  if (_horizRuler == nil)
+    {
+      _hasHorizRuler = NO;
+    }
+  else if (_rulersVisible)
+    {
+      [self addSubview:_horizRuler];
+    }
+
+  if (_rulersVisible)
+    {
+      [self tile];
+    }
 }
 
 - (void) setHasHorizontalRuler: (BOOL)flag
@@ -496,23 +528,49 @@ static float scrollerWidth;
     return;
 
   _hasHorizRuler = flag;
-  if (_hasHorizRuler)
+  if (_hasHorizRuler && _horizRuler == nil)
     {
-      if (!_horizRuler)
-	{
-	  NSRulerView *rulerView = [rulerViewClass new];
-
-	  [self setHorizontalRulerView: rulerView];
-	  RELEASE(rulerView);
-	}
+      _horizRuler = [[isa rulerViewClass] alloc];
+      _horizRuler = [_horizRuler initWithScrollView: self 
+				 orientation: NSHorizontalRuler];
     }
-  else
-    [_horizRuler removeFromSuperview];
+
+  if (_rulersVisible)
+    {
+      if (_hasHorizRuler)
+	{
+	  [self addSubview: _horizRuler];
+	}
+      else
+	{
+	  [_horizRuler removeFromSuperview];
+	}
+      [self tile];
+    }
 }
 
-- (void) setVerticalRulerView: (NSRulerView *)ruler
+- (void) setVerticalRulerView: (NSRulerView *)aRulerView
 {
-  ASSIGN(_vertRuler, ruler);
+  if (_rulersVisible && _vertRuler != nil)
+    {
+      [_vertRuler removeFromSuperview];
+    }
+  
+  ASSIGN(_vertRuler, aRulerView);
+  
+  if (_vertRuler == nil)
+    {
+      _hasVertRuler = NO;
+    }
+  else if (_rulersVisible)
+    {
+      [self addSubview:_vertRuler];
+    }
+
+  if (_rulersVisible)
+    {
+      [self tile];
+    }
 }
 
 - (void) setHasVerticalRuler: (BOOL)flag
@@ -521,18 +579,25 @@ static float scrollerWidth;
     return;
 
   _hasVertRuler = flag;
-  if (_hasVertRuler)
+  if (_hasVertRuler && _vertRuler == nil)
     {
-      if (!_vertRuler)
-	{
-	  NSRulerView *rulerView = [rulerViewClass new];
-
-	  [self setVerticalRulerView: rulerView];
-	  RELEASE(rulerView);
-	}
+      _vertRuler = [[isa rulerViewClass] alloc];
+      _vertRuler = [_vertRuler initWithScrollView: self 
+			       orientation: NSVerticalRuler];
     }
-  else
-    [_vertRuler removeFromSuperview];
+
+  if (_rulersVisible)
+    {
+      if (_hasVertRuler)
+	{
+	  [self addSubview: _vertRuler];
+	}
+      else
+	{
+	  [_vertRuler removeFromSuperview];
+	}
+      [self tile];
+    }
 }
 
 - (void) setRulersVisible: (BOOL)flag
