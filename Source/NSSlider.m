@@ -68,6 +68,7 @@ static Class cellClass;
   // set our cell
   [self setCell: theCell];
   [theCell setState: 1];
+  [theCell setContinuous: YES];
   return self;
 }
 

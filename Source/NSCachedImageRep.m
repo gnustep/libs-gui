@@ -41,8 +41,6 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
-static BOOL NSImageCompositing = YES;
-
 @interface GSCacheW : NSWindow
 @end
 
@@ -72,14 +70,6 @@ static BOOL NSImageCompositing = YES;
 @end
 
 @implementation NSCachedImageRep
-
-- (void) initialize
-{
-  id obj = [[NSUserDefaults standardUserDefaults]
-  	stringForKey: @"ImageCompositing"];
-  if (obj)
-    NSImageCompositing = [obj boolValue];
-}
 
 // Initializing an NSCachedImageRep 
 - (id) initWithSize: (NSSize)aSize
@@ -154,12 +144,9 @@ static BOOL NSImageCompositing = YES;
 
 - (BOOL)draw
 {
-  if (NSImageCompositing)
-    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
 	      [_window gState], NSMinX(_rect), NSMinY(_rect),
 	      NSCompositeSourceOver);
-  else
-    NSCopyBits([_window gState], _rect, _rect.origin);
   return YES;
 }
 
@@ -177,12 +164,9 @@ static BOOL NSImageCompositing = YES;
       if ([[ctxt focusView] isFlipped])
 	aPoint.y -= size.height;
     }
-  if (NSImageCompositing)
-    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
 	      [_window gState], aPoint.x, aPoint.y,
 	      NSCompositeSourceOver);
-  else
-    NSCopyBits([_window gState], _rect, aPoint);
   return NO;
 }
 
@@ -198,12 +182,9 @@ static BOOL NSImageCompositing = YES;
   ctxt = GSCurrentContext();
   if ([[ctxt focusView] isFlipped])
     aRect.origin.y -= NSHeight(aRect);
-  if (NSImageCompositing)
-    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
 	      [_window gState], NSMinX(aRect), NSMinY(aRect),
 	      NSCompositeSourceOver);
-  else
-    NSCopyBits([_window gState], _rect, aRect.origin);
   return YES;
 }
 

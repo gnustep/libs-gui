@@ -304,6 +304,8 @@ typedef enum _NSSelectionAffinity {
 -(void) replaceRange:(NSRange)range 
 withAttributedString:(NSAttributedString*)attrString;
 -(unsigned) textLength;
+- (NSRange) lineRangeForRect: (NSRect) rect;
+- (NSRect) rectForCharacterIndex: (unsigned) index;
 
 //
 // these NSTextView methods are here only informally (GNU extensions)

@@ -1,3 +1,17 @@
+2000-03-11  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSText.h: Add missing methods.
+
+	* Source/NSCachedImageRep.m: Remove ImageCompositing dwrite and
+	centralize in backend (Now use GraphicCompositing to turn on 
+	alpha drawing/compositing).
+
+	* Source/NSSlider.m ([NSSlider -initWithFrame:]): set continuous
+	as specified in OpenStep docs.
+
+	* Source/NSWindow.m (-center): Remove modification already
+	taken care of in backend.
+
 Sat Mar 11 06:32:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSStringDrawing.m: Fix error in handling extent of
