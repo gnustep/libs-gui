@@ -671,12 +671,12 @@ restart:
 		  glyphPosition: p
 		  characterIndex: g->char_index];
 
-	    printf("cell at %i, (%g %g) in (%g %g)+(%g %g), got rect (%g %g)+(%g %g)\n",
+/*	    printf("cell at %i, (%g %g) in (%g %g)+(%g %g), got rect (%g %g)+(%g %g)\n",
 	      g->char_index,p.x,p.y,
 	      lf->rect.origin.x,lf->rect.origin.y,
 	      lf->rect.size.width,lf->rect.size.height,
 	      r.origin.x,r.origin.y,
-	      r.size.width,r.size.height);
+	      r.size.width,r.size.height);*/
 
 	    /* For some obscure reason, the rectangle we get is up-side-down
 	    compared to everything else here, and has it's origin in p.
