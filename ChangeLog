@@ -1,3 +1,13 @@
+Sun May 12 10:08:34 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSTextView.h: Removed ivar
+	_tvf.is_in_dealloc.
+	* Source/NSTextView.m ([-dealloc]): Set the textStorage to nil
+	when releasing it; run the other dealloc cleanups during the
+	recursive invocation rather than during the first invocation; use
+	the _textStorage ivar instead of _tvf.is_in_dealloc.  (Patch by
+	Alexander Malmberg <alexander@malmberg.org>).
+
 2002-05-11  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSStringDrawing.m: drawRun() use GSFromUnicode() API for
