@@ -1,3 +1,7 @@
+2003-11-26 15:00  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSGuiPrivate.h: Fix GSGuiBundle() prototype.
+
 2003-11-26 14:47  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSApplication.h: Add -_windowWillDealloc:.

@@ -36,7 +36,7 @@
  * Should be only used inside the gnustep-gui library.  Implemented
  * in Source/NSApplication.m
  */
-NSBundle *GSGuiBundle ();
+NSBundle *GSGuiBundle (void);
 
 /*
  * Localize a message of the gnustep-gui library.  
@@ -70,6 +70,4 @@ static inline NSString *GSGuiLocalizedString (NSString *key, NSString *comment)
 #define NSLocalizedString(key,comment) GSGuiLocalizedString (key, comment)
 
 #endif /* _GNUstep_H_GSGuiPrivate */
-
-
 
