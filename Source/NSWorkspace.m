@@ -1161,6 +1161,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       NSFileManager	*fm;
       NSString		*ext;
+      BOOL		flag;
 
       fm = [NSFileManager defaultManager];
       ext = [appName pathExtension];
@@ -1169,17 +1170,20 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  NSString	*path;
 
 	  path = [appName stringByAppendingPathExtension: @"app"];
-	  if ([fm fileExistsAtPath: path] == NO)
+	  if ([fm fileExistsAtPath: path isDirectory: &flag] == NO
+	    || flag == NO)
 	    {
 	      path = [appName stringByAppendingPathExtension: @"debug"];
-	      if ([fm fileExistsAtPath: path] == NO)
+	      if ([fm fileExistsAtPath: path isDirectory: &flag] == NO
+		|| flag == NO)
 		{
 		  path = [appName stringByAppendingPathExtension: @"profile"];
 		}
 	    }
 	  appName = path;
 	}
-      if ([fm fileExistsAtPath: appName] == NO) // path doesn't exist
+      if ([fm fileExistsAtPath: appName isDirectory: &flag] == NO
+	|| flag == NO)
 	{
 	  appName = nil;
 	}
