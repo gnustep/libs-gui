@@ -1,4 +1,11 @@
+Tue Mar 13 20:37:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSFontInfo.m ([+encodingForRegistry:encoding:]): Updated
+	encoding names for change in the base library; for example, use 
+	NSISOArabic rather than NSArabic.
+
 2001-03-09 Gregory John Casamento  <greg_casamento@yahoo.com>
+
 	* Model/GMAppKit.m NSClipView ([-encodeWithModelArchiver:] and 
 	[-initWithModelUnarchiver:]):  Added checks to make sure that 
 	the object responds to drawsBackground/setDrawsBackground to 
@@ -7,10 +14,9 @@
 	unarchiving this class.
 	* Source/GMAppKit.h Added category for archiving/unarchiving
 	of NSSecureTextFieldCell
-	* Source/AppKit.h Added #include <AppKit/NSSecureTextField.h> and added
-	forward declarations for both NSSecureTextFieldCell and 
+	* Source/AppKit.h Added #include <AppKit/NSSecureTextField.h> and
+	added forward declarations for both NSSecureTextFieldCell and
 	NSSecureTextField.
-	
 
 Wed Mar  7 16:11:19 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
