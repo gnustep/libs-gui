@@ -1,3 +1,24 @@
+2000-11-05  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSClipView.h:
+	* Headers/gnustep/gui/NSScrollView.h:
+	Added method to set backgound drawing.
+	* Model/GMAppKit.m: Store new ivar for NSClipView	
+	* Source/NSScrollView.m: Hand on background drawing to content
+	view. In [setContentView:] call setDocumentView:.
+	* Source/NSClipView.m: Added dealloc method. Implemented
+	[drawsBackground] and [setDrawsBackground:]. In [setDocumentView:]
+	get the background drawing from the document view. [drawRect:] and
+	[isOpaque] check the background drawing. Corrected [constrainScrollPoint:]
+	to respect the documentFrame origin. Implemented [autoscroll:]
+	* Source/NSTextContainer.m: In [setWidthTracksTextView:] and 
+	[setHeightTracksTextView:] make sure that the view post changes
+	and that notifications are only send once. 
+	* Source/NSText.m: Moved all sizeToFit calls after text changes to
+	the layout manager.
+	* Source/GSSimpleLayoutManager.m: Call size to fit on view after
+	layout changes.
+	
 2000-10-24  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m: Removed some 300 lines
