@@ -34,6 +34,7 @@ ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Model/$(GNUSTEP_OBJ_D
 gpbs_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
 set_show_service_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
 gopen_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
+GSspell_TOOL_LIBS += $(ADDITIONAL_DEPENDS)
 
 # Additional libraries when linking applications
 # ADDITIONAL_GUI_LIBS +=

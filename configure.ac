@@ -262,9 +262,15 @@ fi
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
+do_enable_gsnd=yes
+case "$target_os" in
+  darwin*)   do_enable_gsnd=no;;
+  *)	     ;;
+esac
+
 AC_ARG_ENABLE(gsnd, 
   [  --disable-gsnd          Disable gsnd server],,
-  enable_gsnd=yes)
+  enable_gsnd=$do_enable_gsnd)
 audio_ok=no
 BUILD_GSND=
 

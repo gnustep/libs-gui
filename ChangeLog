@@ -1,3 +1,9 @@
+2005-03-03  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Disable gsnd on darwin
+	
+	* Tools/GNUmakefile.preamble (GSspell_TOOL_LIBS): Add lib depends.
+
 2005-02-27 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSApplication.m (-runModalForWindow:) Clarify gsdoc
