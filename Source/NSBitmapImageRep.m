@@ -63,7 +63,7 @@
   /* 8-bit RGB will be converted to 24-bit by the tiff routines, so account
      for this. */
   space = nil;
-#ifdef HAVE_LIBTIFF
+#ifdef HAVE_TIFF
   switch(info->photoInterp) 
     {
     case PHOTOMETRIC_MINISBLACK: space = NSDeviceWhiteColorSpace; break;

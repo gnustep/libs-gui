@@ -49,10 +49,14 @@
  * OF THIS SOFTWARE.
  */
 
+#include <gnustep/base/preface.h>
+#include <gnustep/gui/config.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef __WIN32__
 #include <unistd.h>		/* for L_SET, etc definitions */
+#endif /* !__WIN32__ */
 #include <AppKit/nsimage-tiff.h>
 
 typedef struct {
@@ -63,7 +67,7 @@ typedef struct {
   realloc_data_callback* realloc_data;
 } chandle_t;
 
-#ifdef HAVE_LIBTIFF
+#ifdef HAVE_TIFF
 
 /* Client functions that provide reading/writing of data for libtiff */
 static tsize_t
@@ -431,7 +435,7 @@ NSTiffGetColormap(TIFF* image)
   return map;
 }
 
-#else /* HAVE_LIBTIFF */
+#else /* HAVE_TIFF */
 
 TIFF* 
 NSTiffOpenData(char* data, long size, const char* mode,
@@ -470,4 +474,4 @@ NSTiffGetColormap(TIFF* image)
   return NULL;
 }
 
-#endif /* not HAVE_LIBTIFF */
+#endif /* not HAVE_TIFF */
