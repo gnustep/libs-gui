@@ -35,19 +35,6 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
 
-// This is being redefined here to prevent NSWorkspace from
-// complaining when no application event-loop is running.
-int
-NSRunAlertPanel(
-  NSString *title,
-  NSString *msg,
-  NSString *defaultButton,
-  NSString *alternateButton,
-  NSString *otherButton, ...)
-{
-  return 0;
-}
-
 int
 main(int argc, char** argv, char **env_c)
 {
