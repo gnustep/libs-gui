@@ -483,55 +483,54 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) boundingRectFor: (NSRect)rect result: (NSRect*)new
 {
-  float angle = [self rotationAngle];
-  float angleRad = pi * angle / 180;
-  float angle90Rad = pi * (angle + 90) / 180;
-  float cosWidth, cosHeight, sinWidth, sinHeight;
   /* Shortcuts of the usual rect values */
   float x = rect.origin.x;
   float y = rect.origin.y;
   float width = rect.size.width;
   float height = rect.size.height;
+  float xc[4];
+  float yc[4];
+  float min_x;
+  float max_x;
+  float min_y;
+  float max_y;
+  int i;
 
-  if (angle == 0)
+  if (B == 0  &&  C == 0)
     {
       *new = rect;
       return;
     }
 
-  cosWidth = cos(angleRad);
-  cosHeight = cos(angle90Rad);
-  sinWidth = sin(angleRad);
-  sinHeight = sin(angle90Rad);
+  xc[0] = A * x + C * y + TX;
+  yc[0] = B * x + D * y + TY;
+  xc[1] = xc[0] + A * width;
+  yc[1] = yc[0] + B * width;
+  xc[2] = xc[0] + C * height;
+  yc[2] = yc[0] + D * height;
+  xc[3] = xc[0] + A * width + C * height;
+  yc[3] = yc[0] + B * width + D * height;
+  
+  min_x = max_x = xc[0];
+  min_y = max_y = yc[0];
+  
+  for (i=1; i < 4; i++) 
+    {
+      if (xc[i] < min_x)
+	min_x = xc[i];
+      if (xc[i] > max_x)
+	max_x = xc[i];
 
-  if (angle <= 90)
-    {
-      new->origin.x = x + height * cosHeight;
-      new->origin.y = y;
-      new->size.width = width * cosWidth - height * cosHeight;
-      new->size.height = width * sinWidth + height * sinHeight;
+      if (yc[i] < min_y)
+	 min_y = yc[i];
+      if (yc[i] > max_y)
+	max_y = yc[i];
     }
-  else if (angle <= 180)
-    {
-      new->origin.x = x + width * cosWidth + height * cosHeight;
-      new->origin.y = y + height * sinHeight;
-      new->size.width = -width * cosWidth - height * cosHeight;
-      new->size.height = width * sinWidth - height * sinHeight;
-    }
-  else if (angle <= 270)
-    {
-      new->origin.x = x + width * cosWidth;
-      new->origin.y = y + width * sinWidth + height * sinHeight;
-      new->size.width = -width * cosWidth + height * cosHeight;
-      new->size.height = -width * sinWidth - height * sinHeight;
-    }
-  else
-    {
-      new->origin.x = x;
-      new->origin.y = y;
-      new->size.width = width * cosWidth + height * cosHeight;
-      new->size.height = width * sinWidth + height * sinHeight;
-    }
+
+  new->origin.x = min_x;
+  new->origin.y = min_y;
+  new->size.width = max_x -min_x;
+  new->size.height = max_y -min_y;
 }
 
 - (NSPoint) pointInMatrixSpace: (NSPoint)point
