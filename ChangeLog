@@ -1,5 +1,28 @@
 2001-08-18  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/GSTextConverter.h
+	New file with two protocols for text converters.
+	* Source/GNUmake
+	Install GSTextConverter.h.
+	* Source/NSAttributedString.m
+	Include GSTextConverter.h. New function converter_class() to load
+	the class for a given text converter format. Use this function in
+	the RTF methods and use new protocol there.
+	* Source/Parser/RTFProducer.h
+	Renamed RTFProducer into RTFDProducer, with new subclass
+	RTFProducer. Both implement the protocol GSTextProducer.
+	* Source/Parser/RTFProducer.m
+	Renamed methods to fit the GSTextProducer protocol. Adopted to
+	changes in header. Implementation for RTFProducer.
+	* Source/Parser/rtfConsumer.h
+	RTFConsumer implements the protocol GSTextConsumer. New subclass
+	RTFDConsumer. 
+	* Source/Parsers/attributedStringConsumer.m 
+	Renamed methods to fit the GSTextConsumer protocol. Adopted to
+	changes in header. Perliminary implementation for RTFDConsumer.
+
+2001-08-18  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSInputServer.h
 	Declaration of this class and of the protocols
 	NSInputServerMouseTracker and NSInputServiceProvider.
