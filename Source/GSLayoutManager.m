@@ -163,7 +163,7 @@ Private method used internally by GSLayoutManager for sanity checking.
 	printf("         level %i, continued %i\n", h->level, h->continued);
 	if (h->head.complete)
 	  {
-	    int i;
+	    unsigned int i;
 	    printf("glyphs:\n");
 	    for (i = 0;i < h->head.glyph_length;i++)
 	      printf("%5i %04x u%04x  ",
@@ -378,10 +378,8 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   glyph_run_head_t *context[SKIP_LIST_DEPTH];
   int positions[SKIP_LIST_DEPTH];
   glyph_run_head_t *h;
-  int pos;
-
-  int length;
-
+  unsigned int pos;
+  unsigned int length;
   int level;
 
 
@@ -575,9 +573,8 @@ not completely accurate).
 
 -(void) _generateGlyphsUpToCharacter: (unsigned int)last
 {
-  int length;
+  unsigned int length;
   BOOL dummy;
-
 
   /*
   Trying to do anything here while the text storage has unprocessed edits
@@ -613,7 +610,7 @@ not completely accurate).
 
 -(void) _generateGlyphsUpToGlyph: (unsigned int)last
 {
-  int length;
+  unsigned int length;
 
   if (!_textStorage)
     return;
@@ -632,7 +629,7 @@ not completely accurate).
 	positions: (unsigned int *)rpos : (unsigned int *)rcpos
 {
   glyph_run_t *r;
-  int pos, cpos;
+  unsigned int pos, cpos;
   int lo, hi, mid, i;
 
   r = run_for_character_index(target, glyphs, &pos, &cpos);
@@ -726,12 +723,18 @@ not completely accurate).
 - (unsigned int) getGlyphs: (NSGlyph *)glyphArray
 	range: (NSRange)glyphRange
 {
-  int pos = glyphRange.location + glyphRange.length - 1;
   glyph_run_t *r;
   NSGlyph *g;
-  int num;
-  int i, j, k;
+  unsigned int pos;
+  unsigned int num;
+  unsigned int i, j, k;
 
+  if (glyphRange.length == 0)
+    {
+      return 0;
+    }
+
+  pos = NSMaxRange(glyphRange) - 1;
   if (glyphs->glyph_length <= pos)
     {
       [self _generateGlyphsUpToGlyph: pos];
@@ -761,7 +764,7 @@ not completely accurate).
       else
 	j = 0;
 
-      k = glyphRange.location + glyphRange.length - pos;
+      k = NSMaxRange(glyphRange) - pos;
       if (k > r->head.glyph_length)
 	k = r->head.glyph_length;
       if (k <= j)
@@ -814,11 +817,19 @@ not completely accurate).
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
 	actualGlyphRange: (NSRange *)actualGlyphRange
 {
-  int cpos, pos = glyphRange.location + glyphRange.length - 1;
   glyph_run_t *r;
   NSRange real_range, char_range;
-  int i, j;
+  unsigned int cpos, pos;
+  unsigned j;
 
+  if (NSMaxRange(glyphRange) == 0)
+    {
+      if (actualGlyphRange)
+	*actualGlyphRange = glyphRange;
+      return NSMakeRange(0, 0);
+    }
+
+  pos = NSMaxRange(glyphRange) - 1;
   if (glyphs->glyph_length <= pos)
     {
       [self _generateGlyphsUpToGlyph: pos];
@@ -845,6 +856,7 @@ not completely accurate).
   {
     glyph_run_t *r2;
     unsigned int adj, cadj;
+    int i;
 
     i = glyphRange.location - pos;
     r2 = r;
@@ -886,6 +898,7 @@ not completely accurate).
     glyph_run_t *r2;
     unsigned int adj, cadj;
     unsigned int last = 0;
+    unsigned int i;
 
     i = glyphRange.location + glyphRange.length - 1 - pos;
     r2 = r;
@@ -917,8 +930,8 @@ not completely accurate).
 {
   NSRange char_range, glyph_range;
   glyph_run_t *r;
-  int cpos, pos = charRange.location + charRange.length - 1;
-  int i, target;
+  unsigned int cpos, pos;
+  unsigned int i, target;
 
   /* TODO: should this really be valid?
 
@@ -944,6 +957,7 @@ not completely accurate).
       return NSMakeRange(0, 0);
     }
 
+  pos = NSMaxRange(charRange) - 1;
   [self _generateGlyphsUpToCharacter: pos];
   if (glyphs->char_length <= pos)
     {
@@ -959,7 +973,7 @@ not completely accurate).
   glyph_range.location = i + pos;
   char_range.location = r->glyphs[i].char_offset + cpos;
 
-  target = charRange.location + charRange.length - 1;
+  target = NSMaxRange(charRange) - 1;
   r = [self _glyphForCharacter: target
 	  index: &i
 	  positions: &pos : &cpos];
@@ -996,20 +1010,16 @@ places where we switch.
 	actualCharacterRange: (NSRange *)actualRange
 {
   BOOL trailing;
-
-  int cpos;
-  int ts_length;
-  int gap;
-
-  int position[SKIP_LIST_DEPTH];
   glyph_run_head_t *context[SKIP_LIST_DEPTH];
   glyph_run_head_t *h;
   glyph_run_t *r;
-  int level;
-
-  int ch;
-
   NSRange rng;
+  int position[SKIP_LIST_DEPTH];
+  unsigned int cpos;
+  unsigned int ts_length;
+  int gap;
+  int level;
+  unsigned int ch;
 
 
   /*
@@ -2222,7 +2232,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 - (void) insertTextContainer: (NSTextContainer *)aTextContainer
 		     atIndex: (unsigned int)index
 {
-  int i;
+  unsigned int i;
 
   if (index < num_textcontainers)
     [self _invalidateLayoutFromContainer: index];
