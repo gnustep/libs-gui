@@ -293,7 +293,7 @@ id _nsbuttonCellClass = nil;
 //
 - (BOOL) acceptsFirstResponder
 {
-	return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);
+  return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);
 }
 
 - (void) keyDown: (NSEvent*)theEvent
