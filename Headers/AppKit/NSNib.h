@@ -1,7 +1,19 @@
-/* 
-   NSNib.h
+/**
+   <title>NSNib.h</title>
 
-   Holds an image to use as a cursor
+   <abstract>
+   This class serves as a container for a nib file.  It's possible 
+   to load a nib file from a URL or from a bundle.   Using this 
+   class the nib file can now be "preloaded" and instantiated 
+   multiple times when/if needed.  Also, since it's possible to 
+   initialize this class using a NSURL it's possible to load 
+   nib files from remote locations. 
+   <b/>
+   This class uses: NSNibOwner and NSNibTopLevelObjects to allow
+   the caller to specify the owner of the nib during instantiation
+   and receive an array containing the top level objects of the nib
+   file.
+   </abstract>
 
    Copyright (C) 2004 Free Software Foundation, Inc.
 
