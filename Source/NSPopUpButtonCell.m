@@ -45,7 +45,7 @@ static NSImage *_pbc_image[2];
 {
   if (self == [NSPopUpButtonCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       ASSIGN(_pbc_image[0], [NSImage imageNamed: @"common_Nibble"]);
       ASSIGN(_pbc_image[1], [NSImage imageNamed: @"common_3DArrowDown"]);
     }
@@ -64,10 +64,13 @@ static NSImage *_pbc_image[2];
 - (id) initTextCell: (NSString *)stringValue
 	  pullsDown: (BOOL)pullDown
 {
+  NSMenu *menu;
+
   [super initTextCell: stringValue];
 
-  _menu = [[NSMenu alloc] initWithTitle: @""];
-  [_menu _setOwnedByPopUp: self];
+  menu = [[NSMenu alloc] initWithTitle: @""];
+  [self setMenu: menu];
+  RELEASE(menu);
 
   [self setPullsDown: pullDown];
   _pbcFlags.usesItemFromMenu = YES;
@@ -85,6 +88,10 @@ static NSImage *_pbc_image[2];
   [_menu _setOwnedByPopUp: nil];    
   ASSIGN(_menu, menu);
   [_menu _setOwnedByPopUp: self];
+  /* We need to set the menu view so we trigger the special case 
+   * popupbutton code in super class NSMenuItemCell
+   */
+  [self setMenuView: [_menu menuRepresentation]];
 }
 
 - (NSMenu *) menu
@@ -95,6 +102,9 @@ static NSImage *_pbc_image[2];
 // Behaviour settings
 - (void) setPullsDown: (BOOL)flag
 {
+  NSMenuItem *item = _menuItem;
+
+  [self setMenuItem: nil];
   _pbcFlags.pullsDown = flag;
   [self setAltersStateOfSelectedItem: !flag];
 
@@ -110,6 +120,8 @@ static NSImage *_pbc_image[2];
       [self setArrowPosition: NSPopUpArrowAtBottom];
       [self setPreferredEdge: NSMaxYEdge];
     }
+
+  [self setMenuItem: item];
 }
 
 - (BOOL) pullsDown
@@ -145,7 +157,6 @@ static NSImage *_pbc_image[2];
 // a pull-down.  If this is NO, then the menu item set with -setMenuItem: 
 // is always displayed.  This can be useful for a popup button that is an
 // icon button that pops up a menu full of textual items, for example.
-
 - (void) setUsesItemFromMenu: (BOOL)flag
 {
   _pbcFlags.usesItemFromMenu = flag;
@@ -226,21 +237,30 @@ static NSImage *_pbc_image[2];
   [anItem setOnStateImage: nil];
   [anItem setMixedStateImage: nil];
 
-  // FIXME: Set target and action to default
+  // FIXME: The documentation is unclear what to set here.
+  //[anItem setAction: [self action]];
+  //[anItem setTarget: [self target]];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
 {
-  [_menu removeItemAtIndex: [_menu indexOfItemWithTitle: title]];
+  [self removeItemAtIndex: [self indexOfItemWithTitle: title]];
 }
 
 - (void) removeItemAtIndex: (int)index
 {
+  if (index == [self indexOfSelectedItem])
+    {
+      [self selectItem: nil];
+    }
+
   [_menu removeItemAtIndex: index];
 }
 
 - (void) removeAllItems
 {
+  [self selectItem: nil];
+
   while ([_menu numberOfItems] > 0)
     {
       [_menu removeItemAtIndex: 0];
@@ -317,17 +337,16 @@ static NSImage *_pbc_image[2];
     }
 }
 
-- (void)setImage:(NSImage *)anImage
+- (void) setImage: (NSImage *)anImage
 {
   // Do nothing as the image is determined by the current item
 }
 
-// Dealing with selection
-- (void) selectItem: (id <NSMenuItem>)item
+- (void) setMenuItem: (NSMenuItem *)item
 {
   NSImage *image;
 
-  if (_selectedItem == item)
+  if (_menuItem == item)
     return;
 
   if (_pbcFlags.arrowPosition == NSPopUpArrowAtBottom)
@@ -344,14 +363,31 @@ static NSImage *_pbc_image[2];
       image = nil;
     }
 
+  if ([_menuItem image] == image)
+    {
+      [_menuItem setImage: nil];
+    }
+
+  [super setMenuItem: item];
+
+  if ([_menuItem image] == nil)
+    {
+      [_menuItem setImage: image];
+    }
+}
+
+// Dealing with selection
+- (void) selectItem: (id <NSMenuItem>)item
+{
+  if (_selectedItem == item)
+    return;
+
   if (_selectedItem != nil)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
 	{
 	  [_selectedItem setState: NSOffState];
 	}
-      if ([_selectedItem image] == image)
-  	[_selectedItem setImage: nil];
     }
 
   _selectedItem = item;
@@ -362,8 +398,6 @@ static NSImage *_pbc_image[2];
         {
 	  [_selectedItem setState: NSOnState];
         }
-      if ([_selectedItem image] == nil)
-	[_selectedItem setImage: image];
     }
 
   /* Set the item in the menu */
@@ -429,32 +463,45 @@ static NSImage *_pbc_image[2];
 
 - (int) indexOfSelectedItem
 {
-  return [_menu indexOfItem: _selectedItem];
+  return [_menu indexOfItem: [self selectedItem]];
 }
 
 - (void) synchronizeTitleAndSelectedItem
 {
+  int index;
+
   if (!_pbcFlags.usesItemFromMenu)
     return;
 
   if ([_menu numberOfItems] == 0)
     {
-      _selectedItem = nil;
+      index = -1;
     }
   else if (_pbcFlags.pullsDown)
     {
-      [self selectItem: [self itemAtIndex: 0]];
+      index = 0;
     }
   else
     {
-      int index = [[_menu menuRepresentation] highlightedItemIndex];
+      index = [[_menu menuRepresentation] highlightedItemIndex];
 
       if (index < 0)
 	index = [self indexOfSelectedItem];
       if (index < 0)
 	index = 0;
+    }
 
-      [self selectItemAtIndex: index];
+  if ((index >= 0)  && ([_menu numberOfItems] > index))
+    {
+      NSMenuItem *anItem;
+
+      // This conversion is needed as [setMenuItem:] expects an NSMenuItem
+      anItem = (NSMenuItem *)[_menu itemAtIndex: index];
+      [self setMenuItem: anItem];
+    }
+  else
+    {
+      [self setMenuItem: nil];
     }
 }
 
@@ -481,8 +528,10 @@ static NSImage *_pbc_image[2];
 
 - (NSString *) titleOfSelectedItem
 {
-  if (_selectedItem != nil)
-    return [_selectedItem title];
+  id <NSMenuItem> item = [self selectedItem];
+
+  if (item != nil)
+    return [item title];
   else
     return @"";
 }
@@ -518,10 +567,24 @@ static NSImage *_pbc_image[2];
   
   // Last, display the window
   [[mr window] orderFrontRegardless];
+
+  /* This covers an obscure case where the user subsequently
+     uses the mouse to select an item. We'll never know
+     this was done (and thus cannot dismiss the popUp) without
+     getting this notification */
+  [nc addObserver: controlView
+      selector: @selector(_handleNotification:)
+      name: NSMenuDidSendActionNotification
+      object: _menu];
 }
 
 - (void) dismissPopUp
 {
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  [nc removeObserver: [self controlView]
+      name: NSMenuDidSendActionNotification
+      object: _menu];
   [_menu close];
 }
 
@@ -533,16 +596,48 @@ static NSImage *_pbc_image[2];
   return NO;
 }
 
+// This method is called to simulate programmatically a click
+// [as NSCell's performClick:]
+// This method is not executed upon mouse down; rather, it should
+// simulate what would happen upon mouse down.  It should not start
+// any real mouse tracking.
 - (void) performClickWithFrame: (NSRect)frame
 			inView: (NSView *)controlView
 {
-  // TODO
+  NSWindow *cvWin = [controlView window];
 
-  // This method is called to simulate programmatically a click
-  // [as NSCell's performClick:]
-  // This method is not executed upon mouse down; rather, it should
-  // simulate what would happen upon mouse down.  It should not start
-  // any real mouse tracking.
+  if(_cell.is_disabled == YES)
+    {
+      return;
+    }
+
+  [controlView lockFocus];
+      
+  [self setNextState];
+  [self highlight: YES withFrame: frame inView: controlView];
+  [cvWin flushWindow];
+      
+  // Wait approx 1/10 seconds
+  [[NSRunLoop currentRunLoop] 
+      runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+      
+  [self highlight: NO withFrame: frame inView: controlView];
+  [cvWin flushWindow];
+      
+  [controlView unlockFocus];
+
+  [self attachPopUpWithFrame: frame inView: controlView];
+}
+
+- (void) performClick: (id)sender
+{
+  NSView *cv = [self controlView];
+
+  if (cv != nil)
+    {  
+      [self performClickWithFrame: [cv bounds]
+	    inView: cv];
+    }
 }
 
 // Arrow position for bezel style and borderless popups.
@@ -562,57 +657,40 @@ static NSImage *_pbc_image[2];
 - (void) drawInteriorWithFrame: (NSRect)cellFrame
 			inView: (NSView*)controlView
 {
-  NSMenuItem *anItem;
+  BOOL new = NO;
 
-  /* 
-   * Get the NSMenuItemCell of the selected item, or create a temporary 
-   * NSMenuItemCell to at least draw our control if items array is empty.
-   */
-  if ([_menu numberOfItems] > 0)
+  if ([self menuItem] == nil)
     {
-      // This conversion is needed as [setMenuView:] expects an NSMenuItem
-      anItem = (NSMenuItem *)[_menu itemAtIndex: [self indexOfSelectedItem]];
-    }
-  else
-    {
+      NSMenuItem *anItem;
+
+      /* 
+       * Create a temporary NSMenuItemCell to at least draw our control,
+       * if items array is empty.
+       */
       anItem = [NSMenuItem new];
-
-      if (_pbcFlags.arrowPosition == NSPopUpArrowAtBottom)
-        {
-	  [anItem setImage: _pbc_image[1]];
-	}
-      else if (_pbcFlags.arrowPosition == NSPopUpArrowAtCenter)
-        {
-	  [anItem setImage: _pbc_image[0]];
-	}
-      else
-        {
-	    // No image for NSPopUpNoArrow
-        }
+      [anItem setTitle: [self title]];
+      /* We need this menu item because NSMenuItemCell gets its contents 
+       * from the menuItem not from what is set in the cell */
+      [self setMenuItem: anItem];
+      RELEASE(anItem);
+      new = YES;
     }      
-
-  /* We need this menu item because NSMenuItemCell gets its contents 
-   * from the menuItem not from what is set in the cell */
-  [self setMenuItem: anItem];
-  /* We need to set the menu view so we trigger the special case 
-   * popupbutton code in NSMenuItemCell
-   */
-  [self setMenuView: [_menu menuRepresentation]];
   
   /* We need to calc our size to get images placed correctly */
   [self calcSize];
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 
-  /* Release the item to restore balance if menu items array is empty*/
-  if ([_menu numberOfItems] == 0)
+  if (_cell.shows_first_responder)
     {
-      RELEASE(anItem);
+      cellFrame = [self drawingRectForBounds: cellFrame];
+      NSDottedFrameRect(cellFrame);
     }
 
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  if (_cell.shows_first_responder)
-    NSDottedFrameRect(cellFrame);
+  /* Unset the item to restore balance if a new was created */
+  if (new)
+    {
+      [self setMenuItem: nil];
+    }
 }
 
 /* FIXME: this method needs to be rewritten to be something like 
@@ -682,7 +760,7 @@ static NSImage *_pbc_image[2];
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: _menu];
-  [aCoder encodeConditionalObject: _selectedItem];
+  [aCoder encodeConditionalObject: [self selectedItem]];
   flag = _pbcFlags.pullsDown;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
   flag = _pbcFlags.preferredEdge;
@@ -699,9 +777,13 @@ static NSImage *_pbc_image[2];
 {
   int flag;
   id<NSMenuItem> selectedItem;
+  NSMenu *menu;
+  int version = [aDecoder versionForClassName: 
+			      @"NSPopUpButtonCell"];
 
   self = [super initWithCoder: aDecoder];
-  _menu = [aDecoder decodeObject];
+  menu = [aDecoder decodeObject];
+  [self setMenu: menu];
   selectedItem = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.pullsDown = flag;
@@ -714,7 +796,15 @@ static NSImage *_pbc_image[2];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.arrowPosition = flag;
 
-  [_menu _setOwnedByPopUp: self];
+  if (version < 2)
+    {
+      // Not the stored format did change but the interpretation of it.
+      // in version 1 most of the ivars were not used, so their values may
+      // be arbitray. We overwrite them with valid settings.
+      [self setPullsDown: _pbcFlags.pullsDown];
+      _pbcFlags.usesItemFromMenu = YES;
+    }
+
   [self selectItem: selectedItem];
   return self;
 }
