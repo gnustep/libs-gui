@@ -90,7 +90,7 @@
 @interface NSInputManager: NSObject <NSTextInput>
 {
   /* The current client we are working for.  */
-  id _currentClient;
+  id<NSTextInput> _currentClient;
 
   /* This is the basic, root set of bindings.  Whenever the input
      manager detects that the current client has changed, it immediately
