@@ -1623,7 +1623,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   // Currently the text container is not encoded
   [archiver encodeSize:[self textContainerInset] withName:@"textContainerInset"];
-  [archiver encodeBOOL:[self allowsUndo] withName:@"allowsUndo"];
+  if ([self respondsToSelector: @selector(allowsUndo)])
+    [archiver encodeBOOL:[self allowsUndo] withName:@"allowsUndo"];
   [archiver encodeBOOL:[self usesRuler] withName:@"usesRuler"];
   [archiver encodeBOOL:[self isRulerVisible] withName:@"isRulerVisible"];
   [archiver encodeObject:[self insertionPointColor] withName:@"insertionPointColor"];
