@@ -1643,6 +1643,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
+  unsigned	i;
+
+  for (i = 0; i < [sub_views count]; i++)
+    if ([[sub_views objectAtIndex: i] performKeyEquivalent: theEvent] == YES)
+      return YES;
   return NO;
 }
 

@@ -984,6 +984,13 @@ static Class	responderClass;
   [self close];
 }
 
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
+{
+  if (content_view)
+    return [content_view performKeyEquivalent: theEvent];
+  return NO;
+}
+
 - (void) performMiniaturize: (id)sender
 {
   is_miniaturized = YES;
