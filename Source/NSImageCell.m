@@ -2,7 +2,7 @@
 
    <abstract>The image cell class</abstract>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2005 Free Software Foundation, Inc.
 
    Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
@@ -289,7 +289,10 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // account for flipped views
   if (is_flipped)
-    position.y += imageSize.height;
+    {
+      position.y += imageSize.height;
+      imageSize.height = -imageSize.height;
+    }
 
   // draw!
   [_cell_image drawInRect: NSMakeRect(position.x, position.y,

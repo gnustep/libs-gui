@@ -1,3 +1,8 @@
+2005-01-28 17:57  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): If our
+	view is flipped, flip the image.
+
 2005-01-26 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSApplication.m (-beginModalSessionforWindow:): Center
