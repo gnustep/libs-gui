@@ -1,3 +1,10 @@
+Thu May 30 18:37:51 1996  Scott Christley <scottc@net-community.com>
+
+	* configure.bat: Modifications for new directory structure.
+	* Source/Makefile.in (uninstall): New target.
+	* Source/Makefile.sed.nt: Modifications for Source/Makefile.in
+	changes and new directory structure.
+
 Tue Feb 13 09:52:02 1996  Scott Christley <scottc@net-community.com>
 
 	* Headers/AppKit/NSText.h: Removed WIN32 instance variables

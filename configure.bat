@@ -26,9 +26,11 @@ rem Configuration files
 rem
 echo "Creating header configuration files"
 cd Headers
-cd AppKit
+cd gnustep
+cd gui
 rm -f config.h
 sed -f config.sed.nt config.h.in >>config.h
+cd ..
 cd ..
 cd ..
 
