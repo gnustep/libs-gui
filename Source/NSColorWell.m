@@ -110,6 +110,12 @@
   [the_color drawSwatchInRect: insideRect];
 }
 
+- (BOOL) isOpaque
+{
+  return is_bordered;
+}
+
+
 //
 // Activating 
 //

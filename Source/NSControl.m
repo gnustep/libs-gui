@@ -192,7 +192,7 @@ static Class cellClass;
 - (void) setStringValue: (NSString *)aString
 {
   [self abortEditing];
-  
+
   [[self selectedCell] setStringValue: aString];
   [self setNeedsDisplay: YES];
 }
@@ -301,6 +301,11 @@ static Class cellClass;
 /*
  * Displaying the Control and Cell
  */
+- (BOOL) isOpaque
+{
+  return [cell isOpaque];
+}
+
 - (void) drawRect: (NSRect)aRect
 {
   [self drawCell: cell];
