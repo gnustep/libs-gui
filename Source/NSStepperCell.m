@@ -341,22 +341,42 @@ static inline void HighlightDownButton(NSRect aRect)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp1, tmp2;
+  int tmp1, tmp2;
   [super encodeWithCoder: aCoder];
-  tmp1 = _autorepeat;
-  tmp2 = _valueWraps;
-  [aCoder encodeValuesOfObjCTypes: "dddii",
-	  &_maxValue, &_minValue, &_increment, &tmp1, &tmp2];
+
+  tmp1 = (int)_autorepeat;
+  tmp2 = (int)_valueWraps;
+
+  [aCoder encodeValueOfObjCType: @encode(double)
+	  at: &_maxValue];
+  [aCoder encodeValueOfObjCType: @encode(double)
+	  at: &_minValue];
+  [aCoder encodeValueOfObjCType: @encode(double)
+	  at: &_increment];
+  [aCoder encodeValueOfObjCType: @encode(int)
+	  at: &tmp1];
+  [aCoder encodeValueOfObjCType: @encode(int)
+	  at: &tmp2];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL tmp1, tmp2;
+  int tmp1, tmp2;
   [super initWithCoder: aDecoder];
-  [aDecoder decodeValuesOfObjCTypes: "dddii",
-	  &_maxValue, &_minValue, &_increment, &tmp1, &tmp2];
-  _autorepeat = tmp1;
-  _valueWraps = tmp2;
+
+  [aDecoder decodeValueOfObjCType: @encode(double)
+	    at: &_maxValue];
+  [aDecoder decodeValueOfObjCType: @encode(double)
+	    at: &_minValue];
+  [aDecoder decodeValueOfObjCType: @encode(double)
+	    at: &_increment];
+  [aDecoder decodeValueOfObjCType: @encode(int)
+	    at: &tmp1];
+  [aDecoder decodeValueOfObjCType: @encode(int)
+	    at: &tmp2];
+
+  _autorepeat = (BOOL)tmp1;
+  _valueWraps = (BOOL)tmp2;
 
   return self;
 }
