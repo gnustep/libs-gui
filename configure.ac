@@ -250,6 +250,14 @@ if test "${enable_ungif}" = yes; then
   fi
 fi
 
+#--------------------------------------------------------------------
+# Check for the spelling lib, for the built-in spell checker...
+#--------------------------------------------------------------------
+AC_CHECK_LIB(aspell, new_aspell_document_checker)
+if test "${ac_cv_lib_aspell_new_aspell_document_checker}" = yes; then
+   AC_CHECK_HEADERS(aspell.h)
+   AC_DEFINE(HAVE_ASPELL,1,[Define if you have the aspell header])
+fi
 
 #--------------------------------------------------------------------
 # NSSound

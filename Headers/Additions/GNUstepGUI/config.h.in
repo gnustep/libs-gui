@@ -1,5 +1,11 @@
 /* Headers/Additions/GNUstepGUI/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if you have the aspell header */
+#undef HAVE_ASPELL
+
+/* Define to 1 if you have the <aspell.h> header file. */
+#undef HAVE_ASPELL_H
+
 /* Define to 1 if you have the <audiofile.h> header file. */
 #undef HAVE_AUDIOFILE_H
 
@@ -8,6 +14,9 @@
 
 /* Define to 1 if you have the <jpeglib.h> header file. */
 #undef HAVE_JPEGLIB_H
+
+/* Define to 1 if you have the `aspell' library (-laspell). */
+#undef HAVE_LIBASPELL
 
 /* Define to 1 if you have the `audiofile' library (-laudiofile). */
 #undef HAVE_LIBAUDIOFILE

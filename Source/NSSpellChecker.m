@@ -97,7 +97,7 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 @implementation GSServicesManager(NSSpellCheckerMethods)
 - (id)_launchSpellCheckerForLanguage: (NSString *)language
 {
-  id proxy = nil;
+  id<NSSpellServerPrivateProtocol> proxy = nil;
   NSDictionary *spellCheckers = [_allServices objectForKey: @"BySpell"];
   NSDictionary *checkerDictionary = [spellCheckers objectForKey: language];
   NSString *spellServicePath = [checkerDictionary objectForKey: @"ServicePath"];
@@ -190,7 +190,7 @@ static int __documentTag = 0;
 // Support function to start the spell server
 - (id)_startServerForLanguage: (NSString *)language
 {
-  id proxy = nil;
+  id<NSSpellServerPrivateProtocol> proxy = nil;
   
   // Start the service for this language  
   proxy = [[NSApp _listener] _launchSpellCheckerForLanguage: language];
@@ -221,7 +221,7 @@ static int __documentTag = 0;
     {
       // Start the server and retain the reference to the
       // proxy.
-      id proxy = [self _startServerForLanguage: _language];
+      id<NSSpellServerPrivateProtocol> proxy = [self _startServerForLanguage: _language];
       if(proxy != nil)
 	{
 	  _serverProxy = proxy;
@@ -317,7 +317,7 @@ static int __documentTag = 0;
 {
   int count = 0;
   NSRange r = NSMakeRange(0,0);
-  id proxy = [self _serverProxy];
+  id<NSSpellServerPrivateProtocol> proxy = [self _serverProxy];
 
   if (proxy != nil)
     r = [proxy _findMisspelledWordInString: aString
@@ -372,7 +372,7 @@ static int __documentTag = 0;
   // spellserver does not bring down the application.
   NS_DURING
     {
-      id proxy = [self _serverProxy];
+      id<NSSpellServerPrivateProtocol> proxy = [self _serverProxy];
 
       // Get the substring and check it.
       NSString *substringToCheck = [stringToCheck substringFromIndex: startingOffset];
@@ -629,7 +629,7 @@ inSpellDocumentWithTag:(int)tag
 
 - _switchDictionary: (id)sender
 {
-  id proxy = nil;
+  id<NSSpellServerPrivateProtocol> proxy = nil;
   NSString *language = nil;
 
   // Start the service for this language  
