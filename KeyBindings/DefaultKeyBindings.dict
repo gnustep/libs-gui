@@ -6,34 +6,53 @@
   "LeftArrow" = "moveLeft:";
   "RightArrow" = "moveRight:";
 
-  "Alternate-LeftArrow" = "moveWordBackward:";
+  "Control-UpArrow" = "pageUp:";
+  "Control-DownArrow" = "pageDown:";
   "Control-LeftArrow" = "moveToBeginningOfLine:";
-  "Control-Shift-LeftArrow" = "selectLine:";
-  "Alternate-RightArrow" = "moveWordForward:";
   "Control-RightArrow" = "moveToEndOfLine:";
-  "Control-Shift-RightArrow" = "selectLine:";
+
+/*  "Alternate-UpArrow" = ("moveUp:", "moveWordBackward:"); */
+/*  "Alternate-DownArrow" = ("moveDown:", "moveWordForward:"); */
+  "Alternate-LeftArrow" = "moveWordBackward:";
+  "Alternate-RightArrow" = "moveWordForward:";
+
+/*  "Shift-UpArrow" = "moveUpAndModifySelection:"; */
+/*  "Shift-DownArrow" = "moveDownAndModifySelection:"; */
+/*  "Shift-LeftArrow" = "moveBackwardAndModifySelection:"; */
+/*  "Shift-RightArrow" = "moveForwardAndModifySelection:"; */
+
+/*  "Alternate-Shift-UpArrow" = ("moveUpAndModifySelection:",
+    "moveWordBackwardAndModifySelection:"); */
+/*  "Alternate-Shift-DownArrow" = ("moveDownAndModifySelection:",
+    "moveWordForwardAndModifySelection:"); */
+/*  "Alternate-Shift-LeftArrow" = "moveWordBackwardAndModifySelection:"; */
+/*  "Alternate-Shift-RightArrow" = "moveWordForwardAndModifySelection:"; */
+
+/*  "Control-Alternate-UpArrow" = ("pageUp:", "moveWordBackward:"); */
+/*  "Control-Alternate-DownArrow" = ("pageDown:", "moveWordForward:"); */
 
   "Delete" = "deleteForward:";
-  "Home" = "moveToBeginningOfDocument:";
-  "Shift-Home" = "selectAll:";
-  "Begin" = "moveToBeginningOfLine:";
-  "End" = "moveToEndOfDocument:";
-  "Shift-End" = "selectAll:";
+/*  "Home" = "moveToBeginningOfParagraph:"; */
+  "Control-Home" = "moveToBeginningOfDocument:";
+/*  "Shift-Home" = "moveToBeginningOfParagraphAndModifySelection:"; */
+/*  "End" = "moveToEndOfParagraph:"; */
+  "Control-End" = "moveToEndOfDocument:";
+/*  "Shift-End" = "moveToEndOfParagraphAndModifySelection:"; */
   "PageUp" = "pageUp:";
   "PageDown" = "pageDown:";
 
-  /* Emacs keybindings */
-  "Alternate-<" = "moveToBeginningOfDocument:";
-  "Alternate->" = "moveToEndOfDocument:";
+  /* Emacs Control keybindings */
   "Control-a" = "moveToBeginningOfLine:";
   "Control-b" = "moveLeft:";
-  "Alternate-b" = "moveWordBackward:";
   "Control-d" = "deleteForward:";
   "Control-e" = "moveToEndOfLine:";
   "Control-f" = "moveRight:";
-  "Alternate-f" = "moveWordForward:";
+  "Control-h" = "deleteBackward:";
+  /* "Control-l" = "centerSelectionInVisibleArea:"; */
+  /* "Control-k" = "deleteToEndOfLine:"; */
   "Control-n" = "moveDown:";
   "Control-p" = "moveUp:";
+  "Control-t" = "transpose:";
   "Control-v" = "pageDown:";
-  "Alternate-v" = "pageUp:";
+/*  "Control-y" = "yank:"; */
 }
