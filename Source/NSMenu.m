@@ -51,6 +51,20 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSScreen.h>
 
+@interface NSMenuWindowTitleView (height)
++ (float) titleHeight;
+@end
+
+@implementation NSMenuWindowTitleView (height)
++ (float) titleHeight
+{
+  NSFont *font = [NSFont boldSystemFontOfSize: 0.0];
+
+  /* Should make up 23 for the default font */
+  return ([font boundingRectForFont].size.height) + 8;
+}
+@end
+
 static NSZone	*menuZone = NULL;
 
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
@@ -158,7 +172,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id) initWithTitle: (NSString*)aTitle
 {
-  NSRect                winRect   = {{0,0},{20,23}};
+  float                 height = [NSMenuWindowTitleView titleHeight];
+  NSRect                winRect   =  { {0 , 0}, {20, height} };
   NSView *contentView;
 
   [super init];
@@ -196,8 +211,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   bWindow = [[NSMenuWindow alloc] init];
 
   titleView = [[NSMenuWindowTitleView alloc] init];
-  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
-  [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
+  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - height)];
+  [titleView setFrameSize: NSMakeSize (winRect.size.width, height)];
 
   contentView = [aWindow contentView];
   [contentView addSubview: menu_view];
@@ -833,7 +848,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   if (!menu_is_beholdenToPopUpButton)
     {
-      size.height += 23;
+      float height = [NSMenuWindowTitleView titleHeight];
+
+      size.height += height;
       [aWindow setContentSize: size];
       [aWindow setFrameTopLeftPoint:
 	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
@@ -841,8 +858,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
       [bWindow setContentSize: size];
       [bWindow setFrameTopLeftPoint:
 	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
-      [menu_view setFrameOrigin: NSMakePoint(0, 0)];
-      [titleView setFrame: NSMakeRect(0,size.height-23,size.width,23)];
+      [menu_view setFrameOrigin: NSMakePoint (0, 0)];
+      [titleView setFrame: NSMakeRect (0, size.height - height, 
+				       size.width, height)];
     }
   else
     {
