@@ -34,7 +34,7 @@ after-all::
 # Things to do before installing
 # before-install::
 
-# Install the library reference documentaion manually
+# Install the library reference documentation manually
 #
 after-install::
 	rm -rf $(GNUSTEP_DOCUMENTATION)/$(Gui_DOC_INSTALL_DIR)
@@ -47,11 +47,9 @@ after-install::
 	(cd GuiAdditions; $(TAR) cf - .) | \
 	  (cd $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR); $(TAR) xf -)
 	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR)/CVS
-	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)
-	$(MKDIRS) $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)
-	(cd GuiUser; $(TAR) cf - .) | \
-	  (cd $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR); $(TAR) xf -)
-	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)/CVS
+	( cd $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR) ; \
+	mv GuiUser/* . ; \
+	rm -rf GuiUser )
 	if [ ! -f $(GNUSTEP_DOCUMENTATION_MAN) ]; then \
 	  $(MKDIRS) $(GNUSTEP_DOCUMENTATION_MAN); \
 	fi; \
