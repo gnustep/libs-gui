@@ -1,3 +1,8 @@
+Wed Dec  6 19:37:33 2000  Georg Fleischmann <georg@vhf.de>
+	
+	* Source/NSTabView.m ([NSTabView -drawRect:]): using aRect
+	(bounds) instead of rect to draw
+
 Thu Nov 23 11:18:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/gsdoc/NSView.gsdoc: Documented drawRect:.
