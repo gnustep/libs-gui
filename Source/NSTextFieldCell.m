@@ -76,6 +76,7 @@
 	
   background_color = [NSColor whiteColor];
   text_color = [NSColor blackColor];
+  support = [NSFont systemFontOfSize:12];
   return self;
 }
 

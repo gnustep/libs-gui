@@ -1,7 +1,7 @@
 /* 
    NSColorList.h
 
-   Description...
+   Manage named lists of NSColors.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -32,11 +32,19 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSColor.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSString.h>
 
 @interface NSColorList : NSObject <NSCoding>
 
 {
   // Attributes
+  NSString *list_name;
+  NSString *file_name;
+  NSMutableDictionary *color_list;
+  NSMutableArray *color_list_keys;
+  BOOL is_editable;
 }
 
 //
@@ -64,7 +72,7 @@
 - (NSColor *)colorWithKey:(NSString *)key;
 - (void)insertColor:(NSColor *)color
 		key:(NSString *)key
-atIndex:(unsigned)location;
+	    atIndex:(unsigned)location;
 - (void)removeColorWithKey:(NSString *)key;
 - (void)setColor:(NSColor *)aColor
 	  forKey:(NSString *)key;

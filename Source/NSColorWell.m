@@ -1,7 +1,7 @@
 /* 
    NSColorWell.m
 
-   Description...
+   NSControl for selecting and display a single color value.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -49,21 +49,33 @@
 //
 // Drawing
 //
+- (void)drawRect:(NSRect)rect
+{
+  // xxx Draw border
+
+  [self drawWellInside: rect];
+}
+
 - (void)drawWellInside:(NSRect)insideRect
-{}
+{
+}
 
 //
 // Activating 
 //
 - (void)activate:(BOOL)exclusive
-{}
+{
+  is_active = YES;
+}
 
 - (void)deactivate
-{}
+{
+  is_active = NO;
+}
 
 - (BOOL)isActive
 {
-  return NO;
+  return is_active;
 }
 
 //
@@ -71,25 +83,33 @@
 //
 - (NSColor *)color
 {
-  return nil;
+  return the_color;
 }
 
 - (void)setColor:(NSColor *)color
-{}
+{
+  the_color = color;
+}
 
 - (void)takeColorFrom:(id)sender
-{}
+{
+  if ([sender respondsToSelector:@selector(color)])
+    the_color = [sender color];
+}
 
 //
 // Managing Borders 
 //
 - (BOOL)isBordered
 {
-  return NO;
+  return is_bordered;
 }
 
 - (void)setBordered:(BOOL)bordered
-{}
+{
+  is_bordered = bordered;
+  [self display];
+}
 
 //
 // NSCoding protocol
@@ -97,11 +117,17 @@
 - (void)encodeWithCoder:aCoder
 {
   [super encodeWithCoder:aCoder];
+  [aCoder encodeObject: the_color];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_active];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
 }
 
 - initWithCoder:aDecoder
 {
   [super initWithCoder:aDecoder];
+  the_color = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_active];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
 
   return self;
 }

@@ -1,7 +1,7 @@
 /* 
    NSColorWell.h
 
-   Description...
+   NSControl for selecting and display a single color value.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -37,6 +37,9 @@
 
 {
   // Attributes
+  NSColor *the_color;
+  BOOL is_active;
+  BOOL is_bordered;
 }
 
 //

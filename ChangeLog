@@ -1,3 +1,8 @@
+Thu Dec  5 06:58:51 1996  GNUstep Development  <gnustep@net-community.com>
+
+	* Source/NSColorList.m: Fill out implementation.
+	* Source/NSColorWell.m: Initial implementation.
+
 Thu Dec 05 09:56:25 1996  Scott Christley  <scottc@net-community.com>
 
 	* Headers/gnustep/gui/NSMenu.h: Newer release of OpenStep

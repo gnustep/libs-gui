@@ -137,21 +137,44 @@
 {
   double val_range,value;
 
-  max_value = aDouble;
+  // Swap values if new max is less than min
+  if (aDouble < min_value)
+    {
+      max_value = min_value;
+      min_value = aDouble;
+    }
+  else
+    max_value = aDouble;
+
   val_range = max_value - min_value;
   if (val_range != 0)
-    //Lowest position assumed to be 0
-    scale_factor = scroll_size/val_range; 
+    {
+      scale_factor = scroll_size/val_range; 
+      if (scale_factor != 0)
+	page_value = knob_thickness * (1/scale_factor);
+    }
 }
 
 - (void)setMinValue:(double)aDouble
 {
   double val_range,value;
 
-  min_value = aDouble;
+  // Swap values if new min is greater than max
+  if (aDouble > max_value)
+    {
+      min_value = max_value;
+      max_value = aDouble;
+    }
+  else
+    min_value = aDouble;
+
   val_range = max_value - min_value;
   if (val_range != 0)
-    scale_factor = scroll_size/val_range; 
+    {
+      scale_factor = scroll_size/val_range; 
+      if (scale_factor != 0)
+	page_value = knob_thickness * (1/scale_factor);
+    }
 }
 
 //
@@ -174,7 +197,21 @@
 
 - (void)setKnobThickness:(float)aFloat
 {
+  int old_scroll = scroll_size;
+  double val_range;
+
+  // Recalculate the scroll size
+  scroll_size = old_scroll + knob_thickness;
   knob_thickness = aFloat;
+  scroll_size -= knob_thickness;
+
+  val_range = max_value - min_value;
+  if (val_range != 0)
+    {
+      scale_factor = scroll_size/val_range; 
+      if (scale_factor != 0)
+	page_value = knob_thickness * (1/scale_factor);
+    }
 }
 
 - (void)setTitle:(NSString *)aString
@@ -269,8 +306,6 @@
   [aCoder encodeValueOfObjCType: "i" at: &scroll_size];
   [aCoder encodeValueOfObjCType: "i" at: &knob_thickness];
   [aCoder encodeValueOfObjCType: "d" at: &page_value];
-//  [aCoder encodeValuesOfObjCTypes: "dddiid", &max_value, &min_value,
-//	  &scale_factor, &scroll_size, &knob_thickness, &page_value];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertical];
 }
 
@@ -284,8 +319,6 @@
   [aDecoder decodeValueOfObjCType: "i" at: &scroll_size];
   [aDecoder decodeValueOfObjCType: "i" at: &knob_thickness];
   [aDecoder decodeValueOfObjCType: "d" at: &page_value];
-//  [aDecoder decodeValuesOfObjCTypes: "dddiid", &max_value, &min_value,
-//	  &scale_factor, &scroll_size, &knob_thickness, &page_value];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertical];
 
   return self;
