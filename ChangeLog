@@ -1,3 +1,9 @@
+2002-02-27  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSSplitView.m ([NSSplitView -mouseDown:]): 
+	Tweaked the drawing code and the event code, so that everything
+	is displayed more smoothly and faster.
+
 2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m

@@ -46,6 +46,8 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSSplitView.h>
 
+#include "AppKit/DPSOperators.h"
+
 @implementation NSSplitView
 
 /*
@@ -95,11 +97,15 @@
   int		offset = 0, i, count = [subs count];
   float		divVertical, divHorizontal;
   NSDate	*farAway = [NSDate distantFuture];
+  NSDate	*longTimeAgo = [NSDate distantPast];
   unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
   BOOL          delegateConstrains = NO;
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-  
+  SEL           constrainSel = 
+    @selector(splitView:constrainSplitPosition:ofSubviewAt:);
+  IMP           constrainImp;
+    
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -267,6 +273,11 @@
 			  inMode: NSEventTrackingRunLoopMode
 			 dequeue: YES];
 
+  if (delegateConstrains)
+    {
+      constrainImp = [_delegate methodForSelector: constrainSel];
+    }
+
   // user is moving the knob loop until left mouse up
   while ([e type] != NSLeftMouseUp)
     {
@@ -275,13 +286,21 @@
 	{
 	  if (_isVertical)
 	    {
+	      /*
 	      p.x = [_delegate splitView: self  constrainSplitPosition: p.x
 			       ofSubviewAt: offset];
+	      */
+	      (*constrainImp)(_delegate, constrainSel, self,
+			      p.x, offset);
 	    }
 	  else
 	    {
+	      /*
 	      p.y = [_delegate splitView: self  constrainSplitPosition: p.y
 			       ofSubviewAt: offset];
+	      */
+	      (*constrainImp)(_delegate, constrainSel, self,
+			      p.y, offset);
 	    }
 	}
       
@@ -316,19 +335,212 @@
 	  NSDebugLog(@"drawing divider at x: %d, y: %d, w: %d, h: %d\n",
 	    (int)NSMinX(r), (int)NSMinY(r), (int)NSWidth(r), (int)NSHeight(r));
 	  [_dividerColor set];
+	
+	    
+	  if (lit == YES)
+	    {
+	      if (_isVertical == NO)
+		{
+		  if ((NSMinY(r) > NSMaxY(oldRect)) 
+		      || (NSMaxY(r) < NSMinY(oldRect)))
+		    // the two rects don't intersect
+		    {
+		      DPScompositerect(GSCurrentContext(), 
+				       NSMinX(oldRect), 
+				       NSMinY(oldRect), 
+				       NSWidth(oldRect), 
+				       NSHeight(oldRect), 
+				       NSCompositeHighlight);
+		      //		      NSHighlightRect(oldRect);
+		      NSHighlightRect(r);
+		    }
+		  else
+		    // the two rects intersect
+		    {
+		      if (NSMinY(r) > NSMinY(oldRect))
+			{
+			  NSRect onRect, offRect;
+			  onRect.size.width = r.size.width;
+			  onRect.origin.x = r.origin.x;
+			  offRect.size.width = r.size.width;
+			  offRect.origin.x = r.origin.x;
+
+			  offRect.origin.y = NSMinY(oldRect);
+			  offRect.size.height = 
+			    NSMinY(r) - NSMinY(oldRect);
+
+			  onRect.origin.y = NSMaxY(oldRect);
+			  onRect.size.height = 
+			    NSMaxY(r) - NSMaxY(oldRect);
+
+			  //			  NSHighlightRect(onRect);
+			  DPScompositerect(GSCurrentContext(), 
+					   NSMinX(onRect), 
+					   NSMinY(onRect), 
+					   NSWidth(onRect), 
+					   NSHeight(onRect), 
+					   NSCompositeHighlight);
+
+			  NSHighlightRect(offRect);
+
+			  //NSLog(@"on : %@", NSStringFromRect(onRect));
+			  //NSLog(@"off : %@", NSStringFromRect(offRect));
+			  //NSLog(@"old : %@", NSStringFromRect(oldRect));
+			  //NSLog(@"r : %@", NSStringFromRect(r));
+			}
+		      else
+			{
+			  NSRect onRect, offRect;
+			  onRect.size.width = r.size.width;
+			  onRect.origin.x = r.origin.x;
+			  offRect.size.width = r.size.width;
+			  offRect.origin.x = r.origin.x;
+
+			  offRect.origin.y = NSMaxY(r);
+			  offRect.size.height = 
+			    NSMaxY(oldRect) - NSMaxY(r);
+
+			  onRect.origin.y = NSMinY(r);
+			  onRect.size.height = 
+			    NSMinY(oldRect) - NSMinY(r);
+
+			  //			  NSHighlightRect(onRect);
+			  DPScompositerect(GSCurrentContext(), 
+					   NSMinX(onRect), 
+					   NSMinY(onRect), 
+					   NSWidth(onRect), 
+					   NSHeight(onRect), 
+					   NSCompositeHighlight);
+
+			  NSHighlightRect(offRect);
+
+			  //NSLog(@"on : %@", NSStringFromRect(onRect));
+			  //NSLog(@"off : %@", NSStringFromRect(offRect));
+			  //NSLog(@"old : %@", NSStringFromRect(oldRect));
+			  //NSLog(@"r : %@", NSStringFromRect(r));
+			}
+		    }
+		}
+	      else
+		{
+		  if ((NSMinX(r) > NSMaxX(oldRect)) 
+		      || (NSMaxX(r) < NSMinX(oldRect)))
+		    // the two rects don't intersect
+		    {
+		      DPScompositerect(GSCurrentContext(), 
+				       NSMinX(oldRect), 
+				       NSMinY(oldRect), 
+				       NSWidth(oldRect), 
+				       NSHeight(oldRect), 
+				       NSCompositeHighlight);
+		      NSHighlightRect(r);
+		    }
+		  else
+		    // the two rects intersect
+		    {
+		      if (NSMinX(r) > NSMinX(oldRect))
+			{
+			  NSRect onRect, offRect;
+			  onRect.size.height = r.size.height;
+			  onRect.origin.y = r.origin.y;
+			  offRect.size.height = r.size.height;
+			  offRect.origin.y = r.origin.y;
+
+			  offRect.origin.x = NSMinX(oldRect);
+			  offRect.size.width = 
+			    NSMinX(r) - NSMinX(oldRect);
+
+			  onRect.origin.x = NSMaxX(oldRect);
+			  onRect.size.width = 
+			    NSMaxX(r) - NSMaxX(oldRect);
+
+			  DPScompositerect(GSCurrentContext(), 
+					   NSMinX(onRect), 
+					   NSMinY(onRect), 
+					   NSWidth(onRect), 
+					   NSHeight(onRect), 
+					   NSCompositeHighlight);
+			  //			  NSHighlightRect(onRect);
+			  NSHighlightRect(offRect);
+			}
+		      else
+			{
+			  NSRect onRect, offRect;
+			  onRect.size.height = r.size.height;
+			  onRect.origin.y = r.origin.y;
+			  offRect.size.height = r.size.height;
+			  offRect.origin.y = r.origin.y;
+
+			  offRect.origin.x = NSMaxX(r);
+			  offRect.size.width = 
+			    NSMaxX(oldRect) - NSMaxX(r);
+
+			  onRect.origin.x = NSMinX(r);
+			  onRect.size.width = 
+			    NSMinX(oldRect) - NSMinX(r);
+
+			  DPScompositerect(GSCurrentContext(), 
+					   NSMinX(onRect), 
+					   NSMinY(onRect), 
+					   NSWidth(onRect), 
+					   NSHeight(onRect), 
+					   NSCompositeHighlight);
+
+			  //			  NSHighlightRect(onRect);
+			  NSHighlightRect(offRect);
+			}
+		    }
+
+		}
+	    }
+	  else
+	    {
+	      NSHighlightRect(r);
+	    }
+	  /*
 	  if (lit == YES)
 	    {
 	      NSHighlightRect(oldRect);
 	      lit = NO;
 	    }
 	  NSHighlightRect(r);
+	  */
 	  lit = YES;
 	  oldRect = r;
 	}
-      e = [app nextEventMatchingMask: eventMask
-			   untilDate: farAway
-			      inMode: NSEventTrackingRunLoopMode
-			     dequeue: YES];
+
+      {
+	NSEvent *ee;
+
+	e = [app nextEventMatchingMask: eventMask
+		  untilDate: farAway
+		  inMode: NSEventTrackingRunLoopMode
+		  dequeue: YES];
+
+	if ((ee = [app nextEventMatchingMask: NSLeftMouseUpMask
+		       untilDate: longTimeAgo
+		       inMode: NSEventTrackingRunLoopMode
+		       dequeue: YES]) != nil)
+	  {
+	    [app discardEventsMatchingMask:NSLeftMouseDraggedMask
+		 beforeEvent:ee];
+	    e = ee;
+	  }
+	else
+	  {
+	    ee = e;
+	    do
+	      {
+		e = ee;
+		ee = [app nextEventMatchingMask: NSLeftMouseDraggedMask
+			  untilDate: longTimeAgo
+			  inMode: NSEventTrackingRunLoopMode
+			  dequeue: YES];
+	      }
+	    while(ee != nil);
+	  }
+      }
+      
     }
 
   if (lit == YES)
@@ -405,7 +617,7 @@
 
   [self setNeedsDisplay: YES];
 
-  [self display];
+  //[self display];
 }
 
 - (void) _adjustSubviews: (NSSize)oldSize
