@@ -163,7 +163,7 @@ static NSMapTable* windowmaps = NULL;
     {
       NSString	*key;
 
-      key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+      key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
       [windowsLock lock];
       [[NSUserDefaults standardUserDefaults] removeObjectForKey: key];
       [windowsLock unlock];
@@ -2207,7 +2207,7 @@ resetCursorRectsForView(NSView *theView)
     }
   else
     {
-      key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+      key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
     }
   [defs setObject: obj forKey: key];
   [windowsLock unlock];
@@ -2382,7 +2382,7 @@ resetCursorRectsForView(NSView *theView)
     {
       NSString	*key;
 
-      key = [NSString stringWithFormat: @"NSWindow frame %@", name];
+      key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
       obj = [defs objectForKey: key];
     }
   [windowsLock unlock];
