@@ -48,6 +48,8 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSFileWrapper.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSParagraphStyle.h>

@@ -45,6 +45,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenuView.h>
