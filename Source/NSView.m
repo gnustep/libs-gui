@@ -1282,13 +1282,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
   int		options = 0;
-  NSSize	superViewFrameSize = [_super_view frame].size;
+  NSSize	superViewFrameSize;
   NSRect        newFrame = _frame;
   BOOL		changedOrigin = NO;
   BOOL		changedSize = NO;
 
   if (_autoresizingMask == NSViewNotSizable)
     return;
+
+  superViewFrameSize = NSMakeSize(0,0);
+  if (_super_view)
+    superViewFrameSize = [_super_view frame].size;
 
   /*
    * determine if and how the X axis can be resized

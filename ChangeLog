@@ -1,3 +1,8 @@
+2002-05-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-resizeWithOldSuperviewSize:): Check supeview
+	before getting frame size (Solaris limintation).
+
 2002-04-30  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.7.7
