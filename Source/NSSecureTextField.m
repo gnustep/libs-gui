@@ -62,7 +62,7 @@
 - (id)initWithFrame:(NSRect)frameRect
 {
   [super initWithFrame: frameRect];
-  [cell setEchosBullets:YES];
+  [_cell setEchosBullets:YES];
 
   return self;
 }

@@ -60,11 +60,11 @@
 - (id) initWithFrame: (NSRect)frameRect
 {
   [super initWithFrame: frameRect];
-  [cell setState: 1];
-  [cell setBezeled: YES];
-  [cell setSelectable: YES];
-  [cell setEnabled: YES];
-  [cell setEditable: YES];
+  [_cell setState: 1];
+  [_cell setBezeled: YES];
+  [_cell setSelectable: YES];
+  [_cell setEnabled: YES];
+  [_cell setEditable: YES];
   [self setDrawsBackground: YES];
   _text_object = nil;
 
@@ -88,24 +88,24 @@
 //
 - (BOOL) isEditable
 {
-  return [cell isEditable];
+  return [_cell isEditable];
 }
 
 - (BOOL) isSelectable
 {
-  return [cell isSelectable];
+  return [_cell isSelectable];
 }
 
 - (void) setEditable: (BOOL)flag
 {
-  [cell setEditable: flag];
+  [_cell setEditable: flag];
   if (_text_object)
     [_text_object setEditable: flag];
 }
 
 - (void) setSelectable: (BOOL)flag
 {
-  [cell setSelectable: flag];
+  [_cell setSelectable: flag];
   if (_text_object)
     [_text_object setSelectable: flag];
 }
@@ -129,8 +129,8 @@
 	      return;
 	  
 	  //  [NSCursor hide];
-	  _text_object = [cell setUpFieldEditorAttributes: t];
-	  [cell selectWithFrame: bounds
+	  _text_object = [_cell setUpFieldEditorAttributes: t];
+	  [_cell selectWithFrame: bounds
 		inView: self
 		editor: _text_object
 		delegate: self
@@ -195,52 +195,52 @@
 //
 - (void) setBackgroundColor: (NSColor *)aColor
 {
-  [cell setBackgroundColor: aColor];
+  [_cell setBackgroundColor: aColor];
 }
 
 - (NSColor *) backgroundColor
 {
-  return [cell backgroundColor];
+  return [_cell backgroundColor];
 }
 
 - (BOOL) drawsBackground
 {
-  return [cell drawsBackground];
+  return [_cell drawsBackground];
 }
 
 - (BOOL) isBezeled
 {
-  return [cell isBezeled];
+  return [_cell isBezeled];
 }
 
 - (BOOL) isBordered
 {
-  return [cell isBordered];
+  return [_cell isBordered];
 }
 
 - (void) setBezeled: (BOOL)flag
 {
-  [cell setBezeled: flag];
+  [_cell setBezeled: flag];
 }
 
 - (void) setBordered: (BOOL)flag
 {
-  [cell setBordered: flag];
+  [_cell setBordered: flag];
 }
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  [cell setDrawsBackground: flag];
+  [_cell setDrawsBackground: flag];
 }
 
 - (void) setTextColor: (NSColor *)aColor
 {
-  [cell setTextColor: aColor];
+  [_cell setTextColor: aColor];
 }
 
 - (NSColor *) textColor
 {
-  return [cell textColor];
+  return [_cell textColor];
 }
 
 //
@@ -285,8 +285,8 @@
 
   //  [NSCursor hide];
   
-  _text_object = [cell setUpFieldEditorAttributes: t];
-  [cell editWithFrame: bounds
+  _text_object = [_cell setUpFieldEditorAttributes: t];
+  [_cell editWithFrame: bounds
 	inView: self
 	editor: _text_object
 	delegate: self
@@ -312,7 +312,7 @@
   if (_text_object)
     {
       [_text_object setString: @""];
-      [cell endEditing: _text_object];
+      [_cell endEditing: _text_object];
       _text_object = nil;
       return YES;
     }
@@ -331,7 +331,7 @@
 - (void) validateEditing 
 {
   if (_text_object)
-    [cell setStringValue: [_text_object text]];
+    [_cell setStringValue: [_text_object text]];
 }
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
@@ -372,7 +372,7 @@
       object: self
       userInfo: d];
 
-  [cell endEditing: [aNotification object]];
+  [_cell endEditing: [aNotification object]];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)
@@ -408,7 +408,7 @@
 
 - (BOOL) textShouldEndEditing: (NSText *)aTextObject
 {
-  if ([cell isEntryAcceptable: [aTextObject text]] == NO)
+  if ([_cell isEntryAcceptable: [aTextObject text]] == NO)
     {
       [self sendAction: _error_action to: [self target]];
       return NO;

@@ -97,44 +97,44 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) setMenu: (NSMenu *)menu
 {
-  [cell setMenu: menu];
+  [_cell setMenu: menu];
 }
 
 - (NSMenu *) menu
 {
-  return [cell menu];
+  return [_cell menu];
 }
 
 - (void) setPullsDown: (BOOL)flag
 {
-  [cell setPullsDown: flag];
+  [_cell setPullsDown: flag];
 }
 
 - (BOOL) pullsDown
 {
-  return [cell pullsDown];
+  return [_cell pullsDown];
 }
 
 - (void) setAutoenablesItems: (BOOL)flag
 {
-  [cell setAutoenablesItems: flag];
+  [_cell setAutoenablesItems: flag];
 }
 
 - (BOOL) autoenablesItems
 {
-  return [cell autoenablesItems];
+  return [_cell autoenablesItems];
 }
 
 - (void) addItemWithTitle: (NSString *)title
 {
-  [cell addItemWithTitle: title];
+  [_cell addItemWithTitle: title];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) addItemsWithTitles: (NSArray *)itemTitles
 {
-  [cell addItemsWithTitles: itemTitles];
+  [_cell addItemsWithTitles: itemTitles];
 
   [self synchronizeTitleAndSelectedItem];
 }
@@ -142,7 +142,7 @@ Class _nspopupbuttonCellClass = 0;
 - (void) insertItemWithTitle: (NSString *)title
 		     atIndex: (int)index
 {
-  [cell insertItemWithTitle: title 
+  [_cell insertItemWithTitle: title 
 	atIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
@@ -150,135 +150,134 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) removeAllItems
 {
-  [cell removeAllItems];
+  [_cell removeAllItems];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
 {
-  [cell removeItemWithTitle: title];
+  [_cell removeItemWithTitle: title];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) removeItemAtIndex: (int)index
 {
-  [cell removeItemAtIndex: index];
+  [_cell removeItemAtIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (id <NSMenuItem>) selectedItem
 {
-  return [cell selectedItem];
+  return [_cell selectedItem];
 }
 
 - (NSString *) titleOfSelectedItem
 {
-  return [cell titleOfSelectedItem];
+  return [_cell titleOfSelectedItem];
 }
 
 - (int) indexOfSelectedItem
 {
-  return [cell indexOfSelectedItem];
+  return [_cell indexOfSelectedItem];
 }
 
 - (void) selectItem: (id <NSMenuItem>)anObject
 {
-  [cell selectItem: anObject];
+  [_cell selectItem: anObject];
 }
 
 - (void) selectItemAtIndex: (int)index
 {
-  [cell selectItemAtIndex: index];
+  [_cell selectItemAtIndex: index];
 }
 
 - (void) selectItemWithTitle: (NSString *)title
 {
-  [cell selectItemWithTitle: title];
+  [_cell selectItemWithTitle: title];
 }
 
 - (int) numberOfItems
 {
-  return [cell numberOfItems];
+  return [_cell numberOfItems];
 }
 
 - (NSArray *) itemArray 
 {
-  return [cell itemArray];
+  return [_cell itemArray];
 }
 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
-  return [cell itemAtIndex: index];
+  return [_cell itemAtIndex: index];
 }
 
 - (NSString *) itemTitleAtIndex: (int)index
 {
-  return [cell itemTitleAtIndex: index];
+  return [_cell itemTitleAtIndex: index];
 }
 
 - (NSArray *) itemTitles
 {
-  return [cell itemTitles];
+  return [_cell itemTitles];
 }
 
 - (id <NSMenuItem>) itemWithTitle: (NSString *)title
 {
-  return [cell itemWithTitle: title];
+  return [_cell itemWithTitle: title];
 }
 
 - (id <NSMenuItem>) lastItem
 {
-  return [cell lastItem];
+  return [_cell lastItem];
 }
 
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  return [cell indexOfItem: anObject];
+  return [_cell indexOfItem: anObject];
 }
 
 - (int) indexOfItemWithTag: (int)tag
 {
-  // FIXME: This clashes with an ivar!!
-  return [cell indexOfItemWithTag: tag];
+  return [_cell indexOfItemWithTag: tag];
 }
 
 - (int) indexOfItemWithTitle: (NSString *)title
 {
-  return [cell indexOfItemWithTitle: title];
+  return [_cell indexOfItemWithTitle: title];
 }
 
 - (int) indexOfItemWithRepresentedObject: (id)anObject
 {
-  return [cell indexOfItemWithRepresentedObject: anObject];
+  return [_cell indexOfItemWithRepresentedObject: anObject];
 }
 
 - (int) indexOfItemWithTarget: (id)target
 		    andAction: (SEL)actionSelector
 {
-  return [cell indexOfItemWithTarget: target andAction: actionSelector];
+  return [_cell indexOfItemWithTarget: target andAction: actionSelector];
 }
 
 - (void) setPreferredEdge: (NSRectEdge)edge
 {
-  [cell setPreferredEdge: edge];
+  [_cell setPreferredEdge: edge];
 }
 
 - (NSRectEdge) preferredEdge
 {
-  return [cell preferredEdge];
+  return [_cell preferredEdge];
 }
 
 - (void) setTitle: (NSString *)aString
 {
-  [cell setTitle: aString];
+  [_cell setTitle: aString];
 }
 
 - (void) synchronizeTitleAndSelectedItem
 {
-  [cell synchronizeTitleAndSelectedItem];
+  [_cell synchronizeTitleAndSelectedItem];
 
   [self sizeToFit];
 
@@ -294,7 +293,7 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) mouseDown: (NSEvent *)theEvent
 { 
-  NSMenuView *mr = [[cell menu] menuRepresentation];
+  NSMenuView *mr = [[_cell menu] menuRepresentation];
   NSEvent    *e;
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   
@@ -305,7 +304,7 @@ Class _nspopupbuttonCellClass = 0;
       object: self];
 
   // Attach the popUp
-  [cell attachPopUpWithFrame: bounds
+  [_cell attachPopUpWithFrame: bounds
 	inView: self];
 
   // Process events; we start menu events processing by converting 
@@ -327,7 +326,7 @@ Class _nspopupbuttonCellClass = 0;
   [self synchronizeTitleAndSelectedItem];
   
   // Dismiss the popUp
-  [cell dismissPopUp];
+  [_cell dismissPopUp];
 
   // Send action to target
   [super sendAction: [self action]

@@ -104,7 +104,7 @@ id _nsbuttonCellClass = nil;
 //
 - (void) setButtonType: (NSButtonType)aType
 {
-  [cell setButtonType: aType];
+  [_cell setButtonType: aType];
   [self display];
 }
 
@@ -128,13 +128,13 @@ id _nsbuttonCellClass = nil;
 
 - (void) setState: (int)value
 {
-  [cell setState: value];
+  [_cell setState: value];
   [self display];
 }
 
 - (int) state
 {
-  return [cell state];
+  return [_cell state];
 }
 
 //
@@ -143,13 +143,13 @@ id _nsbuttonCellClass = nil;
 - (void) getPeriodicDelay: (float *)delay
 		interval: (float *)interval
 {
-  [cell getPeriodicDelay: delay interval: interval];
+  [_cell getPeriodicDelay: delay interval: interval];
 }
 
 - (void) setPeriodicDelay: (float)delay
 		interval: (float)interval
 {
-  [cell setPeriodicDelay: delay interval: interval];
+  [_cell setPeriodicDelay: delay interval: interval];
 }
 
 //
@@ -157,24 +157,24 @@ id _nsbuttonCellClass = nil;
 //
 - (NSString *) alternateTitle
 {
-  return [cell alternateTitle];
+  return [_cell alternateTitle];
 }
 
 - (void) setAlternateTitle: (NSString *)aString
 {
-  [cell setAlternateTitle: aString];
+  [_cell setAlternateTitle: aString];
   [self display];
 }
 
 - (void) setTitle: (NSString *)aString
 {
-  [cell setTitle: aString];
+  [_cell setTitle: aString];
   [self display];
 }
 
 - (NSString *) title
 {
-  return [cell title];
+  return [_cell title];
 }
 
 //
@@ -182,45 +182,45 @@ id _nsbuttonCellClass = nil;
 //
 - (NSImage *) alternateImage
 {
-  return [cell alternateImage];
+  return [_cell alternateImage];
 }
 
 - (NSImage *) image
 {
-  return [cell image];
+  return [_cell image];
 }
 
 - (NSCellImagePosition) imagePosition
 {
-  return [cell imagePosition];
+  return [_cell imagePosition];
 }
 
 - (void) setAlternateImage: (NSImage *)anImage
 {
-  [cell setAlternateImage: anImage];
+  [_cell setAlternateImage: anImage];
   [self display];
 }
 
 - (void) setImage: (NSImage *)anImage
 {
-  [cell setImage: anImage];
+  [_cell setImage: anImage];
   [self display];
 }
 
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
-  [cell setImagePosition: aPosition];
+  [_cell setImagePosition: aPosition];
   [self display];
 }
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  [cell setAlignment: mode];
+  [_cell setAlignment: mode];
 }
 
 - (NSTextAlignment) alignment
 {
-  return [cell alignment];
+  return [_cell alignment];
 }
 
 //
@@ -228,23 +228,23 @@ id _nsbuttonCellClass = nil;
 //
 - (BOOL) isBordered
 {
-  return [cell isBordered];
+  return [_cell isBordered];
 }
 
 - (BOOL) isTransparent
 {
-  return [cell isTransparent];
+  return [_cell isTransparent];
 }
 
 - (void) setBordered: (BOOL)flag
 {
-  [cell setBordered: flag];
+  [_cell setBordered: flag];
   [self display];
 }
 
 - (void) setTransparent: (BOOL)flag
 {
-  [cell setTransparent: flag];
+  [_cell setTransparent: flag];
   [self display];
 }
 
@@ -254,7 +254,7 @@ id _nsbuttonCellClass = nil;
 
 - (void) highlight: (BOOL)flag
 {
-  [cell highlight: flag withFrame: bounds inView: self];
+  [_cell highlight: flag withFrame: bounds inView: self];
 }
 
 //
@@ -262,22 +262,22 @@ id _nsbuttonCellClass = nil;
 //
 - (NSString*) keyEquivalent
 {
-  return [cell keyEquivalent];
+  return [_cell keyEquivalent];
 }
 
 - (unsigned int) keyEquivalentModifierMask
 {
-  return [cell keyEquivalentModifierMask];
+  return [_cell keyEquivalentModifierMask];
 }
 
 - (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
-  [cell setKeyEquivalent: aKeyEquivalent];
+  [_cell setKeyEquivalent: aKeyEquivalent];
 }
 
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
-  [cell setKeyEquivalentModifierMask: mask];
+  [_cell setKeyEquivalentModifierMask: mask];
 }
 
 //
@@ -285,7 +285,7 @@ id _nsbuttonCellClass = nil;
 //
 - (BOOL) acceptsFirstResponder
 {
-  return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);
+  return [_cell acceptsFirstResponder] || ([self keyEquivalent] != nil);
 }
 
 - (void) keyDown: (NSEvent*)theEvent
@@ -312,7 +312,7 @@ id _nsbuttonCellClass = nil;
 
 - (void) performClick: (id)sender
 {
-  [cell performClick: sender];
+  [_cell performClick: sender];
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent

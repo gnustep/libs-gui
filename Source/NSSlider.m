@@ -73,87 +73,87 @@ static Class cellClass;
 
 - (NSImage *) image
 {
-  return [cell image];
+  return [_cell image];
 }
 
 - (int) isVertical
 {
-  return [cell isVertical];
+  return [_cell isVertical];
 }
 
 - (float) knobThickness
 {
-  return [cell knobThickness];
+  return [_cell knobThickness];
 }
 
 - (void) setImage: (NSImage *)backgroundImage
 {
-  [cell setImage: backgroundImage];
+  [_cell setImage: backgroundImage];
 }
 
 - (void) setKnobThickness: (float)aFloat
 {
-  [cell setKnobThickness: aFloat];
+  [_cell setKnobThickness: aFloat];
 }
 
 - (void) setTitle: (NSString *)aString
 {
-  [cell setTitle: aString];
+  [_cell setTitle: aString];
 }
 
 - (void) setTitleCell: (NSCell *)aCell
 {
-  [cell setTitleCell: aCell];
+  [_cell setTitleCell: aCell];
 }
 
 - (void) setTitleColor: (NSColor *)aColor
 {
-  [cell setTitleColor: aColor];
+  [_cell setTitleColor: aColor];
 }
 
 - (void) setTitleFont: (NSFont *)fontObject
 {
-  [cell setTitleFont: fontObject];
+  [_cell setTitleFont: fontObject];
 }
 
 - (NSString *) title
 {
-  return [cell title];
+  return [_cell title];
 }
 
 - (id) titleCell
 {
-  return [cell titleCell];
+  return [_cell titleCell];
 }
 
 - (NSColor *) titleColor
 {
-  return [cell titleColor];
+  return [_cell titleColor];
 }
 
 - (NSFont *) titleFont
 {
-  return [cell titleFont];
+  return [_cell titleFont];
 }
 
 - (double) maxValue
 {
-  return [cell maxValue];
+  return [_cell maxValue];
 }
 
 - (double) minValue
 {
-  return [cell minValue];
+  return [_cell minValue];
 }
 
 - (void) setMaxValue: (double)aDouble
 {
-  [cell setMaxValue: aDouble];
+  [_cell setMaxValue: aDouble];
 }
 
 - (void) setMinValue: (double)aDouble
 {
-  [cell setMinValue: aDouble];
+  [_cell setMinValue: aDouble];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
@@ -163,12 +163,12 @@ static Class cellClass;
 
 - (void) drawRect: (NSRect)rect
 {
-  [cell drawWithFrame: rect inView: self];
+  [_cell drawWithFrame: rect inView: self];
 }
 
 - (float)_floatValueForMousePoint: (NSPoint)point knobRect: (NSRect)knobRect
 {
-  NSSliderCell* theCell = cell;
+  NSSliderCell* theCell = _cell;
   NSRect slotRect = [theCell trackRect];
   BOOL isVertical = [theCell isVertical];
   float minValue = [theCell minValue];
@@ -229,8 +229,8 @@ static Class cellClass;
 			  | NSPeriodicMask;
   NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   NSEventType eventType = [theEvent type];
-  BOOL isContinuous = [cell isContinuous];
-  NSSliderCell* theCell = cell;
+  BOOL isContinuous = [_cell isContinuous];
+  NSSliderCell* theCell = _cell;
   float oldFloatValue = [theCell floatValue];
   id target = [theCell target];
   SEL action = [theCell action];
@@ -278,7 +278,7 @@ static Class cellClass;
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint location = [self convertPoint: [theEvent locationInWindow]fromView: nil];
-  NSSliderCell* theCell = cell;
+  NSSliderCell* theCell = _cell;
   NSRect rect;
 
   rect = [theCell knobRectFlipped: [self isFlipped]];

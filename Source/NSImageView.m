@@ -59,56 +59,56 @@
 
 - (void) setImage: (NSImage *)image
 {
-  [cell setImage: image];
-  [self updateCell: cell];
+  [_cell setImage: image];
+  [self updateCell: _cell];
 }
 
 - (void) setImageAlignment: (NSImageAlignment)align
 {
-  [cell setImageAlignment: align];
-  [self updateCell: cell];
+  [_cell setImageAlignment: align];
+  [self updateCell: _cell];
 }
 
 - (void) setImageScaling: (NSImageScaling)scaling
 {
-  [cell setImageScaling: scaling];
-  [self updateCell: cell];
+  [_cell setImageScaling: scaling];
+  [self updateCell: _cell];
 }
 
 - (void) setImageFrameStyle: (NSImageFrameStyle)style
 {
-  [cell setImageFrameStyle: style];
-  [self updateCell: cell];
+  [_cell setImageFrameStyle: style];
+  [self updateCell: _cell];
 }
 
 - (void) setEditable: (BOOL)flag
 {
-  [cell setEditable: flag];
+  [_cell setEditable: flag];
 }
 
 - (NSImage *) image
 {
-  return [cell image];
+  return [_cell image];
 }
 
 - (NSImageAlignment) imageAlignment
 {
-  return [cell imageAlignment];
+  return [_cell imageAlignment];
 }
 
 - (NSImageScaling) imageScaling
 {
-  return [cell imageScaling];
+  return [_cell imageScaling];
 }
 
 - (NSImageFrameStyle) imageFrameStyle
 {
-  return [cell imageFrameStyle];
+  return [_cell imageFrameStyle];
 }
 
 - (BOOL) isEditable
 {
-  return [cell isEditable];
+  return [_cell isEditable];
 }
 
 @end
