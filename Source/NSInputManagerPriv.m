@@ -32,6 +32,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSDebug.h>
 
 #if !defined USE_INPUT_MANAGER_UTILITIES
 #define USE_INPUT_MANAGER_UTILITIES
@@ -147,9 +148,8 @@ static IMRecord _maskTable[] = {
   NSString	*noModChars	= nil;
   unsigned int	noModCharsLen	= 0;
   unsigned int	modifierFlags	= 0;
-  IMCharacter	*c		= [[IMCharacter alloc] init];
+  IMCharacter	*aChar		= nil;
   SEL		sel		= (SEL)0;
-  unsigned int	i;
   IMQueryResult	result;
 
   if ([self wantsToInterpretAllKeystrokes])
@@ -162,6 +162,7 @@ static IMRecord _maskTable[] = {
   noModChars	= [event charactersIgnoringModifiers];
   noModCharsLen	= [noModChars length];
   modifierFlags = [event modifierFlags];
+  aChar		= [[[IMCharacter alloc] init] autorelease];
 
   /* TODO: Special treatment for localized characters: They are actually
      modified in -back, nonetheless, -charactersIgnoringModifiers returns 0.
@@ -175,46 +176,51 @@ static IMRecord _maskTable[] = {
       return;
     }
 
-  for (i = 0; i < noModCharsLen; i++)
+  /* NB: The following code heavily depends on the implementation
+     detail of NSEvent of the type KeyDown.  The current implementation
+     (gui/back-0.9.1) seemingly contains only a single character per
+     event.  (If there were more than a signle characer, we couldn't
+     rely on -modifierFlags because it wouldn't tell which character
+     was actually modified.) */ 
+  [aChar setCharacter: [noModChars characterAtIndex: 0]];
+  [aChar setModifiers: modifierFlags];
+
+  result = [keyBindingTable getSelectorFromCharacter: aChar 
+					    selector: &sel];
+
+  NSDebugMLLog(@"NSInputManager", @"<-- %@", aChar);
+  if (sel)
     {
-      [c setCharacter: [noModChars characterAtIndex: i]];
-      [c setModifiers: modifierFlags];
+      NSDebugMLLog(@"NSInputManager", @"--> %@", NSStringFromSelector(sel));
+    }
+  else
+    {
+      NSDebugMLLog(@"NSInputManager", @"--> %@", aChar);
+    }
 
+  switch (result)
+    {
+    case IMNotFound:
+      [self insertText: chars];
+      break;
 
-      result = [keyBindingTable getSelectorFromCharacter: c
-						selector: &sel];
-#if defined INPUT_MANAGER_INTERPRETATION_DEBUG
-      NSLog(@"%@: <-- %@", self, c);
+    case IMFound:
       if (sel)
-	NSLog(@"%@: --> %@", self, NSStringFromSelector(sel));
-      else
-	NSLog(@"%@: --> %@", self, [c stringValue]);
-#endif
-
-      switch (result)
 	{
-	case IMNotFound:
-	  if ([c isNotModified] || [c isShiftedOnly])
-	    {
-	      [self insertText: [c stringValue]];
-	    }
-	  break;
-
-	case IMFound:
-	  if (sel)
-	    {
-	      [self doCommandBySelector: sel];
-	    }
-	  else
-	    {
-	      [self insertText: chars];
-	    }
-	  break;
-
-	case IMPending:
-	  /* Do nothing */
-	  break;
+	  [self doCommandBySelector: sel];
 	}
+      else
+	{
+	  /* This implies that the key binding is the one specified by the
+	     current server.  Pass the raw character to it and let it
+	     handle the character. */
+	  [self insertText: chars];
+	}
+      break;
+
+    case IMPending:
+      /* Do nothing, waiting for a next event. */
+      break;
     }
 }
 
@@ -232,9 +238,10 @@ static IMRecord _maskTable[] = {
   static unsigned int	count	    = 0;
   /* Adjust the following two constants so that most of the users feel
      the resulting cursor movements look natural.  (Or fix the crawling
-     re-drawing of NSTextView, which is responsible for this hack. ) */
+     re-drawing of NSTextView, which is primarily responsible for this
+     hack. ) */
   const NSTimeInterval	interval    = 50.0;
-  static const int	skips	    = 40;
+  static const int	skips	    = 80;
 #endif /* SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP */
   NSEnumerator		*objEnum    = nil;
   id			obj	    = nil;
@@ -264,6 +271,9 @@ static IMRecord _maskTable[] = {
       [self interpretSingleKeyEvent: obj];
     }
 }
+
+
+#undef SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP
 
 @end /* @implementation NSInputManager (KeyEventHandling) */
 
