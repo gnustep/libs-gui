@@ -2991,7 +2991,7 @@ byExtendingSelection: (BOOL)flag
       id                  en;
 
       defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"Table Columns %@", 
+      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", 
 			   _autosaveName];
       config = [NSMutableDictionary new];
       
@@ -3024,7 +3024,7 @@ byExtendingSelection: (BOOL)flag
       NSString           *tableKey;
 
       defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"Table Columns %@", 
+      tableKey = [NSString stringWithFormat: @"NSTableView Columns %@", 
 			   _autosaveName];
       config = [defaults objectForKey: tableKey];
       if (config != nil) 
