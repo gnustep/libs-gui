@@ -2975,6 +2975,12 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		  /* Window Manager just deminiaturized us */
 		  [self _didDeminiaturize: self];
 		}
+	      if (_f.visible == NO)
+		{
+		  NSDebugLLog(@"Focus", @"WM take focus on hidden window %d",
+			      _windowNum);
+		  break;
+		}
 	      if ([self canBecomeKeyWindow] == YES)
 		{
 		  [self makeKeyWindow];

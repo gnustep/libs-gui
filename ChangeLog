@@ -1,3 +1,10 @@
+2002-10-09  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication (hide:): Don't setinputfocus to the
+	icon window.
+	* Source/NSWindow.m (-sendEvent:) (GSAppKitWindowFocusIn): 
+	If we're not visible, don't try to become main/key.
+
 2002-10-08  Adam Fedor  <fedor@gnu.org>
 
 	* Fix window focus problems.

@@ -1676,8 +1676,6 @@ delegate.
 	{
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
-	  [GSServerForWindow(_app_icon_window) 
-			    setinputfocus: [_app_icon_window windowNumber]];
 	}
       for (i = 0; i < count; i++)
 	{
