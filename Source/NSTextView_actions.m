@@ -1,6 +1,8 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+   <abstract>Categories which add user actions to NSTextView</abstract>
+
+   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    Originally moved here from NSTextView.m.
 
@@ -40,8 +42,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
-
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+*/
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
@@ -50,11 +52,6 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSTextView.h>
-
-
-/**** User actions ****/
-
-/* TODO: all these need to be cleaned up */
 
 /*
 These methods are for user actions, ie. they are normally called from
@@ -69,7 +66,6 @@ and make sure all necessary notifications are sent. This is done by sending
 All actions from NSResponder that make sense for a text view  should be
 implemented here, but this is _not_ the place to add new actions.
 
-
 When changing attributes, the range returned by
 rangeForUserCharacterAttributeChange or rangeForUserParagraphAttributeChange
 should be used. If the location is NSNotFound, nothing should be done (in
@@ -79,20 +75,12 @@ returns YES, the attributes of the range and the typing attributes should be
 changed, and -didChangeText should be called.
 
 In a non-rich-text text view, the typing attributes _must_always_ hold the
-attributes of the text. Thus, the typing attributes muse always be changed
+attributes of the text. Thus, the typing attributes must always be changed
 in the same way that the attributes of the text are changed.
-
-(TODO: Will need to look over methods that deal with attributes to make
-sure this holds.)
-
 
 TODO: can the selected range's location be NSNotFound? when?
 
-
-
 Not all user actions are here. Exceptions:
-
-  -toggleRuler:
 
   -copy:
   -copyFont:
@@ -107,9 +95,6 @@ Not all user actions are here. Exceptions:
   -showGuessPanel:
 
   -selectAll: (implemented in NSText)
-
-  -toggleContinuousSpellChecking:
-
 
 Not all methods that handle user-induced text modifications are here.
 Exceptions:
@@ -142,7 +127,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 @implementation NSTextView (user_action_helpers)
 
--(void) _illegalMovement: (int)textMovement
+- (void) _illegalMovement: (int)textMovement
 {
   /* This is similar to [self resignFirstResponder], with the
      difference that in the notification we need to put the
@@ -177,9 +162,9 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 }
 
 
--(void) _changeAttribute: (NSString *)name
-		 inRange: (NSRange)r
-		   using: (id (*)(id))func
+- (void) _changeAttribute: (NSString *)name
+		  inRange: (NSRange)r
+		    using: (id (*)(id))func
 {
   unsigned int i;
   NSRange e, r2;
@@ -301,7 +286,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 }
 
 
--(void) subscript: (id)sender
+- (void) subscript: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -313,7 +298,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: int_minus_one];
 }
 
--(void) superscript: (id)sender
+- (void) superscript: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -325,7 +310,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: int_plus_one];
 }
 
--(void) lowerBaseline: (id)sender
+- (void) lowerBaseline: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -337,7 +322,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: float_plus_one];
 }
 
--(void) raiseBaseline: (id)sender
+- (void) raiseBaseline: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -349,7 +334,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: float_minus_one];
 }
 
--(void) unscript: (id)sender
+- (void) unscript: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -372,12 +357,11 @@ static NSNumber *float_plus_one(NSNumber *cur)
 
   [_layoutManager->_typingAttributes removeObjectForKey: NSSuperscriptAttributeName];
   [_layoutManager->_typingAttributes removeObjectForKey: NSBaselineOffsetAttributeName];
-
   [self didChangeText];
 }
 
 
--(void) underline: (id)sender
+- (void) underline: (id)sender
 {
   BOOL doUnderline = YES;
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
@@ -409,7 +393,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 }
 
 
--(void) useStandardKerning: (id)sender
+- (void) useStandardKerning: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -425,7 +409,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
--(void) turnOffKerning: (id)sender
+- (void) turnOffKerning: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -443,7 +427,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
--(void) loosenKerning: (id)sender
+- (void) loosenKerning: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -455,7 +439,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: float_plus_one];
 }
 
--(void) tightenKerning: (id)sender
+- (void) tightenKerning: (id)sender
 {
   NSRange r = [self rangeForUserCharacterAttributeChange];
 
@@ -467,7 +451,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: float_minus_one];
 }
 
--(void) turnOffLigatures: (id)sender
+- (void) turnOffLigatures: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -485,7 +469,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
--(void) useStandardLigatures: (id)sender
+- (void) useStandardLigatures: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -502,7 +486,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
--(void) useAllLigatures: (id)sender
+- (void) useAllLigatures: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -520,7 +504,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self didChangeText];
 }
 
--(void) toggleTraditionalCharacterShape: (id)sender
+- (void) toggleTraditionalCharacterShape: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
@@ -528,7 +512,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 }
 
 
--(void) insertNewline: (id)sender
+- (void) insertNewline: (id)sender
 {
   if (_tf.is_field_editor)
     {
@@ -539,7 +523,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self insertText: @"\n"];
 }
 
--(void) insertTab: (id)sender
+- (void) insertTab: (id)sender
 {
   if (_tf.is_field_editor)
     {
@@ -550,7 +534,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self insertText: @"\t"];
 }
 
--(void) insertBacktab: (id)sender
+- (void) insertBacktab: (id)sender
 {
   if (_tf.is_field_editor)
     {
@@ -563,7 +547,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 }
 
 
--(void) deleteForward: (id)sender
+- (void) deleteForward: (id)sender
 {
   NSRange range = [self rangeForUserTextChange];
   
@@ -605,7 +589,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self setSelectedRange: NSMakeRange (range.location, 0)];
 }
 
--(void) deleteBackward: (id)sender
+- (void) deleteBackward: (id)sender
 {
   NSRange range = [self rangeForUserTextChange];
   
@@ -683,24 +667,32 @@ added to the selection (1,3).
 
 */
 
--(unsigned int) _movementOrigin
+- (unsigned int) _movementOrigin
 {
-  if (_layoutManager->_selectionAffinity == NSSelectionAffinityUpstream)
-    return _layoutManager->_selected_range.location;
+  NSRange range = [self selectedRange];
+
+  if ([self selectionAffinity] == NSSelectionAffinityUpstream)
+    return range.location;
   else
-    return NSMaxRange(_layoutManager->_selected_range);
+    return NSMaxRange(range);
 }
 
--(void) _moveTo: (unsigned int)cindex
-	 select: (BOOL)select
+- (unsigned int) _movementEnd
+{
+  NSRange range = [self selectedRange];
+
+  if ([self selectionAffinity] == NSSelectionAffinityDownstream)
+    return range.location;
+  else
+    return NSMaxRange(range);
+}
+
+- (void) _moveTo: (unsigned int)cindex
+	  select: (BOOL)select
 {
   if (select)
     {
-      unsigned int anchor;
-      if (_layoutManager->_selectionAffinity == NSSelectionAffinityDownstream)
-	anchor = _layoutManager->_selected_range.location;
-      else
-	anchor = NSMaxRange(_layoutManager->_selected_range);
+      unsigned int anchor = [self _movementEnd];
 
       if (anchor < cindex)
 	{
@@ -721,9 +713,9 @@ added to the selection (1,3).
     }
 }
 
--(void) _move: (GSInsertionPointMovementDirection)direction
-     distance: (float)distance
-       select: (BOOL)select
+- (void) _move: (GSInsertionPointMovementDirection)direction
+      distance: (float)distance
+	select: (BOOL)select
 {
   unsigned int cindex;
   int new_direction;
@@ -749,7 +741,6 @@ added to the selection (1,3).
     {
       _originalInsertionPointCharacterIndex = cindex;
     }
-  
 
   cindex = [_layoutManager characterIndexMoving: direction
 	      fromCharacterIndex: cindex
@@ -766,84 +757,46 @@ added to the selection (1,3).
 /*
 Insertion point movement actions.
 
-TODO: should implement:  (D marks done)
-
-D-(void) moveBackward: (id)sender;
-D-(void) moveBackwardAndModifySelection: (id)sender;
-
-D-(void) moveForward: (id)sender;
-D-(void) moveForwardAndModifySelection: (id)sender;
-
-D-(void) moveDown: (id)sender;
-D-(void) moveDownAndModifySelection: (id)sender;
-
-D-(void) moveUp: (id)sender;
-D-(void) moveUpAndModifySelection: (id)sender;
-
-D-(void) moveLeft: (id)sender;
-D-(void) moveRight: (id)sender;
-
-D-(void) moveWordBackward: (id)sender;
-D-(void) moveWordBackwardAndModifySelection: (id)sender;
-
-D-(void) moveWordForward: (id)sender;
-D-(void) moveWordForwardAndModifySelection: (id)sender;
-
-D-(void) moveToBeginningOfDocument: (id)sender;
-D-(void) moveToEndOfDocument: (id)sender;
-
-D-(void) moveToBeginningOfLine: (id)sender;
-D-(void) moveToEndOfLine: (id)sender;
-
--(void) moveToBeginningOfParagraph: (id)sender;
--(void) moveToEndOfParagraph: (id)sender;
-
-TODO: think hard about behavior for pageUp: and pageDown:
-D-(void) pageDown: (id)sender;
-D-(void) pageUp: (id)sender;
-
-
 TODO: some of these used to do nothing if self is a field editor. should
 check if there was a reason for that.
-
 */
 
-
-
--(void) moveUp: (id)sender
+- (void) moveUp: (id)sender
 {
   [self _move: GSInsertionPointMoveUp
 	distance: 0.0
 	select: NO];
 }
--(void) moveUpAndModifySelection: (id)sender
+
+- (void) moveUpAndModifySelection: (id)sender
 {
   [self _move: GSInsertionPointMoveUp
 	distance: 0.0
 	select: YES];
 }
 
--(void) moveDown: (id)sender
+- (void) moveDown: (id)sender
 {
   [self _move: GSInsertionPointMoveDown
 	distance: 0.0
 	select: NO];
 }
--(void) moveDownAndModifySelection: (id)sender
+
+- (void) moveDownAndModifySelection: (id)sender
 {
   [self _move: GSInsertionPointMoveDown
 	distance: 0.0
 	select: YES];
 }
 
--(void) moveLeft: (id)sender
+- (void) moveLeft: (id)sender
 {
   [self _move: GSInsertionPointMoveLeft
 	distance: 0.0
 	select: NO];
 }
 
--(void) moveRight: (id)sender
+- (void) moveRight: (id)sender
 {
   [self _move: GSInsertionPointMoveRight
 	distance: 0.0
@@ -851,18 +804,21 @@ check if there was a reason for that.
 }
 
 
--(void) moveBackward: (id)sender
+- (void) moveBackward: (id)sender
 {
   unsigned int to = [self _movementOrigin];
+
   if (to == 0)
     return;
   to--;
   [self _moveTo: to
 	 select: NO];
 }
--(void) moveBackwardAndModifySelection: (id)sender
+
+- (void) moveBackwardAndModifySelection: (id)sender
 {
   unsigned int to = [self _movementOrigin];
+
   if (to == 0)
     return;
   to--;
@@ -870,18 +826,20 @@ check if there was a reason for that.
 	 select: YES];
 }
 
--(void) moveForward: (id)sender
+- (void) moveForward: (id)sender
 {
   unsigned int to = [self _movementOrigin];
+
   if (to == [_textStorage length])
     return;
   to++;
   [self _moveTo: to
 	 select: NO];
 }
--(void) moveForwardAndModifySelection: (id)sender
+- (void) moveForwardAndModifySelection: (id)sender
 {
   unsigned int to = [self _movementOrigin];
+
   if (to == [_textStorage length])
     return;
   to++;
@@ -889,68 +847,76 @@ check if there was a reason for that.
 	 select: YES];
 }
 
--(void) moveWordBackward: (id)sender
+- (void) moveWordBackward: (id)sender
 {
   unsigned int newLocation;
+
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: NO];
   [self _moveTo: newLocation
 	 select: NO];
 }
--(void) moveWordBackwardAndModifySelection: (id)sender
+
+- (void) moveWordBackwardAndModifySelection: (id)sender
 {
   unsigned int newLocation;
+  
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: NO];
   [self _moveTo: newLocation
 	 select: YES];
 }
 
--(void) moveWordForward: (id)sender
+- (void) moveWordForward: (id)sender
 {
   unsigned newLocation;
+
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: YES];
   [self _moveTo: newLocation
 	 select: NO];
 }
--(void) moveWordForwardAndModifySelection: (id)sender
+
+- (void) moveWordForwardAndModifySelection: (id)sender
 {
   unsigned newLocation;
+
   newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: YES];
   [self _moveTo: newLocation
 	 select: YES];
 }
 
--(void) moveToBeginningOfDocument: (id)sender
+- (void) moveToBeginningOfDocument: (id)sender
 {
   [self _moveTo: 0
 	 select: NO];
 }
--(void) moveToEndOfDocument: (id)sender
+
+- (void) moveToEndOfDocument: (id)sender
 {
   [self _moveTo: [_textStorage length]
 	 select: NO];
 }
 
-
--(void) moveToBeginningOfParagraph: (id)sender
+- (void) moveToBeginningOfParagraph: (id)sender
 {
   NSRange aRange;
   
-  aRange = [[_textStorage string] lineRangeForRange: NSMakeRange([self _movementOrigin], 0)];
+  aRange = [[_textStorage string] lineRangeForRange: 
+				      NSMakeRange([self _movementOrigin], 0)];
   [self _moveTo: aRange.location
 	 select: NO];
 }
 
--(void) moveToEndOfParagraph: (id)sender
+- (void) moveToEndOfParagraph: (id)sender
 {
   NSRange aRange;
   unsigned newLocation;
   unsigned maxRange;
   
-  aRange = [[_textStorage string] lineRangeForRange: NSMakeRange([self _movementOrigin], 0)];
+  aRange = [[_textStorage string] lineRangeForRange: 
+				      NSMakeRange([self _movementOrigin], 0)];
   maxRange = NSMaxRange (aRange);
 
   if (maxRange == 0)
@@ -1000,19 +966,18 @@ check if there was a reason for that.
 
 /* TODO: this is only the beginning and end of lines if lines are horizontal
 and layout is left-to-right */
--(void) moveToBeginningOfLine: (id)sender
+- (void) moveToBeginningOfLine: (id)sender
 {
   [self _move: GSInsertionPointMoveLeft
 	distance: 1e8
 	select: NO];
 }
--(void) moveToEndOfLine: (id)sender
+- (void) moveToEndOfLine: (id)sender
 {
   [self _move: GSInsertionPointMoveRight
 	distance: 1e8
 	select: NO];
 }
-
 
 /**
  * Tries to move the selection/insertion point down one page of the
@@ -1020,7 +985,7 @@ and layout is left-to-right */
  * horizontal position of the last vertical movement.
  * If the receiver is a field editor, this method returns immediatly. 
  */
--(void) pageDown: (id)sender
+- (void) pageDown: (id)sender
 {
   float    scrollDelta;
   float    oldOriginY;
@@ -1055,7 +1020,7 @@ and layout is left-to-right */
  * horizontal position of the last vertical movement.
  * If the receiver is a field editor, this method returns immediatly. 
  */
--(void) pageUp: (id)sender
+- (void) pageUp: (id)sender
 {
   float    scrollDelta;
   float    oldOriginY;
@@ -1085,30 +1050,28 @@ and layout is left-to-right */
 	select: NO];
 }
 
-
-
--(void) scrollLineDown: (id)sender
+- (void) scrollLineDown: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"scrollLineDown:", "NSTextView");
 }
 
--(void) scrollLineUp: (id)sender
+- (void) scrollLineUp: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"scrollLineUp:", "NSTextView");
 }
 
--(void) scrollPageDown: (id)sender
+- (void) scrollPageDown: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"scrollPageDown:", "NSTextView");
 }
 
--(void) scrollPageUp: (id)sender
+- (void) scrollPageUp: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
@@ -1118,7 +1081,7 @@ and layout is left-to-right */
 
 /* -selectAll: inherited from NSText  */
 
--(void) selectLine: (id)sender
+- (void) selectLine: (id)sender
 {
   unsigned int start, end, cindex;
 
@@ -1144,32 +1107,26 @@ and layout is left-to-right */
 TODO: description incorrect. should swap characters on either side of the
 insertion point. (see also: miswart)
 */
--(void) transpose: (id)sender
+- (void) transpose: (id)sender
 {
-  NSRange range;
+  NSRange range = [self selectedRange];
   NSString *string;
   NSString *replacementString;
   unichar chars[2];
-  unichar tmp;
 
   /* Do nothing if we are at beginning of text.  */
-  if (_layoutManager->_selected_range.location < 2)
+  if (range.location < 2)
     {
       return;
     }
 
-  range = NSMakeRange (_layoutManager->_selected_range.location - 2, 2);
+  range = NSMakeRange(range.location - 2, 2);
 
-  /* Get the two chars.  */
+  /* Get the two chars and swap them.  */
   string = [_textStorage string];
-  chars[0] = [string characterAtIndex: (_layoutManager->_selected_range.location - 2)];
-  chars[1] = [string characterAtIndex: (_layoutManager->_selected_range.location - 1)];
+  chars[1] = [string characterAtIndex: range.location];
+  chars[0] = [string characterAtIndex: (range.location + 1)];
 
-  /* Swap them.  */
-  tmp = chars[0];
-  chars[0] = chars[1];
-  chars[1] = tmp;
-  
   /* Replace the original chars with the swapped ones.  */
   replacementString = [NSString stringWithCharacters: chars  length: 2];
 
@@ -1182,17 +1139,17 @@ insertion point. (see also: miswart)
     }
 }
 
-
--(void) delete: (id)sender
+- (void) delete: (id)sender
 {
   [self deleteForward: sender];
 }
 
 
 /* Helper for -align*: */
--(void) _alignUser: (NSTextAlignment)alignment
+- (void) _alignUser: (NSTextAlignment)alignment
 {
   NSRange r = [self rangeForUserParagraphAttributeChange];
+
   if (r.location == NSNotFound)
     return;
   if (![self shouldChangeTextInRange: r
@@ -1204,35 +1161,35 @@ insertion point. (see also: miswart)
   [self didChangeText];
 }
 
--(void) alignCenter: (id)sender
+- (void) alignCenter: (id)sender
 {
   [self _alignUser: NSCenterTextAlignment];
 }
--(void) alignLeft: (id)sender
+
+- (void) alignLeft: (id)sender
 {
   [self _alignUser: NSLeftTextAlignment];
 }
--(void) alignRight: (id)sender
+
+- (void) alignRight: (id)sender
 {
   [self _alignUser: NSRightTextAlignment];
 }
--(void) alignJustified: (id)sender
+
+- (void) alignJustified: (id)sender
 {
   [self _alignUser: NSJustifiedTextAlignment];
 }
 
-
--(void) toggleContinuousSpellChecking: (id)sender
+- (void) toggleContinuousSpellChecking: (id)sender
 {
   [self setContinuousSpellCheckingEnabled: 
 	    ![self isContinuousSpellCheckingEnabled]];
 }
 
-
--(void) toggleRuler: (id)sender
+- (void) toggleRuler: (id)sender
 {
   [self setRulerVisible: !_tf.is_ruler_visible];
 }
 
 @end
-
