@@ -1,3 +1,7 @@
+2003-08-27  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/gsnd/gsnd.m (main): Set daemon flag when forking.
+
 2003-08-26  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.8.9

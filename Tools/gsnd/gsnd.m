@@ -86,7 +86,6 @@ int resampleError(char *s);
 		
 static char	ebuf[2048];
 
-
 #ifdef HAVE_SYSLOG
 
 static int	log_priority;
@@ -1057,6 +1056,7 @@ int main(int argc, char** argv, char **env)
     exit(0);
   }
 #else
+	is_daemon = 1;
 	switch (fork()) {
 	  case -1:
 	    NSLog(@"gsnd - fork failed - bye.\n");
