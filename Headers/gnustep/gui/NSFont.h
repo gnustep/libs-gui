@@ -58,7 +58,7 @@ typedef enum _NSMultibyteGlyphPacking {
   NSFourByteGlyphPacking
 } NSMultibyteGlyphPacking;
 
-APPKIT_EXPORT const float *NSFontIdentityMatrix;
+APPKIT_EXPORT const float*NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding, NSCopying>
 {
@@ -72,22 +72,22 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 //
 // Creating a Font Object
 //
-+ (NSFont *)boldSystemFontOfSize:(float)fontSize;
-+ (NSFont *)fontWithName:(NSString *)aFontName 
-		  matrix:(const float *)fontMatrix;
-+ (NSFont *)fontWithName:(NSString *)aFontName
-		    size:(float)fontSize;
-+ (NSFont *)systemFontOfSize:(float)fontSize;
-+ (NSFont *)userFixedPitchFontOfSize:(float)fontSize;
-+ (NSFont *)userFontOfSize:(float)fontSize;
++ (NSFont*) boldSystemFontOfSize: (float)fontSize;
++ (NSFont*) fontWithName: (NSString*)aFontName 
+		  matrix: (const float*)fontMatrix;
++ (NSFont*) fontWithName: (NSString*)aFontName
+		    size: (float)fontSize;
++ (NSFont*) systemFontOfSize: (float)fontSize;
++ (NSFont*) userFixedPitchFontOfSize: (float)fontSize;
++ (NSFont*) userFontOfSize: (float)fontSize;
 
-+ (NSFont *)titleBarFontOfSize:(float)fontSize;
-+ (NSFont *)menuFontOfSize:(float)fontSize;
-+ (NSFont *)messageFontOfSize:(float)fontSize;
-+ (NSFont *)paletteFontOfSize:(float)fontSize;
-+ (NSFont *)toolTipsFontOfSize:(float)fontSize;
-+ (NSFont *)controlContentFontOfSize:(float)fontSize;
-+ (NSFont *)labelFontOfSize:(float)fontSize;
++ (NSFont*) titleBarFontOfSize: (float)fontSize;
++ (NSFont*) menuFontOfSize: (float)fontSize;
++ (NSFont*) messageFontOfSize: (float)fontSize;
++ (NSFont*) paletteFontOfSize: (float)fontSize;
++ (NSFont*) toolTipsFontOfSize: (float)fontSize;
++ (NSFont*) controlContentFontOfSize: (float)fontSize;
++ (NSFont*) labelFontOfSize: (float)fontSize;
 
 //
 // Font Sizes
@@ -99,75 +99,75 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 //
 // Preferred Fonts
 //
-+ (NSArray *)preferredFontNames;
-+ (void)setPreferredFontNames:(NSArray *)fontNames;
++ (NSArray*) preferredFontNames;
++ (void) setPreferredFontNames: (NSArray*)fontNames;
 
 //
 // Setting the Font
 //
-+ (void)setUserFixedPitchFont:(NSFont *)aFont;
-+ (void)setUserFont:(NSFont *)aFont;
-+ (void)useFont:(NSString *)aFontName;
-- (void)set;
++ (void) setUserFixedPitchFont: (NSFont*)aFont;
++ (void) setUserFont: (NSFont*)aFont;
++ (void) useFont: (NSString*)aFontName;
+- (void) set;
 
 //
 // Querying the Font
 //
-- (NSDictionary *)afmDictionary;
-- (NSString *)afmFileContents;
-- (NSRect)boundingRectForFont;
-- (NSString *)displayName;
-- (NSString *)familyName;
-- (NSString *)fontName;
-- (NSString *)encodingScheme;
-- (BOOL)isFixedPitch;
-- (BOOL)isBaseFont;
-- (const float *)matrix;
-- (float)pointSize;
-- (NSFont *)printerFont;
-- (NSFont *)screenFont;
-- (float)ascender;
-- (float)descender;
-- (float)capHeight;
-- (float)italicAngle;
-- (NSSize)maximumAdvancement;
-- (NSSize)minimumAdvancement;
-- (float)underlinePosition;
-- (float)underlineThickness;
-- (float)xHeight;
-- (float)widthOfString:(NSString *)string;
-- (float)defaultLineHeightForFont;
+- (NSDictionary*) afmDictionary;
+- (NSString*) afmFileContents;
+- (NSRect) boundingRectForFont;
+- (NSString*) displayName;
+- (NSString*) familyName;
+- (NSString*) fontName;
+- (NSString*) encodingScheme;
+- (BOOL) isFixedPitch;
+- (BOOL) isBaseFont;
+- (const float*) matrix;
+- (float) pointSize;
+- (NSFont*) printerFont;
+- (NSFont*) screenFont;
+- (float) ascender;
+- (float) descender;
+- (float) capHeight;
+- (float) italicAngle;
+- (NSSize) maximumAdvancement;
+- (NSSize) minimumAdvancement;
+- (float) underlinePosition;
+- (float) underlineThickness;
+- (float) xHeight;
+- (float) widthOfString: (NSString*)string;
+- (float) defaultLineHeightForFont;
 
 //
 // Manipulating Glyphs
 //
-- (NSSize)advancementForGlyph:(NSGlyph)aGlyph;
-- (NSRect)boundingRectForGlyph:(NSGlyph)aGlyph;
-- (BOOL)glyphIsEncoded:(NSGlyph)aGlyph;
-- (NSMultibyteGlyphPacking)glyphPacking;
-- (NSGlyph)glyphWithName:(NSString*)glyphName;
-- (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
-	   precededByGlyph:(NSGlyph)prevGlyph
-		 isNominal:(BOOL *)nominal;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              forCharacter:(unichar)aChar 
-            struckOverRect:(NSRect)aRect;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-           struckOverGlyph:(NSGlyph)baseGlyph 
-              metricsExist:(BOOL *)flag;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-            struckOverRect:(NSRect)aRect 
-              metricsExist:(BOOL *)flag;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              withRelation:(NSGlyphRelation)relation 
-               toBaseGlyph:(NSGlyph)baseGlyph
-          totalAdvancement:(NSSize *)offset 
-              metricsExist:(BOOL *)flag;
-- (int)positionsForCompositeSequence:(NSGlyph *)glyphs 
-                      numberOfGlyphs:(int)numGlyphs 
-                          pointArray:(NSPoint *)points;
+- (NSSize) advancementForGlyph: (NSGlyph)aGlyph;
+- (NSRect) boundingRectForGlyph: (NSGlyph)aGlyph;
+- (BOOL) glyphIsEncoded: (NSGlyph)aGlyph;
+- (NSMultibyteGlyphPacking) glyphPacking;
+- (NSGlyph) glyphWithName: (NSString*)glyphName;
+- (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
+	    precededByGlyph: (NSGlyph)prevGlyph
+		  isNominal: (BOOL*)nominal;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	       forCharacter: (unichar)aChar 
+	     struckOverRect: (NSRect)aRect;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	    struckOverGlyph: (NSGlyph)baseGlyph 
+	metricsExist: (BOOL*)flag;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+             struckOverRect: (NSRect)aRect 
+               metricsExist: (BOOL*)flag;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+               withRelation: (NSGlyphRelation)relation 
+                toBaseGlyph: (NSGlyph)baseGlyph
+           totalAdvancement: (NSSize*)offset 
+               metricsExist: (BOOL*)flag;
+- (int) positionsForCompositeSequence: (NSGlyph*)glyphs 
+                       numberOfGlyphs: (int)numGlyphs 
+                           pointArray: (NSPoint*)points;
 
-- (NSStringEncoding)mostCompatibleStringEncoding;
+- (NSStringEncoding) mostCompatibleStringEncoding;
 
 @end
 
@@ -175,13 +175,13 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 @class GSFontInfo;
 
 @interface NSFont (GNUstep)
-- (GSFontInfo *) fontInfo;
+- (GSFontInfo*) fontInfo;
 @end
 
-int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
+int NSConvertGlyphsToPackedGlyphs(NSGlyph*glBuf, 
 				  int count, 
 				  NSMultibyteGlyphPacking packing, 
-				  char *packedGlyphs);
+				  char*packedGlyphs);
 #endif
 
 APPKIT_EXPORT NSString *NSAFMAscender;

@@ -1,5 +1,12 @@
 2002-09-27  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSFont.m: Rewrote code dealing with creation and destruction
+	of font objects to remove holes in the original caching scheme and to
+	optimimise font creation/destruction somewhat.  All font objects
+	should now be handled by the cache, no matter how they are created.
+
+2002-09-27  Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSFont.m: Replace caching code which never released fonts
 	with a cache which only holds fonts as long as something is using them.
 

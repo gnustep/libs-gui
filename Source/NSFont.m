@@ -31,6 +31,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSMapTable.h>
+#include <Foundation/NSException.h>
 
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSFont.h>
@@ -45,13 +46,30 @@ static BOOL systemCacheNeedsRecomputing = NO;
 static BOOL boldSystemCacheNeedsRecomputing = NO;
 static BOOL userCacheNeedsRecomputing = NO;
 static BOOL userFixedCacheNeedsRecomputing = NO;
+static NSFont	*placeHolder = nil;
 
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
-	     matrix: (const float*)fontMatrix;
+	     matrix: (const float*)fontMatrix
+	        fix: (BOOL)explicitlySet;
 @end
 
 static int currentVersion = 2;
+
+/*
+ * Just to ensure that we use a standard name in the cache.
+ */
+static NSString*
+newNameWithMatrix(NSString *name, const float *matrix, BOOL fix)
+{
+  NSString	*nameWithMatrix;
+
+  nameWithMatrix = [[NSString alloc] initWithFormat:
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c", name,
+    matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
+    (fix == NO) ? 'N' : 'Y'];
+  return nameWithMatrix;
+}
 
 /**
   <unit>
@@ -161,6 +179,17 @@ setNSFont(NSString* key, NSFont* font)
   if (self == [NSFont class])
     {
       NSFontClass = self;
+
+      /*
+       * The placeHolder is a dummy NSFont instance which is never used
+       * as a font ... the initialiser knows that whenever it gets the
+       * placeHolder it should either return a cached font or return a
+       * newly allocated font to replace it.  This mechanism stops the
+       * +fontWithName:... methods from having to allocete fonts instances
+       * which would immediately have to be released for replacement by
+       * a cache object.
+       */
+      placeHolder = [self alloc];
       globalFontMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
 	NSNonRetainedObjectMapValueCallBacks, 64);
 
@@ -470,45 +499,40 @@ setNSFont(NSString* key, NSFont* font)
   return fontSize;
 }
 
-/** Creates a new font with name aFontName and matrix fontMatrix.  The
-    fontMatrix is a standard size element matrix as used in PostScript
-    to describe the scaling of the font, typically it just includes
-    the font size as [fontSize 0 0 fontSize 0 0].  You can use the constant
-    NSFontIdentityMatrix in place of [1 0 0 1 0 0]. If NSFontIdentityMatrix, 
-    then the font will automatically flip itself when set in a
-    flipped view */
+/**
+ * Returns an autoreleased font with name aFontName and matrix fontMatrix.<br />
+ * The fontMatrix is a standard size element matrix as used in PostScript
+ * to describe the scaling of the font, typically it just includes
+ * the font size as [fontSize 0 0 fontSize 0 0].  You can use the constant
+ * NSFontIdentityMatrix in place of [1 0 0 1 0 0]. If NSFontIdentityMatrix, 
+ * then the font will automatically flip itself when set in a flipped view.
+ */
 + (NSFont*) fontWithName: (NSString*)aFontName 
 		  matrix: (const float*)fontMatrix
 {
-  NSFont *font;
-  NSString *nameWithMatrix;
+  NSFont	*font;
+  BOOL		fix;
 
-  nameWithMatrix = [NSString stringWithFormat:
-    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f", aFontName,
-    fontMatrix[0], fontMatrix[1], fontMatrix[2], 
-    fontMatrix[3], fontMatrix[4], fontMatrix[5]];
+  if (fontMatrix == NSFontIdentityMatrix)
+    fix = NO;
+  else
+    fix = YES;
 
-  /* Check whether the font is cached */
-  font = RETAIN((id)NSMapGet(globalFontMap, (void*)nameWithMatrix));
-  if (font == nil)
-    {
-      font = [[NSFontClass alloc] initWithName: aFontName
-					matrix: fontMatrix];
-      /* Cache the font for later use */
-      NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)font);
-    }
+  font = [placeHolder initWithName: aFontName matrix: fontMatrix fix: fix];
 
   return AUTORELEASE(font);
 }
 
-/** Creates a new font with name aFontName and size fontSize. Fonts created
-    using this method will automatically flip themselves when set in a flipped 
-    view */
+/**
+ * Returns an autoreleased font with name aFontName and size fontSize.<br />
+ * Fonts created using this method will automatically flip themselves
+ * when set in a flipped view.
+ */
 + (NSFont*) fontWithName: (NSString*)aFontName
 		    size: (float)fontSize
 {
-  NSFont*font;
-  float fontMatrix[6] = { 0, 0, 0, 0, 0, 0 };
+  NSFont	*font;
+  float		fontMatrix[6] = { 0, 0, 0, 0, 0, 0 };
 
   if (fontSize == 0)
     {
@@ -521,9 +545,8 @@ setNSFont(NSString* key, NSFont* font)
   fontMatrix[0] = fontSize;
   fontMatrix[3] = fontSize;
 
-  font = [self fontWithName: aFontName matrix: fontMatrix];
-  font->matrixExplicitlySet = NO;
-  return font;
+  font = [placeHolder initWithName: aFontName matrix: fontMatrix fix: NO];
+  return AUTORELEASE(font);
 }
 
 + (void) useFont: (NSString*)aFontName
@@ -534,46 +557,89 @@ setNSFont(NSString* key, NSFont* font)
 //
 // Instance methods
 //
-/** <init /> Initializes a newly created font class from the name and
-    information given in the fontMatrix. The fontMatrix is a standard
-    size element matrix as used in PostScript to describe the scaling
-    of the font, typically it just includes the font size as
-    [fontSize 0 0 fontSize 0 0].
-*/
-- (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
+- (id) init
 {
-  fontName = [name copy];
-  memcpy(matrix, fontMatrix, sizeof(matrix));
-  if (fontMatrix == NSFontIdentityMatrix)
-    matrixExplicitlySet = NO;
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"Called -init on NSFont ... illegal"];
+  return self;
+}
+
+/** <init />
+ * Initializes a newly created font instance from the name and
+ * information given in the fontMatrix. The fontMatrix is a standard
+ * size element matrix as used in PostScript to describe the scaling
+ * of the font, typically it just includes the font size as
+ * [fontSize 0 0 fontSize 0 0].<br />
+ * This method may destroy the receiver and return a cached instance.
+ */
+- (id) initWithName: (NSString*)name
+	     matrix: (const float*)fontMatrix
+		fix: (BOOL)explicitlySet
+{
+  NSString	*nameWithMatrix;
+  NSFont	*font;
+
+  /* Should never be called on an initialised font! */
+  NSAssert(fontName == nil, NSInternalInconsistencyException);
+
+  /* Check whether the font is cached */
+  nameWithMatrix = newNameWithMatrix(name, fontMatrix, explicitlySet);
+  font = (id)NSMapGet(globalFontMap, (void*)nameWithMatrix);
+  if (font == nil)
+    {
+      if (self == placeHolder)
+	{
+	  /*
+	   * If we are initialising the placeHolder, we actually want to
+	   * leave it be (for later re-use) and initialise a newly created
+	   * instance instead.
+	   */
+	  self = [NSFontClass alloc];
+	}
+      fontName = [name copy];
+      memcpy(matrix, fontMatrix, sizeof(matrix));
+      matrixExplicitlySet = explicitlySet;
+      fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
+						 matrix: fontMatrix]);
+      /* Cache the font for later use */
+      NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)self);
+    }
   else
-    matrixExplicitlySet = YES;
-  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
-					     matrix: fontMatrix]);
+    {
+      RELEASE(self);
+      self = RETAIN(font);
+    }
+  RELEASE(nameWithMatrix);
+
   return self;
 }
 
 - (void) dealloc
 {
-  NSString	*nameWithMatrix  = [NSString alloc];
+  if (fontName != nil)
+    {
+      NSString	*nameWithMatrix;
 
-  nameWithMatrix = [nameWithMatrix initWithFormat:
-    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f", fontName,
-    matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]];
-  NSMapRemove(globalFontMap, (void*)nameWithMatrix);
-  RELEASE(nameWithMatrix);
-  RELEASE(fontName);
-  RELEASE(fontInfo);
+      nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet);
+      NSMapRemove(globalFontMap, (void*)nameWithMatrix);
+      RELEASE(nameWithMatrix);
+      RELEASE(fontName);
+    }
+  TEST_RELEASE(fontInfo);
   [super dealloc];
 }
 
-/* FIXME - appropriate description */
-/*
 - (NSString *) description
 {
-  return [self fontName];
+  NSString	*nameWithMatrix;
+  NSString	*description;
+
+  nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet);
+  description = [[super description] stringByAppendingFormat: @" %@",
+    nameWithMatrix];
+  RELEASE(nameWithMatrix);
+  return description;
 }
-*/
 
 - (BOOL) isEqual: (id)anObject
 {
@@ -601,23 +667,14 @@ setNSFont(NSString* key, NSFont* font)
   return ([fontName hash] + sum);
 }
 
-//
-// NSCopying Protocol
-//
+/**
+ * The NSFont class caches instances ... to actually make copies
+ * of instances would defeat the whole point of caching, so the
+ * effect of copying an NSFont is imply to retain it.
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSFont*new_font;
-  if (NSShouldRetainWithZone(self, zone))
-    {
-      new_font = RETAIN(self);
-    }
-  else
-    {
-      new_font = (NSFont*)NSCopyObject(self, 0, zone);
-      new_font->fontName = [fontName copyWithZone: zone];
-      new_font->fontInfo = [fontInfo copyWithZone: zone];
-    }
-  return new_font;
+  return RETAIN(self);
 }
 
 - (NSFont *)_flippedViewFont
@@ -722,44 +779,44 @@ setNSFont(NSString* key, NSFont* font)
                          isNominal: nominal];
 }
 
-- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
-	       forCharacter:(unichar)aChar 
-	     struckOverRect:(NSRect)aRect
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	       forCharacter: (unichar)aChar 
+	     struckOverRect: (NSRect)aRect
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		   forCharacter: aChar 
-		   struckOverRect: aRect];
+		      forCharacter: aChar 
+		    struckOverRect: aRect];
 }
 
-- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
-	    struckOverGlyph:(NSGlyph)baseGlyph 
-	       metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	    struckOverGlyph: (NSGlyph)baseGlyph 
+	       metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
 		   struckOverGlyph: baseGlyph 
-		   metricsExist: flag];
+		      metricsExist: flag];
 }
 
-- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
-	     struckOverRect:(NSRect)aRect 
-	       metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	     struckOverRect: (NSRect)aRect 
+	       metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		   struckOverRect: aRect 
-		   metricsExist: flag];
+		    struckOverRect: aRect 
+		      metricsExist: flag];
 }
 
-- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
-	       withRelation:(NSGlyphRelation)relation 
-		toBaseGlyph:(NSGlyph)baseGlyph
-	   totalAdvancement:(NSSize *)offset 
-	       metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	       withRelation: (NSGlyphRelation)relation 
+		toBaseGlyph: (NSGlyph)baseGlyph
+	   totalAdvancement: (NSSize *)offset 
+	       metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		   withRelation: relation 
-		   toBaseGlyph: baseGlyph
-		   totalAdvancement: offset 
-		   metricsExist: flag];
+		      withRelation: relation 
+		       toBaseGlyph: baseGlyph
+		  totalAdvancement: offset 
+		      metricsExist: flag];
 }
 
 - (int) positionsForCompositeSequence: (NSGlyph *)glyphs 
@@ -778,7 +835,7 @@ setNSFont(NSString* key, NSFont* font)
       // not to each other
       points[i] = [self positionOfGlyph: glyphs[i] 
 			struckOverGlyph: base 
-			metricsExist: &flag];
+			   metricsExist: &flag];
       if (!flag)
 	return i - 1;
     }
@@ -803,41 +860,35 @@ setNSFont(NSString* key, NSFont* font)
 {
   [aCoder encodeObject: fontName];
   [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &matrixExplicitlySet];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: 
-			    @"NSFont"];
+  int version = [aDecoder versionForClassName: @"NSFont"];
+  id	name;
+  float	fontMatrix[6];
+  BOOL	fix;
+
+  name = [aDecoder decodeObject];
+  [aDecoder decodeArrayOfObjCType: @encode(float)
+			    count: 6
+			       at: fontMatrix];
   if (version == currentVersion)
     {
-      id	name;
-      float	fontMatrix[6];
-      
-      name = [aDecoder decodeObject];
-      [aDecoder decodeArrayOfObjCType: @encode(float)
-				count: 6
-				   at: fontMatrix];
-      self = [self initWithName: name  matrix: fontMatrix];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &matrixExplicitlySet];
+				   at: &fix];
     }
   else
     {
-      id	name;
-      float	fontMatrix[6];
-      
-      name = [aDecoder decodeObject];
-      [aDecoder decodeArrayOfObjCType: @encode(float)
-				count: 6
-				   at: fontMatrix];
-      self = [self initWithName: name  matrix: fontMatrix];
       if (fontMatrix[0] == fontMatrix[3]
-	  && fontMatrix[1] == 0.0
-	  && fontMatrix[2] == 0.0)
-	matrixExplicitlySet = NO;
+        && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
+	fix = NO;
+      else
+	fix = YES;
     }
+
+  self = [self initWithName: name  matrix: fontMatrix fix: fix];
   return self;
 }
 
