@@ -53,11 +53,12 @@ typedef enum _NSButtonType {
   NSString* _keyEquivalent;
   NSFont* _keyEquivalentFont;
   unsigned int _keyEquivalentModifierMask;
-  BOOL _is_transparent;
   unsigned int _highlightsByMask;
   unsigned int _showAltStateMask;
   float _delayInterval;
   float _repeatInterval;
+  // Think of the following as a BOOL ivar
+#define _buttoncell_is_transparent _cell.subclass_bool_one
 }
 
 //
