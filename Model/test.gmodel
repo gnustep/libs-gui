@@ -28,7 +28,7 @@
         isVisible = NO; 
         isa = NSWindow; 
         level = 0; 
-        maxSize = "{width = 3.40282e+38; height = 3.40282e+38}"; 
+        maxSize = "{width = 16000.0; height = 16000.0}"; 
         minSize = "{width = 0; height = 0}"; 
         representedFilename = ""; 
         styleMask = 0; 
@@ -70,7 +70,7 @@
         isVisible = NO; 
         isa = NSWindow; 
         level = 0; 
-        maxSize = "{width = 3.40282e+38; height = 3.40282e+38}"; 
+        maxSize = "{width = 16000.0; height = 16000.0}"; 
         minSize = "{width = 0; height = 0}"; 
         representedFilename = ""; 
         styleMask = 0; 
@@ -100,7 +100,7 @@
         isVisible = YES; 
         isa = NSWindow; 
         level = 0; 
-        maxSize = "{width = 3.40282e+38; height = 3.40282e+38}"; 
+        maxSize = "{width = 16000.0; height = 16000.0}"; 
         minSize = "{width = 0; height = 0}"; 
         representedFilename = ""; 
         styleMask = 14; 
@@ -468,7 +468,7 @@
         isVisible = NO; 
         isa = NSWindow; 
         level = 0; 
-        maxSize = "{width = 3.40282e+38; height = 3.40282e+38}"; 
+        maxSize = "{width = 16000.0; height = 16000.0}"; 
         minSize = "{width = 0; height = 0}"; 
         representedFilename = ""; 
         styleMask = 14; 

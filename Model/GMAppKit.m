@@ -750,10 +750,11 @@ void __dummy_GMAppKit_functionForLinking() {}
       = [unarchiver decodeObjectWithName:@"itemArray"];
 
   for (i = 0, count = [decodedItems count]; i < count; i++)
-    [self addItemWithTitle:@"dummy" action:NULL keyEquivalent:@""];
+    [self addItem:[decodedItems objectAtIndex:i]];
+//    [self addItemWithTitle:@"dummy" action:NULL keyEquivalent:@""];
 
-  [itemArray replaceObjectsInRange:NSMakeRange(0, count)
-	     withObjectsFromArray:decodedItems];
+//  [itemArray replaceObjectsInRange:NSMakeRange(0, count)
+//	     withObjectsFromArray:decodedItems];
 
   for (i = 0; i < count; i++) {
     id item = [itemArray objectAtIndex:i];

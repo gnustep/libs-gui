@@ -3,6 +3,9 @@
 	* Source/NSMenu.m: added code to convert anything that conforms to
 	<NSMenuItem> into an NSMenuItemCell. Not tested, but should work.
 	Also fixed a small bug in -init, it was not returning.
+	* Model/GMAppKit.m: fixed code in unarchiving of NSMenus to
+	addItems so they are converted rather than swapped in (in an
+	operation which we can not intercede.)
 
 Mon Jul 12  5:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
