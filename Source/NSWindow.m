@@ -1181,6 +1181,14 @@ static NSNotificationCenter *nc = nil;
     {
       _f.is_key = YES;
 
+      if ((!_firstResponder) || (_firstResponder == self))
+	{
+	  if (_initialFirstResponder)
+	    {
+	      [self makeFirstResponder: _initialFirstResponder];
+	    }
+	}
+
       [_firstResponder becomeFirstResponder];
       if ((_firstResponder != self)
 	  && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
@@ -1795,20 +1803,7 @@ static NSNotificationCenter *nc = nil;
     return;
 
   _rFlags.needs_display = NO;
-  // FIXME: Is the first responder processing needed here?
-  if ((!_firstResponder) || (_firstResponder == self))
-    {
-      if (_initialFirstResponder)
-	{
-	  [self makeFirstResponder: _initialFirstResponder];
-	}
-    }
   
-  /*
-   * inform first responder of it's status so it can set the focus to itself
-   */
-  [_firstResponder becomeFirstResponder];
-
   [_wv display];
   [self discardCachedImage];
 }

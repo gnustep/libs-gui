@@ -1,5 +1,10 @@
 2003-03-31  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSWindow.m (-becomeKeyWindow): Set initialFirstResponder.
+	(-display): Remove this code from here.
+
+2003-03-31  Adam Fedor  <fedor@gnu.org>
+
 	* Source/NSButtonCell.m, Source/NSCell.m, Source/NSMenuItem.m:
 	Add GSCategories.h
 
