@@ -1267,7 +1267,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSDebugLLog(@"NSView", @"Displaying rect \n\t%@\n\t window %p", 
 	      NSStringFromRect(wrect), _window);
   window_t = (struct NSWindow_struct *)_window;
-  [window_t->rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+  [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
 
   DPSgsave(ctxt);
   if (_gstate)
@@ -1342,12 +1342,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   window_t = (struct NSWindow_struct *)_window;
   if (flush)
     {
-      rect = [[window_t->rectsBeingDrawn lastObject] rectValue];
-      window_t->rectNeedingFlush =
-	NSUnionRect(window_t->rectNeedingFlush, rect);
+      rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+      window_t->_rectNeedingFlush =
+	NSUnionRect(window_t->_rectNeedingFlush, rect);
       window_t->_f.needs_flush = YES;
     }
-  [window_t->rectsBeingDrawn removeLastObject];
+  [window_t->_rectsBeingDrawn removeLastObject];
   [ctxt unlockFocusView: self needsFlush: YES ];
 }
 

@@ -128,7 +128,7 @@ NSApplication	*NSApp = nil;
   [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
-  window_level = NSDockWindowLevel;
+  _windowLevel = NSDockWindowLevel;
 }
 
 @end

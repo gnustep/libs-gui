@@ -1279,7 +1279,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 - (void) _initDefaults
 {
   [super _initDefaults];
-  window_level = NSSubmenuWindowLevel;
+  _windowLevel = NSSubmenuWindowLevel;
 }
 
 - (id) init
@@ -1309,7 +1309,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 // This method is a hack to speed-up menu dragging.
 - (void) moveToPoint: (NSPoint)aPoint
 {
-  NSRect frameRect = frame;
+  NSRect frameRect = _frame;
 
   frameRect.origin = aPoint;
   DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
