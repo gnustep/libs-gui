@@ -33,160 +33,226 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSWindow.h>
 
+//
+// Postscript functions to be defined and implemented by the backend
+//
+extern void PSsetlinewidth(float width);			
+extern void PSsetgray(float num);					
+extern void PSmoveto(float x, float y);
+extern void PSrlineto(float x, float y);
+extern void PSstroke(void);										
+extern void PSgrestore(void);
+extern void PSgsave(void);
+
+
+
+
 @implementation NSScrollView
 
+//
+// Class variables
+//
 static Class rulerViewClass = nil;
 
+//
+// Class methods
+//
 + (void)initialize
 {
+	if (self == [NSScrollView class])
+		{
+		NSDebugLog(@"Initialize NSScrollView class\n");
+		[self setVersion:1];
+		}
 }
 
-+ (void)setRulerViewClass:(Class)aClass
++ (void)setRulerViewClass:(Class)aClass		{ rulerViewClass = aClass; }
++ (Class)rulerViewClass						{ return rulerViewClass; }
+
++ (NSSize)contentSizeForFrameSize:(NSSize)frameSize		// calc content size by
+			hasHorizontalScroller:(BOOL)hFlag			// taking into account 
+			hasVerticalScroller:(BOOL)vFlag				// the border type
+			borderType:(NSBorderType)borderType
 {
-  rulerViewClass = aClass;
-}
+NSSize size = frameSize;			
+									// Substract 1 from the width and height of
+	if (hFlag)						// the line that separates the horizontal
+		{							// and vertical scroller from the clip view
+		size.height -= [NSScroller scrollerWidth];
+		size.height -= 1;			
+		}
+	if (vFlag)						
+		{
+		size.width -= [NSScroller scrollerWidth];
+		size.width -= 1;
+		}
 
-+ (Class)rulerViewClass
-{
-  return rulerViewClass;
-}
+	switch (borderType) 
+		{
+		case NSNoBorder:
+			break;
+	
+		case NSLineBorder:
+			size.width -= 2;
+			size.height -= 2;
+			break;
+	
+		case NSBezelBorder:
+		case NSGrooveBorder:
+			size.width -= 4;
+			size.height -= 4;
+			break;
+  		}
 
-/* Backends should rewrite the following 2 methods and adjust the frames
-   depending on the border type. */
-
-+ (NSSize)contentSizeForFrameSize:(NSSize)frameSize
-  hasHorizontalScroller:(BOOL)hFlag
-  hasVerticalScroller:(BOOL)vFlag
-  borderType:(NSBorderType)borderType
-{
-  NSSize size = frameSize;
-
-  if (hFlag)
-    size.height -= [NSScroller scrollerWidth];
-  if (vFlag)
-    size.width -= [NSScroller scrollerWidth];
-
-  return size;
+	return size;
 }
 
 + (NSSize)frameSizeForContentSize:(NSSize)contentSize
-  hasHorizontalScroller:(BOOL)hFlag
-  hasVerticalScroller:(BOOL)vFlag
-  borderType:(NSBorderType)borderType
+			hasHorizontalScroller:(BOOL)hFlag
+			hasVerticalScroller:(BOOL)vFlag
+			borderType:(NSBorderType)borderType
 {
-  NSSize size = contentSize;
+NSSize size = contentSize;
+									// Add 1 to the width and height for the
+	if (hFlag)						// line that separates the horizontal and
+		{							// vertical scroller from the clip view.
+		size.height += [NSScroller scrollerWidth];
+    	size.height += 1;			
+		}
+	if (vFlag)						
+		{
+		size.width += [NSScroller scrollerWidth];
+		size.width += 1;
+		}
 
-  if (hFlag)
-    size.height += [NSScroller scrollerWidth];
-  if (vFlag)
-    size.width += [NSScroller scrollerWidth];
+	switch (borderType) 
+		{
+		case NSNoBorder:
+			break;
+	
+		case NSLineBorder:
+			size.width += 2;
+			size.height += 2;
+			break;
+	
+		case NSBezelBorder:
+		case NSGrooveBorder:
+			size.width += 4;
+			size.height += 4;
+			break;
+  		}
 
-  return size;
+	return size;
 }
 
+//
+// Instance methods
+//
 - initWithFrame:(NSRect)rect
 {
-  [super initWithFrame:rect];
-  [self setContentView:[[NSClipView new] autorelease]];
-  _lineScroll = 10;
-  _pageScroll = 10;
-  _borderType = NSBezelBorder;
-  _scrollsDynamically = YES;
-//  autoresizingMask = NSViewMaxYMargin;
-  [self tile];
-
-  return self;
+	[super initWithFrame:rect];
+	[self setContentView:[[NSClipView new] autorelease]];
+	_lineScroll = 10;
+	_pageScroll = 10;
+	_borderType = NSBezelBorder;
+	_scrollsDynamically = YES;
+	[self tile];
+	
+	return self;
 }
 
 - init
 {
-  return [self initWithFrame:NSZeroRect];
+	return [self initWithFrame:NSZeroRect];
 }
 
 - (void)dealloc
 {
-  [_contentView release];
-
-  [_horizScroller release];
-  [_vertScroller release];
-  [_horizRuler release];
-  [_vertRuler release];
-
-  [super dealloc];
+	[_contentView release];
+	
+	[_horizScroller release];
+	[_vertScroller release];
+	[_horizRuler release];
+	[_vertRuler release];
+	
+	[super dealloc];
 }
 
 - (void)setContentView:(NSView*)aView
 {
-  ASSIGN(_contentView, aView);
-  [self addSubview:_contentView];
-  [self tile];
+	ASSIGN(_contentView, aView);
+	[self addSubview:_contentView];
+	[self tile];
 }
 
 - (void)setHorizontalScroller:(NSScroller*)aScroller
 {
-  [_horizScroller removeFromSuperview];
+	[_horizScroller removeFromSuperview];
 
-  /* Do not add the scroller view to the subviews array yet; the user has to
-     explicitly invoke -setHasHorizontalScroller:. */
-
-  ASSIGN(_horizScroller, aScroller);
-  if (_horizScroller) {
-    [_horizScroller setTarget:self];
-    [_horizScroller setAction:@selector(_doScroll:)];
-  }
+					// Do not add the scroller view to the subviews array yet; 
+					// -setHasHorizontalScroller must be invoked first
+	ASSIGN(_horizScroller, aScroller);
+	if (_horizScroller) 
+		{
+		[_horizScroller setTarget:self];
+		[_horizScroller setAction:@selector(_doScroll:)];
+		}
 }
 
 - (void)setHasHorizontalScroller:(BOOL)flag
 {
-  if (_hasHorizScroller == flag)
-    return;
+	if (_hasHorizScroller == flag)
+		return;
 
-  _hasHorizScroller = flag;
+	_hasHorizScroller = flag;
 
-  if (_hasHorizScroller) {
-    if (!_horizScroller)
-      [self setHorizontalScroller:[[NSScroller new] autorelease]];
-    [self addSubview:_horizScroller];
-  }
-  else
-    [_horizScroller removeFromSuperview];
+	if (_hasHorizScroller) 
+		{
+		if (!_horizScroller)
+			[self setHorizontalScroller:[[NSScroller new] autorelease]];
+		[self addSubview:_horizScroller];
+		}
+	else
+		[_horizScroller removeFromSuperview];
 
-  [self tile];
+	[self tile];
 }
 
 - (void)setVerticalScroller:(NSScroller*)aScroller
 {
-  [_vertScroller removeFromSuperview];
+	[_vertScroller removeFromSuperview];
 
-  /* Do not add the scroller view to the subviews array yet; the user has to
-     explicitly invoke -setHasVerticalScroller:. */
-
-  ASSIGN(_vertScroller, aScroller);
-  if (_vertScroller) {
-    [_vertScroller setTarget:self];
-    [_vertScroller setAction:@selector(_doScroll:)];
-  }
+					// Do not add the scroller view to the subviews array yet; 
+					// -setHasVerticalScroller must be invoked first
+	ASSIGN(_vertScroller, aScroller);
+	if (_vertScroller) 
+		{
+		[_vertScroller setTarget:self];
+		[_vertScroller setAction:@selector(_doScroll:)];
+		}
 }
 
 - (void)setHasVerticalScroller:(BOOL)flag
 {
-  if (_hasVertScroller == flag)
-    return;
+	if (_hasVertScroller == flag)
+		return;
 
-  _hasVertScroller = flag;
+	_hasVertScroller = flag;
 
-  if (_hasVertScroller) {
-    if (!_vertScroller) {
-      [self setVerticalScroller:[[NSScroller new] autorelease]];
-      if (_contentView && ![_contentView isFlipped])
-	[_vertScroller setFloatValue:1];
-    }
-    [self addSubview:_vertScroller];
-  }
-  else
-    [_vertScroller removeFromSuperview];
+	if (_hasVertScroller) 
+		{
+		if (!_vertScroller) 
+			{
+			[self setVerticalScroller:[[NSScroller new] autorelease]];
+			if (_contentView && ![_contentView isFlipped])
+				[_vertScroller setFloatValue:1];
+			}
+		[self addSubview:_vertScroller];
+		}
+	else
+		[_vertScroller removeFromSuperview];
 
-  [self tile];
+	[self tile];
 }
 
 - (void)_doScroll:(NSScroller*)scroller
@@ -306,8 +372,8 @@ id documentView;
 			[_vertScroller setEnabled:YES];
 			knobProportion = clipViewBounds.size.height / 
 								documentFrame.size.height;
-			floatValue = clipViewBounds.origin.y / (documentFrame.size.height - 
-							clipViewBounds.size.height);
+			floatValue = clipViewBounds.origin.y / (documentFrame.size.height 
+							- clipViewBounds.size.height);
 			if (![_contentView isFlipped])
 				floatValue = 1 - floatValue;
 			[_vertScroller setFloatValue:floatValue 
@@ -333,104 +399,215 @@ id documentView;
     		}
   		}
 
-//  [self setNeedsDisplay:YES];			// not needed by XRAW causes flicker
 	[window flushWindow];
 }
 
-- (void)setHorizontalRulerView:(NSRulerView*)aRulerView
+- (void)setHorizontalRulerView:(NSRulerView*)aRulerView			// FIX ME
 {
-  /* TODO */
-  ASSIGN(_horizRuler, aRulerView);
+	ASSIGN(_horizRuler, aRulerView);
 }
 
-- (void)setHasHorizontalRuler:(BOOL)flag
+- (void)setHasHorizontalRuler:(BOOL)flag						// FIX ME
 {
-  /* TODO */
-  if (_hasHorizRuler == flag)
-    return;
+	if (_hasHorizRuler == flag)
+		return;
 
-  _hasHorizRuler = flag;
+	_hasHorizRuler = flag;
 }
 
-- (void)setVerticalRulerView:(NSRulerView*)ruler
+- (void)setVerticalRulerView:(NSRulerView*)ruler				// FIX ME
 {
-  /* TODO */
-  ASSIGN(_vertRuler, ruler);
+	ASSIGN(_vertRuler, ruler);
 }
 
-- (void)setHasVerticalRuler:(BOOL)flag
+- (void)setHasVerticalRuler:(BOOL)flag							// FIX ME
 {
-  /* TODO */
-  if (_hasVertRuler == flag)
-    return;
+	if (_hasVertRuler == flag)
+		return;
 
-  _hasVertRuler = flag;
+	_hasVertRuler = flag;
 }
 
 - (void)setRulersVisible:(BOOL)flag
 {
-  /* TODO */
 }
 
 - (void)setFrame:(NSRect)rect
 {
-  [super setFrame:rect];
-  [self tile];
+	[super setFrame:rect];
+	[self tile];
 }
 
 - (void)setFrameSize:(NSSize)size
 {
-  [super setFrameSize:size];
-  [self tile];
+	[super setFrameSize:size];
+	[self tile];
 }
 
-/* This method should be implemented in the backend to position the scroll
-   view's interface elements */
 - (void)tile
 {
+NSRect boundsRect = [self bounds];
+NSSize contentSize = [isa contentSizeForFrameSize:boundsRect.size
+							hasHorizontalScroller:_hasHorizScroller
+							hasVerticalScroller:_hasVertScroller
+							borderType:_borderType];
+float scrollerWidth = [NSScroller scrollerWidth];
+NSRect contentRect = { NSZeroPoint, contentSize };
+NSRect vertScrollerRect = NSZeroRect;
+NSRect horizScrollerRect = NSZeroRect;
+float borderThickness = 0;
+
+	switch ([self borderType]) 
+		{
+		case NSNoBorder:
+			break;
+	
+		case NSLineBorder:
+			borderThickness = 1;
+			break;
+	
+		case NSBezelBorder:
+		case NSGrooveBorder:
+			borderThickness = 2;
+			break;
+  		}
+
+	contentRect.origin.x = borderThickness;
+	contentRect.origin.y = borderThickness;
+
+	if (_hasVertScroller) 
+		{
+		vertScrollerRect.origin.x = boundsRect.origin.x + borderThickness;
+		vertScrollerRect.origin.y = boundsRect.origin.y + borderThickness;
+		vertScrollerRect.size.width = scrollerWidth;
+		vertScrollerRect.size.height =bounds.size.height - 2 * borderThickness;
+	
+		contentRect.origin.x += scrollerWidth + 1;
+  		}
+
+	if (_hasHorizScroller) 
+		{
+		horizScrollerRect.origin.x = boundsRect.origin.x
+									+ vertScrollerRect.origin.x 
+									+ vertScrollerRect.size.width + 1;
+		horizScrollerRect.origin.y = boundsRect.origin.y + borderThickness;
+		horizScrollerRect.size.width = boundsRect.size.width
+										- horizScrollerRect.origin.x 
+										- borderThickness;
+		horizScrollerRect.size.height = scrollerWidth;
+
+		contentRect.origin.y += scrollerWidth + 1;
+		contentRect.size.height -= 1;
+  		}
+
+	[_contentView setFrame:contentRect];
+	[_horizScroller setFrame:horizScrollerRect];
+	[_vertScroller setFrame:vertScrollerRect];
+												// If the document view is not 
+	if (![_contentView isFlipped])				// flipped reverse the meaning
+		[_vertScroller setFloatValue:1];		// of the vertical scroller's
+}
+
+- (void)drawRect:(NSRect)rect
+{
+float scrollerWidth = [NSScroller scrollerWidth];
+float horizLinePosition, horizLineLength = [self bounds].size.width;
+float borderThickness = 0;
+
+	fprintf (stderr,
+		"NSScrollView drawRect: origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+				rect.origin.x, rect.origin.y, 
+				rect.size.width, rect.size.height);
+
+	PSgsave ();
+	switch ([self borderType]) 
+		{
+		case NSNoBorder:
+			break;
+	
+		case NSLineBorder:
+			borderThickness = 1;
+			NSFrameRect (rect);
+			break;
+	
+		case NSBezelBorder:
+			borderThickness = 2;
+			NSDrawGrayBezel (rect, rect);
+			break;
+	
+		case NSGrooveBorder:
+			borderThickness = 2;
+			NSDrawGroove (rect, rect);
+			break;
+		}
+
+	horizLinePosition = borderThickness;
+
+	PSsetlinewidth (1);
+	PSsetgray (0);
+	if (_hasVertScroller) 
+		{
+		horizLinePosition = scrollerWidth + borderThickness;
+		horizLineLength -= scrollerWidth + 2 * borderThickness;
+		PSmoveto (horizLinePosition, borderThickness + 1);
+		PSrlineto (0, [self bounds].size.height - 2 * borderThickness);
+		PSstroke ();
+		}
+
+	if (_hasHorizScroller) 
+		{
+		PSmoveto (horizLinePosition, scrollerWidth + borderThickness + 1);
+		PSrlineto (horizLineLength - 1, 0);
+		PSstroke ();
+		}
+
+	PSgrestore ();
 }
 
 - (NSRect)documentVisibleRect
 {
-  return [_contentView documentVisibleRect];
+	return [_contentView documentVisibleRect];
 }
 
 - (void)setBackgroundColor:(NSColor*)aColor
 {
-  [_contentView setBackgroundColor:aColor];
+	[_contentView setBackgroundColor:aColor];
 }
 
-- (NSColor*)backgroundColor
-{
-  return [_contentView backgroundColor];
+- (NSColor*)backgroundColor			
+{ 
+	return [_contentView backgroundColor]; 
 }
 
-- (void)setBorderType:(NSBorderType)borderType
-{
-  _borderType = borderType;
+- (void)setBorderType:(NSBorderType)borderType	
+{ 
+	_borderType = borderType; 
 }
 
 - (void)setDocumentView:(NSView*)aView
 {
-  [_contentView setDocumentView:aView];
-  if (_contentView && ![_contentView isFlipped])
-    [_vertScroller setFloatValue:1];
-  [self tile];
+	[_contentView setDocumentView:aView];
+	if (_contentView && ![_contentView isFlipped])
+		[_vertScroller setFloatValue:1];
+	[self tile];
+	[_contentView viewFrameChanged:nil];	
+															// update scroller
+	[self reflectScrolledClipView:(NSClipView*)_contentView];	
 }
 
-- (id)documentView
+- (void)resizeSubviewsWithOldSize:(NSSize)oldSize
 {
-  return [_contentView documentView];
+	fprintf (stderr, "NSScrollView	resizeSubviewsWithOldSize \n");
+	[super resizeSubviewsWithOldSize:oldSize];
+	[self tile];
 }
+
+- (id)documentView					{ return [_contentView documentView]; }
+- (NSCursor*)documentCursor			{ return [_contentView documentCursor]; }
 
 - (void)setDocumentCursor:(NSCursor*)aCursor
 {
-  [_contentView setDocumentCursor:aCursor];
-}
-
-- (NSCursor*)documentCursor
-{
-  return [_contentView documentCursor];
+	[_contentView setDocumentCursor:aCursor];
 }
 
 - (BOOL)isOpaque							{ return YES; }

@@ -130,6 +130,8 @@ int style;
 		[content_view release];						// Release the content view
 		}
 
+	if(_fieldEditor)
+		[_fieldEditor release];
 	[background_color release];
 	[represented_filename release];
 	[miniaturized_title release];
@@ -265,12 +267,7 @@ NSView *wv;
 // Window device attributes
 //
 - (NSBackingStoreType)backingType			{ return backing_type; }
-
-- (NSDictionary *)deviceDescription
-{
-	return nil;
-}
-
+- (NSDictionary *)deviceDescription			{ return nil; }
 - (int)gState								{ return 0; }
 - (BOOL)isOneShot							{ return is_one_shot; }
 
@@ -307,10 +304,17 @@ NSView *wv;
 }
 
 - (NSText *)fieldEditor:(BOOL)createFlag forObject:anObject
-{
+{													// ask delegate if it can
+	if ([delegate respondsToSelector:				// provide a field editor
+			@selector(windowWillReturnFieldEditor:toObject:)])
+		return [delegate windowWillReturnFieldEditor:self toObject:anObject];
+
 	if(!_fieldEditor && createFlag)					// each window has a global
-		_fieldEditor = [[NSText alloc] init];		// text field editor 
-													 
+		{											// text field editor
+		_fieldEditor = [[NSText new] retain];		
+		[_fieldEditor setFieldEditor:YES]; 								 
+		}
+
 	return _fieldEditor;							
 }
 
@@ -381,8 +385,7 @@ NSApplication *theApp = [NSApplication sharedApplication];
 - (void)orderFrontRegardless				{}
 - (void)orderOut:sender						{}
 
-- (void)orderWindow:(NSWindowOrderingMode)place
-		 relativeTo:(int)otherWin
+- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(int)otherWin
 {
 }
 
@@ -900,6 +903,8 @@ NSView *v;
 			v = [content_view hitTest:[theEvent locationInWindow]];
 			NSDebugLog([v description]);
 			NSDebugLog(@"\n");
+			if(first_responder != v)				// if hit view is not first
+				[self makeFirstResponder:v];		// responder ask it to be
 			[v mouseDown:theEvent];
 			last_point = [theEvent locationInWindow];
 			break;
@@ -1094,8 +1099,7 @@ id result = nil;
 		return YES;
 }
 
-- (NSSize)windowWillResize:(NSWindow *)sender
-					toSize:(NSSize)frameSize
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
 {
 	if ([delegate respondsToSelector:@selector(windowWillResize:toSize:)])
 		return [delegate windowWillResize:sender toSize:frameSize];
@@ -1103,8 +1107,7 @@ id result = nil;
 		return frameSize;
 }
 
-- windowWillReturnFieldEditor:(NSWindow *)sender
-					 toObject:client
+- windowWillReturnFieldEditor:(NSWindow *)sender toObject:client
 {
 	return nil;
 }
@@ -1311,8 +1314,8 @@ id result = nil;
 //
 // Mouse capture/release
 //
-- (void)captureMouse: sender			{}			// Do nothing, should be
-- (void)releaseMouse: sender			{}			// implemented by back-end
+- (void)_captureMouse: sender			{}			// Do nothing, should be
+- (void)_releaseMouse: sender			{}			// implemented by back-end
 - (void)performDeminiaturize:sender		{}
 - (void)performHide:sender				{}
 - (void)performUnhide:sender			{}

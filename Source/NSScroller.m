@@ -589,7 +589,6 @@ NSRect rect;
 		if (theCell) 
 			{
 			[theCell highlight:YES withFrame:rect inView:self];	
-//			[self setNeedsDisplayInRect:rect];		// not needed by XRAW
 			[window flushWindow];
 
 			NSLog (@"tracking cell %x", theCell);
@@ -608,7 +607,6 @@ NSRect rect;
 				}
 
 			[theCell highlight:NO withFrame:rect inView:self];
-//      	[self setNeedsDisplayInRect:rect];		// not needed by XRAW
 			[window flushWindow];
 			}
 
@@ -770,7 +768,7 @@ NSUsableScrollerParts usableParts;
 
 		case NSScrollerKnobSlot:
 			x = 0;										// if the scroller does		 
-      		width = scrollerWidth + 1; 					// not have buttons the 
+      		width = scrollerWidth; 						// not have buttons the 
 														// slot completely 
 			if (usableParts == NSNoScrollerParts) 		// fills the scroller.
 				{

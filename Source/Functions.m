@@ -60,12 +60,6 @@ extern char** environ;
   return 0;
 }
 
-void
-initialize_gnustep_backend(void)
-{
-  [GSContext initializeGUIBackend];
-}
-
 //
 // Convert an NSEvent Type to it's respective Event Mask
 //

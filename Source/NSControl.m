@@ -39,7 +39,9 @@
 //
 // Class variables
 //
-static id MB_NSCONTROL_CELL_CLASS = nil;
+static id _NSCONTROL_CELL_CLASS = nil;
+
+
 
 @implementation NSControl
 
@@ -48,54 +50,36 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 + (void)initialize
 {
-  if (self == [NSControl class])
-    {
-      NSDebugLog(@"Initialize NSControl class\n");
-
-      // Initial version
-      [self setVersion:1];
-
-      // Set cell class
-      [self setCellClass:[NSCell class]];
-    }
+	if (self == [NSControl class])
+		{
+		NSDebugLog(@"Initialize NSControl class\n");
+		[self setVersion:1];								// Initial version
+		[self setCellClass:[NSCell class]];					// Set cell class
+		}		
 }
 
 //
 // Setting the Control's Cell 
 //
-+ (Class)cellClass
-{
-  return MB_NSCONTROL_CELL_CLASS;
-}
-
-+ (void)setCellClass:(Class)factoryId
-{
-  MB_NSCONTROL_CELL_CLASS = factoryId;
-}
++ (Class)cellClass						{ return _NSCONTROL_CELL_CLASS; }
++ (void)setCellClass:(Class)factoryId	{ _NSCONTROL_CELL_CLASS = factoryId; }
 
 //
 // Instance methods
 //
-//
-// Initializing an NSControl Object
-//
 - (id)initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
+	[super initWithFrame:frameRect];
+															// create our cell
+	[self setCell:[[_NSCONTROL_CELL_CLASS new] autorelease]];
+	tag = 0;
 
-  // create our cell
-  [self setCell:[[MB_NSCONTROL_CELL_CLASS new] autorelease]];
-
-  tag = 0;
-
-  return self;
+	return self;
 }
 
 - (void)dealloc
 {
-    // release our cell
-    [cell release];
-
+    [cell release];											// release our cell
     [super dealloc];
 }
 
@@ -104,64 +88,52 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 - copyWithZone:(NSZone *)zone
 {
-  id c;
-  c = NSCopyObject (self, 0, zone);
+id c = NSCopyObject (self, 0, zone);
 
-  // make sure the new copy also has a new copy of the cell
-  [cell retain];
-  [c setCell: [[cell copy] autorelease]];
-  return c;
+	[cell retain];											// give new control 
+	[c setCell: [[cell copy] autorelease]];					// a copy of cell
+
+	return c;
 }
 
 //
 // Setting the Control's Cell 
 //
-- (id)cell
-{
-  return cell;
-}
+- (id)cell							{ return cell; }
 
 - (void)setCell:(NSCell *)aCell
 {
-  // Not a cell class --then forget it
-  if (![aCell isKindOfClass:[NSCell class]])
-    return;
+	if (![aCell isKindOfClass:[NSCell class]])				// must be a cell
+		return;
 
-  [cell setControlView:nil];
-  [aCell setControlView:self];
-
-  [aCell retain];
-  [cell release];
-  cell = aCell;
+	[cell setControlView:nil];
+	[aCell setControlView:self];
+	
+	[aCell retain];
+	[cell release];
+	cell = aCell;
 }
 
 //
 // Enabling and Disabling the Control 
 //
-- (BOOL)isEnabled
-{
-  return [[self selectedCell] isEnabled];
-}
-
-- (void)setEnabled:(BOOL)flag
-{
-  [[self selectedCell] setEnabled:flag];
-}
+- (BOOL)isEnabled					{ return [[self selectedCell] isEnabled]; }
+- (void)setEnabled:(BOOL)flag		{ [[self selectedCell] setEnabled:flag]; }
 
 //
 // Identifying the Selected Cell 
 //
 - (id)selectedCell
 {
-  if ([cell state])
-    return cell;
-  else
-    return nil;
+	if ([cell state])
+		return cell;
+	else
+		return nil;
 }
 
 - (int)selectedTag
 {
-  return [[self selectedCell] tag];
+	return [[self selectedCell] tag];
 }
 
 //
@@ -169,51 +141,48 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 - (double)doubleValue
 {
-  return [[self selectedCell] doubleValue];
+	return [[self selectedCell] doubleValue];
 }
 
 - (float)floatValue
 {
-  return [[self selectedCell] floatValue];
+	return [[self selectedCell] floatValue];
 }
 
 - (int)intValue
 {
-  return [[self selectedCell] intValue];
+	return [[self selectedCell] intValue];
 }
 
 - (void)setDoubleValue:(double)aDouble
 {
-  [[self selectedCell] setDoubleValue:aDouble];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] setDoubleValue:aDouble];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)setFloatValue:(float)aFloat
 {
-  [[self selectedCell] setFloatValue:aFloat];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] setFloatValue:aFloat];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)setIntValue:(int)anInt
 {
-  [[self selectedCell] setIntValue:anInt];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] setIntValue:anInt];
+	[self setNeedsDisplay:YES];
 }
 
-- (void)setNeedsDisplay
-{
-  [super setNeedsDisplay:YES];
-}
+- (void)setNeedsDisplay					{ [super setNeedsDisplay:YES]; }
 
 - (void)setStringValue:(NSString *)aString
 {
-  [[self selectedCell] setStringValue:aString];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] setStringValue:aString];
+	[self setNeedsDisplay:YES];
 }
 
 - (NSString *)stringValue
 {
-  return [[self selectedCell] stringValue];
+	return [[self selectedCell] stringValue];
 }
 
 //
@@ -221,26 +190,26 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 - (void)takeDoubleValueFrom:(id)sender
 {
-  [[self selectedCell] takeDoubleValueFrom:sender];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] takeDoubleValueFrom:sender];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)takeFloatValueFrom:(id)sender
 {
-  [[self selectedCell] takeFloatValueFrom:sender];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] takeFloatValueFrom:sender];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)takeIntValueFrom:(id)sender
 {
-  [[self selectedCell] takeIntValueFrom:sender];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] takeIntValueFrom:sender];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)takeStringValueFrom:(id)sender
 {
-  [[self selectedCell] takeStringValueFrom:sender];
-  [self setNeedsDisplay:YES];
+	[[self selectedCell] takeStringValueFrom:sender];
+	[self setNeedsDisplay:YES];
 }
 
 //
@@ -248,114 +217,90 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 - (NSTextAlignment)alignment
 {
-  if (cell)
-    return [cell alignment];
-  else
-    return NSLeftTextAlignment;
+	if (cell)
+		return [cell alignment];
+	else
+		return NSLeftTextAlignment;
 }
 
 - (NSFont *)font
 {
-  if (cell)
-    return [cell font];
-  else
-    return nil;
+	if (cell)
+		return [cell font];
+	else
+		return nil;
 }
 
 - (void)setAlignment:(NSTextAlignment)mode
 {
-  if (cell)
-    {
-      [cell setAlignment:mode];
-      [self setNeedsDisplay:YES];
-    }
+	if (cell)
+		{
+		[cell setAlignment:mode];
+		[self setNeedsDisplay:YES];
+		}
 }
 
 - (void)setFont:(NSFont *)fontObject
 {
-  if (cell) [cell setFont:fontObject];
+	if (cell) 
+		[cell setFont:fontObject];
 }
 
 - (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned)leftDigits
-			 right:(unsigned)rightDigits
+						  left:(unsigned)leftDigits
+						  right:(unsigned)rightDigits
 {}
 
 //
 // Managing the Field Editor 
 //
-- (BOOL)abortEditing
-{
-  return NO;
-}
-
-- (NSText *)currentEditor
-{
-  return nil;
-}
-
-- (void)validateEditing
-{}
+- (BOOL)abortEditing							{ return NO; }		
+- (NSText *)currentEditor						{ return nil; }
+- (void)validateEditing							{}					// FIX ME
 
 //
 // Resizing the Control 
 //
-- (void)calcSize
-{}
-
-- (void)sizeToFit
-{}
+- (void)calcSize								{}					// FIX ME
+- (void)sizeToFit								{}
 
 //
 // Displaying the Control and Cell 
 //
 - (void)drawCell:(NSCell *)aCell
 {
-  if (cell == aCell)
-    {
-      [self lockFocus];
-      [cell drawWithFrame:bounds inView:self];
-      [self unlockFocus];
-    }
+	if (cell == aCell)
+		{
+		[self lockFocus];
+		[cell drawWithFrame:bounds inView:self];
+		[self unlockFocus];
+		}
 }
 
 - (void)drawCellInside:(NSCell *)aCell
 {
-  if (cell == aCell)
-    {
-      [self lockFocus];
-      [cell drawInteriorWithFrame:bounds inView:self];
-      [self unlockFocus];
-    }
+	if (cell == aCell)
+		{
+		[self lockFocus];
+		[cell drawInteriorWithFrame:bounds inView:self];
+		[self unlockFocus];
+		}
 }
 
-- (void)selectCell:(NSCell *)aCell
-{
-  if (cell == aCell) [cell setState:1];
+- (void)selectCell:(NSCell *)aCell			
+{ 
+	if (cell == aCell) 
+		[cell setState:1];
 }
 
-- (void)updateCell:(NSCell *)aCell
-{
-  [self setNeedsDisplay:YES];
-}
-
-- (void)updateCellInside:(NSCell *)aCell
-{
-  [self setNeedsDisplay:YES];
-}
+- (void)updateCell:(NSCell *)aCell			{ [self setNeedsDisplay:YES]; }
+- (void)updateCellInside:(NSCell *)aCell	{ [self setNeedsDisplay:YES]; }
 
 //
 // Target and Action 
 //
-- (SEL)action
-{
-  return [cell action];
-}
-
-- (BOOL)isContinuous
-{
-  return [cell isContinuous];
-}
+- (SEL)action								{ return [cell action]; }
+- (BOOL)isContinuous						{ return [cell isContinuous]; }
 
 - (BOOL)sendAction:(SEL)theAction to:(id)theTarget
 {
@@ -367,43 +312,17 @@ NSApplication *theApp = [NSApplication sharedApplication];
 		return NO;
 }
 
-- (int)sendActionOn:(int)mask
-{
-  return 0;
-}
-
-- (void)setAction:(SEL)aSelector
-{
-  [cell setAction:aSelector];
-}
-
-- (void)setContinuous:(BOOL)flag
-{
-  [cell setContinuous:flag];
-}
-
-- (void)setTarget:(id)anObject
-{
-  [cell setTarget:anObject];
-}
-
-- (id)target
-{
-  return [cell target];
-}
+- (int)sendActionOn:(int)mask				{ return 0; }
+- (void)setAction:(SEL)aSelector			{ [cell setAction:aSelector]; }
+- (void)setContinuous:(BOOL)flag			{ [cell setContinuous:flag]; }
+- (void)setTarget:(id)anObject				{ [cell setTarget:anObject]; }
+- (id)target								{ return [cell target]; }
 
 //
 // Assigning a Tag 
 //
-- (void)setTag:(int)anInt
-{
-  tag = anInt;
-}
-
-- (int)tag
-{
-  return tag;
-}
+- (void)setTag:(int)anInt					{ tag = anInt; }
+- (int)tag									{ return tag; }
 
 //
 // Tracking the Mouse 
@@ -429,7 +348,7 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 	else
     	oldActionMask = [cell sendActionOn: NSPeriodicMask];
 
-	[[self window] captureMouse: self];						// capture mouse
+	[window _captureMouse: self];					// capture the mouse
 
 	[self lockFocus];
 
@@ -466,7 +385,7 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 			done = YES;										// then we are done
   		}
 
-	[[self window] releaseMouse: self];						// Release mouse
+	[window _releaseMouse: self];							// Release mouse
 
 	if (mouseUp)							// the mouse went up in the button
     	{ 
@@ -486,13 +405,8 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
     	[self sendAction:[self action] to:[self target]];	// perform action
 }
 
-- (BOOL)ignoresMultiClick
-{
-  return NO;
-}
-
-- (void)setIgnoresMultiClick:(BOOL)flag
-{}
+- (BOOL)ignoresMultiClick						{ return NO; }
+- (void)setIgnoresMultiClick:(BOOL)flag			{}					// FIX ME
 
 //
 // Methods Implemented by the Delegate
@@ -500,13 +414,13 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 - (BOOL)control:(NSControl *)control 
 		textShouldBeginEditing:(NSText *)fieldEditor
 {
-  return NO;
+	return NO;
 }
 
 - (BOOL)control:(NSControl *)control
 		textShouldEndEditing:(NSText *)fieldEditor
 {
-  return NO;
+	return NO;
 }
 
 - (void)controlTextDidBeginEditing:(NSNotification *)aNotification
@@ -523,20 +437,20 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
-  [aCoder encodeValueOfObjCType: "i" at: &tag];
-  [aCoder encodeObject: cell];
+	[super encodeWithCoder:aCoder];
+	
+	[aCoder encodeValueOfObjCType: "i" at: &tag];
+	[aCoder encodeObject: cell];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
-  [aDecoder decodeValueOfObjCType: "i" at: &tag];
-  cell = [aDecoder decodeObject];
-
-  return self;
+	[super initWithCoder:aDecoder];
+	
+	[aDecoder decodeValueOfObjCType: "i" at: &tag];
+	cell = [aDecoder decodeObject];
+	
+	return self;
 }
 
 @end

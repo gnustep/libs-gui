@@ -1553,7 +1553,8 @@ NSLog(@"keycode:%x",keyCode);
 	{	[self drawInsertionPointAtIndex:[self selectedRange].location color:nil turnedOn:NO];
 		//<!> stop timed entry
 	}
-	if([self isEditable]) return [self textShouldEndEditing:(NSText*)self];
+	if([self isEditable]) 
+		return [self textShouldEndEditing:(NSText*)self];
 	return YES;
 }
 -(BOOL) becomeFirstResponder
@@ -1608,7 +1609,8 @@ NSLog(@"keycode:%x",keyCode);
 -(BOOL) textShouldEndEditing:(NSText *)textObject
 {	if ([delegate respondsToSelector:@selector(textShouldEndEditing:)])
     	return [delegate textShouldEndEditing:(NSText*)self];
-	else return YES;
+	else 
+		return YES;
 }
 
 

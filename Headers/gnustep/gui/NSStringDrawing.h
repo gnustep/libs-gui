@@ -67,8 +67,6 @@ enum
 
 @interface NSString (NSStringDrawing)
 
-- (void) drawAtPoint: (NSPoint)aPoint withAttributes: (NSDictionary *)attr;
-- (void) drawInRect: (NSRect)aRect withAttributes: (NSDictionary *)attr;
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs;
 
 @end

@@ -33,26 +33,23 @@
  *	a back end.
  */
 
-BOOL
-initialize_gnustep_backend(void)
-{
-  return YES;
-}
+BOOL initialize_gnustep_backend(void)					{ return YES; }
+void NSHighlightRect(NSRect aRect)						{}
+void NSRectFill(NSRect aRect)							{}
+void NSBeep(void)										{}
+void NSFrameRect(NSRect aRect)  						{}
+void NSDrawButton(NSRect aRect, NSRect clipRect)		{}
+void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)		{}
+void NSDrawGroove(NSRect aRect, NSRect clipRect)		{}
 
-void
-NSHighlightRect(NSRect aRect)
-{
-}
-
-void
-NSRectFill(NSRect aRect)
-{
-}
-
-void
-NSBeep(void)
-{
-}
+void PSlineto(float x, float y)							{}
+void PSmoveto(float x, float y)							{}
+void PSrlineto(float x, float y)						{}
+void PSsetgray(float num)								{}					
+void PSstroke(void)										{}
+void PSsetlinewidth(float width)						{}			
+void PSgrestore(void)									{}
+void PSgsave(void)										{}
 
 void GSfill() {}
 void GSsetgray() {}
@@ -70,18 +67,6 @@ void GSstroke() {}
 void GSrlineto() {}
 void GSrectclip() {}
 
-void NSFrameRect(NSRect aRect)  
-{
-}
-void NSDrawButton(NSRect aRect, NSRect clipRect)
-{
-}
-void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)
-{
-}
-void NSDrawGroove(NSRect aRect, NSRect clipRect)
-{
-}
 
 @interface  GMModel : NSObject
 @end

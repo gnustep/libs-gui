@@ -414,8 +414,8 @@ extern NSSize NSTokenSize;
 //
 // Mouse capture/release
 //
-- (void)captureMouse: sender;
-- (void)releaseMouse: sender;
+- (void)_captureMouse: sender;
+- (void)_releaseMouse: sender;
 
 // Allow subclasses to init without the backend class
 // attempting to create an actual window

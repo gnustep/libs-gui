@@ -35,12 +35,15 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSEvent.h>
 
-
+//
 // Class variables
+//
 static NSImage *branch_image;
 static NSImage *highlight_image;
 
+//
 // Private methods
+//
 @interface NSBrowserCell (Private)
 - (void)setBranchImageCell:aCell;
 - (void)setHighlightBranchImageCell:aCell;
@@ -49,15 +52,22 @@ static NSImage *highlight_image;
 
 @implementation NSBrowserCell (Private)
 
-- (void)setBranchImageCell:aCell			{ _branchImage = aCell; }
-- (void)setHighlightBranchImageCell:aCell	{ _highlightBranchImage = aCell; }
-- (void)setTextFieldCell:aCell				{ _browserText = aCell; }
+- (void)setTextFieldCell:aCell				{ ASSIGN(_browserText, aCell); }
+- (void)setBranchImageCell:aCell			{ ASSIGN(_branchImage, aCell); }
+- (void)setHighlightBranchImageCell:aCell	
+{ 
+	ASSIGN(_highlightBranchImage, aCell); 
+}
 
 @end
 
+
+//*****************************************************************************
 //
-// NSBrowserCell implementation
+// 		NSBrowserCell 
 //
+//*****************************************************************************
+
 @implementation NSBrowserCell
 
 //
@@ -67,10 +77,9 @@ static NSImage *highlight_image;
 {
 	if (self == [NSBrowserCell class])
 		{
-		[self setVersion:1];
-														// The default images
-		branch_image = [NSImage imageNamed: @"common_ArrowRight"];
-		highlight_image = [NSImage imageNamed: @"common_ArrowRightH"];
+		[self setVersion:1];							// The default images
+		ASSIGN(branch_image, [NSImage imageNamed: @"common_ArrowRight"]);
+		ASSIGN(highlight_image, [NSImage imageNamed: @"common_ArrowRightH"]);
 		}
 }
 
@@ -92,14 +101,13 @@ static NSImage *highlight_image;
 {
 	[super initTextCell: aString];
 														// create image cells
-	_branchImage = [[NSCell alloc] initImageCell: [NSBrowserCell branchImage]];
-	_highlightBranchImage = [[NSCell alloc] initImageCell:
-							[NSBrowserCell highlightedBranchImage]];
+	_branchImage = [[NSBrowserCell branchImage] retain];
+	_highlightBranchImage = [[NSBrowserCell highlightedBranchImage] retain];
 														// create the text cell
-	_browserText = [[NSTextFieldCell alloc] initTextCell: aString];
+	_browserText = [[[NSCell alloc] initTextCell: aString] retain];
 	[_browserText setEditable: NO];
 	[_browserText setBordered: NO];
-	[_browserText setDrawsBackground: YES];
+	[_browserText setAlignment:NSLeftTextAlignment];
 	
 	_alternateImage = nil;
 	_isLeaf = NO;
@@ -114,7 +122,8 @@ static NSImage *highlight_image;
 {
 	[_branchImage release];
 	[_highlightBranchImage release];
-	[_alternateImage release];
+	if(_alternateImage)
+		[_alternateImage release];
 	[_browserText release];
 	
 	[super dealloc];
@@ -124,14 +133,13 @@ static NSImage *highlight_image;
 {
 NSBrowserCell* c = [super copyWithZone:zone];
 														// Copy the image cells
-	[c setBranchImageCell: [_branchImage copy]];
-	[c setHighlightBranchImageCell: [_branchImage copy]];
-	[c setAlternateImage: _alternateImage];
-														
-	[c setTextFieldCell: [_browserText copy]];			// Copy the text cell
-	
-	[c setLeaf: _isLeaf];
-	[c setLoaded: NO];
+	c->_branchImage = [_branchImage retain];
+	if(_alternateImage)
+		c->_alternateImage = [_alternateImage retain];
+	c->_highlightBranchImage = [_highlightBranchImage retain];
+	c->_browserText = [[_browserText copy] retain];		// Copy the text cell
+	c->_isLeaf = _isLeaf;		
+	c->_isLoaded = _isLoaded;		
 	
 	return c;
 }
@@ -142,15 +150,8 @@ NSBrowserCell* c = [super copyWithZone:zone];
 - (NSImage *)alternateImage					{ return _alternateImage; }
 
 - (void)setAlternateImage:(NSImage *)anImage
-{
-	[anImage retain];
-	[_alternateImage release];
-	_alternateImage = anImage;
-														// Set the image in our 
-	if (_alternateImage)								// highlight cell
-		[_highlightBranchImage setImage: _alternateImage];
-	else
-	   [_highlightBranchImage setImage:[NSBrowserCell highlightedBranchImage]];
+{														// set image to display
+	ASSIGN(_alternateImage, anImage);					// when highlighted
 }
 
 //
@@ -220,10 +221,10 @@ NSImage *image = nil;
 		NSColor *white = [NSColor whiteColor];
 
 		[white set];
-		[_browserText setBackgroundColor: white];
+//		[_browserText setBackgroundColor: white];
 		if (!_isLeaf)
 			{
-			image = [_highlightBranchImage image];
+			image = _highlightBranchImage;
 			image_rect.size.height = cellFrame.size.height;
 			image_rect.size.width = image_rect.size.height;
 															// Right justify
@@ -237,10 +238,10 @@ NSImage *image = nil;
 		NSColor *backColor = [[controlView window] backgroundColor];
 
 		[backColor set];
-    	[_browserText setBackgroundColor:backColor];
+ //   	[_browserText setBackgroundColor:backColor];
 		if (!_isLeaf)
 			{
-			image = [_branchImage image];
+			image = _branchImage;
 			image_rect.size.height = cellFrame.size.height;
 			image_rect.size.width = image_rect.size.height;
 															// Right justify
@@ -261,13 +262,6 @@ NSImage *image = nil;
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {														// no border so just 
 														// draw the interior
-	[self drawInteriorWithFrame: cellFrame inView: controlView];
-}
-
-- (void)highlight:(BOOL)lit withFrame:(NSRect)cellFrame		// may not be per
-							inView:(NSView *)controlView	// spec FIX ME?
-{
-	[super highlight: lit withFrame: cellFrame inView: controlView];
 	[self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 

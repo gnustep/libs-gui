@@ -78,18 +78,13 @@ typedef enum _NSWindowOrderingMode {
 
 } NSWindowOrderingMode;
 
-extern NSString *NSBackendContext;
+
 
 @interface GSContext : NSObject
 {
 	NSDictionary  *context_info;
 	NSMutableData *context_data;
 }
-
-//
-// Setup the Backend library
-//
-+ (void) initializeGUIBackend;
 
 //
 // Setting and Identifying the concrete class

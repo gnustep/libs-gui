@@ -134,10 +134,14 @@
 
 - (void)dealloc
 {
-  [contents release];
-  [cell_image release];
+  if(contents)
+	[contents release];
+  if(cell_image)
+	[cell_image release];
   [cell_font release];
-  [represented_object release];
+  if(represented_object)
+	[represented_object release];
+
   [super dealloc];
 }
 
@@ -386,14 +390,27 @@ NSString* _string;
 // Editing Text 
 //
 - (void)editWithFrame:(NSRect)aRect 
-			inView:(NSView *)controlView	
-			editor:(NSText *)textObject	
-			delegate:(id)anObject	
-			event:(NSEvent *)theEvent
-{}
+				inView:(NSView *)controlView	
+				editor:(NSText *)textObject	
+				delegate:(id)anObject	
+				event:(NSEvent *)theEvent
+{
+	[[controlView window] makeFirstResponder:textObject];
+
+	[textObject setFrame:aRect];
+	[textObject setText:[self stringValue]];
+	[textObject setDelegate:anObject];
+	[controlView addSubview:textObject];
+	NSEraseRect(aRect);
+	[textObject display];
+}
 
 - (void)endEditing:(NSText *)textObject
-{}
+{
+	[textObject removeFromSuperview];
+	[self setStringValue: [textObject text]];
+	[textObject setDelegate:nil];
+}
 
 - (void)selectWithFrame:(NSRect)aRect
 			inView:(NSView *)controlView	 
@@ -719,9 +736,11 @@ BOOL mouseWentUp;
 {
 NSCell* c = [[isa allocWithZone: zone] init];
 
-	c->contents = [[contents copy] retain];
-	ASSIGN(c->cell_image, cell_image);
-	ASSIGN(c->cell_font, cell_font);
+	if(contents)
+		c->contents = [[contents copy] retain];
+	if(cell_image)
+		c->cell_image = [cell_image retain];
+	c->cell_font = [cell_font retain];
 	c->cell_state = cell_state;
 	c->cell_highlighted = cell_highlighted;
 	c->cell_enabled = cell_enabled;

@@ -208,7 +208,8 @@ NSString* _string = [aString copy];
 {
   [super setType:buttonType];
 
-  switch (buttonType) {
+  switch (buttonType) 
+	{
     case NSMomentaryLight:
       [self setHighlightsBy:NSChangeBackgroundCellMask];
       [self setShowsStateBy:NSNoCellMask];
@@ -249,7 +250,7 @@ NSString* _string = [aString copy];
       [self setImagePosition:NSImageLeft];
       [self setAlignment:NSLeftTextAlignment];
       break;
-  }
+	}
 
   // update our state
   [self setState:[self state]];
@@ -283,9 +284,11 @@ NSString* _string = [aString copy];
   NSButtonCell* c = [super copyWithZone:zone];
 
   c->altContents = [[altContents copy] retain];
-  ASSIGN(c->altImage, altImage);
+  if(altImage)
+  	c->altImage = [altImage retain];
   c->keyEquivalent = [[keyEquivalent copy] retain];
-  ASSIGN(c->keyEquivalentFont, keyEquivalentFont);
+  if(keyEquivalentFont)
+	c->keyEquivalentFont = [keyEquivalentFont retain];
   c->keyEquivalentModifierMask = keyEquivalentModifierMask;
   c->transparent = transparent;
   c->highlightsByMask = highlightsByMask;

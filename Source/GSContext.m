@@ -32,14 +32,12 @@
 
 #include <Foundation/NSString.h> 
 #include <Foundation/NSArray.h> 
-#include <Foundation/NSValue.h> 
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSData.h>
-#include <Foundation/NSZone.h>
-#include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/GSContext.h"
+
 
 NSZone *_globalGSZone = NULL;					// The memory zone where all 
 												// global objects are allocated 
@@ -48,21 +46,10 @@ NSZone *_globalGSZone = NULL;					// The memory zone where all
 //
 //  Class variables
 //
-static Class _concreteClass;					// actual class of GSContext
+static Class _concreteClass;					// actual class of GSContext		
 static NSMutableArray *contextList;				// list of drawing destinations
-static BOOL _gnustepBackendInitialized = NO;
 
-extern GSContext *_currentGSContext;
 
-static NSString *knownBackends[] = {
-  @"XGContext",
-  @"XRContext",
-  nil
-};
-
-@interface GSContext (Backend)
-+ (void) _initializeGUIBackend;
-@end
 
 @implementation GSContext 
 
@@ -73,43 +60,10 @@ static NSString *knownBackends[] = {
 {
 	if (self == (_concreteClass = [GSContext class]))
 		{
-        _globalGSZone = NSDefaultMallocZone();
-        contextList = [[NSMutableArray allocWithZone: _globalGSZone] init];
+		contextList = [[NSMutableArray arrayWithCapacity:2] retain];
 		NSDebugLog(@"Initialize GSContext class\n");
 		[self setVersion:1];								// Initial version
 		}
-}
-
-+ (void) initializeGUIBackend
-{
-  NSString *backend;
-
-  if (_gnustepBackendInitialized)
-    {
-      NSLog(@"Invalid initialization: Backend already initialized\n");
-      return;
-    }
-  backend = [[NSUserDefaults standardUserDefaults] 
-              stringForKey: NSBackendContext];
-  if (backend)
-    _concreteClass = NSClassFromString(backend);
-  if (!_concreteClass || _concreteClass == [GSContext class])
-    {
-      /* No backend class set, or class not found */
-      int i = 0;
-      _concreteClass = Nil;
-      while (knownBackends[i])
-        if ((_concreteClass = NSClassFromString(knownBackends[i++])))
-          break;
-    }
-
-  if (!_concreteClass)
-    {
-      NSLog(@"Invalid initialization: No backend found\n");
-      return;
-    }
-
-  [_concreteClass _initializeGUIBackend];
 }
 
 + (void) setConcreteClass: (Class)c		{ _concreteClass = c; }
@@ -132,11 +86,11 @@ GSContext *context;
 	return context;
 }
 
-+ (GSContext *) currentContext			{ return _currentGSContext;}
++ (GSContext *) currentContext			{ return nil;}				// backend 
 
 + (void) setCurrentContext: (GSContext *)context
 {
-  _currentGSContext = context;
+	[self subclassResponsibility:_cmd];								// backend
 }
 
 + (void) destroyContext:(GSContext *) context		
@@ -171,6 +125,7 @@ int top;											// deallocated with the
 
 	[contextList addObject: self];
 	[_concreteClass setCurrentContext: self];
+
 	if(info)
 		context_info = [info retain];
 
@@ -193,4 +148,3 @@ int top;											// deallocated with the
 }
 
 @end
-

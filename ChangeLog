@@ -1,3 +1,32 @@
+Mon Dec 14 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSWindow.m renmae captureMouse: to _captureMouse: (designate as non OS),
+	various methods add fieldEditor support. 
+	* GSContext.m/GSContext.h revert to previous code as solution discussed
+	with Adam Fedor regarding backends had problems I had not forseen. 
+	* NSBrowserCell.h/.m specify text subcell as an NSCell, eliminate image 
+	cell, copyWithZone: optimize and eliminate use of ASSIGN (fixes serious
+	dealloc bug), highlight: eliminate method (fixes dup display bug). 
+	* NSButtonCell.m copyWithZone: optimize and eliminate use of ASSIGN 
+	* NSStringDrawing.h/.m remove unimplemented draw methods from Category 
+	(these are backend specific, can't be defined twice and are already 
+	implemented in xraw). 
+	* NSApplication.h redefine initialize_gnustep_backend () per Adam's
+	redefinition in the backend.
+	* Functions.m/.h remove initialize_gnustep_backend() 
+ 	* NSCell.m preliminary implementation of fieldEditor mechanism, 
+	copyWithZone: optimize and eliminate use of ASSIGN
+	* NSControl.m rename cell class global to _NSCONTROL_CELL_CLASS 
+	* NSMatrix.m implement NSControl's updateCell: to prevent unecessary
+	matrix drawing if possible. 
+	* NSView.m -resizeWithOldSuperviewSize reverted code to my own once more 
+	(fewer lines and no if/else logic), changed code to use view frame instead 
+	of bounds per 3.3/4.2 docs, optimize to avoid floating point math and scale
+	adjustment unless view has been scaled. 
+	* NSScrollView.m define as externs various PS* functions for use in 
+	drawing, polish drawing, move all backend code to front. 
+	* Tools/dummy.m define dummy PS* functions employed in gui.
+
 Mon Dec 14  9:10:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSPanel.m: Implemented all the alert panel functions

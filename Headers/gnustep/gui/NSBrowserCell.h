@@ -38,9 +38,9 @@
 {
   // Attributes
   NSImage *_alternateImage;
-  NSCell *_branchImage;
-  NSCell *_highlightBranchImage;
-  NSTextFieldCell *_browserText;
+  NSImage *_branchImage;
+  NSImage *_highlightBranchImage;
+  NSCell *_browserText;
   BOOL _isLeaf;
   BOOL _isLoaded;
 

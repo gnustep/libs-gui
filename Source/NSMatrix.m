@@ -1161,7 +1161,7 @@ static MPoint anchor = {0, 0};
 		[NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
 	ASSIGN(lastEvent, theEvent);
 
-	[window captureMouse: self];							// grab the mouse
+	[window _captureMouse: self];							// grab the mouse
 	[self lockFocus];					// selection involves two steps, first
 										// a loop that continues until the left
 	while (!done) 						// mouse goes up; then a series of 
@@ -1321,7 +1321,7 @@ static MPoint anchor = {0, 0};
 		lastLocation = [self convertPoint:lastLocation fromView:nil];
   		}
 						
-	[window releaseMouse: self];					// Release the mouse
+	[window _releaseMouse: self];					// Release the mouse
 
   	switch (mode) 									// Finish the selection
 		{								 			// process
@@ -1360,6 +1360,23 @@ static MPoint anchor = {0, 0};
 		[NSEvent stopPeriodicEvents];
 
 	[lastEvent release];
+}
+
+- (void)updateCell:(NSCell *)aCell			
+{ 														// attempt to update
+int r, c;												// only the cell and
+														// not the hole matrix
+	if([aCell isOpaque])
+		{														
+		if([self getRow:&r column:&c ofCell:aCell])
+			{
+			[self setNeedsDisplayInRect:[self cellFrameAtRow:r column:c]]; 
+
+			return;
+			}
+		}
+														// oh well, update the
+	[self setNeedsDisplay:YES]; 						// whole matrix
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent

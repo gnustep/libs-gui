@@ -487,9 +487,9 @@ unsigned i;
 					copyOfMainMenu = [main_menu copy];		// under the mouse
 				copyMenuWindow = [copyOfMainMenu menuWindow];
 				[copyOfMainMenu _rightMouseDisplay];
-				[copyMenuWindow captureMouse:self];
+				[copyMenuWindow _captureMouse:self];
 				[[copyOfMainMenu menuCells] mouseDown:theEvent];
-				[copyMenuWindow releaseMouse:self];
+				[copyMenuWindow _releaseMouse:self];
 				}
 			break;
 
