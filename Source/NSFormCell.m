@@ -3,10 +3,12 @@
 
    The cell class for the NSForm control
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1999 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: November 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,97 +29,133 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSFormCell.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSTextFieldCell.h>
 
+static NSColor	*shadowCol;
+
+@interface NSFormCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n;
+@end
+
+@implementation	NSFormCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n
+{
+  ASSIGN(shadowCol, [NSColor controlDarkShadowColor]);
+}
+@end
+
 @implementation NSFormCell
++ (void) initialize
+{
+  if (self == [NSFormCell class])
+    {
+      [self setVersion: 1];
+      [[NSNotificationCenter defaultCenter] 
+	addObserver: self
+	selector: @selector(_systemColorsChanged:)
+	name: NSSystemColorsDidChangeNotification
+	object: nil];
+      [self _systemColorsChanged: nil];
+    }
+}
 
 /* The title attributes are those inherited from the NSActionCell class. */
-
 - init
 {
-  return [self initTextCell:@"Field:"];
+  return [self initTextCell: @"Field:"];
 }
 
 - initTextCell: (NSString *)aString
 {
-  self = [super initTextCell:@""];
-  [self setBezeled:YES];
-  [self setAlignment:NSLeftTextAlignment];
-  titleWidth = -1;
-  titleCell = [[NSCell alloc] initTextCell:aString];
-  [titleCell setBordered:NO];
-  [titleCell setBezeled:NO];
-  [titleCell setAlignment:NSRightTextAlignment];
+  self = [super initTextCell: @""];
+  [self setBezeled: YES];
+  [self setAlignment: NSLeftTextAlignment];
+  _titleCell = [[NSCell alloc] initTextCell: aString];
+  [_titleCell setBordered: NO];
+  [_titleCell setBezeled: NO];
+  [_titleCell setAlignment: NSRightTextAlignment];
+  _autoTitleWidth = YES;
+  _titleWidth = [[self titleFont] widthOfString: aString];
   return self;
 }
 
 - (void)dealloc
 {
-  [titleCell release];
+  [_titleCell release];
   [super dealloc];
 }
 
 - (BOOL)isOpaque
 {
-  return [super isOpaque] && [titleCell isOpaque];
+  return [super isOpaque] && [_titleCell isOpaque];
 }
 
-- (void)setTitle:(NSString*)aString
+- (void)setTitle: (NSString*)aString
 {
-  [titleCell setStringValue:aString];
+  [_titleCell setStringValue: aString];
+  if (_autoTitleWidth)
+    _titleWidth = [[self titleFont] widthOfString: aString];
 }
 
 - (void)setTitleAlignment:(NSTextAlignment)mode
 {
-  [titleCell setAlignment:mode];
+  [_titleCell setAlignment: mode];
 }
 
-- (void)setTitleFont:(NSFont*)fontObject
+- (void)setTitleFont: (NSFont*)fontObject
 {
-  [titleCell setFont:fontObject];
+  [_titleCell setFont: fontObject];
 }
 
-- (void)setTitleWidth:(float)width
+- (void)setTitleWidth: (float)width
 {
-  titleWidth = width;
+  if (_titleWidth >= 0)
+    {
+      _autoTitleWidth = NO;
+      _titleWidth = width;
+    }
+  else 
+    {
+      _autoTitleWidth = YES;
+      _titleWidth = [[self titleFont] widthOfString: [self title]];
+    }
 }
 
 - (NSString*)title
 {
-  return [titleCell stringValue];
+  return [_titleCell stringValue];
 }
 
 - (NSTextAlignment)titleAlignment
 {
-  return [titleCell alignment];
+  return [_titleCell alignment];
 }
 
 - (NSFont*)titleFont
 {
-  return [titleCell font];
+  return [_titleCell font];
 }
 
 - (float)titleWidth
 {
-  if (titleWidth < 0)
-    return [[titleCell font] widthOfString:[self title]];
-  else
-    return titleWidth;
+  return _titleWidth;
 }
 
-- (float)titleWidth:(NSSize)size
+- (float)titleWidth: (NSSize)size
 {
-  // TODO
+  // Minor TODO -- what is this supposed to do?
   return 0;
 }
 
 - (NSSize)cellSize
 {
   NSSize returnedSize;
-  NSSize titleSize = [titleCell cellSize];
-  NSSize textSize = [super cellSize];
+  NSSize titleSize = [_titleCell cellSize];
+  NSSize textSize;
   
   textSize.width = [cell_font widthOfString: @"minimum"];
   textSize.height = [cell_font pointSize] + (2 * yDist) 
@@ -132,26 +170,72 @@
   return returnedSize;
 }
 
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  theRect.origin.x   += _titleWidth + 4;
+  theRect.size.width -= _titleWidth + 4;
+  
+  return [super drawingRectForBounds: theRect];
+}
+
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSRect titleFrame;
-  NSRect textFrame;
+  NSRect titleFrame = cellFrame;
+  NSRect borderedFrame = cellFrame;
 
-  NSDivideRect(cellFrame, &titleFrame, &textFrame,
-               [self titleWidth] + 4, NSMinXEdge);
-  titleFrame.size.width -= 4; 
+  // Save last view drawn to
+  [self setControlView: controlView];
+  
+  // do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame))
+    return;
 
-  [titleCell drawWithFrame: titleFrame inView: controlView];
-  [super drawWithFrame: textFrame inView: controlView];
+  //
+  // Draw title
+  //
+  titleFrame.size.width = _titleWidth;
+  [_titleCell drawWithFrame: titleFrame inView: controlView];
+
+  //
+  // Leave unfilled the space between titlecell and editable text.
+  // 
+  
+  //
+  // Draw border
+  //
+  borderedFrame.origin.x   += _titleWidth + 4;
+  borderedFrame.size.width -= _titleWidth + 4;
+
+  if (NSIsEmptyRect(borderedFrame))
+    return;
+  
+  [controlView lockFocus];
+  if ([self isBordered])
+    {
+      [shadowCol set];
+      NSFrameRect(borderedFrame);
+    }
+  else if ([self isBezeled])
+    {
+      NSDrawWhiteBezel(borderedFrame, NSZeroRect);
+    }
+  [controlView unlockFocus];
+
+  //
+  // Draw interior
+  //
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  // TODO
   [super encodeWithCoder: aCoder];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  // TODO
   [super initWithCoder: aDecoder];
 
   return self;
