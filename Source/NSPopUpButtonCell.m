@@ -359,6 +359,11 @@ static NSImage *_pbc_image[2];
   [self selectItem: anItem];
 }
 
+- (NSString *)stringValue
+{
+  return [self titleOfSelectedItem];
+}
+
 - (id <NSMenuItem>) selectedItem
 {
   return _selectedItem;
