@@ -1241,6 +1241,12 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   NSPoint	point;
   NSView	*view = [NSView focusView];
 
+  /* FIXME: This is an extremely lossy and temporary workaround for
+     the fact that we should draw only inside rect. */
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSgsave(ctxt);
+  NSRectClip (rect);
+
   /*
    * Since [-drawAtPoint:] positions the top-left corner of the text at
    * the point, we locate the top-left corner of the rectangle to do the
@@ -1253,6 +1259,9 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
     point.y = rect.origin.y + rect.size.height;
 
   [self drawAtPoint: point];
+
+  /* Restore matching the DPSgsave used in the temporary workaround */
+  DPSgrestore(ctxt);
 }
 
 - (NSSize) size
