@@ -103,6 +103,7 @@ typedef enum _NSSelectionAffinity {
      ie, should be stored in the layout manager */
   NSMutableDictionary *_typingAttributes;
   NSRange _selected_range;
+  NSRange _original_selected_range;
   NSColor *_caret_color;
   int _spellCheckerDocumentTag;
   
