@@ -93,7 +93,7 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 - (id)_launchSpellCheckerForLanguage: (NSString *)language
 {
   id proxy = nil;
-  NSDictionary *spellCheckers = [allServices objectForKey: @"BySpell"];
+  NSDictionary *spellCheckers = [_allServices objectForKey: @"BySpell"];
   NSDictionary *checkerDictionary = [spellCheckers objectForKey: language];
   NSString *spellServicePath = [checkerDictionary objectForKey: @"ServicePath"];
   NSString *vendor = [checkerDictionary objectForKey: @"NSSpellChecker"];
@@ -127,7 +127,7 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 
 - (NSArray *)_languagesForPopUpButton
 {
-  NSDictionary *spellCheckers = [allServices objectForKey: @"BySpell"];
+  NSDictionary *spellCheckers = [_allServices objectForKey: @"BySpell"];
   NSArray *allKeys = [spellCheckers allKeys];
 
   return allKeys;
