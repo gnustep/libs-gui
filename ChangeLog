@@ -1,3 +1,12 @@
+2003-07-05 17:20  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSAttributedString.m (-fixParagraphStyleAttributeInRange:):
+	Handle paragraphs with a paragraph style set for a part of it but
+	not the first character correctly.
+
+	* Source/NSFont.m (getNSFont): Retain/autorelease when returning a
+	cached instance to make the retain status of the instance correct.
+
 2003-07-05 16:07  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFont.m (-initWithCoder:): Make sure that the returned

@@ -883,6 +883,11 @@ documentAttributes: (NSDictionary **)dict
     }
   // FIXME: Should check for each character if it is supported by the 
   // assigned font
+  /*
+  Note that this needs to be done on a script basis. Per-character checks
+  are difficult to do at all, don't give reasonable results, and would have
+  really poor performance.
+  */
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
@@ -918,10 +923,18 @@ documentAttributes: (NSDictionary **)dict
              the range without the style set.  */
 	  if ((NSMaxRange (found) + 1) < end)
 	    {
-	      /* This skips the range with style not set, and attempts
-		 again to set the style for the whole paragraph taking
-		 the style at the first location with a style set.  */
-	      loc = NSMaxRange (found) + 1;
+	      /* There is a paragraph style for part of the paragraph. Set
+	      this style for the entire paragraph.
+
+	      Since NSMaxRange(found) + 1 is outside the longest effective
+	      range for the nil style, it must be non-nil.
+	      */
+	      style = [self attribute: NSParagraphStyleAttributeName
+			      atIndex: NSMaxRange(found) + 1
+			      effectiveRange: NULL];
+	      [self addAttribute: NSParagraphStyleAttributeName
+		    value: style
+		    range: r];
 	    }
 	  else
 	    {
@@ -930,9 +943,6 @@ documentAttributes: (NSDictionary **)dict
 	      [self addAttribute: NSParagraphStyleAttributeName
 		    value: [NSParagraphStyle defaultParagraphStyle]
 		    range: r];
-
-	      /* Move on to the next paragraph.  */
-	      loc = end;	      
 	    }
 	}
       else
@@ -948,11 +958,10 @@ documentAttributes: (NSDictionary **)dict
 		    value: style
 		    range: found];
 	    }
-
-	  /* Move on to the next paragraph.  */
-	  loc = end;
 	}
       
+      /* Move on to the next paragraph.  */
+      loc = end;
     }
 }
 
