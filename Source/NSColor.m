@@ -951,6 +951,21 @@ NSColor* systemColorWithName(NSString *name)
       return self;
     }
 
+  if ([_colorspace_name isEqualToString: NSNamedColorSpace])
+    {
+      NSColorList *list = [NSColorList colorListNamed: _catalog_name];
+      NSColor *real = [list colorWithKey: _color_name];
+
+      return [real colorUsingColorSpaceName: colorSpace
+		   device: deviceDescription];
+    }
+
+  if ([colorSpace isEqualToString: NSNamedColorSpace])
+    {
+      // FIXME: We cannot convert to named color space.
+      return nil;
+    }
+
   [self supportMaxColorSpaces];
 
   if ([colorSpace isEqualToString: NSCalibratedRGBColorSpace])
@@ -990,6 +1005,20 @@ NSColor* systemColorWithName(NSString *name)
 	    {
 	      aCopy->_active_component = GNUSTEP_GUI_WHITE_ACTIVE;
 	      ASSIGN(aCopy->_colorspace_name, NSCalibratedBlackColorSpace);
+	    }
+	  return aCopy;
+	}
+    }
+
+  if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
+    {
+      if (_valid_components & GNUSTEP_GUI_CMYK_ACTIVE)
+	{
+	  NSColor *aCopy = [self copy];
+	  if (aCopy)
+	    {
+	      aCopy->_active_component = GNUSTEP_GUI_CMYK_ACTIVE;
+	      ASSIGN(aCopy->_colorspace_name, NSDeviceCMYKColorSpace);
 	    }
 	  return aCopy;
 	}
@@ -1382,7 +1411,8 @@ NSColor* systemColorWithName(NSString *name)
 	      double	m = _CMYK_component.magenta;
 	      double	y = _CMYK_component.yellow;
 	      double	white = 1 - _CMYK_component.black;
-
+	      
+	      // FIXME: Check if this is correct
 	      _RGB_component.red = (c > white ? 0 : white - c);
 	      _RGB_component.green = (m > white ? 0 : white - m);
 	      _RGB_component.blue = (y > white ? 0 : white - y);
@@ -1500,6 +1530,18 @@ NSColor* systemColorWithName(NSString *name)
 	}
 
       /*
+       *	RGB to CMYK if required.
+       */
+      if ((_valid_components & GNUSTEP_GUI_CMYK_ACTIVE) == 0)
+	{
+	  _CMYK_component.cyan = 1 - _RGB_component.red;
+	  _CMYK_component.magenta = 1 - _RGB_component.green;
+	  _CMYK_component.yellow = 1 - _RGB_component.blue;
+	  _CMYK_component.black = 0;
+	  _valid_components |= GNUSTEP_GUI_CMYK_ACTIVE;
+	}
+
+      /*
        *	RGB to white if required.
        */
       if ((_valid_components & GNUSTEP_GUI_WHITE_ACTIVE) == 0)
@@ -1507,6 +1549,7 @@ NSColor* systemColorWithName(NSString *name)
 	  _white_component = (_RGB_component.red + _RGB_component.green + _RGB_component.blue)/3;
 	  _valid_components |= GNUSTEP_GUI_WHITE_ACTIVE;
 	}
+
     }
 }
 
