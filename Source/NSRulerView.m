@@ -725,7 +725,6 @@ static NSMutableDictionary *units = nil;
 - (void) dealloc
 {
   RELEASE(_unit);
-  RELEASE(_scrollView);
   RELEASE(_clientView);
   RELEASE(_accessoryView);
   RELEASE(_markers);
