@@ -265,6 +265,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 - (RTFAttribute*) attr;
 - (void) push;
 - (void) pop;
+- (void) appendString: (NSString*)string;
 
 @end
 
@@ -490,6 +491,57 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
     }
 }
 
+- (void) appendString: (NSString*)string
+{
+  int  oldPosition = [result length];
+  int  textlen = [string length]; 
+  NSRange insertionRange = NSMakeRange(oldPosition,0);
+  NSMutableDictionary *attributes;
+
+  if (!ignore && textlen)
+    {
+      RTFAttribute* attr = [self attr];
+      [result replaceCharactersInRange: insertionRange 
+	      withString: string];
+
+      if (attr->changed)
+        {
+	  NSParagraphStyle *ps = [attr->paragraph copy];
+	  attributes = [[NSMutableDictionary alloc]
+			 initWithObjectsAndKeys:
+			   [attr currentFont], NSFontAttributeName,
+			   ps, NSParagraphStyleAttributeName,
+			   nil];
+	  DESTROY(ps);
+	  if (attr->underline)
+	    {
+	      [attributes setObject: [attr underline]
+			  forKey: NSUnderlineStyleAttributeName];
+	    }
+	  if (attr->script)
+	    {
+	      [attributes setObject: [attr script]
+			  forKey: NSSuperscriptAttributeName];
+	    }
+	  if (attr->fgColour != nil)
+	    {
+	      [attributes setObject: attr->fgColour 
+			  forKey: NSForegroundColorAttributeName];
+	    }
+	  if (attr->bgColour != nil)
+	    {
+	      [attributes setObject: attr->bgColour 
+			  forKey: NSBackgroundColorAttributeName];
+	    }
+	  
+	  [result setAttributes: attributes 
+		  range: NSMakeRange(oldPosition, textlen)];
+	  DESTROY(attributes);
+	  attr->changed = NO;
+	}
+    }
+}
+
 @end
 
 #undef IGNORE
@@ -577,54 +629,23 @@ void GSRTFcloseBlock (void *ctxt, BOOL ignore)
 
 void GSRTFmangleText (void *ctxt, const char *text)
 {
-  int  oldPosition = TEXTPOSITION;
-  int  textlen = strlen(text); 
-  NSRange insertionRange = NSMakeRange(oldPosition,0);
-  NSMutableDictionary *attributes;
+  NSData *data = [[NSData alloc] initWithBytes: (void*)text 
+				 length: strlen(text)];
+  NSString *str = [[NSString alloc] initWithData: data
+				    encoding: NSISOLatin1StringEncoding];
 
-  if (!IGNORE && textlen)
-    {
-      NSString *str = [[NSString alloc] initWithCString: text];
-      [RESULT replaceCharactersInRange: insertionRange 
-	      withString: str];
-      DESTROY(str);
+  [(RTFConsumer *)ctxt appendString: str];
+  DESTROY(str);
+  DESTROY(data);
+}
 
-      if (CHANGED)
-        {
-	  NSParagraphStyle *ps = [PARAGRAPH copy];
-	  attributes = [[NSMutableDictionary alloc]
-			 initWithObjectsAndKeys:
-			   [CTXT currentFont], NSFontAttributeName,
-			 ps, NSParagraphStyleAttributeName,
-			 nil];
-	  DESTROY(ps);
-	  if (UNDERLINE)
-	    {
-	      [attributes setObject: [CTXT underline]
-			  forKey: NSUnderlineStyleAttributeName];
-	    }
-	  if (SCRIPT)
-	    {
-	      [attributes setObject: [CTXT script]
-			  forKey: NSSuperscriptAttributeName];
-	    }
-	  if (FGCOLOUR != nil)
-	    {
-	      [attributes setObject: FGCOLOUR 
-			  forKey: NSForegroundColorAttributeName];
-	    }
-	  if (BGCOLOUR != nil)
-	    {
-	      [attributes setObject: BGCOLOUR 
-			  forKey: NSBackgroundColorAttributeName];
-	    }
-	  
-	  [RESULT setAttributes: attributes 
-		  range: NSMakeRange(oldPosition, textlen)];
-	  DESTROY(attributes);
-	  CHANGED = NO;
-	}
-    }
+void GSRTFunicode (void *ctxt, int uchar)
+{
+  unichar chars = uchar;
+  NSString *str = [[NSString alloc] initWithCharacters: &chars 
+				    length: 1];
+  [(RTFConsumer *)ctxt appendString: str];
+  DESTROY(str);
 }
 
 void GSRTFregisterFont (void *ctxt, const char *fontName, 
@@ -930,7 +951,7 @@ void GSRTFaddDefaultColor (void *ctxt)
 
 void GSRTFcolorbg (void *ctxt, int color)
 {
-  if ([COLOURS count] <= color)
+  if ([COLOURS count] <= (unsigned int)color)
     {
       ASSIGN (BGCOLOUR, [NSColor whiteColor]);
     }
@@ -943,7 +964,7 @@ void GSRTFcolorbg (void *ctxt, int color)
 
 void GSRTFcolorfg (void *ctxt, int color)
 {
-  if ([COLOURS count] <= color)
+  if ([COLOURS count] <= (unsigned int)color)
     {
       ASSIGN (FGCOLOUR, [NSColor blackColor]);
     }
