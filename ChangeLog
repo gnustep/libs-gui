@@ -1,3 +1,10 @@
+2004-07-13 02:54  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSImageRep.m (+_imageRepsWithData:): New method.
+	(+imageRepsWithContentsOfURL:): Use +_imageRepsWithData:.
+	(+imageRepsWithContentsOfFile:): If the filename has no extension,
+	use +_imageRepsWithData: to load it.
+
 2004-07-13 01:15  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (+_handleAutodisplay:, +_addAutodisplayedWindow:,

@@ -156,6 +156,39 @@ static Class NSImageRep_class = NULL;
   return nil;
 }
 
+/* Helper for +imageRepsWithContentsOfFile: and imageRepsWithContentsOfURL:.
+It would make sense (and make initialization of images from data more natural
+for the user) to make this a real method and call it +imageRepsWithData:, but
+that's already the name of one of the method concrete image reps need to
+implement, so we can't do that. */
++ (NSArray *) _imageRepsWithData: (NSData *)data
+{
+  Class rep;
+
+  if (self == NSImageRep_class)
+    {
+      rep = [self imageRepClassForData: data];
+    }
+  else if ([self canInitWithData: data])
+    {
+      rep = self;
+    }
+  else
+    return nil;
+
+  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+    return [rep imageRepsWithData: data];
+  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+    {
+      NSImageRep *imageRep = [rep imageRepWithData: data];
+
+      if (imageRep != nil)
+	return [NSArray arrayWithObject: imageRep];
+    }
+
+  return nil;
+}
+
 + (NSArray *) imageRepsWithContentsOfFile: (NSString *)filename
 {
   NSString *ext;
@@ -165,9 +198,11 @@ static Class NSImageRep_class = NULL;
   ext = [filename pathExtension];
   if (!ext)
     {
-      // FIXME: Should this be an exception?
-      NSLog(@"Extension missing from image filename - '%@'", filename);
-      return nil;
+      /* With no extension, we can't tell the type from the file name.
+      Use the data instead. */
+      NSData *data;
+      data = [NSData dataWithContentsOfFile: filename];
+      return [self _imageRepsWithData: data];
     }
   ext = [ext lowercaseString];
 
@@ -212,34 +247,12 @@ static Class NSImageRep_class = NULL;
 
 + (NSArray *)imageRepsWithContentsOfURL:(NSURL *)anURL
 {
-  Class rep;
-  NSData* data;
+  NSData *data;
 
   // FIXME: Should we use the file type for URLs or only check the data?
   data = [anURL resourceDataUsingCache: YES];
 
-  if (self == NSImageRep_class)
-    {
-      rep = [self imageRepClassForData: data];
-    }
-  else if ([self canInitWithData: data])
-    {
-      rep = self;
-    }
-  else
-    return nil;
-
-  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-    return [rep imageRepsWithData: data];
-  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-    {
-      NSImageRep *imageRep = [rep imageRepWithData: data];
-
-      if (imageRep != nil)
-	return [NSArray arrayWithObject: imageRep];
-    }
-
-  return nil;
+  return [self _imageRepsWithData: data];
 }
 
 + (id) imageRepWithPasteboard: (NSPasteboard *)pasteboard
