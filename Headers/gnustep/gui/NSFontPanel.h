@@ -44,7 +44,12 @@ enum {
   NSFPPreviewField,
   NSFPSizeField,
   NSFPSizeTitle,
-  NSFPCurrentField
+  NSFPCurrentField,
+
+  // GNUstep extensions
+  NSFPFamilyBrowser,
+  NSFPFaceBrowser,
+  NSFPSizeBrowser
 };
 
 @interface NSFontPanel : NSPanel <NSCoding>
@@ -60,13 +65,7 @@ enum {
   int _family;
   int _face;
 
-  // fields for display
-  NSButton *_setButton;
-  NSTextField *_previewArea;
-  NSBrowser *_familyBrowser;
-  NSBrowser *_faceBrowser;
-  NSBrowser *_sizeBrowser;
-  NSTextField *_sizeField;
+  // field for display
   NSView *_accessoryView;
 }
 
