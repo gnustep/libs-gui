@@ -850,7 +850,7 @@ byExtendingSelection: (BOOL) flag
   if (_headerView != nil)
     {
       [_headerView setFrameSize: 
-		     NSMakeSize ([self frame].size.width,
+		     NSMakeSize (_frame.size.width,
 				 [_headerView frame].size.height)];
       [_cornerView setFrameSize: 
 		     NSMakeSize ([NSScroller scrollerWidth] + 1,
