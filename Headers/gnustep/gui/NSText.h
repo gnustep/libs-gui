@@ -42,6 +42,7 @@
 @class NSNotification;
 @class NSColor;
 @class NSFont;
+@class NSTextStorage;
 
 typedef enum _NSTextAlignment {
   NSLeftTextAlignment = 0,
@@ -117,7 +118,7 @@ typedef enum _NSSelectionAffinity {
   NSMutableDictionary *_typingAttributes;
   
   // content
-  NSMutableAttributedString	*_textStorage;
+  NSTextStorage	*_textStorage;
   
   int _spellCheckerDocumentTag;
   

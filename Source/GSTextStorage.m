@@ -481,6 +481,9 @@ SANITY();
       RELEASE(info);
     }
   
+  [self edited: NSTextStorageEditedAttributes
+	 range: range
+changeInLength: 0];
 SANITY();
 }
 
@@ -598,6 +601,10 @@ SANITY();
     }
 SANITY();
   [textChars replaceCharactersInRange: range withString: aString];
+
+  [self edited: NSTextStorageEditedCharacters
+         range: range
+changeInLength: [aString length] - range.length];
 SANITY();
 }
 

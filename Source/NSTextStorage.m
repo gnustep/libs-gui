@@ -80,17 +80,6 @@ static	Class	concrete;
   return nil;
 }
 
-- (void) replaceCharactersInRange: (NSRange)aRange
-	     withAttributedString: (NSAttributedString *)attributedString  
-{
-  [super replaceCharactersInRange: aRange
-	     withAttributedString: attributedString];
-
-  [self edited: NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
-	 range: aRange
-changeInLength: [attributedString length] - aRange.length];
-}
-
 /*
  *	Managing NSLayoutManagers
  */
@@ -195,6 +184,11 @@ changeInLength: [attributedString length] - aRange.length];
 
   NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
 
+  /*
+   * The editCount gets decreased later again, so that changes by
+   * the delegate dont trigger a new processEditing
+   */
+  editCount++;
   [nc postNotificationName: NSTextStorageWillProcessEditingNotification
 		    object: self];
 
@@ -204,6 +198,7 @@ changeInLength: [attributedString length] - aRange.length];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];
+  editCount--;
 
   /*
    * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
