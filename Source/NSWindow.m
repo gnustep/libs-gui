@@ -73,6 +73,7 @@
 #include "GNUstepGUI/GSToolbarView.h"
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
+static NSArray *modes = nil;
 
 @interface NSObject (DragInfoBackend)
 - (void) dragImage: (NSImage*)anImage
@@ -122,10 +123,7 @@ has blocked and waited for events.
 		  target: self
 		argument: nil
 		   order: 600000
-		   modes: [NSArray arrayWithObjects:
-				   NSDefaultRunLoopMode,
-				   NSModalPanelRunLoopMode,
-				   NSEventTrackingRunLoopMode, nil]];
+		   modes: modes];
 }
 
 /* We get here if we were ordered out or miniaturized. In this case if
@@ -503,7 +501,6 @@ static NSMutableSet	*autosaveNames;
 static NSMapTable* windowmaps = NULL;
 static NSNotificationCenter *nc = nil;
 
-
 /*
  * Class methods
  */
@@ -520,6 +517,9 @@ static NSNotificationCenter *nc = nil;
       viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
       nc = [NSNotificationCenter defaultCenter];
+      modes = [[NSArray alloc] initWithObjects: NSDefaultRunLoopMode,
+			       NSModalPanelRunLoopMode,
+			       NSEventTrackingRunLoopMode, nil];
     }
 }
 
@@ -1446,10 +1446,7 @@ many times.
 		 target: self
 	       argument: nil
 		  order: 600000
-		  modes: [NSArray arrayWithObjects:
-			    NSDefaultRunLoopMode,
-			    NSModalPanelRunLoopMode,
-			    NSEventTrackingRunLoopMode, nil]];
+		  modes: modes];
 
       if (_f.has_closed == YES)
 	{
