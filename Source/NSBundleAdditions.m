@@ -824,7 +824,7 @@ Class gmodel_class(void)
   
   // fill in actual object from template...
   [obj setBackgroundColor: [self backgroundColor]];
-  [obj setContentView: [self contentView]];
+  [(NSWindow*)obj setContentView: [self contentView]];
   [obj setFrameAutosaveName: [self frameAutosaveName]];
   [obj setHidesOnDeactivate: [self hidesOnDeactivate]];
   [obj setInitialFirstResponder: [self initialFirstResponder]];
