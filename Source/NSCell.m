@@ -219,9 +219,23 @@ static NSColor	*shadowCol;
   return _contents;
 }
 
+/* The following method is important for NSTableView */
 - (void) setObjectValue: (id)object 
 {
-  // TODO
+  /* Temporary solution to make basics of NSTableView work */
+  if ([object isKindOfClass: [NSString class]])
+    [self setStringValue: object];
+  else if ([object isKindOfClass: [NSImage class]])
+    [self setImage: object];
+  else if ([object isKindOfClass: [NSNumber class]])
+    [self setStringValue: [object stringValue]];
+  else if (object == nil)
+    {
+      [self setStringValue: nil];
+      [self setImage: nil];
+    }
+  else 
+    NSLog (@"NSFormatter/NSObjectValue not yet implemented in NSCell");
 }
 
 - (void) setDoubleValue: (double)aDouble
@@ -1090,8 +1104,22 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-        s = GSUtil_sizeOfMultilineStringWithFont(_contents, _cell_font);
-        break;
+	{
+	  if ((_contents != nil) && ([_contents isEqualToString: @""] == NO))
+	    {
+	      NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+						   _cell_font, 
+						 NSFontAttributeName,
+						 nil];
+	      s = [_contents sizeWithAttributes: dict];
+	    }
+	  else 
+	    {
+	      s.width = [_cell_font widthOfString: @"A"];
+	      s.height = [_cell_font pointSize] - [_cell_font descender];
+	    }
+	}
+	break;
 
       case NSImageCellType:
 	if (_cell_image == nil)
@@ -1189,9 +1217,8 @@ static NSColor	*shadowCol;
 - (void) _drawText: (NSString*) title inFrame: (NSRect) cellFrame
 {
   NSColor	*textColor;
-  float		titleWidth;
-  NSDictionary	*dict;
-  NSSize         titleSize;
+  NSDictionary	*attributes;
+  NSSize        titleSize;
 
   if (!title)
     return;
@@ -1199,43 +1226,28 @@ static NSColor	*shadowCol;
   textColor = [self textColor];
 
   if (!_cell_font)
-    [NSException raise: NSInvalidArgumentException
-        format: @"Request to draw a text cell but no font specified!"];
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: 
+		     @"Request to draw a text cell but no font specified!"];
+    }
 
-  titleSize=GSUtil_sizeOfMultilineStringWithFont(title,_cell_font);
-  titleWidth=titleSize.width;
-  /*
-    PJB:
-    The following comment was found here, in the previous version that
-    supposed that title was one-line,  in spite of the fact that title
-    knows  how   to  draw  itself   (drawInRect:withAttributes:)  when
-    contening several lines.
+  attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+			       _cell_font, NSFontAttributeName,
+			     textColor, NSForegroundColorAttributeName,
+			     nil];
+  
+  titleSize = [title sizeWithAttributes: attributes];
 
-    // Important: text should always be vertically centered without
-    // considering descender [as if descender did not exist].
-    // At present (13/1/00) the following code produces the correct output,
-    // even if it seems to be trying to make it wrong.
-    // Please make sure the output remains always correct.
+  // Determine y position of text
 
-    When  the cellFrame  has  been computed  from sizeToFit,  applying
-    GSUtil_sizeOfMultilineStringWithFont to the  _content of the cell,
-    and this is  exactly the parameters we have  here, respecting this
-    comment would imply moving down  for half a descender the block of
-    text, because GSUtil_sizeOfMultilineStringWithFont  does not add a
-    "centering" half  descender above  the text.  Therefore  we won't,
-    and  we will respect  this comment  only in  the other  cases were
-    we'll merely substract the font descender to the titleSize.heigh.
-  */
-  if((cellFrame.size.width!=titleSize.width)
-     ||(cellFrame.size.height!=titleSize.height)){
-      float titleHeight=titleSize.height-[_cell_font descender];
-      // Determine the y position of the text
-      cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
-      cellFrame.size.height = titleHeight;
-  }
-
-
-
+  /* Important: text should always be vertically centered without
+   * considering descender [as if descender did not exist].
+   * This is particularly important for single line texts.
+   * Please make sure the output remains always correct.
+   */
+  cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
+  cellFrame.size.height = titleSize.height;
 
   // Determine the x position of text
   switch (_cell.text_align)
@@ -1246,27 +1258,23 @@ static NSColor	*shadowCol;
       case NSNaturalTextAlignment:
 	break;
       case NSRightTextAlignment:
-        if (titleWidth < NSWidth (cellFrame))
+        if (titleSize.width < NSWidth (cellFrame))
           {
-            float shift = NSWidth (cellFrame) - titleWidth;
+            float shift = NSWidth (cellFrame) - titleSize.width;
             cellFrame.origin.x += shift;
             cellFrame.size.width -= shift;
           }
 	break;
       case NSCenterTextAlignment:
-        if (titleWidth < NSWidth (cellFrame))
+        if (titleSize.width < NSWidth (cellFrame))
           {
-            float shift = (NSWidth (cellFrame) - titleWidth) / 2;
+            float shift = (NSWidth (cellFrame) - titleSize.width) / 2;
             cellFrame.origin.x += shift;
             cellFrame.size.width -= shift;
           }
     }
 
-  dict = [NSDictionary dictionaryWithObjectsAndKeys:
-		_cell_font, NSFontAttributeName,
-		textColor, NSForegroundColorAttributeName,
-		nil];
-  [title drawInRect: cellFrame withAttributes: dict];
+  [title drawInRect: cellFrame  withAttributes: attributes];
 }
 
 /*
