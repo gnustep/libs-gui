@@ -78,6 +78,15 @@ enum {
   NSViewMaxYMargin	= 32 	// top margin between views can stretch
 };
 
+/*
+ * constants defining if and how a view (or cell) should draw a focus ring
+ */
+typedef enum _NSFocusRingType {
+  NSFocusRingTypeDefault = 0,
+  NSFocusRingTypeNone = 1,
+  NSFocusRingTypeExterior = 2
+} NSFocusRingType;
+
 @interface NSView : NSResponder
 {
   NSRect _frame;
@@ -240,11 +249,36 @@ enum {
 - (void) setNeedsDisplay: (BOOL)flag;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect;
 - (BOOL) isOpaque;
+#ifndef STRICT_OPENSTEP
++ (NSFocusRingType) defaultFocusRingType;
+- (void) setKeyboardFocusRingNeedsDisplayInRect: (NSRect)rect;
+- (void) setFocusRingType: (NSFocusRingType)focusRingType;
+- (NSFocusRingType) focusRingType;
+
+/*
+ * Hidding Views
+ */
+- (void) setHidden: (BOOL)flag;
+- (BOOL) isHidden;
+- (BOOL) isHiddenOrHasHiddenAncestor;
+#endif
 
 - (void) drawRect: (NSRect)rect;
 - (NSRect) visibleRect;
 - (BOOL) canDraw;
 - (BOOL) shouldDrawColor;
+#ifndef STRICT_OPENSTEP
+- (BOOL) wantsDefaultClipping;
+- (BOOL) needsToDrawRect: (NSRect)aRect;
+- (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count;
+
+/*
+ * Live resize support
+ */
+- (BOOL) inLiveResize;
+- (void) viewWillStartLiveResize;
+- (void) viewDidEndLiveResize;
+#endif
 
 /*
  * Graphics State Objects
@@ -262,6 +296,7 @@ enum {
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
 #ifndef STRICT_OPENSTEP
 - (BOOL) performMnemonic: (NSString *)aString;
+- (BOOL) mouseDownCanMoveWindow;
 #endif
 
 /*
@@ -281,6 +316,13 @@ enum {
 - (void) registerForDraggedTypes: (NSArray*)newTypes;
 - (void) unregisterDraggedTypes;
 - (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
+#ifndef STRICT_OPENSTEP
+- (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
+                         fromRect: (NSRect)aRect
+                           source: (id)sourceObject 
+                        slideBack: (BOOL)slideBack
+                            event: (NSEvent *)theEvent;
+#endif
 
 /*
  * Managing the Cursor
@@ -347,6 +389,9 @@ enum {
 - (void) setPreviousKeyView: (NSView*)aView;
 - (NSView*) previousKeyView;
 - (NSView*) previousValidKeyView;
+#ifndef STRICT_OPENSTEP
+- (BOOL) canBecomeKeyView;
+#endif
 
 /*
  * Printing

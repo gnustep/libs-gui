@@ -1,3 +1,16 @@
+2004-02-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSView.h:
+	* Source/NSView.m: (+defaultFocusRingType,
+	-setKeyboardFocusRingNeedsDisplayInRect:, -setFocusRingType:,
+	-focusRingType, -setHidden:, -isHidden,
+	-isHiddenOrHasHiddenAncestor, -wantsDefaultClipping,
+	-needsToDrawRect:, -getRectsBeingDrawn:count:, -inLiveResize,
+	-viewWillStartLiveResize, -viewDidEndLiveResize,
+	-mouseDownCanMoveWindow, -dragPromisedFilesOfTypes:...event:,
+	-canBecomeKeyView) 
+	Stups for new MacOSX methods.
+
 2004-02-17 00:18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/NSNib.h: Improved documentation.

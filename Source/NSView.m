@@ -2096,6 +2096,25 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return _visibleRect;
 }
 
+- (BOOL) wantsDefaultClipping
+{
+  return YES;
+}
+
+- (BOOL) needsToDrawRect: (NSRect)aRect
+{
+  // FIXME
+  return YES;
+}
+
+- (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count
+{
+  // FIXME
+  if (count != NULL)
+    {
+      *count = 0;
+    }
+}
 
 extern NSThread *GSAppKitThread; /* TODO */
 
@@ -2213,6 +2232,65 @@ in the main thread.
   DESTROY(v);
 }
 
++ (NSFocusRingType) defaultFocusRingType
+{
+  return NSFocusRingTypeDefault;
+}
+
+- (void) setKeyboardFocusRingNeedsDisplayInRect: (NSRect)rect
+{
+  // FIXME
+  [self setNeedsDisplayInRect: rect];
+}
+
+- (void) setFocusRingType: (NSFocusRingType)focusRingType
+{
+  // FIXME
+}
+
+- (NSFocusRingType) focusRingType
+{
+  // FIXME
+  return NSFocusRingTypeDefault;
+}
+
+/*
+ * Hidding Views
+ */
+- (void) setHidden: (BOOL)flag
+{
+  // FIXME
+}
+
+- (BOOL) isHidden
+{
+  // FIXME
+  return NO;
+}
+
+- (BOOL) isHiddenOrHasHiddenAncestor
+{
+  return ([self isHidden] || [_super_view isHiddenOrHasHiddenAncestor]);
+}
+
+/*
+ * Live resize support
+ */
+- (BOOL) inLiveResize
+{
+  // FIXME
+  return NO;
+}
+
+- (void) viewWillStartLiveResize
+{
+  // FIXME
+}
+
+- (void) viewDidEndLiveResize
+{
+  // FIXME
+}
 
 /*
  * Scrolling
@@ -2590,6 +2668,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return NO;
 }
 
+- (BOOL) mouseDownCanMoveWindow
+{
+  // FIXME
+  return NO;
+}
+
 - (void) removeTrackingRect: (NSTrackingRectTag)tag
 {
   unsigned i, j;
@@ -2858,8 +2942,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   theView = [self nextKeyView];
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil)
-	|| (theView == self))
+      if ((theView == nil) || (theView == self) || 
+	  [theView canBecomeKeyView])
 	{
 	  return theView;
 	}
@@ -2913,13 +2997,19 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   theView = [self previousKeyView];
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil)
-	|| (theView == self))
+      if ((theView == nil) || (theView == self) || 
+	  [theView canBecomeKeyView])
 	{
 	  return theView;
 	}
       theView = [theView previousKeyView];
     }
+}
+
+- (BOOL) canBecomeKeyView
+{
+  // FIXME
+  return [self acceptsFirstResponder] && ![self isHidden];
 }
 
 /*
@@ -3024,6 +3114,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       GSRemoveDragTypes(self);
       _rFlags.has_draginfo = 0;
     }
+}
+
+- (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
+                         fromRect: (NSRect)aRect
+                           source: (id)sourceObject 
+                        slideBack: (BOOL)slideBack
+                            event: (NSEvent *)theEvent
+{
+  // FIXME
+  return NO;
 }
 
 /*
