@@ -1,3 +1,13 @@
+Thu Dec  9 05:47:09 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m ([-runModalForDirectory:path:filename]),
+	([-ok:]), ([-cancel:]): There was a nice bug here: when the panel
+ 	was aborted, NSOKButton was returned!  The reason is that by
+ 	chance NSRunAbortedResponse == NSOKButton (they are defined in two
+ 	different enums).  I changed the way we handle return codes; now
+ 	the panel returns NSCancelButton on abort.
+	* Headers/AppKit/NSSavePanel.h: Added ivar _OKButtonPressed.
+
 Thu Dec  9 03:12:16 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m ([-keyDown:]): Trivial implementation to allow
