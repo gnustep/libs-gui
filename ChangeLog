@@ -1,3 +1,15 @@
+2003-01-20  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSImage.m (NSImageCacheMore): New enum and ivar.
+	* Source/NSImage.m (-setCacheMode:): New method.
+	(-cacheMode): Idem.
+	(-compositeToPoint:fromRect:operation:): If printing, composite from
+	source image, not cache.
+	(-dissolveToPoint:fromRect:fraction:): Idem.
+	(-drawRepresentation:inRect:): Correct background rectfill for
+	flipped views.
+	(-bestRepresentationForDevice:): Rewrite. Close to being correct.
+
 Tue Jan 21 00:39:52 2003  Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenu.m ([-performKeyEquivalent:]): Only perform the

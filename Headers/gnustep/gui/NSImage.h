@@ -43,6 +43,14 @@
 @class NSColor;
 @class NSView;
 
+typedef enum {
+  NSImageCacheDefault,
+  NSImageCacheAlways,
+  NSImageCacheBySize,
+  NSImageCacheNever
+} NSImageCacheMode;
+
+
 @interface NSImage : NSObject <NSCoding, NSCopying>
 {
   // Attributes
@@ -64,8 +72,9 @@
   } _flags;
   NSMutableArray	*_reps;
   NSColor		*_color;
-  NSView	*_lockedView;
-  id		_delegate;
+  NSView                *_lockedView;
+  id		        _delegate;
+  NSImageCacheMode      _cacheMode;
 }
 
 //
@@ -155,6 +164,8 @@
 - (BOOL) isDataRetained;
 - (void) setCacheDepthMatchesImageDepth: (BOOL)flag;
 - (BOOL) cacheDepthMatchesImageDepth;
+- (void) setCacheMode: (NSImageCacheMode)mode;
+- (NSImageCacheMode) cacheMode;
 
 //
 // Drawing 

@@ -44,9 +44,10 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSPrintOperation.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/GSDisplayServer.h>
 
-BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
 @implementation NSBundle (NSImageAdditions)
@@ -329,6 +330,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   //_flags.syncLoad = NO;
   _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   ASSIGN(_color, clearColor);
+  _cacheMode = NSImageCacheDefault;
   
   return self;
 }
@@ -610,6 +612,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return _flags.unboundedCacheDepth;
 }
 
+- (void) setCacheMode: (NSImageCacheMode)mode
+{
+  _cacheMode = mode;
+}
+
+- (NSImageCacheMode) cacheMode
+{
+  return _cacheMode;
+}
+
+
 // Determining How the Image is Drawn 
 - (BOOL) isValid
 {
@@ -691,17 +704,20 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 		 fromRect: (NSRect)aRect
 		operation: (NSCompositingOperation)op
 {
-  NSImageRep *rep;
+  NSImageRep *rep = nil;
 
   NS_DURING
-    {
-      rep = [self _doImageCache];
-      
-      if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
+    { 
+      if ([GSCurrentContext() isDrawingToScreen] == YES)
+	  rep = [self _doImageCache];
+      if (rep
+	  &&_cacheMode != NSImageCacheNever 
+	  && [rep isKindOfClass: cachedClass])
         {
-	  NSRect rect = [(NSCachedImageRep *)rep rect];
+	  NSRect rect;
 	  float y = aPoint.y;
 
+	  rect = [(NSCachedImageRep *)rep rect];
 	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
 		      NSStringFromRect(rect), NSStringFromRect(aRect));
 	  // Move the drawing rectangle to the origin of the image rep
@@ -716,14 +732,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       else	
         {
 	  NSRect rect;
-
+          rep = [self bestRepresentationForDevice: nil];
 	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 	  [self drawRepresentation: rep inRect: rect];
 	}
     }
   NS_HANDLER
     {
-      NSLog(@"NSImage: composite failed due to %@: %@", 
+      NSLog(@"NSImage: compositeToPoint:fromRect:operation: failed due to %@: %@", 
 	    [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
@@ -775,13 +791,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   NS_DURING
     {
-      rep = [self _doImageCache];
-
-      if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
+      if ([GSCurrentContext() isDrawingToScreen] == YES)
+	  rep = [self _doImageCache];
+      if (rep
+	  &&_cacheMode != NSImageCacheNever 
+	  && [rep isKindOfClass: cachedClass])
         {
-	  NSRect rect = [(NSCachedImageRep *)rep rect];
+	  NSRect rect;
 	  float y = aPoint.y;
 
+	  rect = [(NSCachedImageRep *)rep rect];
 	  // Move the drawing rectangle to the origin of the image rep
 	  // and intersect the two rects.
 	  aRect.origin.x += rect.origin.x;
@@ -794,6 +813,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
         {
 	  NSRect rect;
 
+	  /* FIXME: Here we are supposed to composite directly from the source
+	     but how do you do that? */
+          rep = [self bestRepresentationForDevice: nil];
 	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 	  [self drawRepresentation: rep inRect: rect];
 	}
@@ -819,8 +841,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   if (_color != nil)
     {
+      NSRect fillrect = aRect;
       [_color set];
-      NSRectFill(aRect);
+      if ([[NSView focusView] isFlipped])
+	fillrect.origin.y -= _size.height;
+      NSRectFill(fillrect);
+      if ([GSCurrentContext() isDrawingToScreen] == NO)
+	{
+	  /* Reset alpha for image drawing. */
+	  [[NSColor whiteColor] set];
+	}
     }
 
   if (!_flags.scalable) 
@@ -896,7 +926,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
-  if (NSImageDoesCaching == YES)
+  if (_cacheMode != NSImageCacheNever)
     {
       NSWindow	*window;
       GSRepData *repd;
@@ -946,30 +976,102 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
-- (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
+/* Determine if the device is color or gray scale and find the reps of
+   the same type
+*/
+- (NSMutableArray *) _bestRep: (NSArray *)reps 
+	       withColorMatch: (NSDictionary*)deviceDescription
 {
-  NSArray *reps = [self representations];
+  int colors = 3;
+  NSImageRep* rep;
+  NSMutableArray *breps;
   NSEnumerator *enumerator = [reps objectEnumerator];
-  NSImageRep *rep = nil;  
-  NSImageRep *best = nil;
-
+  NSString *colorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
+  
+  if (colorSpace != nil)
+    colors = NSNumberOfColorComponents(colorSpace);
+  
+  breps = [NSMutableArray array];
   while ((rep = [enumerator nextObject]) != nil)
     {
-      /*
-       * What's the best representation? 
-       * FIXME: At the moment we take the last bitmap we find.
-       * If we can't find a bitmap, we take whatever we can.
-       * NSCursor will only handle returned NSBitmapImageReps!
-       */
-      if ([rep isKindOfClass: bitmapClass])
-	best = rep;
-      else if (best == nil)
-	best = rep;
+      if ([rep colorSpaceName] || abs(NSNumberOfColorComponents([rep colorSpaceName]) - colors) <= 1)
+        [breps addObject: rep];
     }
-  return best;
+  
+  /* If there are no matches, pass all the reps */
+  if ([breps count] == 0)
+    return (NSMutableArray *)reps;
+  return breps;
 }
 
-- (NSArray *) representations
+/* Find reps that match the resolution of the device or return the rep
+   that has the highest resolution */
+- (NSMutableArray *) _bestRep: (NSArray *)reps 
+	  withResolutionMatch: (NSDictionary*)deviceDescription
+{
+  NSImageRep* rep;
+  NSMutableArray *breps;
+  NSSize dres;
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  NSValue *resolution = [deviceDescription objectForKey: NSDeviceResolution];
+
+  if (resolution)
+    dres = [resolution sizeValue];
+  else
+    dres = NSMakeSize(0, 0);
+
+  breps = [NSMutableArray array];
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      /* FIXME: Not sure about checking resolution */
+      [breps addObject: rep];
+    }
+  
+  /* If there are no matches, pass all the reps */
+  if ([breps count] == 0)
+    return (NSMutableArray *)reps;
+  return breps;
+}
+
+/* Find reps that match the bps of the device or return the rep that
+   has the highest bps */
+- (NSMutableArray *) _bestRep: (NSArray *)reps 
+		 withBpsMatch: (NSDictionary*)deviceDescription
+{
+  NSImageRep* rep, *max_rep;
+  NSMutableArray *breps;
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  int bps = [[deviceDescription objectForKey: NSDeviceBitsPerSample] intValue];
+  int max_bps;
+
+  breps = [NSMutableArray array];
+  max_bps = 0;
+  max_rep = nil;
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      int rep_bps;
+      if ([rep respondsToSelector: @selector(bitsPerPixel)])
+        rep_bps = [(NSBitmapImageRep *)rep bitsPerPixel];
+      if (rep_bps > max_bps)
+        {
+          max_bps = rep_bps;
+          max_rep = rep;
+        }
+      if (rep_bps == bps)
+        [breps addObject: rep];
+    }
+  
+
+  if ([breps count] == 0 && max_rep != nil)
+    [breps addObject: max_rep];
+
+  /* If there are no matches, pass all the reps */
+  if ([breps count] == 0)
+    return (NSMutableArray *)reps;
+  return breps;
+}
+
+- (NSMutableArray *) _representationsWithCachedImages: (BOOL)flag
 {
   unsigned	count;
 
@@ -989,15 +1091,61 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   else
     {
       id	repList[count];
-      unsigned	i;
+      unsigned	i, j;
 
       [_reps getObjects: repList];
+      j = 0;
       for (i = 0; i < count; i++) 
 	{
-	  repList[i] = ((GSRepData*)repList[i])->rep;
+          if (flag || ((GSRepData*)repList[i])->original == nil)
+            {
+              repList[j] = ((GSRepData*)repList[i])->rep;
+              j++;
+            }
 	}
-      return [NSArray arrayWithObjects: repList count: count];
+      return [NSArray arrayWithObjects: repList count: j];
     }
+}
+
+- (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
+{
+  NSMutableArray *reps = [self _representationsWithCachedImages: NO];
+  
+  if (deviceDescription == nil)
+    {
+      if ([GSCurrentContext() isDrawingToScreen] == YES)
+        {
+          int screen = [[[GSCurrentServer() attributes] 
+			  objectForKey: GSScreenNumber] intValue];
+          deviceDescription = [[[NSScreen screens] objectAtIndex: screen] 
+				deviceDescription];
+        }
+      else if ([NSPrintOperation currentOperation])
+        {
+          /* FIXME: We could try to use the current printer, 
+	     but there are many cases where might
+             not be printing (EPS, PDF, etc) to a specific device */
+        }
+    }
+
+  if (_flags.colorMatchPreferred == YES)
+    {
+      reps = [self _bestRep: reps withColorMatch: deviceDescription];
+      reps = [self _bestRep: reps withResolutionMatch: deviceDescription];
+    }
+  else
+    {
+      reps = [self _bestRep: reps withResolutionMatch: deviceDescription];
+      reps = [self _bestRep: reps withColorMatch: deviceDescription];
+    }
+  reps = [self _bestRep: reps withBpsMatch: deviceDescription];
+  /* Pick an arbitrary representation if there is more than one */
+  return [reps lastObject];
+}
+
+- (NSArray *) representations
+{
+  return [self _representationsWithCachedImages: YES];
 }
 
 - (void) setDelegate: anObject
@@ -1294,7 +1442,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 {
   NSImageRep *rep = [self bestRepresentationForDevice: nil];
 
-  if (NSImageDoesCaching == YES)
+  if (_cacheMode != NSImageCacheNever)
     {
       GSRepData *repd;
 
