@@ -54,7 +54,6 @@
 - (void) dealloc
 {
   RELEASE(tab_items);
-  TEST_RELEASE(tab_selected);
   RELEASE(tab_font);
   [super dealloc];
 }
