@@ -424,6 +424,64 @@ static BOOL useWindowmakerIconBackground = NO;
 {
   if ([theEvent clickCount] >= 2)
     {
+      /* If the app is not hidden we need to order front any visible and 
+      	 possibly obscured windows. If we are active we need to order front 
+	 the key or main window again, otherwise unhide: will unhide and
+	 activate us. Do this all in a way which will not change the stacking
+	 order. 
+
+	 There are 3 possibilities:
+	 1. app is active and has no obscured windows
+	 2. app is active and has obscured windows
+	 3. app is inactive.  
+	 I don't know of any way to tell 1 from 2 and do nothing.
+
+	 This should ideally set aWin NSWindowBelow the key or main window
+	 but with most windowmanagers. It doesn't seem to place the receiving 
+	 window immediately below like it should. 
+       */
+      if ([NSApp isHidden] == NO)
+	{
+	  int i;
+	  NSArray *windows = RETAIN([NSApp windows]);
+      
+	  for (i = 0; i < [windows count]; i++)
+	    { 
+	      NSWindow *aWin = [windows objectAtIndex:i];
+              
+	      if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
+		  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
+		  && aWin != [self window] 
+		  && ([aWin styleMask] & NSMiniWindowMask) == 0)
+	        {
+		  [aWin orderFrontRegardless];
+		}
+	    }
+	
+	  if ([NSApp isActive] == YES)
+	    {
+	      if ([NSApp keyWindow] != nil)
+		{
+		  [[NSApp keyWindow] orderFront: self];
+		}
+	      else if ([NSApp mainWindow] != nil)
+		{
+		  [[NSApp mainWindow] makeKeyAndOrderFront: self];
+		}
+	      else
+		{
+		  /* We need give input focus to some window otherwise we'll 
+		     never get keyboard events. FIXME: doesn't work. */
+		  NSWindow *menu_window= [[NSApp mainMenu] window];
+		  NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+		  [GSServerForWindow(menu_window) setinputfocus:
+					[menu_window windowNumber]];
+		}
+	    }
+	  
+          RELEASE(windows);
+	}
+       
       [NSApp unhide: self];
     }
   else
