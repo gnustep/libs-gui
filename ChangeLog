@@ -1,3 +1,18 @@
+2003-12-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSAffineTransform.h: Corrected element names tX
+	and TY of structure NSAffineTransformStruct to fit Cocoa naming.
+	* Source/NSAffineTransform.m
+	* Source/NSView.m (-_rebuildCoordinates)
+	* Source/NSPrintOperation.m (-_displayPageInRect:atPlacement:withInfo:)
+	Adopted to change of NSAffineTransformStruct elements.
+	* Source/Function.m
+	Implemented NSDrawWindowBackground(), NSDrawDarkBezel() and
+	NSDrawLightBezel().
+	* Source/NSTableHeaderView.m (-drawRect:) Use NSDrawTiledRects()
+	instead of DPS operations.
+	
+
 2003-12-30 00:48  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Added private class to collect
