@@ -642,16 +642,22 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
-  ASSIGN (_menuItem, [aDecoder decodeObject]);
-
-  if ([aDecoder versionForClassName: @"NSMenuItemCell"] < 2)
+  if ([aDecoder allowsKeyedCoding])
     {
-      /* In version 1, we used to encode the _menuView here.  */
-      [aDecoder decodeObject];
+      [self setMenuItem: [aDecoder decodeObjectForKey: @"NSMenuItem"]];
     }
+  else
+    {
+      ASSIGN (_menuItem, [aDecoder decodeObject]);
 
+      if ([aDecoder versionForClassName: @"NSMenuItemCell"] < 2)
+        {
+	  /* In version 1, we used to encode the _menuView here.  */
+	  [aDecoder decodeObject];
+	}
+    }
   _needs_sizing = YES;
 
   return self;

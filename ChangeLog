@@ -1,3 +1,12 @@
+2004-02-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/Function.m
+	Corrected NSDrawWhiteBezel(), NSDrawDarkBezel() and
+	NSDrawLightBezel() to be almost identical to their Cocoa counterparts.
+	* Source/NSMenuItemCell.m
+	* Source/NSPopUpButtonCell.m
+	Corrected keyed decoding. 
+
 2004-02-08 01:36  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSNib.m: Added implmentation for this class.

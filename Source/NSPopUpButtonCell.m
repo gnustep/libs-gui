@@ -812,7 +812,6 @@ static NSImage *_pbc_image[2];
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  id<NSMenuItem> selectedItem;
   NSMenu *menu;
 
   self = [super initWithCoder: aDecoder];
@@ -847,11 +846,11 @@ static NSImage *_pbc_image[2];
 
       menu = [aDecoder decodeObjectForKey: @"NSMenu"];
       [self setMenu: menu];
-      selectedItem = [aDecoder decodeObjectForKey: @"NSMenuItem"];
     }
   else
     {
       int flag;
+      id<NSMenuItem> selectedItem;
       int version = [aDecoder versionForClassName: 
 				  @"NSPopUpButtonCell"];
 
@@ -895,7 +894,6 @@ static NSImage *_pbc_image[2];
 	    }
 	  [self setEnabled: YES];
 	}
-      
       [self selectItem: selectedItem];
     }
   return self;
