@@ -70,6 +70,7 @@ Fri Jan 14 04:33:21 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 Thu Jan 13 20:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenu.m: minor tidyups and fixes for Gorm
+	* Source/NSMenuView.m: minor coding fixes
 	* Source/NSBundleAdditions.m: support for setting main menu from nib.
  
 Mon Jan 10 00:32:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
