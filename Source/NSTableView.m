@@ -4279,7 +4279,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
       if ((row != NSNotFound) && (row >= _numberOfRows))
         {
 	  [_selectedRows removeIndexesInRange: 
-			     NSMakeRange(_numberOfRows,  row - _numberOfRows)];
+			     NSMakeRange(_numberOfRows,  row + 1 - _numberOfRows)];
 	  if (_selectedRow >= _numberOfRows)
 	    {
 	      row = [_selectedRows lastIndex];
