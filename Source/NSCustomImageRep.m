@@ -37,31 +37,31 @@
   [super init];
 
   /* WARNING: Retaining the delegate may or may not create a cyclic graph */
-  delegate = [anObject retain];
-  selector = aSelector;
+  _delegate = RETAIN(anObject);
+  _selector = aSelector;
   return self;
 }
 
 - (void) dealloc
 {
-  [delegate release];
+  RELEASE(_delegate);
   [super dealloc];
 }
 
 // Identifying the Object 
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (SEL) drawSelector
 {
-  return selector;
+  return _selector;
 }
 
 - (BOOL) draw
 {
-  [delegate performSelector: selector];
+  [_delegate performSelector: _selector withObject: self];
   return YES;
 }
 
@@ -70,16 +70,16 @@
 {
   [super encodeWithCoder: aCoder];
   
-  [aCoder encodeObject: delegate];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &selector];
+  [aCoder encodeObject: _delegate];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_selector];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &delegate];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &selector];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_delegate];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_selector];
   return self;
 }
 

@@ -75,8 +75,8 @@ static NSMutableArray*	imageReps = NULL;
 + (NSArray *) imageRepsWithContentsOfFile: (NSString *)filename
 {
   int i, count;
-  NSString* ext;
-  NSMutableArray* array;
+  NSString *ext;
+  NSMutableArray *array;
 
   ext = [filename pathExtension];
   // FIXME: Should this be an exception? Should we even check this?
@@ -86,7 +86,7 @@ static NSMutableArray*	imageReps = NULL;
       return nil;
     }
 
-  array = nil;
+  array = [NSMutableArray arrayWithCapacity: 1];
   count = [imageReps count];
   for (i = 0; i < count; i++)
     {
@@ -95,19 +95,17 @@ static NSMutableArray*	imageReps = NULL;
 	{
 	  NSData* data;
 
-
+	  // This is some GNUstep extension for special file types
 	  if ([rep respondsToSelector: @selector(imageRepsWithFile:)])
-	    array = [rep imageRepsWithFile: filename];
-	  if ([array count] > 0)
-	    break;
-
+	    [array addObjectsFromArray: [rep imageRepsWithFile: filename]];
+	    
 	  data = [NSData dataWithContentsOfFile: filename];
 	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	    array = [rep imageRepsWithData: data];
+	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
 	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	    array = [rep imageRepWithData: data];
-	  if ([array count] > 0)
-	    break;
+	    {
+	      [array addObject: [rep imageRepWithData: data]];
+	    }
 	}
     }
   return (NSArray *)array;
@@ -150,18 +148,23 @@ static NSMutableArray*	imageReps = NULL;
   return (NSArray *)array;
 }
 
++ (id)imageRepWithContentsOfURL:(NSURL *)anURL
+{
+  // TODO
+  return nil;
+}
+
++ (NSArray *)imageRepsWithContentsOfURL:(NSURL *)anURL
+{
+  // TODO
+  return nil;
+}
+
 - (id) copyWithZone: (NSZone *)zone
 {
   NSImageRep	*copy;
 
   copy = (NSImageRep*)NSCopyObject(self, 0, zone);
-
-  copy->size = size;
-  copy->hasAlpha = hasAlpha;
-  copy->isOpaque = isOpaque;
-  copy->bitsPerSample = bitsPerSample;
-  copy->_pixelsWide = _pixelsWide;
-  copy->_pixelsHigh = _pixelsHigh;
   copy->_colorSpace = RETAIN(_colorSpace);
 
   return copy;
@@ -169,7 +172,7 @@ static NSMutableArray*	imageReps = NULL;
 
 - (void) dealloc
 {
-  [_colorSpace release];
+  RELEASE(_colorSpace);
   [super dealloc];
 }
 
@@ -213,18 +216,18 @@ static NSMutableArray*	imageReps = NULL;
 // Setting the Size of the Image
 - (void) setSize: (NSSize)aSize
 {
-  size = aSize;
+  _size = aSize;
 }
 
 - (NSSize) size
 {
-  return size;
+  return _size;
 }
 
 // Specifying Information about the Representation
 - (int) bitsPerSample
 {
-  return bitsPerSample;
+  return _bitsPerSample;
 }
 
 - (NSString *) colorSpaceName
@@ -234,12 +237,12 @@ static NSMutableArray*	imageReps = NULL;
 
 - (BOOL) hasAlpha
 {
-  return hasAlpha;
+  return _hasAlpha;
 }
 
 - (BOOL) isOpaque
 {
-  return isOpaque;
+  return _isOpaque;
 }
 
 - (int) pixelsWide
@@ -254,23 +257,22 @@ static NSMutableArray*	imageReps = NULL;
 
 - (void) setAlpha: (BOOL)flag
 {
-  hasAlpha = flag;
+  _hasAlpha = flag;
 }
 
 - (void) setBitsPerSample: (int)anInt
 {
-  bitsPerSample = anInt;
+  _bitsPerSample = anInt;
 }
 
 - (void) setColorSpaceName: (NSString *)aString
 {
-  [_colorSpace autorelease];
-  _colorSpace = [aString retain];
+  ASSIGN(_colorSpace, aString);
 }
 
 - (void) setOpaque: (BOOL)flag
 {
-  isOpaque = flag;
+  _isOpaque = flag;
 }
 
 - (void) setPixelsWide: (int)anInt
@@ -294,7 +296,7 @@ static NSMutableArray*	imageReps = NULL;
   BOOL ok, reset;
   NSGraphicsContext *ctxt;
 
-  if (size.width == 0 && size.height == 0)
+  if (_size.width == 0 && _size.height == 0)
     return NO;
 
   NSDebugLLog(@"NSImage", @"Drawing at point %f %f\n", aPoint.x, aPoint.y);
@@ -303,7 +305,7 @@ static NSMutableArray*	imageReps = NULL;
   if (aPoint.x != 0 || aPoint.y != 0)
     {
       if ([[ctxt focusView] isFlipped])
-	aPoint.y -= size.height;
+	aPoint.y -= _size.height;
       DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
       DPStranslate(ctxt, aPoint.x, aPoint.y);
       reset = 1;
@@ -322,12 +324,12 @@ static NSMutableArray*	imageReps = NULL;
 
   NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
 	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
-  if (size.width == 0 && size.height == 0)
+  if (_size.width == 0 && _size.height == 0)
     return NO;
 
   ctxt = GSCurrentContext();
-  scale = NSMakeSize(NSWidth(aRect) / size.width, 
-		     NSHeight(aRect) / size.height);
+  scale = NSMakeSize(NSWidth(aRect) / _size.width, 
+		     NSHeight(aRect) / _size.height);
   if ([[ctxt focusView] isFlipped])
     aRect.origin.y -= NSHeight(aRect);
   DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
@@ -425,10 +427,10 @@ static NSMutableArray*	imageReps = NULL;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: _colorSpace];
-  [aCoder encodeSize: size];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isOpaque];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &bitsPerSample];
+  [aCoder encodeSize: _size];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
   [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsWide];
   [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
 }
@@ -436,10 +438,10 @@ static NSMutableArray*	imageReps = NULL;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
-  size = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isOpaque];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &bitsPerSample];
+  _size = [aDecoder decodeSize];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasAlpha];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isOpaque];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_bitsPerSample];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsWide];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
   return self;
