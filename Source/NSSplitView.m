@@ -82,7 +82,9 @@
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
-    return;
+    {
+      return;
+    }
 
   vis = [self visibleRect];
 
@@ -107,11 +109,13 @@
 	    {				// can happen only when i>0.
  	      NSView	*tempView;
 
-	      offset = i-1;
+	      offset = i - 1;
 
 	      /* get the enclosing rect for the two views */
 	      if (prev)
-		r = [prev frame];
+		{
+		  r = [prev frame];
+		}
 	      else
 		{
 		  /*
@@ -120,11 +124,13 @@
 		   */
 		  return;
 		}
-	      if (v)
-		r1 = [v frame];
+	      if (v != nil)
+		{
+		  r1 = [v frame];
+		}
 	      bigRect = r;
 	      bigRect = NSUnionRect(r1, bigRect);
-	      tempView = prev; prev = v; v = tempView;
+	      tempView = prev;  prev = v;  v = tempView;
 	      break;
             }
 	  prev = v;
@@ -136,8 +142,10 @@
 	      offset = i;
 
 	      /* get the enclosing rect for the two views */
-	      if (prev)
-		r = [prev frame];
+	      if (prev != nil)
+		{
+		  r = [prev frame];
+		}
 	      else
 		{
 		  /*
@@ -146,8 +154,10 @@
 		   */
 		  return;
 		}
-	      if (v)
-		r1 = [v frame];
+	      if (v != nil)
+		{
+		  r1 = [v frame];
+		}
 	      bigRect = r;
 	      bigRect = NSUnionRect(r1 , bigRect);
 	      break;
@@ -186,9 +196,13 @@
 		     ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
 	  if (delMinY > minCoord)
-	    minCoord = delMinY;
+	    {
+	      minCoord = delMinY;
+	    }
 	  if (delMaxY < maxCoord)
-	    maxCoord = delMaxY;
+	    {
+	      maxCoord = delMaxY;
+	    }
         }
       else
         {
@@ -199,9 +213,13 @@
 		     ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
 	  if (delMinX > minCoord)
-	    minCoord = delMinX;
+	    {
+	      minCoord = delMinX;
+	    }
 	  if (delMaxX < maxCoord)
-	    maxCoord = delMaxX;
+	    {
+	      maxCoord = delMaxX;
+	    }
         }
     }
 
