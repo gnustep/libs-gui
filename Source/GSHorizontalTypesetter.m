@@ -28,6 +28,7 @@
 
 #include "AppKit/GSLayoutManager.h"
 
+#include <Foundation/NSException.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSGeometry.h>
