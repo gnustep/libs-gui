@@ -139,6 +139,8 @@ static NSNotificationCenter *nc;
 //
 - (void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
 - (void) _illegalMovement: (int) notNumber;
+- (void) copySelection;
+- (void) pasteSelection;
 @end
 
 @implementation NSTextView
@@ -1373,6 +1375,9 @@ static NSNotificationCenter *nc;
       /* Insertion Point */
       if (range.length)
 	{
+	  // Store the selected text in the selection pasteboard
+	  [self copySelection];
+
 	  if (_insertionPointTimer != nil)
 	    {
 	      [_insertionPointTimer invalidate];
@@ -4032,6 +4037,29 @@ other than copy/paste or dragging. */
   
   return [_layoutManager boundingRectForGlyphRange: glyphRange 
 			 inTextContainer: _textContainer];
+}
+
+/** Extension method that copies the current selected text to the 
+    special section pasteboard */
+- (void) copySelection
+{
+  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
+	type: NSStringPboardType];
+}
+
+/** Extension method that pastes the current selected text from the 
+    special section pasteboard */
+- (void) pasteSelection
+{
+  [self readSelectionFromPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
+	type: NSStringPboardType];
+}
+
+/** Bind middle mouse up to pasteSelection. This should be done via configuation! */
+- (void) middleMouseUp: (NSEvent*)theEvent
+{
+  // Should we change the insertion point, based on the event position?
+  [self pasteSelection];
 }
 @end
 
