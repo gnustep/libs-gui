@@ -114,6 +114,7 @@
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSInterfaceStyle.h>
+#include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
@@ -149,8 +150,10 @@
 #include <AppKit/NSTabView.h>
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/NSText.h>
+#include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSTextStorage.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>

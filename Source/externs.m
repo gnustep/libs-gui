@@ -273,6 +273,7 @@ NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
 
 // NSPopUpButton notification
 NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
+NSString *NSPopUpButtonCellWillPopUpNotification = @"PopUpButtonCellWillPopUp";
 
 // NSTable notifications
 NSString *NSTableViewSelectionDidChangeNotification = @"TableViewSelectionDidChange";

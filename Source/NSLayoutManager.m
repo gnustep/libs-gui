@@ -394,6 +394,9 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 {
   NSLog(@"NSLayoutManager was just notified that a change in the text
 storage occured.");
+  NSLog(@"range: (%d, %d) changeInLength: %d invalidatedRange (%d, %d)",
+range.location, range.length, lengthChange, invalidatedRange.location,
+invalidatedRange.length);
 
 /*
   if (mask == NSTextStorageEditedCharacters)
@@ -1164,7 +1167,7 @@ previousParagraphLocation,
 beginLineIndex,
 indexToAdd);
 
-	      ourLines += 14.0;
+	      ourLines += 20.0;  // 14
 	      lineWidth = 0.0;
 
 	      [lineStarts addObject: [NSNumber

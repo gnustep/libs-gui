@@ -40,6 +40,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 // These private methods are used in NSPopUpButton. For NSPB we need to be
 // able to init with a frame, but have a very custom cell size.
 
+// Michael: This simply means that for popups the menu code cannot
+// arbitraily decide the cellSize. The size of the popup must be
+// consistent.
+
 @implementation NSMenuView
 
 //
@@ -77,6 +81,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   menuv_itemCells = [NSMutableArray new];
 
   return [super initWithFrame: aFrame];
+}
+
+- (void)_setCellSize:(NSSize)aSize
+{
+  cellSize = aSize;
 }
 
 - (id)initWithFrame: (NSRect)aFrame

@@ -413,7 +413,7 @@ documentAttributes: (NSDictionary**)dict
 {
   [self fixFontAttributeInRange: range];
 //  [self fixParagraphStyleAttributeInRange: range];
-  [self fixAttachmentAttributeInRange: range];
+//  [self fixAttachmentAttributeInRange: range];
 }
 
 - (void) fixFontAttributeInRange: (NSRange)range

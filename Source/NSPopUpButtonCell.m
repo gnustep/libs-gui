@@ -25,6 +25,7 @@
 */
 
 #include <gnustep/gui/config.h>  
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
@@ -34,162 +35,504 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/PSOperators.h>
 
+@interface NSPopUpButtonCell (GNUstepPrivate)
+- (void)_popUpItemAction:(id)sender;
+@end
+
 @implementation NSPopUpButtonCell
-+ (void) initialize
+- (id)initTextCell:(NSString *)stringValue
 {
-  if (self == [NSPopUpButtonCell class])
-    [self setVersion: 1];
+  return [self initTextCell: stringValue pullsDown: NO];
 }
 
-- (id)init
+- (id)initTextCell:(NSString *)stringValue
+	 pullsDown:(BOOL)pullDown
 {
-  return [super init];   
-}
+  [super initTextCell: stringValue];
 
-- (id)representedObject
-{
-  if (cell_image)
+  _pbcFlags.pullsDown = pullDown;
+  _pbcFlags.usesItemFromMenu = YES;
+  _pbcFlags.altersStateOfSelectedItem = YES;
+
+  if ([stringValue length] > 0)
     {
-      return cell_image;
+      id anItem;
+
+      [self insertItemWithTitle:stringValue atIndex:0];
+
+      anItem = [self itemAtIndex:0];
+      [anItem setTarget: self];
+      [anItem setAction: @selector(_popUpItemAction:)];
     }
 
-  return contents;
+  _menu = [NSMenu initWithTitle:@""];
+  [_menu _setOwnedByPopUp: YES];
+
+  return self;
+}
+
+- (void)setMenu:(NSMenu *)menu
+{
+  ASSIGN(_menu, menu);
+}
+
+- (NSMenu *)menu
+{
+  return _menu;
+}
+
+// Behavior settings
+- (void)setPullsDown:(BOOL)flag
+{
+  _pbcFlags.pullsDown = flag;
+}
+
+- (BOOL)pullsDown
+{
+  return _pbcFlags.pullsDown;
+}
+
+- (void)setAutoenablesItems:(BOOL)flag
+{
+  [_menu setAutoenablesItems: flag];  
+}
+
+- (BOOL)autoenablesItems
+{
+  return [_menu autoenablesItems];
+}
+
+// The preferred edge is used for pull down menus and for popups under 
+// severe screen position restrictions.  It indicates what edge of the
+// cell the menu should pop out from.
+
+- (void)setPreferredEdge:(NSRectEdge)edge
+{
+  _pbcFlags.preferredEdge = edge;
+}
+
+- (NSRectEdge)preferredEdge
+{
+  return _pbcFlags.preferredEdge;
+}
+
+// If YES (the default) the popup button will display an item from the
+// menu.  This will be the selected item for a popup or the first item for
+// a pull-down.  If this is NO, then the menu item set with -setMenuItem:
+// is always displayed.  This can be useful for a popup button that is an
+// icon button that pops up a menu full of textual items, for example.
+
+- (void)setUsesItemFromMenu:(BOOL)flag
+{
+  _pbcFlags.usesItemFromMenu = flag;
+}
+
+- (BOOL)usesItemFromMenu
+{
+  return _pbcFlags.usesItemFromMenu;
+}
+
+// This only has an effect for popups (it is ignored for pulldowns).  
+// If YES (the default) then the selected item gets its state set to
+// NSOnState.  If NO the items in the menu are left alone.
+
+- (void)setAltersStateOfSelectedItem:(BOOL)flag
+{
+  _pbcFlags.altersStateOfSelectedItem = flag;
+}
+
+- (BOOL)altersStateOfSelectedItem
+{
+  return _pbcFlags.altersStateOfSelectedItem;
+}
+
+// Adding and removing items
+- (void)addItemWithTitle:(NSString *)title
+{
+  NSMenuItem *anItem = [NSMenuItem new];
+
+  [anItem setTitle:title];
+  [anItem setTarget: self];
+  [anItem setAction: @selector(_popUpItemAction:)];
+
+  [_menu insertItem: anItem atIndex: [_menu numberOfItems]];
+}
+
+- (void)addItemsWithTitles:(NSArray *)itemTitles
+{
+  int i;
+
+  for (i=0; i<[itemTitles count]; i++)
+    {
+      [self addItemWithTitle: [itemTitles objectAtIndex:i]];
+    }
+}
+
+- (void)insertItemWithTitle:(NSString *)title atIndex:(int)index
+{
+  NSMenuItem *anItem = [NSMenuItem new];
+
+  [anItem setTitle:title];
+  [anItem setTarget: self];
+  [anItem setAction: @selector(_popUpItemAction:)];
+
+  [[_menu itemArray] insertObject: anItem atIndex: index];
+}
+
+- (void)removeItemWithTitle:(NSString *)title
+{
+  [_menu removeItemWithTitle: title];
+}
+
+- (void)removeItemAtIndex:(int)index
+{
+  [[_menu itemArray] removeObjectAtIndex: index];
+}
+
+- (void)removeAllItems
+{
+  [_menu removeAllItems];
+}
+
+// Accessing the items
+- (NSArray *)itemArray
+{
+  return [_menu itemArray];
+}
+
+- (int)numberOfItems
+{
+  return [_menu numberOfItems];
+}
+
+- (int)indexOfItem:(id <NSMenuItem>)item
+{
+  return [_menu indexOfItem: item];
+}
+
+- (int)indexOfItemWithTitle:(NSString *)title
+{
+  return [_menu indexOfItemWithTitle: title];
+}
+
+- (int)indexOfItemWithTag:(int)tag
+{
+  return [_menu indexOfItemWithTag: tag];
+}
+
+- (int)indexOfItemWithRepresentedObject:(id)obj
+{
+  return [_menu indexOfItemWithRepresentedObject: obj];
+}
+
+- (int)indexOfItemWithTarget:(id)target andAction:(SEL)actionSelector
+{
+  return [_menu indexOfItemWithTarget: target andAction: actionSelector];
+}
+
+- (id <NSMenuItem>)itemAtIndex:(int)index
+{
+  return [_menu itemAtIndex: index];
+}
+
+- (id <NSMenuItem>)itemWithTitle:(NSString *)title
+{
+  return [_menu itemWithTitle: title];
+}
+
+- (id <NSMenuItem>)lastItem
+{
+  return [_menu lastItem];
+}
+
+// Dealing with selection
+- (void)selectItem:(id <NSMenuItem>)item
+{
+  if (!item)
+    {
+      if (_pbcFlags.altersStateOfSelectedItem)
+        [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+
+      _selectedIndex = -1;
+    }
+  else
+    {
+      int aIndex = [self indexOfItem: item];
+
+      if (_pbcFlags.altersStateOfSelectedItem)
+        {
+          [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+          [[self itemAtIndex: aIndex] setState: NSOnState];
+        }
+
+      _selectedIndex = aIndex;
+    }
+}
+
+- (void)selectItemAtIndex:(int)index
+{
+  if (index == -1)
+    {
+      if (_pbcFlags.altersStateOfSelectedItem)
+        [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+
+      _selectedIndex = -1;
+    }
+  else
+    {
+      if (_pbcFlags.altersStateOfSelectedItem)
+        {
+          [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+          [[self itemAtIndex: index] setState: NSOnState];
+        }
+
+      _selectedIndex = index;
+    }
+}
+
+- (void)selectItemWithTitle:(NSString *)title
+{
+
+  if ([title length] < 1)
+    {
+      if (_pbcFlags.altersStateOfSelectedItem)
+        [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+
+      _selectedIndex = -1;
+    }
+  else
+    {
+      int aIndex = [self indexOfItemWithTitle: title];
+
+      if (_pbcFlags.altersStateOfSelectedItem)
+        {
+          [[self itemAtIndex: _selectedIndex] setState: NSOffState];
+          [[self itemAtIndex: aIndex] setState: NSOnState];
+        }
+
+      _selectedIndex = aIndex;
+    }
+}
+
+- (void)setTitle:(NSString *)aString
+{
+  if (_pbcFlags.pullsDown)
+    {
+    }
+  else
+    {
+      int aIndex;
+
+      if (aIndex = [self indexOfItemWithTitle: aString])
+        {
+          [self selectItemAtIndex: aIndex];
+        }
+      else
+        {
+          [self addItemWithTitle: aString];
+          [self selectItemWithTitle: aString];
+	}
+    }
+}
+
+- (id <NSMenuItem>)selectedItem
+{
+  if (_selectedIndex != -1)
+    return [self itemAtIndex: _selectedIndex];
+  else
+    return nil;
+}
+
+- (int)indexOfSelectedItem
+{
+  return _selectedIndex;
+}
+
+- (void)synchronizeTitleAndSelectedItem
+{
+  if (!_pbcFlags.usesItemFromMenu)
+    return;
+
+  // Add test for null menus.
+
+  if (_pbcFlags.pullsDown)
+    {
+      [self selectItem: [self itemAtIndex: 0]];
+    }
+  else
+    {
+      if (_selectedIndex >= 0)
+        [self selectItem: [self itemAtIndex: _selectedIndex]];
+      else
+        [self selectItem: [self itemAtIndex: 0]];        
+    }
+}
+
+// Title conveniences
+- (NSString *)itemTitleAtIndex:(int)index
+{
+  return [[self itemAtIndex: index] title];
+}
+
+- (NSArray *)itemTitles
+{
+  NSMutableArray *anArray = [NSMutableArray new];
+  int i;
+
+  for (i=0; i<[[_menu itemArray] count]; i++)
+    {
+      [anArray addObject: [[[_menu itemArray] objectAtIndex: i] title]];    
+    }
+
+  return (NSArray *)anArray;
+}
+
+- (NSString *)titleOfSelectedItem
+{
+  if (_selectedIndex >= 0)
+    return [[self itemAtIndex: _selectedIndex] title];
+  else
+    return @"";
+}
+
+- (void)attachPopUpWithFrame:(NSRect)cellFrame
+		      inView:(NSView *)controlView
+{
+  NSNotificationCenter *_aCenter = [NSNotificationCenter defaultCenter];
+  NSNotification *_aNotif;
+  NSRect scratchRect = cellFrame;
+  NSRect winf;
+
+  _aNotif = [NSNotification
+		notificationWithName: NSPopUpButtonCellWillPopUpNotification
+			      object: controlView
+			    userInfo: nil];
+
+  [_aCenter postNotification: _aNotif];
+
+  _aNotif = [NSNotification
+		notificationWithName: NSPopUpButtonCellWillPopUpNotification
+			      object: self
+			    userInfo: nil];
+
+  [_aCenter postNotification: _aNotif];
+
+  scratchRect.origin = [[controlView window] convertBaseToScreen: cellFrame.origin];
+
+  [[_menu menuRepresentation] _setCellSize: cellFrame.size];
+  [_menu sizeToFit];
+
+  winf = [NSMenuWindow
+           frameRectForContentRect: [[_menu menuRepresentation] frame]
+                         styleMask: [[_menu window] styleMask]];
+  /*
+   * Set popup window frame origin so that the top-left corner of the
+   * window lines up with the top-left corner of this button.
+   */
+  winf.origin = scratchRect.origin;
+  winf.origin.y += scratchRect.size.height - winf.size.height;
+ 
+  /*
+   * Small hack to fix line up.
+   */
+
+  winf.origin.x += 1;
+  winf.origin.y -= 1;
+ 
+//NSLog(@"butf %@", NSStringFromRect(butf));
+  
+  if (!_pbcFlags.pullsDown)
+    {
+      winf.origin.y += (_selectedIndex * scratchRect.size.height);
+    }
+
+NSLog(@"winf %@", NSStringFromRect(winf));
+
+  NSLog(@"here comes the popup.");
+                         
+  [[_menu window] setFrame: winf display: YES];
+  [[_menu window] orderFrontRegardless];
+}
+
+- (void)dismissPopUp
+{
+  [[_menu window] orderOut: nil];
+}
+
+- (BOOL)trackMouse:(NSEvent *)theEvent
+	    inRect:(NSRect)cellFrame
+            ofView:(NSView *)controlView
+      untilMouseUp:(BOOL)untilMouseUp
+{
+}
+
+- (void)performClickWithFrame:(NSRect)frame
+		       inView:(NSView *)controlView
+{
+  int indexToClick;
+
+  [self attachPopUpWithFrame: frame
+                      inView: controlView];
+  indexToClick = [[_menu menuRepresentation] indexOfItemAtPoint: 
+			[[_menu window] mouseLocationOutsideOfEventStream]];
+  [[_menu menuRepresentation] mouseDown: [NSApp currentEvent]];
+
+//  [[[_menu menuRepresentation] menuItemCellForItemAtIndex: indexToClick]
+//  performClick: nil];
+}
+
+// Arrow position for bezel style and borderless popups.
+- (NSPopUpArrowPosition)arrowPosition
+{
+  return _pbcFlags.arrowPosition;
+}
+
+- (void)setArrowPosition:(NSPopUpArrowPosition)position
+{
+  _pbcFlags.arrowPosition = position;
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame
                 inView: (NSView*)view  
 {
-  NSGraphicsContext     *ctxt;
-  NSColor	*backColor;
-  NSImage	*toDraw = nil;
-  NSRect rect = cellFrame;
-  NSRect arect = cellFrame;
-  NSPoint point;
+  NSSize   size;
+  NSPoint  position;
+  NSImage *aImage;
+                                  
+  // Save last view drawn to
+  [self setControlView: view];
 
   [view lockFocus];
-  ctxt = GSCurrentContext();
-  NSDrawButton(cellFrame, cellFrame);
-  
-  arect.size.width -= 3;
-  arect.size.height -= 3;
-  arect.origin.x += 1;
-  arect.origin.y += 2;
- 
-  if (cell_highlighted)
+
+  [super drawWithFrame: cellFrame inView: view];
+
+  if (_pbcFlags.pullsDown)
     {
-      backColor = [NSColor selectedMenuItemColor];
+      aImage = [NSImage imageNamed:@"common_3DArrowDown"];
     }
   else
     {
-      backColor = [NSColor controlColor];
-    }
-  [backColor set];
-  NSRectFill(arect);
-
-  if (cell_image)
-    {
-      NSSize size;
-      NSPoint position;
-
-      [cell_image setBackgroundColor: backColor];
-      size = [cell_image size];
-      position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-      position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
-      /*
-       * Images are always drawn with their bottom-left corner at the origin
-       * so we must adjust the position to take account of a flipped view.
-       */
-      if ([control_view isFlipped])
-	position.y += size.height;
-      [cell_image compositeToPoint: position operation: NSCompositeCopy];
-
-      rect.size.width = 5;                         // calc image rect
-      rect.size.height = 11;
-      rect.origin.x = cellFrame.origin.x + cellFrame.size.width - 8;
-      rect.origin.y = cellFrame.origin.y + 3;
-    }
-  else
-    {
-      [cell_font set];
-
-      point.y = rect.origin.y + (rect.size.height/2) - 4;
-      point.x = rect.origin.x + xDist;
-      rect.origin = point;  
-
-      if (cell_highlighted)
-	{
-	  [[NSColor selectedMenuItemTextColor] set];
-	}
-      else
-	{
-	  [[NSColor controlTextColor] set];
-	}
-  
-      // Draw the title.
-
-      DPSmoveto(ctxt, rect.origin.x, rect.origin.y);
-      DPSshow(ctxt, [contents cString]);
-
-      rect.size.width = 15;                         // calc image rect
-      rect.size.height = cellFrame.size.height;
-      rect.origin.x = cellFrame.origin.x + cellFrame.size.width - (6 + 11);
-      rect.origin.y = cellFrame.origin.y;
+      aImage = [NSImage imageNamed:@"common_Nibble"];
     }
 
-  if ([view isKindOfClass:[NSMenuView class]])
-    {
-      NSPopUpButton *popb = [[(NSMenuView *)view menu] popupButton];
+  size = [aImage size];
+  position.x = cellFrame.origin.x + cellFrame.size.width - size.width - 4;
+  position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
+  /*
+   * Images are always drawn with their bottom-left corner at the origin
+   * so we must adjust the position to take account of a flipped view.
+   */
+  if ([control_view isFlipped])
+    position.y += size.height;
+  [aImage  compositeToPoint: position operation: NSCompositeCopy];
 
-      if ([[[popb selectedItem] representedObject] isEqual: contents])
-        {
-          if ([popb pullsDown] == NO)
-            toDraw = [NSImage imageNamed:@"common_Nibble"];
-          else
-            toDraw = [NSImage imageNamed:@"common_3DArrowDown"];
-	}
-      else if ([[[popb selectedItem] representedObject] isEqual: cell_image])
-        {
-          if ([popb pullsDown] == NO)
-            toDraw = [NSImage imageNamed:@"common_UpAndDownArrowSmall.tiff"];
-          else
-            toDraw = [NSImage imageNamed:@"common_DownArrowSmall"];
-	}
-    }
-  else if ([view isKindOfClass:[NSPopUpButton class]])
-    {
-      if ([[[(NSPopUpButton *)view selectedItem] representedObject]
-	isEqual: contents])
-        {
-          if ([(NSPopUpButton *)view pullsDown] == NO)
-            toDraw = [NSImage imageNamed:@"common_Nibble"];
-          else
-            toDraw = [NSImage imageNamed:@"common_3DArrowDown"];
-	}
-      else if ([[[(NSPopUpButton *)view selectedItem] representedObject] isEqual: cell_image])
-        {
-          if ([(NSPopUpButton *)view pullsDown] == NO)
-            toDraw = [NSImage imageNamed:@"common_UpAndDownArrowSmall"];
-          else
-            toDraw = [NSImage imageNamed:@"common_DownArrowSmall"];
-	}
-    }
-  if (toDraw != nil)
-    {
-      NSSize size;
-      NSPoint position;
+  [view unlockFocus]; 
+}
 
-      [toDraw setBackgroundColor: backColor];
-      size = [toDraw size];
-      position.x = MAX(NSMidX(rect) - (size.width/2.),0.);
-      position.y = MAX(NSMidY(rect) - (size.height/2.),0.);
-      /*
-       * Images are always drawn with their bottom-left corner at the origin
-       * so we must adjust the position to take account of a flipped view.
-       */
-      if ([control_view isFlipped])
-	position.y += size.height;
-      [toDraw compositeToPoint: position operation: NSCompositeCopy];
-    }
-  [view unlockFocus];
+- (void)_popUpItemAction:(id)sender
+{
+  [self selectItemWithTitle: [sender title]];
+  NSLog(@"%@", [sender title]);
+  [self dismissPopUp];
 }
 @end

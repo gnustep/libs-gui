@@ -86,57 +86,14 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return [self initWithTitle: @"Menu"];
 }
 
-- (id) initWithPopUpButton: (NSPopUpButton *)popb
-{
-  NSRect aRect;
-  NSRect winRect = {{0, 0}, {20, 17}};
-
-  [super init];
-
-  // Create an array to store out cells.
-  menu_items = [NSMutableArray new];
-
-  // Create a NSMenuView to draw our cells.
-  aRect = [popb frame];
-
-  menu_view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)
-				       cellSize: aRect.size];
-
-  // Set ourself as the menu for this view.
-  [menu_view setMenu: self];
-
-  // We have no supermenu.
-  menu_supermenu = nil;
-  menu_is_tornoff = NO;
-  menu_is_visible = NO;
-  menu_follow_transient = NO;
-  menu_is_beholdenToPopUpButton = YES;
-  menu_changedMessagesEnabled = YES;
-  ASSIGN(menu_popb, popb);
-  menu_notifications = [NSMutableArray new];
-  menu_is_beholdenToPopUpButton = NO;
-  menu_changed = YES;
-  // According to the spec, menus do autoenable by default.
-  menu_autoenable = YES;
-
-
-  aWindow = [[NSMenuWindow alloc] initWithContentRect:winRect
-                                styleMask: NSBorderlessWindowMask
-                                backing: NSBackingStoreRetained
-                                defer: NO];
-  [[aWindow contentView] addSubview:menu_view];
-
-  return self;
-}
-
-- (id) popupButton
-{
-  return menu_popb;
-}
-
-- (BOOL) _isBeholdenToPopUpButton
+- (BOOL)_ownedByPopUp
 {
   return menu_is_beholdenToPopUpButton;
+}
+
+- (void)_setOwnedByPopUp:(BOOL)flag
+{
+  menu_is_beholdenToPopUpButton = flag;
 }
 
 - (id) initWithTitle: (NSString *)aTitle
@@ -252,12 +209,13 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 {
   id anItem;
 
-  if (menu_is_beholdenToPopUpButton)
-    {
-      anItem = [NSPopUpButtonCell new];
-      [anItem setTarget: menu_popb];
-    }
-  else
+// FIXME
+//  if (menu_is_beholdenToPopUpButton)
+//    {
+//      anItem = [NSPopUpButtonCell new];
+//      [anItem setTarget: menu_popb];
+//    }
+//  else
     anItem = [NSMenuItem new];
 
   [anItem setTitle: aString];

@@ -93,8 +93,15 @@
 {
   if (mcell_highlighted != flag)
     {
+      // Save last view drawn to
+      [self setControlView: controlView];
+
+      [controlView lockFocus];
+
       mcell_highlighted = flag;
       [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+      [controlView unlockFocus];
     }
 }
 

@@ -38,6 +38,11 @@
 #include <AppKit/NSFont.h>
 
 //
+// class variables
+//
+id _nspopupbuttonCellClass = nil;
+
+//
 // NSPopUpButton implementation
 //
 
@@ -53,13 +58,14 @@
     {
       // Initial version
       [self setVersion:1];
-    }
+      [self setCellClass: [NSPopUpButtonCell class]];
+    } 
 }
-
+  
 //
 // Initializing an NSPopUpButton 
 //
-- init
+- (id)init
 {
   return [self initWithFrame:NSZeroRect pullsDown:NO];
 }
@@ -76,21 +82,6 @@
 
   [super initWithFrame:frameRect];
 
-  /* Create our menu */
-
-  popb_menu = [[NSMenu alloc] initWithPopUpButton:self];
-
-  is_up = NO;
-  popb_pullsDown = flag;
-  popb_selectedItem = 0;
-
-  [super setTarget: self];
-
-  /*
-   * Set ourselves up to recieve the notification when we need to popup
-   * the menu.
-   */
-
   [defaultCenter addObserver: self
 		    selector: @selector(_popup:)
 			name: NSPopUpButtonWillPopUpNotification
@@ -101,282 +92,190 @@
 
 - (void)setMenu:(NSMenu *)menu
 {
+  [cell setMenu: menu];
 }
 
 - (NSMenu *)menu
 {
-  return popb_menu;
+  return [cell menu];
 }
 
 - (void)setPullsDown:(BOOL)flag
 {
-  popb_pullsDown = flag;
+  [cell setPullsDown: flag];
 }
 
 - (BOOL)pullsDown
 {
-  return popb_pullsDown;
+  return [cell pullsDown];
 }
 
 - (void)setAutoenablesItems:(BOOL)flag
 {
-  popb_autoenableItems = flag;
+  [cell setAutoenablesItems: flag];
 }
 
 - (BOOL)autoenablesItems
 {
-  return popb_autoenableItems;
+  return [cell autoenablesItems];
 }
 
 - (void)addItemWithTitle:(NSString *)title
 {
-  [self insertItemWithTitle: title atIndex: [self numberOfItems]];
+  [cell addItemWithTitle: title];
+
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)addItemsWithTitles:(NSArray *)itemTitles
 {
-  int i;
+  [cell addItemWithTitles: itemTitles];
 
-  for (i=0;i<[itemTitles count];i++)
-    {
-      [self addItemWithTitle:[itemTitles objectAtIndex:i]];
-    }
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)insertItemWithTitle:(NSString *)title
 		    atIndex:(int)index
 {
-  [popb_menu insertItemWithTitle: title
-		          action: @selector(_buttonPressed:)
-		   keyEquivalent: @""
-			 atIndex: index];
+  [cell insertItemWithTitle: title adIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)removeAllItems
 {
-  [(NSMutableArray *)[popb_menu itemArray] removeAllObjects];
-
-/*
-  for (i=0;i<[self numberOfItems];i++)
-    {
-      [popb_menu removeItemAtIndex:i];
-    }
-*/
+  [cell removeAllItems];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)removeItemWithTitle:(NSString *)title
 {
-  [popb_menu removeItemAtIndex: [self indexOfItemWithTitle: title]];
+  [cell removeItemWithTitle];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)removeItemAtIndex:(int)index
 {
-  [popb_menu removeItemAtIndex: index];
+  [cell removeItemAtIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (id <NSMenuItem>)selectedItem
 {
-  if (popb_selectedItem >= 0)
-    return [[popb_menu itemArray] objectAtIndex: popb_selectedItem];
-  else
-    return nil;
+  return [cell selectedItem];
 }
 
 - (NSString *)titleOfSelectedItem
 {
-// FIXME
-  return [[[popb_menu itemArray] objectAtIndex: popb_selectedItem] title];
+  return [cell titleOfSelectedItem];
 }
 
 - (int)indexOfSelectedItem
 {
-  if (popb_selectedItem >= 0)
-    return popb_selectedItem;
-
-  return -1;
+  return [cell indexOfSelectedItem];
 }
 
 - (void)selectItem:(id <NSMenuItem>)anObject
 {
-  [self selectItemAtIndex:[self indexOfItem: anObject]];
+  [cell selectedItem: anObject];
 }
 
 - (void)selectItemAtIndex:(int)index
 {
-  if (popb_selectedItem != index)
-    {
-      if (index == -1)
-	{
-	  popb_selectedItem = -1;
-	}
-      else
-	{
-	  popb_selectedItem = index;
-	}
-      // This works fine
-      [self setNeedsDisplay: YES];
-      // but replace it with the following
-      //  [self synchronizeTitleAndSelectedItem];
-      // as soon as it works.
-    }
+  [cell selectItemAtIndex: index];
+
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)selectItemWithTitle:(NSString *)title
 {
-  [self selectItemAtIndex:[self indexOfItemWithTitle: title]];
+  [cell selectItemWithTitle: title];
+
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (int)numberOfItems
 {
-  return [popb_menu numberOfItems];
+  return [cell numberOfItems];
 }
 
 - (NSArray *)itemArray 
 {
-  return [popb_menu itemArray];
+  return [cell itemArray];
 }
 
 - (id <NSMenuItem>)itemAtIndex:(int)index
 {
-  return [popb_menu itemAtIndex: index];
+  return [cell itemAtIndex: index];
 }
 
 - (NSString *)itemTitleAtIndex:(int)index
 {
-  return [[self itemAtIndex: index] title];
+  return [cell itemTitleAtIndex: index];
 }
 
 - (NSArray *)itemTitles
 {
-  NSMutableArray *anArray = [NSMutableArray new];
-  int i;
-
-  for (i=0;i<[self numberOfItems];i++)
-    {
-      [anArray addObject:[[self itemAtIndex:i] title]];
-    }
-
-  return anArray;
+  return [cell itemTitles];
 }
 
 - (id <NSMenuItem>)itemWithTitle:(NSString *)title
 {
-  return [popb_menu itemWithTitle: title];
+  return [cell itemWithTitle: title];
 }
 
 - (id <NSMenuItem>)lastItem
 {
-  return [[popb_menu itemArray] lastObject];
+  return [cell lastItem];
 }
 
 - (int)indexOfItem:(id <NSMenuItem>)anObject
 {
-  return [popb_menu indexOfItem: anObject];
+  return [cell indexOfItem: anObject];
 }
 
 - (int)indexOfItemWithTag:(int)tag
 {
-  return [popb_menu indexOfItemWithTag: tag];
+  return [cell indexOfItemWithTag: tag];
 }
 
 - (int)indexOfItemWithTitle:(NSString *)title
 {
-  return [popb_menu indexOfItemWithTitle: title];
+  return [cell indexOfItemWithTitle: title];
 }
 
 - (int)indexOfItemWithRepresentedObject:(id)anObject
 {
-  return [popb_menu indexOfItemWithRepresentedObject: anObject];
+  return [cell indexOfItemWithRepresentedObject: anObject];
 }
 
 - (int)indexOfItemWithTarget:(id)target
 		   andAction:(SEL)actionSelector
 {
-  return [popb_menu indexOfItemWithTarget: target andAction: actionSelector];
+  return [cell indexOfItemWithTarget: target andAction: actionSelector];
 }
 
 - (void)setPreferredEdge:(NSRectEdge)edge
 {
-  // urph
+  [cell setPreferredEdge: edge];
 }
 
 - (NSRectEdge)preferredEdge
 {
-  // urph
-  return -1;
+  return [cell preferredEdge];
 }
 
 - (void)setTitle:(NSString *)aString
 {
-  if (!popb_pullsDown)
-    {
-      int aIndex = [self indexOfItemWithTitle:aString];
-  
-      if (aIndex >= 0)
-        popb_selectedItem = aIndex;
-      else
-        {
-         [self addItemWithTitle:aString];
-          popb_selectedItem = [self indexOfItemWithTitle:aString];
-         [self setNeedsDisplay:YES];
-        }
-    }
-  else
-    {
-      [self setNeedsDisplay:YES];
-    }
-}
-
-- (SEL)action 
-{ 
-  return pub_action;
-}
- 
-- (void)setAction:(SEL)aSelector
-{
-  pub_action = aSelector;
-}
- 
-- (id)target
-{
-  return pub_target;
-}
- 
-- (void)setTarget:(id)anObject
-{
-  pub_target = anObject;
-}
-
-- (void)_buttonPressed:(id)sender
-{
-  popb_selectedItem = [self indexOfItemWithRepresentedObject:[sender representedObject]];
-
-  [self synchronizeTitleAndSelectedItem];
-
-  [self setNeedsDisplay:YES];
-    
-  if (pub_target && pub_action)
-    [pub_target performSelector:pub_action withObject:self];
-
-  if (popb_pullsDown)
-    popb_selectedItem = 0;
+  [cell setTitle: aString];
 }
 
 - (void)synchronizeTitleAndSelectedItem
 {
-  // urph
-  if (popb_selectedItem > [self numberOfItems] - 1)
-    {
-      popb_selectedItem = 0;
-    }
+  [cell synchronizeTitleAndSelectedItem];
 
   [self sizeToFit];
 }
@@ -388,44 +287,8 @@
 
 - (void)_popup:(NSNotification*)notification
 {
-  NSPopUpButton *popb = [notification object];
-  NSRect butf;
-  NSRect winf;   
-
-  butf = [popb frame];
-  butf = [[popb superview] convertRect: butf toView: nil];
-  butf.origin = [[popb window] convertBaseToScreen: butf.origin];
-
-  [[popb_menu menuRepresentation] sizeToFit];
-
-  winf = [NSMenuWindow
-	   frameRectForContentRect: [[popb_menu menuRepresentation] frame]
-	                 styleMask: [[popb_menu window] styleMask]];
-  /*
-   * Set popup window frame origin so that the top-left corner of the
-   * window lines up with the top-left corner of this button.
-   */
-  winf.origin = butf.origin;
-  winf.origin.y += butf.size.height - winf.size.height;
-  
-  /*
-   * Small hack to fix line up.
-   */
-
-  winf.origin.x += 1;
-  winf.origin.y -= 1;
- 
-//NSLog(@"butf %@", NSStringFromRect(butf));
-//NSLog(@"winf %@", NSStringFromRect(winf));
-
-  if (popb_pullsDown == NO)
-    {
-      winf.origin.y += (popb_selectedItem * butf.size.height);
-    }
-
-//  [[popb menu] sizeToFit];
-  [[[popb menu] window] setFrame: winf display:YES];
-  [[[popb menu] window] orderFront:nil];
+  [cell performClickWithFrame: [[notification object] frame]
+                       inView: self];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -436,75 +299,6 @@
   [nc postNotificationName: NSPopUpButtonWillPopUpNotification
                     object: self
                   userInfo: nil];
-
-  [[popb_menu menuRepresentation] mouseDown:
-    [NSEvent mouseEventWithType: NSLeftMouseDown
-                       location: [[popb_menu window] mouseLocationOutsideOfEventStream]
-                  modifierFlags: [theEvent modifierFlags]
-                      timestamp: [theEvent timestamp]
-                   windowNumber: [[popb_menu window] windowNumber]
-                        context: [theEvent context]
-                    eventNumber: [theEvent eventNumber]
-                     clickCount: [theEvent clickCount]
-                       pressure: [theEvent pressure]]];
-
-}
-
-/*
-- (void)mouseUp:(NSEvent *)theEvent
-{
-  NSPoint cP;
-
-  cP = [window convertBaseToScreen: [theEvent locationInWindow]];
-  cP = [popb_win convertScreenToBase: cP];
- 
-//NSLog(@"location x = %d, y = %d\n", (int)cP.x, (int)cP.y);
-    
-  [popb_view mouseUp:
-    [NSEvent mouseEventWithType: NSLeftMouseUp
-                       location: cP
-                  modifierFlags: [theEvent modifierFlags]
-                      timestamp: [theEvent timestamp]
-                   windowNumber: [popb_win windowNumber]
-                        context: [theEvent context]
-                    eventNumber: [theEvent eventNumber]
-                     clickCount: [theEvent clickCount]
-                       pressure: [theEvent pressure]]];
-
-  [popb_win orderOut: nil];
-}
-*/
-
-- (NSView *)hitTest:(NSPoint)aPoint
-{
-  // First check ourselves
-//  if ([self mouse:aPoint inRect:bounds]) return self;
-  if ([self mouse:aPoint inRect: frame]) return self;
-
-  return nil;
-}
-
-//
-// Displaying
-//
-- (void)drawRect:(NSRect)rect
-{
-  id aCell;
-
-  if ([popb_menu numberOfItems] == 0)
-    {
-      [[NSPopUpButtonCell new] drawWithFrame:bounds inView:self];
-      return;
-    }
-
-  if (!popb_pullsDown)
-    aCell  = [[popb_menu menuRepresentation]
-	       menuItemCellForItemAtIndex: popb_selectedItem]; 
-  else
-    aCell  = [[popb_menu menuRepresentation]
-	       menuItemCellForItemAtIndex: 0]; 
-
-  [aCell drawWithFrame:bounds inView:self]; 
 }
 
 //

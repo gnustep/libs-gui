@@ -1,3 +1,9 @@
+1999-11-22  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSPopUpButton.m: rewrite.
+	* Source/NSPopUpButtonCell.m: ditto.
+	* Source/?.m: a few other misc fixes. will document.
+
 Mon Nov 22 17:05:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: Start listening for window notifications
