@@ -1548,22 +1548,38 @@ NSLog(@"keycode:%x",keyCode);
 	else return NO;
 }
 
--(BOOL) resignFirstResponder
-{	if([self shouldDrawInsertionPoint])
-	{	[self drawInsertionPointAtIndex:[self selectedRange].location color:nil turnedOn:NO];
-		//<!> stop timed entry
-	}
-	if([self isEditable]) 
-		return [self textShouldEndEditing:(NSText*)self];
-	return YES;
+- (BOOL) resignFirstResponder
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self lockFocus];
+      [self drawInsertionPointAtIndex: [self selectedRange].location
+			        color: nil
+			     turnedOn: NO];
+      [self unlockFocus];
+      //<!> stop timed entry
+    }
+  if ([self isEditable]) 
+    return [self textShouldEndEditing: self];
+  else
+    return YES;
 }
--(BOOL) becomeFirstResponder
-{	if([self shouldDrawInsertionPoint])
-	{	[self drawInsertionPointAtIndex:[self selectedRange].location color:[NSColor blackColor] turnedOn:YES];
-		//<!> restart timed entry
-	}
-	if([self isEditable] && [self textShouldBeginEditing:(NSText*)self]) return YES;
-	else return NO;
+
+- (BOOL) becomeFirstResponder
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self lockFocus];
+      [self drawInsertionPointAtIndex: [self selectedRange].location
+				color: [NSColor blackColor]
+			     turnedOn: YES];
+      [self unlockFocus];
+      //<!> restart timed entry
+    }
+  if ([self isEditable] && [self textShouldBeginEditing: self])
+    return YES;
+  else
+    return NO;
 }
 
 //

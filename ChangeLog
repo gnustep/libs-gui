@@ -1,6 +1,8 @@
 Wed Feb 10 12:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSClipView.m:  Tidy flip-view errors by Benhur
+	* Source/NSText.m: Lock focus around drawing insertion point while
+	becoming/resiging first responder.
 
 Wed Feb 10 10:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
