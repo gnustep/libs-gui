@@ -198,7 +198,7 @@
       if ([_selected view])
 	{
 	  [self addSubview: [_selected view]];
-	  [[_selected initialFirstResponder] becomeFirstResponder];
+	  [_window makeFirstResponder: [_selected initialFirstResponder]];
 	}
 
       [self setNeedsDisplay: YES];
