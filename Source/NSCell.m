@@ -109,11 +109,11 @@ static NSColor	*shadowCol;
  */
 - (id) _init
 {
-  _cell_type = NSNullCellType;
+  _cell.type = NSNullCellType;
   _cell_image = nil;
   _cell_font = nil;
-  _image_position = NSNoImage;
-  _cell_state = 0;
+  _cell.image_position = NSNoImage;
+  _cell.state = 0;
   _cell.is_highlighted = NO;
   _cell.is_enabled = YES;
   _cell.is_editable = NO;
@@ -143,9 +143,9 @@ static NSColor	*shadowCol;
   NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
 	NSInvalidArgumentException);
 
-  _cell_type = NSImageCellType;
+  _cell.type = NSImageCellType;
   _cell_image = RETAIN(anImage);
-  _image_position = NSImageOnly;
+  _cell.image_position = NSImageOnly;
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
 
   return self;
@@ -159,8 +159,8 @@ static NSColor	*shadowCol;
 
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
   _contents = RETAIN(aString);
-  _cell_type = NSTextCellType;
-  _text_align = NSCenterTextAlignment;
+  _cell.type = NSTextCellType;
+  _cell.text_align = NSCenterTextAlignment;
   _cell.float_autorange = YES;
   _cell_float_right = 6;
 
@@ -197,7 +197,7 @@ static NSColor	*shadowCol;
     borderSize = NSZeroSize;
 
   // Get Content Size
-  switch (_cell_type)
+  switch (_cell.type)
     {
     case NSTextCellType:
       s = NSMakeSize([_cell_font widthOfString: _contents], 
@@ -258,12 +258,12 @@ static NSColor	*shadowCol;
  */
 - (void) setType: (NSCellType)aType
 {
-  _cell_type = aType;
+  _cell.type = aType;
 }
 
 - (NSCellType) type
 {
-  return _cell_type;
+  return _cell.type;
 }
 
 /*
@@ -271,12 +271,12 @@ static NSColor	*shadowCol;
  */
 - (void) setState: (int)value
 {
-  _cell_state = value;
+  _cell.state = value;
 }
 
 - (int) state
 {
-  return _cell_state;
+  return _cell.state;
 }
 
 /*
@@ -316,7 +316,7 @@ static NSColor	*shadowCol;
 		NSInvalidArgumentException);
     }
   
-  _cell_type = NSImageCellType;    
+  _cell.type = NSImageCellType;    
   
   ASSIGN(_cell_image, anImage);
 }
@@ -369,7 +369,7 @@ static NSColor	*shadowCol;
 {
   NSString	*string;
 
-  _cell_type = NSTextCellType;
+  _cell.type = NSTextCellType;
 
   if (!aString)
     string = @"";
@@ -409,7 +409,7 @@ static NSColor	*shadowCol;
  */
 - (NSTextAlignment) alignment
 {
-  return _text_align;
+  return _cell.text_align;
 }
 
 - (NSFont*) font
@@ -434,7 +434,7 @@ static NSColor	*shadowCol;
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  _text_align = mode;
+  _cell.text_align = mode;
 }
 
 - (void) setEditable: (BOOL)flag
@@ -492,7 +492,7 @@ static NSColor	*shadowCol;
     [textObject setTextColor: dtxtCol];
   
   [textObject setFont: _cell_font];
-  [textObject setAlignment: _text_align];
+  [textObject setAlignment: _cell.text_align];
   [textObject setEditable: _cell.is_editable];
   [textObject setSelectable: _cell.is_selectable || _cell.is_editable];
   return textObject;
@@ -505,7 +505,7 @@ static NSColor	*shadowCol;
 		 event: (NSEvent *)theEvent
 {
   if (!controlView || !textObject || !_cell_font ||
-			(_cell_type != NSTextCellType))
+			(_cell.type != NSTextCellType))
     return;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
@@ -533,7 +533,7 @@ static NSColor	*shadowCol;
 		  length: (int)selLength
 {
   if (!controlView || !textObject || !_cell_font ||
-			(_cell_type != NSTextCellType))
+			(_cell.type != NSTextCellType))
     return;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
@@ -550,7 +550,7 @@ static NSColor	*shadowCol;
  */
 - (int) entryType
 {
-  return _entry_type;
+  return _cell.entry_type;
 }
 
 - (BOOL) isEntryAcceptable: (NSString*)aString
@@ -560,7 +560,7 @@ static NSColor	*shadowCol;
 
 - (void) setEntryType: (int)aType
 {
-  _entry_type = aType;
+  _cell.entry_type = aType;
 }
 
 /*
@@ -624,12 +624,7 @@ static NSColor	*shadowCol;
  */
 - (NSView*) controlView
 {
-  return _control_view;
-}
-
-- (void) setControlView: (NSView*)view
-{
-  _control_view = view;
+  return nil;
 }
 
 - (NSColor*) textColor
@@ -663,7 +658,7 @@ static NSColor	*shadowCol;
   cellFrame.size.height = titleHeight;
 
   // Determine the x position of text
-  switch (_text_align)
+  switch (_cell.text_align)
     {
       // ignore the justified and natural alignments
       case NSLeftTextAlignment:
@@ -706,7 +701,7 @@ static NSColor	*shadowCol;
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
-  switch (_cell_type)
+  switch (_cell.type)
     {
       case NSTextCellType:
 	 [self _drawText: _contents inFrame: cellFrame];
@@ -741,9 +736,6 @@ static NSColor	*shadowCol;
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   NSDebugLog (@"NSCell drawWithFrame: inView: ");
-
-  // Save last view drawn to
-  [self setControlView: controlView];
 
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame) || ![controlView window])
@@ -830,27 +822,28 @@ static NSColor	*shadowCol;
 - (void) performClick: (id)sender
 {
   SEL action = [self action];
-  
-  if (_control_view)
+  NSView *cv = [self controlView];
+
+  if (cv)
     {  
-      NSRect   cvBounds = [_control_view bounds];
-      NSWindow *cvWin = [_control_view window];
-
-      [self highlight: YES withFrame: cvBounds inView: _control_view];
+      NSRect   cvBounds = [cv bounds];
+      NSWindow *cvWin = [cv window];
+      
+      [self highlight: YES withFrame: cvBounds inView: cv];
       [cvWin flushWindow];
-
+      
       // Wait approx 1/10 seconds
       [[NSRunLoop currentRunLoop] 
 	runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
       
-      [self highlight: NO withFrame: cvBounds inView: _control_view];
+      [self highlight: NO withFrame: cvBounds inView: cv];
       [cvWin flushWindow];
-  
+      
       if (action)
 	{
 	  NS_DURING
 	    {
-	      [(NSControl *)_control_view sendAction: action to: [self target]];
+	      [(NSControl *)cv sendAction: action to: [self target]];
 	    }
 	  NS_HANDLER
 	    {
@@ -859,7 +852,7 @@ static NSColor	*shadowCol;
 	  NS_ENDHANDLER
 	    }
     }
-  else // We have no control view.  The best we can do is the following. 
+  else  // We have no control view.  The best we can do is the following. 
     {
       if (action)
 	{
@@ -877,6 +870,7 @@ static NSColor	*shadowCol;
 	    }
     }
 }
+
 /*
  * Assigning a Tag
  */
@@ -1050,7 +1044,7 @@ static NSColor	*shadowCol;
 	  NSDebugLog(@"NSCell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
-          [self setState: !_cell_state];
+          [self setState: !_cell.state];
 	  if ((_action_mask & NSLeftMouseUpMask))
 	    [(NSControl*)controlView sendAction: action to: target];
 	}
@@ -1090,7 +1084,7 @@ static NSColor	*shadowCol;
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  if (_cell_type == NSTextCellType && _cell.is_enabled == YES
+  if (_cell.type == NSTextCellType && _cell.is_enabled == YES
     && (_cell.is_selectable == YES || _cell.is_editable == YES))
     {
       static NSCursor	*c = nil;
@@ -1120,8 +1114,8 @@ static NSColor	*shadowCol;
   if ([otherCell isKindOfClass: cellClass] == NO)
     [NSException raise: NSBadComparisonException
 		format: @"NSCell comparison with non-NSCell"];
-  if (_cell_type != NSTextCellType
-    || ((NSCell*)otherCell)->_cell_type != NSTextCellType)
+  if (_cell.type != NSTextCellType
+    || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
     [NSException raise: NSBadComparisonException
 		format: @"Comparison between non-text cells"];
   return [_contents compare: ((NSCell*)otherCell)->_contents];
@@ -1147,7 +1141,7 @@ static NSColor	*shadowCol;
   c->_contents = [_contents copyWithZone: zone];
   ASSIGN(c->_cell_image, _cell_image);
   ASSIGN(c->_cell_font, _cell_font);
-  c->_cell_state = _cell_state;
+  c->_cell.state = _cell.state;
   c->_cell.is_highlighted = _cell.is_highlighted;
   c->_cell.is_enabled = _cell.is_enabled;
   c->_cell.is_editable = _cell.is_editable;
@@ -1159,12 +1153,10 @@ static NSColor	*shadowCol;
   c->_cell.float_autorange = _cell.float_autorange;
   c->_cell_float_left = _cell_float_left;
   c->_cell_float_right = _cell_float_right;
-  c->_image_position = _image_position;
-  c->_cell_type = _cell_type;
-  c->_text_align = _text_align;
-  c->_entry_type = _entry_type;
-  c->_control_view = _control_view;
-  c->_cell_size = _cell_size;
+  c->_cell.image_position = _cell.image_position;
+  c->_cell.type = _cell.type;
+  c->_cell.text_align = _cell.text_align;
+  c->_cell.entry_type = _cell.entry_type;
   [c setRepresentedObject: _represented_object];
 
   return c;
@@ -1176,11 +1168,13 @@ static NSColor	*shadowCol;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL flag;
+  unsigned int tmp_int;
 
   [aCoder encodeObject: _contents];
   [aCoder encodeObject: _cell_image];
   [aCoder encodeObject: _cell_font];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_cell_state];
+  tmp_int = _cell.state;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   flag = _cell.is_highlighted;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_enabled;
@@ -1199,22 +1193,27 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.float_autorange;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [aCoder encodeValueOfObjCType: "I" at: &_cell_float_left];
-  [aCoder encodeValueOfObjCType: "I" at: &_cell_float_right];
-  [aCoder encodeValueOfObjCType: "I" at: &_image_position];
-  [aCoder encodeValueOfObjCType: "i" at: &_cell_type];
-  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_text_align];
-  [aCoder encodeValueOfObjCType: "i" at: &_entry_type];
-  [aCoder encodeConditionalObject: _control_view];
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_left];
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_right];
+  tmp_int = _cell.image_position;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  tmp_int = _cell.type;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  tmp_int = _cell.text_align;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  tmp_int = _cell.entry_type;
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   BOOL flag;
+  unsigned int tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_font];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_cell_state];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.state = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_highlighted = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1233,13 +1232,17 @@ static NSColor	*shadowCol;
   _cell.is_continuous = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.float_autorange = flag;
-  [aDecoder decodeValueOfObjCType: "I" at: &_cell_float_left];
-  [aDecoder decodeValueOfObjCType: "I" at: &_cell_float_right];
-  [aDecoder decodeValueOfObjCType: "I" at: &_image_position];
-  [aDecoder decodeValueOfObjCType: "i" at: &_cell_type];
-  [aDecoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_text_align];
-  [aDecoder decodeValueOfObjCType: "i" at: &_entry_type];
-  _control_view = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_left];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+	    at: &_cell_float_right];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.image_position = tmp_int;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.type = tmp_int;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.text_align = tmp_int;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  _cell.entry_type = tmp_int;
   return self;
 }
 
