@@ -88,22 +88,22 @@ APPKIT_EXPORT NSString *NSDeviceSize;
 /*
  * Get Information About Color Space and Window Depth
  */
-APPKIT_EXPORT const NSWindowDepth *NSAvailableWindowDepths(void);
-APPKIT_EXPORT NSWindowDepth NSBestDepth(NSString *colorSpace, 
+APPKIT_DECLARE const NSWindowDepth *NSAvailableWindowDepths(void);
+APPKIT_DECLARE NSWindowDepth NSBestDepth(NSString *colorSpace, 
 			  int bitsPerSample, int bitsPerPixel, 
 			  BOOL planar, BOOL *exactMatch);
-APPKIT_EXPORT int NSBitsPerPixelFromDepth(NSWindowDepth depth);
-APPKIT_EXPORT int NSBitsPerSampleFromDepth(NSWindowDepth depth);
-APPKIT_EXPORT NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
-APPKIT_EXPORT int NSNumberOfColorComponents(NSString *colorSpaceName);
-APPKIT_EXPORT BOOL NSPlanarFromDepth(NSWindowDepth depth);
+APPKIT_DECLARE int NSBitsPerPixelFromDepth(NSWindowDepth depth);
+APPKIT_DECLARE int NSBitsPerSampleFromDepth(NSWindowDepth depth);
+APPKIT_DECLARE NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
+APPKIT_DECLARE int NSNumberOfColorComponents(NSString *colorSpaceName);
+APPKIT_DECLARE BOOL NSPlanarFromDepth(NSWindowDepth depth);
 
 
 /*
  * Functions for getting information about windows.
  */
-APPKIT_EXPORT void NSCountWindows(int *count);
-APPKIT_EXPORT void NSWindowList(int size, int list[]);
+APPKIT_DECLARE void NSCountWindows(int *count);
+APPKIT_DECLARE void NSWindowList(int size, int list[]);
 
 static inline void
 NSEraseRect(NSRect aRect)
@@ -161,13 +161,13 @@ NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count)
     (ctxt, @selector(NSRectFillListWithGrays:::), rects, grays, count);
 }
 
-APPKIT_EXPORT NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
+APPKIT_DECLARE NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
 			const NSRectEdge * sides, 
 			const float *grays, int count);
-APPKIT_EXPORT void NSDrawButton(const NSRect aRect, const NSRect clipRect);
-APPKIT_EXPORT void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
-APPKIT_EXPORT void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
-APPKIT_EXPORT void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_DECLARE void NSDrawButton(const NSRect aRect, const NSRect clipRect);
+APPKIT_DECLARE void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_DECLARE void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
+APPKIT_DECLARE void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
 
 // This is from an old version of the specification 
 static inline void
@@ -300,22 +300,24 @@ GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
 @class	NSArray;
 @class	NSWindow;
 
-APPKIT_EXPORT NSArray* GSAllWindows();
-APPKIT_EXPORT NSWindow* GSWindowWithNumber(int num);
+APPKIT_DECLARE NSArray* GSAllWindows();
+APPKIT_DECLARE NSWindow* GSWindowWithNumber(int num);
 #endif
 
 #ifndef	STRICT_OPENSTEP
 // Window operations
-void NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum);
-void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum);
+APPKIT_DECLARE void NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum);
+APPKIT_DECLARE void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum);
 
 // Rectangle drawing
-NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
-			     const NSRectEdge *sides, NSColor **colors, 
-			     int count);
-void NSDrawDarkBezel(NSRect aRect, NSRect clipRect);
-void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
-void NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count);
+APPKIT_DECLARE NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
+					    const NSRectEdge *sides, 
+					    NSColor **colors, 
+					    int count);
+APPKIT_DECLARE void NSDrawDarkBezel(NSRect aRect, NSRect clipRect);
+APPKIT_DECLARE void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
+APPKIT_DECLARE void NSRectFillListWithColors(const NSRect *rects, 
+					     NSColor **colors, int count);
 
 static inline void
 NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op) 
@@ -325,20 +327,21 @@ NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
     (ctxt, @selector(NSRectFillUsingOperation::), aRect, op);
 }
 
-void NSRectFillListUsingOperation(const NSRect *rects, int count, 
-				  NSCompositingOperation op);
-void NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
-					    NSColor **colors, 
-					    int num, 
-					    NSCompositingOperation op);
+APPKIT_DECLARE void NSRectFillListUsingOperation(const NSRect *rects, int count, 
+						 NSCompositingOperation op);
+APPKIT_DECLARE void NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
+							   NSColor **colors, 
+							   int num, 
+							   NSCompositingOperation op);
 
-void NSDrawWindowBackground(NSRect aRect);
+APPKIT_DECLARE void NSDrawWindowBackground(NSRect aRect);
 
 // Context information
-void NSCountWindowsForContext(int context, int *count);
-void NSWindowListForContext(int context, int size, int list[][]);
-int NSGetWindowServerMemory(int context, int *virtualMemory, 
-			    int *windowBackingMemory, NSString **windowDumpStream);
+APPKIT_DECLARE void NSCountWindowsForContext(int context, int *count);
+APPKIT_DECLARE void NSWindowListForContext(int context, int size, int list[][]);
+APPKIT_DECLARE int NSGetWindowServerMemory(int context, int *virtualMemory, 
+					   int *windowBackingMemory, 
+					   NSString **windowDumpStream);
 
 #endif
 
