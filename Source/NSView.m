@@ -362,7 +362,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       GSIArrayClear(pKV(self));
       NSZoneFree(NSDefaultMallocZone(), pKV(self));
-      pKV(self) = 0;
+      _previousKeyView = 0;
     }
 
   /*
@@ -394,7 +394,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       GSIArrayClear(nKV(self));
       NSZoneFree(NSDefaultMallocZone(), nKV(self));
-      nKV(self) = 0;
+      _nextKeyView = 0;
     }
 
   RELEASE(_matrixToWindow);
@@ -2540,7 +2540,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       count = [_sub_views count];
       if (count > 0)
 	{
-	  NSView*	array[count];
+	  NSView	*array[count];
 
 	  [_sub_views getObjects: array];
 
@@ -2746,7 +2746,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
        * Create array and ensure that it has a nil item at index 0 ...
        * so we always have room for the pointer to the next view.
        */
-      nKV(self) = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+      _nextKeyView = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
       GSIArrayInitWithZoneAndCapacity(nKV(self), NSDefaultMallocZone(), 1);
       GSIArrayAddItem(nKV(self), (GSIArrayItem)nil);
     }
@@ -2766,7 +2766,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
        * Create array and ensure that it has a nil item at index 0 ...
        * so we always have room for the pointer to the previous view.
        */
-      pKV(aView) = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+      aView->_previousKeyView = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
       GSIArrayInitWithZoneAndCapacity(pKV(aView), NSDefaultMallocZone(), 1);
       GSIArrayAddItem(pKV(aView), (GSIArrayItem)nil);
     }

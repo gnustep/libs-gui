@@ -1,3 +1,8 @@
+2004-02-04 01:24  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m: Remove uses of the deprecated "casts as lvalues"
+	gcc extension.
+
 2004-02-03 23:38  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSBitmapImageRep.m (+imageRepsWithFile:,
