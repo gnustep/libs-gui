@@ -55,6 +55,8 @@
       ASSIGN (_dividerColor, [NSColor controlShadowColor]);
       ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]);
       ASSIGN (_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
+
+      _autoresizes_subviews = NO;
     }
   return self;
 }
@@ -105,14 +107,12 @@
 	}
       if (_isVertical == NO)
         {
-	  if (NSMaxY(r) <= p.y)
-	    {				// can happen only when i>0.
- 	      NSView	*tempView;
-
-	      offset = i - 1;
+	  if (NSMinY(r) >= p.y)
+            {
+	      offset = i;
 
 	      /* get the enclosing rect for the two views */
-	      if (prev)
+	      if (prev != nil)
 		{
 		  r = [prev frame];
 		}
@@ -129,8 +129,7 @@
 		  r1 = [v frame];
 		}
 	      bigRect = r;
-	      bigRect = NSUnionRect(r1, bigRect);
-	      tempView = prev;  prev = v;  v = tempView;
+	      bigRect = NSUnionRect(r1 , bigRect);
 	      break;
             }
 	  prev = v;
@@ -243,18 +242,26 @@
       if (_isVertical == NO)
 	{
 	  if (p.y < minCoord)
-	    p.y = minCoord;
+	    {
+	      p.y = minCoord;
+	    }
 	  if (p.y > maxCoord)
-	    p.y = maxCoord;
+	    {
+	      p.y = maxCoord;
+	    }
 	  r.origin.y = p.y - (divVertical/2.);
 	  r.origin.x = NSMinX(vis);
 	}
       else
 	{
 	  if (p.x < minCoord)
-	    p.x = minCoord;
+	    {
+	      p.x = minCoord;
+	    }
 	  if (p.x > maxCoord)
-	    p.x = maxCoord;
+	    {
+	      p.x = maxCoord;
+	    }
 	  r.origin.x = p.x - (divHorizontal/2.);
 	  r.origin.y = NSMinY(vis);
 	}
@@ -293,13 +300,17 @@
     {
       r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
       if (NSHeight(r) < 1.)
-	r.size.height = 1.;
+	{
+	  r.size.height = 1.;
+	}
     }
   else
     {
       r.size.width = p.x - NSMinX(bigRect) - (divHorizontal/2.);
       if (NSWidth(r) < 1.)
-	r.size.width = 1.;
+	{
+	  r.size.width = 1.;
+	}
     }
   [prev setFrame: r];
   NSDebugLog(@"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
@@ -310,19 +321,27 @@
     {
       r1.origin.y = p.y + (divVertical/2.);
       if (NSMinY(r1) < 0.)
-	r1.origin.y = 0.;
+	{
+	  r1.origin.y = 0.;
+	}
       r1.size.height = NSHeight(bigRect) - NSHeight(r) - divVertical;
       if (NSHeight(r) < 1.)
-	r.size.height = 1.;
+	{
+	  r.size.height = 1.;
+	}
     }
   else
     {
       r1.origin.x = p.x + (divHorizontal/2.);
       if (NSMinX(r1) < 0.)
-	r1.origin.x = 0.;
+	{
+	  r1.origin.x = 0.;
+	}
       r1.size.width = NSWidth(bigRect) - NSWidth(r) - divHorizontal;
       if (NSWidth(r1) < 1.)
-	r1.size.width = 1.;
+	{
+	  r1.size.width = 1.;
+	}
     }
   [v setFrame: r1];
   NSDebugLog(@"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
@@ -376,7 +395,7 @@
 	      oldTotal +=  NSHeight(frames[i]);
 	    }
 	  scale = newTotal/oldTotal;
-	  running = NSHeight (_bounds);
+	  running = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
 	      float	newHeight;
@@ -384,13 +403,16 @@
 	      r = [views[i] frame];
 	      newHeight = NSHeight(frames[i]) * scale;
 	      if (i == count - 1)
-		newHeight = floor(newHeight);
+		{
+		  newHeight = floor(newHeight);
+		}
 	      else
-		newHeight = ceil(newHeight);
+		{
+		  newHeight = ceil(newHeight);
+		}
 	      newSize = NSMakeSize(NSWidth(_bounds), newHeight);
-	      running -= newHeight;
 	      newPoint = NSMakePoint(0.0, running);
-	      running -= _dividerWidth;
+	      running += newHeight + _dividerWidth;
 	      [views[i] setFrameSize: newSize];
 	      [views[i] setFrameOrigin: newPoint];
 	    }
@@ -412,9 +434,13 @@
 	      r = [views[i] frame];
 	      newWidth = NSWidth(r) * scale;
 	      if (i == count - 1)
-		newWidth = floor(newWidth);
+		{
+		  newWidth = floor(newWidth);
+		}
 	      else
-		newWidth = ceil(newWidth);
+		{
+		  newWidth = ceil(newWidth);
+		}
 	      newSize = NSMakeSize(newWidth, NSHeight(_bounds));
 	      newPoint = NSMakePoint(running, 0.0);
 	      running += newWidth + _dividerWidth;
@@ -480,7 +506,10 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   /* focus is already on self */
   if (!_dimpleImage)
-    return;
+    {
+      return;
+    }
+
   dimpleSize = [_dimpleImage size];
 
   dimpleOrigin = centerSizeInRect(dimpleSize, aRect);
@@ -489,7 +518,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
    * so we must adjust the position to take account of a flipped view.
    */
   if (_rFlags.flipped_view)
-    dimpleOrigin.y -= dimpleSize.height;
+    {
+      dimpleOrigin.y += dimpleSize.height;
+    }
   [_dimpleImage compositeToPoint: dimpleOrigin 
 		operation: NSCompositeSourceOver];
 }
@@ -543,12 +574,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 	divRect = [v frame];
 	if (_isVertical == NO)
 	  {
+	    divRect.origin.y = NSMaxY (divRect);
 	    divRect.size.height = _dividerWidth;
-	    divRect.origin.y -= divRect.size.height;
 	  }
 	else
 	  {
-	    divRect.origin.x = NSMaxX(divRect);
+	    divRect.origin.x = NSMaxX (divRect);
 	    divRect.size.width = _dividerWidth;
 	  }
 	[self drawDividerInRect: divRect];
@@ -564,7 +595,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 /* Overridden Methods */
 - (BOOL) isFlipped
 {
-  return NO;
+  return YES;
 }
 
 - (BOOL) isOpaque
@@ -589,7 +620,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
   if (_delegate)
-    [nc removeObserver: _delegate name: nil object: self];
+    {
+      [nc removeObserver: _delegate name: nil object: self];
+    }
   _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
@@ -618,7 +651,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return _backgroundColor;
 }
 
-- (void) setBackgroundColor: (NSColor*)aColor
+- (void) setBackgroundColor: (NSColor *)aColor
 {
   ASSIGN(_backgroundColor, aColor);
 }
@@ -626,7 +659,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 /*
  * NSCoding protocol
  */
-- (void) encodeWithCoder: (NSCoder*)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
 
@@ -651,7 +684,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
 
