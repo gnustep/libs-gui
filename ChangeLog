@@ -1,3 +1,24 @@
+Mon Feb 25 02:16:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Rewritten the input manager keybinding engine to be a full blown
+	keybinding engine - new features include actions composed of array
+	of selectors, multi-stroke keybindings, abort and quote
+	keybindings.
+	* Source/NSInputManager.m: Rewritten most of the engine to be much more
+	powerful.
+	* Headers/gnustep/gui/NSInputManager.h: Changes in ivars, lots of comments,
+	new public and private methods.
+	* Source/GSKeyBindingAction.h: New auxiliary file.
+	* Source/GSKeyBindingAction.m: New auxiliary file.
+	* Source/GSKeyBindingTable.h: New auxiliary file.
+	* Source/GSKeyBindingTable.m: New auxiliary file.
+	* GNUmakefile: Compile the new files.
+	
+Sun Feb 24 17:32:37 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSResponder.h: Put the optional methods in an
+	informal protocol.
+
 Sun Feb 24 11:33:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	
 	* Source/NSSaverPanel.m: Do not assume that NSFileManager
