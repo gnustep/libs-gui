@@ -1,3 +1,54 @@
+Thu Apr 11 22:15:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSAttributedString.h: Do not #include the
+	whole <Foundation/Foundation>, but rather use the minimum @class
+	and #include needed to have it parsed - so that everything
+	compiles faster.
+	* Headers/gnustep/gui/NSProgressIndicator.h: Added missing @class and #include
+	directives.
+	* Headers/gnustep/gui/NSTextStorage.h: Added missing #include.
+	* Headers/gnustep/gui/NSTextView.m: Added missing @class.
+	* Source/GSComboSupport.m: Added missing #includes.
+	* Source/GSInfoPanel.m: Idem.	
+	* Source/GSServicesManager.m: Idem.
+	* Source/NSApplication.m: Idem.
+	* Source/NSBox.m: Idem.
+	* Source/NSBrowser.m: Idem.
+	* Source/NSBrowserCell.m: Idem.
+	* Source/NSBundleAdditions.m: Idem.
+	* Source/NSButtonCell.m: Idem.
+	* Source/NSCell.m: Idem.
+	* Source/NSColorPanel.m: Idem.
+	* Source/NSColorPicker.m: Idem.
+	* Source/NSColorWell.m: Idem.
+	* Source/NSComboBoxCell.m: Idem.
+	* Source/NSControl.m: Idem.
+	* Source/NSFontPanel.m: Idem.
+	* Source/NSHelpManager.m: Idem.
+	* Source/NSLayoutManager.m: Idem.
+	* Source/NSMatrix.m: Idem.
+	* Source/NSMenu.m: Idem.
+	* Source/NSMenuItem.m: Idem.
+	* Source/NSMenuView.m: Idem.
+	* Source/NSOpenPanel.m: Idem.
+	* Source/NSOutlineView.m: Idem.
+	* Source/NSProgressIndicator.m: Idem.
+	* Source/NSSavePanel.m: Idem.
+	* Source/NSScroller.m: Idem.
+	* Source/NSScrollView.m: Idem.
+	* Source/NSSpellChecker.m: Idem.
+	* Source/NSStepper.m: Idem.
+	* Source/NSTableColumn.m: Idem.
+	* Source/NSTableHeaderView.m: Idem.
+	* Source/NSTableView.m: Idem.
+	* Source/NSText.m: Idem.
+	* Source/NSTextField.m: Idem.
+	* Source/NSTextFieldCell.m: Idem.
+	* Source/NSTextView.m: Idem.
+	* Source/NSWindow.m: Idem.
+
+	* Source/NSMatrix.m ([-dealloc]): End editing if while editing.
+
 Thu Apr 11 16:20:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSResponder.h: Include NSObject.h, not NSCoder.h;
