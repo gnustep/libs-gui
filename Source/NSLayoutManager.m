@@ -414,6 +414,10 @@ line frag rect. */
 	       fractionOfDistanceThroughGlyph: NULL];
 }
 
+/*
+TODO: decide on behavior wrt. invisible glyphs and pointer far away from
+anything visible
+*/
 - (unsigned int) glyphIndexForPoint: (NSPoint)point
 		    inTextContainer: (NSTextContainer *)container
      fractionOfDistanceThroughGlyph: (float *)partialFraction
@@ -439,10 +443,32 @@ line frag rect. */
   [self _doLayoutToContainer: i  point: point];
 
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
-    if (NSPointInRect(point, lf->rect))
-      break;
+    {
+      if (NSPointInRect(point, lf->rect))
+	break;
+
+      /* Point is between two lines. */
+      if (NSMinY(lf->rect) > point.y)
+	{
+	  if (lf->pos > 0)
+	    {
+	      *partialFraction = 1.0;
+	      return lf->pos - 1;
+	    }
+	  else
+	    {
+	      *partialFraction = 0.0;
+	      return lf->pos;
+	    }
+	}
+    }
+
+  /* Point is below all line frags. */
   if (i == tc->num_linefrags)
-    return -1;
+    {
+      *partialFraction = 1.0;
+      return tc->pos + tc->length - 1; /* TODO: this should return the correct thing even if the container is empty */
+    }
 
   /* only interested in x from here on */
   point.x -= lf->rect.origin.x;
@@ -475,7 +501,7 @@ line frag rect. */
 
       prev = lp->p.x;
 
-      last_visible = (unsigned int)-1;
+      last_visible = lf->pos;
       for (i = lp->pos - glyph_pos; i + glyph_pos < lp->pos + lp->length; )
 	{
 	  if (r->glyphs[i].isNotShown || r->glyphs[i].g == NSControlGlyph ||

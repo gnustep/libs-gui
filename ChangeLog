@@ -1,3 +1,9 @@
+2003-01-26 21:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:):
+	Try harder to always return a valid glyph index.
+
 2003-01-26 20:41  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextView.h: Don't use protocol forward
