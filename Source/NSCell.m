@@ -573,7 +573,7 @@
     [NSException raise: NSInvalidArgumentException
         format: @"Request to draw a text cell but no font specified!"];
   titleWidth = [font widthOfString: title];
-  titleHeight = [font pointSize];
+  titleHeight = [font pointSize] - [font descender];
 
   // Determine the y position of the text
   cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
@@ -708,7 +708,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   if (cell_highlighted != lit)
     {
       cell_highlighted = lit;
+      PSgsave();
       [self drawWithFrame: cellFrame inView: controlView];
+      PSgrestore();
     }
 }
 

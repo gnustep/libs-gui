@@ -436,6 +436,11 @@ struct NSWindow_struct
   methodTable.DPStranslate__ =
     GET_IMP(@selector(DPStranslate::));
 /* ----------------------------------------------------------------------- */
+/* I/O operations */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPSflush =
+    GET_IMP(@selector(DPSflush));
+/* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
   methodTable.DPSconcatmatrix =
@@ -1027,6 +1032,14 @@ struct NSWindow_struct
 }
 
 - (void) DPStranslate: (float)x : (float)y 
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* Matrix operations */
+/* ----------------------------------------------------------------------- */
+- (void) DPSflush
 {
   [self subclassResponsibility: _cmd];
 }

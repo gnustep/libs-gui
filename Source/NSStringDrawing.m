@@ -238,8 +238,8 @@ sizeLine(NSAttributedString *str,
        */
       // FIXME - superscript should have some effect on height.
 
-      below = [font descender];
-      above = [font pointSize] - below;
+      below = -([font descender]);
+      above = [font pointSize];
       if (base > 0)
 	above += base;		// Character is above baseline.
       else if (base < 0)
@@ -484,11 +484,11 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
    */
   if (draw->flip)
     {
-      origin.y += run->height - run->baseline;
+      origin.y += (run->height - run->baseline);
     }
   else
     {
-      origin.y -= run->height - run->baseline;
+      origin.y -= (run->height - run->baseline);
     }
 
   /*
@@ -522,6 +522,14 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
       buf[i] = '\0';
       DPSmoveto(draw->ctxt, origin.x, origin.y);
       DPSshow(draw->ctxt, buf);
+      /* FIXME - Figure out why DGS fails to flush strings and remove this
+      aweful hack which doesn't even work all the time: */
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
     }
   else
     {
@@ -536,6 +544,14 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	  DPSshow(draw->ctxt, buf);
 	  origin.x += run->glyphs[i].adv.width;
 	}
+      /* FIXME - Figure out why DGS fails to flush strings and remove this
+      aweful hack which doesn't even work all the time: */
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
+      DPSmoveto(draw->ctxt, origin.x, origin.y);
+      DPSshow(draw->ctxt, buf);
     }
 
   if (run->underline)
@@ -623,8 +639,8 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
    * Calculate height of line from font information and base offset.
    * FIXME - should include superscript information here.
    */
-  below = [run->font descender];
-  above = [run->font pointSize] - below;
+  below = -([run->font descender]);
+  above = [run->font pointSize];
   if (run->base > 0)
     above += run->base;		// Character is above baseline.
   else if (run->base < 0)
@@ -1236,7 +1252,6 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
     point.y = rect.origin.y + rect.size.height;
 
   [self drawAtPoint: point];
-  NSRectClip([view bounds]);
 }
 
 - (NSSize) size

@@ -1,3 +1,29 @@
+1999-05-11  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSButtonCell.m ([NSButtonCell
+	-drawInteriorWithFrame:inView:]): gsave/grestore around image/text
+	to return to original clipping rect for second half of drawing.
+
+	* Source/NSCell.m ([NSCell -_drawText:title:cellFrame]): PointSize
+	does not include descender.
+	(-highlight:withFrame:inView:): gsave/grestore to return to
+	original for second highlight call.
+
+	* Source/NSControl.m ([NSControl -mouseDown:]): Remove extra
+	lockFocus. 
+
+	* Source/NSMenu.m ([NSMenuMatrix -initWithFrame:]): Font descender
+	is a negative number.
+	* Source/NSStringDrawing.m (sizeLine): Likewise.
+	(setupRun): Likewise.
+	(drawRun): Awful hack to get DGS to flush strings.
+
+	* Headers/gnustep/gui/DPSOperators.h (DPSflush): Added operator.
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* Headers/gnustep/gui/PSOperators.h: Likewise.
+	* Source/NSGraphicsContext.m: Likewise.
+	
 Mon May 10  9:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: Added GSCurrentContext() for

@@ -83,7 +83,7 @@ static NSFont* menuFont = nil;
   if (!menuFont)
     menuFont = [[NSFont systemFontOfSize: 0] retain];
 
-  cellSize = NSMakeSize (1, [menuFont pointSize] - [menuFont descender] + 6);
+  cellSize = NSMakeSize (1, [menuFont pointSize] + [menuFont descender] + 6);
   return self;
 }
 

@@ -341,6 +341,13 @@ DPStranslate(GSCTXT *ctxt, float x, float y)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* I/O Operations operations */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSflush(GSCTXT *ctxt)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -1221,6 +1228,16 @@ DPStranslate(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPStranslate__)
     (ctxt, @selector(DPStranslate::), x, y);
+}
+
+/* ----------------------------------------------------------------------- */
+/* I/O Operations operations */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSflush(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSflush)
+    (ctxt, @selector(DPSflush));
 }
 
 /* ----------------------------------------------------------------------- */

@@ -473,7 +473,6 @@ static id _NSCONTROL_CELL_CLASS = nil;
 
   if (mouseUp)
     {
-      [self lockFocus];
 //      	[cell setState: ![cell state]];
       [cell highlight: NO withFrame: bounds inView: self];
       [window flushWindow];
