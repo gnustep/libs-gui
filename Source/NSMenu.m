@@ -750,7 +750,6 @@ static NSNotificationCenter *nc;
 	{
 	  NSMenuItem *item = [_items objectAtIndex: i];
 	  SEL	      action = [item action];
-	  id	      target;
 	  id	      validator = nil;
 	  BOOL	      wasEnabled = [item isEnabled];
 	  BOOL	      shouldBeEnabled;
@@ -762,35 +761,17 @@ static NSNotificationCenter *nc;
 	  // If there is no action - there can be no validator for the item.
 	  if (action)
 	    {
-	      // If there is a target use that for validation (or nil).
-	      if (nil != (target = [item target]))
-		{
-		  if ([target respondsToSelector: action])
-		    {  
-		      validator = target;
-		    }
-		}
-	      else
-		{
-		  validator = [NSApp targetForAction: action];
-		}
+	      validator = [NSApp targetForAction: action 
+				 to: [item target]
+				 from: item];
 	    }
 	  else if (_popUpButtonCell != nil)
 	    {
 	      if (NULL != (action = [_popUpButtonCell action]))
 	        {
-		  // If there is a target use that for validation (or nil).
-		  if (nil != (target = [_popUpButtonCell target]))
-		    {
-		      if ([target respondsToSelector: action])
-		        {  
-			  validator = target;
-			}
-		    }
-		  else
-		    {
-		      validator = [NSApp targetForAction: action];
-		    }
+		  validator = [NSApp targetForAction: action
+				     to: [_popUpButtonCell target]
+				     from: [_popUpButtonCell controlView]];
 		}
 	    }
 
