@@ -97,6 +97,9 @@ static Class cellClass;
   id		c = NSCopyObject(self, 0, zone);
   NSCell	*o = [_cell copy];
 
+  /* Prevents the original cell from being released */
+  ((NSControl *)c)->_cell = nil;
+
   [c setCell: o];
   RELEASE(o);
   return c;
