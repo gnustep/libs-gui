@@ -580,7 +580,7 @@ static Class eventClass;
 
 - (NSString*) description
 {
-  const char* eventTypes[] = {
+static const char *eventTypes[] = {
     "leftMouseDown",
     "leftMouseUp",
     "otherMouseDown",
@@ -672,7 +672,7 @@ static Class eventClass;
 	return [NSString stringWithFormat:
 	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 	  @" time = %f, window = %d, dpsContext = %p,"
-	  @" event number = %d, click = %d, pressure = %f",
+	  @" event number = %d, click = %d, pressure = %f"
 	  @" button = %d, deltaX = %f, deltaY = %f, deltaZ = %f",
 	  eventTypes[event_type], location_point.x, location_point.y,
 	  modifier_flags, event_time, window_num, event_context,

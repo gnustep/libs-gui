@@ -1,3 +1,8 @@
+2003-11-18 21:43  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSEvent.m (-description): Remove a stray , that was messing
+	up a +stringWithFormat: call. Make eventTypes static.
+
 2003-11-11 14:41  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: (-targetForAction:): Added code to check the
