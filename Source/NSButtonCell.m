@@ -1128,23 +1128,62 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // FIXME: Add new ivars
-  BOOL tmp;
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  _buttoncell_is_transparent = tmp;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-			       at: &_keyEquivalentModifierMask];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-			       at: &_highlightsByMask];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-			       at: &_showAltStateMask];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSString *alternateContents = [aDecoder decodeObjectForKey: @"NSAlternateContents"];
+      NSImage *alternateImage = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
+      //NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
+      NSString *key = [aDecoder decodeObjectForKey: @"NSKeyEquivalent"];
+      int bFlags;
+      int bFlags2;
+      int delay = 0;
+      int interval = 0;
+      
+      [self setAlternateImage: alternateImage];
+      [self setAlternateTitle: alternateContents];
+      [self setKeyEquivalent: key];
 
+      if ([aDecoder containsValueForKey: @"NSButtonFlags"])
+        {
+	  bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
+	  // FIXME
+	}
+      if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
+        {
+	  bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
+	  // FIXME
+	}
+
+      if ([aDecoder containsValueForKey: @"NSPeriodicDelay"])
+        {
+	  delay = [aDecoder decodeIntForKey: @"NSPeriodicDelay"];
+	}
+      if ([aDecoder containsValueForKey: @"NSPeriodicInterval"])
+        {
+	  interval = [aDecoder decodeIntForKey: @"NSPeriodicInterval"];
+	}
+      [self setPeriodicDelay: delay interval: interval];
+    }
+  else
+    {
+      // FIXME: Add new ivars
+      BOOL tmp;
+      
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      _buttoncell_is_transparent = tmp;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		                   at: &_keyEquivalentModifierMask];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		                   at: &_highlightsByMask];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		                   at: &_showAltStateMask];
+    }
   return self;
 }
 

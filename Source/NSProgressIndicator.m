@@ -302,16 +302,35 @@ static NSImage *images[maxCount];
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-   self = [super initWithCoder:aDecoder];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
-   [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
-	     at:&_animationDelay];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&_doubleValue];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&_minValue];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&_maxValue];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+  self = [super initWithCoder:aDecoder];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      //id *matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
+
+      if ([aDecoder containsValueForKey: @"NSMaxValue"])
+        {
+	  int max = [aDecoder decodeIntForKey: @"NSMaxValue"];
+
+	  [self setMaxValue: max];
+	}
+      if ([aDecoder containsValueForKey: @"NSpiFlags"])
+        {
+	  //int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+	  // FIXME
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
+      [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
+		                   at:&_animationDelay];
+      [aDecoder decodeValueOfObjCType: @encode(double) at:&_doubleValue];
+      [aDecoder decodeValueOfObjCType: @encode(double) at:&_minValue];
+      [aDecoder decodeValueOfObjCType: @encode(double) at:&_maxValue];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+    }
    return self;
 }
 

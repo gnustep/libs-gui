@@ -1044,7 +1044,72 @@ systemColorWithName(NSString *name)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  if ([aDecoder versionForClassName: @"NSColor"] < 3)
+  if ([aDecoder allowsKeyedCoding])
+    {
+      int colorSpace = [aDecoder decodeIntForKey: @"NSColorSpace"];
+
+      DESTROY(self);
+      if (colorSpace == 1)
+        {
+	  unsigned length;
+	  const uint8_t *data;
+	  float red = 0.0;
+	  float green = 0.0;
+	  float blue = 0.0;
+	  float alpha = 0.0;
+	  NSString *str;
+	  NSScanner *scanner;
+	  
+	  if ([aDecoder containsValueForKey: @"NSRGB"])
+	    {
+	      data = [aDecoder decodeBytesForKey: @"NSRGB"
+			     returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: data length: length];
+	      scanner = [[NSScanner alloc] initWithString: str];
+	      [scanner scanFloat: &red];
+	      [scanner scanFloat: &green];
+	      [scanner scanFloat: &blue];
+	    }
+	  
+	  self = [NSColor colorWithCalibratedRed: red
+			  green: green
+			  blue: blue
+			  alpha: alpha];
+	}
+      else if (colorSpace == 3)
+        {
+	  unsigned length;
+	  const uint8_t *data;
+	  float white = 0.0;
+	  float alpha = 0.0;
+	  NSString *str;
+	  NSScanner *scanner;
+	  
+	  if ([aDecoder containsValueForKey: @"NSWhite"])
+	    {
+	      data = [aDecoder decodeBytesForKey: @"NSWhite"
+			     returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: data length: length];
+	      scanner = [[NSScanner alloc] initWithString: str];
+	      [scanner scanFloat: &white];
+	    }
+	  
+	  self = [NSColor colorWithDeviceWhite: white
+			  alpha: alpha];
+	}
+      else if (colorSpace == 6)
+        {
+	  NSString *catalog = [aDecoder decodeObjectForKey: @"NSCatalogName"];
+	  NSString *name = [aDecoder decodeObjectForKey: @"NSColorName"];
+	  //NSColor *color = [aDecoder decodeObjectForKey: @"NSColor"];
+	  
+	  self = [NSColor colorWithCatalogName: catalog
+			  colorName: name];
+	}
+      
+      return self;
+    }
+  else if ([aDecoder versionForClassName: @"NSColor"] < 3)
     {
       float red;
       float green;

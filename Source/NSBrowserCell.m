@@ -329,15 +329,23 @@ static NSFont *_leafFont;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL tmp;
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  [self setLeaf: tmp];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  [self setLoaded: tmp];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_alternateImage];
+  if ([aDecoder allowsKeyedCoding])
+    {
+	// Nothing special
+    }
+  else
+    {
+      BOOL tmp;
 
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      [self setLeaf: tmp];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      [self setLoaded: tmp];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_alternateImage];
+    }
+  
   return self;
 }
 

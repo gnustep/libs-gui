@@ -978,121 +978,139 @@ static BOOL flip_hack;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: @"NSFont"];
-  id	name;
-  float	fontMatrix[6];
-  BOOL	fix;
-  int the_role;
-
-  if (version == 3)
+  if ([aDecoder allowsKeyedCoding])
     {
-      [aDecoder decodeValueOfObjCType: @encode(int)
-				   at: &the_role];
-    }
-  else
-    {
-      the_role = RoleExplicit;
-    }
-
-  if (the_role == RoleExplicit)
-    {
-      /* The easy case: an explicit font, or a font encoded with
-      version <= 2. */
-      name = [aDecoder decodeObject];
-      [aDecoder decodeArrayOfObjCType: @encode(float)
-				count: 6
-				   at: fontMatrix];
-
-      if (version >= 2)
-	{
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				       at: &fix];
-	}
-      else
-	{
-	  if (fontMatrix[0] == fontMatrix[3]
-	      && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
-	    fix = NO;
-	  else
-	    fix = YES;
-	}
-
-      self = [self initWithName: name
-		         matrix: fontMatrix
-			    fix: fix
-		     screenFont: NO
-			   role: RoleExplicit];
-      if (self)
-        return self;
-
-      self = [NSFont userFontOfSize: fontMatrix[0]];
-      NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
-      return RETAIN(self);
-    }
-  else
-    {
-      /* A non-explicit font. */
-      float size;
-      NSFont *new;
-
-      if (the_role & 1)
-	{
-	  [aDecoder decodeValueOfObjCType: @encode(float)
-				       at: &size];
-	}
-      else
-	{
-	  size = 0.0;
-	}
-
-      switch (the_role >> 1)
-	{
-	  case RoleBoldSystemFont:
-	    new = [NSFont boldSystemFontOfSize: size];
-	    break;
-	  case RoleSystemFont:
-	    new = [NSFont systemFontOfSize: size];
-	    break;
-	  case RoleUserFixedPitchFont:
-	    new = [NSFont userFixedPitchFontOfSize: size];
-	    break;
-	  case RoleTitleBarFont:
-	    new = [NSFont titleBarFontOfSize: size];
-	    break;
-	  case RoleMenuFont:
-	    new = [NSFont menuFontOfSize: size];
-	    break;
-	  case RoleMessageFont:
-	    new = [NSFont messageFontOfSize: size];
-	    break;
-	  case RolePaletteFont:
-	    new = [NSFont paletteFontOfSize: size];
-	    break;
-	  case RoleToolTipsFont:
-	    new = [NSFont toolTipsFontOfSize: size];
-	    break;
-	  case RoleControlContentFont:
-	    new = [NSFont controlContentFontOfSize: size];
-	    break;
-	  case RoleLabelFont:
-	    new = [NSFont labelFontOfSize: size];
-	    break;
-
-	  default:
-	    NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
-	    /* fall through */
-	  case RoleUserFont:
-	    new = [NSFont userFontOfSize: size];
-	    break;
-	}
-
+      NSString *name = [aDecoder decodeObjectForKey: @"NSName"];
+      int size = [aDecoder decodeIntForKey: @"NSSize"];
+      
       RELEASE(self);
-      if (new)
-	return RETAIN(new);
+      if ([aDecoder containsValueForKey: @"NSfFlags"])
+        {
+	  //int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
+	  // FIXME
+	}
 
-      new = [NSFont userFontOfSize: size];
-      NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
-      return RETAIN(new);
+      self = [NSFont fontWithName: name size: size];
+      return self;
+    }
+  else
+    {
+      int version = [aDecoder versionForClassName: @"NSFont"];
+      id	name;
+      float	fontMatrix[6];
+      BOOL	fix;
+      int the_role;
+      
+      if (version == 3)
+        {
+	  [aDecoder decodeValueOfObjCType: @encode(int)
+		                       at: &the_role];
+	}
+      else
+        {
+	  the_role = RoleExplicit;
+	}
+      
+      if (the_role == RoleExplicit)
+        {
+	  /* The easy case: an explicit font, or a font encoded with
+	     version <= 2. */
+	  name = [aDecoder decodeObject];
+	  [aDecoder decodeArrayOfObjCType: @encode(float)
+		                    count: 6
+		                       at: fontMatrix];
+	  
+	  if (version >= 2)
+	    {
+	      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				           at: &fix];
+	    }
+	  else
+	    {
+	      if (fontMatrix[0] == fontMatrix[3]
+		  && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
+		fix = NO;
+	      else
+		fix = YES;
+	    }
+
+	  self = [self initWithName: name
+		             matrix: fontMatrix
+			        fix: fix
+		         screenFont: NO
+			       role: RoleExplicit];
+	  if (self)
+	    return self;
+
+	  self = [NSFont userFontOfSize: fontMatrix[0]];
+	  NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
+	  return RETAIN(self);
+	}
+      else
+        {
+	  /* A non-explicit font. */
+	  float size;
+	  NSFont *new;
+	  
+	  if (the_role & 1)
+	    {
+	      [aDecoder decodeValueOfObjCType: @encode(float)
+		    		           at: &size];
+	    }
+	  else
+	    {
+	      size = 0.0;
+	    }
+	  
+	  switch (the_role >> 1)
+	    {
+	      case RoleBoldSystemFont:
+		new = [NSFont boldSystemFontOfSize: size];
+		break;
+	      case RoleSystemFont:
+		new = [NSFont systemFontOfSize: size];
+		break;
+	      case RoleUserFixedPitchFont:
+		new = [NSFont userFixedPitchFontOfSize: size];
+		break;
+	      case RoleTitleBarFont:
+		new = [NSFont titleBarFontOfSize: size];
+		break;
+	      case RoleMenuFont:
+		new = [NSFont menuFontOfSize: size];
+		break;
+	      case RoleMessageFont:
+		new = [NSFont messageFontOfSize: size];
+		break;
+	      case RolePaletteFont:
+		new = [NSFont paletteFontOfSize: size];
+		break;
+	      case RoleToolTipsFont:
+		new = [NSFont toolTipsFontOfSize: size];
+		break;
+	      case RoleControlContentFont:
+		new = [NSFont controlContentFontOfSize: size];
+		break;
+	      case RoleLabelFont:
+		new = [NSFont labelFontOfSize: size];
+		break;
+
+	      default:
+		NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
+		/* fall through */
+	      case RoleUserFont:
+		new = [NSFont userFontOfSize: size];
+		break;
+	    }
+
+	  RELEASE(self);
+	  if (new)
+	    return RETAIN(new);
+
+	  new = [NSFont userFontOfSize: size];
+	  NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
+	  return RETAIN(new);
+	}
     }
 }
 

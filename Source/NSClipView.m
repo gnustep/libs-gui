@@ -718,25 +718,42 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSView *document;
-  BOOL temp;
-
   self = [super initWithCoder: aDecoder];
-  [self setAutoresizesSubviews: YES];
 
-  [self setBackgroundColor: [aDecoder decodeObject]];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &temp];
-  [self setDrawsBackground: temp];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
-
-  if ([[self subviews] count] > 0)
+  if ([aDecoder allowsKeyedCoding])
     {
-      document = AUTORELEASE(RETAIN([[self subviews] objectAtIndex: 0]));
-      [self removeSubview: document];
-      [self setDocumentView: document];
-    }
+      int flags;
+      
+      [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBGColor"]];
+      [self setDocumentCursor: [aDecoder decodeObjectForKey: @"NSCursor"]];
+      [self setDocumentView: [aDecoder decodeObjectForKey: @"NSDocView"]];
 
+      if ([aDecoder containsValueForKey: @"NScvFlags"])
+        {
+	  flags = [aDecoder decodeIntForKey: @"NScvFlags"];
+	  // FIXME setCopiesOnScroll: setDrawsBackground: 
+	}
+    }
+  else
+    {
+      NSView *document;
+      BOOL temp;
+      
+      [self setAutoresizesSubviews: YES];
+      
+      [self setBackgroundColor: [aDecoder decodeObject]];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &temp];
+      [self setDrawsBackground: temp];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
+      
+      if ([[self subviews] count] > 0)
+        {
+	  document = AUTORELEASE(RETAIN([[self subviews] objectAtIndex: 0]));
+	  [self removeSubview: document];
+	  [self setDocumentView: document];
+	}
+    }
   return self;
 }
 @end

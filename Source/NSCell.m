@@ -1980,78 +1980,101 @@ static NSColor	*shadowCol;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL flag;
-  unsigned int tmp_int;
-
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_objectValue];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.contents_is_attributed_string = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_highlighted = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_disabled = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_editable = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_rich_text = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.imports_graphics = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.shows_first_responder = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.refuses_first_responder = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.sends_action_on_end_editing = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_bordered = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_bezeled = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_scrollable = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_selectable = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  // This used to be is_continuous, which has been replaced.
-  //_cell.is_continuous = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.allows_mixed_state = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.wraps = flag;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  _cell.text_align = tmp_int;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  _cell.type = tmp_int;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  _cell.image_position = tmp_int;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  _cell.entry_type = tmp_int;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  _cell.state = tmp_int;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-	    at: &_mnemonic_location];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-	    at: &_mouse_down_flags];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_formatter];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_menu];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
-
-  if (_formatter != nil)
+  if ([aDecoder allowsKeyedCoding])
     {
-      NSString *contents;
+      NSString *contents = [aDecoder decodeObjectForKey: @"NSContents"];
+      NSFont *support = [aDecoder decodeObjectForKey: @"NSSupport"];
+      int cFlags;
+      int cFlags2;
 
-      contents = [_formatter stringForObjectValue: _objectValue];
-      if (contents != nil)
-	{
-	  _cell.has_valid_object_value = YES;
-	  ASSIGN (_contents, contents);
-	  _cell.contents_is_attributed_string = NO;
+      if ([aDecoder containsValueForKey: @"NSCellFlags"])
+        {
+	  cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
+	  // FIXME
+	}
+      if ([aDecoder containsValueForKey: @"NSCellFlags2"])
+        {
+	  cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+	  // FIXME
+	}
+
+      self = [self initTextCell: contents];
+      [self setFont: support];
+    }
+  else
+    {
+      BOOL flag;
+      unsigned int tmp_int;
+      
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_objectValue];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.contents_is_attributed_string = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_highlighted = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_disabled = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_editable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_rich_text = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.imports_graphics = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.shows_first_responder = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.refuses_first_responder = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.sends_action_on_end_editing = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_bordered = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_bezeled = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_scrollable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.is_selectable = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      // This used to be is_continuous, which has been replaced.
+      //_cell.is_continuous = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.allows_mixed_state = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _cell.wraps = flag;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.text_align = tmp_int;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.type = tmp_int;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.image_position = tmp_int;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.entry_type = tmp_int;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.state = tmp_int;
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+		                   at: &_mnemonic_location];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+		                   at: &_mouse_down_flags];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_formatter];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_menu];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
+      
+      if (_formatter != nil)
+        {
+	  NSString *contents;
+
+	  contents = [_formatter stringForObjectValue: _objectValue];
+	  if (contents != nil)
+	    {
+	      _cell.has_valid_object_value = YES;
+	      ASSIGN (_contents, contents);
+	      _cell.contents_is_attributed_string = NO;
+	    }
 	}
     }
-  
   return self;
 }
 @end

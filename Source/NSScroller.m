@@ -153,35 +153,68 @@ static NSColor *scrollBarColor = nil;
 {
   self = [super initWithCoder: aDecoder];
 
-  if (_frame.size.width > _frame.size.height)
+  if ([aDecoder allowsKeyedCoding])
     {
-      _isHorizontal = YES;
+      NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+      id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+      float value = 0.0;
+      float percent = 0.0;
+      int flags;
+      
+      if (action != nil)
+        {
+	  [self setAction: NSSelectorFromString(action)];
+	}
+      [self setTarget: target];
+      
+      if ([aDecoder containsValueForKey: @"NSCurValue"])
+        {
+	  value = [aDecoder decodeFloatForKey: @"NSCurValue"];
+	}
+      if ([aDecoder containsValueForKey: @"NSPercent"])
+        {
+	  percent = [aDecoder decodeFloatForKey: @"NSPercent"];
+	}
+      [self setFloatValue: value knobProportion: percent];
+
+      if ([aDecoder containsValueForKey: @"NSsFlags"])
+        {
+	  flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  // FIXME
+	}
     }
   else
     {
-      _isHorizontal = NO;
+      if (_frame.size.width > _frame.size.height)
+        {
+	  _isHorizontal = YES;
+	}
+      else
+        {
+	  _isHorizontal = NO;
+	}
+
+      if (_isHorizontal)
+        {
+	  _floatValue = 0.0;
+	}
+      else
+        {
+	  _floatValue = 1.0;
+	}
+      
+      _hitPart = NSScrollerNoPart;
+      
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+      // Undo RETAIN by decoder
+      TEST_RELEASE(_target);
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+
+      [self drawParts];
+      [self checkSpaceForParts];
     }
-
-  if (_isHorizontal)
-    {
-      _floatValue = 0.0;
-    }
-  else
-    {
-      _floatValue = 1.0;
-    }
-
-  _hitPart = NSScrollerNoPart;
-
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
-  // Undo RETAIN by decoder
-  TEST_RELEASE(_target);
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-
-  [self drawParts];
-  [self checkSpaceForParts];
 
   return self;
 }

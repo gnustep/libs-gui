@@ -2397,77 +2397,119 @@ static NSTextFieldCell *titleCell;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int colCount;
-  id dummy;
+  self = [super initWithCoder: aDecoder];
 
-  [super initWithCoder: aDecoder];
-  // Here to keep compatibility with old version
-  dummy = [aDecoder decodeObject];
-  _browserCellPrototype = RETAIN([aDecoder decodeObject]);
-  _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSCell *proto = [aDecoder decodeObjectForKey: @"NSCellPrototype"];
+      NSString *title = [aDecoder decodeObjectForKey: @"NSFirstColumnTitle"];
+      NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
+      int flags;
+      
+      self = [super initWithCoder: aDecoder];
+      [self setCellPrototype: proto];
+      [self setPathSeparator: sep];
+      [self setTitle: title ofColumn: 0];
 
-  [self setPathSeparator: [aDecoder decodeObject]];
+      if ([aDecoder containsValueForKey: @"NSBrFlags"])
+        {
+	  flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
+	  // FIXME
+	}
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
+      if ([aDecoder containsValueForKey: @"NSNumberOfVisibleColumns"])
+        {
+	  [self setMaxVisibleColumns: [aDecoder decodeIntForKey: 
+						  @"NSNumberOfVisibleColumns"]];
+	}
 
-  //NSBox *_horizontalScrollerBox;
-  _horizontalScroller = RETAIN([aDecoder decodeObject]);
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
-  _scrollerRect = [aDecoder decodeRect];
-  _columnSize = [aDecoder decodeSize];
+      if ([aDecoder containsValueForKey: @"NSMinColumnWidth"])
+        {
+	  [self setMinColumnWidth: [aDecoder decodeIntForKey: @"NSMinColumnWidth"]];
+	}
 
-  _skipUpdateScroller = NO;
-  /*
-  _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
-  [_horizontalScroller setTarget: self];
-  [_horizontalScroller setAction: @selector(scrollViaScroller:)];
-  */
-  [self setHasHorizontalScroller: _hasHorizontalScroller];
+      if ([aDecoder containsValueForKey: @"NSColumnResizingType"])
+        {
+	  //[self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
+	}
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
-  _lastKeyPressed = 0;
-  _charBuffer = nil;
-  // Skip: int _alphaNumericalLastColumn;
-
-  _browserDelegate = [aDecoder decodeObject];
-  if (_browserDelegate != nil)
-    [self setDelegate:_browserDelegate];
+      if ([aDecoder containsValueForKey: @"NSPreferedColumnWidth"])
+        {
+	  //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
+	}
+    }
   else
-    _passiveDelegate = YES;
+    {
+      int colCount;
+      id dummy;
+      
+      // Here to keep compatibility with old version
+      dummy = [aDecoder decodeObject];
+      _browserCellPrototype = RETAIN([aDecoder decodeObject]);
+      _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
+      
+      [self setPathSeparator: [aDecoder decodeObject]];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
+      
+      //NSBox *_horizontalScrollerBox;
+      _horizontalScroller = RETAIN([aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
+      _scrollerRect = [aDecoder decodeRect];
+      _columnSize = [aDecoder decodeSize];
 
+      _skipUpdateScroller = NO;
+      /*
+	_horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
+	[_horizontalScroller setTarget: self];
+	[_horizontalScroller setAction: @selector(scrollViaScroller:)];
+      */
+      [self setHasHorizontalScroller: _hasHorizontalScroller];
 
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  _target = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-  
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
+      _lastKeyPressed = 0;
+      _charBuffer = nil;
+      // Skip: int _alphaNumericalLastColumn;
 
-  // Do the minimal thing to initiate the browser...
-  /*
-  _lastColumnLoaded = -1;
-  _firstVisibleColumn = 0;
-  _lastVisibleColumn = 0;
-  [self _createColumn];
-  */
-  _browserColumns = RETAIN([aDecoder decodeObject]);
-  // ..and rebuild any existing browser columns
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
-
+      _browserDelegate = [aDecoder decodeObject];
+      if (_browserDelegate != nil)
+	[self setDelegate:_browserDelegate];
+      else
+	_passiveDelegate = YES;
+      
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      _target = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      
+      // Do the minimal thing to initiate the browser...
+      /*
+	_lastColumnLoaded = -1;
+	_firstVisibleColumn = 0;
+	_lastVisibleColumn = 0;
+	[self _createColumn];
+      */
+      _browserColumns = RETAIN([aDecoder decodeObject]);
+      // ..and rebuild any existing browser columns
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
+    }
+      
   // Display even if there isn't any column
   _isLoaded = NO;
   [self tile];
+
   return self;
 }
 

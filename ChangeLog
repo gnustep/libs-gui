@@ -1,3 +1,20 @@
+2004-01-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m
+	* Source/NSBrowserCell.m
+	* Source/NSButtonCell.m
+	* Source/NSCell.m
+	* Source/NSClipView.m
+	* Source/NSColor.m
+	* Source/NSControl.m
+	* Source/NSCursor.m
+	* Source/NSFont.m
+	* Source/NSProgressIndicator.m
+	* Source/NSScroller.m
+	* Source/NSScrollView.m
+	* Source/NSView.m
+	Added keyed decoding. 
+
 2004-01-26  Adam Fedor  <fedor@gnu.org>
 
 	* /Headers/Additions/GNUstepGUI/GSHbox.h: Fix doc markup.

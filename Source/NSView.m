@@ -38,6 +38,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSCalendarDate.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
@@ -3619,71 +3620,109 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSRect	rect;
-  NSEnumerator	*e;
-  NSView	*sub;
-  NSArray	*subs;
-
-  self = [super initWithCoder: aDecoder];
-
-  NSDebugLLog(@"NSView", @"NSView: start decoding\n");
-
-  _frame = [aDecoder decodeRect];
-  _bounds.origin = NSZeroPoint;
-  _bounds.size = _frame.size;
-
-  _frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
-  _boundsMatrix = [NSAffineTransform new];	// Map fromsuperview to bounds
-  _matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
-  _matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
-  [_frameMatrix setFrameOrigin: _frame.origin];
-
-  rect = [aDecoder decodeRect];
-  [self setBounds: rect];
-
-  _sub_views = [NSMutableArray new];
-  _tracking_rects = [NSMutableArray new];
-  _cursor_rects = [NSMutableArray new];
-
-  _super_view = nil;
-  _window = nil;
-  _rFlags.needs_display = YES;
-  _coordinates_valid = NO;
-
-  _rFlags.flipped_view = [self isFlipped];
-
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL)
-			       at: &_is_rotated_or_scaled_from_base];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-			       at: &_autoresizingMask];
-  [self setNextKeyView: [aDecoder decodeObject]];
-  [[aDecoder decodeObject] setNextKeyView: self];
-  
-
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
-  e = [subs objectEnumerator];
-  while ((sub = [e nextObject]) != nil)
+  if ([aDecoder allowsKeyedCoding])
     {
-      NSAssert(sub->_window == nil, NSInternalInconsistencyException);
-      NSAssert(sub->_super_view == nil, NSInternalInconsistencyException);
-      [sub viewWillMoveToWindow: _window];
-      [sub viewWillMoveToSuperview: self];
-      [sub setNextResponder: self];
-      [_sub_views addObject: sub];
-      _rFlags.has_subviews = 1;
-      [sub resetCursorRects];
-      [sub setNeedsDisplay: YES];
-      [sub viewDidMoveToWindow];
-      [sub viewDidMoveToSuperview];
-      [self didAddSubview: sub];
+      NSRect frame = NSZeroRect;
+      id next = [aDecoder decodeObjectForKey: @"NSNextResponder"];
+      //NSView *superView = [aDecoder decodeObjectForKey: @"NSSuperview"];
+      NSView *nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
+      NSArray *subViews = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      
+      if ([aDecoder containsValueForKey: @"NSFrame"])
+        {
+	  frame = [aDecoder decodeRectForKey: @"NSFrame"];
+	}
+      self = [self initWithFrame: frame];
+      if (next != nil)
+        {
+	  [self setNextResponder: next];
+	}
+      if (subViews != nil)
+        {
+	  NSEnumerator *enumerator = [subViews objectEnumerator];
+	  NSView *sub;
+	  
+	  while ((sub = [enumerator nextObject]) != nil)
+	    {
+	      [self addSubview: sub];
+	    }
+	}
+      if (nextKeyView != nil)
+        {
+	  [self setNextKeyView: nextKeyView];
+	}
+      if ([aDecoder containsValueForKey: @"NSvFlags"])
+        {
+	  //int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
+	  // FIXME set the flags
+	}
     }
-  RELEASE(subs);
+  else
+    {
+      NSRect	rect;
+      NSEnumerator	*e;
+      NSView	*sub;
+      NSArray	*subs;
+      
+      self = [super initWithCoder: aDecoder];
 
-  NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
+      NSDebugLLog(@"NSView", @"NSView: start decoding\n");
 
+      _frame = [aDecoder decodeRect];
+      _bounds.origin = NSZeroPoint;
+      _bounds.size = _frame.size;
+      
+      _frameMatrix = [NSAffineTransform new];	  // Map fromsuperview to frame
+      _boundsMatrix = [NSAffineTransform new];	  // Map fromsuperview to bounds
+      _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
+      _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
+      [_frameMatrix setFrameOrigin: _frame.origin];
+
+      rect = [aDecoder decodeRect];
+      [self setBounds: rect];
+
+      _sub_views = [NSMutableArray new];
+      _tracking_rects = [NSMutableArray new];
+      _cursor_rects = [NSMutableArray new];
+      
+      _super_view = nil;
+      _window = nil;
+      _rFlags.needs_display = YES;
+      _coordinates_valid = NO;
+      
+      _rFlags.flipped_view = [self isFlipped];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+		at: &_is_rotated_or_scaled_from_base];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		at: &_autoresizingMask];
+      [self setNextKeyView: [aDecoder decodeObject]];
+      [[aDecoder decodeObject] setNextKeyView: self];
+      
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
+      e = [subs objectEnumerator];
+      while ((sub = [e nextObject]) != nil)
+        {
+	  NSAssert(sub->_window == nil, NSInternalInconsistencyException);
+	  NSAssert(sub->_super_view == nil, NSInternalInconsistencyException);
+	  [sub viewWillMoveToWindow: _window];
+	  [sub viewWillMoveToSuperview: self];
+	  [sub setNextResponder: self];
+	  [_sub_views addObject: sub];
+	  _rFlags.has_subviews = 1;
+	  [sub resetCursorRects];
+	  [sub setNeedsDisplay: YES];
+	  [sub viewDidMoveToWindow];
+	  [sub viewDidMoveToSuperview];
+	  [self didAddSubview: sub];
+	}
+      RELEASE(subs);
+      NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
+    }
+        
   return self;
 }
 

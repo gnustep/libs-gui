@@ -29,6 +29,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSKeyedArchiver.h>
 
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCursor.h"
@@ -371,12 +372,40 @@ backgroundColorHint:(NSColor *)bg
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
-  _cursor_image = [aDecoder decodeObject];
-  _hot_spot = [aDecoder decodePoint];
-  [self _computeCid];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      int type = 0;
+      NSPoint hotSpot;
+      
+      if ([aDecoder containsValueForKey: @"NSCursorType"])
+        {
+	  type = [aDecoder decodeIntForKey: @"NSCursorType"];
+	}
 
+      DESTROY(self);
+      // FIXME
+      if (type == 0)
+        {
+	  self = [NSCursor arrowCursor];
+	}
+      else if (type == 1)
+        {
+	  self = [NSCursor IBeamCursor];
+	}
+      
+      if ([aDecoder containsValueForKey: @"NSHotSpot"])
+        {
+	  hotSpot = [aDecoder decodePointForKey: @"NSHotSpot"];
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
+      _cursor_image = [aDecoder decodeObject];
+      _hot_spot = [aDecoder decodePoint];
+      [self _computeCid];
+    }
   return self;
 }
 
