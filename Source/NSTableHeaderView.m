@@ -183,6 +183,13 @@
       if ((column == highlightedTableColumn)
 	  || [_tableView isColumnSelected: i])
 	{
+	  /* FIXME/TODO - cell can be any subclass of NSCell
+	     (specially a custom subclass), which might not implement
+	     setBackgroundColor: (or might not want us to mess up its
+	     custom drawing by hardcoding a background color here) -
+	     so we should not call it.  Instead, NSTableHeaderCell
+	     should override setHighlighted: to change the background
+	     color.  */
 	  [cell setHighlighted: YES];
 	  [cell setBackgroundColor: [NSColor controlColor]];
 	}
