@@ -1,3 +1,10 @@
+Mon Jan 29 20:19:59 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTableView.m ([-mouseDown:]): Unselect an already
+	selected row only when shift is pressed.  ([-columnAtPoint:]): Fix
+	for point precisely on the first column boundary. (Patches by 
+	Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>).
+
 Mon Jan 29 19:04:53 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* GNUmakefile.postamble (after-install): Install gui.make in 
