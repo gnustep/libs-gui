@@ -63,7 +63,6 @@ extern NSString *NSEventTrackingRunLoopMode;
   // Attributes
   NSMutableArray *window_list;
   NSMutableArray *event_queue;
-  NSMutableArray *recycled_event_queue;
   NSEvent *current_event;
   id key_window;
   id main_window;

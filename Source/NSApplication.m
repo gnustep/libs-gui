@@ -60,7 +60,7 @@
 // Class variables
 //
 static BOOL gnustep_gui_app_is_in_dealloc;
-static NSEvent *gnustep_gui_null_event;
+static NSEvent *null_event;										
 static id NSApp;
 
 #define ASSIGN(a, b)	[b retain]; \
@@ -115,9 +115,8 @@ static id NSApp;
 	windows_need_update = YES;
   
 	event_queue = [NSMutableArray new];					// allocate event queue
-	recycled_event_queue = [NSMutableArray new];		// alloc recycle queue
 	current_event = [NSEvent new];						// no current event
-	gnustep_gui_null_event = [NSEvent new];				// create a NULL event
+	null_event = [NSEvent new];							// create dummy event
 
 	[self setNextResponder:NULL];						// We are the end of 
 														// the responder chain
@@ -171,7 +170,6 @@ NSString* mainModelFile;
 	
 	[window_list release];
 	[event_queue release];
-	[recycled_event_queue release];
 	[current_event release];
 	[super dealloc];
 }
@@ -262,7 +260,7 @@ NSAutoreleasePool* pool;
 
 - (void)sendEvent:(NSEvent *)theEvent
 {
-	if (theEvent == gnustep_gui_null_event)			// Don't send null event
+	if (theEvent == null_event)						// Don't send null event
 		{
 		NSDebugLog(@"Not sending the Null Event\n");
 		return;
@@ -348,7 +346,7 @@ BOOL match = NO;
 				match = YES;									
 			else
 				{
-    			if (event == gnustep_gui_null_event) 	// do nothing if null
+    			if (event == null_event) 				// do nothing if null
 					match = NO;							// event 
 				else
 					{											
@@ -459,7 +457,7 @@ BOOL done = NO;
 	else												// of X motion events
 		inTrackingLoop = NO;							// while not in a 
 														// tracking loop
-	if (event = [self _eventMatchingMask:mask])
+	if ((event = [self _eventMatchingMask:mask]))
 		done = YES;
 	else 
 		if (!expiration)
@@ -475,7 +473,7 @@ BOOL done = NO;
 		limitDate = [[currentLoop limitDateForMode:mode] retain];
 		originalLimitDate = limitDate;
 
-		if (event = [self _eventMatchingMask:mask]) 
+		if ((event = [self _eventMatchingMask:mask])) 
 			{
       		[limitDate release];
       		break;
@@ -489,12 +487,11 @@ BOOL done = NO;
 		[currentLoop runMode:mode beforeDate:limitDate];
     	[originalLimitDate release];
 
-    	if (event = [self _eventMatchingMask:mask])
+    	if ((event = [self _eventMatchingMask:mask]))
       		break;
   		}											// no need to unhide cursor
 													// while in a tracking loop
-	if (event != gnustep_gui_null_event && 			// or if event is the null
-			(!inTrackingLoop))						// event		
+	if (event != null_event && (!inTrackingLoop))	// or if null event
 		{											
 		if ([NSCursor isHiddenUntilMouseMoves])		// do so only if we should
 			{		 								// unhide when mouse moves
@@ -689,7 +686,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (NSArray *)windows
 {
- return window_list;
+	return window_list;
 }
 
 - (NSWindow *)windowWithWindowNumber:(int)windowNum
@@ -815,8 +812,8 @@ int i;
 
 - (void)setWindowsMenu:aMenu
 {
-//  if (windows_menu)
-//    [windows_menu setSubmenu:aMenu];
+	if (windows_menu)
+		[windows_menu setSubmenu:aMenu];
 }
 
 - (void)updateWindowsItem:aWindow
@@ -825,8 +822,10 @@ int i;
 
 - (NSMenu *)windowsMenu
 {
-//  return [windows_menu submenu];
-	return nil;
+	if(windows_menu)
+		return [windows_menu submenu];
+	else
+		return nil;
 }
 
 //
@@ -866,9 +865,12 @@ int i;
 //
 - (void)terminate:sender
 {
-	if ([self applicationShouldTerminate:sender])
+	if ([self applicationShouldTerminate:self])
+		{											// app should end run loop
 		app_should_quit = YES;
-}
+		[event_queue addObject: null_event];		// add dummy event to queue
+		}											// to assure loop cycles
+}													// at least one more time
 
 - delegate											// Assigning a delegate
 {
@@ -1056,12 +1058,12 @@ BOOL result = YES;
 
 + (void)setNullEvent:(NSEvent *)e
 {
-	ASSIGN(gnustep_gui_null_event, e);
+	ASSIGN(null_event, e);
 }
 
 + (NSEvent *)getNullEvent;
 {															// return the class
-	return gnustep_gui_null_event;							// dummy event
+	return null_event;										// dummy event
 }
 
 - (void)_nextEvent											// get next event	

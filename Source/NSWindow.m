@@ -50,10 +50,10 @@
 #include <AppKit/PSMatrix.h>
 #include <AppKit/NSWindowView.h>
 
-#define ASSIGN(variable, value) \
-  [value retain]; \
-  [variable release]; \
-  variable = value;
+#define ASSIGN(a, b)	[b retain]; \
+						[a release]; \
+						a = b;
+
 
 //
 // NSWindow implementation
@@ -124,8 +124,8 @@ static BOOL _needsFlushWindows = YES;
 int style;
 
 	NSDebugLog(@"NSWindow -init\n");
-
-	style = NSTitledWindowMask | NSClosableWindowMask
+															// default style
+	style = NSTitledWindowMask | NSClosableWindowMask		// mask		
 			| NSMiniaturizableWindowMask | NSResizableWindowMask;
 
 	return [self initWithContentRect:NSZeroRect 
@@ -871,12 +871,16 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 //
 - (void)close
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  // Notify our delegate
-  [nc postNotificationName: NSWindowWillCloseNotification object: self];
-
-  [self performClose:self];
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+															// Notify delegate
+	[nc postNotificationName: NSWindowWillCloseNotification object: self];
+	[self orderOut:self];
+	visible = NO;
+															// if app has no
+	if(![[NSApplication sharedApplication] mainMenu])		// menu terminate
+		[[NSApplication sharedApplication] terminate:self];
+	else													// otherwise just 
+		[self autorelease];									// release self 
 }
 
 - (void)deminiaturize:sender
@@ -916,9 +920,35 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
 }
 
-- (void)performClose:sender
+- (void)performClose:sender									
 {
-  visible = NO;
+	if([self styleMask] & NSClosableWindowMask)
+		{											// self must have a close
+		NSBeep();									// button in order to be
+		return;										// closed
+		}
+															
+	if ([delegate respondsToSelector:@selector(windowShouldClose:)])
+		{											// if delegate responds to
+    	if(![delegate windowShouldClose:self])		// windowShouldClose query
+			{										// it to see if it's ok to
+			NSBeep();								// close the window
+			return;									
+			}
+		}											
+	else
+		{
+		if ([self respondsToSelector:@selector(windowShouldClose:)])
+			{										// else if self responds to
+			if(![self windowShouldClose:self])		// windowShouldClose query
+				{									// self to see if it's ok
+				NSBeep();							// to close self
+				return;								
+				} 
+			}										
+		}
+
+	[self close];									// it's ok to close self								
 }
 
 - (void)performMiniaturize:sender
