@@ -1,5 +1,10 @@
 2002-04-10  Adam Fedor  <fedor@gnu.org>
 
+	* Headers/gnustep/gui/config.h.bot: New file implements RINT defs.
+	* Headers/gnustep/gui/config.h.in: Regen.
+	* Source/NSBrowser.m: Remove RINT defs.
+	* Source/NSRulerView.m: Likewise.
+
 	* Headers/gnustep/gui/AppKitExceptions.h: Add GNUstep exception.
 	* Source/externs.m: Idem.
 	* Headers/gnustep/gui/DPSOperators.h: Remove currentgstate, gstate

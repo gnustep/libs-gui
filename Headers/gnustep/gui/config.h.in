@@ -8,3 +8,15 @@
 
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM
+
+/* Define for those who don't have rintf and/or rint */
+#ifndef HAVE_RINTF
+#define rintf rint
+#endif
+#ifndef HAVE_RINT
+static double rint(double a)
+{
+  return (floor(a+0.5));
+}
+#endif
+

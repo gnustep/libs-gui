@@ -38,13 +38,6 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/PSOperators.h>
 
-#ifndef HAVE_RINT
-static double rint(double a)
-{
-  return (floor(a+0.5));
-}
-#endif
-
 #define MIN_LABEL_DISTANCE 40
 #define MIN_MARK_DISTANCE 5
 

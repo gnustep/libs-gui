@@ -53,17 +53,6 @@
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
 
-#ifndef HAVE_RINTF
-#define rintf rint
-#endif
-#ifndef HAVE_RINT
-static double rint(double a)
-{
-  return (floor(a+0.5));
-}
-#endif
-
-
 #define NSBR_COLUMN_SEP 6
 #define NSBR_VOFFSET 2
 
