@@ -35,6 +35,7 @@
 #include <Foundation/NSSet.h>
 
 #include <AppKit/NSDragging.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSDate;
 @class NSDictionary;
@@ -147,7 +148,7 @@ typedef enum _GSWindowInputState
 @end
 
 #ifndef	NO_GNUSTEP
-NSGraphicsContext	*GSCurrentContext();
+APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
