@@ -1,3 +1,14 @@
+Thu Sep  7 21:46:33 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+	
+	* Source/NSTableColumn.m ([-setWidth:]): Post the old width in the
+	notification user info.
+	* Source/NSTableView.m ([-mouseDown:]): Fixed clicking on the
+	table with shift pressed when multiple selection is not allowed.
+	([-_selectColumn:modifiers:]): Idem for clicks on the table header
+	view.  ([-removeTableColumn:]): Rearrange selection if needed.
+	([-moveColumn:toColumn:]): Implemented.  ([-sizeLastColumnToFit]):
+	Allow shrinking last column if needed.
+	
 Thu Sep  7 17:47:46 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSStringDrawing.m ([NSAttributedString -drawInRect:]): 
