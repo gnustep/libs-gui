@@ -1,3 +1,22 @@
+2003-04-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPanel.m
+	Use controlBackgroundColor instead of lightGrayColor. Patch by Matt
+	Rice (matt@vespertine.pc.ashlandfiber.net).
+	* Headers/gnustep/gui/NSGraphics.h
+	* Source/externs.m
+	Added NSPatternColorSpace.
+	* Source/NSColor.m
+	[GSPatternColor colorSpaceName] uses NSPatternColorSpace.
+	Corrected [blendedColorWithFraction:ofColor:], where self and aColor
+	where exchanged and alpha handling was missing.
+	* Source/NSWindow.m
+	Removed unused local variable in [sendEvent:].
+	* Source/NSSliderCell.m
+	Basic implementation of the tick mark methods. Added en-/decoding
+	for tick marks. [setKnobThickness:], [setNumberOfTickMarks:] and
+	[setTickMarkPosition:] now update the control.
+	
 2003-04-25  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSavePanel.m: Track window resizing and adjust browser
