@@ -125,7 +125,7 @@
   NSFreeHashTable(conditionals);
   NSFreeMapTable(classes);
 
-  return [super dealloc];
+  [super dealloc];
 }
 
 - (NSString*) newLabel

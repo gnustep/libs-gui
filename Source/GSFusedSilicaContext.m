@@ -138,7 +138,7 @@
 
 + (void) CGColorSpaceRelease: (CGColorSpaceRef)cs
 {
-  return [(NSDictionary *)cs release];
+  [(NSDictionary *)cs release];
 }
 
 

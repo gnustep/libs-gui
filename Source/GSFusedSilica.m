@@ -438,17 +438,17 @@ CGColorSpaceRef CGColorSpaceRetain(CGColorSpaceRef cs)
 
 void CGColorSpaceRelease(CGColorSpaceRef cs)
 {
-  return [NSGraphicsContext CGColorSpaceRelease: cs];
+  [NSGraphicsContext CGColorSpaceRelease: cs];
 }
 
 void CGContextSetFillColorSpace(CGContextRef ctx, CGColorSpaceRef colorspace)
 {
-  return [(NSGraphicsContext *)ctx GSSetFillColorspace: colorspace];
+  [(NSGraphicsContext *)ctx GSSetFillColorspace: colorspace];
 }
 
 void CGContextSetStrokeColorSpace(CGContextRef ctx, CGColorSpaceRef colorspace)
 {
-  return [(NSGraphicsContext *)ctx GSSetStrokeColorspace: colorspace];
+  [(NSGraphicsContext *)ctx GSSetStrokeColorspace: colorspace];
 }
 
 
@@ -462,12 +462,12 @@ void CGContextSetRenderingIntent(CGContextRef c, CGColorRenderingIntent intent)
 
 void CGContextSetFillColor(CGContextRef ctx, const float *value)
 {
-  return [(NSGraphicsContext *)ctx GSSetFillColor: value];
+  [(NSGraphicsContext *)ctx GSSetFillColor: value];
 }
 
 void CGContextSetStrokeColor(CGContextRef ctx, const float *value)
 {
-  return [(NSGraphicsContext *)ctx GSSetStrokeColor: value];
+  [(NSGraphicsContext *)ctx GSSetStrokeColor: value];
 }
 
 void CGContextSetGrayFillColor(CGContextRef ctx, float gray, float alpha)
@@ -741,7 +741,7 @@ void CGContextSelectFont(
 
 void CGContextSetFont(CGContextRef ctx, CGFontRef font)
 {
-  return [(NSGraphicsContext *)ctx GSSetFont: font];
+  [(NSGraphicsContext *)ctx GSSetFont: font];
 }
 
 void CGContextSetFontSize(CGContextRef ctx, float size)

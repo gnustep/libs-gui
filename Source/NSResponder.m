@@ -159,7 +159,7 @@
 - (void) insertText: (NSString*)aString
 {
   if (_next_responder)
-    return [_next_responder insertText: aString];
+    [_next_responder insertText: aString];
   else
     {
       NSBeep ();
@@ -173,9 +173,9 @@
 - (void) flagsChanged: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder flagsChanged: theEvent];
+    [_next_responder flagsChanged: theEvent];
   else
-    return [self noResponderFor: @selector(flagsChanged:)];
+    [self noResponderFor: @selector(flagsChanged:)];
 }
 
 - (void) helpRequested: (NSEvent*)theEvent
@@ -184,96 +184,99 @@
 	showContextHelpForObject: self
 	locationHint: [theEvent locationInWindow]])
     if (_next_responder)
-      return [_next_responder helpRequested: theEvent];
+      {
+	[_next_responder helpRequested: theEvent];
+	return;
+      }
   [NSHelpManager setContextHelpModeActive: NO];
 }
 
 - (void) keyDown: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder keyDown: theEvent];
+    [_next_responder keyDown: theEvent];
   else
-    return [self noResponderFor: @selector(keyDown:)];
+    [self noResponderFor: @selector(keyDown:)];
 }
 
 - (void) keyUp: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder keyUp: theEvent];
+    [_next_responder keyUp: theEvent];
   else
-    return [self noResponderFor: @selector(keyUp:)];
+    [self noResponderFor: @selector(keyUp:)];
 }
 
 - (void) otherMouseDown: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder otherMouseDown: theEvent];
+    [_next_responder otherMouseDown: theEvent];
   else
-    return [self noResponderFor: @selector(otherMouseDown:)];
+    [self noResponderFor: @selector(otherMouseDown:)];
 }
 
 - (void) otherMouseDragged: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder otherMouseDragged: theEvent];
+    [_next_responder otherMouseDragged: theEvent];
   else
-    return [self noResponderFor: @selector(otherMouseDragged:)];
+    [self noResponderFor: @selector(otherMouseDragged:)];
 }
 
 - (void) otherMouseUp: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder otherMouseUp: theEvent];
+    [_next_responder otherMouseUp: theEvent];
   else
-    return [self noResponderFor: @selector(otherMouseUp:)];
+    [self noResponderFor: @selector(otherMouseUp:)];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseDown: theEvent];
+    [_next_responder mouseDown: theEvent];
   else
-    return [self noResponderFor: @selector(mouseDown:)];
+    [self noResponderFor: @selector(mouseDown:)];
 }
 
 - (void) mouseDragged: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseDragged: theEvent];
+    [_next_responder mouseDragged: theEvent];
   else
-    return [self noResponderFor: @selector(mouseDragged:)];
+    [self noResponderFor: @selector(mouseDragged:)];
 }
 
 - (void) mouseEntered: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseEntered: theEvent];
+    [_next_responder mouseEntered: theEvent];
   else
-    return [self noResponderFor: @selector(mouseEntered:)];
+    [self noResponderFor: @selector(mouseEntered:)];
 }
 
 - (void) mouseExited: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseExited: theEvent];
+    [_next_responder mouseExited: theEvent];
   else
-    return [self noResponderFor: @selector(mouseExited:)];
+    [self noResponderFor: @selector(mouseExited:)];
 }
 
 - (void) mouseMoved: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseMoved: theEvent];
+    [_next_responder mouseMoved: theEvent];
   else
-    return [self noResponderFor: @selector(mouseMoved:)];
+    [self noResponderFor: @selector(mouseMoved:)];
 }
 
 - (void) mouseUp: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder mouseUp: theEvent];
+    [_next_responder mouseUp: theEvent];
   else
-    return [self noResponderFor: @selector(mouseUp:)];
+    [self noResponderFor: @selector(mouseUp:)];
 }
 
 - (void) noResponderFor: (SEL)eventSelector
@@ -286,33 +289,33 @@
 - (void) rightMouseDown: (NSEvent*)theEvent
 {
   if (_next_responder != nil)
-    return [_next_responder rightMouseDown: theEvent];
+    [_next_responder rightMouseDown: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseDown:)];
+    [self noResponderFor: @selector(rightMouseDown:)];
 }
 
 - (void) rightMouseDragged: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder rightMouseDragged: theEvent];
+    [_next_responder rightMouseDragged: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseDragged:)];
+    [self noResponderFor: @selector(rightMouseDragged:)];
 }
 
 - (void) rightMouseUp: (NSEvent*)theEvent
 {
   if (_next_responder)
-    return [_next_responder rightMouseUp: theEvent];
+    [_next_responder rightMouseUp: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseUp:)];
+    [self noResponderFor: @selector(rightMouseUp:)];
 }
 
 - (void) scrollWheel: (NSEvent *)theEvent
 {
   if (_next_responder)
-    return [_next_responder scrollWheel: theEvent];
+    [_next_responder scrollWheel: theEvent];
   else
-    return [self noResponderFor: @selector(scrollWheel:)];
+    [self noResponderFor: @selector(scrollWheel:)];
 }
 
 /*
