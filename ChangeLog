@@ -1,3 +1,15 @@
+Fri Mar 22 11:40:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/IMLoading.m: Include AppKit/NSNibLoading.h for
+	awakeFromNib.
+
+Fri Mar 22 11:35:20 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m ([GSSimpleLayoutManager
+	-setNeedsDisplayForLineRange:inTextContainer:]): Check that the
+	whole range of lines, not just the first one, is in the range we
+	know about (Suggestion from Alexander Malmberg).
+
 2002-03-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/exampleInfo.plist: Fix illegal character in plist ...
