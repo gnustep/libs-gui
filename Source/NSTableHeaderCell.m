@@ -47,7 +47,7 @@ static NSColor *clearCol = nil;
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setBordered: NO];
   [self setBezeled: NO];
-  draw_background = YES;
+  _draws_background = YES;
 
   return self;
 }
