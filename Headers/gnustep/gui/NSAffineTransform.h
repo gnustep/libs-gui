@@ -70,7 +70,6 @@ typedef	struct {
 #ifndef	NO_GNUSTEP
 @interface NSAffineTransform (GNUstep)
 - (void) translateToPoint: (NSPoint)point;
-- (void) rotateByAngle: (float)angle;
 - (void) scaleTo: (float)sx : (float)sy;
 - (void) makeIdentityMatrix;
 - (float) rotationAngle;

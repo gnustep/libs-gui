@@ -380,11 +380,6 @@ static NSAffineTransformStruct identityTransform = {
   TY = newTY;
 }
 
-- (void) rotateByAngle: (float)angle
-{
-  [self rotateByDegrees: angle];
-}
-
 - (void) makeIdentityMatrix
 {
   matrix = identityTransform;
