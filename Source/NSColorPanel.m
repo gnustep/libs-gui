@@ -244,7 +244,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [image setBackgroundColor: aColor];
 
   [sourceView dragImage: image
-                     at: [sourceView frame].origin
+                     at: [sourceView bounds].origin
                  offset: NSMakeSize(0,0)
                   event: anEvent
              pasteboard: pb
