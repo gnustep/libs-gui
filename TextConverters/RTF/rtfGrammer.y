@@ -57,14 +57,20 @@
 #include "rtfScanner.h"
 
 /*	this context is passed to the interface functions	*/
-typedef void	* GSRTFctxt;
-#define YYPARSE_PARAM	ctxt, lctxt
+typedef void	*GSRTFctxt;
+// Two parameters are not supported by some bison versions. The declaration of 
+// yyparse in the .c file must be corrected to be able to compile it.
+#define YYPARSE_PARAM	ctxt, void *lctxt
 #define YYLEX_PARAM		lctxt
+#define YYLSP_NEEDED 0
 #define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
+#define YYDEBUG 0
 
 #include "RTFConsumerFunctions.h"
+/*int GSRTFlex (YYSTYPE *lvalp, RTFscannerCtxt *lctxt); */
+int GSRTFlex(void *lvalp, void *lctxt);
 
 %}
 
@@ -174,7 +180,7 @@ rtfIngredients:	/*	empty	*/
 		|	rtfIngredients rtfBlock
 		;
 
-rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock(CTXT, NO); }
+rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock(CTXT, NO); } /* may be empty */
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFignore rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFinfo rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFstylesheet rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
@@ -182,7 +188,6 @@ rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
-                |	'{'  '}' /* empty */
 		;
 
 
@@ -354,7 +359,8 @@ rtfFontList: '{' RTFfontListStart rtfFonts '}'
 rtfFonts:
 		|	rtfFonts rtfFontStatement
 		|	rtfFonts '{' rtfFontStatement '}'
-
+		|	rtfFonts '{' rtfFontStatement rtfBlock RTFtext '}'
+                    { free((void *)$5);}
 		;
 
 /* the first RTFfont tags the font with a number */
@@ -408,9 +414,9 @@ rtfColorStatement: RTFred RTFgreen RTFblue RTFtext
 
 /*
 	some cludgy trailer
-*/
-dummyNonTerminal: '\\' { @1.first_line; }	/* we introduce a @n to fix the lex attributes */
+dummyNonTerminal: '\\' { @1.first_line; }	/ * we introduce a @n to fix the lex attributes * /
 		;
+*/
 
 %%
 
