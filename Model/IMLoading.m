@@ -154,8 +154,19 @@ BOOL _fileOwnerDecoded = NO;
   for (i = 0, count = [objects count]; i < count; i++) {
     id object = [[objects objectAtIndex:i] nibInstantiate];
 
+    // If the object responds to the awakeFromModel
+    // method, send that message.  If it doesn't then
+    // check for the awakeFromNib selector and send that.
+    // This ensures compatibility w/ apps ported from OPENSTEP.
     if ([object respondsToSelector:@selector(awakeFromModel)])
-      [object awakeFromModel];
+      {
+	[object awakeFromModel];
+      }
+    else
+      if ([object respondsToSelector:@selector(awakeFromNib)])
+	{
+	  [object awakeFromNib];
+	}
   }
 }
 

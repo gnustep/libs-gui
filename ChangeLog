@@ -1,3 +1,9 @@
+2000-06-07  Adam Fedor  <fedor@gnu.org>
+
+	* Model/IMLoading.m ([GMModel -_makeConnections]): Call awakeFromNib
+	if object doesn't respond to awakeFromModel (patch from 
+	Gregory Casamento <borgheron@yahoo.com>).
+
 2000-05-04 Georg Fleischmann
 
 	* gui/Model/GMAppKit.m ([NSWindow -createObjectForModelUnarchiver:]):
