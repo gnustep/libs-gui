@@ -641,10 +641,13 @@ static NSColor	*shadowCol;
 {
   if (_formatter != nil)
     {
+      NSDictionary *attributes;
       NSAttributedString *attrStr;
 
+      attributes = AUTORELEASE ([self _nonAutoreleasedTypingAttributes]);
       attrStr = [_formatter attributedStringForObjectValue: _objectValue 
-			    withDefaultAttributes: [self _typingAttributes]];
+			    withDefaultAttributes: attributes];
+
       if (attrStr != nil)
 	{
 	  return attrStr;
@@ -661,7 +664,7 @@ static NSColor	*shadowCol;
       NSDictionary *dict;
       NSAttributedString *attrStr;
 
-      dict = [self _typingAttributes];
+      dict = AUTORELEASE ([self _nonAutoreleasedTypingAttributes]);
       attrStr = [[NSAttributedString alloc] initWithString: _contents 
 					    attributes: dict];
       return AUTORELEASE (attrStr);
@@ -1791,13 +1794,21 @@ static NSColor	*shadowCol;
     return txtCol;    
 }
 
-- (NSDictionary*) _typingAttributes
+/* This method is an exception and returns a non-autoreleased
+   dictionary, so that calling methods can deallocate it immediately
+   using release.  Otherwise if many cells are drawn/their size
+   computed, we pile up hundreds or thousands of these objects before they 
+   are deallocated at the end of the run loop. */
+- (NSDictionary*) _nonAutoreleasedTypingAttributes
 {
   NSDictionary *attr;
   NSColor *color;
   NSMutableParagraphStyle *paragraphStyle;
 
   color = [self textColor];
+  /* Note: there are only 6 possible paragraph styles for cells.  
+     TODO: Create them once at the beginning, and reuse them for the whole 
+     app lifetime. */
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
   if (_cell.wraps)
@@ -1817,18 +1828,22 @@ static NSColor	*shadowCol;
 			       paragraphStyle, NSParagraphStyleAttributeName,
 			       nil];
   RELEASE (paragraphStyle);
-  return AUTORELEASE (attr);
+  return attr;
 }
 
 - (NSSize) _sizeText: (NSString*)title
 {
   NSSize size;
+  NSDictionary *dict;
+
   if (title == nil)
     {
       return NSMakeSize (0,0);
     }
 
-  size = [title sizeWithAttributes: [self _typingAttributes]];
+  dict = [self _nonAutoreleasedTypingAttributes];
+  size = [title sizeWithAttributes: dict];
+  RELEASE (dict);
   return size;
 }
 
@@ -1863,7 +1878,7 @@ static NSColor	*shadowCol;
   if (title == nil)
     return;
 
-  attributes = [self _typingAttributes];
+  attributes = [self _nonAutoreleasedTypingAttributes];
   titleSize = [title sizeWithAttributes: attributes];
 
   // Determine y position of text
@@ -1877,6 +1892,7 @@ static NSColor	*shadowCol;
   cellFrame.size.height = titleSize.height;
 
   [title drawInRect: cellFrame  withAttributes: attributes];
+  RELEASE (attributes);
 }
 
 @end
