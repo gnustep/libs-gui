@@ -1,3 +1,9 @@
+Wed Feb 27 23:27:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSKeyBindingTable.m ([-bindKey:toAction:]): Modified so
+	that adding new multi-stroke keybindings with the same prefix
+	doesn't discard all previous keybindings with the same prefix.
+
 Wed Feb 27 23:16:47 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-drawRect:]): Always clear the whole rect
