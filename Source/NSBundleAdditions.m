@@ -29,13 +29,16 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArchiver.h>
+#include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSInvocation.h>
 #include <Foundation/NSObjCRuntime.h>
 #include <Foundation/NSString.h>
+#include <AppKit/NSView.h>
 #include <AppKit/NSNibLoading.h>
 
 @implementation NSBundle (NSBundleAdditions)
@@ -293,5 +296,55 @@
   target = [nameTable objectForKey: targetName];
   return [self setOutlet: outletName from: source to: target];
 }
+@end
+
+@implementation	GSNibItem
+- (void) dealloc
+{
+  [theClass release];
+  [settings release];
+  [self dealloc];
+}
+
+- (id) init
+{
+  self = [super init];
+  if (self)
+    {
+      settings = [[NSMutableArray alloc] initWithCapacity: 0];
+    }
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  id		obj;
+  Class		cls;
+  unsigned	i;
+
+  self = [super initWithCoder: aCoder];
+  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &hasFrame];
+  frame = [aCoder decodeRect];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &settings];
+
+  cls = NSClassFromString(theClass);
+  obj = [cls allocWithZone: [self zone]];
+  if (hasFrame)
+    obj = [obj initWithFrame: frame];
+  else
+    obj = [obj init];
+
+  for (i = 0; i < [settings count]; i++)
+    {
+      NSInvocation	*inv = [settings objectAtIndex: i];
+
+      [inv setTarget: obj];
+      [inv invoke];
+    }
+  [self release];
+  return obj;
+}
+
 @end
 

@@ -79,6 +79,15 @@
 	    toName: (NSString*)targetName;
 @end
 
+@interface GSNibItem : NSObject
+{
+  NSString		*theClass;
+  NSRect		frame;
+  BOOL			hasFrame;
+  NSMutableArray	*settings;
+}
+@end
+
 #endif	/* NO_GNUSTEP */
 
 #endif // _GNUstep_H_NSNibLoading
