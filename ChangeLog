@@ -1,3 +1,16 @@
+Thu Nov 12 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* GNUmakefile rearrange subprojects so that Source is built first.
+	* NSMenu.h and NSMenu.m add support for right mouse display of menu.
+	* NSApplication.m implement deque of events test in nextEventMatchingMask..
+	* NSApplication.m implement discardEventsMatchingMask method
+	* NSApplication.m add support for right mouse display of menu.
+	* NSCell.m move non OS method calls to back ends.
+	* NSView.m move non OS XDPS specific method calls to XDPS back ends.
+	* NSWindow.m move various non OS XDPS specific methods to XDPS, move 
+		various front end methods out of XRWindow and into NSWindow, fix 
+		center method.
+
 Mon Nov 9 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: update to Rhapsody DR2 docs - added system colors
