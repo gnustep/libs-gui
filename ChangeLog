@@ -1,3 +1,11 @@
+Sat Jan  8 23:50:38 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSColorList.m: Implemented reading available color lists
+ 	from disk.  ([+_loadAvailableColorLists]): New private method to
+ 	defer scanning of standard directories and loading available color
+ 	lists till really needed.  Related changings and fixes in the
+ 	whole class.
+
 Sat Jan  8 02:40:12 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSColorList.h: Prefixed ivars with underscores, 
