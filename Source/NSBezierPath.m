@@ -999,7 +999,86 @@ static float default_miter_limit = 10.0;
 				  toPoint: (NSPoint)point2
 				   radius: (float)radius
 {
-  // TODO
+  float x1, y1;
+  float dx1, dy1, dx2, dy2;
+  float l, a1, a2;
+  NSPoint p;
+
+  p = [self currentPoint];
+
+  x1 = point1.x;
+  y1 = point1.y;
+  dx1 = p.x - x1;
+  dy1 = p.y - y1;
+
+  l= dx1*dx1 + dy1*dy1;
+  if (l <= 0)
+    {
+      [self lineToPoint: point1];
+      return;
+    }
+  l = 1/sqrt(l);
+  dx1 *= l;
+  dy1 *= l;
+  
+  dx2 = point2.x - x1;
+  dy2 = point2.y - y1;
+
+  l = dx2*dx2 + dy2*dy2;
+  if (l <= 0)
+    {
+      [self lineToPoint: point1];
+      return;
+    }
+	
+  l = 1/sqrt(l);
+  dx2 *= l; 
+  dy2 *= l;
+  
+  l = dx1*dx2 + dy1*dy2;
+  if (l < -0.999)
+    {
+      [self lineToPoint: point1];
+      return;
+    }
+
+  l = radius/sin(acos(l));
+  p.x = x1 + (dx1 + dx2)*l;
+  p.y = y1 + (dy1 + dy2)*l;
+
+  a1 = acos(dx1)/PI*180;
+  if (dy1 < 0)
+    {   
+      a1 = -a1;
+    }
+
+  a2 = acos(dx2)/PI*180;
+  if (dy2 < 0)
+    {   
+      a2 = -a2;
+    }
+
+  l = dx1*dy2 - dx2*dy1;
+  if (l < 0)
+    {
+      a2 = a2 - 90;
+      a1 = a1 + 90;
+      [self appendBezierPathWithArcWithCenter: p  
+	    radius: radius
+	    startAngle: a1  
+	    endAngle: a2  
+	    clockwise: NO];
+    }
+  else
+    {
+      a2 = a2 + 90;
+      a1 = a1 - 90;
+      [self appendBezierPathWithArcWithCenter: p  
+	    radius: radius
+	    startAngle: a1  
+	    endAngle: a2  
+	    clockwise: YES];
+    }
 }
 
 - (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font
