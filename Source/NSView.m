@@ -2474,19 +2474,37 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       while ((o = [e nextObject]) != nil)
 	{
           // FIXME: We have to convert this values for the subclass
-	  float oTop = [self convertPoint: NSMakePoint(0, oldTop) 
-			     toView: o].y;
-	  float oBottom = [self convertPoint: NSMakePoint(0, bottom) 
-				toView: o].y;
-	  float oLimit = [self convertPoint: NSMakePoint(0, bottomLimit) 
-			       toView: o].y;
+
+	  float oTop, oBottom, oLimit;
+	  /* Don't ask me why, but gcc-2.91.66 crashes if we use
+	     NSMakePoint in the following expressions.  We avoid this
+	     compiler internal bug by using an auxiliary aPoint
+	     variable, and setting it manually to the NSPoints we
+	     need.  */
+	  {
+	    NSPoint aPoint = {0, oldTop};
+	    oTop = ([self convertPoint: aPoint  toView: o]).y;
+	  }
+	  
+	  {
+	    NSPoint aPoint = {0, bottom};
+	    oBottom = ([self convertPoint: aPoint  toView: o]).y;
+	  }
+
+	  {
+	    NSPoint aPoint = {0, bottomLimit};
+	    oLimit = ([self convertPoint: aPoint  toView: o]).y;
+	  }
 
 	  [o adjustPageHeightNew: &oBottom
 	     top: oTop
 	     bottom: oBottom
 	     limit: oLimit];
-	  bottom = [self convertPoint: NSMakePoint(0, oBottom) 
-			 fromView: o].y;
+
+	  {
+	    NSPoint aPoint = {0, oBottom};
+	    bottom = ([self convertPoint: aPoint  fromView: o]).y; 
+	  }	    
 	}
     }
 
@@ -2508,19 +2526,39 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       while ((o = [e nextObject]) != nil)
 	{
           // FIXME: We have to convert this values for the subclass
-	  float oLeft = [self convertPoint: NSMakePoint(oldLeft, 0) 
-			      toView: o].x;
-	  float oRight = [self convertPoint: NSMakePoint(right, 0) 
-			       toView: o].x;
-	  float oLimit = [self convertPoint: NSMakePoint(rightLimit, 0) 
-			       toView: o].x;
 
-	  [o adjustPageWidthNew: &oRight
-	     left: oLeft
-	     right: oRight
+	  /* See comments in adjustPageHeightNew:top:bottom:limit:
+	     about why code is structured in this funny way.  */
+	  float oLeft, oRight, oLimit;
+	  /* Don't ask me why, but gcc-2.91.66 crashes if we use
+	     NSMakePoint in the following expressions.  We avoid this
+	     compiler internal bug by using an auxiliary aPoint
+	     variable, and setting it manually to the NSPoints we
+	     need.  */
+	  {
+	    NSPoint aPoint = {oldLeft, 0};
+	    oLeft = ([self convertPoint: aPoint  toView: o]).x;
+	  }
+	  
+	  {
+	    NSPoint aPoint = {right, 0};
+	    oRight = ([self convertPoint: aPoint  toView: o]).x;
+	  }
+
+	  {
+	    NSPoint aPoint = {rightLimit, 0};
+	    oLimit = ([self convertPoint: aPoint  toView: o]).x;
+	  }
+
+	  [o adjustPageHeightNew: &oRight
+	     top: oLeft
+	     bottom: oRight
 	     limit: oLimit];
-	  right = [self convertPoint: NSMakePoint(oRight, 0) 
-			fromView: o].x;
+
+	  {
+	    NSPoint aPoint = {oRight, 0};
+	    right = ([self convertPoint: aPoint  fromView: o]).x; 
+	  }	    
 	}
     }
 
