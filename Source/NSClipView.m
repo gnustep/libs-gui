@@ -134,86 +134,113 @@
   newBounds.origin = point;
 
   if (NSEqualPoints (originalBounds.origin, newBounds.origin))
-    return;
+    {
+      return;
+    }
 
   if (_documentView == nil)
-    return;
-
+    {
+      return;
+    }
+      
   if (_copiesOnScroll && _window && [_window gState])
     {
-      // copy the portion of the view that is common before 
-      // and after scrolling.
-      // then tell docview to draw the exposed parts.
-      // intersection is the common rectangle
+      /* Copy the portion of the view that is common before and after
+	 scrolling.  Then, document view needs to redraw the remaining
+	 areas. */
+
+      /* Common part - which is a first approx of what we could
+         copy... */
       intersection = NSIntersectionRect (originalBounds, newBounds);
+
+      /* but we must make sure we only copy from visible rect - we
+	 can't copy bits which have been clipped (ie discarded) */
+      intersection = NSIntersectionRect (intersection, [self visibleRect]);
+
+      /* At this point, intersection is the rectangle containing the
+	 image we can recycle from the old to the new situation.  We
+	 must not make any assumption on its position/size, because it
+	 has been intersected with visible rect, which is an arbitrary
+	 rectangle as far as we know. */
       if (NSEqualRects (intersection, NSZeroRect))
 	{
-	  // no intersection -- docview should draw everything
+	  // no recyclable part -- docview should redraw everything
+	  // from scratch
 	  [super setBoundsOrigin: newBounds.origin];
 	  [_documentView setNeedsDisplayInRect: 
 			   [self documentVisibleRect]];
 	}
       else
 	{
+	  /* Copy the intersection to the new position */
 	  NSPoint destPoint = intersection.origin;
 	  float dx = newBounds.origin.x - originalBounds.origin.x;
 	  float dy = newBounds.origin.y - originalBounds.origin.y;
-
+	  NSRect redrawRect;
+	  
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
 	  [self lockFocus];
 	  NSCopyBits (0, intersection, destPoint);
 	  [self unlockFocus];
 
+	  /* Change coordinate system to the new one */
 	  [super setBoundsOrigin: newBounds.origin];
-	  if (dx != 0)
-	    {
-	      // moved in x -- redraw a full-height rectangle at
-	      // side of intersection
-	      NSRect redrawRect;
 
-	      redrawRect.origin.y = newBounds.origin.y;
-	      redrawRect.size.height = newBounds.size.height;
-	      redrawRect.size.width = newBounds.size.width
-					- intersection.size.width;
-	      if (dx < 0)
-		{
-		  // moved to the left -- redraw at left of intersection
-		  redrawRect.origin.x = newBounds.origin.x;
-		}
-	      else
-		{
-		  // moved to the right -- redraw at right of intersection
-		  redrawRect.origin.x = newBounds.origin.x
-					+ intersection.size.width;
-		}
+	  /* Get the rectangle representing intersection in the new
+             bounds (mainly to keep code readable) */
+	  intersection.origin.x = destPoint.x;
+	  intersection.origin.y = destPoint.y;
+	  // intersection.size is the same
+
+	  /* Now mark everything which is outside intersection as
+             needing to be redrawn by hand.  NB: During simple usage -
+             scrolling in a single direction (left/rigth/up/down) -
+             and a normal visible rect, only one of the following
+             rects will be non-empty. */
+
+	  /* To the left of intersection */
+	  redrawRect = NSMakeRect (NSMinX (_bounds), _bounds.origin.y,
+				   NSMinX (intersection) - NSMinX (_bounds),
+				   _bounds.size.height);
+	  if (NSIsEmptyRect (redrawRect) == NO)
+	    {
 	      [_documentView setNeedsDisplayInRect: 
-		[self convertRect: redrawRect toView: _documentView]];
+			       [self convertRect: redrawRect 
+				     toView: _documentView]];
 	    }
 
-	  if (dy != 0)
+	  /* Right */
+	  redrawRect = NSMakeRect (NSMaxX (intersection), _bounds.origin.y,
+				   NSMaxX (_bounds) - NSMaxX (intersection),
+				   _bounds.size.height);
+	  if (NSIsEmptyRect (redrawRect) == NO)
 	    {
-	      // moved in y
-	      // -- redraw rectangle with intersection's width over or under it
-	      NSRect redrawRect;
-
-	      redrawRect.origin.x = intersection.origin.x;
-	      redrawRect.size.width = intersection.size.width;
-	      redrawRect.size.height = newBounds.size.height
-					- intersection.size.height;
-	      if (dy < 0)
-		{
-		  // moved down -- redraw under intersection
-		  redrawRect.origin.y = newBounds.origin.y;
-		}
-	      else
-		{
-		  // moved up -- redraw over intersection
-		  redrawRect.origin.y = newBounds.origin.y
-					+ intersection.size.height;
-		}
 	      [_documentView setNeedsDisplayInRect: 
-		[self convertRect: redrawRect toView: _documentView]];
+			       [self convertRect: redrawRect 
+				     toView: _documentView]];
+	    }
+
+	  /* Up (or Down according to whether it's flipped or not) */
+	  redrawRect = NSMakeRect (_bounds.origin.x, NSMinY (_bounds),
+				   _bounds.size.width, 
+				   NSMinY (intersection) - NSMinY (_bounds));
+	  if (NSIsEmptyRect (redrawRect) == NO)
+	    {
+	      [_documentView setNeedsDisplayInRect: 
+			       [self convertRect: redrawRect 
+				     toView: _documentView]];
+	    }
+
+	  /* Down (or Up) */
+	  redrawRect = NSMakeRect (_bounds.origin.x, NSMaxY (intersection),
+				   _bounds.size.width, 
+				   NSMaxY (_bounds) - NSMaxY (intersection));
+	  if (NSIsEmptyRect (redrawRect) == NO)
+	    {
+	      [_documentView setNeedsDisplayInRect: 
+			       [self convertRect: redrawRect 
+				     toView: _documentView]];
 	    }
 	}
     }
@@ -221,13 +248,16 @@
     {
       // dont copy anything -- docview draws it all
       [super setBoundsOrigin: newBounds.origin];
-      [_documentView setNeedsDisplayInRect: 
-		       [self documentVisibleRect]];
+      [_documentView setNeedsDisplayInRect: [self documentVisibleRect]];
     }
 
+  /* ?? TODO: Understand the following code - and add explanatory comment */
   if ([NSView focusView] == _documentView)
-    PStranslate(NSMinX(originalBounds)-point.x, NSMinY(originalBounds)-point.y);
-
+    {
+      PStranslate (NSMinX (originalBounds) - point.x, 
+		   NSMinY (originalBounds) - point.y);
+    }
+  
   [_super_view reflectScrolledClipView: self];
 }
 
