@@ -46,6 +46,10 @@
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSColorPanel.h>
 
+@interface NSTextView (GNUstepPrivate)
+- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
+@end
+
 @implementation NSTextView
 
 /* Class methods */
@@ -86,16 +90,121 @@
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  return [super initWithFrame: frameRect];
+  NSTextContainer *aTextContainer;
+
+  aTextContainer = [self buildUpTextNetwork: frameRect.size];
+
+  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
+
+  /* At this point the situation is as follows: 
+
+     textView (us)  --RETAINs--> textStorage
+     textStorage    --RETAINs--> layoutManager 
+     layoutManager  --RETAINs--> textContainer 
+     textContainter --RETAINs --> textView (us) */
+
+  /* The text system should be destroyed when the textView (us) is
+     released.  To get this result, we send a RELEASE message to us
+     breaking the RETAIN cycle. */
+  RELEASE (self);
+
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  NSTextContainer *aTextContainer; 
+
+  self = [super initWithCoder: coder];
+  
+  /* build up the rest of the text system, which doesn't get stored 
+     <doesn't even implement the Coding protocol>. */
+  aTextContainer = [self buildUpTextNetwork: _frame.size];
+  [aTextContainer setTextView: (NSTextView*)self];
+  /* See initWithFrame: for comments on this RELEASE */
+  RELEASE (self);
+
+  return self;
 }
 
 - (void)dealloc
 {
+  if (_tf.owns_text_network == YES)
+    {
+      /* Prevent recursive dealloc */
+      if (_tf.is_in_dealloc == YES)
+	{
+	  return;
+	}
+      _tf.is_in_dealloc = YES;
+      /* This releases all the text objects (us included) in fall */
+      RELEASE (_textStorage);
+    }
+
   RELEASE (_selectedTextAttributes);
   RELEASE (_markedTextAttributes);
 
   [super dealloc];
 }
+
+- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
+{
+  NSTextContainer *textContainer;
+  NSLayoutManager *layoutManager;
+  NSTextStorage *textStorage;
+
+  textStorage = [[NSTextStorage alloc] init];
+
+  layoutManager = [[NSLayoutManager alloc] init];
+  /*
+    [textStorage addLayoutManager: layoutManager];
+    RELEASE (layoutManager);
+  */
+
+  textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
+  [layoutManager addTextContainer: textContainer];
+  RELEASE (textContainer);
+
+  /* FIXME: The following two lines should go *before* */
+  [textStorage addLayoutManager: layoutManager];
+  RELEASE (layoutManager);
+
+  /* The situation at this point is as follows: 
+
+     textView (us) --RETAINs--> textStorage 
+     textStorage   --RETAINs--> layoutManager 
+     layoutManager --RETAINs--> textContainer */
+
+  /* We keep a flag to remember that we are directly responsible for 
+     managing the text objects. */
+  _tf.owns_text_network = YES;
+
+  return textContainer;
+}
+
+/* 
+ * Implementation of methods declared in superclass but depending 
+ * on the internals of the NSTextView
+ */
+- (void) replaceCharactersInRange: (NSRange)aRange
+		       withString: (NSString*)aString
+{
+  if (aRange.location == NSNotFound)
+    return;
+
+  if ([self shouldChangeTextInRange: aRange  
+	    replacementString: aString] == NO)
+    return; 
+ 
+  [_textStorage beginEditing];
+  [_textStorage replaceCharactersInRange: aRange  withString: aString];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+/* 
+ *  NSTextView's specific methods 
+ */
 
 /* This should only be called by [NSTextContainer -setTextView:] */
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
