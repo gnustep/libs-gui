@@ -1,3 +1,11 @@
+Wed Aug 22 10:16:42 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-_autosaveTableColumns]): Use
+	"NSTableView Columns %@" rather than "Table Columns %@" as key in
+	the user defaults to be consistent with NSWindow, which uses
+	"NSWindow Frame %@".
+	([-_autoloadTableColumns]): Idem.
+
 2001-08-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSMenu.h
