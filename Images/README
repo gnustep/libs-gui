@@ -1,0 +1,43 @@
+----------------------------------------------------------------------------
+
+   GNUstep Icons for the GNUstep generic user environment/UserSuite Apps
+                  and the GNUstep X/DPS window manager.
+
+----------------------------------------------------------------------------
+
+Icons may be used by developers for the creation of Freely
+distributable software to run under any OpenSTEP environment
+*INCLUDING* GNUstep.  Note that apps using these icons may not need to
+be distributed under the GPL, but be freely distributed in at least
+binary form.
+
+If you have a special requirement or need icons or design help with
+any GNUstep project please feel free to contact me and I will russle
+something up for you as quickly as I can to integrate into your
+project.
+
+----------------------------------------------------------------------------
+
+Conditions of use:
+
+No icon may be visually modified any any way without express
+permission of the designer
+(http://www.gnustep.org/UserSuite/UserSuite.html) My efforts here are
+to keep GNUstep elegant and I don't want to waste my time with people
+mucking things up -- sorry if this offends you.
+
+Icons must only be used for the development of application software
+for free deployment under OpenSTEP *AND* it must compile and run for
+GNUstep.
+
+----------------------------------------------------------------------------
+
+I am open to feedback and would like to include any work that you
+think is up to inclusion in the GNUstep project.  If you are
+interested in developing software for GNUstep please view the GNUstep
+home page on (http://www.gnustep.org).
+
+----------------------------------------------------------------------------
+
+Andrew Lindesay
+(apl@kcbbs.gen.nz)

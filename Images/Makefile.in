@@ -1,0 +1,80 @@
+# @configure_input@
+#
+#  Images makefile for the GNUstep GUI Library.
+#  Copyright (C) 1997 Free Software Foundation, Inc.
+#
+#  Author: Scott Christley <scottc@net-community.com>
+#  Date: January 1997
+#
+#  This file is part of the GNUstep GUI Library.
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+#  Library General Public License for more details.
+#
+#  You should have received a copy of the GNU Library General Public
+#  License along with this library; if not, write to the Free
+#  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+SHELL = /bin/sh
+
+#### Start of system configuration section. ####
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+gnustep_libdir = $(libdir)/gnustep
+imagedir = $(gnustep_libdir)/Images
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+
+#### End of system configuration section. ####
+
+include $(srcdir)/../Version
+
+all: 
+
+IMAGE_FILES = \
+README \
+common_ArrowDown.tiff \
+common_ArrowUp.tiff \
+common_ArrowRight.tiff \
+common_ArrowLeft.tiff \
+common_RadioOn.tiff \
+common_RadioOff.tiff \
+common_SwitchOn.tiff \
+common_SwitchOff.tiff \
+common_ret.tiff
+
+installdirs:
+	$(srcdir)/../mkinstalldirs $(libdir) $(gnustep_libdir) $(imagedir)
+
+install: installdirs
+	for file in $(IMAGE_FILES); do \
+	  $(INSTALL_DATA) $(srcdir)/$$file $(imagedir)/$$file ; \
+	done
+
+uninstall:
+	for file in $(IMAGE_FILES); do \
+	  rm -f $(imagedir)/$$file ; \
+	done
+
+mostlyclean:
+	rm -f *~
+clean: mostlyclean
+distclean: clean
+	rm -f Makefile
+
+Makefile: $(srcdir)/Makefile.in
+	cd ..; $(SHELL) config.status
