@@ -1,3 +1,10 @@
+2002-06-11  Alexander Malmberg  <alexander@malmberg.org>
+
+        * Source/GSServicesManager.m,
+	Headers/gnustep/gui/GSServicesManager.h: Fix handling of
+	NSMenuItem:s (were being handled as NSCell:s in many places; this
+        broke submenus of the services menu).
+
 2002-06-10  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSControl.m ([NSControl -mouseDown:]): Set NSPeriodicMask

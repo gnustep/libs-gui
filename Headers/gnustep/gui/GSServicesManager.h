@@ -29,7 +29,6 @@
 
 @class	NSApplication;
 @class	NSArray;
-@class	NSCell;
 @class	NSDate;
 @class	NSMenu;
 @class	NSMutableArray;
@@ -57,9 +56,9 @@
 }
 + (GSServicesManager*) newWithApplication: (NSApplication*)app;
 + (GSServicesManager*) manager;
-- (void) doService: (NSCell*)item;
+- (void) doService: (NSMenuItem*)item;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;
-- (NSString*) item2title: (NSCell*)item;
+- (NSString*) item2title: (NSMenuItem*)item;
 - (void) loadServices;
 - (NSDictionary*) menuServices;
 - (void) rebuildServices;
@@ -73,7 +72,7 @@
 - (void) setServicesProvider: (id)anObject;
 - (int) setShowsServicesMenuItem: (NSString*)item to: (BOOL)enable;
 - (BOOL) showsServicesMenuItem: (NSString*)item;
-- (BOOL) validateMenuItem: (NSCell*)item;
+- (BOOL) validateMenuItem: (NSMenuItem*)item;
 - (void) updateServicesMenu;
 @end
 

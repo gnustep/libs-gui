@@ -53,7 +53,6 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/NSCell.h>
 #include <AppKit/NSWorkspace.h>
 
 #include <AppKit/GSServicesManager.h>
@@ -451,7 +450,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   [super dealloc];
 }
 
-- (void) doService: (NSCell*)item
+- (void) doService: (NSMenuItem*)item
 {
   NSString      *title = [self item2title: item];
   NSDictionary  *info = [_title2info objectForKey: title];
@@ -566,11 +565,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
 }
 
 /*
- *      Use tag in menu cell to identify slot in menu titles array that
+ *      Use tag in menu item to identify slot in menu titles array that
  *      contains the full title of the service.
- *      Return nil if this is not one of our service menu cells.
+ *      Return nil if this is not one of our service menu items.
  */
-- (NSString*) item2title: (NSCell*)item
+- (NSString*) item2title: (NSMenuItem*)item
 {
   unsigned      pos;
 
@@ -830,7 +829,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
                 }
               else
                 {
-                  menu = (NSMenu*)[item target];
+                  menu = (NSMenu*)[item submenu];
                 }
               if (menu != submenu)
                 {
@@ -1027,7 +1026,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return NO;
 }
 
-- (BOOL) validateMenuItem: (NSCell*)item
+- (BOOL) validateMenuItem: (NSMenuItem*)item
 {
   NSString      *title = [self item2title: item];
   NSDictionary  *info = [_title2info objectForKey: title];
@@ -1039,12 +1038,17 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSWindow      *resp = [[_application keyWindow] firstResponder];
 
   /*
-   *    If the menu item is not in our map, it must be the cell containing
-   *    a sub-menu - so we see if any cell in the submenu is valid.
+   *    If the menu item is not in our map, it must be the item containing
+   *    a sub-menu - so we see if any item in the submenu is valid.
    */
   if (title == nil)
     {
-      NSMenu    *sub = [item target];
+      NSMenu    *sub;
+
+      if (![item isKindOfClass: [NSMenuItem class]])
+        return NO;
+
+      sub = [item submenu];
 
       if (sub && [sub isKindOfClass: [NSMenu class]])
         {
@@ -1062,7 +1066,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 
   /*
-   *    The cell corresponds to one of our services - so we check to see if
+   *    The item corresponds to one of our services - so we check to see if
    *    there is anything that can deal with it.
    */
   if (es == 0)
@@ -1140,46 +1144,46 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
       for (i = 0; i < [a count]; i++)
         {
-          NSCell        *cell = [a objectAtIndex: i];
-	  BOOL		wasEnabled = [cell isEnabled];
+          NSMenuItem    *item = [a objectAtIndex: i];
+	  BOOL		wasEnabled = [item isEnabled];
 	  BOOL		shouldBeEnabled;
-	  NSString      *title = [self item2title: cell];
+	  NSString      *title = [self item2title: item];
 
 	  /*
-	   *	If there is no title mapping, this cell must be a
-	   *	submenu - so we check the submenu cells.
+	   *	If there is no title mapping, this item must be a
+	   *	submenu - so we check the submenu items.
 	   */
-	  if (title == nil && [[cell target] isKindOfClass: [NSMenu class]])
+	  if (title == nil && [[item submenu] isKindOfClass: [NSMenu class]])
 	    {
-	      NSArray		*sub = [[cell target] itemArray];
+	      NSArray		*sub = [[item submenu] itemArray];
 	      int		j;
 
 	      shouldBeEnabled = NO;
 	      for (j = 0; j < [sub count]; j++)
 		{
-		  NSCell	*subCell = [sub objectAtIndex: j];
-		  BOOL		subWasEnabled = [subCell isEnabled];
+		  NSMenuItem	*subitem = [sub objectAtIndex: j];
+		  BOOL		subWasEnabled = [subitem isEnabled];
 		  BOOL		subShouldBeEnabled = NO;
 
-		  if ([self validateMenuItem: subCell] == YES)
+		  if ([self validateMenuItem: subitem] == YES)
 		    {
 		      shouldBeEnabled = YES;	/* Enabled menu */
 		      subShouldBeEnabled = YES;
 		    }
 		  if (subWasEnabled != subShouldBeEnabled)
 		    {
-		      [subCell setEnabled: subShouldBeEnabled];
+		      [subitem setEnabled: subShouldBeEnabled];
 //		      [subMenuCells setNeedsDisplayInRect:
 //				[subMenuCells cellFrameAtRow: j]];
 		    }
 		}
 	    }
 	  else
-	    shouldBeEnabled = [self validateMenuItem: cell];
+	    shouldBeEnabled = [self validateMenuItem: item];
 
           if (wasEnabled != shouldBeEnabled)
             {
-              [cell setEnabled: shouldBeEnabled];
+              [item setEnabled: shouldBeEnabled];
 //	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
             }
         }
