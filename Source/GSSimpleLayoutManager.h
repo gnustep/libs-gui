@@ -42,9 +42,6 @@
   NSRect _rects[4];
 }
 
-// Extension
-- (void) setFirstTextView: (NSTextView*) aTextView;
-
 @end
 
 #endif /*__NSCharacterSet_h_GNUSTEP_BASE_INCLUDE*/
