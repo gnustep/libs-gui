@@ -176,15 +176,18 @@ static Class			cacheClass = 0;
   /* If there is no image with that name, search in the main bundle */
   if (!nameDict || ![nameDict objectForKey: aName]) 
     {
-      NSString* ext;
-      NSString* path = nil;
-      NSBundle* main_bundle;
-      NSArray *array;
-      NSString *the_name = aName;
+      NSString	*ext;
+      NSString	*path = nil;
+      NSBundle	*main_bundle;
+      NSArray	*array;
+      NSString	*the_name = aName;
+
       main_bundle = [NSBundle mainBundle];
-      ext  = [aName pathExtension];
-      if (ext && [ext length] == 0)
-      	ext = nil;
+      ext = [aName pathExtension];
+      if (ext != nil && [ext length] == 0)
+	{
+	  ext = nil;
+	}
 
       /* Check if extension is one of the image types */
       array = [self imageFileTypes];

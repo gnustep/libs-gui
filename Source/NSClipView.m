@@ -291,19 +291,14 @@
 
 - (void) viewFrameChanged: (NSNotification*)aNotification
 {
-  NSRect documentFrame = [_documentView frame];
-  
   [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
 
-  /* If _bounds completely encloses (touching allowed) documentFrame */
-  if ((_bounds.origin.x <= documentFrame.origin.x) 
-      && (_bounds.origin.y <= documentFrame.origin.y)
-      && (_bounds.origin.x + _bounds.size.width 
-	  >= documentFrame.origin.x + documentFrame.size.width)
-      && (_bounds.origin.y + _bounds.size.height 
-	  >= documentFrame.origin.y + documentFrame.size.height))
+  /* If document frame does not completely cover _bounds */
+  if (NSContainsRect([_documentView frame], _bounds) == NO)
     {
-      /* then fill the area not covered by documentView with background color */
+      /*
+       * fill the area not covered by documentView with background color
+       */
       [self setNeedsDisplay: YES];
     }
 

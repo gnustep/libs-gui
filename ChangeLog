@@ -1,3 +1,9 @@
+2000-10-20  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSClipView.m: ([-viewFrameChanged:]) fix test for when to
+	redraw entire area becaause document view is smaller than clipview.
+	Suggested by  benhur@inf.UFSM.br
+
 2000-10-19  Michael Hanni <mhanni@sprintmail.com>
 
 	* Source/NSTabView.m: a few bugfixes.
