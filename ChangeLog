@@ -1,3 +1,8 @@
+Tue Jan  8 16:23:08 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Resources/English.lproj/Localizable.strings: Removed 'Windows'.
+	* Resources/Italian.lproj/Localizable.strings: Idem.
+	
 Tue Jan  8 14:30:26 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSInputManager.m ([-bindKey:toAction:]): Allow a ""
