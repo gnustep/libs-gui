@@ -1,3 +1,24 @@
+2001-08-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	Added new class methods [currentContextDrawingToScreen],
+	[graphicsContextWithAttributes:], [graphicsContextWithWindow:],
+	[restoreGraphicsState], [saveGraphicsState], [setGraphicsState:]
+	and new instance methods [attributes], [flushGraphics] and
+	[graphicsPort].
+	* Source/NSGraphicsContext.m
+	Dumy implementations for new class methods and implementations for
+	new instance methods.
+	* Headers/gnustep/gui/NSFormCell.h
+	Delcare the methods [attributedTitle], [setAttributedTitle:] and
+	[setTitleWithMnemonic:].
+	Removed methods already declared for super classes.
+	* Source/NSFormCell.m
+	Implemented the new methods and [titleWidth:]. In method
+	[titleWidth] use [cellSize] to compute the width.
+	In [drawWithFrame:inView:] lock focus only if there is something
+	to draw.
+
 2001-08-03  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Panels/SpellPanel.gmodel
