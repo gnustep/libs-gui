@@ -187,7 +187,7 @@ static NSNotificationCenter *nc;
   NSNotification *resend;
 
   resend = [NSNotification notificationWithName: NSEnqueuedMenuMoveName
-                           object: self];
+					 object: self];
   
   [[NSNotificationQueue defaultQueue]
     enqueueNotification: resend
@@ -214,11 +214,12 @@ static NSNotificationCenter *nc;
       defaults = [NSUserDefaults standardUserDefaults];
       menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
 
-      if ([_aWindow isVisible] && [self isTornOff])
+      if ([_aWindow isVisible])
         {
           if (menuLocations == nil)
             {
-              menuLocations = AUTORELEASE([[NSMutableDictionary alloc] initWithCapacity: 2]);
+              menuLocations = AUTORELEASE([[NSMutableDictionary alloc]
+		initWithCapacity: 2]);
             }
           locString = [[self window] stringWithSavedFrame];
           [menuLocations setObject: locString forKey: key];

@@ -1,3 +1,8 @@
+2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m: ([_updateUserDefaults:]) restore saved menu
+	location functionality (was only working for torn off menus).
+
 2003-03-06  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* Source/NSMenuView.m: Added NSMenuTitleView (moved
