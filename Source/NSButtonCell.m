@@ -370,26 +370,32 @@
       case NSMomentaryLight: 
 	[self setHighlightsBy: NSChangeBackgroundCellMask];
 	[self setShowsStateBy: NSNoCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSMomentaryPushButton: 
 	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
 	[self setShowsStateBy: NSNoCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSMomentaryChangeButton: 
 	[self setHighlightsBy: NSContentsCellMask];
 	[self setShowsStateBy: NSNoCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSPushOnPushOffButton: 
 	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
 	[self setShowsStateBy: NSChangeBackgroundCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSOnOffButton: 
 	[self setHighlightsBy: NSChangeBackgroundCellMask];
 	[self setShowsStateBy: NSChangeBackgroundCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSToggleButton: 
 	[self setHighlightsBy: NSPushInCellMask | NSContentsCellMask];
 	[self setShowsStateBy: NSContentsCellMask];
+	[self setImageDimsWhenDisabled: YES];
 	break;
       case NSSwitchButton: 
 	[self setHighlightsBy: NSContentsCellMask];
@@ -398,6 +404,9 @@
 	[self setAlternateImage: [NSImage imageNamed: @"common_SwitchOn"]];
 	[self setImagePosition: NSImageLeft];
 	[self setAlignment: NSLeftTextAlignment];
+	[self setBordered: NO];
+	[self setBezeled: NO];
+	[self setImageDimsWhenDisabled: NO];
 	break;
       case NSRadioButton: 
 	[self setHighlightsBy: NSContentsCellMask];
@@ -406,6 +415,9 @@
 	[self setAlternateImage: [NSImage imageNamed: @"common_RadioOn"]];
 	[self setImagePosition: NSImageLeft];
 	[self setAlignment: NSLeftTextAlignment];
+	[self setBordered: NO];
+	[self setBezeled: NO];
+	[self setImageDimsWhenDisabled: NO];
 	break;
     }
 }
@@ -496,7 +508,6 @@
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  BOOL		showAlternate = NO;
   unsigned	mask;
   NSImage	*imageToDisplay;
   NSRect	imageRect;
@@ -517,30 +528,23 @@
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
+  if (_cell.is_highlighted)
+    mask = _highlightsByMask;
+  else if (_cell.state)
+    mask = _showAltStateMask;
+  else
+    mask = NSNoCellMask;
+
   // pushed in buttons contents are displaced to the bottom right 1px
-  if (_cell.is_bordered && _cell.is_highlighted
-    && (_highlightsByMask & NSPushInCellMask))
+  if (_cell.is_bordered && (mask & NSPushInCellMask))
     {
       cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
     }
 
   // determine the background color
-  if (_cell.state)
+  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      if (_showAltStateMask
-	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	{
-	  backgroundColor = [NSColor selectedControlColor];
-	}
-    }
-
-  if (_cell.is_highlighted)
-    {
-      if (_highlightsByMask
-	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	{
-	  backgroundColor = [NSColor selectedControlColor];
-	}
+      backgroundColor = [NSColor selectedControlColor];
     }
 
   if (backgroundColor == nil)
@@ -557,14 +561,7 @@
    * if highlighting is set (when a button is pushed it's
    * content is changed to the face of reversed state).
    */
-  if (_cell.is_highlighted)
-    mask = _highlightsByMask;
-  else
-    mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = _cell.state;
-
-  if (showAlternate || _cell.is_highlighted)
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)
@@ -749,7 +746,6 @@
 {
   NSSize s;
   NSSize borderSize;
-  BOOL		showAlternate = NO;
   unsigned	mask;
   NSImage	*imageToDisplay;
   NSString	*titleToDisplay;
@@ -758,16 +754,15 @@
   
   /* 
    * The following code must be kept in sync with -drawInteriorWithFrame
-   */
-  
+   */ 
   if (_cell.is_highlighted)
     mask = _highlightsByMask;
-  else
+  else if (_cell.state)
     mask = _showAltStateMask;
+  else
+    mask = NSNoCellMask;
+
   if (mask & NSContentsCellMask)
-    showAlternate = _cell.state;
-  
-  if (showAlternate || _cell.is_highlighted)
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)
