@@ -1,3 +1,17 @@
+2001-03-21  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSColor.h
+	Made NSColor an abstract class, without ivars.
+	* Source/NSColor.m
+	Define concret subclasses of NSColor and moved code into this
+	subclasses.
+	* Source/NSColorList.m
+	Corrected two errors in [writeToFile:] introduced by the last
+	changes.
+	* Source/NSBezierPath.m
+	[containsPoint:] corrected and simplified a bit, but this still
+	needs a complete rework.
+	
 2001-03-19  Jonathan Gapen  <jagapen@home.com>
 
 	* Headers/gnustep/gui/NSPrinter.h: Prefix instance vars w/underscore.
