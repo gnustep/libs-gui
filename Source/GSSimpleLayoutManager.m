@@ -316,7 +316,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 - (NSRect)boundingRectForGlyphRange:(NSRange)aRange 
 		    inTextContainer:(NSTextContainer *)aTextContainer;
 {
-  float width = [aTextContainer containerSize].width;
   _GNULineLayoutInfo *currentInfo;
   unsigned i1, i2;
   NSRect rect1;
@@ -331,12 +330,17 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
   // This is not exacty what we need, but should be correct enough
   currentInfo = [_lineLayoutInformation objectAtIndex: i1];
-  rect1 = currentInfo->usedRect;
+  rect1 = currentInfo->lineFragmentRect;
 
   if (i1 != i2)
     {
       currentInfo = [_lineLayoutInformation objectAtIndex: i2];
-      rect1 = NSUnionRect(rect1, currentInfo->usedRect);
+      rect1 = NSUnionRect(rect1, currentInfo->lineFragmentRect);
+    }
+  else
+    {
+      //float width = [aTextContainer containerSize].width;
+      // FIXME: When we are on one line we may need only part of it
     }
 
   return rect1;
