@@ -549,6 +549,9 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
     return _recentDocuments;
 }
 
+@end
+
+@implementation NSDocumentController (Private)
 static NSString *NSEditorRole = @"Editor";
 static NSString *NSViewerRole = @"Viewer";
 static NSString *NSNoRole     = @"None";
