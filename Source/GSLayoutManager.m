@@ -97,6 +97,9 @@ static int random_level(void)
   glyph_run_t *cur, *next;
   glyph_run_head_t *h;
 
+  if (!glyphs)
+    return;
+
   h = glyphs;
   h += SKIP_LIST_DEPTH - 1;
 
@@ -232,6 +235,8 @@ static glyph_run_t *run_for_character_index(unsigned int charIndex,
   if (glyphs->char_length <= charIndex)
     return NULL;
 
+//printf("run_for_character_index(%i)\n",charIndex);
+
   pos = cpos = 0;
   level = SKIP_LIST_DEPTH;
   h = glyphs;
@@ -264,6 +269,7 @@ static glyph_run_t *run_for_character_index(unsigned int charIndex,
       *glyph_pos = pos;
       if (char_pos)
 	*char_pos = cpos;
+//printf("got %p (at %i %i)\n",h,pos,cpos);
       return (glyph_run_t *)h;
     }
 }
@@ -523,6 +529,8 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   int i;
 
   r = run_for_character_index(target, glyphs, &pos, &cpos);
+  if (!r)
+    return NULL;
 
   i = 0;
   if (r->glyphs[i].char_offset + cpos > target)
@@ -836,15 +844,12 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       return NSMakeRange(0, 0);
     }
 
+  [self _generateGlyphsUpToCharacter: pos];
   if (glyphs->char_length <= pos)
     {
-      [self _generateGlyphsUpToCharacter: pos];
-      if (glyphs->char_length <= pos)
-	{
-	  [NSException raise: NSRangeException
-		       format: @"%s character range out of range", __PRETTY_FUNCTION__];
-	  return NSMakeRange(0, 0);
-	}
+      [NSException raise: NSRangeException
+	format: @"%s character range out of range", __PRETTY_FUNCTION__];
+      return NSMakeRange(0, 0);
     }
 
   target = charRange.location;
@@ -902,7 +907,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 
 
 /*	[self _glyphDumpRuns];
-	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange); */
+	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);*/
   range.length -= lengthChange;
 //	printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
 
@@ -1079,12 +1084,13 @@ it should still be safe. might lose opportunities to merge runs, though.
   }
 
 /*	printf("deleted\n");
-	[self _glyphDumpRuns]; */
+	[self _glyphDumpRuns];*/
 
   /* r is the last run we want to keep, and the next run is the next
      uninvalidated run. need to insert new runs for range */
   range.length += lengthChange;
 //	printf("create runs for %i+%i\n", range.location, range.length);
+  /* OPT: this is creating more runs than it needs to */
   {
     NSDictionary *attributes;
     glyph_run_t *new;
@@ -1145,7 +1151,7 @@ it should still be safe. might lose opportunities to merge runs, though.
   if (actualRange)
     *actualRange = range;
 
-//	[self _glyphDumpRuns];
+	[self _glyphDumpRuns];
 }
 
 
@@ -1867,6 +1873,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   textcontainer_t *tc = &textcontainers[index];
 
   [self _invalidateLayoutFromContainer: index];
+  [tc->textContainer setLayoutManager: nil];
   [tc->textContainer release];
   num_textcontainers--;
   for (i = index; i < num_textcontainers; i++)
@@ -2103,9 +2110,10 @@ forStartOfGlyphRange: (NSRange)glyphRange
   if (!(mask&NSTextStorageEditedCharacters))
     lengthChange = 0;
 
-/*	printf("edited: range=(%i+%i) invalidatedRange=(%i+%i)\n",
+/*	printf("edited: range=(%i+%i) invalidatedRange=(%i+%i) delta=%i\n",
 		range.location, range.length,
-		invalidatedRange.location, invalidatedRange.length); */
+		invalidatedRange.location, invalidatedRange.length,
+		lengthChange);*/
 
   [self invalidateGlyphsForCharacterRange: invalidatedRange
 	changeInLength: lengthChange
