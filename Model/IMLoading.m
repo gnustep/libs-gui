@@ -56,6 +56,7 @@ BOOL _fileOwnerDecoded = NO;
 
 + (BOOL)loadIMFile:(NSString*)path owner:(id)owner bundle:(NSBundle*)mainBundle
 {
+#ifdef GNU_GUI_LIBRARY
   NSString* resourcePath = [mainBundle resourcePath];
   GMUnarchiver* unarchiver;
   id previousNibOwner = _nibOwner;
@@ -126,6 +127,7 @@ BOOL _fileOwnerDecoded = NO;
      be invoked recursively. */
   _nibOwner = previousNibOwner;
 
+#endif
   return YES;
 }
 

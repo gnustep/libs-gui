@@ -37,6 +37,12 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSArchiver.h>
 
+#ifndef AUTORELEASE
+#define AUTORELEASE(object)     [object autorelease]
+#define RELEASE(object)         [object release]
+#define RETAIN(object)          [object retain]
+#endif
+
 #include <AppKit/GMArchiver.h>
 
 @interface GMClassInfo : NSObject
