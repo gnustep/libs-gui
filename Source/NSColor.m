@@ -941,22 +941,33 @@ systemColorWithName(NSString *name)
 {
   NSColor *myColor = [self colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
   NSColor *other = [aColor colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-  float mr, mg, mb, or, og, ob, red, green, blue;
+  float mr, mg, mb, ma, or, og, ob, oa, red, green, blue, alpha;
+
+  if (fraction <= 0.0)
+    {
+      return self;
+    }
+
+  if (fraction >= 1.0)
+    {
+      return aColor;
+    }
 
   if (myColor == nil || other == nil)
     {
       return nil;
     }
 
-  [myColor getRed: &mr green: &mg blue: &mb alpha: 0];
-  [other getRed: &or green: &og blue: &ob alpha: 0];
-  red = fraction * mr + (1 - fraction) * or;
-  green = fraction * mg + (1 - fraction) * og;
-  blue = fraction * mb + (1 - fraction) * ob;
+  [myColor getRed: &mr green: &mg blue: &mb alpha: &ma];
+  [other getRed: &or green: &og blue: &ob alpha: &oa];
+  red = fraction * or + (1 - fraction) * mr;
+  green = fraction * og + (1 - fraction) * mg;
+  blue = fraction * ob + (1 - fraction) * mb;
+  alpha = fraction * oa + (1 - fraction) * ma;
   return [NSColorClass colorWithCalibratedRed: red
 					green: green
 					 blue: blue
-					alpha: 1.0];
+					alpha: alpha];
 }
 
 - (NSColor*) colorWithAlphaComponent: (float)alpha
@@ -2437,8 +2448,7 @@ systemColorWithName(NSString *name)
 
 - (NSString *)colorSpaceName
 {
-//  return NSPatternImageColorSpace;
-  return nil;
+  return NSPatternColorSpace;
 }
 
 - (NSImage*) patternImage
