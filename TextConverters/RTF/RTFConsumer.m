@@ -102,7 +102,7 @@ readNSString (StringContext *ctxt)
 {
   RTFAttribute *new =  (RTFAttribute *)NSCopyObject (self, 0, zone);
 
-  new->paragraph = [paragraph copyWithZone: zone];
+  new->paragraph = [paragraph mutableCopyWithZone: zone];
   RETAIN(new->fontName);
   RETAIN(new->fgColour);
   RETAIN(new->bgColour);
@@ -475,7 +475,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 	  [localException reason]);
   //[localException raise];
   NS_ENDHANDLER
-
   RELEASE(rtfString);
   RELEASE(pool);
   // document attributes
