@@ -2,6 +2,9 @@ Sat Dec 12 10:10:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSView.m: Fixed bug and added comment about the (deliberately)
 	wrong code that rounds view sizes down to an integer number of points.
+	Commented out debug prointfs
+	* NSPanel.m: Minor tidying - fixed size of alert panel and made
+	message text be centered.
 
 Sat Dec 12  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
