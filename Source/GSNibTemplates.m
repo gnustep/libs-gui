@@ -333,9 +333,19 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: nameTable];
-  [aCoder encodeObject: connections];
-  [aCoder encodeObject: topLevelObjects];
+  int version = [GSNibContainer version];
+  if(version == GNUSTEP_NIB_VERSION)
+    {
+      [aCoder encodeObject: nameTable];
+      [aCoder encodeObject: connections];
+      [aCoder encodeObject: topLevelObjects];
+    }
+  else
+    {
+      // encode it as a version 0 file...
+      [aCoder encodeObject: nameTable];
+      [aCoder encodeObject: connections];
+    }
 }
 
 - (id) init

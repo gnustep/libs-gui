@@ -1,3 +1,11 @@
+2004-07-11  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: Added code to allow the switching
+	of which version of the file gets encoded based on the value
+	of the class variable "version".  This is part of an experimental
+	feature in .gorm files to allow Gorm.app to encode older versions
+	of .gorm files for previous versions of GNUstep.
+	
 2004-07-11  Chad Hardin <cehardin@mac.com>
 
 	* Headers/AppKit/NSPageLayout.h:
