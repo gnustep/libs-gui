@@ -124,19 +124,19 @@ static NSFont *_leafFont;
   _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
   _cell.is_editable = NO;
   _cell.is_bordered = NO;
-  _text_align = NSLeftTextAlignment;
+  _cell.text_align = NSLeftTextAlignment;
   _alternateImage = nil;
   if (_gsFontifyCells)
     {
       // To make the [self setLeaf: NO] effective
-      _isLeaf = YES; 
+      _browsercell_is_leaf = YES; 
       [self setLeaf: NO];
     }
   else
     {
-      _isLeaf = NO; 
+      _browsercell_is_leaf = NO; 
     }
-  _isLoaded = NO;
+  _browsercell_is_loaded = NO;
 
   return self;
 }
@@ -158,8 +158,8 @@ static NSFont *_leafFont;
   if (_alternateImage)
     c->_alternateImage = RETAIN(_alternateImage);
   c->_highlightBranchImage = RETAIN(_highlightBranchImage);
-  c->_isLeaf = _isLeaf;
-  c->_isLoaded = _isLoaded;
+  c->_browsercell_is_leaf = _browsercell_is_leaf;
+  c->_browsercell_is_loaded = _browsercell_is_loaded;
 
   return c;
 }
@@ -182,19 +182,19 @@ static NSFont *_leafFont;
  */
 - (BOOL) isLeaf
 {
-  return _isLeaf;
+  return _browsercell_is_leaf;
 }
 
 - (void) setLeaf: (BOOL)flag
 {
-  if (_isLeaf == flag)
+  if (_browsercell_is_leaf == flag)
     return;
 
-  _isLeaf = flag;
+  _browsercell_is_leaf = flag;
   
   if (_gsFontifyCells)
     {
-      if (_isLeaf)
+      if (_browsercell_is_leaf)
 	{
 	  ASSIGN (_cell_font, _leafFont);
 	}
@@ -210,12 +210,12 @@ static NSFont *_leafFont;
  */
 - (BOOL) isLoaded
 {
-  return _isLoaded;
+  return _browsercell_is_loaded;
 }
 
 - (void) setLoaded: (BOOL)flag
 {
-  _isLoaded = flag;
+  _browsercell_is_loaded = flag;
 }
 
 /*
@@ -224,13 +224,13 @@ static NSFont *_leafFont;
 - (void) reset
 {
   _cell.is_highlighted = NO;
-  _cell_state = NO;
+  _cell.state = NO;
 }
 
 - (void) set
 {
   _cell.is_highlighted = YES;
-  _cell_state = YES;
+  _cell.state = YES;
 }
 
 /*
@@ -248,18 +248,18 @@ static NSFont *_leafFont;
 
   [controlView lockFocus];
 
-  if (_cell.is_highlighted || _cell_state)
+  if (_cell.is_highlighted || _cell.state)
     {
       backColor = [_colorClass selectedControlColor];
       [backColor set];
-      if (!_isLeaf)
+      if (!_browsercell_is_leaf)
 	image = _highlightBranchImage;
     }
   else
     {
       backColor = [cvWin backgroundColor];
       [backColor set];
-      if (!_isLeaf)
+      if (!_browsercell_is_leaf)
 	image = _branchImage;
     }
   
@@ -299,18 +299,24 @@ static NSFont *_leafFont;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL tmp;
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLeaf];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+  
+  tmp = _browsercell_is_leaf;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  tmp = _browsercell_is_loaded;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL tmp;
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLeaf];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  _browsercell_is_leaf = tmp;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  _browsercell_is_loaded = tmp;
   _branchImage = RETAIN([isa branchImage]);
   _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
 
