@@ -891,7 +891,7 @@ static Class		fontPanelClass = Nil;
       // First an entry to start the font panel
       menuItem = [_fontMenu addItemWithTitle: @"Font Panel"
 			    action: @selector(orderFrontFontPanel:)
-			    keyEquivalent: @"f"];
+			    keyEquivalent: @"t"];
       [menuItem setTarget: self];
 
       // Entry for italic
