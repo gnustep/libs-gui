@@ -549,7 +549,10 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_key = YES;
-      DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+      if ([self isVisible] == YES)
+	{
+	  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+	}
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
     }
@@ -608,13 +611,13 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) makeKeyAndOrderFront: (id)sender
 {
+  [self orderFront: sender];
   [self makeKeyWindow];
   /*
    * OPENSTEP makes a window the main window when it makes it the key window.
    * So we do the same (though the documentation doesn't mention it).
    */
   [self makeMainWindow];
-  [self orderFront: sender];
 }
 
 - (void) makeKeyWindow
@@ -738,7 +741,8 @@ static NSMapTable* windowmaps = NULL;
 	    }
 	}
     }
-  else
+  DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
+  if (place != NSWindowOut)
     {
       if (_rFlags.needs_display == NO)
 	{
@@ -770,8 +774,11 @@ static NSMapTable* windowmaps = NULL;
 			   filename: isFileName];
 	    }
 	}
+      if ([self isKeyWindow] == YES)
+	{
+	  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+	}
     }
-  DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
 
 - (void) resignKeyWindow
