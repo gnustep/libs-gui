@@ -1,3 +1,9 @@
+Mon Oct 14 02:24:45 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m (browser:createRowsForColumn:inMatrix:):
+	Fixed last change which had broken the GSFileBrowserHideDotFiles
+	option.
+
 2002-10-13  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/GSNibTemplates.h: Added parentClassName member to 
