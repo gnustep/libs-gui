@@ -1,3 +1,10 @@
+2003-09-19  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSApplication.m ([NSApplication -targetForAction:]): Check
+	document of a document-based app before key window.
+	* Source/NSWindow.m ([NSWindow -performClose:]): Close the
+	document not self if there is a document associated with this window.
+
 2003-09-19  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSMethodTable.h: Change NSReadPixel

@@ -1649,6 +1649,18 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	    }
 	  resp = [resp nextResponder];
 	}
+
+      if ([NSDocumentController isDocumentBasedApplication])
+        {
+          resp = [[NSDocumentController sharedDocumentController]
+                   documentForWindow: keyWindow];
+
+          if (resp != nil  && [resp respondsToSelector: aSelector])
+            {
+              return resp;
+	    }
+        }
+	
       if ([keyWindow respondsToSelector: aSelector])
 	{
 	  return keyWindow;
@@ -1658,17 +1670,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
       if (resp != nil && [resp respondsToSelector: aSelector])
 	{
 	  return resp;
-	}
-
-      if ([NSDocumentController isDocumentBasedApplication])
-	{
-	  resp = [[NSDocumentController sharedDocumentController]
-		   documentForWindow: keyWindow];
-	  
-	  if (resp != nil  && [resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
 	}
     }
 

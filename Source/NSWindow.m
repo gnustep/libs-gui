@@ -2304,6 +2304,8 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) performClose: (id)sender
 {
+  NSDocument *document = [_windowController document];
+      
   /* Don't close if a modal session is running and we are not the
      modal window */
   if ([NSApp modalWindow] && self != [NSApp modalWindow])
@@ -2318,8 +2320,6 @@ resetCursorRectsForView(NSView *theView)
 
   if (_windowController)
     {
-      NSDocument *document = [_windowController document];
-
       if (document && ![document shouldCloseWindowController: _windowController])
         {
           NSBeep();
@@ -2355,7 +2355,14 @@ resetCursorRectsForView(NSView *theView)
     }
 
   // FIXME: The button should be highlighted
-  [self close];
+  if (document)
+    {
+      [document close];
+    }
+  else 
+    {
+      [self close];
+    }
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
