@@ -409,24 +409,24 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 - (void) addTextContainer: (NSTextContainer*)obj
 {
   if ([_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound)
-  {
-    int i;
-
-    [_textContainers addObject: obj];
-    [obj setLayoutManager: self];
-    // TODO: Invalidate layout
-    _textContainersCount++;
-    /* NB: We do not retain this here !  It's already retained in the
-     array. */
-    _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
-					 textView];
-    for (i = 0; i < _textContainersCount; i++)
-      {
-	NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
-	
-	[tv _updateMultipleTextViews];
-      }
-  }
+    {
+      int i;
+      
+      [_textContainers addObject: obj];
+      [obj setLayoutManager: self];
+      // TODO: Invalidate layout
+      _textContainersCount++;
+      /* NB: We do not retain this here !  It's already retained in the
+	 array. */
+      _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
+					   textView];
+      for (i = 0; i < _textContainersCount; i++)
+	{
+	  NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
+	  
+	  [tv _updateMultipleTextViews];
+	}
+    }
 }
 
 /* Insert a container into the array before the container at index.
@@ -537,10 +537,36 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 	actualCharacterRange: NULL];
 }
 
-// Called by NSTextContainer whenever its textView changes.  Used to
-// keep notifications in synch.
+/* Called by NSTextContainer whenever its textView changes.  Used to
+   keep notifications in synch. */
 - (void) textContainerChangedTextView: (NSTextContainer*)aContainer
 {
+  /* It only makes sense if we have more than one text container */
+  if (_textContainersCount > 1)
+    {
+      unsigned index;
+      
+      index = [_textContainers indexOfObjectIdenticalTo: aContainer];
+      
+      if (index != NSNotFound)
+	{
+	  if (index == 0)
+	    {
+	      /* It's the first text view.  Need to update everything. */
+	      int i;
+	      
+	      _firstTextView = [aContainer textView];
+	      
+	      for (i = 0; i < _textContainersCount; i++)
+		{
+		  NSTextView *tv;
+
+		  tv = [[_textContainers objectAtIndex: i] textView]; 
+		  [tv _updateMultipleTextViews];
+		}
+	    }
+	}
+    }
 }
 
 // Sent from processEditing in NSTextStorage. newCharRange is the
@@ -1158,8 +1184,8 @@ needs to be redrawn when a range of glyphs changes. */
   return 0;
 }
 
-- (unsigned)glyphIndexForPoint:(NSPoint)aPoint 
-	       inTextContainer:(NSTextContainer *)aTextContainer
+- (unsigned) glyphIndexForPoint: (NSPoint)aPoint 
+		inTextContainer: (NSTextContainer *)aTextContainer
 {
   return [self glyphIndexForPoint: aPoint
 	       inTextContainer: aTextContainer
