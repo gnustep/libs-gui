@@ -57,7 +57,7 @@ typedef enum {
     NSImageFrameButton
 } NSImageFrameStyle;
 
-@interface NSImageCell : NSCell <NSCopying, NSCoding>
+@interface NSImageCell : NSCell
 {
   // Attributes
   NSImageAlignment _imageAlignment;
