@@ -1,3 +1,13 @@
+Tue Sep 21  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m ([-selectedColumn]): fix: ignore unloaded
+	columns when searching the currently selected one. 
+	* Source/NSMatrix.m ([-drawCellAtRow:column:]): fix: added forgotten
+	lockFocus/unlockFocus.
+	* Source/NSMatrix.m ([-resizeWithOldSuperviewSize:]): New method
+	implementing the prescribed autoresizing behaviour according to
+	autosizesCells.
+
 1999-09-21  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): Put

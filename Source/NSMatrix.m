@@ -1272,8 +1272,10 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
       if (drawsCellBackground)
 	{
+	  [self lockFocus];
 	  [cellBackgroundColor set];
 	  NSRectFill(cellFrame);
+	  [self unlockFocus];
 	}
       [aCell drawWithFrame: cellFrame inView: self];
     }
@@ -2020,7 +2022,57 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   return YES;
 }
 
-// TODO: implement resize according to autosizesCells 
+- (void) resizeWithOldSuperviewSize: (NSSize)oldSize
+{
+  NSSize oldBoundsSize = bounds.size;
+  NSSize newBoundsSize;
+  NSSize change;
+  int nc = numCols;
+  int nr = numRows;
+  
+  [super resizeWithOldSuperviewSize: oldSize];
+
+  newBoundsSize = bounds.size; 
+  
+  change.height = newBoundsSize.height - oldBoundsSize.height;
+  change.width = newBoundsSize.width - oldBoundsSize.width;
+
+  if ((change.height == 0) && (change.width == 0))
+    return;
+  
+  if (autosizesCells)
+    {
+      if (nr <= 0) nr = 1;
+      change.height = change.height / nr;
+      cellSize.height += change.height;
+      if (cellSize.height < 0)
+	cellSize.height = 0;
+
+      if (nc <= 0) nc = 1;      
+      change.width = change.width / nc;
+      cellSize.width += change.width;
+      if (cellSize.width < 0)
+	cellSize.width = 0;
+    }
+  else
+    {
+      if (nr > 1) 
+	{	
+	  change.height = change.height / (nr - 1);
+	  intercell.height += change.height;
+	  if (intercell.height < 0)
+	    intercell.height = 0;
+	}
+      if (nc > 1) 
+	{	
+	  change.width = change.width / (nc - 1);
+	  intercell.width += change.width;
+	  if (intercell.width < 0)
+	    intercell.width = 0;
+	}      
+    }
+  [self setNeedsDisplay: YES];
+}
 
 //
 //	Methods that may not be needed FIX ME

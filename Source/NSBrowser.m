@@ -755,12 +755,15 @@
 
   while ((!found) && (o = [e nextObject]))
     {
-      id matrix = [o columnMatrix];
-
-      c = [matrix selectedCell];
-      if (c)
-	found = YES;
-      else
+      if ([o isLoaded])
+	{
+	  c = [[o columnMatrix] selectedCell];
+	  if (c)
+	    found = YES;
+	  else
+	    --i;
+	}
+      else 
 	--i;
     }
 
