@@ -1,3 +1,21 @@
+2000-06-10  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSDocument.h:
+	* Headers/gnustep/gui/NSDocumentController.h:
+	* Headers/gnustep/gui/NSDocumentFrameworkPrivate.h:
+	Added header, replaced import with include
+	* Source/NSDocument.m:
+	Added header, replaced import, retain, release...
+	Rewrote the saveXX methods
+	Rename saveFileType to fileTypeFromLastRunSavePanel
+	* Source/NSDocumentController.m:
+	Added header, replaced import, retain, release...
+	Added methods for handling of last recent documents.
+	Made addDocument and removeDocument public.
+	* Source/NSAttributedString.m:
+	Added header.
+	RTFHeaderStringWithContext: convert colour to RGB
+	
 2000-06-07  Adam Fedor  <fedor@gnu.org>
 
 	* Model/IMLoading.m ([GMModel -_makeConnections]): Call awakeFromNib
