@@ -595,7 +595,7 @@ NSMutableDictionary*	pasteboards = nil;
   }
   if (verbose) {
     printf("get data for type '%s' version %d\n",
-		[type cStringNoCopy], e ? [e refNum] : -1);
+		[type cString], e ? [e refNum] : -1);
   }
   if (e) {
     PasteboardData*	d = [e itemForType: type];
@@ -678,7 +678,7 @@ NSMutableDictionary*	pasteboards = nil;
 
   if (verbose) {
     printf("set data for type '%s' version %d\n",
-		[type cStringNoCopy], count);
+		[type cString], count);
   }
   e = [self entryByCount: count];
   if (e) {

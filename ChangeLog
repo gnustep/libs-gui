@@ -1,3 +1,7 @@
+Mon Oct 26 13:20:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/gpbs.m: Changed cStringNoCopy to cString.
+
 Sat Oct 17 08:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSImage.m: removed erroneous attempt to set nil in image dictionary.
