@@ -1140,8 +1140,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (id)targetForAction:(SEL)theAction to:(id)theTarget from:(id)sender
 {
-  // TODO: This is not fully documented, if it ever gets, we should call this in
-  // sendAction:to:from:
+  // TODO: This is not fully documented, if it ever gets, we should
+  // call this in sendAction:to:from:
   if (theTarget && [theTarget respondsToSelector: theAction])
     {
       return theTarget;
