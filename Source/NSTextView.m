@@ -2943,32 +2943,44 @@ afterString in order over charRange. */
   aRange = [[_textStorage string] lineRangeForRange: _selected_range];
   maxRange = NSMaxRange (aRange);
 
-  if (maxRange == [_textStorage length])
-    {
-      /* End of text is special - we want the insertion point to
-	 appear *after* the last character, which means as if before 
-	 the next (virtual) character after the end of text.  */
-      //FIXME This is only true if the last character is not newline!
-      newLocation = maxRange;
-    }
-  else if (maxRange == 0)
+  if (maxRange == 0)
     {
       /* Beginning of text is special only for technical reasons -
 	 since maxRange is an unsigned, we can't safely subtract 1
 	 from it if it is 0.  */
       newLocation = maxRange;
     }
+  else if (maxRange == [_textStorage length])
+    {
+      /* End of text is special - we want the insertion point to
+	 appear *after* the last character, which means as if before
+	 the next (virtual) character after the end of text ... unless
+	 the last character is a newline, and we are trying to go to
+	 the end of the line which is displayed as the
+	 one-before-the-last.  Please note (maxRange - 1) is a valid
+	 char since the maxRange == 0 case has already been
+	 eliminated.  */
+      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
+      if (u == '\n'  ||  u == '\r')
+	{
+	  newLocation = maxRange - 1;
+	}
+      else
+	{
+	  newLocation = maxRange;
+	}
+    }
   else
     {
       /* Else, we want the insertion point to appear before the last
-	 character in the paragraph range.  Normally the last character in
-	 the paragraph range is a newline.  */
+	 character in the paragraph range.  Normally the last
+	 character in the paragraph range is a newline.  */
       newLocation = maxRange - 1;
-      
-      if (newLocation < aRange.location)
-	{
-	  newLocation = aRange.location;
-	}
+    }
+
+  if (newLocation < aRange.location)
+    {
+      newLocation = aRange.location;
     }
 
   [self setSelectedRange: NSMakeRange (newLocation, 0) ];
@@ -2996,19 +3008,33 @@ afterString in order over charRange. */
   
   maxRange = NSMaxRange (line);
 
-  if (maxRange == [_textStorage length])
-    {
-      /* End of text is special - we want the insertion point to
-	 appear *after* the last character, which means as if before 
-	 the next (virtual) character after the end of text.  */
-      newLocation = maxRange;
-    }
-  else if (maxRange == 0)
+  if (maxRange == 0)
     {
       /* Beginning of text is special only for technical reasons -
 	 since maxRange is an unsigned, we can't safely subtract 1
 	 from it if it is 0.  */
       newLocation = maxRange;
+    }
+  else if (maxRange == [_textStorage length])
+    {
+      /* End of text is special - we want the insertion point to
+	 appear *after* the last character, which means as if before
+	 the next (virtual) character after the end of text ... unless
+	 the last character is a newline, and we are trying to go to
+	 the end of the line which is displayed as the
+	 one-before-the-last.  (Please note that we do not check for
+	 spaces - spaces are ok, we want to move after the last space)
+	 Please note (maxRange - 1) is a valid char since the maxRange
+	 == 0 case has already been eliminated.  */
+      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
+      if (u == '\n'  ||  u == '\r')
+	{
+	  newLocation = maxRange - 1;
+	}
+      else
+	{
+	  newLocation = maxRange;
+	}
     }
   else
     {
@@ -3016,13 +3042,13 @@ afterString in order over charRange. */
 	 character in the line range.  Normally the last character in
 	 the line range is a space or a newline.  */
       newLocation = maxRange - 1;
-      
-      if (newLocation < line.location)
-	{
-	  newLocation = line.location;
-	}
     }
 
+  if (newLocation < line.location)
+    {
+      newLocation = line.location;
+    }
+  
   [self setSelectedRange: NSMakeRange (newLocation, 0) ];
 }
 
