@@ -102,7 +102,7 @@ NSUnregisterServicesProvider(NSString *name)
        *        Ensure there is no previous listener and nothing else using
        *        the given port name.
        */
-      [[NSPortNameServer defaultPortNameServer] removePortForName: name];
+      [[NSPortNameServer systemDefaultPortNameServer] removePortForName: name];
       [[NSNotificationCenter defaultCenter]
 	removeObserver: [GSListener class]
 		  name: NSConnectionDidDieNotification
@@ -122,7 +122,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
        *	Ensure there is no previous listener and nothing else using
        *	the given port name.
        */
-      [[NSPortNameServer defaultPortNameServer] removePortForName: name];
+      [[NSPortNameServer systemDefaultPortNameServer] removePortForName: name];
       [[NSNotificationCenter defaultCenter]
 	removeObserver: [GSListener class]
 		  name: NSConnectionDidDieNotification
@@ -846,7 +846,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
           if (result == NSAlertOtherReturn)
 	    appName = [[NSProcessInfo processInfo] globallyUniqueString];
 
-          [[NSPortNameServer defaultPortNameServer] removePortForName: appName];
+          [[NSPortNameServer systemDefaultPortNameServer]
+	    removePortForName: appName];
 
           NS_DURING
             {

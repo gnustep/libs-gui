@@ -1,3 +1,8 @@
+2000-07-04 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Update port name servr for revised API
+	compatible with MacOS-X
+
 2000-07-03 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/gpbs.m: Fix for OPENSTEP complient DO
