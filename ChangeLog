@@ -1,5 +1,6 @@
 2002-02-01  Richard Frith-Macdonald  <rfm@gnu.org>
 
+	* Source/NSBezierPath.m:
 	* Source/NSLayoutManager.m:
 	* Source/GSTextStorage.m: Use new GSI API from latest CVS base
 	* library.

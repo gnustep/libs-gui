@@ -1349,7 +1349,7 @@ typedef struct _PathElement
 
 //#define GSUNION_TYPES GSUNION_OBJ
 #define GSI_ARRAY_TYPES       0
-#define GSI_ARRAY_EXTRA       PathElement
+#define GSI_ARRAY_TYPE	PathElement
 
 #define GSI_ARRAY_NO_RETAIN
 #define GSI_ARRAY_NO_RELEASE
