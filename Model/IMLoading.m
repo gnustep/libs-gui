@@ -32,6 +32,9 @@
 #include "AppKit/IMLoading.h"
 #include "AppKit/IMCustomObject.h"
 
+/* For awakeFromNib */
+#include <AppKit/NSNibLoading.h>
+
 void __dummy_IMLoading_functionForLinking()
 {
   __dummy_IMLoading_functionForLinking();
