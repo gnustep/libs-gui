@@ -2,7 +2,9 @@ Tue Jul  6 16:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSMenuView.m: In ([-trackWithEvent:]) fixed indexing bug when mouse
 	dragged off bottom of menu and released, also reformatted to GNU
-	coding style.
+	coding style. Added copyright notice.
+	* NSMenu.m: Added copyright notice.
+	* NSMenuItemCell.m: Added copyright notice.
 
 Tue Jul  6 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
