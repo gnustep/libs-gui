@@ -62,11 +62,16 @@ enum {
   id _browser;
   id _form;
   id _prompt;
+  id _okButton;
   id _titleField;
   id _topView;
 
+  NSSize _originalMinSize;
+  NSSize _originalSize;
+
   NSString *_requiredFileType;
   NSString *_lastValidPath;
+  NSString *_fullFileName;
 
   BOOL _treatsFilePackagesAsDirectories;
   BOOL _delegateHasCompareFilter;
@@ -75,7 +80,7 @@ enum {
 }
 
 /*
- * Creating an NSSavePanel
+ * Getting the NSSavePanel shared instance
  */
 + (NSSavePanel *) savePanel;
 
@@ -187,13 +192,6 @@ enum {
  * Responding to User Input
  */
 - (void) selectText: (id)sender;
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (id)aCoder;
-- (id) initWithCoder: (id)aDecoder;
-
 @end
 
 /*
