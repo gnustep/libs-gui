@@ -747,9 +747,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
       SEL               sel = @selector(doService:);
       NSMenu            *submenu = nil;
 
+      [_servicesMenu setAutoenablesItems: NO];
       pos = [_servicesMenu numberOfItems];
       for (; pos; pos--)
         [_servicesMenu removeItemAtIndex: 0];
+      [_servicesMenu setAutoenablesItems: YES];
 
       keyEquivalents = [NSMutableSet setWithCapacity: 4];
       for (loc0 = pos = 0; pos < [_menuTitles count]; pos++)

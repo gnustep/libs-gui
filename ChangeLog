@@ -1,5 +1,10 @@
 2002-06-12  Alexander Malmberg  <alexander@malmberg.org>
 
+	* Source/GSServicesManager.m (-rebuildServicesMenu): Disable auto-
+	enabling while updating the menu.
+
+2002-06-12  Alexander Malmberg  <alexander@malmberg.org>
+
 	* Source/GSServicesManager.m (-loadServices): Only update timestamp
 	when the file has changed.
 	(-rebuildServicesMenu): Correctly remove the old menu items.
