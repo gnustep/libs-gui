@@ -295,6 +295,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       RELEASE(self);
       return nil;
     }
+  _flags.archiveByName = YES;
 
   return self;
 }

@@ -1,3 +1,10 @@
+2001-09-16  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImage.m (-initByReferencingFile:): set archiveByName.
+
+	* Source/NSPopUpButtonCell.m (-encodeWithCoder:): Implement
+	(-initWithCoder:): Likewise.
+
 2001-09-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItemCell.m
