@@ -1,3 +1,9 @@
+Mon Feb 21 14:40:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: ([-close]) remove spurious retain.
+	* Source/NSApplication.m: ([-run]) do startup stuff inside an
+	autorelease pool and release it before main loop.
+
 Tue Jan 25 14:52:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Contributed by Fred Kiefer:

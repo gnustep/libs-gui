@@ -117,19 +117,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @implementation NSWindow
 
-- (int) arc
-{
-  return [self retainCount] - [NSAutoreleasePool autoreleaseCountForObject: self];
-}
-- (void) release
-{
-  [super release];
-}
-- (id) retain
-{
-  return [super retain];
-}
-
 typedef struct NSView_struct
 {
   @defs(NSView)
@@ -1331,7 +1318,6 @@ resetCursorRectsForView(NSView *theView)
 - (void) close
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  CREATE_AUTORELEASE_POOL(arp);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   _f.has_opened = NO;
@@ -1342,7 +1328,6 @@ resetCursorRectsForView(NSView *theView)
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 
-  RELEASE(arp);
   if (_f.is_released_when_closed)
     RELEASE(self);
 }
