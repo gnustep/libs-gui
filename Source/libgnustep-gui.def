@@ -117,7 +117,7 @@ __objc_class_name_NSView
 __objc_category_name_NSWindow_GNUstepBackend
 __objc_class_name_NSWindow
 __objc_class_name_NSWorkspace
-__objc_class_name_TrackingRectangle
+__objc_class_name_GSTrackingRect
 NSTiffClose
 NSTiffGetColormap
 NSTiffGetInfo

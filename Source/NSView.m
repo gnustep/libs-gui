@@ -31,6 +31,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <math.h>
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
@@ -43,7 +44,7 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/TrackingRectangle.h>
+#include <AppKit/GSTrackingRect.h>
 #include <AppKit/PSMatrix.h>
 
 
@@ -638,20 +639,20 @@ int options = 0;
 														// do nothing if view 
 	if(autoresizingMask == NSViewNotSizable)			// is not resizable
 		return;											
-														// adjust the X axis
-	if(autoresizingMask & NSViewWidthSizable)			
-		options++;										// width resizable?
+														// determine if X axis
+	if(autoresizingMask & NSViewWidthSizable)			// can be resized 
+		options++;										 
 	if(autoresizingMask & NSViewMinXMargin)				
 		options++;
 	if(autoresizingMask & NSViewMaxXMargin)				
 		options++;
-
-	if(options >= 1)
-		{
+														// adjust the X axis if
+	if(options >= 1)									// any X options are
+		{												// set in the mask
 		change = [super_view frame].size.width - oldSize.width;
-		changePerOption = change/options;				// need to floor FIX ME
+		changePerOption = floor(change/options);		
 	
-		if(autoresizingMask & NSViewWidthSizable)		// width resizable?
+		if(autoresizingMask & NSViewWidthSizable)		
 			frame.size.width += changePerOption;
 		if(autoresizingMask & NSViewMinXMargin)				
 			frame.origin.x += changePerOption;
@@ -659,21 +660,21 @@ int options = 0;
 			frame.size.width += changePerOption;
 		bounds.size.width = frame.size.width;
 		}
-														// adjust the Y axis
-	options = 0;
+														// determine if Y axis
+	options = 0;										// can be resized
 	if(autoresizingMask & NSViewHeightSizable)			
-		options++;										// height resizable?
+		options++;										
 	if(autoresizingMask & NSViewMinYMargin)				
 		options++;
 	if(autoresizingMask & NSViewMaxYMargin)				
 		options++;
-
-	if(options >= 1)
-		{
+														// adjust the Y axis if
+	if(options >= 1)									// any Y options are  
+		{												// set in the mask
 		change = [super_view frame].size.height - oldSize.height;
-		changePerOption = change/options;				// need to floor FIX ME
+		changePerOption = floor(change/options);		
 	
-		if(autoresizingMask & NSViewHeightSizable)		// height resizable?
+		if(autoresizingMask & NSViewHeightSizable)		
 			frame.size.height += changePerOption;
 		if(autoresizingMask & NSViewMinYMargin)				
 			frame.origin.y += changePerOption;
@@ -723,23 +724,22 @@ int options = 0;
 		{
 		if(needs_display)
 			{	
-			NSView *firstOpaque = [self opaqueAncestor];
-			NSRect rect;	
-							
-			if(invalidatedRectangle.size.width > 0 
-					&&  invalidatedRectangle.size.height > 0)
-				rect = invalidatedRectangle;
-			else										// convert rect into
-				rect = bounds;							// coordinates of the	
+			if(invalidRect.size.width > 0 && invalidRect.size.height > 0)
+				{
+				NSView *firstOpaque = [self opaqueAncestor];
+				NSRect rect = invalidRect;				// convert rect into
+														// coordinates of the	
 														// first opaque view
-      		rect = [firstOpaque convertRect:rect fromView:self];
-			[firstOpaque displayIfNeededInRectIgnoringOpacity:rect];
+      			rect = [firstOpaque convertRect:rect fromView:self];
+				[firstOpaque displayIfNeededInRectIgnoringOpacity:rect];
+				}
+			needs_display = NO;								
 			}
 		}
 }
 
 - (void)displayIfNeededInRect:(NSRect)aRect
-{														// of our sub views if
+{														
 }				
 
 - (void)displayIfNeededInRectIgnoringOpacity:(NSRect)aRect
@@ -752,9 +752,9 @@ int i = 0, count;										// of our sub views if
 														// stNeedsDisplayInRect
 		if(subview->needs_display)						
 			{											
-    		NSRect rect = subview->invalidatedRectangle;
+    		NSRect rect = subview->invalidRect;
 			if(rect.size.width > 0 && rect.size.height > 0)
-      			[subview displayRect:rect];				// display invalid rect
+	     		[subview displayRect:rect];				// display invalid rect
 			else
       			[subview displayIfNeededIgnoringOpacity];				
 			}											// subview must contain
@@ -770,20 +770,54 @@ int i = 0, count;										// display self and all
 														// need of display with
 	if (needs_display) 									// setNeedsDisplay or
 		{												// stNeedsDisplayInRect
-		if(invalidatedRectangle.size.width > 0 
-				&&  invalidatedRectangle.size.height > 0)
-			[self displayRect:invalidatedRectangle];	// display invalid rect
-		else
-			needs_display = NO;
-		}
-														
-	for (count = [sub_views count]; i < count; ++i) 	
-		{												
-    	NSView* subview = [sub_views objectAtIndex:i];	
+		if(invalidRect.size.width > 0 && invalidRect.size.height > 0)
+			{											
+			[self lockFocus];							// self has an invalid
+			[self drawRect:invalidRect];				// rect that needs to
+			[self unlockFocus];							// be displayed
 
-		if(subview->needs_display)						
-      		[subview displayIfNeededIgnoringOpacity];	// subview contains a			
-		}												// view needing display
+			for (count = [sub_views count]; i < count; ++i) 	
+				{							// cycle thru subviews displaying		
+				NSRect intersection;		// any that intersect invalidRect
+				NSView* subview = [sub_views objectAtIndex:i];	
+				NSRect subviewFrame = subview->frame;
+											// If subview is rotated compute 
+											// it's bounding rect and use this 
+											// instead of the subview's frame. 
+				if ([subview->frameMatrix isRotated])
+					[subview->frameMatrix boundingRectFor:subviewFrame 
+										  result:&subviewFrame];
+
+													// Display the subview if
+													// it intersects "rect". 
+				intersection = NSIntersectionRect (invalidRect, subviewFrame);
+				if (intersection.origin.x || intersection.origin.y || 
+						intersection.size.width || intersection.size.height) 
+					{					// Convert the intersection rectangle
+										// to the subview's coordinates 
+					intersection = [subview convertRect:intersection 
+											fromView:self];
+					[subview displayRect:intersection];
+					}							// subview does not intersect 
+				else							// invalidRect but it may be
+					if(subview->needs_display)	// marked as needing display	
+						[subview displayIfNeededIgnoringOpacity];
+				}
+			invalidRect = NSZeroRect;					
+			}											// self does not need
+		else											// display but a sub
+			{											// view might 
+			for (count = [sub_views count]; i < count; ++i) 	
+				{												
+				NSView* subview = [sub_views objectAtIndex:i];	
+														// a subview contains a
+				if(subview->needs_display)				// view needing display		
+					[subview displayIfNeededIgnoringOpacity];				
+				}												
+			}
+
+		needs_display = NO;								
+		}
 }														
 														
 - (void)displayRect:(NSRect)rect						// not per spec FIX ME
@@ -795,27 +829,25 @@ int i, count;
 	  			NSStringFromClass(isa), self);
 
 	needs_display = NO;
-	invalidatedRectangle = NSZeroRect;					// Reset invalid rect
+	invalidRect = NSZeroRect;							// Reset invalid rect
 
 	[self lockFocus];
 	[self drawRect:rect];
-	[self unlockFocus];
-  													// Tell subviews to display
+	[self unlockFocus];									// display any subviews
+  														// that intersect rect
 	for (i = 0, count = [sub_views count]; i < count; ++i) 
 		{
     	NSView* subview = [sub_views objectAtIndex:i];
     	NSRect subviewFrame = subview->frame;
-    	NSRect intersection;
-										// If the subview is rotated compute 
+    	NSRect intersection;			// If the subview is rotated compute 
 										// its bounding rectangle and use this 
 										// one instead of the subview's frame. 
 		if ([subview->frameMatrix isRotated])
       		[subview->frameMatrix boundingRectFor:subviewFrame 
 								  result:&subviewFrame];
 
-											// Determine if the subview's frame 
-											// intersects "rect" so that we can 
-											// display the subview. 
+													// Display the subview if
+													// it intersects "rect". 
     	intersection = NSIntersectionRect (rect, subviewFrame);
 		if (intersection.origin.x || intersection.origin.y || 
 				intersection.size.width || intersection.size.height) 
@@ -863,7 +895,7 @@ int i, count;
       	rect = [firstOpaque convertRect:bounds fromView:self];
 		[firstOpaque setNeedsDisplayInRect:rect];
 						 
-		invalidatedRectangle = bounds;
+		invalidRect = bounds;
 		[window setViewsNeedDisplay:YES];
 
 		while (currentView) 							// set needs display	 
@@ -873,7 +905,7 @@ int i, count;
 			}
 		}
 	else
-		invalidatedRectangle = NSZeroRect;		
+		invalidRect = NSZeroRect;		
 }
 
 - (void)setNeedsDisplayInRect:(NSRect)rect				// not per spec FIX ME
@@ -881,7 +913,7 @@ int i, count;
 NSView* currentView = super_view;
 		
 	needs_display = YES;
-	invalidatedRectangle = NSUnionRect (invalidatedRectangle, rect);
+	invalidRect = NSUnionRect (invalidRect, rect);
 	[window setViewsNeedDisplay:YES];
 
 	while (currentView) 								// set needs display	 
@@ -946,13 +978,13 @@ NSRect new;
 //
 - (void)addCursorRect:(NSRect)aRect cursor:(NSCursor *)anObject
 {
-TrackingRectangle *m;
+GSTrackingRect *m;
 
-	m = [[[TrackingRectangle alloc] initWithRect: aRect 
-									tag: 0 
-									owner: anObject
-									userData: NULL 
-									inside: YES] autorelease];
+	m = [[[GSTrackingRect alloc] initWithRect: aRect 
+								 tag: 0 
+								 owner: anObject
+								 userData: NULL 
+								 inside: YES] autorelease];
 	[cursor_rects addObject:m];
 }
 
@@ -964,7 +996,7 @@ TrackingRectangle *m;
 - (void)removeCursorRect:(NSRect)aRect cursor:(NSCursor *)anObject
 {
 id e = [cursor_rects objectEnumerator];
-TrackingRectangle *o;
+GSTrackingRect *o;
 NSCursor *c;
   
 	o = [e nextObject];									// Base remove test 
@@ -1056,12 +1088,12 @@ NSView *v = nil, *w;
 - (void)removeTrackingRect:(NSTrackingRectTag)tag
 {
 int i, j;
-TrackingRectangle *m;
+GSTrackingRect *m;
 
 	j = [tracking_rects count];
 	for (i = 0;i < j; ++i)
 		{
-		m = (TrackingRectangle *)[tracking_rects objectAtIndex:i];
+		m = (GSTrackingRect *)[tracking_rects objectAtIndex:i];
 		if ([m tag] == tag)
 			{
 			[tracking_rects removeObjectAtIndex:i];
@@ -1083,22 +1115,22 @@ TrackingRectangle *m;
 {
 NSTrackingRectTag t;
 int i, j;
-TrackingRectangle *m;
+GSTrackingRect *m;
 
 	t = 0;
 	j = [tracking_rects count];
 	for (i = 0;i < j; ++i)
 		{
-		m = (TrackingRectangle *)[tracking_rects objectAtIndex:i];
+		m = (GSTrackingRect *)[tracking_rects objectAtIndex:i];
 		if ([m tag] > t)
 			t = [m tag];
 		}
 	++t;
 
-	m = [[[TrackingRectangle alloc] initWithRect:aRect 
-									tag:t owner:anObject
-									userData:data 
-									inside:flag] autorelease];
+	m = [[[GSTrackingRect alloc] initWithRect:aRect 
+								 tag:t owner:anObject
+								 userData:data 
+								 inside:flag] autorelease];
 	[tracking_rects addObject:m];
 
 	return t;

@@ -1,5 +1,5 @@
 /* 
-   TrackingRectangle.m
+   GSTrackingRect.m
 
    Tracking rectangle class
 
@@ -27,16 +27,16 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <gnustep/gui/TrackingRectangle.h>
+#include <gnustep/gui/GSTrackingRect.h>
 
-@implementation TrackingRectangle
+@implementation GSTrackingRect
 
 //
 // Class methods
 //
 + (void)initialize
 {
-	if (self == [TrackingRectangle class])
+	if (self == [GSTrackingRect class])
 	{
 		// Initial version
 		[self setVersion:1];

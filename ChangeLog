@@ -1,3 +1,12 @@
+Tue Dec 8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSScroller.m move backend code into frontend, polish code, remove ifdefs.
+	* TrackingRectangle.m/.h rename class to GS* prefix (GSTrackingRect).
+	* NSView.m resizeWithOldSuperviewSize: floor possibly fractional results.
+	displayIfNeededIgnoringOpacity: rewrite to fix obscure bugs in auto 
+	display.  Minor tweaks in other display methods for same reasons.  
+	* NSView.h rename invalidatedRectangle to invalidRect.
+
 Tue Dec  8 20:50:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSWindow.h: fixed designated initialiser to

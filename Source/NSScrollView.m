@@ -92,7 +92,7 @@ static Class rulerViewClass = nil;
   _pageScroll = 10;
   _borderType = NSBezelBorder;
   _scrollsDynamically = YES;
-  autoresizingMask = NSViewMaxYMargin;
+//  autoresizingMask = NSViewMaxYMargin;
   [self tile];
 
   return self;

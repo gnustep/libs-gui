@@ -27,6 +27,8 @@
 */
 
 #include <gnustep/gui/config.h>
+#include <math.h>
+
 #include <Foundation/NSDate.h>
 #include <Foundation/NSRunLoop.h>
 
@@ -85,141 +87,136 @@ static BOOL preCalcValues = NO;
 - (SEL)action								{ return _action; }
 - (void)setTarget:(id)target				{ ASSIGN(_target, target); }
 - (id)target								{ return _target; }
+- (void)encodeWithCoder:aCoder				{ }
+- initWithCoder:aDecoder					{ return self; }
 - (BOOL)isOpaque							{ return YES; }
 
 - initWithFrame:(NSRect)frameRect
 {
-  /* Determine if its horizontal or vertical
-     then adjust the width to the standard */
-  if (frameRect.size.width > frameRect.size.height) {
-    _isHorizontal = YES;
-    frameRect.size.height = [isa scrollerWidth];
-  }
-  else {
-    _isHorizontal = NO;
-    frameRect.size.width = [isa scrollerWidth];
-  }
+	if (frameRect.size.width > frameRect.size.height) 		// determine the
+		{													// orientation of
+		_isHorizontal = YES;								// the scroller and
+		frameRect.size.height = [isa scrollerWidth];		// adjust it's size
+		}													// accordingly
+	else 
+		{
+		_isHorizontal = NO;
+		frameRect.size.width = [isa scrollerWidth];
+		}
 
-  [super initWithFrame:frameRect];
-
-  if (_isHorizontal)
-    _arrowsPosition = NSScrollerArrowsMinEnd;
-  else
-    _arrowsPosition = NSScrollerArrowsMaxEnd;
-
-  _hitPart = NSScrollerNoPart;
-  [self drawParts];
-  [self setEnabled:NO];
-  [self checkSpaceForParts];
-
-  return self;
+	[super initWithFrame:frameRect];
+	
+	if (_isHorizontal)
+		_arrowsPosition = NSScrollerArrowsMinEnd;
+	else
+		_arrowsPosition = NSScrollerArrowsMaxEnd;
+	
+	_hitPart = NSScrollerNoPart;
+	[self drawParts];
+	[self setEnabled:NO];
+	[self checkSpaceForParts];
+	
+	return self;
 }
 
 - init
 {
-  return [self initWithFrame:NSZeroRect];
+	return [self initWithFrame:NSZeroRect];
 }
 
 - (void)drawParts
-{
-  /* Create the class variable button cells if they are not already created */
-  if (knobCell)
-    return;
-
-  upCell = [NSButtonCell new];
-  [upCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
-  [upCell setImage:[NSImage imageNamed:@"common_ArrowUp"]];
-  [upCell setAlternateImage:[NSImage imageNamed:@"common_ArrowUpH"]];
-  [upCell setImagePosition:NSImageOnly];
-  [upCell setContinuous:YES];
-  [upCell setPeriodicDelay:0.05 interval:0.05];
-
-  downCell = [NSButtonCell new];
-  [downCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
-  [downCell setImage:[NSImage imageNamed:@"common_ArrowDown"]];
-  [downCell setAlternateImage:[NSImage imageNamed:@"common_ArrowDownH"]];
-  [downCell setImagePosition:NSImageOnly];
-  [downCell setContinuous:YES];
-  [downCell setPeriodicDelay:0.05 interval:0.05];
-
-  leftCell = [NSButtonCell new];
-  [leftCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
-  [leftCell setImage:[NSImage imageNamed:@"common_ArrowLeft"]];
-  [leftCell setAlternateImage:[NSImage imageNamed:@"common_ArrowLeftH"]];
-  [leftCell setImagePosition:NSImageOnly];
-  [leftCell setContinuous:YES];
-  [leftCell setPeriodicDelay:0.05 interval:0.05];
-
-  rightCell = [NSButtonCell new];
-  [rightCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
-  [rightCell setImage:[NSImage imageNamed:@"common_ArrowRight"]];
-  [rightCell setAlternateImage:[NSImage imageNamed:@"common_ArrowRightH"]];
-  [rightCell setImagePosition:NSImageOnly];
-  [rightCell setContinuous:YES];
-  [rightCell setPeriodicDelay:0.05 interval:0.05];
-
-  knobCell = [NSButtonCell new];
-  [knobCell setButtonType:NSMomentaryChangeButton];
-  [knobCell setImage:[NSImage imageNamed:@"common_Dimple"]];
-  [knobCell setImagePosition:NSImageOnly];
+{												// Create the class variable 
+	if (knobCell)								// button cells if they do not 
+		return;									// yet exist.
+	
+	upCell = [NSButtonCell new];
+	[upCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
+	[upCell setImage:[NSImage imageNamed:@"common_ArrowUp"]];
+	[upCell setAlternateImage:[NSImage imageNamed:@"common_ArrowUpH"]];
+	[upCell setImagePosition:NSImageOnly];
+	[upCell setContinuous:YES];
+	[upCell setPeriodicDelay:0.05 interval:0.05];
+	
+	downCell = [NSButtonCell new];
+	[downCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
+	[downCell setImage:[NSImage imageNamed:@"common_ArrowDown"]];
+	[downCell setAlternateImage:[NSImage imageNamed:@"common_ArrowDownH"]];
+	[downCell setImagePosition:NSImageOnly];
+	[downCell setContinuous:YES];
+	[downCell setPeriodicDelay:0.05 interval:0.05];
+	
+	leftCell = [NSButtonCell new];
+	[leftCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
+	[leftCell setImage:[NSImage imageNamed:@"common_ArrowLeft"]];
+	[leftCell setAlternateImage:[NSImage imageNamed:@"common_ArrowLeftH"]];
+	[leftCell setImagePosition:NSImageOnly];
+	[leftCell setContinuous:YES];
+	[leftCell setPeriodicDelay:0.05 interval:0.05];
+	
+	rightCell = [NSButtonCell new];
+	[rightCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
+	[rightCell setImage:[NSImage imageNamed:@"common_ArrowRight"]];
+	[rightCell setAlternateImage:[NSImage imageNamed:@"common_ArrowRightH"]];
+	[rightCell setImagePosition:NSImageOnly];
+	[rightCell setContinuous:YES];
+	[rightCell setPeriodicDelay:0.05 interval:0.05];
+	
+	knobCell = [NSButtonCell new];
+	[knobCell setButtonType:NSMomentaryChangeButton];
+	[knobCell setImage:[NSImage imageNamed:@"common_Dimple"]];
+	[knobCell setImagePosition:NSImageOnly];
 }
 
 - (void)_setTargetAndActionToCells
 {
-  [upCell setTarget:_target];
-  [upCell setAction:_action];
-
-  [downCell setTarget:_target];
-  [downCell setAction:_action];
-
-  [leftCell setTarget:_target];
-  [leftCell setAction:_action];
-
-  [rightCell setTarget:_target];
-  [rightCell setAction:_action];
-
-  [knobCell setTarget:_target];
-  [knobCell setAction:_action];
+	[upCell setTarget:_target];
+	[upCell setAction:_action];
+	
+	[downCell setTarget:_target];
+	[downCell setAction:_action];
+	
+	[leftCell setTarget:_target];
+	[leftCell setAction:_action];
+	
+	[rightCell setTarget:_target];
+	[rightCell setAction:_action];
+	
+	[knobCell setTarget:_target];
+	[knobCell setAction:_action];
 }
 
 - (void)checkSpaceForParts
 {
-  NSSize frameSize = [self frame].size;
-  float size = (_isHorizontal ? frameSize.width : frameSize.height);
-  float scrollerWidth = [isa scrollerWidth];
+NSSize frameSize = [self frame].size;
+float size = (_isHorizontal ? frameSize.width : frameSize.height);
+float scrollerWidth = [isa scrollerWidth];
 
-  if (size > 3 * scrollerWidth + 2)
-    _usableParts = NSAllScrollerParts;
-  else if (size > 2 * scrollerWidth + 1)
-    _usableParts = NSOnlyScrollerArrows;
-  else if (size > scrollerWidth)
-    _usableParts = NSNoScrollerParts;
+	if (size > 3 * scrollerWidth + 2)
+		_usableParts = NSAllScrollerParts;
+	else 
+		if (size > 2 * scrollerWidth + 1)
+			_usableParts = NSOnlyScrollerArrows;
+		else 
+			if (size > scrollerWidth)
+				_usableParts = NSNoScrollerParts;
 }
 
 - (void)setEnabled:(BOOL)flag
 {
-  if (_isEnabled == flag)
-    return;
-
-  _isEnabled = flag;
-#if 1
-  [self setNeedsDisplay:YES];
-#else
-  [self display];
-#endif
+	if (_isEnabled == flag)
+		return;
+	
+	_isEnabled = flag;
+	[self setNeedsDisplay:YES];
 }
 
 - (void)setArrowsPosition:(NSScrollArrowPosition)where
 {
-  if (_arrowsPosition == where)
-    return;
+	if (_arrowsPosition == where)
+		return;
 
-  _arrowsPosition = where;
-#if 1
-  [self setNeedsDisplay:YES];
-#else
-  [self display];
-#endif
+	_arrowsPosition = where;
+	[self setNeedsDisplay:YES];
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -235,88 +232,83 @@ static BOOL preCalcValues = NO;
 	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
 }
 
-- (void)setFloatValue:(float)aFloat
-       knobProportion:(float)ratio
+- (void)setFloatValue:(float)aFloat knobProportion:(float)ratio
 {
-  if (ratio < 0)
-    _knobProportion = 0;
-  else if (ratio > 1)
-    _knobProportion = 1;
-  else
-    _knobProportion = ratio;
+	if (ratio < 0)
+		_knobProportion = 0;
+	else 
+		if (ratio > 1)
+			_knobProportion = 1;
+		else
+			_knobProportion = ratio;
 
-  [self setFloatValue:aFloat];
+	[self setFloatValue:aFloat];
 }
 
 - (void)setFrame:(NSRect)frameRect
 {
-  /* Determine if its horizontal or vertical
-     then adjust the width to the standard */
-  if (frameRect.size.width > frameRect.size.height) {
-    _isHorizontal = YES;
-    frameRect.size.height = [isa scrollerWidth];
-  }
-  else {
-    _isHorizontal = NO;
-    frameRect.size.width = [isa scrollerWidth];
-  }
+	if (frameRect.size.width > frameRect.size.height) 		// determine the
+		{													// orientation of
+		_isHorizontal = YES;								// the scroller and
+		frameRect.size.height = [isa scrollerWidth];		// adjust it's size
+		}													// accordingly
+	else 
+		{
+		_isHorizontal = NO;
+		frameRect.size.width = [isa scrollerWidth];
+		}
 
-  [super setFrame:frameRect];
-
-  if (_isHorizontal)
-    _arrowsPosition = NSScrollerArrowsMinEnd;
-  else
-    _arrowsPosition = NSScrollerArrowsMaxEnd;
-
-  _hitPart = NSScrollerNoPart;
-  [self checkSpaceForParts];
+	[super setFrame:frameRect];
+	
+	if (_isHorizontal)
+		_arrowsPosition = NSScrollerArrowsMinEnd;
+	else
+		_arrowsPosition = NSScrollerArrowsMaxEnd;
+	
+	_hitPart = NSScrollerNoPart;
+	[self checkSpaceForParts];
 }
 
 - (void)setFrameSize:(NSSize)size
 {
-  [super setFrameSize:size];
-  [self checkSpaceForParts];
-#if 1
-  [self setNeedsDisplay:YES];
-#else
-  [self display];
-  [[self window] flushWindow];
-#endif
+	[super setFrameSize:size];
+	[self checkSpaceForParts];
+	[self setNeedsDisplay:YES];
 }
 
-- (NSScrollerPart)testPart:(NSPoint)thePoint
-{
-  NSRect rect;
+- (NSScrollerPart)testPart:(NSPoint)thePoint				// return what part
+{															// of the scroller
+NSRect rect;												// the mouse hit
 
-  if (thePoint.x < 0 || thePoint.x > frame.size.width
-      || thePoint.y < 0 || thePoint.y > frame.size.height)
-    return NSScrollerNoPart;
-
-  rect = [self rectForPart:NSScrollerDecrementLine];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerDecrementLine;
-
-  rect = [self rectForPart:NSScrollerIncrementLine];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerIncrementLine;
-
-  rect = [self rectForPart:NSScrollerKnob];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerKnob;
-
-  rect = [self rectForPart:NSScrollerKnobSlot];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerKnobSlot;
-
-  rect = [self rectForPart:NSScrollerDecrementPage];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerDecrementPage;
-
-  rect = [self rectForPart:NSScrollerIncrementPage];
-  if ([self mouse:thePoint inRect:rect])
-    return NSScrollerIncrementPage;
-
-  return NSScrollerNoPart;
+	if (thePoint.x < 0 || thePoint.x > frame.size.width
+			|| thePoint.y < 0 || thePoint.y > frame.size.height)
+		return NSScrollerNoPart;
+	
+	rect = [self rectForPart:NSScrollerDecrementLine];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerDecrementLine;
+	
+	rect = [self rectForPart:NSScrollerIncrementLine];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerIncrementLine;
+	
+	rect = [self rectForPart:NSScrollerKnob];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerKnob;
+	
+	rect = [self rectForPart:NSScrollerKnobSlot];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerKnobSlot;
+	
+	rect = [self rectForPart:NSScrollerDecrementPage];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerDecrementPage;
+	
+	rect = [self rectForPart:NSScrollerIncrementPage];
+	if ([self mouse:thePoint inRect:rect])
+		return NSScrollerIncrementPage;
+	
+	return NSScrollerNoPart;
 }
 
 - (float)_floatValueForMousePoint:(NSPoint)point
@@ -369,10 +361,10 @@ float position;
 	return floatValue;
 }
 
-- (void)_preCalcParts
-{
-NSRect knobRect = [self rectForPart:NSScrollerKnob];
-
+- (void)_preCalcParts										// pre calculate
+{															// values to lessen
+NSRect knobRect = [self rectForPart:NSScrollerKnob];		// the burden while
+															// scrolling
 	slotRect = [self rectForPart:NSScrollerKnobSlot];
 
 	halfKnobRectWidth = knobRect.size.width / 2;
@@ -389,8 +381,8 @@ NSRect knobRect = [self rectForPart:NSScrollerKnob];
 }
 
 - (float)_floatValueForMousePointFromPreCalc:(NSPoint)point
-{
-float floatValue = 0;
+{															
+float floatValue = 0;										 
 float position;
 
 	if (_isHorizontal) 									// Adjust point to lie
@@ -484,6 +476,7 @@ NSDate *theDistantFuture = [NSDate distantFuture];
 PSMatrix* matrix;
 NSEventType eventType;
 NSRect knobRect = {{0,0},{0,0}};
+int periodCount = 0;								// allows a forced update
 NSArray* path = [self _pathBetweenSubview:self 
 					  toSuperview:[window contentView]];
 
@@ -496,19 +489,26 @@ NSArray* path = [self _pathBetweenSubview:self
 	preCalcValues = YES;
 
 	_hitPart = NSScrollerKnob;						// set periodic events rate
-													// to achieve max of 30fps
+													// to achieve max of ~30fps
 	[NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.03];
 	[[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
 
 	while ((eventType = [theEvent type]) != NSLeftMouseUp)				 
 		{											// user is moving scroller
 		if (eventType != NSPeriodic)				// loop until left mouse up
-			apoint = [theEvent locationInWindow];
-		else
-			{									
+			{
+			apoint = [theEvent locationInWindow];	// zero the periodic count 
+			periodCount = 0;						// whenever a real position
+			}										// event is recieved
+		else				
+			{						// if 6x periods have gone by w/o movement 
+			if(periodCount == 6)	// check mouse and update if necessary
+				apoint = [window mouseLocationOutsideOfEventStream];
+
 			point = [matrix pointInMatrixSpace:apoint];
+
 			if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) 
-				{
+				{									
 				floatValue = [self _floatValueForMousePointFromPreCalc:point];
 
 				if (floatValue != oldFloatValue) 
@@ -523,28 +523,31 @@ NSArray* path = [self _pathBetweenSubview:self
 							_floatValue = floatValue;
 						}
 
-					[self drawKnobSlot];				// draw scroller slot
-					[self drawKnob];					// draw scroller knob
+					[self drawKnobSlot];			// draw the scroller slot
+					[self drawKnob];				// draw the scroller knob
 					[_target performSelector:_action withObject:self];
 					[window flushWindow];
 
 					oldFloatValue = floatValue;
-					}
-
-				knobRect.origin = point;
-				}
-			}
+					}						// avoid timing related scrolling
+											// hesitation by counting number of
+				knobRect.origin = point;	// periodic events since scroll pos
+				}							// was updated, when this reaches
+			periodCount++;					// 6x periodic rate an update is
+			}								// forced on next periodic event
 		theEvent = [app nextEventMatchingMask:eventMask
 						untilDate:theDistantFuture 
 						inMode:NSEventTrackingRunLoopMode
 						dequeue:YES];
   		}				
 	[NSEvent stopPeriodicEvents];
-													// scrolling has stopped 
-	if([_target respondsToSelector:@selector(contentView)])
-		{
-		if([_target respondsToSelector:@selector(_freeMatrix)])
-			[[_target contentView] _freeMatrix];
+
+	if([_target isKindOf:[NSScrollView class]])			// hack for XRAW FIX ME
+		{												 
+		NSObject *targetCV = (NSObject *)[_target contentView];
+
+		if([targetCV respondsToSelector:@selector(_freeMatrix)])
+			[targetCV _freeMatrix];
 		}
 
 	preCalcValues = NO;
@@ -633,51 +636,42 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
 	return ret;
 }												
 
-- (void)encodeWithCoder:aCoder
-{
-}
-
-- initWithCoder:aDecoder
-{
-  return self;
-}
-
 //
 //	draw the scroller
 //
 - (void)drawRect:(NSRect)rect
 {
-  NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
-	      rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-
-  [self drawArrow:NSScrollerDecrementArrow highlight:NO];	
-  [self drawArrow:NSScrollerIncrementArrow highlight:NO];
-
-  [self drawKnobSlot];
-  [self drawKnob];
+	NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
+			rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+	
+	[self drawArrow:NSScrollerDecrementArrow highlight:NO];	
+	[self drawArrow:NSScrollerIncrementArrow highlight:NO];
+	
+	[self drawKnobSlot];
+	[self drawKnob];
 }
 
 - (void)drawArrow:(NSScrollerArrow)whichButton highlight:(BOOL)flag
 {
-  NSRect rect = [self rectForPart:(whichButton == NSScrollerIncrementArrow
-					? NSScrollerIncrementLine
-					: NSScrollerDecrementLine)];
-  id theCell = nil;
+NSRect rect = [self rectForPart:(whichButton == NSScrollerIncrementArrow
+						? NSScrollerIncrementLine : NSScrollerDecrementLine)];
+id theCell = nil;
 
-  NSDebugLog (@"position of %s cell is (%f, %f)",
-	 (whichButton == NSScrollerIncrementArrow ? "increment" : "decrement"),
-	 rect.origin.x, rect.origin.y);
-
-  switch (whichButton) {
-    case NSScrollerDecrementArrow:
-      theCell = (_isHorizontal ? leftCell : downCell);
-      break;
-    case NSScrollerIncrementArrow:
-      theCell = (_isHorizontal ? rightCell : upCell);
-      break;
-  }
-
-  [theCell drawWithFrame:rect inView:self];
+	NSDebugLog (@"position of %s cell is (%f, %f)",
+		(whichButton == NSScrollerIncrementArrow ? "increment" : "decrement"),
+		rect.origin.x, rect.origin.y);
+	
+	switch (whichButton) 
+		{
+		case NSScrollerDecrementArrow:
+			theCell = (_isHorizontal ? leftCell : downCell);
+			break;
+		case NSScrollerIncrementArrow:
+			theCell = (_isHorizontal ? rightCell : upCell);
+			break;
+		}
+	
+	[theCell drawWithFrame:rect inView:self];
 }
 
 - (void)drawKnob

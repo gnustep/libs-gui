@@ -81,7 +81,7 @@ enum {							// resized when the view's superview is resized
   id window;
   NSMutableArray *tracking_rects;
   NSMutableArray *cursor_rects;
-  NSRect invalidatedRectangle;
+  NSRect invalidRect;
   unsigned int autoresizingMask;
 
   BOOL is_rotated_from_base;

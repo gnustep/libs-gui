@@ -105,7 +105,7 @@ NSTextView.m \
 NSView.m \
 NSWindow.m \
 NSWorkspace.m \
-TrackingRectangle.m \
+GSTrackingRect.m \
 GNUAlertPanel.m \
 GNUServicesManager.m \
 PSMatrix.m \
@@ -199,10 +199,10 @@ AppKit/NSTextView.h \
 AppKit/NSView.h \
 AppKit/NSWindow.h \
 AppKit/NSWorkspace.h \
-AppKit/TrackingRectangle.h \
+AppKit/GSTrackingRect.h \
 AppKit/PSMatrix.h \
-AppKit/GNUServicesManager.h \
 AppKit/nsimage-tiff.h \
+AppKit/GNUServicesManager.h \
 
 -include GNUmakefile.preamble
 

@@ -44,7 +44,7 @@
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSColor.h>
-#include <AppKit/TrackingRectangle.h>
+#include <AppKit/GSTrackingRect.h>
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSCursor.h>
@@ -72,10 +72,10 @@
 		}
 }
 
-+ (NSView *)_windowViewWithFrame:(NSRect)frameRect		// create the top view
-{														// view in the view's
-	return nil;											// heirarchy (backend)
-}
++ (NSView *)_windowViewWithFrame:(NSRect)frameRect		// create the view at  
+{														// the root of window's 
+	return nil;											// view heirarchy. 
+}														// (backend)
 
 + (void)removeFrameUsingName:(NSString *)name				
 {														// Saving and restoring 
@@ -772,7 +772,7 @@ NSApplication *theApp = [NSApplication sharedApplication];
 {
 NSArray *tr = [theView trackingRectangles];
 NSArray *sb = [theView subviews];
-TrackingRectangle *r;
+GSTrackingRect *r;
 int i, j;
 BOOL last, now;
 NSEvent *e;
@@ -780,7 +780,7 @@ NSEvent *e;
 	j = [tr count];								// Loop through the tracking
 	for (i = 0;i < j; ++i)						// rectangles
 		{
-		r = (TrackingRectangle *)[tr objectAtIndex:i];
+		r = (GSTrackingRect *)[tr objectAtIndex:i];
 												// Check mouse at last point
 		last = [theView mouse:last_point inRect:[r rectangle]];
 												// Check mouse at current point
@@ -829,7 +829,7 @@ NSEvent *e;
 {
 NSArray *tr = [theView cursorRectangles];
 NSArray *sb = [theView subviews];
-TrackingRectangle *r;
+GSTrackingRect *r;
 int i, j;
 BOOL last, now;
 NSEvent *e;
@@ -841,7 +841,7 @@ NSRect rect;
 	j = [tr count];
 	for (i = 0;i < j; ++i)							// Convert cursor rectangle
 		{											// to window coordinates
-		r = (TrackingRectangle *)[tr objectAtIndex:i];
+		r = (GSTrackingRect *)[tr objectAtIndex:i];
 
 		lastPointConverted = [theView convertPoint:last_point fromView:nil];
 		locationConverted = [theView convertPoint:loc fromView:nil];
@@ -966,7 +966,7 @@ NSView *v;
 		case NSCursorUpdate:								// Cursor update
 			if ([theEvent trackingNumber])			// if it's a mouse entered
 				{									// push the cursor
-	    		TrackingRectangle *r =(TrackingRectangle *)[theEvent userData];
+	    		GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
 				NSCursor *c = (NSCursor *)[r owner];
 				[c push];
 				}									// it is a mouse exited
