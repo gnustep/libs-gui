@@ -1,3 +1,12 @@
+2000-05-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/GSMethodTable.h: 
+	* Headers/gnustep/gui/NSGraphics.h
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	* Source/Functions.m
+	* Source/NSGraphicsContext.m
+	Made all the button, bezel and groove methods functions again.
+	
 2001-05-04  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCursor.m: Corrected illegal use of reserved word (id)
