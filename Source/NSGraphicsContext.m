@@ -603,6 +603,8 @@ NSGraphicsContext	*GSCurrentContext(void)
     GET_IMP(@selector(DPSrmoveto::));
   methodTable.DPSstroke =
     GET_IMP(@selector(DPSstroke));
+  methodTable.DPSshfill =
+    GET_IMP(@selector(DPSshfill:));
 
   methodTable.GSSendBezierPath_ =
     GET_IMP(@selector(GSSendBezierPath:));
@@ -1294,6 +1296,11 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 - (void) DPSstroke
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSshfill: (NSDictionary *)shaderDictionary
 {
   [self subclassResponsibility: _cmd];
 }

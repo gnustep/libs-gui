@@ -394,6 +394,10 @@ static inline void
 DPSstroke(GSCTXT *ctxt)
 __attribute__((unused));
 
+static inline void
+DPSshfill(GSCTXT *ctxt, NSDictionary *shaderDictionary)
+__attribute__((unused));
+
 
 static inline void
 GSSendBezierPath(GSCTXT *ctxt, NSBezierPath * path)
@@ -1078,6 +1082,13 @@ DPSstroke(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSstroke)
     (ctxt, @selector(DPSstroke));
+}
+
+static inline void
+DPSshfill(GSCTXT *ctxt, NSDictionary *shaderDictionary)
+{
+  (ctxt->methods->DPSshfill)
+    (ctxt, @selector(DPSshfill:), shaderDictionary);
 }
 
 

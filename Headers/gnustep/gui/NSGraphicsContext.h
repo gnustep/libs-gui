@@ -336,6 +336,7 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSrlineto: (float)x : (float)y;
 - (void) DPSrmoveto: (float)x : (float)y;
 - (void) DPSstroke;
+- (void) DPSshfill: (NSDictionary *)shaderDictionary;
 
 - (void) GSSendBezierPath: (NSBezierPath *)path;
 - (void) GSRectClipList: (const NSRect *)rects : (int) count;

@@ -306,6 +306,12 @@ typedef struct {
                   NSString *colorSpaceName, 
                   const unsigned char *const data[5]);
 
+  /* This probably belongs next to DPSstroke, but inserting members in this
+  struct breaks apps that use PS* or DPS* functions and were compiled with
+  an earlier version, so it's here until we figure out how to handle that.
+  */
+  void (*DPSshfill)
+        (NSGraphicsContext*, SEL, NSDictionary *);
 } gsMethodTable;
 
 #endif

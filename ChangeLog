@@ -1,3 +1,11 @@
+2003-05-18 00:00  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/DPSOperators.h,
+	Headers/gnustep/gui/PSOperators.h,
+	Headers/gnustep/gui/GSMethodTable.h,
+	Headers/gnustep/gui/NSGraphicsContext.h, Source/NSGraphicsContext.m:
+	Add shfill operator.
+
 2003-05-15  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSInfoPanel.m: Draw authors in the order they occur in

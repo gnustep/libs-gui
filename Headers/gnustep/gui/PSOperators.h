@@ -319,6 +319,9 @@ static inline void
 PSstroke()
 __attribute__((unused));
 
+static inline void
+PSshfill(NSDictionary *shaderDictionary)
+__attribute__((unused));
 
 
 /*-------------------------------------------------------------------------*/
@@ -767,6 +770,11 @@ PSstroke()
   DPSstroke(DEFCTXT);
 }
 
+static inline void
+PSshfill(NSDictionary *shaderDictionary)
+{
+  DPSshfill(DEFCTXT, shaderDictionary);
+}
 
 
 /*-------------------------------------------------------------------------*/
