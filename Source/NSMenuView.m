@@ -625,14 +625,13 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   // Compute position for popups, if needed
   if (selectedItemIndex > -1)
     {
-      screenRect.origin.y += ([self convertSize: cellSize
-				    toView: nil].height
-			      * selectedItemIndex);
+      screenRect.origin.y
+	+= [self convertSize: cellSize toView: nil].height * selectedItemIndex;
     }
   
   // Get the frameRect
   r = [NSMenuWindow frameRectForContentRect: screenRect
-		       styleMask: [_window styleMask]];
+				  styleMask: [_window styleMask]];
   
   // Update position,if needed, using the preferredEdge;
   // It seems we should be calling [self resizeWindowWithMaxHeight:];
@@ -641,7 +640,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   // Set the window frame
   [_window setFrame: r 
-	  display: YES]; 
+	    display: YES]; 
 }
 
 /*
@@ -657,11 +656,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   // Draw a dark gray line at the left of the menu item cells.
   DPSgsave(ctxt);
-    DPSsetlinewidth(ctxt, 1);
-    DPSsetgray(ctxt, 0.333);
-    DPSmoveto(ctxt, _bounds.origin.x, _bounds.origin.y);
-    DPSrlineto(ctxt, 0, _bounds.size.height);
-    DPSstroke(ctxt);
+  DPSsetlinewidth(ctxt, 1);
+  DPSsetgray(ctxt, 0.333);
+  DPSmoveto(ctxt, _bounds.origin.x, _bounds.origin.y);
+  DPSrlineto(ctxt, 0, _bounds.size.height);
+  DPSstroke(ctxt);
   DPSgrestore(ctxt);
 
   // Draw the menu cells.
