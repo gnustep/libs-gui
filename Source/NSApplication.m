@@ -559,6 +559,65 @@ static NSCell* tileCell = nil;
  * Instance methods
  */
 
+/**
+ * The real gui initialisation ... called from -init
+ */
+- (void) _init
+{
+  GSDisplayServer *srv;
+  /* Initialization must be enclosed in an autorelease pool.  */
+  CREATE_AUTORELEASE_POOL (_app_init_pool);
+  
+  /* 
+   * Set NSApp as soon as possible, since other gui classes (which
+   * we refer or use in this method) might be calling [NSApplication
+   * sharedApplication] during their initialization, and we want
+   * those calls to succeed.  
+   */
+  NSApp = self;
+  
+  /* Initialize the backend here.  */
+  initialize_gnustep_backend();
+  
+  /* Connect to our window server.  */
+  srv = [GSDisplayServer serverWithAttributes: nil];
+  RETAIN(srv);
+  [GSDisplayServer setCurrentServer: srv];
+  
+  /* Create a default context.  */
+  _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
+  RETAIN(_default_context);
+  [NSGraphicsContext setCurrentContext: _default_context];
+  
+  /* Initialize font manager.  */
+  [NSFontManager sharedFontManager];
+  
+  _hidden = [[NSMutableArray alloc] init];
+  _inactive = [[NSMutableArray alloc] init];
+  _unhide_on_activation = YES;
+  _app_is_hidden = YES;
+  /* Ivar already automatically initialized to NO when the app is
+     created.  */
+  //_app_is_active = NO;
+  //_main_menu = nil;
+  _windows_need_update = YES;
+  
+  /* Set a new exception handler for the gui library.  */
+  NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+  
+  _listener = [GSServicesManager newWithApplication: self];
+  
+  /* NSEvent doesn't use -init so we use +alloc instead of +new.  */
+  _current_event = [NSEvent alloc]; // no current event
+  null_event = [NSEvent alloc];    // create dummy event
+  
+  /* We are the end of responder chain.  */
+  [self setNextResponder: nil];
+  
+  RELEASE (_app_init_pool);
+}
+
+
 /* 
  * This method initializes an NSApplication instance.  It sets the
  * shared application instance to be the receiver, and then connects
@@ -602,60 +661,15 @@ static NSCell* tileCell = nil;
    * and for subclasses.
    */
   NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
-  {
-    GSDisplayServer *srv;
-    /* Initialization must be enclosed in an autorelease pool.  */
-    CREATE_AUTORELEASE_POOL (_app_init_pool);
-    
-    /* 
-     * Set NSApp as soon as possible, since other gui classes (which
-     * we refer or use in this method) might be calling [NSApplication
-     * sharedApplication] during their initialization, and we want
-     * those calls to succeed.  
-     */
-    NSApp = self;
-    
-    /* Initialize the backend here.  */
-    initialize_gnustep_backend();
-    
-    /* Connect to our window server.  */
-    srv = [GSDisplayServer serverWithAttributes: nil];
-    RETAIN(srv);
-    [GSDisplayServer setCurrentServer: srv];
-    
-    /* Create a default context.  */
-    _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
-    RETAIN(_default_context);
-    [NSGraphicsContext setCurrentContext: _default_context];
-    
-    /* Initialize font manager.  */
-    [NSFontManager sharedFontManager];
-    
-    _hidden = [[NSMutableArray alloc] init];
-    _inactive = [[NSMutableArray alloc] init];
-    _unhide_on_activation = YES;
-    _app_is_hidden = YES;
-    /* Ivar already automatically initialized to NO when the app is
-       created.  */
-    //_app_is_active = NO;
-    //_main_menu = nil;
-    _windows_need_update = YES;
-    
-    /* Set a new exception handler for the gui library.  */
-    NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
-    
-    _listener = [GSServicesManager newWithApplication: self];
-    
-    /* NSEvent doesn't use -init so we use +alloc instead of +new.  */
-    _current_event = [NSEvent alloc]; // no current event
-    null_event = [NSEvent alloc];    // create dummy event
-    
-    /* We are the end of responder chain.  */
-    [self setNextResponder: nil];
-    
-    RELEASE (_app_init_pool);
-  }
-  return self;
+
+  /*
+   * The appkit should run in the main thread ... so to be sure we perform
+   * all the initialisation there.
+   */
+  [self performSelectorOnMainThread: @selector(_init)
+			 withObject: self
+		      waitUntilDone: YES];
+  return NSApp;
 }
 
 - (void) finishLaunching
