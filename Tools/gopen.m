@@ -182,5 +182,5 @@ main(int argc, char** argv, char **env_c)
 	      }
     }
   [pool release];
-  exit(0);
+  exit(EXIT_SUCCESS);
 }

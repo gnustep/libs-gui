@@ -49,7 +49,7 @@ main(int argc, char** argv, char **env)
     {
       NSLog(@"unable to get process information!\n");
       [pool release];
-      exit(0);
+      exit(EXIT_SUCCESS);
     }
 
   args = [proc arguments];
@@ -62,27 +62,27 @@ main(int argc, char** argv, char **env)
 "set_show_service enables or disables the display of a specified service\n"
 "item.  It's should be in the form 'set_show_services --enable name' or \n"
 "'set_show_service --disable name' where 'name' is a service name.\n");
-	  exit(0);
+	  exit(EXIT_SUCCESS);
 	}
       if ([[args objectAtIndex: index] isEqual: @"--enable"])
 	{
 	  if (index >= [args count] - 1)
 	    {
 	      NSLog(@"No name specified for enable.\n");
-	      exit(1);
+	      exit(EXIT_FAILURE);
 	    }
 	  NSSetShowsServicesMenuItem([args objectAtIndex: ++index], YES);
-	  exit(0);
+	  exit(EXIT_SUCCESS);
 	}
       if ([[args objectAtIndex: index] isEqual: @"--disable"])
 	{
 	  if (index >= [args count] - 1)
 	    {
 	      NSLog(@"No name specified for disable.\n");
-	      exit(1);
+	      exit(EXIT_FAILURE);
 	    }
 	  NSSetShowsServicesMenuItem([args objectAtIndex: ++index], NO);
-	  exit(0);
+	  exit(EXIT_SUCCESS);
 	}
     }
 

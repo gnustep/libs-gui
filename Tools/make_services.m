@@ -88,7 +88,7 @@ main(int argc, char** argv, char **env_c)
     {
       NSLog(@"unable to get process information!\n");
       [pool release];
-      exit(0);
+      exit(EXIT_SUCCESS);
     }
 
   [NSSerializer shouldBeCompact: YES];
@@ -120,7 +120,7 @@ main(int argc, char** argv, char **env_c)
 "in 'filename' contains a valid services definition.\n"
 "You may use 'make_services --verbose' to produce descriptive output.\n",
 [cacheName cString]);
-	  exit(0);
+	  exit(EXIT_SUCCESS);
 	}
       if ([[args objectAtIndex: index] isEqual: @"--test"])
 	{
@@ -149,7 +149,7 @@ main(int argc, char** argv, char **env_c)
 		  NSLog(@"bad info - %@\n", file);
 		}
 	    }
-	  exit(0);
+	  exit(EXIT_SUCCESS);
 	}
     }
 
@@ -198,7 +198,7 @@ main(int argc, char** argv, char **env_c)
 	{
 	  NSLog(@"couldn't create %@\n", usrRoot);
 	  [pool release];
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
     }
 
@@ -211,7 +211,7 @@ main(int argc, char** argv, char **env_c)
 	{
 	  NSLog(@"couldn't create %@\n", usrRoot);
 	  [pool release];
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
     }
 
@@ -308,7 +308,7 @@ main(int argc, char** argv, char **env_c)
 	{
 	  NSLog(@"couldn't write %@\n", str);
 	  [pool release];
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
     }
 
@@ -331,12 +331,12 @@ main(int argc, char** argv, char **env_c)
 	{
 	  NSLog(@"couldn't write %@\n", str);
 	  [pool release];
-	  exit(1);
+	  exit(EXIT_FAILURE);
 	}
     }
 
   [pool release];
-  exit(0);
+  exit(EXIT_SUCCESS);
 }
 
 /*
