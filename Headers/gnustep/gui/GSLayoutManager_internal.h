@@ -82,7 +82,7 @@ typedef struct
   is necessary, the mapping will have to be range to range. (Eg. if you
   have characters 'ab' mapped to glyphs 'AB', reordered to 'BA', then the
   range 'ab' will be mapped to the range 'BA'. */
-  int char_offset:21; /* This could be made a lot smaller, if necessary */
+  unsigned int char_offset:21; /* This could be made a lot smaller, if necessary */
 
   unsigned int drawsOutsideLineFragment:1;
   unsigned int isNotShown:1;
