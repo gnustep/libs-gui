@@ -234,7 +234,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
       r = [_font boundingRectForFont];
       /* Should make up 110, 20 for default font */
-      _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 5.);
+      _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 6.);
+
+      if (_cellSize.height < 20)
+	_cellSize.height = 20;
 
       [self setNeedsSizing: YES];
     }
