@@ -181,10 +181,10 @@
   [self setTextColor: [NSColor windowFrameTextColor]];
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setFont: [NSFont titleBarFontOfSize:12]];
-  [self setEditable: NO];
-  [self setBezeled: YES];
-  [self setAlignment: NSCenterTextAlignment];
-  _draws_background = YES;
+  _cell.is_editable = NO;
+  _cell.is_bezeled = YES;
+  _cell.text_align = NSCenterTextAlignment;
+  _textfieldcell_draws_background = YES;
 
   return self;
 }
