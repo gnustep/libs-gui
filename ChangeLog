@@ -1,3 +1,8 @@
+Wed Feb  5 04:42:16 2003  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSPrintOperation.m ([-_printOperationDidRun:success:
+	contextInfo:]): Fixed calling the delegate method.
+
 2003-02-03 02:49  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSLayoutManager.h, Source/NSLayoutManager.m:
