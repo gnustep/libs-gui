@@ -117,10 +117,10 @@ static inline MPoint MakePoint (int x, int y)
 	 highlight: (BOOL)highlight
 	startIndex: (int)start
 	  endIndex: (int)end;
--(BOOL) _selectNextSelectableCellAfterRow: (int)row
-				   column: (int)column;
--(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
-					column: (int)column;
+- (BOOL) _selectNextSelectableCellAfterRow: (int)row
+				    column: (int)column;
+- (BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
+					 column: (int)column;
 @end
 
 enum {
@@ -359,8 +359,10 @@ static SEL getSel;
 	  _cells[i][column] = old;
 	  _selectedCells[i][column] = NO;
 	}
-	if (_selectedCell && (_selectedColumn >= column))
-	_selectedColumn++;
+      if (_selectedCell && (_selectedColumn >= column))
+	{
+	  _selectedColumn++;
+	}
     }
 
   /*
@@ -376,7 +378,8 @@ static SEL getSel;
 	}
     }
 
-  if (_mode == NSRadioModeMatrix && !_allowsEmptySelection && _selectedCell == nil)
+  if (_mode == NSRadioModeMatrix && _allowsEmptySelection == NO
+    && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -459,8 +462,10 @@ static SEL getSel;
     }
 
   if (_mode == NSRadioModeMatrix && !_allowsEmptySelection
-      && _selectedCell == nil)
-    [self selectCellAtRow: 0 column: 0];
+    && _selectedCell == nil)
+    {
+      [self selectCellAtRow: 0 column: 0];
+    }
 }
 
 - (NSCell*) makeCellAtRow: (int)row
@@ -497,9 +502,14 @@ static SEL getSel;
 
   rect.origin.x = column * (_cellSize.width + _intercell.width);
   if (_rFlags.flipped_view)
-    rect.origin.y = row * (_cellSize.height + _intercell.height);
+    {
+      rect.origin.y = row * (_cellSize.height + _intercell.height);
+    }
   else
-    rect.origin.y = (_numRows - row - 1) * (_cellSize.height + _intercell.height);
+    {
+      rect.origin.y = (_numRows - row - 1)
+	* (_cellSize.height + _intercell.height);
+    }
   rect.size = _cellSize;
   return rect;
 }
@@ -522,8 +532,10 @@ static SEL getSel;
     }
 
   if ((row == _selectedRow) && (column == _selectedColumn) 
-      && (_selectedCell != nil))
-    _selectedCell = newCell;
+    && (_selectedCell != nil))
+    {
+      _selectedCell = newCell;
+    }
   
   ASSIGN(_cells[row][column], newCell);
 
@@ -893,7 +905,8 @@ static SEL getSel;
 {
   int i,j;
 
-  if (!_selectedCell || (!_allowsEmptySelection && (_mode == NSRadioModeMatrix)))
+  if (!_selectedCell
+    || (!_allowsEmptySelection && (_mode == NSRadioModeMatrix)))
     return;
 
   /*
@@ -929,7 +942,7 @@ static SEL getSel;
       for (j = 0; j < _numCols; j++)
 	{
 	  if ([_cells[i][j] isEnabled] == YES
-	      && [_cells[i][j] isEditable] == NO)
+	    && [_cells[i][j] isEditable] == NO)
 	    {
 	      _selectedCell = _cells[i][j];
 	      [_selectedCell setState: NSOnState];
@@ -956,7 +969,7 @@ static SEL getSel;
    * is the same. (in NSRadioModeMatrix)
    */
   if (_mode == NSRadioModeMatrix && _selectedCell && aCell
-      && _selectedCell != aCell)
+    && _selectedCell != aCell)
     {
       _selectedCells[_selectedRow][_selectedColumn] = NO;
       [_selectedCell setState: NSOffState];
@@ -993,9 +1006,11 @@ static SEL getSel;
 	  _dottedColumn = column;
 
 	  if (lastRow != -1 && lastColumn != -1
-	      && (lastRow != row || lastColumn != column) 
-	      && [self window] != nil)
-	    [self drawCellAtRow: lastRow column: lastColumn];
+	    && (lastRow != row || lastColumn != column) 
+	    && [self window] != nil)
+	    {
+	      [self drawCellAtRow: lastRow column: lastColumn];
+	    }
 	}
 
       [_selectedCell setState: NSOnState];
@@ -1265,7 +1280,7 @@ static SEL getSel;
       if ([_selectedCell isSelectable])
 	{
 	  [self selectTextAtRow: _selectedRow
-		column: _selectedColumn];
+			 column: _selectedColumn];
 	}
       else
 	{
@@ -3531,6 +3546,7 @@ static SEL getSel;
 				   column: (int)column
 {
   int i,j;
+
   if (row > -1)
     {
       // First look for cells in the same row
@@ -3568,6 +3584,7 @@ static SEL getSel;
 					column: (int)column
 {
   int i,j;
+
   if (row < _numRows)
     {
       // First look for cells in the same row
@@ -3575,8 +3592,7 @@ static SEL getSel;
 	{
 	  if ([_cells[row][j] isEnabled] && [_cells[row][j] isSelectable])
 	    {
-	      _selectedCell = [self selectTextAtRow: row
-				    column: j];
+	      _selectedCell = [self selectTextAtRow: row column: j];
 	      _selectedRow = row;
 	      _selectedColumn = j;
 	      return YES;
@@ -3590,8 +3606,7 @@ static SEL getSel;
 	{
 	  if ([_cells[i][j] isEnabled] && [_cells[i][j] isSelectable])
 	    {
-	      _selectedCell = [self selectTextAtRow: i
-				    column: j];
+	      _selectedCell = [self selectTextAtRow: i column: j];
 	      _selectedRow = i;
 	      _selectedColumn = j;
 	      return YES;

@@ -36,23 +36,24 @@
 /* Class variables */
 static Class defaultCellClass = nil;
 
-+ (void)initialize
++ (void) initialize
 {
-  if (self == [NSForm class]) {
-    /* Set the initial version */
-    [self setVersion: 1];
+  if (self == [NSForm class])
+    {
+      /* Set the initial version */
+      [self setVersion: 1];
 
-    /* Set the default cell class */
-    defaultCellClass = [NSFormCell class];
-  }
+      /* Set the default cell class */
+      defaultCellClass = [NSFormCell class];
+    }
 }
 
-+ (Class)cellClass
++ (Class) cellClass
 {
   return defaultCellClass;
 }
 
-+ (void)setCellClass:(Class)classId
++ (void) setCellClass: (Class)classId
 {
   defaultCellClass = classId;
 }
@@ -69,9 +70,10 @@ static Class defaultCellClass = nil;
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide];
 
-  [self setIntercellSpacing:NSMakeSize (0, 4)];
+  [self setIntercellSpacing: NSMakeSize (0, 4)];
   return self;
 }
+
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
 	   prototype: (NSCell*)prototype
@@ -79,40 +81,40 @@ static Class defaultCellClass = nil;
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
-		prototype: (NSCell*)prototype
-		numberOfRows: (int)rowsHigh
-		numberOfColumns: (int)colsWide];
+			 mode: (int)aMode
+		    prototype: (NSCell*)prototype
+		 numberOfRows: (int)rowsHigh
+	      numberOfColumns: (int)colsWide];
 
-  [self setIntercellSpacing:NSMakeSize (0, 4)];  
+  [self setIntercellSpacing: NSMakeSize (0, 4)];  
   return self;
 }
 
-- (NSFormCell*)addEntry:(NSString*)title
+- (NSFormCell*) addEntry: (NSString*)title
 {
-  return [self insertEntry:title atIndex:[self numberOfRows]];
+  return [self insertEntry: title atIndex: [self numberOfRows]];
 }
 
-- (NSFormCell*)insertEntry:(NSString*)title
-		   atIndex:(int)index
+- (NSFormCell*) insertEntry: (NSString*)title
+		    atIndex: (int)index
 {
-  NSFormCell *new_cell = [[[isa cellClass] alloc] initTextCell:title];
+  NSFormCell *new_cell = [[[isa cellClass] alloc] initTextCell: title];
 
-  [self insertRow:index];
-  [self putCell:new_cell atRow:index column:0];
+  [self insertRow: index];
+  [self putCell: new_cell atRow: index column: 0];
   RELEASE (new_cell);
   
   return new_cell;
 }
 
-- (void)removeEntryAtIndex:(int)index
+- (void) removeEntryAtIndex: (int)index
 {
   [[NSNotificationCenter defaultCenter] 
     removeObserver: self 
     name: _NSFormCellDidChangeTitleWidthNotification
-    object: [self cellAtRow:index column:0]];
+    object: [self cellAtRow: index column: 0]];
   
-  [self removeRow:index];
+  [self removeRow: index];
 }
 
 /* Overriding this method allows decoding stuff to be inherited
@@ -130,12 +132,12 @@ static Class defaultCellClass = nil;
   
   [[NSNotificationCenter defaultCenter]
     addObserver: self
-    selector: @selector(_setTitleWidthNeedsUpdate:)
+    selector: @selector(_setTitleWidthNeedsUpdate: )
     name: _NSFormCellDidChangeTitleWidthNotification
     object: newCell];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] 
     removeObserver: self 
@@ -145,106 +147,106 @@ static Class defaultCellClass = nil;
   [super dealloc];
 }
 
-- (void)setBezeled:(BOOL)flag
+- (void) setBezeled: (BOOL)flag
 {
   int i, count = [self numberOfRows];
 
   /* Set the bezeled attribute to the cell prototype */
-  [[self prototype] setBezeled:flag];
+  [[self prototype] setBezeled: flag];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setBezeled:flag];
+    [[self cellAtRow: i column: 0] setBezeled: flag];
 }
 
-- (void)setBordered:(BOOL)flag
+- (void) setBordered: (BOOL)flag
 {
   int i, count = [self numberOfRows];
 
   /* Set the bordered attribute to the cell prototype */
-  [[self prototype] setBordered:flag];
+  [[self prototype] setBordered: flag];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setBordered:flag];
+    [[self cellAtRow: i column: 0] setBordered: flag];
 }
 
-- (void)setEntryWidth:(float)width
+- (void) setEntryWidth: (float)width
 {
   NSSize size = [self cellSize];
 
   size.width = width;
-  [self setCellSize:size];
+  [self setCellSize: size];
 }
 
-- (void)setInterlineSpacing:(float)spacing
+- (void) setInterlineSpacing: (float)spacing
 {
-  [self setIntercellSpacing:NSMakeSize(0, spacing)];
+  [self setIntercellSpacing: NSMakeSize(0, spacing)];
 }
 
 /* For the title attributes we use the corresponding attributes from the cell.
    For the text attributes we use instead the attributes inherited from the
    NSCell class. */
-- (void)setTitleAlignment:(NSTextAlignment)aMode
+- (void) setTitleAlignment: (NSTextAlignment)aMode
 {
   int i, count = [self numberOfRows];
 
   /* Set the title alignment attribute to the cell prototype */
-  [[self prototype] setTitleAlignment:aMode];
+  [[self prototype] setTitleAlignment: aMode];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setTitleAlignment:aMode];
+    [[self cellAtRow: i column: 0] setTitleAlignment: aMode];
 }
 
-- (void)setTextAlignment:(int)aMode
+- (void) setTextAlignment: (int)aMode
 {
   int i, count = [self numberOfRows];
 
   /* Set the text alignment attribute to the cell prototype */
-  [[self prototype] setAlignment:aMode];
+  [[self prototype] setAlignment: aMode];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setAlignment:aMode];
+    [[self cellAtRow: i column: 0] setAlignment: aMode];
 }
 
-- (void)setTitleFont:(NSFont*)fontObject
+- (void) setTitleFont: (NSFont*)fontObject
 {
   int i, count = [self numberOfRows];
 
   /* Set the title font attribute to the cell prototype */
-  [[self prototype] setTitleFont:fontObject];
+  [[self prototype] setTitleFont: fontObject];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setTitleFont:fontObject];
+    [[self cellAtRow: i column: 0] setTitleFont: fontObject];
 }
 
-- (void)setTextFont:(NSFont*)fontObject
+- (void) setTextFont: (NSFont*)fontObject
 {
   int i, count = [self numberOfRows];
 
   /* Set the text font attribute to the cell prototype */
-  [[self prototype] setFont:fontObject];
+  [[self prototype] setFont: fontObject];
 
   for (i = 0; i < count; i++)
-    [[self cellAtRow:i column:0] setFont:fontObject];
+    [[self cellAtRow: i column: 0] setFont: fontObject];
 }
 
-- (int)indexOfCellWithTag:(int)aTag
+- (int) indexOfCellWithTag: (int)aTag
 {
   int i, count = [self numberOfRows];
 
   for (i = 0; i < count; i++)
-    if ([[self cellAtRow:i column:0] tag] == aTag)
+    if ([[self cellAtRow: i column: 0] tag] == aTag)
       return i;
   return -1;
 }
 
-- (int)indexOfSelectedItem
+- (int) indexOfSelectedItem
 {
   return [self selectedRow];
 }
 
-- (id)cellAtIndex:(int)index
+- (id) cellAtIndex: (int)index
 {
-  return [self cellAtRow:index column:0];
+  return [self cellAtRow: index column: 0];
 }
 
 -(void) _setTitleWidthNeedsUpdate: (NSNotification*)notification
@@ -292,22 +294,22 @@ static Class defaultCellClass = nil;
   [super drawRect: rect];
 }
 
-- (void)drawCellAtIndex:(int)index
+- (void) drawCellAtIndex: (int)index
 {
-  id theCell = [self cellAtIndex:index];
+  id theCell = [self cellAtIndex: index];
 
-  [theCell drawWithFrame:[self cellFrameAtRow:index column:0]
-	   inView:self];
+  [theCell drawWithFrame: [self cellFrameAtRow: index column: 0]
+		  inView: self];
 }
 
-- (void)drawCellAtRow:(int)row column:(int)column
+- (void) drawCellAtRow: (int)row column: (int)column
 {
-  [self drawCellAtIndex:row];
+  [self drawCellAtIndex: row];
 }
 
-- (void)selectTextAtIndex:(int)index
+- (void) selectTextAtIndex: (int)index
 {
-  [self selectTextAtRow:index column:0];
+  [self selectTextAtRow: index column: 0];
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
