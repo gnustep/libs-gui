@@ -1,3 +1,26 @@
+2002-02-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m
+	Corrected [TIFFRepresentation], was calling the wrong
+	NSBitmapImageRep method.
+	* Source/NSFontManager.m
+	[orderFrontFontPanel:] no longer sets the selected font on the
+	panel, as this gets done by the panel itself.
+	* Headers/gnustep/gui/NSFontPanel.h
+	New ivars for traits, weight and a future preview string.
+	* Source/NSFontPanel.m
+	[reloadDefaultFontFamilies] load the family browser and redisplay
+	the selected font. [setPanelFont:isMultiple:] load the face
+	browser, store font weight and traits and display font name in
+	preview only if no preview string is set. [_initWithoutGModel]
+	made the set button the default button. Split most code from
+	[_togglePreview:] into separate method [_doPreview], which is
+	called, when the preview state should not change. In [_doPreview]
+	only display font name if preview string is not set. 
+	[browser:selectRow:inColumn:], when selecting a family select a
+	face with the same weight and traits as the originaly
+	selected. When selecting a face, store its weight and traits.
+	
 2002-02-01  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSBezierPath.m:
