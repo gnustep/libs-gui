@@ -111,6 +111,24 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 @end
 // end: _GNULineLayoutInfo------------------------------------------------------
 
+/* This is the height of the line/insertion point of the default font
+ * - used when there is no text/font in the textview.  FIXME - in many
+ * cases we use this, but it's inappropriate - consider if there is
+ * not a way to get a more appropriate font (eg, the last font the
+ * user was typing in if we're after a newline etc).  Anyway, better
+ * using this function than hardcoding '12' :-)
+ */
+static inline float defaultFontHeight ()
+{
+  NSFont *userFont;
+  NSRect fontRect;
+  
+  userFont = [NSFont userFontOfSize: 0];
+  fontRect = [userFont boundingRectForFont];
+  
+  return fontRect.size.height;
+}
+
 
 @interface GSSimpleLayoutManager (Private)
 
@@ -276,7 +294,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
-      return NSMakeRect(0, 0, 0, 12);
+      return NSMakeRect (0, 0, 0, defaultFontHeight ());      	
     }
   
   currentInfo = [_lineLayoutInformation 
@@ -327,7 +345,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
-      return NSMakeRect(0, 0, 0, 12);
+      return NSMakeRect (0, 0, 0, defaultFontHeight ());
     }
 
   i1 = [self lineLayoutIndexForGlyphIndex: aRange.location];
@@ -681,7 +699,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     width = [container containerSize].width;
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
-      return NSMakeRect(0, 0, width, 12);
+      return NSMakeRect(0, 0, width, defaultFontHeight ());
     }
 
   currentInfo = [_lineLayoutInformation lastObject];
@@ -911,9 +929,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       // If there is no text add one empty box
       [_lineLayoutInformation
 	  addObject: [_GNULineLayoutInfo
-			 lineLayoutWithRange: NSMakeRange (0, 0)
-			 rect: NSMakeRect (0, 0, width, 12)
-			 usedRect: NSMakeRect (0, 0, 1, 12)]];
+		       lineLayoutWithRange: NSMakeRange (0, 0)
+		       rect: NSMakeRect (0, 0, width, defaultFontHeight ())
+		       usedRect: NSMakeRect (0, 0, 1, defaultFontHeight ())]];
       return NSMakeRange(0,1);
     }
       
@@ -1091,10 +1109,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  // Add information for the line break
 		  scannerPosition += eol.length;
 		  usedLineRect.size.width += 1;
-		  // FIXME: This should use the real font size!!
+		  /* FIXME: This should use the real font size!! not
+                     the default one !! */
 		  if (usedLineRect.size.height == 0)
 		    {
-		      usedLineRect.size.height = 12;
+		      usedLineRect.size.height = defaultFontHeight ();
 		    }
 		}
 	    }
@@ -1170,9 +1189,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	addObject: [_GNULineLayoutInfo
 		     lineLayoutWithRange: NSMakeRange (length, 0)
 		     rect: NSMakeRect (drawingPoint.x, drawingPoint.y, 
-				       width, 12)
+				       width, defaultFontHeight ())
 		     usedRect: NSMakeRect (drawingPoint.x, drawingPoint.y, 
-					   1, 12)]];      
+					   1, defaultFontHeight ())]];      
     }
   
 
