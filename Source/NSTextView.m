@@ -2827,13 +2827,17 @@ afterString in order over charRange.
 
       if (stillSelectingFlag == NO)
 	{
-	  // TODO
-	  // Make the selected range visible
-	  // We do not always want to scroll to the beginning of the
-	  // selection
-	  // however we do for sure if the selection's length is 0
-	  if (charRange.length == 0 && _tf.is_editable )
-	    [self scrollRangeToVisible: charRange]; 
+	  /*
+	  TODO: should we really do this here?
+
+	  Make the insertion point (or the moving endpoint of the selection)
+	  visible.
+	  */
+	  if (affinity == NSSelectionAffinityUpstream)
+	    [self scrollRangeToVisible: charRange];
+	  else
+	    [self scrollRangeToVisible:
+	      NSMakeRange(charRange.location + charRange.length, 0)];
 	}
 
       /* Try to optimize for overlapping ranges */

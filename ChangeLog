@@ -1,3 +1,9 @@
+2004-03-29 18:25  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	Always scroll to make the selection visible, and scroll to the right
+	part of it. (Bug reported by Ludovic Marcotte.)
+
 2004-03-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSTableView.h:
