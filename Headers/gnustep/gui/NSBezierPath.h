@@ -24,43 +24,113 @@
    59 Temple Place - Suite 330, Boston, MA 02111 - 1307, USA.
 */
 
-#ifndef NSBEZIERPATH_H
-#define NSBEZIERPATH_H
+#ifndef BEZIERPATH_H
+#define BEZIERPATH_H
 
-#include <Foundation/NSArray.h>
-#include <AppKit/NSFont.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/NSFont.h>
 
-#define PMAX 10000
+@class NSAffineTransform;
 
-typedef enum { 
-	NSBezierPathElementMoveTo,
-	NSBezierPathElementLineTo,
-	NSBezierPathElementCurveTo,
-	NSBezierPathElementClose
-} NSBezierPathElementType;
+typedef enum {
+	NSButtLineCapStyle = 0,
+	NSRoundLineCapStyle = 1,
+	NSSquareLineCapStyle = 2
+} NSLineCapStyle;
 
-typedef enum { 
-	NSWindingRuleNonZero,
-	NSWindingRuleEvenOdd
+typedef enum {
+	NSMiterLineJoinStyle = 0,
+	NSRoundLineJoinStyle = 1,
+	NSBevelLineJoinStyle = 2
+} NSLineJoinStyle;
+
+typedef enum {
+	NSNonZeroWindingRule,
+	NSEvenOddWindingRule
 } NSWindingRule;
 
-@interface NSBezierPath : NSObject
+typedef enum {
+	NSMoveToBezierPathElement,
+	NSLineToBezierPathElement,
+	NSCurveToBezierPathElement,
+	NSClosePathBezierPathElement
+} NSBezierPathElement;
+
+@interface NSBezierPath : NSObject <NSCopying, NSCoding>
 {
-	NSMutableArray *pathElements;
-	NSMutableArray *subPaths;
-	NSPoint draftPolygon[PMAX];
-	int pcount;
-	NSPoint currentPoint;
-	NSWindingRule windingRule;
-	BOOL cachesBezierPath;
+	@private
+	int _state;
+	int _segmentCount;
+	int _segmentMax;
+//	struct PATHSEGMENT *_head;
+	int _lastSubpathIndex;
+	int _elementCount;
+	BOOL _isFlat;
+	NSWindingRule _windingRule;
+	NSLineCapStyle _lineCapStyle;
+	NSLineJoinStyle _lineJoinStyle;
+	float _lineWidth;
+	NSRect _bounds;
+	BOOL _shouldRecalculateBounds;
+	NSRect _controlPointBounds;
+	BOOL _shouldRecalculateControlPointBounds;
+
+	BOOL _cachesBezierPath;
+	BOOL _shouldRecacheUserPath;
+//	int _dpsUserPath;	
 }
 
+//
+// Creating common paths
+//
 + (NSBezierPath *)bezierPath;
 
 + (NSBezierPath *)bezierPathWithRect:(NSRect)aRect;
 
++ (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)rect;
+
 //
-// Contructing paths 
+// Immediate mode drawing of common paths
+//
++ (void)fillRect:(NSRect)rect;
+
++ (void)strokeRect:(NSRect)rect;
+
++ (void)clipRect:(NSRect)rect;
+
++ (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2;
+
++ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)point;
+
+//
+// Default path rendering parameters
+//
++ (void)setDefaultMiterLimit:(float)limit;
+
++ (float)defaultMiterLimit;
+
++ (void)setDefaultFlatness:(float)flatness;
+
++ (float)defaultFlatness;
+
++ (void)setDefaultWindingRule:(NSWindingRule)windingRule;
+
++ (NSWindingRule)defaultWindingRule;
+
++ (void)setDefaultLineCapStyle:(NSLineCapStyle)lineCapStyle;
+
++ (NSLineCapStyle)defaultLineCapStyle;
+
++ (void)setDefaultLineJoinStyle:(NSLineJoinStyle)lineJoinStyle;
+
++ (NSLineJoinStyle)defaultLineJoinStyle;
+
++ (void)setDefaultLineWidth:(float)lineWidth;
+
++ (float)defaultLineWidth;
+
+//
+// Path construction
 //
 - (void)moveToPoint:(NSPoint)aPoint;
 
@@ -72,8 +142,11 @@ typedef enum {
 		 
 - (void)closePath;
 
-- (void)reset;
+- (void)removeAllPoints;
 
+//
+// Relative path construction
+//
 - (void)relativeMoveToPoint:(NSPoint)aPoint;
 
 - (void)relativeLineToPoint:(NSPoint)aPoint;
@@ -83,118 +156,117 @@ typedef enum {
 					controlPoint2:(NSPoint)controlPoint2;
 
 //
-// Appending paths and some common shapes 
+// Path rendering parameters
 //
-- (void)appendBezierPath:(NSBezierPath *)aPath;
+- (float)lineWidth;
 
-- (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count;
+- (void)setLineWidth:(float)lineWidth;
 
-- (void)appendBezierPathWithOvalInRect:(NSRect)aRect;
+- (NSLineCapStyle)lineCapStyle;
 
-- (void)appendBezierPathWithArcWithCenter:(NSPoint)center 
-											  radius:(float)radius 
-										 startAngle:(float)startAngle
-											endAngle:(float)endAngle;
-											
-- (void)appendBezierPathWithGlyph:(NSGlyph)aGlyph inFont:(NSFont *)fontObj;
+- (void)setLineCapStyle:(NSLineCapStyle)lineCapStyle;
 
-- (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
-									  count:(int)count
-									 inFont:(NSFont *)fontObj;
+- (NSLineJoinStyle)lineJoinStyle;
 
-- (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs;
-
-//
-// Setting attributes 
-//
-- (void)setWindingRule:(NSWindingRule)aWindingRule;
+- (void)setLineJoinStyle:(NSLineJoinStyle)lineJoinStyle;
 
 - (NSWindingRule)windingRule;
 
-+ (void)setLineCapStyle:(int)style;
-
-+ (void)setLineJoinStyle:(int)style;
-
-+ (void)setLineWidth:(float)width; 
-
-+ (void)setMiterLimit:(float)limit;
-
-+ (void)setFlatness:(float)flatness;
-
-+ (void)setHalftonePhase:(float)x : (float)y;
+- (void)setWindingRule:(NSWindingRule)windingRule;
 
 //
-// Drawing paths
-// 
+// Path operations
+//
 - (void)stroke;
 
 - (void)fill;
 
-+ (void)fillRect:(NSRect)aRect;
-
-+ (void)strokeRect:(NSRect)aRect;
-
-+ (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2;
-
-+ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)aPoint;
-
-//
-// Clipping paths 
-// 
 - (void)addClip;
 
 - (void)setClip;
 
-+ (void)clipRect:(NSRect)aRect;
+//
+// Path modifications.
+//
+- (NSBezierPath *)bezierPathByFlatteningPath;
+- (NSBezierPath *)bezierPathByReversingPath;
+
+//
+// Applying transformations.
+//
+- (void)transformUsingAffineTransform:(NSAffineTransform *)transform;
+
+//
+// Path info
+//
+- (BOOL)isEmpty;
+
+- (NSPoint)currentPoint;
+
+- (NSRect)controlPointBounds;
+
+- (NSRect)bounds;
+
+//
+// Elements
+//
+- (int)elementCount;
+
+- (NSBezierPathElement)elementAtIndex:(int)index
+		     				associatedPoints:(NSPoint *)points;
+
+				//- (NSBezierPathElement)elementAtIndex:(int)index
+				//		     				associatedPoints:(NSPointArray)points;
+
+- (NSBezierPathElement)elementAtIndex:(int)index;
+
+- (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index;
+
+				//- (void)setAssociatedPoints:(NSPointArray)points atIndex:(int)index;
+
+//
+// Appending common paths
+//
+- (void)appendBezierPath:(NSBezierPath *)path;
+
+- (void)appendBezierPathWithRect:(NSRect)rect;
+
+- (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count;
+
+				//- (void)appendBezierPathWithPoints:(NSPointArray)points count:(int)count;
+
+- (void)appendBezierPathWithOvalInRect:(NSRect)aRect;
+
+- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
+											  radius:(float)radius
+			       					 startAngle:(float)startAngle
+				 							endAngle:(float)endAngle
+										  clockwise:(BOOL)clockwise;
+										  
+- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
+											  radius:(float)radius
+			       					 startAngle:(float)startAngle
+				 							endAngle:(float)endAngle;
+
+- (void)appendBezierPathWithArcFromPoint:(NSPoint)point1
+				 							toPoint:(NSPoint)point2
+				  							 radius:(float)radius;
+
+- (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font;
+
+- (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
+									  count:(int)count
+			    					 inFont:(NSFont *)font;
+				 
+- (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs;
 
 //
 // Hit detection  
 // 
-- (BOOL)isHitByPoint:(NSPoint)aPoint;
-
-- (BOOL)isHitByRect:(NSRect)aRect;
-
-- (BOOL)isHitByPath:(NSBezierPath *)aBezierPath;
-
-- (BOOL)isStrokeHitByPoint:(NSPoint)aPoint;
-
-- (BOOL)isStrokeHitByRect:(NSRect)aRect;
-
-- (BOOL)isStrokeHitByPath:(NSBezierPath *)aBezierPath;
+- (BOOL)containsPoint:(NSPoint)point;
 
 //
-// Querying paths
-// 
-- (NSRect)bounds;
-
-- (NSRect)controlPointBounds;
-
-- (NSPoint)currentPoint;
-
-//
-// Accessing elements of a path 
-// 
-- (int)elementCount;
-
-- (NSBezierPathElementType)elementTypeAtIndex:(int)index;
-
-- (NSBezierPathElementType)elementTypeAtIndex:(int)index
-									  associatedPoints:(NSPoint *)points;
-
-- (void)removeLastElement;
-
-- (int)pointCount;
-
-- (NSPoint)pointAtIndex:(int)index;
-
-- (void)setPointAtIndex:(int)index toPoint:(NSPoint)aPoint;
-
-- (int)pointIndexForPathElementIndex:(int)index;
-
-- (int)pathElementIndexForPointIndex:(int)index;
-
-//
-// Caching paths 
+// Caching
 // 
 - (BOOL)cachesBezierPath;
 
@@ -202,4 +274,4 @@ typedef enum {
 
 @end
 
-#endif // NSBEZIERPATH_H
+#endif // BEZIERPATH_H

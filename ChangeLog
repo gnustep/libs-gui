@@ -1,3 +1,8 @@
+Wed Feb 09 18:50:12 2000  Enrico Sersale  <enrico@imago.ro>
+
+	* Source/NSBezierPath.m  Headers/gnustep/gui/NSBezierPath.h :
+	Rewritten conforming to MacOS-X implementation details.
+
 Tue Jan 25 14:52:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Contributed by Fred Kiefer:
