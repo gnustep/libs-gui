@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSSavePanel
 
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSPanel.h>
 
 @class NSString;
 @class NSView;
@@ -46,9 +47,7 @@ enum {
   NSFileHandlingPanelDiskEjectButton 
 };
 
-// Should be subclassed from NSPanel but
-//   we are using the WIN32 common dialog
-@interface NSSavePanel : NSObject <NSCoding>
+@interface NSSavePanel : NSPanel <NSCoding>
 {
   // Attributes
   NSView *accessory_view;
@@ -58,7 +57,7 @@ enum {
   NSString *file_name;
   NSString *required_type;
   BOOL file_package;
-  id delegate;
+//  id delegate;
 
   // Reserved for back-end use
   void *be_save_reserved;

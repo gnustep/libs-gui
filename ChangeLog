@@ -1,4 +1,15 @@
 <<<<<<< ChangeLog
+Tues Aug 4 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSSplitView in initWithFrame changed default back color to light gray. 
+	* NSSavePanel modified to inherit from NSPanel per OS spec. 
+
+Sun Aug 2 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSText implemented setFont.
+	* NSText fixed setUsesFontPanel.
+	* NSText reformatted code again in certain places.
+
 Sat Aug 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSText in setText modified to use ASSIGN macro.

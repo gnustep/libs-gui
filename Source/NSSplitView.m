@@ -469,9 +469,9 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
       draggedBarWidth=8;
       isVertical=NO;
       [self seDividerColor:[NSColor darkGrayColor]];
-      [self setBackgroundColor:[NSColor whiteColor]];
+      [self setBackgroundColor:[NSColor lightGrayColor]];
       [self setDimpleImage:
-	      [NSImage imageNamed:@"splitButton.tiff"] resetDividerThickness:YES];
+	     [NSImage imageNamed:@"common_Dimple.tiff"] resetDividerThickness:YES];
     }
   return self;
 }

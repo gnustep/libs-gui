@@ -1155,12 +1155,10 @@ static MPoint anchor = {0, 0};
 
 	[[self window] captureMouse: self];						// grab the mouse
 	[self lockFocus];
-					// selection occurs in two stages, the first stage loops
+					// selection consists of two stages, the first stage loops
 					// until the mouse goes up while the second stage completes
-					// the process by sending actions and displaying the cell 
-					// as it should appear after the selection process
-	while (!done) 	
-		{													// begin selection
+	while (!done) 	// the process by sending actions and displaying the cell
+		{			// as it should appear after the selection process										
 		BOOL shouldProceedEvent = NO;
 
     	insideBounds = [self _getRow:&row 
@@ -1317,8 +1315,8 @@ static MPoint anchor = {0, 0};
 						
 	[[self window] releaseMouse: self];				// Release the mouse
 
-  	switch (mode) 									// Finalize the selection
-		{								 
+  	switch (mode) 									// Finish the selection
+		{								 			// process
 		case NSTrackModeMatrix:
 		case NSHighlightModeMatrix:
 			[selectedCell setState:![selectedCell state]];

@@ -65,7 +65,7 @@
 {
 	[super initWithFrame:frameRect];
 	
-	text_contents = @"Mary had a little lamb";
+	text_contents = @"Text";
 	alignment = NSLeftTextAlignment;
 	is_editable = YES;
 	is_rich_text = NO;
@@ -120,43 +120,17 @@
 	[self setSelectedRange:range];
 }
 
-- (NSString *)text
-{
-	return text_contents;
-}
+- (NSString *)text					{ return text_contents; }
 
 //
 // Managing Global Characteristics
 //
-- (NSTextAlignment)alignment
-{
-	return alignment;
-}
-
-- (BOOL)drawsBackground
-{
-	return draws_background;
-}
-
-- (BOOL)importsGraphics
-{
-	return imports_graphics;
-}
-
-- (BOOL)isEditable
-{
-	return is_editable;
-}
-
-- (BOOL)isRichText
-{
-	return is_rich_text;
-}
-
-- (BOOL)isSelectable
-{
-	return is_selectable;
-}
+- (NSTextAlignment)alignment		{ return alignment; }
+- (BOOL)drawsBackground				{ return draws_background; }
+- (BOOL)importsGraphics				{ return imports_graphics; }
+- (BOOL)isEditable					{ return is_editable; }
+- (BOOL)isRichText					{ return is_rich_text; }
+- (BOOL)isSelectable				{ return is_selectable; }
 
 - (void)setAlignment:(NSTextAlignment)mode
 {
@@ -195,18 +169,13 @@
 //
 // Managing Font and Color
 //
-- (NSColor *)backgroundColor
-{
-	return background_color;
-}
+- (NSColor *)backgroundColor		{ return background_color; }
+- (NSFont *)font					{ return default_font; }
+- (NSColor *)textColor				{ return text_color; }
+- (BOOL)usesFontPanel				{ return uses_font_panel; }
 
 - (void)changeFont:(id)sender
 {
-}
-
-- (NSFont *)font
-{
-	return default_font;
 }
 
 - (void)setBackgroundColor:(NSColor *)color
@@ -220,6 +189,7 @@
 
 - (void)setFont:(NSFont *)obj
 {
+	ASSIGN(default_font, obj);
 }
 
 - (void)setFont:(NSFont *)font ofRange:(NSRange)range
@@ -233,26 +203,13 @@
 
 - (void)setUsesFontPanel:(BOOL)flag
 {
-	uses_font_panel = YES;
-}
-
-- (NSColor *)textColor
-{
-	return text_color;
-}
-
-- (BOOL)usesFontPanel
-{
-	return uses_font_panel;
+	uses_font_panel = flag;
 }
 
 //
 // Managing the Selection
 //
-- (NSRange)selectedRange
-{
-	return selected_range;
-}
+- (NSRange)selectedRange			{ return selected_range; }
 
 - (void)setSelectedRange:(NSRange)range
 {
@@ -267,25 +224,10 @@
 	[super setFrame:frameRect];
 }
 
-- (BOOL)isHorizontallyResizable
-{
-	return is_horizontally_resizable;
-}
-
-- (BOOL)isVerticallyResizable
-{
-	return is_vertically_resizable;
-}
-
-- (NSSize)maxSize
-{
-	return NSZeroSize;
-}
-
-- (NSSize)minSize
-{
-	return NSZeroSize;
-}
+- (BOOL)isHorizontallyResizable		{ return is_horizontally_resizable; }
+- (BOOL)isVerticallyResizable		{ return is_vertically_resizable; }
+- (NSSize)maxSize 					{ return NSZeroSize; }
+- (NSSize)minSize					{ return NSZeroSize; }
 
 - (void)setHorizontallyResizable:(BOOL)flag
 {
@@ -306,46 +248,55 @@
 }
 
 - (void)sizeToFit
-{}
+{
+}
 
 //
 // Responding to Editing Commands
 //
 - (void)alignCenter:(id)sender
-{}
+{
+}
 
 - (void)alignLeft:(id)sender
-{}
+{
+}
 
 - (void)alignRight:(id)sender
-{}
+{
+}
 
 - (void)copy:(id)sender
 {
 }
 
 - (void)copyFont:(id)sender
-{}
+{
+}
 
 - (void)copyRuler:(id)sender
-{}
+{
+}
 
 - (void)cut:(id)sender
 {
 }
 
 - (void)delete:(id)sender
-{}
+{
+}
 
 - (void)paste:(id)sender
 {
 }
 
 - (void)pasteFont:(id)sender
-{}
+{
+}
 
 - (void)pasteRuler:(id)sender
-{}
+{
+}
 
 - (void)selectAll:(id)sender
 {
@@ -370,10 +321,7 @@
 //
 // Managing the Ruler
 //
-- (BOOL)isRulerVisible
-{
-	return NO;
-}
+- (BOOL)isRulerVisible				{ return NO; }
 
 - (void)toggleRuler:(id)sender
 {}
@@ -401,8 +349,7 @@
 	return NO;
 }
 
-- (BOOL)writeRTFDToFile:(NSString *)path
-	     atomically:(BOOL)flag
+- (BOOL)writeRTFDToFile:(NSString *)path atomically:(BOOL)flag
 {
 	return NO;
 }
@@ -410,10 +357,7 @@
 //
 // Managing the Field Editor
 //
-- (BOOL)isFieldEditor
-{
-	return is_field_editor;
-}
+- (BOOL)isFieldEditor				{ return is_field_editor; }
 
 - (void)setFieldEditor:(BOOL)flag
 {
@@ -473,10 +417,7 @@
 //
 // Managing the Delegate
 //
-- (id)delegate
-{
-	return delegate;
-}
+- (id)delegate						{ return delegate; }
 
 - (void)setDelegate:(id)anObject
 {

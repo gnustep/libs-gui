@@ -7,7 +7,7 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+  
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
