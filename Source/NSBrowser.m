@@ -2625,6 +2625,7 @@ static double rint(double a)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  int colCount;
   
   [super initWithCoder: aDecoder];
 
@@ -2684,13 +2685,12 @@ static double rint(double a)
   [self _createColumn];
 
   // ..and rebuild any existing browser columns
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
+
   if (_browserDelegate != nil)
     {
       int i;
-      int colCount;
-      
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
       
       [self loadColumnZero];
       for (i=1;i<colCount; i++) 
@@ -2698,7 +2698,6 @@ static double rint(double a)
           [self addColumn];
         }
       [self scrollColumnsRightBy: _firstVisibleColumn];
-      
     }
 
   // Make sure it displays ok even if there isn't any column

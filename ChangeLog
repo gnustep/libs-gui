@@ -1,3 +1,7 @@
+2001-11-21  Laurent Julliard <laurent@julliard-online.org>
+
+	* Source/NSBrowser.m (-initWithCoder:): colCount and _firstVisible Column must always be decoded. Bug fixed (thanks to Adam Fedor)
+
 2001-11-20  Laurent Julliard <laurent@julliard-online.org>
 
 	* Source/NSComboBoxCell.m (-setNumberOfVisibleItems): max number of items tested on wrong variable. Corrected
