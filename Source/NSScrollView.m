@@ -317,32 +317,15 @@ static float scrollerWidth;
       /* If view is flipped reverse the scroll direction */
       amount = -amount;
     }
-  NSDebugLLog (@"NSScrollView", @"increment/decrement: amount = %f, flipped = %d",
-    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+  NSDebugLLog (@"NSScrollView", 
+	       @"increment/decrement: amount = %f, flipped = %d",
+	       amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 
   point.y = clipViewBounds.origin.y + amount;
-  
-  if (_hasHeaderView)
-    {
-      NSPoint scrollTo;
 
-      scrollTo = [_headerClipView bounds].origin;
-      scrollTo.x += point.x - clipViewBounds.origin.x;
-      [_headerClipView scrollToPoint: scrollTo];
-    }
+  /* scrollToPoint: will call reflectScrolledClipView:, which will
+   * update rules, headers, and scrollers.  */
   [_contentView scrollToPoint: point];
-
-  if (_rulersVisible == YES)
-    {
-      if (_hasHorizRuler)
-	{
-	  [_horizRuler setNeedsDisplay: YES];
-	}
-      if (_hasVertRuler)
-	{
-	  [_vertRuler setNeedsDisplay: YES];
-	}
-    }
 }
 
 /**
@@ -387,10 +370,6 @@ static float scrollerWidth;
     }
   point.y = clipViewBounds.origin.y - amount;
   [_contentView scrollToPoint: point];
-  if (_rulersVisible == YES && _hasVertRuler == YES)
-    {
-      [_vertRuler setNeedsDisplay: YES];
-    }
 }
 
 /**
@@ -434,11 +413,6 @@ static float scrollerWidth;
     }
   point.y = clipViewBounds.origin.y + amount;
   [_contentView scrollToPoint: point];
-
-  if (_rulersVisible == YES && _hasVertRuler == YES)
-  {
-    [_vertRuler setNeedsDisplay: YES];
-  }
 }
 
 - (void) _doScroll: (NSScroller*)scroller
@@ -545,28 +519,9 @@ static float scrollerWidth;
 	}
     }
 
-  if (_hasHeaderView)
-    {
-      NSPoint scrollTo;
-
-      scrollTo = [_headerClipView bounds].origin;
-      scrollTo.x += point.x - clipViewBounds.origin.x;
-      [_headerClipView scrollToPoint: scrollTo];
-    }
+  /* scrollToPoint will call reflectScrollerClipView, and that will
+   * update scrollers, rulers and headers */
   [_contentView scrollToPoint: point];
-
-  if (_rulersVisible == YES)
-    {
-      if (_hasHorizRuler)
-	{
-	  [_horizRuler setNeedsDisplay: YES];
-	}
-      if (_hasVertRuler)
-	{
-	  [_vertRuler setNeedsDisplay: YES];
-	}
-    }
-  
 }
 
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
@@ -645,16 +600,25 @@ static float scrollerWidth;
       
       headerClipViewOrigin = [_headerClipView bounds].origin;
 
-      // If needed, scroll the headerview too
+      /* If needed, scroll the headerview too.  */
       if (headerClipViewOrigin.x != clipViewBounds.origin.x)
 	{
 	  headerClipViewOrigin.x = clipViewBounds.origin.x;
-	  headerClipViewOrigin = [_headerClipView constrainScrollPoint: 
-						    headerClipViewOrigin];
 	  [_headerClipView scrollToPoint: headerClipViewOrigin];
 	}
     }
-  
+
+  if (_rulersVisible == YES)
+    {
+      if (_hasHorizRuler)
+	{
+	  [_horizRuler setNeedsDisplay: YES];
+	}
+      if (_hasVertRuler)
+	{
+	  [_vertRuler setNeedsDisplay: YES];
+       }
+    }
 }
 
 - (void) setHorizontalRulerView: (NSRulerView *)aRulerView
