@@ -1,3 +1,24 @@
+1999-11-16  David Lazaro Saz  <khelekir@encomix.es>
+
+	* Source/NSMenu.m: Almost total rewrite of some of the parts. Added
+	all useful MacOS X Server changes.
+	* Source/NSMenuView.m: ditto.
+	* Source/NSMenuItem.m: Reimplemented to be compatible with MacOS X
+	Server.  The online docs are wrong in respect to this class so the
+	changes were infered from a lot of different places.
+	* Source/NSMenuItemCell.m: Reimplemented to be just like another form
+	of NSButtonCell and comply with MacOS X Server specs changes.
+	
+	* Source/NSApplication.m ([NSApplication -setMainMenu:]): Changes to
+	support changes in the menuing code.
+
+	* Source/GSServicesManager.m ([GSServicesManager -updateServicesMenu]):
+	Update for using new NSMenuItem code.  This means that it does send a
+	submenu message instead of a target message to get the submenu.
+
+	* Headers/gnustep/gui/NSView.h: Added declaration for the
+	removeFromSuperviewWithoutNeedingDisplay method.
+
 Tue Nov 16 10:49:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Removed opaque-view optimisation in favour of
