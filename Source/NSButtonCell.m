@@ -48,6 +48,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 
+#include "GSUtil.h"
 
 
 @implementation NSButtonCell
@@ -489,11 +490,10 @@
       imageSize = [imageToDisplay size];
     }
 
-  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
-    {
-      titleSize = NSMakeSize([_cell_font widthOfString: titleToDisplay], 
-			     [_cell_font boundingRectForFont].size.height);
-    }
+  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow)) {
+      titleSize =GSUtil_sizeOfMultilineStringWithFont(titleToDisplay,
+                                                      _cell_font);
+  }
 
   if (flippedView == YES)
     {
@@ -686,11 +686,12 @@
   else 
     imageSize = NSZeroSize;
   
-  if (titleToDisplay)
-    titleSize = NSMakeSize ([_cell_font widthOfString: titleToDisplay], 
-			    [_cell_font boundingRectForFont].size.height); 
-  else 
-    titleSize = NSZeroSize;
+  if(titleToDisplay!=nil){
+      titleSize=GSUtil_sizeOfMultilineStringWithFont(titleToDisplay,
+                                                     _cell_font);
+  }else{
+      titleSize=NSZeroSize;
+  }
   
   switch (_cell.image_position)
     {

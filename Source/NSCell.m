@@ -49,6 +49,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/PSOperators.h>
+#include "GSUtil.h"
 
 static Class	colorClass;
 static Class	cellClass;
@@ -59,9 +60,11 @@ static NSColor	*txtCol;
 static NSColor	*dtxtCol;
 static NSColor	*shadowCol;
 
+
 @interface	NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
 @end
+
 
 @implementation	NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n
@@ -71,6 +74,7 @@ static NSColor	*shadowCol;
   ASSIGN(shadowCol, [colorClass controlDarkShadowColor]);
 }
 @end
+
 
 @implementation NSCell
 
@@ -1060,6 +1064,8 @@ static NSColor	*shadowCol;
 {
 }
 
+
+
 - (NSSize) cellSize
 {
   NSSize borderSize, s;
@@ -1083,9 +1089,8 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
     case NSTextCellType:
-      s = NSMakeSize([_cell_font widthOfString: _contents], 
-		     [_cell_font boundingRectForFont].size.height);
-      break;
+        s=GSUtil_sizeOfMultilineStringWithFont(_contents,_cell_font);
+        break;
     case NSImageCellType:
       if (_cell_image == nil)
 	{
@@ -1182,8 +1187,8 @@ static NSColor	*shadowCol;
 {
   NSColor	*textColor;
   float		titleWidth;
-  float 	titleHeight;
   NSDictionary	*dict;
+  NSSize         titleSize;
 
   if (!title)
     return;
@@ -1193,17 +1198,41 @@ static NSColor	*shadowCol;
   if (!_cell_font)
     [NSException raise: NSInvalidArgumentException
         format: @"Request to draw a text cell but no font specified!"];
-  titleWidth = [_cell_font widthOfString: title];
-  // Important: text should always be vertically centered without
-  // considering descender [as if descender did not exist].
-  // At present (13/1/00) the following code produces the correct output,
-  // even if it seems to be trying to make it wrong.
-  // Please make sure the output remains always correct.
-  titleHeight = [_cell_font pointSize] - [_cell_font descender];
 
-  // Determine the y position of the text
-  cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
-  cellFrame.size.height = titleHeight;
+  titleSize=GSUtil_sizeOfMultilineStringWithFont(title,_cell_font);
+  titleWidth=titleSize.width;
+  /*
+    PJB:
+    The following comment was found here, in the previous version that
+    supposed that title was one-line,  in spite of the fact that title
+    knows  how   to  draw  itself   (drawInRect:withAttributes:)  when
+    contening several lines.
+
+    // Important: text should always be vertically centered without
+    // considering descender [as if descender did not exist].
+    // At present (13/1/00) the following code produces the correct output,
+    // even if it seems to be trying to make it wrong.
+    // Please make sure the output remains always correct.
+
+    When  the cellFrame  has  been computed  from sizeToFit,  applying
+    GSUtil_sizeOfMultilineStringWithFont to the  _content of the cell,
+    and this is  exactly the parameters we have  here, respecting this
+    comment would imply moving down  for half a descender the block of
+    text, because GSUtil_sizeOfMultilineStringWithFont  does not add a
+    "centering" half  descender above  the text.  Therefore  we won't,
+    and  we will respect  this comment  only in  the other  cases were
+    we'll merely substract the font descender to the titleSize.heigh.
+  */
+  if((cellFrame.size.width!=titleSize.width)
+     ||(cellFrame.size.height!=titleSize.height)){
+      float titleHeight=titleSize.height-[_cell_font descender];
+      // Determine the y position of the text
+      cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
+      cellFrame.size.height = titleHeight;
+  }
+
+
+
 
   // Determine the x position of text
   switch (_cell.text_align)
