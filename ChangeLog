@@ -1,3 +1,17 @@
+Wed Feb 27 18:59:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSInputManager.h (_insertControlKeystrokes): New ivar.
+	* Source/NSInputManager.m ([-initWithName:host:]):
+	Read the user default GSInsertControlKeystrokes and save it.
+	* Source/NSInputManager.m ([-handleKeyboardEvents:client:]): When
+	inserting literally a keystroke, if GSInsertControlKeystrokes is
+	NO, and this is a control keystroke, beep but don't insert it.
+	Beep when a function key not bound to anything is pressed.
+	
+Wed Feb 27 18:57:50 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSResponder.m ([-insertText:]): Added.
+
 Wed Feb 27 18:54:43 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSTextStorage.h: Documented.
