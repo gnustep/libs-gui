@@ -3,6 +3,10 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: September 2000
+   Reorganised and cleaned up code
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -20,7 +24,6 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
-
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
@@ -71,9 +74,8 @@
 - (id) initWithFrame: (NSRect)frameRect
        textContainer: (NSTextContainer*)aTextContainer
 {
-  self = [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect textContainer: aTextContainer];
 
-  [aTextContainer setTextView: self];
   [self setEditable: YES];
   [self setUsesFontPanel: YES];
   [self setUsesRuler: YES];
@@ -83,26 +85,21 @@
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSTextContainer *aTextContainer = 
-      [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
-/*  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+  return [super initWithFrame: frameRect];
+}
 
-  [layoutManager addTextContainer: aTextContainer];
-  RELEASE(aTextContainer);
+- (void)dealloc
+{
+  RELEASE(_selectedTextAttributes);
+  RELEASE(_markedTextAttributes);
 
-  _textStorage = [[NSTextStorage alloc] init];
-  [_textStorage addLayoutManager: layoutManager];
-  RELEASE(layoutManager);
-*/
-  return [self initWithFrame: frameRect textContainer: aTextContainer];
+  [super dealloc];
 }
 
 /* This should only be called by [NSTextContainer -setTextView:] */
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
-  ASSIGN(_textContainer, aTextContainer);
-  // FIXME: Could also get a reference to the layout manager
-  //ASSIGN(_textStorage, [[aTextContainer layoutManager] textStorage]);
+  [super setTextContainer: aTextContainer];
 }
 
 - (NSTextContainer*) textContainer
@@ -150,7 +147,7 @@
 
 - (NSLayoutManager*) layoutManager
 {
-  return [_textContainer layoutManager];
+  return _layoutManager;
 }
 
 - (NSTextStorage*) textStorage
@@ -1069,29 +1066,6 @@ container, returning the modified location. */
  
   SET_DELEGATE_NOTIFICATION(DidChangeSelection);
   SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
-}
-
-- (void) drawRect: (NSRect)aRect
-{
-  // currently use super implementation, which is working, 
-  // although the code here is correcter
-  [super drawRect: aRect];
-/*
-  NSRange	glyphRange;
-  NSLayoutManager *layoutManager = [self layoutManager];
-
-  if (_background_color != nil)
-    {
-      [_background_color set];
-      NSRectFill(aRect);
-    }
-  glyphRange = [layoutManager glyphRangeForTextContainer: _textContainer];
-  if (glyphRange.length > 0)
-    {
-      [layoutManager drawGlyphsForGlyphRange: glyphRange
-				     atPoint: [self frame].origin];
-    }
-*/
 }
 
 @end
