@@ -580,9 +580,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
           (frame.size.height - point.y) / cellSize.height;
 }
 
-- (void)setNeedsDisplayForItemAtIndex: (int)index
+- (void) setNeedsDisplayForItemAtIndex: (int)index
 {
-  [[menuv_itemCells objectAtIndex: index] setNeedsDisplay: YES];  
+  NSRect aRect = [self rectOfItemAtIndex: index];
+
+  [self setNeedsDisplayInRect: aRect];
 }
 
 - (NSPoint)locationForSubmenu: (NSMenu *)aSubmenu

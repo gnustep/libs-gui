@@ -559,7 +559,7 @@
 
   if (mcell_imageToDisplay)
     {
-      mcell_imageSize = [mcell_imageToDisplay size];
+      mcell_imageWidth = [mcell_imageToDisplay size].width;
       [mcell_imageToDisplay setBackgroundColor: backgroundColor];
     }
 

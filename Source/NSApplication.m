@@ -1884,49 +1884,39 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	      NSMenuItemCell		*cell;
 	      NSCellImagePosition	oldPos;
 	      NSImage			*oldImage;
+	      NSImage			*newImage;
 	      BOOL			changed;
 
 	      found = YES;
 	      cell = [view menuItemCellForItemAtIndex: i];
 	      oldPos = [cell imagePosition];
 	      oldImage = [cell image];
+	      newImage = oldImage;
 	      changed = NO;
 
-	      if ([aWindow representedFilename] == nil)
+	      if (oldPos != NSImageLeft)
 		{
-		  if (oldPos != NSNoImage)
-		    {
-		      [cell setImagePosition: NSNoImage];
-		      changed = YES;
-		    }
+		  [cell setImagePosition: NSImageLeft];
+		  changed = YES;
+		}
+	      if ([aWindow isDocumentEdited])
+		{
+		  newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
 		}
 	      else
 		{
-		  NSImage	*newImage = oldImage;
-
-		  if (oldPos != NSImageLeft)
-		    {
-		      [cell setImagePosition: NSImageLeft];
-		      changed = YES;
-		    }
-		  if ([aWindow isDocumentEdited])
-		    {
-		      newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
-		    }
-		  else
-		    {
-		      newImage = [NSImage imageNamed: @"common_WMClose"];
-		    }
-		  if (newImage != oldImage)
-		    {
-		      [cell setImage: newImage];
-		      changed = YES;
-		    }
+		  newImage = [NSImage imageNamed: @"common_WMClose"];
+		}
+	      if (newImage != oldImage)
+		{
+		  [item setImage: newImage];
+		  [cell setImage: newImage];
+		  changed = YES;
 		}
 	      if (changed)
 		{
 		  [menu sizeToFit];
-		  [menu update];
+		  [view setNeedsDisplayForItemAtIndex: i];
 		}
 	      break;
 	    }
