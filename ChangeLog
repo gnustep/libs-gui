@@ -1,3 +1,33 @@
+Thu Dec 21 19:46:45 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSWindow.h: New ivar _futureFirstResponder.
+	* Source/NSWindow.m ([-makeFirstResponder:]): Set ivar
+	_futureFirstResponder. ([-_futureFirstResponder]): New method.
+	* Headers/gnustep/gui/NSLayoutManager.h: Added ivars for
+	synchronization of textviews.  Added ivar to mark when editing has
+	began in the group of associated textviews.
+	* Source/NSTextView.m: Use the synchronization ivars in the layout
+	manager instead of the static ones used before.
+	* Source/NSLayoutManager.m ([-addTextContainer:]),
+	([-insertTextContainer:atIndex:]),
+	([-removeTextContainerAtIndex:]): Set ivars for cache; call
+	_updateMultipleTextViews for all our textviews.
+	([-layoutManagerOwnsFirstResponderInWindow:]): Implemented.
+	* Source/NSTextView.m ([-_updateMultipleTextViews]),
+	([-setDelegate:]): Cache if delegate responds to
+	shouldChangeTextInRange:replacementString:.
+	([-shouldChangeTextInRange:replacementString:]): Implemented.
+	([-resignFirstResponder]): Implemented check for multiple
+	textviews using the new _futureFirstResponder: private API in
+	NSWindow; clear editing flag.  ([-becomeFirstResponder:]): Do not
+	ask the delegate or post notifications.  ([-mouseDown:]): No need
+	to attempt to make us first responder - the window does it for us.
+	
+	* Source/NSCell.m ([-acceptsFirstResponder]): Access ivar refuses
+	first responder.
+	* Source/NSButton.m ([-acceptsFirstResponder]): Accept first
+	responder iff we are enabled; key equivalents play no role here.
+	
 Thu Dec 21 00:19:54 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-scrollRangeToVisible:]): Bug fix: use
