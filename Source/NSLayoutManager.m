@@ -28,6 +28,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 #include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSParagraphStyle.h>
 #include "GSSimpleLayoutManager.h"
 
 #include <AppKit/NSWindow.h>
@@ -2748,7 +2749,43 @@ needs to be redrawn when a range of glyphs changes. */
                       paragraphStyle: (NSParagraphStyle*)paragraphStyle
                                ruler: (NSRulerView*)aRulerView
 {
-  return NULL;
+  NSRulerMarker *marker;
+  NSTextTab *tab;
+  NSImage *image;
+  NSArray *tabs = [paragraphStyle tabStops];
+  NSEnumerator *enumerator = [tabs objectEnumerator];
+  NSMutableArray *markers = [NSMutableArray arrayWithCapacity: [tabs count]];
+
+  while ((tab = [enumerator nextObject]) != nil)
+    {
+      switch ([tab tabStopType])
+        {
+	  case NSLeftTabStopType:
+	    image = [NSImage imageNamed: @"common_LeftTabStop"];
+	    break;
+	  case NSRightTabStopType:
+	    image = [NSImage imageNamed: @"common_RightTabStop"];
+	    break;
+	  case NSCenterTabStopType:
+	    image = [NSImage imageNamed: @"common_CenterTabStop"];
+	    break;
+	  case NSDecimalTabStopType:
+	    image = [NSImage imageNamed: @"common_DecimalTabStop"];
+	    break;
+	  default:
+	    image = nil;
+	    break;
+	}
+      marker = [[NSRulerMarker alloc] 
+		   initWithRulerView: aRulerView
+		   markerLocation: [tab location]
+		   image: image
+		   imageOrigin: NSMakePoint(0, 0)];
+      [marker setRepresentedObject: tab];
+      [markers addObject: marker];
+    }
+
+  return markers;
 }
 
 /*
