@@ -585,7 +585,9 @@ _Sane(NSLayoutManager *lm)
  */
 - (id) init
 {
-  if ([super init] != nil)
+  self = [super init];
+
+  if (self != nil)
     {
       GSIArray	a;
 
@@ -603,7 +605,7 @@ _Sane(NSLayoutManager *lm)
       GSIArrayInsertItem(glyphChunks, (GSIArrayItem)_currentGlyphs, 0);
       _chunkIndex = 0;
       _glyphIndex = 0;
-
+      
       /*
        * Initialise storage of gaps in the glyph stream.
        * The initial glyph stream is one big gap starting at index 0!
@@ -621,24 +623,34 @@ _Sane(NSLayoutManager *lm)
 {
   unsigned	i;
 
-  /*
-   * Release all glyph chunk information
+  /* We check that the _glyphData and _glyphGaps are not NULL so that
+   * we can dealloc an object which has not been -init (some
+   * regression tests need it).
    */
-  i = GSIArrayCount(glyphChunks);
-  while (i-- > 0)
+
+  /*
+   * Release all glyph chunk information.
+   */
+  if (_glyphData != NULL)
     {
-      GSGlyphChunk	*chunk;
-
-      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, i).ptr);
-      GSDestroyGlyphChunk(chunk);
+      i = GSIArrayCount(glyphChunks);
+      while (i-- > 0)
+	{
+	  GSGlyphChunk	*chunk;
+	  
+	  chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, i).ptr);
+	  GSDestroyGlyphChunk(chunk);
+	}
+      GSIArrayEmpty(glyphChunks);
+      NSZoneFree(NSDefaultMallocZone(), _glyphData);
     }
-  GSIArrayEmpty(glyphChunks);
-  NSZoneFree(NSDefaultMallocZone(), _glyphData);
-  _glyphData = 0;
 
-  GSIArrayEmpty((GSIArray)_glyphGaps);
-  NSZoneFree(NSDefaultMallocZone(), _glyphGaps);
-
+  if (_glyphGaps != NULL)
+    {
+      GSIArrayEmpty((GSIArray)_glyphGaps);
+      NSZoneFree(NSDefaultMallocZone(), _glyphGaps);
+    }
+  
   RELEASE (_textContainers);
 
   [super dealloc];
