@@ -542,11 +542,14 @@ static  NSMapTable              *mimeMap = NULL;
 
 - (BOOL) writeFileContents: (NSString*)filename
 {
+  NSFileWrapper *wrapper;
   NSData	*data;
   NSString	*type;
   BOOL		ok = NO;
 
-  data = [NSData dataWithContentsOfFile: filename];
+  wrapper = [[NSFileWrapper alloc] initWithPath: filename];
+  data = [wrapper serializedRepresentation];
+  RELEASE(wrapper);
   type = NSCreateFileContentsPboardType([filename pathExtension]);
   NS_DURING
     {
@@ -697,6 +700,7 @@ static  NSMapTable              *mimeMap = NULL;
 			    toFile: (NSString*)filename
 {
   NSData	*d;
+  NSFileWrapper *wrapper;
 
   if (type == nil)
     {
@@ -704,12 +708,19 @@ static  NSMapTable              *mimeMap = NULL;
     }
   d = [self dataForType: type];
   if (d == nil)
-    d = [self dataForType: NSFileContentsPboardType];
-
-  if ([d writeToFile: filename atomically: NO] == NO)
     {
+      d = [self dataForType: NSFileContentsPboardType];
+      if (d == nil)
+	return nil;
+    }
+
+  wrapper = [[NSFileWrapper alloc] initWithSerializedRepresentation: d];
+  if ([wrapper writeToFile: filename atomically: NO updateFilenames: NO] == NO)
+    {
+      RELEASE(wrapper);
       return nil;
     }
+  RELEASE(wrapper);
   return filename;
 }
 
