@@ -1,3 +1,17 @@
+2004-01-09 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSBrowser.m: 
+	(drawRect:) Cosmetic changes in drawing of column separators 
+	and horizontal scroller border.
+	
+	* Source/NSScrollView.m:
+	(drawRect): Calculate separator line usning scoller frame. Remove 
+	header view counting cases.
+	
+	* Source/NSScroller.m:
+	(drawKnobSlot): Always draw background. Even if there's no room 
+	for scroller parts.
+
 2004-01-08 23:26  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSBitmapImageRep+GIF.m: Re-#define Object across the
