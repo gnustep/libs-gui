@@ -89,103 +89,92 @@
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  textStorage = [[NSTextStorage alloc] init];
+  NSTextContainer *aTextContainer = 
+      [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
+  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 
-  layoutManager = [[NSLayoutManager alloc] init];
+  [layoutManager addTextContainer: aTextContainer];
+  RELEASE(aTextContainer);
 
-  [textStorage addLayoutManager: layoutManager];
+  _textStorage = [[NSTextStorage alloc] init];
+  [_textStorage addLayoutManager: layoutManager];
   RELEASE(layoutManager);
 
-  textContainer
-    = [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
-  [layoutManager addTextContainer: textContainer];
-  RELEASE(textContainer);
-
-  return [self initWithFrame: frameRect textContainer: textContainer];
+  return [self initWithFrame: frameRect textContainer: aTextContainer];
 }
 
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
-  ASSIGN(textContainer, aTextContainer);
+  ASSIGN(_textContainer, aTextContainer);
 }
 
 - (NSTextContainer*) textContainer
 {
-  return textContainer;
+  return _textContainer;
 }
 
 - (void) replaceTextContainer: (NSTextContainer*)aTextContainer
 {
   // Notify layoutManager of change?
 
-  ASSIGN(textContainer, aTextContainer);
+  ASSIGN(_textContainer, aTextContainer);
 }
 
 - (void) setTextContainerInset: (NSSize)inset
 {
-  textContainerInset = inset;
+  _textContainerInset = inset;
 }
 
 - (NSSize) textContainerInset
 {
-  return textContainerInset;
+  return _textContainerInset;
 }
 
 - (NSPoint) textContainerOrigin
 {
-  // use bounds, inset, and used rect.
-  NSRect bRect = [self bounds];
-
-  return NSZeroPoint;
+  return _textContainerOrigin;
 }
 
 - (void) invalidateTextContainerOrigin
 {
-  tv_resetTextContainerOrigin = YES;
+  // recompute the textContainerOrigin
+  // use bounds, inset, and used rect.
+  NSRect bRect = [self bounds];
 }
 
 - (NSLayoutManager*) layoutManager
 {
-  return [textContainer layoutManager];
+  return [_textContainer layoutManager];
 }
 
 - (NSTextStorage*) textStorage
 {
-  return textStorage;
+  return _textStorage;
 }
 
 - (void) setBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN(tv_backGroundColor, aColor);
+  ASSIGN(_background_color, aColor);
 }
 
 - (NSColor*) backgroundColor
 {
-  return tv_backGroundColor;
+  return _background_color;
 }
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  tv_drawsBackground = flag;
+  _tf.draws_background = flag;
 }
 
 - (BOOL) drawsBackground
 {
-  return tv_drawsBackground;
+  return _tf.draws_background;
 }
 
 - (void) setNeedsDisplayInRect: (NSRect)aRect
 	 avoidAdditionalLayout: (BOOL)flag
 {
-/*
-  NSRange	glyphsToDraw;
-
-  glyphsToDraw = [layoutManager glyphRangeForTextContainer: textContainer];
-  [self lockFocus];
-  [layoutManager drawGlyphsForGlyphRange: glyphsToDraw
-				 atPoint: [self frame].origin];
-  [self unlockFocus];
-*/
 }
 
 /* We override NSView's setNeedsDisplayInRect: */
@@ -197,7 +186,7 @@
 
 - (BOOL) shouldDrawInsertionPoint
 {
-  return tv_shouldDrawInsertionPoint;
+  return [super shouldDrawInsertionPoint];
 }
 
 - (void) drawInsertionPointInRect: (NSRect)aRect
@@ -240,90 +229,90 @@
 - (void) setEditable: (BOOL)flag
 {
   if (flag)
-    tv_selectable = flag;
+    _tf.is_selectable = flag;
 
-  tv_editable = flag;
+  _tf.is_editable = flag;
 }
 
 - (BOOL) isEditable
 {
-  return tv_editable;
+  return _tf.is_editable;
 }
 
 - (void) setSelectable: (BOOL)flag
 {
-  tv_selectable = flag;
+  _tf.is_selectable = flag;
 }
 
 - (BOOL) isSelectable
 {
-  return tv_selectable;
+  return _tf.is_selectable;
 }
 
 - (void) setFieldEditor: (BOOL)flag
 {
-  tv_fieldEditor = flag;
+  _tf.is_field_editor = flag;
 }
 
 - (BOOL) isFieldEditor
 {
-  return tv_fieldEditor;
+  return _tf.is_field_editor;
 }
 
 - (void) setRichText: (BOOL)flag
 {
   if (!flag)
-    tv_acceptDraggedFiles = flag;
+    _tf.imports_graphics = flag;
 
-  tv_richText = flag;
+  _tf.is_rich_text = flag;
 }
 
 - (BOOL) isRichText
 {
-  return tv_richText;
+  return _tf.is_rich_text;
 }
 
 - (void) setImportsGraphics: (BOOL)flag
 {
   if (flag)
-    tv_richText = flag;
+    _tf.is_rich_text = flag;
 
-  tv_acceptDraggedFiles = flag;
+  _tf.imports_graphics = flag;
 }
 
 - (BOOL) importsGraphics
 {
-  return tv_acceptDraggedFiles;
+  return _tf.imports_graphics;
 }
 
 - (void) setUsesFontPanel: (BOOL)flag
 {
-  tv_usesFontPanel = flag;
+  _tf.uses_font_panel = flag;
 }
 
 - (BOOL) usesFontPanel
 {
-  return tv_usesFontPanel;
+  return _tf.uses_font_panel;
 }
 
 - (void) setUsesRuler: (BOOL)flag
 {
-  tv_usesRuler = flag;
+  _tf.uses_ruler = flag;
 }
 
 - (BOOL) usesRuler
 {
-  return tv_usesRuler;
+  return _tf.uses_ruler;
 }
 
 - (void) setRulerVisible: (BOOL)flag
 {
-  tv_rulerVisible = flag;
+  _tf.is_ruler_visible = flag;
 }
 
 - (BOOL) isRulerVisible
 {
-  return tv_rulerVisible;
+  return _tf.is_ruler_visible;
 }
 
 - (void) setSelectedRange: (NSRange)charRange
@@ -334,7 +323,7 @@
     postNotificationName: NSTextViewDidChangeSelectionNotification
     object: self];
 */
-  tv_selectedRange = charRange;
+  _selected_range = charRange;
   [self setSelectionGranularity: NSSelectByCharacter];
 
   // Also removes the marking from
@@ -343,7 +332,7 @@
 
 - (NSRange) selectedRange
 {
-  return tv_selectedRange;
+  return _selected_range;
 }
 
 - (void) setSelectedRange: (NSRange)charRange
@@ -352,7 +341,7 @@
 {
   NSDebugLLog(@"NSText", @"setSelectedRange stillSelecting.");
 
-  tv_selectedRange = charRange;
+  _selected_range = charRange;
   [self setSelectionGranularity: NSSelectByCharacter];
 
   // FIXME, more.
@@ -360,44 +349,44 @@
 
 - (NSSelectionAffinity) selectionAffinity
 {
-  return tv_selectionAffinity;
+  return _selectionAffinity;
 }
 
 - (void) setSelectionGranularity: (NSSelectionGranularity)granularity
 {
-  tv_selectionGranularity = granularity;
+  _selectionGranularity = granularity;
 }
 
 - (NSSelectionGranularity) selectionGranularity
 {
-  return tv_selectionGranularity;
+  return _selectionGranularity;
 }
 
 - (void) setInsertionPointColor: (NSColor*)aColor
 {
-  ASSIGN(tv_caretColor, aColor);
+  ASSIGN(_caret_color, aColor);
 }
 
 - (NSColor*) insertionPointColor
 {
-  return tv_caretColor;
+  return _caret_color;
 }
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)flag
 {
-  // tv_caretLocation =
+  // _caretLocation =
 
   // restart blinking timer.
 }
 
 - (void) setSelectedTextAttributes: (NSDictionary*)attributes
 {
-  ASSIGN(tv_selectedTextAttributes, attributes);
+  ASSIGN(_selectedTextAttributes, attributes);
 }
 
 - (NSDictionary*) selectedTextAttributes
 {
-  return tv_selectedTextAttributes;
+  return _selectedTextAttributes;
 }
 
 - (NSRange) markedRange
@@ -409,18 +398,19 @@
 
 - (void) setMarkedTextAttributes: (NSDictionary*)attributes
 {
-  ASSIGN(tv_markedTextAttributes, attributes);
+  ASSIGN(_markedTextAttributes, attributes);
 }
 
 - (NSDictionary*) markedTextAttributes
 {
-  return tv_markedTextAttributes;
+  return _markedTextAttributes;
 }
 
 - (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
 		    restrictedToTypesFromArray: (NSArray*)allowedTypes
 {
   // No idea.
+  return nil;
 }
 
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
@@ -457,11 +447,13 @@ of characters (if any) to be replaced by the new data.
 - (NSArray*) readablePasteboardTypes
 {
   // get default types, what are they?
+  return nil;
 }
 
 - (NSArray*) writablePasteboardTypes
 {
   // the selected text can be written to the pasteboard with which types.
+  return nil;
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
@@ -496,7 +488,7 @@ other than copy/paste or dragging. */
 - (void) alignJustified: (id)sender
 {
 /*
-  if (!tv_richText)
+  if (!_tf.is_rich_text)
     // if plain all text is jsutified.
   else
     // selected range is fully justified.
@@ -529,12 +521,12 @@ alignment. alignment is one of:
 {
   // more?
 
-  ASSIGN(tv_typingAttributes, attributes);
+  ASSIGN(_typingAttributes, attributes);
 }
 
 - (NSDictionary*) typingAttributes
 {
-  return tv_typingAttributes;
+  return _typingAttributes;
 }
 
 - (void) useStandardKerning: (id)sender
@@ -545,7 +537,7 @@ alignment. alignment is one of:
 - (void) lowerBaseline: (id)sender
 {
 /*
-  if (tv_richText)
+  if (_tf.is_rich_text)
     // lower baseline by one point for selected text
   else
     // lower baseline for entire document.
@@ -555,7 +547,7 @@ alignment. alignment is one of:
 - (void) raiseBaseline: (id)sender
 {
 /*
-  if (tv_richText)
+  if (_tf.is_rich_text)
     // raise baseline by one point for selected text
   else
     // raise baseline for entire document.
@@ -565,7 +557,7 @@ alignment. alignment is one of:
 - (void) turnOffKerning: (id)sender
 {
 /*
-  if (tv_richText)
+  if (_tf.is_rich_text)
     // turn off kerning in selection.
   else
     // turn off kerning document wide.
@@ -575,7 +567,7 @@ alignment. alignment is one of:
 - (void) loosenKerning: (id)sender
 {
 /*
-  if (tv_richText)
+  if (_tf.is_rich_text)
     // loosen kerning in selection.
   else
     // loosen kerning document wide.
@@ -585,7 +577,7 @@ alignment. alignment is one of:
 - (void) tightenKerning: (id)sender
 {
 /*
-  if (tv_richText)
+  if (_tf.is_rich_text)
     // tighten kerning in selection.
   else
     // tighten kerning document wide.
@@ -647,6 +639,7 @@ replacing the selection.
 
 - (NSArray*) acceptableDragTypes
 {
+  return nil;
 }
 
 - (void) updateDragTypeRegistration
@@ -675,22 +668,22 @@ replacing the selection.
 
 - (NSRange) rangeForUserCharacterAttributeChange
 {
-  if (!tv_editable || !tv_usesFontPanel)
+  if (!_tf.is_editable || !_tf.uses_font_panel)
     return NSMakeRange(NSNotFound, 0);
 
-  if (tv_richText)
-    return tv_selectedRange;
+  if (_tf.is_rich_text)
+    return _selected_range;
   else
     return NSMakeRange(NSNotFound, 0); // should be entire contents.
 }
 
 - (NSRange) rangeForUserParagraphAttributeChange
 {
-  if (!tv_editable)
+  if (!_tf.is_editable)
     return NSMakeRange(NSNotFound, 0);
 
-  if (tv_richText)
-    return [self selectionRangeForProposedRange: tv_selectedRange
+  if (_tf.is_rich_text)
+    return [self selectionRangeForProposedRange: _selected_range
 		granularity: NSSelectByParagraph];
   else
     return NSMakeRange(NSNotFound, 0); // should be entire contents.
@@ -698,10 +691,10 @@ replacing the selection.
 
 - (NSRange) rangeForUserTextChange
 {
-  if (!tv_editable || !tv_usesRuler)
+  if (!_tf.is_editable || !_tf.uses_ruler)
     return NSMakeRange(NSNotFound, 0);
 
-  return tv_selectedRange;
+  return _selected_range;
 }
 
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
@@ -733,12 +726,12 @@ the affected range or replacement string before beginning changes, pass
 
 - (void) setSmartInsertDeleteEnabled: (BOOL)flag
 {
-  tv_smartInsertDelete = flag;
+  _tf.smart_insert_delete = flag;
 }
 
 - (BOOL) smartInsertDeleteEnabled
 {
-  return tv_smartInsertDelete;
+  return _tf.smart_insert_delete;
 }
 
 - (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
@@ -820,10 +813,10 @@ read from the pasteboard; otherwise returns nil.
 - (int) spellCheckerDocumentTag
 {
 /*
-  if (!tv_spellTag)
-    tv_spellTag = [[NSSpellingServer sharedServer] uniqueSpellDocumentTag];
+  if (!_spellCheckerDocumentTag)
+    _spellCheckerDocumentTag = [[NSSpellingServer sharedServer] uniqueSpellDocumentTag];
 */
-  return tv_spellTag;
+  return _spellCheckerDocumentTag;
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
@@ -849,6 +842,11 @@ rulerView: shouldMoveMarker: method, which invokes
 shouldChangeTextInRange: replacementString: to send out the proper request
 and notifications, and only invokes this method if permission is granted.
 */
+}
+
+- (void)rulerView:(NSRulerView *)ruler 
+     didAddMarker:(NSRulerMarker *)marker
+{
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
@@ -953,15 +951,15 @@ container, returning the modified location. */
 			 attributes: [self typingAttributes]];
   AUTORELEASE(aString);
 
-//  [textStorage replaceRange: NSMakeRange(0, [string length])
+//  [_textStorage replaceRange: NSMakeRange(0, [string length])
 //	withString: aString];
 
-  [textStorage setAttributedString: aString];
+  [_textStorage setAttributedString: aString];
 
 //replaceCharactersInRange: NSMakeRange(0, [string length])
 //                   withAttributedString: aString];
 
-//  [textStorage insertAttributedString: aString atIndex: 0];
+//  [_textStorage insertAttributedString: aString atIndex: 0];
 }
 
 - (void) setText: (NSString*)string
@@ -977,7 +975,7 @@ container, returning the modified location. */
     aString = [[NSAttributedString alloc] initWithString: aString
 		attributes: [self typingAttributes]];
 
-  [textStorage replaceCharactersInRange: [self selectedRange]
+  [_textStorage replaceCharactersInRange: [self selectedRange]
        withAttributedString: (NSAttributedString*)aString];
 
   [self sizeToFit];                       // ScrollView interaction
@@ -988,7 +986,7 @@ container, returning the modified location. */
   [self display];
   [_window update]; 
 
-  NSLog(@"%@", [textStorage string]);
+  NSLog(@"%@", [_textStorage string]);
   /*
    * broadcast notification
    */
@@ -1005,13 +1003,14 @@ container, returning the modified location. */
 - (void) drawRect: (NSRect)aRect
 {
   NSRange	glyphRange;
+  NSLayoutManager *layoutManager = [self layoutManager];
 
-  if (tv_backGroundColor)
+  if (_background_color != nil)
     {
-      [tv_backGroundColor set];
+      [_background_color set];
       NSRectFill(aRect);
     }
-  glyphRange = [layoutManager glyphRangeForTextContainer: textContainer];
+  glyphRange = [layoutManager glyphRangeForTextContainer: _textContainer];
   if (glyphRange.length > 0)
     {
       [layoutManager drawGlyphsForGlyphRange: glyphRange
@@ -1019,4 +1018,37 @@ container, returning the modified location. */
     }
 }
 
+@end
+
+@implementation NSTextView(NSTextInput)
+// This are all the NSTextInput methods that are not implemented on NSTextView
+// or one of its super classes.
+
+- (void)setMarkedText:(NSString *)aString selectedRange:(NSRange)selRange
+{
+}
+
+- (BOOL)hasMarkedText
+{
+  return NO;
+}
+
+- (void)unmarkText
+{
+}
+
+- (NSArray*)validAttributesForMarkedText
+{
+  return nil;
+}
+
+- (long)conversationIdentifier
+{
+  return 0;
+}
+
+- (NSRect)firstRectForCharacterRange:(NSRange)theRange
+{
+  return NSZeroRect;
+}
 @end

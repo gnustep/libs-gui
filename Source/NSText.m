@@ -1330,6 +1330,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _tf.draws_background = YES;
   [self setBackgroundColor: [NSColor textBackgroundColor]];
   [self setTextColor: [NSColor textColor]];
+  ASSIGN(_caret_color, [NSColor blackColor]); 
   _default_font = RETAIN([NSFont userFontOfSize: 12]);
   // sets up the contents object
   [self setString: @""];
@@ -1343,7 +1344,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   RELEASE(_background_color);
   RELEASE(_default_font);
   RELEASE(_text_color);
+  RELEASE(_caret_color);
   RELEASE(_textStorage);
+  RELEASE(_typingAttributes);
+  RELEASE(_layoutManager);
 
   [super dealloc];
 }
@@ -2301,7 +2305,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     [self drawSelectionAsRange: chosenRange];
   else if (chosenRange.length  == 0)
     [self drawInsertionPointAtIndex: chosenRange.location
-	  color: [NSColor blackColor] turnedOn: YES];
+	  color: _caret_color turnedOn: YES];
 
   // remember for column stable cursor up/down
   _currentCursor = [self rectForCharacterIndex: chosenRange.location].origin;
@@ -2516,7 +2520,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   //  {
   //   [self lockFocus];
   //   [self drawInsertionPointAtIndex: _selected_range.location
-  //      color: [NSColor blackColor] turnedOn: YES];
+  //      color: _caret_color turnedOn: YES];
   //   [self unlockFocus];
   //   //<!> restart timed entry
   //  }
@@ -2577,28 +2581,34 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeConditionalObject: _delegate];
-
   [aCoder encodeObject: _textStorage];
 
-  [aCoder encodeValueOfObjCType: "I" at: &_alignment];
-  flag = _tf.is_editable;
+  flag = _tf.is_field_editor;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_rich_text;
+  flag = _tf.is_editable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.is_selectable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_rich_text;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.imports_graphics;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.uses_font_panel;
+  flag = _tf.draws_background;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.is_horizontally_resizable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.is_vertically_resizable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_font_panel;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_ruler;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.is_ruler_visible;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_field_editor;
+  flag = _tf.smart_insert_delete;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+  [aCoder encodeValueOfObjCType: "I" at: &_alignment];
   [aCoder encodeObject: _background_color];
   [aCoder encodeObject: _text_color];
   [aCoder encodeObject: _default_font];
@@ -2611,28 +2621,34 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [super initWithCoder: aDecoder];
 
   _delegate  = [aDecoder decodeObject];
-
   _textStorage = [aDecoder decodeObject];
 
-  [aDecoder decodeValueOfObjCType: "I" at: &_alignment];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tf.is_field_editor = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_editable = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tf.is_rich_text = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_selectable = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tf.is_rich_text = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.imports_graphics = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tf.uses_font_panel = flag;
+  _tf.draws_background = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_horizontally_resizable = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_vertically_resizable = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tf.uses_font_panel = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tf.uses_ruler = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_ruler_visible = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tf.is_field_editor = flag;
+  _tf.smart_insert_delete = flag;
+
+  [aDecoder decodeValueOfObjCType: "I" at: &_alignment];
   _background_color  = [aDecoder decodeObject];
   _text_color  = RETAIN([aDecoder decodeObject]);
   _default_font  = RETAIN([aDecoder decodeObject]);
@@ -3206,7 +3222,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     drawRect.size.height = 12;
 
   if (flag && color == nil)
-    color = [NSColor blackColor];
+    color = _caret_color;
 
   [self drawInsertionPointInRect: drawRect
 	color: color
@@ -3269,7 +3285,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   else
     {
       [self drawInsertionPointAtIndex: aRange.location
-				color: [NSColor blackColor]
+				color: _caret_color
 			     turnedOn: YES];
     }
 }
