@@ -952,20 +952,24 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   if ([NSApp mainMenu] != self)
     {
       NSString		*key;
-      NSString		*location;
-      NSUserDefaults	*defaults;
-      NSDictionary	*menuLocations;
 
       key = [self _locationKey];
-      defaults  = [NSUserDefaults standardUserDefaults];
-      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-      
-      location = [menuLocations objectForKey: key];
-      if (location && [location isKindOfClass: [NSString class]])
+      if (key != nil)
 	{
-	  [titleView windowBecomeTornOff];
-	  [self _setTornOff: YES];
-	  [self display];
+	  NSString		*location;
+	  NSUserDefaults	*defaults;
+	  NSDictionary		*menuLocations;
+
+	  defaults  = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+      
+	  location = [menuLocations objectForKey: key];
+	  if (location && [location isKindOfClass: [NSString class]])
+	    {
+	      [titleView windowBecomeTornOff];
+	      [self _setTornOff: YES];
+	      [self display];
+	    }
 	}
     }
 }
@@ -1380,10 +1384,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSUserDefaults	*defaults;
-  NSMutableDictionary	*menuLocations;
   NSString		*key;
-  NSString		*locString;
   NSPoint		lastLocation;
   NSPoint		location;
   unsigned		eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
@@ -1431,16 +1432,23 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   /*
    * Same current menu frame in defaults database.
    */
-  defaults = [NSUserDefaults standardUserDefaults];
-  menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
-  if (menuLocations == nil)
-    menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
-  locString = [[menu window] stringWithSavedFrame];
   key = [menu _locationKey];
-  [menuLocations setObject: locString forKey: key];
-  [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-  RELEASE(menuLocations);
-  [defaults synchronize];
+  if (key != nil)
+    {
+      NSUserDefaults		*defaults;
+      NSMutableDictionary	*menuLocations;
+      NSString			*locString;
+
+      defaults = [NSUserDefaults standardUserDefaults];
+      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
+      if (menuLocations == nil)
+	menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
+      locString = [[menu window] stringWithSavedFrame];
+      [menuLocations setObject: locString forKey: key];
+      [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+      RELEASE(menuLocations);
+      [defaults synchronize];
+    }
 }
 
 - (void) windowBecomeTornOff
