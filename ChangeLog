@@ -1,9 +1,32 @@
+2001-11-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSTextView.h
+	Added protocol NSTextInput to NSTextView. Added some new MacOSX
+	methods. 
+	* Source/NSTextView.m
+	Corrected memory management in rulerview methods. Implemented
+	update ruler. Dummy implementation for new spell checking
+	methods. Implementation of new drag methods, use these in the
+	dragging protocol methods. Moved the NSTextInput methods into the
+	main category. Implemented some of them.
+	* Source/NSLayoutManager.m
+	Implemented [rulerMarkersForTextView:...ruler:].
+	* Headers/gnustep/gui/NSPasteboard.h
+	Added extension methods for NSURL.
+	* Source/NSPasteboard.m 
+	Implemented extension methods for NSURL.
+	* Headers/gnustep/gui/NSView.h
+ 	Added some new MacOSX methods. Changed order of methods.
+	* Source/NSView.m
+	Implemented those new methods. Call new methods from the subview
+	handling methods.
+	
 2001-11-23  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Headers/gnustep/gui/NSTableView.h:
-	* Source/NSTableView.m: 
+	* Headers/gnustep/gui/NSTableView.h
+	* Source/NSTableView.m
 	Added some additional MacOSX methods.
-	* Headers/gnustep/gui/NSTextField.h:
+	* Headers/gnustep/gui/NSTextField.h
 	* Source/NSTextField.m
 	Added and implemented some methods for the handling of richt text.
 	* Source/extern.m
@@ -3539,7 +3562,7 @@ Mon Nov  6 17:02:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 2000-10-24  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m: Removed some 300 lines
-	* Source/NSLayoutManager.m: Added simple glyph cahracter mapping methods
+	* Source/NSLayoutManager.m: Added simple glyph character mapping methods
 	* Source/NSText.m: Set the TextConatainer to track its view
 	again. But switch this of if the view is scrollable.
 
