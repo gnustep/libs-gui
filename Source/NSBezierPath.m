@@ -55,7 +55,6 @@ static float default_miter_limit = 10.0;
 
 - (void)_invalidateCache;
 - (void)_recalculateBounds;
-- (void)_doPath;
 
 @end
 
@@ -479,6 +478,8 @@ static float default_miter_limit = 10.0;
 //
 - (void)stroke
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
   if(_cachesBezierPath) 
     {
       NSRect bounds = [self bounds];
@@ -489,22 +490,24 @@ static float default_miter_limit = 10.0;
         {
 	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];		
 	  [_cacheImage lockFocus];
-	  PStranslate(-origin.x, -origin.y);
-  	  [self _doPath];
-	  PSstroke();
+	  DPStranslate(ctxt, -origin.x, -origin.y);
+	  [ctxt GSSendBezierPath: self];
+	  DPSstroke(ctxt);
 	  [_cacheImage unlockFocus];						
 	}
       [_cacheImage compositeToPoint: origin operation: NSCompositeCopy];
     } 
   else 
     {
-      [self _doPath];
-      PSstroke();
+      [ctxt GSSendBezierPath: self];
+      DPSstroke(ctxt);
     }
 }
 
 - (void)fill
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
   if(_cachesBezierPath) 
     {
       NSRect bounds = [self bounds];
@@ -515,43 +518,47 @@ static float default_miter_limit = 10.0;
         {
 	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];		
 	  [_cacheImage lockFocus];
-	  PStranslate(-origin.x, -origin.y);
-	  [self _doPath];
+	  DPStranslate(ctxt, -origin.x, -origin.y);
+	  [ctxt GSSendBezierPath: self];
 	  if([self windingRule] == NSNonZeroWindingRule)
-	    PSfill();
+	    DPSfill(ctxt);
 	  else
-	    PSeofill();
+	    DPSeofill(ctxt);
 	  [_cacheImage unlockFocus];
 	}
       [_cacheImage compositeToPoint: origin operation: NSCompositeCopy];
     } 
   else 
     {
-      [self _doPath];
+      [ctxt GSSendBezierPath: self];
       if([self windingRule] == NSNonZeroWindingRule)
-	PSfill();
+	DPSfill(ctxt);
       else
-	PSeofill();
+	DPSeofill(ctxt);
     }
 }
 
 - (void)addClip
 {
-  [self _doPath];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSendBezierPath: self];
   if([self windingRule] == NSNonZeroWindingRule)
-    PSclip();
+    DPSclip(ctxt);
   else
-    PSeoclip();
+    DPSeoclip(ctxt);
 }
 
 - (void)setClip
 {
-  PSinitclip();
-  [self _doPath];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  DPSinitclip(ctxt);
+  [ctxt GSSendBezierPath: self];
   if([self windingRule] == NSNonZeroWindingRule)
-    PSclip();
+    DPSclip(ctxt);
   else
-    PSeoclip();
+    DPSeoclip(ctxt);
 }
 
 //
@@ -723,7 +730,6 @@ static float default_miter_limit = 10.0;
   INVALIDATE_CACHE();
 }
 
-
 //
 // Path info
 //
@@ -819,7 +825,6 @@ static float default_miter_limit = 10.0;
   int i, count;
 
   count = [aPath elementCount];
-  
   for (i = 0; i < count; i++)
     {
       type = [aPath elementAtIndex: i associatedPoints: points];
@@ -1396,51 +1401,6 @@ static float default_miter_limit = 10.0;
   _shouldRecalculateBounds = NO;
 }
 
-- (void)_doPath
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  NSBezierPathElement type;
-  NSPoint pts[3];
-  int i, count;
-  float pattern[10];
-  float phase;
-
-  DPSnewpath(ctxt);
-  DPSsetlinewidth(ctxt, [self lineWidth]);
-  DPSsetlinejoin(ctxt, [self lineJoinStyle]);
-  DPSsetlinecap(ctxt, [self lineCapStyle]);
-  DPSsetmiterlimit(ctxt, [self miterLimit]);
-  DPSsetflat(ctxt, [self flatness]);
-
-  [self getLineDash: pattern count: &count phase: &phase];
-  // Always sent the dash pattern. When NULL this will reset to a solid line.
-  DPSsetdash(ctxt, pattern, count, phase);
-
-  count = [self elementCount];
-  for(i = 0; i < count; i++) 
-    {
-      type = [self elementAtIndex: i associatedPoints: pts];
-      switch(type) 
-        {
-	  case NSMoveToBezierPathElement:
-	      DPSmoveto(ctxt, pts[0].x, pts[0].y);
-	      break;
-	  case NSLineToBezierPathElement:
-	      DPSlineto(ctxt, pts[0].x, pts[0].y);
-	      break;
-	  case NSCurveToBezierPathElement:
-	      DPScurveto(ctxt, pts[0].x, pts[0].y, 
-			 pts[1].x, pts[1].y, pts[2].x, pts[2].y);
-	      break;
-	  case NSClosePathBezierPathElement:
-	      DPSclosepath(ctxt);
-	      break;
-	  default:
-	      break;
-	}
-    }
-}
-
 @end
 
 
@@ -1612,6 +1572,64 @@ typedef struct _PathElement
     return self;
 
   return [super bezierPathByFlatteningPath];
+}
+
+- (void) transformUsingAffineTransform: (NSAffineTransform *)transform
+{
+  NSBezierPathElement type;
+  int i, count;
+  PathElement *elments = (PathElement *)GSIArrayItems(pathElements);
+  SEL transformPointSel = @selector(transformPoint:); 
+  NSPoint (*transformPointImp)(NSAffineTransform*, SEL, NSPoint);
+
+  transformPointImp = (NSPoint (*)(NSAffineTransform*, SEL, NSPoint))
+      [transform methodForSelector: transformPointSel];
+
+  count = GSIArrayCount(pathElements);
+  for(i = 0; i < count; i++) 
+    {
+      type = elments[i].type;
+      switch(type) 
+        {
+	  case NSMoveToBezierPathElement:
+	  case NSLineToBezierPathElement:
+	      elments[i].points[0] = (*transformPointImp)(transform,  
+							  transformPointSel, 
+							  elments[i].points[0]);
+	      break;
+	  case NSCurveToBezierPathElement:
+	      elments[i].points[0] = (*transformPointImp)(transform,  
+							  transformPointSel, 
+							  elments[i].points[0]);
+	      elments[i].points[1] = (*transformPointImp)(transform,  
+							  transformPointSel, 
+							  elments[i].points[1]);
+	      elments[i].points[2] = (*transformPointImp)(transform,  
+							  transformPointSel, 
+							  elments[i].points[2]);
+	      break;
+	  case NSClosePathBezierPathElement:
+	      break;
+	  default:
+	      break;
+	}
+    }
+  INVALIDATE_CACHE();
+}
+
+- (void) appendBezierPath: (NSBezierPath *)aPath
+{
+  PathElement elem;
+  int i, count;
+
+  count = [aPath elementCount];
+
+  for (i = 0; i < count; i++)
+    {
+      elem = GSIArrayItemAtIndex(((GSBezierPath*)aPath)->pathElements, i).ext;
+      GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
+    }
+  INVALIDATE_CACHE();
 }
 
 //
