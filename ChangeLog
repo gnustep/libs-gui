@@ -1,3 +1,9 @@
+Wed Jan 17 19:51:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTableHeaderView.m ([-mouseDown:]): Fixed bug in
+	resizing (patch by Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+	slightly modified).
+
 Tue Jan 16 12:01:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler):
