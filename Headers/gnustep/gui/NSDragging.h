@@ -40,7 +40,10 @@ typedef enum _NSDragOperation {
   NSDragOperationLink = 2,
   NSDragOperationGeneric = 4,
   NSDragOperationPrivate = 8,
-  NSDragOperationAll = 15  
+  NSDragOperationMove = 16,
+  NSDragOperationDelete = 32,
+  NSDragOperationAll = 63,
+  NSDragOperationEvery = NSDragOperationAll  
 } NSDragOperation;
 
 @protocol NSDraggingInfo
@@ -84,6 +87,9 @@ typedef enum _NSDragOperation {
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender;
 
+#ifndef STRICT_OPENSTEP
+- (void)draggingEnded: (id <NSDraggingInfo>)sender;
+#endif
 @end
 
 @interface NSObject (NSDraggingSource)
@@ -103,6 +109,13 @@ typedef enum _NSDragOperation {
              endedAt: (NSPoint)screenPoint
            deposited: (BOOL)didDeposit;
 
+#ifndef STRICT_OPENSTEP
+- (void)draggedImage: (NSImage*)image
+             endedAt: (NSPoint)screenPoint
+	   operation: (NSDragOperation)operation;
+- (void)draggedImage: (NSImage*)image
+             movedTo: (NSPoint)screenPoint;
+#endif 
 @end
 
 #endif // _GNUstep_H_NSDragging
