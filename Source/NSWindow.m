@@ -64,6 +64,17 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/GSWraps.h>
 
+static float GSTitleBarHeight = 24.0;
+static float GSResizeBarHeight = 11.0;
+/*
+  PJB: This should be the same as in GSMenuBarHeight in NSMenuView 
+       and the actual title bar height currently drawn by WindowMaker. 
+       (We should do this ourselves).
+       I don't know how it's been computed for NSMenu, but I find the 
+       title bar heigh to be 24 pixels.
+*/
+
+
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 /*
@@ -1175,10 +1186,18 @@ static NSMapTable* windowmaps = NULL;
 {
   NSSize screenSize = [[NSScreen mainScreen] frame].size;
   NSPoint origin = frame.origin;
+  float offset=0.0;
 
-  // center the window within it's screen
+  // center the window within it's screen,
+  // taking into account the title bar and the resize bar heights <PJB>.
+  if((style_mask&NSTitledWindowMask)!=0){
+      offset+=GSTitleBarHeight;
+  }
+  if((style_mask&NSResizableWindowMask)!=0){
+      offset+=GSResizeBarHeight;
+  }
   origin.x = (screenSize.width - frame.size.width) / 2;
-  origin.y = (screenSize.height - frame.size.height) / 2;
+  origin.y = (screenSize.height - offset - frame.size.height) / 2;
   [self setFrameOrigin: origin];
 }
 
