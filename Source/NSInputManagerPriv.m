@@ -25,11 +25,13 @@
  */
 
 #include <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSTimer.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSRunLoop.h>
 
 #if !defined USE_INPUT_MANAGER_UTILITIES
 #define USE_INPUT_MANAGER_UTILITIES
@@ -181,9 +183,8 @@ static IMRecord _maskTable[] = {
 
       result = [keyBindingTable getSelectorFromCharacter: c
 						selector: &sel];
-#if !defined NDEBUG
+#if defined INPUT_MANAGER_INTERPRETATION_DEBUG
       NSLog(@"%@: <-- %@", self, c);
-
       if (sel)
 	NSLog(@"%@: --> %@", self, NSStringFromSelector(sel));
       else
@@ -214,13 +215,48 @@ static IMRecord _maskTable[] = {
 }
 
 
+#define SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP
+
+
 - (void)interpretKeyEvents: (NSArray *)eventArray
 {
-  id		obj;
-  NSEnumerator	*objEnum    = [eventArray objectEnumerator];
+#if defined SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP
+  static NSTimeInterval	prev	    = 0.0;
+  static NSString	*prevChars  = nil;
+  NSTimeInterval	now	    = 0.0;
+  NSString		*curChars   = nil;
+  static unsigned int	count	    = 0;
+  /* Adjust the following two constants so that most of the users feel
+     the resulting cursor movements look natural.  (Or fix the crawling
+     re-drawing of NSTextView, which is responsible for this hack. ) */
+  const NSTimeInterval	interval    = 50.0;
+  static const int	skips	    = 40;
+#endif /* SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP */
+  NSEnumerator		*objEnum    = nil;
+  id			obj	    = nil;
 
+  objEnum = [eventArray objectEnumerator];
   while ((obj = [objEnum nextObject]) != nil)
     {
+      if ([obj isKindOfClass: [NSEvent class]] == NO ||
+	  [obj type] != NSKeyDown)
+	{
+	  continue;
+	}
+#if defined SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP
+      now = [obj timestamp];
+      curChars = [obj characters];
+      if (now - prev <= interval && [curChars isEqualToString: prevChars])
+	{
+	  if (count++ % skips)
+	    {
+	      continue;
+	    }
+	}
+      prev = [obj timestamp];
+      [prevChars release];
+      prevChars = [curChars copy];
+#endif /* SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP */
       [self interpretSingleKeyEvent: obj];
     }
 }

@@ -153,7 +153,7 @@
 }
 
 
-- (BOOL)wantsToHandleMouseEvent
+- (BOOL)wantsToHandleMouseEvents
 {
   [mainBody subclassResponsibility: _cmd];
   /* Not reached */
@@ -370,9 +370,9 @@
 }
 
 
-- (BOOL)wantsToHandleMouseEvent
+- (BOOL)wantsToHandleMouseEvents
 {
-  return [impl wantsToHandleMouseEvent];
+  return [impl wantsToHandleMouseEvents];
 }
 
 
@@ -385,9 +385,9 @@
 /* ----------------------------------------------------------------------------
     NSInputServerMouseTracker protocol methods
 
-    These methods are supposedly invoked when -wantsToHandleMouseEvent
-    returns YES, which in turn implies that impl is implemented with
-    the intention of its conforming to the NSInputServerMouseTracker
+    These methods are supposedly invoked when -wantsToHandleMouseEvents
+    returns YES, which in turn implies that impl is implemented in such
+    way that it conforms to the NSInputServerMouseTracker
     protocol.  Hence, the messages are forwarded to impl without
     checking the conformance.
 

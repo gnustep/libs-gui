@@ -23,6 +23,12 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+#SUBPROJECTS = \
+#    PlainInputServer
+
+include $(GNUSTEP_MAKEFILES)/aggregate.make
+
+
 include $(GNUSTEP_MAKEFILES)/rules.make
 
 $(GNUSTEP_LIBRARY)/InputManagers:

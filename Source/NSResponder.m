@@ -48,11 +48,9 @@
     {
       [self setVersion: 1];
       
-      /* Gets the current input manager - this forces it to read the
-         key binding files at this stage.  */
-      /* NSInputManager needs somehow to interact with the NSApplication.
+      /* NSInputManager somehow needs to interact with the NSApplication.
          Perhap, the right place of the instantiation may be there... */
-      [[NSInputManager alloc] initWithName: nil host: nil];
+      [[NSInputManager alloc] initWithName: @"PlainInputServer" host: nil];
     }
 }
 

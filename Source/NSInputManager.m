@@ -103,13 +103,13 @@ static NSString *_infoFileName		= @"Info";
 
 - (void)clientBecomeActive: (NSNotification *)aNotification;
 - (void)clientResignActive: (NSNotification *)aNotification;
-- (void)lostConnection: (NSNotification *)aNotification;
+- (void)connectionDidDie: (NSNotification *)aNotification;
 @end /* @interface NSInputManager (Private) */
 
 
 /* To ease traffic jam */
 @protocol IMUnifiedProtocolForInputServer <NSInputServiceProvider,
-                                         NSInputServerMouseTracker>
+                                           NSInputServerMouseTracker>
 @end /* @protocol IMUnifiedProtocolForInputServer */
 
 
@@ -309,7 +309,7 @@ static NSMutableArray *_inputServerList = nil;
 {
   if (serverProxy)
     {
-      return [serverProxy wantsToHandleMouseEvent];
+      return [serverProxy wantsToHandleMouseEvents];
     }
   else
     {
@@ -336,12 +336,11 @@ static NSMutableArray *_inputServerList = nil;
   [serverProxy terminate: self];
 
   [self resignObserverOfClient];
-  [self resignObserverOfConnection];
 
   [NSInputManager removeFromInputServerList: self]; 
 
-  [self setKeyBindingTable: nil];
   [self setServerProxy: nil];
+  [self setKeyBindingTable: nil];
   [self setServerInfo: nil];
 
   [super dealloc];
@@ -553,16 +552,10 @@ static NSMutableArray *_inputServerList = nil;
 {
   NSString	*name	    = [serverInfo connectionName];
   NSString	*exec	    = [serverInfo executableAbsolutePath];
-  const float	interval    = 5.0;
+  const float	interval    = 2.0;
   int		count	    = 0;
   const int	limit	    = 3;
   id		proxy;
-
-  if (host == nil)
-    {
-      NSLog(@"%@: Host name wasn't specified", self);
-      return NO;
-    }
 
   do
     {
@@ -580,22 +573,18 @@ static NSMutableArray *_inputServerList = nil;
 				   invocation: nil
 				      repeats: NO];
       [[NSRunLoop currentRunLoop] runUntilDate:
-	  [NSDate dateWithTimeIntervalSinceNow: interval]];
+			    [NSDate dateWithTimeIntervalSinceNow: interval]];
     }
   while (count++ < limit && proxy == nil);
 
   if (proxy == nil)
     {
-      NSLog(@"%@: Failed to connect to server", self);
+      NSLog(@"%@: Failed to launch %@", self, exec);
       return NO;
     }
+  [proxy setProtocolForProxy: @protocol(IMUnifiedProtocolForInputServer)];
 
   [self setServerProxy: proxy];
-
-  [self becomeObserverOfConnection];
-  [proxy setProtocolForProxy: @protocol(IMUnifiedProtocolForInputServer)];
-  [proxy inputClientBecomeActive: self];
-
 
   return YES;
 }
@@ -618,8 +607,10 @@ static NSMutableArray *_inputServerList = nil;
 - (void)setServerProxy: (id)proxy
 {
   [proxy retain];
+  [self resignObserverOfConnection];
   [serverProxy release];
   serverProxy = proxy;
+  [self becomeObserverOfConnection];
 }
 
 
@@ -693,12 +684,16 @@ static NSMutableArray *_inputServerList = nil;
 
 - (void)becomeObserverOfConnection
 {
-  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-
-  [center addObserver: self
-	     selector: @selector(lostConnection:)
-		 name: NSConnectionDidDieNotification
-	       object: [serverProxy connectionForProxy]];
+  NSNotificationCenter *center;
+  
+  if (serverProxy)
+    {
+      center = [NSNotificationCenter defaultCenter];
+      [center addObserver: self
+		 selector: @selector(connectionDidDie:)
+		     name: NSConnectionDidDieNotification
+		   object: [serverProxy connectionForProxy]];
+    }
 }
 
 
@@ -719,11 +714,15 @@ static NSMutableArray *_inputServerList = nil;
 
 - (void)resignObserverOfConnection
 {
-  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *center;
 
-  [center removeObserver: self
-		    name: NSConnectionDidDieNotification
-		  object: [serverProxy connectionForProxy]];
+  if (serverProxy)
+    {
+      center = [NSNotificationCenter defaultCenter];
+      [center removeObserver: self
+			name: NSConnectionDidDieNotification
+		      object: [serverProxy connectionForProxy]];
+    }
 }
 
 
@@ -752,7 +751,7 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
-- (void)lostConnection: (NSNotification *)aNotification
+- (void)connectionDidDie: (NSNotification *)aNotification
 {
   NSMutableDictionary	*src	= [[NSMutableDictionary alloc] init];
   NSDictionary		*dict	= nil;
@@ -760,15 +759,17 @@ static NSMutableArray *_inputServerList = nil;
   IMKeyBindingTable	*table	= nil;
 
   NSLog(@"%@: Lost connection to input server %@",
-	self, [serverProxy serverName]);
+	self, [serverInfo serverName]);
+  NSLog(@"%@: Invalidate key-bindings %@",
+	self, [serverInfo defaultKeyBindings]); 
   /* Release all resources to related to the server */
-  [self resignObserverOfConnection];
-  [self setKeyBindingTable: nil];
   [self setServerProxy: nil];
+  [self setKeyBindingTable: nil];
   [self setServerInfo: nil];
 
   /* To fall back to the stand-alone internal input manager, re-initialize
      the key-binding table.  No error check because this is a last resort. */
+
   if ((path = [self standardKeyBindingAbsolutePath]))
     {
       dict = [[NSDictionary alloc] initWithContentsOfFile: path];
@@ -782,6 +783,14 @@ static NSMutableArray *_inputServerList = nil;
       [dict release], dict = nil;
     }
   table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
+  if (table)
+    {
+      NSLog(@"%@: Key-bindings re-initialized", self);
+    }
+  else
+    {
+      NSLog(@"%@: (CRITICAL) All key bindings lost", self);
+    }
   [self setKeyBindingTable: table];
   [table release], table = nil;
 }

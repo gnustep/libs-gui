@@ -61,8 +61,8 @@
 @interface NSInputManager : NSObject <NSTextInput>
 {
   IMInputServerInfo	*serverInfo;
-  id			serverProxy;
   IMKeyBindingTable	*keyBindingTable;
+  id			serverProxy;
 }
 
 + (NSInputManager *)currentInputManager;

@@ -55,7 +55,7 @@
 			    client: (id)sender;
 - (void)terminate: (id)sender;
 - (BOOL)wantsToDelayTextChangeNotifications;
-- (BOOL)wantsToHandleMouseEvent;
+- (BOOL)wantsToHandleMouseEvents;
 - (BOOL)wantsToInterpretAllKeystrokes;
 @end /* @interface NSInputServiceProvider */
 
