@@ -514,7 +514,7 @@
    "OkButton" = {
 	alignment = 2;
 	alternateImage = nil;
-	alternateTitle = "Ok";
+	alternateTitle = "OK";
 	autoresizesSubviews = NO;
 	autoresizingMask = 1;
 	bounds = "{x = 0; y = 0; width = 70; height = 28}";
@@ -540,7 +540,7 @@
 	subviews = nil;
 	superview = "SavePanelView";
 	tag = 0;
-	title = "Ok";
+	title = "OK";
     };
 
    "OkButtonCell" = {
