@@ -117,7 +117,7 @@ static Class rulerViewClass = nil;
   [super dealloc];
 }
 
-- (void)setContentView:(NSClipView*)aView
+- (void)setContentView:(NSView*)aView
 {
   ASSIGN(_contentView, aView);
   [self addSubview:_contentView];
@@ -407,7 +407,7 @@ static Class rulerViewClass = nil;
 - (BOOL)hasVerticalScroller			{ return _hasVertScroller; }
 - (BOOL)hasHorizontalRuler			{ return _hasHorizRuler; }
 - (NSSize)contentSize			{ return [_contentView bounds].size; }
-- (NSClipView*)contentView			{ return _contentView; }
+- (NSView*)contentView			{ return _contentView; }
 - (NSRulerView*)horizontalRulerView		{ return _horizRuler; }
 - (BOOL)hasVerticalRuler			{ return _hasVertRuler; }
 - (NSRulerView*)verticalRulerView		{ return _vertRuler; }

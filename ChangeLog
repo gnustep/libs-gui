@@ -1,3 +1,11 @@
+Thu Oct 16 12:28:00 1997  Scott Christley  <scottc@stetson.net-community.com>
+
+	* config.mak.in: Delete.
+	* Headers/gnustep/gui/NSScrollView.h: Correct datatype.
+	* Headers/gnustep/gui/NSWindow.h: Declare NSMutableArray.
+	* Source/NSMenu.m (-drawRect:): Handle rounding errors.
+	* Source/NSScrollView.m: Correct datatype.
+
 Mon Oct 13 16:17:45 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSMatrix.m: Removed commented out portions of code.

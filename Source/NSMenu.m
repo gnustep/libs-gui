@@ -37,6 +37,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSMenu.h>
+#include <math.h>
 
 #define ASSIGN(variable, value) \
   [value retain]; \
@@ -207,12 +208,15 @@ static NSFont* menuFont = nil;
   int max, howMany;
   NSRect intRect = {{0, 0}, {0, 0}};
 
-  max = count - rect.origin.y / (cellSize.height + INTERCELL_SPACE);
-  howMany = rect.size.height / (cellSize.height + INTERCELL_SPACE);
+  // If there are no cells then just return
+  if (count == 0) return;
+
+  max = ceil((float)count - rect.origin.y / (cellSize.height + INTERCELL_SPACE));
+  howMany = ceil(rect.size.height / (cellSize.height + INTERCELL_SPACE));
 
   intRect.origin.y = (count - max) * (cellSize.height + INTERCELL_SPACE);
   intRect.size = cellSize;
-  for (i = max - 1; howMany >= 0; i--, howMany--) {
+  for (i = max - 1; howMany > 0; i--, howMany--) {
     id aCell = [cells objectAtIndex:i];
 
     [aCell drawWithFrame:intRect inView:self];

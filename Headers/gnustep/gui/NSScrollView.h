@@ -77,8 +77,8 @@
 - (NSBorderType)borderType;
 
 /* Managing the scrolled views */
-- (void)setContentView:(NSClipView*)aView;
-- (NSClipView*)contentView;
+- (void)setContentView:(NSView*)aView;
+- (NSView*)contentView;
 - (void)setDocumentView:(NSView*)aView;
 - (id)documentView;
 - (void)setDocumentCursor:(NSCursor*)aCursor;
