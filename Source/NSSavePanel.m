@@ -298,20 +298,10 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag
 {
-  NSString	*standardizedPath = [path stringByStandardizingPath];
-  BOOL		isDir;
-
-  // check that path exists, and if so save it
-  if (standardizedPath
-    && [[NSFileManager defaultManager]
-	 fileExistsAtPath: path isDirectory: &isDir] && isDir)
-    {
-      if (_lastValidPath)
-	[_lastValidPath autorelease];
-      _lastValidPath = [standardizedPath retain];
-    }
-  // set the path in the browser
-  if (_browser && flag)
+  if (path)
+    ASSIGN (_lastValidPath, path);
+  
+  if (flag && _lastValidPath)
     [_browser setPath: _lastValidPath];
 }
 
@@ -500,7 +490,17 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (void) setDirectory: (NSString *)path
 {
-  [self _setDirectory: path updateBrowser: YES];
+  NSString*      standardizedPath = [path stringByStandardizingPath];
+  NSFileManager* fm = [NSFileManager defaultManager];
+  BOOL		 isDir;
+  
+  if (standardizedPath && [fm fileExistsAtPath: standardizedPath 
+			      isDirectory: &isDir] 
+      && isDir)
+    {
+      [self _setDirectory: standardizedPath 
+	    updateBrowser: YES];
+    }
 }
 
 - (void) setRequiredFileType: (NSString *)fileType
@@ -549,10 +549,7 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (NSString *) directory
 {
-  if (_browser != nil)
-    return [_browser pathToColumn: [_browser lastColumn]];
-  else
-    return _lastValidPath;
+  return [_browser pathToColumn: [_browser lastColumn]];
 }
 
 - (NSString *) filename
@@ -670,12 +667,11 @@ selectCellWithString: (NSString *)title
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString	*path = [sender pathToColumn: column], *file;
   NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
-  NSArray       *extArray = [NSArray arrayWithObjects: @"app", 
-				     @"bundle", @"debug", @"profile", nil];
   unsigned	i, count;
   BOOL		exists, isDir;
   NSBrowserCell *cell;
   NSString      *theFile;
+  NSString      *filePath;
   
   // if array is empty, just return (nothing to display)
   if ([files lastObject] == nil)
@@ -711,11 +707,15 @@ selectCellWithString: (NSString *)title
       
       if (_treatsFilePackagesAsDirectories == NO && isDir == YES)
 	{
-	  if ([extArray containsObject: [theFile pathExtension]] == YES)
+	  filePath = [theFile pathExtension];
+	  if ([filePath isEqualToString: @"app"] 
+	      || [filePath isEqualToString: @"bundle"] 
+	      || [filePath isEqualToString: @"debug"] 
+	      || [filePath isEqualToString: @"profile"])
 	    isDir = NO;
 	}
       
-      if (exists == YES && isDir == NO)
+      if (isDir == NO)
 	[cell setLeaf: YES];
       else
 	[cell setLeaf: NO];
