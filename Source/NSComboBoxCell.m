@@ -768,7 +768,7 @@ numberOfRowsInColumn: (int)column
     }
   else
   {
-    int i;
+    unsigned int i;
 
     for (i = 0; i < [_popUpList count]; i++)
       {
