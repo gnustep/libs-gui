@@ -28,6 +28,7 @@
 */
 
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSDebug.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSEvent.h"
@@ -37,9 +38,6 @@
 #include "AppKit/NSButton.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
-
-#include <Foundation/NSDebug.h>
-
 #include "AppKit/NSImage.h"
 
 #include "GNUstepGUI/GSTitleView.h"
@@ -465,9 +463,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   if (![_attachedMenu _ownedByPopUp] && !_titleView)
     {
       // Add title view. If this menu not owned by popup
-//      _titleView = [[NSMenuWindowTitleView alloc] init];
-      _titleView = [[GSTitleView alloc] init];
-      [_titleView setOwner:_attachedMenu];
+      _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
       [self addSubview: _titleView];
       RELEASE(_titleView);
     }
