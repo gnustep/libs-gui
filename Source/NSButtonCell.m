@@ -407,7 +407,6 @@
   NSSize	imageSize = {0, 0};
   NSColor	*backgroundColor = nil;
   BOOL		flippedView = [control_view isFlipped];
-  NSCellImagePosition	ipos;
 
   // transparent buttons never draw
   if ([self isTransparent])
@@ -418,23 +417,28 @@
 
   // pushed in buttons contents are displaced to the bottom right 1px
   if ([self isBordered] && [self isHighlighted]
-      && ([self highlightsBy] & NSPushInCellMask))
-    cellFrame = NSOffsetRect (cellFrame,
-			      1., [control_view isFlipped] ? 1. : -1.);
+    && ([self highlightsBy] & NSPushInCellMask))
+    {
+      cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
+    }
 
   // determine the background color
   if ([self state])
     {
-      if ( [self showsStateBy]
-	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-	backgroundColor = [NSColor selectedControlColor];
+      if ([self showsStateBy]
+	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	{
+	  backgroundColor = [NSColor selectedControlColor];
+	}
     }
 
   if ([self isHighlighted])
     {
-      if ( [self highlightsBy]
-	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
-	backgroundColor = [NSColor selectedControlColor];
+      if ([self highlightsBy]
+	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	{
+	  backgroundColor = [NSColor selectedControlColor];
+	}
     }
 
   if (backgroundColor == nil)
@@ -479,20 +483,7 @@
       [imageToDisplay setBackgroundColor: backgroundColor];
     }
 
-  ipos = [self imagePosition];
-  if (flippedView == YES)
-    {
-      if (ipos == NSImageAbove)
-	{
-	  ipos = NSImageBelow;
-	}
-      else if (ipos == NSImageBelow)
-	{
-	  ipos = NSImageAbove;
-	}
-    }
-
-  switch (ipos)
+  switch ([self imagePosition])
     {
       case NSNoImage: 
 	imageToDisplay = nil;
@@ -527,26 +518,42 @@
 
       case NSImageAbove: 
 	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = NSMaxY(cellFrame) - imageSize.height;
 	imageRect.size.width = cellFrame.size.width;
 	imageRect.size.height = imageSize.height;
-
-	titleRect.origin = cellFrame.origin;
+	titleRect.origin.x = cellFrame.origin.x;
+	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = cellFrame.size.height - imageSize.height
 	  - yDist;
-	titleRect.size.width = cellFrame.size.width;
+	if (flippedView)
+	  {
+	    imageRect.origin.y = NSMinY(cellFrame);
+	    titleRect.origin.y = NSMaxY(cellFrame) - titleRect.size.height;
+	  }
+	else
+	  {
+	    imageRect.origin.y = NSMaxY(cellFrame) - imageRect.size.height;
+	    titleRect.origin.y = NSMinY(cellFrame);
+	  }
 	break;
 
       case NSImageBelow: 
-	imageRect.origin = cellFrame.origin;
+	imageRect.origin.x = cellFrame.origin.x;
 	imageRect.size.width = cellFrame.size.width;
 	imageRect.size.height = imageSize.height;
-
 	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = imageSize.height + yDist;
+	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = cellFrame.size.height - imageSize.height
 	  - yDist;
-	titleRect.size.width = cellFrame.size.width;
+	if (flippedView)
+	  {
+	    imageRect.origin.y = NSMaxY(cellFrame) - imageRect.size.height;
+	    titleRect.origin.y = NSMinY(cellFrame);
+	  }
+	else
+	  {
+	    imageRect.origin.y = NSMinY(cellFrame);
+	    titleRect.origin.y = NSMaxY(cellFrame) - titleRect.size.height;
+	  }
 	break;
 
       case NSImageOverlaps: 
