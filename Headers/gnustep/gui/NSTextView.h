@@ -39,6 +39,21 @@
 
 @interface NSTextView : NSText //<NSTextInput>
 {
+  struct GSTextViewFlagsType {
+    /* owns_text_network is YES if we have created the whole network
+       of text classes (and thus we are responsible to release them
+       when we are released).
+       
+       owns_text_network in NO if the text network was assembled by
+       hand, and the text storage owns everything - thus we need to
+       release nothing.  */
+    unsigned owns_text_network: 1;
+    /* Always NO except when we own text network and are deallocating */
+    unsigned is_in_dealloc: 1;
+    unsigned allows_undo: 1;
+    unsigned smart_insert_delete: 1;
+  } _tvf;
+  
   NSSize _textContainerInset;
   NSPoint _textContainerOrigin;
   NSDictionary *_selectedTextAttributes;
