@@ -1,3 +1,14 @@
+Wed Dec 13 16:02:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSAttributedString.m: Optimizations: cache class
+	pointers; replaced static functions wordBreakCSet (), wordCSet ()
+	and attachmentString () with static cached constants.
+	([-initWithPath:documentAttributes:]): Fixed little memory leak.
+	
+Wed Dec 13 03:51:40 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSText.m ([-setAlignment:range:]): Fixed memory leak.
+
 Tue Dec 12 23:50:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSParagraphStyle.h: Prefixed all ivars with
