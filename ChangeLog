@@ -1,3 +1,8 @@
+2003-09-13  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSPopUpButtonCell.m: Corrected minor problem which 
+	was causing a compilation error.
+
 2003-09-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
@@ -7,7 +12,8 @@
 	Undid last change. Rewrote [setMenu:] to make the popup button
 	cell listen to change notifications of the menu. New method
 	[itemChanged:] gets called when a menu item changes. Added hack to
-	[initWithCoder:] to set menu correctly and read old menu items correctly.
+	[initWithCoder:] to set menu correctly and read old menu items 
+	correctly.
 	Check in [itemAtIndex:] that the index is vaild and return nil
 	otherwise.
 	

@@ -353,7 +353,7 @@ static NSImage *_pbc_image[2];
     }
   else 
     {
-      retun nil;
+      return nil;
     }
 }
 

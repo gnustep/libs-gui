@@ -183,10 +183,19 @@ static const int current_version = 1;
     }
 }
 
-
 - (id) initWithIdentifier: (NSString*)identifier
 {
   [super init];
+
+  _customizationPaletteIsRunning = NO;
+  _allowsUserCustomization = NO;
+  _autosavesConfiguration = NO;
+  _configurationDictionary = nil;
+  _delegate = nil;
+  _displayMode = NSToolbarDisplayModeDefault; 
+  _visible = YES;
+  _items = nil;
+  _visibleItems = nil;
   ASSIGN(_identifier, identifier);
   [self _loadConfig];
   
@@ -211,12 +220,17 @@ static const int current_version = 1;
 - (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
 			      atIndex: (int)index
 {
-  NSToolbarItem *item = [_delegate toolbar: self 
-				   itemForItemIdentifier: itemIdentifier
-				   willBeInsertedIntoToolbar: YES];
-  [nc postNotificationName: NSToolbarWillAddItemNotification
-      object: self];
-  [_items insertObject: item atIndex: index];
+  NSToolbarItem *item = nil;
+  NSArray *allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
+  if([allowedItems containsObject: itemIdentifier])
+    {
+      item = [_delegate toolbar: self 
+			itemForItemIdentifier: itemIdentifier
+			willBeInsertedIntoToolbar: YES];
+      [nc postNotificationName: NSToolbarWillAddItemNotification
+	  object: self];
+      [_items insertObject: item atIndex: index];
+    }
 }
 
 - (BOOL) isVisible
@@ -243,6 +257,10 @@ static const int current_version = 1;
 {
   _customizationPaletteIsRunning = [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" 
 					     owner: self];
+  if(!_customizationPaletteIsRunning)
+    {
+      NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
+    }
 }
 
 - (void) setAllowsUserCustomization: (BOOL)flag
