@@ -28,7 +28,6 @@
 #ifndef _GNUstep_H_NSDragging
 #define _GNUstep_H_NSDragging
 
-#include <objc/Protocol.h>
 #include <Foundation/NSGeometry.h>
 
 @class NSWindow;
