@@ -276,9 +276,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   views = [super_view subviews];
-  window = nil;
-  super_view = nil;
   [views removeObjectIdenticalTo: self];
+  super_view = nil;
+  [self viewWillMoveToWindow: nil];
 }
 
 - (void) removeFromSuperview
