@@ -74,6 +74,8 @@
   _menu = [[NSMenu alloc] initWithTitle: @""];
   [_menu _setOwnedByPopUp: YES];
 
+  _selectedIndex = 0;
+
   return self;
 }
 
@@ -269,25 +271,30 @@
 // Dealing with selection
 - (void) selectItem: (id <NSMenuItem>)item
 {
+  id selectedItem = [_menu itemAtIndex: _selectedIndex];
+
   if (!item)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
-        [_selectedItem setState: NSOffState];
+        [selectedItem setState: NSOffState];
 
-      _selectedItem = nil;
+      _selectedIndex = -1;
     }
   else
     {
       if (_pbcFlags.altersStateOfSelectedItem)
         {
-          [_selectedItem setState: NSOffState];
+          [selectedItem setState: NSOffState];
 	}
-      _selectedItem = item;
+      _selectedIndex = [self indexOfItem: item];
+      selectedItem = [_menu itemAtIndex: _selectedIndex];
       if (_pbcFlags.altersStateOfSelectedItem)
         {
-          [_selectedItem setState: NSOnState];
+          [selectedItem setState: NSOnState];
         }
     }
+
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) selectItemAtIndex: (int)index
@@ -333,12 +340,12 @@
 
 - (id <NSMenuItem>) selectedItem
 {
-  return _selectedItem;
+  return [self itemAtIndex: _selectedIndex];
 }
 
 - (int) indexOfSelectedItem
 {
-  return [_menu indexOfItem: _selectedItem];
+  return _selectedIndex;
 }
 
 - (void) synchronizeTitleAndSelectedItem
@@ -348,12 +355,14 @@
 
   if ([_menu numberOfItems] == 0)
     {
-      _selectedItem = nil;
+      _selectedIndex = -1;
     }
   else if (_pbcFlags.pullsDown)
     {
-      [self selectItem: [self itemAtIndex: 0]];
+      _selectedIndex = 0;
+//      [self selectItem: [self itemAtIndex: 0]];
     }
+/*
   else
     {
       int	index = [[_menu menuRepresentation] highlightedItemIndex];
@@ -362,6 +371,7 @@
 	index = 0;
       [self selectItemAtIndex: index];
     }
+*/
 }
 
 // Title conveniences
@@ -387,8 +397,8 @@
 
 - (NSString *) titleOfSelectedItem
 {
-  if (_selectedItem != nil)
-    return [_selectedItem title];
+  if (_selectedIndex >= 0)
+    return [[self itemAtIndex: _selectedIndex] title];
   else
     return @"";
 }
@@ -400,6 +410,8 @@
   NSNotification	*_aNotif;
   NSRect		scratchRect = cellFrame;
   NSRect		winf;
+
+NSLog(@"cF %@", NSStringFromRect(cellFrame));
 
   _aNotif = [NSNotification
     notificationWithName: NSPopUpButtonCellWillPopUpNotification
@@ -415,6 +427,7 @@
 
   [_aCenter postNotification: _aNotif];
 
+  scratchRect = [[controlView superview] convertRect: scratchRect toView: nil];
   scratchRect.origin
     = [[controlView window] convertBaseToScreen: cellFrame.origin];
 
@@ -431,15 +444,6 @@
   winf.origin = scratchRect.origin;
   winf.origin.y += scratchRect.size.height - winf.size.height;
  
-  /*
-   * Small hack to fix line up.
-   */
-
-  winf.origin.x += 1;
-  winf.origin.y -= 1;
- 
-//NSLog(@"butf %@", NSStringFromRect(butf));
-  
   if (!_pbcFlags.pullsDown)
     {
       winf.origin.y += ([self indexOfSelectedItem] * scratchRect.size.height);
@@ -450,7 +454,7 @@ NSLog(@"winf %@", NSStringFromRect(winf));
   NSLog(@"here comes the popup.");
                          
   [[_menu window] setFrame: winf display: YES];
-  [[_menu window] orderFrontRegardless];
+  [[_menu window] orderFront: nil];
 }
 
 - (void) dismissPopUp
@@ -505,6 +509,8 @@ NSLog(@"winf %@", NSStringFromRect(winf));
 
   [super drawWithFrame: cellFrame inView: view];
 
+  [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
+
   if (_pbcFlags.pullsDown)
     {
       aImage = [NSImage imageNamed: @"common_3DArrowDown"];
@@ -517,10 +523,12 @@ NSLog(@"winf %@", NSStringFromRect(winf));
   size = [aImage size];
   position.x = cellFrame.origin.x + cellFrame.size.width - size.width - 4;
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
+
   /*
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
+
   if ([control_view isFlipped])
     position.y += size.height;
   [aImage  compositeToPoint: position operation: NSCompositeCopy];

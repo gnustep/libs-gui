@@ -94,6 +94,11 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 - (void)_setOwnedByPopUp: (BOOL)flag
 {
   menu_is_beholdenToPopUpButton = flag;
+
+  if (flag == YES)
+    {
+      [titleView removeFromSuperviewWithoutNeedingDisplay];
+    }
 }
 
 - (void) dealloc
@@ -222,16 +227,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 			  keyEquivalent: (NSString *)charCode 
 			        atIndex: (unsigned int)index
 {
-  id anItem;
-
-// FIXME
-//  if (menu_is_beholdenToPopUpButton)
-//    {
-//      anItem = [NSPopUpButtonCell new];
-//      [anItem setTarget: menu_popb];
-//    }
-//  else
-    anItem = [NSMenuItem new];
+  id anItem = [NSMenuItem new];
 
   [anItem setTitle: aString];
   [anItem setAction: aSelector];
@@ -985,6 +981,13 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 {
   if (menu_changed)
     [self sizeToFit];
+
+  if (menu_is_beholdenToPopUpButton)
+    {
+      menu_is_visible = YES;
+      [aWindow orderFront: nil];
+      return;
+    }
 
   if (menu_supermenu && ![self isTornOff])      // query super menu for
     {                                           // position

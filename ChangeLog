@@ -1,3 +1,9 @@
+Fri Dec  3 14:41:00 1999  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSPopUpButtonCell.m: more fixes, issues remain.
+	* Source/NSPopUpButton.m: additions to deal with above.
+	* Source/NSMenuView.m: ditto.
+
 Fri Dec  3 14:53:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSOpenPanel.m: ([-browser:selectCellWithString:inColumn:])

@@ -481,24 +481,12 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   accumulatedOffset += neededKeyEquivalentWidth + menuv_horizontalEdgePad;
 
   // Calculate frame size.
-#if 0
-  if (![menuv_menu _isBeholdenToPopUpButton])
-#endif
+  if (![menuv_menu _ownedByPopUp])
     cellSize.width = accumulatedOffset + 3; // Add the border width
 
   [self setFrameSize: NSMakeSize(cellSize.width + 1, howHigh)];
 
   menuv_needsSizing = NO;
-}
-
-- (void) sizeToFitForPopUpButton
-{
-  int howHigh = ([menuv_items_link count] * cellSize.height);
-
-  if ([window contentView] == self)
-    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
-  else
-    [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
 }
 
 - (float)stateImageOffset

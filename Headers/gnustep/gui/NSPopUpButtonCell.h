@@ -13,6 +13,7 @@ typedef enum {
 {
   NSMenu	*_menu;
   NSMenuItem	*_selectedItem;
+  int		_selectedIndex;
   struct __pbcFlags {
       unsigned int pullsDown:1;
       unsigned int preferredEdge:3;

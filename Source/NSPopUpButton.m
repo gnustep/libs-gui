@@ -186,15 +186,11 @@ id _nspopupbuttonCellClass = nil;
 - (void) selectItemAtIndex: (int)index
 {
   [cell selectItemAtIndex: index];
-
-  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) selectItemWithTitle: (NSString *)title
 {
   [cell selectItemWithTitle: title];
-
-  [self synchronizeTitleAndSelectedItem];
 }
 
 - (int) numberOfItems
@@ -278,6 +274,10 @@ id _nspopupbuttonCellClass = nil;
   [cell synchronizeTitleAndSelectedItem];
 
   [self sizeToFit];
+
+  NSLog(@"synchronizeTitleAndSelectedItem");
+
+  [self setNeedsDisplay: YES];
 }
 
 - (void) sizeToFit
