@@ -61,45 +61,57 @@ static NSString	*nsview_thread_key = @"NSViewThreadKey";
     }
 }
 
-//
-// +++ Really each thread should have a stack!
-//
-+ (void)pushFocusView:(NSView *)focusView
++ (void) pushFocusView:(NSView *)focusView
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-
-  // If no context then remove from dictionary
-  if (!focusView)
+  if (focusView)
     {
-      [dict removeObjectForKey: nsview_thread_key];
-    }
-  else
-    {
-      [dict setObject: focusView forKey: nsview_thread_key];
-    }
+      NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+      NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
 
+      if (stack == nil)
+	{
+	  stack = [[NSMutableDictionary alloc] initWithCapacity: 4];
+	  [dict setObject: stack forKey: nsview_thread_key];
+	  [stack release];
+	}
+      [stack addObject: focusView];
+    }
 }
 
 + (NSView *)popFocusView
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-  id v;
+  NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
+  NSView *v = nil;
 
-  // Remove from dictionary
-  v = [dict objectForKey: nsview_thread_key];
-  [dict removeObjectForKey: nsview_thread_key];
+  if (stack)
+    {
+      unsigned count = [stack count];
 
+      if (count > 0)
+	{
+	  v = [stack objectAtIndex: --count];
+	  [stack removeObjectAtIndex: count];
+	}
+    }
   return v;
 }
 
 + (NSView *)focusView
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
   NSView *current_view = nil;
 
-  // current_view is nil if no focused view
-  current_view = [dict objectForKey: nsview_thread_key];
+  if (stack)
+    {
+      unsigned count = [stack count];
 
+      if (count > 0)
+	{
+	  current_view = [stack objectAtIndex: --count];
+	}
+    }
   return current_view;
 }
 
