@@ -44,8 +44,6 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSUserDefaults.h>
-/*GG :
- */
 #include <Foundation/NSBundle.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
@@ -130,9 +128,6 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
      exception handler on again */
   NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
 }
-
-/* GG :
- */
 
 @interface GSBackend : NSGraphicsContext
 {}
@@ -485,9 +480,6 @@ static NSCell* tileCell = nil;
        our window server, so if someone wants to query information that might
        require the backend, they just need to instantiate a sharedApplication
     */
-
-    /* GG : Load the xgps bundle
-     */
     initialize_gnustep_backend();
 
     self = [super init];
