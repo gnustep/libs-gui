@@ -1,3 +1,8 @@
+2004-08-31 14:28  Alexander Malmberg <alexander@malmberg.org>
+
+	* TextConverters/RTF/RTFProducer.m (-_addAttributesString:): Only add
+	attachmentFileWrapper to the attachments array if it isn't nil.
+
 2004-07-30  Adrian Robert  <arobert@cogsci.ucsd.edu>
 
 	* Documentation/GuiUser/GNUMakefile.postamble: Remove an unwanted

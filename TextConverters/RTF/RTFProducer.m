@@ -956,7 +956,8 @@
 
               [attachmentFileWrapper setFilename: attachmentFilename];
               [attachmentFileWrapper setPreferredFilename: attachmentFilename];
-              [attachments addObject: attachmentFileWrapper];
+	      if (attachmentFileWrapper)
+		[attachments addObject: attachmentFileWrapper];
             }
         }
       else
