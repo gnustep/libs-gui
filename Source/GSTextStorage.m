@@ -42,7 +42,7 @@
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSRange.h>
-#include <Foundation/NSGArray.h>
+#include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <AppKit/NSTextStorage.h>
 
@@ -148,15 +148,18 @@ static void _setup()
 {
   if (infCls == 0)
     {
-      Class	c = [NSGMutableArray class];
+      NSMutableArray	*a;
 
       infCls = [GSTextInfo class];
       infImp = [infCls methodForSelector: infSel];
-      addImp = (void (*)())[c instanceMethodForSelector: addSel];
-      cntImp = (unsigned (*)())[c instanceMethodForSelector: cntSel];
-      insImp = (void (*)())[c instanceMethodForSelector: insSel];
-      oatImp = [c instanceMethodForSelector: oatSel];
-      remImp = (void (*)())[c instanceMethodForSelector: remSel];
+
+      a = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
+      addImp = (void (*)())[a methodForSelector: addSel];
+      cntImp = (unsigned (*)())[a methodForSelector: cntSel];
+      insImp = (void (*)())[a methodForSelector: insSel];
+      oatImp = [a methodForSelector: oatSel];
+      remImp = (void (*)())[a methodForSelector: remSel];
+      RELEASE(a);
     }
 }
 
@@ -345,7 +348,7 @@ _attributesAtIndexEffectiveRange(
   NSZone	*z = [self zone];
 
   self = [super initWithString: aString attributes: attributes];
-  infoArray = [[NSGMutableArray allocWithZone: z] initWithCapacity: 1];
+  infoArray = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
   if (aString != nil && [aString isKindOfClass: [NSAttributedString class]])
     {
       NSAttributedString	*as = (NSAttributedString*)aString;
@@ -362,7 +365,7 @@ _attributesAtIndexEffectiveRange(
       RELEASE(info);
     }
   if (aString == nil)
-    textChars = [[NSGMutableString allocWithZone: z] init];
+    textChars = [[NSMutableString allocWithZone: z] init];
   else
     textChars = [aString mutableCopyWithZone: z];
   return self;

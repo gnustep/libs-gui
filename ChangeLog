@@ -1,3 +1,8 @@
+2000-10-08 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: Removed some depen dencies on private
+	classes of base library.
+
 2000-10-02  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m: 
