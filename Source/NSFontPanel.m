@@ -801,6 +801,7 @@ static int score_difference(int weight1, int traits1,
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
   int row = [familyBrowser selectedRowInColumn: 0];
   int i;
+  NSFont *new;
 
   ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
 			  [_familyList objectAtIndex: row]]);
@@ -847,8 +848,16 @@ static int score_difference(int weight1, int traits1,
   [faceBrowser loadColumnZero];
   [faceBrowser selectRow: i inColumn: 0];
 
-  /* Also make sure the size column is updated */
-  [self _trySelectSize: [[self _fontForSelection: _panelFont] pointSize]];
+  /* Also make sure the size column has some value */
+  {
+    NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+    float size = [sizeField floatValue];
+
+    if (size == 0.0)
+      {
+	[self _trySelectSize: 12.0];
+      }
+  }
 
   [self _doPreview];
 }
