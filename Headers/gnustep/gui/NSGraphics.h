@@ -164,10 +164,12 @@ NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count)
 APPKIT_DECLARE NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
 			const NSRectEdge * sides, 
 			const float *grays, int count);
-APPKIT_DECLARE void NSDrawButton(const NSRect aRect, const NSRect clipRect);
-APPKIT_DECLARE void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
-APPKIT_DECLARE void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
-APPKIT_DECLARE void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+
+APPKIT_EXPORT void NSDrawButton(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect);
 
 // This is from an old version of the specification 
 static inline void

@@ -547,6 +547,38 @@ NSDrawLightBezel(NSRect aRect, NSRect clipRect)
 {
 }
 
+void
+NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect)
+{
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			     NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, 
+		   NSDarkGray, NSDarkGray,
+                   NSBlack, NSBlack};
+ 
+  NSRect rect;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (GSWViewIsFlipped(ctxt) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 6);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 6);
+    }
+
+  DPSsetgray(ctxt, NSLightGray);
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+}
+
 void 
 NSDrawWindowBackground(NSRect aRect)
 {

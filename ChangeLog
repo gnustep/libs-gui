@@ -1,3 +1,9 @@
+2001-11-08  Laurent Julliard <laurent@julliard-online.org>
+	* Headers/gnustep/gui/NSGraphics.h
+	* Source/Functions.m
+	* Source/NSImageCell.m:
+	NSDrawFramePhoto added. Needed by the ImageView inspector in Gorm
+
 2001-11-06  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 	* Source/NSTableView.m [- sizeToFit]: replaced floorf with floor
 	suggestion from Stephen Brandon <stephen@brandonitconsulting.co.uk>

@@ -119,7 +119,9 @@
 	// nada
 	break;
       case NSImageFramePhoto:
-	// FIXME
+	[controlView lockFocus];
+	NSDrawFramePhoto(cellFrame, NSZeroRect);
+	[controlView unlockFocus];
 	break;
       case NSImageFrameGrayBezel:
 	[controlView lockFocus];
