@@ -174,13 +174,27 @@ extern NSString *NSControlTextDidChangeNotification;
 // Methods Implemented by the Delegate
 //
 @interface NSObject (NSControlDelegate)
-- (BOOL)control:(NSControl *)control
-  textShouldBeginEditing:(NSText *)fieldEditor;
-- (BOOL)control:(NSControl *)control
-  textShouldEndEditing:(NSText *)fieldEditor;
-- (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
-- (void)controlTextDidEndEditing:(NSNotification *)aNotification;
-- (void)controlTextDidChange:(NSNotification *)aNotification;
+- (BOOL) control: (NSControl *)control
+  textShouldBeginEditing: (NSText *)fieldEditor;
+
+- (BOOL) control: (NSControl *)control
+  textShouldEndEditing: (NSText *)fieldEditor;
+
+- (void) controlTextDidBeginEditing: (NSNotification *)aNotification;
+
+- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
+
+- (void) controlTextDidChange: (NSNotification *)aNotification;
+
+- (BOOL) control: (NSControl *)control 
+  didFailToFormatString: (NSString *)string 
+  errorDescription: (NSString *)error;
+
+- (void) control: (NSControl *)control 
+  didFailToValidatePartialString: (NSString *)string 
+  errorDescription: (NSString *)error;
+
+- (BOOL) control: (NSControl *)control  isValidObject:(id)object;
 @end
 
 
