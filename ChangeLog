@@ -1,3 +1,10 @@
+Wed Feb 27 23:16:47 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-drawRect:]): Always clear the whole rect
+	using the the background color before drawing the new glyphs.
+	This makes sure we always clear away old glyphs.  This fixes the
+	bug when deleting the last character in a text field.
+
 2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m
