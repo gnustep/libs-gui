@@ -1,3 +1,11 @@
+2001-04-18  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GSServicesManager.m: Save the name of the port on which we
+	register services, and use it when we are looking for a service to
+	see if we can handle it ourself.  Should make it possible for an
+	application to provide services to itsself.
+	Also tidied to use memory management macros.
+
 Wed Apr 18 00:14:33 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/IMConnectors.m: Use #import rather than #include.

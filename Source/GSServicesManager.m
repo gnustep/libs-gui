@@ -91,11 +91,12 @@
 static NSConnection	*listenerConnection = nil;
 static GSListener	*listener = nil;
 static id		servicesProvider = nil;
+static NSString		*providerName = nil;
 
 void
 NSUnregisterServicesProvider(NSString *name)
 {
-  if (listenerConnection)
+  if (listenerConnection != nil)
     {
       /*
        *        Ensure there is no previous listener and nothing else using
@@ -106,16 +107,16 @@ NSUnregisterServicesProvider(NSString *name)
 	removeObserver: [GSListener class]
 		  name: NSConnectionDidDieNotification
 		object: listenerConnection];
-      [listenerConnection release];
-      listenerConnection = nil;
+      DESTROY(listenerConnection);
     }
   ASSIGN(servicesProvider, nil);
+  ASSIGN(providerName, nil);
 }
 
 void
 NSRegisterServicesProvider(id provider, NSString *name)
 {
-  if (listenerConnection)
+  if (listenerConnection != nil)
     {
       /*
        *	Ensure there is no previous listener and nothing else using
@@ -126,16 +127,15 @@ NSRegisterServicesProvider(id provider, NSString *name)
 	removeObserver: [GSListener class]
 		  name: NSConnectionDidDieNotification
 		object: listenerConnection];
-      [listenerConnection release];
-      listenerConnection = nil;
+      DESTROY(listenerConnection);
     }
-  if (name && provider)
+  if (name != nil && provider != nil)
     {
       listenerConnection = [NSConnection newRegisteringAtName: name
-				       withRootObject: [GSListener listener]];
-      if (listenerConnection)
+	withRootObject: [GSListener listener]];
+      if (listenerConnection != nil)
 	{
-	  [listenerConnection retain];
+	  RETAIN(listenerConnection);
 	  [[NSNotificationCenter defaultCenter]
                     addObserver: [GSListener class]
 		       selector: @selector(connectionBecameInvalid:)
@@ -143,10 +143,13 @@ NSRegisterServicesProvider(id provider, NSString *name)
 			 object: listenerConnection];
 	}
       else
-       [NSException raise: NSGenericException
-		   format: @"unable to register %@", name];
+	{
+	  [NSException raise: NSGenericException
+		      format: @"unable to register %@", name];
+	}
     }
   ASSIGN(servicesProvider, provider);
+  ASSIGN(providerName, name);
 }
 
 /*
@@ -166,8 +169,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
     removeObserver: self
 	      name: NSConnectionDidDieNotification
 	    object: listenerConnection];
-  [listenerConnection release];
-  listenerConnection = nil;
+  DESTROY(listenerConnection);
   return self;
 }
 
@@ -337,10 +339,12 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSString	*str;
   NSString	*path;
 
-  if (manager)
+  if (manager != nil)
     {
       if (manager->application == nil)
-	manager->application = app;
+	{
+	  manager->application = app;
+	}
       return manager;
     }
 
@@ -350,9 +354,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
           NSUserDomainMask, YES) objectAtIndex: 0];
   str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
-  manager->servicesPath = [path retain];
+  manager->servicesPath = [path copy];
   path = [str stringByAppendingPathComponent: disabledName];
-  manager->disabledPath = [path retain];
+  manager->disabledPath = [path copy];
   /*
    *    Don't retain application object - that would reate a cycle.
    */
@@ -389,18 +393,18 @@ static NSString         *disabledName = @".GNUstepDisabled";
   appName = [[NSProcessInfo processInfo] processName];
   [timer invalidate];
   NSUnregisterServicesProvider(appName);
-  [languages release];
-  [returnInfo release];
-  [combinations release];
-  [title2info release];
-  [menuTitles release];
-  [servicesMenu release];
-  [disabledPath release];
-  [servicesPath release];
-  [disabledStamp release];
-  [servicesStamp release];
-  [allDisabled release];
-  [allServices release];
+  RELEASE(languages);
+  RELEASE(returnInfo);
+  RELEASE(combinations);
+  RELEASE(title2info);
+  RELEASE(menuTitles);
+  RELEASE(servicesMenu);
+  RELEASE(disabledPath);
+  RELEASE(servicesPath);
+  RELEASE(disabledStamp);
+  RELEASE(servicesStamp);
+  RELEASE(allDisabled);
+  RELEASE(allServices);
   [super dealloc];
 }
 
@@ -631,7 +635,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
     return;
 
   defs = [NSUserDefaults standardUserDefaults];
-  newLang = [[[defs arrayForKey: @"Languages"] mutableCopy] autorelease];
+  newLang = AUTORELEASE([[defs arrayForKey: @"Languages"] mutableCopy]);
   if (newLang == nil)
     {
       newLang = [NSMutableArray arrayWithCapacity: 1];
@@ -696,7 +700,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (void) rebuildServicesMenu
 {
-  if (servicesMenu)
+  if (servicesMenu != nil)
     {
       NSArray           *itemArray;
       NSMutableSet      *keyEquivalents;
@@ -706,13 +710,13 @@ static NSString         *disabledName = @".GNUstepDisabled";
       SEL               sel = @selector(doService:);
       NSMenu            *submenu = nil;
 
-      itemArray = [[servicesMenu itemArray] retain];
+      itemArray = [[servicesMenu itemArray] copy];
       pos = [itemArray count];
       while (pos > 0)
         {
           [servicesMenu removeItem: [itemArray objectAtIndex: --pos]];
         }
-      [itemArray release];
+      RELEASE(itemArray);
 
       keyEquivalents = [NSMutableSet setWithCapacity: 4];
       for (loc0 = pos = 0; pos < [menuTitles count]; pos++)
@@ -777,7 +781,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
                   menu = [[NSMenu alloc] initWithTitle: parentTitle];
                   [servicesMenu setSubmenu: menu
                                    forItem: item];
-                  [menu release];
+                  RELEASE(menu);
                 }
               else
                 {
@@ -827,7 +831,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
       registered = YES;
     }
   NS_HANDLER
-    registered = NO;
+    {
+      registered = NO;
+    }
   NS_ENDHANDLER
 
   if (registered == NO)
@@ -957,7 +963,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   [self loadServices];
   if (allDisabled == nil)
-    allDisabled = [[NSMutableSet setWithCapacity: 1] retain];
+    allDisabled = [[NSMutableSet alloc] initWithCapacity: 1];
   if (enable)
     [allDisabled removeObject: item];
   else
@@ -1143,17 +1149,23 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 {
   id		app;
 
-  NS_DURING
+  if (providerName != nil && [port isEqual: providerName] == YES)
     {
-      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-                                                              host: @""];
+      app = servicesProvider;
     }
-  NS_HANDLER
+  else
     {
-      return nil;                /* Fatal error in DO    */
+      NS_DURING
+	{
+	  app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+								  host: @""];
+	}
+      NS_HANDLER
+	{
+	  return nil;                /* Fatal error in DO    */
+	}
+      NS_ENDHANDLER
     }
-  NS_ENDHANDLER
-
   if (app == nil)
     {
       if ([[NSWorkspace sharedWorkspace] launchApplication: appName] == NO)
