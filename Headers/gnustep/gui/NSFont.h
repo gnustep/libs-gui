@@ -32,8 +32,8 @@
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
+#include <Foundation/NSString.h>
 
-@class NSString;
 @class NSDictionary;
 
 typedef unsigned int NSGlyph;
@@ -42,6 +42,20 @@ enum {
   NSControlGlyph = 0x00ffffff,
   NSNullGlyph = 0x0
 };
+
+
+typedef enum _NSGlyphRelation {
+  NSGlyphBelow,
+  NSGlyphAbove,
+} NSGlyphRelation;
+
+typedef enum _NSMultibyteGlyphPacking {
+  NSOneByteGlyphPacking,
+  NSJapaneseEUCGlyphPacking, 
+  NSAsciiWithDoubleByteEUCGlyphPacking,
+  NSTwoByteGlyphPacking, 
+  NSFourByteGlyphPacking
+} NSMultibyteGlyphPacking;
 
 extern const float *NSFontIdentityMatrix;
 
@@ -72,6 +86,12 @@ extern const float *NSFontIdentityMatrix;
 + (NSFont *)paletteFontOfSize:(float)fontSize;
 + (NSFont *)toolTipsFontOfSize:(float)fontSize;
 + (NSFont *)controlContentFontOfSize:(float)fontSize;
+
+//
+// Preferred Fonts
+//
++ (NSArray *)preferredFontNames;
++ (void)setPreferredFontNames:(NSArray *)fontNames;
 
 //
 // Setting the Font
@@ -108,6 +128,7 @@ extern const float *NSFontIdentityMatrix;
 - (float)xHeight;
 - (float)widthOfString:(NSString *)string;
 - (float *)widths;
+- (float)defaultLineHeightForFont;
 
 //
 // Manipulating Glyphs
@@ -115,10 +136,30 @@ extern const float *NSFontIdentityMatrix;
 - (NSSize)advancementForGlyph:(NSGlyph)aGlyph;
 - (NSRect)boundingRectForGlyph:(NSGlyph)aGlyph;
 - (BOOL)glyphIsEncoded:(NSGlyph)aGlyph;
+- (NSMultibyteGlyphPacking)glyphPacking;
 - (NSGlyph)glyphWithName:(NSString*)glyphName;
 - (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
 	   precededByGlyph:(NSGlyph)prevGlyph
 		 isNominal:(BOOL *)nominal;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              forCharacter:(unichar)aChar 
+            struckOverRect:(NSRect)aRect;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+           struckOverGlyph:(NSGlyph)baseGlyph 
+              metricsExist:(BOOL *)flag;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+            struckOverRect:(NSRect)aRect 
+              metricsExist:(BOOL *)flag;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              withRelation:(NSGlyphRelation)relation 
+               toBaseGlyph:(NSGlyph)baseGlyph
+          totalAdvancement:(NSSize *)offset 
+              metricsExist:(BOOL *)flag;
+- (int)positionsForCompositeSequence:(NSGlyph *)glyphs 
+                      numberOfGlyphs:(int)numGlyphs 
+                          pointArray:(NSPoint *)points;
+
+- (NSStringEncoding)mostCompatibleStringEncoding;
 
 //
 // NSCoding protocol

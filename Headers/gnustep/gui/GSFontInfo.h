@@ -97,17 +97,34 @@
 - (float)underlinePosition;
 - (float)underlineThickness;
 - (float)xHeight;
-- (float)widthOfString:(NSString *)string;
+- (float) widthOfString: (NSString*)string;
 - (float *)widths;
+- (float)defaultLineHeightForFont;
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph;
 - (NSRect) boundingRectForGlyph: (NSGlyph)aGlyph;
 - (BOOL) glyphIsEncoded: (NSGlyph)aGlyph;
+- (NSMultibyteGlyphPacking)glyphPacking;
 - (NSGlyph) glyphWithName: (NSString*)glyphName;
 - (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
 	    precededByGlyph: (NSGlyph)prevGlyph
 		  isNominal: (BOOL*)nominal;
-- (float) widthOfString: (NSString*)string;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              forCharacter:(unichar)aChar 
+            struckOverRect:(NSRect)aRect;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+           struckOverGlyph:(NSGlyph)baseGlyph 
+              metricsExist:(BOOL *)flag;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+            struckOverRect:(NSRect)aRect 
+              metricsExist:(BOOL *)flag;
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              withRelation:(NSGlyphRelation)relation 
+               toBaseGlyph:(NSGlyph)baseGlyph
+          totalAdvancement:(NSSize *)offset 
+              metricsExist:(BOOL *)flag;
+
+- (NSStringEncoding)mostCompatibleStringEncoding;
 
 - (NSFontTraitMask) traits;
 - (int) weight;
