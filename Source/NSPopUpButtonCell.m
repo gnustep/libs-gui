@@ -85,25 +85,16 @@ static NSImage *_pbc_image[2];
 
 - (void) dealloc
 {
-  [self selectItem: nil];
-  [self setMenu: nil];
+  /* 
+   * We don't use methods here to clean up the selected item, the menu
+   * item and the menu as these methods internally update the menu,
+   * which tries to access the target of the menu item (or of this cell). 
+   * When the popup is relases this target may already have been freed, 
+   * so the local reference to it is invalid and will result in a 
+   * segmentation fault. 
+   */
+  _selectedItem = nil;
   [super dealloc];
-}
-
-/*
- * Notification Method
- */
-
-- (void) itemChanged: (NSNotification*)notification
-{
-  int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
-		intValue];
-  id <NSMenuItem> item = [self itemAtIndex: index];
-
-  if (item == _menuItem)
-    {
-      [[self controlView] setNeedsDisplay: YES];
-    }
 }
 
 - (void) setMenu: (NSMenu *)menu
@@ -116,22 +107,19 @@ static NSImage *_pbc_image[2];
   if (_menu != nil)
     {
       [_menu _setOwnedByPopUp: nil];
-      [[NSNotificationCenter defaultCenter] removeObserver: self  
-					    name: nil
-					    object: _menu];
     }
   ASSIGN(_menu, menu);
   if (_menu != nil)
     {
       [_menu _setOwnedByPopUp: self];
-      [[NSNotificationCenter defaultCenter] addObserver: self
-					    selector: @selector(itemChanged:)
-					    name: NSMenuDidChangeItemNotification
-					    object: _menu];
       /* We need to set the menu view so we trigger the special case 
        * popupbutton code in super class NSMenuItemCell
        */
       [self setMenuView: [_menu menuRepresentation]];
+    }
+  else 
+    {
+      [self setMenuView: nil];
     }
 }
 
