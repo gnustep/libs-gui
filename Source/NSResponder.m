@@ -131,8 +131,21 @@
 - (void) doCommandBySelector:(SEL)aSelector
 {
   if (![self tryToPerform: aSelector with: nil])
-    NSBeep();
+    {
+      NSBeep();
+    }
 }
+
+- (void) insertText: (NSString*)aString
+{
+  if (_next_responder)
+    return [_next_responder insertText: aString];
+  else
+    {
+      NSBeep ();
+    }
+}
+
 
 /*
  * Forwarding event messages
