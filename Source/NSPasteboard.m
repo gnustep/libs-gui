@@ -370,7 +370,7 @@
       <desc>
 	This (optional) entry is a string value specifying an alternative
 	mechanism for performing the filer service (instead of sending a
-	message to an application to ask it to do it).<be />
+	message to an application to ask it to do it).<br />
 	Possible values are -
 	<deflist>
 	  <term>NSIdentity</term>
