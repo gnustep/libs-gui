@@ -41,6 +41,7 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/GSLayoutManager_internal.h"
 
+#include <Foundation/NSException.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
@@ -121,16 +122,20 @@ container? necessary? */
   float x0, x1;
   NSRect r;
 
-  [self _doLayoutToGlyph: last - 1];
 
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->textContainer == container)
       break;
+  [self _doLayoutToGlyph: last - 1];
   if (i == num_textcontainers ||
       tc->pos + tc->length < last ||
       tc->pos > glyphRange.location)
     {
-      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      if (i == num_textcontainers)
+	NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      else
+	[NSException raise: NSRangeException
+		    format: @"%s invalid glyph range", __PRETTY_FUNCTION__];
       *rectCount = 0;
       return NULL;
     }

@@ -1,3 +1,12 @@
+2003-01-28 17:40  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m, Source/GSLayoutManager.m:
+	Whitespace cleanups and comments.
+
+	Source/NSLayoutManager.m: (-rectArrayForGlyphRange:
+	withinSelectedGlyphRange:inTextContainer:rectCount:): Give better
+	error message for an invalid glyph range.
+
 2003-01-27 16:13  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-setHyphenationFactor:): Fix format
