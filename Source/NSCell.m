@@ -621,6 +621,13 @@
 {
   cellFrame = NSInsetRect(cellFrame, xDist, yDist);
 
+  // Clear the cell frame
+  if ([self isOpaque])
+    {
+      [[NSColor lightGrayColor] set];
+      NSRectFill(cellFrame);
+    }
+
   switch ([self type])
     {
       case NSTextCellType:

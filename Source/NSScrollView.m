@@ -7,7 +7,7 @@
    Date: July 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: October 1998
-   Author:  Richard Frith-Macdoanld <richard@brainstorm.co.uk>
+   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: February 1999
 
    This file is part of the GNUstep GUI Library.

@@ -19,14 +19,4 @@ Also fix or document whatever bugs are there.
 
 @item Need an rtf parser [6 - Objective-C, RTF] (980820).
 
-@item
-Expand the image handling capabilities beyond OpenStep.  There is no
-reason why we must limit ourselves to EPS and TIFF bitmaps, we should
-have image representations for as many bitmap formats as possible;
-excluding GIF files which are currently restricted by patents.
-
-@item
-The spell server and checker; along with this would be to create an
-interface with the GNU Dictionary project.
-
 @end itemize

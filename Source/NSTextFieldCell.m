@@ -79,8 +79,8 @@
   [self setEditable:YES];
   [self setAlignment:NSLeftTextAlignment];
 
-  [self setBackgroundColor: [NSColor whiteColor]];
-  [self setTextColor: [NSColor blackColor]];
+  [self setBackgroundColor: [NSColor textBackgroundColor]];
+  [self setTextColor: [NSColor textColor]];
   [self setFont: [NSFont systemFontOfSize:0]];
   draw_background = YES;
   return self;

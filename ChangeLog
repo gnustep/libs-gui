@@ -1,3 +1,7 @@
+1999-03-08  Adam Fedor  <fedor@gnu.org>
+
+	* Merge dawn branch into main.
+
 Mon Mar  8  8:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSClipView.m: Tidied a little, including minor fixes for
@@ -65,10 +69,6 @@ Mon Mar  1 17:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSCell.h: Added MacOS-X cell state constants.
 
-1999-03-01  Adam Fedor  <fedor@gnu.org>
-
-	* Update documentation.
-
 Thu Feb 25 15:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Added support for the new (MacOS-X) NSGraphicsContext class by
@@ -122,6 +122,23 @@ Sun Feb 21 20:36:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Headers/gnustep/gui/NSView.h: Added matrix for coordinate conversion
 	* Source/NSView.m: Bugfix in update, plus partial code for improved
 	coordinate handling.
+
+1999-03-08  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.5.5 Released.
+
+Sun Mar  7  5:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Fixed error invalidating coordinates of a view.
+
+1999-03-04  Adam Fedor  <fedor@gnu.org>
+
+	* Testing/GNUmakefile.preamble: Remove tiff and jpeg libs.
+	* Tools/GNUmakefile.preamble: Likewise (already in make package).
+
+1999-03-01  Adam Fedor  <fedor@gnu.org>
+
+	* Update documentation.
 
 Wed Feb 24  8:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
