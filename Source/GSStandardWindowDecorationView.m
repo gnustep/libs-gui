@@ -30,6 +30,7 @@
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSStringDrawing.h"
 #include "AppKit/NSWindow.h"
@@ -117,20 +118,28 @@ static NSColor *titleColor[3];
 {
   if (!titleTextAttributes[0])
     {
+      NSMutableParagraphStyle *p;
+
+      p = [NSMutableParagraphStyle defaultParagraphStyle];
+      [p setLineBreakMode: NSLineBreakByClipping];
+
       titleTextAttributes[0] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
 	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  p, NSParagraphStyleAttributeName,
 	  nil];
       titleTextAttributes[1] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
 	  [NSColor blackColor], NSForegroundColorAttributeName, /* TODO: need a named color for this */
+	  p, NSParagraphStyleAttributeName,
 	  nil];
       titleTextAttributes[2] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
 	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  p, NSParagraphStyleAttributeName,
 	  nil];
 
       titleColor[0] = RETAIN([NSColor windowFrameColor]);

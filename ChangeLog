@@ -1,3 +1,9 @@
+2005-01-12 00:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSStandardWindowDecorationView.m (-initWithFrame:window:):
+	Create a paragraph style with line-breaking-by-clipping and use it
+	for window titles.
+
 2005-01-12 00:41  Alexander Malmberg <alexander@malmberg.org>
 
 	* Printing/GSCUPS/GSCUPSPrinter.h (GSCUPSDummyPrinterName): New
