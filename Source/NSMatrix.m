@@ -1666,37 +1666,40 @@ static SEL getSel = @selector(objectAtIndex:);
                                         dequeue: YES];
     }
 
-    // the mouse went up.
-    // if it was inside a cell, the cell has already sent the action.
-    // if not, _selectedCell is the last cell that had the mouse, and
-    // it's state is Off. It must be set into a consistent state.
-    // anyway, the action has to be sent
-    if (!mouseUpInCell)
-      {
-        if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
-          {
-            [_selectedCell setState: NSOnState];
-            [window flushWindow];
-          }
-        else
-          {
-            if (_selectedCell != nil)
-              {
-                selectedCells[_selectedRow][_selectedColumn] = NO;
-                _selectedCell = nil;
-                _selectedRow = _selectedColumn = -1;
-              }
-          }
-        [self sendAction];
-      }
+  // the mouse went up.
+  // if it was inside a cell, the cell has already sent the action.
+  // if not, _selectedCell is the last cell that had the mouse, and
+  // it's state is Off. It must be set into a consistent state.
+  // anyway, the action has to be sent
+  if (!mouseUpInCell)
+    {
+      if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
+	{
+	  [_selectedCell setState: NSOnState];
+	  [window flushWindow];
+	}
+      else
+	{
+	  if (_selectedCell != nil)
+	    {
+	      selectedCells[_selectedRow][_selectedColumn] = NO;
+	      _selectedCell = nil;
+	      _selectedRow = _selectedColumn = -1;
+	    }
+	}
+      [self sendAction];
+    }
 
-    if (highlightedCell)
-      {
-        [self highlightCell: NO
-                      atRow: highlightedRow
-                     column: highlightedColumn];
-        [window flushWindow];
-      }
+  if (_target && _doubleAction && ([theEvent clickCount] > 1))
+    [_target performSelector: _doubleAction withObject: self];
+
+  if (highlightedCell)
+    {
+      [self highlightCell: NO
+		    atRow: highlightedRow
+		   column: highlightedColumn];
+      [window flushWindow];
+    }
 }
 
 
