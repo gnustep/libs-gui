@@ -488,9 +488,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) setSize: (NSSize)aSize
 {
+  // Optimized as this is called very often from NSImageCell
+  if (NSEqualSizes(_size, aSize))
+    return;
+
   _size = aSize;
   _flags.sizeWasExplicitlySet = YES;
-  // TODO: This invalidates any cached data
+
+  [self recache];
 }
 
 - (NSSize) size
@@ -603,17 +608,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   unsigned i, count;
 
-  // FIXME: Not sure if this is correct
-  count = [_reps count];
-  for (i = 0; i < count; i++) 
+  i = [_reps count];
+  while(i--) 
     {
       GSRepData	*repd;
 
       repd = (GSRepData*)[_reps objectAtIndex: i];
-      if (repd->bg != nil)
+      if (repd->original != nil)
 	{
-	  DESTROY(repd->bg);
-	  [repd->rep setOpaque: YES];
+	  [_reps removeObjectAtIndex: i];
 	}
     }
 }
@@ -675,6 +678,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  if ([[ctxt focusView] isFlipped])
 	    y -= rect.size.height;
 
+	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
+		      NSStringFromRect(rect), NSStringFromRect(aRect));
 	  // Move the drawing rectangle to the origin of the image rep
 	  // and intersect the two rects.
 	  aRect.origin.x += rect.origin.x;
