@@ -12,7 +12,7 @@ Noteworthy changes in version `0.4.0'
      receive the -drawRect: message.  Flushing of windows occurs only
      in rectangles that get displayed not in the whole window.
 
-   * Rotation and scalation of view have been finally implemented. The
+   * Rotation and scalation of views have been finally implemented. The
      code requires backend support for changing the state of the
      graphics context accordingly.
 
