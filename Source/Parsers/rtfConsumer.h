@@ -23,11 +23,16 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 #ifndef _rtfConsumer_h_INCLUDE
 #define _rtfConsumer_h_INCLUDE
 
-@interface RTFConsumer: NSObject
+#include <AppKit/GSTextConverter.h>
+
+@class NSMutableDictionary;
+@class NSMutableArray;
+@class NSMutableAttributedString;
+
+@interface RTFConsumer: NSObject <GSTextConsumer>
 {
 @public
   NSMutableDictionary *documentAttributes;
@@ -38,11 +43,9 @@
   int ignore;
 }
 
-+ (NSAttributedString*) parseRTF: (NSData *)rtfData 
-	      documentAttributes: (NSDictionary **)dict;
-+ (NSAttributedString*) parseRTFD: (NSFileWrapper *)rtfFile 
-	       documentAttributes: (NSDictionary **)dict;
+@end
 
+@interface RTFDConsumer: RTFConsumer
 @end
 
 #endif
