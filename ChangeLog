@@ -18,7 +18,7 @@ Wed Feb  4 09:11:49 1998  Adam Fedor  <fedor@ultra.doc.com>
 	* Model/GNUmakefile (APP_NAME): Comment out.
 	(ADDITIONAL_INCLUDE_DIRS): New variable.
 	* Tools/GNUmakefile.preamble (ADDITIONAL_LIB_DIRS): Include Model
-	lib dir. 
+	lib dir. Also include extensions and Foundation dirs.
 	(ADDITIONAL_TOOL_LIBS): Include lgmodel, FoundationExt.
 
 	* Tools/gpbs.m (initialize_gnustep_backend): New function.
