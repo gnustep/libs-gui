@@ -662,7 +662,7 @@ static NSNotificationCenter *nc = nil;
 - (void) _initBackendWindow: (NSRect)frame
 {
   int screenNumber;
-  id dragTypes;
+  NSCountedSet *dragTypes;
   NSGraphicsContext *context = GSCurrentContext();
   GSDisplayServer *srv = GSCurrentServer();
 
@@ -675,7 +675,9 @@ static NSNotificationCenter *nc = nil;
       // As this is the original entry, it will change soon. 
       // We use a copy to reregister the same types later on.
       dragTypes = [dragTypes copy];
-      [srv removeDragTypes: dragTypes fromWindow: self];
+
+      /* Now we need to remove all the drag types for this window.  */
+      [srv removeDragTypes: nil  fromWindow: self];
     }
 
   screenNumber = [_screen screenNumber];
@@ -700,8 +702,28 @@ static NSNotificationCenter *nc = nil;
   /* Ok, now add the drag types back */
   if (dragTypes)
     {
+      id type;
+      NSMutableArray *dragTypesArray = [NSMutableArray array];
+      NSEnumerator *enumerator = [dragTypes objectEnumerator];
+
       NSDebugLLog(@"NSWindow", @"Resetting drag types for window");
-      [srv addDragTypes: dragTypes toWindow: self];
+      /* Now we need to restore the drag types.  */
+      
+      /* Put all the drag types to the dragTypesArray - counted
+       * with their multiplicity.
+       */
+      while ((type = [enumerator nextObject]) != nil)
+	{
+	  int i, count = [dragTypes countForObject: type];
+	  
+	  for (i = 0; i < count; i++)
+	    {
+	      [dragTypesArray addObject: type];
+	    }
+	}
+      
+      /* Now store the array.  */
+      [srv addDragTypes: dragTypesArray toWindow: self];
       // Free our local copy.
       RELEASE(dragTypes);
     }
