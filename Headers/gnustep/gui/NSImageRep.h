@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSImageRep
 #define _GNUstep_H_NSImageRep
 
-#include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 #include <AppKit/AppKitDefines.h>
 

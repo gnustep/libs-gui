@@ -31,7 +31,6 @@
 
 #include <AppKit/NSGraphicsContext.h>
 #include <Foundation/NSBundle.h>
-#include <Foundation/NSCoder.h>
 #include <AppKit/NSBitmapImageRep.h>
 
 @class NSString;
