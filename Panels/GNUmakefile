@@ -32,17 +32,11 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-prefix           = $(GNUSTEP_INSTALLATION_DIR)
-INSTALL          = install -c
-INSTALL_PROGRAM  = ${INSTALL}
-INSTALL_DATA     = ${INSTALL} -m 644
+prefix = $(GNUSTEP_INSTALLATION_DIR)
 
-PANELS   =  SavePanel.gmodel
+PANELS = SavePanel.gmodel
 
-all::
-	@
-
-install:: all
+before-install::
 	if [ ! -e $(prefix)/Library ]; then \
 		mkdir $(prefix)/Library; \
 	fi
@@ -53,7 +47,7 @@ install:: all
 		$(INSTALL_DATA) $$f $(prefix)/Library/Model/; \
 	done
 
-uninstall::
+before-uninstall::
 	for f in $(PANELS); do \
 		rm -f $(prefix)/Library/Model/$$f; \
 	done
@@ -63,6 +57,6 @@ clean::
 
 -include GNUmakefile.preamble
 
-#include $(GNUSTEP_MAKEFILES)/aggregate.make
+include $(GNUSTEP_MAKEFILES)/rules.make
 
 -include GNUmakefile.postamble
