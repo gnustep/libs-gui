@@ -1,3 +1,9 @@
+Wed Aug 25 09:42:05 1999  Martin Man  <Martin.Man@seznam.cz>
+
+        * Source/NSWindow.m ([NSWindow -setFrameTopLeftPoint:]): Corrected
+        positioning of window's top left point. X coordinate was ignored
+        and Y coordinate was computed in wrong way.
+
 Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Patch from Niico Pero <n.pero@mi.flashnet.it> modified to use
