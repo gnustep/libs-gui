@@ -3,7 +3,7 @@
    Copyright (C) 2003 Free Software Foundation, Inc.
 
    Author: Serg Stoyan <stoyan@on.com.ua>
-   Date: Mar 2003
+   Date:   Mar 2003
    
    This file is part of the GNUstep GUI Library.
 
@@ -39,6 +39,10 @@
 
 @implementation GSTitleView
 
+// ============================================================================
+// ==== Initialization & deallocation
+// ============================================================================
+
 + (float) height
 {
   static float height = 0.0;
@@ -66,34 +70,122 @@
   _ownedByMenu = NO;
   _hasCloseButton = NO;
   _hasMiniaturizeButton = NO;
+  _isKeyWindow = NO;
+  _isMainWindow = NO;
+  _isActiveApplication = NO;
 
   [self setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
 
   textAttributes = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
     [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
-  [NSColor blackColor], NSForegroundColorAttributeName, nil];
+    [NSColor blackColor], NSForegroundColorAttributeName, nil];
 
   titleColor = RETAIN ([NSColor lightGrayColor]);
-
-  /*  [self setAutoresizingMask: 
-      NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];*/
 
   return self;
 }
 
+- (id) initWithOwner: (id)owner
+{
+  [self init];
+  [self setOwner: owner];
+
+  return self;
+}
+
+- (void) setOwner: (id)owner
+{
+  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
+
+  if ([owner isKindOfClass:[NSWindow class]])
+    {
+      NSDebugLLog(@"GSTitleView", @"owner is NSWindow or NSPanel");
+      _owner = owner;
+      _ownedByMenu = NO;
+
+      [self setFrame: 
+        NSMakeRect (-1, [_owner frame].size.height - [GSTitleView height]-40,
+                    [_owner frame].size.width+2, [GSTitleView height])];
+
+      if ([_owner styleMask] & NSClosableWindowMask)
+	{
+	  [self addCloseButtonWithAction:@selector (performClose:)];
+	}
+      if ([_owner styleMask] & NSMiniaturizableWindowMask)
+	{
+	  [self addMiniaturizeButtonWithAction:@selector (performMiniaturize:)];
+	}
+
+      // NSWindow observers
+      [theCenter addObserver: self
+                    selector: @selector(windowBecomeKey:)
+                        name: NSWindowDidBecomeKeyNotification
+                      object: _owner];
+      [theCenter addObserver: self
+                    selector: @selector(windowResignKey:)
+                        name: NSWindowDidResignKeyNotification
+                      object: _owner];
+      [theCenter addObserver: self
+                    selector: @selector(windowBecomeMain:)
+                        name: NSWindowDidBecomeMainNotification
+                      object: _owner];
+      [theCenter addObserver: self
+                    selector: @selector(windowResignMain:)
+                        name: NSWindowDidResignMainNotification
+                      object: _owner];
+
+      // NSApplication observers
+      [theCenter addObserver: self
+                    selector: @selector(applicationBecomeActive:)
+                        name: NSApplicationWillBecomeActiveNotification
+                      object: NSApp];
+      [theCenter addObserver: self
+                    selector: @selector(applicationResignActive:)
+                        name: NSApplicationWillResignActiveNotification
+                      object: NSApp];
+    }
+  else if ([owner isKindOfClass:[NSMenu class]])
+    {
+      NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
+      _owner = owner;
+      _ownedByMenu = YES;
+
+      RELEASE (titleColor);
+      titleColor = RETAIN ([NSColor blackColor]);
+      [textAttributes setObject: [NSColor whiteColor] 
+                         forKey: NSForegroundColorAttributeName];
+    }
+  else
+    {
+      NSDebugLLog(@"GSTitleView", 
+		  @"%@ owner is not NSMenu or NSWindow or NSPanel",
+		  [owner className]);
+      return;
+    }
+}
+
+- (id) owner
+{
+  return _owner;
+}
+
 - (void) dealloc
 {
-  RELEASE (closeButton);
-  RELEASE (miniaturizeButton);
+  if (!_ownedByMenu)
+    {
+      [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+
+  RELEASE (textAttributes);
+  RELEASE (titleColor);
 
   [super dealloc];
 }
 
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
-{
-  return YES;
-} 
- 
+// ============================================================================
+// ==== Drawing
+// ============================================================================
+
 - (NSSize) titleSize
 {
   return [[_owner title] sizeWithAttributes: textAttributes];
@@ -103,27 +195,52 @@
 {
   NSRect     workRect = [self bounds];
   NSSize     titleSize;
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};
+  NSRectEdge bottom_right[] = {NSMaxXEdge, NSMinYEdge};
   float      blacks[] = {NSBlack, NSBlack};
-  float      grays[] = {NSDarkGray, NSDarkGray};
+  float      grays[] = {NSLightGray, NSLightGray};
+  float      darkGrays[] = {NSDarkGray, NSDarkGray};
 
-  // Draw the dark gray upper left lines.
+  // Draw the dark gray upper left lines for menu and black for others.
+  // Rectangle 1
   if (_ownedByMenu)
-    workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
+    workRect = NSDrawTiledRects(workRect, workRect, top_left, darkGrays, 2);
   else
-    workRect = NSDrawTiledRects(workRect, workRect, sides, blacks, 2);
-  
+    workRect = NSDrawTiledRects(workRect, workRect, top_left, blacks, 2);
+
+
+  // Rectangle 2
   // Draw the title box's button.
   NSDrawButton(workRect, workRect);
-  
-  // Paint it Black!
+
+  // Overdraw white top and left lines with light gray lines for window title
+  workRect.origin.y += 1;
+  workRect.size.height -= 1;
+  workRect.size.width -= 1;
+  if (!_ownedByMenu && (_isKeyWindow || _isMainWindow))
+    {
+      NSDrawTiledRects(workRect, workRect, top_left, grays, 2);
+    }
+ 
+  // Rectangle 3
+  // Paint background
   workRect.origin.x += 1;
-  workRect.origin.y += 2;
-  workRect.size.height -= 3;
-  workRect.size.width -= 3;
+  workRect.origin.y += 1;
+  workRect.size.height -= 2;
+  workRect.size.width -= 2;
 
   [titleColor set];
   NSRectFill(workRect);
+
+  if (!_ownedByMenu && _isMainWindow && !_isKeyWindow)
+    {
+      NSRect blRect = workRect;
+
+      blRect.origin.y -= 1;
+      blRect.size.width += 1;
+      blRect.size.height += 1;
+      NSDrawTiledRects(blRect, blRect, bottom_right, blacks, 2);
+    }
   
   // Draw the title
   titleSize = [self titleSize];
@@ -140,6 +257,15 @@
   [[_owner title] drawInRect: workRect  withAttributes: textAttributes];
 }
 
+// ============================================================================
+// ==== Mouse actions
+// ============================================================================
+
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+} 
+ 
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSPoint  lastLocation;
@@ -227,8 +353,28 @@
   return nil;
 }
 
+// ============================================================================
+// ==== NSWindow & NSApplication notifications
+// ============================================================================
+
+- (void) applicationBecomeActive: (NSNotification *)notification
+{
+  _isActiveApplication = YES;
+}
+
+- (void) applicationResignActive: (NSNotification *)notification
+{
+  _isActiveApplication = NO;
+  RELEASE (titleColor);
+  titleColor = RETAIN ([NSColor lightGrayColor]);
+  [textAttributes setObject: [NSColor blackColor] 
+                     forKey: NSForegroundColorAttributeName];
+  [self setNeedsDisplay: YES];
+}
+
 - (void) windowBecomeKey: (NSNotification *)notification
 {
+  _isKeyWindow = YES;
   RELEASE (titleColor);
   titleColor = RETAIN ([NSColor blackColor]);
   [textAttributes setObject: [NSColor whiteColor] 
@@ -239,8 +385,9 @@
 
 - (void) windowResignKey: (NSNotification *)notification
 {
+  _isKeyWindow = NO;
   RELEASE (titleColor);
-  if ([NSApp isActive] && [_owner isMainWindow])
+  if (_isActiveApplication && _isMainWindow)
     {
       titleColor = RETAIN ([NSColor darkGrayColor]);
       [textAttributes setObject: [NSColor whiteColor] 
@@ -255,9 +402,20 @@
   [self setNeedsDisplay: YES];
 }
 
-/*
- *  Buttons
- */
+- (void) windowBecomeMain: (NSNotification *)notification 
+{
+  _isMainWindow = YES;
+}
+
+- (void) windowResignMain: (NSNotification *)notification 
+{
+  _isMainWindow = NO;
+}
+
+// ============================================================================
+// ==== Buttons
+// ============================================================================
+
 - (NSButton *) _createButtonWithImage: (NSImage *)image
                        highlightImage: (NSImage *)imageH
                                action: (SEL)action
@@ -310,6 +468,11 @@
     }
 }
 
+- (NSButton *) closeButton
+{
+  return closeButton;
+}
+
 - (void) removeCloseButton
 {
   if ([closeButton superview] != nil)
@@ -348,6 +511,11 @@
     }
 }
 
+- (NSButton *) miniaturizeButton
+{
+  return miniaturizeButton;
+}
+
 - (void) removeMiniaturizeButton
 {
   if ([miniaturizeButton superview] != nil)
@@ -355,62 +523,6 @@
       RETAIN (miniaturizeButton);
       [miniaturizeButton removeFromSuperview];
     }
-}
-
-/*
- * Owner setting
- */
-- (void) setOwner: (id)owner
-{
-  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
-
-  if ([owner isKindOfClass:[NSWindow class]])
-    {
-      NSDebugLLog(@"GSTitleView", @"owner is NSWindow or NSPanel");
-      _owner = owner;
-      _ownedByMenu = NO;
-
-      [self setFrame: 
-        NSMakeRect (0, [_owner frame].size.height - [GSTitleView height],
-                    [_owner frame].size.width, [GSTitleView height])];
-
-      [self addCloseButtonWithAction: @selector (performClose:)];
-
-      [self addMiniaturizeButtonWithAction: @selector (performMiniaturize:)];
-
-      // Observers
-      [theCenter addObserver: self
-                    selector: @selector(windowBecomeKey:)
-                        name: NSWindowDidBecomeKeyNotification
-                      object: _owner];
-      [theCenter addObserver: self
-                    selector: @selector(windowResignKey:)
-                        name: NSWindowDidResignKeyNotification
-                      object: _owner];
-    }
-  else if ([owner isKindOfClass:[NSMenu class]])
-    {
-      NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
-      _owner = owner;
-      _ownedByMenu = YES;
-
-      RELEASE (titleColor);
-      titleColor = RETAIN ([NSColor blackColor]);
-      [textAttributes setObject: [NSColor whiteColor] 
-                         forKey: NSForegroundColorAttributeName];
-    }
-  else
-    {
-      NSDebugLLog(@"GSTitleView", 
-		  @"%@ owner is not NSMenu or NSWindow or NSPanel",
-		  [owner className]);
-      return;
-    }
-}
-
-- (id) owner
-{
-  return _owner;
 }
 
 @end 
