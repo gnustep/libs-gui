@@ -80,6 +80,18 @@ static	Class	concrete;
   return nil;
 }
 
+- (void) replaceCharactersInRange: (NSRange)aRange
+	     withAttributedString: (NSAttributedString *)attributedString  
+{
+  [super replaceCharactersInRange:aRange
+       withAttributedString:attributedString];
+
+  [self edited:NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
+	 range:aRange
+changeInLength:aRange.length];
+}
+
+
 /*
  *	Managing NSLayoutManagers
  */
@@ -175,12 +187,15 @@ static	Class	concrete;
 
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
+  NSLog(@"processEditing called in NSTextStorage.");
+
   [nc postNotificationName: NSTextStorageWillProcessEditingNotification
 		    object: self];
 
   r = editedRange;
   r.length += editedDelta;
-  [self fixAttributesInRange: r];
+// FIXME, Michael: yeah, this is needed.
+//  [self fixAttributesInRange: r];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];

@@ -133,6 +133,8 @@
      changeInLength: (int)lengthChange
    invalidatedRange: (NSRange)invalidatedRange
 {
+  NSLog(@"NSLayoutManager was just notified that a change in the text
+storage occured.");
 }
 
 //
