@@ -1,3 +1,22 @@
+2002-11-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m
+	Corrected [GSBezierPath appendBezierPath:] to check the class of
+	the parameter and to keep the isFlat flag in sync.
+	* TextConverters/RTF/RTFConsumer.m
+	GSRTFregisterFont() handle fontnames with and without trailing ';'.
+	* TextConverters/RTF/rtfGrammer.y
+	Documented how to compile with recent bision releases.
+	Removed one conflict and an unneeded terminal.
+	Allow for additional blocks in font definition.
+	* TextConverters/RTF/rtfGrammer.tab.h
+	Regenerated with bision 1.35
+	* TextConverters/RTF/rtfGrammer.tab.c
+	Regenerated with bision 1.35 and corrected yyparse declaration.
+	* TextConverters/RTF/rtfScanner.c
+	Redefined GSRTFlex() without location parameter. Some cleanup
+	against compiler warnings.
+	
 2002-11-21  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.8.3
