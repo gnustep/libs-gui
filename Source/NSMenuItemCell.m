@@ -54,7 +54,7 @@ static NSImage	*arrowImageH = nil;
 {
   if (self == [NSMenuItemCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       colorClass = [NSColor class];
       arrowImage = [[NSImage imageNamed: @"common_3DArrowRight"] copy];
       arrowImageH = [[NSImage imageNamed: @"common_3DArrowRightH"] copy];
@@ -76,9 +76,7 @@ static NSImage	*arrowImageH = nil;
 
 - (void) dealloc
 {
-  RELEASE(_menuItem);
-  RELEASE(_menuView);
-
+  RELEASE (_menuItem);
   [super dealloc];
 }
 
@@ -95,7 +93,7 @@ static NSImage	*arrowImageH = nil;
 
 - (void) setMenuItem:(NSMenuItem *)item
 {
-  ASSIGN(_menuItem, item);
+  ASSIGN (_menuItem, item);
 }
 
 - (NSMenuItem *) menuItem
@@ -105,7 +103,8 @@ static NSImage	*arrowImageH = nil;
 
 - (void) setMenuView:(NSMenuView *)menuView
 {
-  ASSIGN(_menuView, menuView);
+  /* The menu view is retaining us, we should not retain it.  */
+  _menuView = menuView;
   if ([[_menuView menu] _ownedByPopUp])
     {
       _mcell_belongs_to_popupbutton = YES;
@@ -646,28 +645,37 @@ static NSImage	*arrowImageH = nil;
 
   if (_menuItem)
     c->_menuItem = [_menuItem copyWithZone: zone];
-  c->_menuView = RETAIN(_menuView);
+
+  /* We do not copy _menuView, because _menuView owns the old cell,
+     but not the new one!  _menuView knows nothing about c.  If we copy
+     the pointer to _menuView into c, then that pointer might become
+     invalid at any point in time (it never becomes invalid for the original
+     cell because _menuView will call [originalCell setMenuView: nil]
+     when it's being deallocated.  But it will not do the same for c, because
+     it doesn't even know that c exists!)  */
+  c->_menuView = nil;
 
   return c;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ *
+ * Normally unused since the NSMenu encodes/decodes the NSMenuItems, but
+ * not the NSMenuItemCells.
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeConditionalObject: _menuItem];
-  [aCoder encodeConditionalObject: _menuView];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  _menuItem = [aDecoder decodeObject];
-  _menuView = [aDecoder decodeObject];
+  ASSIGN (_menuItem, [aDecoder decodeObject]);
 
   _needs_sizing = YES;
 

@@ -95,8 +95,12 @@
 - (void) dealloc
 {
   RELEASE(_font);
+
+  /* Clean the pointer to us stored into the _itemCells.  */
+  [_itemCells makeObjectsPerformSelector: @selector(setMenuView:)
+	      withObject: nil];
+
   RELEASE(_itemCells);
-  TEST_RELEASE(_menu);
 
   [super dealloc];
 }
@@ -111,10 +115,11 @@
   if (_menu != nil)
     {
       // Remove this menu view from the old menu list of observers.
-      [theCenter removeObserver: self name: nil object: _menu];
+      [theCenter removeObserver: self  name: nil  object: _menu];
     }
 
-  ASSIGN(_menu, menu);
+  /* menu is retaining us, so we should not be retaining menu.  */
+  _menu = menu;
   _items_link = [_menu itemArray];
 
   // Add this menu view to the menu's list of observers.
@@ -1056,6 +1061,9 @@
 
 /*
  * NSCoding Protocol
+ *
+ * Normally unused because NSMenu does not encode its NSMenuView since
+ * NSMenuView is considered a platform specific way of rendering the menu.
  */
 - (void) encodeWithCoder: (NSCoder*)encoder
 {
@@ -1073,6 +1081,10 @@
   self = [super initWithCoder: decoder];
 
   [decoder decodeValueOfObjCType: @encode(id) at: &_itemCells];
+  
+  [_itemCells makeObjectsPerformSelector: @selector(setMenuView:)
+	      withObject: self];
+
   [decoder decodeValueOfObjCType: @encode(id) at: &_font];
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
