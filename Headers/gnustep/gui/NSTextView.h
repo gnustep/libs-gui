@@ -77,6 +77,9 @@ typedef enum _NSSelectionAffinity {
     /* YES if delegate responds to
        `shouldChangeTextInRange:replacementString:' */
     unsigned delegate_responds_to_should_change: 1;
+    /* YES if delegate responds to
+       `textView:willChangeSelectionFromCharacterRange:toCharacterRange:' */
+    unsigned delegate_responds_to_will_change_sel: 1;
   } _tvf;
   
   /* The following is the object used when posting notifications.  
@@ -92,20 +95,23 @@ typedef enum _NSSelectionAffinity {
   /* manages layout information */
   NSLayoutManager *_layoutManager;  
 
+  /* container position */
+  NSSize _textContainerInset;
+  NSPoint _textContainerOrigin;
+
+  /* These selection ivars should be shared with the other textviews -
+     ie, should be stored in the layout manager */
   NSMutableDictionary *_typingAttributes;
   NSRange _selected_range;
   NSColor *_caret_color;
   int _spellCheckerDocumentTag;
   
-  /* column-stable cursor up/down */
-  NSPoint _currentCursor;
-  
-  NSSize _textContainerInset;
-  NSPoint _textContainerOrigin;
   NSDictionary *_selectedTextAttributes;
   NSDictionary *_markedTextAttributes;
-  NSSelectionAffinity _selectionAffinity;
   NSSelectionGranularity _selectionGranularity;
+
+  /* Column-stable cursor up/down */
+  NSPoint _currentCursor;
 }
 
 /**************************** Initializing ****************************/
@@ -427,7 +433,7 @@ extern NSString *NSTextViewWillChangeNotifyingTextViewNotification;
 // first text view as the first text view changes.
 
 extern NSString *NSTextViewDidChangeSelectionNotification;
-// NSOldSelectedCharacterRange -> NSValue with old range.
+extern NSString *NSOldSelectedCharacterRange;
 
 #endif /* _GNUstep_H_NSTextView */
 
