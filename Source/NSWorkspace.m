@@ -253,15 +253,15 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
  * -application:openFile: message to the application (which must be
  * handled by the applications delegate).  If the application is not
  * running, NSWorkspace will instead attempt to launch the application
- * passing the filename to open after a '-GSOpenFile' flag
- * int the command line arguments.
+ * passing the filename to open after a '-GSFilePath' flag
+ * in the command line arguments.
  * </p>
  * <p>This command line argument mechanism provides a way for non-gnustep
  * applications to be used to open files simply by provideing a wrapper
  * for them containing the appropriate Info-gnustep.plist.<br />
  * For instance - you could set up xv.app to contain a shellscript 'xv'
  * that would start the real xv binary passing it a file to open if the
- * '-GSOpenFile' argument was given. The Info-gnustep.plist file could look
+ * '-GSFilePath' argument was given. The Info-gnustep.plist file could look
  * like this:
  * </p>
  * <example>
