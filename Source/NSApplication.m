@@ -71,6 +71,7 @@
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpManager.h>
 
+#include <AppKit/GSGuiPrivate.h>
 
 /*
  * Base library exception handler
@@ -106,10 +107,15 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
     }
 
   retVal = NSRunCriticalAlertPanel 
-    ([NSString stringWithFormat: @"Critical Error in %@", 
+    ([NSString stringWithFormat: 
+		 GSGuiLocalizedString (@"Critical Error in %@", @""),
 	       [[NSProcessInfo processInfo] processName]],
-     @"%@: %@", @"Abort", @"Ignore", DEBUG_BUTTON,
-     [exception name], [exception reason]);
+     @"%@: %@", 
+     GSGuiLocalizedString (@"Abort", @""), 
+     GSGuiLocalizedString (@"Ignore", @""), 
+     GSGuiLocalizedString (DEBUG_BUTTON, @""),
+     [exception name], 
+     [exception reason]);
 
   /* The user wants to abort */
   if (retVal == NSAlertDefault)
@@ -129,6 +135,15 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
 }
 
+/* This is the bundle from where we load localization of messages.  */
+static NSBundle *guiBundle = nil;
+
+/* Get the bundle.  */
+NSBundle *GSGuiBundle ()
+{
+  return guiBundle;
+}
+
 @interface GSBackend : NSGraphicsContext
 {}
 + (void) initializeBackend;
@@ -139,7 +154,7 @@ initialize_gnustep_backend(void)
 {
   static int first = 1;
 
-  if( first )
+  if (first)
     {
       Class backend;
 
@@ -169,20 +184,25 @@ initialize_gnustep_backend(void)
 	      break;
 	    path = nil;
 	  }
-	NSCAssert(path != nil, @"Unable to load backend, aborting");
+	NSCAssert(path != nil, 
+		  GSGuiLocalizedString (@"Unable to load backend, aborting",
+					nil));
 	NSDebugLog(@"Loading Backend from %@", path);
 
 	theBundle = [NSBundle bundleWithPath: path];
-	NSCAssert(theBundle != nil, @"Can't init backend bundle");
+	NSCAssert(theBundle != nil, 
+		  GSGuiLocalizedString (@"Can't init backend bundle", nil));
 	backend = [theBundle classNamed: @"GSBackend"];
-	NSCAssert(backend, @"Can't load backend bundle");
+	NSCAssert(backend, 
+		  GSGuiLocalizedString (@"Can't load backend bundle", nil));
 	[backend initializeBackend];
       }
 #else
       /* GSBackend will be in a separate library, so use the runtime
 	 to find the class and avoid an unresolved reference problem */
       backend = [[NSBundle gnustepBundle] classNamed: @"GSBackend"];
-      NSCAssert(backend, @"Can't find backend context");
+      NSCAssert(backend, GSGuiLocalizedString (@"Can't find backend context",
+					       nil));
       [backend initializeBackend];
 #endif
     }
@@ -246,7 +266,7 @@ NSApplication	*NSApp = nil;
 {
   if (place == NSWindowOut)
     {
-      NSLog(@"Argh - icon window ordered out");
+      NSLog (@"Argh - icon window ordered out");
     }
   else
     {
@@ -430,7 +450,10 @@ static NSCell* tileCell = nil;
 
       NSDebugLog(@"Initialize NSApplication class\n");
       [self setVersion: 1];
-
+      
+      /* Create the gui bundle we use to localize messages.  */
+      guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"];
+      
       /* Save the base library exception handler */
       defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler ();
       
@@ -486,7 +509,8 @@ static NSCell* tileCell = nil;
     NSApp = self;
     if (NSApp == nil)
       {
-	NSLog(@"Cannot allocate the application instance!\n");
+	NSLog(GSGuiLocalizedString 
+	      (@"Cannot allocate the application instance!\n", nil));
 	RELEASE (_app_init_pool);
 	return nil;
       }
@@ -552,7 +576,8 @@ static NSCell* tileCell = nil;
     {
       if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
 	{
-	  NSLog (@"Cannot load the main model file '%@'", mainModelFile);
+	  NSLog (GSGuiLocalizedString (@"Cannot load the main model file '%@'",
+				       nil), mainModelFile);
 	}
     }
 
@@ -667,7 +692,8 @@ static NSCell* tileCell = nil;
       object: workspace
       userInfo: userInfo];
   NS_HANDLER
-    NSLog(@"Problem during launch app notification: %@", 
+    NSLog(GSGuiLocalizedString (@"Problem during launch app notification: %@", 
+				nil),
 	  [localException reason]);
     [localException raise];
   NS_ENDHANDLER
@@ -1730,7 +1756,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   if (_infoPanel == nil)
     _infoPanel = [[GSInfoPanel alloc] initWithDictionary: options];
   
-  [_infoPanel setTitle: @"Info"];
+  [_infoPanel setTitle: GSGuiLocalizedString (@"Info", 
+					      @"Title of the Info Panel")];
   [_infoPanel orderFront: self];
 }
 
@@ -1770,10 +1797,14 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   _windows_menu = nil;
   for (i = 0; i < j; ++i)
     {
+      NSString *title;
       anItem = [menuItems objectAtIndex: i];
+      title = [anItem title];
       /* "Window" is for compatibility with menus ported from apple */
-      if (([[anItem title] compare: @"Windows"] == NSOrderedSame) 
-	  || ([[anItem title] compare: @"Window"] == NSOrderedSame)) 
+      if (([title compare: GSGuiLocalizedString (@"Windows", 
+						 @"Title of Windows menu")] 
+	   == NSOrderedSame) 
+	  || ([title compare: @"Window"] == NSOrderedSame)) 
 	{
 	  _windows_menu = anItem;
 	  break;
@@ -1955,7 +1986,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
       for (i = 0; i < count; ++i)
 	{
 	  anItem = [itemArray objectAtIndex: i];
-	  if ([[anItem title] compare: @"Windows"] == NSOrderedSame)
+	  if ([[anItem title] compare: GSGuiLocalizedString (@"Windows", nil)]
+	      == NSOrderedSame)
 	    {
 	      _windows_menu = anItem;
 	      break;
@@ -1963,7 +1995,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	}
       if (_windows_menu == nil)
 	{
-	  _windows_menu = [_main_menu insertItemWithTitle: @"Windows"
+	  _windows_menu = [_main_menu insertItemWithTitle: 
+					GSGuiLocalizedString (@"Windows", nil)
 						 action: 0 
 					  keyEquivalent: @""
 					        atIndex: count];
@@ -2148,7 +2181,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 - (void) reportException: (NSException *)anException
 {
   if (anException)
-    NSLog(@"reported exception - %@", anException);
+    NSLog(GSGuiLocalizedString (@"reported exception - %@", nil), anException);
 }
 
 /*
@@ -2162,7 +2195,9 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     shouldTerminate = [_delegate applicationShouldTerminate: sender];
   else
     shouldTerminate = [[NSDocumentController sharedDocumentController] 
-			  reviewUnsavedDocumentsWithAlertTitle:@"Quit" cancellable:YES];
+			  reviewUnsavedDocumentsWithAlertTitle: 
+			  GSGuiLocalizedString (@"Quit", nil)
+			cancellable:YES];
 
   if (shouldTerminate)
     {
@@ -2178,7 +2213,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
       // Tell the Workspace that we really did terminate
       userInfo = [NSDictionary dictionaryWithObject:
-	[[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
+	[[NSProcessInfo processInfo] processName] forKey: 
+				 @"NSApplicationName"];
       [[workspace notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
 		      object: workspace
