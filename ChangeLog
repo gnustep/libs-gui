@@ -1,3 +1,8 @@
+1999-07-18  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSPopUpButtonCell.m: removed debug code. Makes
+	popupbutton snappy not sloppy. ;-)
+
 Sun Jul 18 16:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenuView.m: When doing sizeToFit, use setContentSize to

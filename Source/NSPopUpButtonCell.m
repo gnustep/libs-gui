@@ -62,11 +62,9 @@
   arect.origin.y += 2;
  
   if (cell_highlighted) {
-    NSLog(@"highlighted.");
     [[NSColor whiteColor] set];
     NSRectFill(arect);
   } else {
-    NSLog(@"unhighlighted.");
     [[NSColor lightGrayColor] set];  
     NSRectFill(arect);
   }
