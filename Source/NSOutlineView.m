@@ -770,7 +770,7 @@ static int _levelForItem(NSDictionary *outlineDict,
 
   // reload all the open items...
   _loadDictionary(self, nil, _itemDict);
-  NSLog(@"Dictionary = %@",_itemDict);
+  //  NSLog(@"Dictionary = %@",_itemDict);
   [self _openItem: nil];
   [super reloadData];
 }
@@ -1012,8 +1012,6 @@ static int _levelForItem(NSDictionary *outlineDict,
 	  NSRect drawingRect = [self frameOfCellAtColumn: 0
 				     row: index];
 	  float length = drawingRect.size.width + offset;
-	  NSLog(@"index = %d, offset = %f, textLength = %f",
-		index, offset, length);
 	  if(widest < length) widest = length;
 	}
       // [_outlineTableColumn setWidth: widest];
