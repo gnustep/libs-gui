@@ -1,3 +1,9 @@
+Thu Jun 27 11:49:57 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextField.m ([-textDidEndEditing:]): Set _text_object
+	to nil too before posting the NSControlTextDidEndEditing
+	notification.
+
 2002-06-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Fix error in testing base path for app.
