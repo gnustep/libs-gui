@@ -4970,7 +4970,7 @@ byExtendingSelection: (BOOL)flag
   NSZoneFree(NSDefaultMallocZone(), currentWidth);
   NSZoneFree(NSDefaultMallocZone(), maxWidth);
   NSZoneFree(NSDefaultMallocZone(), minWidth);
-
+  NSZoneFree(NSDefaultMallocZone(), isResizable);
 
   [self tile];
 }
