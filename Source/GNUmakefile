@@ -147,6 +147,7 @@ externs.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
+GSUtil.m \
 Parsers/attributedStringConsumer.m
 
 ifneq ($(FOUNDATION_LIB), fd)
