@@ -256,7 +256,12 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
 - (NSSize)paperSize
 {
-  return [(NSValue *)[_info objectForKey:NSPrintPaperSize] sizeValue];
+  /* Don't simplify this. Some OSs can't handle retuning a NULL value into
+     a struct.  */
+  NSValue *val = [_info objectForKey:NSPrintPaperSize];
+  if (val == nil)
+    return NSMakeSize(0,0);
+  return [val sizeValue];
 }
 
 - (float)rightMargin

@@ -1,3 +1,12 @@
+2004-09-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPrintInfo.m ([NSPrintInfo -paperSize]): Avoid returning
+	a nil object return value into a struct.
+
+	* Printing/GSLPR/GNUmakefile.preamble: Add 
+	Source/$(GNUSTEP_TARGET_DIR) includes
+	* Tools/GNUmakefile.preamble: Likewise.
+
 2004-09-02 00:17  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m (-replaceSubview:with:): Clarify documentation.
