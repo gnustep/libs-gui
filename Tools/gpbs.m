@@ -1034,9 +1034,17 @@ init(int argc, char** argv)
 	  exit(0);
 	}
       else if ([a isEqualToString: @"--no-fork"] == YES)
-	debug++;
+	{
+	  debug++;
+	}
       else if ([a isEqualToString: @"--verbose"] == YES)
-	verbose++;
+	{
+	  verbose++;
+	}
+      else if ([a hasPrefix: @"-"] == YES)
+	{
+	  count++;	// Skip user default specification
+	}
       else if ([a length] > 0)
 	{
 	  printf("gpbs - GNU Pasteboard server\n");
