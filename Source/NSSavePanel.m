@@ -117,6 +117,8 @@ static BOOL _gs_display_reading_progress = NO;
   r = NSMakeRect (8, 68, 292, 177);
   _browser = [[NSBrowser alloc] initWithFrame: r]; 
   [_browser setDelegate: self];
+  [_browser setDoubleAction: @selector (ok:)];
+  [_browser setTarget: self];
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
   [_browser setAllowsMultipleSelection: NO];
