@@ -32,7 +32,10 @@
 #ifndef _GNUstep_H_NSMenuItem
 #define _GNUstep_H_NSMenuItem
 
-#include <AppKit/NSButtonCell.h>
+#include <Foundation/NSString.h>
+
+@class NSMenu;
+@class NSImage;
 
 @protocol NSMenuItem <NSCopying, NSCoding>
 
@@ -62,6 +65,7 @@
 - (unsigned int)keyEquivalentModifierMask;
 
 - (NSString*)userKeyEquivalent;
+- (unsigned int)userKeyEquivalentModifierMask;
 
 - (void)setMnemonicLocation:(unsigned) location;
 - (unsigned)mnemonicLocation;
@@ -98,85 +102,24 @@
 
 @interface NSMenuItem : NSObject <NSMenuItem>
 {
-  NSMenu *mi_menu;
-  NSString *mi_title;
-  NSString *mi_keyEquivalent;
-  unsigned int mi_keyEquivalentModifierMask;
-  unsigned mi_mnemonicLocation;
-  int mi_state;
-  BOOL mi_enabled;
-  NSImage *mi_image;
-  NSImage *mi_onStateImage;
-  NSImage *mi_offStateImage;
-  NSImage *mi_mixedStateImage;
-  id mi_target;
-  SEL mi_action;
-  int mi_tag;
-  id mi_representedObject;
-  NSMenu *mi_submenu;
-  BOOL mi_changesState;
-
-  // Reserved for back-end use
-  void *be_mi_reserved;
+  NSMenu *_menu;
+  NSString *_title;
+  NSString *_keyEquivalent;
+  unsigned int _keyEquivalentModifierMask;
+  unsigned _mnemonicLocation;
+  int _state;
+  BOOL _enabled;
+  NSImage *_image;
+  NSImage *_onStateImage;
+  NSImage *_offStateImage;
+  NSImage *_mixedStateImage;
+  id _target;
+  SEL _action;
+  int _tag;
+  id _representedObject;
+  NSMenu *_submenu;
+  BOOL _changesState;
 }
-
-+ (void)setUsesUserKeyEquivalents:(BOOL)flag;
-+ (BOOL)usesUserKeyEquivalents;
-
-+ (id <NSMenuItem>)separatorItem;
-
-- (id)initWithTitle:(NSString *)aString
-	     action:(SEL)aSelector
-      keyEquivalent:(NSString *)charCode;
-
-- (void)setMenu:(NSMenu *)menu;
-- (NSMenu *)menu;
-
-- (BOOL)hasSubmenu;
-- (void)setSubmenu:(NSMenu *)submenu;
-- (NSMenu *)submenu;
-
-- (void)setTitle:(NSString *)aString;
-- (NSString *)title;
-- (BOOL)isSeparatorItem;
-
-- (void)setKeyEquivalent:(NSString *)aKeyEquivalent;
-- (NSString *)keyEquivalent;
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask;
-- (unsigned int)keyEquivalentModifierMask;
-
-- (NSString *)userKeyEquivalent;
-
-- (void)setMnemonicLocation:(unsigned) location;
-- (unsigned)mnemonicLocation;
-- (NSString *)mnemonic;
-- (void)setTitleWithMnemonic:(NSString *)stringWithAmpersand;
-
-- (void)setImage:(NSImage *)menuImage;
-- (NSImage *)image;
-
-- (void)setState:(int)state;
-- (int)state;
-- (void)setOnStateImage:(NSImage *)image;
-- (NSImage *)onStateImage;
-- (void)setOffStateImage:(NSImage *)image;
-- (NSImage *)offStateImage;
-- (void)setMixedStateImage:(NSImage *)image;
-- (NSImage *)mixedStateImage;
-
-- (void)setEnabled:(BOOL)flag;
-- (BOOL)isEnabled;
-
-- (void)setTarget:(id)anObject;
-- (id)target;
-- (void)setAction:(SEL)aSelector;
-- (SEL)action;
-
-- (void)setTag:(int)anInt;
-- (int)tag;
-
-- (void)setRepresentedObject:(id)anObject;
-- (id)representedObject;
 
 @end
 
@@ -187,12 +130,5 @@
 
 @end
 
-/* Private stuff; it should be in a private header file but it really doesn't
-   worth the effort. */
-enum {
-  INTERCELL_SPACE = 1,
-  RIGHT_IMAGE_WIDTH = 12,
-  ADDITIONAL_WIDTH = RIGHT_IMAGE_WIDTH + 15
-};
-
 #endif // _GNUstep_H_NSMenuItem
+
