@@ -57,6 +57,7 @@
 {
   NSMenu       *menu;
   NSButton     *button;
+	NSSize       imageSize;
   NSDictionary *attr;
 }
 
@@ -138,11 +139,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
-
-  // Add title view. If this menu owned by popup
-  _titleView = [[NSMenuWindowTitleView alloc] init];
-  [self addSubview: _titleView];
-  [_titleView release];
 
   return self;
 }
@@ -457,10 +453,25 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   NSDebugLLog (@"NSMenu", @"update called on menu view");
 
-  [_titleView setMenu: _menu];
+	if (![_menu _ownedByPopUp] && !_titleView)
+		{
+			// Add title view. If this menu not owned by popup
+			_titleView = [[NSMenuWindowTitleView alloc] init];
+			[self addSubview: _titleView];
+			[_titleView release];
+		}
+	else if ([_menu _ownedByPopUp] && _titleView) 
+		{
+			// Remove title view if this menu owned by popup
+			[_titleView removeFromSuperview];
+			_titleView = nil;
+		}
 
-  if (_needsSizing)
-    [self sizeToFit];
+	if ([_titleView menu] == nil && _titleView)
+		[_titleView setMenu: _menu];
+
+	// Resize it anyway.
+	[self sizeToFit];
 
   if ([_menu isTornOff] && ![_menu isTransient])
     {
@@ -804,19 +815,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
   cellFrame = [self convertRect: cellFrame fromView: nil];
  
-  // Remove title view if we owned by popup button
-  if ([_menu _ownedByPopUp] && _titleView) 
-    {
-      [_titleView removeFromSuperview];
-      _titleView = nil;
-			_needsSizing = YES;
-    }
-
-	// Only call sizeToFit if needed.
+	// Only call update if needed.
 	if ((NSEqualSizes(_cellSize, cellFrame.size) == NO) || _needsSizing)
 		{
 			_cellSize = cellFrame.size;
-			[self sizeToFit];
+			[self update];
 		}
   
   /*
@@ -1375,7 +1378,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return _itemCells;
 }
 
-
 @end
 
 @implementation NSMenuWindowTitleView
@@ -1508,11 +1510,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // create the menu's close button
   NSImage *closeImage = [NSImage imageNamed: @"common_Close"];
   NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
-  NSSize  imageSize = [closeImage size];
-  NSRect  rect = { 
-    { _frame.size.width - imageSize.width - 4,
-      (_frame.size.height - imageSize.height) / 2 },
-    { imageSize.width, imageSize.height } };
+	NSRect  rect;
+
+	imageSize = [closeImage size];
+	rect = NSMakeRect (_frame.size.width - imageSize.width - 4,
+										 (_frame.size.height - imageSize.height) / 2 ,
+										 imageSize.width, imageSize.height );
   
   button = [[NSButton alloc] initWithFrame: rect];
   [button setRefusesFirstResponder: YES];
@@ -1538,6 +1541,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   if (button == nil)
     [self createButton];
+
+	// Update location
+	[button setFrameOrigin: 
+		NSMakePoint (_frame.size.width - imageSize.width - 4,
+								 (_frame.size.height - imageSize.height) / 2)];
+
   [self addSubview: button];
   [self setNeedsDisplay: YES];
 }
