@@ -330,8 +330,9 @@ _attributesAtIndexEffectiveRange(
 - (NSDictionary*) attributesAtIndex: (unsigned)index
 		     effectiveRange: (NSRange*)aRange
 {
+  unsigned	dummy;
   return _attributesAtIndexEffectiveRange(
-    index, aRange, [textChars length], infoArray, NULL);
+    index, aRange, [textChars length], infoArray, &dummy);
 }
 
 /*
