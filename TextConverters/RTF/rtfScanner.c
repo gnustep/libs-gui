@@ -231,6 +231,7 @@ LexKeyword RTFcommands[] =
     {"stylesheet",token(RTFstylesheet)},
     {"tab",       token(RTFtabulator)},
     {"tx",        token(RTFtabstop)},
+    {"u",         token(RTFunichar)},
     /* All underline are mapped on one entry */
     {"ul",        token(RTFunderline)},
     {"uld",       token(RTFunderline)},
