@@ -72,6 +72,7 @@ before-install:: $(INSTALL_ROOT_DIR)$(GNUSTEP_MAKEFILES)/Additional
 #	  if [ -d dps ]; then \
 #	    cd dps ; rm -f *~; \
 #	  fi
+# NOTE: the gnustep/gui directories don't exist anymore.
 
 # Things to do before distcleaning
 # before-distclean::
