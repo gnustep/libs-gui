@@ -1,4 +1,8 @@
-2003-01-01 23:22  Gregory John Casamento  <greg_casamento@yahoo.com>
+2004-01-03 19:00  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Removed some uneeded includes.
+
+2004-01-01 23:22  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Moved the declaration of 
 	nibitems in loadNibFile:externalNameTable:withZone: so

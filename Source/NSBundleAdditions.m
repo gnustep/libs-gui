@@ -28,7 +28,6 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSClassDescription.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
@@ -46,14 +45,6 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSound.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSWindow.h"
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
 #include "GNUstepGUI/GSNibTemplates.h"
