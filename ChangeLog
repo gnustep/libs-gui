@@ -1,4 +1,11 @@
 2002-07-18  Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* NSBundleAdditions.m: (-[awakeWithContext:])  Corrected
+	a problem in this method which was preventing awakeFromNib
+	from being called on NSOwner.   I have confirmed that this
+	is the correct behavior on OPENSTEP 4.2/Mach.
+
+2002-07-18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: Removed an extraneous NSLog.
 	* Tools/GSspell.m: Changed registration of spell checker to

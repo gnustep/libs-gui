@@ -503,7 +503,8 @@ Class gmodel_class(void)
       enumerator = [nameTable keyEnumerator];
       while ((key = [enumerator nextObject]) != nil)
 	{
-	  if ([context objectForKey: key] == nil)
+	  if ([context objectForKey: key] == nil || 
+	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
 	    {
 	      id	o;
 
