@@ -101,6 +101,10 @@ enum
 - (void) fixFontAttributeInRange: (NSRange)range;
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range;
 - (void) fixAttachmentAttributeInRange: (NSRange)range;
+
+- (BOOL) readFromURL: (NSURL *)url
+	     options: (NSDictionary *)options
+  documentAttributes: (NSDictionary**)documentAttributes;
 @end
 
 #endif
