@@ -279,6 +279,8 @@ static NSImage *unexpandable  = nil;
 	    }
 	}
       [self noteNumberOfRowsChanged];
+      // Should only mark the rect below the closed item for redraw
+      [self setNeedsDisplay: YES];
     }
 }
 
@@ -366,9 +368,12 @@ static NSImage *unexpandable  = nil;
 		  [self expandItem: child expandChildren: expandChildren];
 		}
 	    }
-	}      
+	}
+      
+      [self noteNumberOfRowsChanged];
+      // Should only mark the rect below the expanded item for redraw
+      [self setNeedsDisplay: YES];
     }
-  [self noteNumberOfRowsChanged];
 }
 
 /**
@@ -1802,7 +1807,6 @@ static NSImage *unexpandable  = nil;
       insertionPoint++;
     }
 
-  [self setNeedsDisplay: YES];  
   for(i=numchildren-1; i >= 0; i--)
     {
       id obj = NSMapGet(_itemDict, sitem);

@@ -1,3 +1,10 @@
+2005-02-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-expandItem:expandChildren:,
+	collapseItem:collapseChildren:): Added a call to setNeedsDisplay:,
+	so the new status will be shown correctly.
+	(_openItem:): Removed setNeedsDisplay: call as all callers do it already.
+
 2005-02-05 15:42 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDataLinkManager.h: Moved NSDataLinkManager delegate
@@ -158,7 +165,7 @@
 
 2005-01-20  Fred Kiefer <FredKiefer@gmx.de>
 
-        * Source/NSTableView.m (-rowAtPoint:): If the heigh of the table
+	* Source/NSTableView.m (-rowAtPoint:): If the heigh of the table
 	is incorrect and because of this the row would be greater than the
 	number of rows, return a usable number.
 
