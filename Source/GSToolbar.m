@@ -1041,6 +1041,8 @@ static id validationCenter;
 
 - (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast
 {   
+  if(_delegate)
+    [nc removeObserver: _delegate name: nil object: self];
   
   if (_delegate == delegate 
     || (broadcast == NO && [_delegate isMemberOfClass: [delegate class]]))
@@ -1063,10 +1065,8 @@ static id validationCenter;
   CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
   CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
 
-  if (_delegate) 
-    [nc removeObserver: _delegate name: nil object: self];
-
-  ASSIGN(_delegate, delegate);
+  // assign the delegate...
+  _delegate = delegate;
 
   #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \

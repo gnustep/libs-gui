@@ -247,13 +247,43 @@ static const int current_version = 1;
       }
 }
 
+// handle notifications
+
+- (void) handleNotification: (NSNotification *)notification
+{
+  NSMutableArray *toolbars = [GSToolbar _toolbars];
+
+  // We currently only worry about when our window closes.
+  // It's necessary to remove the toolbar which belongs to this
+  // window from the master list, so that it doesn't cause a
+  // memory leak.
+  [toolbars removeObjectIdenticalTo: self];
+}
+
 // Private Accessors
 
 - (void)_setWindow: (NSWindow *)window 
 {
-  _window = window; 
+  if(_window != window)
+    {
+      if(_window)
+	{
+	  [nc removeObserver: _window];
+	}
+
+      if(window)
+	{
+	  // watch for this window closing....
+	  [nc addObserver: self
+	      selector: @selector(handleNotification:)
+	      name: NSWindowWillCloseNotification
+	      object: window];
+	}
+    }
+
   // We don't do an ASSIGN because the toolbar view retains us.
   // call [NSWindow(Toolbar) setToolbar:] to set the toolbar window 
+  _window = window; 
 }
 
 - (NSWindow *) _window

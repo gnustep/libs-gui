@@ -1,3 +1,14 @@
+2004-07-05  Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Source/NSToolbar.m: [NSToolbar _setWindow:] added logic
+	to accept the NSWindowWillCloseNotification, since the toolbar
+	will need to remove itself from the "toolbars" master array.
+	Also added a method called [NSToolbar _handleNotification:]
+	to do the actual removal.
+	* Source/GSToolbar.m: [GSToolbar _setDelegate:] toolbar
+	no longer retains it's delegate.   This prevents the delegate
+	from leaking.
+
 2004-07-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m: Moved private methods into separate
@@ -18,19 +29,22 @@
 	ivar to the GSNibContainer class and the method to retrieve it.
 	* Source/GSNibTemplates.m: Move the private class GSNibItemCollector
 	from NSBundleAdditions.m to GSNibTemplates.m.  This helped clean up
-	code and also facilitated the changes necessary for the new .gorm version.
-	Also changed the signature of awakeWithContext: so it only takes the context
-	dictionary as an argument and no longer requires the items to be passed in.
+	code and also facilitated the changes necessary for the new .gorm 
+	version.  Also changed the signature of awakeWithContext: so it 
+	only takes the context dictionary as an argument and no longer 
+	requires the items to be passed in. 
 	Changed the awakeWithContext method to efficiently retain the objects.
 	In initWithCoder: and encodeWithCoder: added new section for updated
 	version.  Added some logic to collect the top level items at that time
-	so that version 0 and version 1 .gorm files load in a precisely equivalent
-	manner.   Also, updated a change made by Alex Malmberg which was causing
-	the designated initializers to not be called.
-	* Source/NSBundleAdditions.m: Moved class to GSNibTemplates as described
-	above.  Cleaned up implementation of +loadNibNamed:context:.
-	* Source/NSNib.m: Removed some of the code which was there to collect top level
-	items.  Also cleaned up some of the code with the new implementation.
+	so that version 0 and version 1 .gorm files load in a precisely 
+	equivalent manner.   Also, updated a change made by Alex Malmberg 
+	which was causing the designated initializers to not be called.
+	* Source/NSBundleAdditions.m: Moved class to GSNibTemplates as 
+	described above.  Cleaned up implementation of +loadNibFile:
+	externalNameTable:withZone:.
+	* Source/NSNib.m: Removed some of the code which was there to 
+	collect top level items.  Also cleaned up some of the code with 
+	the new implementation.
 
 2004-06-28  Serg Stoyan <stoyan255@ukr.net>
 
