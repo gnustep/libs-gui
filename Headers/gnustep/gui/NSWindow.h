@@ -93,36 +93,36 @@ extern NSSize NSTokenSize;
 
 @interface NSWindow : NSResponder <NSCoding>
 {
-  NSRect        frame;
-  NSSize        minimum_size;
-  NSSize        maximum_size;
-  NSSize        increments;
-  NSString	*autosave_name;
+  NSRect        _frame;
+  NSSize        _minimumSize;
+  NSSize        _maximumSize;
+  NSSize        _increments;
+  NSString	*_autosaveName;
   id		_wv;
-  id            content_view;
-  id            first_responder;
-  id            original_responder;
-  NSView        *_initial_first_responder;
+  id            _contentView;
+  id            _firstResponder;
+  id            _originalResponder;
+  NSView        *_initialFirstResponder;
   id            _delegate;
   id            _fieldEditor;
   id            _lastDragView;
-  int           window_num;
-  int           gstate;
-  NSColor       *background_color;
-  NSString      *represented_filename;
-  NSString      *miniaturized_title;
-  NSImage       *miniaturized_image;
-  NSString      *window_title;
-  NSPoint       last_point;
-  NSBackingStoreType backing_type;
-  unsigned      style_mask;
-  int           window_level;
-  NSRect        rectNeedingFlush;
-  NSMutableArray *rectsBeingDrawn;
-  unsigned	disable_flush_window;
-  NSSelectionDirection _selection_direction;
+  int           _windowNum;
+  int           _gstate;
+  NSColor       *_backgroundColor;
+  NSString      *_representedFilename;
+  NSString      *_miniaturizedTitle;
+  NSImage       *_miniaturizedImage;
+  NSString      *_windowTitle;
+  NSPoint       _lastPoint;
+  NSBackingStoreType _backingType;
+  unsigned      _styleMask;
+  int           _windowLevel;
+  NSRect        _rectNeedingFlush;
+  NSMutableArray *_rectsBeingDrawn;
+  unsigned	_disableFlushWindow;
+  NSSelectionDirection _selectionDirection;
 
-  NSWindowDepth depth_limit;
+  NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
   int		_counterpart;
 
@@ -149,7 +149,7 @@ extern NSSize NSTokenSize;
   } _f;
  
   /* Reserved for back-end use */
-  void *be_wind_reserved;
+  void *_be_wind_reserved;
 }
 
 /*
