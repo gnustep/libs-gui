@@ -2856,9 +2856,6 @@ Figure out how the additional layout stuff is supposed to work.
   /* TODO: this is a basic stopgap implementation; should work fine, but no
   blinking. need to do a proper one once I know how */
 
-  unsigned int l;
-  BOOL after;
-  NSRange gr;
   NSRect new;
 
   if (!_layoutManager)
@@ -2870,47 +2867,17 @@ Figure out how the additional layout stuff is supposed to work.
   if (_layoutManager->_selected_range.length > 0 ||
       _layoutManager->_selected_range.location == NSNotFound)
     {
-      [self setNeedsDisplayInRect: _insertionPointRect];
-      _insertionPointRect = NSZeroRect;
-      return;
-    }
-
-  l = _layoutManager->_selected_range.location;
-  if (l == [self textLength])
-    {
-      if (l == 0)
-	{
-	  /* TODO */
-	  new = NSZeroRect;
-	  new.size.width = 1;
-	  new.size.height = 14;
-	  new.origin.y = 0;
-	  goto adjust;
-	}
-      l--;
-      after = YES;
+      new = NSZeroRect;
     }
   else
-    after = NO;
-
-  gr = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(l,1)
-	 actualCharacterRange: NULL];
-
-  new = [_layoutManager boundingRectForGlyphRange: gr
-	  inTextContainer: _textContainer];
-
-  if (after)
     {
-      new.origin.x += new.size.width - 1;
+      new = [_layoutManager
+	      insertionPointRectForCharacterIndex: _layoutManager->_selected_range.location
+	      inTextContainer: _textContainer];
+
+      new.origin.x += _textContainerOrigin.x;
+      new.origin.y += _textContainerOrigin.y;
     }
-  new.size.width = 1;
-
-adjust:
-  new.origin.y++;
-  new.size.height -= 2;
-
-  new.origin.x += _textContainerOrigin.x;
-  new.origin.y += _textContainerOrigin.y;
 
   if (!NSEqualRects(new, _insertionPointRect))
     {
@@ -2919,92 +2886,7 @@ adjust:
       [self setNeedsDisplayInRect: _insertionPointRect];
     }
 
-#if 0 /* TODO */
-  /* Update insertion point rect */
-  NSRange charRange;
-  NSRange glyphRange;
-  unsigned glyphIndex;
-  NSRect rect;
-  NSRect oldInsertionPointRect;
-
-  /* Simple case - no insertion point */
-  if ((_layoutManager->_selected_range.length > 0) || _layoutManager->_selected_range.location == NSNotFound)
-    {
-      if (_insertionPointTimer != nil)
-	{
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
-	}
-      
-      /* TODO: horizontal position of insertion point */
-//      _originalInsertPoint = 0; TODO
-      return;
-    }
-
-  if (_layoutManager->_selected_range.location == [[[_layoutManager textStorage] string] length])
-    {
-      rect = NSZeroRect;
-      goto ugly_hack_done;
-    }
-
-  charRange = NSMakeRange (_layoutManager->_selected_range.location, 0);
-  glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
-			       actualCharacterRange: NULL];
-  glyphIndex = glyphRange.location;
-
-  rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
-			 effectiveRange: NULL];
-  rect.origin.x += _textContainerOrigin.x;
-  rect.origin.y += _textContainerOrigin.y;
-
-  if ([self selectionAffinity] != NSSelectionAffinityUpstream)
-    {
-      /* Standard case - draw the insertion point just before the
-	 associated glyph index */
-      NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
-      
-      rect.origin.x += loc.x;      
-
-    }
-  else /* _affinity == NSSelectionAffinityUpstream - non standard */
-    {
-      /* TODO - THIS DOES NOT WORK - as a consequence,
-         NSSelectionAffinityUpstream DOES NOT WORK */
-
-      /* Check - if the previous glyph is on another line */
-      
-      /* TODO: Don't know how to do this check, this is a hack and
-         DOES NOT WORK - clearly this code should be inside the layout
-         manager anyway */
-      NSRect rect2;
-      
-      rect2 = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex - 1
-			      effectiveRange: NULL];
-      if (NSMinY (rect2) < NSMinY (rect))
-	{
-	  /* Then we need to draw the insertion point just after the
-             previous glyph - DOES NOT WORK */
-	  glyphRange = NSMakeRange (glyphIndex - 1, 1);
-	  rect = [_layoutManager boundingRectForGlyphRange: glyphRange
-				 inTextContainer:_textContainer];
-	  rect.origin.x = NSMaxX (rect) - 1;
-	}
-      else /* Else, standard case again */
-	{
-	  NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
-	  rect.origin.x += loc.x;	  
-	}
-    }
-ugly_hack_done:
-
-  rect.size.width = 1;
-
-  oldInsertionPointRect = _insertionPointRect;
-  _insertionPointRect = rect;
-  
-  /* Remember horizontal position of insertion point */
-//  _originalInsertPoint = _insertionPointRect.origin.x; TODO
-
+#if 0   /* TODO: old code for insertion point blinking. might be useful */
   if (restartFlag)
     {
       /* Start blinking timer if not yet started */

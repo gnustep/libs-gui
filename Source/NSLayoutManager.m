@@ -38,6 +38,8 @@ points inside line frag rects.
 http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 */
 
+#include <math.h>
+
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/GSLayoutManager_internal.h"
 
@@ -126,7 +128,9 @@ container? necessary? */
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->textContainer == container)
       break;
+//printf("container %i %@, %i+%i\n",i,tc->textContainer,tc->pos,tc->length);
   [self _doLayoutToGlyph: last - 1];
+//printf("   now %i+%i\n",tc->pos,tc->length);
   if (i == num_textcontainers ||
       tc->pos + tc->length < last ||
       tc->pos > glyphRange.location)
@@ -173,9 +177,11 @@ container? necessary? */
 	    {
 	      if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 		  r->glyphs[i].g != NSControlGlyph)
-		x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
-	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+		{
+		  x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
 		}
+	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+	    }
 	}
       else
 	x0 = NSMinX(lf->rect);
@@ -202,9 +208,11 @@ container? necessary? */
 	    {
 	      if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
 		  r->glyphs[i].g != NSControlGlyph)
-		x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
-	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+		{
+		  x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
 		}
+	      GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+	    }
 	}
       else
 	x1 = NSMaxX(lf->rect);
@@ -535,6 +543,106 @@ anything visible
       return last_visible;
     }
 }
+
+
+-(NSRect) insertionPointRectForCharacterIndex: (unsigned int)cindex
+			      inTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+  float x0, x1;
+  NSRect r;
+
+  unsigned int glyph_index;
+  float fraction_through;
+
+
+  if (cindex == [[_textStorage string] length])
+    { /* TODO: use extra line frag, etc. */
+      if (!cindex)
+	{
+	  return NSMakeRect(1,1,1,13); /* TODO! */
+	}
+      glyph_index = [self numberOfGlyphs] - 1;
+      fraction_through = 1.0;
+    }
+  else
+    {
+      NSRange glyphRange, charRange;
+
+      glyphRange = [self glyphRangeForCharacterRange: NSMakeRange(cindex, 1)
+		     actualCharacterRange: &charRange];
+
+      /* Magic to deal with composite characters and ligatures. */
+      fraction_through = (cindex - charRange.location) / (float)charRange.length;
+      fraction_through *= glyphRange.length;
+
+      glyph_index = glyphRange.location + floor(fraction_through);
+      fraction_through -= floor(fraction_through);
+    }
+
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == textContainer)
+      break;
+  [self _doLayoutToGlyph: glyph_index - 1];
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return NSZeroRect;
+    }
+
+  if (glyph_index < tc->pos || glyph_index >= tc->pos + tc->length)
+    {
+      return NSZeroRect;
+    }
+
+  for (lf = tc->linefrags, i = 0; i < tc->num_linefrags; i++, lf++)
+    if (lf->pos + lf->length > glyph_index)
+      break;
+
+  {
+    int i, j;
+    linefrag_point_t *lp;
+    glyph_run_t *r;
+    unsigned int gpos, cpos;
+
+    for (j = 0, lp = lf->points; j < lf->num_points; j++)
+      if (lp->pos + lp->length > glyph_index)
+	break;
+
+    x0 = lp->p.x + lf->rect.origin.x;
+    r = run_for_glyph_index(lp->pos, glyphs, &gpos, &cpos);
+    i = lp->pos - gpos;
+
+    while (i + gpos < glyph_index)
+      {
+	if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
+	    r->glyphs[i].g != NSControlGlyph)
+	  {
+	    x0 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+	  }
+	GLYPH_STEP_FORWARD(r, i, gpos, cpos)
+      }
+    x1 = x0;
+    if (!r->glyphs[i].isNotShown && r->glyphs[i].g &&
+	r->glyphs[i].g != NSControlGlyph)
+      {
+	x1 += [r->font advancementForGlyph: r->glyphs[i].g].width;
+      }
+  }
+
+  r = lf->rect;
+  r.origin.x = x0 + (x1 - x0) * fraction_through;
+  r.size.width = 1;
+
+  r.origin.y++;
+  r.size.height -= 2;
+
+  return r;
+}
+
 
 @end
 

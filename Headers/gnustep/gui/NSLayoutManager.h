@@ -110,6 +110,20 @@
 	fractionOfDistanceThroughGlyph: (float *)partialFraction;
 
 
+/*
+Returns a rectangle suitable for drawing an insertion point in if the
+insertion point is placed before the given character. The character index
+may be any character in the text (it will handle positions "inside" a
+ligature), and (unlike other methods) it may be one past the end of the
+text (ie. cindex==[[_textStorage string] length]).
+
+If the character isn't in the text container, returns NSZeroRect.
+
+GNUstep extension.
+*/
+-(NSRect) insertionPointRectForCharacterIndex: (unsigned int)cindex
+			      inTextContainer: (NSTextContainer *)textContainer;
+
 @end
 
 

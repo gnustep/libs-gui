@@ -1,3 +1,11 @@
+2003-02-03 02:49  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSLayoutManager.h, Source/NSLayoutManager.m:
+	Add -insertionPointRectForCharacterIndex:inTextContainer: method.
+
+	* Source/NSTextView.m (-updateInsertionPointStateAndRestartTimer:):
+	Use it.
+
 2003-02-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextField.m
