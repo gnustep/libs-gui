@@ -1,3 +1,9 @@
+Thu Apr 18 11:14:22 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/AppKitDefines.h (APPKIT_DECLARE): Updated
+	Windows DLL import/export #define machinery to the new
+	gnustep-make conventions.
+
 2002-04-17  Pierre-Yves Rivaille <pyrivail@ens-lyon.gt>
 
 	* Source/NSMenuItem.m: 
