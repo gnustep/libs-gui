@@ -183,10 +183,9 @@ static NSImage *_pbc_image[2];
     index = count;
 
   anItem = [_menu insertItemWithTitle: title
-		  action: [self action]
+		  action: NULL
 		  keyEquivalent: @""
 		  atIndex: index];
-  [anItem setTarget: [self target]];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
