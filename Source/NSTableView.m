@@ -182,6 +182,27 @@ _selectionChange (NSTableView *tv, id delegate, int numberOfRows,
     }
 }
 
+static inline BOOL 
+_isCellEditable (id delegate, NSArray *tableColumns, 
+		 NSTableView *tableView, int row, int column)
+{
+  SEL selector = @selector(tableView:shouldEditTableColumn:row:);
+
+  if ([delegate respondsToSelector: selector] == YES)
+    {
+      NSTableColumn *tb;
+      
+      tb = [tableColumns objectAtIndex: column];
+      if ([delegate tableView: tableView  shouldEditTableColumn: tb 
+		    row: row] == NO)
+	{
+	  return NO;
+	}
+    }
+  
+  return YES;
+}
+
 @interface GSTableCornerView : NSView
 {}
 @end
@@ -205,6 +226,10 @@ _selectionChange (NSTableView *tv, id delegate, int numberOfRows,
 
 @interface NSTableView (TableViewInternalPrivate)
 - (void) _setSelectingColumns: (BOOL)flag;
+- (BOOL) _editNextEditableCellAfterRow: (int)row
+				column: (int)column;
+- (BOOL) _editPreviousEditableCellBeforeRow: (int)row
+				     column: (int)column;
 @end
 
 @implementation NSTableView 
@@ -2378,6 +2403,7 @@ byExtendingSelection: (BOOL)flag
 {
   NSMutableDictionary *d;
   id textMovement;
+  int row, column;
 
   [self validateEditing];
 
@@ -2394,6 +2420,10 @@ byExtendingSelection: (BOOL)flag
   _textObject = nil;
   _editedCell = nil;
   RELEASE (_editedCell);
+  /* Save values */
+  row = _editedRow;
+  column = _editedColumn;
+  /* Only then Reset them */
   _editedColumn = -1;
   _editedRow = -1;
 
@@ -2406,21 +2436,17 @@ byExtendingSelection: (BOOL)flag
 	  // Send action ?
 	  break;
 	case NSTabTextMovement:
-	  // TODO
-	  /*	  if([self _selectNextSelectableCellAfterRow: _editedRow
-		   column: _editedColumn])
+	  if([self _editNextEditableCellAfterRow: row  column: column] == YES)
 	    {
 	      break;
-	      }*/  
+	    }
 	  [_window selectKeyViewFollowingView: self];
 	  break;
 	case NSBacktabTextMovement:
-	  // TODO
-	  /*
-	  if([self _selectPreviousSelectableCellBeforeRow: _editedRow
-		   column: _editedColumn])
-	    break;
-	  */
+	  if([self _editPreviousEditableCellBeforeRow: row  column: column] == YES)
+	    {
+	      break;
+	    }
 	  [_window selectKeyViewPrecedingView: self];
 	  break;
 	}
@@ -2550,4 +2576,65 @@ byExtendingSelection: (BOOL)flag
   // TODO
 }
 
+// Return YES on success; NO if no selectable cell found.
+-(BOOL) _editNextEditableCellAfterRow: (int)row
+			       column: (int)column
+{
+  int i, j;
+  if (row > -1)
+    {
+      // First look for cells in the same row
+      for (j = column + 1; j < _numberOfColumns; j++)
+	{
+	  if (_isCellEditable (_delegate, _tableColumns, self, row, j) == YES)
+	    {
+	      [self editColumn: j  row: row  withEvent: nil  select: YES];
+	      return YES;
+	    }
+	}
+    }
+  // Otherwise, make the big cycle.
+  for (i = row + 1; i < _numberOfRows; i++)
+    {
+      for (j = 0; j < _numberOfColumns; j++)
+	{
+	  if (_isCellEditable (_delegate, _tableColumns, self, row, i) == YES)
+	    {
+	      [self editColumn: j  row: i  withEvent: nil  select: YES];
+	      return YES;
+	    }
+	}
+    }
+  return NO;
+}
+-(BOOL) _editPreviousEditableCellBeforeRow: (int)row
+				    column: (int)column
+{
+  int i,j;
+  if (row < _numberOfColumns)
+    {
+      // First look for cells in the same row
+      for (j = column - 1; j > -1; j--)
+	{
+	  if (_isCellEditable (_delegate, _tableColumns, self, row, j) == YES)
+	    {
+	      [self editColumn: j  row: row  withEvent: nil  select: YES];
+	      return YES;
+	    }
+	}
+    }
+  // Otherwise, make the big cycle.
+  for (i = row - 1; i > -1; i--)
+    {
+      for (j = _numberOfColumns - 1; j > -1; j--)
+	{
+	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)
+	    {
+	      [self editColumn: j  row: i  withEvent: nil  select: YES];
+	      return YES;
+	    }
+	}
+    }
+  return NO;
+}
 @end /* implementation of NSTableView */
