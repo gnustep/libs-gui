@@ -66,42 +66,42 @@ static NSLock *_gs_horiz_typesetter_lock;
 
 - (NSTypesetterGlyphInfo *) baseOfTypesetterGlyphInfo
 {
-  return nil;
+  return _glyphInfo;
 }
 
 - (unsigned) capacityOfTypesetterGlyphInfo
 {
-  return 0;
+  return _capacityGlyphInfo;
 }
 
 - (NSTextContainer *) currentContainer
 {
-  return nil;
+  return _currentContainer;
 }
 
 - (NSLayoutManager *) currentLayoutManager
 {
-  return nil;
+  return _currentLayoutManager;
 }
 
 - (NSParagraphStyle *) currentParagraphStyle
 {
-  return nil;
+  return _currentParagraphStyle;
 }
 
 - (NSTextStorage *) currentTextStorage
 {
-  return nil;
+  return _currentTextStorage;
 }
 
 - (unsigned) firstIndexOfCurrentLineFragment
 {
-  return 0;
+  return _firstIndexOfCurrentLineFragment;
 }
 
 - (unsigned) sizeOfTypesetterGlyphInfo
 {
-  return 0;
+  return _sizeGlyphInfo;
 }
 
 //
@@ -110,6 +110,10 @@ static NSLock *_gs_horiz_typesetter_lock;
 
 - (void) breakLineAtIndex: (unsigned)location
 {
+  // Find an index to break the line, if inside a word try to hyphenate and 
+  // add a hyphen, if not possibe wrap.
+  // Do justification acording to the paragraph style.
+    
   return;
 }
 
@@ -149,13 +153,78 @@ static NSLock *_gs_horiz_typesetter_lock;
   return NSLayoutOutOfGlyphs;
 }
 
+/*
+  I think that this is the main interface of the typesetter to the outside 
+  world. So this must be protected by a lock!!
+
+
+ */
 - (void) layoutGlyphsInLayoutManager: (NSLayoutManager *)layoutManager
                 startingAtGlyphIndex: (unsigned)glyphIndex
             maxNumberOfLineFragments: (unsigned)maxNumLines
                       nextGlyphIndex: (unsigned *)nextGlyph
 {
+  unsigned charIndex;
+  unsigned numLines = 0;
+  NSLayoutStatus status;
+
+  [_gs_horiz_typesetter_lock lock];
+  // Set up all the internal state variables
+  // Don't assign here
+  _currentLayoutManager = layoutManager;
+  _currentTextStorage = [layoutManager textStorage];
+  // This probably is wrong as it does layouting itself 
+  _currentContainer = [layoutManager textContainerForGlyphAtIndex: glyphIndex
+				     effectiveRange: NULL];
+  charIndex = [layoutManager characterIndexForGlyphAtIndex: glyphIndex];
+  _currentParagraphStyle = [_currentTextStorage 
+			       attribute: NSParagraphStyleAttributeName
+			       atIndex: charIndex
+			       effectiveRange: NULL];
+  _firstIndexOfCurrentLineFragment = glyphIndex;
+
+
+  do {
+    float baseline = 0;
+    NSRect lineFragmentRect;
+    NSRect usedRect;
+
+    // Get the current lineFragmentRect from the layout manager / container
+    usedRect = lineFragmentRect;
+
+    // Build up a line
+    status = [self layoutGlyphsInHorizontalLineFragment: &usedRect 
+		   baseline: &baseline];
+    if (status == NSLayoutOutOfGlyphs)
+      {
+	[self growGlyphCaches: [self sizeOfTypesetterGlyphInfo] + 100
+	      fillGlyphInfo: YES];
+	continue;
+      }
+
+    [self willSetLineFragmentRect: lineFragmentRect
+	  forGlyphRange: NSMakeRange(_firstIndexOfCurrentLineFragment, 
+				     _currentGlyphIndex - _firstIndexOfCurrentLineFragment)
+	  usedRect: usedRect];
+    [self breakLineAtIndex: _currentGlyphIndex];
+
+    _firstIndexOfCurrentLineFragment = _currentGlyphIndex + 1;
+    numLines++;
+  } while((numLines <= maxNumLines) && (status));
+
   if (nextGlyph != NULL)
-    *nextGlyph = glyphIndex;
+    *nextGlyph = _firstIndexOfCurrentLineFragment;
+
+  [_gs_horiz_typesetter_lock unlock];
+}
+
+/*
+  This is probably the second method to be called from the outside
+ */
+- (float) baselineOffsetInLayoutManager: (NSLayoutManager *)layoutManager
+                             glyphIndex: (unsigned)glyphIndex
+{
+  return 0.0;
 }
 
 - (void) layoutTab
@@ -206,3 +275,4 @@ static NSLock *_gs_horiz_typesetter_lock;
 }
 
 @end
+

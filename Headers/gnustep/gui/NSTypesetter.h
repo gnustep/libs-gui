@@ -75,6 +75,16 @@ typedef enum
 
 @interface NSSimpleHorizontalTypesetter : NSTypesetter
 {
+  NSTypesetterGlyphInfo *_glyphInfo;
+  unsigned _capacityGlyphInfo;
+  unsigned _sizeGlyphInfo;
+  NSLayoutManager *_currentLayoutManager;
+  NSTextStorage *_currentTextStorage;
+  NSTextContainer *_currentContainer;
+  NSParagraphStyle *_currentParagraphStyle;
+  unsigned _firstIndexOfCurrentLineFragment;
+  
+  unsigned _currentGlyphIndex;
 }
 
 //
