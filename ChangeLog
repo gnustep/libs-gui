@@ -19,6 +19,16 @@
 	Rewrote [drawHashMarksAndLabelsInRect:] to use string drawing and
 	bezier path code instead of direct PS operations.
 
+2002-11-16  Frederic De Jaeger <dejaeger@free.fr>
+
+	* Source/NSOpenGLPixelFormat.m, Source/NSOpenGLContext.m,
+	  Source/NSOpenGLView.m, Headers/AppKit/NSOpenGL.h,
+	  Headers/AppKit/NSOpenGLView.h: New files.
+	* Source/Makefile: Updated accordingly.
+	* Headers/AppKit/GSDisplayServer.h (glContextClass, 
+	glPixelFormatClass): New methods.
+	* Source/GSDisplayServer.m: Implement.
+
 2002-11-15  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSColor -encodeWithModelArchiver:]): Encode
