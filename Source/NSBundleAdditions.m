@@ -134,6 +134,16 @@
   ASSIGN(_src, anObject);
 }
 
+- (NSString *)description
+{
+  NSString *desc = [NSString stringWithFormat: @"<%@ src=%@ dst=%@ label=%@>",
+			     [super description],
+			     [self source],
+			     [self destination],
+			     [self label]];
+  return desc;
+}
+
 @end
 
 @implementation	NSNibControlConnector

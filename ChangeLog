@@ -1,3 +1,15 @@
+2005-02-05 15:42 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSDataLinkManager.h: Moved NSDataLinkManager delegate
+	methods to an informal protocol NSDataLinkManagerDelegate.
+	* Source/Functions.m: Implemented NSFrameLinkRect() to draw the frames
+	around source and destination links.
+	* Source/NSBundleAdditions.m: Modified -description method in 
+	NSNibConnector to display the source, destination and label for the
+	connection.  This makes it easier to debug.
+	* Source/NSDataLink.m: Implemented a few private methods.
+	* Source/NSDataLinkManager.m: Implemented -breakAllLinks.
+
 2005-02-03 10:54  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSImage.m (min, max): Rename to ...

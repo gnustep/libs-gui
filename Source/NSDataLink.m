@@ -27,6 +27,27 @@
 #include "AppKit/NSDataLink.h"
 #include "AppKit/NSDataLinkManager.h"
 
+@interface NSDataLink (Private)
+- (void) setLastUpdateTime: (NSDate *)date;
+- (void) setSourceFilename: (NSString *)src;
+- (void) setDestinationFilename: (NSString *)src;
+@end
+
+@implementation NSDataLink (Private)
+- (void) setLastUpdateTime: (NSDate *)date
+{
+  ASSIGN(lastUpdateTime, date);
+}
+- (void) setSourceFilename: (NSString *)src
+{
+  ASSIGN(sourceFilename,src);
+}
+- (void) setDestinationFilename: (NSString *)dst
+{
+  ASSIGN(destinationFilename, dst);
+}
+@end
+
 @implementation NSDataLink
 
 //

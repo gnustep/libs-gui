@@ -101,10 +101,13 @@
 - (NSDataLink *)destinationLinkWithSelection:(NSSelection *)destSel;
 - (void)setLinkOutlinesVisible:(BOOL)flag;
 - (NSEnumerator *)sourceLinkEnumerator;
+@end
+
 
 //
 // Methods Implemented by the Delegate
 //
+@interface NSObject (NSDataLinkManagerDelegate)
 - (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
 		      at:(NSSelection *)selection
 	cheapCopyAllowed:(BOOL)flag;
@@ -126,14 +129,8 @@
 			 at:(NSSelection *)selection;
 - (BOOL)showSelection:(NSSelection *)selection;
 - (NSWindow *)windowForSelection:(NSSelection *)selection;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
-
 @end
+
 
 //
 // Draw a Distinctive Outline around Linked Data

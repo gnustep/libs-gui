@@ -24,7 +24,10 @@
 */ 
 
 #include "config.h"
-#include "AppKit/NSDataLinkManager.h"
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
+#include <AppKit/NSDataLinkManager.h>
+#include <AppKit/NSDataLink.h>
 
 @implementation NSDataLinkManager
 
@@ -99,7 +102,19 @@
 
 - (void)breakAllLinks
 {
-  NSLog(@"Break all links.");
+  NSEnumerator *en = [self destinationLinkEnumerator];
+  id obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      [obj break];
+    }
+
+  en = [self sourceLinkEnumerator];
+  while((obj = [en nextObject]) != nil)
+    {
+      [obj break];
+    }
 }
 
 - (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard
@@ -181,12 +196,23 @@
 
 - (NSEnumerator *)destinationLinkEnumerator
 {
-  return nil;
+  return [destinationLinks keyEnumerator];
 }
 
 - (NSDataLink *)destinationLinkWithSelection:(NSSelection *)destSel
 {
-  return nil;
+  NSEnumerator *en = [self destinationLinkEnumerator];
+  id obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      if([obj destinationSelection] == destSel)
+	{
+	  break;
+	}
+    }
+
+  return obj;
 }
 
 - (void)setLinkOutlinesVisible:(BOOL)flag
@@ -196,77 +222,7 @@
 
 - (NSEnumerator *)sourceLinkEnumerator
 {
-  return nil;
-}
-
-//
-// Methods Implemented by the Delegate
-//
-- (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
-		      at:(NSSelection *)selection
-cheapCopyAllowed:(BOOL)flag
-{
-  return NO;
-}
-
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-	   didBreakLink:(NSDataLink *)link
-{
-}
-
-- (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
-  isUpdateNeededForLink:(NSDataLink *)link
-{
-  return NO;
-}
-
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-      startTrackingLink:(NSDataLink *)link
-{
-}
-
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-       stopTrackingLink:(NSDataLink *)link
-{
-}
-
-- (void)dataLinkManagerCloseDocument:(NSDataLinkManager *)sender
-{
-}
-
-- (void)dataLinkManagerDidEditLinks:(NSDataLinkManager *)sender
-{
-}
-
-- (void)dataLinkManagerRedrawLinkOutlines:(NSDataLinkManager *)sender
-{
-}
-
-- (BOOL)dataLinkManagerTracksLinksIndividually:(NSDataLinkManager *)sender
-{
-  return NO;
-}
-
-- (BOOL)importFile:(NSString *)filename
-		at:(NSSelection *)selection
-{
-  return NO;
-}
-
-- (BOOL)pasteFromPasteboard:(NSPasteboard *)pasteboard 
-			 at:(NSSelection *)selection
-{
-  return NO;
-}
-
-- (BOOL)showSelection:(NSSelection *)selection
-{
-  return NO;
-}
-
-- (NSWindow *)windowForSelection:(NSSelection *)selection
-{
-  return nil;
+  return [sourceLinks keyEnumerator];
 }
 
 //

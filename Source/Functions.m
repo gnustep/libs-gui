@@ -776,17 +776,25 @@ NSDrawWindowBackground(NSRect aRect)
   NSRectFill(aRect);  
 }
 
-void 
-NSFrameLinkRect(NSRect aRect, BOOL isDestination)
-{
-// TODO
-}
-
 float 
 NSLinkFrameThickness(void)
 {
-// TODO
   return 1.5;
+}
+
+void 
+NSFrameLinkRect(NSRect aRect, BOOL isDestination)
+{
+  if (isDestination)
+    {
+      [[NSColor redColor] set];
+    }
+  else
+    {
+      [[NSColor greenColor] set];
+    }
+
+  NSFrameRectWithWidth(aRect, NSLinkFrameThickness());
 }
 
 void 
