@@ -123,6 +123,7 @@
 - (void)selectCell:(NSCell *)aCell;
 - (void)updateCell:(NSCell *)aCell;
 - (void)updateCellInside:(NSCell *)aCell;
+- (void)performClick:(id)sender;
 
 //
 // Target and Action 
