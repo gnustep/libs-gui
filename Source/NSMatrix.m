@@ -15,6 +15,8 @@
    Date: November 1999
    Implementation of Editing: Nicola Pero <n.pero@mi.flashnet.it>
    Date: November 1999
+   Modified: Mirko Viviani <mirko.viviani@rccr.cremona.it>
+   Date: March 2001
 
    This file is part of the GNUstep GUI Library.
 
@@ -210,6 +212,7 @@ static SEL getSel;
   [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
   [self setSelectionByRect: YES];
   [self setAutosizesCells: YES];
+  _dottedRow = _dottedColumn = -1;
   if (_mode == NSRadioModeMatrix && _numRows > 0 && _numCols > 0)
     {
       [self selectCellAtRow: 0 column: 0];
@@ -437,6 +440,9 @@ static SEL getSel;
       _selectedCells[row] = olds;
       if (_selectedCell && (_selectedRow >= row))
 	_selectedRow++;
+
+      if (_dottedRow != -1 && _dottedRow >= row)
+	_dottedRow++;
     }
 
   /*
@@ -452,7 +458,8 @@ static SEL getSel;
 	}
     }
 
-  if (_mode == NSRadioModeMatrix && !_allowsEmptySelection && _selectedCell == nil)
+  if (_mode == NSRadioModeMatrix && !_allowsEmptySelection
+      && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -546,7 +553,14 @@ static SEL getSel;
       if (col == _selectedColumn)
 	{
 	  _selectedCell = nil;
-	  [self selectCellAtRow: 0 column: 0];
+	  [self selectCellAtRow: _selectedRow column: 0];
+	}
+      if (col == _dottedColumn)
+	{
+	  if (_numCols && [_cells[_dottedRow][0] acceptsFirstResponder])
+	    _dottedColumn = 0;
+	  else
+	    _dottedRow = _dottedColumn = -1;
 	}
     }
   else
@@ -585,7 +599,14 @@ static SEL getSel;
       if (row == _selectedRow)
 	{
 	  _selectedCell = nil;
-	  [self selectCellAtRow: 0 column: 0];
+	  [self selectCellAtRow: 0 column: _selectedColumn];
+	}
+      if (row == _dottedRow)
+	{
+	  if (_numRows && [_cells[0][_dottedColumn] acceptsFirstResponder])
+	    _dottedRow = 0;
+	  else
+	    _dottedRow = _dottedColumn = -1;
 	}
     }
   else
@@ -782,10 +803,22 @@ static SEL getSel;
     {
       if (value)
 	{
+	  if (_selectedRow > -1 && _selectedColumn > -1)
+	    {
+	      _selectedCells[_selectedRow][_selectedColumn] = NO;
+	    }
+
 	  _selectedCell = aCell;
 	  _selectedRow = row;
 	  _selectedColumn = column;
-	  [_selectedCell setState: 1];
+
+	  if ([_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
+	    {
+	      _dottedRow = row;
+	      _dottedColumn = column;
+	    }
+
+	  [_selectedCell setState: value];
 	  _selectedCells[row][column] = YES;
 	}
       else if (_allowsEmptySelection)
@@ -861,46 +894,37 @@ static SEL getSel;
 {
   unsigned	i, j;
 
+  _selectedCell = nil;
+  _selectedRow = -1;
+  _selectedColumn = -1;
+
   for (i = 0; i < _numRows; i++)
     {
       for (j = 0; j < _numCols; j++)
 	{
-	  [_cells[i][j] setState: 1];
-	  _selectedCells[i][j] = YES;
-	}
-    }
+	  if ([_cells[i][j] isEnabled] == YES
+	      && [_cells[i][j] isEditable] == NO)
+	    {
+	      _selectedCell = _cells[i][j];
+	      [_selectedCell setState: 1];
+	      _selectedCells[i][j] = YES;
 
-  /*
-   * Make the selected cell the last cell
-   */
-  if ((_numRows >0) && (_numCols > 0))
-    {
-      _selectedCell = [self cellAtRow: _numRows - 1  column: _numCols - 1];
-      _selectedRow = _numRows - 1;
-      _selectedColumn = _numCols - 1;
-    }
-  else
-    {
-      _selectedCell = nil;
-      _selectedRow = -1;
-      _selectedColumn = -1;
+	      _selectedRow = i;
+	      _selectedColumn = j;
+	    }
+	  else
+	    {
+	      _selectedCells[i][j] = NO;
+	      [_cells[i][j] setShowsFirstResponder: NO];
+	    }
+	}
     }
 
   [self setNeedsDisplay: YES];
 }
 
-- (void) selectCellAtRow: (int)row column: (int)column
+- (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
 {
-  NSCell	*aCell;
-
-  if ((row == -1) || (column == -1))
-    {
-      [self deselectAllCells];
-      return;
-    }
-
-  aCell = [self cellAtRow: row column: column];
-
   /*
    * We always deselect the current selection unless the new selection
    * is the same. (in NSRadioModeMatrix)
@@ -916,10 +940,25 @@ static SEL getSel;
 
   if (aCell != nil)
     {
+      if (_selectedCell && _selectedCell != aCell)
+	{
+	  [_selectedCell setShowsFirstResponder: NO];
+	  [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
+					     column: _selectedColumn]];
+	}
+
       _selectedCell = aCell;
       _selectedRow = row;
       _selectedColumn = column;
       _selectedCells[row][column] = YES;
+
+      if ([_cells[row][column] acceptsFirstResponder])
+	{
+	  _dottedRow = row;
+	  _dottedColumn = column;
+	  [_selectedCell setShowsFirstResponder: YES];
+	}
+
       [_selectedCell setState: 1];
 
       // Note: we select the cell iff it is 'selectable', not 'editable' 
@@ -930,6 +969,30 @@ static SEL getSel;
 
       [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
     }
+}
+
+- (void) selectCell: (NSCell *)aCell
+{
+  int row, column;
+
+  if ([self getRow: &row column: &column ofCell: aCell] == YES)
+    [self _selectCell: aCell atRow: row column: column];
+}
+
+- (void) selectCellAtRow: (int)row column: (int)column
+{
+  NSCell	*aCell;
+
+  if ((row == -1) || (column == -1))
+    {
+      [self deselectAllCells];
+      return;
+    }
+
+  aCell = [self cellAtRow: row column: column];
+
+  if (aCell)
+    [self _selectCell:aCell atRow: row column: column];
 }
 
 - (BOOL) selectCellWithTag: (int)anInt
@@ -946,7 +1009,7 @@ static SEL getSel;
 	  aCell = _cells[i][j];
 	  if ([aCell tag] == anInt)
 	    {
-	      [self selectCellAtRow: i column: j];
+	      [self _selectCell: aCell atRow: i column: j];
 	      return YES;
 	    }
 	}
@@ -1268,9 +1331,24 @@ static SEL getSel;
       if ([t resignFirstResponder] == NO)
 	return nil;
 
+    if (_selectedCell && _selectedCell != _cells[row][column])
+      {
+	[_selectedCell setShowsFirstResponder: NO];
+	[self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
+					   column: _selectedColumn]];
+      }
+
     _selectedCell = _cells[row][column];
     _selectedRow = row;
     _selectedColumn = column;
+
+    if ([_cells[row][column] acceptsFirstResponder])
+      {
+	_dottedRow = row;
+	_dottedColumn = column;
+	[_selectedCell setShowsFirstResponder: YES];
+      }
+
     /* See comment in NSTextField */
     length = [[_selectedCell stringValue] length];
     _textObject = [_selectedCell setUpFieldEditorAttributes: t];
@@ -1412,7 +1490,11 @@ static SEL getSel;
       switch ([(NSNumber *)textMovement intValue])
 	{
 	case NSReturnTextMovement:
-	  [self sendAction];
+	  if ([self sendAction] == NO)
+	    {
+	      if ([self performKeyEquivalent: [_window currentEvent]] == NO)
+		[self selectText: self];
+	    }
 	  break;
 	case NSTabTextMovement:
 	  if (_tabKeyTraversesCells)
@@ -1422,6 +1504,17 @@ static SEL getSel;
 		break;
 	    }
 	  [_window selectKeyViewFollowingView: self];
+
+	  if ([_window firstResponder] == _window)
+	    {
+	      if (_tabKeyTraversesCells)
+		{
+		  if([self _selectNextSelectableCellAfterRow: -1
+			   column: -1])
+		    break;
+		}
+	      [self selectText: self];
+	    }
 	  break;
 	case NSBacktabTextMovement:
 	  if (_tabKeyTraversesCells)
@@ -1431,6 +1524,17 @@ static SEL getSel;
 		break;
 	    }
 	  [_window selectKeyViewPrecedingView: self];
+
+	  if ([_window firstResponder] == _window)
+	    {
+	      if (_tabKeyTraversesCells)
+		{
+		  if([self _selectPreviousSelectableCellBeforeRow: _numRows
+			   column: _numCols])
+		    break;
+		}
+	      [self selectText: self];
+	    }
 	  break;
 	}
     }
@@ -1595,12 +1699,23 @@ static SEL getSel;
   if (col1 < 0)
     col1 = 0;
 
+  if (_dottedRow != -1 && _dottedColumn != -1
+      && [_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
+    {
+      [_cells[_dottedRow][_dottedColumn]
+	     setShowsFirstResponder: ([_window isKeyWindow]
+				      && [_window firstResponder] == self)];
+    }
+
   /* Draw the cells within the drawing rectangle. */
   for (i = row1; i <= row2 && i < _numRows; i++)
     for (j = col1; j <= col2 && j < _numCols; j++)
       {
 	[self drawCellAtRow: i column: j];
       }
+
+  if (_dottedRow != -1 && _dottedColumn != -1)
+    [_cells[_dottedRow][_dottedColumn] setShowsFirstResponder: NO];
 }
 
 - (BOOL) isOpaque
@@ -1931,40 +2046,48 @@ static SEL getSel;
 	   column: &column
 	   forPoint: lastLocation])
     {
-      if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
+      if ([_cells[row][column] isEnabled])
 	{
-	  [_selectedCell setState: NSOffState];
-	  [self drawCellAtRow: _selectedRow column: _selectedColumn];
-	  [_window flushWindow];
-	  _selectedCells[_selectedRow][_selectedColumn] = NO;
-	  _selectedCell = nil;
-	  _selectedRow = _selectedColumn = -1;
-	}
-
-      if ([_cells[row][column] isSelectable])
-	{
-	  NSText* t = [_window fieldEditor: YES forObject: self];
-
-	  if ([t superview] != nil)
+	  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
 	    {
-	      if ([t resignFirstResponder] == NO)
-		{
-		  if ([_window makeFirstResponder: _window] == NO)
-		    return;
-		}
+	      [_selectedCell setState: NSOffState];
+	      [self drawCellAtRow: _selectedRow column: _selectedColumn];
+	      [_window flushWindow];
+	      _selectedCells[_selectedRow][_selectedColumn] = NO;
+	      _selectedCell = nil;
+	      _selectedRow = _selectedColumn = -1;
 	    }
-	  // During editing, the selected cell is the cell being edited
-	  _selectedCell = _cells[row][column];
-	  _selectedRow = row;
-	  _selectedColumn = column;
-	  _textObject = [_selectedCell setUpFieldEditorAttributes: t];
-	  [_selectedCell editWithFrame: [self cellFrameAtRow: row
-					      column: column]
-			inView: self
-			editor: _textObject
-			delegate: self
-			event: theEvent];
-	  return;
+
+	  if ([_cells[row][column] isSelectable])
+	    {
+	      NSText* t = [_window fieldEditor: YES forObject: self];
+
+	      if ([t superview] != nil)
+		{
+		  if ([t resignFirstResponder] == NO)
+		    {
+		      if ([_window makeFirstResponder: _window] == NO)
+			return;
+		    }
+		}
+	      // During editing, the selected cell is the cell being edited
+	      _selectedCell = _cells[row][column];
+	      _selectedRow = row;
+	      _selectedColumn = column;
+	      if ([_cells[row][column] acceptsFirstResponder])
+		{
+		  _dottedRow = row;
+		  _dottedColumn = column;
+		}
+	      _textObject = [_selectedCell setUpFieldEditorAttributes: t];
+	      [_selectedCell editWithFrame: [self cellFrameAtRow: row
+						  column: column]
+			     inView: self
+			     editor: _textObject
+			     delegate: self
+			     event: theEvent];
+	      return;
+	    }
 	}
     }
 
@@ -2008,7 +2131,7 @@ static SEL getSel;
 	{
 	  aCell = [self cellAtRow: row column: column];
 	  rect = [self cellFrameAtRow: row column: column];
-	  if (aCell != previousCell)
+	  if (aCell != previousCell && [aCell isEnabled] == YES)
 	    {
 	      switch (_mode)
 		{
@@ -2019,6 +2142,11 @@ static SEL getSel;
 		    _selectedCell = aCell;
 		    _selectedRow = row;
 		    _selectedColumn = column;
+		    if ([_cells[row][column] acceptsFirstResponder])
+		      {
+			_dottedRow = row;
+			_dottedColumn = column;
+		      }
 		    if ([aCell trackMouse: lastEvent
 				   inRect: rect
 				   ofView: self
@@ -2034,6 +2162,11 @@ static SEL getSel;
 		    _selectedCell = aCell;
 		    _selectedRow = row;
 		    _selectedColumn = column;
+		    if ([_cells[row][column] acceptsFirstResponder])
+		      {
+			_dottedRow = row;
+			_dottedColumn = column;
+		      }
 		    [aCell highlight: YES withFrame: rect inView: self];
 		    [_window flushWindow];
 
@@ -2069,6 +2202,11 @@ static SEL getSel;
 		    _selectedCell = aCell;
 		    _selectedRow = row;
 		    _selectedColumn = column;
+		    if ([_cells[row][column] acceptsFirstResponder])
+		      {
+			_dottedRow = row;
+			_dottedColumn = column;
+		      }
 		    [aCell setState: 1];
 		    [aCell highlight: YES withFrame: rect inView: self];
 		    _selectedCells[row][column] = YES;
@@ -2102,6 +2240,12 @@ static SEL getSel;
 			      _selectedRow = row;
 			      _selectedColumn = column;
 
+			      if ([_cells[row][column] acceptsFirstResponder])
+				{
+				  _dottedRow = row;
+				  _dottedColumn = column;
+				}
+
 			      [_selectedCell setState: 1];
 			      [_selectedCell highlight: YES
 					    withFrame: rect
@@ -2121,6 +2265,11 @@ static SEL getSel;
 		      _selectedCell = aCell;
 		      _selectedRow = row;
 		      _selectedColumn = column;
+		      if ([_cells[row][column] acceptsFirstResponder])
+			{
+			  _dottedRow = row;
+			  _dottedColumn = column;
+			}
 		      break;
 		    }
 		}
@@ -2735,6 +2884,39 @@ static SEL getSel;
   return YES;
 }
 
+- (void) _setNeedsDisplayDottedCell
+{
+  if (_dottedRow != -1 && _dottedColumn != -1)
+    {
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: _dottedRow
+					 column: _dottedColumn]];
+    }
+}
+
+- (BOOL) becomeFirstResponder
+{
+  [self _setNeedsDisplayDottedCell];
+
+  return YES;
+}
+
+- (BOOL) resignFirstResponder
+{
+  [self _setNeedsDisplayDottedCell];
+
+  return YES;
+}
+
+- (void) becomeKeyWindow
+{
+  [self _setNeedsDisplayDottedCell];
+}
+
+- (void) resignKeyWindow
+{
+  [self _setNeedsDisplayDottedCell];
+}
+
 - (BOOL) abortEditing
 {
   if (_textObject)
@@ -2984,7 +3166,7 @@ static SEL getSel;
       // First look for cells in the same row
       for (j = column + 1; j < _numCols; j++)
 	{
-	  if ([_cells[row][j] isSelectable])
+	  if ([_cells[row][j] isEnabled] && [_cells[row][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: row
 				    column: j];
@@ -2999,7 +3181,7 @@ static SEL getSel;
     {
       for (j = 0; j < _numCols; j++)
 	{
-	  if ([_cells[i][j] isSelectable])
+	  if ([_cells[i][j] isEnabled] && [_cells[i][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: i
 				    column: j];
@@ -3011,16 +3193,17 @@ static SEL getSel;
     }
   return NO;
 }
+
 -(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
 					column: (int)column
 {
   int i,j;
-  if (row < _numCols)
+  if (row < _numRows)
     {
       // First look for cells in the same row
       for (j = column - 1; j > -1; j--)
 	{
-	  if ([_cells[row][j] isSelectable])
+	  if ([_cells[row][j] isEnabled] && [_cells[row][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: row
 				    column: j];
@@ -3035,7 +3218,7 @@ static SEL getSel;
     {
       for (j = _numCols - 1; j > -1; j--)
 	{
-	  if ([_cells[i][j] isSelectable])
+	  if ([_cells[i][j] isEnabled] && [_cells[i][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: i
 				    column: j];

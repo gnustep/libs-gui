@@ -1,3 +1,103 @@
+2001-03-22  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSButtonCell.m ([NSButtonCell -setCellAttribute:to:]):
+	implemented.
+	([NSButtonCell -cellAttribute:]): implemented.
+
+	* Source/NSPopUpButton.m ([NSPopUpButton -keyDown:]): implemented
+	keyboard selection.
+	([NSPopUpButton -resignFirstResponder]): implemented.
+	([NSPopUpButton -resignKeyWindow]): implemented.
+
+	* Source/NSPopUpButtonCell.m ([NSPopUpButtonCell
+	-drawInteriorWithFrame:inView:]): from -drawWithFrame:inView:
+
+	* Source/NSButton.m ([NSButton -becomeFirstResponder]): set cell first
+	responder.
+	([NSButton -resignFirstResponder]): likewise.
+	([NSButton -becomeKeyWindow]): likewise.
+	([NSButton -resignKeyWindow]): likewise.
+
+	* Source/NSBrowserCell.m ([NSBrowserCell -drawInteriorWithFrame:
+	inView:]): draw correct dotted box.
+
+	* Source/NSBrowser.m ([NSBrowser -becomeFirstResponder]): make first
+	responder the latest column.
+	([NSBrowser -acceptsFirstResponder]): accepts first responder status.
+	([NSBrowser -keyDown:]): handle tabs to select next/previous key view.
+	([NSBrowser -moveRight:]): make browser column the first responder.
+	([NSBrowser -moveUp:]): likewise.
+	([NSBrowser -moveDown:]): likewise.
+	([NSBrowser -moveLeft:]): likewise.
+	([NSBrowser -_unloadFromColumn:]): remove columns from superview and
+	array.
+	([NSBrowser -_remapColumnSubviews:]): set the correct first responder.
+
+	* Source/NSWindow.m ([NSWindow -sendEvent:]): retain/release first
+	responder for keyUp/keyDown events. Discard NSLeftMouseDown for closed
+	windows.
+	([NSWindow -dealloc]): release _originalResponder
+
+	* Source/NSView.m ([NSView -removeSubview:]): remove next responder.
+
+	* Source/NSCell.m ([NSCell -setUpFieldEditorAttributes:]): clear
+	selected range.
+	([NSCell -editWithFrame:inView:editor:delegate:event:]): redisplay
+	textObject after invoking mouseDown:
+	([NSCell -drawInteriorWithFrame:inView:]): draw dotted-line outline
+ 	when first responder.
+	([NSCell -setCellAttribute:to:]): implemented.
+
+	* Source/NSTextView.m ([NSTextView -moveUp:]): don't call
+	_illegalMovement: for the text field editor.
+	([NSTextView -moveDown:]): likewise.
+	([NSTextView -moveLeft:]): likewise.
+	([NSTextView -moveRight:]): likewise.
+
+	* Source/NSTextField.m ([NSTextField -textDidEndEditing:]): fixed
+	return/tab/backtab text movement code.
+
+	* Headers/gnustep/gui/NSGraphics.h: added NSDottedFrameRect prototype.
+
+	* Headers/gnustep/gui/NSMatrix.h: added ivars for dotted frame rect.
+	* Source/NSMatrix.m ([NSMatrix -selectCell:]): implemented.
+	([NSMatrix -_selectCell:atRow:column:]): new method.
+	([NSMatrix -selectCellAtRow:column:]): call _selectCell:atRow:column:
+	([NSMatrix -selectCellWithTag:]): likewise.
+	([NSMatrix -selectAll:]): Do not select disabled or editable cells.
+	([NSMatrix -textDidEndEditing:]): fixed return/tab/backtab text
+	movement code.
+	([NSMatrix -_selectNextSelectableCellAfterRow:column:]): don't select
+	disabled cells.
+	([NSMatrix -_selectPreviousSelectableCellBeforeRow:column:]): likewise.
+	([NSMatrix -_privateFrame:mode:numberOfRows:numberOfColumns:]): set
+	dottedRow and dottedColumn.
+	([NSMatrix -insertRow:withCells:]): likewise.
+	([NSMatrix -removeColumn:]): likewise.
+	([NSMatrix -removeRow:]): likewise.
+	([NSMatrix -mouseDown:]): likewise and discard disabled cells.
+	([NSMatrix -drawRect:]): set shows cell first responder.
+	([NSMatrix -becomeFirstResponder]): draw dotted box for cell.
+	([NSMatrix -resignFirstResponder]): likewise.
+	([NSMatrix -becomeKeyWindow]): likewise.
+	([NSMatrix -resignKeyWindow]): likewise.
+	([NSMatrix -_setNeedsDisplayDottedCell]): likewise.
+	([NSMatrix -selectTextAtRow:column:]): set shows cell first responder.
+	([NSMatrix -setState:atRow:column:]): likewise. Deselect previous
+	selected cell in radio mode.
+
+	* Source/NSSavePanel.m (createRowsForColumn:): use _gsSavePanelCompare:
+	and check extension against _requiredFileType and not "app", "bundle",
+	etc.
+	([NSString -_gsSavePanelCompare:]): filename compare.
+	([NSSavePanel -_initWithoutGModel]): set key view for keyboard
+	interaction.
+	([NSSavePanel -keyDown:]): removed.
+	([NSSavePanel -controlTextDidEndEditing:]): removed.
+
+	* Source/NSOpenPanel.m ([NSOpenPanel -_shouldShowExtension:isDir:]): 
+	added isDir argument.
+
 2001-03-21  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: Change archiving/unarchiving of colors to avoid

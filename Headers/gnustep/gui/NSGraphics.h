@@ -105,6 +105,7 @@ NSRect NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
 			const NSRectEdge *sides, const float *grays, 
 			int count);
 void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+void NSDottedFrameRect(const NSRect aRect);
 void NSFrameRect(const NSRect aRect);
 void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 

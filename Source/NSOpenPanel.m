@@ -62,7 +62,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
 @interface NSOpenPanel (_PrivateMethods)
 - (void) _resetDefaults;
-- (BOOL) _shouldShowExtension: (NSString *)extension;
+- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
 @end
 
 @implementation NSOpenPanel (_PrivateMethods)
@@ -75,16 +75,27 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [self setAllowsMultipleSelection: NO];
   [_okButton setEnabled: YES];
 }
-// NB: Invoked only for files.
-- (BOOL) _shouldShowExtension: (NSString *)extension;
-{
-  if ((_fileTypes) && ([_fileTypes containsObject: extension] == NO))
-    return NO;
-  
-  if (_canChooseFiles == NO)
-    return NO;
 
-  return YES;
+- (BOOL) _shouldShowExtension: (NSString *)extension
+			isDir: (BOOL *)isDir;
+{
+  BOOL found = YES;
+
+  if (_fileTypes)
+    {
+      if ([_fileTypes containsObject: extension] == YES)
+	{
+	  if ([self treatsFilePackagesAsDirectories] == NO)
+	    *isDir = NO;
+	}
+      else
+	found = NO;
+    }
+
+  if (*isDir == YES || (found == YES && _canChooseFiles == YES))
+    return YES;
+
+  return NO;
 }
 
 - (void) _selectTextInColumn: (int)column
@@ -110,7 +121,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	  else
 	    {
 	      [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
-	      [_form selectTextAtIndex:0];
+	      //	      [_form selectTextAtIndex:0];
 	      [_okButton setEnabled:YES];
 	    }
 	}
@@ -118,7 +129,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	{
 	  [_form abortEditing];
 	  [[_form cellAtIndex: 0] setStringValue:nil];
-	  [_form selectTextAtIndex:0];
+	  //	  [_form selectTextAtIndex:0];
 	  [_form setNeedsDisplay:YES];
 	  [_okButton setEnabled:YES];
 	}
@@ -132,7 +143,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	  if([[[_form cellAtIndex: 0] stringValue] length] > 0)
 	    {
 	      [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
-	      [_form selectTextAtIndex:0];
+	      //	      [_form selectTextAtIndex:0];
 	      [_form setNeedsDisplay:YES];
 	    }
 

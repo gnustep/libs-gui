@@ -525,8 +525,8 @@ static NSImage *_pbc_image[2];
  * that is used to draw cells in the menu.
  * This looks like a mess to do in this framework.
  */
-- (void) drawWithFrame: (NSRect)cellFrame
-                inView: (NSView*)view  
+- (void) drawInteriorWithFrame: (NSRect)cellFrame
+			inView: (NSView*)view
 {
   NSSize   size;
   NSPoint  position;
@@ -538,11 +538,19 @@ static NSImage *_pbc_image[2];
 
   [view lockFocus];
 
-  [super drawWithFrame: cellFrame inView: view];
+  //  [super drawWithFrame: cellFrame inView: view];
 
+  cellFrame = [self drawingRectForBounds: cellFrame];
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      cellFrame.origin.x += 3;
+      cellFrame.size.width -= 6;
+      cellFrame.origin.y += 1;
+      cellFrame.size.height -= 2;
+    }
   // Skip 5 points from left side
-  cellFrame.origin.x += 5;
-  cellFrame.size.width -= 5;
+  //  cellFrame.origin.x += 5;
+  //  cellFrame.size.width -= 5;
 
   [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
   
@@ -561,6 +569,16 @@ static NSImage *_pbc_image[2];
   if ([view isFlipped])
     position.y += size.height;
   [anImage  compositeToPoint: position operation: NSCompositeCopy];
+
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      cellFrame.origin.x -= 1;
+      cellFrame.size.width += 2;
+    }
+
+  if (_cell.shows_first_responder
+      && [[view window] firstResponder] == view)
+    NSDottedFrameRect(cellFrame);
 
   [view unlockFocus]; 
 }

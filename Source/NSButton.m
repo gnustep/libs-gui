@@ -323,6 +323,34 @@ id _nsbuttonCellClass = nil;
   return [self isEnabled];
 }
 
+- (BOOL) becomeFirstResponder
+{
+  [_cell setShowsFirstResponder: YES];
+  [self setNeedsDisplay: YES];
+
+  return YES;
+}
+
+- (BOOL) resignFirstResponder
+{
+  [_cell setShowsFirstResponder: NO];
+  [self setNeedsDisplay: YES];
+
+  return YES;
+}
+
+- (void) becomeKeyWindow
+{
+  [_cell setShowsFirstResponder: YES];
+  [self setNeedsDisplay: YES];
+}
+
+- (void) resignKeyWindow
+{
+  [_cell setShowsFirstResponder: NO];
+  [self setNeedsDisplay: YES];
+}
+
 - (void) keyDown: (NSEvent*)theEvent
 {
   if ([self isEnabled])

@@ -425,6 +425,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   aSubview->_super_view = nil;
   [aSubview viewWillMoveToWindow: nil];
+  [aSubview setNextResponder: nil];
   [_sub_views removeObjectIdenticalTo: aSubview];
   if ([_sub_views count] == 0)
     {

@@ -220,6 +220,7 @@ static NSFont *_leafFont;
   NSImage	*image = nil;
   NSColor	*backColor;
   NSWindow      *cvWin = [controlView window];
+  BOOL          showsFirstResponder;
 
   if (!cvWin)
     return;
@@ -243,6 +244,8 @@ static NSFont *_leafFont;
   
   // Clear the background
   NSRectFill(cellFrame);	
+
+  showsFirstResponder = _cell.shows_first_responder;
 
   // Draw the branch image if there is one
   if (image) 
@@ -290,8 +293,15 @@ static NSFont *_leafFont;
   else
     {
       // Draw image, or text
+      _cell.shows_first_responder = NO;
+
       [super drawInteriorWithFrame: title_rect inView: controlView];
     }
+
+  if (showsFirstResponder == YES)
+    NSDottedFrameRect(cellFrame);
+
+  _cell.shows_first_responder = showsFirstResponder;
 
   [controlView unlockFocus];
 }

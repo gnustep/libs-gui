@@ -2264,10 +2264,7 @@ afterString in order over charRange. */
   unsigned newLocation;
 
   if (_tf.is_field_editor)
-    {
-      [self _illegalMovement: NSUpTextMovement];
-      return;
-    }
+    return;
   
   /* Do nothing if we are at beginning of text */
   if (_selected_range.location == 0)
@@ -2303,10 +2300,7 @@ afterString in order over charRange. */
   unsigned newLocation;
 
   if (_tf.is_field_editor)
-    {
-      [self _illegalMovement: NSDownTextMovement];
-      return;
-    }
+    return;
 
   /* Do nothing if we are at end of text */
   if (_selected_range.location == [_textStorage length])
@@ -2341,13 +2335,7 @@ afterString in order over charRange. */
 
   /* Do nothing if we are at beginning of text with no selection */
   if (_selected_range.location == 0 && _selected_range.length == 0)
-    { 
-      if (_tf.is_field_editor)
-        {
-	  [self _illegalMovement: NSLeftTextMovement];
-	}
-      return;
-    }
+    return;
 
   if (_selected_range.location == 0)
     {
@@ -2368,13 +2356,7 @@ afterString in order over charRange. */
 
   /* Do nothing if we are at end of text */
   if (_selected_range.location == length)
-    { 
-      if (_tf.is_field_editor)
-        {
-	  [self _illegalMovement: NSRightTextMovement];
-	}
-      return;
-    }
+    return;
 
   newLocation = MIN (NSMaxRange (_selected_range) + 1, length);
 

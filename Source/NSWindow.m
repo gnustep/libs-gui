@@ -555,6 +555,7 @@ static NSMapTable* windowmaps = NULL;
   TEST_RELEASE(_windowTitle);
   TEST_RELEASE(_rectsBeingDrawn);
   TEST_RELEASE(_initialFirstResponder);
+  TEST_RELEASE(_originalResponder);
   TEST_RELEASE(_defaultButtonCell);
 
   /*
@@ -2440,24 +2441,27 @@ resetCursorRectsForView(NSView *theView)
 	    {
 	      [NSApp activateIgnoringOtherApps: YES];
 	    }
-	  if (_f.is_key == NO)
+	  if (_f.has_closed == NO)
 	    {
-	      [self makeKeyAndOrderFront: self];
-	    }
-	  v = [_contentView hitTest: [theEvent locationInWindow]];
-	  if (_firstResponder != v)
-	    {
-	      [self makeFirstResponder: v];
-	    }
-	  if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
-	    {
-	      if ([NSHelpManager isContextHelpModeActive])
+	      if (_f.is_key == NO)
 		{
-		  [v helpRequested: theEvent];
+		  [self makeKeyAndOrderFront: self];
 		}
-	      else
+	      v = [_contentView hitTest: [theEvent locationInWindow]];
+	      if (_firstResponder != v)
 		{
-		  [v mouseDown: theEvent];
+		  [self makeFirstResponder: v];
+		}
+	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+		{
+		  if ([NSHelpManager isContextHelpModeActive])
+		    {
+		      [v helpRequested: theEvent];
+		    }
+		  else
+		    {
+		      [v mouseDown: theEvent];
+		    }
 		}
 	    }
 	  _lastPoint = [theEvent locationInWindow];
@@ -2554,7 +2558,7 @@ resetCursorRectsForView(NSView *theView)
 	 * Save the first responder so that the key up goes to it and not a
 	 * possible new first responder.
 	 */
-	_originalResponder = _firstResponder;
+	ASSIGN(_originalResponder, _firstResponder);
 	[_firstResponder keyDown: theEvent];
 	break;
 
@@ -2564,6 +2568,7 @@ resetCursorRectsForView(NSView *theView)
 	   */
 	  if (_originalResponder)
 	    [_originalResponder keyUp: theEvent];
+	  DESTROY(_originalResponder);
 	  break;
 
       case NSFlagsChanged:				  // Flags changed

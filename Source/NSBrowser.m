@@ -49,6 +49,7 @@
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSWindow.h>
 
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
@@ -767,7 +768,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Create a scrollview
   sc = [[NSScrollView alloc]
-	   initWithFrame: rect];
+	 initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
   [bc setColumnScrollView: sc];
@@ -778,6 +779,28 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   RELEASE(bc);
 
   [self tile];
+}
+
+- (BOOL) acceptsFirstResponder
+{
+  return YES;
+}
+
+- (BOOL) becomeFirstResponder
+{
+  NSMatrix *matrix;
+  int selectedColumn;
+
+  selectedColumn = [self selectedColumn];
+  if (selectedColumn == -1)
+    matrix = [self matrixInColumn: 0];
+  else
+    matrix = [self matrixInColumn: selectedColumn];
+
+  if (matrix)
+    [_window makeFirstResponder: matrix];
+
+  return YES;
 }
 
 // -------------------
@@ -2092,7 +2115,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   if ([sender class] != _browserMatrixClass)
     return;
-  
+
   column = [self columnOfMatrix: sender];
   // If the matrix isn't ours then just return
   if (column == -1)
@@ -2312,7 +2335,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
           [NSStringFromRect(rect) cString]);
 #endif
 
-  [super initWithFrame: rect];
+  self = [super initWithFrame: rect];
 
   // Class setting
   _browserCellClass = [NSBrowser cellClass];
@@ -2518,7 +2541,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (void)moveUp:(id)sender
 {
-  if(_acceptsArrowKeys == YES)
+  if (_acceptsArrowKeys == YES)
     {
       NSArray       *cells;
       NSMatrix      *matrix;
@@ -2527,29 +2550,30 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
 
       selectedColumn = [self selectedColumn];
-      if(selectedColumn == -1)
+      if (selectedColumn == -1)
 	{
-	  matrix = [self matrixInColumn:0];
+	  matrix = [self matrixInColumn: 0];
 	  cells = [matrix cells];
 	  numberOfRows = [cells count];
 	  oldSelectedRow = selectedRow = numberOfRows - 1;
 	}
       else
 	{
-	  matrix = [self matrixInColumn:selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  cells = [matrix cells];
 	  numberOfRows = [cells count];
 	  oldSelectedRow = selectedRow = [matrix selectedRow];
 	}
 
-      while(1)
+      while (1)
 	{
-	  if(selectedColumn == -1)
+	  if (selectedColumn == -1)
 	    {
-	      if(numberOfRows)
+	      if (numberOfRows)
 		{
-		  [matrix selectCellAtRow:selectedRow column:0];
-		  [self doClick:matrix];
+		  [matrix selectCellAtRow: selectedRow column: 0];
+		  [_window makeFirstResponder: matrix];
+		  [self doClick: matrix];
 		  selectedColumn = 0;
 		}
 	      else
@@ -2557,7 +2581,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	    }
 	  else
 	    {
-	      if(!selectedRow)
+	      if (!selectedRow)
 		{
 		  numberOfRows = [cells count];
 		  if(numberOfRows <= 1)
@@ -2570,25 +2594,26 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	      selectedRow--;
 
 	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow:selectedRow column:0];
-	      [self doClick:matrix];
+	      [matrix selectCellAtRow: selectedRow column: 0];
+	      [_window makeFirstResponder: matrix];
+	      [self doClick: matrix];
 	    }
 
 	  selectedCell = [matrix selectedCell];
 
-	  if(selectedCell ||
-	     (firstPass == NO && selectedRow == oldSelectedRow))
+	  if (selectedCell ||
+	      (firstPass == NO && selectedRow == oldSelectedRow))
 	    break;
 	}
 
-      if(_sendsActionOnArrowKeys == YES)
-	[super sendAction:_action to:_target];
+      if (_sendsActionOnArrowKeys == YES)
+	[super sendAction: _action to: _target];
     }
 }
 
 - (void)moveDown:(id)sender
 {
-  if(_acceptsArrowKeys)
+  if (_acceptsArrowKeys)
     {
       NSArray       *cells;
       NSMatrix      *matrix;
@@ -2597,28 +2622,29 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
 
       selectedColumn = [self selectedColumn];
-      if(selectedColumn == -1)
+      if (selectedColumn == -1)
 	{
-	  matrix = [self matrixInColumn:0];
+	  matrix = [self matrixInColumn: 0];
 	  oldSelectedRow = selectedRow = 0;
 	}
       else
 	{
-	  matrix = [self matrixInColumn:selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  oldSelectedRow = selectedRow = [matrix selectedRow];
 	}
 
       cells = [matrix cells];
       numberOfRows = [cells count];
 
-      while(1)
+      while (1)
 	{
-	  if(selectedColumn == -1)
+	  if (selectedColumn == -1)
 	    {
-	      if(numberOfRows)
+	      if (numberOfRows)
 		{
-		  [matrix selectCellAtRow:0 column:0];
-		  [self doClick:matrix];
+		  [matrix selectCellAtRow: 0 column: 0];
+		  [_window makeFirstResponder: matrix];
+		  [self doClick: matrix];
 		  selectedColumn = 0;
 		}
 	      else
@@ -2628,9 +2654,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	    {
 	      selectedRow++;
 
-	      if(selectedRow >= numberOfRows)
+	      if (selectedRow >= numberOfRows)
 		{
-		  if(numberOfRows <= 1)
+		  if (numberOfRows <= 1)
 		    return;
 
 		  selectedRow = 0;
@@ -2638,86 +2664,92 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 		}
 
 	      [matrix deselectAllCells];
-	      [matrix selectCellAtRow:selectedRow column:0];
-	      [self doClick:matrix];
+	      [matrix selectCellAtRow: selectedRow column: 0];
+	      [_window makeFirstResponder: matrix];
+	      [self doClick: matrix];
 	    }
 
 	  selectedCell = [matrix selectedCell];
 
-	  if(selectedCell ||
-	     (firstPass == NO && selectedRow == oldSelectedRow))
+	  if (selectedCell ||
+	      (firstPass == NO && selectedRow == oldSelectedRow))
 	    break;
 	}
 
-      if(_sendsActionOnArrowKeys == YES)
-	[super sendAction:_action to:_target];
+      if (_sendsActionOnArrowKeys == YES)
+	[super sendAction: _action to: _target];
     }
 }
 
 - (void)moveLeft:(id)sender
 {
-  if(_acceptsArrowKeys)
+  if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
       NSCell   *selectedCell;
       int       selectedRow, selectedColumn;
 
       selectedColumn = [self selectedColumn];
-      if(selectedColumn >= 0)
+      if (selectedColumn >= 0)
 	{
-	  matrix = [self matrixInColumn:selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  selectedCell = [matrix selectedCell];
 	  selectedRow = [matrix selectedRow];
 
 	  [matrix deselectAllCells];
 
 	  if(selectedColumn+1 <= [self lastColumn])
-	    [self setLastColumn:selectedColumn];
+	    [self setLastColumn: selectedColumn];
 
-	  if(_sendsActionOnArrowKeys == YES)
-	    [super sendAction:_action to:_target];
+	  matrix = [self matrixInColumn: [self selectedColumn]];
+	  [_window makeFirstResponder: matrix];
+
+	  if (_sendsActionOnArrowKeys == YES)
+	    [super sendAction: _action to: _target];
 	}
     }
 }
 
 - (void)moveRight:(id)sender
 {
-  if(_acceptsArrowKeys)
+  if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
       BOOL      selectFirstRow = NO;
       int       selectedColumn;
 
       selectedColumn = [self selectedColumn];
-      if(selectedColumn == -1)
+      if (selectedColumn == -1)
 	{
-	  matrix = [self matrixInColumn:0];
+	  matrix = [self matrixInColumn: 0];
 
-	  if([[matrix cells] count])
+	  if ([[matrix cells] count])
 	    {
-	      [matrix selectCellAtRow:0 column:0];
-	      [self doClick:matrix];
+	      [matrix selectCellAtRow: 0 column: 0];
+	      [_window makeFirstResponder: matrix];
+	      [self doClick: matrix];
 	      selectedColumn = 0;
 	    }
 	}
       else
 	{
-	  matrix = [self matrixInColumn:selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  selectFirstRow = YES;
 	}
 
       if(selectFirstRow == YES)
 	{
-	  matrix = [self matrixInColumn:[self lastColumn]];
-	  if([[matrix cells] count])
+	  matrix = [self matrixInColumn: [self lastColumn]];
+	  if ([[matrix cells] count])
 	    {
-	      [matrix selectCellAtRow:0 column:0];
-	      [self doClick:matrix];
+	      [matrix selectCellAtRow: 0 column: 0];
+	      [_window makeFirstResponder: matrix];
+	      [self doClick: matrix];
 	    }
 	}
 
-      if(_sendsActionOnArrowKeys == YES)
-	[super sendAction:_action to:_target];
+      if (_sendsActionOnArrowKeys == YES)
+	[super sendAction: _action to: _target];
     }
 }
 
@@ -2731,7 +2763,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       character = [characters characterAtIndex: 0];
     }
 
-  if(_acceptsArrowKeys)
+  if (_acceptsArrowKeys)
     {
       switch (character)
 	{
@@ -2747,6 +2779,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	case NSRightArrowFunctionKey:
 	  [self moveRight:self];
 	  return;
+	case NSTabCharacter:
+	  {
+	    if ([theEvent modifierFlags] & NSShiftKeyMask)
+	      [_window selectKeyViewPrecedingView: self];
+	    else
+	      [_window selectKeyViewFollowingView: self];
+	  }
+	  break;
 	}
     }
 
@@ -2913,20 +2953,25 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
   id bc, sc;
   int i, count;
+  id firstResponder = nil;
+  BOOL setFirstResponder = NO;
 
 #if defined NSBTRACE__remapColumnSubviews || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)_remapColumnSubviews: %d\n", fromFirst);
 #endif
-
   // Removes all column subviews.
   count = [_browserColumns count];
   for (i = 0; i < count; i++)
     {
       bc = [_browserColumns objectAtIndex: i];
       sc = [bc columnScrollView];
-      [sc removeFromSuperviewWithoutNeedingDisplay];
+
+      if (!firstResponder && [bc columnMatrix] == [_window firstResponder])
+	firstResponder = [bc columnMatrix];
+      if (sc)
+	[sc removeFromSuperviewWithoutNeedingDisplay];
     }
-  
+
   if (_firstVisibleColumn > _lastVisibleColumn)
     return;
 
@@ -2939,7 +2984,18 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  bc = [_browserColumns objectAtIndex: i];
 	  sc = [bc columnScrollView];
 	  [self addSubview: sc];
+
+	  if ([bc columnMatrix] == firstResponder)
+	    {
+	      [_window makeFirstResponder: firstResponder];
+	      setFirstResponder = YES;
+	    }
 	}
+
+      if (firstResponder && setFirstResponder == NO)
+	[_window makeFirstResponder:
+		   [[_browserColumns objectAtIndex: _firstVisibleColumn]
+		     columnMatrix]];
     }
   else
     {
@@ -2948,7 +3004,18 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  bc = [_browserColumns objectAtIndex: i];
 	  sc = [bc columnScrollView];
 	  [self addSubview: sc];
+
+	  if ([bc columnMatrix] == firstResponder)
+	    {
+	      [_window makeFirstResponder: firstResponder];
+	      setFirstResponder = YES;
+	    }
 	}
+
+      if (firstResponder && setFirstResponder == NO)
+	[_window makeFirstResponder:
+		   [[_browserColumns objectAtIndex: _lastVisibleColumn]
+		     columnMatrix]];
     }
 }
 
@@ -2966,8 +3033,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)_performLoadOfColumn: %d\n", column);
 #endif
 
-  if (!(bc = [_browserColumns objectAtIndex: column]))
-    return;
+  bc = [_browserColumns objectAtIndex: column];
 
   if (!(sc = [bc columnScrollView]))
     return;
@@ -3072,19 +3138,22 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   count = [_browserColumns count];
   for (i = column; i < count; ++i)
     {
-      if (!(bc = [_browserColumns objectAtIndex: i]))
-	{
-	  continue;
-	}
+      bc = [_browserColumns objectAtIndex: i];
+      sc = [bc columnScrollView];
+
       if ([bc isLoaded])
 	{
-	  if (!(sc = [bc columnScrollView]))
-	    continue;
 	  // Make the column appear empty by removing the matrix
-	  [sc setDocumentView: nil];
-      	  [sc setNeedsDisplay: YES];
+	  if (sc)
+	    {
+	      [sc setDocumentView: nil];
+	      [sc setNeedsDisplay: YES];
+	    }
 	  [bc setIsLoaded: NO];
 	}
+
+      if (!_reusesColumns && i >= _maxVisibleColumns)
+	[_browserColumns removeObject:bc];
     }
   
   if (column == 0)

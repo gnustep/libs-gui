@@ -395,7 +395,76 @@ static NSColor	*shadowCol;
 
 - (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
 {
-  // TODO
+  switch (aParameter)
+    {
+    case NSCellDisabled:
+      _cell.is_disabled = value;
+      break;
+    case NSCellState:
+      _cell.state = value;
+      break;
+    case NSCellEditable:
+      _cell.is_editable = value;
+      break;
+    case NSCellHighlighted:  
+      _cell.is_highlighted = value;
+      break;
+    case NSCellHasOverlappingImage:
+      if (value)
+	_cell.image_position = NSImageOverlaps;
+      else
+	{
+	  if (_cell.image_position == NSImageOverlaps)
+	    _cell.image_position = NSImageLeft;
+	}
+      break;
+    case NSCellHasImageHorizontal:
+      if (value)
+	{
+	  if (_cell.image_position != NSImageLeft
+	      && _cell.image_position != NSImageRight)
+	    _cell.image_position = NSImageLeft;
+	}
+      else
+	{
+	  if (_cell.image_position == NSImageLeft)
+	    _cell.image_position = NSImageAbove;
+	  else if (_cell.image_position == NSImageRight)
+	    _cell.image_position = NSImageBelow;
+	}
+      break;
+    case NSCellHasImageOnLeftOrBottom:
+      if (value)
+	{
+	  if (_cell.image_position == NSImageAbove)
+	    _cell.image_position = NSImageBelow;
+	  else
+	    _cell.image_position = NSImageLeft;
+	}
+      else
+	{
+	  if (_cell.image_position == NSImageBelow)
+	    _cell.image_position = NSImageAbove;
+	  else
+	    _cell.image_position = NSImageRight;
+	}
+      break;
+      /*
+    case NSCellChangesContents:
+      _cell. = value;
+      break;
+    case NSCellIsInsetButton:
+      _cell. = value;
+      break;
+*/
+    case NSCellIsBordered:
+      _cell.is_bordered = value;
+      break;
+    case NSCellAllowsMixedState:
+      _cell.allows_mixed_state = value;
+      break;
+    default:
+    }
 }
 
 /*
@@ -714,6 +783,7 @@ static NSColor	*shadowCol;
   [textObject setSelectable: _cell.is_selectable || _cell.is_editable];
   [textObject setRichText: _cell.is_rich_text];
   [textObject setImportsGraphics: _cell.imports_graphics];
+  [textObject setSelectedRange: NSMakeRange(0, 0)];
 
   return textObject;
 }
@@ -1438,11 +1508,6 @@ static NSColor	*shadowCol;
 
   [controlView lockFocus];
 
-  /* TODO: Enable this when NSDottedFrameRect is implemented.
-     if (_cell.show_first_responder && [controlView isFirstResponder])
-    NSDottedFrameRect(cellFrame);
-  */
-
   switch (_cell.type)
     {
       case NSTextCellType:
@@ -1480,6 +1545,11 @@ static NSColor	*shadowCol;
       case NSNullCellType:
          break;
     }
+
+  if (_cell.shows_first_responder
+      && [[controlView window] firstResponder] == controlView)
+    NSDottedFrameRect(cellFrame);
+
   // NB: We don't do any highlighting to make it easier for subclasses
   // to reuse this code while doing their own custom highlighting and
   // prettyfying
@@ -1576,12 +1646,13 @@ static NSColor	*shadowCol;
   
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
-  [textObject display];
 
   if ([theEvent type] == NSLeftMouseDown)
     {
       [textObject mouseDown: theEvent];
     }
+
+  [textObject display];
 }
 
 - (void) endEditing: (NSText*)textObject

@@ -458,13 +458,23 @@ static NSNotificationCenter *nc;
       switch ([(NSNumber *)textMovement intValue])
 	{
 	case NSReturnTextMovement:
-	  [self sendAction: [self action] to: [self target]];
+	  if ([self sendAction: [self action] to: [self target]] == NO)
+	    {
+	      if ([self performKeyEquivalent: [_window currentEvent]] == NO)
+		[self selectText: self];
+	    }
 	  break;
 	case NSTabTextMovement:
 	  [_window selectKeyViewFollowingView: self];
+
+	  if ([_window firstResponder] == _window)
+	    [self selectText: self];
 	  break;
 	case NSBacktabTextMovement:
 	  [_window selectKeyViewPrecedingView: self];
+
+	  if ([_window firstResponder] == _window)
+	    [self selectText: self];
 	  break;
 	}
     }

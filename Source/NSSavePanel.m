@@ -63,7 +63,7 @@ static BOOL _gs_display_reading_progress = NO;
 // Subclasses (read NSOpenPanel) may implement this 
 // to filter some extensions out of displayed files.
 @interface NSObject (_SavePanelPrivate)
--(BOOL) _shouldShowExtension: (NSString*)extension;
+-(BOOL) _shouldShowExtension: (NSString*)extension isDir: (BOOL *)isDir;
 @end
 //
 
@@ -92,6 +92,7 @@ static BOOL _gs_display_reading_progress = NO;
   NSButton *button;
   NSImage *image;
   NSRect r;
+  id lastKeyView;
 
   //
   // WARNING: We create the panel sized (308, 317), which is the 
@@ -122,6 +123,7 @@ static BOOL _gs_display_reading_progress = NO;
 
   r = NSMakeRect (8, 68, 292, 177);
   _browser = [[NSBrowser alloc] initWithFrame: r]; 
+  lastKeyView = _browser;
   [_browser setDelegate: self];
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
@@ -146,6 +148,8 @@ static BOOL _gs_display_reading_progress = NO;
   [_form setAutoresizingMask: NSViewWidthSizable];
   [_form setDelegate: self];
   [_bottomView addSubview: _form];
+  [lastKeyView setNextKeyView: _form];
+  lastKeyView = _form;
   [_form release];
 
   r = NSMakeRect (43, 6, 27, 27);
@@ -161,6 +165,8 @@ static BOOL _gs_display_reading_progress = NO;
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelHomeButton];
   [_bottomView addSubview: button];
+  [lastKeyView setNextKeyView: button];
+  lastKeyView = button;
   [button release];
   
   r = NSMakeRect (78, 6, 27, 27);
@@ -175,6 +181,8 @@ static BOOL _gs_display_reading_progress = NO;
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskButton];
   [_bottomView addSubview: button];
+  [lastKeyView setNextKeyView: button];
+  lastKeyView = button;
   [button release];
 
   r = NSMakeRect (112, 6, 27, 27);
@@ -189,6 +197,8 @@ static BOOL _gs_display_reading_progress = NO;
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelDiskEjectButton];
   [_bottomView addSubview: button];
+  [lastKeyView setNextKeyView: button];
+  lastKeyView = button;
   [button release];
   
   r = NSMakeRect (148, 6, 71, 27);
@@ -202,6 +212,8 @@ static BOOL _gs_display_reading_progress = NO;
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelCancelButton];
   [_bottomView addSubview: button];
+  [lastKeyView setNextKeyView: button];
+  lastKeyView = button;
   [button release];
   
   r = NSMakeRect (228, 6, 71, 27);
@@ -215,11 +227,12 @@ static BOOL _gs_display_reading_progress = NO;
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
   [_okButton setEnabled: NO];
-  //    [_okButton setNextKeyView: _form];
   [_okButton setAutoresizingMask: NSViewMinXMargin];
   [_okButton setTag: NSFileHandlingPanelOKButton];
   [_bottomView addSubview: _okButton];
-  [self setDefaultButtonCell:[_okButton cell]];
+  [lastKeyView setNextKeyView: _okButton];
+  [_okButton setNextKeyView: _browser];
+  [self setDefaultButtonCell: [_okButton cell]];
   [_okButton release];
 
   [_browser setDoubleAction: @selector(performClick:)];
@@ -259,6 +272,7 @@ static BOOL _gs_display_reading_progress = NO;
   [bar release];
 
   [self setContentSize: NSMakeSize (384, 426)];
+  [self setInitialFirstResponder: _form];
   [super setTitle: @""];
 
   return self;
@@ -317,7 +331,7 @@ static BOOL _gs_display_reading_progress = NO;
   if (isLeaf)
     {
       [[_form cellAtIndex: 0] setStringValue: [selectedCell stringValue]];
-      [_form selectTextAtIndex:0];
+      //      [_form selectTextAtIndex:0];
       [_form setNeedsDisplay:YES];
       [_okButton setEnabled:YES];
     }
@@ -327,7 +341,7 @@ static BOOL _gs_display_reading_progress = NO;
 	{
 	  [_okButton setEnabled:YES];
 	  [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
-	  [_form selectTextAtIndex:0];
+	  //	  [_form selectTextAtIndex:0];
 	  [_form setNeedsDisplay:YES];
 	}
       else
@@ -448,7 +462,7 @@ static BOOL _gs_display_reading_progress = NO;
   _delegateHasShowFilenameFilter = NO;
   _delegateHasValidNameFilter = NO;
 
-  if ([self respondsToSelector: @selector(_shouldShowExtension:)])
+  if ([self respondsToSelector: @selector(_shouldShowExtension:isDir:)])
     _selfHasShowExtensionFilter = YES;
   else 
     _selfHasShowExtensionFilter = NO;
@@ -767,6 +781,7 @@ static BOOL _gs_display_reading_progress = NO;
 
   switch (character)
     {
+#if 0
     case NSTabCharacter:
       if ([theEvent modifierFlags] & NSShiftKeyMask)
 	{
@@ -794,7 +809,7 @@ static BOOL _gs_display_reading_progress = NO;
 				 isARepeat:NO
 				 keyCode:0]];
       break;
-
+#endif
     case NSUpArrowFunctionKey:
     case NSDownArrowFunctionKey:
     case NSLeftArrowFunctionKey:
@@ -804,52 +819,6 @@ static BOOL _gs_display_reading_progress = NO;
       [_browser keyDown:theEvent];
       break;
     }
-}
-
-- (void) keyDown: (NSEvent *)theEvent
-{
-  NSString *characters = [theEvent characters];
-  unichar character = 0;
-
-  if ([characters length] > 0)
-    {
-      character = [characters characterAtIndex: 0];
-    }
-
-  switch (character)
-    {
-    case NSTabCharacter:
-    case NSUpArrowFunctionKey:
-    case NSDownArrowFunctionKey:
-    case NSLeftArrowFunctionKey:
-    case NSRightArrowFunctionKey:
-      [self selectText:self];
-      return;
-
-    case NSEnterCharacter:
-    case NSFormFeedCharacter:
-    case NSCarriageReturnCharacter:
-      if([_okButton isEnabled] == YES)
-	{
-	  NSMatrix *matrix;
-	  int       selectedColumn;
-
-	  selectedColumn = [_browser selectedColumn];
-	  if(selectedColumn == -1 || selectedColumn != [_browser lastColumn])
-	    break;
-
-	  matrix = [_browser matrixInColumn:selectedColumn];
-
-	  if([[matrix selectedCell] isLeaf] == NO)
-	    {
-	      [_form abortEditing];
-	      [[_form cellAtIndex: 0] setStringValue: nil];
-	    }
-	}
-      break;
-    }
-
-  [super keyDown:theEvent];
 }
 
 - (void) setDelegate: (id)aDelegate
@@ -887,6 +856,91 @@ static BOOL _gs_display_reading_progress = NO;
 {
   // TODO
 }
+@end
+
+//
+// SavePanel filename compare
+//
+@interface NSString (_gsSavePanel)
+- (NSComparisonResult)_gsSavePanelCompare:(NSString *)other;
+@end
+
+@implementation NSString (_gsSavePanel)
+- (NSComparisonResult)_gsSavePanelCompare:(NSString *)other
+{
+  int                sLength, oLength;
+  unichar            sChar, oChar;
+  NSComparisonResult result;
+  NSRange            range;
+
+  sLength = [self length];
+  oLength = [other length];
+  range.location = 0;
+  range.length = sLength;
+
+  if (sLength == 0)
+    {
+      if (oLength == 0)
+	return NSOrderedSame;
+      else
+	return NSOrderedAscending;
+    }
+  else if (oLength == 0)
+    {
+      return NSOrderedDescending;
+    }
+
+  sChar = [self characterAtIndex: 0];
+  oChar = [other characterAtIndex: 0];
+
+  if (sChar == '.' && oChar != '.')
+    return NSOrderedDescending;
+  else if (sChar != '.' && oChar == '.')
+    return NSOrderedAscending;
+
+  if (sLength == oLength)
+    {
+      result = [self compare: other
+		     options: NSCaseInsensitiveSearch
+		     range: range];
+
+      if (result == NSOrderedSame)
+	result = [self compare: other options: 0 range: range];
+    }
+  else
+    {
+      if (sLength < oLength)
+	{
+	  result = [other compare: self
+			  options: NSCaseInsensitiveSearch
+			  range: range];
+
+	  if (result == NSOrderedAscending)
+	    result = NSOrderedDescending;
+	  else if (result == NSOrderedDescending)
+	    result = NSOrderedAscending;
+	  else
+	    {
+	      result = [other compare: self options: 0 range: range];
+
+	      if (result == NSOrderedAscending)
+		result = NSOrderedDescending;
+	      else
+		result = NSOrderedAscending;
+	    }
+	}
+      else
+	result = [self compare: other
+		       options: NSCaseInsensitiveSearch
+		       range: range];
+
+      if (result == NSOrderedSame)
+	result = [self compare: other options: 0 range: range];
+    }
+
+  return result;
+}
+
 @end
 
 //
@@ -990,7 +1044,7 @@ createRowsForColumn: (int)column
 		     context: nil];
     }
   else
-    files = [files sortedArrayUsingSelector: @selector(compare:)];
+    files = [files sortedArrayUsingSelector: @selector(_gsSavePanelCompare:)];
 
   addedRows = 0;
   for (i = 0; i < count; i++)
@@ -1020,17 +1074,14 @@ createRowsForColumn: (int)column
       if (_treatsFilePackagesAsDirectories == NO && isDir == YES && exists)
 	{
 	  // Ones with more chance first
-	  if ([extension isEqualToString: @"app"] 
-	      || [extension isEqualToString: @"bundle"] 
-	      || [extension isEqualToString: @"palette"]
-	      || [extension isEqualToString: @"debug"] 
-	      || [extension isEqualToString: @"profile"])
-	    isDir = NO;
+	  if ([self isMemberOfClass: [NSSavePanel class]] == YES)
+	    if ([extension isEqualToString: _requiredFileType] == YES)
+	      isDir = NO;
 	}
 
-      if (_selfHasShowExtensionFilter && exists && (isDir == NO))
+      if (_selfHasShowExtensionFilter && exists)
 	{
-	  exists = [self _shouldShowExtension: extension];
+	  exists = [self _shouldShowExtension: extension isDir: &isDir];
 	}
       
       if (exists)
@@ -1149,32 +1200,9 @@ selectCellWithString: (NSString*)title
 // NSForm delegate methods
 //
 @interface NSSavePanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification;
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 @end
 @implementation NSSavePanel (FormDelegate)
-
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification
-{
-  id textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
-
-  if (textMovement)
-    {
-      switch ([(NSNumber *)textMovement intValue])
-	{
-	case NSTabTextMovement:
-	case NSBacktabTextMovement:
-	case NSUpTextMovement:
-	case NSDownTextMovement:
-	case NSLeftTextMovement:
-	case NSRightTextMovement:
-	case NSReturnTextMovement:
-	  [NSApp postEvent:[self currentEvent]
-		 atStart:YES];
-	  break;
-	}
-    }
-}
 
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 {

@@ -127,6 +127,79 @@
   return _altContents;
 }
 
+- (int) cellAttribute: (NSCellAttribute)aParameter
+{
+  int value = 0;
+
+  switch (aParameter)
+    {
+    case NSPushInCell:
+      if (_highlightsByMask & NSPushInCellMask)
+	value = 1;
+      break;
+    case NSChangeGrayCell:
+      if (_highlightsByMask & NSChangeGrayCellMask)
+	value = 1;
+      break;
+    case NSChangeBackgroundCell:
+      if (_highlightsByMask & NSChangeBackgroundCellMask)
+	value = 1;
+      break;
+    default:
+      value = [super cellAttribute: aParameter];
+      break;
+    }
+
+  return value;
+}
+
+- (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
+{
+  switch (aParameter)
+    {
+    case NSPushInCell:
+      if (value)
+	_highlightsByMask |= NSPushInCellMask;
+      else
+	_highlightsByMask &= ~NSPushInCellMask;
+      break;
+    case NSChangeGrayCell:
+      if (value)
+	_highlightsByMask |= NSChangeGrayCellMask;
+      else
+	_highlightsByMask &= ~NSChangeGrayCellMask;
+      break;
+    case NSChangeBackgroundCell:
+      if (value)
+	_highlightsByMask |= NSChangeBackgroundCellMask;
+      else
+	_highlightsByMask &= ~NSChangeBackgroundCellMask;
+      break;
+      /*
+    case NSCellLightsByContents: 
+      _cell. = value;
+      break;
+    case NSCellChangesContents:
+      _cell. = value;
+      break;
+      */
+    case NSCellLightsByGray:
+      if (value)
+	_highlightsByMask |= NSChangeGrayCellMask;
+      else
+	_highlightsByMask &= ~NSChangeGrayCellMask;
+      break;
+    case NSCellLightsByBackground:
+      if (value)
+	_highlightsByMask |= NSChangeBackgroundCellMask;
+      else
+	_highlightsByMask &= ~NSChangeBackgroundCellMask;
+      break;
+    default:
+      [super setCellAttribute: aParameter to: value];
+    }
+}
+
 - (void) setFont: (NSFont*)fontObject		
 {
   // TODO Should change the size of the key equivalent font
@@ -739,6 +812,16 @@
     {
       [self _drawText: titleToDisplay inFrame: titleRect];
     }
+
+  if (_cell.shows_first_responder
+      && [[controlView window] firstResponder] == controlView)
+    {
+      if (_cell.is_bordered || _cell.is_bezeled)
+	NSDottedFrameRect(cellFrame);
+      else
+	NSDottedFrameRect(titleRect);
+    }
+
   [controlView unlockFocus];
 }
 

@@ -296,7 +296,20 @@ Class _nspopupbuttonCellClass = 0;
 {
   [[popb_menu menuRepresentation] sizeToFit];
   [super sizeToFit];
-} 
+}
+
+- (BOOL) resignFirstResponder
+{
+  [_cell dismissPopUp];
+
+  return [super resignFirstResponder];
+}
+
+- (void) resignKeyWindow
+{
+  [_cell dismissPopUp];
+  [super resignKeyWindow];
+}
 
 - (void) mouseDown: (NSEvent*)theEvent
 { 
@@ -340,6 +353,102 @@ Class _nspopupbuttonCellClass = 0;
   // Send action to target
   [super sendAction: [self action]
 		 to: [self target]];
+}
+
+- (void) keyDown: (NSEvent*)theEvent
+{
+  if ([self isEnabled])
+    {
+      NSString *characters = [theEvent characters];
+      unichar character = 0;
+
+      if ([characters length] > 0)
+	{
+	  character = [characters characterAtIndex: 0];
+	}
+
+      switch (character)
+	{
+	case NSNewlineCharacter:
+	case NSEnterCharacter: 
+	case NSCarriageReturnCharacter:
+	case ' ':
+	  {
+	    if ([[[_cell menu] window] isVisible] == NO)
+	      {
+		int selectedIndex;
+
+		[[NSNotificationCenter defaultCenter]
+		  postNotificationName: NSPopUpButtonWillPopUpNotification
+		  object: self];
+
+		// Attach the popUp
+		[_cell attachPopUpWithFrame: _bounds
+		       inView: self];
+
+		selectedIndex = [self indexOfSelectedItem];
+
+		if (selectedIndex > -1)
+		  [[[_cell menu] menuRepresentation]
+		    setHighlightedItemIndex: selectedIndex];
+	      }
+	    else
+	      {
+		// Update our selected item
+		[self synchronizeTitleAndSelectedItem];
+
+		// Dismiss the popUp
+		[_cell dismissPopUp];
+
+		[super sendAction: [self action]
+		       to: [self target]];
+	      }
+	  }
+	  return;
+	case '\e':
+	  [_cell dismissPopUp];
+	  return;
+	case NSUpArrowFunctionKey:
+	  {
+	    NSMenuView *menuView;
+	    int selectedIndex, numberOfItems;
+
+	    menuView = [[_cell menu] menuRepresentation];
+	    selectedIndex = [menuView highlightedItemIndex];
+	    numberOfItems = [self numberOfItems];
+
+	    switch (selectedIndex)
+	      {
+	      case -1:
+		selectedIndex = numberOfItems - 1;
+		break;
+	      case 0:
+		return;
+	      default:
+		selectedIndex--;
+		break;
+	      }
+
+	    [menuView setHighlightedItemIndex: selectedIndex];
+	  }
+	  return;
+	case NSDownArrowFunctionKey:
+	  {
+	    NSMenuView *menuView;
+	    int selectedIndex, numberOfItems;
+
+	    menuView = [[_cell menu] menuRepresentation];
+	    selectedIndex = [menuView highlightedItemIndex];
+	    numberOfItems = [self numberOfItems];
+
+	    if (selectedIndex < numberOfItems-1)
+	      [menuView setHighlightedItemIndex: selectedIndex + 1];
+	  }
+	  return;
+	}
+    }
+  
+  [super keyDown: theEvent];
 }
 
 /*
