@@ -32,34 +32,34 @@
 //
 // Before the Image is Released
 //
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   return NSDragOperationNone;
 }
 
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)sender
 {
   return NSDragOperationNone;
 }
 
-- (void)draggingExited:(id <NSDraggingInfo>)sender
+- (void) draggingExited: (id <NSDraggingInfo>)sender
 {
 }
 
 //
 // After the Image is Released
 //
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
 {
   return NO;
 }
 
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
   return NO;
 }
 
-- (void)concludeDragOperation:(id <NSDraggingInfo>)sender
+- (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
 }
 
@@ -70,12 +70,12 @@
 //
 // Querying the Source
 //
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   return NSDragOperationNone;
 }
 
-- (BOOL)ignoreModifierKeysWhileDragging
+- (BOOL) ignoreModifierKeysWhileDragging
 {
   return NO;
 }
@@ -83,14 +83,14 @@
 //
 // Informing the Source
 //
-- (void)draggedImage:(NSImage *)image
-             beganAt:(NSPoint)screenPoint
+- (void) draggedImage: (NSImage*)image
+	      beganAt: (NSPoint)screenPoint
 {
 }
 
-- (void)draggedImage: (NSImage*)image
-             endedAt: (NSPoint)screenPoint
-           deposited: (BOOL)didDeposit
+- (void) draggedImage: (NSImage*)image
+	      endedAt: (NSPoint)screenPoint
+	    deposited: (BOOL)didDeposit
 {
 }
 

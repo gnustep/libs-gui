@@ -353,22 +353,55 @@ static NSMapTable* windowmaps = NULL;
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  // FIXME: The server should be asked for the border size
+  NSGraphicsContext	*context = GSCurrentContext();
+  float	t, b, l, r;
+
+  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  aRect.size.width -= (l + r);
+  aRect.size.height -= (t + b);
+  aRect.origin.x += l;
+  aRect.origin.y += b;
   return aRect;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  // FIXME: The server should be asked for the border size
+  NSGraphicsContext	*context = GSCurrentContext();
+  float	t, b, l, r;
+
+  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  aRect.size.width += (l + r);
+  aRect.size.height += (t + b);
+  aRect.origin.x -= l;
+  aRect.origin.y -= b;
   return aRect;
 }
 
-+ (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
++ (NSRect) minFrameWidthWithTitle: (NSString*)aTitle
 			styleMask: (unsigned int)aStyle
 {
-  // FIXME: The server should be asked for the border size
-  return NSZeroRect;
+  NSGraphicsContext	*context = GSCurrentContext();
+  float	t, b, l, r;
+  NSRect	f = NSZeroRect;
+
+  DPSstyleoffsets(context, &l, &r, &t, &b, aStyle);
+  f.size.width = l + r;
+  f.size.height = t + b;
+  /*
+   * Assume that the width of the area needed for a button is equal to
+   * the height of the title bar.
+   */
+  if (aStyle & NSClosableWindowMask)
+    f.size.width += t;
+  if (aStyle & NSMiniaturizableWindowMask)
+    f.size.width += t;
+  /*
+   * FIXME - title width has to be better determined than this.
+   * need to get correct values from font.
+   */
+  f.size.width += [aTitle length] * 10;
+  return f;
 }
 
 /* default Screen and window depth */
@@ -378,7 +411,7 @@ static NSMapTable* windowmaps = NULL;
   return 8;
 }
 
-+ (void)menuChanged:(NSMenu *)aMenu
++ (void)menuChanged: (NSMenu*)aMenu
 {
   // FIXME: This method is for MS Windows only, does nothing 
   // on other window systems 
@@ -488,7 +521,8 @@ static NSMapTable* windowmaps = NULL;
   style_mask = aStyle;
 
   frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
-  minimum_size = NSMakeSize(1, 1);
+  minimum_size = NSMakeSize(frame.size.width - contentRect.size.width + 1,
+    frame.size.height - contentRect.size.height + 1);
   maximum_size = r.size;
 
   [self setNextResponder: NSApp];
@@ -498,13 +532,13 @@ static NSMapTable* windowmaps = NULL;
 
   /* Create the window view */
   cframe.origin = NSZeroPoint;
-  cframe.size = frame.size;
+  cframe.size = contentRect.size;
   _wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: cframe];
   [_wv viewWillMoveToWindow: self];
 
   /* Create the content view */
   cframe.origin = NSZeroPoint;
-  cframe.size = frame.size;
+  cframe.size = contentRect.size;
   [self setContentView: AUTORELEASE([[NSView alloc] initWithFrame: cframe])];
 
   /* rectBeingDrawn is variable used to optimize flushing the backing store.
@@ -540,7 +574,7 @@ static NSMapTable* windowmaps = NULL;
   return content_view;
 }
 
-- (void) setContentView: (NSView *)aView
+- (void) setContentView: (NSView*)aView
 {
   if (aView == nil)
     {
@@ -566,17 +600,17 @@ static NSMapTable* windowmaps = NULL;
 /*
  * Window graphics
  */
-- (NSColor *) backgroundColor
+- (NSColor*) backgroundColor
 {
   return background_color;
 }
 
-- (NSString *) representedFilename
+- (NSString*) representedFilename
 {
   return represented_filename;
 }
 
-- (void) setBackgroundColor: (NSColor *)color
+- (void) setBackgroundColor: (NSColor*)color
 {
   ASSIGN(background_color, color);
 }
@@ -627,7 +661,7 @@ static NSMapTable* windowmaps = NULL;
   return style_mask;
 }
 
-- (NSString *) title
+- (NSString*) title
 {
   return window_title;
 }
@@ -640,7 +674,7 @@ static NSMapTable* windowmaps = NULL;
   return backing_type;
 }
 
-- (NSDictionary *) deviceDescription
+- (NSDictionary*) deviceDescription
 {
   return [[self screen] deviceDescription];
 }
@@ -673,17 +707,17 @@ static NSMapTable* windowmaps = NULL;
 /*
  * The miniwindow
  */
-- (NSImage *) miniwindowImage
+- (NSImage*) miniwindowImage
 {
   return miniaturized_image;
 }
 
-- (NSString *) miniwindowTitle
+- (NSString*) miniwindowTitle
 {
   return miniaturized_title;
 }
 
-- (void) setMiniwindowImage: (NSImage *)image
+- (void) setMiniwindowImage: (NSImage*)image
 {
   ASSIGN(miniaturized_image, image);
   if (_counterpart != 0 && (style_mask & NSMiniWindowMask) == 0)
@@ -741,7 +775,7 @@ static NSMapTable* windowmaps = NULL;
     }
 }
 
-- (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
+- (NSText*) fieldEditor: (BOOL)createFlag forObject: (id)anObject
 {
   NSText *edit;
   /* ask delegate if it can provide a field editor */
@@ -767,7 +801,7 @@ static NSMapTable* windowmaps = NULL;
 /*
  * Window controller
  */
-- (void)setWindowController:(NSWindowController *)windowController
+- (void) setWindowController: (NSWindowController*)windowController
 {
   ASSIGN(_windowController, windowController);
 }
@@ -1132,8 +1166,10 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: screen
 {
-  // FIXME: The implementation of this method is missing
-  return NSZeroRect;
+  NSRect	r = [screen frame];
+
+  r = NSIntersectionRect(r, frameRect);
+  return r;
 }
 
 - (NSRect) frame
@@ -1156,6 +1192,8 @@ static NSMapTable* windowmaps = NULL;
   NSRect	r = frame;
 
   r.size = aSize;
+  r = [NSWindow frameRectForContentRect: r styleMask: style_mask];
+  r.origin = frame.origin;
   [self setFrame: r display: YES];
 }
 
@@ -1271,20 +1309,26 @@ static NSMapTable* windowmaps = NULL;
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
-  NSPoint	screenPoint;
+  NSGraphicsContext	*context = GSCurrentContext();
+  NSPoint		screenPoint;
+  float			t, b, l, r;
 
-  screenPoint.x = frame.origin.x + basePoint.x;
-  screenPoint.y = frame.origin.y + basePoint.y;
+  DPSstyleoffsets(context, &l, &r, &t, &b, style_mask);
+  screenPoint.x = frame.origin.x + basePoint.x + l;
+  screenPoint.y = frame.origin.y + basePoint.y + b;
 
   return screenPoint;
 }
 
 - (NSPoint) convertScreenToBase: (NSPoint)screenPoint
 {
-  NSPoint basePoint;
+  NSGraphicsContext	*context = GSCurrentContext();
+  NSPoint 		basePoint;
+  float			t, b, l, r;
 
-  basePoint.x = screenPoint.x - frame.origin.x;
-  basePoint.y = screenPoint.y - frame.origin.y;
+  DPSstyleoffsets(context, &l, &r, &t, &b, style_mask);
+  basePoint.x = screenPoint.x - frame.origin.x - l;
+  basePoint.y = screenPoint.y - frame.origin.y - b;
 
   return basePoint;
 }
@@ -1457,17 +1501,17 @@ static NSMapTable* windowmaps = NULL;
   return _rFlags.needs_display;
 }
 
-- (void)cacheImageInRect:(NSRect)aRect
+- (void) cacheImageInRect: (NSRect)aRect
 {
   // FIXME: This Method is missing
 }
 
-- (void)discardCachedImage
+- (void) discardCachedImage
 {
   // FIXME: This Method is missing
 }
 
-- (void)restoreCachedImage
+- (void) restoreCachedImage
 {
   // FIXME: This Method is missing
 }
@@ -1485,7 +1529,7 @@ static NSMapTable* windowmaps = NULL;
     return NO;
 }
 
-- (NSScreen *) deepestScreen
+- (NSScreen*) deepestScreen
 {
   // FIXME: We must check the screens the window is on
   return [NSScreen deepestScreen];
@@ -1501,7 +1545,7 @@ static NSMapTable* windowmaps = NULL;
   return _f.dynamic_depth_limit;
 }
 
-- (NSScreen *) screen
+- (NSScreen*) screen
 {
   // FIXME: Works only if there is only one screen
   return [NSScreen mainScreen];
@@ -1573,7 +1617,7 @@ discardCursorRectsForView(NSView *theView)
   _f.cursor_rects_enabled = YES;
 }
 
-- (void) invalidateCursorRectsForView: (NSView *)aView
+- (void) invalidateCursorRectsForView: (NSView*)aView
 {
   if (((NSViewPtr)aView)->_rFlags.valid_rects)
     {
@@ -1797,13 +1841,13 @@ resetCursorRectsForView(NSView *theView)
   return _f.accepts_mouse_moved;
 }
 
-- (NSEvent *) currentEvent
+- (NSEvent*) currentEvent
 {
   return [NSApp currentEvent];
 }
 
 - (void) discardEventsMatchingMask: (unsigned int)mask
-		       beforeEvent: (NSEvent *)lastEvent
+		       beforeEvent: (NSEvent*)lastEvent
 {
   [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
 }
@@ -1847,7 +1891,7 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
-- (void) setInitialFirstResponder: (NSView *)aView
+- (void) setInitialFirstResponder: (NSView*)aView
 {
   if ([aView isKindOfClass: viewClass])
     {
@@ -1855,12 +1899,12 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (NSView *) initialFirstResponder
+- (NSView*) initialFirstResponder
 {
   return _initial_first_responder;
 }
 
-- (void) keyDown: (NSEvent *)theEvent
+- (void) keyDown: (NSEvent*)theEvent
 {
   unsigned int key_code = [theEvent keyCode];
 
@@ -1914,16 +1958,14 @@ resetCursorRectsForView(NSView *theView)
  * loop status */
 - (NSPoint) mouseLocationOutsideOfEventStream
 {
-  float x;
-  float y;
+  NSPoint	p;
 
-  DPSmouselocation(GSCurrentContext(), &x, &y);
-  x -= frame.origin.x;
-  y -= frame.origin.y;
-  return NSMakePoint(x, y);
+  DPSmouselocation(GSCurrentContext(), &p.x, &p.y);
+  p = [self convertScreenToBase: p];
+  return p;
 }
 
-- (NSEvent *) nextEventMatchingMask: (unsigned int)mask
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
 {
   return [NSApp nextEventMatchingMask: mask
 			    untilDate: nil
@@ -1931,10 +1973,10 @@ resetCursorRectsForView(NSView *theView)
 			      dequeue: YES];
 }
 
-- (NSEvent *) nextEventMatchingMask: (unsigned int)mask
-			  untilDate: (NSDate *)expiration
-			     inMode: (NSString *)mode
-			    dequeue: (BOOL)deqFlag
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+			 untilDate: (NSDate*)expiration
+			    inMode: (NSString*)mode
+			   dequeue: (BOOL)deqFlag
 {
   return [NSApp nextEventMatchingMask: mask
 			    untilDate: expiration
@@ -1942,7 +1984,7 @@ resetCursorRectsForView(NSView *theView)
 			      dequeue: deqFlag];
 }
 
-- (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
+- (void) postEvent: (NSEvent*)event atStart: (BOOL)flag
 {
   [NSApp postEvent: event atStart: flag];
 }
@@ -1952,8 +1994,8 @@ resetCursorRectsForView(NSView *theView)
   _f.accepts_mouse_moved = flag;
 }
 
-- (void) _checkTrackingRectangles: (NSView *)theView
-			 forEvent: (NSEvent *)theEvent
+- (void) _checkTrackingRectangles: (NSView*)theView
+			 forEvent: (NSEvent*)theEvent
 {
   if (((NSViewPtr)theView)->_rFlags.has_trkrects)
     {
@@ -2063,7 +2105,7 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (void) _checkCursorRectangles: (NSView *)theView forEvent: (NSEvent *)theEvent
+- (void) _checkCursorRectangles: (NSView*)theView forEvent: (NSEvent*)theEvent
 {
   if (((NSViewPtr)theView)->_rFlags.valid_rects)
     {
@@ -2107,7 +2149,7 @@ resetCursorRectsForView(NSView *theView)
 		    context: [theEvent context]
 		    eventNumber: 0
 		    trackingNumber: (int)YES
-		    userData: (void *)r];
+		    userData: (void*)r];
 		  [self postEvent: e atStart: YES];
 		}
 	      // Mouse exited
@@ -2123,7 +2165,7 @@ resetCursorRectsForView(NSView *theView)
 		    context: [theEvent context]
 		    eventNumber: 0
 		    trackingNumber: (int)NO
-		    userData: (void *)r];
+		    userData: (void*)r];
 		  [self postEvent: e atStart: YES];
 		}
 	    }
@@ -2155,7 +2197,7 @@ resetCursorRectsForView(NSView *theView)
 
   if (gstate)
     {
-      NSGraphicsContext* context = GSCurrentContext();
+      NSGraphicsContext	*context = GSCurrentContext();
       DPSgsave(context);
       DPSsetgstate(context, gstate);
       DPSupdatewindow(context, window_num);
@@ -2168,7 +2210,7 @@ resetCursorRectsForView(NSView *theView)
 }
 
 
-- (void) sendEvent: (NSEvent *)theEvent
+- (void) sendEvent: (NSEvent*)theEvent
 {
   NSView	*v;
   NSEventType	type;
@@ -2303,8 +2345,8 @@ resetCursorRectsForView(NSView *theView)
 
       case NSCursorUpdate:				  // Cursor update
 	{
-	  GSTrackingRect	*r =(GSTrackingRect *)[theEvent userData];
-	  NSCursor		*c = (NSCursor *)[r owner];
+	  GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
+	  NSCursor		*c = (NSCursor*)[r owner];
 
 	  if ([theEvent trackingNumber])	  // It's a mouse entered
 	    {
@@ -2475,7 +2517,7 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (BOOL) tryToPerform: (SEL)anAction with: anObject
+- (BOOL) tryToPerform: (SEL)anAction with: (id)anObject
 {
   // FIXME: On NO we should hand it on to the delegate
   return ([super tryToPerform: anAction with: anObject]);
@@ -2486,7 +2528,7 @@ resetCursorRectsForView(NSView *theView)
   return NO;
 }
 
-- (void) selectKeyViewFollowingView: (NSView *)aView
+- (void) selectKeyViewFollowingView: (NSView*)aView
 {
   NSView *theView = nil;
 
@@ -2504,7 +2546,7 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (void) selectKeyViewPrecedingView: (NSView *)aView
+- (void) selectKeyViewPrecedingView: (NSView*)aView
 {
   NSView *theView = nil;
 
@@ -2580,7 +2622,7 @@ resetCursorRectsForView(NSView *theView)
 // to know whether they have received it from the window, and
 // if so, in which direction is the selection moving (so that they know
 // if they should select the last or the first editable cell).
-- (NSSelectionDirection)keyViewSelectionDirection
+- (NSSelectionDirection) keyViewSelectionDirection
 {
   return _selection_direction;
 }
@@ -2648,8 +2690,8 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
-- (id) validRequestorForSendType: (NSString *)sendType
-		      returnType: (NSString *)returnType
+- (id) validRequestorForSendType: (NSString*)sendType
+		      returnType: (NSString*)returnType
 {
   id result = nil;
 
@@ -2667,12 +2709,12 @@ resetCursorRectsForView(NSView *theView)
 /*
  * Saving and restoring the frame
  */
-- (NSString *) frameAutosaveName
+- (NSString*) frameAutosaveName
 {
   return autosave_name;
 }
 
-- (void) saveFrameUsingName: (NSString *)name
+- (void) saveFrameUsingName: (NSString*)name
 {
   NSUserDefaults	*defs;
   NSString		*key;
@@ -2686,7 +2728,7 @@ resetCursorRectsForView(NSView *theView)
   [windowsLock unlock];
 }
 
-- (BOOL) setFrameAutosaveName: (NSString *)name
+- (BOOL) setFrameAutosaveName: (NSString*)name
 {
   NSString	*nameToRemove = nil;
 
@@ -2734,7 +2776,7 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
-- (void) setFrameFromString: (NSString *)string
+- (void) setFrameFromString: (NSString*)string
 {
   NSScanner	*scanner = [NSScanner scannerWithString: string];
   NSRect	nRect;
@@ -2847,7 +2889,7 @@ resetCursorRectsForView(NSView *theView)
   [self setFrame: fRect display: YES];
 }
 
-- (BOOL) setFrameUsingName: (NSString *)name
+- (BOOL) setFrameUsingName: (NSString*)name
 {
   NSUserDefaults	*defs;
   id			obj;
@@ -2888,7 +2930,7 @@ resetCursorRectsForView(NSView *theView)
 /*
  * Printing and postscript
  */
-- (NSData *) dataWithEPSInsideRect: (NSRect)rect
+- (NSData*) dataWithEPSInsideRect: (NSRect)rect
 {
   // FIXME: The implementation of this method is missing
   return nil;
@@ -2908,7 +2950,7 @@ resetCursorRectsForView(NSView *theView)
  * Zooming
  */
 
-- (BOOL)isZoomed
+- (BOOL) isZoomed
 {
   // FIXME: Method is missing  
   return NO;
@@ -2930,23 +2972,23 @@ resetCursorRectsForView(NSView *theView)
  * Default botton
  */
 
-- (NSButtonCell *)defaultButtonCell
+- (NSButtonCell*) defaultButtonCell
 {
   // FIXME: Method is missing
   return nil;
 }
 
-- (void)setDefaultButtonCell:(NSButtonCell *)aButtonCell
+- (void) setDefaultButtonCell: (NSButtonCell*)aButtonCell
 {
   // FIXME: Method is missing
 }
 
-- (void)disableKeyEquivalentForDefaultButtonCell
+- (void) disableKeyEquivalentForDefaultButtonCell
 {
   // FIXME: Method is missing
 }
 
-- (void)enableKeyEquivalentForDefaultButtonCell
+- (void) enableKeyEquivalentForDefaultButtonCell
 {
   // FIXME: Method is missing
 }
@@ -3134,10 +3176,10 @@ resetCursorRectsForView(NSView *theView)
   interface_style = aStyle;
 }
 
-- (void *)windowHandle
+- (void*) windowHandle
 {
   // FIXME: Should only be defined on MS Windows
-  return (void *) 0;
+  return (void*) 0;
 }
 
 @end
@@ -3270,6 +3312,5 @@ NSWindow* GSWindowWithNumber(int num)
 {
   return (NSWindow*)NSMapGet(windowmaps, (void*)num);
 }
-
 
 

@@ -1,6 +1,15 @@
+Tue Mar 07 11:00:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Changes throughout to use correct offsets for
+	differences between content rect and frame coordinates.
+	Base coordinate system is that of the content rect, so conversions
+	between screen and base coordinates are required except for
+	borderless windows (where the frame rect is the same as the content
+	rect).
+
 Tue Mar 07 06:24:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* Source/NSApplication.m: ([activateignoringOtherApps]) order key
+	* Source/NSApplication.m: ([activateIgnoringOtherApps]) order key
 	window to front when activating app.
 
 Tue Mar  7 03:23:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
