@@ -1031,14 +1031,22 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   [self loadServices];
   if (_allDisabled == nil)
-    _allDisabled = [[NSMutableSet alloc] initWithCapacity: 1];
+    {
+      _allDisabled = [[NSMutableSet alloc] initWithCapacity: 1];
+    }
   if (enable)
-    [_allDisabled removeObject: item];
+    {
+      [_allDisabled removeObject: item];
+    }
   else
-    [_allDisabled addObject: item];
+    {
+      [_allDisabled addObject: item];
+    }
   d = [NSSerializer serializePropertyList: [_allDisabled allObjects]];
   if ([d writeToFile: _disabledPath atomically: YES] == YES)
-    return 0;
+    {
+      return 0;
+    }
   return -1;
 }
 
@@ -1390,20 +1398,37 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   return YES;
 }
 
+/**
+ * <p>Controls whether the item name should be included in the services menu.
+ * </p>
+ * <p>If enabled is YES then the services menu for each application will
+ * include the named item, if enabled is NO then the service will not be
+ * shown in application services menus.
+ * </p>
+ * <p>Returns 0 if the setting is successfuly changed. Non-zero otherwise.
+ * </p>
+ */
 int
 NSSetShowsServicesMenuItem(NSString *name, BOOL enabled)
 {
-
   return [[GSServicesManager manager] setShowsServicesMenuItem: name
-							     to: enabled];
+							    to: enabled];
 }
 
+/**
+ * Returns a flag indicating whether the named service is supposed to be
+ * displayed in application services menus.
+ */
 BOOL
-NSShowsServicesMenuItem(NSString * name)
+NSShowsServicesMenuItem(NSString *name)
 {
   return [[GSServicesManager manager] showsServicesMenuItem: name];
 }
 
+/**
+ * A services providing application may use this to update the list of
+ * services it provides.
+ */
 void
 NSUpdateDynamicServices(void)
 {
