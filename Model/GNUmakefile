@@ -66,12 +66,12 @@ ADDITIONAL_CPPFLAGS += $(RUNTIME_DEFINE) $(GUI_DEFINE) $(BACKEND_DEFINE)
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR) 
 ifeq ($(GUI_LIB), gnu)
   ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
+  ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions -I../Headers
+else
+  ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions
 endif
 
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
-
-# Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS = -I../Headers/Additions -I../Headers
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
