@@ -2248,7 +2248,7 @@ byExtendingSelection: (BOOL)flag
 
   /* Draw background */
   [_backgroundColor set];
-  NSRectFill (_bounds);
+  NSRectFill (aRect);
 
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
     return;
