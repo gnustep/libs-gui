@@ -532,12 +532,26 @@
 /* Managing responder chain */
 - (BOOL) acceptsFirstResponder
 {
-  return _documentView != nil;
+  if (_documentView == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      return [_documentView acceptsFirstResponder];
+    }
 }
 
 - (BOOL) becomeFirstResponder
 {
-  return (_documentView != nil) ? [_documentView becomeFirstResponder] : NO;
+  if (_documentView == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      return [_window makeFirstResponder: _documentView];
+    }
 }
 
 /*
