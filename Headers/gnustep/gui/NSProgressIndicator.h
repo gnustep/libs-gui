@@ -28,7 +28,14 @@
 #define _GNUstep_H_NSProgressIndicator
 
 #include <AppKit/NSView.h>
+
+@class NSTimer;
+@class NSThread;
+
+/* For NSControlTint */
 #include <AppKit/NSColor.h>
+
+/* For NSControlSize */
 #include <AppKit/NSCell.h>
 
 #define NSProgressIndicatorPreferredThickness 14
