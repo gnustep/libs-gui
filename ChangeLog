@@ -1,3 +1,13 @@
+2003-02-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSSlideView.h
+	* Source/GSSlideView.m
+	Moved over from X11 backend.
+	* Source/GNUmakefile
+	Added new file GSSlideView.m.
+	* Source/GSDisplayServer.m
+	Use GSSlideView to implement image sliding.
+
 2003-02-11 17:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSScrollView.m (-setBorderType:): Call -tile to make
