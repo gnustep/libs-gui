@@ -184,6 +184,8 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 - (NSImage*) _getImageWithName: (NSString*)name
 		     alternate: (NSString*)alternate;
 - (NSImage*) unknownFiletypeImage;
+- (NSImage*) _saveImageFor: (NSString*)iconPath;
+- (NSString*) thumbnailForFile: (NSString *)file;
 - (NSImage*) _iconForExtension: (NSString*)ext;
 - (BOOL) _extension: (NSString*)ext
                role: (NSString*)role
@@ -873,21 +875,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       if (iconPath != nil)
 	{
-	  NS_DURING
-	    {
-	      NSImage	*tmp;
-
-	      tmp = [[NSImage alloc] initWithContentsOfFile: iconPath];
-	      if (tmp != nil)
-		{
-		  image = AUTORELEASE(tmp);
-		}
-	    }
-	  NS_HANDLER
-	    {
-	      NSLog(@"BAD TIFF FILE '%@'", iconPath);
-	    }
-	  NS_ENDHANDLER
+	  image = [self _saveImageFor: iconPath];
 	}
 
       if (image == nil)
@@ -931,6 +919,18 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   else
     {
       NSDebugLog(@"pathExtension is '%@'", pathExtension);
+
+      if ([[NSUserDefaults standardUserDefaults] boolForKey: 
+	      @"GSUseFreedesktopThumbnails"])
+        {
+	  /* This image will be 128x128 pixels as oposed to the 48x48 
+	     of other GNUstep icons or the 32x32 of the specification */  
+	  image = [self _saveImageFor: [self thumbnailForFile: fullPath]];
+	  if (image != nil)
+	    {
+	      return image;
+	    }
+	}
 
       image = [self _iconForExtension: pathExtension];
       if (image == nil || image == [self unknownFiletypeImage])
@@ -1484,7 +1484,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       iconPath = [[bundle bundlePath] stringByAppendingPathComponent: iconPath];
     }
   
-  return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: iconPath]);
+  return [self _saveImageFor: iconPath];
 }
 
 /**
@@ -1650,7 +1650,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
       if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
 	{
-	  return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: file]);
+	  return [self _saveImageFor: file];
 	}
     }
   return nil;
@@ -1681,6 +1681,55 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return image;
 }
 
+/** Try to create the image in an exception handling context */
+- (NSImage*) _saveImageFor: (NSString*)iconPath
+{
+  NSImage *tmp = nil;
+
+  NS_DURING
+    {
+      tmp = [[NSImage alloc] initWithContentsOfFile: iconPath];
+      if (tmp != nil)
+        {
+	  AUTORELEASE(tmp);
+	}
+    }
+  NS_HANDLER
+    {
+      NSLog(@"BAD TIFF FILE '%@'", iconPath);
+    }
+  NS_ENDHANDLER
+
+  return tmp;
+}
+
+/** Returns the freedesktop thumbnail file name for a given file name */
+- (NSString*) thumbnailForFile: (NSString *)file
+{
+  NSString *absolute;
+  NSString *digest;
+  NSString *thumbnail;
+
+  absolute = [[NSURL fileURLWithPath: [file stringByStandardizingPath]] 
+		 absoluteString];
+  // This compensates for a bug we have in NSURL, that is there to have 
+  // MacOSX compatibility.
+  if ([absolute hasPrefix:  @"file://localhost/"])
+    {
+      absolute = [@"file:///" stringByAppendingString: 
+		       [absolute substringWithRange: 
+				     NSMakeRange(17, [absolute length] - 17)]];
+    }
+
+  // FIXME: Not sure which encoding to use here. 
+  digest = [[[[absolute dataUsingEncoding: NSASCIIStringEncoding]
+		 md5Digest] hexadecimalRepresentation] lowercaseString];
+  thumbnail = [@"~/.thumbnails/normal" stringByAppendingPathComponent: 
+		    [digest stringByAppendingPathExtension: @"png"]];
+
+  return [thumbnail stringByStandardizingPath];
+}
+
 - (NSImage*) _iconForExtension: (NSString*)ext
 {
   NSImage	*icon = nil;
@@ -1707,8 +1756,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       iconPath = [prefs objectForKey: @"Icon"];
       if (iconPath)
 	{
-	  icon = [[NSImage alloc] initWithContentsOfFile: iconPath];
-	  AUTORELEASE(icon);
+	  icon = [self _saveImageFor: iconPath];
 	}
 
       if (icon == nil && (extInfo = [self infoForExtension: ext]) != nil)
