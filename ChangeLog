@@ -1,3 +1,12 @@
+Sat Oct 23  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m Moved FileManager at the beginning of file,
+ 	to avoid compiler warnings. ([-_initWithoutGModel]): Made the
+ 	prompt non selectable.
+	* Source/NSScroller.m ([-trackScrollButtons:]): Removed useless
+ 	lockFocus:.  
+	* Source/NSSlider.m ([-mouseDown:]): idem.
+	
 1999-10-22  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSColor.m ([NSColor -set]): Implement (from backend).
