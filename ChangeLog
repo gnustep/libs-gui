@@ -1,3 +1,13 @@
+2002-05-17  Georg Fleischmann <georg@vhf.de>
+
+	* gui/Source/GSSimpleLayoutManager.m
+	([-lineLayoutIndexForPoint:]): cast the count of
+	_lineLayoutInformation to integer in MAX().  test if max is zero.
+	([-glyphRangeForLineLayoutRange:]): test if count of
+	_lineLayoutInformation is zero.
+	([-drawLinesInLineRange:]): test if count of
+	_lineLayoutInformation is zero (Modification by Nicola).
+	
 Wed May 22 13:02:02 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/Functions.m (NSHighlightRect): Do not flush the window.
