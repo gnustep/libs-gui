@@ -2044,6 +2044,9 @@ image.
   NSImage *oldImage = [item image];
   NSImage *newImage;
 
+  if (!([[item target] styleMask] & NSClosableWindowMask))
+    return;
+
   if ([[item target] isDocumentEdited])
     {
       newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
