@@ -1,3 +1,19 @@
+2001-07-24 Gregory John Casamento <greg_casamento@yahoo.com>
+        
+        * Source/NSSpellChecker.m cleaned up some of the NSLog
+        statements which were producing debug output.
+        Corrected the behavior of [NSSpellChecker _correct:], 
+        [NSSpellChecker _learn:], & [NSSpellChecker _forget:].
+        * Source/NSSpellServer.m removed debugging statements.
+        [NSSpellServer _isWord:inDictionary:caseSensitive:] 
+        added logic to search ignoredword list.
+        [NSSpellServer _findMisspelledWordInString:language:
+                ignoredWords:wordCount:countOnly:]
+        Added logic to allow access to the ignored word list maintained by
+        the spell checker.
+        * Tools/GSspell.m implemented a working spell checker which depends
+        on the ispell spell checker.
+
 2000-07-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSCursor.h
