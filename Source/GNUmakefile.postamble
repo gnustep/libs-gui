@@ -35,9 +35,11 @@
 #   otherwise the normal makefile rules will not be performed.
 #
 
-# Things to do before compiling
-before-all::
+./$(GNUSTEP_OBJ_DIR)/Parsers:
 	$(MKDIRS) ./$(GNUSTEP_OBJ_DIR)/Parsers
+
+# Things to do before compiling
+before-all:: ./$(GNUSTEP_OBJ_DIR)/Parsers
 
 # Things to do after compiling
 # after-all::
