@@ -4,6 +4,7 @@
 	for changes to screen size.
 	([constrainFrameRect:toScreen:]) bugfix for positioning when the
 	window origin is negative.
+	* Tools/make_services.m: Ignore illegal (null) file extension spec.
 
 2003-04-26  Fred Kiefer <FredKiefer@gmx.de>
 

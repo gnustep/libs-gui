@@ -397,6 +397,11 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
               NSMutableDictionary	*d;
 
               e = [[a1 objectAtIndex: j] lowercaseString];
+	      if ([e length] == 0)
+		{
+		  NSLog(@"Illegal (nul) extension ignored for - %@\n", app);
+		  return;
+		}
               d = [extensionsMap objectForKey: e];
               if (d == nil)
                 {
