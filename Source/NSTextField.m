@@ -95,6 +95,16 @@ static Class textFieldCellClass;
   return self;
 }
 
+- (void) dealloc
+{
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
+  [super dealloc];
+}
 
 //
 // Setting User Access to Text
