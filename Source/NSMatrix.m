@@ -57,6 +57,8 @@
 
 #include <math.h>
 
+DEFINE_RINT_IF_MISSING
+
 static NSNotificationCenter *nc;
 
 #define	STRICT	0

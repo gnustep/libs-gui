@@ -38,6 +38,8 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/PSOperators.h>
 
+DEFINE_RINT_IF_MISSING
+
 #define MIN_LABEL_DISTANCE 40
 #define MIN_MARK_DISTANCE 5
 

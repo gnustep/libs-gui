@@ -51,6 +51,8 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSWindow.h>
 
+DEFINE_RINT_IF_MISSING
+
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
 

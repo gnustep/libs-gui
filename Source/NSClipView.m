@@ -36,6 +36,8 @@
 
 #include <math.h>
 
+DEFINE_RINT_IF_MISSING
+
 @class NSTableView;
 
 /*
