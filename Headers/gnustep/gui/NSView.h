@@ -335,7 +335,7 @@ enum {
  */
 - (void) addToPageSetup;
 - (void) beginPage: (int)ordinalNum
-	      abel: (NSString*)aString
+	     label: (NSString*)aString
 	      bBox: (NSRect)pageRect
 	     fonts: (NSString*)fontNames;
 - (void) beginPageSetupRect: (NSRect)aRect

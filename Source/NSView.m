@@ -405,16 +405,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       [_window makeFirstResponder: _window];
     }
-  /*
-   * We make sure that the coordinates are invalidated even though the
-   * code to add this view to another view will also invalidate them.
-   * This is for consistency so that when a view is not in the view
-   * hierarchy, its coordinates should not be valid.
-   */
-  if (aSubview->_coordinates_valid)
-    {
-      (*invalidateImp)(aSubview, invalidateSel);
-    }
   aSubview->_super_view = nil;
   [aSubview viewWillMoveToWindow: nil];
   [_sub_views removeObjectIdenticalTo: aSubview];
@@ -520,6 +510,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       return;
     }
+  if (_coordinates_valid)
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  if (_rFlags.has_currects != 0)
+    {
+      [self discardCursorRects];
+    }
   if (_rFlags.has_draginfo)
     {
       NSGraphicsContext	*ctxt = GSCurrentContext();
@@ -533,10 +531,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	{
 	  [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
 	}
-    }
-  if (newWindow == nil && [_window firstResponder] == self)
-    {
-      [_window makeFirstResponder: _window];
     }
 
   _window = newWindow;
