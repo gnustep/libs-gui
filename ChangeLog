@@ -1,3 +1,12 @@
+Wed Oct 17 18:18:54 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-setDataSource:]): Do not release the old
+	data source; do not retain the new one.
+	([-dealloc]): Do not release the data source. 
+	(Suggested by Ludovic Marcotte <ludovic@Sophos.ca>)
+	* Source/NSTableView.m ([-initWithCoder:]): Do not retain the data
+	source when decoding it.
+
 2001-10-16  Adam Fedor  <fedor@gnu.org>
 
 	* GNUmakefile.postamble (before-install): Remove extra /
