@@ -2,6 +2,7 @@
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextAttachment.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSColor.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSRange.h>
 #include "Parsers/rtfConsumer.h"
@@ -299,31 +300,49 @@ paraBreakCSet()
 - (id) initWithPath: (NSString*)path
  documentAttributes: (NSDictionary**)dict
 {
-  return self;
+  // FIXME: This expects the file to be RTFD
+  return [self initWithRTFDFileWrapper: [[NSFileWrapper alloc]
+					  initWithPath: path]
+	       documentAttributes: dict];
 }
 
 - (id) initWithURL: (NSURL*)url 
 documentAttributes: (NSDictionary**)dict
 {
-  return self;
+  NSData *data = [url resourceDataUsingCache: YES];
+
+  // FIXME: This expects the URL to point to a HTML page
+  return [self initWithHTML: data
+	       baseURL: [url baseURL]
+	       documentAttributes: dict];
 }
 
 - (id) initWithRTFDFileWrapper: (NSFileWrapper*)wrapper
             documentAttributes: (NSDictionary**)dict
 {
+  if ([wrapper isRegularFile])
+    return [self initWithRTF: [wrapper regularFileContents]
+		 documentAttributes: dict];
+  else if ([wrapper isDirectory])
+    // FIXME: We should read the main file in the directory
+    return self;
+
   return self;
 }
 
 - (id) initWithHTML: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  return self;
+  return [self initWithHTML: data
+	       baseURL: nil
+	       documentAttributes: dict];
 }
 
 - (id) initWithHTML: (NSData*)data
             baseURL: (NSURL*)base
  documentAttributes: (NSDictionary**)dict
 {
+  // FIXME: Not implemented
   return self;
 }
 
@@ -345,9 +364,22 @@ documentAttributes: (NSDictionary**)dict
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
 			 documentAttributes: (NSDictionary*)dict
 {
-  return [[NSFileWrapper alloc] initRegularFileWithContents:
-				  [self RTFDFromRange: range
-					documentAttributes: dict]];
+  if ([self containsAttachments])
+    {
+      NSMutableDictionary *fileDict = [NSMutableDictionary dictionary];
+      NSFileWrapper *txt = [[NSFileWrapper alloc]
+			     initRegularFileWithContents:
+			       [self RTFDFromRange: range
+				     documentAttributes: dict]];
+
+      // FIXME: We have to add the attachements to the directory file wrapper
+      [fileDict setObject: txt forKey: @"TXT.rtf"];
+      return [[NSFileWrapper alloc] initDirectoryWithFileWrappers: fileDict];
+    }
+  else
+    return [[NSFileWrapper alloc] initRegularFileWithContents:
+				    [self RTFDFromRange: range
+					  documentAttributes: dict]];
 }
 @end
 
@@ -356,14 +388,23 @@ documentAttributes: (NSDictionary**)dict
 {
   id value;
   int sValue;
+  NSRange effRange;
 
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -superscriptRange:"];
+    }
+
+  // We take the value form the first character and use it for the whole range
   value = [self attribute: NSSuperscriptAttributeName
 		  atIndex: range.location
-	   effectiveRange: &range];
+	   effectiveRange: &effRange];
 
-  sValue = [value intValue];
-
-  sValue++;
+  if (value != nil)
+    sValue = [value intValue] + 1;
+  else
+    sValue = 1;
 
   [self addAttribute: NSSuperscriptAttributeName
 	       value: [NSNumber numberWithInt: sValue]
@@ -374,14 +415,23 @@ documentAttributes: (NSDictionary**)dict
 {
   id value;
   int sValue;
+  NSRange effRange;
 
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -subscriptRange:"];
+    }
+
+  // We take the value form the first character and use it for the whole range
   value = [self attribute: NSSuperscriptAttributeName
 		  atIndex: range.location
-	   effectiveRange: &range];
+	   effectiveRange: &effRange];
 
-  sValue = [value intValue];
-
-  sValue--;
+  if (value != nil)
+    sValue = [value intValue] - 1;
+  else
+    sValue = -1;
 
   [self addAttribute: NSSuperscriptAttributeName
 	       value: [NSNumber numberWithInt: sValue]
@@ -390,38 +440,82 @@ documentAttributes: (NSDictionary**)dict
 
 - (void) unscriptRange: (NSRange)range
 {
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -unscriptRange:"];
+    }
+
   [self addAttribute: NSSuperscriptAttributeName
 	       value: [NSNumber numberWithInt: 0]
 	       range: range];
 }
 
-- (void) applyFontTraits: (NSFontTraitMask)traitMask range: (NSRange)range
+- (void) applyFontTraits: (NSFontTraitMask)traitMask
+		   range: (NSRange)range
 {
-/* We don't use font traits yet, oops. */
-/*
-  id value;
+  NSFont *font;
+  unsigned loc = range.location;
+  NSRange effRange;
+  NSFontManager *fm = [NSFontManager sharedFontManager];
 
-  value = [self attribute: NSFontAttributeName
-		  atIndex: range.location
-	   effectiveRange: range];
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -applyFontTraits:range:"];
+    }
 
-  [value setFontTraits: traitMask];
+  while (loc < NSMaxRange(range))
+    {
+      font = [self attribute: NSFontAttributeName
+		   atIndex: loc
+		   effectiveRange: &effRange];
 
-  [self addAttribute: NSFontAttributeName value: value range: range];
-*/
+      if (font != nil && [fm traitsOfFont: font] != traitMask)
+	{
+	  font = [fm fontWithFamily: [font familyName]
+		     traits: traitMask
+		     weight: [fm weightOfFont: font]
+		     size: [font pointSize]];
+
+	  if (font != nil)
+	    [self addAttribute: NSFontAttributeName
+		  value: font
+		  range: NSIntersectionRange(effRange, range)];
+	}
+      loc = NSMaxRange(effRange);
+    }
 }
 
-- (void) setAlignment: (NSTextAlignment)alignment range: (NSRange)range
+- (void) setAlignment: (NSTextAlignment)alignment
+		range: (NSRange)range
 {
   id value;
+  unsigned loc = range.location;
+  NSRange effRange;
 
-  value = [self attribute: NSParagraphStyleAttributeName
-		  atIndex: range.location
-	   effectiveRange: &range];
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -setAlignment:range:"];
+    }
 
-  [value setAlignment: alignment];
+  while (loc < NSMaxRange(range))
+    {
+      value = [self attribute: NSParagraphStyleAttributeName
+		    atIndex: loc
+		    effectiveRange: &effRange];
 
-  [self addAttribute: NSParagraphStyleAttributeName value: value range: range];
+      if (value == nil)
+	value = [NSMutableParagraphStyle defaultParagraphStyle];
+
+      [value setAlignment: alignment];
+
+      [self addAttribute: NSParagraphStyleAttributeName
+	    value: value
+	    range: NSIntersectionRange(effRange, range)];
+      loc = NSMaxRange(effRange);
+    }
 }
 
 - (void) fixAttributesInRange: (NSRange)range
@@ -433,6 +527,12 @@ documentAttributes: (NSDictionary**)dict
 
 - (void) fixFontAttributeInRange: (NSRange)range
 {
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -fixFontAttributeInRange:"];
+    }
+
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
@@ -441,6 +541,12 @@ documentAttributes: (NSDictionary**)dict
   unsigned	length = [str length];
   unsigned	location;
   NSRange	r;
+
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -fixParagraphStyleAttributeInRange:"];
+    }
 
   if (range.location > 0)
     {
@@ -549,6 +655,12 @@ documentAttributes: (NSDictionary**)dict
   unsigned	location = range.location;
   unsigned	end = NSMaxRange(range);
 
+  if (range.location < 0 || NSMaxRange(range) > [self length])
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -fixAttachmentAttributeInRange:"];
+    }
+
   while (location < end)
     {
       NSDictionary	*attr;
@@ -578,6 +690,10 @@ documentAttributes: (NSDictionary**)dict
 	}
       location = NSMaxRange(range);
     }
+}
+
+- (void)updateAttachmentsFromPath:(NSString *)path
+{
 }
 @end
 
@@ -635,9 +751,11 @@ documentAttributes: (NSDictionary**)dict
 - (NSString*) RTFHeaderStringWithContext: (NSMutableDictionary*) contextDict
 {
   NSMutableString	*result;
-  NSMutableDictionary	*fontDict;
+  NSDictionary	*fontDict;
+  NSDictionary	*colorDict;
+  NSDictionary	*docDict;
 
-  result = (id)[NSMutableString stringWithString: @"{\\rtf0\\ansi"];
+  result = (NSMutableString*)[NSMutableString stringWithString: @"{\\rtf0\\ansi"];
   fontDict = [contextDict objectForKey: @"Fonts"];
 
   // write Font Table
@@ -658,7 +776,14 @@ documentAttributes: (NSDictionary**)dict
 	  NSString	*fontFamily;
 	  NSString	*detail;
 
-	  fontFamily = [[NSFont fontWithName: currFont size: 12] familyName];
+	  if ([currFont isEqualToString: @"Symbol"])
+	    fontFamily = @"tech";
+	  else if ([currFont isEqualToString: @"Helvetica"])
+	    fontFamily = @"swiss";
+	  else if ([currFont isEqualToString: @"Courier"])
+	    fontFamily = @"modern";
+	  else
+	    fontFamily = @"nil";
 
 	  detail = [NSString stringWithFormat: @"%@\\f%@ %@;",
 	    [fontDict objectForKey: currFont], fontFamily, currFont];
@@ -667,6 +792,39 @@ documentAttributes: (NSDictionary**)dict
       table = [NSString stringWithFormat: @"{\\fonttbl%@}\n", fontlistString];
       [result appendString: table];
     }
+
+  // write Colour table
+  colorDict = [contextDict objectForKey: @"Colors"];
+  if (colorDict != nil)
+    {
+      unsigned int count = [colorDict count];
+      NSMutableArray *list = [NSMutableArray arrayWithCapacity: count];
+      NSEnumerator *keyEnum = [colorDict keyEnumerator];
+      id next;
+      int i;
+
+      while ((next = [keyEnum nextObject]) != nil)
+	{
+	  NSNumber *cn = [colorDict objectForKey: next];
+	  [list insertObject: next atIndex: [cn intValue]-1];
+	}
+
+      [result appendString: @"{\\colortbl;"];
+      for (i = 0; i < count; i++)
+	{
+	  NSColor *color = [list objectAtIndex: i];
+	  [result appendString: [NSString stringWithFormat:
+					    @"\\red%d\\green%d\\blue%d;",
+					  (int)([color redComponent]*255),
+					  (int)([color greenComponent]*255),
+					  (int)([color blueComponent]*255)]];
+	}
+
+      [result appendString: @"}\n"];
+    }
+  // We should output the parameters for the document
+  docDict = [contextDict objectForKey: @"DocumentAttributes"];
+
   return result;
 }
 
@@ -682,6 +840,8 @@ documentAttributes: (NSDictionary**)dict
   NSString		*string = [self string];
   NSMutableString	*result = [NSMutableString string];
   NSFont		*currentFont = nil;
+  NSColor               *fgColor = [NSColor textColor];
+  NSColor               *bgColor = [NSColor textBackgroundColor];
 
   completeRange = NSRangeFromString([contextDict objectForKey: @"Range"]);
   currRange = NSMakeRange(completeRange.location, 0);
@@ -771,29 +931,159 @@ documentAttributes: (NSDictionary**)dict
 	       */
 	      if (traits & NSItalicFontMask)
 		{
-		  [headerString appendString: @"\n\\i "];
+		  [headerString appendString: @"\\i"];
+		  [trailerString appendString: @"\\i0"];
 		}
 	      if (traits & NSBoldFontMask)
 		{
-		  [headerString appendString: @"\n\\b "];
-		  [trailerString appendString: @"\n\\b0"];
+		  [headerString appendString: @"\\b"];
+		  [trailerString appendString: @"\\b0"];
 		}
 	      currentFont = font;
 	    }
 	  else if ([currAttrib isEqualToString: NSParagraphStyleAttributeName])
 	    {
+	      float firstLineIndent;
+	      float lineIndent;
+	      NSParagraphStyle *paraStyle = [attributes objectForKey:
+							  NSParagraphStyleAttributeName];
+	      NSTextAlignment alignment = [paraStyle alignment];
+
+	      switch (alignment)
+		{
+		case NSRightTextAlignment:
+		  [headerString appendString: @"\\qr"];
+		  break;
+		case NSCenterTextAlignment:
+		  [headerString appendString: @"\\qc"];
+		  break;
+		case NSLeftTextAlignment:
+		  [headerString appendString: @"\\ql"];
+		  break;
+		case NSJustifiedTextAlignment:
+		  [headerString appendString: @"\\qj"];
+		  break;
+		default: break;
+		}
+
+	      // write first line indent and left indent
+	      firstLineIndent = [paraStyle firstLineHeadIndent];
+	      if (firstLineIndent != 0.0)
+		{
+		  // FIXME: How should the units be converted?
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\fi%d",
+							(int)firstLineIndent]];
+		  [trailerString appendString: @"\\fi0"];
+		}
+	      lineIndent = [paraStyle headIndent];
+	      if (lineIndent != 0.0)
+		{
+		  // FIXME: How should the units be converted?
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\li%d",
+							(int)lineIndent]];
+		  [trailerString appendString: @"\\li0"];
+		}
 	    }
 	  else if ([currAttrib isEqualToString: NSForegroundColorAttributeName])
 	    {
+	      NSColor *color = [attributes objectForKey: NSForegroundColorAttributeName];
+	      if (![color isEqual: fgColor])
+		{
+		  NSMutableDictionary	*peekDict;
+		  unsigned int cn;
+
+		  peekDict = [contextDict objectForKey: @"Colors"];
+		  /*
+		   * maintain a dictionary for the used colours
+		   * (for rtf-header generation)
+		   */
+		  if (peekDict == nil)
+		    {
+		      peekDict = [NSMutableDictionary
+				   dictionaryWithObjectsAndKeys:
+				     [NSNumber numberWithInt: 1], color, nil];
+		      [contextDict setObject: peekDict forKey: @"Colors"];
+		      cn = 1;
+		    }
+		  else
+		    {
+		      if ([peekDict objectForKey: color] == nil)
+			{
+			  cn = [peekDict count] + 1;
+
+			  [peekDict setObject: [NSNumber numberWithInt: cn]
+				    forKey: color];
+			}
+		      else
+			cn = [[peekDict objectForKey: color] intValue];
+		    }
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\cf%d", cn]];
+		  [trailerString appendString: @"\\cf0"];
+		}
 	    }
 	  else if ([currAttrib isEqualToString: NSUnderlineStyleAttributeName])
 	    {
+	      [headerString appendString: @"\\ul"];
+	      [trailerString appendString: @"\\ulnone"];
 	    }
 	  else if ([currAttrib isEqualToString: NSSuperscriptAttributeName])
 	    {
+	      NSNumber *value = [attributes objectForKey: NSSuperscriptAttributeName];
+	      int svalue = [value intValue] * 6;
+
+	      if (svalue > 0)
+		{
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\up%d", svalue]];
+		  [trailerString appendString: @"\\up0"];
+		}
+	      else if (svalue < 0)
+		{
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\dn%d", svalue]];
+		  [trailerString appendString: @"\\dn0"];
+		}
 	    }
 	  else if ([currAttrib isEqualToString: NSBackgroundColorAttributeName])
 	    {
+	      NSColor *color = [attributes objectForKey: NSForegroundColorAttributeName];
+	      if (![color isEqual: bgColor])
+		{
+		  NSMutableDictionary	*peekDict;
+		  unsigned int cn;
+
+		  peekDict = [contextDict objectForKey: @"Colors"];
+		  /*
+		   * maintain a dictionary for the used colours
+		   * (for rtf-header generation)
+		   */
+		  if (peekDict == nil)
+		    {
+		      peekDict = [NSMutableDictionary
+				   dictionaryWithObjectsAndKeys:
+				     [NSNumber numberWithInt: 1], color, nil];
+		      [contextDict setObject: peekDict forKey: @"Colors"];
+		      cn = 1;
+		    }
+		  else
+		    {
+		      if ([peekDict objectForKey: color] == nil)
+			{
+			  cn = [peekDict count] + 1;
+
+			  [peekDict setObject: [NSNumber numberWithInt: cn]
+				    forKey: color];
+			}
+		      else
+			cn = [[peekDict objectForKey: color] intValue];
+		    }
+		  [headerString appendString: [NSString stringWithFormat:
+							  @"\\cb%d", cn]];
+		  [trailerString appendString: @"\\cb0"];
+		}
 	    }
 	  else if ([currAttrib isEqualToString: NSAttachmentAttributeName])
 	    {
@@ -812,16 +1102,21 @@ documentAttributes: (NSDictionary**)dict
       substring = [substring stringByReplacingString: @"\\"
 					  withString: @"\\\\"];
       substring = [substring stringByReplacingString: @"\n"
-					  withString: @"\\\n"];
+					  withString: @"\\par\n"];
+      substring = [substring stringByReplacingString: @"\t"
+					  withString: @"\\tab"];
       substring = [substring stringByReplacingString: @"{"
 					  withString: @"\\{"];
       substring = [substring stringByReplacingString: @"}"
 					  withString: @"\\}"];
+      // FIXME: All characters not in the standard encodeing must be
+      // replaced by \'xx
+
       if (useBraces)
 	{
 	  NSString	*braces;
 
-	  braces = [NSString stringWithFormat: @"{%@%@%@}",
+	  braces = [NSString stringWithFormat: @"{%@ %@%@}",
 	    headerString, substring, trailerString];
 	  [result appendString: braces];
 	}
@@ -829,7 +1124,7 @@ documentAttributes: (NSDictionary**)dict
 	{
 	  NSString	*nobraces;
 
-	  nobraces = [NSString stringWithFormat: @"%@%@%@",
+	  nobraces = [NSString stringWithFormat: @"%@ %@%@",
 	    headerString, substring, trailerString];
 	  [result appendString: nobraces];
 	}

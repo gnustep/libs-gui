@@ -3,6 +3,11 @@
 	* Source/GSFontInfo.m: allFonts returns GSFontInfo objects.
 	[-pointSize]: Implement.
 
+2000-04-02 15:00 Fred Kiefer <FredKiefer@gmx.de>
+
+	* NSAttributedString.m: Improved RTF output and corrections in the
+	formating methods
+
 2000-04-01 18:00 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSText.m: Now really uses a text storage instead of an
