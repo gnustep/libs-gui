@@ -78,13 +78,4 @@
 
 @end
 
-//
-// GNUstep backend methods
-//
-@interface NSColorWell (GNUstepBackend)
-
-- (void)drawBorderRect:(NSRect)aRect;
-
-@end
-
 #endif // _GNUstep_H_NSColorWell

@@ -41,14 +41,14 @@
 //
 + (void)initialize
 {
-	if (self == [NSColorWell class])
-		[self setVersion:1];								// Initial version
+  if (self == [NSColorWell class])
+    [self setVersion: 1];
 }
 
 //
 // Instance methods
 //
-- initWithFrame:(NSRect)frameRect
+- initWithFrame: (NSRect)frameRect
 {
   [super initWithFrame: frameRect];
 
@@ -107,14 +107,13 @@
 {
   if (NSIsEmptyRect(insideRect))
     return;
-  [the_color set];
-  NSRectFill(insideRect);
+  [the_color drawSwatchInRect insideRect];
 }
 
 //
 // Activating 
 //
-- (void)activate:(BOOL)exclusive
+- (void)activate: (BOOL)exclusive
 {
   is_active = YES;
 }
@@ -137,14 +136,14 @@
   return the_color;
 }
 
-- (void)setColor:(NSColor *)color
+- (void)setColor: (NSColor *)color
 {
   ASSIGN(the_color, color);
 }
 
-- (void)takeColorFrom:(id)sender
+- (void)takeColorFrom: (id)sender
 {
-  if ([sender respondsToSelector:@selector(color)])
+  if ([sender respondsToSelector: @selector(color)])
     ASSIGN(the_color, [sender color]);
 }
 
@@ -156,7 +155,7 @@
   return is_bordered;
 }
 
-- (void)setBordered:(BOOL)bordered
+- (void)setBordered: (BOOL)bordered
 {
   is_bordered = bordered;
   [self display];
@@ -185,12 +184,3 @@
 
 @end
 
-//
-// GNUstep backend methods
-//
-@implementation NSColorWell (GNUstepBackend)
-
-- (void) drawBorderRect:(NSRect)aRect
-{
-}
-@end
