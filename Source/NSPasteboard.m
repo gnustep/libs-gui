@@ -312,11 +312,13 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       if (data != nil)
 	{
 	  tmp = [NSPasteboard pasteboardWithUniqueName];
+	  [tmp declareTypes: [NSArray arrayWithObject: fromType] owner: nil];
 	  [tmp setData: data forType: fromType];
 	}
       else if (file != nil)
 	{
 	  tmp = [NSPasteboard pasteboardWithUniqueName];
+	  [tmp declareTypes: [NSArray arrayWithObject: fromType] owner: nil];
 	  [tmp writeFileContents: file];
 	}
       else
