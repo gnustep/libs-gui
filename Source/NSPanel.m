@@ -29,6 +29,8 @@
 #include <gnustep/gui/config.h>
 #include <AppKit/NSPanel.h>
 
+
+
 @implementation NSPanel
 
 //
@@ -36,56 +38,35 @@
 //
 + (void)initialize
 {
-  if (self == [NSPanel class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+	if (self == [NSPanel class])
+		[self setVersion:1];
 }
 
 //
-//
+// Instance methods
 //
 - init
 {
-  int style;
+int style = NSTitledWindowMask | NSClosableWindowMask;
 
-  style = NSTitledWindowMask | NSClosableWindowMask;
-  return [self initWithContentRect:NSZeroRect styleMask:style
-	       backing:NSBackingStoreBuffered defer:NO];
+	return [self initWithContentRect:NSZeroRect 
+				 styleMask:style
+				 backing:NSBackingStoreBuffered 
+				 defer:NO];
 }
 
 //
-// Determining the Panel Behavior 
+// Determining the Panel's Behavior 
 //
-- (BOOL)becomesKeyOnlyIfNeeded
-{
-  return _becomesKeyOnlyIfNeeded;
-}
-
-- (BOOL)isFloatingPanel
-{
-  return _isFloatingPanel;
-}
+- (BOOL)isFloatingPanel					{ return _isFloatingPanel; }
+- (void)setFloatingPanel:(BOOL)flag		{ _isFloatingPanel = flag; }
+- (BOOL)worksWhenModal					{  return _worksWhenModal; }
+- (void)setWorksWhenModal:(BOOL)flag	{ _worksWhenModal = flag; }
+- (BOOL)becomesKeyOnlyIfNeeded			{ return _becomesKeyOnlyIfNeeded; }
 
 - (void)setBecomesKeyOnlyIfNeeded:(BOOL)flag
 {
-  _becomesKeyOnlyIfNeeded = flag;
-}
-
-- (void)setFloatingPanel:(BOOL)flag
-{
-  _isFloatingPanel = flag;
-}
-
-- (void)setWorksWhenModal:(BOOL)flag
-{
-  _worksWhenModal = flag;
-}
-
-- (BOOL)worksWhenModal
-{
-  return _worksWhenModal;
+	_becomesKeyOnlyIfNeeded = flag;
 }
 
 //
@@ -93,14 +74,14 @@
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
+	[super encodeWithCoder:aCoder];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
+	[super initWithCoder:aDecoder];
 
-  return self;
+	return self;
 }
 
 @end

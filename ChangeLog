@@ -6,6 +6,7 @@ Tue Dec 8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	displayIfNeededIgnoringOpacity: rewrite to fix obscure bugs in auto 
 	display.  Minor tweaks in other display methods for same reasons.  
 	* NSView.h rename invalidatedRectangle to invalidRect.
+	* NSApplication.m: polish, eliminate a couple of compiler warnings.
 
 Tue Dec  8 20:50:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

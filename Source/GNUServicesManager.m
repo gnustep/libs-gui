@@ -1083,6 +1083,6 @@ NSSetShowsServicesMenuItem(NSString *name, BOOL enabled)
 BOOL
 NSShowsServicesMenuItem(NSString * name)
 {
-  return [[GNUServicesManager manager] showsServicesMenuItem: itemName];
+  return [[GNUServicesManager manager] showsServicesMenuItem: name];
 }
 
