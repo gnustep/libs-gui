@@ -1,3 +1,18 @@
+Wed Jun 21 19:42:12 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* NSCell.m ([-objectValue]): Placeholder implementation returning
+	the same as stringValue.
+
+        Alpha implementation of editing in NSTableView.
+	* Source/NSTableView.m ([-setDelegate:]): Check whether delegate
+	is editable.  ([-drawRow:clipRect:]): Don't draw over the edited
+	cell.  ([-mouseDown:]): Added editing.  ([-abortEditing]):
+	Implemented.  ([-currentEditor]): Idem.  ([-validateEditing]):
+	Idem.  ([-editedRow]): Idem.  ([-editedColumn]): Idem.
+	([-textDidBeginEditing:]): Idem.  ([-textDidEndEditing:]):
+	Idem. ([-textShouldBeginEditing:]): Idem.
+	([-textShouldEndEditing:]): Idem.  ([-textDidChange:]): Idem.
+
 Tue Jun 20 20:22:34 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/AppKit/NSTableView.h: Added editing related ivars.
