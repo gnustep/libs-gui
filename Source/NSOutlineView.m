@@ -83,6 +83,11 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
+- (id)_objectValueForTableColumn: (NSTableColumn *)tb
+			     row: (int)index;
+- (void) _setObjectValue: (id)value
+	  forTableColumn: (NSTableColumn *)tb
+		     row: (int) index;
 @end
 
 // These methods are private...
@@ -768,7 +773,9 @@ static NSImage *unexpandable  = nil;
 }
 
 - (void) setDelegate: (id)anObject
-{ 
+{
+  const SEL sel = @selector(outlineView:willDisplayCell:forTableColumn:item:);
+ 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = anObject;
@@ -787,6 +794,8 @@ static NSImage *unexpandable  = nil;
   SET_DELEGATE_NOTIFICATION(ItemDidCollapse);
   SET_DELEGATE_NOTIFICATION(ItemWillExpand);
   SET_DELEGATE_NOTIFICATION(ItemWillCollapse);
+
+  _del_responds = [_delegate respondsToSelector: sel];
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -1130,6 +1139,37 @@ static NSImage *unexpandable  = nil;
   return YES;
 }
 
+- (id) _objectValueForTableColumn: (NSTableColumn *)tb
+			      row: (int) index
+{
+  id result = nil;
+  id item = [self itemAtRow: index];
+
+  if([_dataSource respondsToSelector:
+		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+    {
+      result = [_dataSource outlineView: self
+			    objectValueForTableColumn: tb
+			    byItem: item];
+    }
+
+  return result;
+}
+
+- (void) _setObjectValue: (id)value
+	  forTableColumn: (NSTableColumn *)tb
+		     row: (int) index
+{
+  id item = [self itemAtRow: index];
+  if([_dataSource respondsToSelector:
+		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+    {
+      [_dataSource outlineView: self
+		   setObjectValue: value
+		   forTableColumn: tb
+		   byItem: item];
+    }
+}
 
 - (void) setDropItem: (id) item
       dropChildIndex: (int) childIndex
@@ -1521,6 +1561,163 @@ static NSImage *unexpandable  = nil;
 	    }
 	}
     }
+}
+
+- (void) editColumn: (int) columnIndex 
+		row: (int) rowIndex 
+	  withEvent: (NSEvent *) theEvent 
+	     select: (BOOL) flag
+{
+  NSText *t;
+  NSTableColumn *tb;
+  NSRect drawingRect, imageRect;
+  unsigned length = 0;
+  id item = nil;
+  int level = 0;
+  float indentationFactor = 0.0;
+  NSImage *image = nil;
+  NSCell *imageCell = nil;
+
+  // We refuse to edit cells if the delegate can not accept results 
+  // of editing.
+  if (_dataSource_editable == NO)
+    {
+      return;
+    }
+  
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
+
+  if (rowIndex < 0 || rowIndex >= _numberOfRows 
+      || columnIndex < 0 || columnIndex >= _numberOfColumns)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Row/column out of index in edit"];
+    }
+  
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+
+  // Now (_textObject == nil)
+
+  t = [_window fieldEditor: YES  forObject: self];
+
+  if ([t superview] != nil)
+    {
+      if ([t resignFirstResponder] == NO)
+	{
+	  return;
+	}
+    }
+  
+  _editedRow = rowIndex;
+  _editedColumn = columnIndex;
+  item = [self itemAtRow: _editedRow];
+
+  // Prepare the cell
+  tb = [_tableColumns objectAtIndex: columnIndex];
+  // NB: need to be released when no longer used
+  _editedCell = [[tb dataCellForRow: rowIndex] copy];
+
+  [_editedCell setEditable: YES];
+  [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
+				     row: rowIndex]];
+
+  // We really want the correct background color!
+  if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
+    {
+      [(NSTextFieldCell *)_editedCell setBackgroundColor: _backgroundColor];
+    }
+  else
+    {
+      [t setBackgroundColor: _backgroundColor];
+    }
+  
+  // But of course the delegate can mess it up if it wants
+  if (_del_responds)
+    {
+      [_delegate outlineView: self   
+		 willDisplayCell: _editedCell 
+		 forTableColumn: tb   
+		 item: [self itemAtRow: rowIndex]];
+    }
+
+  /* Please note the important point - calling stringValue normally
+     causes the _editedCell to call the validateEditing method of its
+     control view ... which happens to be this object :-)
+     but we don't want any spurious validateEditing to be performed
+     before the actual editing is started (otherwise you easily end up
+     with the table view picking up the string stored in the field
+     editor, which is likely to be the string resulting from the last
+     edit somewhere else ... getting into the bug that when you TAB
+     from one cell to another one, the string is copied!), so we must
+     call stringValue when _textObject is still nil.  */
+  if (flag)
+    {
+      length = [[_editedCell stringValue] length];
+    }
+
+  _textObject = [_editedCell setUpFieldEditorAttributes: t];
+
+  // determine which image to use...
+  if([self isItemExpanded: item])
+    {
+      image = expanded;
+    }
+  else
+    {
+      image = collapsed;
+    }
+
+  if(![self isExpandable: item])
+    {
+      image = unexpandable;
+    }
+  // move the drawing rect over like in the drawRow routine...
+  level = [self levelForItem: item];
+  indentationFactor = _indentationPerLevel * level;
+  drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
+  drawingRect.origin.x += indentationFactor + 5 + [image size].width;
+  drawingRect.size.width -= indentationFactor + 5 + [image size].width;
+
+  // create the image cell..
+  imageCell = [[NSCell alloc] initImageCell: image];
+  if(_indentationMarkerFollowsCell)
+    {
+      imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+      imageRect.origin.y = drawingRect.origin.y;
+    }
+  else
+    {
+      imageRect.origin.x = drawingRect.origin.x;
+      imageRect.origin.y = drawingRect.origin.y;
+    }
+  
+  // draw...
+  imageRect.size.width = [image size].width;
+  imageRect.size.height = [image size].height;
+  [imageCell drawWithFrame: imageRect inView: self];
+  if (flag)
+    {
+      [_editedCell selectWithFrame: drawingRect
+		   inView: self
+		   editor: _textObject
+		   delegate: self
+		   start: 0
+		   length: length];
+    }
+  else
+    {
+      [_editedCell editWithFrame: drawingRect
+		   inView: self
+		   editor: _textObject
+		   delegate: self
+		   event: theEvent];
+    }
+  return;    
 }
 @end /* implementation of NSOutlineView */
 

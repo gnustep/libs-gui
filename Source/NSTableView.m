@@ -89,6 +89,11 @@ static unsigned currentDragOperation;
 - (BOOL) _writeRows: (NSArray *) rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
+- (id)_objectValueForTableColumn: (NSTableColumn *)tb
+			     row: (int)index;
+- (void)_setObjectValue: (id)value
+	 forTableColumn: (NSTableColumn *)tb
+		    row: (int)index;
 @end
 
 
@@ -3963,8 +3968,12 @@ byExtendingSelection: (BOOL)flag
 	      
 	      tb = [_tableColumns objectAtIndex: _editedColumn];
 	      
-	      [_dataSource tableView: self  setObjectValue: newObjectValue
-			 forTableColumn: tb  row: _editedRow];
+	      [self _setObjectValue: newObjectValue
+		    forTableColumn: tb
+		    row: _editedRow];
+
+	      //[_dataSource tableView: self  setObjectValue: newObjectValue
+	      //	 forTableColumn: tb  row: _editedRow];
 	    }
 	}
     }
@@ -4024,10 +4033,11 @@ byExtendingSelection: (BOOL)flag
   _editedCell = [[tb dataCellForRow: rowIndex] copy];
 
   [_editedCell setEditable: YES];
-  [_editedCell setObjectValue: [_dataSource tableView: self
-					    objectValueForTableColumn: tb
-					    row: rowIndex]];
-
+  [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
+				     row: rowIndex]];
+  /* [_dataSource tableView: self
+     objectValueForTableColumn: tb
+     row: rowIndex]]; */
 
   // We really want the correct background color!
   if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
@@ -7072,6 +7082,36 @@ byExtendingSelection: (BOOL)flag
     }
 
   return YES;
+}
+
+- (id) _objectValueForTableColumn: (NSTableColumn *)tb
+			      row: (int) index
+{
+  id result = nil;
+
+  if([_dataSource respondsToSelector:
+		    @selector(tableView:objectValueForTableColumn:row:)])
+    {
+      result = [_dataSource tableView: self
+			    objectValueForTableColumn: tb
+			    row: index];
+    }
+
+  return result;
+}
+
+- (void) _setObjectValue: (id)value
+	  forTableColumn: (NSTableColumn *)tb
+		     row: (int) index
+{
+  if([_dataSource respondsToSelector:
+		    @selector(tableView:objectValueForTableColumn:row:)])
+    {
+      [_dataSource tableView: self
+		   setObjectValue: value
+		   forTableColumn: tb
+		   row: index];
+    }
 }
 
 - (BOOL) _isDraggingSource

@@ -1,3 +1,15 @@
+2002-07-11  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: ([-editColumn:row:withEvent:select:])
+	Needed to override this method in NSOutlineView since attempting
+	to edit a cell in an NSOutlineView was causing a crash.  Also,
+	NSTableView's version of this method does not draw the button image
+	correctly.
+	* Source/NSTableView.m: Added a new methods 
+	[-_objectValueForTableColumn:row:] and [-_setObjectValue:
+	forTableColumn:row:] to both this class and to NSOutlineView
+	to allow more code reuse between the NSOutlineView and NSTableView.
+
 Mon Jul  8 13:55:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m ([-createRowsForColumn:]): Removed usage of
