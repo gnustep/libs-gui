@@ -310,5 +310,11 @@ enum {
  */
 unsigned int NSEventMaskFromType(NSEventType type);
 
+#ifndef	NO_GNUSTEP
+typedef enum {
+  GSAppKitWindowMoved = 1,
+  GSAppKitWindowResized
+} GSAppKitSubtype;
+#endif
 
 #endif /* _GNUstep_H_NSEvent */

@@ -3,12 +3,10 @@
 
    Generic Functions for the GNUstep GUI Library.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
-   Date: December 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -36,20 +34,23 @@
 
 char **NSArgv = NULL;
 
-//
-// Main initialization routine for the GNUstep GUI Library Apps
-//
-int NSApplicationMain(int argc, const char **argv)
+/*
+ * Main initialization routine for the GNUstep GUI Library Apps
+ */
+int
+NSApplicationMain(int argc, const char **argv)
 {
-extern char** environ;
+  NSAutoreleasePool	*pool;
 
 #if LIB_FOUNDATION_LIBRARY
-  [NSProcessInfo initializeWithArguments:(char**)argv
-				 count:argc
-			     environment:environ];
+  extern char		**environ;
+
+  [NSProcessInfo initializeWithArguments: (char**)argv
+				   count: argc
+			     environment: environ];
 #endif
 
-  [NSAutoreleasePool new];
+  pool = [NSAutoreleasePool new];
 
 #ifndef NX_CURRENT_COMPILER_RELEASE
   initialize_gnustep_backend();
@@ -57,47 +58,36 @@ extern char** environ;
 
   [[NSApplication sharedApplication] run];
 
+  [pool release];
+
   return 0;
 }
 
-//
-// Convert an NSEvent Type to it's respective Event Mask
-//
-unsigned int NSEventMaskFromType(NSEventType type)
-{													
-	switch(type)										
-		{												
-		case NSLeftMouseDown:							
-			return NSLeftMouseDownMask;
-		case NSLeftMouseUp:
-			return NSLeftMouseUpMask;
-		case NSRightMouseDown:
-			return NSRightMouseDownMask;
-		case NSRightMouseUp:
-			return NSRightMouseUpMask;
-		case NSMouseMoved:
-			return NSMouseMovedMask;
-		case NSMouseEntered:
-			return NSMouseEnteredMask;
-		case NSMouseExited:
-			return NSMouseExitedMask;
-		case NSLeftMouseDragged:
-			return NSLeftMouseDraggedMask;
-		case NSRightMouseDragged:
-			return NSRightMouseDraggedMask;
-		case NSKeyDown:
-			return NSKeyDownMask;
-		case NSKeyUp:
-			return NSKeyUpMask;
-		case NSFlagsChanged:
-			return NSFlagsChangedMask;
-		case NSPeriodic:
-			return NSPeriodicMask;
-		case NSCursorUpdate:
-			return NSCursorUpdateMask;
-		default:
-			break;
-		}
-
-	return 0;
+/*
+ * Convert an NSEvent Type to it's respective Event Mask
+ */
+unsigned
+NSEventMaskFromType(NSEventType type)
+{
+  switch(type)
+    {
+      case NSLeftMouseDown:	return NSLeftMouseDownMask;
+      case NSLeftMouseUp:	return NSLeftMouseUpMask;
+      case NSRightMouseDown:	return NSRightMouseDownMask;
+      case NSRightMouseUp:	return NSRightMouseUpMask;
+      case NSMouseMoved:	return NSMouseMovedMask;
+      case NSMouseEntered:	return NSMouseEnteredMask;
+      case NSMouseExited:	return NSMouseExitedMask;
+      case NSLeftMouseDragged:	return NSLeftMouseDraggedMask;
+      case NSRightMouseDragged:	return NSRightMouseDraggedMask;
+      case NSKeyDown:		return NSKeyDownMask;
+      case NSKeyUp:		return NSKeyUpMask;
+      case NSFlagsChanged:	return NSFlagsChangedMask;
+      case NSPeriodic:		return NSPeriodicMask;
+      case NSCursorUpdate:	return NSCursorUpdateMask;
+      case NSAppKitDefined:	return NSAppKitDefinedMask;
+      case NSSystemDefined:	return NSSystemDefinedMask;
+      case NSApplicationDefined: return NSApplicationDefinedMask;
+    }
+  return 0;
 }

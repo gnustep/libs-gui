@@ -1,3 +1,18 @@
+Tue Jul  6 12:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSEvent.h: Added event subtypes for appkit events
+	* Source/Functions.m: Rewrite for new event types.
+
+Tue Jul  6  6:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSGraphicsContext.h: New method for window control -
+	([_setFrame:forWindow:])
+	* Headers/AppKit/NSWindow.m: New ivar 'autosave_name' and new method
+	([_setFrame:]) for backend to call when window frame has changed.
+	* Source/NSGraphicsContext.m: Dummy implementation of new method.
+	* Source/NSWindow.m: Rewrite all moving/sizing methods and methods
+	for storing/retrieving window frame info in defaults database.
+
 1999-07-05  Adam Fedor  <fedor@gnu.org>
 
         * Source/GNUmakefile: Install NSPopUpButtonCell.h
