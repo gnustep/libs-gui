@@ -1,3 +1,8 @@
+Fri May 10 11:24:38 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSRulerView.m ([NSRulerView -dealloc]): Do not release the 
+	scrollview (Suggested by Benhur Stein <benhur@inf.ufsm.br>).
+
 2002-05-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSFont.m (-initWithName:matrix:): If matrix
