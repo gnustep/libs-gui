@@ -437,15 +437,28 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (BOOL) setName: (NSString *)string
 {
+  BOOL retained = NO;
+  
   if (!string || [nameDict objectForKey: string])
     return NO;
 
   if (_name && self == [nameDict objectForKey: _name])
-    [nameDict removeObjectForKey: _name];
-
+    {
+      /* We retain self in case removing from the dictionary releases
+         us */
+      RETAIN (self);
+      retained = YES;
+      [nameDict removeObjectForKey: _name];
+    }
+  
   ASSIGN(_name, string);
-
+  
   [nameDict setObject: self forKey: _name];
+  if (retained)
+    {
+      RELEASE (self);
+    }
+  
   return YES;
 }
 
