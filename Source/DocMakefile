@@ -152,27 +152,18 @@ GSTable.h \
 GSHbox.h \
 GSVbox.h \
 
-DOCUMENT_NAME = Gui GuiAdditions GuiUser
+DOCUMENT_NAME = Gui GuiAdditions
 
 Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
 GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
-GuiUser_DOC_INSTALL_DIR = User/Gui
 
 Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
 	../Documentation/Gui/Introduction.gsdoc \
-	../Documentation/Gui/NSBundleAdditions.gsdoc \
-	../Documentation/Gui/NSCoderAdditions.gsdoc \
 	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
-	../Documentation/Gui/NSStringAdditions.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
 
 GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
 	../Documentation/GuiAdditions/GuiAdditions.gsdoc
-
-GuiUser_AGSDOC_FILES =	\
-	../Documentation/Gui/DefaultsSummary.gsdoc \
-	../Documentation/Gui/KeyboardSetup.gsdoc \
-	../Documentation/Gui/LanguageSetup.gsdoc
 
 #
 # Hack ... using the -DocumentationDirectory flag overrides the value
@@ -180,6 +171,7 @@ GuiUser_AGSDOC_FILES =	\
 # directory.
 #
 Gui_AGSDOC_FLAGS = \
+	-MakeFrames YES \
 	-DocumentationDirectory ../Documentation/Gui \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \
@@ -195,6 +187,7 @@ Gui_AGSDOC_FLAGS = \
 	}' -Up Gui
 
 GuiAdditions_AGSDOC_FLAGS = \
+	-MakeFrames YES \
 	-DocumentationDirectory ../Documentation/GuiAdditions \
 	-HeaderDirectory ../Headers/Additions/GNUstepGUI \
 	-Declared GNUstepGUI \
@@ -208,21 +201,6 @@ GuiAdditions_AGSDOC_FLAGS = \
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	DEFINE_RINT_IF_MISSING=""; \
 	}' -Up GuiAdditions
-
-GuiUser_AGSDOC_FLAGS = \
-	-DocumentationDirectory ../Documentation/GuiUser \
-	-HeaderDirectory ../Headers/AppKit \
-	-Declared AppKit \
-	-Standards YES \
-	-ConstantsTemplate TypesAndConstants \
-	-FunctionsTemplate Functions \
-	-MacrosTemplate Functions \
-	-TypedefsTemplate TypesAndConstants \
-	-VariablesTemplate TypesAndConstants \
-	-WordMap '{\
-	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
-	DEFINE_RINT_IF_MISSING=""; \
-	}' -Up GuiUser
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
 

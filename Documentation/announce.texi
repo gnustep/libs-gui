@@ -45,7 +45,7 @@ Read the INSTALL file or the GNUstep-HOWTO for installation instructions.
 @section Where do I send bug reports?
 
 Please log bug reports on the GNUstep project page
-@url{http://savannah.gnu.org/support/?group=gnustep} or send
+@url{http://savannah.gnu.org/bugs/?group=gnustep} or send
 bug reports to @email{bug-gnustep@@gnu.org}.
 
 @section Obtaining GNU Software

@@ -9,6 +9,17 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.9.3}
+
+@itemize @bullet
+@item Spell checker reimplemented using libaspell
+@item New NSComboBox implementation
+@item NSToolbar much improved
+@item Binary incompatibilites from ivar additions in NSView and subclasses.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.9.2}
 
 @itemize @bullet
@@ -21,8 +32,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item NSStringDrawing redesigned.
 @item Much improved loading of gorm files
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.9.1}
 

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.1//EN" "http://www.gnustep.org/gsdoc-1_0_1.xml">
+<gsdoc base="ReleaseNotes">
+  <head>
+    <title>GNUstep Gui Release Notes</title>
+    <author name="Adam Fedor">
+      <email address="fedor@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>$Revision$</version>
+    <date>$Date$</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>Gui Release Notes</heading>
+      <p>
+        The release notes include descriptions of API changes, behavior
+	changes and other information that might help developers and users
+	migrate to using a newer version of the library.
+      </p>
+      <section>
+	<heading>Version 0.9.3</heading>
+	<p>
+	</p>
+	  <deflist>
+	    <term>Spell checker daemon reimplemented using libaspell</term>
+	    <desc>
+	      If the optional library libaspell is found, the spell checker
+	      will use it (otherwise spell checking will not work).
+	    </desc>
+	    <term>New NSComboBox implementation</term>
+	    <desc>
+	      NSComboBox and related classes have been re-implemented
+	      and documented.
+	    </desc>
+	    <term>NSToolbar code redone</term>
+	    <desc>
+	      A lot of changes where made to the NSToolbar class to 
+	      make it more functional.
+	    </desc>
+	    <term>Binary Incompatibilities</term>
+	    <desc>
+	      New ivars were added NSTableView, NSView,
+	      NSSavePanel. Applications that use this class and
+	      subclasses (e.g. NSOutlineView) may need to be
+	      recompiled to work properly.
+	    </desc>
+	  </deflist>
+      </section>
+    </chapter>
+  </body>
+</gsdoc>
