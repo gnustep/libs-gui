@@ -858,7 +858,7 @@ static void initSystemExtensionsColors(void)
 - (int) _insertionIndexAtPoint: (NSPoint)location
 {
   id hitView = [self hitTest: location];
-  NSRect hitViewFrame = [hitView frame];;
+  NSRect hitViewFrame = [hitView frame];
   int index;
   
   if ((hitView != nil)
