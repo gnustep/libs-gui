@@ -417,31 +417,33 @@ static Class cellClass;
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint location = [self convertPoint: [theEvent locationInWindow] 
-			   fromView: nil];
-  NSRect rect;
-
-  rect = [_cell knobRectFlipped: _rFlags.flipped_view];
-  if (![self mouse: location inRect: rect])
+  if ([_cell isEnabled])
     {
-      // Mouse is not on the knob, move the knob to the mouse position
-      float floatValue;
-      floatValue = _floatValueForMousePoint (location, rect, 
-					     [_cell trackRect], 
-					     [_cell isVertical], 
-					     [_cell minValue], 
-					     [_cell maxValue], _cell, 
-					     _rFlags.flipped_view); 
-      [_cell setFloatValue: floatValue];
-      if ([_cell isContinuous])
+      NSPoint location = [self convertPoint: [theEvent locationInWindow] 
+			       fromView: nil];
+      NSRect rect;
+
+      rect = [_cell knobRectFlipped: _rFlags.flipped_view];
+      if (![self mouse: location inRect: rect])
 	{
-	  [self sendAction: [_cell action] to: [_cell target]];
+	  // Mouse is not on the knob, move the knob to the mouse position
+	  float floatValue;
+	  floatValue = _floatValueForMousePoint (location, rect, 
+						 [_cell trackRect], 
+						 [_cell isVertical], 
+						 [_cell minValue], 
+						 [_cell maxValue], _cell, 
+						 _rFlags.flipped_view); 
+	  [_cell setFloatValue: floatValue];
+	  if ([_cell isContinuous])
+	    {
+	      [self sendAction: [_cell action] to: [_cell target]];
+	    }
+	  [_cell drawWithFrame: _bounds inView: self];
+	  [_window flushWindow];
 	}
-      [_cell drawWithFrame: _bounds inView: self];
-      [_window flushWindow];
+      
+      [self trackKnob: theEvent knobRect: rect];
     }
-
-  [self trackKnob: theEvent knobRect: rect];
 }
-
 @end
