@@ -133,7 +133,6 @@ static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
 static Class	viewClass;
-static Class	textFieldClass;
 static NSMutableSet	*autosaveNames;
 static NSRecursiveLock	*windowsLock;
 static NSMapTable* windowmaps = NULL;
@@ -151,7 +150,6 @@ static NSMapTable* windowmaps = NULL;
       ctImp = [self instanceMethodForSelector: ctSel];
       responderClass = [NSResponder class];
       viewClass = [NSView class];
-      textFieldClass = [NSTextField class];
       autosaveNames = [NSMutableSet new];
       windowsLock = [NSRecursiveLock new];
     }
@@ -2058,8 +2056,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView)
     {
       [self makeFirstResponder: theView];
-      if ([theView isKindOfClass: textFieldClass])
-	[(NSTextField *)theView selectText: self];
+      if ([theView respondsToSelector:@selector(selectText:)])
+	{
+	  _selection_direction =  NSSelectingNext;
+	  [(id)theView selectText: self];
+	  _selection_direction =  NSDirectSelection;
+      	}
     }
 }
 
@@ -2072,8 +2074,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView)
     {
       [self makeFirstResponder: theView];
-      if ([theView isKindOfClass: textFieldClass])
-	[(NSTextField *)theView selectText: self];
+      if ([theView respondsToSelector:@selector(selectText:)])
+	{
+	  _selection_direction =  NSSelectingPrevious;
+	  [(id)theView selectText: self];
+	  _selection_direction =  NSDirectSelection;
+	}
     }
 }
 
@@ -2084,7 +2090,7 @@ resetCursorRectsForView(NSView *theView)
   if ([first_responder isKindOfClass: viewClass])    
     theView = [first_responder nextValidKeyView];
   
-  if (!theView)
+  if ((theView == nil) && (_initial_first_responder))
     {
       if ([_initial_first_responder acceptsFirstResponder])
 	theView = _initial_first_responder;
@@ -2095,8 +2101,12 @@ resetCursorRectsForView(NSView *theView)
   if (theView)
     {
       [self makeFirstResponder: theView];
-      if ([theView isKindOfClass: textFieldClass])
-	[(NSTextField *)theView selectText: self];
+      if ([theView respondsToSelector:@selector(selectText:)])
+	{
+	  _selection_direction =  NSSelectingNext;
+	  [(id)theView selectText: self];
+	  _selection_direction =  NSDirectSelection;
+	}
     }
 }
 
@@ -2107,7 +2117,7 @@ resetCursorRectsForView(NSView *theView)
   if ([first_responder isKindOfClass: viewClass])    
     theView = [first_responder previousValidKeyView];
   
-  if (!theView)
+  if ((theView == nil) && (_initial_first_responder))
     {
       if ([_initial_first_responder acceptsFirstResponder])
 	theView = _initial_first_responder;
@@ -2118,9 +2128,22 @@ resetCursorRectsForView(NSView *theView)
   if (theView)
     {
       [self makeFirstResponder: theView];
-      if ([theView isKindOfClass: textFieldClass])
-	[(NSTextField *)theView selectText: self];
+      if ([theView respondsToSelector:@selector(selectText:)])
+	{
+	  _selection_direction =  NSSelectingPrevious;
+	  [(id)theView selectText: self];
+	  _selection_direction =  NSDirectSelection;
+	}
     }
+}
+
+// This is invoked by selectText: of some views (eg matrixes),
+// to know whether they have received it from the window, and
+// if so, in which direction is the selection moving (so that they know 
+// if they should select the last or the first editable cell).
+- (NSSelectionDirection)keyViewSelectionDirection
+{ 
+  return _selection_direction;
 }
 
 /*
@@ -2801,6 +2824,7 @@ resetCursorRectsForView(NSView *theView)
   first_responder = self;
   original_responder = nil;
   _initial_first_responder = nil;
+  _selection_direction = NSDirectSelection;
   delegate = nil;
   window_num = 0;
   gstate = 0;
