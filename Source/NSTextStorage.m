@@ -194,6 +194,10 @@ static	Class	concrete;
 
   r = editedRange;
   r.length += editedDelta;
+  // Multiple adds at the end might give a too long result
+  if (NSMaxRange(r) > [self length])
+      r.length = [self length] - r.location;
+
   [self fixAttributesInRange: r];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
