@@ -255,10 +255,6 @@ id _nsbuttonCellClass = nil;
 //
 // Displaying
 //
-- (void) drawRect: (NSRect)rect
-{
-  [cell drawWithFrame: rect inView: self];
-}
 
 - (void) highlight: (BOOL)flag
 {

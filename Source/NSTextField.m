@@ -213,14 +213,6 @@ id _nsTextfieldCellClass = nil;
 }
 
 //
-// Drawing
-//
-- (void) drawRect: (NSRect)rect
-{
-  [cell drawWithFrame: rect inView: self];
-}
-
-//
 // Modifying Graphic Attributes
 //
 - (void) setBackgroundColor: (NSColor *)aColor

@@ -486,7 +486,7 @@
 
   if ([popb_menu numberOfItems] == 0)
     {
-      [[NSPopUpButtonCell new] drawWithFrame:rect inView:self];
+      [[NSPopUpButtonCell new] drawWithFrame:bounds inView:self];
       return;
     }
 
@@ -495,7 +495,7 @@
   else
     aCell  = [[popb_menu itemArray] objectAtIndex:0]; 
 
-  [aCell drawWithFrame:rect inView:self]; 
+  [aCell drawWithFrame:bounds inView:self]; 
 }
 
 //
