@@ -602,8 +602,7 @@ static NSCell* tileCell = nil;
     {
       if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
 	{
-	  if ([NSBundle loadGModelNamed: mainModelFile owner: self] == NO)
-	    NSLog (@"Cannot load the main model file '%@'", mainModelFile);
+	  NSLog (@"Cannot load the main model file '%@'", mainModelFile);
 	}
     }
 
