@@ -79,23 +79,31 @@
 //
 // Setting the Control's Value 
 //
-- (double)doubleValue;
-- (float)floatValue;
-- (int)intValue;
-- (void)setDoubleValue:(double)aDouble;
-- (void)setFloatValue:(float)aFloat;
-- (void)setIntValue:(int)anInt;
-- (void)setNeedsDisplay;
-- (void)setStringValue:(NSString *)aString;
-- (NSString *)stringValue;
+- (void) setDoubleValue: (double)aDouble;
+- (double) doubleValue;
+
+- (void) setFloatValue: (float)aFloat;
+- (float) floatValue;
+
+- (void) setIntValue: (int)anInt;
+- (int) intValue;
+
+- (void) setStringValue: (NSString *)aString;
+- (NSString *) stringValue;
+
+- (void) setObjectValue: (id)anObject;
+- (id) objectValue;
+
+- (void) setNeedsDisplay;
 
 //
 // Interacting with Other Controls 
 //
-- (void)takeDoubleValueFrom:(id)sender;
-- (void)takeFloatValueFrom:(id)sender;
-- (void)takeIntValueFrom:(id)sender;
-- (void)takeStringValueFrom:(id)sender;
+- (void) takeDoubleValueFrom: (id)sender;
+- (void) takeFloatValueFrom: (id)sender;
+- (void) takeIntValueFrom: (id)sender;
+- (void) takeStringValueFrom: (id)sender;
+- (void) takeObjectValueFrom: (id)sender;
 
 //
 // Formatting Text 
