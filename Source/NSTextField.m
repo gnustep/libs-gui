@@ -127,19 +127,23 @@ static NSNotificationCenter *nc;
 	{
 	  NSText *t = [_window fieldEditor: YES 
 			      forObject: self];
+	  int length;
 
 	  if ([t superview] != nil)
 	    if ([t resignFirstResponder] == NO)
 	      return;
 	  
 	  //  [NSCursor hide];
+	  /* [self stringValue] generates a call to validateEditing 
+	     so we need to call it before setting up the _text_object */
+	  length = [[self stringValue] length];
 	  _text_object = [_cell setUpFieldEditorAttributes: t];
 	  [_cell selectWithFrame: _bounds
-		inView: self
-		editor: _text_object
-		delegate: self
-		start: 0
-		length: [[self stringValue] length]];
+		 inView: self
+		 editor: _text_object
+		 delegate: self
+		 start: 0
+		 length: length];
 	}
     }
 }

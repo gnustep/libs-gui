@@ -1262,6 +1262,7 @@ static SEL getSel;
   {
     NSText *t = [_window fieldEditor: YES
 			forObject: self];
+    int length;
 
     if ([t superview] != nil)
       if ([t resignFirstResponder] == NO)
@@ -1270,6 +1271,8 @@ static SEL getSel;
     _selectedCell = _cells[row][column];
     _selectedRow = row;
     _selectedColumn = column;
+    /* See comment in NSTextField */
+    length = [[_selectedCell stringValue] length];
     _textObject = [_selectedCell setUpFieldEditorAttributes: t];
     [_selectedCell selectWithFrame: [self cellFrameAtRow: _selectedRow
 					  column: _selectedColumn]
@@ -1277,7 +1280,7 @@ static SEL getSel;
 		   editor: _textObject
 		   delegate: self
 		   start: 0
-		   length: [[_selectedCell stringValue] length]];
+		   length: length];
     return _selectedCell;
   }
 }
