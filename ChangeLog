@@ -1,3 +1,15 @@
+2001-11-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFontManager.m
+	Reorganised the handling of the font enumerator. New
+	[_includeFont:] is only called from here. Corrected
+	[availableMembersOfFontFamily:] and [fontNamed:hasTraits:].
+	* Headers/gnustep/gui/GSFontInfo.h: 
+	Adopted GSFontEnumerator to changes on NSFontManager.
+	* Source/GSFontInfo.m: 
+	Changed GSFontEnumerator so that only [enumerateFontsAndFamilies]
+	must be subclassed.
+	
 2001-11-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTabView.m
