@@ -137,7 +137,6 @@ static NSNotificationCenter *nc;
 //
 - (void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
 - (void) _illegalMovement: (int) notNumber;
-- (void) deleteRange: (NSRange)aRange  backspace: (BOOL)flag;
 @end
 
 @implementation NSTextView
@@ -412,7 +411,7 @@ static NSNotificationCenter *nc;
 
 - (void) delete: (id)sender
 {
-  [self deleteRange: _selected_range  backspace: NO];
+  [self deleteForward: sender];
 }
 
 - (void) paste: (id)sender
@@ -1544,7 +1543,7 @@ static NSNotificationCenter *nc;
 				     attributes: _typingAttributes])];
     }
   else
-    {
+    {      
       [self replaceCharactersInRange: insertRange
 	    withString: insertString];
     }
@@ -2103,28 +2102,99 @@ afterString in order over charRange. */
 
 - (void) deleteForward: (id)sender
 {
-  unsigned location = _selected_range.location;
-
-  if (location != [self textLength])
+  NSRange range = [self rangeForUserTextChange];
+  
+  if (range.location == NSNotFound)
     {
-      /* Not at the end of text -- delete following character */
-      NSRange delRange = NSMakeRange (location, 1);
-
-      delRange = [self selectionRangeForProposedRange: delRange
-		       granularity: NSSelectByCharacter];
-      [self deleteRange: delRange  backspace: NO];
+      return;
     }
-  else
+  
+  /* Manage case of insertion point - implicitly means to delete following 
+     character */
+  if (range.length == 0)
     {
-      /* end of text: behave the same way as NSBackspaceKey */
-      [self deleteBackward: sender];
+      if (range.location != [self textLength])
+	{
+	  /* Not at the end of text -- delete following character */
+	  range.length = 1;
+	}
+      else
+	{
+	  /* At the end of text - TODO: Make beeping or not beeping
+	     configurable vie User Defaults */
+	  NSBeep ();
+	  return;
+	}
     }
+  
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  /* The new selected range is just the insertion point at the beginning 
+     of deleted range */
+  [self setSelectedRange: NSMakeRange (range.location, 0)];
+
+  /* remember x for row - stable cursor movements - FIXME: Move this
+     inside setSelectedRange: */
+  _currentCursor = [self rectForCharacterIndex:
+			   _selected_range.location].origin;
 }
 
 - (void) deleteBackward: (id)sender
 {
-  [self deleteRange: _selected_range backspace: YES];
+  NSRange range = [self rangeForUserTextChange];
+  
+  if (range.location == NSNotFound)
+    {
+      return;
+    }
+  
+  /* Manage case of insertion point - implicitly means to delete
+     previous character */
+  if (range.length == 0)
+    {
+      if (range.location != 0)
+	{
+	  /* Not at the beginning of text -- delete previous character */
+	  range.location -= 1;
+	  range.length = 1;
+	}
+      else
+	{
+	  /* At the beginning of text - TODO: Make beeping or not
+	     beeping configurable vie User Defaults */
+	  NSBeep ();
+	  return;
+	}
+    }
+  
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  /* The new selected range is just the insertion point at the beginning 
+     of deleted range */
+  [self setSelectedRange: NSMakeRange (range.location, 0)];
+
+  /* remember x for row - stable cursor movements - FIXME: Move this
+     inside setSelectedRange: */
+  _currentCursor = [self rectForCharacterIndex:
+			   _selected_range.location].origin;
 }
+
 
 //<!> choose granularity according to keyboard modifier flags
 - (void) moveUp: (id)sender
@@ -3094,36 +3164,7 @@ other than copy/paste or dragging. */
 // (takes care of optimized redraw/ cursor positioning)
 - (void) deleteRange: (NSRange) aRange  backspace: (BOOL) flag
 {
-  NSRange deleteRange;
 
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (!aRange.length && !(flag && aRange.location))
-    return;
-
-  if (aRange.length)
-    {
-      deleteRange = aRange;
-    }
-  else
-    {
-      deleteRange = NSMakeRange (MAX (0, aRange.location - 1), 1);
-    }
-
-  if (![self shouldChangeTextInRange: deleteRange  replacementString: @""])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage deleteCharactersInRange: deleteRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-
-  // move cursor <!> [self selectionRangeForProposedRange: ]
-  [self setSelectedRange: NSMakeRange (deleteRange.location, 0)];
-
-  // remember x for row - stable cursor movements
-  _currentCursor = [self rectForCharacterIndex:
-			   _selected_range.location].origin;
 }
 
 - (unsigned) characterIndexForPoint: (NSPoint)point
