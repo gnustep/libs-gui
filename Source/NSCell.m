@@ -1690,6 +1690,15 @@ static NSColor	*shadowCol;
        */
       if ([self isOpaque] == NO)
 	{
+	  /* FIXME - This looks like potentially generating an
+	   * infinite loop!  The control asking the cell to draw
+	   * itself in the rect, the cell asking the control to draw
+	   * the rect, the control asking the cell to draw itself in
+	   * the rect, the cell ...
+	   *
+	   * I think we should remove it.  The control is responsible
+	   * for using the cell to draw, not vice versa.
+	   */
 	  [controlView displayRect: cellFrame];
 	}
       [self drawWithFrame: cellFrame inView: controlView];
