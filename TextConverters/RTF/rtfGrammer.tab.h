@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made from rtfGrammer.y, by GNU bison 1.75.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
@@ -22,6 +22,9 @@
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
+
+#ifndef BISON_RTFGRAMMER_TAB_H
+# define BISON_RTFGRAMMER_TAB_H
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -85,21 +88,22 @@
      RTFitalic = 311,
      RTFunderline = 312,
      RTFunderlineStop = 313,
-     RTFsubscript = 314,
-     RTFsuperscript = 315,
-     RTFtabstop = 316,
-     RTFfcharset = 317,
-     RTFfprq = 318,
-     RTFcpg = 319,
-     RTFOtherStatement = 320,
-     RTFfontListStart = 321,
-     RTFfamilyNil = 322,
-     RTFfamilyRoman = 323,
-     RTFfamilySwiss = 324,
-     RTFfamilyModern = 325,
-     RTFfamilyScript = 326,
-     RTFfamilyDecor = 327,
-     RTFfamilyTech = 328
+     RTFunichar = 314,
+     RTFsubscript = 315,
+     RTFsuperscript = 316,
+     RTFtabstop = 317,
+     RTFfcharset = 318,
+     RTFfprq = 319,
+     RTFcpg = 320,
+     RTFOtherStatement = 321,
+     RTFfontListStart = 322,
+     RTFfamilyNil = 323,
+     RTFfamilyRoman = 324,
+     RTFfamilySwiss = 325,
+     RTFfamilyModern = 326,
+     RTFfamilyScript = 327,
+     RTFfamilyDecor = 328,
+     RTFfamilyTech = 329
    };
 #endif
 #define RTFtext 258
@@ -158,40 +162,40 @@
 #define RTFitalic 311
 #define RTFunderline 312
 #define RTFunderlineStop 313
-#define RTFsubscript 314
-#define RTFsuperscript 315
-#define RTFtabstop 316
-#define RTFfcharset 317
-#define RTFfprq 318
-#define RTFcpg 319
-#define RTFOtherStatement 320
-#define RTFfontListStart 321
-#define RTFfamilyNil 322
-#define RTFfamilyRoman 323
-#define RTFfamilySwiss 324
-#define RTFfamilyModern 325
-#define RTFfamilyScript 326
-#define RTFfamilyDecor 327
-#define RTFfamilyTech 328
+#define RTFunichar 314
+#define RTFsubscript 315
+#define RTFsuperscript 316
+#define RTFtabstop 317
+#define RTFfcharset 318
+#define RTFfprq 319
+#define RTFcpg 320
+#define RTFOtherStatement 321
+#define RTFfontListStart 322
+#define RTFfamilyNil 323
+#define RTFfamilyRoman 324
+#define RTFfamilySwiss 325
+#define RTFfamilyModern 326
+#define RTFfamilyScript 327
+#define RTFfamilyDecor 328
+#define RTFfamilyTech 329
 
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#ifndef YYSTYPE
 #line 77 "rtfGrammer.y"
-typedef union YYSTYPE {
+typedef union {
 	int		number;
 	const char	*text;
 	RTFcmd		cmd;
-} YYSTYPE;
-/* Line 1248 of yacc.c.  */
-#line 188 "rtfGrammer.tab.h"
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+} yystype;
+/* Line 1281 of /usr/share/bison/yacc.c.  */
+#line 194 "rtfGrammer.tab.h"
+# define YYSTYPE yystype
 #endif
 
 
 
 
+#endif /* not BISON_RTFGRAMMER_TAB_H */
 
