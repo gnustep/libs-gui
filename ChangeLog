@@ -1,0 +1,15 @@
+Tue Feb 13 09:52:02 1996  Scott Christley <scottc@net-community.com>
+
+	* Headers/AppKit/NSText.h: Removed WIN32 instance variables
+
+Sun Feb 11 14:17:15 1996  Scott Christley <scottc@net-community.com>
+
+	* Makefile.in: Changed library name from libAppKit to libgnustep
+	* Renamed file libAppKit.m to libgnustep.m
+	* Changed terminology "Application Kit Library" to
+	"Application Library" to eliminate trademark conflicts with NeXT.
+
+Thu Feb  8 04:53:45 1996  Scott Christley <scottc@net-community.com>
+
+	* *.m: Conforms to NSCoding protocol
+	* *.h: Added NSCoding protocol methods

@@ -1,0 +1,313 @@
+# @configure_input@
+#
+#  Main makefile for GNUstep GUI Library
+#  Copyright (C) 1996, 1996 Free Software Foundation, Inc.
+#
+#  Author: Scott Christley <scottc@net-community.com>
+#
+#  This file is part of the GNUstep GUI Library.
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+#  Library General Public License for more details.
+#
+#  If you are interested in a warranty or support for this source code,
+#  contact Scott Christley at scottc@net-community.com
+#
+#  You should have received a copy of the GNU Library General Public
+#  License along with this library; if not, write to the Free
+#  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ 
+
+SHELL = /bin/sh
+
+#### Start of system configuration section. ####
+
+# The main executable or library
+MAIN_FILE=libgnustep-gui
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = $(exec_prefix)/lib
+includedir = $(prefix)/include
+
+MAKEDEFINES =
+
+CC = @CC@
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
+
+GCC_LIB = 
+OBJC_LIB = -lobjc
+SYS_LIBS =  
+ADD_LIBS = @LIBS@
+
+exeext = 
+oext = .o
+libext = .a
+resext = .res
+rcext = .rc
+
+LN_S = @LN_S@
+
+LDFLAGS = @LDFLAGS@ -o
+LD = ld
+
+LDOUT =
+LIB = ar
+LIBOUT = 
+LIBFLAGS = rc
+RANLIB = @RANLIB@
+RC = 
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+INIT_FILE =
+INIT_FILE_OBJ=$(INIT_FILE)$(oext)
+
+#### End of system configuration section. ####
+
+include $(srcdir)/../Version
+
+GNUSTEP1_HEADERS = gui/AppKit.h \
+gui/Functions.h \
+gui/LogFile.h \
+gui/NSActionCell.h \
+gui/NSApplication.h \
+gui/NSBitmapImageRep.h \
+gui/NSBox.h \
+gui/NSBrowser.h \
+gui/NSBrowserCell.h \
+gui/NSBundle.h \
+gui/NSButton.h \
+gui/NSButtonCell.h \
+gui/NSCachedImageRep.h \
+gui/NSCell.h \
+gui/NSClipView.h \
+gui/NSColor.h \
+gui/NSColorList.h \
+gui/NSColorPanel.h \
+gui/NSColorPicker.h \
+gui/NSColorWell.h \
+gui/NSControl.h \
+gui/NSCursor.h \
+gui/NSCustomImageRep.h
+
+GNUSTEP2_HEADERS = gui/NSDataLink.h \
+gui/NSDataLinkManager.h \
+gui/NSDataLinkPanel.h \
+gui/NSEPSImageRep.h \
+gui/NSEvent.h \
+gui/NSFont.h \
+gui/NSFontManager.h \
+gui/NSFontPanel.h \
+gui/NSForm.h \
+gui/NSFormCell.h \
+gui/NSHelpPanel.h \
+gui/NSImage.h \
+gui/NSImageRep.h \
+gui/NSMatrix.h \
+gui/NSMenu.h \
+gui/NSMenuCell.h \
+gui/NSOpenPanel.h \
+gui/NSPageLayout.h \
+gui/NSPanel.h \
+gui/NSPasteboard.h \
+gui/NSPopUpButton.h \
+gui/NSPrintInfo.h \
+gui/NSPrintOperation.h \
+gui/NSPrintPanel.h
+
+GNUSTEP3_HEADERS = gui/NSPrinter.h \
+gui/NSResponder.h \
+gui/NSSavePanel.h \
+gui/NSScreen.h \
+gui/NSScrollView.h \
+gui/NSScroller.h \
+gui/NSSelection.h \
+gui/NSSlider.h \
+gui/NSSliderCell.h \
+gui/NSSpellChecker.h \
+gui/NSSpellServer.h \
+gui/NSSplitView.h \
+gui/NSText.h \
+gui/NSTextField.h \
+gui/NSTextFieldCell.h \
+gui/NSView.h \
+gui/NSWindow.h \
+gui/NSWorkspace.h \
+gui/TrackingRectangle.h \
+gui/TypesandConstants.h \
+gui/config.h \
+gui/stdappkit.h
+
+GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \
+dps/DPSOperators.h \
+dps/TypesandConstants.h
+
+OBJS_WITHOUT_INIT = $(MAIN_FILE)$(oext) \
+NSActionCell$(oext) \
+NSApplication$(oext) \
+NSBitmapImageRep$(oext) \
+NSBox$(oext) \
+NSBrowser$(oext) \
+NSBrowserCell$(oext) \
+NSButton$(oext) \
+NSButtonCell$(oext) \
+NSCachedImageRep$(oext) \
+NSCell$(oext) \
+NSClipView$(oext) \
+NSColor$(oext) \
+NSColorList$(oext) \
+NSColorPanel$(oext) \
+NSColorPicker$(oext) \
+NSColorWell$(oext) \
+NSControl$(oext) \
+NSCursor$(oext) \
+NSCustomImageRep$(oext) \
+NSDataLink$(oext) \
+NSDataLinkManager$(oext) \
+NSDataLinkPanel$(oext) \
+NSDPSContext$(oext) \
+NSEPSImageRep$(oext) \
+NSEvent$(oext) \
+NSFont$(oext) \
+NSFontManager$(oext) \
+NSFontPanel$(oext) \
+NSForm$(oext) \
+NSFormCell$(oext) \
+NSHelpPanel$(oext) \
+NSImage$(oext) \
+NSImageRep$(oext) \
+NSMatrix$(oext) \
+NSMenu$(oext) \
+NSMenuCell$(oext) \
+NSOpenPanel$(oext) \
+NSPageLayout$(oext) \
+NSPanel$(oext) \
+NSPasteboard$(oext) \
+NSPrinter$(oext) \
+NSPrintInfo$(oext) \
+NSPrintOperation$(oext) \
+NSPrintPanel$(oext) \
+NSPopUpButton$(oext) \
+NSResponder$(oext) \
+NSSavePanel$(oext) \
+NSScreen$(oext) \
+NSScroller$(oext) \
+NSScrollView$(oext) \
+NSSelection$(oext) \
+NSSlider$(oext) \
+NSSliderCell$(oext) \
+NSSpellChecker$(oext) \
+NSSpellServer$(oext) \
+NSSplitView$(oext) \
+NSText$(oext) \
+NSTextField$(oext) \
+NSTextFieldCell$(oext) \
+NSView$(oext) \
+NSWindow$(oext) \
+NSWorkspace$(oext) \
+Functions$(oext) \
+TrackingRectangle$(oext) \
+LogFile$(oext)
+
+OBJS = $(OBJS_WITHOUT_INIT)
+
+.SUFFIXES: .m
+.m$(oext):
+	$(CC) $(CFLAGS) $<
+
+#
+# libraries
+#
+LIBS = $(GCC_LIB) $(OBJC_LIB) $(SYS_LIBS) $(ADD_LIBS)
+
+#
+# targets
+#
+
+all: header_links src
+
+header_links:
+	-rm -f ../Headers/AppKit
+	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
+	-rm -f ../Headers/DPSClient
+	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
+
+src: $(MAIN_FILE)$(libext)
+
+# library
+$(MAIN_FILE)$(libext): $(OBJS)
+	$(LIB) $(LIBFLAGS) $(LIBOUT)$(MAIN_FILE)$(libext) $(OBJS)
+	$(RANLIB) $(MAIN_FILE)$(libext)
+
+#
+# Initialization routine
+#
+$(INIT_FILE_OBJ): $(OBJS_WITHOUT_INIT)
+	nm $(OBJS_WITHOUT_INIT) | grep "  __GLOBAL_" > tmpinit.c
+	collect tmpinit.c $(INIT_FILE)
+	$(CC) $(CFLAGS) $(INIT_FILE).c
+	rm tmpinit.c
+
+install: installdirs install-lib install-headers
+
+installdirs:
+	$(srcdir)/../mkinstalldirs \
+		$(libdir) \
+		$(includedir)/gnustep \
+		$(includedir)/gnustep/dps \
+		$(includedir)/gnustep/gui
+	if [ -d $(includedir)/AppKit ] ; then true ; else \
+		$(LN_S) $(includedir)/gnustep/gui $(includedir)/AppKit ; fi
+	if [ -d $(includedir)/DPSClient ] ; then true ; else \
+		$(LN_S) $(includedir)/gnustep/dps $(includedir)/DPSClient ; fi
+# end of installdirs
+
+install-lib: $(MAIN_FILE)$(libext)
+	-rm -f $(libdir)/$(MAIN_FILE)$(libext)
+	mv $(MAIN_FILE)$(libext) $(libdir)
+
+install-headers:
+	for file in $(GNUSTEP1_HEADERS); do \
+		$(INSTALL_DATA) ../Headers/gnustep/$$file \
+			$(includedir)/gnustep/$$file ; \
+	done
+	for file in $(GNUSTEP2_HEADERS); do \
+		$(INSTALL_DATA) ../Headers/gnustep/$$file \
+			$(includedir)/gnustep/$$file ; \
+	done
+	for file in $(GNUSTEP3_HEADERS); do \
+		$(INSTALL_DATA) ../Headers/gnustep/$$file \
+			$(includedir)/gnustep/$$file ; \
+	done
+	for file in $(GNUSTEP_DPS_HEADERS); do \
+		$(INSTALL_DATA) ../Headers/gnustep/$$file \
+			$(includedir)/gnustep/$$file ; \
+	done
+
+#
+# Cleaning
+#
+mostlyclean:
+clean:
+	rm -f *~
+	rm -f *$(oext)
+	rm -f $(MAIN_FILE)$(libext)
+distclean: clean
+	rm -f Makefile
+maintainer-clean: distclean
+
+FORCE:

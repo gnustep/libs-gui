@@ -1,0 +1,21 @@
+GNUstep GUI Library NEWS
+************************
+
+The currently released version of the library is `0.1.0'
+
+Noteworthy changes in version `0.1.0'
+======================================
+
+   * Integration of the GNUstep X/DPS GUI Backend.  This has finally
+     produced a set of core code with can display on X/Windows.
+     Much of the X/Windows code has been written by Pascal Forget 
+     <pascal@wsc.com> and integration efforts have been lead by Scott
+     Christley <scottc@net-community.com>.
+
+   * Some major directory reorganization for the new naming guidelines.
+     Headers previously in AppKit and DPSClient directories have been moved
+     to gnustep/gui and gnustep/dps directores and symbol links are
+     created for the AppKit and DPSClient directories.  This should allow
+     both GNUstep and other OpenStep implementations to reside on the
+     same machine without conflicts.
+

@@ -1,0 +1,15 @@
+# This file is included in various Makefile's to get version information.
+
+# The gcc version required to compile the library.
+APPKIT_GCC_VERSION = 2.7.0
+
+# The version number of this release.
+APPKIT_MAJOR_VERSION = 0
+APPKIT_MINOR_VERSION = 1
+APPKIT_SUBMINOR_VERSION = 0
+APPKIT_VERSION = \
+$(APPKIT_MAJOR_VERSION).$(APPKIT_MINOR_VERSION).$(APPKIT_SUBMINOR_VERSION)
+
+APPKIT_FTP_MACHINE = alpha.gnu.ai.mit.edu
+APPKIT_FTP_DIRECTORY = gnu
+
