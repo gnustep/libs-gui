@@ -2776,6 +2776,17 @@ resetCursorRectsForView(NSView *theView)
     (int)sRect.size.width, (int)sRect.size.height];
 }
 
+- (void) performZoom: (id)sender
+{
+  NSLog (@"[NSWindow performZoom:] not implemented yet");
+}
+
+- (void) zoom: (id)sender
+{
+  NSLog (@"[NSWindow zoom:] not implemented yet");
+}
+
+
 /*
  * Printing and postscript
  */
