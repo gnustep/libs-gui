@@ -152,6 +152,8 @@ NSWindowController.m \
 NSWorkspace.m \
 GSComboSupport.m \
 GSDisplayServer.m \
+GSFusedSilica.m \
+GSFusedSilicaContext.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
@@ -195,6 +197,7 @@ Gui_AGSDOC_FLAGS = \
 # These are gui headers that are also classes documented with autogsdoc
 AUTOGSDOC_HEADERS = \
 GSDisplayServer.h \
+GSFusedSilica.h \
 GSTable.h \
 GSHbox.h \
 GSVbox.h \

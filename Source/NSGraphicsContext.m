@@ -789,7 +789,7 @@ NSGraphicsContext	*GSCurrentContext()
     should have n components, where n corresponds to the number of
     color components required to specify the color in the current
     colorspace (Quartz). */
-- (void) GSSetFillColor: (float *)values
+- (void) GSSetFillColor: (const float *)values
 {
   [self subclassResponsibility: _cmd];
 }
@@ -798,7 +798,7 @@ NSGraphicsContext	*GSCurrentContext()
     should have n components, where n corresponds to the number of
     color components required to specify the color in the current
     colorspace (Quartz). */
-- (void) GSSetStrokeColor: (float *)values
+- (void) GSSetStrokeColor: (const float *)values
 {
   [self subclassResponsibility: _cmd];
 }

@@ -265,7 +265,7 @@ NSApplication	*NSApp = nil;
 
 - (BOOL) canBecomeKeyWindow
 {
-  return NO;
+  return YES;
 }
 
 - (BOOL) worksWhenModal
@@ -734,17 +734,6 @@ static NSCell* tileCell = nil;
     }
 
   /*
-   * If there is no main or key window, we need to make the main menu key
-   * so it can respond to menu shortcuts and deactivate the app properly
-   * when it looses focus.
-   */
-  if (_key_window == nil && _main_window == nil)
-    {
-      _key_window = [[self mainMenu] window];
-      [_key_window becomeKeyWindow];
-    }
-
-  /*
    * If there was more than one window set as key or main, we must make sure
    * that the one we have recorded is the real one by making it become key/main
    * again.
@@ -932,8 +921,6 @@ static NSCell* tileCell = nil;
 	{
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
-	  [GSServerForWindow(_app_icon_window)
-	          setinputfocus: [_app_icon_window windowNumber]];
 	}
       for (i = 0; i < count; i++)
 	{

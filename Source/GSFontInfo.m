@@ -341,6 +341,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return familyName;
 }
 
+- (const float*) matrix
+{
+  return matrix;
+}
+
 - (float) pointSize
 {
   return matrix[0];

@@ -38,6 +38,7 @@
 #include <AppKit/NSFontManager.h>
 #include <AppKit/GSFontInfo.h>
 #include <AppKit/NSView.h>
+#include <gnustep/gui/GSFusedSilicaContext.h>
 
 /* We cache all the 4 default fonts after we first get them.
    But when a default font is changed, the variable is set to YES 
@@ -700,9 +701,9 @@ setNSFont(NSString* key, NSFont* font)
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   if (matrixExplicitlySet == NO && [[NSView focusView] isFlipped])
-    [ctxt GSSetFont: [self _flippedViewFont]];
+    [ctxt GSSetFont: [[self _flippedViewFont] fontRef]];
   else
-    [ctxt GSSetFont: self];
+    [ctxt GSSetFont: [self fontRef]];
 
   [ctxt useFont: fontName];
 }
@@ -905,6 +906,14 @@ setNSFont(NSString* key, NSFont* font)
 {
   return fontInfo;
 }
+
+- (void *) fontRef
+{
+  if (_fontRef == nil)
+    _fontRef = [NSGraphicsContext CGFontReferenceFromFont: self];
+  return _fontRef;
+}
+
 
 @end
 

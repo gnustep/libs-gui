@@ -1,3 +1,23 @@
+2002-10-08  Adam Fedor  <fedor@gnu.org>
+
+	* Fix window focus problems.
+	* Source/NSApplication.m ([NSIconWindow -canBecomeKeyWindow]): 
+	return YES.
+	(-finishLaunching): Don't make main menu key.
+	([NSApplication -deactivate]): Don't setinputfocus to the
+	icon window.
+
+	* Add Quartz-like interface and overridable passing of
+	colorspaces and fonts to backend.
+	* Headers/gnustep/gui/NSFont.h (_fontRef): New ivar.
+	* Source/NSFont (-fontRef): New method.
+	(GSSetFont): Use it.
+	* Source/GSFontInfo (-matrix): New method.
+	* Headers/gnustep/gui/GSFusedSilica.h: New header
+	* Headers/gnustep/gui/GSFusedSilicaContext.h: Idem.
+	* GSFusedSilica.m: New file.
+	* GSFusedSilicaContext.m: Idem.
+
 Tue Oct  8 19:15:24 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSecureTextField.m: Mostly rewritten.  Main changes -

@@ -229,8 +229,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
 
 - (void) GSSetFillColorspace: (void *)spaceref;
 - (void) GSSetStrokeColorspace: (void *)spaceref;
-- (void) GSSetFillColor: (float *)values;
-- (void) GSSetStrokeColor: (float *)values;
+- (void) GSSetFillColor: (const float *)values;
+- (void) GSSetStrokeColor: (const float *)values;
 
 /* ----------------------------------------------------------------------- */
 /* Text operations */

@@ -90,6 +90,7 @@
 - (NSString *)familyName;
 - (NSString *)fontName;
 - (NSString *)encodingScheme;
+- (const float*) matrix;
 - (BOOL)isFixedPitch;
 - (BOOL)isBaseFont;
 - (float)ascender;

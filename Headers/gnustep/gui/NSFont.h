@@ -67,6 +67,7 @@ APPKIT_EXPORT const float*NSFontIdentityMatrix;
   BOOL matrixExplicitlySet;
 
   id fontInfo;
+  void *_fontRef;
 }
 
 //
@@ -176,6 +177,7 @@ APPKIT_EXPORT const float*NSFontIdentityMatrix;
 
 @interface NSFont (GNUstep)
 - (GSFontInfo*) fontInfo;
+- (void *) fontRef;
 @end
 
 int NSConvertGlyphsToPackedGlyphs(NSGlyph*glBuf, 
