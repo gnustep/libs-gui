@@ -673,7 +673,7 @@ static Class		fontPanelClass = Nil;
   NSArray *fontDefs = [self availableMembersOfFontFamily: family];
   unsigned int i;
 
-  //NSLog(@"Searching font %@: %i: %i", family, weight, traits);  
+  //NSLog(@"Searching font %@: %i: %i size %.0f", family, weight, traits, size);
 
   // First do an exact match search
   for (i = 0; i < [fontDefs count]; i++)
@@ -681,12 +681,12 @@ static Class		fontPanelClass = Nil;
       NSArray *fontDef = [fontDefs objectAtIndex: i];
 
       //NSLog(@"Testing font %@: %i: %i", [fontDef objectAtIndex: 0], 
-      //	    [[fontDef objectAtIndex: 2] intValue], 
-      //	    [[fontDef objectAtIndex: 3] unsignedIntValue]);  
+      //          [[fontDef objectAtIndex: 2] intValue], 
+      //          [[fontDef objectAtIndex: 3] unsignedIntValue]);  
       if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
 	  ([[fontDef objectAtIndex: 3] unsignedIntValue] == traits))
 	{
-	  //NSLog(@"Found font");
+          //NSLog(@"Found font");
 	  return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
 			 size: size];
 	}
@@ -698,7 +698,7 @@ static Class		fontPanelClass = Nil;
 
   if (traits & NSBoldFontMask)
     {
-      // For bold ignore weigth
+      //NSLog(@"Trying ignore weights for bold font");
       for (i = 0; i < [fontDefs count]; i++)
         {
 	  NSArray *fontDef = [fontDefs objectAtIndex: i];
@@ -714,34 +714,17 @@ static Class		fontPanelClass = Nil;
 	}
     }
   
-  if (weight == 5)
+  if (weight == 5 || weight == 6)
     {
-      weight = 6;
+      //NSLog(@"Trying alternate non-bold weights for non-bold font");
       for (i = 0; i < [fontDefs count]; i++)
         {
 	  NSArray *fontDef = [fontDefs objectAtIndex: i];
 	  NSFontTraitMask t = [[fontDef objectAtIndex: 3] unsignedIntValue];
 
 	  t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask);
-	  if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
-	      (t == traits))
-	    {
-	      //NSLog(@"Found font");
-	      return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
-			     size: size];
-	    }
-	}
-    }
-  else if (weight == 6)
-    {
-      weight = 5;
-      for (i = 0; i < [fontDefs count]; i++)
-        {
-	  NSArray *fontDef = [fontDefs objectAtIndex: i];
-	  NSFontTraitMask t = [[fontDef objectAtIndex: 3] unsignedIntValue];
-
-	  t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask);
-	  if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
+	  if ((([[fontDef objectAtIndex: 2] intValue] == 5) ||
+               ([[fontDef objectAtIndex: 2] intValue] == 6)) &&
 	      (t == traits))
 	    {
 	      //NSLog(@"Found font");

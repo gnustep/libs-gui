@@ -1,3 +1,9 @@
+2005-01-22 Adrian Robert <arobert@cogsci.ucsd.edu>
+	* Source/NSFontManager.m (-fontWithFamily:traits:weight:size:)
+	Corrected logic in fallback approximate trait search for weight 5 or 6
+	(regular) fonts. Font w/approximate traits but originally-requested
+	weight will now be found.
+	
 2005-01-21 21:43  Alexander Malmberg  <alexander@malmberg.org>
 
 	Various whitespace cleanups, comment type fixes, and changes
