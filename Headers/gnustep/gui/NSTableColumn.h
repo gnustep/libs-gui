@@ -50,7 +50,7 @@
 /* 
  * Initializing an NSTableColumn instance 
  */
-- (NSTableColumn *) initWithIdentifier: (id)anObject;
+- (id) initWithIdentifier: (id)anObject;
 /*
  * Managing the Identifier
  */
