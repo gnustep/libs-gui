@@ -874,15 +874,13 @@ byExtendingSelection: (BOOL)flag
 
   if (flag == NO)
     {
-      if (_numberOfRows == 1)
+      /* If _numberOfRows == 1, we can skip trying to deselect the
+	 only row - because we have been called to select it. */
+      if (_numberOfRows > 1)
 	{
-	  /* Extreme case - we are asked to deselect then select the
-             same row. */
-	  return;
+	  [_selectedRows removeAllObjects];
+	  _selectedRow = -1;
 	}
-
-      [_selectedRows removeAllObjects];
-      _selectedRow = -1;
     }
   else // flag == YES
     {
