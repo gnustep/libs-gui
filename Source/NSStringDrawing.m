@@ -154,7 +154,9 @@ drawSpecialRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
   // Currently this is only used for attachments
   id <NSTextAttachmentCell> cell = run->cell;
   unsigned charIndex = run->charIndex;
-  NSRect cellFrame = NSMakeRect(origin.x, origin.y, 
+  NSRect cellFrame = NSMakeRect(origin.x, (draw->flip ?  
+					   origin.y - run->glyphs[0].adv.height : 
+					   origin.y), 
 				run->glyphs[0].adv.width,
 				run->glyphs[0].adv.height);
   NSView *controlView = [draw->ctxt focusView];
@@ -280,6 +282,10 @@ setupSpecialRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
 
   run->baseline = [run->cell cellBaselineOffset].y;
   run->height = run->glyphs[0].adv.height;
+  // Unset the normale fields
+  run->font = nil;
+  run->bg = nil;
+  run->fg = nil;
 }
 
 static void
