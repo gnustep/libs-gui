@@ -316,10 +316,15 @@ static NSMapTable* windowmaps = NULL;
   DPSgrestore(context);
 
   NSMapInsert (windowmaps, (void*)window_num, self);
-  /* I'm not sure we even need this if menu_exclude is set correctly */
-  if ([self level] >= NSDockWindowLevel)
-    [[NSApplication sharedApplication] removeWindowsItem: self];
 
+  if (_f.menu_exclude == NO)
+    {
+      BOOL	isDoc = [window_title isEqual: represented_filename];
+
+      [NSApp addWindowsItem: self
+		      title: window_title
+		   filename: isDoc];
+    }
   NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
@@ -386,12 +391,11 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setRepresentedFilename: (NSString*)aString
 {
-  id  old = represented_filename;
+  id	old = represented_filename;
+  BOOL	changed = (_f.menu_exclude == NO && [aString isEqual: old] == NO);
 
   ASSIGN(represented_filename, aString);
-  if (_f.menu_exclude == NO
-    && ((represented_filename != nil && old == nil)
-      || (represented_filename == nil && old != nil)))
+  if (changed)
     {
       [NSApp updateWindowsItem: self];
     }

@@ -1358,13 +1358,6 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 		format: @"Object of bad type passed as window"];
 
   /*
-   *	If Menus are implemented as a subclass of window we must make sure
-   *	to exclude them from the windows menu.
-   */
-  if ([aWindow isKindOfClass: [NSMenu class]])
-    return;
-
-  /*
    * Can't permit an untitled window in the window menu.
    */
   if (aString == nil || [aString isEqualToString: @""])
@@ -1473,67 +1466,74 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (windows_menu)
     {
-      NSMutableArray	*windows;
-      NSMenu		*menu;
-      id		win;
+      NSArray	*windows;
+      NSMenu	*menu;
+      unsigned  count;
+      unsigned  i;
 
       menu = [self windowsMenu];
       if (menu == aMenu)
 	return;
 
       /*
-       * Remove all the windows from the old windows menu and store
-       * them in a temporary array for insertion into the new menu.
+       * Remove all the windows from the old windows menu.
        */
-      windows = [NSMutableArray arrayWithCapacity: 10];
       if (menu)
 	{
-	  NSArray   *itemArray;
-	  unsigned  count;
-	  unsigned  i;
+	  NSArray   *itemArray = [menu itemArray];
 
-	  itemArray = [menu itemArray];
 	  count = [itemArray count];
 	  for (i = 0; i < count; i++)
 	    {
-	      id    item = [itemArray objectAtIndex: i];
+	      id	item = [itemArray objectAtIndex: i];
+	      id	win = [item target];
 
-	      win = [item target];
 	      if ([win isKindOfClass: [NSWindow class]])
 		{
-		  [windows addObject: win];
 		  [menu removeItem: item];
 		}
 	    }
 	}
 
       /*
-       * Now use [-changeWindowsItem: title: filename: ] to build the new menu.
+       * Now use [-changeWindowsItem:title:filename:] to build the new menu.
        */
       [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
-      while ((win = [windows lastObject]) != nil)
+      windows = [self windows];
+      count = [windows count];
+      for (i = 0; i < count; i++)
 	{
-	  [self changeWindowsItem: win
-			    title: [win title]
-			 filename: [win representedFilename] != nil];
-	  [windows removeLastObject];
+	  NSWindow	*win = [windows objectAtIndex: i];
+
+	  if ([win isExcludedFromWindowsMenu] == NO)
+	    {
+	      NSString	*t = [win title];
+	      NSString	*f = [win representedFilename];
+
+	      [self changeWindowsItem: win
+				title: t
+			     filename: [t isEqual: f]];
+	    }
 	}
       [aMenu sizeToFit];
       [aMenu update];
     }
 }
 
-- (void) updateWindowsItem: aWindow
+- (void) updateWindowsItem: (NSWindow*)aWindow
 {
   NSMenu	*menu;
+  NSMenuView	*view;
 
   menu = [self windowsMenu];
-  if (menu)
+  if (menu != nil)
     {
       NSArray	*itemArray;
       unsigned	count;
       unsigned	i;
+      BOOL	found = NO;
 
+      view = [menu menuRepresentation];
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
@@ -1542,15 +1542,22 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 	  if ([item target] == aWindow)
 	    {
-	      NSCellImagePosition	oldPos = [item imagePosition];
-	      NSImage			*oldImage = [item image];
-	      BOOL			changed = NO;
+	      NSMenuItemCell		*cell;
+	      NSCellImagePosition	oldPos;
+	      NSImage			*oldImage;
+	      BOOL			changed;
+
+	      found = YES;
+	      cell = [view menuItemCellForItemAtIndex: i];
+	      oldPos = [cell imagePosition];
+	      oldImage = [cell image];
+	      changed = NO;
 
 	      if ([aWindow representedFilename] == nil)
 		{
 		  if (oldPos != NSNoImage)
 		    {
-		      [item setImagePosition: NSNoImage];
+		      [cell setImagePosition: NSNoImage];
 		      changed = YES;
 		    }
 		}
@@ -1560,7 +1567,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 		  if (oldPos != NSImageLeft)
 		    {
-		      [item setImagePosition: NSImageLeft];
+		      [cell setImagePosition: NSImageLeft];
 		      changed = YES;
 		    }
 		  if ([aWindow isDocumentEdited])
@@ -1573,18 +1580,26 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 		    }
 		  if (newImage != oldImage)
 		    {
-		      [item setImage: newImage];
+		      [cell setImage: newImage];
 		      changed = YES;
 		    }
 		}
 	      if (changed)
 		{
-		  [(id)[item controlView] sizeToFit];
 		  [menu sizeToFit];
 		  [menu update];
 		}
 	      break;
 	    }
+	}
+      if (found == NO)
+	{
+	  NSString	*t = [aWindow title];
+	  NSString	*f = [aWindow representedFilename];
+
+	  [self changeWindowsItem: aWindow
+			    title: t
+			 filename: [t isEqual: f]];
 	}
     }
 }
