@@ -95,8 +95,6 @@
 {
   [super initImageCell: anImage];
 
-  _contents = nil;
-
   return [self _init];
 }
 
@@ -258,7 +256,15 @@
 - (NSAttributedString *)attributedAlternateTitle
 {
   // TODO
-  return nil;
+  NSDictionary *dict;
+  NSAttributedString *attrStr;
+
+  dict = [self _nonAutoreleasedTypingAttributes];
+  attrStr = [[NSAttributedString alloc] initWithString: _altContents 
+					attributes: dict];
+  RELEASE(dict);
+
+  return AUTORELEASE(attrStr);
 }
 
 - (void)setAttributedAlternateTitle:(NSAttributedString *)aString
@@ -631,7 +637,7 @@
   unsigned	mask;
   NSImage	*imageToDisplay;
   NSRect	imageRect;
-  NSString	*titleToDisplay;
+  NSAttributedString	*titleToDisplay;
   NSRect	titleRect;
   NSSize	imageSize = {0, 0};
   NSSize        titleSize = {0, 0};
@@ -698,15 +704,19 @@
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)
-	imageToDisplay = _cell_image;
-      titleToDisplay = _altContents;
-      if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
-        titleToDisplay = _contents;
+        {
+	  imageToDisplay = _cell_image;
+	}
+      titleToDisplay = [self attributedAlternateTitle];
+      if (titleToDisplay == nil || [titleToDisplay length] == 0)
+        {
+	  titleToDisplay = [self attributedTitle];
+	}
     }
   else
     {
       imageToDisplay = _cell_image;
-      titleToDisplay = _contents;
+      titleToDisplay = [self attributedTitle];
     }
 
   if (imageToDisplay)
@@ -722,7 +732,7 @@
 
   if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
     {
-      titleSize = [self _sizeText: titleToDisplay];
+      titleSize = [titleToDisplay size];
     }
 
   if (flippedView == YES)
@@ -875,7 +885,7 @@
     }
   if (titleToDisplay != nil)
     {
-      [self _drawText: titleToDisplay inFrame: titleRect];
+      [self _drawAttributedText: titleToDisplay inFrame: titleRect];
     }
 
   if (_cell.shows_first_responder
@@ -898,7 +908,7 @@
   NSSize borderSize;
   unsigned	mask;
   NSImage	*imageToDisplay;
-  NSString	*titleToDisplay;
+  NSAttributedString	*titleToDisplay;
   NSSize	imageSize;
   NSSize	titleSize;
   
@@ -925,16 +935,16 @@
 	{
 	  imageToDisplay = _cell_image;
 	}
-      titleToDisplay = _altContents;
-      if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
-	{
-	  titleToDisplay = _contents;
+      titleToDisplay = [self attributedAlternateTitle];
+      if (titleToDisplay == nil || [titleToDisplay length] == 0)
+        {
+	  titleToDisplay = [self attributedTitle];
 	}
     }
   else
     {
       imageToDisplay = _cell_image;
-      titleToDisplay = _contents;
+      titleToDisplay = [self attributedTitle];
     }
   
   if (imageToDisplay)
@@ -948,7 +958,7 @@
 
   if (titleToDisplay != nil)
     {
-      titleSize = [self _sizeText: titleToDisplay];
+      titleSize = [titleToDisplay size];
     }
   else
     {
