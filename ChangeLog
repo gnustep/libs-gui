@@ -1,3 +1,8 @@
+Thu Feb 28 14:19:00 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSText.h: Added the special key enum
+	containing NSBackspaceKey which used to be in NSCStringText.h.
+	
 Wed Feb 27 23:50:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSKeyBindingTable.m ([-bindKey:toAction:]): Implemented
