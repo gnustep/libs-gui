@@ -223,7 +223,6 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setFont:font];
 
     // if (model_version >= 2) {
-    [self setType:[unarchiver decodeIntWithName:@"type"]];
     [self setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
     [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
     [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
@@ -238,6 +237,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
     [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
     [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
+    [self setType:[unarchiver decodeIntWithName:@"type"]];
     // }
 
     return self;
@@ -1327,3 +1327,76 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end  /* NSBrowser (GMArchiverMethods) */
+
+@implementation NSColorWell (GMArchiverMethods)
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setColor:[unarchiver decodeObjectWithName:@"color"]];
+
+  return self;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeObject:[self color] withName:@"color"];
+}
+
+@end /* NSColorWell (GMArchiverMethods) */
+
+@implementation NSImageView (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeInt:[self imageAlignment] withName:@"alignment"];
+  [archiver encodeInt:[self imageFrameStyle] withName:@"frameStyle"];
+  [archiver encodeObject:[self image] withName:@"image"];
+  [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
+  [archiver encodeInt:[self imageScaling] withName:@"scaling"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setImageAlignment:[unarchiver decodeIntWithName:@"alignment"]];
+  [self setImageFrameStyle:[unarchiver decodeIntWithName:@"frameStyle"]];
+  [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+  [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
+  [self setImageScaling:[unarchiver decodeIntWithName:@"scaling"]];
+
+  return self;
+}
+
+@implementation NSTextFieldCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+  [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
+  [archiver encodeObject:[self textColor] withName:@"textColor"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setBackgroundColor:
+	     [unarchiver decodeObjectWithName:@"backgroundColor"]];
+  [self setDrawsBackground:
+	     [unarchiver decodeBOOLWithName:@"drawsBackground"]];
+  [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
+
+  return self;
+}
+
+@end /* NSTextFieldCell (GMArchiverMethods) */
+

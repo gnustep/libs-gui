@@ -1,3 +1,8 @@
+Thu Apr  1 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Model/GMAppKit.m: Added patch supplied by Jonathan Gapen
+	<jagapen@whitewater.chem.wisc.edu>
+
 Thu Apr  1 06:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: Make bezeled and bordered mutually exclusive
