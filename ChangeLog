@@ -1,5 +1,9 @@
 2003-09-02  Adam Fedor  <fedor@gnu.org>
 
+	* Tools/gsnd/gsnd.m (main): Don't mess with file descriptors on MinGW.
+
+2003-09-02  Adam Fedor  <fedor@gnu.org>
+
 	* Source/libgnustep-gui.def: Update.
 
 2003-09-01  Fred Kiefer <FredKiefer@gmx.de>

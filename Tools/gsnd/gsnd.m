@@ -1073,7 +1073,6 @@ int main(int argc, char** argv, char **env)
 		default:
 			exit(0);
 	}
-#endif 
 
   /*
    *	Ensure we don't have any open file descriptors which may refer
@@ -1109,6 +1108,7 @@ int main(int argc, char** argv, char **env)
       gsnd_log(LOG_CRIT);
       exit(EXIT_FAILURE);
     }
+#endif 
 
   gsnd = [[SoundServer alloc] init];
 
