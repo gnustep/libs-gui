@@ -26,6 +26,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+/* To keep the allocation counts valid when swizzling the class in
+[NSMutableParagraphStyle -copyWithZone:]. */
+#include <Foundation/NSDebug.h>
+
 #include <Foundation/NSException.h>
 #include <AppKit/NSParagraphStyle.h>
 
@@ -479,7 +483,9 @@ static NSParagraphStyle	*defaultStyle = nil;
   NSMutableParagraphStyle	*c;
 
   c = (NSMutableParagraphStyle*)NSCopyObject (self, 0, aZone);
+  GSDebugAllocationRemove(c->isa, c);
   c->isa = [NSParagraphStyle class];
+  GSDebugAllocationAdd(c->isa, c);
   c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
   return c;
 }

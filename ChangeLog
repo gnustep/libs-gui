@@ -1,3 +1,10 @@
+2003-02-15 18:11  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSParagraphStyle.m ([NSMutableParagraphStyle
+	-copyWithZone:]): Add calls to GSDebugAllocationAdd/
+	GSDebugAllocationRemove when swizzling the class to keep the
+	allocation counts valid.
+
 2003-02-15 18:04  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSSpellChecker.m (-_launchSpellCheckerForLanguage:): Don't
