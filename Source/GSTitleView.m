@@ -46,8 +46,12 @@
     {
       NSFont *font = [NSFont menuFontOfSize: 0.0];
 
-      /* Should make up 23 for the default font */
-      height = ([font boundingRectForFont].size.height) + 8;
+      /* Minimum title height is 23 */
+      height = ([font boundingRectForFont].size.height) + 9;
+      if (height < 23)
+	{
+	  height = 23;
+	}
     }
 
   return height;
@@ -142,15 +146,19 @@
   unsigned eventMask = NSLeftMouseUpMask | NSPeriodicMask;
   BOOL     done = NO;
   NSDate   *theDistantFuture = [NSDate distantFuture];
+  NSPoint  startWindowOrigin;
+  NSPoint  endWindowOrigin;
 
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
-  lastLocation = [theEvent locationInWindow];
-
-  if (_ownedByMenu && ![_owner isTornOff] && [_owner supermenu])
+  // Remember start position of window
+  if (_ownedByMenu)
     {
-      [_owner setTornOff: YES];
+      startWindowOrigin = [_window frame].origin;
     }
+
+  // Remember start location of cursor in window
+  lastLocation = [theEvent locationInWindow];
 
   [_window _captureMouse: nil];
   
@@ -162,7 +170,6 @@
                                     untilDate: theDistantFuture
                                        inMode: NSEventTrackingRunLoopMode
                                       dequeue: YES];
-
       switch ([theEvent type])
         {
         case NSRightMouseUp:
@@ -178,14 +185,14 @@
 
               origin.x += (location.x - lastLocation.x);
               origin.y += (location.y - lastLocation.y);
-              if ([_owner class] == [NSMenu class])
-                {
-                  [_owner nestedSetFrameOrigin: origin];
-                }
-              else
-                {
-                  [_owner setFrameOrigin: origin];
-                }
+	      if (_ownedByMenu)
+		{
+		  [_owner nestedSetFrameOrigin: origin];
+		}
+	      else
+		{
+		  [_owner setFrameOrigin: origin];
+		}
             }
           break;
 
@@ -193,6 +200,18 @@
           break;
         }
     }
+
+  // Make menu torn off
+  if (_ownedByMenu && ![_owner isTornOff] && [_owner supermenu])
+    {
+      endWindowOrigin = [_window frame].origin;
+      if ((startWindowOrigin.x != endWindowOrigin.x 
+	   || startWindowOrigin.y != endWindowOrigin.y))
+	{
+	  [_owner setTornOff: YES];
+	}
+    }
+
   [NSEvent stopPeriodicEvents];
 }
 
@@ -235,14 +254,6 @@
   [self setNeedsDisplay: YES];
 }
 
-/*- (void) windowBecomeMain
-{
-}
-
-- (void) windowResignMain
-{
-}*/
-
 /*
  *  Buttons
  */
@@ -252,8 +263,8 @@
 {
   NSButton *button;
   NSSize   imageSize = [image size]; 
-	NSRect   rect = NSMakeRect (0, 0, imageSize.width+3, imageSize.height+3);
-  
+  NSRect   rect = NSMakeRect (0, 0, imageSize.width+3, imageSize.height+3);
+
   button = [[NSButton alloc] initWithFrame: rect];
   [button setRefusesFirstResponder: YES];
   [button setButtonType: NSMomentaryChangeButton];
@@ -350,12 +361,13 @@
  */
 - (void) setOwner: (id)owner
 {
-  NSNotificationCenter  *theCenter = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
 
   if ([owner class] == [NSMenu class])
     {
       _owner = owner;
       _ownedByMenu = YES;
+
       RELEASE (titleColor);
       titleColor = RETAIN ([NSColor blackColor]);
       [textAttributes setObject: [NSColor whiteColor] 
