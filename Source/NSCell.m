@@ -552,6 +552,7 @@
   NSFont *font;
   float titleWidth;
   float titleHeight;
+  NSDictionary	*dict;
 
   if (!title)
     return;
@@ -594,9 +595,11 @@
           }
     }
 
-  [font set];
-  [textColor set];
-  [title drawInRect: cellFrame withAttributes: nil];
+  dict = [NSDictionary dictionaryWithObjectsAndKeys:
+		font, NSFontAttributeName,
+		textColor, NSForegroundColorAttributeName,
+		nil];
+  [title drawInRect: cellFrame withAttributes: dict];
 }
 
 // Draw image centered in frame.

@@ -1,4 +1,4 @@
-Fri Mar  5 14:46:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Fri Mar  5 16:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: Added three new methods to
 	support focusing - ([-focusView]), ([-pushFocusView:]) and
@@ -7,6 +7,7 @@ Fri Mar  5 14:46:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	a little, and made graphocs contexts thread-safe.
 	* Source/NSView.m: Removed old code to handle per-thread stack of
 	focussed views - use new code in NSGraphicsContext instead.
+	* Source/NSCell.m: Draw cell text with font and colour attributes.
 
 Thu Mar  4 12:46:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
