@@ -41,7 +41,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
-static BOOL NSImageCompositing = NO;
+static BOOL NSImageCompositing = YES;
 
 @interface GSCacheW : NSWindow
 @end
@@ -75,8 +75,10 @@ static BOOL NSImageCompositing = NO;
 
 - (void) initialize
 {
-  NSImageCompositing = [[NSUserDefaults standardUserDefaults]
-  	boolForKey: @"ImageCompositing"];
+  id obj = [[NSUserDefaults standardUserDefaults]
+  	stringForKey: @"ImageCompositing"];
+  if (obj)
+    NSImageCompositing = [obj boolValue];
 }
 
 // Initializing an NSCachedImageRep 

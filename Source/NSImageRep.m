@@ -51,9 +51,11 @@ static NSMutableArray*	imageReps = NULL;
      them can load in data from an external source. */
   if (self == [NSImageRep class])
     {
+      id obj;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
-      if ([[NSUserDefaults standardUserDefaults] 
-      		boolForKey: @"ImageCompositing"])
+      obj = [[NSUserDefaults standardUserDefaults] 
+      		stringForKey: @"ImageCompositing"];
+      if (!obj || [obj boolValue] == YES)
         [imageReps addObject: [NSBitmapImageRep class]];
       //      [imageReps addObject: [NSEPSImageRep class]];
     }

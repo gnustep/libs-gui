@@ -1,3 +1,8 @@
+2000-01-18  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCachedImageRep.m: Make "ImageCompositing" on by default.
+	* Souce/NSImageRep.m: Likewise.
+
 Mon Jan 17  21:15:00 2000  Enrico Sersale <enrico@imago.ro>
 
 	* Source/NSBezierPath.m (-elementTypeAtIndex:associatedPoints:]):
