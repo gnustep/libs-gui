@@ -1,3 +1,8 @@
+Thu Mar 22 22:13:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Tools/Functions.m (NSDottedFrameRect): Added empty 
+	implementation to make the Tools compile.
+
 2001-03-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.6.8
