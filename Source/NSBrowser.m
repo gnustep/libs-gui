@@ -1382,8 +1382,7 @@ static NSTextFieldCell *titleCell;
 
   // If there are not enough columns to scroll with
   // then the column must be visible
-  if ((_lastColumnLoaded == 0) ||
-      (_lastColumnLoaded <= (num - 1)))
+  if ((_firstVisibleColumn == 0) && (_lastColumnLoaded < num))
     {
       [_horizontalScroller setEnabled: NO];
     }
@@ -1394,6 +1393,11 @@ static NSTextFieldCell *titleCell;
       	  float prop = (float)num / (float)(_lastColumnLoaded + 1);
       	  float i = _lastColumnLoaded - num + 1;
       	  float f = 1 + ((_lastVisibleColumn - _lastColumnLoaded) / i);
+
+	  if (_lastVisibleColumn > _lastColumnLoaded)
+	    {
+	      prop = (float)num / (float)(_lastVisibleColumn + 1);
+	    }
 
           [_horizontalScroller setFloatValue: f knobProportion: prop];
 	}
@@ -1884,6 +1888,7 @@ static NSTextFieldCell *titleCell;
     }
 
   [self updateScroller];
+
   // Send the action to target
   [self sendAction];
 
