@@ -189,17 +189,19 @@ initialize_gnustep_backend(void)
 	      break;
 	    path = nil;
 	  }
-	NSCAssert(path != nil, 
-		  GSGuiLocalizedString (@"Unable to load backend, aborting",
-					nil));
+	NSCAssert1(path != nil, 
+		  GSGuiLocalizedString (@"Unable to load backend %@",
+					nil), bundleName);
 	NSDebugLog(@"Loading Backend from %@", path);
+	NSDebugFLLog(@"BackendBundle", @"Loading Backend from %@", path);
 
 	theBundle = [NSBundle bundleWithPath: path];
-	NSCAssert(theBundle != nil, 
-		  GSGuiLocalizedString (@"Can't init backend bundle", nil));
+	NSCAssert1(theBundle != nil, 
+		  GSGuiLocalizedString (@"Can't init backend bundle %@", nil),
+		  path);
 	backend = [theBundle classNamed: @"GSBackend"];
 	NSCAssert(backend, 
-		  GSGuiLocalizedString (@"Can't load backend bundle", nil));
+		  GSGuiLocalizedString (@"Can't load backend class", nil));
 	[backend initializeBackend];
       }
 #else

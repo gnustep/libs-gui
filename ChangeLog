@@ -1,3 +1,10 @@
+2002-04-05  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (initialize_gnustep_backend): Better
+	debugging info.
+	* Source/NSPrintOperation.m ([NSPrintOperation -destroyContext]): 
+	Remove old context method.	
+
 2002-04-06  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSOutlineView.m ([NSOutlineView -performDragOperation:]): 

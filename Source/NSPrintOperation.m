@@ -399,7 +399,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (void)destroyContext
 {
-  [_context destroyContext];
   DESTROY(_context);
 }
 
