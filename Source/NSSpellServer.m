@@ -147,12 +147,11 @@ GSSpellServerName(NSString *vendor, NSString *language)
 {
   NSString *path = nil;
   NSString *user_gsroot = nil;
-  NSDictionary *env = nil;
   
-  env = [[NSProcessInfo processInfo] environment];
-  
-  user_gsroot = [env objectForKey: @"GNUSTEP_USER_ROOT"];
-  if(currentLanguage != nil)
+  user_gsroot = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+    NSUserDomainMask, YES) lastObject];
+
+  if (currentLanguage != nil)
     {
       NSString *dirPath = nil;
       NSFileManager *mgr = [NSFileManager defaultManager];

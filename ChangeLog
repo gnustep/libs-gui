@@ -2,9 +2,10 @@
 
 	* Source/GSTextStoarge.m: Add GSIMap option for minor performance
 	improvement.
-	* Tools/Make_services.m: Use correct user root.  Noticed that this
+	* Tools/make_services.m: Use correct user root.  Noticed that this
 	tool needs fixing to use the correct paths as provided by the
 	NSSearchPathsForDirectoriesInDomains() function.
+	* Source/NSSpellServer.m: Use NSSearchPathsForDirectoriesInDomains()
 
 2002-02-13  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
