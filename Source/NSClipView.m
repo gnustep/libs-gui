@@ -33,6 +33,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/PSOperators.h>
 
 @implementation NSClipView
 
@@ -212,6 +213,9 @@
       [_documentView setNeedsDisplayInRect: 
 	[self convertRect: newBounds toView: _documentView]];
     }
+
+  if ([NSView focusView] == _documentView)
+    PStranslate(NSMinX(originalBounds)-point.x, NSMinY(originalBounds)-point.y);
 
   [_super_view reflectScrolledClipView: self];
 }

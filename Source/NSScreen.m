@@ -247,11 +247,14 @@ _screenNumbers(int *count)
     }
 }
 
+static NSScreen *mainScreen = nil;
+
 // Creating NSScreen Instances
 + (NSScreen*) mainScreen
 {
   int *windows = 0, count;
-  NSScreen *mainScreen = nil;
+  if (mainScreen)
+    return mainScreen;
 
   // Initialize the window list.
   windows = _screenNumbers(&count);
@@ -264,7 +267,7 @@ _screenNumbers(int *count)
   mainScreen = [[NSScreen alloc] _initWithScreenNumber: windows[0]];
   NSZoneFree(NSDefaultMallocZone(), windows); // free the list
 
-  return AUTORELEASE(mainScreen);
+  return mainScreen;
 }
 
 + (NSScreen*) deepestScreen

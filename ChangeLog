@@ -1,3 +1,11 @@
+2000-11-05  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSScreen.m (+mainScreen): Make the mainScreen a shared
+	instance.
+
+	* Source/NSClipView.m (-setBoundsOrigin:): If our documentView is 
+	focused, translate the PS context to the new bounds.
+
 2000-11-05  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSClipView.h:
