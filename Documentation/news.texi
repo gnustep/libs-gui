@@ -9,6 +9,15 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.8}
+
+@itemize @bullet
+@item Updated LanguageSetup documentation
+@item Improved RTF reader (unicode support, etc).
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.8.7}
 
 @itemize @bullet
@@ -16,8 +25,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item NSDataLink[Panel/Manager] - some implementation
 @item Added default to load user-defined bundles (GSAppKitUserBundles default).
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.6}
 

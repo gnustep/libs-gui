@@ -1,7 +1,14 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.7'.
+The currently released version of the library is `0.8.8'.
+
+Noteworthy changes in version `0.8.8'
+=====================================
+
+   * Updated LanguageSetup documentation
+
+   * Improved RTF reader (unicode support, etc).
 
 Noteworthy changes in version `0.8.7'
 =====================================

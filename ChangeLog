@@ -1,3 +1,7 @@
+2003-07-23  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.8.8
+
 2003-07-23  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/DocMakefile: only remove directory containing 'stamp' for
