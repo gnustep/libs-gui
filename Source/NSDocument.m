@@ -37,6 +37,7 @@
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSDocumentFrameworkPrivate.h>
 
+#include <AppKit/GSGuiPrivate.h>
 
 @implementation NSDocument
 
@@ -83,10 +84,9 @@
     }
   else
     {
-      //FIXME -- localize.
-      NSRunAlertPanel(@"Load failed",
-		      @"Could not load file %@.",
-		      nil, nil, nil, fileName);
+      NSRunAlertPanel (_(@"Load failed"),
+		       _(@"Could not load file %@."),
+		       nil, nil, nil, fileName);
       RELEASE(self);
       return nil;
     }
@@ -105,9 +105,8 @@
     }
   else
     {
-      //FIXME -- localize.
-      NSRunAlertPanel(@"Load failed",
-		      @"Could not load URL %@.",
+      NSRunAlertPanel(_(@"Load failed"),
+		      _(@"Could not load URL %@."),
 		      nil, nil, nil, [url absoluteString]);
       RELEASE(self);
       return nil;
@@ -250,9 +249,10 @@
   if (![self isDocumentEdited])
     return YES;
 
-  //FIXME -- localize.
-  result = NSRunAlertPanel(@"Close", @"%@ has changed.  Save?",
-			   @"Save", @"Cancel", @"Don't Save", [self displayName]);
+  result = NSRunAlertPanel (_(@"Close"), 
+			    _(@"%@ has changed.  Save?"),
+			    _(@"Save"), _(@"Cancel"), _(@"Don't Save"), 
+			    [self displayName]);
   
 #define Save     NSAlertDefaultReturn
 #define Cancel   NSAlertAlternateReturn
@@ -261,7 +261,11 @@
   switch (result)
     {
       // return NO if save failed
-    case Save:		[self saveDocument:nil]; return ![self isDocumentEdited];
+    case Save:
+      {
+	[self saveDocument:nil]; 
+	return ![self isDocumentEdited];
+      }
     case DontSave:	return YES;
     case Cancel:
     default:		return NO;
@@ -329,8 +333,7 @@
     }
   else
     {
-      //FIXME -- localize.
-      return [NSString stringWithFormat:@"Untitled-%d", _documentIndex];
+      return [NSString stringWithFormat: _(@"Untitled-%d"), _documentIndex];
     }
 }
 
@@ -470,10 +473,9 @@
 
   switch (saveOperation)
     {
-      // FIXME -- localize.
-    case NSSaveOperation:	title = @"Save"; break;
-    case NSSaveAsOperation:	title = @"Save As"; break;
-    case NSSaveToOperation: title = @"Save To"; break;
+    case NSSaveOperation:   title = _(@"Save");    break;
+    case NSSaveAsOperation: title = _(@"Save As"); break;
+    case NSSaveToOperation: title = _(@"Save To"); break;
     }
   
   [savePanel setTitle:title];
@@ -594,10 +596,9 @@
 	  if (![fileManager movePath:fileName toPath:backupFilename handler:nil] &&
 	      [self keepBackupFile])
             {
-	      //FIXME -- localize.
-	      int result = NSRunAlertPanel(@"File Error",
-					   @"Can't create backup file.  Save anyways?",
-					   @"Save", @"Cancel", nil);
+	      int result = NSRunAlertPanel(_(@"File Error"),
+					   _(@"Can't create backup file.  Save anyways?"),
+					   _(@"Save"), _(@"Cancel"), nil);
 	      
 	      if (result != NSAlertDefaultReturn) return NO;
             }
@@ -696,10 +697,11 @@
 {
   int result;
 
-  //FIXME -- localize.
-  result = NSRunAlertPanel(@"Revert",
-			   @"%@ has been edited.  Are you sure you want to undo changes?",
-			   @"Revert", @"Cancel", nil, [self displayName]);
+  result = NSRunAlertPanel 
+    (_(@"Revert"),
+     _(@"%@ has been edited.  Are you sure you want to undo changes?"),
+     _(@"Revert"), _(@"Cancel"), nil, 
+     [self displayName]);
   
   if (result == NSAlertDefaultReturn &&
       [self revertToSavedFromFile:[self fileName] ofType:[self fileType]])
