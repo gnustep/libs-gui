@@ -137,6 +137,7 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token <cmd> RTFitalic
 %token <cmd> RTFunderline
 %token <cmd> RTFunderlineStop
+%token <cmd> RTFunichar
 %token <cmd> RTFsubscript
 %token <cmd> RTFsuperscript
 %token <cmd> RTFtabstop
@@ -347,6 +348,7 @@ rtfStatement: RTFfont				{ int font;
 						      on = NO;
 						  GSRTFunderline(CTXT, on); }
 		|	RTFunderlineStop	{ GSRTFunderline(CTXT, NO); }
+		|	RTFunichar	        { GSRTFunicode(CTXT, $1.parameter); }
                 |	RTFplain	        { GSRTFdefaultCharacterStyle(CTXT); }
                 |	RTFparagraph	        { GSRTFparagraph(CTXT); }
                 |	RTFrow   	        { GSRTFparagraph(CTXT); }
