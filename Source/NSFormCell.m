@@ -214,7 +214,7 @@ static NSColor	*shadowCol;
     }
 }
 
-- (float)titleWidth: (NSSize)size
+- (float)titleWidth: (NSSize)aSize
 {
   if (_formcell_auto_title_width == NO)
     return _displayedTitleWidth;
@@ -222,10 +222,10 @@ static NSColor	*shadowCol;
     {
       NSSize titleSize = [_titleCell cellSize];
 
-      if (size.width > titleSize.width)
+      if (aSize.width > titleSize.width)
 	return titleSize.width;
       else
-	return size.width;
+	return aSize.width;
     }
 }
 

@@ -85,8 +85,8 @@ typedef enum {
 //
 // Managing the FontManager
 //
-+ (void)setFontManagerFactory:(Class)classId;
-+ (void)setFontPanelFactory:(Class)classId;
++ (void) setFontManagerFactory: (Class)class;
++ (void) setFontPanelFactory: (Class)class;
 + (NSFontManager *)sharedFontManager;
 
 //

@@ -787,9 +787,9 @@ static Class		fontPanelClass = Nil;
 //
 // Examining a font
 //
-- (NSFontTraitMask) traitsOfFont: (NSFont*)fontObject
+- (NSFontTraitMask) traitsOfFont: (NSFont*)aFont
 {
-  return [[fontObject fontInfo] traits];
+  return [[aFont fontInfo] traits];
 }
 
 - (int) weightOfFont: (NSFont*)fontObject

@@ -66,12 +66,14 @@ static inline void _setFloatValue (NSTextField *field, float size)
 
 NSText *sizeFieldText = nil;
 
-/* Implemented in NSBrowser */
-@interface GSBrowserTitleCell : NSTextFieldCell
-@end
-
 float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 
 		 14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
+
+/* Implemented in NSBrowser */
+@interface GSBrowserTitleCell : NSTextFieldCell
+{
+}
+@end
 
 @interface NSFontPanel (Private)
 - (NSFont*) _fontForSelection: (NSFont*) fontObject;

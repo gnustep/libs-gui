@@ -98,7 +98,7 @@ NSGraphicsContext	*GSCurrentContext()
   <p>In addition, this class provides methods to perform the actual
   drawing. As a convenience, you can also access these through various
   function interfaces. One is a Display Postscript interface using PS
-  and DPS opeterations. Another is a Quartz interface (not yet written).
+  and DPS operations. Another is a Quartz interface (not yet written).
   </p>
 
   </unit> */
@@ -1079,7 +1079,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r;
+- (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r
 {
   [self subclassResponsibility: _cmd];
 }

@@ -36,13 +36,11 @@ Gui_GSDOC_FILES = Gui.gsdoc \
 	DefaultsSummary.gsdoc \
 	NSBundleAdditions.gsdoc \
 	NSCoderAdditions.gsdoc \
-	NSMenuItem.gsdoc \
 	NSMutableAttributedStringAdditions.gsdoc \
 	NSMutableParagraphStyle.gsdoc \
 	NSPICTImageRep.gsdoc \
 	NSSecureTextFieldCell.gsdoc \
 	NSStringAdditions.gsdoc \
-	NSTableColumn.gsdoc \
 	NSTextAttachment.gsdoc \
 	NSTextAttachmentCell.gsdoc \
 	NSTextTab.gsdoc
@@ -94,6 +92,7 @@ Gui_AUTOGSDOC_FILES = \
 	NSLayoutManager.gsdoc \
 	NSMatrix.gsdoc \
 	NSMenu.gsdoc \
+	NSMenuItem.gsdoc \
 	NSMenuItemCell.gsdoc \
 	NSMenuView.gsdoc \
 	NSOpenPanel.gsdoc \
@@ -123,6 +122,7 @@ Gui_AUTOGSDOC_FILES = \
 	NSSplitView.gsdoc \
 	NSTabView.gsdoc \
 	NSTabViewItem.gsdoc \
+	NSTableColumn.gsdoc \
 	NSTableHeaderCell.gsdoc \
 	NSTableHeaderView.gsdoc \
 	NSTableView.gsdoc \

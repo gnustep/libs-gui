@@ -18,45 +18,6 @@
         NSTableColumn objects represent columns in
         NSTableViews.
       </p>
-      <section>
-        <heading>The Column Identifier</heading>
-        <p>
-          Each NSTableColumn object is identified by an object,
-          called the column identifier. The reason is that,
-          after a column has been added to a table view, the user
-          might move the columns around, so there is a need to
-          identify the columns regardless of their position in
-          the table.
-        </p>
-        <p>
-          The identifier is typically a string describing the
-          column. This identifier object is never displayed to
-          the user ! It is only used internally by the program to
-          identify the column - so yes, you may use a funny
-          string for it and nobody will know, except people
-          reading the code.
-        </p>
-      </section>
-      <section>
-        <heading>
-          Information Stored in an NSTableColumn Object
-        </heading>
-        <p>
-          An NSTableColumn object mainly keeps information about the
-          width of the column, its minimum and maximum width;
-          whether the column can be edited or resized; and the
-          cells used to draw the column header and the data in
-          the column. You can change all these attributes of the
-          column by calling the appropriate methods. Please note
-          that the table column does not hold nor has access to
-          the data to be displayed in the column; this data is
-          maintained in the table view's data source, as
-          described in the NSTableView documentation. A last
-          hint: to set the title of a table column, ask the table
-          column for its header cell, and set the string value
-          of this header cell to the desired title.
-        </p>
-      </section>
       <class name="NSTableColumn" super="NSObject">
         <declared>AppKit/NSTableColumn.h</declared>
         <conform>NSCoding</conform>
@@ -326,6 +287,45 @@
           <GNUstep /> <MacOS-X /> <OpenStep />
         </standards>
       </class>
+      <section>
+        <heading>The Column Identifier</heading>
+        <p>
+          Each NSTableColumn object is identified by an object,
+          called the column identifier. The reason is that,
+          after a column has been added to a table view, the user
+          might move the columns around, so there is a need to
+          identify the columns regardless of their position in
+          the table.
+        </p>
+        <p>
+          The identifier is typically a string describing the
+          column. This identifier object is never displayed to
+          the user ! It is only used internally by the program to
+          identify the column - so yes, you may use a funny
+          string for it and nobody will know, except people
+          reading the code.
+        </p>
+      </section>
+      <section>
+        <heading>
+          Information Stored in an NSTableColumn Object
+        </heading>
+        <p>
+          An NSTableColumn object mainly keeps information about the
+          width of the column, its minimum and maximum width;
+          whether the column can be edited or resized; and the
+          cells used to draw the column header and the data in
+          the column. You can change all these attributes of the
+          column by calling the appropriate methods. Please note
+          that the table column does not hold nor has access to
+          the data to be displayed in the column; this data is
+          maintained in the table view's data source, as
+          described in the NSTableView documentation. A last
+          hint: to set the title of a table column, ask the table
+          column for its header cell, and set the string value
+          of this header cell to the desired title.
+        </p>
+      </section>
     </chapter>
   </body>
 </gsdoc>

@@ -1232,13 +1232,13 @@ NSRunInformationalAlertPanel(
 
 
 void
-NSReleaseAlertPanel(id alertPanel)
+NSReleaseAlertPanel(id panel)
 {
-  if ((alertPanel != standardAlertPanel)
-     && (alertPanel != informationalAlertPanel)
-     && (alertPanel != criticalAlertPanel))
+  if ((panel != standardAlertPanel)
+     && (panel != informationalAlertPanel)
+     && (panel != criticalAlertPanel))
     {
-      RELEASE(alertPanel);
+      RELEASE(panel);
     }
 }
 

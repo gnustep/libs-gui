@@ -55,7 +55,7 @@ typedef	struct {
 - (void) invert;
 - (void) prependTransform: (NSAffineTransform*)aTransform;
 - (void) rotateByDegrees: (float)angle;
-- (void) rotateByRadians: (float)angle;
+- (void) rotateByRadians: (float)angleRad;
 - (void) scaleBy: (float)scale;
 - (void) scaleXBy: (float)scaleX yBy: (float)scaleY;
 - (void) set;
@@ -82,7 +82,7 @@ typedef	struct {
 
 - (BOOL) isRotated;
 
-- (void) boundingRectFor: (NSRect)rect result: (NSRect*)result;
+- (void) boundingRectFor: (NSRect)rect result: (NSRect*)new;
 
 /* Returns anotherMatrix * self */
 - (void) concatenateWith: (NSAffineTransform*)anotherMatrix;

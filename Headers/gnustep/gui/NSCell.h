@@ -428,7 +428,7 @@ typedef enum _NSControlSize {
 - (NSMutableDictionary*) _nonAutoreleasedTypingAttributes;
 - (NSColor*) textColor;
 - (NSSize) _sizeText: (NSString*) title;
-- (void) _drawText: (NSString*)aString  inFrame: (NSRect)aRect;
+- (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame;
 - (void) _drawAttributedText: (NSAttributedString*)aString  
 		     inFrame: (NSRect)aRect;
 

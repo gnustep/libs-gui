@@ -32,10 +32,6 @@
 #include <AppKit/NSBox.h>
 
 @implementation GSVbox: GSTable
-{
-  BOOL _haveViews;
-  float _defaultMinYMargin;
-}
 //
 // Class methods
 //

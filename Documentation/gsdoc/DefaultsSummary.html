@@ -29,8 +29,9 @@
 
           A string containing the name of the backend bundle to use
           for display specific GUI handling. The default is
-          "libgnustep-xgps". Currently the only other choice is
-          "libgnustep-xdps".
+          "libgnustep-back". Custom backends can be created during compilation
+	  of the libraries. Any other choice for a name is thus system
+	  specific.
           </p>
 
 	  
@@ -207,10 +208,10 @@
 
 	  
 </dl>
-<h3><a name ="cont-2">XGPS Backend Defaults</a></h3>
+<h3><a name ="cont-2">Backend Defaults</a></h3>
 <p>
 
-      Below is a list of defaults used to control the gnustep-xgps
+      Below is a list of defaults used to control the x11-based
       backend. These defaults generally control system specific
       display and user interaction options which may not be available
       on all systems.
@@ -240,14 +241,14 @@
           </p>
 
 	  
-<dt>GSBorderedBorderlessWindows
+<dt>GSAppOwnsMiniwindow
 <dd>
           <p>
 
-          A boolean value which defaults to <code>NO</code>. Some Window
-          Managers and/or X servers put a border around windows that are
-          supposed to be borderless. Set this to <code>YES</code> if you
-          have odd problems of menus/windows moving when you click on them.
+          A boolean value which defaults to <code>YES</code>. Some window
+          managers control the miniaturized versions of windows themselves.
+          Set this default to <code>NO</code> to let the window manager
+          have it's way, otherwise, GNUstep will create a miniwindow.
           </p>
 
 	  

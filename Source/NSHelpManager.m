@@ -109,10 +109,6 @@
 @end
 
 @implementation NSHelpManager
-{
-@private
-  NSMapTable* contextHelpTopics;
-}
 
 static NSHelpManager *_gnu_sharedHelpManager = nil;
 static BOOL _gnu_contextHelpActive = NO;

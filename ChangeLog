@@ -8,6 +8,37 @@
 	
 2002-04-02  Adam Fedor  <fedor@gnu.org>
 
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Update.
+	* Documentation/gsdoc/Gui.gsdoc: Idem.
+	* Headers/gnustep/gui/NSAffineTransform.h: Tidy for autogsdoc.
+	* Headers/gnustep/gui/NSButtonCell.h: Idem.
+	* Headers/gnustep/gui/NSCell.h: Idem.
+	* Headers/gnustep/gui/NSClipView.h: Idem.
+	* Headers/gnustep/gui/NSFont.h: Idem.
+	* Headers/gnustep/gui/NSFontManager.h: Idem.
+	* Headers/gnustep/gui/NSOutlineView.h: Idem.
+	* Headers/gnustep/gui/NSRulerView.h: Idem.
+	* Headers/gnustep/gui/NSSavePanel.h: Idem.
+	* Source/GSHbox.m: Idem.
+	* Source/GSVbox.m: Idem.
+	* Source/NSCachedImageRep.m: Idem.
+	* Source/NSCell.m: Idem.
+	* Source/NSClipView.m: Idem.
+	* Source/NSDocument.m: Idem.
+	* Source/NSFont.m: Idem.
+	* Source/NSFontManager.m: Idem.
+	* Source/NSFontPanel.m: Idem.
+	* Source/NSFormCell.m: Idem.
+	* Source/NSGraphicsContext.m: Idem.
+	* Source/NSHelpManager.m: Idem.
+	* Source/NSImage.m: Idem.
+	* Source/NSPanel.m: Idem.
+	* Source/NSRulerView.m: Idem.
+	* Source/NSStepperCell.m: Idem.
+	* Source/NSText.m: Idem.
+	
+2002-04-02  Adam Fedor  <fedor@gnu.org>
+
 	* Source/NSGraphicsContext.m (-GSDefineGState): Document new
 	definition of method.
 	* Source/NSWindow.m ([NSWindow -_initBackendWindow:]): Change to

@@ -203,14 +203,14 @@ setNSFont(NSString* key, NSFont* font)
 
 /* Setting the preferred user fonts*/
 
-+ (void) setUserFixedPitchFont: (NSFont*)font
++ (void) setUserFixedPitchFont: (NSFont*)aFont
 {
-  setNSFont (@"NSUserFixedPitchFont", font);
+  setNSFont (@"NSUserFixedPitchFont", aFont);
 }
 
-+ (void) setUserFont: (NSFont*)font
++ (void) setUserFont: (NSFont*)aFont
 {
-  setNSFont (@"NSUserFont", font);
+  setNSFont (@"NSUserFont", aFont);
 }
 
 + (void)setPreferredFontNames:(NSArray *)fontNames
@@ -374,14 +374,14 @@ setNSFont(NSString* key, NSFont* font)
   return 12.0;
 }
 
-+ (NSFont*) fontWithName: (NSString*)name 
++ (NSFont*) fontWithName: (NSString*)aFontName 
 		  matrix: (const float*)fontMatrix
 {
-  return AUTORELEASE([[NSFontClass alloc] initWithName: name
+  return AUTORELEASE([[NSFontClass alloc] initWithName: aFontName
 						matrix: fontMatrix]);
 }
 
-+ (NSFont*) fontWithName: (NSString*)name
++ (NSFont*) fontWithName: (NSString*)aFontName
 		    size: (float)fontSize
 {
   NSFont*font;
@@ -398,14 +398,14 @@ setNSFont(NSString* key, NSFont* font)
   fontMatrix[0] = fontSize;
   fontMatrix[3] = fontSize;
 
-  font = [self fontWithName: name matrix: fontMatrix];
+  font = [self fontWithName: aFontName matrix: fontMatrix];
   font->matrixExplicitlySet = NO;
   return font;
 }
 
-+ (void) useFont: (NSString*)name
++ (void) useFont: (NSString*)aFontName
 {
-  [GSCurrentContext() useFont: name];
+  [GSCurrentContext() useFont: aFontName];
 }
 
 //

@@ -2035,16 +2035,16 @@ static NSColor	*shadowCol;
   [title drawInRect: cellFrame];
 }
 
-- (void) _drawText: (NSString*)title  inFrame: (NSRect)cellFrame
+- (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame
 {
   NSSize titleSize;
   NSDictionary *attributes;
 
-  if (title == nil)
+  if (aString == nil)
     return;
 
   attributes = [self _nonAutoreleasedTypingAttributes];
-  titleSize = [title sizeWithAttributes: attributes];
+  titleSize = [aString sizeWithAttributes: attributes];
 
   // Determine y position of text
 
@@ -2056,7 +2056,7 @@ static NSColor	*shadowCol;
   cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
   cellFrame.size.height = titleSize.height;
 
-  [title drawInRect: cellFrame  withAttributes: attributes];
+  [aString drawInRect: cellFrame  withAttributes: attributes];
   RELEASE (attributes);
 }
 

@@ -99,7 +99,7 @@ typedef enum {
 - (void) setOriginOffset: (float)offset; 
 - (float) originOffset; 
 
-- (void) setMarkers: (NSArray *)markers; 
+- (void) setMarkers: (NSArray *)newMarkers; 
 - (NSArray *) markers;
 - (void) addMarker: (NSRulerMarker *)aMarker; 
 - (void) removeMarker: (NSRulerMarker *)aMarker; 

@@ -65,9 +65,9 @@
   return _maxValue;
 }
 
-- (void) setMaxValue: (double)newMaxValue
+- (void) setMaxValue: (double)maxValue
 {
-  _maxValue = newMaxValue;
+  _maxValue = maxValue;
 }
 
 - (double) minValue
@@ -75,9 +75,9 @@
   return _minValue;
 }
 
-- (void) setMinValue: (double)newMinValue
+- (void) setMinValue: (double)minValue
 {
-  _minValue = newMinValue;
+  _minValue = minValue;
 }
 
 - (double) increment
@@ -97,9 +97,9 @@
   return _autorepeat;
 }
 
-- (void)setAutorepeat: (BOOL)newAutorepeat
+- (void)setAutorepeat: (BOOL)autorepeat
 {
-  _autorepeat = newAutorepeat;
+  _autorepeat = autorepeat;
 }
 
 - (BOOL)valueWraps
@@ -107,9 +107,9 @@
   return _valueWraps;
 }
 
-- (void)setValueWraps: (BOOL)newValueWraps
+- (void)setValueWraps: (BOOL)valueWraps
 {
-  _valueWraps = newValueWraps;
+  _valueWraps = valueWraps;
 }
 
 - (void) dealloc

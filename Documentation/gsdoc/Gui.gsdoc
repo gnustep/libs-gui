@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
 <gsdoc base="Gui">
   <head>
     <title>Gui</title>
@@ -126,10 +126,18 @@
         <item><uref url="NSWorkspace.html">NSWorkspace</uref></item>
       </list>
       <p>
-        There is also documentation on various GUI functions.
+        Documentation on non-OpenStep, non-MacOSX, and private classes
       </p>
       <list>
-        <item><uref url="DPSOperators.html">DPSOperators</uref></item>
+        <item><uref url="GSDisplayServer.html">GSDisplayServer</uref></item>
+        <item><uref url="GSHbox.html">GSHbox</uref></item>
+        <item><uref url="GSTable.html">GSTable</uref></item>
+        <item><uref url="GSVbox.html">GSVbox</uref></item>
+      </list>
+      <p>
+        Miscellaneous documentation
+      </p>
+      <list>
         <item><uref url="DefaultsSummary.html">Available User Defaults</uref></item>
       </list>
 

@@ -26,6 +26,249 @@
         NSTableColumn objects represent columns in
         NSTableViews.
       </p>
+<h2><a name ="NSTableColumn">NSTableColumn</a></h2>
+<p><b>Declared in: </b> AppKit/NSTableColumn.h</p>
+<p><b>Inherits from: </b> NSObject</p>
+<p><b>Conforms to: </b> NSCoding
+</p>
+<hr>
+
+        
+<h2>Instance Variables </h2>
+<ul>
+</ul>
+<h2>Methods </h2>
+<ul>
+<li ><a href ="NSTableColumn.html#method-0">-dataCell</a>
+<li ><a href ="NSTableColumn.html#method-1">-dataCellForRow:</a>
+<li ><a href ="NSTableColumn.html#method-2">-headerCell</a>
+<li ><a href ="NSTableColumn.html#method-3">-identifier</a>
+<li ><a href ="NSTableColumn.html#method-4">-initWithIdentifier:</a>
+<li ><a href ="NSTableColumn.html#method-5">-isEditable</a>
+<li ><a href ="NSTableColumn.html#method-6">-isResizable</a>
+<li ><a href ="NSTableColumn.html#method-7">-maxWidth</a>
+<li ><a href ="NSTableColumn.html#method-8">-minWidth</a>
+<li ><a href ="NSTableColumn.html#method-9">-setDataCell:</a>
+<li ><a href ="NSTableColumn.html#method-10">-setEditable:</a>
+<li ><a href ="NSTableColumn.html#method-11">-setHeaderCell:</a>
+<li ><a href ="NSTableColumn.html#method-12">-setIdentifier:</a>
+<li ><a href ="NSTableColumn.html#method-13">-setMaxWidth:</a>
+<li ><a href ="NSTableColumn.html#method-14">-setMinWidth:</a>
+<li ><a href ="NSTableColumn.html#method-15">-setResizable:</a>
+<li ><a href ="NSTableColumn.html#method-16">-setTableView:</a>
+<li ><a href ="NSTableColumn.html#method-17">-setWidth:</a>
+<li ><a href ="NSTableColumn.html#method-18">-sizeToFit</a>
+<li ><a href ="NSTableColumn.html#method-19">-tableView</a>
+<li ><a href ="NSTableColumn.html#method-20">-width</a>
+</ul>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-0">dataCell</a></h3>
+- (NSCell*) <b>dataCell</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the cell used to display data in the column.
+            The default data cell is an NSTextFieldCell.
+          
+ <hr>
+<h3><a name ="method-1">dataCellForRow:</a></h3>
+- (NSCell*) <b>dataCellForRow:</b> (int)row;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            <em>Description forthcoming.</em>
+          
+ <hr>
+<h3><a name ="method-2">headerCell</a></h3>
+- (NSCell*) <b>headerCell</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the cell used to display the column title.
+            The default header cell is an NSTableHeaderCell.
+          
+ <hr>
+<h3><a name ="method-3">identifier</a></h3>
+- (id) <b>identifier</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the column identifier, an object used to
+            identify the column. This object is usually a
+            string, but might be any kind of object.
+          
+ <hr>
+<h3><a name ="method-4">initWithIdentifier:</a></h3>
+- (id) <b>initWithIdentifier:</b> (id)anObject;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Initialize the column. <var>anObject</var> is an
+            object used to identify the column; it is usually a
+            string, but might be any kind of object.
+            <var>anObject</var> is retained.
+          
+ <hr>
+<h3><a name ="method-5">isEditable</a></h3>
+- (BOOL) <b>isEditable</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return whether data displayed in the column can be
+            edited by the user by double-cliking on them.
+          
+ <hr>
+<h3><a name ="method-6">isResizable</a></h3>
+- (BOOL) <b>isResizable</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return whether the column might be resized by the
+            user by dragging the column header border.
+          
+ <hr>
+<h3><a name ="method-7">maxWidth</a></h3>
+- (float) <b>maxWidth</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the column's max width. The column can in no
+            way be resized to a width bigger than this max width.
+            The default max width is 100000.
+          
+ <hr>
+<h3><a name ="method-8">minWidth</a></h3>
+- (float) <b>minWidth</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the column's min width. The column can in no
+            way be resized to a width smaller than this min width.
+            The default min width is zero.
+          
+ <hr>
+<h3><a name ="method-9">setDataCell:</a></h3>
+- (void) <b>setDataCell:</b> (NSCell*)aCell;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the cell used to display data in the column.
+            <var>aCell</var> can't be <code>nil</code>, otherwise
+            a warning will be generated and the method ignored. The
+            old cell is released, the new one is retained. If you
+            want to change the attributes in which a single row in
+            a column is displayed, you should better use a delegate
+            for your NSTableView implementing
+            tableView:willDisplayCell:forTableColumn:row:.
+          
+ <hr>
+<h3><a name ="method-10">setEditable:</a></h3>
+- (void) <b>setEditable:</b> (BOOL)flag;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set whether data in the column might be edited by the
+            user by double-cliking on them.
+          
+ <hr>
+<h3><a name ="method-11">setHeaderCell:</a></h3>
+- (void) <b>setHeaderCell:</b> (NSCell*)aCell;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the cell used to display the column header.
+            <var>aCell</var> can't be <code>nil</code>, otherwise
+            a warning will be generated and the method call ignored.
+            The old cell is released, the new one is retained.
+          
+ <hr>
+<h3><a name ="method-12">setIdentifier:</a></h3>
+- (void) <b>setIdentifier:</b> (id)anObject;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the identifier used to identify the table. The old
+            identifier is released, and the new one is
+            retained.
+          
+ <hr>
+<h3><a name ="method-13">setMaxWidth:</a></h3>
+- (void) <b>setMaxWidth:</b> (float)maxWidth;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the max width of the table column, eventually
+            adjusting the width of the column if it is bigger
+            than the new max width. In no way a table column can
+            be made bigger than its max width.
+          
+ <hr>
+<h3><a name ="method-14">setMinWidth:</a></h3>
+- (void) <b>setMinWidth:</b> (float)minWidth;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the min width of the table column, eventually
+            adjusting the width of the column if it is
+            smaller than the new min width. In no way a table
+            column can be made smaller than its min width.
+          
+ <hr>
+<h3><a name ="method-15">setResizable:</a></h3>
+- (void) <b>setResizable:</b> (BOOL)flag;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set whether the user can resize the table column by
+            dragging the border of its header with the mouse.
+            The table column can be resized programmatically
+            regardless of this setting.
+          
+ <hr>
+<h3><a name ="method-16">setTableView:</a></h3>
+- (void) <b>setTableView:</b> (NSTableView*)aTableView;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the table view corresponding to this table column.
+            This method is invoked internally by the table view,
+            and you should not call it directly; it is exposed
+            because you may want to override it in subclasses.
+            To use the table column in a table view, you should use
+            NSTableView's addTableColumn: instead.
+          
+ <hr>
+<h3><a name ="method-17">setWidth:</a></h3>
+- (void) <b>setWidth:</b> (float)newWidth;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Set the width of the table column. Before being
+            resized, the new width is constrained to the table
+            column minimum and maximum width: if
+            <var>newWidth</var> is smaller than the table
+            column's min width, the table column is simply
+            resized to its min width. If <var>newWidth</var> is
+            bigger than the table column's max width, the table
+            column is simply resized to its max width.
+            Otherwise, it is resized to <var>newWidth</var>.
+            If the width of the table was actually changed, the
+            table view (if any) is redisplayed (by calling tile),
+            and the NSTableViewColumnDidResizeNotification is
+            posted on behalf of the table view.
+          
+ <hr>
+<h3><a name ="method-18">sizeToFit</a></h3>
+- (void) <b>sizeToFit</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Change the width of the column to be just enough to
+            display its header; change the minimum width and
+            maximum width to allow the column to have this
+            width (if the minimum width is bigger than the column
+            header width, it is reduced to it; if the maximum
+            width is smaller than the column header width, it is
+            increased to it).
+          
+ <hr>
+<h3><a name ="method-19">tableView</a></h3>
+- (NSTableView*) <b>tableView</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the table view the column belongs to, or
+            <code>nil</code> if the table column was not added
+            to any table view.
+          
+ <hr>
+<h3><a name ="method-20">width</a></h3>
+- (float) <b>width</b>;<br>
+Standards:  GNUstep MacOS-X OpenStep<br>
+
+            Return the width of the table column.
+          
+ <hr>
 <h3><a name ="cont-1">The Column Identifier</a></h3>
 <p>
 

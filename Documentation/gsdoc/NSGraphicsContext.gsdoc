@@ -19,18 +19,63 @@
   <body>
     <front><contents /></front>
     <chapter>
-      <heading>
-        Software documentation for the NSGraphicsContext class
-      </heading>
+      <heading>NSGraphicsContext</heading>
+      <p>
+        This is an abstract class which provides a framework for a
+        device independant drawing.
+      </p>
+      <p>
+        In addition, this class provides methods to perform the
+        actual drawing. As a convenience, you can also access
+        these through various function interfaces. One is a
+        Display Postscript interface using PS and DPS
+        opeterations. Another is a Quartz interface (not
+        yet written).
+      </p>
       <class name="NSGraphicsContext" super="NSObject">
         <declared>AppKit/NSGraphicsContext.h</declared>
         <desc>
-          <em>Description forthcoming.</em>
         </desc>
+        <ivariable type="" name="_antialias">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="_interp">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="context_data">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="context_info">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="focus_stack">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="methods">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
+        <ivariable type="" name="usedFonts">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
         <method type="NSGraphicsContext*" factory="yes">
           <sel>currentContext</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the current context. Also see the
+            convienience function GSCurrentContext()
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -39,7 +84,8 @@
         <method type="BOOL" factory="yes">
           <sel>currentContextDrawingToScreen</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the current context is
+            a display context
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -49,7 +95,12 @@
           <sel>graphicsContextWithAttributes:</sel>
           <arg type="NSDictionary*">attributes</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            <p>
+              Create a graphics context with
+              <var>attributes</var>, which contains key/value
+              pairs which describe the specifics of how the
+              context is to be initialized.
+            </p>
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -59,7 +110,8 @@
           <sel>graphicsContextWithWindow:</sel>
           <arg type="NSWindow*">aWindow</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Create graphics context with attributes speficied by
+            aWindow's device description.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -87,7 +139,8 @@
           <sel>setCurrentContext:</sel>
           <arg type="NSGraphicsContext*">context</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Set the current <var>context</var> that will handle
+            drawing.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -96,15 +149,6 @@
         <method type="void" factory="yes">
           <sel>setGraphicsState:</sel>
           <arg type="int">graphicsState</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void" factory="yes">
-          <sel>waitAllContexts</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -122,15 +166,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>flush</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>flushGraphics</sel>
           <desc>
             <em>Description forthcoming.</em>
@@ -140,7 +175,25 @@
           </standards>
         </method>
         <method type="void*">
+          <sel>focusStack</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void*">
           <sel>graphicsPort</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSImageInterpolation">
+          <sel>imageInterpolation</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -176,7 +229,37 @@
           </standards>
         </method>
         <method type="void">
-          <sel>wait</sel>
+          <sel>setFocusStack:</sel>
+          <arg type="void*">stack</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setImageInterpolation:</sel>
+          <arg type="NSImageInterpolation">interpolation</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setShouldAntialias:</sel>
+          <arg type="BOOL">antialias</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>shouldAntialias</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -199,16 +282,6 @@
         <desc>
           <em>Description forthcoming.</em>
         </desc>
-        <method type="NSGraphicsContext*" factory="yes">
-          <sel>defaultContextWithInfo:</sel>
-          <arg type="NSDictionary*">info</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
         <method type="void" factory="yes">
           <sel>setDefaultContextClass:</sel>
           <arg type="Class">defaultContextClass</arg>
@@ -219,65 +292,9 @@
             <NotMacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
-        <method type="BOOL">
-          <sel>_addDragTypes:</sel>
-          <arg type="NSArray*">types</arg>
-          <sel>toWindow:</sel>
-          <arg type="NSWindow*">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
-        <method type="id&lt;NSDraggingInfo&gt;">
-          <sel>_dragInfo</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
-        <method type="NSCountedSet*">
-          <sel>_dragTypesForWindow:</sel>
-          <arg type="NSWindow*">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>_removeDragTypes:</sel>
-          <arg type="NSArray*">types</arg>
-          <sel>fromWindow:</sel>
-          <arg type="NSWindow*">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>_slideImage:</sel>
-          <arg type="NSImage*">image</arg>
-          <sel>from:</sel>
-          <arg type="NSPoint">from</arg>
-          <sel>to:</sel>
-          <arg type="NSPoint">to</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
         <method type="void">
-          <sel>destroyContext</sel>
+          <sel>contextDevice:</sel>
+          <arg type="int">num</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -309,15 +326,6 @@
           <arg type="NSView*">aView</arg>
           <sel>inRect:</sel>
           <arg type="NSRect">rect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotMacOS-X /> <NotOpenStep /> <GNUstep />
-          </standards>
-        </method>
-        <method type="NSMutableData*">
-          <sel>mutableData</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -381,44 +389,6 @@
         <desc>
           <em>Description forthcoming.</em>
         </desc>
-        <method type="void" factory="yes">
-          <sel>initializeBackend</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="const NSWindowDepth*">
-          <sel>GSAvailableDepthsForScreen:</sel>
-          <arg type="int">screen</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="NSSize">
-          <sel>GSResolutionForScreen:</sel>
-          <arg type="int">screen</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="unsigned int">
-          <sel>GSWDefineAsUserObj</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
         <method type="void">
           <sel>GSWSetViewIsFlipped:</sel>
           <arg type="BOOL">flipped</arg>
@@ -438,56 +408,8 @@
             <NotOpenStep /> <GNUstep /> <MacOS-X />
           </standards>
         </method>
-        <method type="NSWindowDepth">
-          <sel>GSWindowDepthForScreen:</sel>
-          <arg type="int">screen</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
         <method type="void">
           <sel>NSBeep</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSCopyBitmapFromGState:</sel>
-          <arg type="int">srcGstate</arg>
-          <sel>:</sel>
-          <arg type="NSRect">srcRect</arg>
-          <sel>:</sel>
-          <arg type="NSRect">destRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSCopyBits:</sel>
-          <arg type="int">srcGstate</arg>
-          <sel>:</sel>
-          <arg type="NSRect">srcRect</arg>
-          <sel>:</sel>
-          <arg type="NSPoint">destPoint</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSDottedFrameRect:</sel>
-          <arg type="const NSRect">aRect</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -525,121 +447,9 @@
             <NotOpenStep /> <GNUstep /> <MacOS-X />
           </standards>
         </method>
-        <method type="void">
-          <sel>NSEraseRect:</sel>
-          <arg type="NSRect">aRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSFrameRect:</sel>
-          <arg type="const NSRect">aRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSFrameRectWithWidth:</sel>
-          <arg type="const NSRect">aRect</arg>
-          <sel>:</sel>
-          <arg type="float">frameWidth</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSHighlightRect:</sel>
-          <arg type="NSRect">aRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
         <method type="NSColor*">
           <sel>NSReadPixel:</sel>
           <arg type="NSPoint">location</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectClip:</sel>
-          <arg type="NSRect">aRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectClipList:</sel>
-          <arg type="const NSRect*">rects</arg>
-          <sel>:</sel>
-          <arg type="int">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectFill:</sel>
-          <arg type="NSRect">aRect</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectFillList:</sel>
-          <arg type="const NSRect*">rects</arg>
-          <sel>:</sel>
-          <arg type="int">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectFillListWithGrays:</sel>
-          <arg type="const NSRect*">rects</arg>
-          <sel>:</sel>
-          <arg type="const float*">grays</arg>
-          <sel>:</sel>
-          <arg type="int">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>NSRectFillUsingOperation:</sel>
-          <arg type="NSRect">aRect</arg>
-          <sel>:</sel>
-          <arg type="NSCompositingOperation">op</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -663,64 +473,6 @@
           <em>Description forthcoming.</em>
         </desc>
         <method type="void">
-          <sel>DPSDiscardEventsMatchingMask:</sel>
-          <arg type="unsigned">mask</arg>
-          <sel>beforeEvent:</sel>
-          <arg type="NSEvent*">limit</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSFontDirectory</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="NSEvent*">
-          <sel>DPSGetEventMatchingMask:</sel>
-          <arg type="unsigned">mask</arg>
-          <sel>beforeDate:</sel>
-          <arg type="NSDate*">limit</arg>
-          <sel>inMode:</sel>
-          <arg type="NSString*">mode</arg>
-          <sel>dequeue:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSISOLatin1Encoding</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSPostEvent:</sel>
-          <arg type="NSEvent*">anEvent</arg>
-          <sel>atStart:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSPrintf:</sel>
           <arg type="char*">fmt</arg>
           <sel>:</sel>
@@ -733,37 +485,10 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSSharedFontDirectory</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSStandardEncoding</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSWriteData:</sel>
           <arg type="char*">buf</arg>
           <sel>:</sel>
           <arg type="unsigned int">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSalphaimage</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -826,32 +551,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSarcto:</sel>
-          <arg type="float">x1</arg>
-          <sel>:</sel>
-          <arg type="float">y1</arg>
-          <sel>:</sel>
-          <arg type="float">x2</arg>
-          <sel>:</sel>
-          <arg type="float">y2</arg>
-          <sel>:</sel>
-          <arg type="float">r</arg>
-          <sel>:</sel>
-          <arg type="float*">xt1</arg>
-          <sel>:</sel>
-          <arg type="float*">yt1</arg>
-          <sel>:</sel>
-          <arg type="float*">xt2</arg>
-          <sel>:</sel>
-          <arg type="float*">yt2</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSashow:</sel>
           <arg type="float">x</arg>
           <sel>:</sel>
@@ -886,48 +585,10 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPScapturegstate:</sel>
-          <arg type="int*">gst</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScapturemouse:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPScharpath:</sel>
           <arg type="const char*">s</arg>
           <sel>:</sel>
           <arg type="int">b</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSclear</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScleartomark</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -945,25 +606,7 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSclippath</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSclosepath</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScolorimage</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1024,91 +667,10 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSconcatmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScopy:</sel>
-          <arg type="int">n</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScopypage</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScount:</sel>
-          <arg type="int*">n</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScountscreenlist:</sel>
-          <arg type="int">context</arg>
-          <sel>:</sel>
-          <arg type="int*">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScounttomark:</sel>
-          <arg type="int*">n</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScountwindowlist:</sel>
-          <arg type="int">context</arg>
-          <sel>:</sel>
-          <arg type="int*">count</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPScurrentalpha:</sel>
           <arg type="float*">a</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentcacheparams</sel>
-          <desc>
-            <em>Description forthcoming.</em>
+            Returns the current alpha component
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1124,36 +686,8 @@
           <sel>:</sel>
           <arg type="float*">k</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentdash</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentdefaultdepthlimit:</sel>
-          <arg type="int*">limit</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentdrawingfunction:</sel>
-          <arg type="int*">function</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Returns the current color according to the CMYK
+            color model
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1162,15 +696,6 @@
         <method type="void">
           <sel>DPScurrentflat:</sel>
           <arg type="float*">flatness</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentfont</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1195,28 +720,13 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPScurrentgcdrawablecolor:</sel>
-          <arg type="void**">gc</arg>
-          <sel>:</sel>
-          <arg type="void**">draw</arg>
-          <sel>:</sel>
-          <arg type="int*">x</arg>
-          <sel>:</sel>
-          <arg type="int*">y</arg>
-          <sel>:</sel>
-          <arg type="int*">colorInfo</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPScurrentgray:</sel>
           <arg type="float*">gray</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the gray-level equivalent in the current
+            color space. The value may depend on the current
+            color space and may be 0 if the current color space
+            has no notion of a <var>gray</var> value
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1226,28 +736,10 @@
           <sel>DPScurrentgstate:</sel>
           <arg type="int">gst</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrenthalftone</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrenthalftonephase:</sel>
-          <arg type="float*">x</arg>
-          <sel>:</sel>
-          <arg type="float*">y</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Depcreciated. Same as
+            <ref type="method" id="-GSReplaceGState:">
+              -GSReplaceGState:
+            </ref>
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1261,7 +753,8 @@
           <sel>:</sel>
           <arg type="float*">b</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the current color according to the HSB
+            color model.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1298,15 +791,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPScurrentmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPScurrentmiterlimit:</sel>
           <arg type="float*">limit</arg>
           <desc>
@@ -1321,18 +805,6 @@
           <arg type="int*">x</arg>
           <sel>:</sel>
           <arg type="int*">y</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentowner:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="int*">owner</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1360,26 +832,8 @@
           <sel>:</sel>
           <arg type="float*">b</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentscreen</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentserverdevice:</sel>
-          <arg type="void**">serverptr</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Returns the current color according to the RGB
+            color model
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1388,103 +842,6 @@
         <method type="void">
           <sel>DPScurrentstrokeadjust:</sel>
           <arg type="int*">b</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrenttransfer</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindow:</sel>
-          <arg type="int*">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowalpha:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="int*">alpha</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowbounds:</sel>
-          <arg type="int">num</arg>
-          <sel>:</sel>
-          <arg type="float*">x</arg>
-          <sel>:</sel>
-          <arg type="float*">y</arg>
-          <sel>:</sel>
-          <arg type="float*">w</arg>
-          <sel>:</sel>
-          <arg type="float*">h</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowdepth:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="int*">depth</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowdepthlimit:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="int*">limit</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowdevice:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="void**">windowptr</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPScurrentwindowlevel:</sel>
-          <arg type="int">win</arg>
-          <sel>:</sel>
-          <arg type="int*">level</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1505,33 +862,6 @@
           <arg type="float">x3</arg>
           <sel>:</sel>
           <arg type="float">y3</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSdefaultmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSdefinefont</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSdefineuserobject</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1564,43 +894,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSdocedited:</sel>
-          <arg type="int">edited</arg>
-          <sel>:</sel>
-          <arg type="int">window</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSdtransform:</sel>
-          <arg type="float">x1</arg>
-          <sel>:</sel>
-          <arg type="float">y1</arg>
-          <sel>:</sel>
-          <arg type="float*">x2</arg>
-          <sel>:</sel>
-          <arg type="float*">y2</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSdup</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSeoclip</sel>
           <desc>
             <em>Description forthcoming.</em>
@@ -1619,87 +912,7 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSeoviewclip</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSerasepage</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSexch</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSexecstack</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSexecuserobject:</sel>
-          <arg type="int">index</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSfill</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSfindfont:</sel>
-          <arg type="const char*">name</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSfindwindow:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="int">op</arg>
-          <sel>:</sel>
-          <arg type="int">otherWin</arg>
-          <sel>:</sel>
-          <arg type="float*">lx</arg>
-          <sel>:</sel>
-          <arg type="float*">ly</arg>
-          <sel>:</sel>
-          <arg type="int*">winFound</arg>
-          <sel>:</sel>
-          <arg type="int*">didFind</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -1717,140 +930,12 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSflush</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSflushwindowrect:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="float">w</arg>
-          <sel>:</sel>
-          <arg type="float">h</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSfrontwindow:</sel>
-          <arg type="int*">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSget</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetboolean:</sel>
-          <arg type="int*">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetchararray:</sel>
-          <arg type="int">size</arg>
-          <sel>:</sel>
-          <arg type="char*">s</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetfloat:</sel>
-          <arg type="float*">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetfloatarray:</sel>
-          <arg type="int">size</arg>
-          <sel>:</sel>
-          <arg type="float*">a</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetint:</sel>
-          <arg type="int*">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetintarray:</sel>
-          <arg type="int">size</arg>
-          <sel>:</sel>
-          <arg type="int*">a</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgetstring:</sel>
-          <arg type="char*">s</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSgrestore</sel>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSgrestoreall</sel>
-          <desc>
-            <em>Description forthcoming.</em>
+            Pops a previously saved gstate from the gstate stack
+            and makes it current. Drawing information in the
+            previously saved gstate becomes the current
+            information
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1859,7 +944,10 @@
         <method type="void">
           <sel>DPSgsave</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Saves (pushes) a copy of the current gstate
+            information onto the gstate stack. This saves
+            drawing information contained in the gstate, such
+            as the current path, ctm and colors.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1868,91 +956,11 @@
         <method type="void">
           <sel>DPSgstate</sel>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPShidecursor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSidentmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSidtransform:</sel>
-          <arg type="float">x1</arg>
-          <sel>:</sel>
-          <arg type="float">y1</arg>
-          <sel>:</sel>
-          <arg type="float*">x2</arg>
-          <sel>:</sel>
-          <arg type="float*">y2</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSimage</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSimagecursor:</sel>
-          <arg type="float">hotx</arg>
-          <sel>:</sel>
-          <arg type="float">hoty</arg>
-          <sel>:</sel>
-          <arg type="float">w</arg>
-          <sel>:</sel>
-          <arg type="float">h</arg>
-          <sel>:</sel>
-          <arg type="int">colors</arg>
-          <sel>:</sel>
-          <arg type="const char*">image</arg>
-          <sel>:</sel>
-          <arg type="void**">cid</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSimagemask</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSindex:</sel>
-          <arg type="int">i</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Depreciated. Use
+            <ref type="method" id="-DPSDefineGState">
+              -DPSDefineGState
+            </ref>
+            to create a gstate it and tag it with a id tag.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -1986,103 +994,10 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSinitviewclip</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSinvertmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSitransform:</sel>
-          <arg type="float">x1</arg>
-          <sel>:</sel>
-          <arg type="float">y1</arg>
-          <sel>:</sel>
-          <arg type="float*">x2</arg>
-          <sel>:</sel>
-          <arg type="float*">y2</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSkshow:</sel>
-          <arg type="const char*">s</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSlineto:</sel>
           <arg type="float">x</arg>
           <sel>:</sel>
           <arg type="float">y</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSmakefont</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSmark</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSminiwindow:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSmouselocation:</sel>
-          <arg type="float*">x</arg>
-          <sel>:</sel>
-          <arg type="float*">y</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2103,44 +1018,7 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSmovewindow:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSnewpath</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSnull</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSorderwindow:</sel>
-          <arg type="int">op</arg>
-          <sel>:</sel>
-          <arg type="int">otherWin</arg>
-          <sel>:</sel>
-          <arg type="int">winNum</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2165,51 +1043,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSpathforall</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSplacewindow:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="float">w</arg>
-          <sel>:</sel>
-          <arg type="float">h</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSpop</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSput</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSrcurveto:</sel>
           <arg type="float">x1</arg>
           <sel>:</sel>
@@ -2222,15 +1055,6 @@
           <arg type="float">x3</arg>
           <sel>:</sel>
           <arg type="float">y3</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSreadimage</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2287,40 +1111,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSrectviewclip:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="float">w</arg>
-          <sel>:</sel>
-          <arg type="float">h</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSreleasemouse</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSrestore</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSreversepath</sel>
           <desc>
             <em>Description forthcoming.</em>
@@ -2354,29 +1144,8 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSroll:</sel>
-          <arg type="int">n</arg>
-          <sel>:</sel>
-          <arg type="int">j</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSrotate:</sel>
           <arg type="float">angle</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsave</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2397,150 +1166,13 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSscalefont:</sel>
-          <arg type="float">size</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSscreenlist:</sel>
-          <arg type="int">context</arg>
-          <sel>:</sel>
-          <arg type="int">count</arg>
-          <sel>:</sel>
-          <arg type="int*">windows</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSselectfont:</sel>
-          <arg type="const char*">name</arg>
-          <sel>:</sel>
-          <arg type="float">scale</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendboolean:</sel>
-          <arg type="int">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendchararray:</sel>
-          <arg type="const char*">s</arg>
-          <sel>:</sel>
-          <arg type="int">size</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendfloat:</sel>
-          <arg type="float">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendfloatarray:</sel>
-          <arg type="const float*">a</arg>
-          <sel>:</sel>
-          <arg type="int">size</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendint:</sel>
-          <arg type="int">it</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendintarray:</sel>
-          <arg type="const int*">a</arg>
-          <sel>:</sel>
-          <arg type="int">size</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsendstring:</sel>
-          <arg type="const char*">s</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSsetalpha:</sel>
           <arg type="float">a</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetautofill:</sel>
-          <arg type="int">truth</arg>
-          <sel>:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetbbox:</sel>
-          <arg type="float">llx</arg>
-          <sel>:</sel>
-          <arg type="float">lly</arg>
-          <sel>:</sel>
-          <arg type="float">urx</arg>
-          <sel>:</sel>
-          <arg type="float">ury</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Sets the alpha drawing component. For this and other
+            color setting commands that have no differentiation
+            between fill and stroke colors, both the fill and
+            stroke alpha are set.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2556,29 +1188,11 @@
           <sel>:</sel>
           <arg type="float">k</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetcursorcolor:</sel>
-          <arg type="float">fr</arg>
-          <sel>:</sel>
-          <arg type="float">fg</arg>
-          <sel>:</sel>
-          <arg type="float">fb</arg>
-          <sel>:</sel>
-          <arg type="float">br</arg>
-          <sel>:</sel>
-          <arg type="float">bg</arg>
-          <sel>:</sel>
-          <arg type="float">bb</arg>
-          <sel>:</sel>
-          <arg type="void*">cid</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Sets the current colorspace to Device CMYK and the
+            current color based on the indicated values. For
+            this and other color setting commands that have no
+            differentiation between fill and stroke
+            colors, both the fill and stroke colors are set.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2599,47 +1213,8 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSsetdefaultdepthlimit:</sel>
-          <arg type="int">limit</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetdrawingfunction:</sel>
-          <arg type="int">function</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetexposurecolor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSsetflat:</sel>
           <arg type="float">flatness</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetfont:</sel>
-          <arg type="int">f</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2664,28 +1239,11 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSsetgcdrawablecolor:</sel>
-          <arg type="void*">gc</arg>
-          <sel>:</sel>
-          <arg type="void*">draw</arg>
-          <sel>:</sel>
-          <arg type="int">x</arg>
-          <sel>:</sel>
-          <arg type="int">y</arg>
-          <sel>:</sel>
-          <arg type="const int*">colorInfo</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSsetgray:</sel>
           <arg type="float">gray</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Sets the current colorspace to Device Gray and the
+            current <var>gray</var> value
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2695,16 +1253,9 @@
           <sel>DPSsetgstate:</sel>
           <arg type="int">gst</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsethalftone</sel>
-          <desc>
-            <em>Description forthcoming.</em>
+            Makes the gstate indicated by the tag <var>gst</var>
+            the current gstate. Note that the gstate is copied, so
+            that changes to either gstate do not affect the other.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2730,29 +1281,8 @@
           <sel>:</sel>
           <arg type="float">b</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetinputfocus:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetinputstate:</sel>
-          <arg type="int">window</arg>
-          <sel>:</sel>
-          <arg type="int">state</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Sets the current colorspace to Device RGB and the
+            current color based on the indicated values
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2789,43 +1319,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSsetmatrix</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetmaxsize:</sel>
-          <arg type="float">width</arg>
-          <sel>:</sel>
-          <arg type="float">height</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetminsize:</sel>
-          <arg type="float">width</arg>
-          <sel>:</sel>
-          <arg type="float">height</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSsetmiterlimit:</sel>
           <arg type="float">limit</arg>
           <desc>
@@ -2848,48 +1341,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSsetowner:</sel>
-          <arg type="int">owner</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetresizeincrements:</sel>
-          <arg type="float">width</arg>
-          <sel>:</sel>
-          <arg type="float">height</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetrgbactual:</sel>
-          <arg type="double">r</arg>
-          <sel>:</sel>
-          <arg type="double">g</arg>
-          <sel>:</sel>
-          <arg type="double">b</arg>
-          <sel>:</sel>
-          <arg type="int*">success</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSsetrgbcolor:</sel>
           <arg type="float">r</arg>
           <sel>:</sel>
@@ -2897,28 +1348,8 @@
           <sel>:</sel>
           <arg type="float">b</arg>
           <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetscreen</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetsendexposed:</sel>
-          <arg type="int">truth</arg>
-          <sel>:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
+            Sets the current colorspace to Device RGB and the
+            current color based on the indicated values
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />
@@ -2927,51 +1358,6 @@
         <method type="void">
           <sel>DPSsetstrokeadjust:</sel>
           <arg type="int">b</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsettransfer</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetwindowdepthlimit:</sel>
-          <arg type="int">limit</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetwindowlevel:</sel>
-          <arg type="int">level</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSsetwindowtype:</sel>
-          <arg type="int">type</arg>
-          <sel>:</sel>
-          <arg type="int">win</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -2990,114 +1376,7 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSshowcursor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSshowpage</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSstandardcursor:</sel>
-          <arg type="int">style</arg>
-          <sel>:</sel>
-          <arg type="void**">cid</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSstroke</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSstrokepath</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSstyleoffsets:</sel>
-          <arg type="float*">l</arg>
-          <sel>:</sel>
-          <arg type="float*">r</arg>
-          <sel>:</sel>
-          <arg type="float*">t</arg>
-          <sel>:</sel>
-          <arg type="float*">b</arg>
-          <sel>:</sel>
-          <arg type="int">style</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSstylewindow:</sel>
-          <arg type="int">style</arg>
-          <sel>:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPStermwindow:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPStitlewindow:</sel>
-          <arg type="const char*">window_title</arg>
-          <sel>:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPStransform:</sel>
-          <arg type="float">x1</arg>
-          <sel>:</sel>
-          <arg type="float">y1</arg>
-          <sel>:</sel>
-          <arg type="float*">x2</arg>
-          <sel>:</sel>
-          <arg type="float*">y2</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -3118,118 +1397,6 @@
           </standards>
         </method>
         <method type="void">
-          <sel>DPSueofill:</sel>
-          <arg type="const char*">nums</arg>
-          <sel>:</sel>
-          <arg type="int">n</arg>
-          <sel>:</sel>
-          <arg type="const char*">ops</arg>
-          <sel>:</sel>
-          <arg type="int">l</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSufill:</sel>
-          <arg type="const char*">nums</arg>
-          <sel>:</sel>
-          <arg type="int">n</arg>
-          <sel>:</sel>
-          <arg type="const char*">ops</arg>
-          <sel>:</sel>
-          <arg type="int">l</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSundefinefont:</sel>
-          <arg type="const char*">name</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSundefineuserobject:</sel>
-          <arg type="int">index</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSupdatewindow:</sel>
-          <arg type="int">win</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSustroke:</sel>
-          <arg type="const char*">nums</arg>
-          <sel>:</sel>
-          <arg type="int">n</arg>
-          <sel>:</sel>
-          <arg type="const char*">ops</arg>
-          <sel>:</sel>
-          <arg type="int">l</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSustrokepath:</sel>
-          <arg type="const char*">nums</arg>
-          <sel>:</sel>
-          <arg type="int">n</arg>
-          <sel>:</sel>
-          <arg type="const char*">ops</arg>
-          <sel>:</sel>
-          <arg type="int">l</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSviewclip</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSviewclippath</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
           <sel>DPSwidthshow:</sel>
           <arg type="float">x</arg>
           <sel>:</sel>
@@ -3238,60 +1405,6 @@
           <arg type="int">c</arg>
           <sel>:</sel>
           <arg type="const char*">s</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSwindow:</sel>
-          <arg type="float">x</arg>
-          <sel>:</sel>
-          <arg type="float">y</arg>
-          <sel>:</sel>
-          <arg type="float">w</arg>
-          <sel>:</sel>
-          <arg type="float">h</arg>
-          <sel>:</sel>
-          <arg type="int">type</arg>
-          <sel>:</sel>
-          <arg type="int*">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSwindowdevice:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSwindowdeviceround:</sel>
-          <arg type="int">num</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>DPSwindowlist:</sel>
-          <arg type="int">context</arg>
-          <sel>:</sel>
-          <arg type="int">count</arg>
-          <sel>:</sel>
-          <arg type="int*">windows</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
@@ -3342,10 +1455,281 @@
           </standards>
         </method>
         <method type="void">
-          <sel>setFont:</sel>
+          <sel>GSConcatCTM:</sel>
+          <arg type="NSAffineTransform*">ctm</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSAffineTransform*">
+          <sel>GSCurrentCTM</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>GSDefineGState</sel>
+          <desc>
+            Creates a copy of the current gstate and associates
+            it with a tag, which is given in the return value. This
+            tag can later be used in
+            <ref type="method" id="-DPSsetgstate:">
+              -DPSsetgstate:
+            </ref>
+            to set the gstate as being current again.
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSDrawImage:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>:</sel>
+          <arg type="void*">imageref</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSAffineTransform*">
+          <sel>GSGetTextCTM</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="NSPoint">
+          <sel>GSGetTextPosition</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSRectClipList:</sel>
+          <arg type="const NSRect*">rects</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSRectFillList:</sel>
+          <arg type="const NSRect*">rects</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSReplaceGState:</sel>
+          <arg type="int">gst</arg>
+          <desc>
+            Replaces the gstate refered to by the tag
+            <var>gst</var> with the current gstate. The former
+            gstate is destroyed.
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSendBezierPath:</sel>
+          <arg type="NSBezierPath*">path</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetCTM:</sel>
+          <arg type="NSAffineTransform*">ctm</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetCharacterSpacing:</sel>
+          <arg type="float">extra</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetFillColor:</sel>
+          <arg type="float*">values</arg>
+          <desc>
+            Sets the current color for fill operations. The
+            <var>values</var> array should have n components,
+            where n corresponds to the number of color components
+            required to specify the color in the current
+            colorspace.
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetFillColorspace:</sel>
+          <arg type="NSDictionary*">dict</arg>
+          <desc>
+            <p>
+              Sets the colorspace for fill operations based on
+              values in the supplied dictionary <var>dict</var>.
+            </p>
+            <p>
+              For device colorspaces (GSDeviceGray, GSDeviceRGB,
+              GSDeviceCMYK), only the name of the
+              colorspace needs to be set using the
+              GSColorSpaceName key.
+            </p>
+            <p>Other colorspaces will be documented later</p>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetFont:</sel>
           <arg type="NSFont*">font</arg>
           <desc>
             <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetFontSize:</sel>
+          <arg type="float">size</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetStrokeColor:</sel>
+          <arg type="float*">values</arg>
+          <desc>
+            Sets the current color for fill operations. The
+            <var>values</var> array should have n components,
+            where n corresponds to the number of color components
+            required to specify the color in the current
+            colorspace.
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetStrokeColorspace:</sel>
+          <arg type="NSDictionary*">dict</arg>
+          <desc>
+            Sets the colorspace for stroke operations based on the
+            values in the supplied dictionary. See
+            <ref type="method" id="-GSSetFillColorspace:">
+              -GSSetFillColorspace:
+            </ref>
+            for a description of the values that need to be
+            supplied
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetTextCTM:</sel>
+          <arg type="NSAffineTransform*">ctm</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetTextDrawingMode:</sel>
+          <arg type="GSTextDrawingMode">mode</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSSetTextPosition:</sel>
+          <arg type="NSPoint">loc</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSShowGlyphs:</sel>
+          <arg type="const NSGlyph*">glyphs</arg>
+          <sel>:</sel>
+          <arg type="size_t">length</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSShowText:</sel>
+          <arg type="const char*">string</arg>
+          <sel>:</sel>
+          <arg type="size_t">length</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>GSUndefineGState:</sel>
+          <arg type="int">gst</arg>
+          <desc>
+            Disassociates the tag <var>gst</var> with
+            it's gstate and destroys the gstate object. The tag
+            will no longer be valid and should not be used to
+            refer to the gstate again.
           </desc>
           <standards>
             <NotOpenStep /> <GNUstep /> <MacOS-X />

@@ -182,9 +182,9 @@
 // private; called during nib load.  
 // we do not retain the window, since it should
 // already have a retain from the nib.
-- (void)setWindow:(NSWindow *)window
+- (void)setWindow:(NSWindow *)aWindow
 {
-  _window = window;
+  _window = aWindow;
 }
 
 //FIXME: In the later specification this method has a different return type!! 

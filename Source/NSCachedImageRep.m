@@ -88,12 +88,12 @@
   return self;
 }
 
-- (id) initWithWindow: (NSWindow *)win rect: (NSRect)rect
+- (id) initWithWindow: (NSWindow *)aWindow rect: (NSRect)aRect
 {
   [super init];
 
-  _window = RETAIN(win);
-  _rect   = rect;
+  _window = RETAIN(aWindow);
+  _rect   = aRect;
 
   /* Either win or rect must be non-NULL. If rect is empty, we get the
      frame info from the window. If win is nil we create it from the

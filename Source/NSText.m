@@ -184,9 +184,9 @@ static	Class	concrete;
   [self replaceCharactersInRange: aRange  withString: aString];
 }
 
-- (void) setText: (NSString*)string
+- (void) setText: (NSString*)aString
 {
-  [self setString: string];
+  [self setString: aString];
 }
 
 - (NSString*) text

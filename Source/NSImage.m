@@ -454,11 +454,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return copy;
 }
 
-- (BOOL) setName: (NSString *)string
+- (BOOL) setName: (NSString *)aName
 {
   BOOL retained = NO;
   
-  if (!string || [nameDict objectForKey: string])
+  if (!aName || [nameDict objectForKey: aName])
     return NO;
 
   if (_name && self == [nameDict objectForKey: _name])
@@ -470,7 +470,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       [nameDict removeObjectForKey: _name];
     }
   
-  ASSIGN(_name, string);
+  ASSIGN(_name, aName);
   
   [nameDict setObject: self forKey: _name];
   if (retained)

@@ -30,11 +30,6 @@
 #include <AppKit/NSBox.h>
 
 @implementation GSHbox: GSTable
-{
-  // YES if some NSView was already added to the box
-  BOOL _haveViews;
-  float _defaultMinXMargin;
-}
 //
 // Class methods
 //

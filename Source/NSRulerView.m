@@ -485,7 +485,7 @@ static NSMutableDictionary *units = nil;
     }
 }
 
-- (void) drawHashMarksAndLabelsInRect: (NSRect)drawRect
+- (void) drawHashMarksAndLabelsInRect: (NSRect)aRect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSFont *font;
@@ -526,7 +526,7 @@ static NSMutableDictionary *units = nil;
     {
       baseLineRect.origin.y = baselineLocation; 
       baseLineRect.size.height = 1;
-      baseLineRect = NSIntersectionRect(baseLineRect, drawRect);
+      baseLineRect = NSIntersectionRect(baseLineRect, aRect);
       firstVisibleLocation = NSMinX(baseLineRect);
       visibleLength = NSWidth(baseLineRect);
     }
@@ -534,7 +534,7 @@ static NSMutableDictionary *units = nil;
     {
       baseLineRect.origin.x = baselineLocation;
       baseLineRect.size.width = 1;
-      baseLineRect = NSIntersectionRect(baseLineRect, drawRect);
+      baseLineRect = NSIntersectionRect(baseLineRect, aRect);
       firstVisibleLocation = NSMinY(baseLineRect);
       visibleLength = NSHeight(baseLineRect);
     }
@@ -625,10 +625,10 @@ static NSMutableDictionary *units = nil;
   _cacheIsValid = NO;
 }
 
-- (void) setScrollView: (NSScrollView *)sView
+- (void) setScrollView: (NSScrollView *)scrollView
 {
   /* We do NOT retain the scrollView; the scrollView is retaining us.  */
-  _scrollView = sView;
+  _scrollView = scrollView;
 }
 
 - (NSScrollView *) scrollView

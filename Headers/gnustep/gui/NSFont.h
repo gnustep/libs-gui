@@ -73,9 +73,9 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 // Creating a Font Object
 //
 + (NSFont *)boldSystemFontOfSize:(float)fontSize;
-+ (NSFont *)fontWithName:(NSString *)fontName 
++ (NSFont *)fontWithName:(NSString *)aFontName 
 		  matrix:(const float *)fontMatrix;
-+ (NSFont *)fontWithName:(NSString *)fontName
++ (NSFont *)fontWithName:(NSString *)aFontName
 		    size:(float)fontSize;
 + (NSFont *)systemFontOfSize:(float)fontSize;
 + (NSFont *)userFixedPitchFontOfSize:(float)fontSize;
@@ -107,7 +107,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 //
 + (void)setUserFixedPitchFont:(NSFont *)aFont;
 + (void)setUserFont:(NSFont *)aFont;
-+ (void)useFont:(NSString *)fontName;
++ (void)useFont:(NSString *)aFontName;
 - (void)set;
 
 //

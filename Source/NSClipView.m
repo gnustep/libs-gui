@@ -203,18 +203,18 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [self addCursorRect: _bounds cursor: _cursor];
 }
 
-- (void) scrollToPoint: (NSPoint)point
+- (void) scrollToPoint: (NSPoint)aPoint
 {
-  [self setBoundsOrigin: [self constrainScrollPoint: point]];
+  [self setBoundsOrigin: [self constrainScrollPoint: aPoint]];
 }
 
-- (void) setBoundsOrigin: (NSPoint)point
+- (void) setBoundsOrigin: (NSPoint)aPoint
 {
   NSRect originalBounds = _bounds;
   NSRect newBounds = originalBounds;
   NSRect intersection;
 
-  newBounds.origin = point;
+  newBounds.origin = aPoint;
 
   if (NSEqualPoints (originalBounds.origin, newBounds.origin))
     {
@@ -354,8 +354,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   /* ?? TODO: Understand the following code - and add explanatory comment */
   if ([NSView focusView] == _documentView)
     {
-      PStranslate (NSMinX (originalBounds) - point.x, 
-		   NSMinY (originalBounds) - point.y);
+      PStranslate (NSMinX (originalBounds) - aPoint.x, 
+		   NSMinY (originalBounds) - aPoint.y);
     }
   
   [_super_view reflectScrolledClipView: self];

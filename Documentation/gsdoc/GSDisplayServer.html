@@ -1,0 +1,842 @@
+<html>
+  <head>
+    <title>GSDisplayServer</title>
+  </head>
+  <body>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$GSDisplayServer">GSDisplayServer</a></h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+      Abstract display server class.
+    </blockquote>
+    <p><b>Copyright:</b> (C) 2002 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">GSDisplayServer</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        GSDisplayServer(EventOps) category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the
+        GSDisplayServer(WindowOps) category</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">GSDisplayServer</a></h1>
+    <p>
+
+        This is an abstract class which provides a framework for a
+        device independant window server. A window server
+        handles the very basic control of the computer display
+        and input. This includes basic window creation and
+        handling, event handling, cursors, and providing
+        miscellaneous information about the display.
+          </p>
+    <p>
+
+        Typically a backend library will provide a concrete
+        subclass which implements the device specific methods
+        described below.
+          </p>
+    <p>
+
+        In almost all cases, you should not call these methods
+        directly in an application. You should use the
+        equivalent methods available elsewhere in the
+        library (e.g. NSWindow, NSScreen, etc).
+          </p>
+    <h2><a name="class$GSDisplayServer">GSDisplayServer</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/GSDisplayServer.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+addDragTypes:toWindow:">+addDragTypes:toWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+dragTypesForWindow:">+dragTypesForWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+removeDragTypes:fromWindow:">+removeDragTypes:fromWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+serverWithAttributes:">+serverWithAttributes:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+setCurrentServer:">+setCurrentServer:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer+setDefaultServerClass:">+setDefaultServerClass:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-_setWindowOwnedByServer:">-_setWindowOwnedByServer:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-addDragTypes:toWindow:">-addDragTypes:toWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-appOwnsMiniwindow">-appOwnsMiniwindow</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-attributes">-attributes</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-availableDepthsForScreen:">-availableDepthsForScreen:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-boundsForScreen:">-boundsForScreen:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-capturemouse:">-capturemouse:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-closeServer">-closeServer</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-discardEventsMatchingMask:beforeEvent:">-discardEventsMatchingMask:beforeEvent:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-docedited::">-docedited::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-dragInfo">-dragInfo</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-dragTypesForWindow:">-dragTypesForWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-findwindow:::::">-findwindow:::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-flushwindowrect::">-flushwindowrect::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-getEventMatchingMask:beforeDate:inMode:dequeue:">-getEventMatchingMask:beforeDate:inMode:dequeue:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-hidecursor">-hidecursor</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-imagecursor::::::">-imagecursor::::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-initWithAttributes:">-initWithAttributes:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-miniwindow:">-miniwindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-mouselocation">-mouselocation</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-movewindow::">-movewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-orderwindow:::">-orderwindow:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-placewindow::">-placewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-postEvent:atStart:">-postEvent:atStart:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-releasemouse">-releasemouse</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-removeDragTypes:fromWindow:">-removeDragTypes:fromWindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-resolutionForScreen:">-resolutionForScreen:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-screenList">-screenList</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-serverDevice">-serverDevice</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setcursorcolor:::">-setcursorcolor:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setinputfocus:">-setinputfocus:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setinputstate::">-setinputstate::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setmaxsize::">-setmaxsize::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setminsize::">-setminsize::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setresizeincrements::">-setresizeincrements::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setwindowlevel::">-setwindowlevel::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-showcursor">-showcursor</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-slideImage:from:to:">-slideImage:from:to:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-standardcursor::">-standardcursor::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-styleoffsets:::::">-styleoffsets:::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-stylewindow::">-stylewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-termwindow:">-termwindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-titlewindow::">-titlewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-window:::">-window:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowDepthForScreen:">-windowDepthForScreen:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowDevice:">-windowDevice:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowbacking:">-windowbacking:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowbounds:">-windowbounds:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowdepth:">-windowdepth:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowdevice:">-windowdevice:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowlevel:">-windowlevel:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowlist">-windowlist</a></li>
+    </ul>
+    <hr width="50%" align="left" />
+    <h3><a name="method$GSDisplayServer+addDragTypes:toWindow:">addDragTypes:toWindow:</a></h3>
+    + (BOOL) <b>addDragTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types<b> toWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Convienience method that calls
+            <a rel="gsdoc" href="#method$GSDisplayServer-addDragTypes:toWindow:">
+              -addDragTypes:toWindow:
+            </a>
+
+            using the server that controls <var>win</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer+dragTypesForWindow:">dragTypesForWindow:</a></h3>
+    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSSet.html#class$NSCountedSet">NSCountedSet</a>*) <b>dragTypesForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Convienience method that calls
+            <a rel="gsdoc" href="#method$GSDisplayServer-dragTypesForWindow:">
+              -dragTypesForWindow:
+            </a>
+
+            using the server that controls <var>win</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer+removeDragTypes:fromWindow:">removeDragTypes:fromWindow:</a></h3>
+    + (BOOL) <b>removeDragTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types<b> fromWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Convienience method that calls
+            <a rel="gsdoc" href="#method$GSDisplayServer-removeDragTypes:fromWindow:">
+              -removeDragTypes:fromWindow:
+            </a>
+
+            using the server that controls <var>win</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer+serverWithAttributes:">serverWithAttributes:</a></h3>
+    + (<a rel="gsdoc" href="#class$GSDisplayServer">GSDisplayServer</a>*) <b>serverWithAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributes;<br />
+    <p>
+      
+            
+    </p>
+    <p>
+
+              Create a window server with <var>attributes</var>,
+              which contains key/value pairs which describe the
+              specifics of how the window server is to be
+              initialized. Typically these values are
+              specific to the concrete implementation.
+              Currently there are no standard set of
+              <var>attributes</var> defined for GSDisplayServer.
+                </p>
+    <p>
+      
+            
+    </p>
+    <p>
+
+              In almost all applications one would only create a
+              single instance of a window server. Although it is
+              possible, it is unlikely that you would need
+              more than one window server (and you would have to
+              be very careful how you handled window creation and
+              events in this case).
+                </p>
+    <p>
+      
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer+setCurrentServer:">setCurrentServer:</a></h3>
+    + (void) <b>setCurrentServer:</b> (<a rel="gsdoc" href="#class$GSDisplayServer">GSDisplayServer</a>*)server;<br />
+    <p>
+      
+            Sets the current <var>server</var> that will be
+            handling windows, events, etc. This method must be
+            called after a window <var>server</var> is created
+            in order to make it available to the rest of the GUI
+            library
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer+setDefaultServerClass:">setDefaultServerClass:</a></h3>
+    + (void) <b>setDefaultServerClass:</b> (Class)aClass;<br />
+    <p>
+      
+            Set the concrete subclass that will provide the device
+            dependant implementation.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-addDragTypes:toWindow:">addDragTypes:toWindow:</a></h3>
+    - (BOOL) <b>addDragTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types<b> toWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Add (increment count by 1) each drag type to those
+            registered for the window. If this results in a
+            change to the <var>types</var> registered in the
+            counted set, return <code>YES</code>, otherwise
+            return <code>NO</code>. Subclasses should override
+            this method, call 'super' and take appropriate action
+            if the method returns 'YES'.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-attributes">attributes</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>attributes</b>;<br />
+    <p>
+      
+            Return information used to create the server
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-availableDepthsForScreen:">availableDepthsForScreen:</a></h3>
+    - (const <a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>*) <b>availableDepthsForScreen:</b> (int)screen;<br />
+    <p>
+      
+            Returns a null terminated list of possible window
+            depths for <var>screen</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-boundsForScreen:">boundsForScreen:</a></h3>
+    - (NSRect) <b>boundsForScreen:</b> (int)screen;<br />
+    <p>
+      
+            Retuns the bounds, in pixels, for the indicated
+            <var>screen</var> of the display.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-closeServer">closeServer</a></h3>
+    - (void) <b>closeServer</b>;<br />
+    <p>
+      
+            Causes the server to disconnect from the display. If
+            the receiver is the current server, it removes itself
+            and sets the current server to <code>nil</code>.
+            Sending any more messages to the receiver after
+            this is likely to cause severe problems and probably
+            crash the application.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-dragInfo">dragInfo</a></h3>
+    - (id) <b>dragInfo</b>;<br />
+    <p>
+      
+            Returns an instance of a class which implements the
+            NSDraggingInfo protocol.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-dragTypesForWindow:">dragTypesForWindow:</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSSet.html#class$NSCountedSet">NSCountedSet</a>*) <b>dragTypesForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Returns the drag types set for the window
+            <var>win</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-initWithAttributes:">initWithAttributes:</a></h3>
+    - (id) <b>initWithAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributes;<br />
+This is a designated initialiser for the class.<br />
+    <p>
+      
+            Initializes the server. This typically causes
+            the receiver to <em>connect</em> to the display (e.g.
+            XOpenDisplay() on an X-Windows server).
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-removeDragTypes:fromWindow:">removeDragTypes:fromWindow:</a></h3>
+    - (BOOL) <b>removeDragTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types<b> fromWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+      
+            Remove (decrement count by 1) each drag type from
+            those registered for the window. If this results in a
+            change to the <var>types</var> registered in the
+            counted set, return <code>YES</code>, otherwise
+            return <code>NO</code>. If given 'nil' as the array
+            of <var>types</var>, remove ALL. Subclasses should
+            override this method, call 'super' and take
+            appropriate action if the method returns 'YES'.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-resolutionForScreen:">resolutionForScreen:</a></h3>
+    - (NSSize) <b>resolutionForScreen:</b> (int)screen;<br />
+    <p>
+      
+            Retuns the resolution, in points, for the indicated
+            <var>screen</var> of the display.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-screenList">screenList</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>screenList</b>;<br />
+    <p>
+      
+            Returns an array of NSNumbers, where each number
+            describes a screen that is available on this
+            display.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-serverDevice">serverDevice</a></h3>
+    - (void*) <b>serverDevice</b>;<br />
+    <p>
+      
+            Returns a display dependant pointer that describes
+            the internal connection to the display. On X-Windows,
+            for example, this is a pointer to the
+            <code>Display</code> variable.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-slideImage:from:to:">slideImage:from:to:</a></h3>
+    - (BOOL) <b>slideImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image<b> from:</b> (NSPoint)from<b> to:</b> (NSPoint)to;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowDepthForScreen:">windowDepthForScreen:</a></h3>
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>) <b>windowDepthForScreen:</b> (int)screen;<br />
+    <p>
+      
+            Returns the default depth of windows that are
+            created on <var>screen</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowDevice:">windowDevice:</a></h3>
+    - (void*) <b>windowDevice:</b> (int)win;<br />
+    <p>
+      
+            Returns a display dependant pointer that describes
+            the internal window representation for <var>win</var>.
+            On X-Windows, for example, this is a pointer to the
+            <code>Window</code> variable.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="002000000000">
+        Software documentation for the
+        GSDisplayServer(EventOps) category
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$GSDisplayServer">GSDisplayServer</a>(<a name="category$GSDisplayServer(EventOps)">EventOps</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/GSDisplayServer.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-discardEventsMatchingMask:beforeEvent:">-discardEventsMatchingMask:beforeEvent:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-getEventMatchingMask:beforeDate:inMode:dequeue:">-getEventMatchingMask:beforeDate:inMode:dequeue:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-postEvent:atStart:">-postEvent:atStart:</a></li>
+    </ul>
+    <hr width="50%" align="left" />
+    <h3><a name="method$GSDisplayServer-discardEventsMatchingMask:beforeEvent:">discardEventsMatchingMask:beforeEvent:</a></h3>
+    - (void) <b>discardEventsMatchingMask:</b> (unsigned)mask<b> beforeEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)limit;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-getEventMatchingMask:beforeDate:inMode:dequeue:">getEventMatchingMask:beforeDate:inMode:dequeue:</a></h3>
+    - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>getEventMatchingMask:</b> (unsigned)mask<b> beforeDate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDate.html#class$NSDate">NSDate</a>*)limit<b> inMode:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)mode<b> dequeue:</b> (BOOL)flag;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-postEvent:atStart:">postEvent:atStart:</a></h3>
+    - (void) <b>postEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent<b> atStart:</b> (BOOL)flag;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
+        Software documentation for the
+        GSDisplayServer(WindowOps) category
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$GSDisplayServer">GSDisplayServer</a>(<a name="category$GSDisplayServer(WindowOps)">WindowOps</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/GSDisplayServer.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>NotOpenStep</li>
+        <li>NotMacOS-X</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-_setWindowOwnedByServer:">-_setWindowOwnedByServer:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-appOwnsMiniwindow">-appOwnsMiniwindow</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-capturemouse:">-capturemouse:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-docedited::">-docedited::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-findwindow:::::">-findwindow:::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-flushwindowrect::">-flushwindowrect::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-hidecursor">-hidecursor</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-imagecursor::::::">-imagecursor::::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-miniwindow:">-miniwindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-mouselocation">-mouselocation</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-movewindow::">-movewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-orderwindow:::">-orderwindow:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-placewindow::">-placewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-releasemouse">-releasemouse</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setcursorcolor:::">-setcursorcolor:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setinputfocus:">-setinputfocus:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setinputstate::">-setinputstate::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setmaxsize::">-setmaxsize::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setminsize::">-setminsize::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setresizeincrements::">-setresizeincrements::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-setwindowlevel::">-setwindowlevel::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-showcursor">-showcursor</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-standardcursor::">-standardcursor::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-styleoffsets:::::">-styleoffsets:::::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-stylewindow::">-stylewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-termwindow:">-termwindow:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-titlewindow::">-titlewindow::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-window:::">-window:::</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowbacking:">-windowbacking:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowbounds:">-windowbounds:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowdepth:">-windowdepth:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowdevice:">-windowdevice:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowlevel:">-windowlevel:</a></li>
+      <li><a rel="gsdoc" href="GSDisplayServer.html#method$GSDisplayServer-windowlist">-windowlist</a></li>
+    </ul>
+    <hr width="50%" align="left" />
+    <h3><a name="method$GSDisplayServer-_setWindowOwnedByServer:">_setWindowOwnedByServer:</a></h3>
+    - (void) <b>_setWindowOwnedByServer:</b> (int)win;<br />
+    <p>
+      
+            Tells the receiver that it owns the window described
+            by <var>win</var>. Concrete subclasses must call this
+            function when creating a window. Do not call this
+            method in any other case, particularly for a window
+            that has already been created
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-appOwnsMiniwindow">appOwnsMiniwindow</a></h3>
+    - (BOOL) <b>appOwnsMiniwindow</b>;<br />
+    <p>
+      
+            Returns <code>YES</code> if the application should
+            create the miniwindow counterpart to the full size
+            window and own it. Some display systems handle the
+            miniwindow themselves. In this case the backend
+            subclass should override this method to return
+            <code>NO</code>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-capturemouse:">capturemouse:</a></h3>
+    - (BOOL) <b>capturemouse:</b> (int)win;<br />
+    <p>
+      
+            Grabs the pointer device so that all future mouse
+            events will be directed only to the window
+            <var>win</var>. If successful, the return value is
+            <code>YES</code> and this message must be balanced
+            by a
+            <a rel="gsdoc" href="#method$GSDisplayServer(WindowOps)-releasemouse">
+              -releasemouse
+            </a>
+
+            message.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-docedited::">docedited::</a></h3>
+    - (void) <b>docedited:</b> (int)edited<b> :</b> (int)win;<br />
+    <p>
+      
+            Sets the document <var>edited</var> flag for the
+            window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-findwindow:::::">findwindow:::::</a></h3>
+    - (BOOL) <b>findwindow:</b> (NSPoint)loc<b> :</b> (int)op<b> :</b> (int)otherWin<b> :</b> (NSPoint*)floc<b> :</b> (int*)winFound;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-flushwindowrect::">flushwindowrect::</a></h3>
+    - (void) <b>flushwindowrect:</b> (NSRect)rect<b> :</b> (int)win;<br />
+    <p>
+      
+            Causes buffered graphics to be flushed to the screen
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-hidecursor">hidecursor</a></h3>
+    - (void) <b>hidecursor</b>;<br />
+    <p>
+      
+            Hides the cursor
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-imagecursor::::::">imagecursor::::::</a></h3>
+    - (void) <b>imagecursor:</b> (NSPoint)hotp<b> :</b> (int)w<b> :</b> (int)h<b> :</b> (int)colors<b> :</b> (const char*)image<b> :</b> (void**)cid;<br />
+    <p>
+      
+            Create a cursor from an <var>image</var>. Returns a
+            pointer to the internal device representation that
+            can be used later to make this cursor the current one
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-miniwindow:">miniwindow:</a></h3>
+    - (void) <b>miniwindow:</b> (int)win;<br />
+    <p>
+      
+            Miniaturizes the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-mouselocation">mouselocation</a></h3>
+    - (NSPoint) <b>mouselocation</b>;<br />
+    <p>
+      
+            Returns the current mouse location
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-movewindow::">movewindow::</a></h3>
+    - (void) <b>movewindow:</b> (NSPoint)loc<b> :</b> (int)win;<br />
+    <p>
+      
+            Moves the bottom left cornder of the window to
+            <var>loc</var>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-orderwindow:::">orderwindow:::</a></h3>
+    - (void) <b>orderwindow:</b> (int)op<b> :</b> (int)otherWin<b> :</b> (int)win;<br />
+    <p>
+      
+            Causes the window to be ordered onto or off the
+            screen depending on the value of <var>op</var>. The
+            window is ordered relative to <var>otherWin</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-placewindow::">placewindow::</a></h3>
+    - (void) <b>placewindow:</b> (NSRect)frame<b> :</b> (int)win;<br />
+    <p>
+      
+            Moves and resizes the window on the screen as
+            described by <var>frame</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-releasemouse">releasemouse</a></h3>
+    - (void) <b>releasemouse</b>;<br />
+    <p>
+      
+            Release a previous captured mouse from
+            <a rel="gsdoc" href="#method$GSDisplayServer(WindowOps)-capturemouse:">
+              -capturemouse:
+            </a>
+
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setcursorcolor:::">setcursorcolor:::</a></h3>
+    - (void) <b>setcursorcolor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)fg<b> :</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)bg<b> :</b> (void*)cid;<br />
+    <p>
+      
+            Set the cursor given by the <var>cid</var>
+            representation as being the current cursor.
+            The cursor has a foreground color <var>fg</var> and a
+            background color <var>bg</var>. To keep the
+            default color for the cursor, pass <code>nil</code>
+            for <var>fg</var> and <var>bg</var>.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setinputfocus:">setinputfocus:</a></h3>
+    - (void) <b>setinputfocus:</b> (int)win;<br />
+    <p>
+      
+            Forces focus to the window so that all key events
+            are sent to this window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setinputstate::">setinputstate::</a></h3>
+    - (void) <b>setinputstate:</b> (int)state<b> :</b> (int)win;<br />
+    <p>
+      
+            Sets the input <var>state</var> for the window given
+            by the GSWindowInputState constant. Instructs the window
+            manager that the specified window is 'key', 'main',
+            or just a normal window.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setmaxsize::">setmaxsize::</a></h3>
+    - (void) <b>setmaxsize:</b> (NSSize)size<b> :</b> (int)win;<br />
+    <p>
+      
+            Set the maximum <var>size</var> of the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setminsize::">setminsize::</a></h3>
+    - (void) <b>setminsize:</b> (NSSize)size<b> :</b> (int)win;<br />
+    <p>
+      
+            Set the minimum <var>size</var> of the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setresizeincrements::">setresizeincrements::</a></h3>
+    - (void) <b>setresizeincrements:</b> (NSSize)size<b> :</b> (int)win;<br />
+    <p>
+      
+            Set the resize incremenet of the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-setwindowlevel::">setwindowlevel::</a></h3>
+    - (void) <b>setwindowlevel:</b> (int)level<b> :</b> (int)win;<br />
+    <p>
+      
+            Set the <var>level</var> of the window as in [NSWindow
+            -setLevel]
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-showcursor">showcursor</a></h3>
+    - (void) <b>showcursor</b>;<br />
+    <p>
+      
+            Show a previously hidden cursor
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-standardcursor::">standardcursor::</a></h3>
+    - (void) <b>standardcursor:</b> (int)style<b> :</b> (void**)cid;<br />
+    <p>
+      
+            Create a standard cursor (such as an arror or
+            IBeam). Returns a pointer to the internal device
+            representation that can be used later to
+            make this cursor the current one
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-styleoffsets:::::">styleoffsets:::::</a></h3>
+    - (void) <b>styleoffsets:</b> (float*)l<b> :</b> (float*)r<b> :</b> (float*)t<b> :</b> (float*)b<b> :</b> (int)style;<br />
+    <p>
+      
+            Returns the dimensions of the window that are
+            inside the window frame but are controlled by the
+            window manager. For instance, <var>t</var> gives the
+            height of the title bar for the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-stylewindow::">stylewindow::</a></h3>
+    - (void) <b>stylewindow:</b> (int)style<b> :</b> (int)win;<br />
+    <p>
+      
+            Sets the <var>style</var> of the window. See [NSWindow
+            -styleMask] for a description of the available
+            styles
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-termwindow:">termwindow:</a></h3>
+    - (void) <b>termwindow:</b> (int)win;<br />
+    <p>
+      
+            Destroys the representation of the window and
+            frees and memory associated with it.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-titlewindow::">titlewindow::</a></h3>
+    - (void) <b>titlewindow:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)window_title<b> :</b> (int)win;<br />
+    <p>
+      
+            Sets the window title
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-window:::">window:::</a></h3>
+    - (int) <b>window:</b> (NSRect)frame<b> :</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>)type<b> :</b> (unsigned int)style;<br />
+    <p>
+      
+            Creates a window whose location and size is
+            described by <var>frame</var> and whose backing
+            store is described by <var>type</var>. This window is
+            not mapped to the screen by this call
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowbacking:">windowbacking:</a></h3>
+    - (void) <b>windowbacking:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>)type;<br />
+    <p>
+      
+            Changes window's the backing store to
+            <var>type</var>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowbounds:">windowbounds:</a></h3>
+    - (NSRect) <b>windowbounds:</b> (int)win;<br />
+    <p>
+      
+            Retuns the frame of the window on the screen
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowdepth:">windowdepth:</a></h3>
+    - (int) <b>windowdepth:</b> (int)win;<br />
+    <p>
+      
+            Returns the depth of the window
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowdevice:">windowdevice:</a></h3>
+    - (void) <b>windowdevice:</b> (int)win;<br />
+    <p>
+      
+            Sets the window drawable for the current
+            NSGraphicsContext, typically by calling
+            [NSGraphicsContext
+            -DPSsetgcdrawable::::], although
+            depending on the concrete implmentation, more
+            information than this may need to be exchanged.
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowlevel:">windowlevel:</a></h3>
+    - (int) <b>windowlevel:</b> (int)win;<br />
+    <p>
+      
+            Returns the window level as in [NSWindow -level]
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$GSDisplayServer-windowlist">windowlist</a></h3>
+    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>windowlist</b>;<br />
+    <p>
+      
+            Returns the list of windows that the server
+            controls
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
+  </body>
+</html>

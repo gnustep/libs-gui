@@ -131,7 +131,7 @@ typedef enum _NSGradientType {
 - (NSString *)keyEquivalent;
 - (NSFont *)keyEquivalentFont;
 - (unsigned int)keyEquivalentModifierMask;
-- (void)setKeyEquivalent:(NSString *)aKeyEquivalent;
+- (void)setKeyEquivalent:(NSString *)key;
 - (void)setKeyEquivalentModifierMask:(unsigned int)mask;
 - (void)setKeyEquivalentFont:(NSFont *)fontObj;
 - (void)setKeyEquivalentFont:(NSString *)fontName 
@@ -157,9 +157,9 @@ typedef enum _NSGradientType {
 // Modifying Graphic Attributes 
 //
 - (int)highlightsBy;
-- (void)setHighlightsBy:(int)aType;
-- (void)setShowsStateBy:(int)aType;
-- (void)setButtonType:(NSButtonType)aType;
+- (void)setHighlightsBy:(int)mask;
+- (void)setShowsStateBy:(int)mask;
+- (void)setButtonType:(NSButtonType)buttonType;
 - (int)showsStateBy;
 
 //

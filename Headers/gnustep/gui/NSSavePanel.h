@@ -131,7 +131,7 @@ enum {
  * the extension.  Invoke this method each time the Save panel 
  * is used for another file type within the application.
  */
-- (void) setRequiredFileType: (NSString *)type;
+- (void) setRequiredFileType: (NSString *)fileType;
 
 /*
  * Sets the NSSavePanel's behavior for displaying file packages 
@@ -179,7 +179,7 @@ enum {
 			file: (NSString *)filename
 	    relativeToWindow: (NSWindow*)window;
 - (void) beginSheetForDirectory: (NSString *)path
-			   file: (NSString *)name
+			   file: (NSString *)filename
 		 modalForWindow: (NSWindow *)docWindow
 		  modalDelegate: (id)delegate
 		 didEndSelector: (SEL)didEndSelector

@@ -50,7 +50,7 @@
 - (id)documentView;
 
 /* Scrolling */
-- (void)scrollToPoint:(NSPoint)newOrigin;
+- (void)scrollToPoint:(NSPoint)aPoint;
 - (BOOL)autoscroll:(NSEvent*)theEvent;
 - (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin;
 
@@ -91,10 +91,6 @@
 - (void)viewBoundsChanged:(NSNotification*)aNotification;
 - (void)viewFrameChanged:(NSNotification*)aNotification;
 
-@end
-
-@interface NSClipView (BackendMethods)
-- (void)_translateToPoint:(NSPoint)point oldPoint:(NSPoint)oldPoint;
 @end
 
 #endif /* _GNUstep_H_NSClipView */

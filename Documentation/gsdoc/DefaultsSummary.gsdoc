@@ -29,8 +29,9 @@
           <p>
           A string containing the name of the backend bundle to use
           for display specific GUI handling. The default is
-          "libgnustep-xgps". Currently the only other choice is
-          "libgnustep-xdps".
+          "libgnustep-back". Custom backends can be created during compilation
+	  of the libraries. Any other choice for a name is thus system
+	  specific.
           </p>
 	  </desc>
 	  <term>GSBrowserCellFontify</term>
@@ -185,7 +186,7 @@
       <section>
         <heading>Backend Defaults</heading>
       <p>
-      Below is a list of defaults used to control the xlib-based
+      Below is a list of defaults used to control the x11-based
       backend. These defaults generally control system specific
       display and user interaction options which may not be available
       on all systems.

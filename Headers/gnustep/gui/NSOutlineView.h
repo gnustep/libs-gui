@@ -68,7 +68,7 @@
 - (int)rowForItem: (id)item;
 - (void)setAutoresizesOutlineColumn: (BOOL)resize;
 - (void)setAutosaveExpandedItems: (BOOL)flag;
-- (void)setDropItem:(id)item dropChildIndex: (int)index;
+- (void)setDropItem:(id)item dropChildIndex: (int)childIndex;
 - (void)setIndentationMarkerFollowsCell: (BOOL)followsCell;
 - (void)setIndentationPerLevel: (float)newIndentLevel;
 - (void)setOutlineTableColumn: (NSTableColumn *)outlineTableColumn;
