@@ -1078,7 +1078,7 @@ static BOOL flip_hack;
       if (self)
         return self;
 
-      self = [isa userFontOfSize: fontMatrix[0]];
+      self = [NSFont userFontOfSize: fontMatrix[0]];
       NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
       return self;
     }
@@ -1101,41 +1101,41 @@ static BOOL flip_hack;
       switch (the_role >> 1)
 	{
 	  case RoleBoldSystemFont:
-	    new = [isa boldSystemFontOfSize: size];
+	    new = [NSFont boldSystemFontOfSize: size];
 	    break;
 	  case RoleSystemFont:
-	    new = [isa systemFontOfSize: size];
+	    new = [NSFont systemFontOfSize: size];
 	    break;
 	  case RoleUserFixedPitchFont:
-	    new = [isa userFixedPitchFontOfSize: size];
+	    new = [NSFont userFixedPitchFontOfSize: size];
 	    break;
 	  case RoleTitleBarFont:
-	    new = [isa titleBarFontOfSize: size];
+	    new = [NSFont titleBarFontOfSize: size];
 	    break;
 	  case RoleMenuFont:
-	    new = [isa menuFontOfSize: size];
+	    new = [NSFont menuFontOfSize: size];
 	    break;
 	  case RoleMessageFont:
-	    new = [isa messageFontOfSize: size];
+	    new = [NSFont messageFontOfSize: size];
 	    break;
 	  case RolePaletteFont:
-	    new = [isa paletteFontOfSize: size];
+	    new = [NSFont paletteFontOfSize: size];
 	    break;
 	  case RoleToolTipsFont:
-	    new = [isa toolTipsFontOfSize: size];
+	    new = [NSFont toolTipsFontOfSize: size];
 	    break;
 	  case RoleControlContentFont:
-	    new = [isa controlContentFontOfSize: size];
+	    new = [NSFont controlContentFontOfSize: size];
 	    break;
 	  case RoleLabelFont:
-	    new = [isa labelFontOfSize: size];
+	    new = [NSFont labelFontOfSize: size];
 	    break;
 
 	  default:
 	    NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
 	    /* fall through */
 	  case RoleUserFont:
-	    new = [isa userFontOfSize: size];
+	    new = [NSFont userFontOfSize: size];
 	    break;
 	}
 
@@ -1143,7 +1143,7 @@ static BOOL flip_hack;
       if (new)
 	return new;
 
-      new = [isa userFontOfSize: size];
+      new = [NSFont userFontOfSize: size];
       NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
       return new;
     }

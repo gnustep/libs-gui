@@ -1,5 +1,10 @@
 2003-06-20  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSFont.m ([NSFont -initWithCoder:]): Use NSFont not isa
+	to call class methods.
+
+2003-06-20  Adam Fedor  <fedor@gnu.org>
+
 	* Source/DocMakefile (after-all): Check if Gui exists before
 	removing.
 
