@@ -1,10 +1,10 @@
 /*
-    NSInputManagerPriv.h
+    GSTIMKeyBindingTable.h
 
     Copyright (C) 2004 Free Software Foundation, Inc.
 
     Author: Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
-    Date:   March, 2004
+    Date: April 2004
 
     This file is part of the GNUstep GUI Library.
 
@@ -24,15 +24,42 @@
     59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _GNUstep_NSInputManagerPriv_h
-#define _GNUstep_NSInputManagerPriv_h
+#if !defined _GNUstep_GSTIMKeyBindingTable_h
+#define _GNUstep_GSTIMKeyBindingTable_h
 
-#include <AppKit/NSInputManager.h>
+#include <Foundation/NSObject.h>
 
-@class NSArray;
+@class NSString;
+@class NSDictionary;
+@class NSMutableDictionary;
+@class GSTIMKeyStroke;
 
-@interface NSInputManager (KeyEventHandling)
-- (void)interpretKeyEvents: (NSArray *)eventArray;
-@end /* @interface NSInputManager (KeyEventHandling) */
+typedef enum _GSTIMQueryResult
+{
+  GSTIMNotFound = 0,
+  GSTIMFound,
+  GSTIMPending
+} GSTIMQueryResult;
 
-#endif /* _GNUstep_NSInputManagerPriv_h */
+
+@interface GSTIMKeyBindingTable : NSObject
+{
+  NSDictionary	*bindings;
+  NSDictionary	*branch;
+}
+
+- (id)initWithKeyBindingDictionary: (NSDictionary *)bindingDictionary;
+
+- (void)setBindings: (NSDictionary *)newBindings;
+- (NSDictionary *)bindings;
+
+- (GSTIMKeyStroke *)compileForKeyStroke: (NSString *)aStroke;
+
+- (void)compileBindings: (NSMutableDictionary *)draft
+	     withSource: (NSDictionary *)source;
+
+- (GSTIMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
+				    selector: (SEL *)selector;
+@end
+
+#endif /* _GNUstep_GSTIMKeyBindingTable_h */

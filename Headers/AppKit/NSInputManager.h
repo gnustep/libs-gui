@@ -38,7 +38,7 @@
 @class NSInputServer;
 @class NSImage;
 @class GSTIMInputServerInfo;
-@class IMKeyBindingTable;
+@class GSTIMKeyBindingTable;
 
 
 @protocol NSTextInput
@@ -61,7 +61,7 @@
 @interface NSInputManager : NSObject <NSTextInput>
 {
   GSTIMInputServerInfo	*serverInfo;
-  IMKeyBindingTable	*keyBindingTable;
+  GSTIMKeyBindingTable	*keyBindingTable;
   id			serverProxy;
 }
 

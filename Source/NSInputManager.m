@@ -45,10 +45,7 @@
 #include "AppKit/NSInputServer.h"
 #include "AppKit/NSInputManager.h"
 #include "GSTIMInputServerInfo.h"
-
-#if !defined USE_INPUT_MANAGER_UTILITIES
-#define USE_INPUT_MANAGER_UTILITIES
-#endif
+#include "GSTIMKeyBindingTable.h"
 #include "NSInputManagerPriv.h"
 
 
@@ -67,8 +64,8 @@
 - (void)setServerProxy: (id)proxy;
 - (id)serverProxy;
 
-- (void)setKeyBindingTable: (IMKeyBindingTable *)table;
-- (IMKeyBindingTable *)keyBindingTable;
+- (void)setKeyBindingTable: (GSTIMKeyBindingTable *)table;
+- (GSTIMKeyBindingTable *)keyBindingTable;
 
 - (id)clientView;
 
@@ -444,7 +441,7 @@ static NSMutableArray *_inputServerList = nil;
   NSMutableDictionary	*src	= [[NSMutableDictionary alloc] init];
   NSDictionary		*dict	= nil;
   NSString		*path	= nil;
-  IMKeyBindingTable	*table	= nil;
+  GSTIMKeyBindingTable	*table	= nil;
 
   if ([self wantsToInterpretAllKeystrokes] == NO)
     {
@@ -482,7 +479,7 @@ static NSMutableArray *_inputServerList = nil;
       return NO;
     }
 
-  table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
+  table = [[GSTIMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
   if (table == nil)
     {
       NSLog(@"%@: Couldn't construct key-binding table");
@@ -571,7 +568,7 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
-- (void)setKeyBindingTable: (IMKeyBindingTable *)table
+- (void)setKeyBindingTable: (GSTIMKeyBindingTable *)table
 {
   [table retain];
   [keyBindingTable release];
@@ -579,7 +576,7 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
-- (IMKeyBindingTable *)keyBindingTable
+- (GSTIMKeyBindingTable *)keyBindingTable
 {
   return keyBindingTable;
 }
@@ -718,7 +715,7 @@ static NSMutableArray *_inputServerList = nil;
   NSMutableDictionary	*src	= [[NSMutableDictionary alloc] init];
   NSDictionary		*dict	= nil;
   NSString		*path	= nil;
-  IMKeyBindingTable	*table	= nil;
+  GSTIMKeyBindingTable	*table	= nil;
 
   NSLog(@"%@: Lost connection to input server %@",
 	self, [serverInfo serverName]);
@@ -744,7 +741,7 @@ static NSMutableArray *_inputServerList = nil;
       [src addEntriesFromDictionary: dict];
       [dict release], dict = nil;
     }
-  table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
+  table = [[GSTIMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
   if (table)
     {
       NSLog(@"%@: Key-bindings re-initialized", self);

@@ -24,24 +24,15 @@
     59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSArray.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSRunLoop.h>
 #include <Foundation/NSDebug.h>
-
-#if !defined USE_INPUT_MANAGER_UTILITIES
-#define USE_INPUT_MANAGER_UTILITIES
-#endif
-#include "NSInputManagerPriv.h"
+#include "AppKit/NSEvent.h"
+#include "GSTIMKeyBindingTable.h"
 #include "GSTIMKeyStroke.h"
-
-static NSString *_plain	  = @"1234567890-=qwertyuiop[]asdfghjkl;'\\zxcvbnm,./";
-static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
+#include "NSInputManagerPriv.h"
 
 
 @implementation NSInputManager (KeyEventHandling)
@@ -55,7 +46,7 @@ static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
   unsigned int	    modifierFlags   = 0;
   GSTIMKeyStroke    *aChar	    = nil;
   SEL		    sel		    = (SEL)0;
-  IMQueryResult	    result;
+  GSTIMQueryResult  result;
 
   if ([self wantsToInterpretAllKeystrokes])
     {
@@ -105,11 +96,11 @@ static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
 
   switch (result)
     {
-    case IMNotFound:
+    case GSTIMNotFound:
       [self insertText: chars];
       break;
 
-    case IMFound:
+    case GSTIMFound:
       if (sel)
 	{
 	  [self doCommandBySelector: sel];
@@ -123,7 +114,7 @@ static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
 	}
       break;
 
-    case IMPending:
+    case GSTIMPending:
       /* Do nothing, waiting for a next event. */
       break;
     }
@@ -183,6 +174,7 @@ static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
 @end /* @implementation NSInputManager (KeyEventHandling) */
 
 
+#if 0
 @implementation IMKeyBindingTable
 
 - (id)initWithKeyBindingDictionary: (NSDictionary *)bindingDictionary
@@ -416,3 +408,4 @@ static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
 }
 
 @end /* @implementation IMKeyBindingTable */
+#endif
