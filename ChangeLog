@@ -1,3 +1,8 @@
+2004-04-04  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit.h: Added NSNib.h to the #ifndef STRICT_OPENSTEP
+	section of the headers.
+	
 2004-04-02  Quentin Mathe <qmathe@club-internet.fr>
 
         With the help of Fred Kiefer and Alexander Malmberg, the modifications

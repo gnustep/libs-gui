@@ -143,6 +143,7 @@
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSOutlineView.h>
+#include <AppKit/NSNib.h>
 #include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSTextContainer.h>
