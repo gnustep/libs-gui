@@ -38,25 +38,23 @@
 #include <Foundation/NSValue.h>
 
 #include <AppKit/AppKitExceptions.h>
+#include <AppKit/NSAttributedString.h>
 #include <AppKit/NSApplication.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSView.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
+#include <AppKit/NSClipView.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphics.h>
 #include <AppKit/NSFont.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSParagraphStyle.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSTextContainer.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSAttributedString.h>
-
-#include <AppKit/NSClipView.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
 
 static Class	colorClass;
 static Class	cellClass;

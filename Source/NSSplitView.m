@@ -32,23 +32,22 @@
 */
 
 #include <math.h>
-#include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSGeometry.h>
-#include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSRunLoop.h>
-#include <Foundation/NSDebug.h>
+#include <Foundation/NSString.h>
+
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
-#include <AppKit/NSImage.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/NSSplitView.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSSplitView.h>
 #include <AppKit/NSWindow.h>
-
-#include "AppKit/DPSOperators.h"
 
 static NSNotificationCenter *nc = nil;
 

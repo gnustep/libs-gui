@@ -24,25 +24,24 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
-#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSProcessInfo.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSUserDefaults.h>
 
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuView.h>
 #include <AppKit/NSMenuItemCell.h>
+#include <AppKit/NSMenuView.h>
 
-#include <AppKit/PSOperators.h>
 
 @implementation NSMenuItemCell
 

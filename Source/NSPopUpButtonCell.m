@@ -25,17 +25,13 @@
 
 #include <gnustep/gui/config.h>  
 #include <AppKit/NSApplication.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
-#include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuView.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
 
 /* The image to use in a specific popupbutton is
  * _pbc_image[_pbcFlags.pullsDown]; that is, _pbc_image[0] if it is a

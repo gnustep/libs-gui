@@ -25,31 +25,28 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <AppKit/NSOutlineView.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSNull.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSException.h>
 #include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSMapTable.h>
+#include <Foundation/NSValue.h>
+
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
-#include <AppKit/NSFont.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphics.h>
-#include <AppKit/NSScroller.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSOutlineView.h>
+#include <AppKit/NSScroller.h>
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableHeaderView.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSCachedImageRep.h>
-
 
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;

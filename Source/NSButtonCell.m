@@ -38,17 +38,16 @@
 #include <Foundation/NSDebug.h>
 
 #include <AppKit/AppKitExceptions.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSButton.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSImage.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSSound.h>
-#include <AppKit/PSOperators.h>
+#include <AppKit/NSWindow.h>
 
 @implementation NSButtonCell
 

@@ -1,3 +1,16 @@
+2002-11-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m
+	* Source/NSButtonCell.m
+	* Source/NSMenuItemCell.m
+	* Source/NSOutlineView.m
+	* Source/NSPopUpButtonCell.m
+	* Source/NSSplitView.m
+	Removed unneeded includes.
+	* Source/NSRulerView.m
+	Rewrote [drawHashMarksAndLabelsInRect:] to use string drawing and
+	bezier path code instead of direct PS operations.
+
 2002-11-15  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSColor -encodeWithModelArchiver:]): Encode
