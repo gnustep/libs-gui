@@ -1,3 +1,33 @@
+Sun Nov 28 04:44:43 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	First implementation of editing in NSForm, NSMatrix.
+	* Source/NSFormCell.m ([-initTextCell:]): Set editable by default.
+	* Source/NSForm.m ([-selectTextAtIndex:]): Implemented.
+	* Source/NSMatrix.m: Started work of prefixing ivars with underscore; 
+	([-selectText:]): Implemented.
+	([-selectTextAtRow:column:]): Implemented.
+	([-textDidBeginEditing:]): Implemented.
+	([-textDidChange:]): Implemented.
+	([-textDidEndEditing:]): Implemented.
+	([-textShouldBeginEditing:]): Implemented.
+	([-textShouldEndEditing:]): Implemented.
+	([-tabKeyTraversesCells]): Implemented.
+	([-setTabKeyTraversesCells:]): Implemented.	
+	([-mouseDown:]): Added code to start editing if needed.
+	([-setDelegate:]): Implemented.
+	([-keyDown:]): Removed old implementation -- still to do the new one.
+	([-acceptsFirstResponder]): Fixed.
+	([-abortEditing]): Implemented.
+	([-currentEditor]): Implemented.
+	([-validateEditing]): Implemented.
+	([-_selectNextSelectableCellAfterRow:column:]): : New method.
+	([-_selectPreviousSelectableCellBeforeRow:column:]): New method.
+	* Headers/AppKit/NSMatrix.h: Updated in sync.
+
+	* Source/NSSavePanel.m: Use a NSForm for the text field; cleanup.
+	* Headers/AppKit/NSSavePanel.h: Updated.
+	* Source/NSOpenPanel.m: Updated.
+
 Sat Nov 27 04:30:15 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m ([-directory]): Maintenance, clean up.
