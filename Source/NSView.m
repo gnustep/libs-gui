@@ -1377,6 +1377,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (_window != nil)
     {
+      if (_coordinates_valid == NO)
+	{
+	  [self _rebuildCoordinates];
+	}      
       [self displayRect: _visibleRect];
     }
 }
