@@ -1,5 +1,29 @@
 Tue Oct 26  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
+	SavePanel tidyups, simplifications and fixes for better
+ 	accessoryView support.
+	* Headers/gnustep/gui/NSSavePanel.h: Removed ivars _oldContentFrame, 
+ 	_oldTopViewFrame.
+	* Source/NSSavePanel.m ([NSSavePanel -setAccessoryView:]): 
+	Cleaned, improved and tested size calculations.
+	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): 
+	Set properly all the autoresizingMasks.  
+	
+	Added experimental feature (*disabled* by default) to Browser Cells.
+  	Setting the user preference "GSBrowserCellFontify" to 'YES' draws the
+ 	leaf and non-leaf cells with different fonts and colors.  The API 
+	is stricltly unchanged in all cases.
+	* Documentation/gnustep-gui.tmpl.texi (NSBrowserCell): Written
+ 	short description of how to turn the experimental feature on/off.
+	* Source/NSBrowserCell.m ([+initialize]): Initialize fonts and
+ 	colors if fontify is on.
+	* Source/NSBrowserCell.m ([-initTextCell:]): use setLeaf: instead
+ 	of setting the ivar directly.
+	* Source/NSBrowserCell.m ([-setLeaf:]): If fontification is on,
+ 	change appropriately the text cell font and color.
+ 		
+Tue Oct 26  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
 	Fixes for Controls and Cells:
 	* Source/NSButton.m ([-selectedCell]): Removed (duplicate of
  	NSControl's method).
