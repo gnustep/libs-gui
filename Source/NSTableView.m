@@ -1426,6 +1426,7 @@ byExtendingSelection: (BOOL)flag
   NSPoint location = [theEvent locationInWindow];
   NSTableColumn *tb;
   int clickCount;
+  BOOL shouldEdit;
 
   //
   // Pathological case -- ignore mouse down
@@ -1765,20 +1766,32 @@ byExtendingSelection: (BOOL)flag
   if ([self isRowSelected: _clickedRow] == NO)
     return;
 
-  if ([_delegate respondsToSelector: 
-		   @selector(tableView:shouldEditTableColumn:row:)])
+  tb = [_tableColumns objectAtIndex: _clickedColumn];
+
+  shouldEdit = YES;
+
+  if ([tb isEditable] == NO)
     {
-      tb = [_tableColumns objectAtIndex: _clickedColumn];
+      shouldEdit = NO;
+    }
+  else if ([_delegate respondsToSelector: 
+			@selector(tableView:shouldEditTableColumn:row:)])
+    {
       if ([_delegate tableView: self shouldEditTableColumn: tb 
 		     row: _clickedRow] == NO)
 	{
-	  // Send double-action but don't edit
-	  [self sendAction: _doubleAction to: _target];
-	  return;
+	  shouldEdit = NO;
 	}
     }
+  
+  if (shouldEdit == NO)
+    {
+      // Send double-action but don't edit
+      [self sendAction: _doubleAction to: _target];
+      return;
+    }
 
-  // Delegate said its OK to edit column.  Go on, do it.
+  // It is OK to edit column.  Go on, do it.
   [self editColumn: _clickedColumn  row: _clickedRow
 	withEvent: theEvent  select: NO];
 }
