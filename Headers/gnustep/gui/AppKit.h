@@ -119,6 +119,7 @@
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSPrinter.h>
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>

@@ -522,14 +522,10 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
       buf[i] = '\0';
       DPSmoveto(draw->ctxt, origin.x, origin.y);
       DPSshow(draw->ctxt, buf);
-      /* FIXME - Figure out why DGS fails to flush strings and remove this
-      aweful hack which doesn't even work all the time: */
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
+#ifdef XDPS_BACKEND_LIBRARY
+      /* FIXME: Hack to force DGS to flush the text */
+      DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
+#endif
     }
   else
     {
@@ -544,14 +540,10 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	  DPSshow(draw->ctxt, buf);
 	  origin.x += run->glyphs[i].adv.width;
 	}
-      /* FIXME - Figure out why DGS fails to flush strings and remove this
-      aweful hack which doesn't even work all the time: */
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
-      DPSmoveto(draw->ctxt, origin.x, origin.y);
-      DPSshow(draw->ctxt, buf);
+#ifdef XDPS_BACKEND_LIBRARY
+      /* FIXME: Hack to force DGS to flush the text */
+      DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
+#endif
     }
 
   if (run->underline)

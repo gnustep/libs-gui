@@ -328,6 +328,7 @@ NSApplication	*NSApp = nil;
       RELEASE(pool);
     }
 
+  [GSCurrentContext() destroyContext];
   NSDebugLog(@"NSApplication end of run loop\n");
 }
 

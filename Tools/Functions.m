@@ -55,21 +55,9 @@ void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)
 {}
 void NSDrawGroove(NSRect aRect, NSRect clipRect)
 {}
-void PSlineto(float x, float y)
+void NSDrawPopupNibble(NSPoint aPoint)
 {}
-void PSmoveto(float x, float y)
-{}
-void PSrlineto(float x, float y)
-{}
-void PSsetgray(float num)
-{}
-void PSstroke(void)
-{}
-void PSsetlinewidth(float width)
-{}
-void PSgrestore(void)
-{}
-void PSgsave(void)
+void NSDrawDownArrow(NSPoint aPoint)
 {}
 
 /* Dummy wraps */

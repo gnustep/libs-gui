@@ -1,3 +1,11 @@
+1999-07-03  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-run): Added destroyContext (so we can
+	remove backend run method).
+
+	* Source/NSStringDrawing.m (drawRun): Better hack to work around
+	DGS bug that fails to flush strings (XDPS backend only).
+
 1999-06-30  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenuView.m: fixes:
