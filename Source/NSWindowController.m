@@ -35,7 +35,7 @@
 - (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner
 {
   [self initWithWindow: nil];
-  _windowNibName = RETAIN (windowNibName);
+  ASSIGN (_windowNibName, windowNibName);
   _owner = owner;
   return self;
 }
