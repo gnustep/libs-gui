@@ -1,3 +1,8 @@
+2003-02-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextField.m
+	Only accept first mouse when editable.
+	
 2003-02-02 02:31  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m, Source/NSTextView_actions.m: Clarify
@@ -6,7 +11,7 @@
 
 2003-02-02  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSTextView.m
+	* Source/NSWindow.m
 	Rewrote all the toolbar methods. Implemented [zoom:]. Extracted
 	new method [_terminateBackendWindow] from [dealloc] and use it to
 	implement one shot windows in the orderOut case of
