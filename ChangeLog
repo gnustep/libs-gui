@@ -1,3 +1,47 @@
+Tue Dec  7 06:23:07 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Major improvements of the save panel and the open panel.
+	* Headers/AppKit/NSWindow.h: Prefixed ivar delegate with
+ 	underscore.
+	* Source/NSWindow.m: Prefixed ivar delegate with underscore.
+
+	* Headers/AppKit/NSSavePanel.h: Changed ivars.
+	* Source/NSSavePanel.m:
+	([NSFileManager -_directoryContentsAtPath:showHidden:]): Removed.
+	([NSFileManager -hiddenFilesAtPath:]): Removed.
+	([-_initWithoutGModel]): Removed setMinSize in excess; set
+ 	title of window to @"".  
+	([-setTitle:]): Dont set window title to @"".
+  	([-_setDirectory:updateBrowser:]): Removed method.	
+  	([-_resetDefaults]): New method.  
+	([+initialize]): New method.
+	([+savePanel]): Moved all reset defaults code to _resetDefaults.
+	([-dealloc]): New method.
+	([-init]): Some changings.
+	([-setAccessoryView:]): Access content view directly.
+	([-setDirectory:]): Updated.
+	([-runModalForDirectory:path:filename]): Updated, fixed.
+	([-directory]): New better implementation.
+	([-cancel:]): set directory to nil.
+	([-cancel:]), ([-ok:]): Changed from orderOut: to close:.
+	([-setDelegate:]): Cleaned, fixed.
+	([-browser:createRowsForColumn:inMatrix:]): Rewritten, much better.
+	([-browser:selectCellWithString:inColumn:]): Rewritten, much better.
+	([-controlTextDidEndEditing:]): Improved, still to finish.
+
+	* Source/NSOpenPanel.m: Updated for changing in NSSavePanel.  
+	([-_resetDefaults]): New method.
+	([-_shouldShowExtension:]): New method.
+	([+openPanel]):	Updated.
+	([-runModalForDirectory:file:types:]): Updated.
+ 	([-browser:createRowsForColumn:inMatrix:]): Removed method; not needed 
+	any longer after rewriting of NSSavePanel.
+	([-browser:selectCellWithString:inColumn:]): Rewritten, updated.
+	
+	* Documentation/gnustep-gui.tmpl.texi (NSSavePanel): Added
+ 	documentation for the new experimental feature
+	GSSavePanelShowProgress.
+
 Tue Dec  7  5:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Fixes by Jonathon Gapen -
