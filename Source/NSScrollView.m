@@ -151,7 +151,7 @@ static Class rulerViewClass = nil;
 //
 // Instance methods
 //
-- initWithFrame: (NSRect)rect
+- (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];
   [self setContentView: [[NSClipView new] autorelease]];
@@ -164,7 +164,7 @@ static Class rulerViewClass = nil;
   return self;
 }
 
-- init
+- (id) init
 {
   return [self initWithFrame: NSZeroRect];
 }
@@ -179,6 +179,11 @@ static Class rulerViewClass = nil;
   [_vertRuler release];
 
   [super dealloc];
+}
+
+- (BOOL) isFlipped
+{
+  return YES;
 }
 
 - (void) setContentView: (NSClipView*)aView
@@ -479,7 +484,14 @@ static Class rulerViewClass = nil;
       horizScrollerRect.size.width = contentRect.size.width;
       horizScrollerRect.size.height = scrollerWidth;
 
-      contentRect.origin.y += scrollerWidth + 1;
+      if ([self isFlipped])
+	{
+	  horizScrollerRect.origin.y += contentRect.size.height + 1;
+	}
+      else
+	{
+	  contentRect.origin.y += scrollerWidth + 1;
+	}
     }
 
   [_horizScroller setFrame: horizScrollerRect];
@@ -494,6 +506,7 @@ static Class rulerViewClass = nil;
 
 - (void) drawRect: (NSRect)rect
 {
+  NSGraphicsContext	*ctxt = [NSGraphicsContext currentContext];
   float scrollerWidth = [NSScroller scrollerWidth];
   float horizLinePosition, horizLineLength = [self bounds].size.width;
   float borderThickness = 0;
@@ -503,7 +516,7 @@ static Class rulerViewClass = nil;
 //				rect.origin.x, rect.origin.y,
 //				rect.size.width, rect.size.height);
 
-  PSgsave ();
+  DPSgsave(ctxt);
   switch ([self borderType])
     {
       case NSNoBorder:
@@ -511,41 +524,45 @@ static Class rulerViewClass = nil;
 
       case NSLineBorder:
 	borderThickness = 1;
-	NSFrameRect (rect);
+	NSFrameRect(rect);
 	break;
 
       case NSBezelBorder:
 	borderThickness = 2;
-	NSDrawGrayBezel (rect, rect);
+	NSDrawGrayBezel(rect, rect);
 	break;
 
       case NSGrooveBorder:
 	borderThickness = 2;
-	NSDrawGroove (rect, rect);
+	NSDrawGroove(rect, rect);
 	break;
     }
 
   horizLinePosition = borderThickness;
 
-  PSsetlinewidth (1);
-  PSsetgray (0);
+  DPSsetlinewidth(ctxt, 1);
+  DPSsetgray(ctxt, 0);
   if (_hasVertScroller)
     {
       horizLinePosition = scrollerWidth + borderThickness;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
-      PSmoveto (horizLinePosition, borderThickness + 1);
-      PSrlineto (0, [self bounds].size.height - 2 * borderThickness);
-      PSstroke ();
+      DPSmoveto(ctxt, horizLinePosition, borderThickness + 1);
+      DPSrlineto(ctxt, 0, [self bounds].size.height - 2 * borderThickness - 1);
+      DPSstroke(ctxt);
     }
 
   if (_hasHorizScroller)
     {
-      PSmoveto (horizLinePosition, scrollerWidth + borderThickness + 1);
-      PSrlineto (horizLineLength - 1, 0);
-      PSstroke ();
+      float	ypos = scrollerWidth + borderThickness + 1;
+
+      if ([self isFlipped])
+	ypos = [self bounds].size.height - ypos;
+      DPSmoveto(ctxt, horizLinePosition, ypos);
+      DPSrlineto(ctxt, horizLineLength - 1, 0);
+      DPSstroke(ctxt);
     }
 
-  PSgrestore ();
+  DPSgrestore(ctxt);
 }
 
 - (NSRect) documentVisibleRect

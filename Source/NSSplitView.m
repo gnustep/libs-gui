@@ -393,17 +393,12 @@ RETURN_LABEL:
   draggedBarWidth = newWidth;
 }
 
-NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
+static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   NSPoint p;
   p.x = MAX(NSMidX(outerRect) - (innerSize.width/2.),0.);
   p.y = MAX(NSMidY(outerRect) - (innerSize.height/2.),0.);
   return p;
-}
-
-NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
-{
-  return centerSizeInRect(innerRect.size,outerRect);
 }
 
 - (void) drawDividerInRect: (NSRect)aRect
@@ -416,11 +411,13 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
     return;
   dimpleSize = [dimpleImage size];
 
-  /* composite into the center of the given rect. Since NSImages
-     are always flipped, we adjust for it here */
-  dimpleOrigin = centerSizeInRect(dimpleSize,aRect);
+  dimpleOrigin = centerSizeInRect(dimpleSize, aRect);
+  /*
+   * Images are always drawn with their bottom-left corner at the origin
+   * so we must adjust the position to take account of a flipped view.
+   */
   if ([self isFlipped])
-    dimpleOrigin.y += dimpleSize.height;
+    dimpleOrigin.y -= dimpleSize.height;
   [dimpleImage compositeToPoint: dimpleOrigin operation: NSCompositeSourceOver];
 }
 

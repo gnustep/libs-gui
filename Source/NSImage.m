@@ -27,7 +27,7 @@
     FIXME:  
         [1] Filter services not implemented.
 	[2] Should there be a place to look for system bitmaps? 
-	(findImageNamed:).
+	(findImageNamed: ).
 	[3] bestRepresentation is not complete.
 */
 #include <gnustep/gui/config.h>
@@ -57,10 +57,12 @@ static NSString* NSImage_PATH = @"Images";
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
 @protocol NSImageBackend
-- (void) compositeToPoint: (NSPoint)point fromRect: (NSRect)rect
-	operation: (NSCompositingOperation)op;
-- (void) dissolveToPoint: (NSPoint)point fromRect: (NSRect)rect
-        fraction: (float)aFloat;
+- (void) compositeToPoint: (NSPoint)point
+		 fromRect: (NSRect)rect
+		operation: (NSCompositingOperation)op;
+- (void) dissolveToPoint: (NSPoint)point
+		fromRect: (NSRect)rect
+		fraction: (float)aFloat;
 @end
 
 typedef struct _rep_data_t 
@@ -107,7 +109,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
       [[_reps objectAtIndex: i] getValue: &repd];
       if (repd.rep == rep && !found)
 	{
-	  [_reps replaceObjectAtIndex: i withObject:
+	  [_reps replaceObjectAtIndex: i withObject: 
 	    [NSValue value: new_repd withObjCType: @encode(rep_data_t)]];
 	  found = YES;
 	  break;
@@ -138,17 +140,17 @@ static NSDictionary* nsmapping = nil;
 {
   if (self == [NSImage class])
     {
-      NSBundle *system = [NSBundle bundleWithPath:gnustep_libdir];
-      NSString* path = [system pathForResource:@"nsmapping"
-			       ofType:@"strings"
-			       inDirectory:NSImage_PATH];
+      NSBundle *system = [NSBundle bundleWithPath: gnustep_libdir];
+      NSString* path = [system pathForResource: @"nsmapping"
+			       ofType: @"strings"
+			       inDirectory: NSImage_PATH];
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
 
       // initialize the class variables
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
       if (path)
-	nsmapping = [[[NSString stringWithContentsOfFile:path]
+	nsmapping = [[[NSString stringWithContentsOfFile: path]
 				propertyListFromStringsFileFormat]
 				retain];
     }
@@ -156,13 +158,13 @@ static NSDictionary* nsmapping = nil;
 
 + imageNamed: (NSString *)aName
 {
-  NSString* realName = [nsmapping objectForKey:aName];
+  NSString* realName = [nsmapping objectForKey: aName];
 
   if (realName)
     aName = realName;
 
   /* If there is no image with that name, search in the main bundle */
-  if (!nameDict || ![nameDict objectForKey:aName]) 
+  if (!nameDict || ![nameDict objectForKey: aName]) 
     {
       NSString* ext;
       NSString* path = nil;
@@ -199,7 +201,7 @@ static NSDictionary* nsmapping = nil;
 	  while ((o = [e nextObject]))
 	    {
 	      NSDebugLog(@"extension %s\n", [o cString]);
-	      path = [main pathForResource:the_name 
+	      path = [main pathForResource: the_name 
 		        ofType: o];
 	      if ([path length] != 0)
 		break;
@@ -250,7 +252,7 @@ static NSDictionary* nsmapping = nil;
 	}
     }
   
-  return [nameDict objectForKey:aName];
+  return [nameDict objectForKey: aName];
 }
 
 // Designated initializer for nearly everything.
@@ -282,7 +284,7 @@ static NSDictionary* nsmapping = nil;
   if ((self = [self init]) == o)
     {
       _flags.dataRetained = NO;
-      if (![self useFromFile:fileName])
+      if (![self useFromFile: fileName])
 	{
 	  [self release];
 	  return nil;
@@ -298,7 +300,7 @@ static NSDictionary* nsmapping = nil;
   if ((self = [self init]) == o)
     {
       _flags.dataRetained = YES;
-      if (![self useFromFile:fileName])
+      if (![self useFromFile: fileName])
 	{
 	  [self release];
 	  return nil;
@@ -324,7 +326,7 @@ static NSDictionary* nsmapping = nil;
 
 - initWithPasteboard: (NSPasteboard *)pasteboard
 {
-  [self notImplemented:_cmd];
+  [self notImplemented: _cmd];
   return nil;
 }
 
@@ -352,7 +354,7 @@ static NSDictionary* nsmapping = nil;
   /* Make sure we don't remove name from the nameDict if we are just a copy
      of the named image, not the original image */
   if (name && self == [nameDict objectForKey: name]) 
-    [nameDict removeObjectForKey:name];
+    [nameDict removeObjectForKey: name];
   [name release];
   [super dealloc];
 }
@@ -571,7 +573,7 @@ static NSDictionary* nsmapping = nil;
 	  cached.original = rep;
 	  cached.validCache = YES;
 	  [_reps removeLastObject];
-	  [_reps addObject:
+	  [_reps addObject: 
 	    [NSValue value: &cached withObjCType: @encode(rep_data_t)]];
 	}
 #endif
@@ -599,16 +601,17 @@ static NSDictionary* nsmapping = nil;
 
 // Using the Image 
 - (void) compositeToPoint: (NSPoint)aPoint 
-	operation: (NSCompositingOperation)op;
+		operation: (NSCompositingOperation)op;
 {
   NSRect rect;
   [self size];
   rect = NSMakeRect(0, 0, _size.width, _size.height);
-  [self compositeToPoint: aPoint fromRect:rect operation: op];
+  [self compositeToPoint: aPoint fromRect: rect operation: op];
 }
 
-- (void) compositeToPoint: (NSPoint)aPoint fromRect: (NSRect)aRect
-	operation: (NSCompositingOperation)op;
+- (void) compositeToPoint: (NSPoint)aPoint
+		 fromRect: (NSRect)aRect
+		operation: (NSCompositingOperation)op;
 {
   NSImageRep *rep;
   NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
@@ -630,8 +633,9 @@ static NSDictionary* nsmapping = nil;
   [self dissolveToPoint: aPoint fromRect: rect fraction: aFloat];
 }
 
-- (void) dissolveToPoint: (NSPoint)aPoint fromRect: (NSRect)aRect 
-	fraction: (float)aFloat;
+- (void) dissolveToPoint: (NSPoint)aPoint
+		fromRect: (NSRect)aRect 
+		fraction: (float)aFloat;
 {
   NSImageRep *rep;
   NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
@@ -678,7 +682,7 @@ static NSDictionary* nsmapping = nil;
   return ok;
 }
 
-- (BOOL)loadFromFile: (NSString *)fileName
+- (BOOL) loadFromFile: (NSString *)fileName
 {
   NSArray* array;
 
@@ -750,12 +754,12 @@ static NSDictionary* nsmapping = nil;
   if (!imageSize.width || !imageSize.height)
     return NO;
 
-  // FIMXE: determine alpha? separate?
+  // FIXME: determine alpha? separate?
   rep = [[NSCachedImageRep alloc] initWithSize: _size
        depth: depth
        separate: NO
        alpha: NO];
-  [self addRepresentation:rep];
+  [self addRepresentation: rep];
   return YES;
 }
 
@@ -840,8 +844,7 @@ static NSDictionary* nsmapping = nil;
   return [_repList lastObject];
 }
 
-- (NSImageRep *) bestRepresentationForDevice: 
-         (NSDictionary *)deviceDescription;
+- (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
 {
   id o, e;
   NSImageRep *rep = nil;
@@ -877,7 +880,7 @@ static NSDictionary* nsmapping = nil;
 
 - (NSArray *) representations
 {
-  int i, count;
+  unsigned i, count;
   if (!_repList)
     _repList = [[NSMutableArray alloc] init];
   if (_syncLoad)
@@ -888,7 +891,7 @@ static NSDictionary* nsmapping = nil;
     {
       rep_data_t repd;
       [[_reps objectAtIndex: i] getValue: &repd];
-      [_repList addObject:repd.rep];
+      [_repList addObject: repd.rep];
     }
   return _repList;
 }
@@ -898,7 +901,7 @@ static NSDictionary* nsmapping = nil;
   delegate = anObject;
 }
 
-- delegate
+- (id) delegate
 {
   return delegate;
 }
@@ -918,10 +921,10 @@ static NSDictionary* nsmapping = nil;
 }
 
 // Methods Implemented by the Delegate 
-- (NSImage *)imageDidNotDraw:(id)sender
-		      inRect:(NSRect)aRect
+- (NSImage *)imageDidNotDraw: (id)sender
+		      inRect: (NSRect)aRect
 {
-  if ([delegate respondsToSelector:@selector(imageDidNotDraw:inRect:)])
+  if ([delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
     return [delegate imageDidNotDraw: sender inRect: aRect];
   else
     return self;
@@ -939,9 +942,9 @@ static NSDictionary* nsmapping = nil;
 
 - (id) awakeAfterUsingCoder: (NSCoder*)aDecoder
 {
-  if (name && [nameDict objectForKey:name]) 
+  if (name && [nameDict objectForKey: name]) 
     {
-      return [nameDict objectForKey:name];
+      return [nameDict objectForKey: name];
     }
     
   return self;

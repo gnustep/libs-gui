@@ -30,6 +30,7 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSGeometry.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
@@ -603,6 +604,14 @@
   [title drawInRect: cellFrame withAttributes: dict];
 }
 
+static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
+{
+  NSPoint p;
+  p.x = MAX(NSMidX(outerRect) - (innerSize.width/2.),0.);
+  p.y = MAX(NSMidY(outerRect) - (innerSize.height/2.),0.);
+  return p;
+}
+
 // Draw image centered in frame.
 - (void) _drawImage: (NSImage *) image inFrame: (NSRect) cellFrame
 {
@@ -613,8 +622,13 @@
     return;
 
   size = [image size];
-  position.x = NSMidX (cellFrame) - size.width / 2;
-  position.y = NSMidY (cellFrame) - size.height / 2;
+  position = centerSizeInRect(size, cellFrame);
+  /*
+   * Images are always drawn with their bottom-left corner at the origin
+   * so we must adjust the position to take account of a flipped view.
+   */
+  if ([control_view isFlipped])
+    position.y -= size.height;
   [image compositeToPoint: position operation: NSCompositeCopy];
 }
 

@@ -1,3 +1,11 @@
+Tue Mar 30 14:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: Position image correctly in flipped views.
+	* Source/NSSplitView.m: Position dimple image correctly when flipped.
+	* Source/NSImage.m: Tidied a little
+	* Source/NSScrollView.m: Work when flipped - and make NSScrollView
+	flipped unless a subclass dictates otherwise.
+
 Tue Mar 30 05:26:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSScroller.h: Modified ([-setContentView:]) and
