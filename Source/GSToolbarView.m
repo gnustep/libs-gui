@@ -98,7 +98,7 @@ static void initSystemExtensionsColors(void)
     {
       SystemExtensionsColors = [[NSColorList alloc] initWithName: @"System extensions"];
     }
-  else
+
     {
       NSEnumerator *e;
       NSString *colorKey;

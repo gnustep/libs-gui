@@ -1,3 +1,10 @@
+2005-01-24  Quentin Mathe  <qmathe@club-internet.fr>
+
+	* Source/GSToolbarView.m (initSystemExtensionsColors()): Removed 
+	spurious 'else' (introduced with revision 1.11) which prevented toolbar 
+	colors loading code to be executed (Fix the white toolbar background bug
+	reported by Riccardo Mottola).
+
 2005-01-24 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSSavePanel.m (-_shouldShowExtension:isDir:,
