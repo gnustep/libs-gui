@@ -658,9 +658,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
-  [GSCurrentContext() _orderWindow: place
-			relativeTo: otherWin
-			 forWindow: [self windowNumber]];
+  DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
 
 - (void) resignKeyWindow
@@ -816,7 +814,8 @@ static NSMapTable* windowmaps = NULL;
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
-  [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
+  DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
+    frameRect.size.width, frameRect.size.height, [self windowNumber]);
 
   if (flag)
     [self display];

@@ -334,22 +334,6 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/*
- *	Misc window management support.
- */
-- (BOOL) _setFrame: (NSRect)frameRect forWindow: (int)winNum
-{
-  [self subclassResponsibility: _cmd];
-  return NO;
-}
-
-- (void) _orderWindow: (NSWindowOrderingMode)place
-	   relativeTo: (int)otherWin
-	    forWindow: (int)winNum
-{
-  [self subclassResponsibility: _cmd];
-}
-
 @end
 
 @implementation NSGraphicsContext (Private)

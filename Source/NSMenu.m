@@ -1255,7 +1255,8 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   NSRect frameRect = frame;
 
   frameRect.origin = aPoint;
-  [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
+  DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
+    frameRect.size.width, frameRect.size.height, [self windowNumber]);
 }
 
 @end
