@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,7 +29,10 @@
 */ 
 
 #include <gnustep/gui/config.h>
+
 #include <AppKit/NSControl.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
 
@@ -406,10 +411,80 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  //NSRect f;
+NSApplication *theApp = [NSApplication sharedApplication];
+BOOL mouseUp = NO, done = NO;
+NSEvent *e;
+int oldActionMask;
+NSPoint location;
+unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+							NSMouseMovedMask | NSLeftMouseDraggedMask | 
+							NSRightMouseDraggedMask;
 
-  //f = MBConvertRectToWindow(bounds);
-  //[cell trackMouse:theEvent inRect:f ofView:self untilMouseUp:YES];
+	NSDebugLog(@"NSControl mouseDown\n");
+
+	if (![self isEnabled])							// If we are not enabled 
+		return;										// then ignore the mouse
+	
+	if ([cell isContinuous])						// Have NSCell send action
+		oldActionMask = [cell sendActionOn:0];		// only if we're continuous
+	else
+    	oldActionMask = [cell sendActionOn: NSPeriodicMask];
+
+	[[self window] captureMouse: self];						// capture mouse
+
+	[self lockFocus];
+
+	e = theEvent;
+	while (!done) 									// loop until mouse goes up 
+		{								
+		location = [e locationInWindow];
+		location = [self convertPoint:location fromView:nil];
+										// ask the cell to track the mouse only 
+										// if the mouse is within the cell
+		if ((location.x >= 0) && (location.x < bounds.size.width) &&
+				(location.y >= 0 && location.y < bounds.size.height))
+			{											// highlight the cell
+			[cell highlight: YES withFrame: bounds inView: self];	
+			[window flushWindow];
+			if([cell trackMouse:e inRect:bounds ofView:self untilMouseUp:YES])			 
+				done = mouseUp = YES;					// YES if the mouse 
+			else										// goes up in the cell
+				{
+				[cell highlight: NO withFrame: bounds inView: self];	
+				[window flushWindow];
+				}
+			}											
+
+    	if (done)											// if done break 
+      		break;											// out of the loop
+
+		NSDebugLog(@"NSControl process another event\n");
+		e = [theApp nextEventMatchingMask:event_mask 		// get next event
+					untilDate:nil
+					inMode:NSEventTrackingRunLoopMode 
+					dequeue:YES];
+		if ([e type] == NSLeftMouseUp)						// If mouse went up
+			done = YES;										// then we are done
+  		}
+
+	[[self window] releaseMouse: self];						// Release mouse
+
+	if (mouseUp)							// the mouse went up in the button
+    	{ 
+		[self lockFocus];			// lockFocus gets released when button is 
+									// drawn presseddown (NSView's displayRect)
+									// so we call it again, one of these needs
+									// to be optimized out FAR  FIX ME
+      	[cell setState:![cell state]];
+     	[cell highlight: NO withFrame: bounds inView: self];	// Unhighlight
+      	[window flushWindow];
+    	}
+	[self unlockFocus];
+															// Restore the old
+	[cell sendActionOn:oldActionMask];						// action mask
+  
+	if (mouseUp)											// Have the target 
+    	[self sendAction:[self action] to:[self target]];	// perform action
 }
 
 - (BOOL)ignoresMultiClick
@@ -423,14 +498,14 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 //
 // Methods Implemented by the Delegate
 //
-- (BOOL)control:(NSControl *)control
-textShouldBeginEditing:(NSText *)fieldEditor
+- (BOOL)control:(NSControl *)control 
+		textShouldBeginEditing:(NSText *)fieldEditor
 {
   return NO;
 }
 
 - (BOOL)control:(NSControl *)control
-textShouldEndEditing:(NSText *)fieldEditor
+		textShouldEndEditing:(NSText *)fieldEditor
 {
   return NO;
 }

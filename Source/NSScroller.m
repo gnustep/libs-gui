@@ -36,28 +36,46 @@
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/PSMatrix.h>
+
+
 
 @implementation NSScroller
 
-/* Class variables */
-
-/* These button cells are used by all scroller instances to draw the scroller
-   buttons and the knob. */
-static NSButtonCell* upCell = nil;
-static NSButtonCell* downCell = nil;
-static NSButtonCell* leftCell = nil;
-static NSButtonCell* rightCell = nil;
+//
+// Class variables 
+//
+static NSButtonCell* upCell = nil;						// button cells used by 
+static NSButtonCell* downCell = nil;					// scroller instances
+static NSButtonCell* leftCell = nil;					// to draw scroller 
+static NSButtonCell* rightCell = nil;					// buttons and knob.
 static NSButtonCell* knobCell = nil;
 
+static const float scrollerWidth = 17;
+static const float buttonsWidth = 16;
+static const float buttonsDistance = 1;
+
+static float halfKnobRectHeight;							
+static float slotOriginPlusKnobHeight;
+static float slotOriginPlusSlotHeightMinusKnobHeight;
+static float slotHeightMinusKnobHeight;
+static float halfKnobRectWidth;
+static float slotOriginPlusKnobWidth;
+static float slotOriginPlusSlotWidthMinusHalfKnobWidth;
+static float slotWidthMinusKnobWidth;
+static NSRect slotRect = {{0,0},{0,0}};
+static BOOL preCalcValues = NO;
+
+//
+// Class methods 
+//
 + (void)initialize
 {
-  if (self == [NSScroller class]) {
-    /* The current version */
-    [self setVersion:1];
-  }
+	if (self == [NSScroller class])
+		[self setVersion:1];
 }
 
-+ (float)scrollerWidth						{ return 18; }
++ (float)scrollerWidth						{ return scrollerWidth; }
 - (NSScrollArrowPosition)arrowsPosition		{ return _arrowsPosition; }
 - (NSUsableScrollerParts)usableParts		{ return _usableParts; }
 - (float)knobProportion						{ return _knobProportion; }
@@ -303,139 +321,233 @@ static NSButtonCell* knobCell = nil;
 
 - (float)_floatValueForMousePoint:(NSPoint)point
 {
-  NSRect knobRect = [self rectForPart:NSScrollerKnob];
-  NSRect slotRect = [self rectForPart:NSScrollerKnobSlot];
-  float floatValue = 0;
-  float position;
+NSRect knobRect = [self rectForPart:NSScrollerKnob];
+NSRect slotRect = [self rectForPart:NSScrollerKnobSlot];
+float floatValue = 0;
+float position;
 
-  if (_isHorizontal) {
-    float	halfKnobWidth = knobRect.size.width / 2;
+	if (_isHorizontal) 									// Adjust point to lie
+		{												// within the knob slot 
+		float halfKnobRectWidth = knobRect.size.width / 2;
 
-    /* Adjust the point to lie inside the knob slot */
-    if (point.x < slotRect.origin.x + halfKnobWidth)
-      position = slotRect.origin.x + halfKnobWidth;
-    else if (point.x > slotRect.origin.x + slotRect.size.width
-			    - halfKnobWidth)
-      position = slotRect.origin.x + slotRect.size.width
-		    - halfKnobWidth;
-    else
-      position = point.x;
+		if (point.x < slotRect.origin.x + halfKnobRectWidth)
+			position = slotRect.origin.x + halfKnobRectWidth;
+		else
+			{ 
+			if (point.x > slotRect.origin.x + slotRect.size.width - 
+					halfKnobRectWidth)
+				position = slotRect.origin.x + slotRect.size.width - 
+							halfKnobRectWidth;
+			else
+				position = point.x;						
+			}											// Compute float value 
+														// given the knob size
+		floatValue = (position - (slotRect.origin.x + halfKnobRectWidth))
+						/ (slotRect.size.width - knobRect.size.width);
+		}
+	else 												// Adjust point to lie
+		{						 						// within the knob slot 
+		float halfKnobRectHeight = knobRect.size.height / 2;
 
-    /* Compute the float value considering the knob size */
-    floatValue = (position - (slotRect.origin.x + halfKnobWidth))
-		  / (slotRect.size.width - knobRect.size.width);
-  }
-  else {
-    float	halfKnobHeight = knobRect.size.height / 2; 
+		if (point.y < slotRect.origin.y + halfKnobRectHeight)
+			position = slotRect.origin.y + halfKnobRectHeight;
+		else 
+			{
+			if (point.y > slotRect.origin.y + slotRect.size.height - 
+					halfKnobRectHeight)
+				position = slotRect.origin.y + slotRect.size.height - 
+							halfKnobRectHeight;
+			else
+				position = point.y;
+			}
+														// Compute float value
+		floatValue = (position - (slotRect.origin.y + halfKnobRectHeight)) / 
+						(slotRect.size.height - knobRect.size.height);
+		floatValue = 1 - floatValue;
+		}
 
-    /* Adjust the point to lie inside the knob slot */
-    if (point.y < slotRect.origin.y + halfKnobHeight)
-      position = slotRect.origin.y + halfKnobHeight;
-    else if (point.y > slotRect.origin.y + slotRect.size.height
-			    - halfKnobHeight)
-      position = slotRect.origin.y + slotRect.size.height
-			    - halfKnobHeight;
-    else
-      position = point.y;
+	return floatValue;
+}
 
-    /* Compute the float value */
-    floatValue = (position - (slotRect.origin.y + halfKnobHeight))
-		  / (slotRect.size.height - knobRect.size.height);
-    floatValue = 1 - floatValue;
-  }
+- (void)_preCalcParts
+{
+NSRect knobRect = [self rectForPart:NSScrollerKnob];
 
-  return floatValue;
+	slotRect = [self rectForPart:NSScrollerKnobSlot];
+
+	halfKnobRectWidth = knobRect.size.width / 2;
+	slotOriginPlusKnobWidth = slotRect.origin.x + halfKnobRectWidth;
+	slotOriginPlusSlotWidthMinusHalfKnobWidth = slotRect.origin.x + 	
+									slotRect.size.width - halfKnobRectWidth;
+	slotWidthMinusKnobWidth = slotRect.size.width - knobRect.size.width;
+
+	halfKnobRectHeight = knobRect.size.height / 2;
+	slotOriginPlusKnobHeight = slotRect.origin.y + halfKnobRectHeight;
+	slotOriginPlusSlotHeightMinusKnobHeight = slotRect.origin.y + 
+									slotRect.size.height - halfKnobRectHeight;
+	slotHeightMinusKnobHeight = slotRect.size.height - knobRect.size.height;
+}
+
+- (float)_floatValueForMousePointFromPreCalc:(NSPoint)point
+{
+float floatValue = 0;
+float position;
+
+	if (_isHorizontal) 									// Adjust point to lie
+		{												// within the knob slot 
+		if (point.x < slotOriginPlusKnobWidth)
+			position = slotOriginPlusKnobWidth;
+		else
+			{ 
+			if (point.x > slotOriginPlusSlotWidthMinusHalfKnobWidth)
+				position = slotOriginPlusSlotWidthMinusHalfKnobWidth;
+			else
+				position = point.x;
+			}											// Compute float value 
+														// given the knob size
+		floatValue = (position - slotOriginPlusKnobWidth) / 
+						slotWidthMinusKnobWidth;
+		}
+	else 												// Adjust point to lie
+		{						 						// within the knob slot 
+		if (point.y < slotOriginPlusKnobHeight)
+			position = slotOriginPlusKnobHeight;
+		else 
+			{
+			if (point.y > slotOriginPlusSlotHeightMinusKnobHeight)
+				position = slotOriginPlusSlotHeightMinusKnobHeight;
+			else
+				position = point.y;
+			}
+														// Compute float value
+		floatValue = (position - slotOriginPlusKnobHeight) / 
+						slotHeightMinusKnobHeight;
+		floatValue = 1 - floatValue;
+		}
+
+	return floatValue;
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
 {
-  NSPoint location = [self convertPoint:[theEvent locationInWindow]
-			   fromView:nil];
+NSPoint location = [self convertPoint:[theEvent locationInWindow]
+						 fromView:nil];
 
-  [self lockFocus];
-  _hitPart = [self testPart:location];
-  [self _setTargetAndActionToCells];
-
-  switch (_hitPart) {
-    case NSScrollerIncrementLine:
-    case NSScrollerDecrementLine:
-    case NSScrollerIncrementPage:
-    case NSScrollerDecrementPage:
-      [self trackScrollButtons:theEvent];
-      break;
-
-    case NSScrollerKnob:
-      [self trackKnob:theEvent];
-      break;
-
-    case NSScrollerKnobSlot: {
-      float floatValue = [self _floatValueForMousePoint:location];
-
-      [self setFloatValue:floatValue];
-      [self sendAction:_action to:_target];
-#if 0
-      [self drawKnobSlot];
-      [self drawKnob];
-      [[self window] flushWindow];
-#endif
-      [self trackKnob:theEvent];
-      break;
-    }
-
-    case NSScrollerNoPart:
-      break;
-  }
-
-  _hitPart = NSScrollerNoPart;
-  [self unlockFocus];
+	[self lockFocus];
+	_hitPart = [self testPart:location];
+	[self _setTargetAndActionToCells];
+	
+	switch (_hitPart) 
+		{
+		case NSScrollerIncrementLine:
+		case NSScrollerDecrementLine:
+		case NSScrollerIncrementPage:
+		case NSScrollerDecrementPage:
+			[self trackScrollButtons:theEvent];
+			break;
+		
+		case NSScrollerKnob:
+			[self trackKnob:theEvent];
+			break;
+		
+		case NSScrollerKnobSlot: 
+			{
+			float floatValue = [self _floatValueForMousePoint:location];
+		
+			[self setFloatValue:floatValue];
+			[self sendAction:_action to:_target];
+			[self drawKnobSlot];
+			[self drawKnob];
+			[window flushWindow];
+			[self trackKnob:theEvent];
+			break;
+			}
+	
+		case NSScrollerNoPart:
+			break;
+		}
+	
+	_hitPart = NSScrollerNoPart;
+	[self unlockFocus];
 }
 
 - (void)trackKnob:(NSEvent*)theEvent
 {
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			   | NSLeftMouseDraggedMask | NSMouseMovedMask
-			   | NSPeriodicMask;
-  NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-  NSRect knobRect = [self rectForPart:NSScrollerKnob];
-  NSEventType eventType = [theEvent type];
-  float oldFloatValue = _floatValue;
-  NSApplication *theApp = [NSApplication sharedApplication];
+unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+							| NSLeftMouseDraggedMask | NSMouseMovedMask
+							| NSPeriodicMask;
+NSApplication *app = [NSApplication sharedApplication];
+NSPoint point, apoint;
+float oldFloatValue = _floatValue;
+float floatValue;
+NSDate *theDistantFuture = [NSDate distantFuture];
+PSMatrix* matrix;
+NSEventType eventType;
+NSRect knobRect = {{0,0},{0,0}};
+NSArray* path = [self _pathBetweenSubview:self 
+					  toSuperview:[window contentView]];
 
-  _hitPart = NSScrollerKnob;
-  [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
-  [[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
+    matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
+    [matrix inverse];
 
-  while (eventType != NSLeftMouseUp) {
-    theEvent = [theApp
-		 nextEventMatchingMask:eventMask
-		 untilDate:[NSDate distantFuture] 
-		 inMode:NSEventTrackingRunLoopMode
-		 dequeue:YES];
-    eventType = [theEvent type];
+//fprintf(stderr, " trackKnob \n");
 
-    if (eventType != NSPeriodic)
-      point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    else if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) {
-      float floatValue = [self _floatValueForMousePoint:point];
+	[self _preCalcParts];							// pre calc scroller parts
+	preCalcValues = YES;
 
-      if (floatValue != oldFloatValue) {
-	[self setFloatValue:floatValue];
-#if 1
-	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
-#else
-	[self drawKnobSlot];
-	[self drawKnob];
-	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
-	[[self window] flushWindow];
-#endif
-	[self sendAction:_action to:_target];
-	oldFloatValue = floatValue;
-      }
-      knobRect.origin = point;
-    }
-  }
+	_hitPart = NSScrollerKnob;						// set periodic events rate
+													// to achieve max of 30fps
+	[NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.03];
+	[[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
 
-  [NSEvent stopPeriodicEvents];
+	while ((eventType = [theEvent type]) != NSLeftMouseUp)				 
+		{											// user is moving scroller
+		if (eventType != NSPeriodic)				// loop until left mouse up
+			apoint = [theEvent locationInWindow];
+		else
+			{									
+			point = [matrix pointInMatrixSpace:apoint];
+			if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) 
+				{
+				floatValue = [self _floatValueForMousePointFromPreCalc:point];
+
+				if (floatValue != oldFloatValue) 
+					{
+					if (floatValue < 0)
+						_floatValue = 0;
+					else
+						{ 
+						if (floatValue > 1)
+							_floatValue = 1;
+						else
+							_floatValue = floatValue;
+						}
+
+					[self drawKnobSlot];				// draw scroller slot
+					[self drawKnob];					// draw scroller knob
+					[_target performSelector:_action withObject:self];
+					[window flushWindow];
+
+					oldFloatValue = floatValue;
+					}
+
+				knobRect.origin = point;
+				}
+			}
+		theEvent = [app nextEventMatchingMask:eventMask
+						untilDate:theDistantFuture 
+						inMode:NSEventTrackingRunLoopMode
+						dequeue:YES];
+  		}				
+	[NSEvent stopPeriodicEvents];
+													// scrolling has stopped 
+	if([_target respondsToSelector:@selector(contentView)])
+		{
+		if([_target respondsToSelector:@selector(_freeMatrix)])
+			[[_target contentView] _freeMatrix];
+		}
+
+	preCalcValues = NO;
 }
 
 - (void)trackScrollButtons:(NSEvent*)theEvent
@@ -486,8 +598,10 @@ NSRect rect;
 
 			if([_target isKindOf:[NSScrollView class]])		// a hack for XRAW
 				{											// FIX ME
-				if([[_target contentView] respondsTo:@selector(_freeMatrix)])
-					[[_target contentView] _freeMatrix];
+				NSObject *targetCV = (NSObject *)[_target contentView];
+
+				if([targetCV respondsToSelector:@selector(_freeMatrix)])
+					[targetCV _freeMatrix];
 				}
 
 			[theCell highlight:NO withFrame:rect inView:self];
@@ -528,6 +642,9 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
   return self;
 }
 
+//
+//	draw the scroller
+//
 - (void)drawRect:(NSRect)rect
 {
   NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
@@ -540,8 +657,7 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
   [self drawKnob];
 }
 
-- (void)drawArrow:(NSScrollerArrow)whichButton
-	highlight:(BOOL)flag
+- (void)drawArrow:(NSScrollerArrow)whichButton highlight:(BOOL)flag
 {
   NSRect rect = [self rectForPart:(whichButton == NSScrollerIncrementArrow
 					? NSScrollerIncrementLine
@@ -566,18 +682,168 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
 
 - (void)drawKnob
 {
-  [knobCell drawWithFrame:[self rectForPart:NSScrollerKnob] inView:self];
-}
-
-/* The following methods should be implemented in the backend */
-
-- (NSRect)rectForPart:(NSScrollerPart)partCode
-{
-  return NSZeroRect;
+	[knobCell drawWithFrame:[self rectForPart:NSScrollerKnob] inView:self];
 }
 
 - (void)drawKnobSlot
 {
+NSRect rect;
+
+	if(preCalcValues)									// in a modal loop we
+		rect = slotRect;								// have already pre
+	else												// calc'd our parts
+		rect = [self rectForPart:NSScrollerKnobSlot];
+
+	[[NSColor darkGrayColor] set];						
+	NSRectFill(rect);									// draw the bar slot
+}
+
+- (NSRect)rectForPart:(NSScrollerPart)partCode
+{
+NSRect scrollerFrame = frame;
+float x = 1, y = 1, width = 0, height = 0, floatValue;
+NSScrollArrowPosition arrowsPosition;
+NSUsableScrollerParts usableParts;
+											// If the scroller is disabled then
+	if (!_isEnabled)						// the scroller buttons and the 
+		usableParts = NSNoScrollerParts;	// knob are not displayed at all.
+	else
+		usableParts = _usableParts;
+
+								// Since we haven't yet flipped views we have 
+	if (!_isHorizontal) 		// to swap the meaning of the arrows position
+		{						// if the scroller's orientation is vertical.
+		if (_arrowsPosition == NSScrollerArrowsMaxEnd)
+			arrowsPosition = NSScrollerArrowsMinEnd;
+		else
+			{ 
+			if (_arrowsPosition == NSScrollerArrowsMinEnd)
+				arrowsPosition = NSScrollerArrowsMaxEnd;
+			else
+				arrowsPosition = NSScrollerArrowsNone;
+			}
+		}
+	else
+		arrowsPosition = _arrowsPosition;
+
+						// Assign to `width' and `height' values describing 
+						// the width and height of the scroller regardless 
+						// of its orientation.  Also compute the `floatValue' 
+   if (_isHorizontal) 	// which is essentially the same width as _floatValue
+		{				// but keeps track of the scroller's orientation.
+		width = scrollerFrame.size.height;
+		height = scrollerFrame.size.width;
+		floatValue = _floatValue;
+		}
+    else 
+		{
+		width = scrollerFrame.size.width;
+		height = scrollerFrame.size.height;
+		floatValue = 1 - _floatValue;
+    	}								// The x, y, width and height values 
+										// are computed below for the vertical  	
+	switch (partCode) 					// scroller.  The height of the scroll 
+		{								// buttons is assumed to be equal to 
+    	case NSScrollerKnob: 			// the width.
+			{
+			float knobHeight, knobPosition, slotHeight;
+      									// If the scroller does not have parts 
+										// or a knob return a zero rect. 
+			if (usableParts == NSNoScrollerParts || 
+									usableParts == NSOnlyScrollerArrows)
+				return NSZeroRect;
+      													// calc the slot Height
+			slotHeight = height - (arrowsPosition == NSScrollerArrowsNone ? 
+									0 : 2 * (buttonsWidth + buttonsDistance));
+			if (_isHorizontal) 
+				slotHeight -= 2;
+      		knobHeight = _knobProportion * slotHeight;
+      		if (knobHeight < buttonsWidth)
+        		knobHeight = buttonsWidth;
+														// calc knob's position
+      		knobPosition = floatValue * (slotHeight - knobHeight);
+     		knobPosition = (float)floor(knobPosition);	// avoid rounding error
+      													// calc actual position
+      		y = knobPosition + (arrowsPosition == NSScrollerArrowsMaxEnd
+			  					|| arrowsPosition == NSScrollerArrowsNone ? 
+								0 : 2 * (buttonsWidth + buttonsDistance));
+			height = knobHeight;
+			width = buttonsWidth;
+			if (_isHorizontal) 							// keeps horiz knob off
+				y++;									// of the buttons
+			break;
+    		}
+
+		case NSScrollerKnobSlot:
+			x = 0;										// if the scroller does		 
+      		width = scrollerWidth + 1; 					// not have buttons the 
+														// slot completely 
+			if (usableParts == NSNoScrollerParts) 		// fills the scroller.
+				{
+				y = 0;									// `height' unchanged
+				break;
+				}
+			if (arrowsPosition == NSScrollerArrowsMaxEnd) 
+				{
+				y = 0;
+				height -= 2 * (buttonsWidth + buttonsDistance) + 1;
+				}
+			else 
+				{
+				if (arrowsPosition == NSScrollerArrowsMinEnd) 
+					{
+					y = 2 * (buttonsWidth + buttonsDistance) + 1;
+					height -= y;
+					}
+				else 
+					y = 0;								// `height' unchanged
+				}
+			break;
+
+		case NSScrollerDecrementLine:
+		case NSScrollerDecrementPage:
+			if (usableParts == NSNoScrollerParts)		// if scroller has no
+				return NSZeroRect;						// parts or knob then
+														// return a zero rect
+			width = buttonsWidth;
+			if (arrowsPosition == NSScrollerArrowsMaxEnd)
+				y = height - 2 * (buttonsWidth + buttonsDistance);
+			else
+				{ 
+				if (arrowsPosition == NSScrollerArrowsMinEnd)
+					y = 1;
+				else
+					return NSZeroRect;
+				}
+      		height = buttonsWidth;
+			break;
+
+		case NSScrollerIncrementLine:
+		case NSScrollerIncrementPage:
+			if (usableParts == NSNoScrollerParts)		// if scroller has no
+				return NSZeroRect;						// parts or knob then
+														// return a zero rect
+      		width = buttonsWidth;
+      		if (arrowsPosition == NSScrollerArrowsMaxEnd)
+				y = height - (buttonsWidth + buttonsDistance);
+      		else 
+				{
+				if (arrowsPosition == NSScrollerArrowsMinEnd)
+					y = buttonsWidth + buttonsDistance + 1;
+      			else
+					return NSZeroRect;
+				}
+				height = buttonsWidth;
+				break;
+
+		case NSScrollerNoPart:
+      		return NSZeroRect;
+  		}
+
+	if (_isHorizontal)
+		return NSMakeRect (y, x, height, width);
+	else
+		return NSMakeRect (x, y, width, height);
 }
 
 @end

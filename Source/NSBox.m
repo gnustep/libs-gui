@@ -240,6 +240,41 @@
 //
 - (void)drawRect:(NSRect)rect
 {
+  // Fill inside
+  [[window backgroundColor] set];
+  NSRectFill(bounds);
+
+  // Draw border
+  switch(border_type)
+    {
+    case NSNoBorder:
+      break;
+    case NSLineBorder:
+      NSFrameRect(border_rect);
+      break;
+    case NSBezelBorder:
+      NSDrawGrayBezel(border_rect, bounds);
+      break;
+    case NSGrooveBorder:
+      NSDrawGroove(border_rect, bounds);
+      break;
+    }
+
+  // Draw title
+  switch(title_position)
+    {
+    case NSNoTitle:
+      // Nothing to do
+      break;
+    case NSAboveTop:
+    case NSAtTop:
+    case NSBelowTop:
+    case NSAboveBottom:
+    case NSAtBottom:
+    case NSBelowBottom:
+      [cell setBackgroundColor: [window backgroundColor]];
+      [cell drawWithFrame: title_rect inView: self];
+    }
 }
 
 //

@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -993,7 +995,9 @@
       [_horizontalScroller setEnabled: YES];
     }
 
-  return;
+	[self display];			// should probably be a setNeedsDisplay FIX ME?
+
+	return;
 }
 
 //
@@ -1083,6 +1087,8 @@
 
   // Send the action to target
   [self sendAction];
+
+	[self display];			// should probably be a setNeedsDisplay FIX ME?
 }
 
 - (void)doDoubleClick:(id)sender
@@ -1357,40 +1363,35 @@
 
 - (void)_adjustMatrixOfColumn:(int)column
 {
-  NSBrowserColumn *bc;
-  NSScrollView *sc;
-  id matrix;
-  NSSize cs, ms;
-  NSRect mr;
+NSBrowserColumn *bc;
+NSScrollView *sc;
+id matrix;
+NSSize cs, ms;
+NSRect mr;
 
-  if (column >= (int)[_browserColumns count])
-    return;
+	if (column >= (int)[_browserColumns count])
+		return;
+	
+	bc = [_browserColumns objectAtIndex: column];
+	sc = [bc columnScrollView];
+	matrix = [bc columnMatrix];
+  										// Adjust matrix to fit in scrollview
+	if (sc && matrix && [bc isLoaded])	// do it only if column has been loaded	
+		{								
+		cs = [sc contentSize];
+		ms = [matrix cellSize];
+		ms.width = cs.width;
+		[matrix setCellSize: ms];
+		mr = [matrix frame];
+	
+		if (mr.size.height < cs.height)					// matrix smaller than
+			{											// scrollview's content
+			mr.origin.y = cs.height;					// view requires origin
+			[matrix setFrame: mr];						// adjustment for it to 
+			}											// appear at top
 
-  bc = [_browserColumns objectAtIndex: column];
-  sc = [bc columnScrollView];
-  matrix = [bc columnMatrix];
-
-  // Adjust matrixes to fit in the scrollview
-  // Only set if column has been loaded
-  if (sc && matrix && [bc isLoaded])
-    {
-      cs = [sc contentSize];
-      [matrix sizeToCells];
-      ms = [matrix cellSize];
-      ms.width = cs.width;
-      [matrix setCellSize: ms];
-      mr = [matrix frame];
-
-#if 0	      
-      // Adjust because NSMatrix has incorrect origin
-      if (mr.size.height < cs.height)
-	{
-	  mr.origin.y = cs.height - mr.size.height;
-	  [matrix setFrame: mr];
-	}
-#endif
-      [sc setDocumentView: matrix];
-    }
+		[sc setDocumentView: matrix];
+		}
 }
 
 - (void)_adjustScrollerFrameOfColumn:(int)column force:(BOOL)flag
@@ -1553,6 +1554,14 @@
 	  [bc setIsLoaded: NO];
 	}
     }
+}
+
+- (void)setFrame:(NSRect)frameRect
+{
+NSLog (@"NSBrowser setFrame ");
+  	[super setFrame:frameRect];
+	[self tile];								// recalc browser's elements
+	[self _adjustScrollerFrames:YES];			// adjust browser's matrix
 }
 
 @end

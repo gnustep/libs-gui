@@ -7,6 +7,8 @@
 
    Author:  Robert Vasvari <vrobi@ddrummer.com>
    Date: Jul 1998
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: November 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,18 +29,15 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#import <Foundation/Foundation.h>
-#import <Foundation/NSRunLoop.h>
-#import <AppKit/AppKit.h>
 #include <string.h>
 #include <math.h>
 
+#import <Foundation/Foundation.h>
+#import <Foundation/NSRunLoop.h>
 
-/* Backend protocol - methods that must be implemented by the backend to
-   complete the class */
-@protocol NSSplitViewBackend
-- (void) _fillRect: (NSRect)rect;
-@end
+#import <AppKit/AppKit.h>
+
+
 
 @implementation NSSplitView
 
@@ -46,6 +45,7 @@
 
 - (void)mouseDown:(NSEvent *)theEvent 
 {
+  NSApplication *app = [NSApplication sharedApplication];
   static NSRect oldRect; //only one can be dragged at a time
   NSPoint p;
   NSEvent *e;
@@ -173,42 +173,48 @@
   [divColor set];
   r.size.width = divHorizontal;
   r.size.height = divVertical;
-  e=[[NSApplication sharedApplication]
-      nextEventMatchingMask:eventMask
-      untilDate:farAway inMode:NSEventTrackingRunLoopMode dequeue:YES];
+	e = [app nextEventMatchingMask:eventMask
+			 untilDate:farAway 
+			 inMode:NSEventTrackingRunLoopMode 
+			 dequeue:YES];
 
-  while([e type] != NSLeftMouseUp)
-    { 	
-      [self displayRect:oldRect];
-      if ([e type] != NSPeriodic)
-	{
-	  p=[e locationInWindow];
-	  p = [self convertPoint:p fromView:nil];
-	}
-      if([self isVertical])
-        {
-	  if(p.y<minCoord) p.y=minCoord;
-	  if(p.y>maxCoord) p.y=maxCoord;
-	  r.origin.y = p.y-(divVertical/2.);
-	  r.origin.x = NSMinX(vis);
-        }
-      else
-        {
-	  if(p.x<minCoord) p.x=minCoord;
-	  if(p.x>maxCoord) p.x=maxCoord;
-	  r.origin.x = p.x-(divHorizontal/2.);
-	  r.origin.y = NSMinY(vis);
-        }
-      NSDebugLog(@"drawing divider at x:%d, y:%d, w:%d, h:%d\n",
-		 (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),
-		 (int)NSHeight(r));
-      [self _fillRect: r];
-      [[GPSDrawContext currentContext] flush];
-      oldRect=r;
-      e=[[NSApplication sharedApplication] 
-	  nextEventMatchingMask:eventMask
-	  untilDate:farAway inMode:NSEventTrackingRunLoopMode dequeue:YES];
-    }
+	while([e type] != NSLeftMouseUp)				// user is moving the knob
+		{ 											// loop until left mouse up
+//		[self displayRect:oldRect];
+		if ([e type] != NSPeriodic)
+			p = [self convertPoint:[e locationInWindow] fromView:nil];
+		if([self isVertical])
+			{
+			if(p.y<minCoord) 
+				p.y=minCoord;
+			if(p.y>maxCoord) 
+				p.y=maxCoord;
+			r.origin.y = p.y-(divVertical/2.);
+			r.origin.x = NSMinX(vis);
+			}
+		else
+			{
+			if(p.x<minCoord) 
+				p.x=minCoord;
+			if(p.x>maxCoord) 
+				p.x=maxCoord;
+			r.origin.x = p.x-(divHorizontal/2.);
+			r.origin.y = NSMinY(vis);
+			}
+		NSDebugLog(@"drawing divider at x:%d, y:%d, w:%d, h:%d\n",
+					(int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),
+					(int)NSHeight(r));
+		[dividerColor set];								// draw the divider
+		NSHighlightRect(r);									
+//      [[NSDrawContext currentContext] flush];
+		oldRect=r;
+		e = [app nextEventMatchingMask:eventMask
+				untilDate:farAway 
+				inMode:NSEventTrackingRunLoopMode 
+				dequeue:YES];
+		[dividerColor set];								// draw the divider
+		NSHighlightRect(oldRect);									
+		}
 
   [self unlockFocus];
   [NSEvent stopPeriodicEvents];
@@ -254,6 +260,8 @@
 RETURN_LABEL:
   [[self window] setAcceptsMouseMovedEvents:NO];
   [self setNeedsDisplay:YES];
+
+  [self display];
 }
 
 - (void)adjustSubviews
@@ -263,6 +271,7 @@ RETURN_LABEL:
   NSPoint newPoint;
   float total=0.;
 
+NSLog (@"XRSplitView  adjustSubviews");
   if(delegate && [delegate respondsToSelector:@selector(splitView:resizeSubviewsWithOldSize:)])
     {	
       [delegate splitView:self resizeSubviewsWithOldSize:fr.size];
@@ -315,6 +324,15 @@ RETURN_LABEL:
             }
 	  [v setFrameSize: newSize];
 	  [v setFrameOrigin: newPoint];
+
+if(!i == 0)								// Fix me FAR
+{
+[v setFrameOrigin:NSMakePoint(0, bounds.size.height - ([v bounds].size.height -
+[self dividerThickness] - 20))];
+//NSLog (@"XRSplitView:  bounds.size.height %f, [v bounds].size.height %f ", //bounds.size.height, [v bounds].size.height);
+//NSLog (@"XRSplitView:  newPoint %f ", newPoint);
+}
+
         }
     }
   [[NSNotificationCenter defaultCenter]
@@ -413,6 +431,12 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
     }
 }
 
+- (void)displayRect:(NSRect)rect
+{												// should not be needed FIX ME
+	[super displayRect:rect];								
+	[window flushWindow];
+}
+
 - (void)drawRect:(NSRect)r
 {
   NSArray *subs=[self subviews];
@@ -423,7 +447,7 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
   if([self isOpaque])
     {
       [[self backgroundColor] set];
-      [self _fillRect: [self bounds]];
+	  NSRectFill(r);
     }
 
   /* draw the dimples */

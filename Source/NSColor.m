@@ -436,7 +436,8 @@ static NSColorList	*systemColors = nil;
 
 + (NSColor*) selectedTextColor
 {
-  return [systemColors colorWithKey: @"selectedTextColor"];
+//  return [systemColors colorWithKey: @"selectedTextColor"];		// FIX ME
+	return [self colorWithCalibratedRed:.12 green:.12 blue:0 alpha:1.0];
 }
 
 + (NSColor*) selectedKnobColor

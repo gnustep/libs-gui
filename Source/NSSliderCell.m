@@ -23,12 +23,15 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <Foundation/NSString.h>
 #include "gnustep/gui/config.h"
+
+#include <Foundation/NSString.h>
+
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
+
 
 @implementation NSSliderCell
 
@@ -65,13 +68,13 @@
     _floatValue = aFloat;
 }
 
-- (void)drawBarInside:(NSRect)aRect flipped:(BOOL)flipped
-{
-  if ([self image])
-    return;
+- (void)drawBarInside:(NSRect)rect flipped:(BOOL)flipped
+{														// not per spec FIX ME
+	if ([self image])
+		return;
 
-  /* We should now draw the bar. Since this code depends on backend this method
-     should be overwritten in backend. */
+	[[NSColor darkGrayColor] set];						
+	NSRectFill(rect);									// draw the bar
 }
 
 - (NSRect)knobRectFlipped:(BOOL)flipped

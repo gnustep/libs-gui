@@ -1,3 +1,26 @@
+Wed Nov 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* move DPSOperators.h to XDPS.
+	* move GPS headers into a new backend.
+	* define GSContext.h/GSContext.m as abstract super for all drawing 
+		destinations (eliminates the need for DPS, GPS, DGS at the root of 
+		the AppKit) add appropriate defintion to various classes.
+	* NSMatrix.m add abstract backend code from xraw (eliminate backend). 
+	* NSSlider.m add abstract backend code from xraw (eliminate backend). 
+	* NSSliderCell.m add abstract backend code from xraw (eliminate backend).
+	* NSSplitView.m add abstract backend code from xraw (eliminate backend).  
+		replace private divider highlight method with NSHighlightRect()
+	* NSWindow.m add class method to create backend specific window view.
+	* NSTextField.m add abstract backend code from xraw (eliminate backend).
+	* NSForm.m add abstract backend code from xraw (eliminate backend).
+	* NSFormCell.m add abstract backend code from xraw (eliminate backend).
+	* NSColorWell.m add abstract backend code from xraw (eliminate backend).
+	* NSButton.m add abstract backend code from xraw (eliminate backend).
+	* NSControl.m add abstract backend code from xraw (eliminate backend).
+	* NSBox.m add abstract backend code from xraw (eliminate backend).
+	* NSBrowser.m add abstract backend code from xraw (eliminate backend).
+	* NSBrowserCell.m add abstract backend code from xraw (eliminate backend).
+
 Tue Nov 24 15:40:001998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSApplication.h: updates for services

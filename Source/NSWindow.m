@@ -49,7 +49,8 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/PSMatrix.h>
-#include <AppKit/NSWindowView.h>
+
+
 
 //*****************************************************************************
 //
@@ -67,13 +68,18 @@
 	if (self == [NSWindow class])
 		{
 		NSDebugLog(@"Initialize NSWindow class\n");
-		[self setVersion:2];								// Initial version
+		[self setVersion:2];							
 		}
+}
+
++ (NSView *)_windowViewWithFrame:(NSRect)frameRect		// create the top view
+{														// view in the view's
+	return nil;											// heirarchy (backend)
 }
 
 + (void)removeFrameUsingName:(NSString *)name				
 {														// Saving and restoring 
-}														// the frame
+}														// the window's frame
 
 + (NSRect)contentRectForFrameRect:(NSRect)aRect
 						styleMask:(unsigned int)aStyle
@@ -100,9 +106,6 @@
 
 //
 // Instance methods
-//
-//
-// Initialization
 //
 - init
 {
@@ -213,7 +216,7 @@ NSView *wv;
 													// been created, create it
 	if ((!content_view) || ([content_view superview] == nil)) 
 		{
-		wv = [[NSWindowView alloc] initWithFrame: frame];
+		wv = [NSWindow _windowViewWithFrame: frame];
 		[wv viewWillMoveToWindow: self];
 		}
 	else
@@ -611,14 +614,17 @@ NSView *v;
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 															// Notify delegate
 	[nc postNotificationName: NSWindowWillCloseNotification object: self];
-	[self orderOut:self];
+	[self orderOut:self];									
 	visible = NO;
 															// if app has no
 	if(![[NSApplication sharedApplication] mainMenu])		// menu terminate
 		[[NSApplication sharedApplication] terminate:self];
-	else if (is_released_when_closed)													// otherwise just 
-		[self autorelease];									// release self 
-}
+	else 													
+		{													// else if should
+		if (is_released_when_closed)						// release do so						 
+			[self autorelease];								// default is YES
+		}													// for windows and				 	
+}															// NO for panels
 
 - (void)deminiaturize:sender
 {
@@ -1022,17 +1028,17 @@ NSView *v;
 - validRequestorForSendType:(NSString *)sendType
 				 returnType:(NSString *)returnType
 {
-  id result = nil;
+id result = nil;
 
-  if (delegate && [delegate respondsToSelector: _cmd])
-    result = [delegate validRequestorForSendType: sendType
-									  returnType: returnType];
+	if (delegate && [delegate respondsToSelector: _cmd])
+		result = [delegate validRequestorForSendType: sendType
+						   returnType: returnType];
 
-  if (result == nil)
-    result = [[NSApplication sharedApplication]
-					   validRequestorForSendType: sendType
-									  returnType: returnType];
-  return result;
+	if (result == nil)
+		result = [[NSApplication sharedApplication]
+					   			 validRequestorForSendType: sendType
+								 returnType: returnType];
+	return result;
 }
 
 //

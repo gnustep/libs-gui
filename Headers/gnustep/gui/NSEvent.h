@@ -34,12 +34,8 @@
 #include <Foundation/NSDate.h>
 
 @class NSString;
-
 @class NSWindow;
-#ifdef NO_GNUSTEP
-#define GPSDrawContext NSDPSContext
-#endif
-@class GPSDrawContext;
+@class GSContext;
 
 typedef enum _NSEventType {
   NSLeftMouseDown,
@@ -96,7 +92,7 @@ enum {
   unsigned int modifier_flags;
   NSTimeInterval event_time;
   int window_num;
-  GPSDrawContext *event_context;
+  GSContext *event_context;
   union _MB_event_data
   {
     struct
@@ -136,7 +132,7 @@ enum {
 		      modifierFlags:(unsigned int)flags
 			  timestamp:(NSTimeInterval)time
 		       windowNumber:(int)windowNum
-			    context:(GPSDrawContext *)context	
+			    context:(GSContext *)context	
 			eventNumber:(int)eventNum
 		     trackingNumber:(int)trackingNum
 			   userData:(void *)userData; 
@@ -146,7 +142,7 @@ enum {
 		modifierFlags:(unsigned int)flags
 		    timestamp:(NSTimeInterval)time
 		 windowNumber:(int)windowNum
-		      context:(GPSDrawContext *)context	
+		      context:(GSContext *)context	
 		   characters:(NSString *)keys	
   charactersIgnoringModifiers:(NSString *)ukeys
 		    isARepeat:(BOOL)repeatKey	
@@ -157,7 +153,7 @@ enum {
 		  modifierFlags:(unsigned int)flags
 		      timestamp:(NSTimeInterval)time
 		   windowNumber:(int)windowNum	
-			context:(GPSDrawContext *)context	
+			context:(GSContext *)context	
 		    eventNumber:(int)eventNum	
 		     clickCount:(int)clickNum	
 		       pressure:(float)pressureValue;
@@ -167,7 +163,7 @@ enum {
 		  modifierFlags:(unsigned int)flags
 		      timestamp:(NSTimeInterval)time
 		   windowNumber:(int)windowNum	
-			context:(GPSDrawContext *)context	
+			context:(GSContext *)context	
 			subtype:(short)subType	
 			  data1:(int)data1	
 			  data2:(int)data2;
@@ -175,7 +171,7 @@ enum {
 //
 // Getting General Event Information
 //
-- (GPSDrawContext *)context;
+- (GSContext *)context;
 - (NSPoint)locationInWindow;
 - (unsigned int)modifierFlags;
 - (NSTimeInterval)timestamp;

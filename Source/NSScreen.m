@@ -30,18 +30,22 @@
 #include <Foundation/NSDictionary.h>
 #include <AppKit/NSScreen.h>
 
+
+
 @implementation NSScreen
+
+//
+// Class variables
+//
+NSScreen *mainScreen = nil;
 
 //
 // Class methods
 //
 + (void)initialize
 {
-  if (self == [NSScreen class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+	if (self == [NSScreen class])
+		[self setVersion:1];
 }
 
 //
@@ -49,17 +53,20 @@
 //
 + (NSScreen *)mainScreen
 {
-  return nil;
+	if (!mainScreen)
+		mainScreen = [[NSScreen alloc] init];
+
+	return mainScreen;
 }
 
 + (NSScreen *)deepestScreen
 {
-  return nil;
+	return nil;
 }
 
 + (NSArray *)screens
 {
-  return nil;
+	return nil;
 }
 
 //
@@ -67,13 +74,11 @@
 //
 - init
 {
-  [super init];
+	[super init];				// Create our device description dictionary
+								// The backend will have to fill the dictionary
+	device_desc = [NSMutableDictionary dictionary];
 
-  // Create our device description dictionary
-  // The backend will have to fill the dictionary
-  device_desc = [NSMutableDictionary dictionary];
-
-  return self;
+	return self;
 }
 
 //
@@ -81,19 +86,19 @@
 //
 - (NSWindowDepth)depth
 {
-  return 0;
+	return 0;
 }
 
 - (NSRect)frame
 {
-  return NSZeroRect;
+	return NSZeroRect;
 }
 
-// Make a copy of our dictionary and return it
-- (NSDictionary *)deviceDescription
-{
-  NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
-  return d;
+- (NSDictionary *)deviceDescription					// Make a copy of device 
+{													// dictionary and return it
+NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
+
+	return d;
 }
 
 @end

@@ -31,7 +31,7 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
-#include <AppKit/GPSDrawContext.h>
+#include <AppKit/GSContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
@@ -399,11 +399,6 @@ extern NSSize NSTokenSize;
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
-
-//
-// Private methods
-//
-- (void)_collectFlushRectangles;
 
 @end
 

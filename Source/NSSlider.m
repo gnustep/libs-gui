@@ -5,6 +5,8 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: September 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -48,7 +50,7 @@ static Class cellClass;
 }
 
 + (void)setCellClass:(Class)class		{ cellClass = class; }
-+ (Class)cellClass				{ return cellClass; }
++ (Class)cellClass						{ return cellClass; }
 
 - initWithFrame:(NSRect)frameRect
 {
@@ -159,129 +161,130 @@ static Class cellClass;
 
 - (float)_floatValueForMousePoint:(NSPoint)point knobRect:(NSRect)knobRect
 {
-  NSSliderCell* theCell = [self cell];
-  NSRect slotRect = [theCell trackRect];
-  BOOL isVertical = [theCell isVertical];
-  float minValue = [theCell minValue];
-  float maxValue = [theCell maxValue];
-  float floatValue = 0;
-  float position;
+NSSliderCell* theCell = [self cell];
+NSRect slotRect = [theCell trackRect];
+BOOL isVertical = [theCell isVertical];
+float minValue = [theCell minValue];
+float maxValue = [theCell maxValue];
+float floatValue = 0;
+float position;
 
-  if (isVertical) {
-    /* Adjust the point to lie inside the knob slot. We don't have to worry
-       if the view is flipped or not. */
-    if (point.y < slotRect.origin.y + knobRect.size.height / 2)
-      position = slotRect.origin.y + knobRect.size.height / 2;
-    else if (point.y > slotRect.origin.y + slotRect.size.height
-			    - knobRect.size.height / 2)
-      position = slotRect.origin.y + slotRect.size.height
-			    - knobRect.size.height / 2;
-    else
-      position = point.y;
+	if (isVertical) 
+		{			// Adjust the point to lie inside the knob slot. We don't 
+					// have to worry whether the view is flipped or not.
+		if (point.y < slotRect.origin.y + knobRect.size.height / 2)
+			position = slotRect.origin.y + knobRect.size.height / 2;
+    	else 
+			if (point.y > slotRect.origin.y + slotRect.size.height
+			    	- knobRect.size.height / 2)
+      			position = slotRect.origin.y + slotRect.size.height
+			    			- knobRect.size.height / 2;
+    		else
+      			position = point.y;
+													// Compute the float value 
+    	floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
+		  				/ (slotRect.size.height - knobRect.size.height);
+   		if ([self isFlipped])
+      		floatValue = 1 - floatValue;
+  		}
+	else 
+		{						// Adjust the point to lie inside the knob slot 
+		if (point.x < slotRect.origin.x + knobRect.size.width / 2)
+			position = slotRect.origin.x + knobRect.size.width / 2;
+		else 
+			if (point.x > slotRect.origin.x + slotRect.size.width
+			    	- knobRect.size.width / 2)
+      			position = slotRect.origin.x + slotRect.size.width
+		    				- knobRect.size.width / 2;
+    		else
+      			position = point.x;
+													// Compute the float value
+						 							// given the knob size
+    	floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
+		  				/ (slotRect.size.width - knobRect.size.width);
+  		}
 
-    /* Compute the float value */
-    floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
-		  / (slotRect.size.height - knobRect.size.height);
-    if ([self isFlipped])
-      floatValue = 1 - floatValue;
-  }
-  else {
-    /* Adjust the point to lie inside the knob slot */
-    if (point.x < slotRect.origin.x + knobRect.size.width / 2)
-      position = slotRect.origin.x + knobRect.size.width / 2;
-    else if (point.x > slotRect.origin.x + slotRect.size.width
-			    - knobRect.size.width / 2)
-      position = slotRect.origin.x + slotRect.size.width
-		    - knobRect.size.width / 2;
-    else
-      position = point.x;
-
-    /* Compute the float value considering the knob size */
-    floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
-		  / (slotRect.size.width - knobRect.size.width);
-  }
-
-  return floatValue * (maxValue - minValue) + minValue;
+	return floatValue * (maxValue - minValue) + minValue;
 }
 
 - (void)trackKnob:(NSEvent*)theEvent knobRect:(NSRect)knobRect
 {
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			   | NSLeftMouseDraggedMask | NSMouseMovedMask
-			   | NSPeriodicMask;
-  NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-  NSEventType eventType = [theEvent type];
-  BOOL isContinuous = [self isContinuous];
-  NSSliderCell* theCell = [self cell];
-  float oldFloatValue = [theCell floatValue];
-  id target = [theCell target];
-  SEL action = [theCell action];
+NSApplication *app = [NSApplication sharedApplication];
+unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+							| NSLeftMouseDraggedMask | NSMouseMovedMask
+							| NSPeriodicMask;
+NSPoint point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+NSEventType eventType = [theEvent type];
+BOOL isContinuous = [self isContinuous];
+NSSliderCell* theCell = [self cell];
+float oldFloatValue = [theCell floatValue];
+id target = [theCell target];
+SEL action = [theCell action];
 
-  [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
-  [[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
+	[NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
+	[[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
 
-  while (eventType != NSLeftMouseUp) {
-    theEvent = [[NSApplication sharedApplication]
-		    nextEventMatchingMask:eventMask
-		    untilDate:[NSDate distantFuture] 
-		    inMode:NSEventTrackingRunLoopMode
-		    dequeue:YES];
-    eventType = [theEvent type];
+	while (eventType != NSLeftMouseUp) 
+		{
+		theEvent = [app nextEventMatchingMask:eventMask
+						untilDate:[NSDate distantFuture] 
+						inMode:NSEventTrackingRunLoopMode
+						dequeue:YES];
+		eventType = [theEvent type];
 
-    if (eventType != NSPeriodic)
-      point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    else if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) {
-      float floatValue = [self _floatValueForMousePoint:point
-				knobRect:knobRect];
+		if (eventType != NSPeriodic)
+      		point = [self convertPoint:[theEvent locationInWindow] 
+						  fromView:nil];
+		else
+			{
+			if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) 
+				{
+				float floatValue = [self _floatValueForMousePoint:point
+										 knobRect:knobRect];
 
-      if (floatValue != oldFloatValue) {
-	[theCell setFloatValue:floatValue];
-#if 0
-	[theCell drawWithFrame:[self bounds] inView:self];
-	[[self window] flushWindow];
-#else
-	[self setNeedsDisplay:YES];
-#endif
-	if (isContinuous)
-	  [target performSelector:action withObject:self];
-	oldFloatValue = floatValue;
-      }
-      knobRect.origin = point;
-    }
-  }
-
-  /* If the control is not continuous send the action at the end of the drag */
-  if (!isContinuous)
-    [target performSelector:action withObject:self];
-  [NSEvent stopPeriodicEvents];
+				if (floatValue != oldFloatValue) 
+					{
+					[theCell setFloatValue:floatValue];
+					[theCell drawWithFrame:[self bounds] inView:self];
+					[window flushWindow];
+					if (isContinuous)
+	  					[target performSelector:action withObject:self];
+					oldFloatValue = floatValue;
+      				}
+      			knobRect.origin = point;
+    			}
+			}
+	}								 
+									// If the control is not continuous send
+	if (!isContinuous)				// the action at the end of the drag
+		[target performSelector:action withObject:self];
+	[NSEvent stopPeriodicEvents];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  NSPoint location = [self convertPoint:[theEvent locationInWindow]
-			   fromView:nil];
-  NSSliderCell* theCell = [self cell];
-  NSRect rect;
+NSPoint location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
+NSSliderCell* theCell = [self cell];
+NSRect rect;
 
-  [self lockFocus];
-
-  rect = [theCell knobRectFlipped:[self isFlipped]];
-  if (![self mouse:location inRect:rect]) {
-    /* Mouse is not on the knob, move the knob to the mouse position */
-    float floatValue = [self _floatValueForMousePoint:location knobRect:rect];
-
-    [theCell setFloatValue:floatValue];
-    if ([self isContinuous])
-      [[theCell target] performSelector:[theCell action] withObject:self];
-#if 0
-    [theCell drawWithFrame:[self bounds] inView:self];
-    [[self window] flushWindow];
-#else
-    [self setNeedsDisplay:YES];
-#endif
-  }
-
-  [self trackKnob:theEvent knobRect:rect];
+	[self lockFocus];
+	
+	rect = [theCell knobRectFlipped:[self isFlipped]];
+	if (![self mouse:location inRect:rect]) 
+		{									// Mouse is not on the knob, move 
+											// the knob to the mouse position 
+		float floatValue = [self _floatValueForMousePoint:location 
+								 knobRect:rect];
+	
+		[theCell setFloatValue:floatValue];
+		if ([self isContinuous])
+			[[theCell target] performSelector:[theCell action] 
+							  withObject:self];
+		[theCell drawWithFrame:[self bounds] inView:self];
+		[window flushWindow];
+		}
+	
+	[self trackKnob:theEvent knobRect:rect];
 }
 
 @end

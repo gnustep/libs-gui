@@ -90,17 +90,13 @@ typedef enum _NSScrollerArrow {
 //
 // Setting the NSScroller's Values
 //
-
 - (float)knobProportion;
-
-- (void)setFloatValue:(float)aFloat
-       knobProportion:(float)ratio;
+- (void)setFloatValue:(float)aFloat knobProportion:(float)ratio;
 
 //
 // Displaying 
 //
-- (void)drawArrow:(NSScrollerArrow)whichButton
-	highlight:(BOOL)flag;
+- (void)drawArrow:(NSScrollerArrow)whichButton highlight:(BOOL)flag;
 - (void)drawKnobSlot;
 - (void)drawKnob;
 - (void)drawParts;
@@ -113,7 +109,7 @@ typedef enum _NSScrollerArrow {
 - (void)trackKnob:(NSEvent *)theEvent;
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 
-/* Other methods */
+// Other methods 
 - (void)setFrameSize:(NSSize)size;
 - (void)setEnabled:(BOOL)flag;
 

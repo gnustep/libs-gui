@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: May 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -30,6 +32,10 @@
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 
+
+#define XRBW 1.0								// half the width of the bevel
+#define XRHW 5.0								// width of border/handle
+
 @implementation NSColorWell
 
 //
@@ -37,11 +43,8 @@
 //
 + (void)initialize
 {
-  if (self == [NSColorWell class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+	if (self == [NSColorWell class])
+		[self setVersion:1];								// Initial version
 }
 
 //
@@ -69,20 +72,22 @@
 //
 - (void)drawRect:(NSRect)rect
 {
-  NSDebugLog(@"NSColorWell drawRect: %f %f %f %f\n", rect.origin.x, 
-	     rect.origin.y,
-	     rect.size.width, rect.size.height);
+NSRect inside = rect;
+  
+	if (is_bordered)										// if well has a 
+		[self drawBorderRect: rect];						// border draw it
 
-  // Draw border
-  if (is_bordered)
-    [self drawBorderRect: rect];
-
-  // Draw the color inside
-  [self drawWellInside: rect];
+	inside.origin.x += XRBW + XRHW + XRBW + XRBW;			// calc interior
+	inside.origin.y += XRBW + XRHW + XRBW;					// rect
+	inside.size.width -= (4*XRBW + XRHW + XRHW) + XRBW;
+	inside.size.height -= (4*XRBW + XRHW + XRHW) + XRBW;
+	[self drawWellInside: inside];							// draw interior
 }
 
 - (void)drawWellInside:(NSRect)insideRect
 {
+	[the_color set];
+	NSRectFill(insideRect);									// fill interior	
 }
 
 //
@@ -166,6 +171,19 @@
 
 - (void)drawBorderRect:(NSRect)aRect
 {
+NSRect inside;
+
+	[[NSColor lightGrayColor] set];
+	NSRectFill(bounds);									// fill the area with
+														// gray first
+	NSDrawButton(aRect, aRect);							// draw outer border
+
+	inside = aRect;										// calc inner border
+	inside.origin.x += XRBW + XRHW;						// rect
+	inside.origin.y += XRBW + XRHW;
+	inside.size.width -= (XRBW + XRBW + XRHW + XRHW);
+	inside.size.height -= (XRBW + XRBW + XRHW + XRHW);
+	NSDrawGrayBezel(inside, inside);					// draw inner border
 }
 
 @end

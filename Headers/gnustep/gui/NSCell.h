@@ -86,11 +86,16 @@ typedef enum _NSCellAttribute {
 } NSCellAttribute;
 
 enum {
-  NSNoCellMask			= 0,
-  NSContentsCellMask		= 1,
-  NSPushInCellMask		= 2,
-  NSChangeGrayCellMask		= 4,
+  NSNoCellMask					= 0,
+  NSContentsCellMask			= 1,
+  NSPushInCellMask				= 2,
+  NSChangeGrayCellMask			= 4,
   NSChangeBackgroundCellMask	= 8
+};
+
+enum {
+  xDist = 2,	// horizontal distance between the text and image rects. 
+  yDist = 2		// vertical distance between the text and image rects. 
 };
 
 @interface NSCell : NSObject <NSCopying, NSCoding>

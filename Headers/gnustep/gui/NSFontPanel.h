@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSFontPanel
 #define _GNUstep_H_NSFontPanel
 
-#include <AppKit/GPSDrawContext.h>
 #include <AppKit/NSPanel.h>
 
 @class NSFont;

@@ -41,7 +41,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/GPSDrawContext.h>
+#include <AppKit/GSContext.h>
 
 @implementation NSEvent
 
@@ -68,7 +68,7 @@ static NSString	*timerKey = @"NSEventTimersKey";
 						   modifierFlags:(unsigned int)flags
 						   timestamp:(NSTimeInterval)time
 						   windowNumber:(int)windowNum
-						   context:(GPSDrawContext *)context	
+						   context:(GSContext *)context	
 						   eventNumber:(int)eventNum
 						   trackingNumber:(int)trackingNum
 						   userData:(void *)userData
@@ -97,7 +97,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 					 modifierFlags:(unsigned int)flags
 					 timestamp:(NSTimeInterval)time
 					 windowNumber:(int)windowNum
-					 context:(GPSDrawContext *)context	
+					 context:(GSContext *)context	
 					 characters:(NSString *)keys	
 					 charactersIgnoringModifiers:(NSString *)ukeys
 					 isARepeat:(BOOL)repeatKey	
@@ -129,7 +129,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 						modifierFlags:(unsigned int)flags
 						timestamp:(NSTimeInterval)time
 						windowNumber:(int)windowNum 
-						context:(GPSDrawContext *)context 
+						context:(GSContext *)context 
 						eventNumber:(int)eventNum	
 						clickCount:(int)clickNum	
 						pressure:(float)pressureValue
@@ -160,7 +160,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 						modifierFlags:(unsigned int)flags
 						timestamp:(NSTimeInterval)time
 						windowNumber:(int)windowNum 
-						context:(GPSDrawContext *)context 
+						context:(GSContext *)context 
 						subtype:(short)subType	
 						data1:(int)data1	
 						data2:(int)data2
@@ -284,7 +284,7 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 //
 // Getting General Event Information
 //
-- (GPSDrawContext *)context
+- (GSContext *)context
 {
 	return event_context;
 }
@@ -374,10 +374,10 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
   // Make sure it is one of the right event types
   if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp) &&
 	  (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
-	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
-	  (event_type != NSMouseMoved) &&
-	  (event_type != NSMouseEntered) && (event_type != NSMouseExited))
-	return 0;
+	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) 
+	  && (event_type != NSMouseMoved) && (event_type != NSMouseEntered) && 	
+	  (event_type != NSMouseExited))
+		return 0;
 
   if ((event_type == NSMouseEntered) || (event_type == NSMouseExited))
 	return event_data.tracking.event_num;
@@ -390,9 +390,9 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
   // Make sure it is one of the right event types
   if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp) &&
 	  (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
-	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
-	  (event_type != NSMouseMoved))
-	return 0;
+	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged)
+	  && (event_type != NSMouseMoved))
+		return 0;
 
   return event_data.mouse.pressure;
 }

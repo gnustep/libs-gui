@@ -28,6 +28,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+
 #include <AppKit/NSButton.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSButtonCell.h>
@@ -48,14 +49,11 @@ id gnustep_gui_nsbutton_class = nil;
 //
 + (void)initialize
 {
-  if (self == [NSButton class])
-    {
-      // Initial version
-      [self setVersion:1];
-
-      // Set our cell class to NSButtonCell
-      [self setCellClass:[NSButtonCell class]];
-    }
+	if (self == [NSButton class]) 
+		{
+		[self setVersion:1];
+   		[self setCellClass:[NSButtonCell class]];
+  		}
 }
 
 //
@@ -284,81 +282,6 @@ id gnustep_gui_nsbutton_class = nil;
 //
 // Handling Events and Action Messages 
 //
-- (void)mouseDown:(NSEvent *)theEvent
-{
-  NSApplication *theApp = [NSApplication sharedApplication];
-  BOOL mouseUp, done;
-  NSEvent *e;
-  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
-  int oldActionMask;
-
-  NSDebugLog(@"NSButton mouseDown\n");
-
-  // If we are not enabled then ignore the mouse
-  if (![self isEnabled])
-    return;
-
-  // Have NSCell send action only if we are continuous
-  if ([cell isContinuous])
-    oldActionMask = [cell sendActionOn:0];
-  else
-    oldActionMask = [cell sendActionOn: NSPeriodicMask];
-
-  // capture mouse
-  [[self window] captureMouse: self];
-
-  [self lockFocus];
-
-  done = NO;
-  e = theEvent;
-  while (!done)
-    {
-	[cell highlight: YES withFrame: bounds inView: self];	// highlight cell
-	[self setNeedsDisplayInRect:bounds];		
-      mouseUp = [cell trackMouse: e inRect: bounds
-		      ofView:self untilMouseUp:YES];
-      e = [theApp currentEvent];
-
-      // If mouse went up then we are done
-      if ((mouseUp) || ([e type] == NSLeftMouseUp))
-	done = YES;
-      else
-	{
-	  NSDebugLog(@"NSButton process another event\n");
-	  e = [theApp nextEventMatchingMask:event_mask untilDate:nil
-		      inMode:NSEventTrackingRunLoopMode dequeue:YES];
-	}
-    }
-
-  // Release mouse
-  [[self window] releaseMouse: self];
-
-  // If the mouse went up in the button
-  if (mouseUp)
-    { 
-      // Unhighlight the button
-      [cell highlight: NO withFrame: bounds
-	    inView: self];
-
-      [cell setState:![self state]];
-#if 1
-      [self setNeedsDisplayInRect:bounds];
-#else
-      [cell drawWithFrame:bounds inView:self];
-      [[self window] flushWindow];
-#endif
-    }
-  [self unlockFocus];
-
-  /* Restore the old action mask */
-  [cell sendActionOn:oldActionMask];
-
-  // Have the target perform the action
-  if (mouseUp)
-    [self sendAction:[self action] to:[self target]];
-}
-
 - (void)performClick:(id)sender
 {
   [cell performClick:sender];

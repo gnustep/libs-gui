@@ -45,10 +45,7 @@
 @class NSMenuItem;
 @class NSImage;
 @class NSWindow;
-#ifdef NO_GNUSTEP
-#define GPSDrawContext NSDPSContext
-#endif
-@class GPSDrawContext;
+@class GSContext;
 
 typedef struct _NSModalSession *NSModalSession;
 
@@ -218,9 +215,9 @@ extern NSString *NSEventTrackingRunLoopMode;
 		 returnType:(NSString *)returnType;
 
 //
-// Getting the display postscript context
+// Getting the display context
 //
-- (GPSDrawContext *)context;
+- (GSContext *)context;
 
 //
 // Reporting an exception
@@ -312,7 +309,7 @@ extern NSString *NSApplicationDidUnhideNotification;
 extern NSString *NSApplicationDidUpdateNotification;
 extern NSString *NSApplicationWillBecomeActiveNotification;
 extern NSString *NSApplicationWillFinishLaunchingNotification;
-extern NSString* NSApplicationWillTerminateNotification;
+extern NSString *NSApplicationWillTerminateNotification;
 extern NSString *NSApplicationWillHideNotification;
 extern NSString *NSApplicationWillResignActiveNotification;
 extern NSString *NSApplicationWillUnhideNotification;

@@ -790,8 +790,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self orderFront:nil];
 
 #if GNU_GUI_LIBRARY
-  //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
-  [[self contentView] setNeedsDisplay:YES];
+	[[self contentView] setNeedsDisplay:YES];
 #endif
 
   return self;
@@ -878,8 +877,7 @@ void __dummy_GMAppKit_functionForLinking() {}
         [unarchiver decodeBOOLWithName:@"setWorksWhenModal"]];
 
 #if GNU_GUI_LIBRARY
-    //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
-  [[self contentView] setNeedsDisplay:YES];
+	[[self contentView] setNeedsDisplay:YES];
 #endif
     return self;
 }
@@ -990,8 +988,7 @@ void __dummy_GMAppKit_functionForLinking() {}
           [unarchiver decodeStringWithName:@"directory"]];
 
 #if GNU_GUI_LIBRARY
-    //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
-  [[self contentView] setNeedsDisplay:YES];
+    [[self contentView] setNeedsDisplay:YES];
 #endif
     return self;
 }

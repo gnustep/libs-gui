@@ -44,6 +44,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMatrix.h>
 
+
+
 /* Define the following symbol when NSView will support flipped views */
 //#define HAS_FLIPPED_VIEWS 1
 
@@ -995,6 +997,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   NSRect intRect, upperLeftRect;
   NSArray* row;
 
+	if(drawsBackground)							
+		{										
+		[backgroundColor set];					
+		NSRectFill(rect);								// draw the background
+		}
+
   [self _getRow:&row1 column:&col1
 #if HAS_FLIPPED_VIEWS
        forPoint:rect.origin
@@ -1039,28 +1047,28 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   }
 }
 
-- (void)drawCellAtRow:(int)row
-	       column:(int)column
+- (void)drawCellAtRow:(int)row column:(int)column
 {
-  NSCell *aCell = [self cellAtRow:row column:column];
-  NSRect cellFrame = [self cellFrameAtRow:row column:column];
+NSCell *aCell = [self cellAtRow:row column:column];
+NSRect cellFrame = [self cellFrameAtRow:row column:column];
 
-  [aCell drawWithFrame:cellFrame inView:self];
+	[aCell drawWithFrame:cellFrame inView:self];
 }
 
 - (void)highlightCell:(BOOL)flag
-		atRow:(int)row
-	       column:(int)column
+				atRow:(int)row
+	       		column:(int)column
 {
-  NSCell *aCell = [self cellAtRow:row column:column];
-  NSRect cellFrame;
+NSCell *aCell = [self cellAtRow:row column:column];
+NSRect cellFrame;
 
-  if (aCell) {
-    cellFrame = [self cellFrameAtRow:row column:column];
-    [aCell highlight:flag
-	   withFrame:[self cellFrameAtRow:row column:column]
-	   inView:self];
-  }
+	if (aCell) 
+		{
+		cellFrame = [self cellFrameAtRow:row column:column];
+		[aCell highlight:flag
+			   withFrame:[self cellFrameAtRow:row column:column]
+			   inView:self];
+		}
 }
 
 - (BOOL)sendAction
@@ -1129,7 +1137,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (BOOL)acceptsFirstMouse:(NSEvent*)theEvent
 {
-  return mode == NSListModeMatrix ? NO : YES;
+	return mode == NSListModeMatrix ? NO : YES;
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
@@ -1452,6 +1460,70 @@ static MPoint anchor = {0, 0};
 #if HAS_FLIPPED_VIEWS
 - (BOOL)isFlipped							{ return YES; }
 #endif
+
+
+
+//
+//	Methods that may not be needed FIX ME
+//
+
+/*
+ * Get characters until you encounter
+ * a carriage return, return number of characters.
+ * Deal with backspaces, etc.  Deal with Expose events
+ * on all windows associated with this application.
+ * Deal with keyboard remapping.
+ */
+
+- (void)keyDown:(NSEvent *)theEvent;
+{
+unsigned int flags = [theEvent modifierFlags];
+unsigned int key_code = [theEvent keyCode];
+NSRect rect = [self cellFrameAtRow:selectedRow column:selectedColumn];
+
+fprintf(stderr, " NSMatrix: keyDown --- ");
+
+  // If not editable then don't recognize the key down
+  if (![selectedCell isEditable]) return;
+
+  [self lockFocus];
+
+   // If RETURN key then make the next text the first responder
+  if (key_code == 0x0d)
+    {
+	[selectedCell endEditing:nil];
+  [selectedCell drawInteriorWithFrame: rect inView: self];
+    return;
+    }
+
+ // Hide the cursor during typing
+  [NSCursor hide];
+
+  [selectedCell _handleKeyEvent:theEvent];
+  [selectedCell drawInteriorWithFrame: rect inView: self];
+  [self unlockFocus];
+}
+
+- (BOOL)acceptsFirstResponder
+{
+  if ([selectedCell isSelectable])
+    return YES;
+  else
+    return NO;
+}
+
+- (BOOL)becomeFirstResponder
+{
+  if ([selectedCell isSelectable])
+    {
+ //     [selectedCell selectText:self];
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
+}
 
 @end
 

@@ -321,7 +321,7 @@ NSString *NSBaselineOffsetAttributeName = 	@"NSBaselineOffsetAttributeName";
 NSString *NSKernAttributeName = 			@"NSKernAttributeName";        
 /* Drawing engine externs */
 
-GPSDrawContext *_currentGPSContext;
+GSContext *_currentGSContext;
 
 NSString *DPSconfigurationerror = @"DPSconfigurationerror";
 NSString *DPSinvalidaccess = @"DPSinvalidaccess";

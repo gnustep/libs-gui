@@ -43,7 +43,7 @@ NSProcessInfo* processInfo;
   }
 #endif
 
-  [[NSDPSContext currentContext] wait];
+  [[GSContext currentContext] wait];
   [[NSApplication sharedApplication] run];
   printf ("exiting...\n");
 

@@ -29,14 +29,6 @@
 #ifndef _GNUstep_H_AppKit
 #define _GNUstep_H_AppKit
 
-//
-// Display Postscript System
-//
-#ifndef NO_GNUSTEP
-#include <AppKit/GPSOperators.h>
-#else
-#include <AppKit/DPSOperators.h>
-#endif
 
 //
 // Foundation
@@ -146,7 +138,6 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/NSWindowView.h>
 #include <AppKit/NSWorkspace.h>
 
 #endif _GNUstep_H_AppKit

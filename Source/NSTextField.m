@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,33 +29,34 @@
 */ 
 
 #include <gnustep/gui/config.h>
+
 #include <Foundation/NSString.h>
+
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCursor.h>
 
+
+
+@implementation NSTextField
+
 //
 // class variables
 //
 id gnustep_gui_nstextfield_cell_class = nil;
-
-@implementation NSTextField
 
 //
 // Class methods
 //
 + (void)initialize
 {
-  if (self == [NSTextField class])
-    {
-      // Initial version
-      [self setVersion:1];
-
-      // Set our cell class to NSTextFieldCell
-      [self setCellClass:[NSTextFieldCell class]];
-    }
+	if (self == [NSTextField class])
+		{
+		[self setVersion:1];							// Set cell class to
+		[self setCellClass:[NSTextFieldCell class]];	// NSTextFieldCell
+		}
 }
 
 //
@@ -61,12 +64,12 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 + (Class)cellClass
 {
-  return gnustep_gui_nstextfield_cell_class;
+	return gnustep_gui_nstextfield_cell_class;
 }
 
 + (void)setCellClass:(Class)classId
 {
-  gnustep_gui_nstextfield_cell_class = classId;
+	gnustep_gui_nstextfield_cell_class = classId;
 }
 
 //
@@ -74,25 +77,24 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 - init
 {
-  return [self initWithFrame:NSZeroRect];
+	return [self initWithFrame:NSZeroRect];
 }
 
 - initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
+	[super initWithFrame:frameRect];
+															// set our cell
+	[self setCell:[[gnustep_gui_nstextfield_cell_class new] autorelease]];
+	[cell setState:1];
+	text_cursor = [[NSCursor IBeamCursor] retain];
 
-  // set our cell
-  [self setCell:[[gnustep_gui_nstextfield_cell_class new] autorelease]];
-  [cell setState:1];
-  text_cursor = [[NSCursor IBeamCursor] retain];
-
-  return self;
+	return self;
 }
 
 - (void)dealloc
 {
-  [text_cursor release];
-  [super dealloc];
+	[text_cursor release];
+	[super dealloc];
 }
 
 //
@@ -100,185 +102,116 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 - (void)setTextCursor:(NSCursor *)aCursor
 {
-  [aCursor retain];
-  [text_cursor release];
-  text_cursor = aCursor;
+	[aCursor retain];
+	[text_cursor release];
+	text_cursor = aCursor;
 }
 
 - copyWithZone:(NSZone *)zone
 {
-  id c;
+id c;
 
-  c = [super copyWithZone: zone];
+	c = [super copyWithZone: zone];
+	[c setTextCursor: [NSCursor IBeamCursor]];
 
-  [c setTextCursor: [NSCursor IBeamCursor]];
-  return c;
+	return c;
 }
 
 //
 // Setting User Access to Text 
 //
-- (BOOL)isEditable
-{
-  return [cell isEditable];
-}
-
-- (BOOL)isSelectable
-{
-  return [cell isSelectable];
-}
-
-- (void)setEditable:(BOOL)flag
-{
-  [cell setEditable:flag];
-}
-
-- (void)setSelectable:(BOOL)flag
-{
-  [cell setSelectable:flag];
-}
+- (BOOL)isEditable						{  return [cell isEditable]; }
+- (BOOL)isSelectable					{ return [cell isSelectable]; }
+- (void)setEditable:(BOOL)flag			{ [cell setEditable:flag]; }
+- (void)setSelectable:(BOOL)flag		{ [cell setSelectable:flag]; }
 
 //
 // Editing Text 
 //
 - (void)selectText:(id)sender
 {
-  if ([[self window] makeFirstResponder:self])
-    [cell selectText:sender];
+	if ([[self window] makeFirstResponder:self])
+		[cell selectText:sender];
+	[self setNeedsDisplay:YES];
 }
 
 //
 // Setting Tab Key Behavior 
 //
-- (id)nextText
-{
-  return next_text;
-}
-
-- (id)previousText
-{
-  return previous_text;
-}
+- (id)nextText							{ return next_text; }
+- (id)previousText						{ return previous_text; }
 
 - (void)setNextText:(id)anObject
 {
-  id t;
-
-  next_text = anObject;
-
-  // Tell the object that we are the previous text
-  // Unless it already knows that
-  if ([anObject respondsToSelector:@selector(setPreviousText:)])
-    {
-      t = [anObject previousText];
-      if (t != self)
-	[anObject setPreviousText:self];
-    }
+id t;
+													// Tell the object that we
+	next_text = anObject;							// are the previous text 
+													// Unless it already is
+	if ([anObject respondsToSelector:@selector(setPreviousText:)])
+		{
+		t = [anObject previousText];
+		if (t != self)
+			[anObject setPreviousText:self];
+		}
 }
 
 - (void)setPreviousText:(id)anObject
 {
-  id t;
-
-  previous_text = anObject;
-
-  // Tell the object that we are the next text
-  // Unless it already knows that
-  if ([anObject respondsToSelector:@selector(setNextText:)])
-    {
-      t = [anObject nextText];
-      if (t != self)
-	[anObject setNextText:self];
-    }
+id t;
+													// Tell the object that we 
+	previous_text = anObject;						// are the next text
+													// Unless it already knows
+	if ([anObject respondsToSelector:@selector(setNextText:)])
+		{
+		t = [anObject nextText];
+		if (t != self)
+			[anObject setNextText:self];
+		}
 }
 
 //
 // Assigning a Delegate 
 //
-- (void)setDelegate:(id)anObject
-{
-  text_delegate = anObject;
-}
-
-- (id)delegate
-{
-  return text_delegate;
-}
+- (void)setDelegate:(id)anObject		{ text_delegate = anObject; }
+- (id)delegate							{ return text_delegate; }
 
 //
 // Drawing
 //
-- (void)drawRect:(NSRect)rect
-{
-  [cell drawWithFrame:rect inView:self];
+- (void)drawRect:(NSRect)rect		
+{ 
+	[cell drawWithFrame:rect inView:self]; 
 }
 
 //
 // Modifying Graphic Attributes 
 //
-- (NSColor *)backgroundColor
-{
-  return [cell backgroundColor];
-}
-
-- (BOOL)drawsBackground
-{
-  return [cell drawsBackground];
-}
-
-- (BOOL)isBezeled
-{
-  return [cell isBezeled];
-}
-
-- (BOOL)isBordered
-{
-  return [cell isBordered];
-}
-
 - (void)setBackgroundColor:(NSColor *)aColor
 {
-  [cell setBackgroundColor:aColor];
+	[cell setBackgroundColor:aColor];
 }
 
-- (void)setBezeled:(BOOL)flag
-{
-  [cell setBezeled:flag];
-}
-
-- (void)setBordered:(BOOL)flag
-{
-  [cell setBordered:flag];
-}
-
-- (void)setDrawsBackground:(BOOL)flag
-{
-  [cell setDrawsBackground:flag];
-}
-
-- (void)setTextColor:(NSColor *)aColor
-{
-  [cell setTextColor:aColor];
-}
-
-- (NSColor *)textColor
-{
-  return [cell textColor];
-}
-
-- (id)selectedCell			{ return cell; }
+- (NSColor *)backgroundColor			{ return [cell backgroundColor]; }
+- (BOOL)drawsBackground					{ return [cell drawsBackground]; }
+- (BOOL)isBezeled						{ return [cell isBezeled]; }
+- (BOOL)isBordered						{ return [cell isBordered]; }
+- (void)setBezeled:(BOOL)flag			{ [cell setBezeled:flag]; }
+- (void)setBordered:(BOOL)flag			{ [cell setBordered:flag]; }
+- (void)setDrawsBackground:(BOOL)flag	{ [cell setDrawsBackground:flag]; }
+- (void)setTextColor:(NSColor *)aColor 	{ [cell setTextColor:aColor]; }
+- (NSColor *)textColor					{ return [cell textColor]; }
+- (id)selectedCell						{ return cell; }
 
 //
 // Target and Action 
 //
-- (SEL)errorAction
-{
-  return error_action;
-}
+- (SEL)errorAction						{ return error_action; }
+- (void)setErrorAction:(SEL)aSelector	{ error_action = aSelector; }
 
-- (void)setErrorAction:(SEL)aSelector
+- (void)displayRect:(NSRect)rect					// not per OS spec FIX ME
 {
-  error_action = aSelector;
+	[super displayRect:rect];
+	[window flushWindow];
 }
 
 //
@@ -286,79 +219,84 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse down
-  if (![self isSelectable]) return;
+NSPoint location;									
+													// If not selectable then 
+	if (![self isSelectable]) 						// don't recognize the 
+		return;										// mouse down
 
-  [[self window] makeFirstResponder:self];
+fprintf(stderr, " TextField mouseDown --- ");
+
+	location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	[self lockFocus];
+	[[self cell] _setCursorLocation:location];
+	[[self cell] _setCursorVisibility: YES];
+	[cell drawWithFrame:bounds inView:self];
+	[window flushWindow];
+	[self unlockFocus];
+	if ([[self window] makeFirstResponder:self])
+		[self setNeedsDisplay:YES];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse up
-  if (![self isSelectable]) return;
-}
+	if (![self isSelectable]) 						// If not selectable then 
+		return;										// don't recognize the 
+}													// mouse up
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse moved
-  if (![self isSelectable]) return;
-}
+	if (![self isSelectable]) 						// If not selectable then 
+		return;										// don't recognize the 
+}													// mouse moved
+
+/*
+ * Get characters until you encounter
+ * a carriage return, return number of characters.
+ * Deal with backspaces, etc.  Deal with Expose events
+ * on all windows associated with this application.
+ * Deal with keyboard remapping.
+ */
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-  unsigned int flags = [theEvent modifierFlags];
-  unsigned int key_code = [theEvent keyCode];
+unsigned int flags = [theEvent modifierFlags];
+unsigned int key_code = [theEvent keyCode];
+id nextResponder;
 
-  // If SHIFT-TAB key then make the previous text the first responder
-  if ((key_code == 0x09) && (flags & NSShiftKeyMask))
-    {
-      if ([previous_text respondsToSelector:@selector(selectText:)])
-	// Either select the previous' text
-	[previous_text selectText:self];
-      else
-	// Or select ourself
-	[self selectText:self];
+  NSDebugLog(@"NSTextField: -keyDown %s\n", [[theEvent characters] cString]);
 
-      // Have the target perform the action
-      [self sendAction:[self action] to:[self target]];
+  // If TAB, SHIFT-TAB or RETURN key then make another text the first
+  // responder. This depends on key.
+  if (key_code == 0x09 || key_code == 0x0d) {
+    if (key_code == 0x09 && (flags & NSShiftKeyMask))
+      nextResponder = previous_text;
+    else
+      nextResponder = next_text;
 
-      return;
-    }
+    if ([nextResponder respondsToSelector:@selector(selectText:)])
+      // Either select the previous' text
+      [nextResponder selectText:self];
+    else
+      // Or select ourself
+      [self selectText:self];
 
-  // If TAB key then make the next text the first responder
-  if (key_code == 0x09)
-    {
-      if ([next_text respondsToSelector:@selector(selectText:)])
-	// Either select the next's text
-	[next_text selectText:self];
-      else
-	// Or select ourself
-	[self selectText:self];
-
-      // Have the target perform the action
-      [self sendAction:[self action] to:[self target]];
-
-      return;
-    }
-
-  // If RETURN key then make the next text the first responder
-  if (key_code == 0x0d)
-    {
-      if ([next_text respondsToSelector:@selector(selectText:)])
-	// Either select the next's text
-	[next_text selectText:self];
-      else
-	// Or select ourself
-	[self selectText:self];
-
-      // Have the target perform the action
-      [self sendAction:[self action] to:[self target]];
-
-      return;
-    }
+    // Have the target perform the action
+    [self sendAction:[self action] to:[self target]];
+    return;
+  }
 
   // If not editable then don't recognize the key down
   if (![self isEditable]) return;
+
+  // Hide the cursor during typing
+  [NSCursor hide];
+
+  [self lockFocus];
+  [[self cell] _handleKeyEvent:theEvent];
+  [cell drawWithFrame:bounds inView:self];
+  [window flushWindow];
+  [self unlockFocus];
+//  [self setNeedsDisplay:YES];
 }
 
 - (void)keyUp:(NSEvent *)theEvent

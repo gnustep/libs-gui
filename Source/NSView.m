@@ -46,11 +46,18 @@
 #include <AppKit/TrackingRectangle.h>
 #include <AppKit/PSMatrix.h>
 
+
+
 @implementation NSView
 
-/* Class variables */
-static NSString	*nsview_thread_key = @"NSViewThreadKey";
+//
+//  Class variables
+//
+static NSString	*viewThreadKey = @"NSViewThreadKey";
 
+//
+// Class methods
+//
 + (void)initialize
 {
 	if (self == [NSView class])
@@ -63,13 +70,13 @@ static NSString	*nsview_thread_key = @"NSViewThreadKey";
 + (NSView *)focusView
 {
 NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
+NSMutableArray *stack = [dict objectForKey: viewThreadKey];
 NSView *current_view = nil;
-
-	if (stack)
-		{
-		unsigned count = [stack count];
-
+														// return the view at
+	if (stack)											// the top of thread's
+		{												// focus stack or nil
+		unsigned count = [stack count];					// if none is focused
+														
 		if (count > 0)
 			current_view = [stack objectAtIndex: --count];
 		}
@@ -77,6 +84,9 @@ NSView *current_view = nil;
 	return current_view;
 }
 
+//
+// Instance methods
+//
 - init
 {
 	return [self initWithFrame:NSZeroRect];
@@ -123,17 +133,17 @@ NSView *current_view = nil;
 }
 
 - (void)addSubview:(NSView *)aView
-{												// make sure we aren't making 
-	if ([self isDescendantOf:aView])			// self a subview of self 
-		{
+{													// make sure we are not 
+	if ([self isDescendantOf:aView])				// making self a subview of 
+		{											// self
 		NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
 		return;
 		}
   
-	[aView viewWillMoveToWindow:window];				// Add to our subview
-	[aView setSuperview:self];							// list
+	[aView viewWillMoveToWindow:window];			
+	[aView setSuperview:self];						
 	[aView setNextResponder:self];
-	[sub_views addObject:(id)aView];
+	[sub_views addObject:(id)aView];				// Add to our subview list
 }
 
 - (void)addSubview:(NSView *)aView					// may not be per OS spec
@@ -273,7 +283,7 @@ NSSize old_size = bounds.size;
 	bounds.size = frame.size;
 	[frameMatrix setFrameOrigin:frame.origin];
 	
-	[self resizeSubviewsWithOldSize: old_size];				// Resize subviews
+	[self resizeSubviewsWithOldSize: old_size];			// Resize the subviews
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
 						postNotificationName:NSViewFrameDidChangeNotification 
@@ -297,7 +307,7 @@ NSSize old_size = bounds.size;
 
 	frame.size = bounds.size = newSize;
   
-	[self resizeSubviewsWithOldSize: old_size];				// Resize subviews
+	[self resizeSubviewsWithOldSize: old_size];			// Resize the subviews
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
 						postNotificationName:NSViewFrameDidChangeNotification 
@@ -657,13 +667,13 @@ id e, o;
 			oldSize.width, oldSize.height);
 }
 
-- (void)allocateGState						{}			// implemented by the
-- (void)releaseGState						{}			// back end
-- (int)gState								{ return 0; }
-- (void)renewGState							{}
-- (void)setUpGState							{}
-- (void)lockFocus							{}
-- (void)unlockFocus							{}
+- (void)allocateGState					{}				// implemented by the
+- (void)releaseGState					{}				// back end
+- (int)gState							{ return 0; }
+- (void)renewGState						{}
+- (void)setUpGState						{}
+- (void)lockFocus						{ [self subclassResponsibility:_cmd]; }
+- (void)unlockFocus						{ [self subclassResponsibility:_cmd]; }
 
 - (BOOL)canDraw								
 {														// not implemented per

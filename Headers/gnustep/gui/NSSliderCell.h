@@ -58,7 +58,7 @@
 
 /* Displaying the cell */
 - (NSRect)knobRectFlipped:(BOOL)flipped;
-- (void)drawBarInside:(NSRect)aRect flipped:(BOOL)flipped;
+- (void)drawBarInside:(NSRect)rect flipped:(BOOL)flipped;
 - (void)drawKnob;
 - (void)drawKnob:(NSRect)knobRect;
 

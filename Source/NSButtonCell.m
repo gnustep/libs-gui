@@ -6,7 +6,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-	    Ovidiu Predescu <ovidiu@net-community.com>
+	        Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
@@ -42,9 +42,8 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 
-//
-// NSButtonCell implementation
-//
+
+
 @implementation NSButtonCell
 
 //
@@ -52,8 +51,8 @@
 //
 + (void)initialize
 {
-  if (self == [NSButtonCell class])
-	[self setVersion:1];								// Initial version
+	if (self == [NSButtonCell class])
+		[self setVersion:1];								// Initial version
 }
 
 //
@@ -61,202 +60,149 @@
 //
 - _init
 {
-  cell_enabled = YES;
-  transparent = NO;
-  cell_bordered = YES;
-  showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
-  highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
-  delayInterval = 0.4;
-  repeatInterval = 0.075;
-  altContents = nil;
+	cell_enabled = YES;
+	transparent = NO;
+	cell_bordered = YES;
+	showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
+	highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
+	delayInterval = 0.4;
+	repeatInterval = 0.075;
+	altContents = nil;
 	
-  return self;
+	return self;
 }
 
 - init
 {
-  [self initTextCell:@"Button"];
+	[self initTextCell:@"Button"];
 	
-  return self;
+	return self;
 }
 
 - initImageCell:(NSImage *)anImage
 {
-  [super initImageCell:anImage];
+	[super initImageCell:anImage];
 	
-  contents = nil;
+	contents = nil;
 	
-  return [self _init];
+	return [self _init];
 }
 
 - initTextCell:(NSString *)aString
 {
-  [super initTextCell:aString];
+	[super initTextCell:aString];
 	
-  return [self _init];
+	return [self _init];
 }
 
 - (void)dealloc
 {
-  [altContents release];
-  [altImage release];
-  [keyEquivalent release];
-  [keyEquivalentFont release];
-
-  [super dealloc];
+	[altContents release];
+	[altImage release];
+	[keyEquivalent release];
+	[keyEquivalentFont release];
+	
+	[super dealloc];
 }
 
 //
 // Setting the Titles 
 //
-- (NSString *)alternateTitle
+- (NSString *)title								{ return [self stringValue]; }
+- (NSString *)alternateTitle					{ return altContents; }
+- (void)setFont:(NSFont *)fontObject			{ [super setFont:fontObject]; }
+
+- (void)setTitle:(NSString *)aString
 {
-  return altContents;
+	[self setStringValue:aString];
+	[self setState:[self state]];						// update our state
 }
 
 - (void)setAlternateTitle:(NSString *)aString
 {
 NSString* _string = [aString copy];
 
-  ASSIGN(altContents, _string);
-  [self setState:[self state]];						// update our state
-}
-
-- (void)setFont:(NSFont *)fontObject
-{
-  [super setFont:fontObject];
-}
-
-- (void)setTitle:(NSString *)aString
-{
-  [self setStringValue:aString];
-  [self setState:[self state]];						// update our state
-}
-
-- (NSString *)title
-{
-  return [self stringValue];
+	ASSIGN(altContents, _string);
+	[self setState:[self state]];						// update our state
 }
 
 //
 // Setting the Images 
 //
-- (NSImage *)alternateImage
-{
-  return altImage;
-}
-
-- (NSCellImagePosition)imagePosition
-{
-  return image_position;
-}
-
-- (void)setAlternateImage:(NSImage *)anImage
-{
-  ASSIGN(altImage, anImage);
-}
+- (NSImage *)alternateImage						{ return altImage; }
+- (NSCellImagePosition)imagePosition			{ return image_position; }
+- (void)setAlternateImage:(NSImage *)anImage	{ ASSIGN(altImage, anImage); }
 
 - (void)setImagePosition:(NSCellImagePosition)aPosition
 {
-  image_position = aPosition;
+	image_position = aPosition;
 }
 
 //
 // Setting the Repeat Interval 
 //
-- (void)getPeriodicDelay:(float *)delay
-				interval:(float *)interval
+- (void)getPeriodicDelay:(float *)delay interval:(float *)interval
 {
-  *delay = delayInterval;
-  *interval = repeatInterval;
+	*delay = delayInterval;
+	*interval = repeatInterval;
 }
 
-- (void)setPeriodicDelay:(float)delay
-				interval:(float)interval
+- (void)setPeriodicDelay:(float)delay interval:(float)interval
 {
-  delayInterval = delay;
-  repeatInterval = interval;
-  [self setContinuous:YES];
+	delayInterval = delay;
+	repeatInterval = interval;
+	[self setContinuous:YES];
 }
 
 //
 // Setting the Key Equivalent 
 //
-- (NSString *)keyEquivalent
-{
-  return keyEquivalent;
-}
+- (NSString *)keyEquivalent				{ return keyEquivalent; }
+- (NSFont *)keyEquivalentFont			{ return keyEquivalentFont; }
 
-- (NSFont *)keyEquivalentFont
-{
-  return keyEquivalentFont;
-}
-
-- (unsigned int)keyEquivalentModifierMask
-{
-  return keyEquivalentModifierMask;
+- (unsigned int)keyEquivalentModifierMask 
+{ 
+	return keyEquivalentModifierMask;
 }
 
 - (void)setKeyEquivalent:(NSString *)key	
 { 
-NSString* _string = [key copy];
-
-  ASSIGN(keyEquivalent, _string);
+	ASSIGN(keyEquivalent, [key copy]);
 }
 
 - (void)setKeyEquivalentModifierMask:(unsigned int)mask
 {
-  keyEquivalentModifierMask = mask;
+	keyEquivalentModifierMask = mask;
 }
 
 - (void)setKeyEquivalentFont:(NSFont *)fontObj
 {
-  ASSIGN(keyEquivalentFont, fontObj);
+	ASSIGN(keyEquivalentFont, fontObj);
 }
 
-- (void)setKeyEquivalentFont:(NSString *)fontName 
-						size:(float)fontSize
+- (void)setKeyEquivalentFont:(NSString *)fontName size:(float)fontSize
 {
-NSFont* font = [NSFont fontWithName:fontName size:fontSize];
-
-  ASSIGN(keyEquivalentFont, font);
+	ASSIGN(keyEquivalentFont, [NSFont fontWithName:fontName size:fontSize]);
 }
 
 //
 // Modifying Graphic Attributes 
 //
-- (BOOL)isTransparent
-{
-  return transparent;
-}
+- (BOOL)isTransparent					{ return transparent; }
+- (void)setTransparent:(BOOL)flag		{ transparent = flag; }
 
-- (void)setTransparent:(BOOL)flag
-{
-  transparent = flag;
-}
-
-- (BOOL)isOpaque
-{
-  return !transparent && [self isBordered];
+- (BOOL)isOpaque				
+{ 
+	return !transparent && [self isBordered]; 
 }
 
 //
 // Modifying Graphic Attributes 
 //
-- (int)highlightsBy
-{
-  return highlightsByMask;
-}
+- (int)highlightsBy						{ return highlightsByMask; }
+- (void)setHighlightsBy:(int)mask		{ highlightsByMask = mask; }
+- (void)setShowsStateBy:(int)mask		{ showAltStateMask = mask; }
 
-- (void)setHighlightsBy:(int)mask
-{
-  highlightsByMask = mask;
-}
-
-- (void)setShowsStateBy:(int)mask
-{
-  showAltStateMask = mask;
-}
 
 - (void)setButtonType:(NSButtonType)buttonType
 {
@@ -309,37 +255,20 @@ NSFont* font = [NSFont fontWithName:fontName size:fontSize];
   [self setState:[self state]];
 }
 
-- (int)showsStateBy
-{
-  return showAltStateMask;
-}
-
-- (void)setIntValue:(int)anInt
-{
-  [self setState:(anInt != 0)];
-}
-
-- (void)setFloatValue:(float)aFloat
-{
-  [self setState:(aFloat != 0)];
-}
-
-- (void)setDoubleValue:(double)aDouble
-{
-  [self setState:(aDouble != 0)];
-}
-
-- (int)intValue				{ return [self state]; }
-- (float)floatValue			{ return [self state]; }
-- (double)doubleValue		{ return [self state]; }
+- (int)showsStateBy						{ return showAltStateMask; }
+- (void)setIntValue:(int)anInt			{ [self setState:(anInt != 0)]; }
+- (void)setFloatValue:(float)aFloat		{ [self setState:(aFloat != 0)]; }
+- (void)setDoubleValue:(double)aDouble	{ [self setState:(aDouble != 0)]; }
+- (int)intValue							{ return [self state]; }
+- (float)floatValue						{ return [self state]; }
+- (double)doubleValue					{ return [self state]; }
 
 //
 // Displaying
 //
-- (void)drawWithFrame:(NSRect)cellFrame
-	       	   inView:(NSView *)controlView
+- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-  control_view = controlView;				// Save last view cell was drawn to
+	control_view = controlView;				// Save last view cell was drawn to
 }
 
 //

@@ -406,127 +406,96 @@ NSString* _string;
 //
 // Validating Input 
 //
-- (int)entryType
-{
-  return entry_type;
-}
-
-- (BOOL)isEntryAcceptable:(NSString *)aString
-{
-  return YES;
-}
-
-- (void)setEntryType:(int)aType
-{
-  entry_type = aType;
-}
+- (int)entryType								{ return entry_type; }
+- (BOOL)isEntryAcceptable:(NSString *)aString 	{ return YES; }
+- (void)setEntryType:(int)aType					{ entry_type = aType; }
 
 //
 // Formatting Data 
 //
 - (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned int)leftDigits
-			 right:(unsigned int)rightDigits
+						  left:(unsigned int)leftDigits
+						  right:(unsigned int)rightDigits
 {
-  cell_float_autorange = autoRange;
-  cell_float_left = leftDigits;
-  cell_float_right = rightDigits;
+	cell_float_autorange = autoRange;
+	cell_float_left = leftDigits;
+	cell_float_right = rightDigits;
 }
 
 //
 // Modifying Graphic Attributes 
 //
-- (BOOL)isBezeled
-{
-  return cell_bezeled;
-}
-
-- (BOOL)isBordered
-{
-  return cell_bordered;
-}
-
-- (BOOL)isOpaque
-{
-  return cell_bezeled;
-}
-
-- (void)setBezeled:(BOOL)flag
-{
-  cell_bezeled = flag;
-}
-
-- (void)setBordered:(BOOL)flag
-{
-  cell_bordered = flag;
-}
+- (BOOL)isBezeled							{ return cell_bezeled; }
+- (BOOL)isBordered							{ return cell_bordered; }
+- (BOOL)isOpaque							{ return cell_bezeled; }
+- (void)setBezeled:(BOOL)flag				{ cell_bezeled = flag; }
+- (void)setBordered:(BOOL)flag				{ cell_bordered = flag; }
 
 //
 // Setting Parameters 
 //
 - (int)cellAttribute:(NSCellAttribute)aParameter
 {
-  return 0;
+	return 0;
 }
 
-- (void)setCellAttribute:(NSCellAttribute)aParameter
-		      to:(int)value
-{}
+- (void)setCellAttribute:(NSCellAttribute)aParameter to:(int)value
+{
+}
 
 //
 // Displaying 
 //
-- (NSView *)controlView
+- (NSView *)controlView						{ return control_view; }
+- (void)setControlView:(NSView*)view		{ control_view = view; }
+
+- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
-  return control_view;
+	switch ([self type]) 
+		{
+		case NSTextCellType: 
+			{
+			float titleGray = [self isEnabled] ? NSBlack : NSDarkGray;
+
+			[self _displayTitle:[self stringValue]
+						inFrame:cellFrame
+						titleGray:titleGray];
+			break;
+    		}
+		case NSImageCellType:
+			[self _displayImage:[self image] inFrame:cellFrame];
+			break;
+		case NSNullCellType:
+			break;
+  		}
 }
 
-- (void)setControlView:(NSView*)view
-{
-  control_view = view;
-}
-
-- (void)drawInteriorWithFrame:(NSRect)cellFrame
-					   inView:(NSView *)controlView
+- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {													// implemented in back end
 }											
 
-- (void)drawWithFrame:(NSRect)cellFrame
-			   inView:(NSView *)controlView
-{													// implemented in back end
-}											
+- (BOOL)isHighlighted					{ return cell_highlighted; }
 
-- (void)highlight:(BOOL)lit
-		withFrame:(NSRect)cellFrame
-	   	inView:(NSView *)controlView
-{													// implemented in back end
+- (void)highlight:(BOOL)lit withFrame:(NSRect)cellFrame		// Not per OS spec
+							inView:(NSView *)controlView	// FIX ME
+{													
+	cell_highlighted = lit;
+	[self drawWithFrame:cellFrame inView:controlView];			// draw cell
 }											
-
-- (BOOL)isHighlighted
-{
-  return cell_highlighted;
-}
 
 //
 // Target and Action 
 //
-- (SEL)action
-{
-  return NULL;
-}
-
-- (BOOL)isContinuous
-{
-  return cell_continuous;
-}
+- (SEL)action							{ return NULL; }
+- (BOOL)isContinuous					{ return cell_continuous; }
 
 - (int)sendActionOn:(int)mask
 {
-  unsigned int previousMask = action_mask;
+unsigned int previousMask = action_mask;
 
-  action_mask = mask;
+	action_mask = mask;
 
-  return previousMask;
+	return previousMask;
 }
 
 - (void)setAction:(SEL)aSelector
@@ -573,32 +542,30 @@ NSString* _string;
 // Tracking the Mouse 
 //
 - (BOOL)continueTracking:(NSPoint)lastPoint
-		      at:(NSPoint)currentPoint
-		  inView:(NSView *)controlView
+					  at:(NSPoint)currentPoint
+					  inView:(NSView *)controlView
 {
     return YES;
 }
 
 - (int)mouseDownFlags
 {
-  return 0;
+	return 0;
 }
 
-- (void)getPeriodicDelay:(float *)delay
-		interval:(float *)interval
+- (void)getPeriodicDelay:(float *)delay interval:(float *)interval
 {
-  *delay = 0.05;
-  *interval = 0.05;
+	*delay = 0.05;
+	*interval = 0.05;
 }
 
-- (BOOL)startTrackingAt:(NSPoint)startPoint
-		 inView:(NSView *)controlView
-{
-    // If the point is in the view then yes start tracking
-    if ([controlView mouse: startPoint inRect: [controlView bounds]])
-	return YES;
+- (BOOL)startTrackingAt:(NSPoint)startPoint inView:(NSView *)controlView
+{												// If the point is in the view 
+												// then yes start tracking
+	if ([controlView mouse: startPoint inRect: [controlView bounds]])
+		return YES;
     else
-	return NO;
+		return NO;
 }
 
 - (void)stopTracking:(NSPoint)lastPoint
@@ -609,21 +576,21 @@ NSString* _string;
 }
 
 - (BOOL)trackMouse:(NSEvent *)theEvent
-	    inRect:(NSRect)cellFrame
-	    ofView:(NSView *)controlView
-      untilMouseUp:(BOOL)flag
+			inRect:(NSRect)cellFrame
+			ofView:(NSView *)controlView
+			untilMouseUp:(BOOL)flag
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
-  NSPoint location = [theEvent locationInWindow];
-  NSPoint point = [controlView convertPoint: location fromView: nil];
-  float delay, interval;
-  id target = [self target];
-  SEL action = [self action];
-  NSPoint last_point;
-  BOOL done;
-  BOOL mouseWentUp;
+NSApplication *theApp = [NSApplication sharedApplication];
+unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+NSPoint location = [theEvent locationInWindow];
+NSPoint point = [controlView convertPoint: location fromView: nil];
+float delay, interval;
+id target = [self target];
+SEL action = [self action];
+NSPoint last_point;
+BOOL done;
+BOOL mouseWentUp;
 
   NSDebugLog(@"NSCell start tracking\n");
   NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n", 
