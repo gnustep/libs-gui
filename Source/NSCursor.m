@@ -62,7 +62,7 @@ static NSMutableDictionary *cursorDict = nil;
       // Initialize class variables
       NSCursor_class = self;
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
-      gnustep_gui_hidden_until_move = YES;
+      gnustep_gui_hidden_until_move = NO;
       cursorDict = [NSMutableDictionary new]; 
       [[self arrowCursor] push];
     }
@@ -89,8 +89,21 @@ static NSMutableDictionary *cursorDict = nil;
       return;
     }
 
+/*
+  We should rather convert the image to a bitmap representation here via 
+  the following code, but this is currently not supported by the libart backend
+
+{
+  NSSize size = [_cursor_image size];
+
+  [_cursor_image lockFocus];
+  rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
+            NSMakeRect(0, 0, size.width, size.height)];
+  AUTORELEASE(rep);
+  [_cursor_image unlockFocus];
+} 
+ */
   rep = (NSBitmapImageRep *)[_cursor_image bestRepresentationForDevice: nil];
-  /* FIXME: Handle cached image reps also */
   if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
     {
       NSLog(@"NSCursor can only handle NSBitmapImageReps for now");
@@ -133,6 +146,14 @@ static NSMutableDictionary *cursorDict = nil;
 
 + (void) setHiddenUntilMouseMoves: (BOOL)flag
 {
+  if (flag)
+    {
+      [self hide];
+    } 
+  else 
+    {
+      [self unhide];
+    } 
   gnustep_gui_hidden_until_move = flag;
 }
 
@@ -149,43 +170,92 @@ static NSMutableDictionary *cursorDict = nil;
 /*
  * Getting the Cursor
  */
-+ (NSCursor*) arrowCursor
+inline
+NSCursor* _getStandardCursor(NSString *name, int style)
 {
-  NSString *name = @"GSArrowCursor";
   NSCursor *cursor = [cursorDict objectForKey: name];
+
   if (cursor == nil)
     {
       void *c;
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
-      [GSCurrentServer() standardcursor: GSArrowCursor : &c];
+      [GSCurrentServer() standardcursor: style : &c];
       [cursor _setCid: c];
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
     }
   return cursor;
+}
+
++ (NSCursor*) arrowCursor
+{
+  return _getStandardCursor(@"GSArrowCursor", GSArrowCursor);
+}
+
++ (NSCursor*) IBeamCursor
+{
+  return _getStandardCursor(@"GSIBeamCursor", GSIBeamCursor);
+}
+
++ (NSCursor*) closedHandCursor
+{
+  return _getStandardCursor(@"GSClosedHandCursor", GSClosedHandCursor);
+}
+
++ (NSCursor*) crosshairCursor
+{
+  return _getStandardCursor(@"GSCrosshairCursor", GSCrosshairCursor);
+}
+
++ (NSCursor*) disappearingItemCursor
+{
+  return _getStandardCursor(@"GSDisappearingItemCursor", GSDisappearingItemCursor);
+}
+
++ (NSCursor*) openHandCursor
+{
+  return _getStandardCursor(@"GSOpenHandCursor", GSOpenHandCursor);
+}
+
++ (NSCursor*) pointingHandCursor
+{
+  return _getStandardCursor(@"GSPointingHandCursor", GSPointingHandCursor);
+}
+
++ (NSCursor*) resizeDownCursor
+{
+  return _getStandardCursor(@"GSResizeDownCursor", GSResizeDownCursor);
+}
+
++ (NSCursor*) resizeLeftCursor
+{
+  return _getStandardCursor(@"GSResizeLeftCursor", GSResizeLeftCursor);
+}
+
++ (NSCursor*) resizeLeftRightCursor
+{
+  return _getStandardCursor(@"GSResizeLeftRightCursor", GSResizeLeftRightCursor);
+}
+
++ (NSCursor*) resizeRightCursor
+{
+  return _getStandardCursor(@"GSResizeRightCursor", GSResizeRightCursor);
+}
+
++ (NSCursor*) resizeUpCursor
+{
+  return _getStandardCursor(@"GSResizeUpCursor", GSResizeUpCursor);
+}
+
++ (NSCursor*) resizeUpDownCursor
+{
+  return _getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
 }
 
 + (NSCursor*) currentCursor
 {
   return gnustep_gui_current_cursor;
-}
-
-+ (NSCursor*) IBeamCursor
-{
-  NSString *name = @"GSIBeamCursor";
-  NSCursor *cursor = [cursorDict objectForKey: name];
-  if (cursor == nil)
-    {
-      void *c;
-    
-      cursor = [[NSCursor_class alloc] initWithImage: nil];
-      [GSCurrentServer() standardcursor: GSIBeamCursor : &c];
-      [cursor _setCid: c];
-      [cursorDict setObject: cursor forKey: name];
-      RELEASE(cursor);
-    }
-  return cursor;
 }
 
 + (NSCursor*) greenArrowCursor
@@ -259,13 +329,13 @@ backgroundColorHint:(NSColor *)bg
  */
 - (NSPoint) hotSpot
 {
-  // FIXME: This wont work for the two standard cursor
+  // FIXME: This wont work for the standard cursor
   return _hot_spot;
 }
 
 - (NSImage*) image
 {
-  // FIXME: This wont work for the two standard cursor
+  // FIXME: This wont work for the standard cursor
   return _cursor_image;
 }
 

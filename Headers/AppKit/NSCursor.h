@@ -64,9 +64,10 @@ backgroundColorHint:(NSColor *)bg
  */
 - (NSPoint) hotSpot;
 - (NSImage*) image;
-// This methods are defined in OpenStep, but not in MacOSX
+#ifndef	STRICT_MACOS_X
 - (void) setHotSpot: (NSPoint)spot;
 - (void) setImage: (NSImage *)newImage;
+#endif
 
 /*
  * Setting the Cursor
@@ -97,12 +98,37 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) greenArrowCursor;
 #endif
 
+#ifndef STRICT_OPENSTEP
++ (NSCursor*) closedHandCursor;
++ (NSCursor*) crosshairCursor;
++ (NSCursor*) disappearingItemCursor;
++ (NSCursor*) openHandCursor;
++ (NSCursor*) pointingHandCursor;
++ (NSCursor*) resizeDownCursor;
++ (NSCursor*) resizeLeftCursor;
++ (NSCursor*) resizeLeftRightCursor;
++ (NSCursor*) resizeRightCursor;
++ (NSCursor*) resizeUpCursor;
++ (NSCursor*) resizeUpDownCursor;
+#endif
+
 @end
 
 /* Cursor types */
 typedef enum {
   GSArrowCursor,
-  GSIBeamCursor
+  GSIBeamCursor,
+  GSClosedHandCursor,
+  GSCrosshairCursor,
+  GSDisappearingItemCursor,
+  GSOpenHandCursor,
+  GSPointingHandCursor,
+  GSResizeDownCursor,
+  GSResizeLeftCursor,
+  GSResizeLeftRightCursor,
+  GSResizeRightCursor,
+  GSResizeUpCursor,
+  GSResizeUpDownCursor,
 } GSCursorTypes;
 
 #endif /* _GNUstep_H_NSCursor */

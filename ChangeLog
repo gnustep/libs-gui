@@ -1,3 +1,14 @@
+2004-06-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSCursor.h: Added more MacOSX methods for standard
+	cursors.
+        * Source/NSCursor.m: Implemented new standard cursors methods. 
+	(+setHiddenUntilMouseMoves:) added implementation. 
+	(+initialize) set isHiddenUntilMouseMoves to NO (was YES).
+        * Source/NSApplication.m: (-nextEventMatchingMask:...dequeue:) when
+	cursor is hidden until mouse move, call [NSCursor
+	setHiddenUntilMouseMoves: NO] instead of [NSCursor unhide].
+
 2004-06-27 23:10  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSNibTemplates.m: Replace calls to

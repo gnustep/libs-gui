@@ -1579,7 +1579,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 		|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
 		|| (type == NSMouseMoved))
 		{
-		  [NSCursor unhide];
+		  [NSCursor setHiddenUntilMouseMoves: NO];
 		}
 	    }
 	}
