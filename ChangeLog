@@ -1,3 +1,7 @@
+2003-07-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Set protocols for proxy objects.
+
 2003-07-03 01:43  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFont.m (getNSFont): Only update the cache when the font

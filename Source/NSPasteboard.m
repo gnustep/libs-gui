@@ -959,8 +959,10 @@ static  NSMapTable              *mimeMap = NULL;
 
       if (RETAIN((id)the_server) != nil)
 	{
-	  NSConnection*	conn = [(id)the_server connectionForProxy];
+	  NSConnection	*conn = [(id)the_server connectionForProxy];
+          Protocol      *p = @protocol(GSPasteboardSvr);
 
+          [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
 	       selector: @selector(_lostServer:)
@@ -1107,10 +1109,16 @@ static  NSMapTable              *mimeMap = NULL;
       id<GSPasteboardObj>	anObj;
 
       anObj = [[self _pbs] pasteboardWithName: aName];
-      if (anObj)
+      if (anObj != nil)
 	{
 	  NSPasteboard	*ret;
 
+	  if ([(id)anObj isProxy] == YES)
+	    {
+	      Protocol	*p = @protocol(GSPasteboardObj);
+
+	      [(id)anObj setProtocolForProxy: p];
+	    }
 	  ret = [self _pasteboardWithTarget: anObj name: aName];
 	  NS_VALRETURN(ret);
 	}
