@@ -33,6 +33,8 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSBundle.h>
+#include <Foundation/NSCoder.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSButton.h>
@@ -43,6 +45,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/IMLoading.h>
+#include <AppKit/GMAppKit.h>
 
 #include <extensions/GMArchiver.h>
 
@@ -83,13 +86,32 @@
 //
 // Determining the Panel's Behavior
 //
-- (BOOL)isFloatingPanel					{ return _isFloatingPanel; }
-- (void)setFloatingPanel:(BOOL)flag		{ _isFloatingPanel = flag; }
-- (BOOL)worksWhenModal					{  return _worksWhenModal; }
-- (void)setWorksWhenModal:(BOOL)flag	{ _worksWhenModal = flag; }
-- (BOOL)becomesKeyOnlyIfNeeded			{ return _becomesKeyOnlyIfNeeded; }
+- (BOOL) isFloatingPanel
+{
+  return _isFloatingPanel;
+}
 
-- (void)setBecomesKeyOnlyIfNeeded:(BOOL)flag
+- (void) setFloatingPanel: (BOOL)flag
+{
+  _isFloatingPanel = flag;
+}
+
+- (BOOL) worksWhenModal
+{
+  return _worksWhenModal;
+}
+
+- (void) setWorksWhenModal: (BOOL)flag
+{
+  _worksWhenModal = flag;
+}
+
+- (BOOL) becomesKeyOnlyIfNeeded
+{
+  return _becomesKeyOnlyIfNeeded;
+}
+
+- (void)setBecomesKeyOnlyIfNeeded: (BOOL)flag
 {
   _becomesKeyOnlyIfNeeded = flag;
 }
@@ -97,16 +119,16 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-	[super encodeWithCoder:aCoder];
+  [super encodeWithCoder:aCoder];
 }
 
-- initWithCoder:aDecoder
+- initWithCoder: (NSCoder*)aDecoder
 {
-	[super initWithCoder:aDecoder];
+  [super initWithCoder:aDecoder];
 
-	return self;
+  return self;
 }
 
 @end /* NSPanel */
@@ -123,7 +145,9 @@
 @class	GSAlertPanel;
 
 static GSAlertPanel	*standardAlertPanel = nil;
-static GSAlertPanel	*reusableAlertPanel = nil;
+static GSAlertPanel	*informationalAlertPanel = nil;
+static GSAlertPanel	*criticalAlertPanel = nil;
+static GSAlertPanel	*gmodelAlertPanel = nil;
 
 @interface	GSAlertPanel : NSPanel
 {
@@ -136,7 +160,7 @@ static GSAlertPanel	*reusableAlertPanel = nil;
   int		result;
   BOOL		active;
 }
-- (void) buttonAction: (id)sender;
+- (void) buttonAction: (id) sender;
 - (int) result;
 - (int) runModal;
 - (void) setTitle: (NSString*)title
@@ -157,6 +181,20 @@ static GSAlertPanel	*reusableAlertPanel = nil;
     {
       [self setVersion:1];
     }
+}
+
++ (id) createObjectForModelUnarchiver: (GMUnarchiver*)unarchiver
+{
+    unsigned backingType = [unarchiver decodeUnsignedIntWithName:
+			   @"backingType"];
+    unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
+    NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+    NSPanel* panel = [[[GSAlertPanel allocWithZone:[unarchiver objectZone]]
+		     initWithContentRect:aRect
+		     styleMask:styleMask backing:backingType defer:YES]
+		    autorelease];
+
+    return panel;
 }
 
 - (void) buttonAction: (id)sender
@@ -190,6 +228,12 @@ static GSAlertPanel	*reusableAlertPanel = nil;
 
 - (void) dealloc
 {
+  if (self == standardAlertPanel)
+    standardAlertPanel = nil;
+  if (self == informationalAlertPanel)
+    informationalAlertPanel = nil;
+  if (self == criticalAlertPanel)
+    criticalAlertPanel = nil;
   [defButton release];
   [altButton release];
   [othButton release];
@@ -201,8 +245,13 @@ static GSAlertPanel	*reusableAlertPanel = nil;
 
 - (void) encodeWithModelArchiver: (GMArchiver *)archiver
 {
-  if (standardAlertPanel)
-    [archiver encodeObject: standardAlertPanel withName: @"AlertPanel"];
+  [super encodeWithModelArchiver: archiver];
+  [archiver encodeObject: defButton withName: @"DefaultButton"];
+  [archiver encodeObject: altButton withName: @"AlternateButton"];
+  [archiver encodeObject: othButton withName: @"OtherButton"];
+  [archiver encodeObject: icoButton withName: @"IconButton"];
+  [archiver encodeObject: messageField withName: @"MessageField"];
+  [archiver encodeObject: titleField withName: @"TitleField"];
 }
 
 - (id) initWithContentRect: (NSRect)r
@@ -322,10 +371,15 @@ static GSAlertPanel	*reusableAlertPanel = nil;
 
 - (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
 {
-  if (!standardAlertPanel)
-    standardAlertPanel = [unarchiver decodeObjectWithName: @"AlertPanel"];
-  [self release];
-  return standardAlertPanel;
+  self = [super initWithModelUnarchiver: unarchiver];
+  defButton = [[unarchiver decodeObjectWithName: @"DefaultButton"] retain];
+  altButton = [[unarchiver decodeObjectWithName: @"AlternateButton"] retain];
+  othButton = [[unarchiver decodeObjectWithName: @"OtherButton"] retain];
+  icoButton = [[unarchiver decodeObjectWithName: @"IconButton"] retain];
+  messageField = [[unarchiver decodeObjectWithName: @"MessageField"] retain];
+  titleField = [[unarchiver decodeObjectWithName: @"TitleField"] retain];
+  gmodelAlertPanel = self;
+  return gmodelAlertPanel;
 }
 
 - (int) result
@@ -483,16 +537,31 @@ NSGetCriticalAlertPanel(NSString *title,
 			NSString *otherButton, ...)
 {
   va_list	ap;
-  NSPanel	*panel;
+  NSString	*message;
+  GSAlertPanel	*panel;
 
   if (title == nil)
     title = @"Warning";
   va_start (ap, otherButton);
-  panel = NSGetAlertPanel(title, msg, defaultButton,
-			alternateButton, otherButton, ap);
+  message = [NSString stringWithFormat: msg arguments: ap];
   va_end (ap);
 
-  return [panel retain];
+  if (criticalAlertPanel == nil)
+    {
+      panel = NSGetAlertPanel(title, msg, defaultButton,
+			alternateButton, otherButton, ap);
+      criticalAlertPanel = panel;
+    }
+  else
+    panel = criticalAlertPanel;
+
+  [panel setTitle: @"Critical"];
+  [panel setTitle: title
+	  message: message
+	      def: defaultButton
+	      alt: alternateButton
+	    other: otherButton];
+  return panel;
 }
 
 id
@@ -503,22 +572,40 @@ NSGetInformationalAlertPanel(NSString *title,
 			     NSString *otherButton, ...)
 {
   va_list	ap;
-  NSPanel	*panel;
+  NSString	*message;
+  GSAlertPanel	*panel;
 
   if (title == nil)
     title = @"Information";
   va_start (ap, otherButton);
-  panel = NSGetAlertPanel(title, msg, defaultButton,
-			alternateButton, otherButton, ap);
+  message = [NSString stringWithFormat: msg arguments: ap];
   va_end (ap);
 
-  return [panel retain];
+  if (informationalAlertPanel == nil)
+    {
+      panel = NSGetAlertPanel(title, msg, defaultButton,
+			alternateButton, otherButton, ap);
+      informationalAlertPanel = panel;
+    }
+  else
+    panel = informationalAlertPanel;
+
+  [panel setTitle: @"Information"];
+  [panel setTitle: title
+	  message: message
+	      def: defaultButton
+	      alt: alternateButton
+	    other: otherButton];
+  return panel;
 }
 
 void
 NSReleaseAlertPanel(id alertPanel)
 {
-  [alertPanel release];
+  if (alertPanel != standardAlertPanel &&
+      alertPanel != informationalAlertPanel &&
+      alertPanel != criticalAlertPanel)
+    [alertPanel release];
 }
 
 int
@@ -542,10 +629,9 @@ NSRunAlertPanel(NSString *title,
   message = [NSString stringWithFormat: msg arguments: ap];
   va_end (ap);
 
-  if (reusableAlertPanel)
+  if (standardAlertPanel)
     {
-      panel = reusableAlertPanel;
-      reusableAlertPanel = nil;
+      panel = standardAlertPanel;
       [panel setTitle: title
 	      message: message
 		  def: defaultButton
@@ -556,15 +642,115 @@ NSRunAlertPanel(NSString *title,
     {
       panel = NSGetAlertPanel(title, message, defaultButton,
 			alternateButton, otherButton, ap);
+      standardAlertPanel = panel;
     }
 
   result = [panel runModal];
+  NSReleaseAlertPanel(panel);
+  return result;
+}
 
-  if (reusableAlertPanel == nil)
-    reusableAlertPanel = panel;
+int
+NSRunCriticalAlertPanel(NSString *title,
+			NSString *msg,
+			NSString *defaultButton,
+			NSString *alternateButton,
+			NSString *otherButton, ...)
+{
+  va_list	ap;
+  GSAlertPanel	*panel;
+  int		result;
+
+  va_start (ap, otherButton);
+  panel = NSGetCriticalAlertPanel(title, msg,
+		defaultButton, alternateButton, otherButton, ap);
+  va_end (ap);
+
+  result = [panel runModal];
+  NSReleaseAlertPanel(panel);
+  return result;
+}
+
+int
+NSRunInformationalAlertPanel(NSString *title,
+			     NSString *msg,
+			     NSString *defaultButton,
+			     NSString *alternateButton,
+			     NSString *otherButton, ...)
+{
+  va_list	ap;
+  GSAlertPanel	*panel;
+  int		result;
+
+  va_start (ap, otherButton);
+  panel = NSGetInformationalAlertPanel(title, msg,
+		defaultButton, alternateButton, otherButton, ap);
+  va_end (ap);
+
+  result = [panel runModal];
+  NSReleaseAlertPanel(panel);
+  return result;
+}
+
+int
+NSRunLocalizedAlertPanel(NSString *table,
+			 NSString *title,
+			 NSString *msg,
+			 NSString *defaultButton, 
+			 NSString *alternateButton, 
+			 NSString *otherButton, ...)
+{
+  va_list	ap;
+  GSAlertPanel	*panel;
+  NSString	*message;
+  int		result;
+  NSBundle	*bundle = [NSBundle mainBundle];
+
+  if (title == nil)
+    title = @"Alert";
+
+  title = [bundle localizedStringForKey: title
+				  value: title
+				  table: table];
+  if (defaultButton)
+    defaultButton = [bundle localizedStringForKey: defaultButton
+					    value: defaultButton
+					    table: table];
+  if (alternateButton)
+    alternateButton = [bundle localizedStringForKey: alternateButton
+					      value: alternateButton
+					      table: table];
+  if (otherButton)
+    otherButton = [bundle localizedStringForKey: otherButton
+					  value: otherButton
+					  table: table];
+  if (msg)
+    msg = [bundle localizedStringForKey: msg
+				  value: msg
+				  table: table];
+
+  va_start (ap, otherButton);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end (ap);
+
+  if (standardAlertPanel)
+    {
+      panel = standardAlertPanel;
+      [panel setTitle: title
+	      message: message
+		  def: defaultButton
+		  alt: alternateButton
+		other: otherButton];
+    }
   else
-    NSReleaseAlertPanel(panel);
+    {
+      panel = NSGetAlertPanel(title, message, defaultButton,
+			alternateButton, otherButton, ap);
+      standardAlertPanel = panel;
+    }
 
+  result = [panel runModal];
+  NSReleaseAlertPanel(panel);
   return result;
 }
 

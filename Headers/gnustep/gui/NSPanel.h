@@ -87,6 +87,20 @@ id NSGetAlertPanel(NSString *title,
                    NSString *alternateButton, 
                    NSString *otherButton, ...);
 
+#ifndef	STRICT_OPENSTEP
+id NSGetCriticalAlertPanel(NSString *title,
+			   NSString *msg,
+			   NSString *defaultButton,
+			   NSString *alternateButton, 
+			   NSString *otherButton, ...);
+
+id NSGetInformationalAlertPanel(NSString *title,
+				NSString *msg,
+				NSString *defaultButton,
+				NSString *alternateButton, 
+				NSString *otherButton, ...);
+#endif
+
 //
 // Create and Run an Attention Panel
 //
@@ -95,12 +109,29 @@ int NSRunAlertPanel(NSString *title,
                     NSString *defaultButton,
                     NSString *alternateButton,
                     NSString *otherButton, ...);
+
+#ifndef	STRICT_OPENSTEP
+int NSRunCriticalAlertPanel(NSString *title,
+			    NSString *msg,
+			    NSString *defaultButton,
+			    NSString *alternateButton, 
+			    NSString *otherButton, ...);
+
+int NSRunInformationalAlertPanel(NSString *title,
+				 NSString *msg,
+				 NSString *defaultButton,
+				 NSString *alternateButton, 
+				 NSString *otherButton, ...);
+#endif
+
+#ifndef	STRICT_MACOS_X
 int NSRunLocalizedAlertPanel(NSString *table,
                              NSString *title,
                              NSString *msg,
                              NSString *defaultButton, 
                              NSString *alternateButton, 
                              NSString *otherButton, ...);
+#endif
 
 //
 // Release an Attention Panel

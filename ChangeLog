@@ -1,3 +1,8 @@
+Mon Dec 14  9:10:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSPanel.m: Implemented all the alert panel functions
+	* NSPanel.h: Added prototypes for MacOS-X alert panel functions.
+
 Sat Dec 12 10:10:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSView.m: Fixed bug and added comment about the (deliberately)
