@@ -836,6 +836,8 @@ Optional Packages:
   --with-jpeg-include=DIR JPEG include files are in DIR
   --with-tiff-library=DIR TIFF library file are in DIR
   --with-tiff-include=DIR TIFF include files are in DIR
+  --with-audiofile-library=DIR AUDIOFILE library file are in DIR
+  --with-audiofile-include=DIR AUDIOFILE include files are in DIR
 
 Some influential environment variables:
   CC          C compiler command
@@ -1340,6 +1342,8 @@ LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
 #--------------------------------------------------------------------
+ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
+ADDITIONAL_LIB_DIRS="$LDFLAGS"
 case "$target_os" in
   freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
               LDFLAGS="$LDFLAGS -L/usr/local/lib";;
@@ -3172,8 +3176,8 @@ echo "$as_me: error: gnustep-gui will not compile without tiff" >&2;}
 fi
 CPPFLAGS="${tiff_check_lib_save_header}"
 
-ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS"
-ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS"
+ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 
 #--------------------------------------------------------------------
@@ -3188,6 +3192,35 @@ else
 fi;
 audio_ok=no
 BUILD_GSND=
+
+
+# Check whether --with-audiofile_library or --without-audiofile_library was given.
+if test "${with_audiofile_library+set}" = set; then
+  withval="$with_audiofile_library"
+
+else
+  with_audiofile_library=
+fi;
+
+# Check whether --with-audiofile_include or --without-audiofile_include was given.
+if test "${with_audiofile_include+set}" = set; then
+  withval="$with_audiofile_include"
+
+else
+  with_audiofile_include=
+fi;
+
+if test -n "$with_audiofile_library"; then
+  with_audiofile_library="-L$with_audiofile_library"
+fi
+if test -n "$with_audiofile_include"; then
+  with_audiofile_include="-I$with_audiofile_include"
+fi
+
+audiofile_check_lib_save_headers=$CPPFLAGS
+audiofile_check_lib_save_libs=$LIBS
+CPPFLAGS="${with_audiofile_include} $CPPFLAGS"
+LIBS="${with_audiofile_library} $LIBS"
 echo "$as_me:$LINENO: checking for afGetVirtualFrameSize in -laudiofile" >&5
 echo $ECHO_N "checking for afGetVirtualFrameSize in -laudiofile... $ECHO_C" >&6
 if test "${ac_cv_lib_audiofile_afGetVirtualFrameSize+set}" = set; then
@@ -3248,6 +3281,7 @@ if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes; then
 else
   audio_ok=no
 fi
+
 
 if test $audio_ok = yes -a $enable_gsnd = yes; then
 
@@ -3365,9 +3399,14 @@ fi
 done
 
   ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
+  ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS ${with_audiofile_include}"
+  ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS ${with_audiofile_library}"
   BUILD_GSND=gsnd
 fi
 
+
+LIBS=${audiofile_check_lib_save_libs}
+CPPFLAGS=${audiofile_check_lib_save_headers}
 
 #--------------------------------------------------------------------
 # Record the version

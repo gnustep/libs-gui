@@ -61,6 +61,8 @@ LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 #--------------------------------------------------------------------
 # Add target OS directories as necessary
 #--------------------------------------------------------------------
+ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
+ADDITIONAL_LIB_DIRS="$LDFLAGS"
 case "$target_os" in
   freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
               LDFLAGS="$LDFLAGS -L/usr/local/lib";;
@@ -201,8 +203,8 @@ CPPFLAGS="${tiff_check_lib_save_header}"])
 
 AC_CHECK_TIFFLIB(${with_tiff_library}, ${with_tiff_include})
 
-ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS"
-ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS"
+ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 
 #--------------------------------------------------------------------
@@ -213,13 +215,38 @@ AC_ARG_ENABLE(gsnd,
   enable_gsnd=yes)
 audio_ok=no
 BUILD_GSND=
+
+AC_ARG_WITH(audiofile_library, 
+           [  --with-audiofile-library=DIR AUDIOFILE library file are in DIR], ,
+           with_audiofile_library=)
+AC_ARG_WITH(audiofile_include,  
+	[  --with-audiofile-include=DIR AUDIOFILE include files are in DIR], ,
+        with_audiofile_include=)
+
+if test -n "$with_audiofile_library"; then
+  with_audiofile_library="-L$with_audiofile_library"
+fi
+if test -n "$with_audiofile_include"; then
+  with_audiofile_include="-I$with_audiofile_include"
+fi
+
+audiofile_check_lib_save_headers=$CPPFLAGS
+audiofile_check_lib_save_libs=$LIBS
+CPPFLAGS="${with_audiofile_include} $CPPFLAGS"
+LIBS="${with_audiofile_library} $LIBS"
 AC_CHECK_LIB(audiofile, afGetVirtualFrameSize, audio_ok=yes, audio_ok=no)
+
 if test $audio_ok = yes -a $enable_gsnd = yes; then
   AC_CHECK_HEADERS(audiofile.h)
   ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
+  ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS ${with_audiofile_include}"
+  ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS ${with_audiofile_library}"
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
+
+LIBS=${audiofile_check_lib_save_libs}
+CPPFLAGS=${audiofile_check_lib_save_headers}
 
 #--------------------------------------------------------------------
 # Record the version
