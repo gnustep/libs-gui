@@ -1,5 +1,5 @@
-2004-02-24  Gregory John Casamento <greg_casamento@yahoo.com>
-	On behalf of Quentin Mathé <qmathe@club-internet.fr>
+2004-02-24  Quentin Mathé <qmathe@club-internet.fr>
+	committed by Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSToolbarView.h: Changes for 
 	new toolbar implementation.
