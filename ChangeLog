@@ -1,3 +1,7 @@
+Mon Mar 22 12:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: implement lockFocus and unlockFocus
+t
 Wed Mar 17  6:48:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSAffineTransform.m: bounding matrix of an unrotated rect
