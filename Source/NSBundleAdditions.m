@@ -201,42 +201,49 @@
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone
 {
-  NSData	*data;
   BOOL		loaded = NO;
+  NSUnarchiver	*unarchiver = nil;
 
-  data = [NSData dataWithContentsOfFile: fileName];
-  if (data != nil)
+  NS_DURING
     {
-      NSUnarchiver	*unarchiver;
+      NSData	*data = [NSData dataWithContentsOfFile: fileName];
 
-      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
-      if (unarchiver != nil)
+      if (data != nil)
 	{
-	  id	obj;
-
-	  [unarchiver setObjectZone: zone];
-	  obj = [unarchiver decodeObject];
-	  if (obj != nil)
+	  unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
+	  if (unarchiver != nil)
 	    {
-	      if ([obj isKindOfClass: [GSNibContainer class]])
+	      id	obj;
+
+	      [unarchiver setObjectZone: zone];
+	      obj = [unarchiver decodeObject];
+	      if (obj != nil)
 		{
-		  [obj awakeWithContext: context];
-		  /*
-		   *	Ok - it's all done now - just retain the nib container
-		   *	so tthat it will not be released when the unarchiver
-		   *	is released, and the nib contents will persist.
-		   */
-		  RETAIN(obj);
-		  loaded = YES;
+		  if ([obj isKindOfClass: [GSNibContainer class]])
+		    {
+		      [obj awakeWithContext: context];
+		      /*
+		       *Ok - it's all done now - just retain the nib container
+		       *so that it will not be released when the unarchiver
+		       *is released, and the nib contents will persist.
+		       */
+		      RETAIN(obj);
+		      loaded = YES;
+		    }
+		  else
+		    {
+		      NSLog(@"Nib '%@' without container object!", fileName);
+		    }
 		}
-	      else
-		{
-		  NSLog(@"Nib '%@' without container object!", fileName);
-		}
+	      RELEASE(unarchiver);
 	    }
-	  RELEASE(unarchiver);
 	}
     }
+  NS_HANDLER
+    {
+      TEST_RELEASE(unarchiver);
+    }
+  NS_ENDHANDLER
   return loaded;
 }
 

@@ -1,3 +1,8 @@
+Mon Jan 17  6:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBundleAdditions.m: Catch exceptions when loading nib so
+	we simply return YES or NO.  Fix suggested by karl@nfox.com
+
 Sun Jan 16  8:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Don't log DnD stuff unless NSDragging logging
