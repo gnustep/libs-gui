@@ -1,3 +1,18 @@
+1999-07-19  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSTableView.m: very incomplete implementation.
+	* Source/NSTableColumn.m: mostly complete NSTableColumn
+	implementation.
+	* Source/NSTableHeaderView.m: some coding left when NSTableView
+	works.
+	* Source/NSTableHeaderCell.m: once all is drawing this should be
+	corrected.
+
+	None of this is built for good reason. The code is not finished,
+	and the interfaces are not written. But committing them to CVS
+	makes it much easier for me to develop on the multiple machines I
+	use.
+
 1999-07-18  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSPopUpButtonCell.m: removed debug code. Makes
