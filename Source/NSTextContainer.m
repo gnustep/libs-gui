@@ -165,6 +165,9 @@
 
 - (void) setContainerSize: (NSSize)aSize
 {
+  if (NSEqualSizes(_containerRect.size, aSize))
+    return;
+
   _containerRect = NSMakeRect (0, 0, aSize.width, aSize.height);
 
   if (_layoutManager)
