@@ -1,3 +1,21 @@
+2001-10-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m
+	Implemented [setRulerViewClass:] and preset to NSRulerView. Cache
+	the scrollerWidth in a class var, use this in all methods.
+	Use _sizeForBorderType() from NSCell to determine the border size
+	in all methods that handle borderType. Replaced all uses of
+	AUTORELEASE with explicit RELEASE calls. In [setContentView:]
+	don't RETAIN the content view, as this is handled by the normal
+	subview mechanism. (Don't RELEASE it in [dealloc] and
+	[removeSubview:]) Added dummy method [scrollWheel:].
+	Implemented the ruler methods, but this are still not handled in
+	[tile] and [drawRect:].
+	* Header/gnustep/gui/NSScroller.h
+	Added some MacOSX methods.
+	* Source/NSScroller.m
+	Dummy implementation for those methods.
+	
 Thu Oct 18 16:21:37 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSClipView.m ([-dealloc]): Remove us from observing the
