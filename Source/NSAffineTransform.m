@@ -34,6 +34,7 @@
 
 #include <AppKit/config.h>
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSBezierPath.h>
 #include <AppKit/PSOperators.h>
 
 /* Private definitions */
@@ -67,7 +68,7 @@ static NSAffineTransformStruct identityTransform = {
   t = (NSAffineTransform*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   t->matrix = identityTransform;
   t->rotationAngle = 0.0;
-  return [t autorelease];
+  return AUTORELEASE(t);
 }
 
 + (id) new
@@ -312,24 +313,9 @@ static NSAffineTransformStruct identityTransform = {
   TY += tranY;
 }
 
-
-+ matrixFrom: (const float[6])_matrix
-{
-  NSAffineTransform	*m = [[self alloc] autorelease];
-
-  [m setMatrix: _matrix];
-
-  return m;
-}
-
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSAffineTransform *new;
-
-  new = (NSAffineTransform*)NSAllocateObject(isa, 0, zone);
-  new->matrix = matrix;
-  new->rotationAngle = rotationAngle;
-  return new;
+  return NSCopyObject(self, 0, zone);
 }
 
 - (BOOL) isEqual: (id)anObject
@@ -343,6 +329,41 @@ static NSAffineTransformStruct identityTransform = {
 	return YES;
     }
   return NO;
+}
+
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  float replace[6];
+    
+  [aCoder decodeArrayOfObjCType: @encode(float)
+	  count: 6
+	  at: replace];
+  [self setMatrix: replace];
+
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  float replace[6];
+    
+  [self getMatrix: replace];
+  [aCoder encodeArrayOfObjCType: @encode(float)
+	  count: 6
+	  at: replace];
+}
+
+@end /* NSAffineTransform */
+
+@implementation NSAffineTransform (GNUstep)
+
++ matrixFrom: (const float[6])_matrix
+{
+  NSAffineTransform	*m = AUTORELEASE([self alloc]);
+
+  [m setMatrix: _matrix];
+
+  return m;
 }
 
 - (void) scaleBy: (float)sx :(float)sy
@@ -558,5 +579,5 @@ static NSAffineTransformStruct identityTransform = {
   replace[5] = matrix.ty;
 }
 
-@end /* NSAffineTransform */
+@end /* NSAffineTransform (GNUstep) */
 
