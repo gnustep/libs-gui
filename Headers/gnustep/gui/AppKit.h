@@ -101,6 +101,7 @@
 #include <AppKit/NSFontPanel.h>
 #include <AppKit/NSForm.h>
 #include <AppKit/NSFormCell.h>
+#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSHelpPanel.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSImageRep.h>
@@ -139,5 +140,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSNibDeclarations.h>
+
+#include <AppKit/PSOperators.h>
 
 #endif _GNUstep_H_AppKit

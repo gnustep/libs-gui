@@ -50,7 +50,7 @@
 # include <Foundation/NSConnection.h>
 #endif
 
-#include <AppKit/GSContext.h>
+#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPasteboard.h>
@@ -1617,9 +1617,9 @@ BOOL done = NO;
   return nil;
 }
 
-- (GSContext *)context                              // return the current draw
+- (NSGraphicsContext *)context                      // return the current draw
 {                                                   // context (drawing dest)
-  return [GSContext currentContext];
+  return [NSGraphicsContext currentContext];
 }
 
 - (void) reportException: (NSException *)anException

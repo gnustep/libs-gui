@@ -141,12 +141,12 @@ toData:(NSMutableData *)data
 //
 // Managing the drawing Context
 //
-- (GSContext *)createContext
+- (NSGraphicsContext*)createContext
 {
   return nil;
 }
 
-- (GSContext *)context
+- (NSGraphicsContext *)context
 {
   return nil;
 }

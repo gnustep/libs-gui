@@ -334,4 +334,3 @@ NSString *NSKernAttributeName = 			@"NSKernAttributeName";
 /* Drawing engine externs */
 NSString *NSBackendContext = @"NSBackendContext";
 
-GSContext *_currentGSContext;

@@ -39,7 +39,7 @@
 @class NSView;
 @class NSPrintInfo;
 @class NSPrintPanel;
-@class GSContext;
+@class NSGraphicsContext;
 
 typedef enum _NSPrintingPageOrder {
   NSDescendingPageOrder,
@@ -99,8 +99,8 @@ typedef enum _NSPrintingPageOrder {
 //
 // Managing the DPS Context
 //
-- (GSContext *)createContext;
-- (GSContext *)context;
+- (NSGraphicsContext *)createContext;
+- (NSGraphicsContext *)context;
 - (void)destroyContext;
 
 //

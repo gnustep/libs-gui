@@ -33,7 +33,7 @@
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
 
-#include <AppKit/GSContext.h>
+#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSResponder.h>
 
 @class NSString;

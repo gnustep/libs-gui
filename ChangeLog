@@ -1,3 +1,29 @@
+Thu Feb 25 15:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Added support for the new (MacOS-X) NSGraphicsContext class by
+	incorporating stuff from Adam Fedors xgps and replacing GSContext
+	* Headers/AppKit/DPSOperators.h: New file
+	* Headers/AppKit/PSOperators.h: New file
+	* Headers/AppKit/GSMethodTable.h: New file
+	* Headers/AppKit/NSGraphicsContext.h: New file
+	* Source/NSGraphicsContext.m: New class implementation
+	* Headers/AppKit/AppKit.h: Updated for NSGraphicsContext
+	* Headers/AppKit/NSApplication.h: ditto
+	* Headers/AppKit/NSEvent.h: ditto
+	* Headers/AppKit/NSImage.h: ditto
+	* Headers/AppKit/NSPrintOperation.h: ditto
+	* Headers/AppKit/NSView.h: ditto
+	* Headers/AppKit/NSWindow.h: ditto
+	* Source/Functions.m: ditto
+	* Source/GNUmakefile: ditto
+	* Source/NSApplication.m: ditto
+	* Source/NSButtonCell.m: ditto
+	* Source/NSCell.m: ditto
+	* Source/NSEvent.m: ditto
+	* Source/NSPrintOperation.m: ditto
+	* Source/NSScrollView.m: ditto
+	* Source/externs.m: ditto
+
 Wed Feb 24  Felipe A. Rodriguez  <farz@mindspring.com>
 
 	* NSSliderCell.m: knobRectFlipped: fix draw bugs in slider.app example.

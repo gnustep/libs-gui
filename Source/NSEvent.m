@@ -41,7 +41,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/GSContext.h>
+#include <AppKit/NSGraphicsContext.h>
 
 @implementation NSEvent
 
@@ -63,15 +63,15 @@ static NSString	*timerKey = @"NSEventTimersKey";
 //
 // Creating NSEvent objects
 //
-+ (NSEvent *)enterExitEventWithType:(NSEventType)type	
-						   location:(NSPoint)location
-						   modifierFlags:(unsigned int)flags
-						   timestamp:(NSTimeInterval)time
-						   windowNumber:(int)windowNum
-						   context:(GSContext *)context	
-						   eventNumber:(int)eventNum
-						   trackingNumber:(int)trackingNum
-						   userData:(void *)userData
++ (NSEvent*) enterExitEventWithType: (NSEventType)type	
+			   location: (NSPoint)location
+		      modifierFlags: (unsigned int)flags
+			  timestamp: (NSTimeInterval)time
+		       windowNumber: (int)windowNum
+			    context: (NSGraphicsContext*)context	
+		        eventNumber: (int)eventNum
+		     trackingNumber: (int)trackingNum
+			   userData: (void *)userData
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
@@ -93,15 +93,15 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 }
 
 + (NSEvent *)keyEventWithType:(NSEventType)type
-					 location:(NSPoint)location
-					 modifierFlags:(unsigned int)flags
-					 timestamp:(NSTimeInterval)time
-					 windowNumber:(int)windowNum
-					 context:(GSContext *)context	
-					 characters:(NSString *)keys	
-					 charactersIgnoringModifiers:(NSString *)ukeys
-					 isARepeat:(BOOL)repeatKey	
-					 keyCode:(unsigned short)code
+		     location:(NSPoint)location
+		modifierFlags:(unsigned int)flags
+		    timestamp:(NSTimeInterval)time
+		 windowNumber:(int)windowNum
+		      context:(NSGraphicsContext *)context	
+		   characters:(NSString *)keys	
+  charactersIgnoringModifiers:(NSString *)ukeys
+		    isARepeat:(BOOL)repeatKey	
+		      keyCode:(unsigned short)code
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
@@ -125,14 +125,14 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 }
 
 + (NSEvent *)mouseEventWithType:(NSEventType)type	
-						location:(NSPoint)location
-						modifierFlags:(unsigned int)flags
-						timestamp:(NSTimeInterval)time
-						windowNumber:(int)windowNum 
-						context:(GSContext *)context 
-						eventNumber:(int)eventNum	
-						clickCount:(int)clickNum	
-						pressure:(float)pressureValue
+		       location:(NSPoint)location
+		  modifierFlags:(unsigned int)flags
+		      timestamp:(NSTimeInterval)time
+		   windowNumber:(int)windowNum 
+			context:(NSGraphicsContext*)context 
+		    eventNumber:(int)eventNum	
+		     clickCount:(int)clickNum	
+		       pressure:(float)pressureValue
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 															// event is not of
@@ -156,14 +156,14 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 }
 
 + (NSEvent *)otherEventWithType:(NSEventType)type	
-						location:(NSPoint)location
-						modifierFlags:(unsigned int)flags
-						timestamp:(NSTimeInterval)time
-						windowNumber:(int)windowNum 
-						context:(GSContext *)context 
-						subtype:(short)subType	
-						data1:(int)data1	
-						data2:(int)data2
+		       location:(NSPoint)location
+		  modifierFlags:(unsigned int)flags
+		      timestamp:(NSTimeInterval)time
+		   windowNumber:(int)windowNum 
+			context:(NSGraphicsContext*)context 
+			subtype:(short)subType	
+			  data1:(int)data1	
+			  data2:(int)data2
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
@@ -284,9 +284,9 @@ NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 //
 // Getting General Event Information
 //
-- (GSContext *)context
+- (NSGraphicsContext*) context
 {
-	return event_context;
+  return event_context;
 }
 
 - (NSPoint)locationInWindow

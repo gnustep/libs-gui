@@ -35,7 +35,7 @@
 
 @class NSString;
 @class NSWindow;
-@class GSContext;
+@class NSGraphicsContext;
 
 typedef enum _NSEventType {
   NSLeftMouseDown,
@@ -92,7 +92,7 @@ enum {
   unsigned int modifier_flags;
   NSTimeInterval event_time;
   int window_num;
-  GSContext *event_context;
+  NSGraphicsContext*event_context;
   union _MB_event_data
   {
     struct
@@ -132,7 +132,7 @@ enum {
 		      modifierFlags:(unsigned int)flags
 			  timestamp:(NSTimeInterval)time
 		       windowNumber:(int)windowNum
-			    context:(GSContext *)context	
+			    context:(NSGraphicsContext*)context	
 			eventNumber:(int)eventNum
 		     trackingNumber:(int)trackingNum
 			   userData:(void *)userData; 
@@ -142,7 +142,7 @@ enum {
 		modifierFlags:(unsigned int)flags
 		    timestamp:(NSTimeInterval)time
 		 windowNumber:(int)windowNum
-		      context:(GSContext *)context	
+		      context:(NSGraphicsContext*)context	
 		   characters:(NSString *)keys	
   charactersIgnoringModifiers:(NSString *)ukeys
 		    isARepeat:(BOOL)repeatKey	
@@ -153,7 +153,7 @@ enum {
 		  modifierFlags:(unsigned int)flags
 		      timestamp:(NSTimeInterval)time
 		   windowNumber:(int)windowNum	
-			context:(GSContext *)context	
+			context:(NSGraphicsContext*)context	
 		    eventNumber:(int)eventNum	
 		     clickCount:(int)clickNum	
 		       pressure:(float)pressureValue;
@@ -163,7 +163,7 @@ enum {
 		  modifierFlags:(unsigned int)flags
 		      timestamp:(NSTimeInterval)time
 		   windowNumber:(int)windowNum	
-			context:(GSContext *)context	
+			context:(NSGraphicsContext*)context	
 			subtype:(short)subType	
 			  data1:(int)data1	
 			  data2:(int)data2;
@@ -171,7 +171,7 @@ enum {
 //
 // Getting General Event Information
 //
-- (GSContext *)context;
+- (NSGraphicsContext*)context;
 - (NSPoint)locationInWindow;
 - (unsigned int)modifierFlags;
 - (NSTimeInterval)timestamp;

@@ -33,20 +33,7 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSWindow.h>
-
-//
-// Postscript functions to be defined and implemented by the backend
-//
-extern void PSsetlinewidth(float width);
-extern void PSsetgray(float num);
-extern void PSmoveto(float x, float y);
-extern void PSrlineto(float x, float y);
-extern void PSstroke(void);
-extern void PSgrestore(void);
-extern void PSgsave(void);
-
-
-
+#include <AppKit/PSOperators.h>
 
 @implementation NSScrollView
 

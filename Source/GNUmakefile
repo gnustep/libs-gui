@@ -37,7 +37,6 @@ LIBRARY_NAME=libgnustep-gui
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
-GSContext.m \
 NSActionCell.m \
 NSApplication.m \
 NSBitmapImageRep.m \
@@ -70,6 +69,7 @@ NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
+NSGraphicsContext.m \
 NSHelpPanel.m \
 NSImage.m \
 NSImageRep.m \
@@ -120,7 +120,6 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
 
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
-AppKit/GSContext.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \
 AppKit/NSBitmapImageRep.h \
@@ -155,6 +154,7 @@ AppKit/NSFontPanel.h \
 AppKit/NSForm.h \
 AppKit/NSFormCell.h \
 AppKit/NSGraphics.h \
+AppKit/NSGraphicsContext.h \
 AppKit/NSHelpPanel.h \
 AppKit/NSImage.h \
 AppKit/NSImageRep.h \
@@ -204,7 +204,10 @@ AppKit/NSWorkspace.h \
 AppKit/GSTrackingRect.h \
 AppKit/PSMatrix.h \
 AppKit/nsimage-tiff.h \
-AppKit/GSServicesManager.h \
+AppKit/GSMethodTable.h \
+AppKit/DPSOperators.h \
+AppKit/PSOperators.h \
+AppKit/GSServicesManager.h
 
 -include GNUmakefile.preamble
 

@@ -45,7 +45,7 @@
 @class NSMenuItem;
 @class NSImage;
 @class NSWindow;
-@class GSContext;
+@class NSGraphicsContext;
 
 typedef struct _NSModalSession *NSModalSession;
 
@@ -216,7 +216,7 @@ extern NSString *NSEventTrackingRunLoopMode;
 //
 // Getting the display context
 //
-- (GSContext *)context;
+- (NSGraphicsContext *)context;
 
 //
 // Reporting an exception

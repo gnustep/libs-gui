@@ -32,7 +32,7 @@
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/GSContext.h>
+#include <AppKit/NSGraphicsContext.h>
 
 char **NSArgv = NULL;
 
