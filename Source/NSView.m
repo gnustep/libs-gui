@@ -423,7 +423,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       [window makeFirstResponder: window];
     }
-  [super_view setNeedsDisplayInRect: [self frame]];
+  [super_view setNeedsDisplayInRect: frame];
   RETAIN(self);
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
