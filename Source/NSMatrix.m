@@ -2226,7 +2226,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   SEL		mkSel = @selector(makeCellAtRow:column:);
   IMP		mkImp = [self methodForSelector: mkSel];
 
-NSLog(@"mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols, row, col);
+//NSLog(@"%x - mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, maxRows, maxCols, numRows, numCols, row, col);
   if (row < 0)
     {
 #if	STRICT == 0
@@ -2256,11 +2256,13 @@ NSLog(@"mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols,
    * putCell:atRow:column: to implement it, and that checks bounds.
    */
   oldMaxC = maxCols;
-  maxCols = col;
   numCols = col;
+  if (col > maxCols)
+    maxCols = col;
   oldMaxR = maxRows;
-  maxRows = row;
   numRows = row;
+  if (row > maxRows)
+    maxRows = row;
 
   if (col > oldMaxC)
     {
@@ -2331,7 +2333,7 @@ NSLog(@"mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols,
     }
 
   [self deselectAllCells];
-NSLog(@"end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols, row, col);
+//NSLog(@"%x - end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, maxRows, maxCols, numRows, numCols, row, col);
 }
 
 - (void) _setState: (int)state
