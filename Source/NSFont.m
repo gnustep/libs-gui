@@ -79,8 +79,6 @@ getNSFont(NSString* key, NSString* defaultFontName, float fontSize)
     {
       fontSize = [defaults floatForKey:
 	[NSString stringWithFormat: @"%@Size", key]];
-      if (fontSize == 0)
-	fontSize = 12;
     }
 
   return [NSFontClass fontWithName: fontName size: fontSize];
@@ -361,18 +359,38 @@ setNSFont(NSString* key, NSFont* font)
 //
 + (float) labelFontSize
 {
-  /* FIXME - if the user has set a default, shouldn't this return that ? */ 
-  return 12.0;
+  float fontSize = [defaults floatForKey: @"NSLabelFontSize"];
+  
+  if (fontSize == 0)
+    {
+      fontSize = 12;
+    }
+
+  return fontSize;
 }
 
 + (float) smallSystemFontSize
 {
-  return 9.0;
+  float fontSize = [defaults floatForKey: @"NSSmallFontSize"];
+  
+  if (fontSize == 0)
+    {
+      fontSize = 9;
+    }
+
+  return fontSize;
 }
 
 + (float) systemFontSize
 {
-  return 12.0;
+  float fontSize = [defaults floatForKey: @"NSFontSize"];
+  
+  if (fontSize == 0)
+    {
+      fontSize = 12;
+    }
+
+  return fontSize;
 }
 
 /** Creates a new font with name aFontName and matrix fontMatrix.  The
@@ -385,8 +403,26 @@ setNSFont(NSString* key, NSFont* font)
 + (NSFont*) fontWithName: (NSString*)aFontName 
 		  matrix: (const float*)fontMatrix
 {
-  return AUTORELEASE([[NSFontClass alloc] initWithName: aFontName
-						matrix: fontMatrix]);
+  NSFont *font;
+  NSString *nameWithMatrix;
+
+  nameWithMatrix = [NSString stringWithFormat:
+                             @"%@ %.3f %.3f %.3f %.3f %.3f %.3f",
+                             aFontName,
+                             fontMatrix[0], fontMatrix[1], fontMatrix[2], 
+			     fontMatrix[3], fontMatrix[4], fontMatrix[5]];
+
+  /* Check whether the font is cached */
+  font = [globalFontDictionary objectForKey: nameWithMatrix];
+  if(font == nil)
+    {
+      font = AUTORELEASE([[NSFontClass alloc] initWithName: aFontName
+					      matrix: fontMatrix]);
+      /* Cache the font for later use */
+      [globalFontDictionary setObject: font forKey: nameWithMatrix];
+    }
+
+  return font;
 }
 
 /** Creates a new font with name aFontName and size fontSize. Fonts created
@@ -430,26 +466,6 @@ setNSFont(NSString* key, NSFont* font)
 */
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
 {
-  NSFont *font;
-  NSString *nameWithMatrix;
-
-  nameWithMatrix = [NSString stringWithFormat:
-                             @"%@ %.3f %.3f %.3f %.3f %.3f %.3f",
-                             name,
-                             fontMatrix[0], fontMatrix[1], fontMatrix[2], 
-			     fontMatrix[3], fontMatrix[4], fontMatrix[5]];
-
-  /* Check whether the font is cached */
-  font = [globalFontDictionary objectForKey: nameWithMatrix];
-  if(font != nil)
-    {
-      RELEASE(self);
-      // retain to act like we were alloc'd
-      return RETAIN(font);
-    }
-  /* Cache the font for later use */
-  [globalFontDictionary setObject: self forKey: nameWithMatrix];
-
   fontName = [name copy];
   memcpy(matrix, fontMatrix, sizeof(matrix));
   if (fontMatrix == NSFontIdentityMatrix)
