@@ -1152,6 +1152,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
       return [self _launchApplication: appName arguments: args];
     }
+  else
+    {
+      [app activateIgnoringOtherApps:YES];
+    }
 
   return YES;
 }

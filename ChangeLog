@@ -1,3 +1,10 @@
+2004-09-05 06:23  Matt Rice <ratmice@yahoo.com>
+
+	* Source/GSServicesManager.m: new method -activateIgnoringOtherApps:
+	* Source/NSWorkspace.m (-launchApplication:showIcon:autolaunch:):
+	call -activateIgnoringOtherApps: on the remote connection to an already
+	running app.
+
 2004-09-04 23:32  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:):

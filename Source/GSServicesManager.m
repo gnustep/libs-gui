@@ -76,6 +76,7 @@ static GSServicesManager	*manager = nil;
 - (void) dealloc;
 - (void) release;
 - (id) retain;
+- (void) activateIgnoringOtherApps: (BOOL)flag;
 - (id) self;
 @end
 
@@ -388,6 +389,11 @@ NSRegisterServicesProvider(id provider, NSString *name)
   return self;
 }
 
+- (void) activateIgnoringOtherApps: (BOOL)flag
+{
+  [NSApp activateIgnoringOtherApps:flag];
+}
+  
 - (id) self
 {
   return self;
