@@ -1,3 +1,14 @@
+Sun Sep 10 23:33:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTextView.m ([-initWithFrame:textContainer:]): Fixed the
+	setting of the text view as the text container's text view (patch
+	prepared in cooperation with Georg Fleischman <georg@vhf.de>).
+
+Sun Sep 10 23:07:45 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSMatrix.m ([-initWithCoder:]), ([-encodeWithCoder:]):
+	Implemented.
+
 Sun Sep 10 16:49:50 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSMatrix.h: Prefixed all ivars with
