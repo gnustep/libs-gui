@@ -127,6 +127,7 @@ NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
 NSText.m \
+NSTextAttachment.m \
 NSTextContainer.m \
 NSTextField.m \
 NSTextFieldCell.m \
