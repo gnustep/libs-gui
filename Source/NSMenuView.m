@@ -1425,6 +1425,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 - (void) drawRect: (NSRect)rect
 {
   NSRect workRect = [self bounds];
+  NSSize titleSize;
   NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
   float grays[] = {NSDarkGray, NSDarkGray};
   /* Cache the title attributes */
@@ -1454,11 +1455,10 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 	       nil];
     }
 
-  // This gives the correct position
-  // WO: No it doesn't!
+  titleSize = [[menu title] sizeWithAttributes: attr];
   workRect.origin.x += 5;
-  workRect.size.width -= 5;
-  workRect.size.height -= 2;
+  workRect.origin.y = NSMidY (workRect) - titleSize.height / 2;
+  workRect.size.height = titleSize.height;
   [[menu title] drawInRect: workRect  withAttributes: attr];
 }
 

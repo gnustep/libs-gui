@@ -2,6 +2,8 @@
 
 	* Source/NSMenu.m: ([-_updateUserDefaults:]) Do not store location
 	for attached menus.
+	* Source/NSMenuView.m ([NSMenuWindowTitleView -drawRect:]):
+	Centre drawing of title instead of using fixed offset.
 
 2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
