@@ -1,5 +1,16 @@
 Sun Nov 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
+	Modified code so that text is highlighted only when moving between
+ 	fields with TAB, not on mouse events:
+	* Source/NSTextField.m ([-becomeFirstResponder]), ([-mouseDown:]):
+ 	Modified.  ([-acceptsFirstMouse:]): New method.
+	* Source/NSWindow.m: ([-selectKeyViewPrecedingView:]), 
+	([-selectPreviousKeyView:]), ([-selectNextKeyView:]), 
+	([-selectKeyViewFollowingView:]): Select text if the newly selected 
+	view is kind of text field.
+
+Sun Nov 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
 	Huge improvements of NSTextField and related code.  
 		
 	Fix for nil target:
