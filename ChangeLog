@@ -1,3 +1,7 @@
+Wed Jul 10 17:11:53 1996  Scott Christley <scottc@net-community.com>
+
+	* Source/Makefile.sed.nt: Disable debugging by default.
+
 Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Source/NSButton.m (mouseDown:): Correct cell state changes for

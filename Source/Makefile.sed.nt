@@ -1,6 +1,6 @@
 s/@configure_input@/ Generated from Makefile.in by configure.bat/
 s/@srcdir@/./
-s/@CC@/gcc -fgnu-runtime -O -DDEBUGLOG -D__MS_WIN32__/
+s/@CC@ -g/gcc -fgnu-runtime -O -D__MS_WIN32__/
 s/@CPPFLAGS@//
 s/@prefix@/$(MB_DEV)/
 s/@exec_prefix@/$(prefix)/
