@@ -182,24 +182,20 @@ static Class NSImageRep_class = NULL;
   else
     return nil;
 
-  // This is a GNUstep extension for special file types
-  if ([rep respondsToSelector: @selector(imageRepsWithFile:)])
-    return [rep imageRepsWithFile: filename];
-  else
-    {  
-      NSData* data;
-	  
-      data = [NSData dataWithContentsOfFile: filename];
-      if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	return [rep imageRepsWithData: data];
-      else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-        {
-	  NSImageRep *imageRep = [rep imageRepWithData: data];
-	      
-	  if (imageRep != nil)
-	    return [NSArray arrayWithObject: imageRep];
-	}
-    }
+  {
+    NSData* data;
+
+    data = [NSData dataWithContentsOfFile: filename];
+    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+      return [rep imageRepsWithData: data];
+    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+      {
+	NSImageRep *imageRep = [rep imageRepWithData: data];
+
+	if (imageRep != nil)
+	  return [NSArray arrayWithObject: imageRep];
+      }
+  }
 
   return nil;
 }
@@ -232,13 +228,13 @@ static Class NSImageRep_class = NULL;
     }
   else
     return nil;
-	  
+
   if ([rep respondsToSelector: @selector(imageRepsWithData:)])
     return [rep imageRepsWithData: data];
   else if ([rep respondsToSelector: @selector(imageRepWithData:)])
     {
       NSImageRep *imageRep = [rep imageRepWithData: data];
-	      
+
       if (imageRep != nil)
 	return [NSArray arrayWithObject: imageRep];
     }

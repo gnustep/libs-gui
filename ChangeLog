@@ -1,3 +1,12 @@
+2004-02-03 23:38  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSBitmapImageRep.m (+imageRepsWithFile:,
+	_initFromWrasterFile:, _wrasterFileTypes): Remove obsolete libwraster
+	image loading hack. Update callers.
+
+	* Source/NSImageRep.m (+imageRepsWithContentsOfFile:): Remove uses
+	of the removed NSBitmapImageRep methods.
+
 2004-02-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m

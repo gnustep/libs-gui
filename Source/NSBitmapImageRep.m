@@ -61,10 +61,7 @@
 static BOOL supports_lzw_compression = NO;
 
 /* Backend methods (optional) */
-@interface NSBitmapImageRep (Backend)
-+ (NSArray *) _wrasterFileTypes;
-- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber;
-
+@interface NSBitmapImageRep (GSPrivate)
 // GNUstep extension
 - _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
 
@@ -133,9 +130,7 @@ static BOOL supports_lzw_compression = NO;
 
   if (types == nil)
     {
-      NSArray *wtypes = [self _wrasterFileTypes];
-
-      types = [[NSMutableArray alloc] initWithObjects:
+      types = [[NSArray alloc] initWithObjects:
 	@"tiff", @"tif",
 	@"pnm", @"ppm",
 #if HAVE_LIBUNGIF
@@ -148,11 +143,6 @@ static BOOL supports_lzw_compression = NO;
 	@"png",
 #endif
 	nil];
-
-      if (wtypes != nil)
-	{
-	  [(NSMutableArray *)types addObjectsFromArray: wtypes];
-	}
     }
 
   return types;
@@ -963,7 +953,7 @@ static BOOL supports_lzw_compression = NO;
 
 @end
 
-@implementation NSBitmapImageRep (GNUstepExtension)
+@implementation NSBitmapImageRep (GSPrivate)
 
 - (int) _localFromCompressionType: (NSTIFFCompression)type
 {
@@ -1001,62 +991,6 @@ static BOOL supports_lzw_compression = NO;
   return NSTIFFCompressionNone;
 }
 
-
-/* A special method used mostly when we have the wraster library in the
-   backend, which can read several more image formats. 
-   Don't use this for TIFF images, use the regular ...Data methods */
-+ (NSArray*) imageRepsWithFile: (NSString *)filename
-{
-  NSString *ext;
-  int	   images;
-  NSMutableArray *array;
-  NSBitmapImageRep* imageRep;
-  NSFileManager *manager = [NSFileManager defaultManager];
-
-  if ([manager fileExistsAtPath: filename] == NO)
-    {
-      return nil;
-    }
-
-  ext = [filename pathExtension];
-  if (!ext)
-    {
-      NSLog(@"Extension missing from filename - '%@'", filename);
-      return nil;
-    }
-  /* This is a quick hack to make it work - if the extension is that
-     of a tiff file, we init with data */
-  if ([ext isEqualToString: @"tiff"]  ||  [ext isEqualToString: @"tif"])
-    {
-      NSData* data = [NSData dataWithContentsOfFile: filename];
-      return [self imageRepsWithData: data];
-    }
-
-  /* Otherwise, we attempt using wraster classes to load the file
-     (which could be png, etc) */
-  array = [NSMutableArray arrayWithCapacity: 2];
-  images = 0;
-  do
-    {
-      imageRep = [[[self class] alloc] _initFromWrasterFile: filename 
-				                     number: images];
-      if (imageRep)
-	{
-	  [array addObject: AUTORELEASE(imageRep)];
-	}
-      images++;
-    }
-  while (imageRep);
-
-  if ([array count] > 0)
-    {
-      return array;
-    }
-  else 
-    {
-      return nil;
-    }
-}
 
 /* Given a TIFF image (from the libtiff library), load the image information
    into our data structure.  Reads the specified image. */
@@ -1115,15 +1049,5 @@ static BOOL supports_lzw_compression = NO;
   return self;
 }
 
-// This are just placeholders for the implementation in the backend
-- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber
-{
-  return nil;
-}
-
-+ (NSArray *) _wrasterFileTypes
-{
-  return nil;
-}
-
 @end
+
