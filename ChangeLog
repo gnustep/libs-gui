@@ -1,3 +1,11 @@
+Wed Feb 20 19:15:58 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/GSMemoryPanel.h: New file.
+	* Source/GSMemoryPanel.m: New file.
+	* Source/GNUmakefile: Compile, install the new files.
+	* Source/GSInfoPanel.m: If the user clicks on the application
+	icon, open the memory panel (idea by Richard Frith-Macdonald).
+
 Wed Feb 20 12:36:05 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Model/GMAppKit.m ([NSBox -subviewsForModel]): New method fixing
