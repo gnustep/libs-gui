@@ -677,6 +677,7 @@ static NSMapTable* windowmaps = NULL;
   _styleMask = aStyle;
   
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
+  _frame = [self constrainFrameRect: _frame toScreen: [self screen]];
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
     _frame.size.height - contentRect.size.height + 1);
   _maximumSize = NSMakeSize (10e4, 10e4);
