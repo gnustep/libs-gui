@@ -1,3 +1,10 @@
+2004-02-15 20:56  Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Source/GSNibCompatibility.m: Removal of keyed archiver
+	code in deprecated template NSWindowTemplate.  I commented this
+	out as we need to determine how to implement this with the 
+	keyed archiver changes in the new templates.
+
 2004-02-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSLayoutManager.m: 

@@ -97,6 +97,7 @@
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
+  /*
   if ([aDecoder allowsKeyedCoding])
     {
       NSRect screenRect = [aDecoder decodeRectForKey: @"NSScreenRect"];
@@ -133,11 +134,12 @@
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-      return [super initWithCoder: aDecoder];
-    }
+  */
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
+  return [super initWithCoder: aDecoder];
+  //}
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
