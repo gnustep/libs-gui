@@ -1622,6 +1622,13 @@ typedef struct _PathElement
   PathElement elem;
   int i, count;
 
+  if (![aPath isKindOfClass: isa])
+    {
+      [super appendBezierPath: aPath];
+      return;
+    }
+
+  flat = flat && ((GSBezierPath*)aPath)->flat;
   count = [aPath elementCount];
 
   for (i = 0; i < count; i++)
