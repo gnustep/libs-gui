@@ -189,9 +189,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - init
 {
   [super init];
-  ASSIGN(fontDictionary, [NSMutableDictionary dictionaryWithCapacity:25]);
-  weight = 0;
-  traits = 0;
   mostCompatibleStringEncoding = NSASCIIStringEncoding;
 
   return self;
@@ -242,6 +239,66 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (NSDictionary*) afmDictionary
 {
+  if (fontDictionary == nil)
+    {
+      NSString *weightString;
+
+      fontDictionary = [[NSMutableDictionary alloc] initWithCapacity: 25];
+      
+      [fontDictionary setObject: fontName forKey: NSAFMFontName];
+      if (familyName != nil)
+        {
+	  [fontDictionary setObject: familyName 
+			  forKey: NSAFMFamilyName];
+	}
+      if (ascender != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: ascender] 
+			  forKey: NSAFMAscender];
+	}
+      if (descender != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: descender]
+			  forKey: NSAFMDescender];
+	}
+      if (xHeight != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: xHeight]
+			  forKey: NSAFMXHeight];
+	}
+      if (capHeight != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: capHeight]
+			  forKey: NSAFMCapHeight];
+	}
+      if (italicAngle != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: italicAngle]
+			  forKey: NSAFMItalicAngle];
+	}
+      if (underlinePosition != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: underlinePosition]
+			  forKey: NSAFMUnderlinePosition];
+	}
+      if (underlineThickness != 0.0)
+        {
+	  [fontDictionary setObject: [NSNumber numberWithFloat: underlineThickness]
+			  forKey: NSAFMUnderlineThickness];
+	}
+
+      weightString = [GSFontInfo stringForWeight: weight];      
+      if (weightString != nil)
+        {
+	  [fontDictionary setObject: weightString forKey: NSAFMWeight];
+	}
+      if (encodingScheme != nil)
+        {
+	  [fontDictionary setObject: encodingScheme
+			  forKey: NSAFMEncodingScheme];
+	}
+
+    }
   return fontDictionary;
 }
 
