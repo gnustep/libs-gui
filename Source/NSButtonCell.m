@@ -111,6 +111,7 @@
   RELEASE(_altImage);
   RELEASE(_keyEquivalent);
   RELEASE(_keyEquivalentFont);
+  RELEASE(_sound);
 
   [super dealloc];
 }
@@ -217,8 +218,12 @@
   ASSIGNCOPY(_altContents, aString);
 
   if (_control_view)
-    if ([_control_view isKindOfClass: [NSControl class]])
-      [(NSControl*)_control_view updateCell: self];
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+	{
+	  [(NSControl*)_control_view updateCell: self];
+	}
+    }
 }
 
 - (NSAttributedString *)attributedAlternateTitle
@@ -855,20 +860,30 @@
    * The following code must be kept in sync with -drawInteriorWithFrame
    */ 
   if (_cell.is_highlighted)
-    mask = _highlightsByMask;
+    {
+      mask = _highlightsByMask;
+    }
   else if (_cell.state)
-    mask = _showAltStateMask;
+    {
+      mask = _showAltStateMask;
+    }
   else
-    mask = NSNoCellMask;
-
+    {
+      mask = NSNoCellMask;
+    }
+  
   if (mask & NSContentsCellMask)
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)
-	imageToDisplay = _cell_image;
+	{
+	  imageToDisplay = _cell_image;
+	}
       titleToDisplay = _altContents;
       if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
-	titleToDisplay = _contents;
+	{
+	  titleToDisplay = _contents;
+	}
     }
   else
     {
@@ -877,10 +892,14 @@
     }
   
   if (imageToDisplay)
-    imageSize = [imageToDisplay size];
-  else 
-    imageSize = NSZeroSize;
-  
+    {
+      imageSize = [imageToDisplay size];
+    }
+  else
+    { 
+      imageSize = NSZeroSize;
+    }
+
   if (titleToDisplay != nil)
     {
       titleSize = [self _sizeText: titleToDisplay];
@@ -970,12 +989,14 @@
 			 theRect.size.height - 3.);
     }
   else
-    return theRect;
+    {
+      return theRect;
+    }
 }
 
-- (void)setSound:(NSSound *)aSound
+- (void)setSound: (NSSound *)aSound
 {
-  _sound = aSound;
+  ASSIGN(_sound, aSound);
 }
 
 - (NSSound *)sound
