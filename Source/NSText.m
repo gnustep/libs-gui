@@ -252,11 +252,12 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 + (void) setSelectionWordGranularitySet: (NSCharacterSet*)aSet;
 + (void) setSelectionParagraphGranularitySet: (NSCharacterSet*)aSet;
 
++ (NSDictionary*) defaultTypingAttributes;
+
 //
 // private
 //
 - (void) deleteRange: (NSRange)aRange backspace: (BOOL)flag;
-- (NSDictionary*) defaultTypingAttributes;
 
 - (void) setSelectedRangeNoDrawing: (NSRange)range;
 - (void) drawInsertionPointAtIndex: (unsigned)index
@@ -786,7 +787,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   int aLine = 0;
   int insertionLineIndex = 0;
-  unsigned oldMax = NSMaxRange(aRange);
+  //unsigned oldMax = NSMaxRange(aRange);
   //unsigned newMax = oldMax + insertionDelta;
   NSPoint drawingPoint = NSZeroPoint;
   NSScanner *pScanner;
@@ -1318,20 +1319,22 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self setMinSize: frameRect.size];
   [self setMaxSize: NSMakeSize(HUGE,HUGE)];
 
-  _alignment = NSLeftTextAlignment;
+  _tf.is_field_editor = NO;
   _tf.is_editable = YES;
   _tf.is_selectable = YES;
   _tf.is_rich_text = NO;
-  _tf.uses_font_panel = NO;
+  _tf.imports_graphics = NO;
+  _tf.draws_background = NO;
   _tf.is_horizontally_resizable = NO;
   _tf.is_vertically_resizable = YES;
+  _tf.uses_font_panel = YES;
+  _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
-  _tf.is_field_editor = NO;
-  _tf.draws_background = YES;
-  [self setBackgroundColor: [NSColor textBackgroundColor]];
-  [self setTextColor: [NSColor textColor]];
   ASSIGN(_caret_color, [NSColor blackColor]); 
-  _default_font = RETAIN([NSFont userFontOfSize: 12]);
+  [self setTypingAttributes: [[self class] defaultTypingAttributes]];
+
+  [self setBackgroundColor: [NSColor textBackgroundColor]];
+
   // sets up the contents object
   [self setString: @""];
   //[self setSelectedRange: NSMakeRange (0, 0)];
@@ -1342,8 +1345,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   [self unregisterDraggedTypes];
   RELEASE(_background_color);
-  RELEASE(_default_font);
-  RELEASE(_text_color);
   RELEASE(_caret_color);
   RELEASE(_textStorage);
   RELEASE(_typingAttributes);
@@ -1376,9 +1377,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) replaceCharactersInRange: (NSRange)aRange
 		       withString: (NSString*)aString
 {
+  if (![self shouldChangeTextInRange: aRange
+	     replacementString: nil])
+    return;  
   [_textStorage beginEditing];
   [_textStorage replaceCharactersInRange: aRange withString: aString];
   [_textStorage endEditing];
+  [self didChangeText];
   [self sizeToFit];
 }
 
@@ -1387,7 +1392,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   RELEASE(_textStorage);
   _textStorage = [[NSTextStorage alloc]
 		   initWithString: aString
-		   attributes: [self defaultTypingAttributes]];
+		   attributes: [self typingAttributes]];
 
   [self _buildUpLayout];
   [self sizeToFit];
@@ -1500,6 +1505,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void)setImportsGraphics: (BOOL)flag
 {
+  if (flag)
+    _tf.is_rich_text = flag;
   _tf.imports_graphics = flag;
   [self updateDragTypeRegistration];
 }
@@ -1509,6 +1516,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _tf.is_rich_text  = flag;
   if (!flag)
     {
+      _tf.imports_graphics = flag;
       [self setString: [self string]];
     }
 
@@ -1546,11 +1554,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) toggleRuler: (id)sender
 {
-  NSScrollView *sv = [self enclosingScrollView];
-
-  _tf.is_ruler_visible = !_tf.is_ruler_visible;
-  if (sv != nil)
-    [sv setRulersVisible: _tf.is_ruler_visible];
+  [self setRulerVisible: !_tf.is_ruler_visible];
 }
 
 //
@@ -1595,13 +1599,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
   else	// no selection
     {
-      if ([self isRichText])
+      if (_tf.is_rich_text)
 	{
-	  [self setTypingAttributes: [NSMutableDictionary
-				       dictionaryWithDictionary:
-					 [_textStorage
-					   attributesAtIndex: range.location
-					   effectiveRange: NULL]]];
+	  [self setTypingAttributes: [_textStorage attributesAtIndex: range.location
+						   effectiveRange: NULL]];
 	}
       // <!>enable caret timed entry
     }
@@ -1623,7 +1624,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 					    NSStringPboardType];
   NSPasteboard *pboard = [NSPasteboard generalPasteboard];
 
-  if ([self isRichText])
+  if (_tf.is_rich_text)
     [types addObject: NSRTFPboardType];
 
   if (_tf.imports_graphics)
@@ -1634,7 +1635,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [pboard setString: [[self string] substringWithRange: _selected_range]
 	  forType: NSStringPboardType];
 
-  if ([self isRichText])
+  if (_tf.is_rich_text)
     [pboard setData: [self RTFFromRange: _selected_range]
 	    forType: NSRTFPboardType];
 
@@ -1674,7 +1675,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSParagraphStyle *style;
   NSData * data = nil;
 
-  if (![self isRichText])
+  if (!_tf.is_rich_text)
     return;
 
   // FIXME: Should use rulerAttributesInRange:
@@ -1729,12 +1730,20 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 }
 
 /*
- * Managing Font and Color
+ * Managing Font
  */
 - (NSFont*) font
 {
-  // FIXME: Should take the font of the first text, if there is some
-  return _default_font;
+  if ([_textStorage length])
+    {
+      NSFont *font = [_textStorage attribute: NSFontAttributeName
+				   atIndex: 0
+				   effectiveRange: NULL];
+      if (font != nil)
+	return font;
+    }
+
+  return [_typingAttributes objectForKey: NSFontAttributeName];
 }
 
 /*
@@ -1744,64 +1753,60 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
  */
 - (void) changeFont: (id)sender
 {
-  if (_tf.uses_font_panel)
-    {
-      if ([self isRichText])
-	{
-	  NSRange searchRange = _selected_range;
-	  NSRange foundRange;
-	  int maxSelRange;
+  NSRange foundRange;
+  int maxSelRange;
+  NSRange aRange= [self rangeForUserCharacterAttributeChange];
+  NSRange searchRange = aRange;
 
-	  [_textStorage beginEditing];
-	  for (maxSelRange = NSMaxRange(_selected_range);
-	       searchRange.location < maxSelRange;
-	       searchRange = NSMakeRange (NSMaxRange (foundRange),
-					  maxSelRange - NSMaxRange(foundRange)))
-	    {
-	      NSFont *font = [_textStorage attribute: NSFontAttributeName
-					   atIndex: searchRange.location
-					   longestEffectiveRange: &foundRange
-					   inRange: searchRange];
-	      if (font)
-		{
-		  [self setFont: [sender convertFont: font]
-			ofRange: foundRange];
-		}
-	    }
-	  [_textStorage endEditing];
-	}
-      else
-	{
-	  [self setFont: [sender convertFont: _default_font]];
-	}
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  for (maxSelRange = NSMaxRange(aRange);
+       searchRange.location < maxSelRange;
+       searchRange = NSMakeRange (NSMaxRange (foundRange),
+				  maxSelRange - NSMaxRange(foundRange)))
+    {
+      NSFont *font = [_textStorage attribute: NSFontAttributeName
+				   atIndex: searchRange.location
+				   longestEffectiveRange: &foundRange
+				   inRange: searchRange];
+      if (font != nil)
+      {
+	  [self setFont: [sender convertFont: font]
+		ofRange: foundRange];
+      }
     }
+  [_textStorage endEditing];
+  [self didChangeText];
+  // FIXME: set typing attributes
 }
 
 - (void) setFont: (NSFont*)font
 {
   NSRange fullRange = NSMakeRange(0, [_textStorage length]);
 
-  ASSIGN(_default_font, font);
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSFontAttributeName
-		value: font
-		range: fullRange];
-  [_textStorage endEditing];
+  [self setFont: font ofRange: fullRange];
+  [_typingAttributes setObject: font forKey: NSFontAttributeName];
 }
 
 - (void) setFont: (NSFont*)font
 	 ofRange: (NSRange)aRange
 {
-  if ([self isRichText])
+  if (font != nil)
     {
-      if (font != nil)
-	{
-	  [_textStorage beginEditing];
-	  [_textStorage addAttribute: NSFontAttributeName
-		      value: font
-		      range: aRange];
-	  [_textStorage endEditing];
-	}
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
+      [_textStorage beginEditing];
+      [_textStorage addAttribute: NSFontAttributeName
+		    value: font
+		    range: aRange];
+      [_textStorage endEditing];
+      [self didChangeText];
     }
 }
 
@@ -1810,84 +1815,87 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
  */
 - (NSTextAlignment) alignment
 {
-  return _alignment;
+  NSRange aRange = [self rangeForUserParagraphAttributeChange];
+  NSParagraphStyle *aStyle;
+
+  if (aRange.location != NSNotFound)
+    {
+      aStyle = [_textStorage attribute: NSParagraphStyleAttributeName
+			     atIndex: aRange.location
+			     effectiveRange: NULL];
+      if (aStyle != nil)
+	return [aStyle alignment]; 
+    }
+
+  // Get alignment from typing attributes
+  return [[[self typingAttributes] 
+	      objectForKey: NSParagraphStyleAttributeName] alignment];
 }
 
 - (void) setAlignment: (NSTextAlignment) mode
 {
-  _alignment = mode;
-  [_textStorage beginEditing];
-  [_textStorage setAlignment: NSCenterTextAlignment
-		range: NSMakeRange(0, [_textStorage length])];
-  [_textStorage endEditing];
+  [self setAlignment: mode
+	range: NSMakeRange(0, [_textStorage length])];
 }
 
 - (void) alignCenter: (id) sender
 {
-  if ([self isRichText])
-    {
-      [_textStorage beginEditing];
-      [_textStorage setAlignment: NSCenterTextAlignment
-		    range: _selected_range];
-      [_textStorage endEditing];
-    }
-  else
-    [self setAlignment: NSCenterTextAlignment];
+  [self setAlignment: NSCenterTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
 }
 
 - (void) alignLeft: (id) sender
 {
-  if ([self isRichText])
-    {
-      [_textStorage beginEditing];
-      [_textStorage setAlignment: NSLeftTextAlignment
-		    range: _selected_range];
-      [_textStorage endEditing];
-    }
-  else
-    [self setAlignment: NSLeftTextAlignment];
+  [self setAlignment: NSLeftTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
 }
 
 - (void) alignRight: (id) sender
 {
-  if ([self isRichText])
-    {
-      [_textStorage beginEditing];
-      [_textStorage setAlignment: NSRightTextAlignment
-		    range: _selected_range];
-      [_textStorage endEditing];
-    }
-  else
-    [self setAlignment: NSRightTextAlignment];
+  [self setAlignment: NSRightTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
 }
 
 /*
  * Text colour
  */
+
 - (NSColor*) textColor
 {
-  return _text_color;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location != NSNotFound)
+    return [_textStorage attribute: NSForegroundColorAttributeName
+			 atIndex: aRange.location
+			 effectiveRange: NULL];
+  else 
+    return [_typingAttributes objectForKey: NSForegroundColorAttributeName];
 }
 
 - (void) setTextColor: (NSColor*) color
 		range: (NSRange) aRange
 {
-  if ([self isRichText])
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  if (color != nil)
     {
-      [_textStorage beginEditing];
-      if (color != nil)
-	{
-	  [_textStorage addAttribute: NSForegroundColorAttributeName
-			value: color
-			range: aRange];
-	}
-      else
-	{
-	  [_textStorage removeAttribute: NSForegroundColorAttributeName
-			range: aRange];
-	}
-      [_textStorage endEditing];
+      [_textStorage addAttribute: NSForegroundColorAttributeName
+		    value: color
+		    range: aRange];
+      [_typingAttributes setObject: color forKey: NSForegroundColorAttributeName];
     }
+  else
+    {
+      [_textStorage removeAttribute: NSForegroundColorAttributeName
+		    range: aRange];
+    }
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) setColor: (NSColor*) color
@@ -1900,20 +1908,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   NSRange fullRange = NSMakeRange(0, [_textStorage length]);
 
-  ASSIGN (_text_color, color);
-  [_textStorage beginEditing];
-  if (color != nil)
-    {
-      [_textStorage addAttribute: NSForegroundColorAttributeName
-		    value: color
-		    range: fullRange];
-    }
-  else
-    {
-      [_textStorage removeAttribute: NSForegroundColorAttributeName
-		    range: fullRange];
-    }
-  [_textStorage endEditing];
+  [self setTextColor: color range: fullRange];
 }
 
 //
@@ -1921,23 +1916,25 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 //
 - (void) subscript: (id)sender
 {
-  NSRange aRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
-  if (_tf.is_rich_text)
-    aRange = _selected_range;
-  else
-    aRange = NSMakeRange(0, [_textStorage length]);
+  if (aRange.location == NSNotFound)
+    return;
 
   if (aRange.length)
     {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
       [_textStorage beginEditing];
       [_textStorage subscriptRange: aRange];
       [_textStorage endEditing];
+      [self didChangeText];
     }
   else
     {
       // FIXME: Set the typing attributes
-      /* [[self typingAttributes]
+      /* [_typingAttributes
 	  setObject: [NSNumber numberWithInt: ]
 	  forKey: NSSuperScriptAttributeName]; */
     }
@@ -1945,18 +1942,20 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) superscript: (id)sender
 {
-  NSRange aRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
-  if (_tf.is_rich_text)
-    aRange = _selected_range;
-  else
-    aRange = NSMakeRange(0, [_textStorage length]);
+  if (aRange.location == NSNotFound)
+    return;
 
   if (aRange.length)
     {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
       [_textStorage beginEditing];
       [_textStorage superscriptRange: aRange];
       [_textStorage endEditing];
+      [self didChangeText];
     }
   else
     {
@@ -1966,18 +1965,20 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) unscript: (id)sender
 {
-  NSRange aRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
-  if (_tf.is_rich_text)
-    aRange = _selected_range;
-  else
-    aRange = NSMakeRange(0, [_textStorage length]);
+  if (aRange.location == NSNotFound)
+    return;
 
   if (aRange.length)
     {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
       [_textStorage beginEditing];
       [_textStorage unscriptRange: aRange];
       [_textStorage endEditing];
+      [self didChangeText];
     }
   else
     {
@@ -1987,13 +1988,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) underline: (id)sender
 {
-  NSRange aRange;
   BOOL doUnderline = YES;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
-  if (_tf.is_rich_text)
-    aRange = _selected_range;
-  else
-    aRange = NSMakeRange(0, [_textStorage length]);
+  if (aRange.location == NSNotFound)
+    return;
 
   if ([[_textStorage attribute: NSUnderlineStyleAttributeName
 		     atIndex: aRange.location
@@ -2002,14 +2001,18 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
   if (aRange.length)
     {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
       [_textStorage beginEditing];
       [_textStorage addAttribute: NSUnderlineStyleAttributeName
 		    value: [NSNumber numberWithInt: doUnderline]
 		    range: aRange];
       [_textStorage endEditing];
+      [self didChangeText];
     }
   else  // no redraw necess.
-    [[self typingAttributes]
+    [_typingAttributes
       setObject: [NSNumber numberWithInt: doUnderline]
       forKey: NSUnderlineStyleAttributeName];
 }
@@ -2607,12 +2610,15 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.smart_insert_delete;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.allows_undo;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
-  [aCoder encodeValueOfObjCType: "I" at: &_alignment];
+  [aCoder encodeObject: _typingAttributes];
   [aCoder encodeObject: _background_color];
-  [aCoder encodeObject: _text_color];
-  [aCoder encodeObject: _default_font];
   [aCoder encodeValueOfObjCType: @encode(NSRange) at: &_selected_range];
+  [aCoder encodeObject: _caret_color];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 }
 
 - initWithCoder: aDecoder
@@ -2647,12 +2653,15 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _tf.is_ruler_visible = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.smart_insert_delete = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tf.allows_undo = flag;
 
-  [aDecoder decodeValueOfObjCType: "I" at: &_alignment];
+  _typingAttributes  = [aDecoder decodeObject];
   _background_color  = [aDecoder decodeObject];
-  _text_color  = RETAIN([aDecoder decodeObject]);
-  _default_font  = RETAIN([aDecoder decodeObject]);
   [aDecoder decodeValueOfObjCType: @encode(NSRange) at: &_selected_range];
+  _caret_color  = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+  [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 
   // build up the layout information that dont get stored
   [self _buildUpLayout];
@@ -2689,6 +2698,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) replaceRange: (NSRange) aRange
  withAttributedString: (NSAttributedString*) attrString
 {
+  if (![self shouldChangeTextInRange: aRange
+	     replacementString: [attrString string]])
+    return;
   [_textStorage beginEditing];
   if ([self isRichText])
     [_textStorage replaceCharactersInRange: aRange
@@ -2697,6 +2709,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     [_textStorage replaceCharactersInRange: aRange
 		  withString: [attrString string]];
   [_textStorage endEditing];
+  [self didChangeText];
   // ScrollView interaction
   [self sizeToFit];
 }
@@ -2711,6 +2724,19 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self sizeToFit];
 }
 
+@end
+
+@implementation NSText(NSTextView)
+
+- (void) setRulerVisible: (BOOL)flag
+{
+  NSScrollView *sv = [self enclosingScrollView];
+
+  _tf.is_ruler_visible = flag;
+  if (sv != nil)
+    [sv setRulersVisible: _tf.is_ruler_visible];
+}
+
 - (int) spellCheckerDocumentTag
 {
   if (!_spellCheckerDocumentTag)
@@ -2719,39 +2745,54 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   return _spellCheckerDocumentTag;
 }
 
+- (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
+	       replacementString: (NSString*)replacementString
+{
+  return YES;
+}
+
+- (void) didChangeText
+{
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName: NSTextDidChangeNotification object: self];
+}
+
 // central text inserting method (takes care
 // of optimized redraw/ cursor positioning)
 - (void) insertText: (NSString*) insertString
 {
+  NSRange insertRange = [self rangeForUserTextChange];
+
+  if (insertRange.location == NSNotFound)
+    return;
+
   if ([self isRichText])
     {
-      [self replaceRange: _selected_range
+      [self replaceRange: insertRange
 	    withAttributedString: AUTORELEASE([[NSAttributedString alloc]
 				     initWithString: insertString
 				     attributes: [self typingAttributes]])];
     }
   else
     {
-      [self replaceCharactersInRange: _selected_range
+      [self replaceCharactersInRange: insertRange
 	    withString: insertString];
     }
 
   // move cursor <!> [self selectionRangeForProposedRange: ]
   [self setSelectedRange:
-	  NSMakeRange (_selected_range.location + [insertString length], 0)];
+	  NSMakeRange (insertRange.location + [insertString length], 0)];
 
   // remember x for row - stable cursor movements
   _currentCursor = [self rectForCharacterIndex:
 			   _selected_range.location].origin;
-
-  // broadcast notification
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidChangeNotification
-    object: self];
 }
 
 - (void) setTypingAttributes: (NSDictionary*) dict
 {
+  if (dict == nil)
+    dict = [[self class] defaultTypingAttributes];
+
   if (![dict isKindOfClass: [NSMutableDictionary class]])
     {
       RELEASE(_typingAttributes);
@@ -2761,13 +2802,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     ASSIGN(_typingAttributes, (NSMutableDictionary*)dict);
 }
 
-- (NSMutableDictionary*) typingAttributes
+- (NSDictionary*) typingAttributes
 {
-  if (_typingAttributes != nil)
-    return _typingAttributes;
-  else
-    return [NSMutableDictionary dictionaryWithDictionary:
-				  [self defaultTypingAttributes]];
+  return [NSDictionary dictionaryWithDictionary: _typingAttributes];
 }
 
 - (void) updateFontPanel
@@ -2775,30 +2812,15 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   // update fontPanel only if told so
   if (_tf.uses_font_panel)
     {
-      BOOL isMultiple = NO;
-      NSFont *currentFont = nil;
+      NSRange longestRange;
+      NSFont *currentFont = [_textStorage attribute: NSFontAttributeName
+				  atIndex: _selected_range.location
+				  longestEffectiveRange: &longestRange
+				  inRange: _selected_range];
 
-      if ([self isRichText])
-	{
-	  NSRange longestRange;
-
-	  currentFont = [_textStorage attribute: NSFontAttributeName
-				      atIndex: _selected_range.location
-				      longestEffectiveRange: &longestRange
-				      inRange: _selected_range];
-
-	  if (NSEqualRanges (longestRange, _selected_range))
-	    isMultiple = NO;
-	  else
-	  {
-	    isMultiple = YES;
-	  }
-	}
-      else
-	currentFont = _default_font;
-
-      [[NSFontManager sharedFontManager] setSelectedFont: currentFont
-					 isMultiple: isMultiple];
+      [[NSFontManager sharedFontManager] 
+	  setSelectedFont: currentFont
+	  isMultiple: NSEqualRanges(longestRange, _selected_range)];
     }
 }
 
@@ -2833,50 +2855,108 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
 			       granularity: (NSSelectionGranularity)granularity
 {
-  NSCharacterSet *set = nil;
+  unsigned index;
+  NSRange aRange;
+  NSRange newRange = proposedCharRange;
   NSString *string = [self string];
-  unsigned lastIndex = [string length] - 1;
-  unsigned lpos = MIN(lastIndex, proposedCharRange.location);
-  // <!>better: rpos = MAX(0, (int)NSMaxRange(proposedCharRange) - 1);
-  unsigned rpos = NSMaxRange(proposedCharRange);
-  BOOL rmemberstate, lmemberstate;
+  unsigned length = [string length];
 
-  if (![string length])
+  if (proposedCharRange.location > length)
     {
-      return NSMakeRange(0,0);
+      proposedCharRange.location = length;
+      proposedCharRange.length = 0;
     }
+  if (proposedCharRange.length > length - proposedCharRange.location)
+    {
+      proposedCharRange.length = length - proposedCharRange.location;
+    }
+
+  if (!length)
+      return proposedCharRange;
 
   switch (granularity)
     {
-    case NSSelectByCharacter:
-      return NSIntersectionRange (proposedCharRange,
-				  NSMakeRange (0, lastIndex + 2));
     case NSSelectByWord:
-      set = selectionWordGranularitySet;
-      break;
+      index = [_textStorage nextWordFromIndex: proposedCharRange.location
+				   forward: NO];
+      newRange.location = index;
+      index = [_textStorage nextWordFromIndex: NSMaxRange(proposedCharRange)
+				   forward: YES];
+      if (index > newRange.location)
+	newRange.length = index - 1 - newRange.location;
+      return newRange;
     case NSSelectByParagraph:
-      set = selectionParagraphGranularitySet;
-      break;
+      return [[self string] lineRangeForRange: proposedCharRange];
+
+    case NSSelectByCharacter:
+    default:
+      aRange = [string rangeOfComposedCharacterSequenceAtIndex: proposedCharRange.location];
+      newRange.location = aRange.location;
+      // If the proposedCharRange is empty we only ajust the beginning
+      if (!proposedCharRange.length)
+	return newRange;
+      aRange = [string rangeOfComposedCharacterSequenceAtIndex: NSMaxRange(proposedCharRange)];
+      newRange.length = NSMaxRange(aRange) - newRange.location;
+      return newRange;
     }
-  // now work on set...
-  lmemberstate = [set characterIsMember: [string characterAtIndex: lpos]];
-  rmemberstate = [set characterIsMember: [string characterAtIndex:
-						   MIN (rpos, lastIndex)]];
-  while (rpos <= lastIndex
-	 && ([set characterIsMember: [string characterAtIndex: rpos]]
-	     == rmemberstate))
-    rpos++;
+}
 
-  while (lpos
-	 && ([set characterIsMember: [string characterAtIndex: lpos]]
-	     == lmemberstate))
-    lpos--;
+- (NSRange) rangeForUserCharacterAttributeChange
+{
+  if (!_tf.is_editable || !_tf.uses_font_panel)
+    return NSMakeRange(NSNotFound, 0);
 
-  if ([set characterIsMember: [string characterAtIndex: lpos]] != lmemberstate
-      && lpos < proposedCharRange.location)
-    lpos++;
+  if (_tf.is_rich_text)
+    // This expects the selection to be already corrected to characters
+    return _selected_range;
+  else
+    return NSMakeRange(0, [_textStorage length]);
+}
 
-  return MakeRangeFromAbs(lpos,rpos);
+- (NSRange) rangeForUserParagraphAttributeChange
+{
+  if (!_tf.is_editable || !_tf.uses_ruler)
+    return NSMakeRange(NSNotFound, 0);
+
+  if (_tf.is_rich_text)
+    return [self selectionRangeForProposedRange: _selected_range
+		granularity: NSSelectByParagraph];
+  else
+    return NSMakeRange(0, [_textStorage length]);
+}
+
+- (NSRange) rangeForUserTextChange
+{
+  if (!_tf.is_editable)
+    return NSMakeRange(NSNotFound, 0);
+  
+  // This expects the selection to be already corrected to characters
+  return _selected_range;
+}
+
+- (void) setAlignment: (NSTextAlignment)alignment
+		range: (NSRange)aRange
+{ 
+  NSMutableParagraphStyle *style;
+  
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage setAlignment: alignment
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  // Set the typing attributes
+  style = [[_typingAttributes objectForKey: NSParagraphStyleAttributeName]
+	      mutableCopy];
+  [style setAlignment: alignment];
+  // FIXME: Should use setTypingAttributes
+  [_typingAttributes setObject: style forKey: NSParagraphStyleAttributeName];
 }
 
 - (NSArray*) acceptableDragTypes
@@ -2913,11 +2993,12 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   ASSIGN(invSelectionParagraphGranularitySet, [aSet invertedSet]);
 }
 
-- (NSDictionary*) defaultTypingAttributes
++ (NSDictionary*) defaultTypingAttributes
 {
   return [NSDictionary dictionaryWithObjectsAndKeys:
-			 _default_font, NSFontAttributeName,
-		         _text_color, NSForegroundColorAttributeName,
+			 [NSParagraphStyle defaultParagraphStyle], NSParagraphStyleAttributeName,
+			 [NSFont userFontOfSize: 12], NSFontAttributeName,
+		         [NSColor textColor], NSForegroundColorAttributeName,
 		         nil];
 }
 
@@ -2980,23 +3061,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 // end: drag accepting---------------------------------
 
 
-- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pb
-                             types: (NSArray*)sendTypes
-{
-  NSArray      *types;
-  NSString     *string;
-
-  if ([sendTypes containsObject: NSStringPboardType] == NO)
-    {
-      return NO;
-    }
-  types = [NSArray arrayWithObjects: NSStringPboardType, nil];
-  [pb declareTypes: types owner: nil];
-  string = [self string];
-  string = [string substringWithRange: _selected_range];
-  return [pb setString: string forType: NSStringPboardType];
-}
-
 // <!>
 // handle ruler pasteboard as well!
 - (BOOL) performPasteOperation: (NSPasteboard*)pboard
@@ -3034,7 +3098,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  if (_selected_range.length)
 		    [self setFont: font ofRange: _selected_range];
 		  else
-		    [[self typingAttributes]
+		    [_typingAttributes
 		      setObject: font
 		      forKey: NSFontAttributeName];
 		}
@@ -3114,12 +3178,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   return NO;
 }
 
-- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pb
-{
-  return [self performPasteOperation: pb];
-}
-
-
 // central text deletion/backspace method
 // (takes care of optimized redraw/ cursor positioning)
 - (void) deleteRange: (NSRange) aRange
@@ -3142,9 +3200,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       deleteRange = NSMakeRange (MAX (0, aRange.location - 1), 1);
     }
 
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: @""])
+    return;
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: deleteRange];
   [_textStorage endEditing];
+  [self didChangeText];
 
   // ScrollView interaction
   [self sizeToFit];
@@ -3155,10 +3217,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   // remember x for row - stable cursor movements
   _currentCursor = [self rectForCharacterIndex:
 			   _selected_range.location].origin;
-  // broadcast notification
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidChangeNotification
-    object: self];
 }
 
 - (unsigned) characterIndexForPoint: (NSPoint) point
