@@ -1,10 +1,12 @@
 /*
    NSSliderCell.m
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: September 1997
+   Rewrite: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: 1999
   
    This file is part of the GNUstep GUI Library.
 
@@ -44,7 +46,6 @@
   _isVertical = -1;
   _minValue = 0;
   _maxValue = 1;
-  _floatValue = 0;
   _cell.is_bordered = YES;
   _cell.is_bezeled = YES;
 
@@ -65,16 +66,6 @@
   return YES;
 }
 
-- (void) setFloatValue: (float)aFloat
-{
-  if (aFloat < _minValue)
-    _floatValue = _minValue;
-  else if (aFloat > _maxValue)
-    _floatValue = _maxValue;
-  else
-    _floatValue = aFloat;
-}
-
 - (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped
 {
   [[NSColor scrollBarColor] set];					
@@ -86,12 +77,12 @@
   NSImage* image = [_knobCell image];
   NSSize size;
   NSPoint origin;
-  float floatValue;
+  float floatValue = [self floatValue];
 
   if (_isVertical && flipped)
-    _floatValue = _maxValue + _minValue - _floatValue;
+    floatValue = _maxValue + _minValue - floatValue;
 
-  floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
+  floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
 
   size = [image size];
 
@@ -186,38 +177,98 @@
 - (void) setMinValue: (double)aDouble
 {
   _minValue = aDouble;
-  if (_floatValue < _minValue)
-    _floatValue = _minValue;
 }
 
 - (void) setMaxValue: (double)aDouble
 {
   _maxValue = aDouble;
-  if (_floatValue > _maxValue)
-    _floatValue = _maxValue;
 }
 
-- (id) titleCell				{ return _titleCell; }
-- (NSColor*) titleColor			{ return [_titleCell textColor]; }
-- (NSFont*) titleFont			{ return [_titleCell font]; }
-- (void) setTitle: (NSString*)title	{ [_titleCell setStringValue: title]; }
-- (NSString*) title			{ return [_titleCell stringValue]; }
-- (void) setTitleCell: (NSCell*)aCell	{ ASSIGN(_titleCell, aCell); }
-- (void) setTitleColor: (NSColor*)color	{ [_titleCell setTextColor: color]; }
-- (void) setTitleFont: (NSFont*)font	{ [_titleCell setFont: font]; }
-- (int) isVertical			{ return _isVertical; }
-- (double) altIncrementValue		{ return _altIncrementValue; }
-+ (BOOL) prefersTrackingUntilMouseUp	{ return YES; }
-- (NSRect) trackRect			{ return _trackRect; }
-- (double) minValue			{ return _minValue; }
-- (double) maxValue			{ return _maxValue; }
-- (float) floatValue			{ return _floatValue; }
+- (id) titleCell
+{
+  return _titleCell;
+}
+
+- (NSColor*) titleColor
+{
+  return [_titleCell textColor];
+}
+
+- (NSFont*) titleFont
+{
+  return [_titleCell font];
+}
+
+- (void) setTitle: (NSString*)title
+{
+  [_titleCell setStringValue: title];
+}
+
+- (NSString*) title
+{
+  return [_titleCell stringValue];
+}
+
+- (void) setTitleCell: (NSCell*)aCell
+{
+  ASSIGN(_titleCell, aCell);
+}
+
+- (void) setTitleColor: (NSColor*)color
+{
+  [_titleCell setTextColor: color];
+}
+
+- (void) setTitleFont: (NSFont*)font
+{
+  [_titleCell setFont: font];
+}
+
+- (int) isVertical
+{
+  return _isVertical;
+}
+
+- (double) altIncrementValue
+{
+  return _altIncrementValue;
+}
+
++ (BOOL) prefersTrackingUntilMouseUp
+{
+  return YES;
+}
+
+- (NSRect) trackRect
+{
+  return _trackRect;
+}
+
+- (double) minValue
+{
+  return _minValue;
+}
+
+- (double) maxValue
+{
+  return _maxValue;
+}
+
+- (float) floatValue
+{
+  float	aFloat = [super floatValue];
+  if (aFloat < _minValue)
+    return _minValue;
+  else if (aFloat > _maxValue)
+    return _maxValue;
+  return aFloat;
+}
 
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  [decoder decodeValuesOfObjCTypes: "ffffi",
-    &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
+  [decoder decodeValuesOfObjCTypes: "fffi",
+    &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
   [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
   [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
   return self;
@@ -226,8 +277,8 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  [coder encodeValuesOfObjCTypes: "ffffi",
-    &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
+  [coder encodeValuesOfObjCTypes: "fffi",
+    &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
   [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
   [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
 }

@@ -35,52 +35,51 @@
 
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
-  float _minValue;
-  float _maxValue;
-  float _floatValue;
-  float _altIncrementValue;
-  id _titleCell;
-  id _knobCell;
-  NSRect _trackRect;
-  BOOL _isVertical;
+  float		_minValue;
+  float		_maxValue;
+  float		_altIncrementValue;
+  id		_titleCell;
+  id		_knobCell;
+  NSRect	_trackRect;
+  BOOL		_isVertical;
 }
 
 /* Asking about the cell's behavior */
-- (double)altIncrementValue;
-+ (BOOL)prefersTrackingUntilMouseUp;
-- (NSRect)trackRect;
+- (double) altIncrementValue;
++ (BOOL) prefersTrackingUntilMouseUp;
+- (NSRect) trackRect;
 
 /* Changing the cell's behavior */
-- (void)setAltIncrementValue:(double)increment;
+- (void) setAltIncrementValue: (double)increment;
 
 /* Displaying the cell */
-- (NSRect)knobRectFlipped:(BOOL)flipped;
-- (void)drawBarInside:(NSRect)rect flipped:(BOOL)flipped;
-- (void)drawKnob;
-- (void)drawKnob:(NSRect)knobRect;
+- (NSRect) knobRectFlipped: (BOOL)flipped;
+- (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped;
+- (void) drawKnob;
+- (void) drawKnob: (NSRect)knobRect;
 
 /* Asking about the cell's appearance */
-- (float)knobThickness;
-- (int)isVertical;
-- (NSString*)title;
-- (id)titleCell;
-- (NSColor*)titleColor;
-- (NSFont*)titleFont;
+- (float) knobThickness;
+- (int) isVertical;
+- (NSString*) title;
+- (id) titleCell;
+- (NSColor*) titleColor;
+- (NSFont*) titleFont;
 
 /* Changing the cell's appearance */
-- (void)setKnobThickness:(float)thickness;
-- (void)setTitle:(NSString*)title;
-- (void)setTitleCell:(NSCell*)aCell;
-- (void)setTitleColor:(NSColor*)color;
-- (void)setTitleFont:(NSFont*)font;
+- (void) setKnobThickness: (float)thickness;
+- (void) setTitle: (NSString*)title;
+- (void) setTitleCell: (NSCell*)aCell;
+- (void) setTitleColor: (NSColor*)color;
+- (void) setTitleFont: (NSFont*)font;
 
 /* Asking about the value limits */
-- (double)minValue;
-- (double)maxValue;
+- (double) minValue;
+- (double) maxValue;
 
 /* Changing the value limits */
-- (void)setMinValue:(double)aDouble;
-- (void)setMaxValue:(double)aDouble;
+- (void) setMinValue: (double)aDouble;
+- (void) setMaxValue: (double)aDouble;
 
 @end
 

@@ -1,3 +1,9 @@
+Wed Dec 29  7:11:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSSliderCell.m: Fix so that setting and taking values from the
+	cell work properly - removed unused ivar.
+	* Headers/AppKit/NSSliderCell.h: removed unused ivar.
+
 1999-12-29  David Lazaro  <khelekir@encomix.es>
 
 	Changed name of function so GNUstep GUI library can be linked again.
