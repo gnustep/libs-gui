@@ -41,84 +41,99 @@
 #include "Parsers/rtfConsumer.h"
 #include "Parsers/RTFProducer.h"
 
-/*
- * function to return a character set containing characters that
- * separate words.
- */
-static NSCharacterSet*
-wordBreakCSet()
+/* Cache class pointers to avoid the expensive lookup by string. */ 
+static Class dictionaryClass = nil;
+static Class stringClass = nil;
+
+/* A character set containing characters that separate words.  */
+static NSCharacterSet *wordBreakCSet = nil;
+/* A character set containing characters that are legal within words.  */
+static NSCharacterSet *wordCSet = nil;
+/* A String containing the attachment character */
+static NSString *attachmentString = nil;
+
+
+/* This function initializes all the previous cached values. */
+static void cache_init_real ()
 {
-  static NSCharacterSet	*cset = nil;
-
-  if (cset == nil)
-    {
-      NSMutableCharacterSet	*m = [NSMutableCharacterSet new];
-
-      cset = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-      [m formUnionWithCharacterSet: cset];
-      cset = [NSCharacterSet punctuationCharacterSet];
-      [m formUnionWithCharacterSet: cset];
-      cset = [NSCharacterSet controlCharacterSet];
-      [m formUnionWithCharacterSet: cset];
-      cset = [NSCharacterSet illegalCharacterSet];
-      [m formUnionWithCharacterSet: cset];
-      cset = [m copy];
-      RELEASE(m);
-    }
-  return cset;
+  NSMutableCharacterSet *m;
+  NSCharacterSet *cset;
+  unichar ch = NSAttachmentCharacter;
+  
+  /* Initializes Class pointer cache */
+  dictionaryClass = [NSDictionary class];
+  stringClass = [NSString class];
+  
+  /* Initializes wordBreakCSet */
+  m = [NSMutableCharacterSet new];
+  cset = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  [m formUnionWithCharacterSet: cset];
+  cset = [NSCharacterSet punctuationCharacterSet];
+  [m formUnionWithCharacterSet: cset];
+  cset = [NSCharacterSet controlCharacterSet];
+  [m formUnionWithCharacterSet: cset];
+  cset = [NSCharacterSet illegalCharacterSet];
+  [m formUnionWithCharacterSet: cset];
+  wordBreakCSet = [m copy];
+  RELEASE (m);
+  
+  /* Initializes wordCSet */
+  wordCSet = [[wordBreakCSet invertedSet] copy];
+  
+  /* Initializes attachmentString */
+  attachmentString = [stringClass stringWithCharacters: &ch length: 1];
+  RETAIN (attachmentString);  
 }
 
-/*
- * function to return a character set containing characters that
- * are legal within words.
- */
-static NSCharacterSet*
-wordCSet()
+/* This inline function calls cache_init_real () the first time it is
+   invoked, and does nothing afterwards.  Thus we get both speed
+   (cache_init is inlined and only compares a pointer to nil when the
+   cache has been initialized) and limit memory consumption (we are
+   not copying everywhere the real initialization code, which is in
+   cache_real_init (), which is not inlined.).*/
+static inline void cache_init ()
 {
-  static NSCharacterSet	*cset = nil;
-
-  if (cset == nil)
+  if (dictionaryClass == nil)
     {
-      cset = [[wordBreakCSet() invertedSet] copy];
+      cache_init_real ();
     }
-  return cset;
 }
-
-/*
- * Returns a String containing the attachment character
- */
-static NSString *attachmentString()
-{
-  static NSString *attach  = nil;
-
-  if (attach == nil)
-    {
-      unichar ch = NSAttachmentCharacter;
-      attach = RETAIN([NSString stringWithCharacters: &ch length: 1]);
-    }
-  return attach;
-}
-
 
 @implementation NSAttributedString (AppKit)
 
-+ (NSAttributedString *)attributedStringWithAttachment:(NSTextAttachment *)attachment
++ (NSAttributedString *) attributedStringWithAttachment: 
+                                            (NSTextAttachment *)attachment
 {
-  NSDictionary *attributes = [NSDictionary dictionaryWithObject: attachment
-					   forKey: NSAttachmentAttributeName];
+  NSDictionary *attributes;
 
-  return AUTORELEASE([[self alloc] initWithString: attachmentString() 
-				   attributes: attributes]);
+  cache_init ();
+
+  attributes = [dictionaryClass dictionaryWithObject: attachment
+				forKey: NSAttachmentAttributeName];
+  
+  return AUTORELEASE ([[self alloc] initWithString: attachmentString
+				    attributes: attributes]);
 }
 
 - (BOOL) containsAttachments
 {
-  NSRange aRange = [[self string] rangeOfString: attachmentString()];
+  NSRange aRange;
 
-  return aRange.length;
+  cache_init ();
+
+  aRange = [[self string] rangeOfString: attachmentString];
+
+  if (aRange.length > 0)
+    {
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
 }
 
-- (NSDictionary*) fontAttributesInRange: (NSRange)range
+- (NSDictionary *) fontAttributesInRange: (NSRange)range
 {
   NSDictionary	*all;
   static SEL	sel = 0;
@@ -133,77 +148,60 @@ static NSString *attachmentString()
 		  format: @"RangeError in method -fontAttributesInRange:"];
     }
   all = [self attributesAtIndex: range.location
-		 effectiveRange: &range];
+	      effectiveRange: &range];
 
   if (sel == 0)
-    sel = @selector(objectForKey:);
+    {
+      sel = @selector (objectForKey:);
+    }
   objForKey = [all methodForSelector: sel];
+  
+#define NSATT_GET_ATTRIBUTE(attribute) \
+  keys[count] = attribute; \
+  objects[count] = (*objForKey) (all, sel, keys[count]); \
+  if (objects[count] != nil) count++; 
 
-  keys[count] = NSFontAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
+  NSATT_GET_ATTRIBUTE (NSFontAttributeName);
+  NSATT_GET_ATTRIBUTE (NSForegroundColorAttributeName);
+  NSATT_GET_ATTRIBUTE (NSBackgroundColorAttributeName);
+  NSATT_GET_ATTRIBUTE (NSUnderlineStyleAttributeName);
+  NSATT_GET_ATTRIBUTE (NSSuperscriptAttributeName);
+  NSATT_GET_ATTRIBUTE (NSBaselineOffsetAttributeName);
+  NSATT_GET_ATTRIBUTE (NSKernAttributeName);
+  NSATT_GET_ATTRIBUTE (NSLigatureAttributeName);
 
-  keys[count] = NSForegroundColorAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
+#undef NSATT_GET_ATTRIBUTE
 
-  keys[count] = NSBackgroundColorAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  keys[count] = NSUnderlineStyleAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  keys[count] = NSSuperscriptAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  keys[count] = NSBaselineOffsetAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  keys[count] = NSKernAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  keys[count] = NSLigatureAttributeName;
-  objects[count] = (*objForKey)(all, sel, keys[count]);
-  if (objects[count] != nil)
-    count++;
-
-  return [NSDictionary dictionaryWithObjects: objects
-				     forKeys: keys
-				       count: count];
+  cache_init ();
+  
+  return [dictionaryClass dictionaryWithObjects: objects
+			  forKeys: keys
+			  count: count];
 }
 
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range
 {
-  id	style;
+  id style;
 
-  if (NSMaxRange(range) > [self length])
+  cache_init ();
+
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -rulerAttributesInRange:"];
+		   format: @"RangeError in method -rulerAttributesInRange:"];
     }
-
+  
   style = [self attribute: NSParagraphStyleAttributeName
-		  atIndex: range.location
-	   effectiveRange: &range];
+		atIndex: range.location
+		effectiveRange: &range];
 
   if (style != nil)
     {
-      return [NSDictionary dictionaryWithObject: style
-					 forKey: NSParagraphStyleAttributeName];
+      return [dictionaryClass dictionaryWithObject: style
+			      forKey: NSParagraphStyleAttributeName];
     }
-  return [NSDictionary dictionary];
+  
+  return [dictionaryClass dictionary];
 }
 
 - (unsigned) lineBreakBeforeIndex: (unsigned)location
@@ -213,37 +211,43 @@ static NSString *attachmentString()
   unsigned length = [str length];
   NSRange scanRange;
   NSRange startRange;
+  
+  cache_init ();
 
-  if (NSMaxRange(aRange) > length || location > length)
+  if (NSMaxRange (aRange) > length || location > length)
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -lineBreakBeforeIndex:withinRange:"];
+		   format: @"RangeError in method -lineBreakBeforeIndex:withinRange:"];
     }
 
-  if (!NSLocationInRange(location, aRange))
-    return NSNotFound;
-
-  scanRange = NSMakeRange(aRange.location, location - aRange.location);
-  startRange = [str rangeOfCharacterFromSet: wordBreakCSet()
-				    options: NSBackwardsSearch|NSLiteralSearch
-				      range: scanRange];
+  if (!NSLocationInRange (location, aRange))
+    {
+      return NSNotFound;
+    }
+  
+  scanRange = NSMakeRange (aRange.location, location - aRange.location);
+  startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+		    options: NSBackwardsSearch | NSLiteralSearch
+		    range: scanRange];
   if (startRange.length == 0)
     {
       return NSNotFound;
     }
   else
     {
-      return NSMaxRange(startRange);
+      return NSMaxRange (startRange);
     }
 }
 
 - (NSRange) doubleClickAtIndex: (unsigned)location
 {
-  NSString	*str = [self string];
-  unsigned	length = [str length];
-  NSRange	scanRange;
-  NSRange	startRange;
-  NSRange	endRange;
+  NSString *str = [self string];
+  unsigned length = [str length];
+  NSRange  scanRange;
+  NSRange  startRange;
+  NSRange  endRange;
+
+  cache_init ();
 
   if (location > length)
     {
@@ -251,12 +255,12 @@ static NSString *attachmentString()
 		  format: @"RangeError in method -doubleClickAtIndex:"];
     }
 
-  scanRange = NSMakeRange(0, location);
-  startRange = [str rangeOfCharacterFromSet: wordBreakCSet()
+  scanRange = NSMakeRange (0, location);
+  startRange = [str rangeOfCharacterFromSet: wordBreakCSet
 				    options: NSBackwardsSearch|NSLiteralSearch
 				      range: scanRange];
-  scanRange = NSMakeRange(location, length - location);
-  endRange = [str rangeOfCharacterFromSet: wordBreakCSet()
+  scanRange = NSMakeRange (location, length - location);
+  endRange = [str rangeOfCharacterFromSet: wordBreakCSet
 				  options: NSLiteralSearch
 				    range: scanRange];
   if (startRange.length == 0)
@@ -265,8 +269,9 @@ static NSString *attachmentString()
     }
   else
     {
-      location = startRange.location + startRange.length;
+      location = NSMaxRange (startRange);
     }
+
   if (endRange.length == 0)
     {
       length = length - location;
@@ -275,7 +280,7 @@ static NSString *attachmentString()
     {
       length = endRange.location - location;
     }
-  return NSMakeRange(location, length);
+  return NSMakeRange (location, length);
 }
 
 - (unsigned) nextWordFromIndex: (unsigned)location
@@ -288,76 +293,96 @@ static NSString *attachmentString()
   if (location > length)
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -nextWordFromIndex:forward:"];
+		   format: @"RangeError in method -nextWordFromIndex:forward:"];
     }
+
+  cache_init ();
 
   if (isForward)
     {
-      range = NSMakeRange(location, length - location);
-      range = [str rangeOfCharacterFromSet: wordBreakCSet()
+      range = NSMakeRange (location, length - location);
+      range = [str rangeOfCharacterFromSet: wordBreakCSet
+		                   options: NSLiteralSearch
+                          	     range: range];
+      if (range.length == 0)
+	{
+	  return length;
+	}
+      
+      range = NSMakeRange (range.location, length - range.location);
+      range = [str rangeOfCharacterFromSet: wordCSet
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return length;
-      range = NSMakeRange(range.location, length - range.location);
-      range = [str rangeOfCharacterFromSet: wordCSet()
-				   options: NSLiteralSearch
-				     range: range];
-      if (range.length == 0)
-	return length;
+	{
+	  return length;
+	}
+      
       return range.location;
     }
   else
     {
-      BOOL inWord = [wordCSet() characterIsMember: [str characterAtIndex: location]];
+      BOOL inWord;
+
+      inWord = [wordCSet characterIsMember: [str characterAtIndex: location]];
       
-      range = NSMakeRange(0, location);
+      range = NSMakeRange (0, location);
+
       if (!inWord)
 	{
-	  range = [str rangeOfCharacterFromSet: wordCSet()
-			 options: NSBackwardsSearch|NSLiteralSearch
-			 range: range];
+	  range = [str rangeOfCharacterFromSet: wordCSet
+		       options: NSBackwardsSearch | NSLiteralSearch
+		       range: range];
 	  if (range.length == 0)
-	    return 0;
-	  range = NSMakeRange(0, range.location);
+	    {
+	      return 0;
+	    }
+	  
+	  range = NSMakeRange (0, range.location);
 	}
-      range = [str rangeOfCharacterFromSet: wordBreakCSet()
-		   options: NSBackwardsSearch|NSLiteralSearch
+      range = [str rangeOfCharacterFromSet: wordBreakCSet
+		   options: NSBackwardsSearch | NSLiteralSearch
 		   range: range];
       if (range.length == 0)
-	return 0;
-      return NSMaxRange(range);
+	{
+	  return 0;
+	}
+      
+      return NSMaxRange (range);
     }
 }
 
-- (id) initWithPath: (NSString*)path
- documentAttributes: (NSDictionary**)dict
+- (id) initWithPath: (NSString *)path
+ documentAttributes: (NSDictionary **)dict
 {
   // FIXME: This expects the file to be RTFD
-  return [self initWithRTFDFileWrapper: [[NSFileWrapper alloc]
-					  initWithPath: path]
-	       documentAttributes: dict];
+  NSFileWrapper *fw;
+  
+  fw = [[NSFileWrapper alloc] initWithPath: path];
+  AUTORELEASE (fw);
+  
+  return [self initWithRTFDFileWrapper: fw  documentAttributes: dict];
 }
 
-- (id) initWithURL: (NSURL*)url 
-documentAttributes: (NSDictionary**)dict
+- (id) initWithURL: (NSURL *)url 
+documentAttributes: (NSDictionary **)dict
 {
   NSData *data = [url resourceDataUsingCache: YES];
-
+  
   // FIXME: This expects the URL to point to a HTML page
   return [self initWithHTML: data
 	       baseURL: [url baseURL]
 	       documentAttributes: dict];
 }
 
-- (id) initWithRTFDFileWrapper: (NSFileWrapper*)wrapper
-            documentAttributes: (NSDictionary**)dict
+- (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
+            documentAttributes: (NSDictionary **)dict
 {
   NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
 					 documentAttributes: dict];
   // We do not return self but the newly created object
-  RELEASE(self);
-  return RETAIN(new); 
+  RELEASE (self);
+  return RETAIN (new); 
 }
 
 - (id) initWithRTFD: (NSData*)data
@@ -368,53 +393,53 @@ documentAttributes: (NSDictionary**)dict
   NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
 					 documentAttributes: dict];
   // We do not return self but the newly created object
-  RELEASE(self);
-  RELEASE(wrapper);
-  return RETAIN(new); 
+  RELEASE (self);
+  RELEASE (wrapper);
+  return RETAIN (new); 
 }
 
-- (id) initWithRTF: (NSData*)data
-  documentAttributes: (NSDictionary**)dict
+- (id) initWithRTF: (NSData *)data
+  documentAttributes: (NSDictionary **)dict
 {
   NSAttributedString *new = [RTFConsumer parseRTF: data
 					 documentAttributes: dict];
   // We do not return self but the newly created object
-  RELEASE(self);
-  return RETAIN(new); 
+  RELEASE (self);
+  return RETAIN (new); 
 }
 
-- (id) initWithHTML: (NSData*)data
- documentAttributes: (NSDictionary**)dict
+- (id) initWithHTML: (NSData *)data
+ documentAttributes: (NSDictionary **)dict
 {
   return [self initWithHTML: data
 	       baseURL: nil
 	       documentAttributes: dict];
 }
 
-- (id) initWithHTML: (NSData*)data
-            baseURL: (NSURL*)base
- documentAttributes: (NSDictionary**)dict
+- (id) initWithHTML: (NSData *)data
+            baseURL: (NSURL *)base
+ documentAttributes: (NSDictionary **)dict
 {
   // FIXME: Not implemented
   return self;
 }
 
-- (NSData*) RTFFromRange: (NSRange)range
-      documentAttributes: (NSDictionary*)dict
+- (NSData *) RTFFromRange: (NSRange)range
+       documentAttributes: (NSDictionary *)dict
 {
   return [RTFProducer produceRTF: [self attributedSubstringFromRange: range]
 		      documentAttributes: dict];
 }
 
-- (NSData*) RTFDFromRange: (NSRange)range
-       documentAttributes: (NSDictionary*)dict
+- (NSData *) RTFDFromRange: (NSRange)range
+       documentAttributes: (NSDictionary *)dict
 {
   return [[RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
 		       documentAttributes: dict] serializedRepresentation];
 }
 
-- (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
-			 documentAttributes: (NSDictionary*)dict
+- (NSFileWrapper *) RTFDFileWrapperFromRange: (NSRange)range
+			  documentAttributes: (NSDictionary *)dict
 {
   return [RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
 		      documentAttributes: dict];
@@ -428,26 +453,31 @@ documentAttributes: (NSDictionary**)dict
   id value;
   int sValue;
   NSRange effRange;
-
-  if (NSMaxRange(range) > [self length])
+  
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -superscriptRange:"];
+		   format: @"RangeError in method -superscriptRange:"];
     }
-
-  // We take the value form the first character and use it for the whole range
+  
+  // We take the value from the first character and use it for the whole range
   value = [self attribute: NSSuperscriptAttributeName
 		  atIndex: range.location
 	   effectiveRange: &effRange];
 
   if (value != nil)
-    sValue = [value intValue] + 1;
+    {
+      sValue = [value intValue] + 1;
+    }
   else
-    sValue = 1;
+    {
+      sValue = 1;
+    }
+  
 
   [self addAttribute: NSSuperscriptAttributeName
-	       value: [NSNumber numberWithInt: sValue]
-	       range: range];
+	value: [NSNumber numberWithInt: sValue]
+	range: range];
 }
 
 - (void) subscriptRange: (NSRange)range
@@ -456,7 +486,7 @@ documentAttributes: (NSDictionary**)dict
   int sValue;
   NSRange effRange;
 
-  if (NSMaxRange(range) > [self length])
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -subscriptRange:"];
@@ -464,30 +494,34 @@ documentAttributes: (NSDictionary**)dict
 
   // We take the value form the first character and use it for the whole range
   value = [self attribute: NSSuperscriptAttributeName
-		  atIndex: range.location
-	   effectiveRange: &effRange];
+		atIndex: range.location
+		effectiveRange: &effRange];
 
   if (value != nil)
-    sValue = [value intValue] - 1;
+    {
+      sValue = [value intValue] - 1;
+    }
   else
-    sValue = -1;
+    {
+      sValue = -1;
+    }
 
   [self addAttribute: NSSuperscriptAttributeName
-	       value: [NSNumber numberWithInt: sValue]
-	       range: range];
+	value: [NSNumber numberWithInt: sValue]
+	range: range];
 }
 
 - (void) unscriptRange: (NSRange)range
 {
-  if (NSMaxRange(range) > [self length])
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -unscriptRange:"];
     }
 
   [self addAttribute: NSSuperscriptAttributeName
-	       value: [NSNumber numberWithInt: 0]
-	       range: range];
+	value: [NSNumber numberWithInt: 0]
+	range: range];
 }
 
 - (void) applyFontTraits: (NSFontTraitMask)traitMask
@@ -498,13 +532,13 @@ documentAttributes: (NSDictionary**)dict
   NSRange effRange;
   NSFontManager *fm = [NSFontManager sharedFontManager];
 
-  if (NSMaxRange(range) > [self length])
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -applyFontTraits:range:"];
+		   format: @"RangeError in method -applyFontTraits:range:"];
     }
 
-  while (loc < NSMaxRange(range))
+  while (loc < NSMaxRange (range))
     {
       font = [self attribute: NSFontAttributeName
 		   atIndex: loc
@@ -518,9 +552,11 @@ documentAttributes: (NSDictionary**)dict
 		     size: [font pointSize]];
 
 	  if (font != nil)
-	    [self addAttribute: NSFontAttributeName
-		  value: font
-		  range: NSIntersectionRange(effRange, range)];
+	    {
+	      [self addAttribute: NSFontAttributeName
+		    value: font
+		    range: NSIntersectionRange (effRange, range)];
+	    }
 	}
       loc = NSMaxRange(effRange);
     }
@@ -547,7 +583,7 @@ documentAttributes: (NSDictionary**)dict
       value = [self attribute: NSParagraphStyleAttributeName
 		      atIndex: loc
 	       effectiveRange: &effRange];
-      newRange = NSIntersectionRange(effRange, range);
+      newRange = NSIntersectionRange (effRange, range);
 
       if (value == nil)
 	{
@@ -568,7 +604,7 @@ documentAttributes: (NSDictionary**)dict
 	{
 	  RELEASE(value);
 	}
-      loc = NSMaxRange(effRange);
+      loc = NSMaxRange (effRange);
     }
 }
 
@@ -581,7 +617,7 @@ documentAttributes: (NSDictionary**)dict
 
 - (void) fixFontAttributeInRange: (NSRange)range
 {
-  if (NSMaxRange(range) > [self length])
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixFontAttributeInRange:"];
@@ -596,21 +632,21 @@ documentAttributes: (NSDictionary**)dict
   unsigned loc = range.location;
   NSRange r;
 
-  if (NSMaxRange(range) > [self length])
+  if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixParagraphStyleAttributeInRange:"];
     }
 
-  while (loc < NSMaxRange(range))
+  while (loc < NSMaxRange (range))
     {
       NSParagraphStyle	*style;
       NSRange		found;
       unsigned		end;
 
       // Extend loc to take in entire paragraph if necessary.
-      r = [str lineRangeForRange: NSMakeRange(loc, 1)];
-      end = NSMaxRange(r);
+      r = [str lineRangeForRange: NSMakeRange (loc, 1)];
+      end = NSMaxRange (r);
 
       // get the style in effect at the paragraph start.
       style = [self attribute: NSParagraphStyleAttributeName
@@ -618,10 +654,10 @@ documentAttributes: (NSDictionary**)dict
 		    longestEffectiveRange: &found
 		    inRange: r];
       
-      if (style != nil && NSMaxRange(found) < end)
+      if (style != nil && NSMaxRange (found) < end)
         {
 	  // Styles differ - add the old style to the remainder of the range.
-	  found.location = NSMaxRange(found);
+	  found.location = NSMaxRange (found);
 	  found.length = end - found.location;
 	  [self addAttribute: NSParagraphStyleAttributeName
 		value: style
@@ -629,7 +665,7 @@ documentAttributes: (NSDictionary**)dict
 	  loc = end;
 	}
       else
-	loc = NSMaxRange(found);
+	loc = NSMaxRange (found);
     }
 }
 
@@ -637,7 +673,9 @@ documentAttributes: (NSDictionary**)dict
 {
   NSString *string = [self string];
   unsigned location = aRange.location;
-  unsigned end = NSMaxRange(aRange);
+  unsigned end = NSMaxRange (aRange);
+
+  cache_init ();
 
   if (end > [self length])
     {
@@ -651,7 +689,7 @@ documentAttributes: (NSDictionary**)dict
       NSDictionary	*attr;
       NSRange range;
 
-      attr = [self attributesAtIndex: location effectiveRange: &range];
+      attr = [self attributesAtIndex: location  effectiveRange: &range];
       if ([attr objectForKey: NSAttachmentAttributeName] != nil)
 	{
 	  unichar	buf[range.length];
@@ -659,27 +697,27 @@ documentAttributes: (NSDictionary**)dict
 	  unsigned	start = range.location;
 
 	  // Leave only one character with the attachment
-	  [string getCharacters: buf range: range];
+	  [string getCharacters: buf  range: range];
 	  while (pos < range.length && buf[pos] != NSAttachmentCharacter)
 	      pos++;
 	  if (pos)
 	    [self removeAttribute: NSAttachmentAttributeName
-		  range: NSMakeRange(start, pos)];
+		  range: NSMakeRange (start, pos)];
 	  pos++;
 	  if (pos < range.length)
 	    [self removeAttribute: NSAttachmentAttributeName
-		  range: NSMakeRange(start+pos, range.length - pos)];
+		  range: NSMakeRange (start + pos, range.length - pos)];
 	}
-      location = NSMaxRange(range);
+      location = NSMaxRange (range);
     }
 
   // Check for attachment characters without attachments
   location = aRange.location;
   while (location < end)
     {
-      NSRange range = [string rangeOfString: attachmentString()
+      NSRange range = [string rangeOfString: attachmentString
 			      options: NSLiteralSearch 
-			      range: NSMakeRange(location, end - location)];
+			      range: NSMakeRange (location, end - location)];
       NSTextAttachment *attachment;
 
       if (!range.length)
@@ -691,11 +729,11 @@ documentAttributes: (NSDictionary**)dict
 
       if (attachment == nil)
         {
-	  [self deleteCharactersInRange: NSMakeRange(range.location, 1)];
+	  [self deleteCharactersInRange: NSMakeRange (range.location, 1)];
 	  range.length--;
 	}
 
-      location = NSMaxRange(range);
+      location = NSMaxRange (range);
     }
 }
 
@@ -705,11 +743,13 @@ documentAttributes: (NSDictionary**)dict
   unsigned location = 0;
   unsigned end = [string length];
 
+  cache_init ();
+
   while (location < end)
     {
-      NSRange range = [string rangeOfString: attachmentString()
+      NSRange range = [string rangeOfString: attachmentString
 			      options: NSLiteralSearch 
-			      range: NSMakeRange(location, end - location)];
+			      range: NSMakeRange (location, end - location)];
       NSTextAttachment *attachment;
       NSFileWrapper *fileWrapper;
 
@@ -724,7 +764,7 @@ documentAttributes: (NSDictionary**)dict
       // FIXME: Is this the correct thing to do?
       [fileWrapper updateFromPath: [path stringByAppendingPathComponent: 
 					     [fileWrapper filename]]];
-      location = NSMaxRange(range);
+      location = NSMaxRange (range);
     }
 }
 
