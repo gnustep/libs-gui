@@ -41,6 +41,8 @@
   NSColor* _backgroundColor;
   BOOL _drawsBackground;
   BOOL _copiesOnScroll;
+  /* Cached */
+  BOOL _isOpaque;
 }
 
 /* Setting the document view */
