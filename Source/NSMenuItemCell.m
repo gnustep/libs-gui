@@ -260,9 +260,12 @@ static NSImage	*arrowImageH = nil;
   // Calculate the image part of cell frame from NSMenuView
   cellFrame.origin.x  += [_menuView imageAndTitleOffset];
   cellFrame.size.width = [_menuView imageAndTitleWidth];
-  if ([_menuItem changesState])
-    cellFrame.origin.x += [_menuView stateImageWidth]
-                       + 2 * [_menuView horizontalEdgePadding];
+  /* If the state image has no width we do not add additional padding.  */
+  if ([_menuItem changesState]  &&  _stateImageWidth > 0)
+    {
+      cellFrame.origin.x += [_menuView stateImageWidth]
+	+ 2 * [_menuView horizontalEdgePadding];
+    }
 
   switch (_cell.image_position)
     {
@@ -319,9 +322,12 @@ static NSImage	*arrowImageH = nil;
   // Calculate the image part of cell frame from NSMenuView
   cellFrame.origin.x  += [_menuView imageAndTitleOffset];
   cellFrame.size.width = [_menuView imageAndTitleWidth];
-  if ([_menuItem changesState])
-    cellFrame.origin.x += [_menuView stateImageWidth]
-                        + 2 * [_menuView horizontalEdgePadding];
+  /* If the state image has no width we do not add additional padding.  */
+  if ([_menuItem changesState]  &&  _stateImageWidth > 0)
+    {
+      cellFrame.origin.x += [_menuView stateImageWidth]
+	+ 2 * [_menuView horizontalEdgePadding];
+    }
 
   switch (_cell.image_position)
     {
@@ -452,8 +458,6 @@ static NSImage	*arrowImageH = nil;
   NSPoint	position;
   NSImage	*imageToDisplay;
 
-  cellFrame = [self stateImageRectForBounds: cellFrame];
-
   switch ([_menuItem state])
     {
       case NSOnState:
@@ -470,7 +474,13 @@ static NSImage	*arrowImageH = nil;
 	break;
     }
 
+  if (imageToDisplay == nil)
+    {
+      return;
+    }
+  
   size = [imageToDisplay size];
+  cellFrame = [self stateImageRectForBounds: cellFrame];
   position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
   /*
@@ -478,10 +488,14 @@ static NSImage	*arrowImageH = nil;
    * so we must adjust the position to take account of a flipped view.
    */
   if ([controlView isFlipped])
-    position.y += size.height;
-
+    {
+      position.y += size.height;
+    }
+  
   if (nil != _backgroundColor)
-    [imageToDisplay setBackgroundColor: _backgroundColor];
+    {
+      [imageToDisplay setBackgroundColor: _backgroundColor];
+    }
   [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
 }
 
