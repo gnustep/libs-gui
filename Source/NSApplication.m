@@ -1551,7 +1551,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		}
 	      if (changed)
 		{
-		  [item sizeToFit];
+		  [[item controlView] sizeToFit];
 		  [menu sizeToFit];
 		  [menu update];
 		}

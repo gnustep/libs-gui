@@ -1,6 +1,4 @@
 /*
-   NSWindow.m
-
    The window class
 
    Copyright (C) 1996 Free Software Foundation, Inc.
@@ -246,7 +244,15 @@ NSView *wv;
 
 - (void) setRepresentedFilename: (NSString*)aString
 {
+  id  old = represented_filename;
+
   ASSIGN(represented_filename, aString);
+  if (menu_exclude == NO
+    && ((represented_filename != nil && old == nil)
+      || (represented_filename == nil && old != nil)))
+    {
+      [[NSApplication sharedApplication] updateWindowsItem: self];
+    }
 }
 
 - (void) setTitle: (NSString*)aString
@@ -706,7 +712,19 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 }
 
 - (void)performMiniaturize:sender           { is_miniaturized = YES; }                                                  - (int)resizeFlags                          { return 0; }
-- (void)setDocumentEdited:(BOOL)flag        { is_edited = flag; }
+
+- (void) setDocumentEdited: (BOOL)flag
+{
+  if (is_edited != flag)
+    {
+      is_edited = flag;
+      if (menu_exclude == NO)
+        {
+          [[NSApplication sharedApplication] updateWindowsItem: self];
+        }
+    }
+}
+
 - (void)setReleasedWhenClosed:(BOOL)flag    { is_released_when_closed = flag; }
 
 //

@@ -1,7 +1,13 @@
+Wed Jan  6 17:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/NSApplication.m: minor fix for updating windows menu items.
+        * Source/NSWindow.m: Update windows menu when document edit state is
+        changed.
+
 Tue Jan  5 18:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-        Source/NSMatrix.m: bugfix growing matrix - from stark@easynet.fr
-        Source/NSApplication.m: Modified -init method to return the shared
+        * Source/NSMatrix.m: bugfix growing matrix - from stark@easynet.fr
+        * Source/NSApplication.m: Modified -init method to return the shared
         application object so that +new is effectively a synonym for the
         [+sharedApplication] method - from stark@easynet.fr
 
