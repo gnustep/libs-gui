@@ -620,6 +620,7 @@ static NSColor *scrollBarColor = nil;
 
   while ((eventType = [theEvent type]) != NSLeftMouseUp)
     {
+      CREATE_AUTORELEASE_POOL(arp);
       if (eventType != NSPeriodic)
 	{
 	  apoint = [theEvent locationInWindow];
@@ -663,6 +664,7 @@ static NSColor *scrollBarColor = nil;
 				    untilDate: theDistantFuture
 				       inMode: NSEventTrackingRunLoopMode
 				      dequeue: YES];
+      DESTROY(arp);
     }
   [NSEvent stopPeriodicEvents];
 }
