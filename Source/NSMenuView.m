@@ -53,10 +53,16 @@
 /* A menu's title is an instance of this class */
 @class NSButton;
 
+@interface GSCloseButton : NSButton
+{
+}
+
+@end
+
 @interface NSMenuWindowTitleView : NSView
 {
   NSMenu *menu;
-  NSButton *button;
+  GSCloseButton *button;
 }
 
 - (void) addCloseButton;
@@ -500,6 +506,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   unsigned i;
   unsigned howMany = [_itemCells count];
   float    neededImageAndTitleWidth = [_font widthOfString: [_menu title]];
+  float    initialImageAndTitleWidth = neededImageAndTitleWidth;
   float    neededKeyEquivalentWidth = 0.0;
   float    neededStateImageWidth = 0.0;
   float    accumulatedOffset = 0.0;
@@ -569,6 +576,11 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
       if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
 	neededKeyEquivalentWidth = aKeyEquivalentWidth;
     }
+
+  if (neededImageAndTitleWidth == initialImageAndTitleWidth)
+  {
+    neededImageAndTitleWidth += 10;
+  }
 
   // Cache the needed widths.
   _stateImageWidth = neededStateImageWidth;
@@ -1521,15 +1533,11 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 		    (_frame.size.height - imageSize.height) / 2},
 		  { imageSize.height, imageSize.width } };
 
-  button = [[NSButton alloc] initWithFrame: rect];
-  [button setButtonType: NSMomentaryLight];
-  [button setImagePosition: NSImageOnly];
+  button = [[GSCloseButton alloc] initWithFrame: rect];
   [button setImage: closeImage];
   [button setAlternateImage: closeHImage];
-  [button setBordered: NO];
   [button setTarget: menu];
   [button setAction: @selector(_performMenuClose:)];
-  [button setAutoresizingMask: NSViewMinXMargin];
   
   [self setAutoresizingMask:
     NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
@@ -1560,3 +1568,23 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 }
 
 @end /* NSMenuWindowTitleView */
+
+@implementation GSCloseButton
+
+- (id) initWithFrame: (NSRect) rect
+{
+  self = [super initWithFrame: rect];
+  [self setButtonType: NSMomentaryChangeButton];
+  [self setImagePosition: NSImageOnly];
+  [self setBordered: NO];
+  [self setAutoresizingMask: NSViewMinXMargin];
+
+  return self;
+}
+
+- (BOOL) acceptsFirstResponder
+{
+  return NO;
+}
+
+@end
