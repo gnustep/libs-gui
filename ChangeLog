@@ -1,3 +1,11 @@
+Wed Jan 10 21:19:23 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([+initialize]): Save the default
+	exception handler before setting a new one.
+	(_NSAppKitUncaughtExceptionHandler): Reset the exception handler
+	to the default exception handler during execution, to prevent very
+	annoying recursive calls.
+	
 Wed Jan 10 19:42:22 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTextStorage.m ([-length]): Added for speed.
