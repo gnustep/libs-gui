@@ -1,5 +1,11 @@
 2003-08-20  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m
+	In [performClose:] call the method [shouldCloseWindowController:]
+	on the document instead of [windowShouldClose:]
+	
+2003-08-20  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenuView.m
 	In [itemChanged:] call [setNeedsDisplayForItemAtIndex:] so that
 	changes get redisplayed.
