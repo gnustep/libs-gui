@@ -1,7 +1,41 @@
 NEWS
 ****
 
-The currently released version of the library is `0.1.1'.
+The currently released version of the library is `0.2.0'.
+
+Noteworthy changes in version `0.2.0'
+=====================================
+
+   * Additional NSImage and NSImageRep class work.  Incorporated common
+     images for use with controls that were designed by Andrew Lindesay.
+
+   * Fill out implementation of NSColorWell class.
+
+   * Fill out implementation of NSColorList class.
+
+   * Cleaned up the header files and added missing headers, methods,
+     categories, and protocols; thanks to Simon Frankau for much of this
+     work.  Major reorganization of header files.  Types and constants
+     were moved in the files they belong.  Each header file includes
+     only the headers it really needs.  Use `@class' to forward class
+     definitions instead of including the corresponding class file.
+
+   * Completely reworked the NSFont and NSFontManager classes so that
+     NSUserDefaults is used for getting defaults and list of known
+     fonts are maintained.
+
+   * Initial implementation of NSCursor class.
+
+   * Almost complete implementation of NSButton and NSButtonCell class.
+     Buttons can not display images and/or text, handles all of the
+     OpenStep button types and styles.
+
+   * Fill out implementation of NSScroller class.
+
+   * Put in underlying support for optimizing drawing; flushing of
+     windows, backing store, and only display when needed.
+
+   * Many bug fixes and minor enhancements.
 
 Noteworthy changes in version `0.1.1'
 =====================================
@@ -41,4 +75,6 @@ Noteworthy changes in version `0.1.0'
      are created for the AppKit and DPSClient directories.  This should
      allow both GNUstep and other OpenStep implementations to reside on
      the same machine without conflicts.
+
+   Also see the `ChangeLog' file for more detail.
 

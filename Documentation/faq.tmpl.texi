@@ -7,7 +7,7 @@
 
 Maintained by Scott Christley @email{scottc@@net-community.com}.
 
-Last updated August 26 1996.  The most up-to-date version of this FAQ
+Last updated March 28 1997.  The most up-to-date version of this FAQ
 is available at:
 
 @example
@@ -34,19 +34,19 @@ portion of the OpenStep standard.  However the implementation has
 been written to take advantage of GNUstep enhancements wherever possible.
 
 
-@item @b{Explain the organization of the front- and back-ends.}
+@item @b{Explain the organization of the front and back-ends.}
 
-The GNUstep GUI Library is divided into a front- and back-end.  The
+The GNUstep GUI Library is divided into a front and back-end.  The
 front-end contains the majority of implementation, but leaves out the
 low-level drawing and event code.  A back-end can override whatever
 methods necessary in order to implement low-level drawing event
 receiving.  Different back-ends will make GNUstep available on various
-platforms.  The default GNU back-end will run on top of X Windows and
-the DisplayGhostScript Server.  Other back-ends could allow GNUstep to
-run on OpenGL, OS/2, and WIN32 graphics/event platforms.  Much work
-will be saved by this clean separation between front- and back-end,
-because it allows different platforms to share the large amount of
-front-end code.
+platforms.  The default GNU back-end will run on top of the X Window
+System and the Display Ghostscript Server.  Other back-ends could allow
+GNUstep to run on Mac, OS/2, and WIN32 graphics/event platforms.
+Much work will be saved by this clean separation between front and
+back-end, because it allows different platforms to share the large
+amount of front-end code.
 
 The front-end does not specify what mechanism to use in order to "plug
 in" the back-end; that is the back-end implementor's choice.  At least
@@ -54,19 +54,21 @@ two backends will use @samp{+poseAs:} method, for example, running
 @samp{[XDPSWindow poseAs: [NSWindow class]]}.  Using @samp{+poseAs:} is
 more flexible than using Categories because it allows the the back-end
 implementor to choose what to override in the front-end, instead of
-having the interface between front- and back-end fixed by the front-end.
+having the interface between front and back-end fixed by the front-end.
 
 
 @item @b{What is the current state of development of the front-end?}
 
 A number of classes in the front-end are complete or almost complete;
-these include:  NSActionCell, NSButtonCell, NSButton, NSCell, NSControl,
-NSEvent, NSFont, NSResponder, and NSSlider.
+these include: NSActionCell, NSButtonCell, NSButton, NSCell, NSColor,
+NSColorWell, NSControl, NSCursor, NSEvent, NSFont, NSImage, NSImageRep,
+NSBitmapImageRep, NSResponder, NSSlider, NSScroller, NSTextField, and
+NSTextFieldCell.
 
 Other classes are complete enough to use, but still require some major
 additions before being considered almost complete: NSApplication, NSBox,
-NSColor, NSFontManager, NSMenu, NSMenuCell, NSPopUpButton, NSSliderCell,
-NSText, NSTextField, NSTextFieldCell, NSView, and NSWindow.
+NSFontManager, NSMatrix, NSMenu, NSMenuCell, NSPopUpButton,
+NSSliderCell, NSText, NSView, and NSWindow.
 
 You can review the most up-to-date status report at:
 
@@ -76,7 +78,7 @@ You can review the most up-to-date status report at:
 
 @item @b{What back-ends are available?}
 
-The official back-end is the GNUstep GUI X/DPS Backend which runs
+The official back-end is the GNUstep X/DPS GUI Backend which runs
 under the X Window System and interfaces to the Display Ghostscript
 System.  You can learn more at:
 
@@ -86,19 +88,36 @@ System.  You can learn more at:
 
 @item @b{Where can I get a copy?}
 
-It is not yet publically released.  When it is available you will be
-able to find it in:
+@ifset GNUSTEP-GUI-FTP-MACHINE
+The gstep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
+file has been placed on @samp{@value{GNUSTEP-GUI-FTP-MACHINE}} in
+@samp{@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
+@end ifset
+@ifclear GNUSTEP-GUI-FTP-MACHINE
+The gstep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
+file has not been made available by anonymous ftp.
+@end ifclear
 
-@example
-@url{ftp://@value{GNUSTEP-GUI-FTP-MACHINE}/@value{GNUSTEP-GUI-FTP-DIRECTORY}}
-@end example
+The program requires gcc @value{GNUSTEP-GUI-GCC} or higher.
 
-@noindent
-Pre-release snapshots are available at:
+It requires the Display Ghostscript System version
+@value{GNUSTEP-GUI-DGS} and the TIFF Graphics library version
+@value{GNUSTEP-GUI-LIBTIFF}.
 
-@example
-@url{ftp://@value{GNUSTEP-GUI-SNAP-FTP-MACHINE}/@value{GNUSTEP-GUI-SNAP-FTP-DIRECTORY}}
-@end example
+It also requires a FoundationKit library as specified by the OpenStep
+specification.  The FoundationKit library known to work is the GNUstep
+Base Library version @samp{@value{GNUSTEP-GUI-BASE}}.
+
+The @samp{.tar} file is compressed with GNU gzip.  Gzip can be obtained by
+anonymous ftp at any of the GNU archive sites.
+
+For info about FTP via email, send email to
+@email{ftpmail@@decwrl.dec.com} with no subject line, and two-line body
+with line one @samp{help} and line two @samp{quit}.
+
+The most recent (not necessarily tested) snapshots of the library will
+be placed in 
+@url{ftp://@value{GNUSTEP-GUI-SNAP-FTP-MACHINE}/@value{GNUSTEP-GUI-SNAP-FTP-DIRECTORY}}.
 
 @end enumerate
 

@@ -1,11 +1,64 @@
 @c -*-texinfo-*-
+@ifclear ANNOUNCE-ONLY
 @chapter NEWS
+@end ifclear
 
 @ifset TEXT-ONLY
 @include version.texi
 @end ifset
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
+
+@section Noteworthy changes in version @samp{0.2.0}
+
+@itemize @bullet
+
+@item
+Additional NSImage and NSImageRep class work.  Incorporated common
+images for use with controls that were designed by Andrew Lindesay.
+
+@item
+Fill out implementation of NSColorWell class.
+
+@item
+Fill out implementation of NSColorList class.
+
+@item
+Cleaned up the header files and added missing headers, methods,
+categories, and protocols; thanks to Simon Frankau for much of this
+work.  Major reorganization of header files.  Types and constants were
+moved in the files they belong.  Each header file includes only the
+headers it really needs.  Use @samp{@@class} to forward class definitions
+instead of including the corresponding class file.
+
+@item
+Completely reworked the NSFont and NSFontManager classes so that
+NSUserDefaults is used for getting defaults and list of known fonts are
+maintained.
+
+@item
+Initial implementation of NSCursor class.
+
+@item
+Almost complete implementation of NSButton and NSButtonCell class.
+Buttons can not display images and/or text, handles all of the OpenStep
+button types and styles.
+
+@item
+Fill out implementation of NSScroller class.
+
+@item
+Put in underlying support for optimizing drawing; flushing of windows,
+backing store, and only display when needed.
+
+@item
+Many bug fixes and minor enhancements.
+
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.1.1}
 
@@ -58,3 +111,8 @@ created for the AppKit and DPSClient directories.  This should allow
 both GNUstep and other OpenStep implementations to reside on the
 same machine without conflicts.
 @end itemize
+
+Also see the @samp{ChangeLog} file for more detail.
+
+@end ifclear
+@c end ifclear ANNOUNCE-ONLY

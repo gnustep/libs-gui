@@ -5,7 +5,7 @@
 @include version.texi
 @end ifset
 
-This is version @value{GNUSTEP-GUI-VERSION} of the GNUstep GUI library (@samp{libgnustep-gui}).
+This is version @value{GNUSTEP-GUI-VERSION} of the GNUstep GUI library (@samp{gnustep-gui}).
 
 Here is some introductory info to get you started:
 

@@ -3,7 +3,7 @@ Frequently Asked Questions With Answers
 
 Maintained by Scott Christley <scottc@net-community.com>.
 
-   Last updated August 26 1996.  The most up-to-date version of this FAQ
+   Last updated March 28 1997.  The most up-to-date version of this FAQ
 is available at:
 
      `ftp://www.gnustep.org/Documentation/gnustep-gui/gnustep-gui_toc.html'
@@ -26,19 +26,19 @@ is available at:
      been written to take advantage of GNUstep enhancements wherever
      possible.
 
-  2. Explain the organization of the front- and back-ends.
+  2. Explain the organization of the front and back-ends.
 
-     The GNUstep GUI Library is divided into a front- and back-end.  The
+     The GNUstep GUI Library is divided into a front and back-end.  The
      front-end contains the majority of implementation, but leaves out
      the low-level drawing and event code.  A back-end can override
      whatever methods necessary in order to implement low-level drawing
      event receiving.  Different back-ends will make GNUstep available
      on various platforms.  The default GNU back-end will run on top of
-     X Windows and the DisplayGhostScript Server.  Other back-ends
-     could allow GNUstep to run on OpenGL, OS/2, and WIN32
+     the X Window System and the Display Ghostscript Server.  Other
+     back-ends could allow GNUstep to run on Mac, OS/2, and WIN32
      graphics/event platforms.  Much work will be saved by this clean
-     separation between front- and back-end, because it allows
-     different platforms to share the large amount of front-end code.
+     separation between front and back-end, because it allows different
+     platforms to share the large amount of front-end code.
 
      The front-end does not specify what mechanism to use in order to
      "plug in" the back-end; that is the back-end implementor's choice.
@@ -46,20 +46,21 @@ is available at:
      running `[XDPSWindow poseAs: [NSWindow class]]'.  Using `+poseAs:'
      is more flexible than using Categories because it allows the the
      back-end implementor to choose what to override in the front-end,
-     instead of having the interface between front- and back-end fixed
+     instead of having the interface between front and back-end fixed
      by the front-end.
 
   3. What is the current state of development of the front-end?
 
      A number of classes in the front-end are complete or almost
-     complete; these include:  NSActionCell, NSButtonCell, NSButton,
-     NSCell, NSControl, NSEvent, NSFont, NSResponder, and NSSlider.
+     complete; these include: NSActionCell, NSButtonCell, NSButton,
+     NSCell, NSColor, NSColorWell, NSControl, NSCursor, NSEvent,
+     NSFont, NSImage, NSImageRep, NSBitmapImageRep, NSResponder,
+     NSSlider, NSScroller, NSTextField, and NSTextFieldCell.
 
      Other classes are complete enough to use, but still require some
      major additions before being considered almost complete:
-     NSApplication, NSBox, NSColor, NSFontManager, NSMenu, NSMenuCell,
-     NSPopUpButton, NSSliderCell, NSText, NSTextField, NSTextFieldCell,
-     NSView, and NSWindow.
+     NSApplication, NSBox, NSFontManager, NSMatrix, NSMenu, NSMenuCell,
+     NSPopUpButton, NSSliderCell, NSText, NSView, and NSWindow.
 
      You can review the most up-to-date status report at:
 
@@ -67,7 +68,7 @@ is available at:
 
   4. What back-ends are available?
 
-     The official back-end is the GNUstep GUI X/DPS Backend which runs
+     The official back-end is the GNUstep X/DPS GUI Backend which runs
      under the X Window System and interfaces to the Display Ghostscript
      System.  You can learn more at:
 
@@ -75,13 +76,27 @@ is available at:
 
   5. Where can I get a copy?
 
-     It is not yet publically released.  When it is available you will
-     be able to find it in:
+     The gstep-gui-0.2.0.tar.gz distribution file has been placed on
+     `ftp.gnustep.org' in `pub/gnustep'.
 
-          `ftp://alpha.gnu.ai.mit.edu/gnu/gnustep'
+     The program requires gcc 2.7.0 or higher.
 
-     Pre-release snapshots are available at:
+     It requires the Display Ghostscript System version 0.2.0 and the
+     TIFF Graphics library version 3.4.
 
-          `ftp://ftp.net-community.com/pub/GNUstep'
+     It also requires a FoundationKit library as specified by the
+     OpenStep specification.  The FoundationKit library known to work
+     is the GNUstep Base Library version `0.2.12'.
+
+     The `.tar' file is compressed with GNU gzip.  Gzip can be obtained
+     by anonymous ftp at any of the GNU archive sites.
+
+     For info about FTP via email, send email to
+     <ftpmail@decwrl.dec.com> with no subject line, and two-line body
+     with line one `help' and line two `quit'.
+
+     The most recent (not necessarily tested) snapshots of the library
+     will be placed in
+     `ftp://alpha.gnu.ai.mit.edu/gnu/gnustep'.
 
 

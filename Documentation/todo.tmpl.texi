@@ -29,7 +29,7 @@ That would be optimal because GNUstep and non-GNUstep programs would then
 be able to partially interoperate.
 
 @item
-Expand the image handling capabilities beyond OPENSTEP.  There is no
+Expand the image handling capabilities beyond OpenStep.  There is no
 reason why we must limit ourselves to EPS and TIFF bitmaps, we should
 have image representations for as many bitmap formats as possible;
 excluding GIF files which are currently restricted by patents.
@@ -41,6 +41,8 @@ interface with the GNU Dictionary project.
 @item
 GNUstep window manager.  Though not part of the GUI Library per se, an X
 Window manager that gives the complete desktop the GNUstep look and feel
-would be a great thing to have.
+would be a great thing to have.  There is actually some work that has
+been started; a clearly defined interface between GNUstep and the X
+Window manager needs to be defined and implemented.
 
 @end itemize

@@ -31,7 +31,7 @@ VPATH = @srcdir@
 
 # Installation location
 prefix = @prefix@
-infodir = $(prefix)/info
+infodir = @infodir@
 
 MAKEINFO = makeinfo
 TEXI2DVI = texi2dvi
@@ -87,7 +87,9 @@ version.tmpl.texi: $(srcdir)/../Version
 	rm -f version.tmpl.texi
 	echo '@set GNUSTEP-GUI-VERSION' $(GNUSTEP_GUI_VERSION) \
 		> version.tmpl.texi
-	echo '@set GNUSTEP-GUI-GCC-VERSION $(GNUSTEP_GUI_GCC_VERSION)' \
+	echo '@set GNUSTEP-GUI-GCC $(GNUSTEP_GUI_GCC)' \
+		>> version.tmpl.texi
+	echo '@set GNUSTEP-GUI-BASE $(GNUSTEP_GUI_BASE)' \
 		>> version.tmpl.texi
 	echo '@set GNUSTEP-GUI-LIBTIFF $(GNUSTEP_GUI_LIBTIFF)' \
 		>> version.tmpl.texi
@@ -227,6 +229,15 @@ objc-runtime_toc.html: version.tmpl.texi objc-runtime.tmpl.texi
 
 install:
 uninstall:
+
+update-top: ANNOUNCE FAQ INSTALL NEWS README TODO STATUS
+	cp ANNOUNCE ..
+	cp FAQ ..
+	cp INSTALL ..
+	cp NEWS ..
+	cp README ..
+	cp TODO ..
+	cp STATUS ..
 
 mostlyclean:
 	rm -f *~

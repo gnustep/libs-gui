@@ -1,22 +1,23 @@
 # This file is included in various Makefile's to get version information.
 
 # The gcc version required to compile the library.
-GNUSTEP_GUI_GCC_VERSION = 2.7.0
+GNUSTEP_GUI_GCC = 2.7.0
 
 # Versions for libraries that gnustep-gui is dependent upon
+GNUSTEP_GUI_BASE = 0.2.12
 GNUSTEP_GUI_LIBTIFF = 3.4
-GNUSTEP_GUI_DGS = 0.1.1
+GNUSTEP_GUI_DGS = 0.2.0
 GNUSTEP_GUI_DPSCLIENT = 6.1
 
 # The version number of this release.
 GNUSTEP_GUI_MAJOR_VERSION = 0
-GNUSTEP_GUI_MINOR_VERSION = 1
-GNUSTEP_GUI_SUBMINOR_VERSION = 1
+GNUSTEP_GUI_MINOR_VERSION = 2
+GNUSTEP_GUI_SUBMINOR_VERSION = 0
 GNUSTEP_GUI_VERSION = \
 $(GNUSTEP_GUI_MAJOR_VERSION).$(GNUSTEP_GUI_MINOR_VERSION).$(GNUSTEP_GUI_SUBMINOR_VERSION)
 
-GNUSTEP_GUI_FTP_MACHINE = alpha.gnu.ai.mit.edu
-GNUSTEP_GUI_FTP_DIRECTORY = gnu/gnustep
-GNUSTEP_GUI_SNAP_FTP_MACHINE = ftp.net-community.com
-GNUSTEP_GUI_SNAP_FTP_DIRECTORY = pub/GNUstep
+GNUSTEP_GUI_FTP_MACHINE = ftp.gnustep.org
+GNUSTEP_GUI_FTP_DIRECTORY = pub/gnustep
+GNUSTEP_GUI_SNAP_FTP_MACHINE = alpha.gnu.ai.mit.edu
+GNUSTEP_GUI_SNAP_FTP_DIRECTORY = gnu/gnustep
 

@@ -25,7 +25,7 @@ This file documents the GNUstep GUI Library.
 @ifclear NO-TEXI2HTML
 @subtitle DRAFT Edition for GNUstep GUI Library @value{GNUSTEP-GUI-VERSION}
 @subtitle Last revision August 1996
-@c @subtitle For GCC Version @value{GNUSTEP-GUI-GCC-VERSION}
+@c @subtitle For GCC Version @value{GNUSTEP-GUI-GCC}
 @author Scott Christley
 @sp 1
 @end ifclear
@@ -51,7 +51,7 @@ into another language, under the above conditions for modified versions.
 @title The GNUstep GUI Library
 @subtitle DRAFT Edition for GNUstep GUI Library @value{GNUSTEP-GUI-VERSION}
 @subtitle Last revision August 1996
-@c @subtitle For GCC Version @value{GNUSTEP-GUI-GCC-VERSION}
+@c @subtitle For GCC Version @value{GNUSTEP-GUI-GCC}
 @author Scott Christley
 @page
 
@@ -60,7 +60,7 @@ Copyright @copyright{} 1996 NET-Community
 
 @sp 2
 GNUstep GUI Library Version @value{GNUSTEP-GUI-VERSION}@*
-@c For GCC Version @value{GNUSTEP-GUI-GCC-VERSION}@*
+@c For GCC Version @value{GNUSTEP-GUI-GCC}@*
 @sp 1
 Published by NET-Community@*
 Portland, Oregon, USA@*

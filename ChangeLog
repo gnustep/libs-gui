@@ -1,3 +1,27 @@
+Fri Mar 28 14:15:52 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Release version 0.2.0
+	* Version: Update with new version number.
+	
+	* Update documentation.
+	* Documentation/announce.tmpl.texi: Likewise.
+	* Documentation/faq.tmpl.texi: Likewise.
+	* Documentation/gnustep-gui.tmpl.texi: Likewise.
+	* Documentation/install.tmpl.texi: Likewise.
+	* Documentation/news.tmpl.texi: Likewise.
+	* Documentation/readme.tmpl.texi: Likewise.
+	* Documentation/status.tmpl.texi: Likewise.
+	* Documentation/todo.tmpl.texi: Likewise.
+	* ANNOUNCE: Likewise.
+	* FAQ: Likewise.
+	* INSTALL: Likewise.
+	* NEWS: Likewise.
+	* README: Likewise.
+	* STATUS: Likewise.
+	* SUPPORT: Likewise.
+	* TODO: Likewise.
+	* Documentation/Makefile.in (update-top): New target.
+
 Thu Mar 27 09:43:02 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Source/NSTextFieldCell.m: Change default point size to 16.
