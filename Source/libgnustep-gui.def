@@ -120,6 +120,7 @@ __objc_class_name_NSMenuItem
 __objc_class_name_NSMenuItemCell
 __objc_class_name_NSMenuView
 __objc_class_name_NSOpenPanel
+__objc_class_name_NSOutlineView
 __objc_class_name_NSPageLayout
 __objc_class_name_GSAlertPanel
 __objc_class_name_NSPanel
