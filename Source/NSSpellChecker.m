@@ -115,9 +115,8 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
   if (proxy == nil)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
-	    @"Failed to contact spell checker for language '%@'", language],
-	@"Continue", nil, nil);
+	@"Failed to contact spell checker for language '%@'",
+	@"Continue", nil, nil, language);
     }
   else
     {

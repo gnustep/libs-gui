@@ -1,3 +1,9 @@
+2003-02-15 18:04  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSpellChecker.m (-_launchSpellCheckerForLanguage:): Don't
+	printf-expand the error message twice (might cause a crash if
+	'language' contains a "%").
+
 Sat Feb 15 13:26:03 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/AppKit.h: Include NSRulerView.h
