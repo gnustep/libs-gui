@@ -1,3 +1,16 @@
+2001-08-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSImageCell.h
+	Removed already inherited protocols.
+	* Source/NSImageCell.m
+	Removed [initImageCell:], [dealloc], [cellSizeForBounds:] and
+	[copyWithZone:], which where only super calls. 
+	In [drawWithFrame:inView:] lockFocus only around drawing
+	code and check for invalid window.
+	In [drawInteriorWithFrame:inView:] lockFocus only around drawing
+	code, check for invalid window, use NSCompositeSourceOver instead
+	of NSCompositeCopy and show first responder state.
+	
 Sat Aug 11 07:41:45 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m ([NSMatrix -getRow:column:forPoint:]): Fixed
