@@ -32,6 +32,7 @@
 #include <AppKit/NSPanel.h>
 
 @class NSView;
+@class NSPrintInfo;
 
 enum {
   NSPPSaveButton = 4,
@@ -55,7 +56,7 @@ enum {
   NSPPLayoutButton
 };
 
-@interface NSPrintPanel : NSPanel <NSCoding>
+@interface NSPrintPanel : NSPanel
 {
   id _cancelButton;
   id _copiesField;
@@ -91,12 +92,19 @@ enum {
 //
 // Running the Panel 
 //
-- (int)runModal;
-- (void)pickedButton:(id)sender;
+- (int) runModal;
+#ifndef STRICT_OPENSTEP
+- (void) beginSheetWithPrintInfo: (NSPrintInfo *)printInfo 
+		  modalForWindow: (NSWindow *)docWindow 
+			delegate: (id)delegate 
+		  didEndSelector: (SEL)didEndSelector 
+		     contextInfo: (void *)contextInfo;
+#endif
 
 //
 // Updating the Panel's Display 
 //
+- (void)pickedButton:(id)sender;
 - (void)pickedAllPages:(id)sender;
 - (void)pickedLayoutList:(id)sender;
 
@@ -105,12 +113,6 @@ enum {
 //
 - (void)updateFromPrintInfo;
 - (void)finalWritePrintInfo;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

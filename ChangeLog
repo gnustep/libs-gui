@@ -1,3 +1,17 @@
+2001-10-08  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPrintOperation (_runOperation): New internal method.
+	(runOperation): Use it.
+	(-runOperationModalForWindow:delegate:didRunSelector:contextInfo:):
+	Implement.
+	(-createContext): Use our context if already created. Set the
+	path from the NSPrintInfo object if available.
+
+	* Source/NSPrintPanel.m 
+	(beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:
+	contextInfo:): Implement.
+	Remove coding methods.
+
 Mon Oct  8 14:50:44 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Tools/wgetopt.h: New file copied from base/Testing/wgetopt.h.

@@ -155,6 +155,12 @@ typedef enum _NSPrintingPageOrder {
 - (void)cleanUpOperation;
 - (BOOL)deliverResult;
 - (BOOL)runOperation;
+#ifndef STRICT_OPENSTEP
+- (void)runOperationModalForWindow: (NSWindow *)docWindow 
+			  delegate: (id)delegate 
+		    didRunSelector: (SEL)didRunSelector 
+		       contextInfo:(void *)contextInfo;
+#endif
 
 //
 // Getting the NSPrintInfo Object

@@ -159,6 +159,23 @@
   return (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton;
 }
 
+- (void) beginSheetWithPrintInfo: (NSPrintInfo *)printInfo 
+		  modalForWindow: (NSWindow *)docWindow 
+			delegate: (id)delegate 
+		  didEndSelector: (SEL)didEndSelector 
+		     contextInfo: (void *)contextInfo
+{
+  _picked = NSCancelButton;
+  // FIXME: We should probably arrange to call endSheet instead of stopModal
+  [NSApp beginSheet: self
+         modalForWindow: docWindow
+         modalDelegate: delegate
+         didEndSelector: didEndSelector
+         contextInfo: contextInfo];
+  [self orderOut: self];
+}
+
+
 - (BOOL) _getSavePath
 {
   int result;
@@ -500,21 +517,6 @@
   NSDebugLLog(@"NSPrintPanel", 
 	      @"Final info dictionary ----\n %@ \n --------------", dict);
 
-}
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  [super initWithCoder: aDecoder];
-
-  return self;
 }
 
 @end

@@ -35,6 +35,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSValue.h>
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSView.h>
@@ -307,7 +308,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 //
 - (NSGraphicsContext*)createContext
 {
-  // FIXME
+  [self subclassResponsibility: _cmd];
   return nil;
 }
 
@@ -355,60 +356,114 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   return YES;
 }
 
+- (BOOL) _runOperation
+{
+  BOOL result;
+  NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
+
+  [self createContext];
+  if (_context == nil)
+    return NO;
+
+  result = NO;
+  [NSGraphicsContext setCurrentContext: _context];
+  NS_DURING
+    {
+      [self _print];
+      result = YES;
+    }
+  NS_HANDLER
+    {
+      NSRunAlertPanel(@"Error", @"Printing error: %@", 
+		      @"OK", NULL, NULL, localException);
+    }
+  NS_ENDHANDLER
+  [NSGraphicsContext setCurrentContext: oldContext];
+  [self destroyContext];
+  return result;
+}
+
 - (BOOL)runOperation
 {
   BOOL result;
-  NSString *clocale;
 
   if (_showPanels)
     {
-	NSPrintPanel *panel = [self printPanel];
-	int button;
+      NSPrintPanel *panel = [self printPanel];
+      int button;
+      
+      [panel setAccessoryView: _accessoryView];
+      [panel updateFromPrintInfo];
+      button = [panel runModal];
+      [panel setAccessoryView: nil];
 
-	[panel setAccessoryView: _accessoryView];
-	[panel updateFromPrintInfo];
-	button = [panel runModal];
-	[panel setAccessoryView: nil];
-/*
-	if (button != NSOKButton)
+      if (button != NSOKButton)
 	{
 	  [self cleanUpOperation];
 	  return NO;
 	}
-*/
-	[panel finalWritePrintInfo];
+      [panel finalWritePrintInfo];
     }
 
-  ASSIGN(_context, [self createContext]);
-
-  if (_context != nil)
-    {
-      NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
-
-      /* Reset the current locale to a generic C locale so numbers
-	 get printed correctly for PostScript (maybe we should only
-	 set the numeric locale?). Save the current locale for later */
-      clocale = GSSetLocale(nil);
-      GSSetLocale(@"C");
-      [NSGraphicsContext setCurrentContext: _context];
-      NS_DURING
-	{
-	  [self _print];
-	}
-      NS_HANDLER
-	{
-	   NSLog(@"Error while printing: %@\n", localException);
-	}
-      NS_ENDHANDLER
-      GSSetLocale(clocale);
-      [NSGraphicsContext setCurrentContext: oldContext];
-      [self destroyContext];
-    }
-
-  result = [self deliverResult];
+  result = NO;
+  if ([self _runOperation])
+    result = [self deliverResult];
   [self cleanUpOperation];
 
   return result;
+}
+
+- (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
+		      success:(BOOL)success  
+		  contextInfo:(void *)contextInfo
+{
+  id delegate;
+  SEL *didRunSelector;
+  NSMutableDictionary *dict;
+  if (success == YES)
+    {
+      NSPrintPanel *panel = [self printPanel];
+      [panel finalWritePrintInfo];
+      success = NO;
+      if ([self _runOperation])
+	success = [self deliverResult];
+    }
+  [self cleanUpOperation];
+  dict = [_printInfo dictionary];
+  didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
+  delegate = [dict objectForKey: @"GSModalRunDelegate"];
+  [delegate performSelector: *didRunSelector
+                   withObject: success
+                   withObject: contextInfo];
+}
+
+- (void)runOperationModalForWindow: (NSWindow *)docWindow 
+			  delegate: (id)delegate 
+		    didRunSelector: (SEL)didRunSelector 
+		       contextInfo:(void *)contextInfo
+{
+  NSMutableDictionary *dict;
+  NSPrintPanel *panel = [self printPanel];
+
+  /* Save the selector so we can use it later */
+  dict = [_printInfo dictionary];
+  [dict setObject: [NSValue value: &didRunSelector withObjCType: @encode(SEL)]
+	   forKey: @"GSModalRunSelector"];
+  [dict setObject: delegate
+	   forKey: @"GSModalRunDelegate"];
+
+  /* Assume we want to show the panel regardless of the value
+     of _showPanels 
+  */
+  [panel setAccessoryView: _accessoryView];
+  [panel updateFromPrintInfo];
+  [panel beginSheetWithPrintInfo: _printInfo 
+	          modalForWindow: docWindow 
+			delegate: delegate 
+		  didEndSelector: 
+		          @selector(_printOperationDidRun:sucess:contextInfo:)
+		      contextInfo: contextInfo];
+  [panel setAccessoryView: nil];
 }
 
 //
@@ -453,7 +508,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   _rect = rect;
   ASSIGN(_data, data);
   _pageOrder = NSUnknownPageOrder;
-  _showPanels = YES;
+  _showPanels = NO;
   [self setPrintInfo: aPrintInfo];
 
   ASSIGN(_path, @"/tmp/NSTempPrintFile");
@@ -465,8 +520,16 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (void) _print
 {
-  // This is the actual printing
+  NSString *clocale;
+  /* Reset the current locale to a generic C locale so numbers
+     get printed correctly for PostScript (maybe we should only
+     set the numeric locale?). Save the current locale for later. */
+  clocale = GSSetLocale(nil);
+  GSSetLocale(@"C");
+
   [_view displayRectIgnoringOpacity: _rect];
+
+  GSSetLocale(clocale);
 }
 
 @end
@@ -490,13 +553,25 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (NSGraphicsContext*)createContext
 {
-  NSMutableDictionary *info = [_printInfo dictionary];
-  NSGraphicsContext *psContext;
+  NSMutableDictionary *info;
+  if (_context)
+    return _context;
+
+  info = [_printInfo dictionary];
+  if (_pathSet == NO)
+    {
+      NSString *output = [info objectForKey: NSPrintSavePath];
+      if (output)
+	{
+	  ASSIGN(_path, output);
+	  _pathSet = YES;
+	}
+    }
 
   [info setObject: _path forKey: @"NSOutputFile"];
-  psContext = [NSGraphicsContext postscriptContextWithInfo: info];
+  _context = RETAIN([NSGraphicsContext postscriptContextWithInfo: info]);
 
-  return psContext;
+  return _context;
 }
 
 - (BOOL)deliverResult
