@@ -57,7 +57,6 @@
 }
 + (GSServicesManager*) newWithApplication: (NSApplication*)app;
 + (GSServicesManager*) manager;
-- (void) checkServices;
 - (void) doService: (NSCell*)item;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;
 - (NSString*) item2title: (NSCell*)item;

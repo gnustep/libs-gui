@@ -50,6 +50,34 @@
 #include <AppKit/NSCursor.h>
 
 
+@interface GSWindowView : NSView
+{
+}
+@end
+
+@implementation GSWindowView
+
+- (BOOL) isOpaque
+{
+  return YES;
+}
+
+- (void) drawRect: (NSRect)rect
+{
+  NSColor *c = [[self window] backgroundColor];
+
+  [c set];
+  NSRectFill(rect);
+}
+
+- (Class) classForCoder: (NSCoder*)aCoder
+{
+  if ([self class] == [GSWindowView class])
+    return [super class];
+  return [self class];
+}
+
+@end
 
 //*****************************************************************************
 //
@@ -70,11 +98,6 @@
       [self setVersion: 2];
     }
 }
-
-+ (NSView *) _windowViewWithFrame: (NSRect)frameRect      // create the view at
-{                                                       // the root of window's
-  return nil;                                         // view heirarchy.
-}                                                       // (backend)
 
 + (void) removeFrameUsingName: (NSString *)name
 {                                                       // Saving and restoring
@@ -208,13 +231,14 @@
 {
   NSView *wv;
 
-  if (!aView)                                       // contentview can't be nil
+  // contentview can't be nil
+  if (!aView)
     aView = [[[NSView alloc] initWithFrame: frame] autorelease];
-						    // If window view has not
-                                                    // been created, create it
+
+  // If window view has not been created, create it
   if ((!content_view) || ([content_view superview] == nil))
     {
-      wv = [NSWindow _windowViewWithFrame: frame];
+      wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: frame];
       [wv viewWillMoveToWindow: self];
     }
   else

@@ -44,6 +44,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSPortNameServer.h>
+#include <Foundation/NSTask.h>
 
 #include <base/fast.x>
 
@@ -57,20 +58,16 @@
 
 #include <AppKit/GSServicesManager.h>
 
-#define stringify_it(X) #X
-#define prog_path(X,Y) \
-  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO
-
 /*
- *	The GNUListener class is for talking to other applications.
+ *	The GSListener class is for talking to other applications.
  *	It is a proxy with some dangerous methods implemented in a
  *	harmless manner to reduce the chances of a malicious app
  *	messing with us.  This is responsible for forwarding service
  *      requests and other communications with the outside world.
  */
-@interface      GNUListener : NSObject
+@interface      GSListener : NSObject
 + (id) connectionBecameInvalid: (NSNotification*)notification;
-+ (GNUListener*) listener;
++ (GSListener*) listener;
 + (id) servicesProvider;
 + (void) setServicesProvider: (id)anObject;
 - (Class) class;
@@ -78,10 +75,20 @@
 - (void) release;
 - (id) retain;
 - (id) self;
+- (BOOL) application: (NSApplication*)theApp
+	    openFile: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+   openFileWithoutUI: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+	openTempFile: (NSString*)file;
+- (void) performService: (NSString*)name
+	 withPasteboard: (NSPasteboard*)pb
+	       userData: (NSString*)ud
+		  error: (NSString**)e;
 @end
 
 static NSConnection	*listenerConnection = nil;
-static GNUListener	*listener = nil;
+static GSListener	*listener = nil;
 static id		servicesProvider = nil;
 
 void
@@ -94,7 +101,7 @@ NSUnregisterServicesProvider(NSString *name)
        *        the given port name.
        */
       [[NSPortNameServer defaultPortNameServer] removePortForName: name];
-      [NSNotificationCenter removeObserver: [GNUListener class]
+      [NSNotificationCenter removeObserver: [GSListener class]
                                       name: NSConnectionDidDieNotification
                                     object: listenerConnection];
       [listenerConnection release];
@@ -113,7 +120,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
        *	the given port name.
        */
       [[NSPortNameServer defaultPortNameServer] removePortForName: name];
-      [NSNotificationCenter removeObserver: [GNUListener class]
+      [NSNotificationCenter removeObserver: [GSListener class]
 				      name: NSConnectionDidDieNotification
 				    object: listenerConnection];
       [listenerConnection release];
@@ -122,12 +129,12 @@ NSRegisterServicesProvider(id provider, NSString *name)
   if (name && provider)
     {
       listenerConnection = [NSConnection newRegisteringAtName: name
-				       withRootObject: [GNUListener listener]];
+				       withRootObject: [GSListener listener]];
       if (listenerConnection)
 	{
 	  [listenerConnection retain];
 	  [NotificationDispatcher
-                    addObserver: [GNUListener class]
+                    addObserver: [GSListener class]
 		       selector: @selector(connectionBecameInvalid:)
 			   name: NSConnectionDidDieNotification
 			 object: listenerConnection];
@@ -140,12 +147,12 @@ NSRegisterServicesProvider(id provider, NSString *name)
 }
 
 /*
- *	The GNUListener class exists as a proxy to forward messages to
+ *	The GSListener class exists as a proxy to forward messages to
  *	service provider objects.  It implements very few methods and
  *	those that it does implement are generally designed to defeat
  *	any attack by a malicious program.
  */
-@implementation GNUListener
+@implementation GSListener
 
 + (id) connectionBecameInvalid: (NSNotification*)notification
 {
@@ -160,7 +167,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
   return self;
 }
 
-+ (GNUListener*) listener
++ (GSListener*) listener
 {
   if (listener == nil)
     {
@@ -219,6 +226,63 @@ NSRegisterServicesProvider(id provider, NSString *name)
   return nil;
 }
 
+- (BOOL) application: (NSApplication*)theApp
+	    openFile: (NSString*)file
+{
+  NSApplication	*app = [NSApplication sharedApplication];
+
+  return [app application: theApp openFile: file];
+}
+
+- (BOOL) application: (NSApplication*)theApp
+   openFileWithoutUI: (NSString*)file
+{
+  NSApplication	*app = [NSApplication sharedApplication];
+
+  return [app application: theApp openFileWithoutUI: file];
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	openTempFile: (NSString*)file
+{
+  NSApplication	*app = [NSApplication sharedApplication];
+
+  return [app application: theApp openTempFile: file];
+}
+
+- (void) performService: (NSString*)name
+	 withPasteboard: (NSPasteboard*)pb
+	       userData: (NSString*)ud
+		  error: (NSString**)e
+{
+  id	obj = servicesProvider;
+  SEL	msgSel = NSSelectorFromString(name);
+  IMP	msgImp;
+
+  if (obj != nil && [obj respondsToSelector: msgSel])
+    {
+      msgImp = [obj methodForSelector: msgSel];
+      if (msgImp != 0)
+	{
+	  (*msgImp)(obj, msgSel, pb, ud, e);
+	  return;
+	}
+    }
+
+  obj = [[NSApplication sharedApplication] delegate];
+  if (obj != nil && [obj respondsToSelector: msgSel])
+    {
+      msgImp = [obj methodForSelector: msgSel];
+      if (msgImp != 0)
+	{
+	  (*msgImp)(obj, msgSel, pb, ud, e);
+	  return;
+	}
+    }
+
+  *e = @"No object available to provide service"; 
+}
+
 - (void) release
 {
 }
@@ -232,7 +296,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 {
   return self;
 }
-@end /* GNUListener */
+@end /* GSListener */
 
 
 
@@ -300,13 +364,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
       [self newWithApplication: nil];
     }
   return manager;
-}
-
-- (void) checkServices
-{
-  system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
-
-  [self loadServices];
 }
 
 - (void) dealloc
@@ -860,7 +917,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (id) servicesProvider
 {
-  return [GNUListener servicesProvider];
+  return [GSListener servicesProvider];
 }
 
 - (void) setServicesMenu: (NSMenu*)aMenu
@@ -871,7 +928,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (void) setServicesProvider: (id)anObject
 {
-  [GNUListener setServicesProvider: anObject];
+  [GSListener setServicesProvider: anObject];
 }
 
 - (int) setShowsServicesMenuItem: (NSString*)item to: (BOOL)enable
@@ -1195,7 +1252,12 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   msgImp = get_imp(fastClass(provider), msgSel);
   NS_DURING
     {
-      (*msgImp)(provider, msgSel, pboard, userData, &error);
+      [provider performService: selName
+		withPasteboard: pboard
+		      userData: userData
+			 error: &error];
+
+//      (*msgImp)(provider, msgSel, pboard, userData, &error);
     }
   NS_HANDLER
     {

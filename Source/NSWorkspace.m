@@ -40,22 +40,27 @@
 #include <Foundation/NSTask.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSProcessInfo.h>
+#include <Foundation/NSFileManager.h>
 
 #define stringify_it(X) #X
-#define prog_path(X,Y) \
-  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO
+#define	mkpath(X) stringify_it(X) "/Tools"
 
 static NSDictionary	*applications = nil;
+
+@interface	NSWorkspace (GNUstep)
+- (NSTask*) launchProgram: (NSString *)prog
+		   atPath: (NSString *)path;
+@end
 
 
 @implementation	NSWorkspace
 
-static NSWorkspace	*sharedWorkspace = nil;
+static NSWorkspace		*sharedWorkspace = nil;
 static NSNotificationCenter	*workspaceCenter = nil;
-static BOOL userDefaultsChanged = NO;
+static BOOL 			userDefaultsChanged = NO;
 
-static NSString		*appListName = @".GNUstepAppList";
-static NSString		*appListPath = nil;
+static NSString			*appListName = @".GNUstepAppList";
+static NSString			*appListPath = nil;
 
 static NSString* gnustep_target_dir = 
 #ifdef GNUSTEP_TARGET_DIR
@@ -85,7 +90,7 @@ static NSString* library_combo =
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSWorkspace class])
     {
@@ -93,7 +98,7 @@ static NSString* library_combo =
       NSDictionary	*env;
 
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
 
       [gnustep_global_lock lock];
       if (beenHere == YES)
@@ -158,7 +163,7 @@ static NSString* library_combo =
 //
 // Creating a Workspace
 //
-+ (NSWorkspace *)sharedWorkspace
++ (NSWorkspace *) sharedWorkspace
 {
   if (sharedWorkspace == nil)
     {
@@ -213,7 +218,7 @@ static NSString* library_combo =
   if (apps == nil || [apps count] == 0)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
+	[NSString stringWithFormat: 
 	    @"No known applications for file extension '%@'", ext],
 	@"Continue", nil, nil);
       return NO;
@@ -225,30 +230,28 @@ static NSString* library_combo =
   return [self openFile: fullPath withApplication: appName];
 }
 
-- (BOOL)openFile:(NSString *)fullPath
-       fromImage:(NSImage *)anImage
-	      at:(NSPoint)point
-	  inView:(NSView *)aView
+- (BOOL) openFile: (NSString *)fullPath
+        fromImage: (NSImage *)anImage
+	       at: (NSPoint)point
+	   inView: (NSView *)aView
 {
   /* FIXME - should do animation here */
   return [self openFile: fullPath];
 }
 
-- (BOOL)openFile:(NSString *)fullPath
- withApplication:(NSString *)appName
+- (BOOL) openFile: (NSString *)fullPath
+  withApplication: (NSString *)appName
 {
   return [self openFile: fullPath withApplication: appName andDeactivate: YES];
 }
 
-- (BOOL)openFile:(NSString *)fullPath
- withApplication:(NSString *)appName
-   andDeactivate:(BOOL)flag
+- (BOOL) openFile: (NSString *)fullPath
+  withApplication: (NSString *)appName
+    andDeactivate: (BOOL)flag
 {
   NSString      *port = [appName stringByDeletingPathExtension];
   NSDate        *finish = [NSDate dateWithTimeIntervalSinceNow: 30.0];
   id            app;
-
-/* FIXME - should probably deactivate self here. */
 
   /*
    *    Try to connect to the application - launches if necessary.
@@ -257,7 +260,7 @@ static NSString* library_combo =
   if (app == nil)
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
+	[NSString stringWithFormat: 
 	    @"Failed to contact '%@' to open file", port],
 	@"Continue", nil, nil);
       return NO;
@@ -273,17 +276,20 @@ static NSString* library_combo =
   NS_HANDLER
     {
       NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
+	[NSString stringWithFormat: 
 	    @"Failed to contact '%@' to open file", port],
 	    @"Continue", nil, nil);
       return NO;
     }
   NS_ENDHANDLER
 
+  if (flag)
+    [[NSApplication sharedApplication] deactivate];
+
   return YES;
 }
 
-- (BOOL)openTempFile:(NSString *)fullPath
+- (BOOL) openTempFile: (NSString *)appName
 {
   return NO;
 }
@@ -291,17 +297,17 @@ static NSString* library_combo =
 //
 // Manipulating Files	
 //
-- (BOOL)performFileOperation:(NSString *)operation
-		      source:(NSString *)source
-		 destination:(NSString *)destination
-		       files:(NSArray *)files
-			 tag:(int *)tag
+- (BOOL) performFileOperation: (NSString *)operation
+		      source: (NSString *)source
+		 destination: (NSString *)destination
+		       files: (NSArray *)files
+			 tag: (int *)tag
 {
   return NO;
 }
 
-- (BOOL)selectFile:(NSString *)fullPath
-inFileViewerRootedAtPath:(NSString *)rootFullpath
+- (BOOL) selectFile: (NSString *)fullPath
+inFileViewerRootedAtPath: (NSString *)rootFullpath
 {
   return NO;
 }
@@ -309,7 +315,7 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Requesting Information about Files
 //
-- (NSString *)fullPathForApplication:(NSString *)appName
+- (NSString *) fullPathForApplication: (NSString *)appName
 {
   NSString      *last = [appName lastPathComponent];
 
@@ -329,34 +335,34 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
   return nil;
 }
 
-- (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
-		     isRemovable:(BOOL *)removableFlag
-		      isWritable:(BOOL *)writableFlag
-		   isUnmountable:(BOOL *)unmountableFlag
-		     description:(NSString **)description
-			    type:(NSString **)fileSystemType
+- (BOOL) getFileSystemInfoForPath: (NSString *)fullPath
+		      isRemovable: (BOOL *)removableFlag
+		       isWritable: (BOOL *)writableFlag
+		    isUnmountable: (BOOL *)unmountableFlag
+		      description: (NSString **)description
+			     type: (NSString **)fileSystemType
 {
   return NO;
 }
 
-- (BOOL)getInfoForFile:(NSString *)fullPath
-	   application:(NSString **)appName
-		  type:(NSString **)type
+- (BOOL) getInfoForFile: (NSString *)fullPath
+	    application: (NSString **)appName
+		   type: (NSString **)type
 {
   return NO;
 }
 
-- (NSImage *)iconForFile:(NSString *)fullPath
+- (NSImage *) iconForFile: (NSString *)fullPath
 {
   return nil;
 }
 
-- (NSImage *)iconForFiles:(NSArray *)pathArray
+- (NSImage *) iconForFiles: (NSArray *)pathArray
 {
   return nil;
 }
 
-- (NSImage *)iconForFileType:(NSString *)fileType
+- (NSImage *) iconForFileType: (NSString *)fileType
 {
   return nil;
 }
@@ -364,23 +370,33 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Tracking Changes to the File System
 //
-- (BOOL)fileSystemChanged
+- (BOOL) fileSystemChanged
 {
   return NO;
 }
 
-- (void)noteFileSystemChanged
-{}
+- (void) noteFileSystemChanged
+{
+}
 
 //
 // Updating Registered Services and File Types
 //
 - (void) findApplications
 {
-  NSData	*data;
-  NSDictionary	*newApps;
+  static NSString	*path = nil;
+  NSData		*data;
+  NSDictionary		*newApps;
+  NSTask		*task;
 
-  system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
+  /*
+   * Try to locate and run an executable copy of 'make_services'
+   */
+  if (path == nil)
+    path = [[NSString alloc] initWithCString: mkpath(GNUSTEP_INSTALL_PREFIX)];
+  task = [self launchProgram: @"make_services" atPath: path];
+  if (task != nil)
+    [task waitUntilExit];
 
   data = [NSData dataWithContentsOfFile: appListPath];
   if (data)
@@ -395,22 +411,21 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Launching and Manipulating Applications	
 //
-- (void)hideOtherApplications
-{}
+- (void) hideOtherApplications
+{
+}
 
-- (BOOL)launchApplication:(NSString *)appName
+- (BOOL) launchApplication: (NSString *)appName
 {
   return [self launchApplication: appName
 			showIcon: YES
 		      autolaunch: NO];
 }
 
-- (BOOL)launchApplication:(NSString *)appName
-		 showIcon:(BOOL)showIcon
-	       autolaunch:(BOOL)autolaunch
+- (BOOL) launchApplication: (NSString *)appName
+		  showIcon: (BOOL)showIcon
+	        autolaunch: (BOOL)autolaunch
 {
-  NSArray	*args;
-  NSTask	*task;
   NSString	*path;
   NSString	*file;
   NSDictionary	*info;
@@ -437,28 +452,33 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
   if (path == nil)
     return NO;
 
+  /*
+   *	See if the 'Info-gnustep.plist' specifies the location of the
+   *	executable - if it does, replace our app name with the specified
+   *	value.  If the executable name is an absolute path name, we also
+   *	replace the path with that specified.
+   */
   file = [path stringByAppendingPathComponent: @"Resources/Info-gnustep.plist"];
   info = [NSDictionary dictionaryWithContentsOfFile: file];
   file = [info objectForKey: @"NSExecutable"];
-  if (file == nil)
+  if (file != nil)
     {
-      file = appName;
+      appName = [file lastPathComponent];
+      if ([file isAbsolutePath] == YES)
+	{
+	  path = [file stringByDeletingLastPathComponent];
+	}
     }
-  path = [path stringByAppendingPathComponent: gnustep_target_dir]; 
-  path = [path stringByAppendingPathComponent: library_combo]; 
-  path = [path stringByAppendingPathComponent: appName]; 
 
-  args = [NSArray arrayWithObjects: nil];
-  task = [NSTask launchedTaskWithLaunchPath: path
-				  arguments: args];
-
+  if ([self launchProgram: appName atPath: path] == nil)
+    return NO;
   return YES;
 }
 
 //
 // Unmounting a Device	
 //
-- (BOOL)unmountAndEjectDeviceAtPath:(NSString *)path
+- (BOOL) unmountAndEjectDeviceAtPath: (NSString *)path
 {
   return NO;
 }
@@ -466,15 +486,16 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Tracking Status Changes for Devices
 //
-- (void)checkForRemovableMedia
-{}
+- (void) checkForRemovableMedia
+{
+}
 
-- (NSArray *)mountNewRemovableMedia
+- (NSArray *) mountNewRemovableMedia
 {
   return nil;
 }
 
-- (NSArray *)mountedRemovableMedia
+- (NSArray *) mountedRemovableMedia
 {
   return nil;
 }
@@ -482,7 +503,7 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Notification Center
 //
-- (NSNotificationCenter *)notificationCenter
+- (NSNotificationCenter *) notificationCenter
 {
   return workspaceCenter;
 }
@@ -490,12 +511,12 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Tracking Changes to the User Defaults Database
 //
-- (void)noteUserDefaultsChanged
+- (void) noteUserDefaultsChanged
 {
   userDefaultsChanged = YES;
 }
 
-- (BOOL)userDefaultsChanged
+- (BOOL) userDefaultsChanged
 {
   BOOL	hasChanged = userDefaultsChanged;
   userDefaultsChanged = NO;
@@ -505,17 +526,63 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 // Animating an Image	
 //
-- (void)slideImage:(NSImage *)image
-	      from:(NSPoint)fromPoint
-		to:(NSPoint)toPoint
-{}
+- (void) slideImage: (NSImage *)image
+	       from: (NSPoint)fromPoint
+		 to: (NSPoint)toPoint
+{
+}
 
 //
 // Requesting Additional Time before Power Off or Logout
 //
-- (int)extendPowerOffBy:(int)requested
+- (int) extendPowerOffBy: (int)requested
 {
   return 0;
 }
 
 @end
+
+
+@implementation	NSWorkspace (GNUstep)
+/*
+ *	Attempt to start a program.  First look in machine/os/libs directory,
+ *	then in machine/os directory, then at top level.
+ */
+- (NSTask*) launchProgram: (NSString *)prog
+		   atPath: (NSString *)path
+{
+  NSArray	*args;
+  NSTask	*task;
+  NSString	*path0;
+  NSString	*path1;
+  NSString	*path2;
+  NSFileManager	*mgr;
+
+  /*
+   *	Try to locate the actual executable file and start it running.
+   */
+  path2 = [path stringByAppendingPathComponent: prog];
+  path = [path stringByAppendingPathComponent: gnustep_target_dir]; 
+  path1 = [path stringByAppendingPathComponent: prog];
+  path = [path stringByAppendingPathComponent: library_combo]; 
+  path0 = [path stringByAppendingPathComponent: prog]; 
+
+  mgr = [NSFileManager defaultManager];
+  if ([mgr isExecutableFileAtPath: path0])
+    path = path0;
+  else if ([mgr isExecutableFileAtPath: path1])
+    path = path1;
+  else if ([mgr isExecutableFileAtPath: path2])
+    path = path2;
+  else
+    return nil;
+
+  args = [NSArray arrayWithObjects: nil];
+  task = [NSTask launchedTaskWithLaunchPath: path
+				  arguments: args];
+
+  return task;
+}
+
+@end
+
