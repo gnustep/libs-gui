@@ -6,8 +6,8 @@ Mon Feb 25 02:16:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	keybindings.
 	* Source/NSInputManager.m: Rewritten most of the engine to be much more
 	powerful.
-	* Headers/gnustep/gui/NSInputManager.h: Changes in ivars, lots of comments,
-	new public and private methods.
+	* Headers/gnustep/gui/NSInputManager.h: Changes in ivars, lots of 
+	comments, new public and private methods.
 	* Source/GSKeyBindingAction.h: New auxiliary file.
 	* Source/GSKeyBindingAction.m: New auxiliary file.
 	* Source/GSKeyBindingTable.h: New auxiliary file.
