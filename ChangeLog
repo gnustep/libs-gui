@@ -1,3 +1,17 @@
+2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
+
+	* Source/NSBrowser.h: Add instance variables to support alphanumerical
+	keys. Add GNUstepExtensions category with alpahnumerical-key-related
+	methods (acceptsAlphaNumericalKeys, setAcceptsAlphaNumericalKeys:,
+	sendsActionOnAlphaNumericalKeys, setSendsActionOnAlphaNumericalKeys:)
+	* Source/NSBrowser.m: Add GNUstepExtensions category methods
+	* Source/NSBrowser.m (-initWIthFrame:): initialization of the 
+	alphanumerical-key-related instance variables.
+	* Source/NSBrowser.m (-dealloc): TEST_RELEASE a keyDown internal object
+	* Source/NSBrowser.m (-keyDown): support for alphanumerical keys
+	* Source/NSBrowser.m (-selectRow:inColumn:): when calling 
+	[matrix cellAtRow:column:], column should be 0 (not column)
+
 Fri Jul 20 10:18:58 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSWindowController.m ([-initWithWindowNibName:owner:]):
