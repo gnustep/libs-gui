@@ -24,6 +24,334 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+
+<chapter>
+  <heading>The pasteboard system</heading>
+  <p>
+    The pasteboard system is the core of OpenStep inter-application
+    communications.  This chapter is concerned with the use of the system,
+    for detailed reference see the [NSPasteboard] class.
+  </p>
+  <section>
+    <heading>Cut and Paste</heading>
+    <p>
+      The most obvious use of the pasteboard system is to support cut and
+      paste of text and other data, permitting the user to take selected
+      information from a document open in an application, and move it
+      around in the same document, or to another document open in the same
+      application, or to a document open in another application entirely.
+    </p>
+    <p>
+      While some objects (eg instances of [NSText]) will handle cut and
+      paste for you automatically, you may often need to do this yourself
+      in your own classes.  The mechanism for this is quite simple, and
+      should be done in a method called when the user selects the
+      <em>Cut</em> or <em>Copy</em> item on the <em>Edit</em> menu.<br />
+      The methods to do this should be called <em>cut:</em> and <em>copy:</em>
+      respectively, and will be called automatically when the menu items
+      are selected.
+    </p>
+    <list>
+      <item>
+        <strong>Select a pasteboard to use</strong><br />
+        There some standard pasteboards, or you can obtain or create other
+	ones with the [NSPasteboard+pasteboardWithName:] method.<br />
+	Usually you will want to use a standard pasteboard such as
+        the one returned by the [NSPasteboard+generalPasteboard] method.
+<example>
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+</example>
+      </item>
+      <item>
+	<strong>Declare ownership and types</strong><br />
+	When you are going to supply data for pasting, you must take
+	ownership of the pasteboard and specify what types of data can
+        be provided.  If you are going to place the data on the pasteboard
+        immediately, you don't need to set a pasteboard owner, but if
+        you plan to supply the data <em>lazily</em> (ie on-demand), you
+        need to specify an object which the system can ask to provide
+        the data when it needs it.  In either case, you need to say what
+        kinds of data the pasteboard will supply, and you use the
+	[NSPasteboard-declareTypes:owner:] method to do this.
+<example>
+  // Provide string data immediately.
+  [pb declareTypes: [NSArray arrayWithObject: NSStringPboardType]
+	     owner: nil];
+  [pb setString: myString forType: NSStringPboardType];
+</example>
+      </item>
+      <item>
+	<strong>Provide data for pasting</strong><br />
+	If you decided to provide data lazily (recommended) then the
+	pasteboard owner you declared will be asked to provide the
+	data when it is needed for pasting.
+<example>
+- (void) pasteboard: (NSPasteboard*)pb provideDataForType: (NSString*)type
+{
+  // Place the data needed for pasting onto the pasteboard.
+  [pb setData: data forType: type];
+}
+</example>
+      </item>
+      <item>
+	<strong>Support multiple types</strong><br />
+	Normally, it is best to support pasting of multiple types of data
+	so that the object into which the data is being pasted can handle
+        the pasted information readily.  To do this it is conventional to
+        supply data in the <em>richest</em> possible format in the cut:
+	or copy: method, and supply other forms of data lazily.
+<example>
+// Supply RTF data to the pasteboard system.
+- (id) copy: (id)sender
+{
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+  [pb declareTypes: [NSArray arrayWithObjects: NSRTFPboardType,
+    NSStringPboardType, nil]
+	     owner: nil];
+  [pb setData: myData forType: NSRTFPboardType];
+}
+</example>
+	The providing object can retrieve the data initially stored in the
+        pasteboard, and set the type of data actually needed.
+<example>
+- (void) pasteboard: (NSPasteboard*)pb provideDataForType: (NSString*)type
+{
+  if ([type isEqualToString: NSStringPboardType] == YES)
+    {
+      NSData *d = [pb dataForType: NSRTFPboardType];
+      NSString *s = [self convertToString: d];
+      [pb setString: s forType: NSStringPboardType];
+    }
+  else
+    {
+      // Unsupported type ... should not happen
+      [pb setData: nil forType: type];
+    }
+}
+</example>
+      </item>
+    </list>
+    <p>
+      Similarly, when the user selects the <em>Paste</em> item on the
+      <em>Edit</em> menu, the <em>paste:</em> method in your code will
+      be called, and this method should retrieve data from the pasteboard
+      and insert it into your custom object so that the user can see it.
+    </p>
+    <list>
+      <item>
+	<strong>Retrieve data from pasteboard</strong>
+	<example>
+- (id) paste: (id)sender
+{
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+  NSString *info = [pb stringForType: NSStringPboardType];
+  // Now make use of info
+  return self;
+}
+	</example>
+      </item>
+    </list>
+  </section>
+  <section>
+    <heading>Drag and Drop</heading>
+    <p>
+      The drag and drop system for transferring data is in essence a simple
+      extension of copy and paste, where the data being dragged is a
+      copy of some initially selected data, and the location to which it is
+      pasted depends on where it is dropped.<br />
+      To support drag and drop, you use a few standard methods to interact
+      with pasteboards, but you need to extend this with DnD specific methods
+      to handle the drag and drop process.
+    </p>
+  </section>
+  <section>
+    <heading>Services</heading>
+    <p>
+      The services system provides a standardised mechanism for an application
+      to provide services to other applications.  Likew cut and paste, or
+      drag and drop, the use of an application service is normally initiated
+      by the suer selecting some data to work with.  The user then goes to
+      the services menu, and selects a service lsted there.  The selection
+      of a menu item causes the data to be placed on a pasteboard and
+      transferred to the service providing application, where the action of
+      the service is performed on it, and resulting data transferred back
+      to the original system via the pasteboard system again.
+    </p>
+    <p>
+      To make use of a service then, you typically need to make <em>no</em>
+      changes to your application, making the services facility supremely
+      easy to deal with!<br />
+      If however, you wish to make use of a service programmatically (rather
+      than from the services menu), you can use the NSPerformService()
+      function to invoke the service directly ...
+    </p>
+    <example>
+  // Create a pasteboard and store a string in it.
+  NSPasteboard *pb = [NSPasteboard pasteboardWithUniqueName];
+  [pb declareTypes: [NSArray arrayWithObject: NSStringPboardType]
+	     owner: nil];
+  [pb setString: myString forType: NSStringPboardType];
+  // Invoke a service which takes string input and produces data output.
+  if (NSPerformService(@"TheServiceName", pb) == YES)
+    {
+      result = [pb dataForType: NSGeneralPboardType];
+    }
+    </example>
+    <p>
+      Providing a service is a bit trickier, it involves implementing a
+      method to perform the service (usually in your [NSApplication-delegate]
+      object) and specifying information about your service in the Info.plist
+      file for your application.<br />
+      When your application is installed in one of the standard locations,
+      and the <em>make_services</em> tool is run to update the cache of
+      services information, your service automatically becomes available
+      on the services menu of every application you run.
+    </p>
+    <p>
+      Your Info.plist should contain an array named <code>NSServices</code>
+      listing all the services your application provides.  Each service
+      definition should be a dictionary contaning the following information -
+    </p>
+    <deflist>
+      <term>NSSendTypes</term>
+      <desc>
+	This is an array containing the string values of the types of
+	data that the service provider can handle (ie the types of data
+	the application requesting the service may send).<br />
+	The string values are the same as the standard constant names
+	for these types, so the string "NSStringPboardType" would match
+	the use of the <code>NSStringPboardType</code> in your code.<br />
+	Similarly, the functions NSCreateFileContentsPboardType() and
+	NSCreateFilenamesPboardType() return types whose string values
+	are found by appending the filename extension concerned to the
+	strings "NSTypedFileContentsPboardType:" and
+	"NSTypedFilenamesPboardType:" respectively.
+      </desc>
+      <term>NSReturnTypes</term>
+      <desc>
+	These are the types of data that the service provider may return
+	and are specified in the same way as the NSSendTypes.<br />
+	NB. A service must handle at least one send type or one return type,
+	but it is OK to have a service which expects no input data or one
+	which produces no output data.
+      </desc>
+      <term>NSMessage</term>
+      <desc>
+	This mandatory string value is the interesting part of
+	the message which is sent to your service provider in
+	order to perform the service.<br />
+	The method in your application which does the work, must take three
+	arguments and have a name formed of this value followed by
+	<code>:userData:error:</code>
+<example>
+// If NSMessage=encryptData
+- (void) encryptString: (NSPasteboard*)pboard
+	      userData: (NSString*)userData
+		 error: (NSString**)error;
+</example>
+	This method will be pass the pasteboard to use and an optional
+        user data string, and must return results in the pasteboard, or
+        an error message in the error argument.
+      </desc>
+      <term>NSPortName</term>
+      <desc>
+	This specifies the name of the Distributed Objects port
+	(see [NSConnection] and [NSPort]) on which the service provider
+	will be listening for messages.  While its value depends on how
+	you register the service, it is normally the name of the application
+	providing the service.  This information is required in order for
+	other applications to know how to contact the service provider.
+      </desc>
+      <term>NSUserData</term>
+      <desc>
+	This is an optional arbitrary string which (if present) is passed
+	as the userData argument to the method implementing the service.
+	This permits a service provider to implement a single method to
+	handle a variety of similar services, whose exact characteristics
+	are determined by this parameter.
+      </desc>
+      <term>NSMenuItem</term>
+      <desc>
+	This is a dictionary containing language names and the text to
+	appear in the services menu for each language.  It may contain
+	an entry where the language name is <code>default</code> and
+	this entry will be used where none of the specific laungues
+	listed are found in the application user's preferences.<br />
+	These text items may contain a single slash ('/') character,
+	and if this is present, the text after the slash will appear
+	in a submenu of the services menu, with the text before the
+	slash being the name of that submenu.  This is very useful
+	where a single application provides a variety of services and
+	wishes to group them together.
+      </desc>
+      <term>NSKeyEquivalent</term>
+      <desc>
+	This is an optional dictionary specifying the key equivalents to
+	select the menu items listed in the NSMenuItem specification.
+      </desc>
+      <term>NSTimeout</term>
+      <desc>
+	This is an optional timeout (in milliseconds) specifying how long
+	the system should wait for the service provider to perform the
+	service.  If omitted, it defaults to 30000 (30 seconds).
+      </desc>
+      <term>NSExecutable</term>
+      <desc>
+	This is an optional path to the executable binary of the program
+	which performs the service .. it's used to launch the program if
+	it is not already running.  Normaly, for an application, this is
+	not necessary, as the system knows how to launch any applications
+	found instaalled in standard locations.
+      </desc>
+      <term>NSHost</term>
+      <desc>
+	Not yet implemented ... this provides for the system to launch the
+	executabel for this service on a different host on the network.
+      </desc>
+    </deflist>
+    <p>
+      The actual code to implement a service is very simple, even with
+      error checking added -
+    </p>
+    <example>
+- (void) encryptString: (NSPasteboard*)pboard
+	      userData: (NSString*)userData
+		 error: (NSString**)error
+{
+  NSString	*d;
+
+  if ([pboard types] containsObject: NSStringPboardType] == NO)
+    { *error = @"Bad types for encrypt service ... no string data";
+      return;
+    }
+  s = [pboard stringForType: NSStringPboardType];
+  if ([d length] == 0)
+    { *error = @"No data supplied for encrypt service";
+      return;
+    }
+  s = [self encryptString: s];	// Do the real work
+  [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType
+		 owner: nil];
+  [pboard setString: s forType: NSStringPboardType];
+  return;
+}
+    </example>
+  </section>
+  <section>
+    <heading>Filter services</heading>
+    <p>
+      A filter service is a special case of an inter-application service.
+      Its action is to take data of one type and convert it to another
+      type.  Unlike general services, this is not directly initiated by
+      user action clicking on an item in the services menu (indeed, filter
+      services do not appear on the services menu), but is instead performed
+      transparently when the application asks the poasteboard system for
+      data of a particular type, but the pasteboard only contains data of
+      some other type.
+    </p>
+  </section>
+</chapter>
 */ 
 
 #include "gnustep/gui/config.h"
@@ -1302,7 +1630,7 @@ static  NSMapTable              *mimeMap = NULL;
  * it to the specified filename and returns the file name (or nil on failure).
  * </p>
  * <p>This method should only be used to read data written by
- * the -writeFileContents: or -writeFileWrapper method.
+ * the -writeFileContents: or -writeFileWrapper: method.
  * </p>
  */
 - (NSString*) readFileContentsType: (NSString*)type
@@ -1338,7 +1666,7 @@ static  NSMapTable              *mimeMap = NULL;
  * it and returns the resulting file wrapper (or nil).
  * </p>
  * <p>This method should only be used to read data written by
- * the -writeFileContents: or -writeFileWrapper method.
+ * the -writeFileContents: or -writeFileWrapper: method.
  * </p>
  */
 - (NSFileWrapper*) readFileWrapper
