@@ -659,10 +659,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	}
     }
 
-  // Do this here since we are not using decode to do this.
-  // Normally decode does a retain, so we must do it here.
-  // RETAIN(obj); 
-
   // change the class of the instance to the one we want to see...
   return obj;
 }
