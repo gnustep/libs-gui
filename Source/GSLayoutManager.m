@@ -2153,11 +2153,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     used = NSUnionRect(used, lf->used_rect);
 
-  if (container == extra_textcontainer)
-    {
-      used = NSUnionRect(used, extra_used_rect);
-    }
-
   return used;
 }
 

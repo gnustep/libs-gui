@@ -1,3 +1,13 @@
+2003-03-03 19:26  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-usedRectForTextContainer:): Don't add
+	the extra line frag rect.
+
+	* Source/NSTextView.m (-sizeToFit): Add the extra line frag rect
+	when computing the size of the view.
+	(-scrollRangeToVisible:): Reimplement using the new insertion point
+	positioning methods.
+
 2003-03-03 16:17  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-layoutGlyphsInLayoutManager:
