@@ -212,7 +212,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
       NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
       NSString *face = @"";
-      int i;
+      unsigned int i;
  
       // Store style information for font
       _traits = [fm traitsOfFont: fontObject];
@@ -729,7 +729,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 -(void) _trySelectSize: (float)size
 {
-  int i;
+  unsigned int i;
   NSBrowser *sizeBrowser = [[self contentView] viewWithTag: NSFPSizeBrowser];
   NSTextField *sizeField;
 
@@ -800,7 +800,7 @@ static int score_difference(int weight1, int traits1,
   NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
   int row = [familyBrowser selectedRowInColumn: 0];
-  int i;
+  unsigned int i;
 
   ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
 			  [_familyList objectAtIndex: row]]);
@@ -935,12 +935,15 @@ static int score_difference(int weight1, int traits1,
 	  column: (int)column
 {
   NSString *value = nil;
-  
+
+  if (row < 0)
+    return;
+
   switch ([sender tag])
     {
     case NSFPFamilyBrowser:
       {
-	if ([_familyList count] > row)
+	if ([_familyList count] > (unsigned)row)
 	  {
 	    value = [_familyList objectAtIndex: row];
 	  }
@@ -948,7 +951,7 @@ static int score_difference(int weight1, int traits1,
       }
     case NSFPFaceBrowser:
       {
-	if ([_faceList count] > row)
+	if ([_faceList count] > (unsigned)row)
 	  {
 	    value = [[_faceList objectAtIndex: row] objectAtIndex: 1];
 	  } 
