@@ -1,3 +1,10 @@
+Wed Sep 26 23:04:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSFileWrapper.m 
+	([-writeToFile:atomically:updateFilenames:]): Use only the last 
+	part of the path when saving it into the filename (patch by 
+	Ludovic Marcotte <ludovic@Sophos.ca>).
+
 2001-09-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSWindow.h
