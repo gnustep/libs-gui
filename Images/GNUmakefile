@@ -95,6 +95,8 @@ common_Root_Apple.tiff \
 common_noCursor.tiff \
 common_copyCursor.tiff \
 common_linkCursor.tiff \
+common_outlineCollapsed.tiff \
+common_outlineExpanded.tiff \
 GNUstep.tiff \
 GNUstepMenuImage.tiff \
 nsmapping.strings \
