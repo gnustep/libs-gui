@@ -469,28 +469,27 @@ static NSNotificationCenter *nc;
   if (aRange.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
+  if (![self shouldChangeTextInRange: aRange  replacementString: nil])
     return;
+
   [_textStorage beginEditing];
-  for (maxSelRange = NSMaxRange(aRange);
+  for (maxSelRange = NSMaxRange (aRange);
        searchRange.location < maxSelRange;
        searchRange = NSMakeRange (NSMaxRange (foundRange),
-				  maxSelRange - NSMaxRange(foundRange)))
+				  maxSelRange - NSMaxRange (foundRange)))
     {
       font = [_textStorage attribute: NSFontAttributeName
 			   atIndex: searchRange.location
 			   longestEffectiveRange: &foundRange
 			   inRange: searchRange];
       if (font != nil)
-      {
-	  [self setFont: [sender convertFont: font]
-		ofRange: foundRange];
-      }
+	{
+	  [self setFont: [sender convertFont: font]  ofRange: foundRange];
+	}
     }
   [_textStorage endEditing];
   [self didChangeText];
-  // Set typing attributes
+  /* Set typing attributes */
   font = [_typingAttributes objectForKey: NSFontAttributeName];
   if (font != nil)
     {
@@ -507,7 +506,7 @@ static NSNotificationCenter *nc;
     }
   
   [self setFont: font  ofRange: NSMakeRange (0, [self textLength])];
-  [_typingAttributes setObject: font forKey: NSFontAttributeName];
+  [_typingAttributes setObject: font  forKey: NSFontAttributeName];
 }
 
 - (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange
@@ -518,8 +517,7 @@ static NSNotificationCenter *nc;
 	return;
 
       [_textStorage beginEditing];
-      [_textStorage addAttribute: NSFontAttributeName
-		    value: font
+      [_textStorage addAttribute: NSFontAttributeName  value: font
 		    range: aRange];
       [_textStorage endEditing];
       [self didChangeText];
@@ -545,8 +543,8 @@ static NSNotificationCenter *nc;
     }
 
   // Get alignment from typing attributes
-  return [[[self typingAttributes] 
-	      objectForKey: NSParagraphStyleAttributeName] alignment];
+  return [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+	   alignment];
 }
 
 - (void) setAlignment: (NSTextAlignment)mode
@@ -744,10 +742,10 @@ static NSNotificationCenter *nc;
  */
 - (BOOL) readRTFDFromFile: (NSString*)path
 {
-  NSAttributedString *peek = [[NSAttributedString alloc] 
-				 initWithPath: path
-				 documentAttributes: NULL];
+  NSAttributedString *peek;
 
+  peek = [[NSAttributedString alloc] initWithPath: path 
+				     documentAttributes: NULL];
   if (peek != nil)
     {
       if (!_tf.is_rich_text)
@@ -1328,8 +1326,22 @@ static NSNotificationCenter *nc;
 	    {
 	      NSDictionary *dict;
 	      
-	      dict = [_textStorage attributesAtIndex: range.location
-				   effectiveRange: NULL];
+	      if (range.location > 0)
+		{
+		  /* If the insertion point is after a bold word, for
+		     example, we need to use bold for further
+		     insertions - this is why we take the attributes
+		     from range.location - 1. */
+		  dict = [_textStorage attributesAtIndex: (range.location - 1)
+				       effectiveRange: NULL];
+		}
+	      else
+		{
+		  /* Unless we are at the beginning of text - we use the 
+		     first valid attributes then */
+		  dict = [_textStorage attributesAtIndex: range.location
+				       effectiveRange: NULL];
+		}
 	      [self setTypingAttributes: dict];
 	    }
 	  /* <!>enable caret timed entry */
@@ -1521,7 +1533,7 @@ static NSNotificationCenter *nc;
       [self replaceRange: insertRange
 	    withAttributedString: AUTORELEASE([[NSAttributedString alloc]
 				     initWithString: insertString
-				     attributes: [self typingAttributes]])];
+				     attributes: _typingAttributes])];
     }
   else
     {
@@ -1538,18 +1550,23 @@ static NSNotificationCenter *nc;
 			   _selected_range.location].origin;
 }
 
-- (void) setTypingAttributes: (NSDictionary*) dict
+- (void) setTypingAttributes: (NSDictionary*)dict
 {
   if (dict == nil)
-    dict = [isa defaultTypingAttributes];
-
-  if (![dict isKindOfClass: [NSMutableDictionary class]])
     {
-      RELEASE(_typingAttributes);
-      _typingAttributes = [[NSMutableDictionary alloc] initWithDictionary: dict];
+      dict = [isa defaultTypingAttributes];
+    }
+
+  if ([dict isKindOfClass: [NSMutableDictionary class]] == NO)
+    {
+      RELEASE (_typingAttributes);
+      _typingAttributes = [[NSMutableDictionary alloc] 
+			    initWithDictionary: dict];
     }
   else
-    ASSIGN(_typingAttributes, (NSMutableDictionary*)dict);
+    {
+      ASSIGN (_typingAttributes, (NSMutableDictionary*)dict);
+    }
 }
 
 - (NSDictionary*) typingAttributes
@@ -1749,9 +1766,10 @@ static NSNotificationCenter *nc;
 	       atIndex: (unsigned int)charIndex
 {
 
-/* Notifies the delegate that the user clicked in a link at the specified
-charIndex. The delegate may take any appropriate actions to handle the
-click in its textView: clickedOnLink: atIndex: method. */
+/* Notifies the delegate that the user clicked in a link at the
+   specified charIndex. The delegate may take any appropriate actions
+   to handle the click in its textView: clickedOnLink: atIndex:
+   method. */
   if (_delegate != nil && 
       [_delegate respondsToSelector: 
 		   @selector(textView:clickedOnLink:atIndex:)])
@@ -1777,19 +1795,41 @@ replacing the selection.
 
 - (void) updateFontPanel
 {
-  // update fontPanel only if told so
+  /* Update fontPanel only if told so */
   if (_tf.uses_font_panel)
     {
       NSRange longestRange;
       NSFontManager *fm = [NSFontManager sharedFontManager];
       NSFont *currentFont;
 
-      currentFont = [_textStorage attribute: NSFontAttributeName
-				  atIndex: _selected_range.location
-				  longestEffectiveRange: &longestRange
-				  inRange: _selected_range];
-      [fm setSelectedFont: currentFont
-	  isMultiple: !NSEqualRanges (longestRange, _selected_range)];
+      if (_selected_range.length > 0) /* Multiple chars selection */
+	{
+	  currentFont = [_textStorage attribute: NSFontAttributeName
+				      atIndex: _selected_range.location
+				      longestEffectiveRange: &longestRange
+				      inRange: _selected_range];
+	  [fm setSelectedFont: currentFont
+	      isMultiple: !NSEqualRanges (longestRange, _selected_range)];
+	}
+      else /* Just Insertion Point. */ 
+	{
+	  unsigned location;
+
+	  if (_selected_range.location > 0) 
+	    {
+	      /* Use the font before the insertion point... */
+	      location = _selected_range.location - 1;
+	    }
+	  else
+	    {
+	      /* ...or at location 0 if at the beginning of text*/
+	      location = _selected_range.location;
+	    }
+	  currentFont = [_textStorage attribute: NSFontAttributeName
+				      atIndex: location  
+				      effectiveRange: NULL];
+	  [fm setSelectedFont: currentFont  isMultiple: NO];
+	}
     }
 }
 
@@ -2523,7 +2563,7 @@ container, returning the modified location. */
 }
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
-			       granularity: (NSSelectionGranularity)granularity
+			       granularity: (NSSelectionGranularity)granul
 {
   unsigned index;
   NSRange aRange;
@@ -2538,7 +2578,7 @@ container, returning the modified location. */
       return proposedCharRange;
     }
 
-  if (NSMaxRange(proposedCharRange) > length)
+  if (NSMaxRange (proposedCharRange) > length)
     {
       proposedCharRange.length = length - proposedCharRange.location;
     }
@@ -2548,7 +2588,7 @@ container, returning the modified location. */
       return proposedCharRange;
     }
 
-  switch (granularity)
+  switch (granul)
     {
     case NSSelectByWord:
       /* FIXME: The following code (or the routines it calls) does the
