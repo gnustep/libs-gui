@@ -2,7 +2,8 @@
 
 	* Headers/AppKit/NSTabViewItem.h: defined some non-spec methods.
 	* Source/NSTabView.m: added event code. you can now select tabs.
-	Not perfect yet, but it works (i.e. click around the text.)
+	Not perfect yet, but it works (i.e. click around the text.) Also
+	fixed image problem with left most tab being selected.
 	* Source/NSTabViewItem.m: cache tabrect for quick retrieval.
 	* Source/NSMenuView.m: removed an extra call to flushwindow.
 

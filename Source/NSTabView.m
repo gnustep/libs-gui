@@ -219,9 +219,11 @@
       iP.x = rect.origin.x;
       iP.y = rect.size.height;
 
-      if (itemState == NSSelectedTab)
-        [[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
+      if (itemState == NSSelectedTab) {
+	iP.y -= 1;
+        [[NSImage imageNamed:@"common_TabSelectedLeft.tiff"]
 	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      }
       else if (itemState == NSBackgroundTab)
         [[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
 	  compositeToPoint:iP operation: NSCompositeSourceOver];
