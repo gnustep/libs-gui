@@ -1,3 +1,9 @@
+2003-05-11  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Add support for generic application icon.
+	Reduce private method name pollution a little.
+	* Images/common_UnknownApplication.tiff: copied from WM ...
+
 2003-05-05  Michael Hanni   <michael@deviant-behavior.com>
 
 	* Source/NSTabView.m: implemented 
