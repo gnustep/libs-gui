@@ -397,13 +397,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) removeSubview: (NSView*)aSubview
 {
+  id view;
   /*
    * This must be first because it invokes -resignFirstResponder:, 
    * which assumes the view is still in the view hierarchy
    */
-  if ([_window firstResponder] == aSubview)
+  for (view = [_window firstResponder];
+       view != nil && [view respondsToSelector:@selector(superview)];
+       view = [view superview] )
     {
-      [_window makeFirstResponder: _window];
+      if (view == aSubview)
+	{      
+	  [_window makeFirstResponder: _window];
+	  break;
+	}
     }
   aSubview->_super_view = nil;
   [aSubview viewWillMoveToWindow: nil];
