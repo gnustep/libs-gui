@@ -429,7 +429,8 @@ static Class rulerViewClass = nil;
 
   NSDebugLog (@"reflectScrolledClipView:");
 
-  clipViewBounds = [_contentView bounds];
+  if (_contentView)
+    clipViewBounds = [_contentView bounds];
   if ((documentView = [_contentView documentView]))
     documentFrame = [documentView frame];
 
