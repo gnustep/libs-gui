@@ -38,6 +38,7 @@
 #include <Foundation/NSInvocation.h>
 #include <Foundation/NSObjCRuntime.h>
 #include <Foundation/NSString.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSNibLoading.h>
 
@@ -45,7 +46,27 @@
 
 - (NSString *)pathForImageResource:(NSString *)name
 {
-  return nil;
+  NSString	*ext = [name pathExtension];
+  NSString	*path = nil;
+
+  if (ext != nil)
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
+    }
+  else
+    {
+      NSArray	*types = [NSImage imageUnfilteredFileTypes];
+      unsigned	c = [types count];
+      unsigned	i;
+
+      for (i = 0; path == nil && i < c; i++)
+	{
+	  ext = [types objectAtIndex: i];
+	  path = [self pathForResource: name ofType: ext];
+	}
+    }
+  return path;
 }
 
 + (BOOL) loadNibFile: (NSString *)fileName

@@ -182,9 +182,21 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
       if ([file isAbsolutePath] == NO)
 	{
 	  NSString	*path;
+	  NSString	*iconPath;
+	  NSBundle	*bundle;
 
 	  path = [ws fullPathForApplication: appName];
-	  file = [path stringByAppendingPathComponent: file];
+	  bundle = [NSBundle bundleWithPath: path];
+	  iconPath = [bundle pathForImageResource: file];
+	  /*
+	   * If the icon is not in the Resources of the app, try looking
+	   * directly in the app wrapper.
+	   */
+	  if (iconPath == nil)
+	    {
+	      iconPath = [path stringByAppendingPathComponent: file];
+	    }
+	  path = iconPath;
 	}
       if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
 	{
@@ -662,7 +674,22 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
 	  if (iconPath && [iconPath isAbsolutePath] == NO)
 	    {
-	      iconPath = [aPath stringByAppendingPathComponent: iconPath];
+	      NSString	*file = iconPath;
+
+	      iconPath = [bundle pathForImageResource: file];
+
+	      /*
+	       * If there is no icon in the Resources of the app, try
+	       * looking directly in the app wrapper.
+	       */
+	      if (iconPath == nil)
+		{
+		  iconPath = [aPath stringByAppendingPathComponent: file];
+		  if ([mgr isReadableFileAtPath: iconPath] == NO)
+		    {
+		      iconPath = nil;
+		    }
+		}
 	    }
 	  /*
 	   *	If there is no icon specified in the Info.plist for app
