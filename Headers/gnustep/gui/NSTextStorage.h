@@ -1,26 +1,6 @@
 /*
    NSTextStorage.h
 
-     NSTextStorage is a semi-abstract subclass of
-     NSMutableAttributedString. It implements change management
-     (beginEditing/endEditing), verification of attributes, delegate
-     handling, and layout management notification. The one aspect it
-     does not implement is the actual attributed string storage ---
-     this is left up to the subclassers, which need to override the
-     four NSAttributedString and NSMutableAttributedString primitives:
-
-	- (NSString*) string;
-	- (NSDictionary*) attributesAtIndex: (unsigned)index
-			     effectiveRange: (NSRange*)aRange;
-	
-	- (void) replaceCharactersInRange: (NSRange)range 
-			       withString: (NSString *)str;
-	- (void) setAttributes: (NSDictionary *)attrs 
-			 range: (NSRange)range;
-
-     These primitives should perform the change then call 
-     edited:range:changeInLength: to get everything else to happen.
-
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
@@ -28,6 +8,9 @@
    Source by Daniel Bðhringer integrated into GNUstep gui
    by Felipe A. Rodriguez <far@ix.netcom.com> 
    Update: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+   Documentation written from scratch by: Nicola Pero
+   <nicola@brainstorm.co.uk>
    
    This file is part of the GNUstep GUI Library.
 
@@ -48,14 +31,18 @@
 #ifndef _GNUstep_H_NSTextStorage
 #define _GNUstep_H_NSTextStorage
 
-#import <Foundation/Foundation.h>
-#import <AppKit/NSStringDrawing.h>
+#include <Foundation/Foundation.h>
+#include <AppKit/NSStringDrawing.h>
 
 @class NSLayoutManager;
 
 /*
- *	These values are or'ed together in notifications to indicate
- *	what got changed.
+ * When edit:range:changeInLength: is called, it takes a mask saying
+ * what has been edited.  The mask is NSTextStorageEditedAttributes
+ * if the attributes have been changed, NSTextStorageEditedCharacters
+ * if the characters have been changed, and 
+ * NSTextStorageEditedAttributes | NSTextStorageEditedCharacters if both
+ * characters and attributes were edited.
  */
 enum
 {
@@ -63,6 +50,9 @@ enum
   NSTextStorageEditedCharacters = 2
 };
 
+/* 
+ * The NSTextStorage 
+ */
 @interface NSTextStorage : NSMutableAttributedString
 {
   NSRange		_editedRange;
@@ -73,47 +63,76 @@ enum
   unsigned		_editCount;
 }
 
-/*
- *	Managing NSLayoutManagers
- */
 - (void) addLayoutManager: (NSLayoutManager*)obj;
 - (void) removeLayoutManager: (NSLayoutManager*)obj;
 - (NSArray*) layoutManagers;
 
 /*
- *	If there are no outstanding beginEditing calls, this method calls
- *	processEditing to cause post-editing stuff to happen. This method
- *	has to be called by the primitives after changes are made.
- *	The range argument to edited:... is the range in the original string
- *	(before the edit).
- */
+ * This method is normally called between a beginEditing and an
+ * endEditing message to record any changes which were made to the
+ * receiver.  It is automatically called by the NSTextStorage
+ * primitives, so in other words, NSTextStorage calls it for you, and
+ * you don't normally need to call this method.  You might (a more
+ * theoretical than practical option) need to subclass it and override
+ * this method to take into account changes done.
+ *
+ * If the method is called outside a beginEditing/endEditing calls, it
+ * calls processEditing immediately.  As far as I understand, that would
+ * happen if you modify the NSTextStorage without enclosing your changes
+ * inside a beginEditing/endEditing calls.
+ *
+ * maks can be NSTextStorageEditedAttributes or
+ * NSTextStorageEditedCharacters, or and | of the two.
+ *
+ * the old range is the range affected by the change in the string ... in the
+ * original string.
+ *
+ * the changeInLength is, well, positive if you added characters, negative
+ * if you removed characters.  */
 - (void) edited: (unsigned)mask range: (NSRange)old changeInLength: (int)delta;
 
 /*
- *	This is called from edited:range:changeInLength: or endEditing.
- *	This method sends out NSTextStorageWillProcessEditing, then fixes
- *	the attributes, then sends out NSTextStorageDidProcessEditing,
- *	and finally notifies the layout managers of change with the
- *	textStorage:edited:range:changeInLength:invalidatedRange: method.
- */
+ * This method is called to process the editing once it's finished.
+ * Normally it is called by endEditing; but if you modify the NSTextStorage
+ * without enclosing the modifications into a beginEditing/endEditing pair,
+ * this method will be called directly by edited:range:changeInLength:.
+ * 
+ * But in practice, what does this method do ?  Well, it posts the
+ * NSTextStorageWillProcessEditing notification.  Then, it calls
+ * fixAttributesAfterEditingRange:.  Then, it posts the
+ * NSTextStorageDidProcessEditing notification.  Finally, it tells the
+ * layout manager(s) about this change in the text storage by calling
+ * textStorage:edited:range:changeInLength:invalidatedRange:.  */
 - (void) processEditing;
 
+/*
+ * Start a set of changes to the text storage.  All the changes are
+ * recorded and merged - without any layout to be done.  When you call
+ * endEditing, the layout will be done in one single operation.
+ *
+ * In practice, you should call beginEditing before starting to modify
+ * the NSTextStorage.  When you are finished modifying it and you want
+ * your changes to be propagated to the layout manager(s), you call
+ * endEditing.
+ *
+ * If you don't enclose your changes into a beginEditing/endEditing pair,
+ * it still works, but it's less efficient.
+ */
 - (void) beginEditing;
+
+/* 
+ * End a set of changes, and calls processEditing.
+ */
 - (void) endEditing;
 
 /*
- *	These methods return information about the editing status.
- *	Especially useful when there are outstanding beginEditing calls or
- *	during processEditing... editedRange.location will be NSNotFound if
- *	nothing has been edited.
- */       
+ * The delegate can use the following methods when it receives a
+ * notification that a change was made.  The methods tell him what
+ * kind of change was made.  */
 - (unsigned) editedMask;
 - (NSRange) editedRange;
 - (int) changeInLength;
 
-/*
- *	Set/get the delegate
- */
 - (void) setDelegate: (id)delegate;
 - (id) delegate;
 
@@ -131,10 +150,13 @@ enum
 @interface NSObject (NSTextStorageDelegate)
 
 /*
- *	These methods are sent during processEditing:. The receiver can use
- *	the callback methods editedMask, editedRange, and changeInLength to
- *	see what has changed. Although these methods can change the contents
- *	of the text storage, it's best if only the delegate did this.
+ * The delegate is automatically registered to receive the
+ * NSTextStorageWillProcessEditingNotification, and the
+ * NSTextStorageDidProcessEditingNotification via these methods, so
+ * once the notifications are sent, these methods of the delegate will
+ * be invokes.  In these methods the delegate can use editedMask,
+ * editedRange, changeInLength to figure out what the actual change
+ * is.
  */
 - (void) textStorageWillProcessEditing: (NSNotification*)notification;
 - (void) textStorageDidProcessEditing: (NSNotification*)notification;
@@ -143,6 +165,7 @@ enum
 
 /**** Notifications ****/
 
+/* The object of the notification is the NSTextStorage itself.  */
 APPKIT_EXPORT NSString *NSTextStorageWillProcessEditingNotification;
 APPKIT_EXPORT NSString *NSTextStorageDidProcessEditingNotification;
 
