@@ -1,3 +1,8 @@
+2003-08-13  David Ayers  <d.ayers@inode.at>
+
+	* Headers/gnustep/gui/*.h/*.h.in: Remove headers moved in header
+	reorganization on 2003-07-31.
+	
 2003-08-05  Martin Brecher <martin@mb-itconsulting.com>
 
 	* Documentation/gopen.1: New file.
