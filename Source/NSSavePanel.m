@@ -546,7 +546,7 @@ static BOOL _gs_display_reading_progress = NO;
     {
       /* Make sure the new accessory view behaves  - its height must be fixed
        * and its position relative to the bottom of the superview must not
-       * change	*/
+       * change	- so its position rlative to the top must be changable. */
       [_accessoryView setAutoresizingMask: NSViewMaxYMargin
 	| ([_accessoryView autoresizingMask] 
 	& ~(NSViewHeightSizable | NSViewMinYMargin))];  
