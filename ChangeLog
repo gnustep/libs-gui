@@ -1,3 +1,10 @@
+Sat Feb 23 12:20:28 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by Alexander Malmberg <alexander@malmber.org> -
+	* Source/NSMenu.m ([-initWithTitle:]): Show torn off menus upon
+	receiving the NSApplicationDidFinishLaunching notification, not
+	the NSApplicationWillFinishLaunching one.
+
 Sat Feb 23 12:11:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patches by Alexander Malmberg <alexander@malmber.org> with many
