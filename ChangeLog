@@ -1,25 +1,57 @@
+Tue Aug 29 20:07:23 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	Implemented object value and formatter support in NSCell and
+	controls.
+	* Headers/gnustep/gui/NSCell.h: Added ivars for formatter, object
+	value and a new flag to cache whether the cell has a valid object
+	value or not.
+	* Source/NSCell.m ([-dealloc]), ([-copyWithZone:]): Added object
+	value and formatter.  ([-setFormatter:]), ([-formatter]):
+	Implemented.  ([-setIntValue:]), ([-setFloatValue:]),
+	([-setDoubleValue:]): Rewritten, updated.  ([-setObjectValue:]):
+	Rewritten, updated.  ([-hasValidObjectValue]), ([-objectValue]):
+	Implemented.  ([-editWithFrame:inView:editor:delegate:event:]):
+	Use string provided by formatter.  ([-encodeWithCoder:]): Added
+	formatter, object value.  ([-initWithCoder:): Added formatter,
+	object value; recompute has_valid_object_value flag.
+	* Headers/gnustep/gui/NSControl.h: Added declaration of methods 
+	implemented by the delegate for validation using a formatter.
+	* Source/NSTextField.m ([-validateEditing]): Added validation
+	using NSFormatter.  ([-textShouldEndEditing:]): Added validation
+	of object value.  ([-textDidChange:]): Skeleton and some code for
+	validation while typing.
+	* Source/NSMatrix.m ([-validateEditing]),
+	([-textShouldEndEditing:]), ([-textDidChange:]): Same changes as
+	in Source/NSTextField.m.
+	* Source/NSTableView.m ([-validateEditing]),
+	([-textShouldEndEditing:]): Idem.
+	
+	* Source/NSMatrix.m ([-drawCell:]): Implemented.
+	* Source/NSMatrix.m, Source/NSTextField: Cache the default
+	notification center for the whole class.
+
+	* Source/NSTableView.m ([-mouseDown:]): Double clicking starts 
+	editing only if row is selected.
+	
 2000-08-26 Georg Fleischmann
 
-	* gui/Source/NSApplication.m [NSApplication run]: Don't update
+	* gui/Source/NSApplication.m ([-NSApplication run]): Don't update
 	menu for NSPeriodic and NSMouseMoved events.
 
 2000-08-27  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Source/NSFontPanel.m:
-	Changed to tags for all subviews to prepare for the switch to
-	gmodel. [panelConvertFont:] corrected to not return nil.
-	* Header/gnustep/gui/NSFontPanel.h
-	Removed ivars for subviews.
-	* Source/NSFontManager.m
-	[convertWeight:ofFont:] better conversion.
-	* Source/NSView.m:
-	[viewWithTag:] corrected bug in optimisation for first sub-level.
+	* Source/NSFontPanel.m: Changed to tags for all subviews to
+	prepare for the switch to gmodel.  ([-panelConvertFont:]):
+	corrected to not return nil.
+	* Header/gnustep/gui/NSFontPanel.h: Removed ivars for subviews.
+	* Source/NSFontManager.m ([-convertWeight:ofFont:]): Better
+	conversion.
+	* Source/NSView.m: ([-viewWithTag:]): Corrected bug in
+	optimisation for first sub-level.
 	* Header/gnustep/gui/NSLayoutManager.h
-	* Source/NSLayoutManager.m
-	Started cleanup of code.
-	* Source/NSTextStorage.c
-	[edited:range:changeInLength:] and [processEditing] corrected
-	reported range.
+	* Source/NSLayoutManager.m: Started cleanup of code.
+	* Source/NSTextStorage.c ([-edited:range:changeInLength:]), 
+	([-processEditing]): Corrected reported range.
 	
 Sun Aug 27 19:11:59 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
@@ -68,21 +100,20 @@ Sat Aug 26 19:25:17 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 2000-08-25  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/Parser/RTFProducer.m
-	[runStringForString:attributes:paragraphStart:] Improved output of
-	bold/italic formating. 
-	* Source/Parser/rtfScanner.c
-	Corrected function gethex().
+	([-runStringForString:attributes:paragraphStart:]): Improved
+	output of bold/italic formating.
+	* Source/Parser/rtfScanner.c Corrected function gethex().
 	
 2000-08-19 Georg Fleischmann
 
-        * gui/Source/NSView.m ([NSView removeSubview:]): check if any
+	* gui/Source/NSView.m ([NSView -removeSubview:]): check if any
 	superview of the first responder is the view to be removed
 
 2000-08-15 Georg Fleischmann
 
-	* gui/Source/NSText.m ([NSText sizeToFit:]): 'else' removed to
+	* gui/Source/NSText.m ([NSText -sizeToFit:]): 'else' removed to
 	allow resize of height and width
-	scanRange(): line 1032: +1 to avoid infinite
+	(scanRange()): line 1032: +1 to avoid infinite
 	loop for single character line 1011, 1047: '>' instead of '>='
 
 Thu Aug 17 08:51:45 2000  Adam Fedor  <fedor@ultra.doc.com>
