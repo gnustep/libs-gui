@@ -181,7 +181,9 @@ Usability greatly depends upon backend implementation.
 
 @item NSPanel:: [2]
 
-@item NSPasteboard:: [2]
+@item NSPasteboard:: [9]
+There is also a pasteboard server located in the Tools directory which
+this class communicates with using Distributed Objects.
 
 @item NSPopUpButton:: [4]
 Usability greatly depends upon backend implementation.

@@ -6,7 +6,7 @@
    Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 
    Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
-   Date: June 1997
+   Date: June 1997 - January 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -28,18 +28,12 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-/* FIXMES to do:
- *
- * Loading PPD files:
- * Interpret *includes
- * Interpret Symbol values
- * Reading of hex values in strings
- * Proper checking of the PPD as it is loaded
- * Add a printerNames function (to complement printerTypes)?
- *
- * Other:
- * Do deviceDescription
- * Do encoding/decoding
+/* NB:
+ * There are a few FIXMEs in the functionality left.
+ * Parsing of the PPDs is somewhat suboptimal.
+ * (I think it's best to leave optimisation until more of GNUstep is done).
+ * The *OpenUI, *CloseUI, *OpenGroup and *CloseGroup are not processed.
+ * (This is not required in the OpenStep standard, but could be useful).
  */
 
 #include <gnustep/gui/config.h>
@@ -57,44 +51,58 @@
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSMapTable.h>
+#include <Foundation/NSProcessInfo.h>
+#include <AppKit/AppKitExceptions.h>
+#include <AppKit/NSGraphics.h>
 
 #include <AppKit/NSPrinter.h>
-
-#ifndef NSPrinter_PATH
-#define NSPrinter_PATH @GNUSTEP_INSTALL_LIBDIR @"/PrinterTypes"
-#endif
-
-#ifndef NSPrinter_INDEXFILE
-#define NSPrinter_INDEXFILE @"Printers"
-#endif
 
 
 // Define size used for the name and type maps - just use a small table
 #define NAMEMAPSIZE 0
 #define TYPEMAPSIZE 0
 
+// The maximum level of nesting of *Include directives
+#define MAX_PPD_INCLUDES 4
+
+// A macro to skip whitespace over lines
+#define skipSpace(x) [x scanCharactersFromSet:\
+			  [NSCharacterSet whitespaceAndNewlineCharacterSet]\
+			intoString:NULL]
+
+static NSString *NSPrinter_PATH = @"gnustep/PrinterTypes";
+static NSString *NSPrinter_INDEXFILE = @"Printers";
+
+//
 // Class variables:
+//
 
-// Maps  holding NSPrinters with the types of printers, and the real printers
-NSMapTable *typeMap = NULL;
-NSMapTable *nameMap = NULL;
-
+// Maps holding NSPrinters with the types of printers, and the real printers
+static NSMapTable *typeMap = NULL;
+static NSMapTable *nameMap = NULL;
 // Dictionary of real printers, from which NSPrinters can be made
-NSDictionary *nameDict = nil;
+static NSDictionary *nameDict = nil;
+// Bundles used to load printer related information, such as PPDs.
+static NSBundle *userBundle = nil, *localBundle = nil, *systemBundle = nil;
+// An array to cache the available printer types
+static NSArray *printerTypesAvailable = nil;
+
+//
+// Class variables used during scanning:
+//
 
 // Character sets used in scanning.
-NSCharacterSet *newlineSet = nil;
-NSCharacterSet *keyEndSet = nil;
-NSCharacterSet *optKeyEndSet = nil;
-NSCharacterSet *valueEndSet = nil;
-
-// Bundle used to load printer related information, such as PPDs.
-NSBundle *printerBundle = nil;
-
-// An array to cache the available printer types
-NSArray *printerTypesAvailable = nil;
-
-extern NSString* NSPPDParseException;
+static NSCharacterSet *newlineSet = nil;
+static NSCharacterSet *keyEndSet = nil;
+static NSCharacterSet *optKeyEndSet = nil;
+static NSCharacterSet *valueEndSet = nil;
+// Array of Repeated Keywords (Appendix B of the PostScript Printer
+// Description File Format Specification).
+static NSArray *repKeys = nil;		   
+// Array to collect the values of symbol values in.
+static NSMutableDictionary *PPDSymbolValues;
+// File name of the file being processed
+static NSString *PPDFileName;
 
 #ifndef LIB_FOUNDATION_LIBRARY
 
@@ -120,6 +128,112 @@ static const NSMapTableValueCallBacks NSNonRetainedObjectMapValueCallBacks = {
 #endif /* LIB_FOUNDATION_LIBRARY */
 
 
+// Convert a character to a value between 0 and 15
+static int gethex(unichar character)
+{
+  switch (character)
+    {
+    case '0': return 0;
+    case '1': return 1;
+    case '2': return 2;
+    case '3': return 3;
+    case '4': return 4;
+    case '5': return 5;
+    case '6': return 6;
+    case '7': return 7;
+    case '8': return 8;
+    case '9': return 9;
+    case 'A': return 10;
+    case 'B': return 11;
+    case 'C': return 12;
+    case 'D': return 13;
+    case 'E': return 14;
+    case 'F': return 15;
+    case 'a': return 10;
+    case 'b': return 11;
+    case 'c': return 12;
+    case 'd': return 13;
+    case 'e': return 14;
+    case 'f': return 15;
+    }      
+  [NSException 
+    raise:NSPPDParseException 
+    format:@"Badly formatted hexadeximal substring in PPD printer file."];
+  // NOT REACHED
+}
+
+// Function to convert hexadecimal substrings
+static NSString *interpretQuotedValue(NSString *qString)
+{
+  NSScanner *scanner;
+  NSCharacterSet *emptySet;
+  NSString *value = nil;
+  NSString *part;
+  int stringLength;
+  int location;
+  NSRange range;
+
+  // Don't bother unless there's something to convert
+  range = [qString rangeOfString:@"<"];
+  if(!range.length)
+    return qString;
+
+  scanner = [NSScanner scannerWithString:qString];
+  emptySet = [NSCharacterSet characterSetWithCharactersInString:@""];
+  [scanner setCharactersToBeSkipped:emptySet];  
+  if(![scanner scanUpToString:@"<" intoString:&value])
+    value = [NSString string];
+  stringLength = [qString length];
+
+  while (![scanner isAtEnd]) {
+    [scanner scanString:@"<" intoString:NULL];
+    skipSpace(scanner);
+    while (![scanner scanString:@">" intoString:NULL])
+      {
+	location = [scanner scanLocation];
+	if (location+2 > stringLength)
+	  {
+	    [NSException
+	      raise:NSPPDParseException
+	      format:@"Badly formatted hexadecimal substring in PPD printer file."];
+	    // NOT REACHED
+	  }
+	value = [value stringByAppendingFormat:@"%c",
+		       16 * gethex([qString characterAtIndex:location])
+                       + gethex([qString characterAtIndex:location+1])];
+	[scanner setScanLocation:location+2];
+	skipSpace(scanner);
+      }
+    if([scanner scanUpToString:@"<" intoString:&part])
+      {
+	value = [value stringByAppendingString:part];
+      }
+  }
+  return value;
+}
+
+static NSString *getFile(NSString *name, NSString *type)
+{
+  NSString *path;
+  path = [userBundle pathForResource:name
+		     ofType:type
+		     inDirectory:NSPrinter_PATH];
+  if (path && [path length])
+    return path;
+  path = [localBundle pathForResource:name
+		      ofType:type
+		      inDirectory:NSPrinter_PATH];
+  if (path && [path length])
+    return path;
+  path = [systemBundle pathForResource:name
+		       ofType:type
+		       inDirectory:NSPrinter_PATH];
+  if (path && [path length])
+    return path;
+  return nil;
+}
+
+
 @interface NSPrinter (private)
 + allocMaps;
 - initWithPPD:(NSString *)PPDstring
@@ -129,22 +243,20 @@ static const NSMapTableValueCallBacks NSNonRetainedObjectMapValueCallBacks = {
      withNote:(NSString *)note
      fromFile:(NSString *)file
        isReal:(BOOL)real;
+-    loadPPD:(NSString *)PPDstring
+inclusionNum:(int)includeNum;
 - addPPDKeyword:(NSString *)mainKeyword
-    withScanner:(NSScanner *)PPDdata
-       fromFile:(NSString *)file;
-- addPPDUIConstraint:(NSScanner *)constraint
-	    fromFile:(NSString *)file;
-- addPPDOrderDependency:(NSScanner *)dependency
-	       fromFile:(NSString *)file;
-- addValue:(NSString *)value
-andValueTranslation:(NSString *)valueTranslation
+    withScanner:(NSScanner *)PPDdata;
+- addPPDUIConstraint:(NSScanner *)constraint;
+- addPPDOrderDependency:(NSScanner *)dependency;
+-           addValue:(NSString *)value
+ andValueTranslation:(NSString *)valueTranslation
 andOptionTranslation:(NSString *)optionTranslation
-forKey:(NSString *)key;
+	      forKey:(NSString *)key;
 - addString:(NSString *)string
      forKey:(NSString *)key
     inTable:(NSMutableDictionary *)table;
 @end
-
 
 @implementation NSPrinter
 
@@ -190,8 +302,7 @@ forKey:(NSString *)key;
       // NOT REACHED
     }
   // Create it
-  path = [printerBundle pathForResource:[printerInfo objectAtIndex:0]
-			ofType:@"ppd"];
+  path = getFile([printerInfo objectAtIndex:0], @"ppd");
   // If not found
   if (path == nil || [path length] == 0)
     {
@@ -225,7 +336,7 @@ forKey:(NSString *)key;
   // If the NSPrinter is already created, use it
   if (printer)
     return printer;
-  path = [printerBundle pathForResource:type ofType:@"ppd"];
+  path = getFile(type, @"ppd");
   // If not found
   if (path == nil || [path length] == 0)
     {
@@ -243,8 +354,16 @@ forKey:(NSString *)key;
   return printer;
 }
 
++ (NSArray *)printerNames
+{
+  if(!nameDict)
+    [NSPrinter allocMaps];
+  return [nameDict allKeys];
+}
+
 + (NSArray *)printerTypes
 {
+  /*
   NSDirectoryEnumerator *files;
   NSMutableArray *printers;
   NSString *fileName;
@@ -272,7 +391,45 @@ forKey:(NSString *)key;
 	    [printers addObject:fileName];
 	}
     }
-  printerTypesAvailable = [printers retain];
+    */
+  // userBundle, localBundle, systemBundle
+  NSArray *userPaths = nil, *localPaths = nil, *systemPaths = nil;
+  NSMutableArray *printers;
+  NSString *path;
+  NSAutoreleasePool *subpool; // There's a lot of temp strings used...
+  int i, max;
+
+  if (printerTypesAvailable)
+    return printerTypesAvailable;
+
+  printers = [[NSMutableArray array] retain];
+  subpool = [[NSAutoreleasePool alloc] init];
+  userPaths = [userBundle pathsForResourcesOfType:@"ppd"
+			  inDirectory:NSPrinter_PATH];
+  localPaths = [localBundle pathsForResourcesOfType:@"ppd"
+			    inDirectory:NSPrinter_PATH];
+  systemPaths = [systemBundle pathsForResourcesOfType:@"ppd"
+			      inDirectory:NSPrinter_PATH];
+  max = [userPaths count];
+  for(i=0 ; i<max ; i++)
+    {
+      path = [[userPaths objectAtIndex:i] lastPathComponent];
+      [printers addObject:[path substringToIndex:[path length]-4]];
+    }
+  max = [localPaths count];
+  for(i=0 ; i<max ; i++)
+    {
+      path = [[localPaths objectAtIndex:i] lastPathComponent];
+      [printers addObject:[path substringToIndex:[path length]-4]];
+    }
+  max = [systemPaths count];
+  for(i=0 ; i<max ; i++)
+    {
+      path = [[systemPaths objectAtIndex:i] lastPathComponent];
+      [printers addObject:[path substringToIndex:[path length]-4]];
+    }
+  [subpool release];
+  printerTypesAvailable = printers;
   return printers;
 }
 
@@ -346,9 +503,6 @@ forKey:(NSString *)key;
   whitespace = [NSCharacterSet whitespaceCharacterSet];
   while(![protocols isAtEnd])
     {
-      // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-      // reading the actual data, so it needs to be done manually
-      [protocols scanCharactersFromSet:whitespace intoString:NULL];
       [protocols scanUpToCharactersFromSet:whitespace intoString:&result];
       if ([result isEqual:@"BCP"])
 	{
@@ -454,8 +608,45 @@ forKey:(NSString *)key;
 
 - (NSDictionary *)deviceDescription
 {
-  // FIXME: I haven't got NSGraphics.h yet.
-  return nil;
+  /* FIXME: This is all rather dodgy - I don't have detailed information.
+   * I think I'll wait until NSWindow's deviceDescription is
+   * implemented, and then use that, since I'm not sure as to what sort
+   * of objects the values should be, and it would be nice to get the
+   * deviceDescriptions methods to match in the way they work.
+   */
+  NSDictionary *result;
+  int dpi = [self intForKey:@"DefaultResolution" inTable:@"PPD"];
+  BOOL color = [self booleanForKey:@"ColorDevice" inTable:@"PPD"];
+  NSString *colorSpaceName;
+  int bits = [self intForKey:@"DefaultBitsPerPixel" inTable:@"PPD"];
+  NSSize paperSize = [self pageSizeForPaper:
+			     [self stringForKey:@"DefaultPageSize"
+				   inTable:@"PPD"]];
+  // Guess 300 dpi
+  if (!dpi)
+    dpi = 300;
+  // FIXME: Should NSDeviceWhiteColorSpace be NSDeviceBlackColorSpace?
+  // FIXME #2: Are they calibrated?
+  // Basically I'm not sure which color spaces should be used...
+  if (color)
+    colorSpaceName = NSDeviceCMYKColorSpace;
+  else
+    colorSpaceName = NSDeviceWhiteColorSpace;
+  if (!bits) // Either not found, or 'None'
+    bits=1;
+  // If the paper size wasn't found, try Letter
+  if (!(paperSize.width && paperSize.height))
+    paperSize = NSMakeSize(612,792);
+  // Create the dictionary...
+  result = [NSDictionary dictionaryWithObjectsAndKeys:
+	[NSNumber numberWithInt:dpi],		NSDeviceResolution, 
+	colorSpaceName,				NSDeviceColorSpaceName, 
+	[NSNumber numberWithInt:bits],		NSDeviceBitsPerSample,
+	[NSNumber numberWithBool:NO],		NSDeviceIsScreen, 
+	[NSNumber numberWithBool:YES],		NSDeviceIsPrinter,
+	[NSValue valueWithSize:paperSize],	NSDeviceSize, 
+		nil];
+  return result;
 }
 
 - (float)floatForKey:(NSString *)key
@@ -683,14 +874,43 @@ forKey:(NSString *)key;
 //
 - (void)encodeWithCoder:aCoder
 {
-  // FIXME: implement this
-  // [super encodeWithCoder:aCoder];
+  //  [super encodeWithCoder:aCoder];
+  
+  [aCoder encodeObject:printerHost];
+  [aCoder encodeObject:printerName];
+  [aCoder encodeObject:printerNote];
+  [aCoder encodeObject:printerType];
+
+  [aCoder encodeValueOfObjCType:"i" at:&cacheAcceptsBinary];
+  [aCoder encodeValueOfObjCType:"i" at:&cacheOutputOrder];
+  [aCoder encodeValueOfObjCType:@encode(BOOL) at:&isRealPrinter];
+
+  [aCoder encodeObject:PPD];
+  [aCoder encodeObject:PPDOptionTranslation];
+  [aCoder encodeObject:PPDArgumentTranslation];
+  [aCoder encodeObject:PPDOrderDependency];
+  [aCoder encodeObject:PPDUIConstraints];
 }
 
 - initWithCoder:aDecoder
 {
-  //  [super initWithCoder:aDecoder];
-  // FIXME: implement this
+  //  self = [super initWithCoder:aDecoder];
+    
+  printerHost = [aDecoder decodeObject];
+  printerName = [aDecoder decodeObject];
+  printerNote = [aDecoder decodeObject];
+  printerType = [aDecoder decodeObject];
+
+  [aDecoder decodeValueOfObjCType:"i" at:&cacheAcceptsBinary];
+  [aDecoder decodeValueOfObjCType:"i" at:&cacheOutputOrder];
+  [aDecoder decodeValueOfObjCType:@encode(BOOL) at:&isRealPrinter];
+
+  PPD = [aDecoder decodeObject];
+  PPDOptionTranslation = [aDecoder decodeObject];
+  PPDArgumentTranslation = [aDecoder decodeObject];
+  PPDOrderDependency = [aDecoder decodeObject];
+  PPDUIConstraints = [aDecoder decodeObject];
+
   return self;
 }
 
@@ -704,11 +924,38 @@ forKey:(NSString *)key;
 + allocMaps
 {
   NSString *path;
+  NSMutableString *user, *local, *system;
+  NSDictionary *env;
 
-  // Make sure the printer bundle is created
-  if (!printerBundle)
-    printerBundle = [[NSBundle bundleWithPath:NSPrinter_PATH] retain];
-  path = [printerBundle pathForResource:NSPrinter_INDEXFILE ofType:nil];
+  // Allocate name and type maps
+  typeMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			     NSNonRetainedObjectMapValueCallBacks,
+			     TYPEMAPSIZE);
+  nameMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			     NSNonRetainedObjectMapValueCallBacks,
+			     NAMEMAPSIZE);
+
+  // Create the printer bundles
+  env = [[NSProcessInfo processInfo] environment];
+  user = [[[env objectForKey: @"GNUSTEP_USER_ROOT"]
+            mutableCopy] autorelease];
+  [user appendString: @"/Libraries"];
+  local = [[[env objectForKey: @"GNUSTEP_LOCAL_ROOT"]
+            mutableCopy] autorelease];
+  [local appendString: @"/Libraries"];
+  system = [[[env objectForKey: @"GNUSTEP_SYSTEM_ROOT"]
+            mutableCopy] autorelease];
+  [system appendString: @"/Libraries"];
+
+  if (user)
+    userBundle = [NSBundle bundleWithPath: user];
+  if (local)
+    localBundle = [NSBundle bundleWithPath: local];
+  if (system)
+    systemBundle = [NSBundle bundleWithPath: system];
+
+  // Load the index file
+  path = getFile(NSPrinter_INDEXFILE, nil);
   // If not found
   if (path == nil || [path length] == 0)
     {
@@ -717,13 +964,6 @@ forKey:(NSString *)key;
 		   [NSPrinter_INDEXFILE cString]];
       // NOT REACHED
     }
-  // Allocate name and type maps
-  typeMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			     NSNonRetainedObjectMapValueCallBacks,
-			     TYPEMAPSIZE);
-  nameMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			     NSNonRetainedObjectMapValueCallBacks,
-			     NAMEMAPSIZE);
   // And create the name dictionary, loading it
   nameDict = [[NSDictionary dictionaryWithContentsOfFile:path] retain];
   return self;
@@ -742,8 +982,8 @@ forKey:(NSString *)key;
        isReal:(BOOL)real
 {
   NSAutoreleasePool *subpool;
-  NSScanner *PPDdata;
-  NSString *keyword;
+  NSEnumerator *objEnum;
+  NSMutableArray *valArray;
 
   // Initialise instance variables
   printerName = [name retain];
@@ -764,6 +1004,111 @@ forKey:(NSString *)key;
   keyEndSet = [NSCharacterSet characterSetWithCharactersInString:@"\n\r\t: "];
   optKeyEndSet = [NSCharacterSet characterSetWithCharactersInString:@"\n\r:/"];
   valueEndSet = [NSCharacterSet characterSetWithCharactersInString:@"\n\r/"];
+  // Allowed repeated keys, used during scanning.
+  repKeys = [NSArray arrayWithObjects:@"Emulators",
+		     @"Extensions",
+		     @"FaxSupport",
+		   //@"Include", (handled separately)
+		     @"Message",
+		     @"PrinterError",
+		     @"Product",
+		     @"Protocols",
+		     @"PSVersion",
+		     @"Source",
+		     @"Status",
+		   //@"UIConstraints", (handled separately)
+  // Even though this is not mentioned in the list of repeated keywords, 
+  // it's often repeated anyway, so I'm putting it here.
+		     @"InkName",
+		     nil];
+  // Set the file name to use
+  PPDFileName = file;
+  // NB: There are some structure keywords (such as OpenUI/CloseUI) that may
+  // be repeated, but as yet are not used. Since they are structure keywords,
+  // they'll probably need special processing anyway, and so aren't
+  // added to this list.
+  // Create dictionary for temporary storage of symbol values
+  PPDSymbolValues = [NSMutableDictionary dictionary];
+  // And scan the PPD itself
+  [self loadPPD:PPDstring inclusionNum:0];
+  // Search the PPD dictionary for symbolvalues, and substitute them.
+  objEnum = [PPD objectEnumerator];
+  while (valArray = [objEnum nextObject])
+    {
+      NSString *oldValue;
+      NSString *newValue;
+      int i, max;
+      max = [valArray count];
+      for(i=0 ; i < max ; i++ )
+	{
+	  oldValue = [valArray objectAtIndex:i];
+	  if ([oldValue isKindOfClass:[NSString class]]
+	      && ![oldValue isEqual:@""]
+	      && [[oldValue substringToIndex:1] isEqual:@"^"])
+	    {
+	      newValue = [PPDSymbolValues
+			   objectForKey:[oldValue substringFromIndex:1]];
+	      if (!newValue)
+		{
+		  [NSException
+		    raise:NSPPDParseException
+		    format:@"Unknown symbol value, ^%s in PPD file %s.ppd",
+		    [oldValue cString],
+		    [PPDFileName cString]];
+		  // NOT REACHED
+		}
+	      [valArray replaceObjectAtIndex:i withObject:newValue];
+	    }
+	}
+    }
+
+#if 0
+  // DISABLED: Though the following keywords *should* be present, there seems
+  // to be few problems is they are omitted. Many of the .ppd files I have 
+  // don't have *LanguageEncoding, for example.
+
+  // Make sure all the required keys are present
+  objEnum = [[NSArray arrayWithObjects:@"NickName",
+		      @"ModelName",
+		      @"PCFileName",
+		      @"Product",
+		      @"PSVersion",
+		      @"FileVersion",
+		      @"FormatVersion",
+		      @"LanguageEncoding",
+		      @"LanguageVersion",
+		      @"PageSize",
+		      @"PageRegion",
+		      @"ImageableArea",
+		      @"PaperDimension",
+		      @"PPD-Adobe",
+		      nil] objectEnumerator];
+
+  while (checkVal = [objEnum nextObject])
+    {
+      if (![self isKey:checkVal inTable:@"PPD"])
+		{
+		  [NSException
+		    raise:NSPPDParseException
+		    format:@"Required keyword *%s not found in PPD file %s.ppd",
+		    [checkVal cString],
+		    [PPDFileName cString]];
+		  // NOT REACHED
+		}
+    }
+#endif
+
+  // Release the local autoreleasePool
+  [subpool release];
+  return self;
+}
+
+-    loadPPD:(NSString *)PPDstring
+inclusionNum:(int)includeNum
+{
+  NSScanner *PPDdata;
+  NSString *keyword;
+
   // Set up the scanner - Appending a newline means that it should be
   // able to process the last line correctly
   PPDdata = [NSScanner scannerWithString:
@@ -773,9 +1118,7 @@ forKey:(NSString *)key;
   while (1) // Check it is not at end only after skipping the blanks
     {
       // Get to the start of a new keyword, skipping blank lines
-      [PPDdata scanCharactersFromSet:[NSCharacterSet 
-				       whitespaceAndNewlineCharacterSet]
-	       intoString:NULL];
+      skipSpace(PPDdata);
       if ([PPDdata isAtEnd])
 	break;
       // All new entries should starts '*'
@@ -783,11 +1126,14 @@ forKey:(NSString *)key;
 	{
 	  [NSException raise:NSPPDParseException
 		       format:@"Line not starting * in PPD file %s.ppd",
-		       [file cString]];
+		       [PPDFileName cString]];
 	  // NOT REACHED
 	}
-      // Skip comments starting '*%'
-      if ([PPDdata scanString:@"%" intoString:NULL])
+      // Skip lines starting '*%', '*End', '*SymbolLength', or '*SymbolEnd'
+      if ([PPDdata scanString:@"%" intoString:NULL]
+	  || [PPDdata scanString:@"End" intoString:NULL]
+	  || [PPDdata scanString:@"SymbolLength" intoString:NULL]
+	  || [PPDdata scanString:@"SymbolEnd" intoString:NULL])
 	{
 	  [PPDdata scanUpToCharactersFromSet:newlineSet intoString:NULL];
 	  continue;
@@ -799,37 +1145,79 @@ forKey:(NSString *)key;
 	continue;
       // Add the line to the relevant table
       if ([keyword isEqual:@"OrderDependency"])
-	[self addPPDOrderDependency:PPDdata fromFile:file];
+	[self addPPDOrderDependency:PPDdata];
       else if ([keyword isEqual:@"UIConstraints"])
-	[self addPPDUIConstraint:PPDdata fromFile:file];
+	[self addPPDUIConstraint:PPDdata];
+      else if ([keyword isEqual:@"Include"])
+	{
+	  NSString *fileName;
+	  NSString *path;
+	  [PPDdata scanString:@":" intoString:NULL];
+	  // Find the filename between two "s
+	  [PPDdata scanString:@"\"" intoString:NULL];
+	  [PPDdata scanUpToString:@"\"" intoString:&fileName];
+	  [PPDdata scanString:@"\"" intoString:NULL];
+	  // Load the file
+	  path = getFile(fileName, nil);
+	  // If not found
+	  if (path == nil || [path length] == 0)
+	    {
+	      [NSException raise:NSPPDIncludeNotFoundException
+			   format:@"Could not find included PPD file %s", 
+			   [fileName cString]];
+	      // NOT REACHED
+	    }
+	  includeNum++;
+	  if (includeNum > MAX_PPD_INCLUDES)
+	    {
+	      [NSException raise:NSPPDIncludeStackOverflowException
+			   format:@"Too many *Includes in PPD"];
+	      // NOT REACHED
+	    }	    
+	  [self loadPPD:[NSString stringWithContentsOfFile:path]
+		inclusionNum:includeNum];
+	}
+      else if ([keyword isEqual:@"SymbolValue"])
+	{
+	  NSString *symbolName;
+	  NSString *symbolVal;
+	  if (![PPDdata scanString:@"^" intoString:NULL])
+	    {
+	      [NSException
+		raise:NSPPDParseException
+		format:@"Badly formatted *SymbolValue in PPD file %s.ppd",
+		  [PPDFileName cString]];
+	      // NOT REACHED
+	    }	    
+	  [PPDdata scanUpToString:@":" intoString:&symbolName];
+	  [PPDdata scanString:@":" intoString:NULL];
+	  [PPDdata scanString:@"\"" intoString:NULL];
+	  [PPDdata scanUpToString:@"\"" intoString:&symbolVal];
+	  if (!symbolVal)
+	    symbolVal = @"";
+	  [PPDdata scanString:@"\"" intoString:NULL];
+	  [PPDSymbolValues setObject:symbolVal forKey:symbolName];
+	}
       else
-	[self addPPDKeyword:keyword withScanner:PPDdata fromFile:file];
+	[self addPPDKeyword:keyword withScanner:PPDdata];
     }
-  // Release the local autoreleasePool
-  [subpool release];
   return self;
 }
 
 - addPPDKeyword:(NSString *)mainKeyword
     withScanner:(NSScanner *)PPDdata
-       fromFile:(NSString *)file
 { 
   NSString *optionKeyword = nil;
   NSString *optionTranslation = nil;
   NSString *value = nil;
   NSString *valueTranslation = nil;
   // Scan off any optionKeyword
-  // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-  // reading the actual data, so it needs to be done manually
-  [PPDdata scanCharactersFromSet:
-	     [NSCharacterSet whitespaceAndNewlineCharacterSet]
-	   intoString:NULL];
   [PPDdata scanUpToCharactersFromSet:optKeyEndSet intoString:&optionKeyword];
   if ([PPDdata scanCharactersFromSet:newlineSet intoString:NULL])
     {
       [NSException raise:NSPPDParseException
         format:@"Keyword has optional keyword but no value in PPD file %s.ppd",
-		   [file cString]];
+		   [PPDFileName cString]];
       // NOT REACHED
     }
   if ([PPDdata scanString:@"/" intoString:NULL])
@@ -843,16 +1231,18 @@ forKey:(NSString *)key;
   if ([PPDdata scanString:@"\"" intoString:NULL])
     {
       [PPDdata scanUpToString:@"\"" intoString:&value];
+      if (!value)
+	value = @"";
       [PPDdata scanString:@"\"" intoString:NULL];
+      // It is a QuotedValue if it's in quotes, and there is no option
+      // key, or the main key is a *JCL keyword
+      if (!optionKeyword || [[mainKeyword substringToIndex:3]
+			      isEqualToString:@"JCL"])
+	  value = interpretQuotedValue(value);
     }
   else
     {
       // Otherwise, scan up to the end of line or '/'
-      // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-      // reading the actual data, so it needs to be done manually
-      [PPDdata scanCharactersFromSet:
-		    [NSCharacterSet whitespaceAndNewlineCharacterSet]
-		  intoString:NULL];
       [PPDdata scanUpToCharactersFromSet:valueEndSet intoString:&value];
     }
   // If there is a value translation, scan it
@@ -861,14 +1251,28 @@ forKey:(NSString *)key;
       [PPDdata scanUpToCharactersFromSet:newlineSet
 	       intoString:&valueTranslation];
     }
+  // The translations also have to have any hex substrings interpreted
+  if (optionTranslation)
+    optionTranslation = interpretQuotedValue(optionTranslation);
+  if (valueTranslation)
+    valueTranslation = interpretQuotedValue(valueTranslation);
+  // The keyword (or keyword/option pair, if there's a option), should only
+  // only have one value, unless it's one of the optionless keywords which
+  // allow multiple instances.
+  // If a keyword is read twice, 'first instance is correct', according to
+  // the standard.
   // Finally, add the strings to the tables
   if (optionKeyword)
     {
+      NSString *mainAndOptionKeyword=[mainKeyword
+				       stringByAppendingFormat:@"/%s",
+				       [optionKeyword cString]];
+      if ([self isKey:mainAndOptionKeyword inTable:@"PPD"])
+	return self;
       [self addValue:value
 	    andValueTranslation:valueTranslation
 	    andOptionTranslation:optionTranslation
-	    forKey:[mainKeyword stringByAppendingFormat:@"/%s",
-				[optionKeyword cString]]];
+	    forKey:mainAndOptionKeyword];
       // Deal with the oddities of stringForKey:inTable:
       // If this method is used to find a keyword with options, using
       // just the keyword it should return an empty string
@@ -890,6 +1294,9 @@ forKey:(NSString *)key;
     }
   else
     {
+      if ([self isKey:mainKeyword inTable:@"PPD"] && 
+	  ![repKeys containsObject:mainKeyword])
+	return self;
       [self addValue:value
 	    andValueTranslation:valueTranslation
 	    andOptionTranslation:optionTranslation
@@ -899,7 +1306,6 @@ forKey:(NSString *)key;
 }
 
 - addPPDUIConstraint:(NSScanner *)constraint
-	    fromFile:(NSString *)file
 {
   NSString *mainKey1 = nil;
   NSString *optionKey1 = nil;
@@ -909,8 +1315,8 @@ forKey:(NSString *)key;
   if (![constraint scanString:@":" intoString:NULL])
     {
       [NSException raise:NSPPDParseException
-	format:@"UIConstraints has option keyword in PPDfile %s.ppd",
-		   [file cString]];
+	format:@"UIConstraints has option keyword in PPDFileName %s.ppd",
+		   [PPDFileName cString]];
       // NOT REACHED
     }
   // Skip the '*'
@@ -930,11 +1336,6 @@ forKey:(NSString *)key;
 	      intoString:&mainKey2];
   if (![constraint scanCharactersFromSet:newlineSet intoString:NULL])
     {
-      // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-      // reading the actual data, so it needs to be done manually
-      [constraint scanCharactersFromSet:
-		    [NSCharacterSet whitespaceAndNewlineCharacterSet]
-		  intoString:NULL];
       [constraint scanUpToCharactersFromSet:
 		    [NSCharacterSet whitespaceAndNewlineCharacterSet]
 		  intoString:&optionKey2];
@@ -956,32 +1357,21 @@ forKey:(NSString *)key;
 }
 
 - addPPDOrderDependency:(NSScanner *)dependency
-	       fromFile:(NSString *)file
 {
   NSString *realValue = nil;
   NSString *section = nil;
   NSString *keyword = nil;
   NSString *optionKeyword = nil;
-  // Order dependency  should have no option keyword
+  // Order dependency should have no option keyword
   if (![dependency scanString:@":" intoString:NULL])
     {
       [NSException raise:NSPPDParseException
 	format:@"OrderDependency has option keyword in PPD file %s.ppd",
-		   [file cString]];
+		   [PPDFileName cString]];
       // NOT REACHED
     }
-  // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-  // reading the actual data, so it needs to be done manually
-  [dependency scanCharactersFromSet:
-		[NSCharacterSet whitespaceAndNewlineCharacterSet]
-	      intoString:NULL];
   [dependency scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet]
 	      intoString:&realValue];
-  // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-  // reading the actual data, so it needs to be done manually
-  [dependency scanCharactersFromSet:
-		[NSCharacterSet whitespaceAndNewlineCharacterSet]
-	      intoString:NULL];
   [dependency scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet]
 	      intoString:&section];
   [dependency scanString:@"*" intoString:NULL];
@@ -991,11 +1381,6 @@ forKey:(NSString *)key;
   if (![dependency scanCharactersFromSet:newlineSet intoString:NULL])
     {
       // Optional keyword exists
-      // FIXME: scanUpToCharactersFromSet does not skip whitespace before
-      // reading the actual data, so it needs to be done manually
-      [dependency scanCharactersFromSet:
-		    [NSCharacterSet whitespaceAndNewlineCharacterSet]
-		  intoString:NULL];
       [dependency scanUpToCharactersFromSet:
 		    [NSCharacterSet whitespaceAndNewlineCharacterSet]
 		  intoString:&optionKeyword];
@@ -1014,10 +1399,10 @@ forKey:(NSString *)key;
 //
 // Adds the various values to the relevant tables, for the given key
 //
-- addValue:(NSString *)value
-andValueTranslation:(NSString *)valueTranslation
+-           addValue:(NSString *)value
+ andValueTranslation:(NSString *)valueTranslation
 andOptionTranslation:(NSString *)optionTranslation
-forKey:(NSString *)key
+              forKey:(NSString *)key
 {
   [self addString:value forKey:key inTable:PPD];
   if (valueTranslation)

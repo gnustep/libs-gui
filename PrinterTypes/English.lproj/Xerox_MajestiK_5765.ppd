@@ -1,0 +1,509 @@
+*PPD-Adobe: "4.1"
+*% Adobe Systems PostScript(R) Printer Description File
+*% Copyright 1987-1994 Adobe Systems Incorporated. 
+*% All Rights Reserved. 
+*% Permission is granted for redistribution of this file as
+*% long as this copyright notice is intact and the contents
+*% of the file is not altered in any way from its original form.
+*% End of Copyright statement
+
+*% for Splash Server version 1.1
+*% written by John Marshall"
+*%
+*% Copyright 1993 SuperMac Technologies Incorporated. 
+*% Date: Thur, Jan 13, 1994 10:51:54 AM
+
+*FormatVersion: "4.1"
+*FileVersion: "1.0"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*Product: "(MajestiK)"
+*PSVersion: "(2013.108)"
+*PCFileName: "SMMJSTK1.PPD"
+*ModelName: "Xerox MajestiK 5765"
+*NickName: "MajestiK"
+
+
+*UIConstraints: *InputSlot Tray1 *Option3
+*UIConstraints: *InputSlot Tray2 *Option3
+*UIConstraints: *InputSlot Tray3 *Option3
+*UIConstraints: *Option1 Gray *Option2
+
+*% ==== Device Capabilities ===============
+*LanguageLevel: "2"
+*ColorDevice: True
+*DefaultColorSpace: CMYK
+*FreeVM: "4460000"
+*VariablePaperSize: False
+*FileSystem: False
+*?FileSystem: "
+save statusdict begin
+	(False) /diskstatus where{
+		pop diskstatus exch pop 0 ne {pop (True)} if
+	}if = flush
+end restore
+"
+*End
+*Throughput: "8"
+*Password: "0"
+*ExitServer: "
+ count 0 eq
+ { false } { true exch startjob } ifelse
+ not { 
+     (WARNING: Cannot modify initial VM.) =
+     (Missing or invalid password.) =
+     (Please contact the author of this software.) = flush quit
+     } if
+"
+*End
+
+*Reset: "
+ count 0 eq
+ { false } { true exch startjob } ifelse
+ not { 
+    (WARNING: Cannot reset printer.) =
+    (Missing or invalid password.) =
+    (Please contact the author of this software.) = flush quit
+    } if
+ systemdict /quit get exec
+ (WARNING : Printer Reset Failed.) = flush
+"
+*End
+
+*DefaultResolution: 400dpi
+*?Resolution: "
+  save
+    currentpagedevice /HWResolution get
+    0 get
+    (          ) cvs print
+    (dpi)
+    = flush
+  restore
+"
+*End
+
+*% =============== Halftone Information ===============
+*% Halftone Information ===============
+*ScreenFreq: "400.0"
+*ScreenAngle: "0.0"
+*DefaultScreenProc: Dot
+*ScreenProc Dot: "
+{ 180 mul cos exch 180 mul cos add 2 div}
+"
+*End
+
+*SpotFunctionLine: "{ pop }"
+*SpotFunctionEllipse: "{ dup 5 mul 8 div mul exch dup mul exch add sqrt 1 exch sub }"
+
+*DefaultTransfer: Null
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+
+*% Paper Handling ===================
+
+*% Code in this section both selects a tray and sets up a frame buffer.
+
+*OpenUI *PageSize: PickOne
+
+*OrderDependency: 60 AnySetup *PageSize
+*DefaultPageSize: Letter
+*PageSize A3: "4 dict dup /PageSize [842 1191] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 830 1179
+%SMEndSettings"
+*End
+*PageSize A4: "4 dict dup /PageSize [595 842] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 584 830
+%SMEndSettings"
+*End
+*PageSize A4L: "4 dict dup /PageSize [842 595] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 830 584
+%SMEndSettings"
+*End
+*PageSize B4: "4 dict dup /PageSize [728 1032] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 717 1021
+%SMEndSettings"
+*End
+*PageSize B5: "4 dict dup /PageSize [516 729] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 505 717
+%SMEndSettings"
+*End
+*PageSize B5L: "4 dict dup /PageSize [729 516] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 717 505
+%SMEndSettings"
+*End
+*PageSize Legal: "4 dict dup /PageSize [612 1009] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 997
+%SMEndSettings"
+*End
+*PageSize Legal13: "4 dict dup /PageSize [612 936] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 925
+%SMEndSettings"
+*End
+*PageSize Letter: "4 dict dup /PageSize [612 792] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 781
+%SMEndSettings"
+*End
+*PageSize LetterL: "4 dict dup /PageSize [792 612] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 781 601
+%SMEndSettings"
+*End
+*PageSize 11x17: "4 dict dup /PageSize [792 1224] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 781 1213
+%SMEndSettings"
+*End
+*PageSize 8x10L: "4 dict dup /PageSize [720 576] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 709 565
+%SMEndSettings"
+*End
+*PageSize 9x12: "4 dict dup /PageSize [648 864] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 637 853
+%SMEndSettings"
+*End
+*PageSize 215mmx315mm: "4 dict dup /PageSize [609 893] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 598 881
+%SMEndSettings"
+*End
+
+*?PageSize: "
+ save
+   currentpagedevice /PageSize get aload pop
+   2 copy gt {exch} if
+   (Unknown)
+  13 dict
+   dup [842 1191] (A3) put
+   dup [595 842] (A4) put
+   dup [842 595] (A4L) put
+   dup [732 1028] (B4) put
+   dup [516 729] (B5) put
+   dup [729 516] (B5L) put
+   dup [612 1008] (Legal) put
+   dup [612 936] (Legal13) put
+   dup [612 792] (Letter) put
+   dup [792 612] (LetterL) put
+   dup [792 1224] (11x17) put
+   dup [720 576] (8x10L) put
+   dup [648 864] (9x12) put
+   dup [609 893] (215mmx315mm) put
+ { exch aload pop 4 index sub abs 5 le exch
+   5 index sub abs 5 le and
+      {exch pop exit} {pop} ifelse
+   } bind forall
+   = flush pop pop
+restore
+"
+*End
+
+*CloseUI *PageSize
+
+*OpenUI *PageRegion: PickOne
+
+*OrderDependency: 60 AnySetup *PageRegion
+*DefaultPageRegion: Letter
+*PageRegion A3: "4 dict dup /PageSize [842 1191] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 830 1179
+%SMEndSettings"
+*End
+*PageRegion A4: "4 dict dup /PageSize [595 842] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 584 830
+%SMEndSettings"
+*End
+*PageRegion A4L: "4 dict dup /PageSize [842 595] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 830 584
+%SMEndSettings"
+*End
+*PageRegion B4: "4 dict dup /PageSize [728 1032] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 717 1021
+%SMEndSettings"
+*End
+*PageRegion B5: "4 dict dup /PageSize [516 729] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 505 717
+%SMEndSettings"
+*End
+*PageRegion B5L: "4 dict dup /PageSize [729 516] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 717 505
+%SMEndSettings"
+*End
+*PageRegion Legal: "4 dict dup /PageSize [612 1009] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 997
+%SMEndSettings"
+*End
+*PageRegion Legal13: "4 dict dup /PageSize [612 936] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 925
+%SMEndSettings"
+*End
+*PageRegion Letter: "4 dict dup /PageSize [612 792] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 601 781
+%SMEndSettings"
+*End
+*PageRegion LetterL: "4 dict dup /PageSize [792 612] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 781 601
+%SMEndSettings"
+*End
+*PageRegion 11x17: "4 dict dup /PageSize [792 1224] put dup /ImagingBBox null put dup /HWResolution [400 currentpagedevice /ProcessColorModel get (DeviceGray) eq {400} {200} ifelse ] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 781 1213
+%SMEndSettings"
+*End
+*PageRegion 8x10L: "4 dict dup /PageSize [720 576] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 709 565
+%SMEndSettings"
+*End
+*PageRegion 9x12: "4 dict dup /PageSize [648 864] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 637 853
+%SMEndSettings"
+*End
+*PageRegion 215mmx315mm: "4 dict dup /PageSize [609 893] put dup /ImagingBBox null put dup /HWResolution [400 400] put dup /MatchAll false put setpagedevice
+%%PageBoundingBox: 11 25 598 881
+%SMEndSettings"
+*End
+
+*CloseUI *PageRegion
+
+
+*DefaultPaperTray: OnlyOne
+
+*% The following entries provide information about specific paper keywords.
+*DefaultImageableArea: Letter
+*ImageableArea A3: "11 11 831 1165"
+*ImageableArea A4: "11 11 584 816"
+*ImageableArea A4L: "11 11 831 570"
+*ImageableArea B4: "11 11 717 1006"
+*ImageableArea B5: "11 11 505 703"
+*ImageableArea B5L: "11 11 717 490"
+*ImageableArea Legal: "11 11 601 984"
+*ImageableArea Legal13: "11 11 601 910"
+*ImageableArea Letter: "11 11 601 766"
+*ImageableArea LetterL: "11 11 781 586"
+*ImageableArea 11x17: "11 11 781 1198"
+*ImageableArea 8x10L: "11 11 709 550"
+*ImageableArea 9x12: "11 11 637 838"
+*ImageableArea 215mmx315mm: "11 11 598 867"
+*?ImageableArea: "
+   save
+    /cvp { (                ) cvs print ( ) print } bind def
+    /upperright {10000 mul floor 10000 div} bind def
+    /lowerleft {10000 mul ceiling 10000 div} bind def
+    newpath clippath pathbbox
+    4 -2 roll exch 2 {lowerleft cvp} repeat
+    exch 2 {upperright cvp} repeat flush
+   restore
+   "
+*End
+
+*DefaultPaperDimension: Letter
+
+*PaperDimension A3: "842 1191"
+*PaperDimension A4: "596 842"
+*PaperDimension A4L: "842 596"
+*PaperDimension B4: "729 1032"
+*PaperDimension B5: "516 729"
+*PaperDimension B5L: "729 516"
+*PaperDimension Legal: "612 1009"
+*PaperDimension Legal13: "612 936"
+*PaperDimension Letter: "612 792"
+*PaperDimension LetterL: "792 612"
+*PaperDimension 11x17: "792 1224"
+*PaperDimension 8x10L: "720 576"
+*PaperDimension 9x12: "648 864"
+*PaperDimension 215mmx315mm: "609 893"
+
+*RequiresPageRegion	All:	True
+
+*OpenUI *InputSlot: PickOne
+*OrderDependency: 20 AnySetup *InputSlot
+*DefaultInputSlot: Unknown
+*InputSlot Tray1/Tray1: "%SMForceTray: 1"
+*InputSlot Tray2/Tray2: "%SMForceTray: 2"
+*InputSlot Tray3/Tray3: "%SMForceTray: 3"
+*InputSlot BypassTray/BypassTray: "%SMForceTray: 4"
+*CloseUI: *InputSlot
+
+*OpenUI *Option1/Color Model: PickOne
+*OrderDependency: 30 AnySetup *Option1
+*DefaultOption1: Color
+*Option1 Color/Full  Color (4 Pass): "%SMProcessColorModel: 3"
+*Option1 Gray/Grayscale (Black - 1 Pass): "%SMProcessColorModel: 0"
+*CloseUI: *Option1
+
+*OpenUI *Option2/Color Correction: PickOne
+*OrderDependency: 40 AnySetup *Option2
+*DefaultOption2: None
+*Option2 None/None: "
+%SMColorMatching: 0"
+*End
+*Option2 TypeA/SuperMatch Hi-Res 20 (Trinitron): "%SMColorMatching: 1
+%SMMonitorIndex: 1"
+*End
+*Option2 TypeB/SuperMatch PressView 21 (EBU): "%SMColorMatching: 1
+%SMMonitorIndex: 2"
+*End
+*CloseUI: *Option2
+
+*OpenUI *Option3/Bypass Feed Tray Options: PickOne
+*OrderDependency: 50 AnySetup *Option3
+*DefaultOption3: Normal
+*Option3 Normal/Normal (Paper or Transparency): "
+%SMThicknessFeederPaper: 0"
+*End
+*Option3 Thick/Heavy Weight Paper: "
+%SMThicknessFeederPaper: 1"
+*End
+*Option3 Interleave/Transparency Interleave: "
+%SMThicknessFeederPaper: 3"
+*End
+*CloseUI: *Option3
+
+*DefaultOutputBin: OnlyOne
+*DefaultOutputOrder: Normal
+
+*% =============== Font Information =====================
+
+*DefaultFont: Courier
+*Font ACaslon-Italic: Standard "(001.001)" Standard Disk
+*Font ACaslon-Regular: Standard "(001.001)" Standard Disk
+*Font ACaslon-Semibold: Standard "(001.001)" Standard Disk
+*Font ACaslon-SemiboldItalic: Standard "(001.001)" Standard Disk
+*Font AGaramond-Bold: Standard "(001.001)" Standard Disk
+*Font AGaramond-BoldItalic: Standard "(001.001)" Standard Disk
+*Font AGaramond-Italic: Standard "(001.001)" Standard Disk
+*Font AGaramond-Regular: Standard "(001.001)" Standard Disk
+*Font Americana: Standard "(001.000)" Standard Disk
+*Font Americana-ExtraBold: Standard "(001.000)" Standard Disk
+*Font AvantGarde-Book: Standard "(001.002)" Standard Disk
+*Font AvantGarde-BookOblique: Standard "(001.002)" Standard Disk
+*Font AvantGarde-Demi: Standard "(001.003)" Standard Disk
+*Font AvantGarde-DemiOblique: Standard "(001.003)" Standard Disk
+*Font Barmeno-Bold: Standard "(001.000)" Standard Disk
+*Font Barmeno-ExtraBold: Standard "(001.000)" Standard Disk
+*Font Barmeno-Medium: Standard "(001.000)" Standard Disk
+*Font Barmeno-Regular: Standard "(001.000)" Standard Disk
+*Font Blackoak: Standard "(001.001)" Standard Disk
+*Font Bookman-Demi: Standard "(001.003)" Standard Disk
+*Font Bookman-DemiItalic: Standard "(001.003)" Standard Disk
+*Font Bookman-Light: Standard "(001.003)" Standard Disk
+*Font Bookman-LightItalic: Standard "(001.003)" Standard Disk
+*Font Carta: Special "(001.001)" Special Disk
+*Font Courier: Standard "(002.003)" Standard Disk
+*Font Courier-Bold: Standard "(002.003)" Standard Disk
+*Font Courier-BoldOblique: Standard "(002.003)" Standard Disk
+*Font Courier-Oblique: Standard "(002.003)" Standard Disk
+*Font Formata-Italic: Standard "(001.001)" Standard Disk
+*Font Formata-Medium: Standard "(001.001)" Standard Disk
+*Font Formata-MediumItalic: Standard "(001.001)" Standard Disk
+*Font Formata-Regular: Standard "(001.001)" Standard Disk
+*Font Helvetica: Standard "(001.006)" Standard Disk
+*Font Helvetica-Bold: Standard "(001.007)" Standard Disk
+*Font Helvetica-BoldOblique: Standard "(001.007)" Standard Disk
+*Font Helvetica-Narrow: Standard "(001.006)" Standard Disk
+*Font Helvetica-Narrow-Bold: Standard "(001.007)" Standard Disk
+*Font Helvetica-Narrow-BoldOblique: Standard "(001.007)" Standard Disk
+*Font Helvetica-Narrow-Oblique: Standard "(001.006)" Standard Disk
+*Font Helvetica-Oblique: Standard "(001.006)" Standard Disk
+*Font Kaufmann: Standard "(001.000)" Standard Disk
+*Font Lithos-Black: Standard "(001.001)" Standard Disk
+*Font Lithos-Regular: Standard "(001.001)" Standard Disk
+*Font NewCenturySchlbk-Bold: Standard "(001.008)" Standard Disk
+*Font NewCenturySchlbk-BoldItalic: Standard "(001.006)" Standard Disk
+*Font NewCenturySchlbk-Italic: Standard "(001.005)" Standard Disk
+*Font NewCenturySchlbk-Roman: Standard "(001.006)" Standard Disk
+*Font Palatino-Bold: Standard "(001.005)" Standard Disk
+*Font Palatino-BoldItalic: Standard "(001.005)" Standard Disk
+*Font Palatino-Italic: Standard "(001.005)" Standard Disk
+*Font Palatino-Roman: Standard "(001.005)" Standard Disk
+*Font Parisian: Standard "(001.001)" Standard Disk
+*Font ParkAvenue: Standard "(001.005)" Standard Disk
+*Font Poetica: Special "(001.000)" Special Disk
+*Font Symbol: Special "(001.007)" Special Disk
+*Font Tekton: Standard "(001.001)" Standard Disk
+*Font Tekton-Bold: Standard "(001.001)" Standard Disk
+*Font Times-Bold: Standard "(001.007)" Standard Disk
+*Font Times-BoldItalic: Standard "(001.009)" Standard Disk
+*Font Times-Italic: Standard "(001.007)" Standard Disk
+*Font Times-Roman: Standard "(001.007)" Standard Disk
+*Font Trajan-Bold: Standard "(001.000)" Standard Disk
+*Font WoodtypeOrnaments-Two: Special "(001.002)" Special Disk
+*Font ZapfChancery-MediumItalic: Standard "(001.006)" Standard Disk
+*Font ZapfDingbats: Special "(001.004)" Special Disk
+
+
+*?FontQuery: "
+ save
+   { count 1 gt
+      { exch dup 127 string cvs (/) print print (:) print
+        /Font resourcestatus {pop pop (Yes)} {(No)} ifelse =
+      } { exit } ifelse 
+   } bind loop
+   (*) = flush
+ restore
+"
+*End
+
+*?FontList: "
+save
+  (*) {cvn ==} 128 string /Font resourceforall
+  (*) = flush
+restore
+"
+*End
+
+
+*% Printer Messages (verbatim from printer):
+*Message: "%%[ exitserver: permanent state may be changed ]%%"
+*Message: "%%[ Flushing: rest of job (to end-of-file) will be ignored ]%%"
+*Message: "\FontName\ not found, using Courier"
+
+*% Status (format: %%[ status: <one of these> ]%% )
+*Status: "idle"
+*Status: "busy"
+*Status: "waiting"
+*Status: "printing"
+*Status: "PrinterError: paper jam"
+
+*% Input Sources (format: %%[ status: <stat>; source: <one of these> ]%% )
+*Source: "AppleTalk"
+
+*% Printer Error (format: %%[ PrinterError: <one of these> ]%%)
+*PrinterError: "paper jam"
+
+*%DeviceAdjustMatrix: "[1 0 0 1 0 0]"
+
+*% Color Separation Information =====================
+
+*DefaultColorSep: ProcessBlack.60lpi.300dpi/60 lpi / 300 dpi
+
+*InkName: ProcessBlack/Process Black
+*InkName: CustomColor/Custom Color
+*InkName: ProcessCyan/Process Cyan
+*InkName: ProcessMagenta/Process Magenta
+*InkName: ProcessYellow/Process Yellow
+
+*% For 60 lpi / 300 dpi =====================================================
+
+*ColorSepScreenAngle ProcessBlack.60lpi.300dpi/60 lpi / 300 dpi: "45"
+*ColorSepScreenAngle CustomColor.60lpi.300dpi/60 lpi / 300 dpi: "45"
+*ColorSepScreenAngle ProcessCyan.60lpi.300dpi/60 lpi / 300 dpi: "15"
+*ColorSepScreenAngle ProcessMagenta.60lpi.300dpi/60 lpi / 300 dpi: "75"
+*ColorSepScreenAngle ProcessYellow.60lpi.300dpi/60 lpi / 300 dpi: "0"
+
+*ColorSepScreenFreq ProcessBlack.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq CustomColor.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessCyan.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessMagenta.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessYellow.60lpi.300dpi/60 lpi / 300 dpi: "60"
+
+*% For 53 lpi / 300 dpi =====================================================
+
+*ColorSepScreenAngle ProcessBlack.53lpi.300dpi/53 lpi / 300 dpi: "45.0"
+*ColorSepScreenAngle CustomColor.53lpi.300dpi/53 lpi / 300 dpi: "45.0"
+*ColorSepScreenAngle ProcessCyan.53lpi.300dpi/53 lpi / 300 dpi: "71.5651"
+*ColorSepScreenAngle ProcessMagenta.53lpi.300dpi/53 lpi / 300 dpi: "18.4349"
+*ColorSepScreenAngle ProcessYellow.53lpi.300dpi/53 lpi / 300 dpi: "0.0"
+
+*ColorSepScreenFreq ProcessBlack.53lpi.300dpi/53 lpi / 300 dpi: "53.033"
+*ColorSepScreenFreq CustomColor.53lpi.300dpi/53 lpi / 300 dpi: "53.033"
+*ColorSepScreenFreq ProcessCyan.53lpi.300dpi/53 lpi / 300 dpi: "47.4342"
+*ColorSepScreenFreq ProcessMagenta.53lpi.300dpi/53 lpi / 300 dpi: "47.4342"
+*ColorSepScreenFreq ProcessYellow.53lpi.300dpi/53 lpi / 300 dpi: "50.0"
+*% The byte count of this file should be exactly 019601 or 020110
+*% depending on the filesystem it resides in.
+*% =============== end of PPD file for SuperMaster ===============
+

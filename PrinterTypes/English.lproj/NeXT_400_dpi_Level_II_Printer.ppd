@@ -1,0 +1,181 @@
+*PPD-Adobe: "4.0"
+*% Adobe Systems PostScript(R) Printer Description File
+*% Copyright 1987-1992 Adobe Systems Incorporated. 
+*% All Rights Reserved. 
+*% Permission is granted for redistribution of this file as
+*% long as this copyright notice is intact and the contents
+*% of the file is not altered in any way from its original form.
+*%
+*FormatVersion: "4.0"
+*FileVersion: "4.0"
+*PCFileName: "NXNLP2_1.PPD"
+*LanguageVersion: English
+*Product: "(NeXT Canon Display PostScript System)"
+*PSVersion: "(2011.102) 0"
+*ModelName: "NeXT 400 dpi Level II Printer" 
+*NickName: "NeXT 400 dpi Level II Printer"
+
+*% General Information and Defaults ===============
+*LanguageLevel: "2"
+*ColorDevice: False
+*DefaultColorSpace: Gray
+*VariablePaperSize: False
+*FileSystem: False
+*Throughput: "8"
+*NeXTDriver: "NXNLPDriver"
+
+
+*% Resolution ===================
+
+*OpenUI *Resolution: PickOne
+*OrderDependency: 10 AnySetup *Resolution
+*DefaultResolution: 400dpi
+*Resolution 300dpi/300 dpi: "1 dict dup /HWResolution [300 300] put setpagedevice"
+*Resolution 400dpi/400 dpi: "1 dict dup /HWResolution [400 400] put setpagedevice"
+*CloseUI: *Resolution
+
+*% Halftone Information ===============
+
+*DefaultTransfer: Null
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+
+*% Paper Handling ===================
+
+*% Use these entries to set paper size most of the time, unless there is
+*% specific reason to use PageRegion.
+*OpenUI *PageSize: PickOne
+*OrderDependency: 30 AnySetup *PageSize
+*DefaultPageSize: Letter
+*PageSize Letter: "2 dict dup /PageSize [612 792] put dup /ImagingBBox null put
+setpagedevice"
+*PageSize Legal: "2 dict dup /PageSize [612 1008] put dup /ImagingBBox null put setpagedevice"
+*PageSize A4: "2 dict dup /PageSize [595 842] put dup /ImagingBBox null put setpagedevice"
+*PageSize B5: "2 dict dup /PageSize [516 729] put dup /ImagingBBox null put setpagedevice"
+*CloseUI: *PageSize
+
+*% These entries will set up the frame buffer. Usually used with manual feed.
+*OpenUI *PageRegion: PickOne
+*OrderDependency: 40 AnySetup *PageRegion
+*DefaultPageRegion: Letter
+*PageRegion Letter: "2 dict dup /PageSize [612 792] put dup /ImagingBBox null put setpagedevice"
+*PageRegion Legal: "2 dict dup /PageSize [612 1008] put dup /ImagingBBox null put setpagedevice"
+*PageRegion A4: "2 dict dup /PageSize [595 842] put dup /ImagingBBox null put setpagedevice"
+*PageRegion B5: "2 dict dup /PageSize [516 729] put dup /ImagingBBox null put setpagedevice"
+*CloseUI: *PageRegion
+
+*% The following entries provide information about specific paper keywords.
+*DefaultImageableArea: Letter
+*ImageableArea Letter: "10 10 602 782 "
+*ImageableArea Legal: "10 10 602 998 "
+*ImageableArea A4: "10 10 585 832 "
+*ImageableArea B5: "10 10 506 719 "
+
+*% These provide the physical dimensions of the paper (by keyword)
+*DefaultPaperDimension: Letter
+*PaperDimension Letter: "612 792"
+*PaperDimension Legal: "612 1008"
+*PaperDimension A4: "595 842"
+*PaperDimension B5: "516 729"
+
+*OpenUI *ManualFeed: Boolean
+*OrderDependency: 20 AnySetup *ManualFeed
+*DefaultManualFeed: False
+*ManualFeed True: "1 dict dup /ManualFeed true put setpagedevice"
+*ManualFeed False: "1 dict dup /ManualFeed false put setpagedevice"
+*End
+*CloseUI: *ManualFeed
+
+*OpenUI *InputSlot: PickOne
+*OrderDependency: 20 AnySetup *InputSlot
+*DefaultInputSlot: Cassette
+*InputSlot Cassette: ""
+*CloseUI: *InputSlot
+
+*DefaultOutputOrder: Reverse
+
+*% Font Information =====================
+
+*DefaultFont: Courier
+*Font Courier: Standard "(002.002)" Standard ROM
+*Font Courier-Bold: Standard "(002.002)" Standard ROM
+*Font Courier-BoldOblique: Standard "(002.002)" Standard ROM
+*Font Courier-Oblique: Standard "(002.002)" Standard ROM
+*Font Helvetica: Standard "(001.006)" Standard ROM
+*Font Helvetica-Bold: Standard "(001.007)" Standard ROM
+*Font Helvetica-BoldOblique: Standard "(001.007)" Standard ROM
+*Font Helvetica-Oblique: Standard "(001.006)" Standard ROM
+*Font Ohlfs: Standard "(001.005)" Standard ROM
+*Font Symbol: Special "(001.003)" Special ROM
+*Font Times-Bold: Standard "(001.007)" Standard ROM
+*Font Times-BoldItalic: Standard "(001.009)" Standard ROM
+*Font Times-Italic: Standard "(001.007)" Standard ROM
+*Font Times-Roman: Standard "(001.007)" Standard ROM
+
+*% Color Separation Information =====================
+
+*DefaultColorSep: ProcessBlack.71lpi.400dpi/71 lpi / 400 dpi
+
+*InkName: ProcessBlack/Process Black
+*InkName: CustomColor/Custom Color
+*InkName: ProcessCyan/Process Cyan
+*InkName: ProcessMagenta/Process Magenta
+*InkName: ProcessYellow/Process Yellow
+
+*%  For 60 lpi / 300 dpi  ===============================
+
+*ColorSepScreenAngle ProcessBlack.60lpi.300dpi/60 lpi / 300 dpi: "45"
+*ColorSepScreenAngle CustomColor.60lpi.300dpi/60 lpi / 300 dpi: "45"
+*ColorSepScreenAngle ProcessCyan.60lpi.300dpi/60 lpi / 300 dpi: "15"
+*ColorSepScreenAngle ProcessMagenta.60lpi.300dpi/60 lpi / 300 dpi: "75"
+*ColorSepScreenAngle ProcessYellow.60lpi.300dpi/60 lpi / 300 dpi: "0"
+
+*ColorSepScreenFreq ProcessBlack.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq CustomColor.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessCyan.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessMagenta.60lpi.300dpi/60 lpi / 300 dpi: "60"
+*ColorSepScreenFreq ProcessYellow.60lpi.300dpi/60 lpi / 300 dpi: "60"
+
+*%  For 53 lpi / 300 dpi  ===============================
+
+*ColorSepScreenAngle ProcessBlack.53lpi.300dpi/53 lpi / 300 dpi: "45.0"
+*ColorSepScreenAngle CustomColor.53lpi.300dpi/53 lpi / 300 dpi: "45.0"
+*ColorSepScreenAngle ProcessCyan.53lpi.300dpi/53 lpi / 300 dpi: "71.5651"
+*ColorSepScreenAngle ProcessMagenta.53lpi.300dpi/53 lpi / 300 dpi: "18.4349"
+*ColorSepScreenAngle ProcessYellow.53lpi.300dpi/53 lpi / 300 dpi: "0.0"
+
+*ColorSepScreenFreq ProcessBlack.53lpi.300dpi/53 lpi / 300 dpi: "53.033"
+*ColorSepScreenFreq CustomColor.53lpi.300dpi/53 lpi / 300 dpi: "53.033"
+*ColorSepScreenFreq ProcessCyan.53lpi.300dpi/53 lpi / 300 dpi: "47.4342"
+*ColorSepScreenFreq ProcessMagenta.53lpi.300dpi/53 lpi / 300 dpi: "47.4342"
+*ColorSepScreenFreq ProcessYellow.53lpi.300dpi/53 lpi / 300 dpi: "50.0"
+
+*%  For 71 lpi / 400 dpi  ===============================
+
+*ColorSepScreenAngle ProcessBlack.71lpi.400dpi/71 lpi / 400 dpi: "45.0"
+*ColorSepScreenAngle CustomColor.71lpi.400dpi/71 lpi / 400 dpi: "45.0"
+*ColorSepScreenAngle ProcessCyan.71lpi.400dpi/71 lpi / 400 dpi: "71.5651"
+*ColorSepScreenAngle ProcessMagenta.71lpi.400dpi/71 lpi / 400 dpi: "18.4349"
+*ColorSepScreenAngle ProcessYellow.71lpi.400dpi/71 lpi / 400 dpi: "0.0"
+
+*ColorSepScreenFreq ProcessBlack.71lpi.400dpi/71 lpi / 400 dpi: "70.7107"
+*ColorSepScreenFreq CustomColor.71lpi.400dpi/71 lpi / 400 dpi: "70.7107"
+*ColorSepScreenFreq ProcessCyan.71lpi.400dpi/71 lpi / 400 dpi: "63.2456"
+*ColorSepScreenFreq ProcessMagenta.71lpi.400dpi/71 lpi / 400 dpi: "63.2456"
+*ColorSepScreenFreq ProcessYellow.71lpi.400dpi/71 lpi / 400 dpi: "66.6667"
+
+*%  For 47 lpi / 400 dpi  ===============================
+
+*ColorSepScreenAngle ProcessBlack.47lpi.400dpi/47 lpi / 400 dpi: "45.0"
+*ColorSepScreenAngle CustomColor.47lpi.400dpi/47 lpi / 400 dpi: "45.0"
+*ColorSepScreenAngle ProcessCyan.47lpi.400dpi/47 lpi / 400 dpi: "71.5651"
+*ColorSepScreenAngle ProcessMagenta.47lpi.400dpi/47 lpi / 400 dpi: "18.4349"
+*ColorSepScreenAngle ProcessYellow.47lpi.400dpi/47 lpi / 400 dpi: "0.0"
+
+*ColorSepScreenFreq ProcessBlack.47lpi.400dpi/47 lpi / 400 dpi: "47.1405"
+*ColorSepScreenFreq CustomColor.47lpi.400dpi/47 lpi / 400 dpi: "47.1405"
+*ColorSepScreenFreq ProcessCyan.47lpi.400dpi/47 lpi / 400 dpi: "42.1637"
+*ColorSepScreenFreq ProcessMagenta.47lpi.400dpi/47 lpi / 400 dpi: "42.1637"
+*ColorSepScreenFreq ProcessYellow.47lpi.400dpi/47 lpi / 400 dpi: "44.4444"
+
+*% end of PPD file for Next 400 dpi Level II Printer

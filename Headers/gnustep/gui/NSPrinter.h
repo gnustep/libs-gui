@@ -60,6 +60,7 @@ typedef enum _NSPrinterTableStatus {
 //
 + (NSPrinter *)printerWithName:(NSString *)name;
 + (NSPrinter *)printerWithType:(NSString *)type;
++ (NSArray *)printerNames;
 + (NSArray *)printerTypes;
 
 //

@@ -1,3 +1,20 @@
+Mon Apr  6 16:38:40 1998  Scott Christley  <scottc@net-community.com>
+
+	* Documentation/status.tmpl.texi: Update.
+
+	* Add Adobe printer definition files.
+	* PrinterTypes/English.lproj/*.ppd: New file.s
+	* PrinterTypes/French.lproj/*.ppd: New file.s
+	* PrinterTypes/German.lproj/*.ppd: New file.s
+	* PrinterTypes/Italian.lproj/*.ppd: New file.s
+	* PrinterTypes/Spanish.lproj/*.ppd: New file.s
+	* PrinterTypes/Swedish.lproj/*.ppd: New file.s
+
+Mon Apr  6 16:38:40 1998  Simon Frankau <sgf22@hermes.cam.ac.uk>
+
+	* Headers/gnustep/gui/NSPrinter.h (+printerNames): Add method.
+	* Source/NSPrinter.m: Major rewrite.
+
 Wed Mar 11 10:47:31 1998  Scott Christley  <scottc@net-community.com>
 
 	* Version: Version 0.5.0

@@ -1,0 +1,239 @@
+*PPD-Adobe: "4.1"
+*% Adobe Systems PostScript(R) Printer Description File
+*% Copyright 1987-1993 Adobe Systems Incorporated. 
+*% All Rights Reserved. 
+*% Permission is granted for redistribution of this file as
+*% long as this copyright notice is intact and the contents
+*% of the file is not altered in any way from its original form.
+*% End of Copyright statement
+*FormatVersion: "4.1"
+*FileVersion: "1.0"
+*PCFileName: "IDORACC1.PPD"
+*LanguageEncoding: ISOLatin1
+*LanguageVersion: English
+*Product: "(OracC Velociraptor)"
+*PSVersion: "(2013.108) 2"
+*ModelName: "IDT OracC Velociraptor"
+*ShortNickName: "IDT OracC Velociraptor"
+*NickName: "IDT OracC Velociraptor v2013.108"
+
+*UIConstraints: *MediaType Paper *Density Low
+*UIConstraints: *MediaType Paper *Density Intermediate
+*UIConstraints: *MediaType Paper *Density High
+*UIConstraints: *Density Low *MediaType Paper
+*UIConstraints: *Density Intermediate *MediaType Paper
+*UIConstraints: *Density High *MediaType Paper
+*UIConstraints: *MediaType Transparency *Enhancement ExtraHigh
+*UIConstraints: *Enhancement ExtraHigh *MediaType Transparency
+*UIConstraints: *RibbonType Color *Density Intermediate
+*UIConstraints: *RibbonType BW *Density Intermediate
+*UIConstraints: *Density Intermediate *RibbonType Color
+*UIConstraints: *Density Intermediate *RibbonType BW
+
+
+*% General Information and Defaults ===============
+*FreeVM: "8203433"
+*LanguageLevel: "2"
+*Protocols: BCP
+*ColorDevice: True
+*DefaultColorSpace: RGB
+*VariablePaperSize: False
+*FileSystem: False
+*Throughput: "1"
+*Password: "()"
+
+*OpenUI *Resolution/Choose Resolution: PickOne
+*OrderDependency: 10 AnySetup *Resolution
+*Resolution 203dpi: "1 dict dup /HWResolution [203 203] put setpagedevice"
+*Resolution 406dpi: "1 dict dup /HWResolution [406 406] put setpagedevice"
+*DefaultResolution: 203dpi 
+*CloseUI: *Resolution
+
+*DefaultTransfer: Null
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+
+*% XLT Specific Queries ===================
+
+*?MediaType: "%OracQuery: MediaType"
+*?RibbonType: "%OracQuery: RibbonType"
+*?Density: "%OracQuery: Density"
+*?Enhancement: "%OracQuery: Enhancement"
+
+*% XLT Specific UI items ===================
+
+*OpenUI *MediaType: PickOne
+*OrderDependency: 30 Prolog *MediaType
+*DefaultMediaType: Paper
+*MediaType Paper: "
+ 1 dict dup /MediaType (Paper) put setpagedevice"
+*End
+*MediaType Transparency: "
+ 1 dict dup /MediaType (Transparency) put setpagedevice"
+*End
+*CloseUI: *MediaType
+
+*OpenUI *RibbonType: PickOne
+*OrderDependency: 30 Prolog *RibbonType
+*DefaultRibbonType: XLTColor
+*RibbonType XLTColor/XLT Color: "
+ (IDT_XL_Ribbon_v_XLTColor) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*RibbonType Color: "
+ (IDT_XL_Ribbon_v_Color) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*RibbonType BW/Black & White: "
+ (IDT_XL_Ribbon_v_BW) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*CloseUI: *RibbonType
+
+*OpenUI *Density: PickOne
+*OrderDependency: 30 Prolog *Density
+*DefaultDensity: Normal
+*Density Low: "
+ (IDT_XL_Density_v_Low) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Density Intermediate: "
+ (IDT_XL_Density_v_Intermediate) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Density Normal: "
+ (IDT_XL_Density_v_Normal) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Density High: "
+ (IDT_XL_Density_v_High) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*CloseUI: *Density
+
+*OpenUI *Enhancement: PickMany
+*OrderDependency: 30 Prolog *Enhancement
+*DefaultEnhancement: Normal
+*Enhancement None: "
+ (IDT_XL_Enhancement_v_None) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Enhancement Low: "
+ (IDT_XL_Enhancement_v_Low) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Enhancement Normal: "
+ (IDT_XL_Enhancement_v_Normal) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Enhancement High: "
+ (IDT_XL_Enhancement_v_High) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*Enhancement ExtraHigh/Extra High: "
+ (IDT_XL_Enhancement_v_ExtraHigh) /IDT_XL /ProcSet findresource /xlcommand get exec"
+*End
+*CloseUI: *Enhancement
+
+*% Paper Handling ===================
+
+*% Code in this section both selects a tray and sets up a frame buffer.
+*OpenUI *PageSize: PickOne
+*OrderDependency: 30 AnySetup *PageSize
+*DefaultPageSize: Tab11
+*PageSize Tab11/11 x 11: "2 dict dup /PageSize [792 792] put dup /ImagingBBox null put setpagedevice"
+*PageSize A4: "2 dict dup /PageSize [595 842] put dup /ImagingBBox null put setpagedevice"
+*PageSize Letter/8.5 x 11: "2 dict dup /PageSize [612 792] put dup /ImagingBBox null put setpagedevice"
+*CloseUI: *PageSize
+
+*OpenUI *PageRegion: PickOne
+*OrderDependency: 40 AnySetup *PageRegion
+*DefaultPageRegion: Tab11
+*PageRegion Tab11/11 x 11: "2 dict dup /PageSize [792 792] put dup /ImagingBBox null put setpagedevice"
+*PageRegion A4: "2 dict dup /PageSize [595 842] put dup /ImagingBBox null put setpagedevice"
+*PageRegion Letter/8.5 x 11: "2 dict dup /PageSize [612 792] put dup /ImagingBBox null put setpagedevice"
+*CloseUI: *PageRegion
+
+*% The following entries provide information about specific paper keywords.
+*DefaultImageableArea: Tab11
+*ImageableArea Tab11: "33.3 33.3 758.7 758.7"
+*ImageableArea A4: "25.51 58.11 569.49 783.89"
+*ImageableArea Letter: "34.02 33.307 577.98 758.69"
+*?ImageableArea: "
+save
+  /cvp { (                ) cvs print ( ) print } bind def
+  /upperright {10000 mul floor 10000 div} bind def
+  /lowerleft {10000 mul ceiling 10000 div} bind def
+  newpath clippath pathbbox
+  4 -2 roll exch 2 {lowerleft cvp} repeat
+  exch 2 {upperright cvp} repeat flush
+ restore
+"
+*End
+
+*% These provide the physical dimensions of the paper (by keyword)
+*DefaultPaperDimension: Tab11
+*PaperDimension Tab11: "792 792"
+*PaperDimension A4: "595 842"
+*PaperDimension Letter: "612 792"
+
+*OpenUI *InputSlot: PickOne
+*OrderDependency: 20 AnySetup *InputSlot
+*DefaultInputSlot: Cassette
+*InputSlot Cassette: ""
+*RequiresPageRegion All: True
+*CloseUI: *InputSlot
+
+*% Font Information =====================
+*DefaultFont: Courier
+*Font AvantGarde-Book: Standard "(001.002)" Standard Standard ROM
+*Font AvantGarde-BookOblique: Standard "(001.002)" Standard Standard ROM
+*Font AvantGarde-Demi: Standard "(001.003)" Standard Standard ROM
+*Font AvantGarde-DemiOblique: Standard "(001.003)" Standard Standard ROM
+*Font Bookman-Demi: Standard "(001.003S)" Standard Standard ROM
+*Font Bookman-DemiItalic: Standard "(001.003S)" Standard Standard ROM
+*Font Bookman-Light: Standard "(001.003S)" Standard Standard ROM
+*Font Bookman-LightItalic: Standard "(001.003S)" Standard Standard ROM
+*Font Courier: Standard "(002.003)" Standard Standard ROM
+*Font Courier-Bold: Standard "(002.003)" Standard Standard ROM
+*Font Courier-BoldOblique: Standard "(002.003)" Standard Standard ROM
+*Font Courier-Oblique: Standard "(002.003)" Standard Standard ROM
+*Font Helvetica: Standard "(001.006S)" Standard Standard ROM
+*Font Helvetica-Bold: Standard "(001.007S)" Standard Standard ROM
+*Font Helvetica-BoldOblique: Standard "(001.007S)" Standard Standard ROM
+*Font Helvetica-Narrow: Standard "(001.006S)" Standard Standard ROM
+*Font Helvetica-Narrow-Bold: Standard "(001.007S)" Standard Standard ROM
+*Font Helvetica-Narrow-BoldOblique: Standard "(001.007S)" Standard Standard ROM
+*Font Helvetica-Narrow-Oblique: Standard "(001.006S)" Standard Standard ROM
+*Font Helvetica-Oblique: Standard "(001.006S)" Standard Standard ROM
+*Font NewCenturySchlbk-Bold: Standard "(001.008S)" Standard Standard ROM
+*Font NewCenturySchlbk-BoldItalic: Standard "(001.006S)" Standard Standard ROM
+*Font NewCenturySchlbk-Italic: Standard "(001.005S)" Standard Standard ROM
+*Font NewCenturySchlbk-Roman: Standard "(001.006S)" Standard Standard ROM
+*Font Palatino-Bold: Standard "(001.005S)" Standard Standard ROM
+*Font Palatino-BoldItalic: Standard "(001.005S)" Standard Standard ROM
+*Font Palatino-Italic: Standard "(001.005S)" Standard Standard ROM
+*Font Palatino-Roman: Standard "(001.005S)" Standard Standard ROM
+*Font Symbol: Special "(001.007S)" Special Special ROM
+*Font Times-Bold: Standard "(001.007S)" Standard Standard ROM
+*Font Times-BoldItalic: Standard "(001.009S)" Standard Standard ROM
+*Font Times-Italic: Standard "(001.007S)" Standard Standard ROM
+*Font Times-Roman: Standard "(001.007S)" Standard Standard ROM
+*Font ZapfChancery-MediumItalic: Standard "(001.006)" Standard Standard ROM
+*Font ZapfDingbats: Special "(001.004S)" Special Special ROM
+*?FontQuery: "
+ save
+   { count 1 gt
+      { exch dup 127 string cvs (/) print print (:) print
+        /Font resourcestatus {pop pop (Yes)} {(No)} ifelse =
+      } { exit } ifelse
+   } bind loop
+   (*) = flush
+ restore
+"
+*End
+
+*?FontList: "
+save
+  (*) {cvn ==} 128 string /Font resourceforall
+  (*) = flush
+restore
+"
+*End
+
+*%DeviceAdjustMatrix: "[1 0 0 1 0 0]"
+
+*% Last Edit Date: Nov 19 1993
+*% The byte count of this file should be exactly 008951 or 009190
+*% depending on the filesystem it resides in.
+*% end of PPD file for OracC
+

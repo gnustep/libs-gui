@@ -1,0 +1,58 @@
+*PPD-Adobe: "4.0"
+*% Adobe Systems PostScript(R) Printer Description File
+*% Copyright 1987-1992 Adobe Systems Incorporated. 
+*% All Rights Reserved. 
+*% Permission is granted for redistribution of this file as
+*% long as this copyright notice is intact and the contents
+*% of the file is not altered in any way from its original form.
+*%
+*FormatVersion: "4.0"
+*FileVersion: "4.0"
+*PCFileName: "NXGENC_1.PPD"
+*LanguageVersion: English
+*Product: "(Any Printer)"
+*PSVersion: "(0) 0"
+*ModelName: "NeXT Generic Color" 
+*NickName: "NeXT Generic Color"
+
+*% General Information and Defaults ===============
+*LanguageLevel: "1"
+*ColorDevice: True
+*Extensions: CMYK
+*DefaultColorSpace: Gray
+*VariablePaperSize: False
+*FileSystem: False
+*Throughput: "8"
+
+*DefaultResolution: 300dpi
+
+*% Halftone Information ===============
+
+*DefaultTransfer: Null
+*Transfer Null: "{ }"
+*Transfer Null.Inverse: "{ 1 exch sub }"
+
+*DefaultPageSize: Letter
+*DefaultPageRegion: Letter
+
+*DefaultOutputOrder: Normal
+
+*% Font Information =====================
+
+*DefaultFont: Courier
+*Font Courier: Standard "(002.002)" Standard ROM
+*Font Courier-Bold: Standard "(002.002)" Standard ROM
+*Font Courier-BoldOblique: Standard "(002.002)" Standard ROM
+*Font Courier-Oblique: Standard "(002.002)" Standard ROM
+*Font Helvetica: Standard "(001.006)" Standard ROM
+*Font Helvetica-Bold: Standard "(001.007)" Standard ROM
+*Font Helvetica-BoldOblique: Standard "(001.007)" Standard ROM
+*Font Helvetica-Oblique: Standard "(001.006)" Standard ROM
+*Font Symbol: Special "(001.003)" Special ROM
+*Font Times-Bold: Standard "(001.007)" Standard ROM
+*Font Times-BoldItalic: Standard "(001.009)" Standard ROM
+*Font Times-Italic: Standard "(001.007)" Standard ROM
+*Font Times-Roman: Standard "(001.007)" Standard ROM
+
+
+*% end of PPD file for NeXT Generic Color
