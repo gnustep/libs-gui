@@ -31,6 +31,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImageCell.h"
 #include "AppKit/NSImage.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSImageCell
 
@@ -133,16 +134,16 @@
 	// nada
 	break;
       case NSImageFramePhoto:
-	NSDrawFramePhoto(cellFrame, NSZeroRect);
+	[GSDrawFunctions drawFramePhoto: cellFrame : NSZeroRect];
 	break;
       case NSImageFrameGrayBezel:
-	NSDrawGrayBezel(cellFrame, NSZeroRect);
+	[GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
 	break;
       case NSImageFrameGroove:
-	NSDrawGroove(cellFrame, NSZeroRect);
+	[GSDrawFunctions drawGroove: cellFrame : NSZeroRect];
 	break;
       case NSImageFrameButton:
-	NSDrawButton(cellFrame, NSZeroRect);
+	[GSDrawFunctions drawButton: cellFrame : NSZeroRect];
 	break;
     }
 

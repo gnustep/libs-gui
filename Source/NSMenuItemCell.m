@@ -41,11 +41,11 @@
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItemCell.h"
 #include "AppKit/NSMenuView.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 
 @implementation NSMenuItemCell
 
-static Class	colorClass = 0;		/* Cache color class.	*/
 static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 
@@ -54,7 +54,6 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (self == [NSMenuItemCell class])
     {
       [self setVersion: 2];
-      colorClass = [NSColor class];
       arrowImage = [[NSImage imageNamed: @"common_3DArrowRight"] copy];
     }
 }
@@ -361,11 +360,11 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
   if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
     {
-      NSDrawGrayBezel(cellFrame, NSZeroRect);
+      [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
     }
   else
     {
-      NSDrawButton(cellFrame, NSZeroRect);
+      [GSDrawFunctions drawButton: cellFrame : NSZeroRect];
     }
 }
 
@@ -548,10 +547,10 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
    */
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      _backgroundColor = [colorClass selectedMenuItemColor];
+      _backgroundColor = [NSColor selectedMenuItemColor];
     }
   if (_backgroundColor == nil)
-    _backgroundColor = [colorClass controlBackgroundColor];
+    _backgroundColor = [NSColor controlBackgroundColor];
 
   // Set cell's background color
   [_backgroundColor set];

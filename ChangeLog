@@ -1,3 +1,11 @@
+2004-02-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuItemCell.m: (-drawBorderAndBackgroundWithFrame:inView:)
+	Let GSDrawFunctions do the border drawing. Removed caching of
+	colour class.
+	* Source/NSImageCell.m: (-drawWithFrame:inView:) Let
+	GSDrawFunctions do the border drawing. 
+	
 2004-02-10 21:48  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSFont.h: Add cachedScreenFont ivar.
