@@ -825,6 +825,7 @@ static NSCell* tileCell = nil;
 	}
       for (i = 0; i < count; i++)
 	{
+	  NSModalSession theSession;
 	  NSWindow	*win = [windows_list objectAtIndex: i];
 
 	  if ([win isVisible] == NO)
@@ -835,6 +836,17 @@ static NSCell* tileCell = nil;
 	    {
 	      continue;		/* can't hide the app icon.	*/
 	    }
+	  /* Don't order out modal windows */
+	  theSession = _session;
+	  while (theSession != 0)
+	    {
+	      if (win == theSession->window)
+		break;
+	      theSession = theSession->previous;
+	    }
+	  if (theSession)
+	    continue;
+
 	  if ([win hidesOnDeactivate] == YES)
 	    {
 	      [_inactive addObject: win];
@@ -1108,6 +1120,11 @@ See Also: -runModalForWindow:
 	      DPSPostEvent(ctxt, event, YES);
 	      found = YES;
 	    }
+	  else if ([event type] == NSAppKitDefined)
+	    {
+	      /* Handle resize and other window manager events now */
+	      [self sendEvent: event];
+	    }
 	}
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
@@ -1313,9 +1330,14 @@ See -runModalForWindow:
 
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
-	  NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
-		      type, ((window != nil) ? [window description] 
-			     : @"No window"));
+	  if (type == NSMouseMoved)
+	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to window %@", 
+			type, ((window != nil) ? [window description] 
+			       : @"No window"));
+	  else
+	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
+			type, ((window != nil) ? [window description] 
+			       : @"No window"));
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)

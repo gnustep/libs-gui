@@ -1,3 +1,9 @@
+2002-01-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-deactivate): Don't hide modal windows.
+	(-runModalSession:): Handle WM events (like resize) for any window
+	right away.
+
 2002-01-21  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Headers/Appkit/NSGraphicsContext.h: new method to slide image
