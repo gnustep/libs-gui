@@ -3150,18 +3150,18 @@ resetCursorRectsForView(NSView *theView)
  */
 - (NSData*) dataWithEPSInsideRect: (NSRect)rect
 {
-  // FIXME: The implementation of this method is missing
-  return nil;
+  return [_contentView dataWithEPSInsideRect: 
+			   [_contentView convertRect: rect fromView: nil]];
 }
 
 - (void) fax: (id)sender
 {
-  // FIXME: This method is missing
+  [_contentView fax: sender];
 }
 
 - (void) print: (id)sender
 {
-  // FIXME: This method is missing
+  [_contentView print: sender];
 }
 
 /*
