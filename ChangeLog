@@ -1,3 +1,14 @@
+Tue Feb 22 17:51:52 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Still much to do in the font classes, but thanks to Fred Kiefer
+	things are starting to work.
+
+	Contributed by Fred Kiefer <FredKiefer@gmx.de>:
+	* Headers/AppKit/NSFontManager.h: Fixed typo in ivar name.
+	* Source/NSFontManager.m: More work on this class.
+	* Source/NSFontPanel.m: Almost complete rewrite.
+	* Headers/AppKit/NSFontPanel.h: Idem.  
+	
 Mon Feb 21 14:40:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: ([-close]) remove spurious retain.
