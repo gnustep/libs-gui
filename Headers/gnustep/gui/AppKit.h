@@ -142,6 +142,7 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSWindowView.h>
 #include <AppKit/NSWorkspace.h>
 
 #endif _GNUstep_H_AppKit
