@@ -45,7 +45,7 @@
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSPortNameServer.h>
 
-#include <gnustep/base/fast.x>
+#include <base/fast.x>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
