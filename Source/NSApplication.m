@@ -745,11 +745,8 @@ static NSCell* tileCell = nil;
   TEST_RELEASE(_app_icon_window);
   TEST_RELEASE(_infoPanel);
 
-  /* FIXME - the following should be destroying the GSCurrentContext(),
-     but it doesn't!  */
+  /* Destroy the default context, this will free it */
   [_default_context destroyContext];
-  /* One retain I think is here:
-     [NSGraphicsContext setCurrentContext: nil]; */
 
   [super dealloc];
 }
@@ -2286,8 +2283,6 @@ delegate.
 	
 	IF_NO_GC(pool = [arpClass new]);
 
-	/* FIXME - the following should destroy the GSCurrentContext(),
-	   but it doesn't.  */
 	DESTROY(NSApp);
 
 	DESTROY(pool);
