@@ -894,8 +894,11 @@ static NSNotificationCenter *nc;
       NSMenu		*sub = [item submenu];
 
       [self addItem: item];
+      // FIXME: We propably don't need this, as all the fields are
+      // already set up for the submenu item.
       if (sub != nil)
 	{
+	  [sub setSupermenu: nil];
 	  [self setSubmenu: sub forItem: item];
 	}
     }
