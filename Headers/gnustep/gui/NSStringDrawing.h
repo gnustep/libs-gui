@@ -35,29 +35,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
-
-// global NSString attribute names used in accessing  
-// the respective property in a text attributes 
-// dictionary.  if the key is not in the dictionary 	
-// the default value is assumed  											
-extern NSString *NSFontAttributeName;
-extern NSString *NSParagraphStyleAttributeName;
-extern NSString *NSForegroundColorAttributeName;
-extern NSString *NSUnderlineStyleAttributeName;
-extern NSString *NSSuperscriptAttributeName;
-extern NSString *NSBackgroundColorAttributeName;
-extern NSString *NSAttachmentAttributeName;
-extern NSString *NSLigatureAttributeName;
-extern NSString *NSBaselineOffsetAttributeName;
-extern NSString *NSKernAttributeName;
-
-// Currently supported values for NSUnderlineStyleAttributeName
-enum 									
-{
-  GSNoUnderlineStyle = 0,
-  NSSingleUnderlineStyle = 1
-};
-
+#include <AppKit/NSAttributedString.h>
 
 @interface NSString (NSStringDrawing)
 

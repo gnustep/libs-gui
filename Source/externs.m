@@ -1,4 +1,4 @@
-/* 
+/*
    externs.m
 
    External data
@@ -7,16 +7,14 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: August 1997
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
-   Date: Aug 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -26,7 +24,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
@@ -37,7 +35,7 @@ NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
 NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
 
 //
-// Global Exception Strings 
+// Global Exception Strings
 //
 NSString *NSAbortModalException = @"AbortModal";
 NSString *NSAbortPrintingException = @"AbortPrinting";
@@ -76,22 +74,22 @@ NSString *NSWordTablesReadException = @"WordTablesRead";
 NSString *NSWordTablesWriteException = @"WordTablesWrite";
 
 // Application notifications
-NSString *NSApplicationDidBecomeActiveNotification 
+NSString *NSApplicationDidBecomeActiveNotification
               = @"ApplicationDidBecomeActive";
-NSString *NSApplicationDidFinishLaunchingNotification 
+NSString *NSApplicationDidFinishLaunchingNotification
               = @"ApplicationDidFinishLaunching";
 NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
-NSString *NSApplicationDidResignActiveNotification 
+NSString *NSApplicationDidResignActiveNotification
               = @"ApplicationDidResignActive";
 NSString *NSApplicationDidUnhideNotification = @"ApplicationDidUnhide";
 NSString *NSApplicationDidUpdateNotification = @"ApplicationDidUpdate";
-NSString *NSApplicationWillBecomeActiveNotification 
+NSString *NSApplicationWillBecomeActiveNotification
               = @"ApplicationWillBecomeActive";
-NSString *NSApplicationWillFinishLaunchingNotification 
+NSString *NSApplicationWillFinishLaunchingNotification
               = @"ApplicationWillFinishLaunching";
 NSString *NSApplicationWillTerminateNotification = @"ApplicationWillTerminate";
 NSString *NSApplicationWillHideNotification = @"ApplicationWillHide";
-NSString *NSApplicationWillResignActiveNotification 
+NSString *NSApplicationWillResignActiveNotification
               = @"ApplicationWillResignActive";
 NSString *NSApplicationWillUnhideNotification = @"ApplicationWillUnhide";
 NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
@@ -163,7 +161,7 @@ NSString *NSDeviceSize = @"Size";
 NSString *NSImageRepRegistryChangedNotification =
 @"NSImageRepRegistryChangedNotification";
 
-// Pasteboard Type Globals 
+// Pasteboard Type Globals
 NSString *NSStringPboardType = @"NSStringPboardType";
 NSString *NSColorPboardType = @"NSColorPboardType";
 NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
@@ -178,7 +176,7 @@ NSString *NSTIFFPboardType = @"NSTIFFPboardType";
 NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
 NSString *NSGeneralPboardType = @"NSGeneralPboardType";
 
-// Pasteboard Name Globals 
+// Pasteboard Name Globals
 NSString *NSDragPboard = @"NSDragPboard";
 NSString *NSFindPboard = @"NSFindPboard";
 NSString *NSFontPboard = @"NSFontPboard";
@@ -191,7 +189,7 @@ NSString *NSRulerPboard = @"NSRulerPboard";
 NSString *NSPasteboardCommunicationException
 = @"NSPasteboardCommunicationException";
 
-// Printing Information Dictionary Keys 
+// Printing Information Dictionary Keys
 NSString *NSPrintAllPages = @"PrintAllPages";
 NSString *NSPrintBottomMargin = @"PrintBottomMargin";
 NSString *NSPrintCopies = @"PrintCopies";
@@ -227,7 +225,7 @@ NSString *NSPrintHorizontalPagination = @"PrintHorizontalPagination";
 NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
 NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
 
-// Print Job Disposition Values 
+// Print Job Disposition Values
 NSString  *NSPrintCancelJob = @"PrintCancelJob";
 NSString  *NSPrintFaxJob = @"PrintFaxJob";
 NSString  *NSPrintPreviewJob = @"PrintPreviewJob";
@@ -280,14 +278,14 @@ NSString *NSWindowWillCloseNotification = @"WindowWillClose";
 NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
 NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
-// Workspace File Type Globals 
+// Workspace File Type Globals
 NSString *NSPlainFileType = @"NSPlainFileType";
 NSString *NSDirectoryFileType = @"NSDirectoryFileType";
 NSString *NSApplicationFileType = @"NSApplicationFileType";
 NSString *NSFilesystemFileType = @"NSFilesystemFileType";
 NSString *NSShellCommandFileType = @"NSShellCommandFileType";
 
-// Workspace File Operation Globals 
+// Workspace File Operation Globals
 NSString *NSWorkspaceCompressOperation = @"NSWorkspaceCompressOperation";
 NSString *NSWorkspaceCopyOperation = @"NSWorkspaceCopyOperation";
 NSString *NSWorkspaceDecompressOperation = @"NSWorkspaceDecompressOperation";
@@ -316,19 +314,31 @@ NSString *NSWorkspaceWillPowerOffNotification =
 NSString *NSWorkspaceWillUnmountNotification =
 @"NSWorkspaceWillUnmountNotification";
 
-//
-//	NSStringDrawing NSString additions
-//
-NSString *NSFontAttributeName = 			@"NSFontAttributeName";    	
-NSString *NSParagraphStyleAttributeName =	@"NSParagraphStyleAttributeName";	 
-NSString *NSForegroundColorAttributeName =	@"NSForegroundColorAttributeName"; 
-NSString *NSUnderlineStyleAttributeName =	@"NSUnderlineStyleAttributeName";   	 	 
-NSString *NSSuperscriptAttributeName =		@"NSSuperscriptAttributeName";      	 
-NSString *NSBackgroundColorAttributeName =	@"NSBackgroundColorAttributeName";		
-NSString *NSAttachmentAttributeName = 		@"NSAttachmentAttributeName";         	 
-NSString *NSLigatureAttributeName = 		@"NSLigatureAttributeName";			
-NSString *NSBaselineOffsetAttributeName = 	@"NSBaselineOffsetAttributeName";   	 
-NSString *NSKernAttributeName = 			@"NSKernAttributeName";        
+/*
+ *	NSStringDrawing NSString additions
+ */
+NSString *NSFontAttributeName
+  = @"NSFontAttributeName";
+NSString *NSParagraphStyleAttributeName
+  = @"NSParagraphStyleAttributeName";
+NSString *NSForegroundColorAttributeName
+  = @"NSForegroundColorAttributeName";
+NSString *NSUnderlineStyleAttributeName
+  = @"NSUnderlineStyleAttributeName";
+NSString *NSSuperscriptAttributeName
+  = @"NSSuperscriptAttributeName";
+NSString *NSBackgroundColorAttributeName
+  = @"NSBackgroundColorAttributeName";
+NSString *NSAttachmentAttributeName
+  = @"NSAttachmentAttributeName";
+NSString *NSLigatureAttributeName
+  = @"NSLigatureAttributeName";
+NSString *NSBaselineOffsetAttributeName
+  = @"NSBaselineOffsetAttributeName";
+NSString *NSKernAttributeName
+  = @"NSKernAttributeName";
+NSString *NSLinkAttributeName
+ = @"NSLinkAttributeName";
 
 /* NSFont matrix */
 const float NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};

@@ -25,19 +25,45 @@
 */ 
 
 #include <Foundation/Foundation.h>
+#include <AppKit/NSAttributedString.h>
 #include <AppKit/NSTextStorage.h>
 
 @implementation NSTextStorage
 
+@class	GSTextStorage;
+
+static	Class	abstract;
+static	Class	concrete;
+
++ (void) initialize
+{
+  if (self == [NSTextStorage class])
+    {
+      abstract = self;
+      concrete = [GSTextStorage class];
+    }
+}
+
++ (id) allocWithZone: (NSZone*)zone
+{
+  if (self == abstract)
+    return NSAllocateObject(concrete, 0, zone);
+  else
+    return NSAllocateObject(self, 0, zone);
+}
+
 - (void) dealloc
 {
-  [layoutManagers release];
+  RELEASE(layoutManagers);
   [super dealloc];
 }
 
-- (id) init
+/*
+ *	The designated intialiser
+ */
+- (id) initWithString: (NSString*)aString
+           attributes: (NSDictionary*)attributes
 {
-  self = [super init];
   layoutManagers = [[NSMutableArray alloc] initWithCapacity: 2];
   return self;
 }

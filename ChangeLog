@@ -1,3 +1,14 @@
+Thu Jul 15  6:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSAttributedString.h: new file
+	* Headers/AppKit/NSStringDrawing.h: Move some stuff to
+	NSAttributedString.h
+	* Headers/AppKit/AppKit.h: include NSAttributedString.h
+	* Source/GSTextStorage.m: new file
+	* Source/GNUmakefile: update for new source
+	* Source/NSTextStorage.m: Make instances of GSTextStorage
+	* Source/externs.m: Add new string constant for text links.
+
 Wed Jul 14 19:18:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/GNUmakefile: Install NSMenuItemCell.h and NSMenuView.h

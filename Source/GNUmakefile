@@ -115,6 +115,7 @@ NSTextView.m \
 NSView.m \
 NSWindow.m \
 NSWorkspace.m \
+GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
 tiff.m \
@@ -132,6 +133,7 @@ AppKit/AppKit.h \
 AppKit/NSActionCell.h \
 AppKit/NSAffineTransform.h \
 AppKit/NSApplication.h \
+AppKit/NSAttributedString.h \
 AppKit/NSBitmapImageRep.h \
 AppKit/NSBox.h \
 AppKit/NSBrowser.h \
