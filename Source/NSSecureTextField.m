@@ -115,7 +115,13 @@
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
 			inView: (NSView *)controlView
 {
-  /* Do nothing.  */
+  /* Draw background, then ... */ 
+  if (_textfieldcell_draws_background)
+    {
+      [_background_color set];
+      NSRectFill ([self drawingRectForBounds: cellFrame]);
+    }
+  /* .. do nothing.  */
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject

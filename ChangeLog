@@ -1,3 +1,8 @@
+2005-02-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSecureTextField.m (-drawInteriorWithFrame:inView:):
+	Draw the background colour of the cell.
+	
 2005-02-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-expandItem:expandChildren:,
