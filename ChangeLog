@@ -1,6 +1,10 @@
 <<<<<<< ChangeLog
 Thurs Aug 20 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
+	* NSTextView.m commented out references to defaultTypingAttributes
+
+Thurs Aug 20 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
 	* NSSplitView.m in drawRect moved NSRectFill() to backend
 	* NSSavePanel.m commented out call to NSRunAlertPanel
 	* NSText.h and NSText.m integrated source from Daniel Bðhringer. 

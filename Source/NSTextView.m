@@ -99,9 +99,9 @@ NSMutableArray *ret = [NSMutableArray arrayWithObjects:NSStringPboardType,
 				// atIndex:range.location longestEffectiveRange:NULL 
 				// inRange:range]
 			} 
-		else 
-			currentFont = [[self defaultTypingAttributes] 
-									objectForKey:NSFontAttributeName];
+//		else 
+//			currentFont = [[self defaultTypingAttributes] 
+//									objectForKey:NSFontAttributeName];
 		[[NSFontPanel sharedFontPanel] setPanelFont:currentFont 
 										isMultiple:isMultiple];
 		}
@@ -128,7 +128,8 @@ NSMutableArray *ret = [NSMutableArray arrayWithObjects:NSStringPboardType,
 	if(typingAttributes) 
 		return typingAttributes;
 	else 
-		return [self defaultTypingAttributes];
+//		return [self defaultTypingAttributes];
+		return nil;
 }
 
 - (int) spellCheckerDocumentTag
