@@ -1,4 +1,15 @@
-2005-03-13  Richard Frith-Macdoanld <rfm@gnu.org>
+2005-03-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMatrix.m:
+	([removeRow:]) set column counts to zero if all rows are removed
+	([removeColumn:]) set row counts to zero if all columns are removed
+	([_renewRows:columns:rowSpace:colSpace:]) initialise all columns of
+	any newly created rows (up to _maxCols) rather than just the number
+	specified by the method argument.  Otherwise we get uninitialised
+	columns in the matrix which will cause a crash when they are used.
+	Fixes bug #12299
+
+2005-03-13  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSGraphics.h: Fix prototype for stricter compiler.
 	* Source/Functions.m: ditto

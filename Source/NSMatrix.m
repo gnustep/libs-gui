@@ -634,6 +634,11 @@ static SEL getSel;
       _numCols--;
       _maxCols--;
 
+      if (_maxCols == 0)
+	{
+	  _numRows = _maxRows = 0;
+	}
+
       if (column == _selectedColumn)
 	{
 	  _selectedCell = nil;
@@ -679,6 +684,11 @@ static SEL getSel;
 	}
       _maxRows--;
       _numRows--;
+
+      if (_maxRows == 0)
+	{
+	  _numCols = _maxCols = 0;
+	}
 
       if (row == _selectedRow)
 	{
@@ -2204,7 +2214,7 @@ static SEL getSel;
                   // we clear the existing selection
                   // unless the Alternate or Shift keys have been pressed.
 		  if (!(mouseDownFlags & NSShiftKeyMask)
-		      && !(mouseDownFlags & NSAlternateKeyMask))
+		    && !(mouseDownFlags & NSAlternateKeyMask))
 		    {
 		      [self deselectAllCells];
 		    }
@@ -3591,18 +3601,19 @@ static SEL getSel;
       int	end = row - 1;
 
       _cells = NSZoneRealloc(_myZone, _cells, row * sizeof(id*));
-      _selectedCells = NSZoneRealloc(_myZone, _selectedCells, row * sizeof(BOOL*));
+      _selectedCells
+	= NSZoneRealloc(_myZone, _selectedCells, row * sizeof(BOOL*));
 
       /* Allocate the new rows and fill them */
       for (i = oldMaxR; i < row; i++)
 	{
-	  _cells[i] = NSZoneMalloc(_myZone, col * sizeof(id));
+	  _cells[i] = NSZoneMalloc(_myZone, _maxCols * sizeof(id));
 	  _selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
-	    col * sizeof(BOOL));
+	    _maxCols * sizeof(BOOL));
 
 	  if (i == end)
 	    {
-	      for (j = 0; j < col; j++)
+	      for (j = 0; j < _maxCols; j++)
 		{
 		  _cells[i][j] = nil;
 		  _selectedCells[i][j] = NO;
@@ -3610,7 +3621,7 @@ static SEL getSel;
 		    {
 		      rowSpace--;
 		    }
-		  else
+		  else if (i < col)
 		    {
 		      (*mkImp)(self, mkSel, i, j);
 		    }
@@ -3618,11 +3629,14 @@ static SEL getSel;
 	    }
 	  else
 	    {
-	      for (j = 0; j < col; j++)
+	      for (j = 0; j < _maxCols; j++)
 		{
 		  _cells[i][j] = nil;
 		  _selectedCells[i][j] = NO;
-		  (*mkImp)(self, mkSel, i, j);
+		  if (i < col)
+		    {
+		      (*mkImp)(self, mkSel, i, j);
+		    }
 		}
 	    }
 	}
@@ -3665,9 +3679,9 @@ static SEL getSel;
 	  NSCell	*aCell = _cells[i][j];
 
           if ([aCell isEnabled]
-              && ([aCell state] != state || [aCell isHighlighted] != highlight
-                  || (state == NSOffState && _selectedCells[i][j] != NO)
-                  || (state != NSOffState && _selectedCells[i][j] == NO)))
+	    && ([aCell state] != state || [aCell isHighlighted] != highlight
+	      || (state == NSOffState && _selectedCells[i][j] != NO)
+	      || (state != NSOffState && _selectedCells[i][j] == NO)))
             {
 	      [aCell setState: state];
 
@@ -3696,8 +3710,7 @@ static SEL getSel;
 	{
 	  if ([_cells[row][j] isEnabled] && [_cells[row][j] isSelectable])
 	    {
-	      _selectedCell = [self selectTextAtRow: row
-				    column: j];
+	      _selectedCell = [self selectTextAtRow: row column: j];
 	      _selectedRow = row;
 	      _selectedColumn = j;
 	      return YES;
@@ -3711,8 +3724,7 @@ static SEL getSel;
 	{
 	  if ([_cells[i][j] isEnabled] && [_cells[i][j] isSelectable])
 	    {
-	      _selectedCell = [self selectTextAtRow: i
-				    column: j];
+	      _selectedCell = [self selectTextAtRow: i column: j];
 	      _selectedRow = i;
 	      _selectedColumn = j;
 	      return YES;
