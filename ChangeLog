@@ -3,6 +3,7 @@ Thu Mar 16 13:15:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSText.m: Fixes by Fred Kiefer for rich text display.
 	* Source/NSTextView.m: ditto
 	* Source/NSFontManager.m: bugfixes - check for nil fonts.
+	* Headers/AppKit/NSResponder.h: additional macOS-X methods declared
 
 Wed Mar 15 02:41:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 

@@ -34,6 +34,8 @@
 
 @class NSString;
 @class NSEvent;
+@class NSMenu;
+@class NSUndoManager;
 
 @interface NSResponder : NSObject <NSCoding>
 {
@@ -51,15 +53,15 @@
      * not change during the views lifetime - if it does, the view must
      * be sure to change the flag accordingly.
      */
-    unsigned	flipped_view:1;
-    unsigned	has_subviews:1;		/* The view has subviews.	*/
-    unsigned	has_currects:1;		/* The view has cursor rects.	*/
-    unsigned	has_trkrects:1;		/* The view has tracking rects.	*/
-    unsigned	has_draginfo:1;		/* View/window has drag types.	*/
-    unsigned	opaque_view:1;		/* For views whose opacity may	*/
+    unsigned	flipped_view: 1;
+    unsigned	has_subviews: 1;		/* The view has subviews.	*/
+    unsigned	has_currects: 1;		/* The view has cursor rects.	*/
+    unsigned	has_trkrects: 1;		/* The view has tracking rects.	*/
+    unsigned	has_draginfo: 1;		/* View/window has drag types.	*/
+    unsigned	opaque_view: 1;		/* For views whose opacity may	*/
 					/* change to keep track of it.	*/
-    unsigned	valid_rects:1;		/* Some cursor rects may be ok.	*/
-    unsigned	needs_display:1;	/* Window/view needs display.	*/
+    unsigned	valid_rects: 1;		/* Some cursor rects may be ok.	*/
+    unsigned	needs_display: 1;	/* Window/view needs display.	*/
   } _rFlags;
 }
 
@@ -83,32 +85,32 @@
 /*
  * Aid event processing
  */
-- (BOOL) performKeyEquivalent: (NSEvent *)theEvent;
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
 - (BOOL) tryToPerform: (SEL)anAction with: (id)anObject;
 
 /*
  * Forwarding event messages
  */
-- (void) flagsChanged: (NSEvent *)theEvent;
-- (void) helpRequested: (NSEvent *)theEvent;
-- (void) keyDown: (NSEvent *)theEvent;
-- (void) keyUp: (NSEvent *)theEvent;
-- (void) mouseDown: (NSEvent *)theEvent;
-- (void) mouseDragged: (NSEvent *)theEvent;
-- (void) mouseEntered: (NSEvent *)theEvent;
-- (void) mouseExited: (NSEvent *)theEvent;
-- (void) mouseMoved: (NSEvent *)theEvent;
-- (void) mouseUp: (NSEvent *)theEvent;
+- (void) flagsChanged: (NSEvent*)theEvent;
+- (void) helpRequested: (NSEvent*)theEvent;
+- (void) keyDown: (NSEvent*)theEvent;
+- (void) keyUp: (NSEvent*)theEvent;
+- (void) mouseDown: (NSEvent*)theEvent;
+- (void) mouseDragged: (NSEvent*)theEvent;
+- (void) mouseEntered: (NSEvent*)theEvent;
+- (void) mouseExited: (NSEvent*)theEvent;
+- (void) mouseMoved: (NSEvent*)theEvent;
+- (void) mouseUp: (NSEvent*)theEvent;
 - (void) noResponderFor: (SEL)eventSelector;
-- (void) rightMouseDown: (NSEvent *)theEvent;
-- (void) rightMouseDragged: (NSEvent *)theEvent;
-- (void) rightMouseUp: (NSEvent *)theEvent;
+- (void) rightMouseDown: (NSEvent*)theEvent;
+- (void) rightMouseDragged: (NSEvent*)theEvent;
+- (void) rightMouseUp: (NSEvent*)theEvent;
 
 /*
  * Services menu support
  */
-- (id) validRequestorForSendType: (NSString *)typeSent
-		      returnType: (NSString *)typeReturned;
+- (id) validRequestorForSendType: (NSString*)typeSent
+		      returnType: (NSString*)typeReturned;
 
 /*
  * NSCoding protocol
@@ -117,6 +119,84 @@
 - (id) initWithCoder: (NSCoder*)aDecoder;
 
 #ifndef	STRICT_OPENSTEP
+- (void) interpretKeyEvents: (NSArray*)eventArray;
+- (BOOL) performMnemonic: (NSString*)aString;
+- (void) flushBufferedKeyEvents;
+- (void) doCommandBySelector: (SEL)aSelector;
+- (void) insertText: (NSString*)aString;
+- (NSUndoManager*) undoManager;
+
+/*
+ * Action methods, declared but not implemented
+ */ 
+- (void) capitalizeWord: (id)sender;
+- (void) centerSelectionInVisibleArea: (id)sender;
+- (void) changeCaseOfLetter: (id)sender;
+- (void) complete: (id)sender;
+- (void) deleteBackward: (id)sender;
+- (void) deleteForward: (id)sender;
+- (void) deleteToBeginningOfLine: (id)sender;
+- (void) deleteToBeginningOfParagraph: (id)sender;
+- (void) deleteToEndOfLine: (id)sender;
+- (void) deleteToEndOfParagraph: (id)sender;
+- (void) deleteToMark: (id)sender;
+- (void) deleteWordBackward: (id)sender;
+- (void) deleteWordForward: (id)sender;
+- (void) indent: (id)sender;
+- (void) insertBacktab: (id)sender;
+- (void) insertNewline: (id)sender;
+- (void) insertNewlineIgnoringFieldEditor: (id)sender;
+- (void) insertParagraphSeparator: (id)sender;
+- (void) insertTab: (id)sender;
+- (void) insertTabIgnoringFieldEditor: (id)sender;
+- (void) lowercaseWord: (id)sender;
+- (void) moveBackward: (id)sender;
+- (void) moveBackwardAndModifySelection: (id)sender;
+- (void) moveDown: (id)sender;
+- (void) moveDownAndModifySelection: (id)sender;
+- (void) moveForward: (id)sender;
+- (void) moveForwardAndModifySelection: (id)sender;
+- (void) moveLeft: (id)sender;
+- (void) moveRight: (id)sender;
+- (void) moveToBeginningOfDocument: (id)sender;
+- (void) moveToBeginningOfLine: (id)sender;
+- (void) moveToBeginningOfParagraph: (id)sender;
+- (void) moveToEndOfDocument: (id)sender;
+- (void) moveToEndOfLine: (id)sender;
+- (void) moveToEndOfParagraph: (id)sender;
+- (void) moveUp: (id)sender;
+- (void) moveUpAndModifySelection: (id)sender;
+- (void) moveWordBackward: (id)sender;
+- (void) moveWordBackwardAndModifySelection: (id)sender;
+- (void) moveWordForward: (id)sender;
+- (void) moveWordForwardAndModifySelection: (id)sender;
+- (void) pageDown: (id)sender;
+- (void) pageUp: (id)sender;
+- (void) scrollLineDown: (id)sender;
+- (void) scrollLineUp: (id)sender;
+- (void) scrollPageDown: (id)sender;
+- (void) scrollPageUp: (id)sender;
+- (void) selectAll: (id)sender;
+- (void) selectLine: (id)sender;
+- (void) selectParagraph: (id)sender;
+- (void) selectToMark: (id)sender;
+- (void) selectWord: (id)sender;
+- (void) showContextHelp: (id)sender;
+- (void) swapWithMark: (id)sender;
+- (void) transpose: (id)sender;
+- (void) transposeWords: (id)sender;
+- (void) uppercaseWord: (id)sender;
+- (void) yank: (id)sender;
+
+/*
+ * Menu
+ */
+- (NSMenu*) menu;
+- (void) setMenu: (NSMenu*)aMenu;
+
+/*
+ * Setting the interface
+ */
 - (NSInterfaceStyle) interfaceStyle;
 - (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
 #endif

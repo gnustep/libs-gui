@@ -87,7 +87,7 @@
 /*
  * Aid event processing
  */
-- (BOOL) performKeyEquivalent: (NSEvent *)theEvent
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   return NO;
 }
@@ -110,10 +110,30 @@
     }
 }
 
+- (BOOL) performMnemonic: (NSString*)aString
+{
+  return NO;
+}
+
+- (void) interpretKeyEvents:(NSArray*)eventArray
+{
+  // FIXME: As NSInputManger is still missing this method does nothing
+}
+
+- (void) flushBufferedKeyEvents
+{
+}
+
+- (void) doCommandBySelector:(SEL)aSelector
+{
+  if (![self tryToPerform: aSelector with: nil])
+    NSBeep();
+}
+
 /*
  * Forwarding event messages
  */
-- (void) flagsChanged: (NSEvent *)theEvent
+- (void) flagsChanged: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder flagsChanged: theEvent];
@@ -121,7 +141,7 @@
     return [self noResponderFor: @selector(flagsChanged:)];
 }
 
-- (void) helpRequested: (NSEvent *)theEvent
+- (void) helpRequested: (NSEvent*)theEvent
 {
   if(![[NSHelpManager sharedHelpManager]
 	showContextHelpForObject: self
@@ -131,7 +151,7 @@
   [NSHelpManager setContextHelpModeActive: NO];
 }
 
-- (void) keyDown: (NSEvent *)theEvent
+- (void) keyDown: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder keyDown: theEvent];
@@ -139,7 +159,7 @@
     return [self noResponderFor: @selector(keyDown:)];
 }
 
-- (void) keyUp: (NSEvent *)theEvent
+- (void) keyUp: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder keyUp: theEvent];
@@ -147,7 +167,7 @@
     return [self noResponderFor: @selector(keyUp:)];
 }
 
-- (void) mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseDown: theEvent];
@@ -155,7 +175,7 @@
     return [self noResponderFor: @selector(mouseDown:)];
 }
 
-- (void) mouseDragged: (NSEvent *)theEvent
+- (void) mouseDragged: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseDragged: theEvent];
@@ -163,7 +183,7 @@
     return [self noResponderFor: @selector(mouseDragged:)];
 }
 
-- (void) mouseEntered: (NSEvent *)theEvent
+- (void) mouseEntered: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseEntered: theEvent];
@@ -171,7 +191,7 @@
     return [self noResponderFor: @selector(mouseEntered:)];
 }
 
-- (void) mouseExited: (NSEvent *)theEvent
+- (void) mouseExited: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseExited: theEvent];
@@ -179,7 +199,7 @@
     return [self noResponderFor: @selector(mouseExited:)];
 }
 
-- (void) mouseMoved: (NSEvent *)theEvent
+- (void) mouseMoved: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseMoved: theEvent];
@@ -187,7 +207,7 @@
     return [self noResponderFor: @selector(mouseMoved:)];
 }
 
-- (void) mouseUp: (NSEvent *)theEvent
+- (void) mouseUp: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder mouseUp: theEvent];
@@ -202,7 +222,7 @@
     NSBeep();
 }
 
-- (void) rightMouseDown: (NSEvent *)theEvent
+- (void) rightMouseDown: (NSEvent*)theEvent
 {
   if (next_responder != nil)
     {
@@ -210,6 +230,7 @@
     }
   else
     {
+      // FIXME: This should be moved into NSApplication
       NSMenu	*menu = [NSApp mainMenu];
 
       if (menu != nil)
@@ -219,7 +240,7 @@
     }
 }
 
-- (void) rightMouseDragged: (NSEvent *)theEvent
+- (void) rightMouseDragged: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder rightMouseDragged: theEvent];
@@ -227,7 +248,7 @@
     return [self noResponderFor: @selector(rightMouseDragged:)];
 }
 
-- (void) rightMouseUp: (NSEvent *)theEvent
+- (void) rightMouseUp: (NSEvent*)theEvent
 {
   if (next_responder)
     return [next_responder rightMouseUp: theEvent];
@@ -238,8 +259,8 @@
 /*
  * Services menu support
  */
-- (id) validRequestorForSendType: (NSString *)typeSent
-		      returnType: (NSString *)typeReturned
+- (id) validRequestorForSendType: (NSString*)typeSent
+		      returnType: (NSString*)typeReturned
 {
   if (next_responder)
     return [next_responder validRequestorForSendType: typeSent
@@ -266,6 +287,17 @@
   return self;
 }
 
+- (NSMenu*) menu
+{
+  // FIXME: We need a slot for the menu
+  return nil;
+}
+
+- (void) setMenu: (NSMenu*)aMenu
+{
+  // FIXME: We need a slot for the menu
+}
+
 - (NSInterfaceStyle) interfaceStyle
 {
   return interface_style;
@@ -276,4 +308,8 @@
   interface_style = aStyle;
 }
 
+- (NSUndoManager*) undoManager
+{
+  return nil;
+}
 @end
