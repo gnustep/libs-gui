@@ -624,13 +624,16 @@
       NSLog(@"Extension missing from filename - '%@'", filename);
       return nil;
     }
-
-  if ([[self imageUnfilteredFileTypes] indexOfObject: ext] != NSNotFound)
+  /* This is a quick hack to make it work - if the extension is that
+     of a tiff file, we init with data */
+  if ([ext isEqualToString: @"tiff"]  ||  [ext isEqualToString: @"tif"])
     {
       NSData* data = [NSData dataWithContentsOfFile: filename];
       return [self imageRepsWithData: data];
     }
 
+  /* Otherwise, we attempt using wraster classes to load the file
+     (which could be png, etc) */
   array = [NSMutableArray arrayWithCapacity: 2];
   images = 0;
   do
