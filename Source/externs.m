@@ -160,12 +160,12 @@ NSString *NSAFMWeight = @"Weight";
 NSString *NSAFMXHeight = @"XHeight";
 
 // NSScreen Global device dictionary key strings
-NSString *NSDeviceResolution = @"Resolution";
-NSString *NSDeviceColorSpaceName = @"ColorSpaceName";
-NSString *NSDeviceBitsPerSample = @"BitsPerSample";
-NSString *NSDeviceIsScreen = @"IsScreen";
-NSString *NSDeviceIsPrinter = @"IsPrinter";
-NSString *NSDeviceSize = @"Size";
+NSString *NSDeviceResolution = @"NSDeviceResolution";
+NSString *NSDeviceColorSpaceName = @"NSDeviceColorSpaceName";
+NSString *NSDeviceBitsPerSample = @"NSDeviceBitsPerSample";
+NSString *NSDeviceIsScreen = @"NSDeviceIsScreen";
+NSString *NSDeviceIsPrinter = @"NSDeviceIsPrinter";
+NSString *NSDeviceSize = @"NSDeviceSize";
 
 // NSImageRep notifications
 NSString *NSImageRepRegistryChangedNotification =
@@ -378,3 +378,25 @@ const float NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};
 /* Drawing engine externs */
 NSString *NSBackendContext = @"NSBackendContext";
 
+typedef int NSWindowDepth;
+
+/**** Color function externs ****/
+/* Since these are constants it was not possible
+   to do the OR directly.  If you change the
+   _GS*BitValue numbers, please remember to
+   change the corresponding depth values */
+const NSWindowDepth _GSGrayBitValue = 256;
+const NSWindowDepth _GSRGBBitValue = 512;
+const NSWindowDepth _GSCMYKBitValue = 1024;
+const NSWindowDepth _GSNamedBitValue = 2048;
+const NSWindowDepth _GSCustomBitValue = 4096;
+const NSWindowDepth NSDefaultDepth = 0;            // GRAY = 256, RGB = 512
+const NSWindowDepth NSTwoBitGrayDepth = 258;       // 0100000010 GRAY | 2bps
+const NSWindowDepth NSEightBitGrayDepth = 264;     // 0100001000 GRAY | 8bps
+const NSWindowDepth NSEightBitRGBDepth = 514;      // 1000000010 RGB  | 2bps
+const NSWindowDepth NSTwelveBitRGBDepth = 516;     // 1000000100 RGB  | 4bps
+const NSWindowDepth GSSixteenBitRGBDepth = 517;    // 1000000101 RGB  | 5bps GNUstep specific
+const NSWindowDepth NSTwentyFourBitRGBDepth = 520; // 1000001000 RGB  | 8bps
+const NSWindowDepth _GSWindowDepths[7] = { 258, 264, 514, 516, 517, 520, 0 };
+
+/* End of color functions externs */

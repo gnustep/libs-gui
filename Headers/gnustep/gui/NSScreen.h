@@ -3,10 +3,14 @@
 
    Class representing monitors
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2000 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
+
+   Fixes and updates made by
+   Author: Gregory John Casamento <borgheron@yahoo.com>
+   Date: 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -38,28 +42,27 @@
 
 @interface NSScreen : NSObject
 {
-  // Attributes
-  NSWindowDepth depth;
-  NSRect frame;
-  NSMutableDictionary *device_desc;
+@private
+  NSWindowDepth        _depth;
+  NSRect               _frame;
+  int                  _screenNumber;
 
-  // Reserved for backend use
-  void *be_screen_reserved;
+  void                *_reserved;
 }
 
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
+/*
+ * Creating NSScreen Instances
+ */
++ (NSScreen*) mainScreen;
++ (NSScreen*) deepestScreen;
++ (NSArray*) screens;
 
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
+/*
+ * Reading Screen Information
+ */
+- (NSWindowDepth) depth;
+- (NSRect) frame;
+- (NSDictionary*) deviceDescription;
 
 #ifndef STRICT_OPENSTEP
 - (const NSWindowDepth*) supportedWindowDepths;
@@ -67,12 +70,4 @@
 #endif
 
 @end
-
-#ifndef NO_GNUSTEP
-// Need this definition for backend classes
-@interface NSScreen (GNUstep)
-- initWithDeviceDescription: (NSDictionary *)dict;
-@end
-#endif
-
 #endif // _GNUstep_H_NSScreen

@@ -281,3 +281,7 @@ float NSLinkFrameThickness(void)
   return 0;
 }
 
+// Color Functions
+NSWindowDepth GSWindowDepthForScreen(int screen) {}
+
+const NSWindowDepth *GSAvailableDepthsForScreen(int screen) {}

@@ -31,9 +31,9 @@
 @class NSString;
 @class NSColor;
 
-//
-// Colorspace Names 
-//
+/*
+ * Colorspace Names 
+ */
 extern NSString *NSCalibratedWhiteColorSpace; 
 extern NSString *NSCalibratedBlackColorSpace; 
 extern NSString *NSCalibratedRGBColorSpace;
@@ -45,6 +45,23 @@ extern NSString *NSNamedColorSpace;
 extern NSString *NSCustomColorSpace;
 
 typedef int NSWindowDepth;
+
+/*
+ * Color function externs
+ */
+extern const NSWindowDepth _GSGrayBitValue;
+extern const NSWindowDepth _GSRGBBitValue;
+extern const NSWindowDepth _GSCMYKBitValue;
+extern const NSWindowDepth _GSCustomBitValue;
+extern const NSWindowDepth _GSNamedBitValue;
+extern const NSWindowDepth *_GSWindowDepths[7];
+extern const NSWindowDepth NSDefaultDepth;
+extern const NSWindowDepth NSTwoBitGrayDepth;
+extern const NSWindowDepth NSEightBitGrayDepth;
+extern const NSWindowDepth NSEightBitRGBDepth;
+extern const NSWindowDepth NSTwelveBitRGBDepth;
+extern const NSWindowDepth GSSixteenBitRGBDepth;
+extern const NSWindowDepth NSTwentyFourBitRGBDepth;
 
 /*
  * Gray Values 
@@ -102,6 +119,8 @@ int NSBitsPerSampleFromDepth(NSWindowDepth depth);
 NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
 int NSNumberOfColorComponents(NSString *colorSpaceName);
 BOOL NSPlanarFromDepth(NSWindowDepth depth);
+NSWindowDepth GSWindowDepthForScreen(int screen);
+const NSWindowDepth *GSAvailableDepthsForScreen(int screen);
 
 /*
  * Read the Color at a Screen Position
@@ -146,6 +165,7 @@ void NSWindowList(int size, int list[]);
 
 NSArray* GSAllWindows();
 NSWindow* GSWindowWithNumber(int num);
+
 #endif
 
 #endif /* __NSGraphics_h__ */

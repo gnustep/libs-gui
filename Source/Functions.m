@@ -32,6 +32,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSGraphics.h>
 
 char **NSArgv = NULL;
 
@@ -103,4 +104,193 @@ NSEventMaskFromType(NSEventType type)
       case NSApplicationDefined: return NSApplicationDefinedMask;
     }
   return 0;
+}
+
+/*
+ * Color Functions
+ */
+
+/*
+ * Get Information About Color Space and Window Depth
+ */
+const NSWindowDepth*
+NSAvailableWindowDepths(void)
+{
+  /*
+   * Perhaps this is the only function which
+   * belongs in the backend.   It should be possible
+   * to detect which depths the window server is capable
+   * of.
+   */	
+  return (const NSWindowDepth *)_GSWindowDepths;
+}
+
+NSWindowDepth
+NSBestDepth(NSString *colorSpace, int bitsPerSample, int bitsPerPixel,
+  BOOL planar, BOOL *exactMatch)
+{
+  int			components = NSNumberOfColorComponents(colorSpace);
+  int			index = 0;
+  const NSWindowDepth	*depths = NSAvailableWindowDepths();
+  NSWindowDepth		bestDepth = NSDefaultDepth;
+  
+  *exactMatch = NO;
+  
+  if (components == 1)
+    {	
+      for (index = 0; depths[index] != 0; index++)
+	{
+	  NSWindowDepth	depth = depths[index];
+
+	  if (NSPlanarFromDepth(depth))
+	    {
+	      bestDepth = depth;
+	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
+		{
+		  *exactMatch = YES;
+		}
+	    }
+	}
+    }
+  else
+    {
+      for (index = 0; depths[index] != 0; index++)
+	{
+	  NSWindowDepth	depth = depths[index];
+
+	  if (!NSPlanarFromDepth(depth))
+	    {
+	      bestDepth = depth;
+	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
+		{
+		  *exactMatch = YES;
+		}
+	    }
+	}
+    }
+  
+  return bestDepth;
+}
+
+int
+NSBitsPerPixelFromDepth(NSWindowDepth depth)
+{
+  int	bps = NSBitsPerSampleFromDepth(depth);
+  int	spp = 0;
+  
+  if (depth & _GSRGBBitValue)
+    {
+      spp = 3;	
+    }
+  else if (depth & _GSCMYKBitValue)
+    {
+      spp = 4;
+    }
+  else if (depth & _GSGrayBitValue)
+    {
+      spp = 1;
+    }
+  return (spp * bps);
+}
+
+int
+NSBitsPerSampleFromDepth(NSWindowDepth depth)
+{
+  NSWindowDepth	bitValue = 0;
+
+  /*
+   * Test against colorspace bit.
+   * and out the bit to get the bps value.
+   */
+  if (depth & _GSRGBBitValue)
+    {
+      bitValue = _GSRGBBitValue;
+    }
+  else if (depth & _GSCMYKBitValue)
+    {
+      bitValue = _GSCMYKBitValue;
+    }
+  else if (depth & _GSGrayBitValue)
+    {
+      bitValue = _GSGrayBitValue;
+    }
+  /*
+   * AND against the complement
+   * to extract the bps value.	
+   */
+  return (depth & ~(bitValue));
+}
+
+NSString*
+NSColorSpaceFromDepth(NSWindowDepth depth)
+{
+  NSString	*colorSpace = NSCalibratedWhiteColorSpace;
+  
+  /*
+   * Test against each of the possible colorspace bits
+   * and return the corresponding colorspace.
+   */
+  if (depth == 0)
+    {
+      colorSpace = NSCalibratedBlackColorSpace;
+    }
+  else if (depth & _GSRGBBitValue)
+    {
+      colorSpace = NSCalibratedRGBColorSpace;
+    }
+  else if (depth & _GSCMYKBitValue)
+    {
+      colorSpace = NSDeviceCMYKColorSpace;
+    }
+  else if (depth & _GSGrayBitValue)
+    {
+      colorSpace = NSCalibratedWhiteColorSpace;
+    }
+  else if (depth & _GSNamedBitValue)
+    {
+      colorSpace = NSNamedColorSpace;
+    }
+  else if (depth & _GSCustomBitValue)
+    {
+      colorSpace = NSCustomColorSpace;
+    }
+
+  return colorSpace;
+}
+
+int
+NSNumberOfColorComponents(NSString *colorSpaceName)
+{
+  int	components = 1;
+  
+  /*
+   * These are the only exceptions to the above.
+   * All other colorspaces have as many bps as bpp.
+   */
+  if ([colorSpaceName isEqualToString: NSCalibratedRGBColorSpace]
+    || [colorSpaceName isEqualToString: NSDeviceRGBColorSpace])
+    {
+      components = 3;
+    }
+  else if ([colorSpaceName isEqualToString: NSDeviceCMYKColorSpace])
+    {
+      components = 4;
+    }
+  return components;
+}
+
+BOOL
+NSPlanarFromDepth(NSWindowDepth depth)
+{
+  BOOL planar = NO;
+  
+  /*
+   * Only the grayscale depths are planar.
+   * All others are interleaved.
+   */
+  if (depth & _GSGrayBitValue)
+    {
+      planar = YES;
+    }
+  return planar;
 }

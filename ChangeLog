@@ -1,3 +1,11 @@
+2000-04-25 Richard Frith-Macdonald <rfm@gnu.org>
+
+	Patch by Gregory John Casamento <borgheron@yahoo.com> edited to
+	conform to standards.  Adds improved colorspace support.
+	Files modified - Headers/gnustep/gui/NSGraphics.h,
+	Headers/gnustep/gui/NSScreen.h, Source/Functions.m, Source/NSScreen.m,
+	Source/externs.m, Tools/Functions.m
+
 2000-04-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-_updateBoundsMatrix): New method from
