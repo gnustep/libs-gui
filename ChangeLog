@@ -1,3 +1,7 @@
+2003-10-18  16:48  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: Added full gsdoc documentation for this class.
+	
 2003-10-17  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Make mapping of service names to

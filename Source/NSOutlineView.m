@@ -1,6 +1,10 @@
 /** <title>NSOutlineView</title>
 
-   <abstract>The outline class.</abstract>
+   <abstract>
+   This class is a subclass of NSTableView which provides the user with a way
+   to display tree structured data in an outline format.   It is particularly useful for show
+   hierarchical data such as a class inheritance tree or any other set of relationships.
+   </abstract>
    
    Copyright (C) 2001 Free Software Foundation, Inc.
 
@@ -116,6 +120,12 @@ static NSImage *unexpandable  = nil;
 }
 
 // Instance methods
+
+/**
+ *  Initalizes the outline view with the given frame.   Invokes
+ * the superclass method initWithFrame: as well to initialize the object.
+ *
+ */
 - (id)initWithFrame: (NSRect)frame
 {
   [super initWithFrame: frame];
@@ -161,11 +171,19 @@ static NSImage *unexpandable  = nil;
   [super dealloc];
 }
 
+/**
+ * Causes the outline column, the column containing the expand/collapse gadget, to
+ * resize based on the amount of space needed by widest content.
+ */
 - (BOOL)autoResizesOutlineColumn
 {
   return _autoResizesOutlineColumn;
 }
 
+/**
+ * Causes the outline column, the column containing the expand/collapse gadget, to
+ * resize based on the amount of space needed by widest content.
+ */
 - (BOOL)autosaveExpandedItems
 {
   return _autosaveExpandedItems;
@@ -303,11 +321,20 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+/**
+ * Collapses the given item only.  This is the equivalent of calling 
+ * [NSOutlineView-collapseItem:collapseChildren:] with NO.
+ */
 - (void)collapseItem: (id)item
 {
   [self collapseItem: item collapseChildren: NO];
 }
 
+/**
+ * Collapses the specified item.  If collapseChildren is set to YES, then all of the
+ * expandable children of this item all also collapsed in a recursive fashion (i.e.
+ * all children, grandchildren and etc).
+ */
 - (void)collapseItem: (id)item collapseChildren: (BOOL)collapseChildren
 {
   const SEL shouldSelector = @selector(outlineView:shouldCollapseItem:);
@@ -363,11 +390,20 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+/**
+ * Expands the given item only.  This is the equivalent of calling 
+ * [NSOutlineView-expandItem:expandChildren:] with NO.
+ */
 - (void)expandItem: (id)item
 {
   [self expandItem: item expandChildren: NO];
 }
 
+/**
+ * Expands the specified item.  If expandChildren is set to YES, then all of the
+ * expandable children of this item all also expanded in a recursive fashion (i.e.
+ * all children, grandchildren and etc).
+ */
 - (void)expandItem:(id)item expandChildren:(BOOL)expandChildren
 {
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
@@ -430,21 +466,35 @@ static NSImage *unexpandable  = nil;
   [self noteNumberOfRowsChanged];
 }
 
+/**
+ * Returns whether or not the indentation marker or "knob" is indented
+ * along with the content inside the cell.
+ */
 - (BOOL)indentationMarkerFollowsCell
 {
   return _indentationMarkerFollowsCell;
 }
 
+/**
+ * Returns the amount of indentation, in points, for each level 
+ * of the tree represented by the outline view.
+ */
 - (float)indentationPerLevel
 {
   return _indentationPerLevel;
 }
 
+/**
+ * Returns YES, if the item is able to be expanded, NO otherwise.
+ */
 - (BOOL)isExpandable: (id)item
 {
   return [_dataSource outlineView: self isItemExpandable: item];
 }
 
+/**
+ * Returns YES if the item is expanded or open, NO otherwise.
+ */
 - (BOOL)isItemExpanded: (id)item
 {
   if(item == nil)
@@ -454,11 +504,17 @@ static NSImage *unexpandable  = nil;
   return([_expandedItems containsObject: item]);
 }
 
+/**
+ * Returns the item at a given row.
+ */
 - (id)itemAtRow: (int)row
 {
   return [_items objectAtIndex: row];
 }
 
+/**
+ * Returns the level for a given item.
+ */
 - (int)levelForItem: (id)item
 {
   if(item != nil)
@@ -470,11 +526,17 @@ static NSImage *unexpandable  = nil;
   return -1;
 }
 
+/**
+ * Returns the level for the given row.
+ */
 - (int)levelForRow: (int)row
 {
   return [self levelForItem: [self itemAtRow: row]];
 }
 
+/**
+ * Returns the outline table column.
+ */
 - (NSTableColumn *)outlineTableColumn
 {
   return _outlineTableColumn;
@@ -512,11 +574,20 @@ static NSImage *unexpandable  = nil;
   return hasChildren;
 }
 
+/**
+ * Causes an item to be reloaded.  This is the equivalent of calling
+ * [NSOutlineView-reloadItem:reloadChildren:] with reloadChildren set to NO.
+ */
 - (void)reloadItem: (id)item
 {
   [self reloadItem: item reloadChildren: NO];
 }
 
+/**
+ * Causes an item and all of it's children to be reloaded if reloadChildren is
+ * set to YES, if it's set to NO, then only the item itself is refreshed from the
+ * datasource.
+ */
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
   id parent = nil;
@@ -555,16 +626,29 @@ static NSImage *unexpandable  = nil;
     }      
 }
 
+/**
+ * Returns the corresponding row in the outline view for the given item.
+ */
 - (int)rowForItem: (id)item
 {
   return [_items indexOfObject: item];
 }
 
+/**
+ * When set to YES this causes the outline column, the column containing 
+ * the expand/collapse gadget, to resize based on the amount of space 
+ * needed by widest content.
+ */
 - (void)setAutoresizesOutlineColumn: (BOOL)resize
 {
   _autoResizesOutlineColumn = resize;
 }
 
+/**
+ * When set to YES, the outline view will save the state of all expanded or 
+ * collapsed items in the view to the users defaults for the application the
+ * outline view is running in.
+ */
 - (void)setAutosaveExpandedItems: (BOOL)flag
 {
   if(flag == _autosaveExpandedItems)
@@ -602,26 +686,44 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+/**
+ * If set to YES, the indentation marker will follow the content at each level.
+ * Otherwise, the indentation marker will remain at the left most position of
+ * the view regardless of how many levels in the content is indented.
+ */
 - (void)setIndentationMarkerFollowsCell: (BOOL)followsCell
 {
   _indentationMarkerFollowsCell = followsCell;
 }
 
+/**
+ * Sets the amount, in points, that each level is to be indented by.
+ */
 - (void)setIndentationPerLevel: (float)newIndentLevel
 {
   _indentationPerLevel = newIndentLevel;
 }
 
+/**
+ * Sets the outline table column in which to place the indentation marker.
+ */
 - (void)setOutlineTableColumn: (NSTableColumn *)outlineTableColumn
 {
   _outlineTableColumn = outlineTableColumn;
 }
 
+/**
+ * Returns YES, by default.   Subclasses should override this method if 
+ * a different behaviour is required.
+ */
 - (BOOL)shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited
 {
   return YES;
 }
 
+/**
+ * This method returns the number of rows changed in the data source.
+ */
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_items count];
@@ -708,6 +810,9 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+/**
+ * Sets the data source for this outline view. 
+ */
 - (void) setDataSource: (id)anObject
 {
 #define CHECK_REQUIRED_METHOD(selector_name) \
@@ -730,6 +835,9 @@ static NSImage *unexpandable  = nil;
   [self reloadData];
 }
 
+/**
+ * Forces a from scratch reload of all data in the outline view. 
+ */
 - (void) reloadData
 {
   // release the old array
@@ -764,6 +872,9 @@ static NSImage *unexpandable  = nil;
   [super reloadData];
 }
 
+/**
+ * Sets the delegate of the outline view. 
+ */
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(outlineView:willDisplayCell:forTableColumn:item:);

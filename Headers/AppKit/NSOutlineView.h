@@ -76,49 +76,79 @@
 
 @end /* interface of NSOutlineView */
 
-/* 
+/** 
  * Informal protocol NSOutlineViewDataSource 
  */
 @interface NSObject (NSOutlineViewDataSource)
+/**
+ * Returns whether or not the outline view should accept a drop 
+ * into the indicated item.
+ */
 - (BOOL)outlineView: (NSOutlineView *)outlineView 
          acceptDrop: (id <NSDraggingInfo>)info 
                item: (id)item 
          childIndex: (int)index;
-
-// required method
+/**
+ * Implementation of this method is required.  Returns the child at 
+ * the specified index for the given item.
+ */
 - (id)outlineView: (NSOutlineView *)outlineView 
             child: (int)index 
            ofItem: (id)item;
-
-// required method
+/**
+ * This is a required method.  Returns whether or not the outline view
+ * item specified is expandable or not.
+ */
 - (BOOL)outlineView: (NSOutlineView *)outlineView
    isItemExpandable: (id)item;
 
+/**
+ * Returns the item for the given persistent object.
+ */
 - (id)outlineView: (NSOutlineView *)outlineView 
 itemForPersistentObject:(id)object;
 
-// required method
+/*
+ * This is a required method.  Returns the number of children of
+ * the given item.
+ */
 - (int)outlineView: (NSOutlineView *)outlineView
 numberOfChildrenOfItem: (id)item;
 
-// required method
+/**
+ * This is a required method.  Returns the object corresponding to the
+ * item representing it in the outline view.
+ */
 - (id)outlineView: (NSOutlineView *)outlineView 
 objectValueForTableColumn:(NSTableColumn *)tableColumn 
            byItem:(id)item;
 
+/**
+ * Returns the persistent object for the item specified.
+ */
 - (id)outlineView: (NSOutlineView *)outlineView
 persistentObjectForItem: (id)item;
 
+/**
+ * Sets the object value of the given item in the given table column to the object provided.
+ */
 - (void)outlineView: (NSOutlineView *)outlineView 
      setObjectValue: (id)object
      forTableColumn: (NSTableColumn *)tableColumn
              byItem: (id)item;
 
+/**
+ * Used by the Drag and Drop system.  Returns the drap operations which was performed on the
+ * given outline view.
+ */
 - (NSDragOperation)outlineView: (NSOutlineView*)outlineView 
                   validateDrop: (id <NSDraggingInfo>)info 
                   proposedItem: (id)item 
             proposedChildIndex: (int)index;
 
+/**
+ * Causes the outline view to write the specified items to the pastboard.
+ */
 - (BOOL)outlineView: (NSOutlineView *)outlineView 
          writeItems: (NSArray*)items 
        toPasteboard: (NSPasteboard*)pboard;
@@ -148,35 +178,89 @@ APPKIT_EXPORT NSString *NSOutlineViewItemWillCollapseNotification;
  */
 @interface NSObject (NSOutlineViewDelegate)
 // notification methods
+/**
+ * Called after the column has moved.
+ */
 - (void) outlineViewColumnDidMove: (NSNotification *)aNotification;
+/**
+ * Called after the view column is resized.
+ */
 - (void) outlineViewColumnDidResize: (NSNotification *)aNotification;
+/**
+ * Called after the item has collapsed.
+ */
 - (void) outlineViewItemDidCollapse: (NSNotification *)aNotification;
+/**
+ * Called after the item has expanded
+ */
 - (void) outlineViewItemDidExpand: (NSNotification *)aNotification;
+/**
+ * Called before the item has collapsed.
+ */
 - (void) outlineViewItemWillCollapse: (NSNotification *)aNotification;
+/**
+ * Called before the item is expanded.
+ */
 - (void) outlineViewItemWillExpand: (NSNotification *)aNotification;
+/**
+ * Called when the selection has changed.
+ */
 - (void) outlineViewSelectionDidChange: (NSNotification *)aNotification;
+/**
+ * Called when the selection is about to change.
+ */
 - (void) outlineViewSelectionIsChanging: (NSNotification *)aNotification;
 
 // delegate methods
+/**
+ * Returns whether or not the specified item should be allowed to collapse.
+ */
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
    shouldCollapseItem: (id)item;
+/**
+ * Returns whether or not the given table column should be allowed to be edited.
+ */
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
 shouldEditTableColumn: (NSTableColumn *)tableColumn
 	         item: (id)item;
+/**
+ * Returns whether or not the specified item should be expanded.
+ */
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
      shouldExpandItem: (id)item;
+/**
+ * Returns YES or NO depending on if the given item is selectable.  If YES, the item is selected,
+ * otherwise the outline view will reject the selection.
+ */
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
      shouldSelectItem: (id)item;
+/**
+ * Returns YES or NO depending on if the given table column is selectable according
+ * to the delegate.  If NO is returned the outline view will not allow the selection, if YES
+ * it will allow the selection.
+ */
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
 shouldSelectTableColumn: (NSTableColumn *)tableColumn;
+/**
+ * Called when the given cell is about to be displayed.  This method is
+ * useful for making last second modifications to what will be shown. 
+ */
 - (void)  outlineView: (NSOutlineView *)outlineView 
       willDisplayCell: (id)cell
        forTableColumn: (NSTableColumn *)tableColumn
                  item: (id)item;  
+/**
+ * Called when the given cell in the outline column is about to be displayed.  This method is
+ * useful for making last second modifications to what will be shown.
+ */
 - (void)  outlineView: (NSOutlineView *)outlineView 
 willDisplayOutlineCell: (id)cell
        forTableColumn: (NSTableColumn *)tableColumn
                  item: (id)item;
+/**
+ * Called before the selection is modified.  This method should return YES if
+ * the selection is allowed and NO, if not.
+ */
 - (BOOL) selectionShouldChangeInOutlineView: (NSOutlineView *)outlineView;
 @end
 
