@@ -98,37 +98,6 @@
 }
 
 //
-// Determining Component Sizes 
-//
-- (NSSize) cellSize
-{
-  NSFont *f;
-  NSSize borderSize, s;
-
-  // Get border size
-  if ([self isBordered])
-    {
-      if ([self isBezeled])
-	borderSize = [NSCell sizeForBorderType: NSBezelBorder];
-      else
-	borderSize = [NSCell sizeForBorderType: NSLineBorder];
-    }
-  else
-    borderSize = [NSCell sizeForBorderType: NSNoBorder];
-
-  // Get size of text with a little buffer space
-  f = [self font];
-  s = NSMakeSize([f widthOfString: [self stringValue]] + 2,
-		 [f pointSize] + 2);
-
-  // Add in border size
-  s.width += 2 * borderSize.width;
-  s.height += 2 * borderSize.height;
-
-  return s;
-}
-
-//
 // Modifying Graphic Attributes 
 //
 - (NSColor *) backgroundColor
@@ -226,10 +195,8 @@
 {
   if (draw_background)
     {
-      NSRect	backgroundRect = NSInsetRect(cellFrame, xDist, yDist);
-
       [background_color set];
-      NSRectFill(backgroundRect);
+      NSRectFill ([self drawingRectForBounds: cellFrame]);
     }
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }

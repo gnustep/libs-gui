@@ -424,7 +424,7 @@
   if ([self isTransparent])
     return;
 
-  cellFrame = NSInsetRect(cellFrame, xDist, yDist);
+  cellFrame = [self drawingRectForBounds: cellFrame];
 
   // determine the background color
   if ([self state])
@@ -638,7 +638,7 @@
       break;
     }
   
-  // Add spacing between text/image and border
+  // Add some spacing between text/image and border
   s.width += 2 * xDist;
   s.height += 2 * yDist;
  
@@ -653,6 +653,18 @@
   s.height += 2 * borderSize.height;
   
   return s;
+}
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  NSSize borderSize;
+  
+  // Get border size
+  if (cell_bordered)
+    borderSize = [NSCell sizeForBorderType: NSBezelBorder];
+  else
+    borderSize = [NSCell sizeForBorderType: NSNoBorder];
+
+  return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 
 - (id) copyWithZone: (NSZone*)zone

@@ -7,8 +7,10 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Modifications:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Rewrite:  Multiple authors
+   Date: 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -58,16 +60,18 @@ static	NSColor	*clearCol = nil;
 @implementation NSCell
 
 static Class	imageClass;
+static Class	cellClass;
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSCell class])
     {
       [self setVersion: 1];
       imageClass = [NSImage class];
+      cellClass = [NSCell class];
     }
 }
 
@@ -76,9 +80,9 @@ static Class	imageClass;
   return NO;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - _init
 {
   cell_type = NSNullCellType;
@@ -159,41 +163,85 @@ static Class	imageClass;
   [super dealloc];
 }
 
-//
-// Determining Component Sizes
-//
+/*
+ * Determining Component Sizes
+ */
 - (void) calcDrawInfo: (NSRect)aRect
 {
 }
 
 - (NSSize) cellSize
 {
-  return NSZeroSize;
+  NSSize borderSize, s;
+  
+  // Get border size
+  if (cell_bordered)
+    borderSize = [callClass sizeForBorderType: NSLineBorder];
+  else if (cell_bezeled)
+    borderSize = [callClass sizeForBorderType: NSBezelBorder];
+  else
+    borderSize = [callClass sizeForBorderType: NSNoBorder];
+
+  // Get Content Size
+  switch (cell_type)
+    {
+    case NSTextCellType:
+      s = NSMakeSize([cell_font widthOfString: contents], 
+		     [cell_font pointSize]);
+      // If text, add in a distance between text and borders
+      // otherwise the text will mess up with the borders
+      s.width += 2 * xDist;
+      s.height += 2 * yDist;
+      break;
+    case NSImageCellType:
+      s = [cell_image size];
+      break;
+    case NSNullCellType:
+      s = NSZeroSize;
+      break;
+    }
+
+  // Add in border size
+  s.width += 2 * borderSize.width;
+  s.height += 2 * borderSize.height;
+  
+  return s;
 }
 
 - (NSSize) cellSizeForBounds: (NSRect)aRect
 {
+  // TODO
   return NSZeroSize;
 }
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  return NSZeroRect;
+  NSSize borderSize;
+
+  // Get border size
+  if (cell_bordered)
+    borderSize = [callClass sizeForBorderType: NSLineBorder];
+  else if (cell_bezeled)
+    borderSize = [callClass sizeForBorderType: NSBezelBorder];
+  else
+    borderSize = [callClass sizeForBorderType: NSNoBorder];
+  
+  return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 
 - (NSRect) imageRectForBounds: (NSRect)theRect
 {
-  return NSZeroRect;
+  return [self drawingRectForBounds: theRect];
 }
 
 - (NSRect) titleRectForBounds: (NSRect)theRect
 {
-  return NSZeroRect;
+  return [self drawingRectForBounds: theRect];
 }
 
-//
-// Setting the NSCell's Type
-//
+/*
+ * Setting the NSCell's Type
+ */
 - (void) setType: (NSCellType)aType
 {
   cell_type = aType;
@@ -204,9 +252,9 @@ static Class	imageClass;
   return cell_type;
 }
 
-//
-// Setting the NSCell's State
-//
+/*
+ * Setting the NSCell's State
+ */
 - (void) setState: (int)value
 {
   cell_state = value;
@@ -217,9 +265,9 @@ static Class	imageClass;
   return cell_state;
 }
 
-//
-// Enabling and Disabling the NSCell
-//
+/*
+ * Enabling and Disabling the NSCell
+ */
 - (BOOL) isEnabled
 {
   return cell_enabled;
@@ -230,17 +278,17 @@ static Class	imageClass;
   cell_enabled = flag;
 }
 
-//
-// Determining the first responder
-//
+/*
+ * Determining the first responder
+ */
 - (BOOL) acceptsFirstResponder
 {
   return cell_enabled;
 }
 
-//
-// Setting the Image
-//
+/*
+ * Setting the Image
+ */
 - (NSImage*) image
 {
   return cell_image;
@@ -255,9 +303,9 @@ static Class	imageClass;
   [self setType: NSImageCellType];
 }
 
-//
-// Setting the NSCell's Value
-//
+/*
+ * Setting the NSCell's Value
+ */
 - (double) doubleValue
 {
   return [contents doubleValue];
@@ -313,9 +361,9 @@ static Class	imageClass;
   contents = _string;
 }
 
-//
-// Interacting with Other NSCells
-//
+/*
+ * Interacting with Other NSCells
+ */
 - (void) takeDoubleValueFrom: (id)sender
 {
   [self setDoubleValue: [sender doubleValue]];
@@ -336,9 +384,9 @@ static Class	imageClass;
   [self setStringValue: [sender stringValue]];
 }
 
-//
-// Modifying Text Attributes
-//
+/*
+ * Modifying Text Attributes
+ */
 - (NSTextAlignment) alignment
 {
   return text_align;
@@ -413,9 +461,9 @@ static Class	imageClass;
   return NO;
 }
 
-//
-// Editing Text
-//
+/*
+ * Editing Text
+ */
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
   return nil;
@@ -482,9 +530,9 @@ static Class	imageClass;
   [textObject display];
 }
 
-//
-// Validating Input
-//
+/*
+ * Validating Input
+ */
 - (int) entryType
 {
   return entry_type;
@@ -500,9 +548,9 @@ static Class	imageClass;
   entry_type = aType;
 }
 
-//
-// Formatting Data
-//
+/*
+ * Formatting Data
+ */
 - (void) setFloatingPointFormat: (BOOL)autoRange
 			   left: (unsigned int)leftDigits
 			  right: (unsigned int)rightDigits
@@ -512,9 +560,9 @@ static Class	imageClass;
   cell_float_right = rightDigits;
 }
 
-//
-// Modifying Graphic Attributes
-//
+/*
+ * Modifying Graphic Attributes
+ */
 - (BOOL) isBezeled
 {
   return cell_bezeled;
@@ -544,9 +592,9 @@ static Class	imageClass;
     cell_bezeled = NO;
 }
 
-//
-// Setting Parameters
-//
+/*
+ * Setting Parameters
+ */
 - (int) cellAttribute: (NSCellAttribute)aParameter
 {
   return 0;
@@ -556,9 +604,9 @@ static Class	imageClass;
 {
 }
 
-//
-// Displaying
-//
+/*
+ * Displaying
+ */
 - (NSView*) controlView
 {
   return control_view;
@@ -663,8 +711,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  cellFrame = NSInsetRect(cellFrame, xDist, yDist);
-
+  cellFrame = [self drawingRectForBounds: cellFrame];
+  
   // Clear the cell frame
   if ([self isOpaque])
     {
@@ -735,9 +783,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     }
 }
 
-//
-// Target and Action
-//
+/*
+ * Target and Action
+ */
 - (SEL) action
 {
   return NULL;
@@ -803,9 +851,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   [self highlight: NO withFrame: [cv frame] inView: cv];
 }
 
-//
-// Assigning a Tag
-//
+/*
+ * Assigning a Tag
+ */
 - (void) setTag: (int)anInt
 {
   [NSException raise: NSInternalInconsistencyException
@@ -817,17 +865,17 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return -1;
 }
 
-//
-// Handling Keyboard Alternatives
-//
+/*
+ * Handling Keyboard Alternatives
+ */
 - (NSString*) keyEquivalent
 {
   return @"";
 }
 
-//
-// Tracking the Mouse
-//
+/*
+ * Tracking the Mouse
+ */
 - (BOOL) continueTracking: (NSPoint)lastPoint
 		       at: (NSPoint)currentPoint
 		   inView: (NSView *)controlView
@@ -1010,16 +1058,16 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return NO;				// Otherwise return NO
 }
 
-//
-// Managing the Cursor
-//
+/*
+ * Managing the Cursor
+ */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
 }
 
-//
-// Comparing to Another NSCell
-//
+/*
+ * Comparing to Another NSCell
+ */
 - (NSComparisonResult) compare: (id)otherCell
 {
   if ([otherCell isKindOfClass: [NSCell class]] == NO)
@@ -1032,9 +1080,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return [contents compare: ((NSCell*)otherCell)->contents];
 }
 
-//
-// Using the NSCell to Represent an Object
-//
+/*
+ * Using the NSCell to Represent an Object
+ */
 - (id) representedObject
 {
   return represented_object;
@@ -1075,9 +1123,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return c;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: contents];
@@ -1129,9 +1177,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 @end
 
-//
-// Methods the backend should implement
-//
+/*
+ * Methods the backend should implement
+ */
 @implementation NSCell (GNUstepBackend)
 
 + (NSSize) sizeForBorderType: (NSBorderType)aType
@@ -1151,3 +1199,4 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 }
 
 @end
+

@@ -296,6 +296,7 @@ static Class cellClass;
 
 - (void) sizeToFit
 {
+  [self setFrameSize: [cell cellSize]];
 }
 
 /*
