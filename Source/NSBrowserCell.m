@@ -275,6 +275,7 @@ static Class	colorClass;
   NSColor	*backColor;
 
   control_view = controlView;		// remember last view cell was drawn in
+  [controlView lockFocus];
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
     {
       backColor = [colorClass selectedControlColor];
@@ -327,6 +328,7 @@ static Class	colorClass;
 	position.y += [image size].height;
       [image compositeToPoint: position operation: NSCompositeCopy];
     }
+  [controlView unlockFocus];
 }
 
 /*

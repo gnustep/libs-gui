@@ -125,6 +125,7 @@
   NSImage* image;
   NSSize size;
 
+  [controlView lockFocus];
   if (vertical != _isVertical) {
     if (vertical) {
       image = [NSImage imageNamed: @"common_SliderVert"];
@@ -148,6 +149,7 @@
 
   [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
   [self drawKnob];
+  [controlView unlockFocus];
 }
 
 - (float) knobThickness

@@ -59,13 +59,15 @@
 - (void) drawWithFrame: (NSRect)cellFrame
                 inView: (NSView*)view  
 {
-  NSGraphicsContext     *ctxt = GSCurrentContext();
+  NSGraphicsContext     *ctxt;
   NSColor	*backColor;
   NSImage	*toDraw = nil;
   NSRect rect = cellFrame;
   NSRect arect = cellFrame;
   NSPoint point;
 
+  [view lockFocus];
+  ctxt = GSCurrentContext();
   NSDrawButton(cellFrame, cellFrame);
   
   arect.size.width -= 3;
@@ -188,5 +190,6 @@
 	position.y += size.height;
       [toDraw compositeToPoint: position operation: NSCompositeCopy];
     }
+  [view unlockFocus];
 }
 @end

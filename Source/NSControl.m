@@ -77,7 +77,7 @@ static Class cellClass;
 - (id) initWithFrame: (NSRect)frameRect
 {
   [super initWithFrame: frameRect];
-  [self setCell: AUTORELEASE([cellClass new])];
+  [self setCell: AUTORELEASE([[[self class] cellClass] new])];
   tag = 0;
 
   return self;
@@ -319,7 +319,8 @@ static Class cellClass;
 {
   if (cell == aCell)
     {
-      [cell drawInteriorWithFrame: bounds inView: self];
+      [cell drawInteriorWithFrame: [cell drawingRectForBounds: bounds] 
+	    inView: self];
     }
 }
 
@@ -413,7 +414,6 @@ static Class cellClass;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 			    NSMouseMovedMask | NSLeftMouseDraggedMask |
 			    NSRightMouseDraggedMask;
-
   NSDebugLog(@"NSControl mouseDown\n");
 
   if (![self isEnabled])
@@ -425,8 +425,6 @@ static Class cellClass;
     oldActionMask = [cell sendActionOn: NSPeriodicMask];
 
   [window _captureMouse: self];
-
-  [self lockFocus];
 
   e = theEvent;
   while (!done) 		// loop until mouse goes up
@@ -472,7 +470,7 @@ static Class cellClass;
       [cell highlight: NO withFrame: bounds inView: self];
       [window flushWindow];
     }
-  [self unlockFocus];
+
   [cell sendActionOn: oldActionMask];
 
   if (mouseUp)

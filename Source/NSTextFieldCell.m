@@ -195,8 +195,10 @@
 {
   if (draw_background)
     {
+      [controlView lockFocus];
       [background_color set];
       NSRectFill ([self drawingRectForBounds: cellFrame]);
+      [controlView unlockFocus];
     }
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }

@@ -252,11 +252,13 @@ static BOOL usesUserKeyEquivalents = YES;
 - (void) drawWithFrame: (NSRect)cellFrame
 	        inView: (NSView *)controlView
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext();
+  NSGraphicsContext	*ctxt;
   NSRect		floodRect = cellFrame;
   NSString		*keyQ = nil;
   NSColor		*backColor;
 
+  [controlView lockFocus];
+  ctxt = GSCurrentContext();
   NSDrawButton(cellFrame, cellFrame);
 
   floodRect.origin.x += 1;
@@ -326,5 +328,6 @@ static BOOL usesUserKeyEquivalents = YES;
 
     [self _drawText:keyQ inFrame:floodRect];
   }
+  [controlView unlockFocus];
 }
 @end

@@ -1,3 +1,40 @@
+Tue Sep 15  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	(NB. The above date reflects submission of the patch - sorry I didn't
+	commit it until 21st Sept - RFM)
+	* Source/NSButton.m ([-performClick:]): Removed lock/unlock focus, 
+	now done automatically by the cell. 
+	* Source/NSBrowserCell.m ([-drawInteriorWithFrame:inView:]): Lock
+	focus in the view during drawing.
+	* Source/NSButtonCell.m: ([-drawInteriorWithFrame:inView:]): Lock
+	focus in the view during drawing. ([-drawWithFrame:inView:]):
+	idem. 
+	* Source/NSButtonCell.m ([-performClick:]): draw in its control_view,
+	if it has one, not in the currently focused view.
+	* Source/NSCell.m ([-performClick:]): idem.
+	* Source/NSCell.m: ([-drawInteriorWithFrame:inView:]): Lock focus
+	in the view during drawing. ([-drawWithFrame:inView:]): idem.
+	* Source/NSControl.m ([-initWithFrame:]): invoke +cellClass 
+	when creating the new cell.     
+	* Source/NSControl.m ([-drawCellInside:]): call the cell's
+	drawingRectForBounds: method to get the area to draw. 
+	* Source/NSControl.m ([-mouseDown:]): Removed lock/unlock focus
+	now done automatically by the cell.
+	* Source/NSImageCell.m: ([-drawInteriorWithFrame:inView:]): Lock
+	focus in the view during drawing. ([-drawWithFrame:inView:]): idem.
+	* Source/NSMatrix.m ([-highlightCell:atRow:column:]): lock focus
+	during drawing of background.
+	* Source/NSMatrix.m ([-_mouseDownNonListMode:]): Removed lock
+	focus now done by the cells. ([-mouseDown:]): idem. ([-keyDown:]):
+	idem.
+	* Source/NSMenuItemCell.m ([-drawWithFrame:inView:]): Lock focus
+	in the view during drawing.
+	* Source/NSPopUpButtonCell.m ([-drawWithFrame:inView:]): idem.
+	* Source/NSSliderCell.m ([-drawInteriorWithFrame:inView:]): idem. 
+	* Source/NSTableHeaderCell.m ([-drawInteriorWithFrame:inView:]):
+	idem.
+	* Source/NSTextFieldCell.m: ([-drawInteriorWithFrame:inView:]): idem.
+
 Mon Sep 20  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSView.m ([-setFrameSize:]): use zero width or height if

@@ -684,7 +684,8 @@ static Class	cellClass;
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   cellFrame = [self drawingRectForBounds: cellFrame];
-  
+  [controlView lockFocus];
+
   // Clear the cell frame
   if ([self isOpaque])
     {
@@ -730,6 +731,7 @@ static Class	cellClass;
       case NSNullCellType:
          break;
     }
+    [controlView unlockFocus];
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -743,6 +745,7 @@ static Class	cellClass;
   if (NSIsEmptyRect(cellFrame))
     return;
 
+  [controlView lockFocus];
   // draw the border if needed
   if ([self isBordered])
     {
@@ -754,6 +757,7 @@ static Class	cellClass;
       NSDrawWhiteBezel(cellFrame, NSZeroRect);
     }
 
+  [controlView unlockFocus];
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
@@ -820,7 +824,12 @@ static Class	cellClass;
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv = [NSView focusView];
+  NSView	*cv;
+
+  if (control_view)
+    cv = control_view;
+  else 
+    cv = [NSView focusView];
 
   NSLog(@"performClick:");
 

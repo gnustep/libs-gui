@@ -185,7 +185,12 @@
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv = [NSView focusView];
+  NSView	*cv;
+
+  if (control_view)
+    cv = control_view;
+  else 
+    cv = [NSView focusView];
 
   [self highlight: YES withFrame: [cv frame] inView: cv];
   if (action)
@@ -397,6 +402,7 @@
   // draw the border if needed
   if ([self isBordered])
     {
+      [controlView lockFocus];
       if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask))
         {
           NSDrawGrayBezel(cellFrame, NSZeroRect);
@@ -405,6 +411,7 @@
         {
           NSDrawButton(cellFrame, NSZeroRect);
         }
+        [controlView unlockFocus];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -426,6 +433,7 @@
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
+  [controlView lockFocus];
 
   // pushed in buttons contents are displaced to the bottom right 1px
   if ([self isBordered] && [self isHighlighted]
@@ -562,6 +570,7 @@
     {
       [self _drawText: titleToDisplay inFrame: titleRect];
     }
+  [controlView unlockFocus];
 }
 
 - (NSSize) cellSize 

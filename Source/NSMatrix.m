@@ -1289,8 +1289,10 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
       if (drawsCellBackground)
 	{
+	  [self lockFocus];
 	  [cellBackgroundColor set];
 	  NSRectFill(cellFrame);
+	  [self unlockFocus];
 	}
       [aCell highlight: flag
              withFrame: cellFrame
@@ -1385,8 +1387,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   NSRect mouseCellFrame;
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
-
-  [self lockFocus];
 
   if ((mode == NSRadioModeMatrix) && selectedCell)
     {
@@ -1499,8 +1499,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
                      column: highlightedColumn];
         [window flushWindow];
       }
-
-    [self unlockFocus];
 }
 
 
@@ -1533,7 +1531,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
 
-  [self lockFocus];
   // selection involves two steps, first
   // a loop that continues until the left mouse goes up; then a series of
   // steps which send actions and display the cell as it should appear after
@@ -1742,8 +1739,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   // click count > 1 indicates a double click
   if (target && doubleAction && ([lastEvent clickCount] > 1))
     [target performSelector: doubleAction withObject: self];
-
-  [self unlockFocus];
 
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
     [NSEvent stopPeriodicEvents];
@@ -2051,14 +2046,11 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   if (![selectedCell isEditable])
     return;
 
-  [self lockFocus];
-
   // If RETURN key then make the next text the first responder
   if (key_code == 0x0d)
     {
       [selectedCell endEditing: nil];
       [selectedCell drawInteriorWithFrame: rect inView: self];
-      [self unlockFocus];
       return;
     }
 
@@ -2067,7 +2059,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
   [selectedCell _handleKeyEvent: theEvent];
   [selectedCell drawInteriorWithFrame: rect inView: self];
-  [self unlockFocus];
 }
 
 - (BOOL) acceptsFirstResponder

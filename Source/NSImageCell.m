@@ -122,7 +122,8 @@
   // do nothing if cell's frame rect is zero
   if( NSIsEmptyRect(cellFrame) )
     return;
-
+  
+  [controlView lockFocus];
   // draw the border if needed
   switch( [self imageFrameStyle] )
   {
@@ -144,6 +145,7 @@
   }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+  [controlView unlockFocus];
 }
 
 static inline float xLeftInRect(NSSize innerSize, NSRect outerRect)
@@ -210,6 +212,7 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // leave room for the frame
   cellFrame = [self drawingRectForBounds: cellFrame];
+  [controlView lockFocus];
 
   switch( [self imageScaling] )
   {
@@ -287,6 +290,7 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // draw!
   [image compositeToPoint: position operation: NSCompositeCopy];
+  [controlView unlockFocus];
 }
 
 - (NSSize) cellSize
