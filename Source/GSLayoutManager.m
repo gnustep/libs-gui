@@ -27,6 +27,7 @@
 #include <AppKit/GSLayoutManager_internal.h>
 
 #include <Foundation/NSCharacterSet.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
@@ -175,6 +176,20 @@ static int random_level(void)
   }
   printf("--- done\n");
   fflush(stdout);
+}
+
+
+-(void) _sanityChecks
+{
+  glyph_run_t *g;
+
+  g = (glyph_run_t *)&glyphs[SKIP_LIST_DEPTH - 1];
+  while (g->head.next)
+    {
+      NSAssert((glyph_run_t *)((glyph_run_t *)g->head.next)->prev == g,
+ 	@"glyph structure corrupted: g->next->prev!=g");
+      g = (glyph_run_t *)g->head.next;
+    }
 }
 
 
@@ -927,8 +942,13 @@ it should still be safe. might lose opportunities to merge runs, though.
   */
   cached_run = NULL;
 
-/*	[self _glyphDumpRuns];
-	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);*/
+  /* Set it now for early returns. */
+  if (actualRange)
+    *actualRange = range;
+
+//	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
+  [self _sanityChecks];
+//[self _glyphDumpRuns];
   range.length -= lengthChange;
 //	printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
 
@@ -999,6 +1019,9 @@ it should still be safe. might lose opportunities to merge runs, though.
       hn--;
       for (i = 1; i <= new->level; i++, hn--)
 	run_fix_head(hn);
+
+      if (new->head.next)
+	((glyph_run_t *)new->head.next)->prev = (glyph_run_head_t *)new;
 
       r->head.char_length -= new->head.char_length;
     }
@@ -1104,8 +1127,8 @@ it should still be safe. might lose opportunities to merge runs, though.
     trailing = !next;
   }
 
-/*	printf("deleted\n");
-	[self _glyphDumpRuns];*/
+//	printf("deleted\n");
+//	[self _glyphDumpRuns];
 
   /* r is the last run we want to keep, and the next run is the next
      uninvalidated run. need to insert new runs for range */
@@ -1126,7 +1149,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 				 inRange: NSMakeRange(0, [_textStorage length])];
 
 /*			printf("at %i, max=%i, effective range (%i+%i)\n",
-				ch, max, rng.location, rng.length); */
+				ch, max, rng.location, rng.length);*/
 
 	new = run_insert(context);
 	if (rng.location < ch)
@@ -1173,6 +1196,7 @@ it should still be safe. might lose opportunities to merge runs, though.
     *actualRange = range;
 
 //	[self _glyphDumpRuns];
+  [self _sanityChecks];
 }
 
 
@@ -1409,6 +1433,18 @@ it should still be safe. might lose opportunities to merge runs, though.
 @implementation GSLayoutManager (layout)
 
 
+/*
+In the general case, we can't make any assumptions about how layout might
+interact between line frag rects. To be safe in all cases, we must
+invalidate all layout information.
+
+TODO:
+We could handle this by assuming that whoever calls this knows exactly what
+needs to be invalidated. We won't be using it internally, anyway, so it
+doesn't matter much to us, and it would make more advanced things possible
+for external callers. On the other hand, it would be easy to break things
+by calling this incorrectly.
+*/
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange 
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange *)actualRange
@@ -1857,7 +1893,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return lf->used_rect;
 }
 
-- (NSRange) rangeOfNominallySpacedGlyphsContainingIndex:(unsigned int)glyphIndex
+- (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned int)glyphIndex
 					  startLocation: (NSPoint *)p
 {
   int i;
@@ -2285,6 +2321,11 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 }
 
 
+/*
+Note that NSLayoutManager completely overrides this (to perform more
+intelligent invalidation of layout using the constraints on layout it
+has).
+*/
 - (void) textStorage: (NSTextStorage *)aTextStorage
 	      edited: (unsigned int)mask
 	       range: (NSRange)range
@@ -2296,23 +2337,16 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
 
-/*	printf("edited: range=(%i+%i) invalidatedRange=(%i+%i) delta=%i\n",
-		range.location, range.length,
-		invalidatedRange.location, invalidatedRange.length,
-		lengthChange);*/
-
   [self invalidateGlyphsForCharacterRange: invalidatedRange
 	changeInLength: lengthChange
 	actualCharacterRange: &r];
 
-  [self invalidateLayoutForCharacterRange: r
-	isSoft: NO
-	actualCharacterRange: &r];
-  r.location += r.length;
-  r.length = [_textStorage length] - r.location;
-  [self invalidateLayoutForCharacterRange: r
-	isSoft: YES
-	actualCharacterRange: NULL];
+  /*
+  See the comments above -invalidateLayoutForCharacterRange:isSoft:
+  actualCharacterRange: for information on why we invalidate everything
+  here.
+  */
+  [self _invalidateLayoutFromContainer: 0];
 
   [self _didInvalidateLayout];
 }

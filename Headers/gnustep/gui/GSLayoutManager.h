@@ -148,6 +148,9 @@ If characters have been edited, lengthChange has the text length delta.
 Mark the glyphs for the characters in aRange as invalid. lengthChange
 is the text length delta. If not NULL, the range of characters actually
 affected (_after_ the change) will be returned in actualRange.
+
+This method is used internally and should _not_ be called. (It interacts
+in complex ways with layout invalidation.)
 */
 - (void) invalidateGlyphsForCharacterRange: (NSRange)aRange 
 	changeInLength: (int)lengthChange
@@ -248,6 +251,11 @@ manager might be substituting screen fonts. */
 
 /** Layout **/
 
+/*
+This method is used internally and should _not_ be called. (It interacts
+in complex ways with glyph invalidation, and with itself when doing soft
+invalidation.)
+*/
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange 
 	isSoft: (BOOL)flag
 	actualCharacterRange: (NSRange *)actualRange;

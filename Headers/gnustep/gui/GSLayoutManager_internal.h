@@ -193,6 +193,7 @@ typedef struct GSLayoutManager_textcontainer_s
 -(void) _freeGlyphs;
 
 -(void) _glyphDumpRuns;
+-(void) _sanityChecks;
 
 -(void) _generateGlyphsUpToCharacter: (unsigned int)last;
 -(void) _generateGlyphsUpToGlyph: (unsigned int)last;

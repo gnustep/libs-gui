@@ -1,3 +1,15 @@
+2003-02-17 21:25  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h,
+	Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:
+	changeInLength:actualCharacterRange:): Set the prev pointer
+	correctly when splitting a run. Add sanity checks to catch try
+	to catch glyph structure corruption early.
+
+	(-textStorage:edited:range:changeInLength:invalidatedRange:): Clean
+	up layout invalidation.
+
 2003-02-17 02:16  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
