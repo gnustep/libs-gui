@@ -626,51 +626,46 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 	  [self setHighlightedItemIndex: -1];
 
-	  NSLog(@"just mouseUp'ed.");
-
 	  if ([selectedCell action] && ![selectedCell target])
 	    [menuv_menu performActionForItem: 
 	      [menuv_items_link objectAtIndex: lastIndex]];
-	  else
+	  else if ([selectedCell action] && [selectedCell target])
 	    [menuv_popb performSelector:[selectedCell action] withObject:selectedCell];
 
-	  while (!finished)
-	    { // "forward"cursive menu find.
-	      if ([aMenu attachedMenu])
-		{
-		  aMenu = [aMenu attachedMenu];
-		}
-	      else
-		finished = YES;
+	  if (menuv_menu)
+	    {
+	      while (!finished)
+	        { // "forward"cursive menu find.
+	          if ([aMenu attachedMenu])
+		    {
+		      aMenu = [aMenu attachedMenu];
+		    }
+	          else
+		    finished = YES;
+	        }
+
+	      finished = NO;
+
+	      while (!finished)
+	        { // Recursive menu close & deselect.
+	          if ([aMenu supermenu] && ![aMenu isTornOff])
+		    {
+		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		      aMenu = [aMenu supermenu];
+		    } 
+	          else
+		    finished = YES;
+
+	          [window flushWindow];
+	        }
+	    }
+	
+	  if (menuv_popb)
+	    {
+	      [menuv_popb close];
 	    }
 
-	  finished = NO;
-
-	  while (!finished)
-	    { // Recursive menu close & deselect.
-	      if ([aMenu supermenu] && ![aMenu isTornOff])
-		{
-		  [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
-//		  [aMenu close];
-		  aMenu = [aMenu supermenu];
-		} 
-	      else
-		finished = YES;
-
-	      [window flushWindow];
-	    }
-	}
-      else if ([[menuv_items_link objectAtIndex:
-menuv_highlightedItemIndex]
-	hasSubmenu] && [[[menuv_items_link objectAtIndex:
-menuv_highlightedItemIndex] target] isTornOff])
-	{
-	  // This code does not work. Please ignore. FIXME, Michael.
-	  // close transient.
-//	  [self setHighlightedItemIndex: -1];
-//
-//	  [[[menuv_menu supermenu] menuView] setHighlightedItemIndex: -1];
-	}
+        }
     }
   else if (weRightMenu)
     {

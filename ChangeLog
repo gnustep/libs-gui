@@ -1,3 +1,11 @@
+1999-07-20  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSMenuView.m: trackEvent: fixed problems that existed for
+	NSPopUpButton. Should now work as desired. However, I believe I
+	need to once again rewrite NSPopUp to make proper use of
+	setMenu:, that will make the code sharing between NSMenu and
+	NSPopUp complete.
+
 1999-07-19  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSTableView.m: very incomplete implementation.
