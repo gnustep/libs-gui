@@ -489,14 +489,17 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 {
   NSRect frame;
   NSRect submenuFrame;
+  NSWindow *win_link;
 
   if (![self isFollowTransient])
     {
       frame = [aWindow frame];
+      win_link = aWindow;
     }
   else
     {
       frame = [bWindow frame];
+      win_link = bWindow;
     }
             
   if (aSubmenu)
@@ -506,9 +509,20 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   else
     submenuFrame = NSZeroRect;
 
-  return NSMakePoint (frame.origin.x + frame.size.width + 1,
-                        frame.origin.y + frame.size.height
-                        - submenuFrame.size.height);
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == GSWindowMakerInterfaceStyle)
+    {
+      NSRect aRect = [menu_view rectOfItemAtIndex:[self indexOfItemWithTitle:[aSubmenu title]]];
+      NSPoint subOrigin = [win_link convertBaseToScreen: NSMakePoint(aRect.origin.x, aRect.origin.y)];
+
+      return NSMakePoint (frame.origin.x + frame.size.width + 1,
+                         subOrigin.y - (submenuFrame.size.height - 41));
+    }
+  else
+    {
+      return NSMakePoint (frame.origin.x + frame.size.width + 1,
+                          frame.origin.y + frame.size.height
+                          - submenuFrame.size.height);
+    }
 }
 
 - (NSMenu *) supermenu
@@ -836,6 +850,12 @@ NSArray* array;
       [defaults synchronize];
     }
 } 
+
+- (void) _rightMouseDisplay
+{
+  // TODO: implement this method 
+  ;
+}
 
 - (void) display
 {

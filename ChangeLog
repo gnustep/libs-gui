@@ -1,3 +1,21 @@
+1999-09-07  Michael Hanni   <mhanni@sprintmail.com>
+
+	* Source/NSInterfaceStyle.m: added support for
+	GSWindowMakerInterfaceStyle.
+	* Headers/NSInterfaceStyle.h: added enum
+	GSWindowMakerInterfaceStyle.
+	* Source/NSMenu.m: implemented NSInterfaceStyle based window maker
+	like menus. i.e. they line up with the menu item selected.
+	try 'defaults write NSGlobalDomain NSMenuInterfaceStyle
+	     GSWindowMakerInterfaceStyle'
+	* Source/NSTabView.m: some modifications to make tabs on the
+	bottom look a little better.
+	* Source/NSAttributedString.m: turned off fixParagraphAttributes,
+	was causing Text Network to crash. (Most likely my fault.)
+	* Source/NSLayoutManager.m: lots of code... nothing exciting.
+	* Images/*: somehow I triggered CVS to touch everything in here,
+	oops.
+
 Tue Sep  7  6:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSScrollView.m: ([-setContentView:]) prohibit illegal settings.

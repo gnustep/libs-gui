@@ -169,8 +169,8 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 
   position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)aKey, aSort);
 
-  NSLog(@"key: %d aObject: %d position: %d", aKey->glyphRange.location,
-aObject->glyphRange.location, position);
+//  NSLog(@"key: %d aObject: %d position: %d", aKey->glyphRange.location,
+//aObject->glyphRange.location, position);
 
   if (position > 0)
     {
@@ -179,18 +179,18 @@ aObject->glyphRange.location, position);
       if (anKey->glyphRange.location == aObject->glyphRange.location)
         {
 //          GSIArrayInsertSorted(_runs, (GSIArrayItem)anObject, aSort);
-	  NSLog(@"=========> duplicated item.");
+//	  NSLog(@"=========> duplicated item.");
 	  GSIArraySetItemAtIndex(_runs, (GSIArrayItem)anObject, position-1);
         }
       else
 	{
-	  NSLog(@"=========> not duplicated item.");
+//	  NSLog(@"=========> not duplicated item.");
 	  GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
 	}
     }
   else if (position == 0)
     {
-	NSLog(@"=========> first item (zero index).");
+//	NSLog(@"=========> first item (zero index).");
 	GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
 //      GSIArrayInsertSorted(_runs, (GSIArrayItem)anObject, aSort);
 //      [self insertObject:anObject atIndex:position];
@@ -198,7 +198,7 @@ aObject->glyphRange.location, position);
   else
     NSLog(@"dead. VERY DEAD DEAD DEAD DEAD.");
 
-  NSLog(@"==> %d item(s)", GSIArrayCount(_runs));
+//  NSLog(@"==> %d item(s)", GSIArrayCount(_runs));
 }
 
 - (void)insertObject:(id)anObject
@@ -536,16 +536,19 @@ textContainer(s) in containerRuns.", [containerRuns count]);
     {
       GSTextContainerLayoutInfo *aNewLine = [containerRuns objectAtIndex:i];
 
+/*
       NSLog(@"glyphRangeForTextContainer: (%d, %d)",
 aNewLine->glyphRange.location,
 aNewLine->glyphRange.length);
+*/
 
       if ([aNewLine->textContainer isEqual:aTextContainer])
         {
+/*
 	  NSLog(@"glyphRangeForWantedTextContainer: (%d, %d)",
 aNewLine->glyphRange.location,
 aNewLine->glyphRange.length);
-
+*/
 	  return aNewLine->glyphRange;
         }
     }
@@ -927,7 +930,7 @@ info->lineFragmentRect.size.height);
 
   firstPosition = [fragmentRuns indexOfObjectContainingLocation:glyphRange.location];
   lastPosition = [fragmentRuns 
-indexOfObjectContainingLocation:(glyphRange.location+glyphRange.length-2)];
+indexOfObjectContainingLocation:(glyphRange.location+glyphRange.length-3)];
 
   NSLog(@"glyphRange: (%d, %d) position1: %d position2: %d",
 glyphRange.location, glyphRange.length, firstPosition, lastPosition);
@@ -936,13 +939,16 @@ glyphRange.location, glyphRange.length, firstPosition, lastPosition);
     {
       if (lastPosition == -1)
         {
-          lastPosition = [fragmentRuns count]; // FIXME
+          lastPosition = [fragmentRuns count] - 1; // FIXME
 	  NSLog(@"fixed lastPosition: %d", lastPosition);
         }
 
-      for (i = firstPosition; i < lastPosition; i++)
+      for (i = firstPosition; i <= lastPosition; i++)
         {
 	  GSLineLayoutInfo *aLine = [fragmentRuns objectAtIndex:i];
+	  NSRect aRect = aLine->lineFragmentRect;
+	  aRect.size.height -= 4;
+
 /*
 NSLog(@"drawRange: (%d, %d) inRect (%f, %f) (%f, %f)",
 aLine->glyphRange.location,
@@ -952,6 +958,8 @@ aLine->lineFragmentRect.origin.y,
 aLine->lineFragmentRect.size.width,
 aLine->lineFragmentRect.size.height);
 */
+
+          NSEraseRect (aRect);
 	  [_textStorage drawRange:aLine->glyphRange inRect:aLine->lineFragmentRect];
         }
     }
@@ -1015,13 +1023,15 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 {
   NSSize cSize = [aContainer containerSize];
   float i = 0.0;
-  NSMutableArray *lines = [NSMutableArray new];
+  NSMutableArray *lineStarts = [NSMutableArray new];
+  NSMutableArray *lineEnds = [NSMutableArray new];
   int indexToAdd;
   _GNUTextScanner *lineScanner;
   _GNUTextScanner *paragraphScanner;
   BOOL lastLineForContainerReached = NO;
   NSString *aString;
   int previousScanLocation;
+  int previousParagraphLocation;
   int endScanLocation;
   int startIndex;
   NSRect firstProposedRect;
@@ -1038,9 +1048,11 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
   NSRange currentStringRange;
   NSRange trailingSpacesRange;
   NSRange leadingNlRange;
+  NSRange trailingNlRange;
   NSSize lSize;
   float lineWidth = 0.0;
   float ourLines = 0.0;
+  int beginLineIndex = 0;
 
   NSLog(@"rebuilding Layout at index: %d.\n", glyphIndex);
 
@@ -1075,16 +1087,22 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
   while (![paragraphScanner isAtEnd])
     {
-//      leadingNlRange=[paragraphScanner scanSetCharacters];
-      paragraphRange = [paragraphScanner scanNonSetCharacters];
-      leadingNlRange=[paragraphScanner scanSetCharacters];
+      previousParagraphLocation = [paragraphScanner scanLocation];
+      beginLineIndex = previousParagraphLocation;
+      lineWidth = 0.0;
 
-      if (leadingNlRange.length)
-	currentStringRange = NSUnionRange (leadingNlRange,paragraphRange);
+      leadingNlRange=[paragraphScanner scanSetCharacters];
+      paragraphRange = [paragraphScanner scanNonSetCharacters];
+      trailingNlRange=[paragraphScanner scanSetCharacters];
+
+//      NSLog(@"leadingNlRange: (%d, %d)", leadingNlRange.location, leadingNlRange.length);
+
+//      if (leadingNlRange.length)
+//	paragraphRange = NSUnionRange (leadingNlRange,paragraphRange);
+//      if (trailingNlRange.length)
+//	paragraphRange = NSUnionRange (trailingNlRange,paragraphRange);
 
       NSLog(@"paragraphRange: (%d, %d)", paragraphRange.location, paragraphRange.length);
-
-      NSLog(@"======> begin paragraph");
 
       lineScanner = [_GNUTextScanner scannerWithString:[[_textStorage string] substringWithRange:paragraphRange]
 		      set:selectionWordGranularitySet invertedSet:invSelectionWordGranularitySet];
@@ -1092,6 +1110,7 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
       while(![lineScanner isAtEnd])
         {
           previousScanLocation = [lineScanner scanLocation];
+
            // snack next word
           leadingSpacesRange = [lineScanner scanSetCharacters];    // leading spaces: only first time
           currentStringRange = [lineScanner scanNonSetCharacters];
@@ -1104,16 +1123,28 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
 	  lSize = [_textStorage sizeRange:currentStringRange];
 
-	  if (lineWidth + lSize.width < cSize.width)
+//	  lSize = [_textStorage sizeRange:
+//NSMakeRange(currentStringRange.location+paragraphRange.location+startIndex,
+//currentStringRange.length)];
+
+	  if ((lineWidth + lSize.width) < cSize.width)
 	    {
 	      if ([lineScanner isAtEnd])
                 {
 		  NSLog(@"we are at end before finishing a line: %d.\n",  [lineScanner scanLocation]);
-	          [lines addObject:[NSNumber numberWithInt:(int)[lineScanner scanLocation] + paragraphRange.location]];
+		NSLog(@"scanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d",
+[lineScanner scanLocation],
+previousParagraphLocation,
+beginLineIndex);
+		  [lineStarts addObject: [NSNumber
+numberWithInt:beginLineIndex]];
+	          [lineEnds addObject: [NSNumber
+numberWithInt:(int)[lineScanner scanLocation] + previousParagraphLocation - (beginLineIndex)]];
+	          lineWidth = 0.0;
                 }
 
 	      lineWidth += lSize.width;
-	      NSLog(@"lineWidth: %f", lineWidth);
+	      //NSLog(@"lineWidth: %f", lineWidth);
 	    }
 	  else
 	    {
@@ -1124,13 +1155,22 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
                  }
 
 	      [lineScanner setScanLocation:previousScanLocation];
-	      indexToAdd = previousScanLocation + paragraphRange.location;
+	      indexToAdd = previousScanLocation + previousParagraphLocation
+- (beginLineIndex);
+
+		NSLog(@"previousScanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d indexToAdd = %d",
+previousScanLocation,
+previousParagraphLocation,
+beginLineIndex,
+indexToAdd);
+
 	      ourLines += 14.0;
-	      lineWidth = 0;
+	      lineWidth = 0.0;
 
-	      NSLog(@"indexToAdd: %d\tourLines: %f", indexToAdd, ourLines);
-
-	      [lines addObject:[NSNumber numberWithInt:indexToAdd]];
+	      [lineStarts addObject: [NSNumber
+numberWithInt:beginLineIndex]];
+	      [lineEnds addObject:[NSNumber numberWithInt:indexToAdd]];
+	      beginLineIndex = previousScanLocation + previousParagraphLocation;
 	    }
 	}
 
@@ -1138,7 +1178,7 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
         break;
     }
 
-  endScanLocation = [lineScanner scanLocation] + paragraphRange.location;
+  endScanLocation = [paragraphScanner scanLocation];
 
   NSLog(@"endScanLocation: %d", endScanLocation);
 
@@ -1151,14 +1191,18 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
   // step 2. break the lines up and assign rects to them.
 
-  for (i=0;i<[lines count];i++)
+  for (i=0;i<[lineStarts count];i++)
     {
       NSRect aRect, bRect;
       float padding = [aContainer lineFragmentPadding];
       NSRange ourRange;
 
-      NSLog(@"\t\t===> %d", [[lines objectAtIndex:i] intValue]);
+//      NSLog(@"\t\t===> %d", [[lines objectAtIndex:i] intValue]);
 
+      ourRange = NSMakeRange ([[lineStarts objectAtIndex: i] intValue],
+			      [[lineEnds objectAtIndex: i] intValue]);
+
+/*
       if (i == 0)
         {
           ourRange = NSMakeRange (startIndex, 
@@ -1170,7 +1214,10 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 [[lines objectAtIndex:i] intValue] - [[lines objectAtIndex:i-1]
 intValue]);
         }
- 
+*/
+      NSLog(@"line: %@|", [[_textStorage string]
+substringWithRange:ourRange]);
+
       firstProposedRect = NSMakeRect (0, i * 14, cSize.width, 14);
 
       // ask our textContainer to fix our lineFragment.
@@ -1204,7 +1251,8 @@ intValue]);
 //	  didCompleteLayoutForTextContainer:[textContainers objectAtIndex:i]
 //          atEnd:YES];
 
-  [lines release];
+  [lineStarts release];
+  [lineEnds release];
 
   return endScanLocation;
 }

@@ -309,204 +309,234 @@
 
   if (tab_type == NSBottomTabsBezelBorder)
     {
-      for (i=0;i<howMany;i++) {
-        // where da tab be at?
-        NSSize s;
-        NSRect r;
-        NSPoint iP;
-        NSTabViewItem *anItem = [tab_items objectAtIndex:i];
-        NSTabState itemState;
+      for (i=0;i<howMany;i++) 
+	{
+	  // where da tab be at?
+	  NSSize s;
+	  NSRect r;
+	  NSPoint iP;
+	  NSTabViewItem *anItem = [tab_items objectAtIndex:i];
+	  NSTabState itemState;
 
-        itemState = [anItem tabState];
+	  itemState = [anItem tabState];
 
-        s = [anItem sizeOfLabel:NO];
+	  s = [anItem sizeOfLabel:NO];
 
-        if (i == 0) {
+	  if (i == 0)
+	    {
+	      int iFlex = 0;
+	      iP.x = rect.origin.x;
+	      iP.y = rect.origin.y;
 
-          iP.x = rect.origin.x;
-          iP.y = rect.origin.y;
+	      if (itemState == NSSelectedTab)
+		{
+		  iP.y += 1;
+		  [[NSImage imageNamed:@"common_TabDownSelectedLeft.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		  iP.y -= 1;
+		  iFlex = 1;
+		}
+	      else if (itemState == NSBackgroundTab)
+		{
+		  iP.y += 1;
+		  [[NSImage imageNamed:@"common_TabDownUnSelectedLeft.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		  iP.y -= 1;
+		}
+	      else
+		NSLog(@"Not finished yet. Luff ya.\n");
 
-          if (itemState == NSSelectedTab) {
-	    iP.y += 1;
-            [[NSImage imageNamed:@"common_TabDownSelectedLeft.tiff"]
-	      compositeToPoint:iP operation: NSCompositeSourceOver];
-          }
-          else if (itemState == NSBackgroundTab)
-            [[NSImage imageNamed:@"common_TabDownUnSelectedLeft.tiff"]
-	      compositeToPoint:iP operation: NSCompositeSourceOver];
-          else
-	    NSLog(@"Not finished yet. Luff ya.\n");
+	      r.origin.x = rect.origin.x + 13;
+	      r.origin.y = rect.origin.y + 2;
+	      r.size.width = s.width;
+	      r.size.height = 15 + iFlex;
 
-          r.origin.x = rect.origin.x + 13;
-          r.origin.y = rect.origin.y + 2;
-          r.size.width = s.width;
-          r.size.height = 15;
+	      DPSsetlinewidth(ctxt,1);
+	      DPSsetgray(ctxt,1);
+	      DPSmoveto(ctxt, r.origin.x, r.origin.y-1);
+	      DPSrlineto(ctxt, r.size.width, 0);
+	      DPSstroke(ctxt);      
 
-          DPSsetlinewidth(ctxt,1);
-          DPSsetgray(ctxt,1);
-          DPSmoveto(ctxt, r.origin.x, r.origin.y-1);
-          DPSrlineto(ctxt, r.size.width, 0);
-          DPSstroke(ctxt);      
+	      [anItem drawLabel:NO inRect:r];
 
-          [anItem drawLabel:NO inRect:r];
-
-          previousRect = r;
-          previousState = itemState;
-        } else {
-          iP.x = previousRect.origin.x + previousRect.size.width;
-          iP.y = rect.origin.y;
-
-          if (itemState == NSSelectedTab) {
-	    iP.y += 1;
-            [[NSImage
-imageNamed:@"common_TabDownUnSelectedToSelectedJunction.tiff"]
-    	      compositeToPoint:iP operation: NSCompositeSourceOver];
-          }
-          else if (itemState == NSBackgroundTab) {
-	    if (previousState == NSSelectedTab) {
-	      iP.y += 1;
-              [[NSImage
-imageNamed:@"common_TabDownSelectedToUnSelectedJunction.tiff"]
-	        compositeToPoint:iP operation: NSCompositeSourceOver];
-	      iP.y -= 1;
+	      previousRect = r;
+	      previousState = itemState;
 	    } else {
-              [[NSImage
-imageNamed:@"common_TabDownUnSelectedJunction.tiff"]
-	        compositeToPoint:iP operation: NSCompositeSourceOver];
-            }
-        } 
-        else
-	  NSLog(@"Not finished yet. Luff ya.\n");
+	      int iFlex = 0;
+	      iP.x = previousRect.origin.x + previousRect.size.width;
+	      iP.y = rect.origin.y;
 
-        r.origin.x = iP.x + 13;
-        r.origin.y = rect.origin.y + 2;
-        r.size.width = s.width;
-        r.size.height = 15;
+	      if (itemState == NSSelectedTab) 
+		{
+		  iP.y += 1;
+		  iFlex = 1;
+		  [[NSImage imageNamed:@"common_TabDownUnSelectedToSelectedJunction.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		  iP.y -= 1;
+		}
+	      else if (itemState == NSBackgroundTab)
+		{
+		if (previousState == NSSelectedTab)
+		  {
+		    iP.y += 1;
+		    [[NSImage imageNamed:@"common_TabDownSelectedToUnSelectedJunction.tiff"]
+		      compositeToPoint:iP operation: NSCompositeSourceOver];
+		    iP.y -= 1;
+		    iFlex = -1;
+		  } else {
+		    //		    iP.y += 1;
+		    [[NSImage imageNamed:@"common_TabDownUnSelectedJunction.tiff"]
+		      compositeToPoint:iP operation: NSCompositeSourceOver];
+		    //iP.y -= 1;
+		    iFlex = -1;
+		  }
+		} 
+	      else
+		NSLog(@"Not finished yet. Luff ya.\n");
+	      
+	      r.origin.x = iP.x + 13;
+	      r.origin.y = rect.origin.y + 2;
+	      r.size.width = s.width;
+	      r.size.height = 15 + iFlex; // was 15
 
-        DPSsetlinewidth(ctxt,1);
-        DPSsetgray(ctxt,1);
-        DPSmoveto(ctxt, r.origin.x, r.origin.y - 1);
-        DPSrlineto(ctxt, r.size.width, 0);
-        DPSstroke(ctxt);      
+	      iFlex = 0;
 
-        [anItem drawLabel:NO inRect:r];
+	      DPSsetlinewidth(ctxt,1);
+	      DPSsetgray(ctxt,1);
+	      DPSmoveto(ctxt, r.origin.x, r.origin.y - 1);
+	      DPSrlineto(ctxt, r.size.width, 0);
+	      DPSstroke(ctxt);      
 
-        previousRect = r;
-        previousState = itemState;
-      }  
+	      [anItem drawLabel:NO inRect:r];
+	      
+	      previousRect = r;
+	      previousState = itemState;
+	    }  
 
-      if (i == howMany-1) {
-        iP.x += s.width + 13;
+	  if (i == howMany-1)
+	    {
+	      iP.x += s.width + 13;
 
-        if ([anItem tabState] == NSSelectedTab)
-          [[NSImage imageNamed:@"common_TabDownSelectedRight.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-        else if ([anItem tabState] == NSBackgroundTab)
-          [[NSImage imageNamed:@"common_TabDownUnSelectedRight.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-        else
-	  NSLog(@"Not finished yet. Luff ya.\n");
-      }
+	      if ([anItem tabState] == NSSelectedTab)
+		[[NSImage imageNamed:@"common_TabDownSelectedRight.tiff"]
+		  compositeToPoint:iP operation: NSCompositeSourceOver];
+	      else if ([anItem tabState] == NSBackgroundTab)
+		{
+		  //		  iP.y += 1;
+		  [[NSImage imageNamed:@"common_TabDownUnSelectedRight.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		  //		  iP.y -= 1;
+		}
+	      else
+		NSLog(@"Not finished yet. Luff ya.\n");
+	    }
+	}
     }
-    return;
-  }
+  else if (tab_type == NSTopTabsBezelBorder)
+    {
+      for (i=0;i<howMany;i++) 
+	{
+	  // where da tab be at?
+	  NSSize s;
+	  NSRect r;
+	  NSPoint iP;
+	  NSTabViewItem *anItem = [tab_items objectAtIndex:i];
+	  NSTabState itemState;
+	  
+	  itemState = [anItem tabState];
+	  
+	  s = [anItem sizeOfLabel:NO];
+	  
+	  if (i == 0)
+	    {
+	      iP.x = rect.origin.x;
+	      iP.y = rect.size.height;
+	      
+	      if (itemState == NSSelectedTab)
+		{
+		  iP.y -= 1;
+		  [[NSImage imageNamed:@"common_TabSelectedLeft.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		}
+	      else if (itemState == NSBackgroundTab)
+		[[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
+		  compositeToPoint:iP operation: NSCompositeSourceOver];
+	      else
+		NSLog(@"Not finished yet. Luff ya.\n");
 
-  for (i=0;i<howMany;i++) {
-    // where da tab be at?
-    NSSize s;
-    NSRect r;
-    NSPoint iP;
-    NSTabViewItem *anItem = [tab_items objectAtIndex:i];
-    NSTabState itemState;
+	      r.origin.x = rect.origin.x + 13;
+	      r.origin.y = rect.size.height;
+	      r.size.width = s.width;
+	      r.size.height = 15;
+	      
+	      DPSsetlinewidth(ctxt,1);
+	      DPSsetgray(ctxt,1);
+	      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
+	      DPSrlineto(ctxt, r.size.width, 0);
+	      DPSstroke(ctxt);      
+	      
+	      [anItem drawLabel:NO inRect:r];
+	      
+	      previousRect = r;
+	      previousState = itemState;
+	    } else {
+	      iP.x = previousRect.origin.x + previousRect.size.width;
+	      iP.y = rect.size.height;
 
-    itemState = [anItem tabState];
+	      if (itemState == NSSelectedTab)
+		{
+		  iP.y -= 1;
+		  [[NSImage imageNamed:@"common_TabUnSelectToSelectedJunction.tiff"]
+		    compositeToPoint:iP operation: NSCompositeSourceOver];
+		}
+	      else if (itemState == NSBackgroundTab)
+		{
+		  if (previousState == NSSelectedTab)
+		    {
+		      iP.y -= 1;
+		      [[NSImage imageNamed:@"common_TabSelectedToUnSelectedJunction.tiff"]
+			compositeToPoint:iP operation: NSCompositeSourceOver];
+		      iP.y += 1;
+		    } else {
+		      [[NSImage imageNamed:@"common_TabUnSelectedJunction.tiff"]
+			compositeToPoint:iP operation: NSCompositeSourceOver];
+		    }
+		} 
+	      else
+		NSLog(@"Not finished yet. Luff ya.\n");
 
-    s = [anItem sizeOfLabel:NO];
+	      r.origin.x = iP.x + 13;
+	      r.origin.y = rect.size.height;
+	      r.size.width = s.width;
+	      r.size.height = 15;
 
-    if (i == 0) {
+	      DPSsetlinewidth(ctxt,1);
+	      DPSsetgray(ctxt,1);
+	      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
+	      DPSrlineto(ctxt, r.size.width, 0);
+	      DPSstroke(ctxt);      
+	      
+	      [anItem drawLabel:NO inRect:r];
+	      
+	      previousRect = r;
+	      previousState = itemState;
+	    }  
 
-      iP.x = rect.origin.x;
-      iP.y = rect.size.height;
-
-      if (itemState == NSSelectedTab) {
-	iP.y -= 1;
-        [[NSImage imageNamed:@"common_TabSelectedLeft.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-      }
-      else if (itemState == NSBackgroundTab)
-        [[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-      else
-	NSLog(@"Not finished yet. Luff ya.\n");
-
-      r.origin.x = rect.origin.x + 13;
-      r.origin.y = rect.size.height;
-      r.size.width = s.width;
-      r.size.height = 15;
-
-      DPSsetlinewidth(ctxt,1);
-      DPSsetgray(ctxt,1);
-      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
-      DPSrlineto(ctxt, r.size.width, 0);
-      DPSstroke(ctxt);      
-
-      [anItem drawLabel:NO inRect:r];
-
-      previousRect = r;
-      previousState = itemState;
-    } else {
-      iP.x = previousRect.origin.x + previousRect.size.width;
-      iP.y = rect.size.height;
-
-      if (itemState == NSSelectedTab) {
-	iP.y -= 1;
-        [[NSImage imageNamed:@"common_TabUnSelectToSelectedJunction.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-      }
-      else if (itemState == NSBackgroundTab) {
-	if (previousState == NSSelectedTab) {
-	  iP.y -= 1;
-          [[NSImage imageNamed:@"common_TabSelectedToUnSelectedJunction.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-	  iP.y += 1;
-	} else {
-          [[NSImage imageNamed:@"common_TabUnSelectedJunction.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-        }
-      } 
-      else
-	NSLog(@"Not finished yet. Luff ya.\n");
-
-      r.origin.x = iP.x + 13;
-      r.origin.y = rect.size.height;
-      r.size.width = s.width;
-      r.size.height = 15;
-
-      DPSsetlinewidth(ctxt,1);
-      DPSsetgray(ctxt,1);
-      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
-      DPSrlineto(ctxt, r.size.width, 0);
-      DPSstroke(ctxt);      
-
-      [anItem drawLabel:NO inRect:r];
-
-      previousRect = r;
-      previousState = itemState;
-    }  
-
-    if (i == howMany-1) {
-        iP.x += s.width + 13;
-
-      if ([anItem tabState] == NSSelectedTab)
-        [[NSImage imageNamed:@"common_TabSelectedRight.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-      else if ([anItem tabState] == NSBackgroundTab)
-        [[NSImage imageNamed:@"common_TabUnSelectedRight.tiff"]
-	  compositeToPoint:iP operation: NSCompositeSourceOver];
-      else
-	NSLog(@"Not finished yet. Luff ya.\n");
+	  if (i == howMany-1)
+	    {
+	    iP.x += s.width + 13;
+	    
+	    if ([anItem tabState] == NSSelectedTab)
+	      [[NSImage imageNamed:@"common_TabSelectedRight.tiff"]
+		compositeToPoint:iP operation: NSCompositeSourceOver];
+	    else if ([anItem tabState] == NSBackgroundTab)
+	      [[NSImage imageNamed:@"common_TabUnSelectedRight.tiff"]
+		compositeToPoint:iP operation: NSCompositeSourceOver];
+	    else
+	      NSLog(@"Not finished yet. Luff ya.\n");
+	    }
+	}
     }
-  }
 
   DPSgrestore(ctxt);
 }
@@ -539,7 +569,9 @@ imageNamed:@"common_TabDownUnSelectedJunction.tiff"]
       [self selectTabViewItem:anItem];
     }
 
-  [self setNeedsDisplay:YES];
+  //  [self setNeedsDisplay:YES];
+
+  [window update];
 
   return [super hitTest:aPoint];
 }

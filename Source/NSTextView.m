@@ -939,10 +939,21 @@ container, returning the modified location. */
   [textStorage replaceCharactersInRange:[self selectedRange]
        withAttributedString:(NSAttributedString *)aString];
 
+  [self sizeToFit];                       // ScrollView interaction
+
   [self setSelectedRange:NSMakeRange([self 
     selectedRange].location+[aString length],0)];
 
+  [self display];
+  [window update]; 
+  [self textDidChange: nil];      // broadcast notification
+
   NSLog(@"%@", [textStorage string]);
+}
+
+- (void)sizeToFit
+{
+  NSLog(@"sizeToFit called.\n");
 }
 
 - (void)drawRect:(NSRect)aRect
