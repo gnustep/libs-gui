@@ -102,6 +102,7 @@ static SEL	ccSel = @selector(_checkCursorRectangles:forEvent:);
 static SEL	ctSel = @selector(_checkTrackingRectangles:forEvent:);
 static IMP	ccImp;
 static IMP	ctImp;
+static Class	responderClass;
 
 //
 // Class methods
@@ -114,6 +115,7 @@ static IMP	ctImp;
       [self setVersion: 2];
       ccImp = [self instanceMethodForSelector: ccSel];
       ctImp = [self instanceMethodForSelector: ctSel];
+      responderClass = [NSResponder class];
     }
 }
 
@@ -1040,7 +1042,7 @@ static IMP	ctImp;
   if (first_responder == aResponder)
     return YES;
 
-  if (![aResponder isKindOfClass: [NSResponder class]])
+  if (![aResponder isKindOfClass: responderClass])
     return NO;
 
   if (![aResponder acceptsFirstResponder])
