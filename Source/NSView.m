@@ -629,17 +629,24 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSPoint	new;
   PSMatrix	*matrix;
-  NSPoint	yyy;
-  PSMatrix	*xxx;
 
   if (!aView)
     aView = [window contentView];
 
-  xxx = [[aView _windowMatrix] copy];
-  [xxx inverse];
-  (*concatImp)(xxx, concatSel, [self _windowMatrix]);
-  yyy = [xxx pointInMatrixSpace: aPoint];
-  
+#if 1
+  /*
+   * Convert from aView to window
+   */
+  matrix = [aView _windowMatrix];
+  new = [matrix pointInMatrixSpace: aPoint];
+  /*
+   * Convert from window to self.
+   */
+  matrix = [[self _windowMatrix] copy];
+  [matrix inverse];
+  new = [matrix pointInMatrixSpace: new];
+  [matrix release];
+#else  
   if ([self isDescendantOf: aView])
     {
       NSMutableArray	*path;
@@ -664,8 +671,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       new = [aView convertPoint: aPoint toView: nil];
       new = [self convertPoint: new fromView: nil];
     }
-
-//  NSAssert(NSEqualPoints(new, yyy), NSInternalInconsistencyException);
+#endif
   return new;
 }
 
@@ -719,6 +725,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (!aView)
     aView = [window contentView];
 
+#if 1
+  /*
+   * Convert from aView to window
+   */
+  matrix = [aView _windowMatrix];
+  new = [matrix sizeInMatrixSpace: aSize];
+  /*
+   * Convert from window to self.
+   */
+  matrix = [[self _windowMatrix] copy];
+  [matrix inverse];
+  new = [matrix sizeInMatrixSpace: new];
+  [matrix release];
+#else
   if ([self isDescendantOf: aView])
     {
       NSArray* path = [self _pathBetweenSubview: self toSuperview: aView];
@@ -739,7 +759,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       new = [aView convertSize: aSize toView: nil];
       new = [self convertSize: new fromView: nil];
     }
-
+#endif
   return new;
 }
 
