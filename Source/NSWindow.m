@@ -2302,7 +2302,8 @@ resetCursorRectsForView(NSView *theView)
 
   /*
    * If there is a first responder tell it to resign.
-   * Change only if it replies Y */
+   * Change only if it replies YES.
+   */
   if ((_firstResponder) && (![_firstResponder resignFirstResponder]))
     return NO;
 
