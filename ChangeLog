@@ -1,3 +1,22 @@
+2003-08-20 14:36  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSFontInfo.m (+sharedEnumerator,
+	+fontInfoForFontName:matrix:screenFont:): Assert that the backend
+	classes have been set.
+
+	* Source/NSBrowser.m (+initialize, -initWithFrame:): Don't create
+	the shared title cell in +initialize. Creating the cell requires
+	that the backend has been set up (by creating the shared application
+	object). We can't assume that this has been done before +initialize
+	is called.
+
+	* Source/NSTextView.m (+initialize, -initWithFrame:textContainer:):
+	Don't register for services in +initialize for the same reason: the
+	shared application object might not have been created yet (also, note
+	that calling +sharedApplication is unsafe; it will create a shared
+	application object, but in some cases of the wrong class, which would
+	lead to confusing errors later).
+
 2003-08-20 14:08  Alexander Malmberg <alexander@malmberg.org>
 
 	Clean up code to remove warnings issued by (what will become)

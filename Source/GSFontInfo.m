@@ -33,6 +33,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSException.h>
 
 static Class fontEnumeratorClass = Nil;
 static Class fontInfoClass = Nil;
@@ -63,6 +64,10 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 + (GSFontEnumerator*) sharedEnumerator
 {
+  NSAssert(fontEnumeratorClass,
+    @"Called with fontEnumeratorClass unset."
+    @" The shared NSApplication instance must be created before methods that"
+    @" need the backend may be called.");
   if (!sharedEnumerator)
     sharedEnumerator = [[fontEnumeratorClass alloc] init];
   return sharedEnumerator;
@@ -125,6 +130,10 @@ static GSFontEnumerator *sharedEnumerator = nil;
                              matrix: (const float *)fmatrix
 			 screenFont: (BOOL)screenFont;
 {
+  NSAssert(fontInfoClass,
+    @"Called with fontInfoClass unset."
+    @" The shared NSApplication instance must be created before methods that"
+    @" need the backend may be called.");
   return AUTORELEASE([[fontInfoClass alloc] initWithFontName: nfontName 
 						      matrix: fmatrix
 						  screenFont: screenFont]);

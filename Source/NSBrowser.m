@@ -1887,7 +1887,6 @@ static NSTextFieldCell *titleCell;
       // Initial version
       [self setVersion: 1];
       scrollerWidth = [NSScroller scrollerWidth];
-      titleCell = [GSBrowserTitleCell new];
     }
 }
 
@@ -1900,6 +1899,12 @@ static NSTextFieldCell *titleCell;
 {
   NSSize bs;
   //NSScroller *hs;
+
+  /* Created the shared titleCell if it hasn't been created already. */
+  if (!titleCell)
+    {
+      titleCell = [GSBrowserTitleCell new];
+    }
 
   self = [super initWithFrame: rect];
 

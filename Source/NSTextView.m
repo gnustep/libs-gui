@@ -375,19 +375,23 @@ this happens when layout has been invalidated, and when we are resized.
     {
       [self setVersion: currentVersion];
       notificationCenter = [NSNotificationCenter defaultCenter];
-      [self registerForServices];
     }
 }
+
+static BOOL did_register_for_services;
 
 +(void) registerForServices
 {
   NSArray *types;
-      
+
+  did_register_for_services = YES;
+
   types = [NSArray arrayWithObjects: NSStringPboardType,
 		    NSRTFPboardType, NSRTFDPboardType, nil];
- 
-  [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
-						       returnTypes: types];
+
+  NSAssert(NSApp, @"Called before the shared application object was created.");
+  [NSApp registerServicesMenuSendTypes: types
+			   returnTypes: types];
 }
 
 +(NSDictionary *) defaultTypingAttributes
@@ -473,6 +477,9 @@ If a text view is added to an empty text network, it keeps its attributes.
   self = [super initWithFrame: frameRect];
   if (!self)
     return nil;
+
+  if (!did_register_for_services)
+    [isa registerForServices];
 
   _minSize = NSMakeSize(0, 0);
   _maxSize = NSMakeSize(HUGE,HUGE);
