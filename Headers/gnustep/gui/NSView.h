@@ -92,7 +92,6 @@ enum {
 
   BOOL is_rotated_from_base;
   BOOL is_rotated_or_scaled_from_base;
-  BOOL needs_display;
   BOOL post_frame_changes;
   BOOL post_bounds_changes;
   BOOL autoresize_subviews;
