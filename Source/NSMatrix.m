@@ -544,14 +544,7 @@ static int mouseDownFlags = 0;
 	 column:(int)column
 {
   [[cells objectAtIndex:row] replaceObjectAtIndex:column withObject:newCell];
-#if 1
   [self setNeedsDisplayInRect:[self cellFrameAtRow:row column:column]];
-#else
-  [self lockFocus];
-  [newCell drawWithFrame:[self cellFrameAtRow:row column:column] inView:self];
-  [[self window] flushWindow];
-  [self unlockFocus];
-#endif
 }
 
 - (void)removeColumn:(int)column
@@ -727,14 +720,7 @@ static int mouseDownFlags = 0;
   else
     [aCell setState:value];
 
-#if 1
   [self setNeedsDisplayInRect:[self cellFrameAtRow:row column:column]];
-#else
-  [self lockFocus];
-  [aCell drawWithFrame:[self cellFrameAtRow:row column:column] inView:self];
-  [[self window] flushWindow];
-  [self unlockFocus];
-#endif
 }
 
 - (void)deselectAllCells
@@ -752,17 +738,10 @@ static int mouseDownFlags = 0;
 	aCell = [row objectAtIndex:j];
 	[aCell setState:0];
 	[aCell highlight:NO withFrame:theFrame inView:self];
-#if 1
 	[self setNeedsDisplayInRect:theFrame];
-#else
-	[aCell drawWithFrame:theFrame inView:self];
-#endif
 	((tMatrix)selectedCells)->matrix[i][j] = NO;
       }
   }
-#if 0
-  [[self window] flushWindow];
-#endif
 }
 
 - (void)deselectSelectedCell
@@ -805,16 +784,8 @@ static int mouseDownFlags = 0;
        not allowed. Otherwise deselect the selected cell. */
     if (!aCell && !allowsEmptySelection)
       return;
-    else if (selectedCell) {
-      NSRect f = [self cellFrameAtRow:selectedRow column:selectedColumn];
-
+    else if (selectedCell)
       [selectedCell setState:0];
-#if 0
-      [self lockFocus];
-      [selectedCell drawWithFrame:f inView:self];
-      [self unlockFocus];
-#endif
-    }
   }
   else if (!aCell)
     return;
@@ -824,14 +795,7 @@ static int mouseDownFlags = 0;
   selectedColumn = column;
   [selectedCell setState:1];
 
-#if 1
   [self setNeedsDisplayInRect:[self cellFrameAtRow:row column:column]];
-#else
-  [self lockFocus];
-  [aCell drawWithFrame:[self cellFrameAtRow:row column:column] inView:self];
-  [self unlockFocus];
-  [[self window] flushWindow];
-#endif
 }
 
 - (BOOL)selectCellWithTag:(int)anInt
@@ -1069,9 +1033,6 @@ static int mouseDownFlags = 0;
     intRect.origin.y -= cellSize.height + intercell.height;
 #endif
   }
-#if 0
-  [[self window] flushWindow];
-#endif
 }
 
 - (void)drawCellAtRow:(int)row
@@ -1227,11 +1188,7 @@ static int mouseDownFlags = 0;
 	  selectedRow = row;
 	  selectedColumn = column;
 	  [selectedCell highlight:YES withFrame:rect inView:self];
-#if 1
 	  [self setNeedsDisplayInRect:rect];
-#else
-	  [[self window] flushWindow];
-#endif
 	  break;
 
 	case NSRadioModeMatrix:
@@ -1244,11 +1201,7 @@ static int mouseDownFlags = 0;
 	    id aCell = selectedCell;
 
 	    [self deselectSelectedCell];
-#if 1
 	    [self setNeedsDisplayInRect:f];
-#else
-	    [aCell drawWithFrame:f inView:self];
-#endif
 	  }
 	  else {
 	    [previousCell highlight:NO withFrame:previousCellRect inView:self];
@@ -1259,11 +1212,7 @@ static int mouseDownFlags = 0;
 	  selectedRow = row;
 	  selectedColumn = column;
 	  [selectedCell highlight:YES withFrame:rect inView:self];
-#if 1
 	  [self setNeedsDisplayInRect:rect];
-#else
-	  [[self window] flushWindow];
-#endif
 	  break;
 
 	case NSListModeMatrix: {
@@ -1293,15 +1242,8 @@ static int mouseDownFlags = 0;
 
 	      [selectedCell setState:1];
 	      [selectedCell highlight:YES withFrame:rect inView:self];
-#if 0
-	      [selectedCell drawWithFrame:rect inView:self];
-#endif
 	      ((tMatrix)selectedCells)->matrix[row][column] = YES;
-#if 1
 	      [self setNeedsDisplayInRect:rect];
-#else
-	      [[self window] flushWindow];
-#endif
 	      break;
 	    }
 	  }
@@ -1318,9 +1260,6 @@ static int mouseDownFlags = 0;
 	  ASSIGN(selectedCell, aCell);
 	  selectedRow = row;
 	  selectedColumn = column;
-#if 0
-	  [[self window] flushWindow];
-#endif
 	  break;
 	}
       }
@@ -1370,17 +1309,11 @@ static int mouseDownFlags = 0;
       [selectedCell setState:![selectedCell state]];
       [selectedCell highlight:NO withFrame:rect inView:self];
       [self setNeedsDisplayInRect:rect];
-#if 0
-      [selectedCell drawWithFrame:rect inView:self];
-#endif
       break;
     case NSRadioModeMatrix:
       [selectedCell setState:1];
       [selectedCell highlight:NO withFrame:rect inView:self];
       [self setNeedsDisplayInRect:rect];
-#if 0
-      [selectedCell drawWithFrame:rect inView:self];
-#endif
       break;
     case NSListModeMatrix:
       break;
@@ -1390,10 +1323,6 @@ static int mouseDownFlags = 0;
     [[selectedCell target] performSelector:[selectedCell action] withObject:self];
   else if (target)
     [target performSelector:action withObject:self];
-
-#if 0
-  [[self window] flushWindow];
-#endif
 
   [self unlockFocus];
   if (mode != NSTrackModeMatrix)
@@ -1929,11 +1858,7 @@ static int mouseDownFlags = 0;
       aCell = [row objectAtIndex:colNo];
       [aCell setState:state];
       [aCell highlight:highlight withFrame:rect inView:self];
-#if 1
       [self setNeedsDisplayInRect:rect];
-#else
-      [aCell drawWithFrame:rect inView:self];
-#endif
       ((tMatrix)selectedCells)->matrix[rowNo][colNo] = YES;
       rect.origin.x += cellSize.width + intercell.width;
     }
@@ -2050,11 +1975,7 @@ static int mouseDownFlags = 0;
       aCell = [row objectAtIndex:j];
       [aCell setState:state];
       [aCell highlight:highlight withFrame:rect inView:self];
-#if 1
       [self setNeedsDisplayInRect:rect];
-#else
-      [aCell drawWithFrame:rect inView:self];
-#endif
       ((tMatrix)selectedCells)->matrix[i][j] = YES;
       rect.origin.x += cellSize.width + intercell.width;
     }

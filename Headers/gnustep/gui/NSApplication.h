@@ -298,6 +298,11 @@ extern NSString *NSEventTrackingRunLoopMode;
 
 @end
 
+
+/* Backend functions */
+extern BOOL initialize_gnustep_backend (void);
+
+
 //
 // Notifications
 //
