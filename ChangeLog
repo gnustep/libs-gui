@@ -1,3 +1,8 @@
+Mon Nov 9 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSColor.m: update to Rhapsody DR2 docs - added system colors
+	* Headers/NSColor.h: update to add system colors etc.
+
 Thu Nov 5 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* Model/GNUmakefile enable build of test app, fix resource files ref.
