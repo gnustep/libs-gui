@@ -9,11 +9,21 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
-@section Noteworthy changes in version @samp{0.8.0}
+@section Noteworthy changes in version @samp{0.8.1}
+
+@itemize @bullet
+@item Handle scaled curves correctly.
+@item Handle alpha channel with images correctly
+@item NSWindow frame string save without flipping coordinates.
+@item NSSound implemented. gssnd sound server.
+@item Spell checker starts correctly now.
+@end itemize
 
 @c ====================================================================
 @c Keep the next line just below the list of changes in most recent version.
 @ifclear ANNOUNCE-ONLY
+
+@section Noteworthy changes in version @samp{0.8.0}
 
 @section Noteworthy changes in version @samp{0.7.9}
 

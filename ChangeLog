@@ -1,3 +1,10 @@
+2002-08-30  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.8.1
+
+	* Documentation/GNUmakefile: Set dir for reference documentation
+	* Documentation/GNUmakefile.postamble: New file.
+
 2002-08-30 00:11  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSBezierPath.m (-appendBezierPath:): Handle curves

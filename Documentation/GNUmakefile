@@ -64,31 +64,13 @@ BUGS_TEXI_FILES = version.texi
 BUGS_TEXT_MAIN = todo.texi
 BUGS_DOC_INSTALL_DIR = Developer/Gui/ReleaseNotes/$(VERSION)
 
--include Makefile.preamble
+REF_DOC_INSTALL_DIR = $(GNUSTEP_INSTALLATION_DIR)/Documentation/Developer/Gui/Reference
+
+-include GNUmakefile.preamble
 
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
 
--include Makefile.postamble
-
-regenerate: $(DOCUMENT_TEXT_NAME)
-	mv $(TOP_DOC_FILES) ..
-
-version.texi: ../Version
-	rm -f version.texi
-	echo '@set GNUSTEP-GUI-VERSION' $(GNUSTEP_GUI_VERSION) \
-		> version.texi
-	echo '@set GNUSTEP-GUI-GCC $(GNUSTEP_GUI_GCC)' \
-		>> version.texi
-	echo '@set GNUSTEP-GUI-BASE $(GNUSTEP_GUI_BASE)' \
-		>> version.texi
-	echo '@set GNUSTEP-GUI-LIBTIFF $(GNUSTEP_GUI_LIBTIFF)' \
-		>> version.texi
-	if [ $(GNUSTEP_GUI_FTP_MACHINE) ]; then \
-	  echo '@set GNUSTEP-GUI-FTP-MACHINE $(GNUSTEP_GUI_FTP_MACHINE)' \
-		>> version.texi; fi
-	if [ $(GNUSTEP_GUI_FTP_DIRECTORY) ]; then \
-	  echo '@set GNUSTEP-GUI-FTP-DIRECTORY $(GNUSTEP_GUI_FTP_DIRECTORY)' \
-		>> version.texi; fi
+-include GNUmakefile.postamble
 

@@ -31,14 +31,23 @@ include $(GNUSTEP_MAKEFILES)/common.make
 # The documents to be generated
 DOCUMENT_NAME = Gui
 
-Gui_GSDOC_FILES = Gui.gsdoc \
+Gui_AGSDOC_FILES = \
 	Introduction.gsdoc \
 	DefaultsSummary.gsdoc \
+	LanguageSetup.gsdoc \
 	NSBundleAdditions.gsdoc \
 	NSCoderAdditions.gsdoc \
 	NSMutableAttributedStringAdditions.gsdoc \
 	NSMutableParagraphStyle.gsdoc \
 	NSStringAdditions.gsdoc \
+
+Gui_AGSDOC_FLAGS = \
+	-DocumentationDirectory . \
+	-Declared AppKit \
+	-Standards YES \
+	-WordMap '{\
+	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
+	}' -Up Gui
 
 Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
 
