@@ -54,6 +54,20 @@ static const int currentVersion = 2;
 #define ADDING_ROW (1 << 4)
 
 
+@interface NSTableView (NotificationRequestMethods)
+- (void) _postSelectionIsChangingNotification;
+- (void) _postSelectionDidChangeNotification;
+- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
+					   newIndex: (int) newIndex;
+- (void) _postColumnDidResizeNotification;
+- (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn;
+- (BOOL) _shouldSelectRow: (int)rowIndex;
+- (BOOL) _shouldSelectionChange;
+- (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
+			    row: (int) rowIndex;
+@end
+
+
 /*
  *  A specific struct and its associated quick sort function
  *  This is used by the -sizeToFit method
@@ -178,8 +192,7 @@ static void computeNewSelection
 		    }
 		  else
 		    {
-		      if ((delegate == nil) || 
-			  [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -210,8 +223,7 @@ static void computeNewSelection
 		    }
 		  else
 		    {
-		      if ((delegate == nil) || 
-			  [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -230,9 +242,7 @@ static void computeNewSelection
 	    }
 	  if (notified == YES)
 	    {
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else // new multiple selection, after first pass
@@ -257,8 +267,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -275,9 +284,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -322,9 +329,7 @@ static void computeNewSelection
 			{
 			  *_selectedRow = [lastObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -345,8 +350,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -363,9 +367,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -412,9 +414,7 @@ static void computeNewSelection
 			    [_selectedRows objectAtIndex: 0];
 			  *_selectedRow = [firstObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -464,8 +464,7 @@ static void computeNewSelection
 		      }
 		    else
 		      {
-			if ((delegate == nil) || 
-			    [delegate tableView: tv shouldSelectRow: i] == YES)
+			if ([tv _shouldSelectRow: i] == YES)
 			  {
 			    if (notified == NO)
 			      {
@@ -494,9 +493,7 @@ static void computeNewSelection
 			[_selectedRows objectAtIndex: 0];
 		      *_selectedRow = [firstObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -545,8 +542,7 @@ static void computeNewSelection
 		      }
 		    else
 		      {
-			if ((delegate == nil) || 
-			    [delegate tableView: tv shouldSelectRow: i] == YES)
+			if ([tv _shouldSelectRow: i] == YES)
 			  {
 			    if (notified == NO)
 			      {
@@ -575,9 +571,7 @@ static void computeNewSelection
 			[_selectedRows lastObject];
 		      *_selectedRow = [lastObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 
@@ -617,8 +611,7 @@ static void computeNewSelection
 	    {
 	      for (i = _originalRow; i <= _currentRow; i++)
 		{
-		  if ((delegate == nil) || 
-		      [delegate tableView: tv shouldSelectRow: i] == YES)
+		  if ([tv _shouldSelectRow: i] == YES)
 		    {
 		      if (notified == NO)
 			{
@@ -639,8 +632,7 @@ static void computeNewSelection
 	      // this case does happen (sometimes)
 	      for (i = _originalRow; i >= _currentRow; i--)
 		{
-		  if ((delegate == nil) || 
-		      [delegate tableView: tv shouldSelectRow: i] == YES)
+		  if ([tv _shouldSelectRow: i] == YES)
 		    {
 		      if (notified == NO)
 			{
@@ -658,9 +650,7 @@ static void computeNewSelection
 	    }
 	  if (notified == YES)
 	    {
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else // new multiple selection, after first pass
@@ -675,8 +665,7 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ((delegate == nil) || 
-			       [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -692,9 +681,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -729,9 +716,7 @@ static void computeNewSelection
 			{
 			  *_selectedRow = [lastObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -743,8 +728,7 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ((delegate == nil) || 
-			       [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -760,9 +744,7 @@ static void computeNewSelection
 		    } 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -800,9 +782,7 @@ static void computeNewSelection
 			    [_selectedRows objectAtIndex: 0];
 			  *_selectedRow = [firstObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -834,8 +814,7 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow + 1; i <= _currentRow; i++)
 		  {
-		    if ((delegate == nil) || 
-			[delegate tableView: tv shouldSelectRow: i] == YES)
+		    if ([tv _shouldSelectRow: i] == YES)
 		      {
 			if (notified == NO)
 			  {
@@ -863,9 +842,7 @@ static void computeNewSelection
 			[_selectedRows objectAtIndex: 0];
 		      *_selectedRow = [firstObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -896,8 +873,7 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow - 1; i >= _currentRow; i--)
 		  {
-		    if ((delegate == nil) || 
-			[delegate tableView: tv shouldSelectRow: i] == YES)
+		    if ([tv _shouldSelectRow: i] == YES)
 		      {
 			if (notified == NO)
 			  {
@@ -925,9 +901,7 @@ static void computeNewSelection
 			[_selectedRows lastObject];
 		      *_selectedRow = [lastObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 
@@ -951,12 +925,9 @@ static void computeNewSelection
       int count = [_selectedRows count];
       BOOL notified = NO;
 
-      if (delegate != nil)
+      if ([tv _shouldSelectRow: _currentRow] == NO)
 	{
-	  if ([delegate tableView: tv shouldSelectRow: _currentRow] == NO)
-	    {
-	      return;
-	    }
+	  return;
 	}
       
       if ((count != 1) || (_oldRow == -1))
@@ -994,9 +965,7 @@ static void computeNewSelection
 	    }
 	  if (notified == YES)
 	    {
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else
@@ -1028,9 +997,7 @@ static void computeNewSelection
 	      [tv setNeedsDisplayInRect:
 		    [tv rectOfRow: _currentRow]];
 	      *_selectedRow = _currentRow;
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];	      
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       
@@ -1067,9 +1034,7 @@ static void computeNewSelection
 	    }
 	  [_selectedRows removeAllObjects];
 	  *_selectedRow = -1;
-	  [nc postNotificationName:
-		NSTableViewSelectionIsChangingNotification
-	      object: tv];
+	  [tv _postSelectionIsChangingNotification];
 	  
 	}
       else if (_currentRow != _originalRow)
@@ -1087,22 +1052,18 @@ static void computeNewSelection
 		}
 	      //end checking code
 
-	      if (delegate != nil)
+	      if ([tv _shouldSelectRow: _originalRow] == NO)
 		{
-		  if ([delegate tableView: tv shouldSelectRow: _originalRow] == NO)
-		    {
-		      return;
-		    }
+		  return;
 		}
+
 	      [tv setNeedsDisplayInRect:
 		    [tv rectOfRow: _originalRow]];
 	      
 	      [_selectedRows addObject: 
 			       [NSNumber numberWithInt: _originalRow]];
 	      *_selectedRow = _originalRow;
-	      [nc postNotificationName:
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else if (_currentRow == _originalRow)
@@ -1118,9 +1079,7 @@ static void computeNewSelection
 		    [tv rectOfRow: _originalRow]];
 	      [_selectedRows removeObjectAtIndex: 0];
 	      *_selectedRow = -1;
-	      [nc postNotificationName:
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
     }
@@ -1143,9 +1102,7 @@ static void computeNewSelection
 	{
 	  // if we can select the _originalRow, we'll clear the old selection
 	  // else we'll add to the old selection
-	  if ((delegate == nil) || 
-	      [delegate tableView: tv 
-			shouldSelectRow: _currentRow] == YES)
+	  if ([tv _shouldSelectRow: _currentRow] == YES)
 	    {
 	      // let's clear the old selection
 	      // this code is copied from another case
@@ -1173,8 +1130,7 @@ static void computeNewSelection
 		{
 		  for (i = _originalRow; i <= _currentRow; i++)
 		    {
-		      if ((delegate == nil) || 
-			  [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -1194,8 +1150,7 @@ static void computeNewSelection
 		{
 		  for (i = _originalRow; i >= _currentRow; i--)
 		    {
-		      if ((delegate == nil) || 
-			  [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -1235,8 +1190,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -1267,8 +1221,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -1287,9 +1240,7 @@ static void computeNewSelection
 		}
 	      if (notified == YES)
 		{
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	}
@@ -1310,8 +1261,7 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow + 1; i <= _currentRow; i++)
 		    {
-		      if ((delegate == nil) || 
-			       [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -1327,9 +1277,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -1364,9 +1312,7 @@ static void computeNewSelection
 			{
 			  *_selectedRow = [lastObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -1378,8 +1324,7 @@ static void computeNewSelection
 		  BOOL notified = NO;
 		  for (i = _oldRow - 1; i >= _currentRow; i--)
 		    {
-		      if ((delegate == nil) || 
-			       [delegate tableView: tv shouldSelectRow: i] == YES)
+		      if ([tv _shouldSelectRow: i] == YES)
 			{
 			  if (notified == NO)
 			    {
@@ -1395,9 +1340,7 @@ static void computeNewSelection
 		    } 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -1435,9 +1378,7 @@ static void computeNewSelection
 			    [_selectedRows objectAtIndex: 0];
 			  *_selectedRow = [firstObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -1469,8 +1410,7 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow + 1; i <= _currentRow; i++)
 		  {
-		    if ((delegate == nil) || 
-			[delegate tableView: tv shouldSelectRow: i] == YES)
+		    if ([tv _shouldSelectRow: i] == YES)
 		      {
 			if (notified == NO)
 			  {
@@ -1498,9 +1438,7 @@ static void computeNewSelection
 			[_selectedRows objectAtIndex: 0];
 		      *_selectedRow = [firstObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -1531,8 +1469,7 @@ static void computeNewSelection
 	      {
 		for (i = _originalRow - 1; i >= _currentRow; i--)
 		  {
-		    if ((delegate == nil) || 
-			[delegate tableView: tv shouldSelectRow: i] == YES)
+		    if ([tv _shouldSelectRow: i] == YES)
 		      {
 			if (notified == NO)
 			  {
@@ -1560,9 +1497,7 @@ static void computeNewSelection
 			[_selectedRows lastObject];
 		      *_selectedRow = [lastObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	}
@@ -1593,8 +1528,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -1611,9 +1545,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -1658,9 +1590,7 @@ static void computeNewSelection
 			{
 			  *_selectedRow = [lastObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -1681,8 +1611,7 @@ static void computeNewSelection
 			}
 		      else
 			{
-			  if ((delegate == nil) || 
-			      [delegate tableView: tv shouldSelectRow: i] == YES)
+			  if ([tv _shouldSelectRow: i] == YES)
 			    {
 			      if (notified == NO)
 				{
@@ -1699,9 +1628,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -1748,9 +1675,7 @@ static void computeNewSelection
 			    [_selectedRows objectAtIndex: 0];
 			  *_selectedRow = [firstObject intValue];
 			}
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -1800,8 +1725,7 @@ static void computeNewSelection
 		      }
 		    else
 		      {
-			if ((delegate == nil) || 
-			    [delegate tableView: tv shouldSelectRow: i] == YES)
+			if ([tv _shouldSelectRow: i] == YES)
 			  {
 			    if (notified == NO)
 			      {
@@ -1830,9 +1754,7 @@ static void computeNewSelection
 			[_selectedRows objectAtIndex: 0];
 		      *_selectedRow = [firstObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -1881,8 +1803,7 @@ static void computeNewSelection
 		      }
 		    else
 		      {
-			if ((delegate == nil) || 
-			    [delegate tableView: tv shouldSelectRow: i] == YES)
+			if ([tv _shouldSelectRow: i] == YES)
 			  {
 			    if (notified == NO)
 			      {
@@ -1911,9 +1832,7 @@ static void computeNewSelection
 			[_selectedRows lastObject];
 		      *_selectedRow = [lastObject intValue];
 		    }
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	}
@@ -1997,9 +1916,7 @@ static void computeNewSelection
 	    }
 	  if (notified == YES)
 	    {
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else // new multiple antiselection, after first pass
@@ -2046,9 +1963,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -2075,9 +1990,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -2119,9 +2032,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -2149,9 +2060,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -2214,9 +2123,7 @@ static void computeNewSelection
 
 	      if (notified == YES)
 		{
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -2278,9 +2185,7 @@ static void computeNewSelection
 
 	      if (notified == YES)
 		{
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	}
@@ -2368,9 +2273,7 @@ static void computeNewSelection
 	    }
 	  if (notified == YES)
 	    {
-	      [nc postNotificationName: 
-		    NSTableViewSelectionIsChangingNotification
-		  object: tv];
+	      [tv _postSelectionIsChangingNotification];
 	    }
 	}
       else // new multiple antiselection, after first pass
@@ -2420,9 +2323,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -2454,9 +2355,7 @@ static void computeNewSelection
 		    }
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -2500,9 +2399,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	      else
@@ -2536,9 +2433,7 @@ static void computeNewSelection
 
 		  if (notified == YES)
 		    {
-		      [nc postNotificationName: 
-			    NSTableViewSelectionIsChangingNotification
-			  object: tv];
+		      [tv _postSelectionIsChangingNotification];
 		    }
 		}
 	    }
@@ -2608,9 +2503,7 @@ static void computeNewSelection
 
 	      if (notified == YES)
 		{
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	  else if (oldDiff >= 0 && newDiff <= 0)
@@ -2679,9 +2572,7 @@ static void computeNewSelection
 
 	      if (notified == YES)
 		{
-		  [nc postNotificationName: 
-			NSTableViewSelectionIsChangingNotification
-		      object: tv];
+		  [tv _postSelectionIsChangingNotification];
 		}
 	    }
 	}
@@ -2807,19 +2698,16 @@ static inline BOOL
 _isCellEditable (id delegate, NSArray *tableColumns, 
 		 NSTableView *tableView, int row, int column)
 {
-  SEL selector = @selector(tableView:shouldEditTableColumn:row:);
-
-  if ([delegate respondsToSelector: selector] == YES)
-    {
-      NSTableColumn *tb;
-      
-      tb = [tableColumns objectAtIndex: column];
-      if ([delegate tableView: tableView  shouldEditTableColumn: tb 
-		    row: row] == NO)
-	{
-	  return NO;
+  {
+    NSTableColumn *tb;
+    
+    tb = [tableColumns objectAtIndex: column];
+    if ([tableView _shouldEditTableColumn: tb 
+		   row: row] == NO)
+      {
+	return NO;
 	}
-    }
+  }
   
   return YES;
 }
@@ -2883,6 +2771,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) _autosaveTableColumns;
 - (void) _autoloadTableColumns;
 @end
+
 
 @implementation NSTableView 
 
@@ -3051,7 +2940,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   int shift;
   /* Dummy variables for the loop */
   int i, count, column;
-  NSDictionary *dict;
 
   if ((columnIndex < 0) || (columnIndex > (_numberOfColumns - 1)))
     {
@@ -3132,12 +3020,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   [self tile];
 
   /* Post notification */
-  dict =[NSDictionary dictionaryWithObjectsAndKeys: 
-			[NSNumber numberWithInt: columnIndex], @"NSOldColumn", 
-		      [NSNumber numberWithInt: newIndex], @"NSNewColumn", nil];
-  [nc postNotificationName: NSTableViewColumnDidMoveNotification
-      object: self
-      userInfo: dict];
+
+  [self _postColumnDidMoveNotificationWithOldIndex: columnIndex
+	newIndex: newIndex];
 
   [self _autosaveTableColumns];
 }
@@ -3289,13 +3174,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	  return;
 	}
 	  
-      selector = @selector (selectionShouldChangeInTableView:);
-      if ([_delegate respondsToSelector: selector] == YES) 
+      if ([self _shouldSelectionChange] == NO)
 	{
-	  if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	    {
-	      return;
-	    }
+	  return;
 	}
 
       if (_selectingColumns == NO)
@@ -3327,24 +3208,19 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	  return;
 	}
       
-      selector = @selector (selectionShouldChangeInTableView:);
-      if ([_delegate respondsToSelector: selector] == YES) 
+      if ([self _shouldSelectionChange] == NO)
 	{
-	  if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	    {
-	      return;
-	    }
+	  return;
 	}
 
-      selector = @selector (tableView:shouldSelectTableColumn:);
-      if ([_delegate respondsToSelector: selector] == YES) 
-	{
-	  NSTableColumn *tc = [_tableColumns objectAtIndex: columnIndex];
-	  if ([_delegate tableView: self  shouldSelectTableColumn: tc] == NO)
-	    {
-	      return;
-	    }
-	}
+      
+      {
+	NSTableColumn *tc = [_tableColumns objectAtIndex: columnIndex];
+	if ([self _shouldSelectTableColumn: tc] == NO)
+	  {
+	    return;
+	  }
+      }
 
       if (_selectingColumns == NO)
 	{
@@ -3543,8 +3419,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	  [_headerView setNeedsDisplayInRect: 
 			 [_headerView headerRectOfColumn: columnIndex]];
 	}
-      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-	  object: self];
+      [self _postSelectionDidChangeNotification];
     }
   else /* Otherwise simply change the last selected column */
     {
@@ -3613,8 +3488,7 @@ byExtendingSelection: (BOOL)flag
     {
       _insertNumberInSelectionArray (_selectedRows, num);
       _selectedRow = rowIndex;
-      [nc postNotificationName: NSTableViewSelectionIsChangingNotification
-	  object: self];
+      [self _postSelectionIsChangingNotification];
     }
   else /* Otherwise simply change the last selected row */
     {
@@ -3692,8 +3566,7 @@ byExtendingSelection: (BOOL)flag
       _insertNumberInSelectionArray (_selectedRows, num);
       _selectedRow = rowIndex;
       [self setNeedsDisplayInRect: [self rectOfRow: rowIndex]];
-      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-	  object: self];
+      [self _postSelectionDidChangeNotification];
     }
   else /* Otherwise simply change the last selected row */
     {
@@ -3754,8 +3627,7 @@ byExtendingSelection: (BOOL)flag
 		     [_headerView headerRectOfColumn: columnIndex]];
     }
 
-  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-      object: self];
+  [self _postSelectionDidChangeNotification];
 }
 
 - (void) deselectRow: (int)rowIndex
@@ -3801,8 +3673,7 @@ byExtendingSelection: (BOOL)flag
       _selectedRow = nearestRow;
     }
 
-  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-      object: self];
+  [self _postSelectionDidChangeNotification];
 }
 
 - (int) numberOfSelectedColumns
@@ -3863,21 +3734,17 @@ byExtendingSelection: (BOOL)flag
 	  return;
 	}
 
-      selector = @selector (tableView:shouldSelectTableColumn:);
-      
-      if ([_delegate respondsToSelector: selector] == YES) 
-	{
-	  NSEnumerator *enumerator = [_tableColumns objectEnumerator];
-	  NSTableColumn *tb;
-	  while ((tb = [enumerator nextObject]) != nil)
-	    {
-	      if ([_delegate tableView: self  
-			     shouldSelectTableColumn: tb] == NO)
-		{
-		  return;
-		}
-	    }
-	}
+      {
+	NSEnumerator *enumerator = [_tableColumns objectEnumerator];
+	NSTableColumn *tb;
+	while ((tb = [enumerator nextObject]) != nil)
+	  {
+	    if ([self _shouldSelectTableColumn: tb] == NO)
+	      {
+		return;
+	      }
+	  }
+      }
     }
   else // selecting rows
     {
@@ -3887,18 +3754,15 @@ byExtendingSelection: (BOOL)flag
 	  return;
 	}
 
-      selector = @selector (tableView:shouldSelectRow:);
-      
-      if ([_delegate respondsToSelector: selector] == YES) 
-	{
-	  int row; 
-      
-	  for (row = 0; row < _numberOfRows; row++)
-	    {
-	      if ([_delegate tableView: self  shouldSelectRow: row] == NO)
-		  return;
-	    }
-	}
+      {
+	int row; 
+	
+	for (row = 0; row < _numberOfRows; row++)
+	  {
+	    if ([self _shouldSelectRow: row] == NO)
+	      return;
+	  }
+      }
     }
 
   /* Stop editing if any */
@@ -3932,8 +3796,7 @@ byExtendingSelection: (BOOL)flag
 	}
     }
   
-  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-      object: self];
+  [self _postSelectionDidChangeNotification];
 }
 
 
@@ -3945,15 +3808,11 @@ byExtendingSelection: (BOOL)flag
   if (_allowsEmptySelection == NO)
     return;
 
-  selector = @selector (selectionShouldChangeInTableView:);
-  if ([_delegate respondsToSelector: selector] == YES) 
+  if ([self _shouldSelectionChange])
     {
-      if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	{
-	  return;
-	}
+      return;
     }
-
+  
   if (_textObject != nil)
     {
       [self validateEditing];
@@ -3967,8 +3826,7 @@ byExtendingSelection: (BOOL)flag
       _selectedColumn = -1;
       _selectedRow = -1;
       _selectingColumns = NO;
-      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
-	  object: self];
+      [self _postSelectionDidChangeNotification];
     }
   else
     {
@@ -4358,6 +4216,7 @@ byExtendingSelection: (BOOL)flag
 	}
       
       // does the delegate take part in the selection
+      /*
       selector = @selector (tableView:shouldSelectRow:);
       if ([_delegate respondsToSelector: selector] == YES)
 	{
@@ -4367,15 +4226,12 @@ byExtendingSelection: (BOOL)flag
 	{
 	  delegateIfItTakesPart = nil;
 	}
+      */
 
       // is the delegate ok for a new selection ?
-      selector = @selector (selectionShouldChangeInTableView:);
-      if ([_delegate respondsToSelector: selector] == YES) 
+      if ([self _shouldSelectionChange] == NO)
 	{
-	  if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	    {
-	      return;
-	    }
+	  return;
 	}
 
       // if we are in column selection mode, stop it
@@ -4589,9 +4445,7 @@ byExtendingSelection: (BOOL)flag
 	      [[_oldSelectedRows allObjects] 
 		sortedArrayUsingSelector: @selector(compare:)]] == NO)
 	{
-	  [nc postNotificationName: 
-		NSTableViewSelectionDidChangeNotification
-	      object: self];
+	  [self _postSelectionDidChangeNotification];
 	}	    
       return;
     }
@@ -4609,16 +4463,11 @@ byExtendingSelection: (BOOL)flag
     {
       shouldEdit = NO;
     }
-  else if ([_delegate respondsToSelector: 
-			@selector(tableView:shouldEditTableColumn:row:)])
+  else if ([self _shouldEditTableColumn: tb 
+		 row: _clickedRow] == NO)
     {
-      if ([_delegate tableView: self shouldEditTableColumn: tb 
-		     row: _clickedRow] == NO)
-	{
-	  shouldEdit = NO;
-	}
+      shouldEdit = NO;
     }
-  
   if (shouldEdit == NO)
     {
       // Send double-action but don't edit
@@ -6805,6 +6654,107 @@ byExtendingSelection: (BOOL)flag
 	}
       _superview_width = visible_width;
     }
+}
+
+
+/*
+ * (NotificationRequestMethods)
+ */
+- (void) _postSelectionIsChangingNotification
+{
+  [nc postNotificationName: 
+	NSTableViewSelectionIsChangingNotification
+      object: self];
+}
+- (void) _postSelectionDidChangeNotification
+{
+  [nc postNotificationName: 
+	NSTableViewSelectionDidChangeNotification
+      object: self];
+}
+- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
+					   newIndex: (int) newIndex
+{
+  [nc postNotificationName: 
+	NSTableViewColumnDidMoveNotification
+      object: self
+      userInfo: [NSDictionary 
+		  dictionaryWithObjectsAndKeys:
+		  [NSNumber numberWithInt: newIndex],
+		  @"NSNewColumn",
+		    [NSNumber numberWithInt: oldIndex],
+		  @"NSOldColumn",
+		  nil]];
+}
+
+- (void) _postColumnDidResizeNotificationWithOldWidth: (float) oldWidth
+{
+  [nc postNotificationName: 
+	NSTableViewColumnDidResizeNotification
+      object: self
+      userInfo: [NSDictionary 
+		  dictionaryWithObjectsAndKeys:
+		    [NSNumber numberWithFloat: oldWidth],
+		  @"NSOldWidth", 
+		  nil]];
+}
+
+- (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn
+{
+  if ([_delegate respondsToSelector: 
+		   @selector (tableView:shouldSelectTableColumn:)] == YES) 
+    {
+      if ([_delegate tableView: self  shouldSelectTableColumn: tableColumn] == NO)
+	{
+	  return NO;
+	}
+    }
+
+  return YES;
+}
+
+- (BOOL) _shouldSelectRow: (int)rowIndex
+{
+  if ([_delegate respondsToSelector: 
+		   @selector (tableView:shouldSelectRow:)] == YES) 
+    {
+      if ([_delegate tableView: self  shouldSelectRow: rowIndex] == NO)
+	{
+	  return NO;
+	}
+    }
+  
+  return YES;
+}
+
+- (BOOL) _shouldSelectionChange
+{
+  if ([_delegate respondsToSelector: 
+	  @selector (selectionShouldChangeInTableView:)] == YES) 
+    {
+      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+	{
+	  return NO;
+	}
+    }
+  
+  return YES;
+}
+
+- (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
+			    row: (int) rowIndex
+{
+  if ([_delegate respondsToSelector: 
+			@selector(tableView:shouldEditTableColumn:row:)])
+    {
+      if ([_delegate tableView: self shouldEditTableColumn: tableColumn
+		     row: rowIndex] == NO)
+	{
+	  return NO;
+	}
+    }
+
+  return YES;
 }
 
 @end /* implementation of NSTableView */

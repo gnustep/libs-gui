@@ -1,3 +1,19 @@
+2002-03-04  Gregory John Casamento <greg_casamento@yahoo.com>
+	  & Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTableView.m added methods to handle posting of
+	notifications as well as methods to handle making appropriate
+	delegate calls.  Also made necessary changes in other methods
+	([NSTableView mouseDown:], [NSTableView selectAll], etc...) 
+	to use them.  (PYR)
+	* Source/NSOutlineView.m overrode notification methods and delegate
+	methods defined in NSTableView. (GJC)  This was done as a 
+	collaborative effort to ensure that NSOutlineView is more 
+	maintainable and benefits from updates made to NSTableView.
+	Also made changes to increase spacing between "knob" and text
+	* Images/common_outlineUnexpandable.tiff lightened image to 
+	make it stand out more when an item cannot be expanded. (GJC)
+	
 2002-03-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSEvent.h: Modify to support MacOS-X documented API
