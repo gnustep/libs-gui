@@ -120,6 +120,11 @@ static NSNotificationCenter *nc;
 
 @interface NSTextView (GNUstepPrivate)
 /*
+ * Used to implement the blinking insertion point
+ */
+- (void) _blink;
+
+/*
  * these NSLayoutManager- like methods are here only informally
  */
 - (unsigned) characterIndexForPoint: (NSPoint)point;
@@ -220,18 +225,19 @@ static NSNotificationCenter *nc;
   _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
   _original_selected_range.location = NSNotFound;
-  ASSIGN (_caret_color, [NSColor blackColor]); 
+  ASSIGN (_caret_color, [NSColor blackColor]);
+
   [self setTypingAttributes: [isa defaultTypingAttributes]];
 
   [self setBackgroundColor: [NSColor textBackgroundColor]];
-
-  //[self setSelectedRange: NSMakeRange (0, 0)];
 
   [aTextContainer setTextView: self];
 
   [self setEditable: YES];
   [self setUsesFontPanel: YES];
   [self setUsesRuler: YES];
+
+  [self setSelectedRange: NSMakeRange (0, 0)];
 
   return self;
 }
@@ -290,6 +296,8 @@ static NSNotificationCenter *nc;
   /* See initWithFrame: for comments on this RELEASE */
   RELEASE (self);
 
+  [self setSelectedRange: NSMakeRange (0, 0)];
+
   return self;
 }
 
@@ -305,6 +313,12 @@ static NSNotificationCenter *nc;
       _tvf.is_in_dealloc = YES;
       /* This releases all the text objects (us included) in fall */
       RELEASE (_textStorage);
+    }
+
+  if (_insertionPointTimer != nil)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY (_insertionPointTimer);
     }
 
   RELEASE (_selectedTextAttributes);
@@ -1068,7 +1082,7 @@ static NSNotificationCenter *nc;
 - (BOOL) shouldDrawInsertionPoint
 {
   return (_selected_range.length == 0) && _tf.is_editable
-    && [_window isKeyWindow];
+    && [_window isKeyWindow] && ([_window firstResponder] == self);
 }
 
 /*
@@ -1229,7 +1243,20 @@ static NSNotificationCenter *nc;
 {
   NSTEXTVIEW_SYNC (@selector(setEditable:));
   [super setEditable: flag];
-  /* FIXME/TODO: Update/show the insertion point */
+  
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: YES];
+    }   
+  else
+    {
+      if (_insertionPointTimer != nil)
+	{
+	  [_insertionPointTimer invalidate];
+	  DESTROY (_insertionPointTimer);
+	  _drawInsertionPointNow = NO;
+	}
+    }
 }
 
 - (void) setFieldEditor: (BOOL)flag
@@ -1356,7 +1383,12 @@ static NSNotificationCenter *nc;
       /* Insertion Point */
       if (range.length)
 	{
-	  /* <!>disable caret timed entry */
+	  if (_insertionPointTimer != nil)
+	    {
+	      [_insertionPointTimer invalidate];
+	      DESTROY (_insertionPointTimer);
+	      _drawInsertionPointNow = YES;
+	    }
 	}
       else  /* no selection, only insertion point */
 	{
@@ -1486,7 +1518,12 @@ static NSNotificationCenter *nc;
   /* Simple case - no insertion point */
   if ((_selected_range.length > 0) || _selected_range.location == NSNotFound)
     {
-      _insertionPointRect = NSZeroRect;
+      if (_insertionPointTimer != nil)
+	{
+	  [_insertionPointTimer invalidate];
+	  DESTROY (_insertionPointTimer);
+	  _drawInsertionPointNow = YES;
+	}
       
       /* FIXME: horizontal position of insertion point */
       _originalInsertPoint = 0;
@@ -1554,7 +1591,24 @@ static NSNotificationCenter *nc;
 
   if (flag)
     {
-      /* TODO: Restart blinking timer */
+      /* Start blinking timer if not yet started */
+      if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
+	{
+	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+					  target: self
+					  selector: @selector(_blink)
+					  userInfo: nil
+					  repeats: YES];
+	  RETAIN (_insertionPointTimer);
+	}
+    }
+  else
+    {
+      if (_insertionPointTimer != nil)
+	{
+	  [_insertionPointTimer invalidate];
+	  DESTROY (_insertionPointTimer);
+	}
     }
 }
 
@@ -2432,6 +2486,13 @@ afterString in order over charRange. */
 
 - (BOOL) resignFirstResponder
 {
+  if (_insertionPointTimer != nil)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY (_insertionPointTimer);
+      _drawInsertionPointNow = NO;
+    }
+
   if (_tvf.multiple_textviews == YES)
     {
       id futureFirstResponder;
@@ -2471,10 +2532,8 @@ afterString in order over charRange. */
 
   if ([self shouldDrawInsertionPoint])
     {
-      [self setNeedsDisplayInRect: _insertionPointRect  
-	    avoidAdditionalLayout: YES];
-      //<!> stop timed entry
-    }
+      [self updateInsertionPointStateAndRestartTimer: NO];
+    }    
 
   SET_BEGAN_EDITING (NO);
 
@@ -2490,6 +2549,7 @@ afterString in order over charRange. */
      yes, the notification name is misleading. */
   [nc postNotificationName: NSTextDidEndEditingNotification  
       object: _notifObject];
+
   return YES;
 }
 
@@ -2505,30 +2565,12 @@ afterString in order over charRange. */
 
   /* Draw selection, update insertion point */
 
-  //if ([self shouldDrawInsertionPoint])
-  //  {
-  //   [self lockFocus];
-  //   [self drawInsertionPointAtIndex: _selected_range.location
-  //      color: _caret_color turnedOn: YES];
-  //   [self unlockFocus];
-  //   //<!> restart timed entry
-  //  }
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: YES];
+    }
 
   return YES;
-}
-
-- (void) becomeKeyWindow
-{
-  [self setNeedsDisplayInRect: _insertionPointRect  
-	avoidAdditionalLayout: YES];
-  //<!> start timed entry
-}
-
-- (void) resignKeyWindow
-{
-  [self setNeedsDisplayInRect: _insertionPointRect  
-	avoidAdditionalLayout: YES];
-  //<!> stop timed entry
 }
 
 - (void) drawRect: (NSRect)rect
@@ -2548,13 +2590,16 @@ afterString in order over charRange. */
   if ([self shouldDrawInsertionPoint])
     {
       unsigned location = _selected_range.location;
-
+      
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
-	  [self drawInsertionPointInRect: _insertionPointRect  
-		color: _caret_color  
-		turnedOn: YES];
+	  if (_drawInsertionPointNow)
+	    {
+	      [self drawInsertionPointInRect: _insertionPointRect  
+		    color: _caret_color  
+		    turnedOn: YES];
+	    }
 	}
     }
 }
@@ -3200,6 +3245,25 @@ other than copy/paste or dragging. */
 
 @implementation NSTextView (GNUstepPrivate)
 
+- (void) _blink
+{
+  if (_drawInsertionPointNow)
+    {
+      _drawInsertionPointNow = NO;
+    }
+  else
+    {
+      _drawInsertionPointNow = YES;
+    }
+  
+  [self setNeedsDisplayInRect: _insertionPointRect
+	avoidAdditionalLayout: YES];
+  /* Because we are called by a timer which is independent of any
+     event processing in the gui runloop, we need to manually update
+     the windows.  */
+  [NSApp updateWindows];
+}
+
 + (NSDictionary*) defaultTypingAttributes
 {
   return [NSDictionary dictionaryWithObjectsAndKeys:
@@ -3247,9 +3311,14 @@ other than copy/paste or dragging. */
 		       @selector(textShouldEndEditing:)])
       && ([_delegate textShouldEndEditing: self] == NO))
     return;
-  
-  // Add any clean-up stuff here
-  
+
+  /* FIXME */
+  if (_insertionPointTimer != nil)
+    {
+      [_insertionPointTimer invalidate];
+      DESTROY (_insertionPointTimer);
+    }
+
   number = [NSNumber numberWithInt: textMovement];
   uiDictionary = [NSDictionary dictionaryWithObject: number
 			       forKey: @"NSTextMovement"];
