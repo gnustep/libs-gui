@@ -155,11 +155,12 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned	has_opened:1;
     unsigned	has_closed:1;
     unsigned	default_button_cell_key_disabled:1;
+    // 3 bits reserved for subclass use
+    unsigned subclass_bool_one: 1;
+    unsigned subclass_bool_two: 1;
+    unsigned subclass_bool_three: 1;
   } _f;
  
-  /* Reserved for back-end use */
-  void *_be_wind_reserved;
-
   id _defaultButtonCell;
 }
 
