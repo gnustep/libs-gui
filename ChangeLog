@@ -1,3 +1,14 @@
+Mon Nov 23 22:10:001998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSWorkspace.m: partial implementation - can launch apps.
+	* NSPasteboard.m: partial support for services.
+	* Tools/make_services.m: new file - moven in from base library
+	* Tools/example.m: new example service provider
+	* Tools/dummy.m: dummy functions for linking without backend.
+	* Tools/gpbs.m: Tidied indentatione etc.
+	* Tools/GNUmakefile: Added new files
+	* Testing/testpb.m: Added rudimentary services test.
+
 Sun Nov 22 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSClipView.m: ([-setDocumentView:]) Ignore attempt to assign a
