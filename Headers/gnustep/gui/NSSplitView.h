@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSSplitView
 #define _GNUstep_H_NSSplitView
 
-#import <AppKit/NSView.h>
+#include <AppKit/NSView.h>
 
 @class NSImage, NSColor, NSNotification;
 

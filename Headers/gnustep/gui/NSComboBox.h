@@ -27,8 +27,8 @@
 #ifndef _GNUstep_H_NSComboBox
 #define _GNUstep_H_NSComboBox
 
-#import <Foundation/NSNotification.h>
-#import <AppKit/NSTextField.h>
+#include <Foundation/NSNotification.h>
+#include <AppKit/NSTextField.h>
 
 @interface NSComboBox : NSTextField
 {

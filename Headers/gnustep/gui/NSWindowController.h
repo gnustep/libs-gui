@@ -25,8 +25,8 @@
 #ifndef _GNUstep_H_NSWindowController
 #define _GNUstep_H_NSWindowController
 
-#import <Foundation/Foundation.h>
-#import <AppKit/NSNibDeclarations.h>
+#include <Foundation/Foundation.h>
+#include <AppKit/NSNibDeclarations.h>
 
 @class NSWindow, NSDocument;
 
