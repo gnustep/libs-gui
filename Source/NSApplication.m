@@ -180,6 +180,8 @@ NSApplication	*NSApp = nil;
   NSDictionary		*infoDict = [mainBundle infoDictionary];
   NSString		*mainModelFile;
   NSString		*appIconFile;
+  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSString		*filePath;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile && ![mainModelFile isEqual: @""])
@@ -210,6 +212,19 @@ NSApplication	*NSApp = nil;
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
+
+  /*
+   *	Now check to see if we were launched with arguments asking to
+   *	open a file.
+   */
+  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil)
+    {
+      [self application: self openFile: filePath];
+    }
+  else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
+    {
+      [self application: self openTempFile: filePath];
+    }
 }
 
 - (void) dealloc
