@@ -570,7 +570,7 @@ static Class NSBezierPath_concrete_class = nil;
   return path;
 }
 
-- (NSBezierPath *)bezierPathByReversingPath
+- (NSBezierPath *) bezierPathByReversingPath
 {
   NSBezierPath *path = [isa bezierPath];
   NSBezierPathElement type, last_type;
@@ -649,7 +649,7 @@ static Class NSBezierPath_concrete_class = nil;
 //
 // Applying transformations.
 //
-- (void)transformUsingAffineTransform:(NSAffineTransform *)transform
+- (void) transformUsingAffineTransform: (NSAffineTransform *)transform
 {
   NSBezierPathElement type;
   NSPoint pts[3];
@@ -685,12 +685,12 @@ static Class NSBezierPath_concrete_class = nil;
 //
 // Path info
 //
-- (BOOL)isEmpty
+- (BOOL) isEmpty
 {
   return ([self elementCount] == 0);
 }
 
-- (NSPoint)currentPoint
+- (NSPoint) currentPoint
 {
   NSBezierPathElement type;
   NSPoint points[3];
@@ -727,14 +727,14 @@ static Class NSBezierPath_concrete_class = nil;
   return NSZeroPoint;
 }
 
-- (NSRect)controlPointBounds
+- (NSRect) controlPointBounds
 {
   if (_shouldRecalculateBounds)
      [self _recalculateBounds];
   return _controlPointBounds;
 }
 
-- (NSRect)bounds
+- (NSRect) bounds
 {
   if (_shouldRecalculateBounds)
      [self _recalculateBounds];
@@ -744,20 +744,20 @@ static Class NSBezierPath_concrete_class = nil;
 //
 // Elements
 //
-- (int)elementCount
+- (int) elementCount
 {
   [self subclassResponsibility:_cmd];
   return 0;
 }
 
-- (NSBezierPathElement)elementAtIndex:(int)index
-		     associatedPoints:(NSPoint *)points
+- (NSBezierPathElement) elementAtIndex: (int)index
+		      associatedPoints: (NSPoint *)points
 {
   [self subclassResponsibility:_cmd];	
   return 0;
 }
 
-- (NSBezierPathElement)elementAtIndex:(int)index
+- (NSBezierPathElement) elementAtIndex: (int)index
 {
   return [self elementAtIndex: index associatedPoints: NULL];	
 }
@@ -770,7 +770,7 @@ static Class NSBezierPath_concrete_class = nil;
 //
 // Appending common paths
 //
-- (void)appendBezierPath:(NSBezierPath *)aPath
+- (void) appendBezierPath: (NSBezierPath *)aPath
 {
   NSBezierPathElement type;
   NSPoint points[3];
@@ -833,7 +833,7 @@ static Class NSBezierPath_concrete_class = nil;
   [self appendBezierPath: [isa bezierPathWithOvalInRect: aRect]];
 }
 
-/* startAngle and endAngle are in degrees, counterclockwise, from the 
+/* startAngle and endAngle are in degrees, counterclockwise, from the
    x axis */
 - (void) appendBezierPathWithArcWithCenter: (NSPoint)center  
 				    radius: (float)radius
@@ -844,15 +844,36 @@ static Class NSBezierPath_concrete_class = nil;
   float startAngle_rad, endAngle_rad, diff;
   NSPoint p0, p1, p2, p3;
 
-  while (startAngle < 0)
-    startAngle = startAngle + 360;
-  while (startAngle > 360)
-    startAngle = startAngle - 360;
+  /* We use the Postscript prescription for managing the angles and
+     drawing the arc.  See the documentation for `arc' and `arcn' in
+     the Postscript Reference. */
 
-  while (endAngle < 0)
-    endAngle = endAngle + 360;
-  while (endAngle > 360)
-    endAngle = endAngle - 360;
+  if (clockwise)
+    {
+      /* This modification of the angles is the postscript
+         prescription. */
+      while (startAngle < endAngle)
+        endAngle -= 360;
+
+      /* This is used when we draw a clockwise quarter of
+	 circumference.  By adding diff at the starting angle of the
+	 quarter, we get the ending angle.  diff is negative because
+	 we draw clockwise. */
+      diff = - PI / 2;
+    }
+  else
+    {
+      /* This modification of the angles is the postscript
+         prescription. */
+      while (endAngle < startAngle)
+        endAngle += 360;
+
+      /* This is used when we draw a counterclockwise quarter of
+	 circumference.  By adding diff at the starting angle of the
+	 quarter, we get the ending angle.  diff is positive because
+	 we draw counterclockwise. */
+      diff = PI / 2;
+    }
 
   /* Convert the angles to radians */
   startAngle_rad = PI * startAngle / 180;
@@ -862,23 +883,6 @@ static Class NSBezierPath_concrete_class = nil;
   p0 = NSMakePoint (center.x + radius * cos (startAngle_rad), 
 		    center.y + radius * sin (startAngle_rad));
   [self moveToPoint: p0];
-
-  if (clockwise)
-    {
-      diff = -PI / 2;
-      if (startAngle_rad < endAngle_rad)
-	{
-	  startAngle_rad += 2 * PI; 
-	}
-    }
-  else
-    {
-      diff = PI / 2;
-      if (startAngle_rad > endAngle_rad)
-	{
-	  startAngle_rad -= 2 * PI; 
-	}
-    }  
 
   while ((clockwise) ? (startAngle_rad > endAngle_rad) 
 	 : (startAngle_rad < endAngle_rad))
