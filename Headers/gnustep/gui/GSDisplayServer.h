@@ -105,7 +105,7 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen;
 - (void) termwindow: (int) win;
-- (void) stylewindow: (int) style : (int) win;
+- (void) stylewindow: (unsigned int) style : (int) win;
 - (void) windowbacking: (NSBackingStoreType)type : (int) win;
 - (void) titlewindow: (NSString *) window_title : (int) win;
 - (void) miniwindow: (int) win;
@@ -123,7 +123,8 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (void) setminsize: (NSSize)size : (int) win;
 - (void) setresizeincrements: (NSSize)size : (int) win;
 - (void) flushwindowrect: (NSRect)rect : (int) win;
-- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b : (int) style;
+- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b 
+                     : (unsigned int) style;
 - (void) docedited: (int) edited : (int) win;
 - (void) setinputstate: (int)state : (int)win;
 - (void) setinputfocus: (int) win;
