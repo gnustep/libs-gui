@@ -18,14 +18,33 @@
     <chapter>
       <heading>Defaults Summary</heading>
       <p>
-        This document contains a summary of available user default
-        values that one can set to control the operation of the GNUstep
-        libraries.
+        This document contains a summary of available user default values that
+        one can set to control the operation of the GNUstep libraries.  To set
+        a default, use the <code>defaults write (domain) (key) (value)</code>
+        command in a terminal, with the <code>NSGlobalDomain</code> as first
+        argument.  E.g.,
+      </p>
+      <example>
+          defaults write NSGlobalDomain GSBackend libgnustep-art
+      </example>
+      <p>To read out the value set for the default, use <code>defaults read
+         (domain) [(key)]</code>.  If you do not specify the key, every
+         key-value pair in the domain will be printed.
+      </p>
+      <p>
+          Other domains besides the system level domain
+          "<code>NSGlobalDomain</code>" include the application domains, named
+          for each application that has registered defaults, and the temporary
+          runtime "<code>NSArgumentDomain</code>" for command line arguments.
+          At runtime there is also a "<code>NSRegistrationDomain</code>", a
+          second-chance domain in which "defaults for defaults" can be
+          registered, and possibly also domains for specific locales.
       </p>
       <section>
         <heading>GUI Library Defaults</heading>
       <p>
-      Below is a list of defaults used to control the gnustep-gui library.
+      Below is a list of <code>NSGlobalDomain</code> defaults used to
+      control the gnustep-gui library.
       </p>
       <deflist>
 	  <term>GSBackend</term>
@@ -224,6 +243,14 @@
           This defines the application NSPrintOperation will try to
           connect to preview PostScript files, unless there is already
 	  an application registed as a Viewer of ps files.
+          </p>
+	  </desc>
+	  <term>NSShowNonLocalizedStrings</term>
+	  <desc>
+          <p>
+          Default is "NO".  If "YES", the application will display localization
+          keys instead of strings in its UI.  This can be useful during
+          development to see where a given string in the UI is "coming from".
           </p>
 	  </desc>
 	  <term><em>System Colors</em></term>
