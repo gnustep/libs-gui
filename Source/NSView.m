@@ -631,31 +631,55 @@ id e, o;												// to and we have never
 		}
 }
 
-- (void)resizeWithOldSuperviewSize:(NSSize)oldSize		// preliminary FIX ME
-{										
-	if(autoresizingMask == NSViewNotSizable)		
-		return;											// view not resizable
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize		// preliminary  FIX ME
+{
+float change, changePerOption;
+int options = 0;
+														// do nothing if view 
+	if(autoresizingMask == NSViewNotSizable)			// is not resizable
+		return;											
+														// adjust the X axis
+	if(autoresizingMask & NSViewWidthSizable)			
+		options++;										// width resizable?
+	if(autoresizingMask & NSViewMinXMargin)				
+		options++;
+	if(autoresizingMask & NSViewMaxXMargin)				
+		options++;
 
-	if(autoresizingMask & NSViewWidthSizable)			// width resizable?
+	if(options >= 1)
 		{
-  		frame.size.width = [super_view frame].size.width;
-		}	
-	else									// width is not resizable, so check 
-		{									// if left margin can be stretched
-		if(autoresizingMask & NSViewMinXMargin)
-  			frame.origin.x += [super_view frame].size.width - oldSize.width;
+		change = [super_view frame].size.width - oldSize.width;
+		changePerOption = change/options;				// need to floor FIX ME
+	
+		if(autoresizingMask & NSViewWidthSizable)		// width resizable?
+			frame.size.width += changePerOption;
+		if(autoresizingMask & NSViewMinXMargin)				
+			frame.origin.x += changePerOption;
+		if(autoresizingMask & NSViewMaxXMargin)				
+			frame.size.width += changePerOption;
+		bounds.size.width = frame.size.width;
 		}
+														// adjust the Y axis
+	options = 0;
+	if(autoresizingMask & NSViewHeightSizable)			
+		options++;										// height resizable?
+	if(autoresizingMask & NSViewMinYMargin)				
+		options++;
+	if(autoresizingMask & NSViewMaxYMargin)				
+		options++;
 
-	if(autoresizingMask & NSViewHeightSizable)		// height resizable?
+	if(options >= 1)
 		{
-  		frame.size.height = [super_view frame].size.height;
-		}
-	else									// height is not resizable so check 
-		{									// if bottom margin can be stretchd
-		if(autoresizingMask & NSViewMinYMargin)
-	  		frame.origin.y += [super_view frame].size.height - oldSize.height;
-// 		if(autoresizingMask & NSViewMaxYMargin)
-// 			frame.origin.y = [super_view frame].origin.y;
+		change = [super_view frame].size.height - oldSize.height;
+		changePerOption = change/options;				// need to floor FIX ME
+	
+		if(autoresizingMask & NSViewHeightSizable)		// height resizable?
+			frame.size.height += changePerOption;
+		if(autoresizingMask & NSViewMinYMargin)				
+			frame.origin.y += changePerOption;
+		if(autoresizingMask & NSViewMaxYMargin)				
+			frame.size.height += changePerOption;
+		bounds.size.height = frame.size.height;
 		}
 
 	fprintf (stderr, "NSView resizeWithOldSuperviewSize: \n");
