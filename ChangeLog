@@ -1,6 +1,6 @@
 Tue Oct 23 15:06:57 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
-	Patch by Ludovi Marcotte <ludovi@sophos.ca>:
+	Patch by Ludovic Marcotte <ludovic@sophos.ca>:
 	* Source/NSOpenPanel.m ([-_selectTextInColumn:]): Updated calls
 	to setStringValue: for last change.
 	* Source/NSSavePanel.m ([NSSavePanel -selectText:]): Idem.
