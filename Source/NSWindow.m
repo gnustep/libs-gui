@@ -779,7 +779,7 @@ static NSRecursiveLock	*windowsLock;
  */
 - (void) disableFlushWindow
 {
-  disable_flush_window = YES;
+  disable_flush_window++;
 }
 
 - (void) display
@@ -824,7 +824,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) flushWindowIfNeeded
 {
-  if (!disable_flush_window && needs_flush)
+  if (disable_flush_window == 0 && needs_flush == YES)
     {
       needs_flush = NO;
       [self flushWindow];
@@ -838,7 +838,10 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) enableFlushWindow
 {
-  disable_flush_window = NO;
+  if (disable_flush_window > 0)
+    {
+      disable_flush_window--;
+    }
 }
 
 - (BOOL) isAutodisplay
@@ -848,7 +851,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (BOOL) isFlushWindowDisabled
 {
-  return disable_flush_window;
+  return disable_flush_window == 0 ? NO : YES;
 }
 
 - (void) setAutodisplay: (BOOL)flag
@@ -2005,6 +2008,7 @@ static NSRecursiveLock	*windowsLock;
   [aCoder encodeObject: miniaturized_image];
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
   [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
+  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
@@ -2012,7 +2016,6 @@ static NSRecursiveLock	*windowsLock;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
@@ -2047,6 +2050,7 @@ static NSRecursiveLock	*windowsLock;
   [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
 	at: &backing_type];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
@@ -2054,7 +2058,6 @@ static NSRecursiveLock	*windowsLock;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
@@ -2133,7 +2136,7 @@ static NSRecursiveLock	*windowsLock;
   is_edited = NO;
   is_released_when_closed = YES;
   is_miniaturized = NO;
-  disable_flush_window = NO;
+  disable_flush_window = 0;
   menu_exclude = NO;
   hides_on_deactivate = NO;
   accepts_mouse_moved = NO;
