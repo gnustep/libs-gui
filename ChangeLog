@@ -1,9 +1,20 @@
+Sat Jun  9 04:04:46 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* gui.make: Moved to gui.make.in.
+	* gui.make.in: New file with code from gui.make;
+	(GNUSTEP_GUI_VERSION, GNUSTEP_GUI_MAJOR_VERSION),
+	(GNUSTEP_GUI_MINOR_VERSION, GNUSTEP_GUI_SUBMINOR_VERSION): New
+	variables set up at configure time.
+	* configure.in: Source ./Version and substitute the new version
+	variables; generate gui.make from gui.make.in.
+	* configure: Regenerated.
+
 Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m (NSTEXTVIEW_SYNC): Use full selector as
 	argument to the macro to prevent warning/problems with new
 	compilers.  Updated all calling code.
-	
+
 2000-06-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m
