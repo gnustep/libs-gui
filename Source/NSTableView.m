@@ -283,7 +283,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
 - (void) dealloc
 {
-  TEST_RELEASE (_dataSource);
   RELEASE (_gridColor);
   RELEASE (_backgroundColor);
   RELEASE (_tableColumns);
@@ -556,7 +555,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 		   @"tableView:objectValueForTableColumn:row:"];
     }
   
-  ASSIGN (_dataSource, anObject);
+  /* We do *not* retain the dataSource, it's like a delegate */
+  _dataSource = anObject;
   [self tile];
   [self reloadData];
 }
@@ -2290,7 +2290,9 @@ byExtendingSelection: (BOOL)flag
   float x_pos;
 
   if (_dataSource == nil)
-    return;
+    {
+      return;
+    }
 
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -2869,7 +2871,7 @@ byExtendingSelection: (BOOL)flag
 
   self = [super initWithCoder: aDecoder];
 
-  _dataSource      = RETAIN([aDecoder decodeObject]);
+  _dataSource      = [aDecoder decodeObject];
   _tableColumns    = RETAIN([aDecoder decodeObject]);
   _gridColor       = RETAIN([aDecoder decodeObject]);
   _backgroundColor = RETAIN([aDecoder decodeObject]);
