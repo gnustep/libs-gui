@@ -42,6 +42,8 @@ BUNDLE_INSTALL_DIR = $(GNUSTEP_INSTALLATION_DIR)/Library/ColorPickers
 
 ADDITIONAL_INCLUDE_DIRS += -I../Headers -I../Headers/gnustep
 
+ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Models/$(GNUSTEP_OBJ_DIR)
+
 # The Objective-C source files to be compiled
 StandardPicker_OBJC_FILES =  	GSStandardColorPicker.m \
 			     	GSRGBColorPicker.m \

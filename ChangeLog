@@ -1,6 +1,7 @@
 2003-02-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/libgnustep-gui.def: Regenerated
+	* ColorPickers/GNUmakefile: add local library paths
 
 Wed Feb  5 04:56:45 2003  Serg Stoyan <stoyan@hologr.com>
 	
