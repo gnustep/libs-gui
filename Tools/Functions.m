@@ -27,7 +27,6 @@
 #include <AppKit/NSCStringText.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/GSWraps.h>
-#include <AppKit/DPSOperators.h>
 
 /*
  * Dummy definitions provided here to avoid errors when not linking with
@@ -60,9 +59,8 @@ void NSDrawDownArrow(NSPoint aPoint)
 {}
 
 /* Dummy wraps */
-void GSWSetMatrix(GSCTXT *ctxt, float m[6]) {}
-unsigned int GSWDefineAsUserObj(GSCTXT *ctxt) {return 0;}
-void GSWViewIsFlipped(GSCTXT *ctxt, BOOL flipped) {}
+unsigned int GSWDefineAsUserObj(NSGraphicsContext *ctxt) {return 0;}
+void GSWViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped) {}
 
 @interface  GMModel : NSObject
 @end
