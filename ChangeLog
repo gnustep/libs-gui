@@ -1,3 +1,23 @@
+Mon Dec 17 23:54:35 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSInputManager.m: New class which loads key binding files
+	and process keys basing on loaded key bindings.
+	* Headers/gnustep/gui/NSInputManager.h: Updated.  Removed methods
+	deprecated in apple doc - there is no point in trying to be
+	compatible with internal deprecated methods of a foreign system.
+	* Source/NSResponder.m ([-interpretKeyEvents:]): Pass the key
+	events to the current input manager.
+	([+initialize]): Added call to NSInputManager to have it init
+	itself.
+	* KeyBindings/: New directory.
+	* KeyBindings/GNUmakefile: New file.
+	* KeyBindings/DefaultKeyBindings.dict: New file.
+	* Documentation/gsdoc/GNUmakefile (Gui_GSDOC_FILES): Added
+	DefaultsSummary.gsdoc.
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Documented 
+	the GSDefaultKeyBindings and GSCustomKeyBindings options.
+	* Documentation/gsdoc/DefaultsSummary.html: Regenerated.
+	
 2001-12-17  Pierre-Yves Rivaille  <pyrivail@ens-lyon.fr>
 
         * Source/NSButtonCell.m ([NSButtonCell -drawInteriorWithFrame:inView:])
