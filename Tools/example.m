@@ -33,6 +33,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSTask.h>
+#include <Foundation/NSUserDefaults.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
 
@@ -62,6 +63,8 @@
   NSArray	*args;
   NSString	*path;
   NSTask	*task;
+  NSString      *browser;
+  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
 
   types = [pb types];
   if (![types containsObject: NSStringPboardType])
@@ -77,11 +80,16 @@
       return;
     }
 
+  browser = [defs objectForKey:@"NSWebBrowser"];
+  if(!browser || [browser isEqualToString:@""])
+  {
+    browser = @"mozilla -remote \"openURL(%@,new-window)\"";
+  }
+
   path = @"/bin/sh";
   args = [NSArray arrayWithObjects:
     @"-c",
-    [NSString stringWithFormat:
-      @"netscape -noraise -remote \"openURL(%@,new-window)\"", url],
+    [NSString stringWithFormat: browser, url],
     nil];
 
   task = [NSTask launchedTaskWithLaunchPath: path
