@@ -226,43 +226,56 @@ static NSString			*_rootPath = @"/";
 	}
 
       beenHere = YES;
-      service = [[NSSearchPathForDirectoriesInDomains(
-	  NSUserDirectory, NSUserDomainMask, YES) objectAtIndex: 0]
-		    stringByAppendingPathComponent: @"Services"];
 
-      /*
-       *	Load file extension preferences.
-       */
-      extPrefPath = [service
-			stringByAppendingPathComponent: @".GNUstepExtPrefs"];
-      RETAIN(extPrefPath);
-      if ([mgr isReadableFileAtPath: extPrefPath] == YES)
+      NS_DURING
 	{
-	  data = [NSData dataWithContentsOfFile: extPrefPath];
-	  if (data)
+	  service = [[NSSearchPathForDirectoriesInDomains(NSUserDirectory, 
+							  NSUserDomainMask, 
+							  YES) 
+							 objectAtIndex: 0]
+		      stringByAppendingPathComponent: @"Services"];
+	  
+	  /*
+	   *	Load file extension preferences.
+	   */
+	  extPrefPath = [service
+			  stringByAppendingPathComponent: @".GNUstepExtPrefs"];
+	  RETAIN(extPrefPath);
+	  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
 	    {
-	      dict = [NSDeserializer deserializePropertyListFromData: data
-						   mutableContainers: NO];
-	      extPreferences = RETAIN(dict);
+	      data = [NSData dataWithContentsOfFile: extPrefPath];
+	      if (data)
+		{
+		  dict = [NSDeserializer deserializePropertyListFromData: data
+					 mutableContainers: NO];
+		  extPreferences = RETAIN(dict);
+		}
+	    }
+	  
+	  /*
+	   *	Load cached application information.
+	   */
+	  appListPath = [service
+			  stringByAppendingPathComponent: @".GNUstepAppList"];
+	  RETAIN(appListPath);
+	  if ([mgr isReadableFileAtPath: appListPath] == YES)
+	    {
+	      data = [NSData dataWithContentsOfFile: appListPath];
+	      if (data)
+		{
+		  dict = [NSDeserializer deserializePropertyListFromData: data
+					 mutableContainers: NO];
+		  applications = RETAIN(dict);
+		}
 	    }
 	}
-
-      /*
-       *	Load cached application information.
-       */
-      appListPath = [service
-			stringByAppendingPathComponent: @".GNUstepAppList"];
-      RETAIN(appListPath);
-      if ([mgr isReadableFileAtPath: appListPath] == YES)
+      NS_HANDLER
 	{
-	  data = [NSData dataWithContentsOfFile: appListPath];
-	  if (data)
-	    {
-	      dict = [NSDeserializer deserializePropertyListFromData: data
-						   mutableContainers: NO];
-	      applications = RETAIN(dict);
-	    }
+	  [gnustep_global_lock unlock];
+	  [localException raise];
 	}
+      NS_ENDHANDLER
+
       [gnustep_global_lock unlock];
     }
 }
@@ -315,7 +328,7 @@ static NSString			*_rootPath = @"/";
     selector: @selector(noteUserDefaultsChanged)
     name: NSUserDefaultsDidChangeNotification
     object: nil];
-  
+
   _workspaceCenter = [_GSWorkspaceCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
