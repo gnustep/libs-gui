@@ -248,29 +248,13 @@ typedef enum
 				[[NSText class] newlineString]]];
 }
 
-- (void) setFirstTextView: (NSTextView*)aTextView
-{
-  _firstTextView = aTextView;
-}
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
-  unsigned length = [aTextStorage length];
-  NSRange aRange = NSMakeRange(0, length);
-  ASSIGN(_textStorage, aTextStorage);
-  // force complete re - layout
   RELEASE(lineLayoutInformation);
   lineLayoutInformation = nil;
-  [self textStorage: aTextStorage
-	edited: NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
-	range: aRange
-	changeInLength: length 
-	invalidatedRange: aRange];
-}
 
-- (NSTextStorage*) textStorage
-{
-  return _textStorage;
+  [super setTextStorage: aTextStorage];
 }
 
 // Currently gyphIndex is the same as character index
@@ -513,6 +497,18 @@ typedef enum
   return _rects;
 }
 
+- (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
+{
+  NSRange lineRange;
+
+  RELEASE(lineLayoutInformation);
+  lineLayoutInformation = nil;
+
+  lineRange = [self rebuildForRange: NSMakeRange(0, [_textStorage length])
+		delta: 0];
+  [self setNeedsDisplayForLineRange: lineRange];
+}
+
 - (void)textStorage:(NSTextStorage *)aTextStorage
 	     edited:(unsigned int)mask
 	      range:(NSRange)aRange
@@ -537,7 +533,7 @@ typedef enum
 		      inTextContainer: nil];
 
   // clear area under text
-  [[_firstTextView backgroundColor] set];
+  [[[self firstTextView] backgroundColor] set];
   NSRectFill(rect);
 }
 
@@ -545,7 +541,7 @@ typedef enum
 			atPoint:(NSPoint)containerOrigin
 {
   NSRange newRange;
-  NSRange selectedRange = [_firstTextView selectedRange];
+  NSRange selectedRange = [[self firstTextView] selectedRange];
   unsigned start = [self lineLayoutIndexForCharacterIndex: glyphRange.location];
   unsigned end = [self lineLayoutIndexForCharacterIndex: NSMaxRange(glyphRange)];
   NSRange lineRange = NSMakeRange(start, end + 1 - start);
@@ -590,22 +586,25 @@ typedef enum
 
 - (NSRect) frame
 {
-  return [_firstTextView frame];
+  if ([self firstTextView] == nil)
+    {
+      NSSize size =  [[_textContainers objectAtIndex: 0] containerSize];
+      return NSMakeRect(0, 0, size.width, size.height);
+    }
+  return [[self firstTextView] frame];
 }
 
 - (float) width
 {
-  return [_firstTextView frame].size.width;
+  return [[_textContainers objectAtIndex: 0] containerSize].width;
 }
 
 - (float) maxWidth
 {
-  NSRect aRect = [_firstTextView frame];
-
-  if ([_firstTextView isHorizontallyResizable])
+  if ([[self firstTextView] isHorizontallyResizable])
     return HUGE;
   else
-    return aRect.size.width;
+    return [self width];
 }
 
 - (unsigned) lineLayoutIndexForPoint: (NSPoint)point
@@ -869,7 +868,7 @@ typedef enum
 					     (int)NSMaxRange(redrawLineRange) - 1] lineRect]);
 
       displayRect.size.width = width - displayRect.origin.x;
-      [_firstTextView setNeedsDisplayInRect: displayRect];
+      [[self firstTextView] setNeedsDisplayInRect: displayRect];
     }
 
 
@@ -884,8 +883,8 @@ typedef enum
       if (![lineLayoutInformation count]
 	  || (lowestY < NSMaxY(myFrame)))
 	{
-	  [_firstTextView setNeedsDisplayInRect: NSMakeRect(0, lowestY,
-							 width, NSMaxY(myFrame) - lowestY)];
+	  [[self firstTextView] setNeedsDisplayInRect: NSMakeRect(0, lowestY,
+								  width, NSMaxY(myFrame) - lowestY)];
 	}
     }
 
