@@ -2868,6 +2868,11 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
   [super dealloc];
 }
 

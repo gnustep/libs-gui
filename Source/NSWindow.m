@@ -643,6 +643,13 @@ static NSNotificationCenter *nc = nil;
       [GSServerForWindow(self) termwindow: _windowNum];
       NSMapRemove(windowmaps, (void*)_windowNum);
     }
+  
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
   [super dealloc];
 }
 
