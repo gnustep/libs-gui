@@ -2218,9 +2218,13 @@ resetCursorRectsForView(NSView *theView)
 /**
   Causes the window to deminiaturize. Normally you would not call this
   method directly. A window is automatically deminiaturized by the
-  user via a mouse click event.  */
+  user via a mouse click event. Does nothing it the window isn't
+  miniaturized.  */
 - (void) deminiaturize: sender
 {
+  if (!_f.is_miniaturized)
+    return;
+
   if (_counterpart != 0)
     {
       NSWindow		*mini = GSWindowWithNumber(_counterpart);
@@ -2244,10 +2248,19 @@ resetCursorRectsForView(NSView *theView)
 
 /**
   Causes the window to miniaturize, that is the window is removed from
-  the screen and it's counterpart (mini)window is displayed.  */
+  the screen and it's counterpart (mini)window is displayed. Does
+  nothing if the window can't be miniaturized (eg. because it's already
+  miniaturized).  */
 - (void) miniaturize: (id)sender
 {
   GSDisplayServer *srv = GSServerForWindow(self);
+
+  if (_f.is_miniaturized
+      || (!(_styleMask & NSMiniaturizableWindowMask))
+      || (_styleMask & (NSIconWindowMask | NSMiniWindowMask))
+      || (![self isVisible]))
+    return;
+
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
 		    object: self];
   

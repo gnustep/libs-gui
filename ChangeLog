@@ -1,3 +1,11 @@
+2003-10-07 14:32  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (-miniaturize:): Check that the window is
+	miniaturizable, visible, and not already miniaturized before
+	trying to miniaturize it.
+	(-deminiaturize:): Do nothing if the window isn't miniaturized.
+	(Based on patch from Matt Rice.)
+
 2003-10-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/DocMakefile: Remove dependencies file when cleaning.
