@@ -1,3 +1,8 @@
+Wed Jun  5 14:09:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSKeyBindingAction.h: Cleaned syntax of #endif to remove
+	compiler warnings.
+
 2002-06-03  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSDisplayServer.m (-beep): New method.
