@@ -218,7 +218,7 @@
   _imagePlanes = NSZoneMalloc([self zone], sizeof(unsigned char*) * MAX_PLANES);
   if (planes) 
     {
-      int i;
+      unsigned int i;
 
       for (i = 0; i < MAX_PLANES; i++)
  	_imagePlanes[i] = NULL;
@@ -229,7 +229,7 @@
     {
       unsigned char* bits;
       long length;
-      int i;
+      unsigned int i;
 
       // No image data was given, allocate it.
       length = (long)((_isPlanar) ? _numColors : 1) * _bytesPerRow * 
@@ -354,7 +354,7 @@
 
 - (void) getBitmapDataPlanes: (unsigned char **)data
 {
-  int i;
+  unsigned int i;
 
   if (data)
     {
@@ -594,7 +594,7 @@
   else
     {
       unsigned char* bits;
-      int i;
+      unsigned int i;
 
       bits = [copy->_imageData mutableBytes];
       copy->_imagePlanes[0] = bits;
