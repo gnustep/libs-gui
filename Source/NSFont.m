@@ -210,39 +210,121 @@ setNSFont(NSString* key, NSFont* font)
 
 /* Getting various fonts*/
 
-#ifndef STRICT_OPENSTEP
 + (NSFont*) controlContentFontOfSize: (float)fontSize
 {
-  return [NSFont fontWithName: @"Helvetica" size: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSControlContentFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSControlContentFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) menuFontOfSize: (float)fontSize
 {
-  return [NSFont fontWithName: @"Helvetica" size: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSMenuFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSMenuFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) titleBarFontOfSize: (float)fontSize
 {
-  return [self boldSystemFontOfSize: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSTitelBarFont", @"Helvetica-Bold", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSTitleBarFont", @"Helvetica-Bold", 0));
+	  boldSystemCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) messageFontOfSize: (float)fontSize
 {
-  return [self systemFontOfSize: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSMessageFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSMessageFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) paletteFontOfSize: (float)fontSize
 {
   // Not sure on this one.
-  return [self boldSystemFontOfSize: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSPaletteFont", @"Helvetica-Bold", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSPaletteFont", @"Helvetica-Bold", 0));
+	  boldSystemCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) toolTipsFontOfSize: (float)fontSize
 {
   // Not sure on this one.
-  return [NSFont fontWithName: @"Helvetica" size: fontSize];
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSToolTipsFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSToolTipsFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
-#endif
 
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
 {
