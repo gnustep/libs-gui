@@ -1,3 +1,11 @@
+2002-08-30 00:11  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSBezierPath.m (-appendBezierPath:): Handle curves
+        correctly.
+
+        (-appendBezierPathWithArcFromPoint:toPoint:radius:): Fix numerical
+        stability issue by clamping dx1 and dx2 manually.
+
 2002-08-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDisplayServer.m:

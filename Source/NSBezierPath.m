@@ -818,9 +818,9 @@ static float default_miter_limit = 10.0;
 	      [self lineToPoint: points[0]];
 	      break;
 	  case NSCurveToBezierPathElement:
-	      [self curveToPoint: points[0] 
-		    controlPoint1: points[1]
-		    controlPoint2: points[2]];
+	      [self curveToPoint: points[2] 
+		    controlPoint1: points[0]
+		    controlPoint2: points[1]];
 	      break;
 	  case NSClosePathBezierPathElement:
 	      [self closePath];
@@ -1005,12 +1005,12 @@ static float default_miter_limit = 10.0;
   NSPoint p;
 
   p = [self currentPoint];
-
+ 
   x1 = point1.x;
   y1 = point1.y;
   dx1 = p.x - x1;
   dy1 = p.y - y1;
-
+  
   l= dx1*dx1 + dy1*dy1;
   if (l <= 0)
     {
@@ -1046,13 +1046,23 @@ static float default_miter_limit = 10.0;
   p.x = x1 + (dx1 + dx2)*l;
   p.y = y1 + (dy1 + dy2)*l;
 
-  a1 = acos(dx1)/PI*180;
+  if (dx1 < -1)
+    a1 = 180;
+  else if (dx1 > 1)
+    a1 = 0;
+  else
+    a1 = acos(dx1)/PI*180;
   if (dy1 < 0)
     {   
       a1 = -a1;
     }
 
-  a2 = acos(dx2)/PI*180;
+  if (dx2 < -1)
+    a2 = 180;
+  else if (dx2 > 1)
+    a2 = 0;
+  else
+    a2 = acos(dx2)/PI*180;
   if (dy2 < 0)
     {   
       a2 = -a2;
