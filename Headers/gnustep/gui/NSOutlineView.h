@@ -169,11 +169,11 @@ shouldEditTableColumn: (NSTableColumn *)tableColumn
      shouldSelectItem: (id)item;
 - (BOOL)  outlineView: (NSOutlineView *)outlineView 
 shouldSelectTableColumn: (NSTableColumn *)tableColumn;
-- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+- (void)  outlineView: (NSOutlineView *)outlineView 
       willDisplayCell: (id)cell
        forTableColumn: (NSTableColumn *)tableColumn
                  item: (id)item;  
-- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+- (void)  outlineView: (NSOutlineView *)outlineView 
 willDisplayOutlineCell: (id)cell
        forTableColumn: (NSTableColumn *)tableColumn
                  item: (id)item;

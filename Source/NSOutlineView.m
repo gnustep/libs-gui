@@ -780,9 +780,7 @@ static NSImage *unexpandable  = nil;
 }
 
 - (void) setDelegate: (id)anObject
-{
-  SEL sel;
-  
+{ 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = anObject;
@@ -801,10 +799,6 @@ static NSImage *unexpandable  = nil;
   SET_DELEGATE_NOTIFICATION(ItemDidCollapse);
   SET_DELEGATE_NOTIFICATION(ItemWillExpand);
   SET_DELEGATE_NOTIFICATION(ItemWillCollapse);
-  
-  /* Cache */
-  sel = @selector(outlineView:willDisplayCell:forTableColumn:row:);
-  sel = @selector(outlineView:setObjectValue:forTableColumn:row:);
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -952,7 +946,7 @@ static NSImage *unexpandable  = nil;
 	  tb = [_tableColumns objectAtIndex: i];
 	  cell = [tb dataCellForRow: rowIndex];
 	  
-	  if (_del_responds)
+	  if ([_delegate respondsToSelector: @selector(outlineView:willDisplayCell:forTableColumn:item:)])
 	    {
 	      [_delegate outlineView: self   
 			 willDisplayCell: cell 
