@@ -14,6 +14,11 @@ ifeq (mingw32, $(GNUSTEP_TARGET_OS))
   PA_OBJ_DIR = $(GNUSTEP_OBJ_DIR)/portaudio/pa_win_ds
 else
   PA_OBJ_DIR = $(GNUSTEP_OBJ_DIR)/portaudio/pa_unix_oss
+  # Most often this is already included from gnustep-base but may not
+  # be if libobjc is compiled without threads.
+  ifeq ($(objc_threaded),)
+    ADDITIONAL_TOOL_LIBS += -lpthread
+  endif
 endif
 
 before-all::

@@ -40,6 +40,9 @@ PACKAGE_NAME = gnustep-gui
 
 include ./Version
 
+# Build docs by default
+doc=yes
+
 #
 # The list of subproject directories
 #
@@ -53,8 +56,11 @@ PrinterTypes \
 TextConverters \
 ColorPickers \
 KeyBindings \
-Resources \
-Documentation
+Resources
+
+ifeq ($(doc), yes)
+SUBPROJECTS += Documentation
+endif
 
 -include GNUmakefile.preamble
 

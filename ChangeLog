@@ -1,3 +1,16 @@
+2003-07-19  Adam Fedor  <fedor@gnu.org>
+
+	* GNUmakefile: Build Documentation if doc=yes (yes by default).
+
+	* Tools/gsnd/GNUmakefile.postamble: Linke in pthreads if not
+	already linked in (non-mingw targets only).
+	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c: On OpenBSD
+	include soundcard.h.
+
+	* Panels/English.proj: Replace GSPageLayout.gorm and 
+	GSPrintPanel.gorm with updated GOrm dirs. Make Options button 
+	non-continuous.
+
 2003-07-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m

@@ -3821,7 +3821,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  * <p>Use of this method is discouraged in GNUstep as it breaks many
  *    user interface guidelines. At the very least, menu items that appear
  *    in a context sensitive menu should also always appear in a normal
- *    menu. Otherwise, user are faced with an inconsistant interface where
+ *    menu. Otherwise, users are faced with an inconsistant interface where
  *    the menu items they want are only available in certain (possibly
  *    unknown) cases, making it difficult for the user to understand how
  *    the application operates</p>
