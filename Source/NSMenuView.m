@@ -143,11 +143,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (id)initAsTearOff
 {
-	[self initWithFrame: NSZeroRect];
+  [self initWithFrame: NSZeroRect];
 	
-	if (_menu)
-		[_menu setTornOff: YES];
-	
+  if (_menu)
+    [_menu setTornOff: YES];
+  
   return self;
 }
 
@@ -450,26 +450,26 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   NSDebugLLog (@"NSMenu", @"update called on menu view");
 
-	if (![_menu _ownedByPopUp] && !_titleView)
-		{
-			// Add title view. If this menu not owned by popup
-			_titleView = [[NSMenuWindowTitleView alloc] init];
-			[self addSubview: _titleView];
-			[_titleView release];
-		}
-	else if ([_menu _ownedByPopUp] && _titleView) 
-		{
-			// Remove title view if this menu owned by popup
-			[_titleView removeFromSuperview];
-			_titleView = nil;
-		}
-
-	if ([_titleView menu] == nil && _titleView)
-		[_titleView setMenu: _menu];
-
-	// Resize it anyway.
-	[self sizeToFit];
-
+  if (![_menu _ownedByPopUp] && !_titleView)
+    {
+      // Add title view. If this menu not owned by popup
+      _titleView = [[NSMenuWindowTitleView alloc] init];
+      [self addSubview: _titleView];
+      [_titleView release];
+    }
+  else if ([_menu _ownedByPopUp] && _titleView) 
+    {
+      // Remove title view if this menu owned by popup
+      [_titleView removeFromSuperview];
+      _titleView = nil;
+    }
+  
+  if ([_titleView menu] == nil && _titleView)
+    [_titleView setMenu: _menu];
+  
+  // Resize it anyway.
+  [self sizeToFit];
+  
   if ([_menu isTornOff] && ![_menu isTransient])
     {
       [_titleView addCloseButton];
@@ -563,16 +563,16 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         neededStateImageWidth = aStateImageWidth;
       
       if (anImageAndTitleWidth > neededImageAndTitleWidth)
-				 	neededImageAndTitleWidth = anImageAndTitleWidth;
+        neededImageAndTitleWidth = anImageAndTitleWidth;
 		
       if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
         neededKeyEquivalentWidth = aKeyEquivalentWidth;
       
-			// Title view width less than item's left part width
-			if ((anImageAndTitleWidth + aStateImageWidth) 
-					> neededImageAndTitleWidth)
-				wideTitleView = 0;
-
+      // Title view width less than item's left part width
+      if ((anImageAndTitleWidth + aStateImageWidth) 
+          > neededImageAndTitleWidth)
+        wideTitleView = 0;
+      
       // Popup menu has only one item with nibble or arrow image
       if (anImageWidth)
         popupImageWidth = anImageWidth;
@@ -582,38 +582,38 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   _stateImageWidth = neededStateImageWidth;
   _imageAndTitleWidth = neededImageAndTitleWidth;
   _keyEqWidth = neededKeyEquivalentWidth;
-
-	accumulatedOffset = _horizontalEdgePad;
+  
+  accumulatedOffset = _horizontalEdgePad;
   if (howMany)
     {
-			// Calculate the offsets and cache them.
-			if (neededStateImageWidth)
-				{
-					_stateImageOffset = accumulatedOffset;
-					accumulatedOffset += neededStateImageWidth += _horizontalEdgePad;
-				}
-
-			if (neededImageAndTitleWidth)
-				{
-					_imageAndTitleOffset = accumulatedOffset;
-					accumulatedOffset += neededImageAndTitleWidth;
-				}
-
-			if (wideTitleView)
-				{
-					_keyEqOffset = accumulatedOffset = neededImageAndTitleWidth
-						+ (3 * _horizontalEdgePad);
-				}
-			else
-				{
-					_keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
-				}
-			accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
-
-			if ([_menu supermenu] != nil && neededKeyEquivalentWidth < 8)
-				{
-					accumulatedOffset += 8 - neededKeyEquivalentWidth;
-				}
+      // Calculate the offsets and cache them.
+      if (neededStateImageWidth)
+        {
+          _stateImageOffset = accumulatedOffset;
+          accumulatedOffset += neededStateImageWidth += _horizontalEdgePad;
+        }
+      
+      if (neededImageAndTitleWidth)
+        {
+          _imageAndTitleOffset = accumulatedOffset;
+          accumulatedOffset += neededImageAndTitleWidth;
+        }
+      
+      if (wideTitleView)
+        {
+          _keyEqOffset = accumulatedOffset = neededImageAndTitleWidth
+            + (3 * _horizontalEdgePad);
+        }
+      else
+        {
+          _keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
+        }
+      accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
+      
+      if ([_menu supermenu] != nil && neededKeyEquivalentWidth < 8)
+        {
+          accumulatedOffset += 8 - neededKeyEquivalentWidth;
+        }
     }
   else
     {
@@ -729,7 +729,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   for (i = 0; i < howMany; i++)
     {
       NSRect aRect = [self rectOfItemAtIndex: i];
-
+      
       aRect = _addLeftBorderOffsetToRect(aRect);
 
       if (NSMouseInRect(point, aRect, NO))
@@ -802,12 +802,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
   cellFrame = [self convertRect: cellFrame fromView: nil];
  
-	// Only call update if needed.
-	if ((NSEqualSizes(_cellSize, cellFrame.size) == NO) || _needsSizing)
-		{
-			_cellSize = cellFrame.size;
-			[self update];
-		}
+  // Only call update if needed.
+  if ((NSEqualSizes(_cellSize, cellFrame.size) == NO) || _needsSizing)
+    {
+      _cellSize = cellFrame.size;
+      [self update];
+    }
   
   /*
    * Compute the frame
@@ -1037,10 +1037,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
               candidateMenu = [_menu supermenu];
               while (candidateMenu  
                      && !NSMouseInRect (locationInScreenCoordinates, 
-																				[[candidateMenu window] frame], 
-																				NO) // not found yet
-										 && (! ([candidateMenu isTornOff] 
-														&& ![candidateMenu isTransient]))  // no root of display tree
+                                        [[candidateMenu window] frame], 
+                                        NO) // not found yet
+                     && (! ([candidateMenu isTornOff] 
+                            && ![candidateMenu isTransient]))  // no root of display tree
                      && [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
@@ -1055,15 +1055,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 									// menu and the attached menu is already correct.
                   [[[candidateMenu attachedMenu] menuRepresentation]
                     detachSubmenu];
-
-									// Reset highlighted index for this menu.
- 									// This way if we return to this submenu later there 
-									// won't be a highlighted item.
-									[[[candidateMenu attachedMenu] menuRepresentation]
- 										setHighlightedItemIndex: -1];
-
+                  
+                  // Reset highlighted index for this menu.
+                  // This way if we return to this submenu later there 
+                  // won't be a highlighted item.
+                  [[[candidateMenu attachedMenu] menuRepresentation]
+                    setHighlightedItemIndex: -1];
+                  
                   return [[candidateMenu menuRepresentation]
-                    trackWithEvent: original];
+                           trackWithEvent: original];
                 }
 
               // 3b - Check if we enter the attached submenu
@@ -1440,12 +1440,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // create the menu's close button
   NSImage *closeImage = [NSImage imageNamed: @"common_Close"];
   NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
-	NSRect  rect;
-
-	imageSize = [closeImage size];
-	rect = NSMakeRect (_frame.size.width - imageSize.width - 4,
-										 (_frame.size.height - imageSize.height) / 2 ,
-										 imageSize.width, imageSize.height );
+  NSRect  rect;
+        
+  imageSize = [closeImage size];
+  rect = NSMakeRect (_frame.size.width - imageSize.width - 4,
+                     (_frame.size.height - imageSize.height) / 2 ,
+                     imageSize.width, imageSize.height );
   
   button = [[NSButton alloc] initWithFrame: rect];
   [button setRefusesFirstResponder: YES];
@@ -1472,10 +1472,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   if (button == nil)
     [self createButton];
 
-	// Update location
-	[button setFrameOrigin: 
-		NSMakePoint (_frame.size.width - imageSize.width - 4,
-								 (_frame.size.height - imageSize.height) / 2)];
+  // Update location
+  [button setFrameOrigin: 
+            NSMakePoint (_frame.size.width - imageSize.width - 4,
+                         (_frame.size.height - imageSize.height) / 2)];
 
   [self addSubview: button];
   [self setNeedsDisplay: YES];
