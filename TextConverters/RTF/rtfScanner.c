@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "rtfScanner.h"
 #include "rtfGrammer.tab.h"
@@ -157,86 +158,86 @@ int findStringFromKeywordArray(const char *string, const LexKeyword *array,
 //	<!> must be sorted
 LexKeyword RTFcommands[] = 
   {
-    "ansi",      token(RTFansi),
-    "b",         token(RTFbold),
-    "blue",      token(RTFblue),
-    "bullet",    token(RTFbullet),
-    "cb",        token(RTFcolorbg),
-    "cell",      token(RTFcell),
-    "cf",        token(RTFcolorfg),
-    "colortbl",  token(RTFcolortable),
-    "cpg",       token(RTFcpg),
-    "dn",        token(RTFsubscript),
-    "emdash",    token(RTFemdash),
-    "emspace",   token(RTFemspace),
-    "endash",    token(RTFendash),
-    "enspace",   token(RTFenspace),
-    "f",         token(RTFfont),
-    "fcharset",  token(RTFfcharset),
-    "fdecor",    token(RTFfamilyDecor),
-    "fi",        token(RTFfirstLineIndent),
-    "fmodern",   token(RTFfamilyModern),
-    "fnil",      token(RTFfamilyNil),
-    "fonttbl",   token(RTFfontListStart),
+    {"ansi",      token(RTFansi)},
+    {"b",         token(RTFbold)},
+    {"blue",      token(RTFblue)},
+    {"bullet",    token(RTFbullet)},
+    {"cb",        token(RTFcolorbg)},
+    {"cell",      token(RTFcell)},
+    {"cf",        token(RTFcolorfg)},
+    {"colortbl",  token(RTFcolortable)},
+    {"cpg",       token(RTFcpg)},
+    {"dn",        token(RTFsubscript)},
+    {"emdash",    token(RTFemdash)},
+    {"emspace",   token(RTFemspace)},
+    {"endash",    token(RTFendash)},
+    {"enspace",   token(RTFenspace)},
+    {"f",         token(RTFfont)},
+    {"fcharset",  token(RTFfcharset)},
+    {"fdecor",    token(RTFfamilyDecor)},
+    {"fi",        token(RTFfirstLineIndent)},
+    {"fmodern",   token(RTFfamilyModern)},
+    {"fnil",      token(RTFfamilyNil)},
+    {"fonttbl",   token(RTFfontListStart)},
     /* All footers are mapped on one entry */
-    "footer",    token(RTFfooter),
-    "footerf",   token(RTFfooter),
-    "footerl",   token(RTFfooter),
-    "footerr",   token(RTFfooter),
-    "footnote",  token(RTFfootnote),
-    "fprq",      token(RTFfprq),
-    "froman",    token(RTFfamilyRoman),
-    "fs",        token(RTFfontSize),
-    "fscript",   token(RTFfamilyScript),
-    "fswiss",    token(RTFfamilySwiss),
-    "ftech",     token(RTFfamilyTech),
-    "green",     token(RTFgreen),
+    {"footer",    token(RTFfooter)},
+    {"footerf",   token(RTFfooter)},
+    {"footerl",   token(RTFfooter)},
+    {"footerr",   token(RTFfooter)},
+    {"footnote",  token(RTFfootnote)},
+    {"fprq",      token(RTFfprq)},
+    {"froman",    token(RTFfamilyRoman)},
+    {"fs",        token(RTFfontSize)},
+    {"fscript",   token(RTFfamilyScript)},
+    {"fswiss",    token(RTFfamilySwiss)},
+    {"ftech",     token(RTFfamilyTech)},
+    {"green",     token(RTFgreen)},
     /* All headers are mapped on one entry */
-    "header",    token(RTFheader),
-    "headerf",   token(RTFheader),
-    "headerl",   token(RTFheader),
-    "headerr",   token(RTFheader),
-    "i",         token(RTFitalic),
-    "info",      token(RTFinfo),
-    "ldblquote", token(RTFldblquote),
-    "li",        token(RTFleftIndent),
-    "lquote",    token(RTFlquote),
-    "mac",       token(RTFmac),
-    "margb",     token(RTFmarginButtom),
-    "margl",     token(RTFmarginLeft),
-    "margr",     token(RTFmarginRight),
-    "margt",     token(RTFmarginTop),
-    "paperh",    token(RTFpaperHeight),
-    "paperw",    token(RTFpaperWidth),
-    "par",       token(RTFparagraph),
-    "pard",      token(RTFdefaultParagraph),
-    "pc",        token(RTFpc),
-    "pca",       token(RTFpca),
-    "pict",      token(RTFpict),
-    "plain",     token(RTFplain),
-    "qc",        token(RTFalignCenter),
-    "qj",        token(RTFalignJustified),
-    "ql",        token(RTFalignLeft),
-    "qr",        token(RTFalignRight),
-    "rdblquote", token(RTFrdblquote),
-    "red",       token(RTFred),
-    "ri",        token(RTFrightIndent),
-    "row",       token(RTFrow),
-    "rquote",    token(RTFrquote),
-    "rtf",       token(RTFstart),
-    "s",         token(RTFstyle),
-    "sa",        token(RTFspaceAbove),
-    "sl",        token(RTFlineSpace),
-    "stylesheet",token(RTFstylesheet),
-    "tab",       token(RTFtabulator),
-    "tx",        token(RTFtabstop),
+    {"header",    token(RTFheader)},
+    {"headerf",   token(RTFheader)},
+    {"headerl",   token(RTFheader)},
+    {"headerr",   token(RTFheader)},
+    {"i",         token(RTFitalic)},
+    {"info",      token(RTFinfo)},
+    {"ldblquote", token(RTFldblquote)},
+    {"li",        token(RTFleftIndent)},
+    {"lquote",    token(RTFlquote)},
+    {"mac",       token(RTFmac)},
+    {"margb",     token(RTFmarginButtom)},
+    {"margl",     token(RTFmarginLeft)},
+    {"margr",     token(RTFmarginRight)},
+    {"margt",     token(RTFmarginTop)},
+    {"paperh",    token(RTFpaperHeight)},
+    {"paperw",    token(RTFpaperWidth)},
+    {"par",       token(RTFparagraph)},
+    {"pard",      token(RTFdefaultParagraph)},
+    {"pc",        token(RTFpc)},
+    {"pca",       token(RTFpca)},
+    {"pict",      token(RTFpict)},
+    {"plain",     token(RTFplain)},
+    {"qc",        token(RTFalignCenter)},
+    {"qj",        token(RTFalignJustified)},
+    {"ql",        token(RTFalignLeft)},
+    {"qr",        token(RTFalignRight)},
+    {"rdblquote", token(RTFrdblquote)},
+    {"red",       token(RTFred)},
+    {"ri",        token(RTFrightIndent)},
+    {"row",       token(RTFrow)},
+    {"rquote",    token(RTFrquote)},
+    {"rtf",       token(RTFstart)},
+    {"s",         token(RTFstyle)},
+    {"sa",        token(RTFspaceAbove)},
+    {"sl",        token(RTFlineSpace)},
+    {"stylesheet",token(RTFstylesheet)},
+    {"tab",       token(RTFtabulator)},
+    {"tx",        token(RTFtabstop)},
     /* All underline are mapped on one entry */
-    "ul",        token(RTFunderline),
-    "uld",       token(RTFunderline),
-    "uldb",      token(RTFunderline),
-    "ulnone",    token(RTFunderlineStop),
-    "ulw",       token(RTFunderline),
-    "up",        token(RTFsuperscript)
+    {"ul",        token(RTFunderline)},
+    {"uld",       token(RTFunderline)},
+    {"uldb",      token(RTFunderline)},
+    {"ulnone",    token(RTFunderlineStop)},
+    {"ulw",       token(RTFunderline)},
+    {"up",        token(RTFsuperscript)}
   };
 
 BOOL probeCommand (RTFscannerCtxt *lctxt)
@@ -385,13 +386,13 @@ static int gethex(RTFscannerCtxt *lctxt)
   return c;
 }
 
-int GSRTFlex (YYSTYPE *lvalp, YYLTYPE *llocp, 
+int GSRTFlex (YYSTYPE *lvalp, //YYLTYPE *llocp, 
 	      RTFscannerCtxt *lctxt)	/* provide value and position in the params */ 
 {
   int c;
   int token = 0;
   char *cv;
-  
+
   do
     {
       c = lexGetchar(lctxt);
@@ -480,6 +481,7 @@ int GSRTFlex (YYSTYPE *lvalp, YYLTYPE *llocp,
 		  return token;
 	      default:
 		  // fall through
+		  break;
 	  }
 	}
       // else fall through to default: read text <A>
