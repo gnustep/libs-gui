@@ -1022,7 +1022,17 @@ NSView *v;
 - validRequestorForSendType:(NSString *)sendType
 				 returnType:(NSString *)returnType
 {
-	return nil;
+  id result = nil;
+
+  if (delegate && [delegate respondsToSelector: _cmd])
+    result = [delegate validRequestorForSendType: sendType
+									  returnType: returnType];
+
+  if (result == nil)
+    result = [[NSApplication sharedApplication]
+					   validRequestorForSendType: sendType
+									  returnType: returnType];
+  return result;
 }
 
 //

@@ -70,6 +70,7 @@ extern NSString *NSEventTrackingRunLoopMode;
   id key_window;
   id main_window;
   id delegate;
+  id listener;
   int window_count;
   NSMenu *main_menu;
   NSMenuItem *windows_menu;
@@ -210,7 +211,9 @@ extern NSString *NSEventTrackingRunLoopMode;
 - (void)registerServicesMenuSendTypes:(NSArray *)sendTypes
 			  returnTypes:(NSArray *)returnTypes;
 - (NSMenu *)servicesMenu;
+- (id)servicesProvider;
 - (void)setServicesMenu:(NSMenu *)aMenu;
+- (void)setServicesProvider:(id)anObject;
 - validRequestorForSendType:(NSString *)sendType
 		 returnType:(NSString *)returnType;
 
@@ -331,6 +334,11 @@ BOOL NSPerformService(NSString *item, NSPasteboard *pboard);
 //
 void NSUpdateDynamicServices(void);
 
+//
+// Register object to handle services requests.
+//
+void
+NSRegisterServicesProvider(id provider, NSString *name);
 
 int NSApplicationMain(int argc, const char **argv);
 

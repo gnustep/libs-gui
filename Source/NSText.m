@@ -59,8 +59,15 @@
 #include <Foundation/NSData.h>
 
 static NSRange MakeRangeFromAbs(int a1,int a2) // not the same as NSMakeRange!
-{	if(a1< a2)	return NSMakeRange(a1,a2-a1);	
-	else		return NSMakeRange(a2,a1-a2);
+{
+  if (a1 < 0)
+    a1 = 0;
+  if (a2 < 0)
+    a2 = 0;
+  if (a1 < a2)
+    return NSMakeRange(a1,a2-a1);	
+  else
+    return NSMakeRange(a2,a1-a2);
 }
 
 extern BOOL	NSEqualRanges(NSRange range1, NSRange range2);	// should define in base FIX ME FAR
@@ -334,9 +341,19 @@ typedef enum
 //
 + (void)initialize
 {
-	if (self == [NSText class])
-	{	[self setVersion:1];						// Initial version
-	}
+  if (self == [NSText class])
+    {
+      NSArray	*r;
+      NSArray	*s;
+
+      [self setVersion:1];			// Initial version
+
+      r = [NSArray arrayWithObjects: NSStringPboardType, nil];
+      s = [NSArray arrayWithObjects: NSStringPboardType, nil];
+
+      [[NSApplication sharedApplication] registerServicesMenuSendTypes: s
+							   returnTypes: r];
+    }
 }
 
 //<!>
@@ -407,6 +424,65 @@ typedef enum
 														nil];
 }
 
+/*
+ *	Handle enabling/disabling of services menu items.
+ */
+- (id) validRequestorForSendType: (NSString*)sendType
+		      returnType: (NSString*)returnType
+{
+  if ((!sendType || [sendType isEqual: NSStringPboardType]) &&
+      (!returnType || [returnType isEqual: NSStringPboardType]))
+    {
+      if (([self selectedRange].length || !sendType) &&
+	([self isEditable] || !returnType))
+	{
+	  return self;
+	}
+    }
+  return [super validRequestorForSendType: sendType
+			       returnType: returnType];
+
+}
+
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pb
+{
+  NSArray	*types;
+  NSString	*string;
+  NSRange	range;
+
+  types = [pb types];
+  if ([types containsObject: NSStringPboardType] == NO)
+    {
+      return NO;
+    }
+  string = [pb stringForType: NSStringPboardType];
+  range = [self selectedRange];
+  [self deleteRange: range backspace: NO];
+  [self insertText: string];
+  range.length = [string length];
+  [self setSelectedRange: range];
+
+  return YES;
+}
+
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pb
+			      types: (NSArray*)sendTypes
+{
+  NSArray	*types;
+  NSRange	range;
+  NSString	*string;
+
+  if ([sendTypes containsObject: NSStringPboardType] == NO)
+    {
+      return NO;
+    }
+  types = [NSArray arrayWithObjects: NSStringPboardType, nil];
+  [pb declareTypes: types owner: nil];
+  range = [self selectedRange];
+  string = [self string];
+  string = [string substringWithRange: range];
+  return [pb setString: string forType: NSStringPboardType];
+}
 
 // <!>
 // handle font pasteboard as well!
