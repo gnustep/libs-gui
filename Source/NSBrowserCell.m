@@ -46,10 +46,12 @@ static NSImage	*highlight_image;
 static Class	cellClass;
 static Class	colorClass;
 
+// Color is not used now, but the code is here
+// in case in the future we want to use it again
 static BOOL gsFontifyCells = NO;
-static NSColor *nonLeafColor;
+//static NSColor *nonLeafColor;
 static NSFont *nonLeafFont;
-static NSColor *leafColor;
+//static NSColor *leafColor;
 static NSFont *leafFont;
 
 /*
@@ -111,11 +113,10 @@ static NSFont *leafFont;
 	{ 
 	  gsFontifyCells = YES;
 	  cellClass = [NSTextFieldCell class];
-	  // TODO: Make these easily configurable
-	  nonLeafColor = RETAIN ([colorClass colorWithCalibratedWhite: 0.222
-					  alpha: 1.0]);
+	  //nonLeafColor = RETAIN ([colorClass colorWithCalibratedWhite: 0.222
+	  //				  alpha: 1.0]);
 	  nonLeafFont = RETAIN ([NSFont boldSystemFontOfSize: 0]);
-	  leafColor = RETAIN ([colorClass blackColor]);
+	  //leafColor = RETAIN ([colorClass blackColor]);
 	  leafFont = RETAIN ([NSFont systemFontOfSize: 0]);
 	}
     }
@@ -223,12 +224,12 @@ static NSFont *leafFont;
       if (_isLeaf)
 	{
 	  [(NSTextFieldCell *)_browserText setFont: leafFont];
-	  [(NSTextFieldCell *)_browserText setTextColor: leafColor];
+	  //[(NSTextFieldCell *)_browserText setTextColor: leafColor];
 	}
       else 
 	{
 	  [(NSTextFieldCell *)_browserText setFont: nonLeafFont];
-	  [(NSTextFieldCell *)_browserText setTextColor: nonLeafColor]; 
+	  //[(NSTextFieldCell *)_browserText setTextColor: nonLeafColor]; 
 	}
     }
 }
