@@ -90,10 +90,10 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
  */
 - (void) setFrame: (NSRect)frameRect
 {
-  NSSize oldSize = frame.size;
-  NSView *cv = [window contentView];
+  NSSize oldSize = _frame.size;
+  NSView *cv = [_window contentView];
 
-  autoresize_subviews = NO;
+  _autoresizes_subviews = NO;
   [super setFrame: frameRect];
   // Safety Check.
   [cv setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
@@ -230,7 +230,7 @@ static NSMapTable* windowmaps = NULL;
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
    */
-  [context _removeDragTypes: nil fromWindow: [self windowNumber]];
+  [context _removeDragTypes: nil fromWindow: window_num];
 
   if (gstate)
     DPSundefineuserobject(context, gstate);
@@ -547,7 +547,7 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_key = YES;
-      DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+      DPSsetinputfocus(GSCurrentContext(), window_num);
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
     }
@@ -736,7 +736,7 @@ static NSMapTable* windowmaps = NULL;
 	    }
 	}
     }
-  DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
+  DPSorderwindow(GSCurrentContext(), place, otherWin, window_num);
   if (place != NSWindowOut)
     {
       if (_rFlags.needs_display == NO)
@@ -771,7 +771,7 @@ static NSMapTable* windowmaps = NULL;
 	}
       if ([self isKeyWindow] == YES)
 	{
-	  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+	  DPSsetinputfocus(GSCurrentContext(), window_num);
 	}
     }
 }
@@ -897,7 +897,7 @@ static NSMapTable* windowmaps = NULL;
    * We will recieve an event to tell us when the resize is done.
    */
   DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
-    frameRect.size.width, frameRect.size.height, [self windowNumber]);
+    frameRect.size.width, frameRect.size.height, window_num);
 
   if (flag)
     [self display];
@@ -1218,7 +1218,7 @@ discardCursorRectsForView(NSView *theView)
 
       if (((NSViewPtr)theView)->_rFlags.has_subviews)
 	{
-	  NSArray	*s = ((NSViewPtr)theView)->sub_views;
+	  NSArray	*s = ((NSViewPtr)theView)->_sub_views;
 	  unsigned	count = [s count];
 
 	  if (count)
@@ -1250,7 +1250,7 @@ discardCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)aView)->_rFlags.valid_rects)
     {
-      [((NSViewPtr)aView)->cursor_rects
+      [((NSViewPtr)aView)->_cursor_rects
 	makeObjectsPerformSelector: @selector(invalidate)];
       ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
       _f.cursor_rects_valid = NO;
@@ -1266,7 +1266,7 @@ resetCursorRectsForView(NSView *theView)
 
       if (((NSViewPtr)theView)->_rFlags.has_subviews)
 	{
-	  NSArray	*s = ((NSViewPtr)theView)->sub_views;
+	  NSArray	*s = ((NSViewPtr)theView)->_sub_views;
 	  unsigned	count = [s count];
 
 	  if (count)
@@ -1589,7 +1589,7 @@ resetCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)theView)->_rFlags.has_trkrects)
     {
-      NSArray	*tr = ((NSViewPtr)theView)->tracking_rects;
+      NSArray	*tr = ((NSViewPtr)theView)->_tracking_rects;
       unsigned	count = [tr count];
 
       /*
@@ -1680,7 +1680,7 @@ resetCursorRectsForView(NSView *theView)
    */
   if (((NSViewPtr)theView)->_rFlags.has_subviews)
     {
-      NSArray	*sb = ((NSViewPtr)theView)->sub_views;
+      NSArray	*sb = ((NSViewPtr)theView)->_sub_views;
       unsigned	count = [sb count];
 
       if (count > 0)
@@ -1699,7 +1699,7 @@ resetCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)theView)->_rFlags.valid_rects)
     {
-      NSArray	*tr = ((NSViewPtr)theView)->cursor_rects;
+      NSArray	*tr = ((NSViewPtr)theView)->_cursor_rects;
       unsigned	count = [tr count];
 
       // Loop through cursor rectangles
@@ -1767,7 +1767,7 @@ resetCursorRectsForView(NSView *theView)
    */
   if (((NSViewPtr)theView)->_rFlags.has_subviews)
     {
-      NSArray	*sb = ((NSViewPtr)theView)->sub_views;
+      NSArray	*sb = ((NSViewPtr)theView)->_sub_views;
       unsigned	count = [sb count];
 
       if (count > 0)
@@ -2030,7 +2030,7 @@ resetCursorRectsForView(NSView *theView)
 			   location: [theEvent locationInWindow]
 			   modifierFlags: 0
 			   timestamp: 0
-			   windowNumber: [self windowNumber]
+			   windowNumber: window_num
 			   context: GSCurrentContext()
 			   subtype: GSAppKitDraggingStatus
 			   data1: [theEvent data1]
@@ -2079,7 +2079,7 @@ resetCursorRectsForView(NSView *theView)
 			   location: [theEvent locationInWindow]
 			   modifierFlags: 0
 			   timestamp: 0
-			   windowNumber: [self windowNumber]
+			   windowNumber: window_num
 			   context: GSCurrentContext()
 			   subtype: GSAppKitDraggingFinished
 			   data1: [theEvent data1]
