@@ -355,6 +355,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 - (BOOL)runOperation
 {
   BOOL result;
+  NSString *clocale;
 
   if (_showPanels)
     {
@@ -381,6 +382,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     {
       NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
 
+      /* Reset the current locale to a generic C locale so numbers
+	 get printed correctly for PostScript (maybe we should only
+	 set the numeric locale?). Save the current locale for later */
+      clocale = GSSetLocale(nil);
+      GSSetLocale(@"C");
       [NSGraphicsContext setCurrentContext: _context];
       NS_DURING
 	{
@@ -391,6 +397,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	   NSLog(@"Error while printing: %@\n", localException);
 	}
       NS_ENDHANDLER
+      GSSetLocale(clocale);
       [NSGraphicsContext setCurrentContext: oldContext];
       [self destroyContext];
     }
