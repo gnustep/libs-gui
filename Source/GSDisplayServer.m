@@ -423,6 +423,12 @@ GSCurrentServer(void)
   return NULL;
 }
 
+/** Play the System Beep */
+- (void) beep
+{
+  [self subclassResponsibility: _cmd];
+}
+
 @end
 
 /* ----------------------------------------------------------------------- */

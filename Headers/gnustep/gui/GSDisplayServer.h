@@ -87,6 +87,8 @@ APPKIT_DECLARE NSString * GSScreenNumber;
 
 - (void *) serverDevice;
 - (void *) windowDevice: (int)win;
+
+- (void) beep;
 @end
 
 /* ----------------------------------------------------------------------- */

@@ -1310,6 +1310,8 @@ NSGraphicsContext	*GSCurrentContext()
 
 @end
 
+#include <AppKit/GSDisplayServer.h>
+
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
@@ -1338,7 +1340,7 @@ NSGraphicsContext	*GSCurrentContext()
 /** Play the System Beep */
 - (void) NSBeep
 {
-  [self subclassResponsibility: _cmd];
+  [GSCurrentServer() beep];
 }
 
 /** This method is used by the backend, but has been rendered obsolete.
