@@ -357,19 +357,22 @@ selectCellWithString: (NSString *)title
 	{
 	  if ([[sender selectedCell] isLeaf])
 	    {
-	      [_form setStringValue: title];
+	      [[_form cellAtIndex: 0] setStringValue: title];
+	      [_form display];
 	    }
 	}
       else 
 	{
 	  if ([[sender selectedCell] isLeaf])
 	    {
-	      [_form setStringValue: title];
+	      [[_form cellAtIndex: 0] setStringValue: title];
+	      [_form display];
 	      [_okButton setEnabled: YES];
 	    }
 	  else
 	    {
-	      [_form setStringValue: nil];
+	      [[_form cellAtIndex: 0] setStringValue: nil];
+	      [_form display];
 	      [_okButton setEnabled: NO];
 	    }
 	}
