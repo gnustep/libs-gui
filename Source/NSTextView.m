@@ -1393,6 +1393,11 @@ incorrectly. */
   if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
     {
       NSRect r = [_layoutManager usedRectForTextContainer: _textContainer];
+      if (_textContainer == [_layoutManager extraLineFragmentTextContainer])
+	{
+	  r = NSUnionRect(r, [_layoutManager extraLineFragmentUsedRect]);
+	}
+
       size = NSMakeSize(NSMaxX(r), NSMaxY(r));
     }
   
@@ -1414,6 +1419,9 @@ incorrectly. */
 TODO: There is code in TextEdit that implies that the minimum size is
 mostly ignored, and that the size of the containing clip view is always
 used instead. Should test on OS to find out what the proper behavior is.
+
+UPDATE: current behavior is correct, but must be documented properly
+before this TODO can be removed
 */
 -(void) setConstrainedFrameSize: (NSSize)desiredSize
 {
@@ -2178,6 +2186,42 @@ Returns the ranges to which various kinds of user changes should apply.
 }
 
 
+
+/**** Misc. ****/
+
+/*
+Scroll so that the beginning of the range is visible.
+*/
+-(void) scrollRangeToVisible: (NSRange)aRange
+{
+  NSRect rect;
+
+  /*
+  Make sure that our size is up-to-date. If the scroll is in response to
+  a change, the delayed size updating might not have run yet. To avoid
+  scrolling outside the view, we force an update now.
+
+  (An alternative would be to delay the scroll, too. If problems using
+  this method turn up, it could be changed.)
+  */
+  [self sizeToFit];
+
+  if (aRange.length > 0)
+    {
+      aRange.length = 1;
+      [self scrollRectToVisible: 
+	      [self rectForCharacterRange: aRange]];
+      return;
+    }
+
+  rect = [_layoutManager insertionPointRectForCharacterIndex: aRange.location
+					     inTextContainer: _textContainer];
+  rect.origin.x += _textContainerOrigin.x;
+  rect.origin.y += _textContainerOrigin.y;
+  [self scrollRectToVisible: rect];
+}
+
+
 @end
 
 
@@ -2319,61 +2363,6 @@ This method is for user changes; see NSTextView_actions.m.
   return [wrapper writeToFile: path  atomically: flag  updateFilenames: YES];
 }
 
-
-/*
- * [NSText] Scrolling
- */
-- (void) scrollRangeToVisible: (NSRange)aRange
-{
-  if (aRange.length > 0)
-    {
-      aRange.length = 1;
-      [self scrollRectToVisible: 
-	      [self rectForCharacterRange: aRange]];
-    }
-  else
-    {
-      /* Update insertion point rect */
-      NSRange charRange;
-      NSRange glyphRange;
-      unsigned glyphIndex;
-      NSRect rect;
-
-      charRange = NSMakeRange (aRange.location, 1);
-      if (charRange.location == [[[_layoutManager textStorage] string] length])
-	{
-	  if (charRange.location == 0)
-	    {
-	      rect = NSZeroRect;
-	      goto ugly_hack_done;
-	    }
-	  else
-	    charRange.location--;
-	}
-
-      glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
-				   actualCharacterRange: NULL];
-      glyphIndex = glyphRange.location;
-      
-      rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
-			     effectiveRange: NULL];
-      rect.origin.x += _textContainerOrigin.x;
-      rect.origin.y += _textContainerOrigin.y;
-      if ([self selectionAffinity] != NSSelectionAffinityUpstream)
-	{
-	  /* Standard case - draw the insertion point just before the
-	     associated glyph index */
-	  NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
-	  
-	  rect.origin.x += loc.x;      
-	}
-      
-ugly_hack_done:
-      rect.size.width = 1;
-      [self scrollRectToVisible: rect];
-      
-    }
-}
 
 /*
  * [NSResponder] Handle enabling/disabling of services menu items.
@@ -2702,6 +2691,10 @@ afterString in order over charRange.
       /* Insertion Point */
       if (charRange.length)
 	{
+	  /*
+	  TODO: this is a big bottle-neck since it involves talking to
+	  the pasteboard server. should do this "later"
+	  */
 	  // Store the selected text in the selection pasteboard
 	  [self copySelection];
 
