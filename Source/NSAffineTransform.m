@@ -305,7 +305,6 @@ static NSAffineTransformStruct identityTransform = {
   /* If it's rotated.  */
   if (B != 0  ||  C != 0)
     {
-      /* Not sure why this code, it was this way.  */
       float angle = [self rotationAngle];
 
       A = sx; B = 0;
