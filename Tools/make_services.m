@@ -106,7 +106,9 @@ main(int argc, char** argv, char **env_c)
   for (index = 1; index < [args count]; index++)
     {
       if ([[args objectAtIndex: index] isEqual: @"--verbose"])
-	verbose = YES;
+	{
+	  verbose = YES;
+	}
       if ([[args objectAtIndex: index] isEqual: @"--help"])
 	{
 	  printf(
@@ -115,7 +117,9 @@ main(int argc, char** argv, char **env_c)
 "This cache is stored in '%s' in the users GNUstep directory.\n"
 "\n"
 "You may use 'make_services --test filename' to test that the property list\n"
-"in 'filename' contains a valid services definition.\n", [cacheName cString]);
+"in 'filename' contains a valid services definition.\n"
+"You may use 'make_services --verbose' to produce descriptive output.\n",
+[cacheName cString]);
 	  exit(0);
 	}
       if ([[args objectAtIndex: index] isEqual: @"--test"])
@@ -186,9 +190,13 @@ main(int argc, char** argv, char **env_c)
    */
   str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
   if (str != nil)
-    usrRoot = str;
+    {
+      usrRoot = str;
+    }
   else
-    usrRoot = [sClass stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+    {
+      usrRoot = [sClass stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+    }
 
   mgr = [NSFileManager defaultManager];
   if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
@@ -220,25 +228,35 @@ main(int argc, char** argv, char **env_c)
        * Ensure that the user root (or default user root) is in the path.
        */
       if ([roots containsObject: str] == NO)
-	[roots addObject: str];
+	{
+	  [roots addObject: str];
+	}
 
       /*
        * Ensure that the local root (or default local root) is in the path.
        */
       str = [env objectForKey: @"GNUSTEP_LOCAL_ROOT"];
       if (str == nil)
-	str = @"/usr/GNUstep/Local";
+	{
+	  str = @"/usr/GNUstep/Local";
+	}
       if ([roots containsObject: str] == NO)
-	[roots addObject: str];
+	{
+	  [roots addObject: str];
+	}
 
       /*
        * Ensure that the system root (or default system root) is in the path.
        */
       str = [env objectForKey: @"GNUSTEP_SYSTEM_ROOT"];
       if (str == nil)
-	str = @"/usr/GNUstep";
+	{
+	  str = @"/usr/GNUstep";
+	}
       if ([roots containsObject: str] == NO)
-	[roots addObject: str];
+	{
+	  [roots addObject: str];
+	}
     }
 
   /*
@@ -455,9 +473,9 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       NSString	*newPath;
       BOOL	isDir;
 
-      if (ext != nil &&
-	  ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
-	  || [ext isEqualToString: @"profile"]))
+      if (ext != nil
+	&& ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
+	|| [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
@@ -482,7 +500,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
                    * precedence.
                    */
                   NSLog(@"duplicate app (%@) at '%@' and '%@'\n",
-                        name, oldPath, newPath);
+		    name, oldPath, newPath);
                   continue;
                 }
 
@@ -652,7 +670,7 @@ validateEntry(id svcs, NSString *path)
       else
 	{
 	  NSLog(@"NSServices entry %u not a dictionary - %@\n",
-		pos, path);
+	    pos, path);
 	}
     }
   return newServices;
@@ -712,7 +730,8 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	    {
 	      if ([obj isKindOfClass: sClass] == NO)
 		{
-		  NSLog(@"NSServices entry %u field %@ is not a string - %@\n", pos, k, path);
+		  NSLog(@"NSServices entry %u field %@ is not a string "
+		    @"- %@\n", pos, k, path);
 		  return nil;
 		}
 	      [result setObject: obj forKey: k];
@@ -723,13 +742,15 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
 	      if ([obj isKindOfClass: aClass] == NO)
 		{
-		  NSLog(@"NSServices entry %u field %@ is not an array - %@\n", pos, k, path);
+		  NSLog(@"NSServices entry %u field %@ is not an array "
+		    @"- %@\n", pos, k, path);
 		  return nil;
 		}
 	      a = (NSArray*)obj;
 	      if ([a count] == 0)
 		{
-		  NSLog(@"NSServices entry %u field %@ is an empty array - %@\n", pos, k, path);
+		  NSLog(@"NSServices entry %u field %@ is an empty array "
+		    @"- %@\n", pos, k, path);
 		}
 	      else
 		{
@@ -739,7 +760,8 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 		    {
 		      if ([[a objectAtIndex: i] isKindOfClass: sClass] == NO)
 			{
-			  NSLog(@"NSServices entry %u field %@ element %u is not a string - %@\n", pos, k, i, path);
+			  NSLog(@"NSServices entry %u field %@ element %u is "
+			    @"not a string - %@\n", pos, k, i, path);
 			  return nil;
 			}
 		    }
@@ -752,13 +774,15 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
 	      if ([obj isKindOfClass: dClass] == NO)
 		{
-		  NSLog(@"NSServices entry %u field %@ is not a dictionary - %@\n", pos, k, path);
+		  NSLog(@"NSServices entry %u field %@ is not a dictionary "
+		    @"- %@\n", pos, k, path);
 		  return nil;
 		}
 	      d = (NSDictionary*)obj;
 	      if ([d objectForKey: @"default"] == nil)
 		{
-		  NSLog(@"NSServices entry %u field %@ has no default value - %@\n", pos, k, path);
+		  NSLog(@"NSServices entry %u field %@ has no default value "
+		    @"- %@\n", pos, k, path);
 		}
 	      else
 		{
@@ -768,7 +792,8 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 		    {
 		      if ([obj isKindOfClass: sClass] == NO)
 			{
-			  NSLog(@"NSServices entry %u field %@ contains non-string value - %@\n", pos, k, path);
+			  NSLog(@"NSServices entry %u field %@ contains "
+			    @"non-string value - %@\n", pos, k, path);
 			  return nil;
 			}
 		    }
@@ -835,7 +860,9 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
       if (used == NO)
 	{
 	  if (verbose)
-	    NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    {
+	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    }
 	  return nil;	/* Ignore - already got service with this name	*/
 	}
     }
@@ -898,7 +925,9 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
       if (used == NO)
 	{
 	  if (verbose)
-	    NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    {
+	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    }
 	  return nil;	/* Ignore - already got filter for types.	*/
 	}
     }
@@ -939,7 +968,9 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
       if (used == NO)
 	{
 	  if (verbose)
-	    NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    {
+	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    }
 	  return nil;	/* Ignore - already got filter with this name	*/
 	}
     }
@@ -972,7 +1003,9 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
       if (used == NO)
 	{
 	  if (verbose)
-	    NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    {
+	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	    }
 	  return nil;	/* Ignore - already got speller with language.	*/
 	}
     }
