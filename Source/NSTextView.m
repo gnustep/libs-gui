@@ -4088,41 +4088,38 @@ other than copy/paste or dragging. */
 	 word/paragraph as usual.  */
       if (granularity == NSSelectByCharacter)
 	{
-	  if ([_textStorage containsAttachments])
-	    {
-	      NSTextAttachment *attachment;
-	      
-	      /* Check if the click was on an attachment cell.  */
-	      attachment = [_textStorage attribute: NSAttachmentAttributeName
-					 atIndex: startIndex
-					 effectiveRange: NULL];
-	      
-	      if (attachment != nil)
-		{ 
-		  id <NSTextAttachmentCell> cell = [attachment attachmentCell];
-		  
-		  if (cell != nil)
-		    {
-		      /* TODO: Where to get the cellFrame? */
-		      NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+	  NSTextAttachment *attachment;
 
-		      /* TODO: What about the insertion point ? */
-		      if ([cell wantsToTrackMouseForEvent: theEvent  
-				inRect: cellFrame
-				ofView: self
-				atCharacterIndex: startIndex]
-			  && [cell trackMouse: theEvent  
+	  /* Check if the click was on an attachment cell.  */
+	  attachment = [_textStorage attribute: NSAttachmentAttributeName
+				       atIndex: startIndex
+				effectiveRange: NULL];
+	      
+	  if (attachment != nil)
+	    {
+	      id <NSTextAttachmentCell> cell = [attachment attachmentCell];
+
+	      if (cell != nil)
+		{
+		  /* TODO: Where to get the cellFrame? */
+		  NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+
+		  /* TODO: What about the insertion point ? */
+		  if ([cell wantsToTrackMouseForEvent: theEvent
+			inRect: cellFrame
+			ofView: self
+			atCharacterIndex: startIndex]
+		      && [cell trackMouse: theEvent
 				   inRect: cellFrame 
 				   ofView: self
-				   atCharacterIndex: startIndex
-				   untilMouseUp: NO])
-			{
-			  return;
-			}
+			 atCharacterIndex: startIndex
+			     untilMouseUp: NO])
+		    {
+		      return;
 		    }
 		}
 	    }
-	  
+
 	  /* This is the code for handling click event on a link (a link
 	     is some chars with the NSLinkAttributeName set to something
 	     which is not-null, a NSURL object usually).  */

@@ -1,3 +1,8 @@
+2004-08-07 13:18  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-mouseDown:): Remove -containsAttachments
+	call.
+
 2004-08-06 14:13  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSPasteboard.m (-pasteboard:provideDataForType:): Print
