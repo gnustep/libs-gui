@@ -316,19 +316,9 @@
 - (void) rightMouseDown: (NSEvent*)theEvent
 {
   if (_next_responder != nil)
-    {
-      return [_next_responder rightMouseDown: theEvent];
-    }
+    return [_next_responder rightMouseDown: theEvent];
   else
-    {
-      // FIXME: This should be moved into NSApplication
-      NSMenu	*menu = [NSApp mainMenu];
-
-      if (menu != nil)
-	[menu _rightMouseDisplay: theEvent];
-      else
-	return [self noResponderFor: @selector(rightMouseDown:)];
-    }
+    return [self noResponderFor: @selector(rightMouseDown:)];
 }
 
 - (void) rightMouseDragged: (NSEvent*)theEvent
@@ -345,6 +335,12 @@
     return [_next_responder rightMouseUp: theEvent];
   else
     return [self noResponderFor: @selector(rightMouseUp:)];
+}
+
+- (void) scrollWheel: (NSEvent *)theEvent
+{
+  // FIXME
+  NSLog(@"Sorry, currently no support for scroll wheel.");
 }
 
 /*
