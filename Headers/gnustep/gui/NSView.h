@@ -72,38 +72,34 @@ enum {
 
 @interface NSView : NSResponder <NSCoding>
 {
-  // Attributes
-  NSRect frame;
-  NSRect bounds;
-  id frameMatrix;
-  id boundsMatrix;
-  id matrixToWindow;
-  id matrixFromWindow;
+  NSRect _frame;
+  NSRect _bounds;
+  id _frameMatrix;
+  id _boundsMatrix;
+  id _matrixToWindow;
+  id _matrixFromWindow;
 
-  NSView* super_view;
-  NSMutableArray *sub_views;
-  id window;
-  NSMutableArray *tracking_rects;
-  NSMutableArray *cursor_rects;
-  NSRect invalidRect;
-  NSRect visibleRect;
-  unsigned int autoresizingMask;
-  int gstate;
+  NSView* _super_view;
+  NSMutableArray *_sub_views;
+  id _window;
+  NSMutableArray *_tracking_rects;
+  NSMutableArray *_cursor_rects;
+  NSRect _invalidRect;
+  NSRect _visibleRect;
+  unsigned int _autoresizingMask;
+  int _gstate;
 
-  BOOL is_rotated_from_base;
-  BOOL is_rotated_or_scaled_from_base;
-  BOOL post_frame_changes;
-  BOOL post_bounds_changes;
-  BOOL autoresize_subviews;
-  BOOL coordinates_valid;
-  BOOL allocate_gstate;
-  BOOL renew_gstate;
+  BOOL _is_rotated_from_base;
+  BOOL _is_rotated_or_scaled_from_base;
+  BOOL _post_frame_changes;
+  BOOL _post_bounds_changes;
+  BOOL _autoresizes_subviews;
+  BOOL _coordinates_valid;
+  BOOL _allocate_gstate;
+  BOOL _renew_gstate;
 
   NSView *_nextKeyView;
   NSView *_previousKeyView;
-
-  // Reserved for back-end use
-  void *be_view_reserved;
 }
 
 //
