@@ -1,3 +1,10 @@
+2000-09-03  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSFontInfo.m: 
+	[weightForString:] added "black"
+	* Source/NSAttributesString.m
+	Corrected bug in [nextWordFromIndex:forward:] 
+	
 Sun Sep  3 21:20:25 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSliderCell.m ([-init]): Create titleCell.
