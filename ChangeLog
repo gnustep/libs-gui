@@ -1,3 +1,10 @@
+Tue Aug  7 05:08:01 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Testing/GNUmakefile: Simplified, removed unused bloat, removed
+	all references to the test applications which are no longer there.
+	* Testing/GNUmakefile.postamble (after-distclean): Do nothing.
+	* Testing/README: New file saying that this directory is obsolete.
+	
 2001-08-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSApplication.h
