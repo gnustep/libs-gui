@@ -865,7 +865,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   else
     {
       /*
-      i really should be >= 0 here, except for the very obscure case where
+      i really should be > 0 here, except for the very obscure case where
       the delegate has refused all fonts (so that our family and face lists
       are completely empty).
       */

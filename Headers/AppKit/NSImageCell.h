@@ -32,7 +32,7 @@
 #include <AppKit/NSCell.h>
 
 typedef enum {
-    NSScaleProportionally = 0,   // Fit propoRtionally
+    NSScaleProportionally = 0,   // Fit proportionally
     NSScaleToFit,                // Forced fit (distort if necessary)
     NSScaleNone                  // Don't scale (clip)
 } NSImageScaling;
