@@ -196,7 +196,7 @@
   [controlView lockFocus];
   NSDrawGrayBezel (cellFrame, NSZeroRect);
   [controlView unlockFocus];
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 @end
 
@@ -1152,7 +1152,7 @@
   sw = [NSScroller scrollerWidth];
   // Take the border into account
   if (_separatesColumns)
-    sw += 2 * [NSCell sizeForBorderType: NSBezelBorder].width;
+    sw += 2 * (_sizeForBorderType (NSBezelBorder)).width;
 
   // Column width cannot be less than scroller and border
   if (columnWidth < sw)
@@ -1321,7 +1321,7 @@
 
 - (float)titleHeight
 {
-  NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
+  NSSize bs = _sizeForBorderType (NSBezelBorder);
 
 #if defined NSBTRACE_titleHeight || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)titleHeight\n");
@@ -1675,7 +1675,7 @@
 - (NSRect)frameOfColumn: (int)column
 {
   NSRect r = NSZeroRect;
-  NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
+  NSSize bs = _sizeForBorderType (NSBezelBorder);
   int n;
 
 //#define NSBTRACE_frameOfColumn
@@ -1744,7 +1744,7 @@
 
 - (void)tile
 {
-  NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
+  NSSize bs = _sizeForBorderType (NSBezelBorder);
   int i, num = _maxVisibleColumns;
   id bc, sc;
 
@@ -2119,7 +2119,7 @@
   _browserDelegate = nil;
   _passiveDelegate = YES;
   _doubleAction = NULL;  
-  bs = [NSCell sizeForBorderType: NSBezelBorder];
+  bs = _sizeForBorderType (NSBezelBorder);
   _minColumnWidth = [NSScroller scrollerWidth] + (2 * bs.width);
   
   // Horizontal scroller
@@ -2261,7 +2261,7 @@
   if (_hasHorizontalScroller)
     {
       NSRect scrollerBorderRect = _scrollerRect;
-      NSSize bs = [NSCell sizeForBorderType: NSBezelBorder];
+      NSSize bs = _sizeForBorderType (NSBezelBorder);
 
       scrollerBorderRect.origin.x = 0;
       scrollerBorderRect.origin.y = 0;
