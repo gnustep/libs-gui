@@ -418,6 +418,10 @@ Class gmodel_class(void)
 
   ext = [fileName pathExtension];
   fileName = [fileName stringByDeletingPathExtension];
+  if ([ext isEqualToString: @"nib"] == YES)
+    {
+      ext = @"";
+    }
 
   /*
    * Build an array of resource paths that differs from the normal order -
@@ -457,14 +461,10 @@ Class gmodel_class(void)
 	  path = [rootPath stringByAppendingPathExtension: @"gorm"];
 	  if ([mgr isReadableFileAtPath: path] == NO)
 	    {
-	      path = [rootPath stringByAppendingPathExtension: @"nib"];
+	      path = [rootPath stringByAppendingPathExtension: @"gmodel"];
 	      if ([mgr isReadableFileAtPath: path] == NO)
 		{
-		  path = [rootPath stringByAppendingPathExtension: @"gmodel"];
-		  if ([mgr isReadableFileAtPath: path] == NO)
-		    {
-		      continue;
-		    }
+		  continue;
 		}
 	    }
 	  return path;
