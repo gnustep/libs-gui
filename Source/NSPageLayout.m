@@ -34,8 +34,10 @@
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSImageView.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSBox.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSColor.h"
 #include "AppKit/NSComboBox.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSMatrix.h"
@@ -50,9 +52,8 @@
 
 static NSPageLayout *shared_instance;
 
-#define GSPANELNAME @"GSPageLayout"
 
-#define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
+//#define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
 
 @implementation NSApplication (NSPageLayout)
 
@@ -62,6 +63,55 @@ static NSPageLayout *shared_instance;
 }
 
 @end
+
+
+@interface GSPageLayoutController : NSObject
+{
+  NSSize _size;
+  double _scale;
+  id _panel;
+  id _orientationMatrix;
+  id _widthField;
+  id _heightField;
+  id _unitsButton;
+  id _paperNameButton;
+  id _scaleField;
+  id _imageButton;
+  id _miniPageView;
+  NSPrintInfo *_printInfo;
+  NSView *_accessoryView;
+}
+-(NSPageLayout*) panel;
+
+//IBActions
+-(void) buttonClicked: (id)sender;
+-(void) paperSelected: (id)sender;
+-(void) unitsSelected: (id)sender;
+-(void) scaleSelected: (id)sender;
+-(void) widthSelected: (id)sender;
+-(void) heightSelected: (id)sender;
+-(void) orientationMatrixClicked: (id)sender;
+
+//internal
+-(void)  setNewPageSize;
+-(float) factorForIndex: (int)sel;
+
+//access to ivars
+-(NSPrintInfo*) printInfo;
+-(void) setPrintInfo:(NSPrintInfo*)printInfo;
+-(NSView*) accessoryView;
+-(void) setAccessoryView:(NSView*)accessoryView;
+-(NSSize) pageSize;
+
+
+//Handling of NSPageLayout implementation
+-(void)convertOldFactor:(float *)old
+	             newFactor:(float *)new;
+-(void)readPrintInfo;
+-(void)writePrintInfo;
+@end
+
+
 
 /**
 <unit>
@@ -108,135 +158,13 @@ static NSPageLayout *shared_instance;
 {
   if (shared_instance == nil)
     {
-      shared_instance = [[NSPageLayout alloc] init];
+      GSPageLayoutController *controller;
+      controller = [[GSPageLayoutController alloc] init];
+      shared_instance = [controller panel];
     }
   return shared_instance;
 }
 
-//
-// Instance methods
-//
-- (NSArray*) _units
-{
-  return [NSArray arrayWithObjects: _(@"Points"), _(@"Minimeters"), _(@"Centimeters"), _(@"Inches"), nil]; 
-}
-
-
-- (NSArray*) _pageLayout
-{
-  return [NSArray arrayWithObjects: _(@"1 per page"), _(@"2 per page"), _(@"4 per page"), _(@"8 per page"),_(@"16 per page"),nil]; 
-}
-
-
-- (id) init
-{
-  int style =  NSTitledWindowMask;
-  NSRect frame = NSMakeRect(300, 300, 350, 320);
-  return [self initWithContentRect: frame
-			 styleMask: style
-			   backing: NSBackingStoreBuffered
-			     defer: YES];
-}
-
-- (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
-		   backing: (NSBackingStoreType)bufferingType
-		     defer: (BOOL)flag
-		    screen: (NSScreen*)aScreen
-{
-  unsigned int i;
-  id control;
-  NSArray *subviews, *list;
-  NSString *panel;
-  NSDictionary *table;
-  id image;
-
-  self = [super initWithContentRect: contentRect
-		 styleMask: aStyle
-		   backing: bufferingType
-		     defer: flag
-		    screen: aScreen];
-  if (self == nil)
-    return nil;
-
-  panel = [GSGuiBundle() pathForResource: GSPANELNAME ofType: @"gorm"
-		             inDirectory: nil];
-  if (panel == nil)
-    {
-      NSRunAlertPanel(@"Error", @"Could not find page layout resource", 
-		      @"OK", NULL, NULL);
-      return nil;
-    }
-  table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
-  if ([NSBundle loadNibFile: panel 
-	  externalNameTable: table
-		withZone: [self zone]] == NO)
-    {
-      NSRunAlertPanel(@"Error", @"Could not load page layout resource", 
-		      @"OK", NULL, NULL);
-      return nil;
-    }
-
-  /* Transfer the objects to us. FIXME: There must be a way to 
-     instantiate the panel directly */
-  subviews = [[_panel contentView] subviews];
-  for (i = 0; i < [subviews count]; i++)
-    {
-      [_contentView addSubview: [subviews objectAtIndex: i]];
-    }
-  DESTROY(_panel);
-
-  //Image 
-  control =  CONTROL(self,NSPLImageButton);
-  image = [[NSApplication sharedApplication] applicationIconImage];
-  [control setImage:image];
-
-  //Units PopUpButton tag = 3
-  control = CONTROL(self,NSPLUnitsButton);
-  list = [self _units];
-  [control removeAllItems];
-  for (i = 0; i < [list count]; i++)
-    {
-      [control addItemWithTitle: [list objectAtIndex: i]];
-      [[control itemAtIndex:i] setEnabled:YES];
-    }
-  [control setAutoenablesItems:YES];
-  //Action ?
-  [control setTarget: self];
-  //TODO check local and select the good Unit
-  [control selectItemAtIndex: 0];
-
-  //Orientation matix (Portrait/Landscape) tag = 6 
-  control = CONTROL(self,NSPLOrientationMatrix);
-  [[control cellAtRow:0 column:0] setImage:[NSImage imageNamed:@"page_landscape.tiff"]];
-  [[control cellAtRow:0 column:1] setImage:[NSImage imageNamed:@"page_portrait.tiff"]];
-
-  //pageLayout 
-  control = CONTROL(self,NSPLPageLayout);
-  list = [self _pageLayout];
-  [control removeAllItems];
-  for (i = 0; i < [list count]; i++)
-    {
-      [control addItemWithTitle: [list objectAtIndex: i]];
-      [[control itemAtIndex:i] setEnabled:YES];
-    }
-  [control setAutoenablesItems:YES];
-  //Action ?
-  [control setTarget: self];
-  [control selectItemAtIndex: 0];  
-
-  //Protrait YES  ?
-  //  _portrait = YES;
-
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE (_accessoryView);
-
-  [super dealloc];
-}
 
 //
 // Running the Panel 
@@ -254,11 +182,11 @@ static NSPageLayout *shared_instance;
    information in the indicated NSPrintInfo object. Returns NSCancelButton 
    if the user clicks the Cancel button or NSOKButton otherwise.
 */
-- (int)runModalWithPrintInfo:(NSPrintInfo *)pInfo
+- (int)runModalWithPrintInfo:(NSPrintInfo *)printInfo
 {
   int result;
   
-  _printInfo = pInfo;
+  [_controller setPrintInfo: printInfo];
   [self readPrintInfo];
 
   result = [NSApp runModalForWindow: self];
@@ -272,15 +200,14 @@ static NSPageLayout *shared_instance;
 		 didEndSelector:(SEL)didEndSelector
 		    contextInfo:(void *)contextInfo
 {
-  _picked = NSOKButton;
-  _printInfo = printInfo;
+  [_controller setPrintInfo: printInfo];
   [self readPrintInfo];
 
   [NSApp beginSheet: self
-	 modalForWindow: docWindow
-	 modalDelegate: delegate
-	 didEndSelector: didEndSelector
-	 contextInfo: contextInfo];
+	   modalForWindow: docWindow
+	    modalDelegate: delegate
+	   didEndSelector: didEndSelector
+	      contextInfo: contextInfo];
 
   [self orderOut: self];
 }
@@ -292,138 +219,37 @@ static NSPageLayout *shared_instance;
  */
 - (NSView *)accessoryView
 {
-  return _accessoryView;
+  return [_controller accessoryView];
 }
 
 /** Set the accessory view for the page layout panel 
  */
 - (void)setAccessoryView:(NSView *)aView
 {
-  ASSIGN(_accessoryView, aView);
+  [_controller setAccessoryView: aView];
 }
+
+
 
 //
 // Updating the Panel's Display 
 //
-- (float) factorForIndex: (int)sel
-{
-  switch (sel)
-    {
-      default:
-      case 0: return 1.0;
-      case 1: return 25.4/72;
-      case 2: return 2.54/72;
-      case 3: return 1.0/72;	    
-    }    
-}
-
 /** Convert the old value to a new one based on the current units. This
     method has been depreciated. It doesn't do anything useful
 */
 - (void)convertOldFactor:(float *)old
-	       newFactor:(float *)new
+	             newFactor:(float *)new
 {
-  NSPopUpButton *pop;
-  int sel;
-
-  if (old == NULL)
-    return;
-  pop = [[self contentView] viewWithTag: NSPLUnitsButton];
-  if (pop == nil)
-    return;
-
-  sel = [pop indexOfSelectedItem];
-  if (new)
-    *new = [self factorForIndex: sel];
+  [_controller convertOldFactor: old
+	                   newFactor: new];
 }
 
-/* Private communication with our panel objects */
-- (void) _pickedButton: (id)sender
-{
-  int tag = [sender tag];
-
-  if (tag == NSPLOKButton)
-    {
-      _picked = NSOKButton;
-      [self writePrintInfo];
-    }
-  else if (tag == NSPLCancelButton)
-    {
-      _picked = NSCancelButton;
-    }
-  else
-    {
-      NSLog(@"NSPageLayout button press from unknown sender %@ tag %d", 
-	    sender, tag);
-      _picked = NSOKButton;
-    }
-  [NSApp stopModalWithCode: _picked];
-}
-
-- (void) _setNewPageSize
-{
-  NSTextField *sizeField = [[self contentView] viewWithTag: NSPLWidthField];
-  NSTextField *heightField = [[self contentView] viewWithTag: NSPLHeightField];
-  id control = [[self contentView] viewWithTag: NSPLUnitsButton];
-  double factor = [self factorForIndex: [control indexOfSelectedItem]];
-  [sizeField setDoubleValue: _size.width * factor];
-  [heightField setDoubleValue: _size.height * factor];
-}
-
-- (void) _pickedPaper: (id)sender
-{
-  NSPrinter *printer = [_printInfo printer];
-  int tag = [sender tag];
-
-  //tag == 2
-  if (tag == NSPLPaperNameButton)
-    {
-      id control;
-      _size = [printer pageSizeForPaper: [sender titleOfSelectedItem]];
-      control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
-      if ([control selectedColumn] > 0)
-	{
-	  double temp = _size.width;
-	  _size.width = _size.height;
-	  _size.height = temp;
-	}
-      [self _setNewPageSize];
-    }
-  //tag == 3
-  else if (tag == NSPLUnitsButton)
-    {
-      [self _setNewPageSize];
-    }
-  //tag == 6
-  else if (tag == NSPLOrientationMatrix)
-    {
-      if ([sender selectedColumn] > 0)
-	{
-	  double temp = MIN(_size.width, _size.height);
-	  _size.width = MAX(_size.width, _size.height);
-	  _size.height = temp;
-	}
-      else
-	{
-	  double temp = MAX(_size.width, _size.height);
-	  _size.width = MIN(_size.width, _size.height);
-	  _size.height = temp;
-	}
-      [self _setNewPageSize];
-    }
-  else 
-    {
-      NSLog(@"NSPageLayout action from unknown sender %@ tag %d", 
-	    sender, tag);
-    }
-}
 
 /** This method has been depreciated. It doesn't do anything useful.
 */
 - (void)pickedButton:(id)sender
 {
   NSLog(@"[NSPageLayout -pickedButton:] method depreciated");
-  //[self pickedButton: sender];
 }
 
 /** This method has been depreciated. It doesn't do anything useful.
@@ -462,95 +288,14 @@ static NSPageLayout *shared_instance;
 */
 - (NSPrintInfo *)printInfo
 {
-  return _printInfo;
+  return [_controller printInfo];
 }
 
 /** Updates the receiver panel with information from its NSPrintInfo object
  */
 - (void)readPrintInfo
 {
-  id control;
-  NSString *str;
-  NSPrinter *printer;
-  NSDictionary *dict;
-
-  printer = [_printInfo printer];
-  dict = [_printInfo dictionary];
-
-  /* Setup the paper name popup */
-  control = [[self contentView] viewWithTag: NSPLPaperNameButton];
-  [control removeAllItems];
-  str = [_printInfo paperName];
-  if (str)
-    {
-      NSArray *list;
-      list = [printer stringListForKey:@"PageSize" inTable: @"PPD"];
-      if ([list count])
-	{
-	  unsigned int i;
-
-	  for (i = 0; i < [list count]; i++)
-	    {
-	      NSString *key = [list objectAtIndex: i];
-	      [control addItemWithTitle: key];
-	    }
-	  [control selectItemWithTitle: str];
-	}
-      else
-	{
-	  [control addItemWithTitle: str];
-	}
-    }
-  else
-    [control addItemWithTitle: @"Unknown"];
-
-  /* Set up units */
-  control = [[self contentView] viewWithTag: NSPLUnitsButton];
-  if ([control numberOfItems] < 2)
-    {
-      unsigned int i;
-      NSArray *list = [self _units];
-
-      [control removeAllItems];
-      for (i = 0; i < [list count]; i++)
-	{
-	  [control addItemWithTitle: [list objectAtIndex: i]];
-	}
-      [control selectItemAtIndex: 0];
-    }
-  else
-    {
-      /* We've already been setup */
-      [control selectItemAtIndex: 0];
-    }
-     
-  /* Set up size form */
-  _size = [_printInfo paperSize];
-  control = [[self contentView] viewWithTag: NSPLWidthField];
-  [control setDoubleValue: _size.width];
-  control = [[self contentView] viewWithTag: NSPLHeightField];
-  [control setDoubleValue: _size.height];
-  
-  /* Set up the orientation */
-  {
-    NSPrintingOrientation orient = [_printInfo orientation];
-    control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
-    [control selectCellAtRow: 0 column: (orient - NSPortraitOrientation)];
-  }
-
-  //TODO Scaling 
-  {
-    float scale = 100;
-    NSNumber *scaleNumber; 
-    control = [[self contentView] viewWithTag: NSPLScaleField];
-    if ((scaleNumber = [dict objectForKey:NSPrintScalingFactor]))
-      {
-	scale = [scaleNumber floatValue];
-      }
-
-    [control setFloatValue: scale];
-  }
-
+  [_controller readPrintInfo];
 }
 
 /** Writes any layout information set by the user to the receiver's
@@ -558,26 +303,348 @@ static NSPageLayout *shared_instance;
 */
 - (void)writePrintInfo
 {
-  id control;
-  NSString *str;
+  [_controller writePrintInfo];
+}
+
+@end
+
+
+
+//
+// Controller for the PageLayout Panel
+//
+@implementation GSPageLayoutController
+- (id) init
+{
+  NSString *panelPath;
+  NSDictionary *table;
+  NSImage *image;
+
+  self = [super init];
+  panelPath = [GSGuiBundle() pathForResource: @"GSPageLayout" 
+			                                ofType: @"gorm"
+			                           inDirectory: nil];
+                                 
+  NSLog(@"Panel path=%@",panelPath);
+  table = [NSDictionary dictionaryWithObject: self 
+                                      forKey: @"NSOwner"];
+                                      
+  if ([NSBundle loadNibFile: panelPath 
+	        externalNameTable: table
+		               withZone: [self zone]] == NO)
+    {
+      NSRunAlertPanel(@"Error", @"Could not load page layout panel resource", 
+		                  @"OK", NULL, NULL);
+      return nil;
+    }
+    
+  image = [[NSApplication sharedApplication] applicationIconImage];
+  [_imageButton setImage: image];
+  
+  return self;
+}
+
+- (NSPageLayout*) panel
+{
+  return (NSPageLayout*)_panel;
+}
+
+
+/* Private communication with our panel objects */
+- (void) buttonClicked: (id)sender
+{
+  int picked;
+  int tag = [sender tag];
+
+  NSLog(@"buttonClicked:");
+  if (tag == NSPLOKButton)
+    {
+      picked = NSOKButton;
+      [self writePrintInfo];
+    }
+  else if (tag == NSPLCancelButton)
+    {
+      picked = NSCancelButton;
+    }
+  else
+    {
+      NSLog(@"NSPageLayout button press from unknown sender %@ tag %d", 
+	            sender, tag);
+      picked = NSOKButton;
+    }
+  [NSApp stopModalWithCode: picked];
+}
+
+- (void) setNewPageSize
+{
+  double factor;
+ 
+  factor = [self factorForIndex: [_unitsButton indexOfSelectedItem]];
+  [_widthField setDoubleValue: _size.width * factor];
+  [_heightField setDoubleValue: _size.height * factor];
+}
+
+//
+// Converts between points, millimeters, centimeters, and inches, in that order.
+// Dependent upon the order of which the values appear in the Gorm popup.
+//
+- (float) factorForIndex: (int)sel
+{
+  switch (sel)
+    {
+      default:
+      case 0: return 1.0;
+      case 1: return 25.4/72;
+      case 2: return 2.54/72;
+      case 3: return 1.0/72;	    
+    }    
+}
+
+
+
+- (void) paperSelected: (id)sender
+{
+  NSPrinter *printer;
+  
+  _scale = 100;
+  [_scaleField setDoubleValue: _scale];
+  
+  printer = [_printInfo printer];
+  _size = [printer pageSizeForPaper: [sender titleOfSelectedItem]];
+  
+  //check if the user selected landscape mode, if so, switch out the 
+  //width and height
+  if ([_orientationMatrix selectedColumn] > 0)
+	  {
+	    double temp  = _size.width;
+	    _size.width  = _size.height;
+	    _size.height = temp;
+	  }
+  [self setNewPageSize];
+  [_miniPageView setNeedsDisplay: YES];
+}
+
+- (void) unitsSelected: (id)sender
+{
+  [self setNewPageSize];
+  [_miniPageView setNeedsDisplay: YES];
+}
+
+-(void) scaleSelected: (id)sender
+{
+  float scale;
+  
+  scale = [_scaleField doubleValue];
+  
+  if( scale == 0.0 )
+    {
+      [_scaleField setDoubleValue: _scale];
+    }
+  else
+    {
+      _scale = scale;
+      _size.width  *= (_scale/100);
+      _size.height *= (_scale/100); 
+    }
+  
+  [self setNewPageSize];
+  [_miniPageView setNeedsDisplay: YES];
+}
+
+-(void) widthSelected: (id)sender
+{
+  double width;
+  
+  width = [_widthField doubleValue];
+  
+  if( width == 0.0 )
+    {
+      [_widthField setDoubleValue: _size.width];
+    }
+  else
+    {
+      _size.width = width;
+      [_miniPageView setNeedsDisplay: YES];
+    }
+}
+
+-(void) heightSelected: (id)sender
+{
+  double height;
+  
+  height = [_heightField doubleValue];
+  
+  if( height == 0.0 )
+    {
+      [_heightField setDoubleValue: _size.height];
+    }
+  else
+    {
+      _size.height = height;
+      [_miniPageView setNeedsDisplay: YES];
+    }
+}
+
+- (void) orientationMatrixClicked: (id)sender
+{
+  double temp;
+  
+  if ([sender selectedColumn] > 0)
+	  {
+	    temp = MIN(_size.width, _size.height);
+	    _size.width = MAX(_size.width, _size.height);
+	  }
+  else
+	  {
+	    temp = MAX(_size.width, _size.height);
+	    _size.width = MIN(_size.width, _size.height);
+	  }
+  _size.height = temp;
+  [self setNewPageSize];
+  [_miniPageView setNeedsDisplay: YES];
+}
+
+-(NSPrintInfo*) printInfo
+{
+  return _printInfo;
+}
+
+-(void) setPrintInfo:(NSPrintInfo*)printInfo
+{
+  ASSIGN( _printInfo, printInfo);
+}
+
+-(NSView*) accessoryView
+{
+  return _accessoryView;
+}
+
+-(void) setAccessoryView:(NSView*)accessoryView
+{
+  ASSIGN( _accessoryView, accessoryView);
+}
+
+-(NSSize) pageSize
+{
+  return _size;
+}
+
+- (void)convertOldFactor:(float *)old
+	       newFactor:(float *)new
+{
+  int sel;
+
+  if (old == NULL)
+    return;
+
+  sel = [_unitsButton indexOfSelectedItem];
+  if (new)
+    *new = [self factorForIndex: sel];
+}
+
+- (void)readPrintInfo
+{
+  NSString *string;
+  NSPrinter *printer;
+  NSDictionary *dict;
+
+  printer = [_printInfo printer];
+  dict = [_printInfo dictionary];
+
+  /* Setup the paper name popup */
+  {
+    [_paperNameButton removeAllItems];
+    string = [_printInfo paperName];
+    if (string)
+      {
+        NSArray *paperNames;
+        paperNames = [printer stringListForKey:@"PageSize" 
+                                       inTable:@"PPD"];
+        if ([paperNames count])
+	        {
+            NSEnumerator *paperNamesEnum;
+            NSString *paperName;
+	          paperNamesEnum = [paperNames objectEnumerator];
+
+            while( (paperName = [paperNamesEnum nextObject]) )
+              {
+                [_paperNameButton addItemWithTitle: paperName];
+              }
+	          [_paperNameButton selectItemWithTitle: string];
+	        }
+        else //PPD was empty!
+	        {
+	          [_paperNameButton addItemWithTitle: string];
+	        }
+      }
+    else //this really should not happen man.
+      {
+        [_paperNameButton addItemWithTitle: @"Unknown"];
+      }
+  }
+  
+  /* Set up units */
+  {
+    //The loading of the GORM file should ensure this is ok.
+    [_unitsButton selectItemAtIndex: 0];
+  }
+     
+  /* Set up size form */
+  {
+    _size = [_printInfo paperSize];
+    [_widthField setDoubleValue: _size.width];
+    [_heightField setDoubleValue: _size.height];
+  }
+  
+  /* Set up the orientation */
+  {
+    NSPrintingOrientation orient = [_printInfo orientation];
+    [_orientationMatrix selectCellAtRow: 0 
+                                 column: (orient - NSPortraitOrientation)];
+  }
+
+  //TODO Scaling 
+  {
+    float scale = 100;
+    NSNumber *scaleNumber; 
+    if ((scaleNumber = [dict objectForKey:NSPrintScalingFactor]))
+      {
+	      scale = [scaleNumber floatValue];
+      }
+
+    [_scaleField setFloatValue: scale];
+    _scale = scale;
+  }
+
+}
+
+- (void)writePrintInfo
+{
+  NSString *string;
   NSPrinter *printer;
   float scale; 
   NSMutableDictionary *dict = [_printInfo dictionary];
 
   printer = [_printInfo printer];
+  
   /* Write Paper Name */
-  control = [[self contentView] viewWithTag: NSPLPaperNameButton];
-  str = [control titleOfSelectedItem];
-  [_printInfo setPaperName: str];
+  {
+    string = [_paperNameButton titleOfSelectedItem];
+    [_printInfo setPaperName: string];
+  }
 
   /* Write Orientation */
-  control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
-  [_printInfo setOrientation: [control selectedColumn]+NSPortraitOrientation];
+  {
+    [_printInfo setOrientation: 
+                [_orientationMatrix selectedColumn]+NSPortraitOrientation];
+  }
 
-
-  control = [[self contentView] viewWithTag: NSPLScaleField]; 
-  scale = [control floatValue];
-  [dict setObject: [NSNumber numberWithFloat:scale] forKey:NSPrintScalingFactor];
+  /* Write Scaling Factor */
+  {
+    scale = _scale;
+    [dict setObject: [NSNumber numberWithFloat:scale] 
+             forKey: NSPrintScalingFactor];
+  }
   
   
   /* Write Size */
@@ -586,3 +653,90 @@ static NSPageLayout *shared_instance;
 }
 
 @end
+
+
+
+
+//
+// Show the preview of the page's dimensions
+//
+
+@interface GSPageLayoutMiniPageView : NSView
+{
+  id _pageLayoutController;
+}
+@end
+
+
+//
+// Show the preview of the page's dimensions
+//
+@implementation GSPageLayoutMiniPageView
+
+-(int) tag
+{
+  return NSPLMiniPageView;
+}
+
+- (void) drawRect: (NSRect)rect
+{
+  NSSize pageSize;
+  NSRect paper;
+  NSRect shadow;
+  double ratio;
+  double width, height;
+  NSColor *shadowColor;
+  
+  //Draw the background
+  NSRect bounds = [self bounds];
+	//[[NSColor windowBackgroundColor] set];
+	//[NSBezierPath fillRect: bounds];
+  
+  pageSize = [_pageLayoutController pageSize];
+  
+  if( pageSize.width >= pageSize.height)
+    {
+      ratio = pageSize.height/ pageSize.width;
+      width  = bounds.size.width;
+      height = width * ratio;
+    }
+  else
+    {
+      ratio =  pageSize.width / pageSize.height;
+      height = bounds.size.height;
+      width  = height * ratio;
+    }
+  
+  //make the page a bit smaller
+  width  *= 0.75;
+  height *= 0.75;
+  
+  paper.origin.x = (bounds.size.width  - width)  / 2;
+  paper.origin.y = (bounds.size.height - height) / 2;
+  paper.size.width  = width;
+  paper.size.height = height;
+  
+  shadow = paper;
+  if( [self isFlipped] == NO)
+      shadow.origin.y -= 2;
+  else
+      shadow.origin.y += 2;
+      
+  shadow.origin.x += 2;
+  
+  
+  //first draw the shadow
+  shadowColor = [[NSColor windowBackgroundColor] shadowWithLevel: 0.5];
+  
+  [shadowColor set];
+  [NSBezierPath fillRect: shadow];
+  
+  //now draw the paper
+  [[NSColor whiteColor] set];
+  [NSBezierPath fillRect: paper];
+  [[NSColor blackColor] set];
+  [NSBezierPath strokeRect: paper];
+}
+
+@end
+

@@ -30,23 +30,31 @@
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
+#include <AppKit/NSView.h>
 
 @class NSPrintInfo;
-@class NSView;
 
 enum {
-  NSPLImageButton,
-  NSPLTitleField,
-  NSPLPaperNameButton,
-  NSPLUnitsButton,
-  NSPLWidthField,
-  NSPLHeightField,
-  NSPLOrientationMatrix,
-  NSPLCancelButton,
-  NSPLOKButton,
-  NSPLPageLayout,
-  NSPLScaleField
+  NSPLImageButton       = 0,
+  NSPLTitleField        = 1,
+  NSPLPaperNameButton   = 2,
+  NSPLUnitsButton       = 3,
+  NSPLWidthField        = 4,  //Not OpenStep, but used in the panel.
+  NSPLHeightField       = 5,  //Not OpenStep, but used in the panel.
+  NSPLOrientationMatrix = 6,
+  NSPLCancelButton      = 7,
+  NSPLOKButton          = 8,
+  NSPLPageLayout        = 9,  //Not OpenStep, previously used in this panel.
+	                            //Not anymore though, this is now solely in the 
+											        //Print Panel.  This used to select the number 
+											        //of pages printed per sheet of paper.  It is 
+															//best kept in the Print Panel only though.
+  NSPLScaleField        = 10, //Not OpenStep, but used in this panel.                              
+	NSPLWidthForm         = 20, //These were added because they
+	NSPLHeightForm        = 21, //have been seen in OpenStep
+	NSPLMiniPageView      = 22  //Not OpenStep, but used in this panel.
 };
+
 
 @interface NSApplication (NSPageLayout)
 - (void) runPageLayout: (id)sender;
@@ -54,11 +62,7 @@ enum {
 
 @interface NSPageLayout : NSPanel
 {
-  NSSize _size;
-  NSPrintInfo *_printInfo;
-  NSView *_accessoryView;
-  id _panel;
-  int _picked;
+  id _controller; 
 }
 
 //

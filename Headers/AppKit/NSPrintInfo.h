@@ -59,6 +59,7 @@ typedef enum _NSPrintingPaginationMode {
   NSMutableDictionary *_info;
 }
 
+
 //
 // Creating and Initializing an NSPrintInfo Instance 
 //

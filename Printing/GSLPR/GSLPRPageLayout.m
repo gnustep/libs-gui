@@ -25,26 +25,7 @@
 
 */ 
 #include <Foundation/NSDebug.h>
-//#include <AppKit/NSApplication.h>
-//#include <AppKit/NSFont.h>
-//#include <AppKit/NSTextField.h>
-//#include <AppKit/NSImage.h>
-//#include <AppKit/NSImageView.h>
-//#include <AppKit/NSBox.h>
-//#include <AppKit/NSButton.h>
-//#include <AppKit/NSComboBox.h>
-//#include <AppKit/NSPopUpButton.h>
-//#include <AppKit/NSMatrix.h>
-//#include <AppKit/NSNibLoading.h>
-//#include <AppKit/NSForm.h>
-//#include <AppKit/NSFormCell.h>
-//#include <AppKit/NSPrintInfo.h>
-//#include <AppKit/NSPageLayout.h>
-//#include <AppKit/NSPrinter.h>
-//#include "GSGuiPrivate.h"
 #include "GSLPRPageLayout.h"
-//#include "GNUstepGUI/GSPrinting.h"
-
 
 
 @implementation GSLPRPageLayout

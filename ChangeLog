@@ -1,9 +1,25 @@
+2004-07-11  Chad Hardin <cehardin@mac.com>
+
+	* Headers/AppKit/NSPageLayout.h:
+	* Source/NSPageLayout.m:
+	* Panels/English.lproj/GSPageLayout.gorm/data.classes:
+	* Panels/English.lproj/GSPageLayout.gorm/objects.gorm:
+	* Printing/GSLPR/GSLPRPageLayout.m:
+	Completely redid NSPageLayout.  It now takes full 
+	advantage of being GORM based (ie: connections rather
+	than checking tags).  Most of the functionality of 
+	NSPageLayout was split off and put into a controller 
+	object, GSPrintLayoutController.  The panel	itself is 
+	much improved, it even includes a preview display of 
+	the page dimensions.
+
 2004-07-11 14:17  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
 	When printing, position each glyph explicitly.
 
 2004-07-09  Chad Hardin <cehardin@mac.com>
+
 	* Source/GNUmakefile:
 	* Headers/AppKit/NSPageLayout.h:
 	* Source/NSPageLayout.m:

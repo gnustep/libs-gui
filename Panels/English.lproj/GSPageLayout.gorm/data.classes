@@ -142,19 +142,59 @@
 	    "_pickedButton:",
 	    "pickedOrientation:",
 	    "_pickedPaper:",
-	    "pickedUnits:"
+	    "pickedUnits:",
+	    "pickedButton:",
+	    "pickedPaperSize:",
+	    "buttonClicked:",
+	    "paperSelected:",
+	    "unitsSelected:",
+	    "orientationMatrixClicked:",
+	    "scaleSelected:",
+	    "widthSelected:",
+	    "heightSelected:"
 	);
 	Super = NSObject;
     };
+    GSPageLayoutController = {
+	Actions = (
+	    "buttonClicked:",
+	    "paperSelected:",
+	    "unitsSelected:",
+	    "orientationMatrixClicked:",
+	    "scaleSelected:",
+	    "widthSelected:",
+	    "heightSelected:"
+	);
+	Outlets = (
+	    _panel,
+	    _orientationMatrix,
+	    _widthField,
+	    _heightField,
+	    _unitsButton,
+	    _paperNameButton,
+	    _scaleField,
+	    _imageButton,
+	    _miniPageView
+	);
+	Super = NSObject;
+    };
+    GSPageLayoutMiniPageView = {
+	Actions = (
+	);
+	Outlets = (
+	    _pageLayoutController
+	);
+	Super = NSView;
+    };
     NSPageLayout = {
 	Actions = (
-	    "_pickedButton:",
+	    "pickedButton:",
 	    "pickedOrientation:",
-	    "_pickedPaper:",
+	    "pickedPaperSize:",
 	    "pickedUnits:"
 	);
 	Outlets = (
-	    _panel
+	    _controller
 	);
 	Super = NSPanel;
     };
