@@ -1,4 +1,12 @@
-2001-07-23  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
+2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
+
+	* Source/NSPopUpItemCell.m (-drawInteriorWithFrame:inView:): updates to
+	have a cuter displaying of NSPopUpButton
+	* Source/NSMenuItemCell.m (-imageRectForBounds:): idem
+	(-drawBorderAndBackgroundWithFrame:inView:): idem
+	(-drawInteriorWithFrame:inView:): idem
+
+2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
 	* Source/NSFontPanel.m (_initWithoutGModel): call setMinColumnWidth on 
 	familyBrowser and on faceBrowser (they were not displayed)
@@ -10,12 +18,12 @@
 	methods (acceptsAlphaNumericalKeys, setAcceptsAlphaNumericalKeys:,
 	sendsActionOnAlphaNumericalKeys, setSendsActionOnAlphaNumericalKeys:)
 	* Source/NSBrowser.m: Add GNUstepExtensions category methods
-	* Source/NSBrowser.m (-initWIthFrame:): initialization of the 
-	alphanumerical-key-related instance variables.
-	* Source/NSBrowser.m (-dealloc): TEST_RELEASE a keyDown internal object
-	* Source/NSBrowser.m (-keyDown): support for alphanumerical keys
-	* Source/NSBrowser.m (-selectRow:inColumn:): when calling 
-	[matrix cellAtRow:column:], column should be 0 (not column)
+	(-initWIthFrame:): initialization of the alphanumerical-key-related 
+	instance variables.
+	(-dealloc): TEST_RELEASE a keyDown internal object
+	(-keyDown): support for alphanumerical keys
+	(-selectRow:inColumn:): when calling [matrix cellAtRow:column:], column
+	should be 0 (not column)
 
 Fri Jul 20 10:18:58 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
