@@ -71,6 +71,11 @@
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpPanel.h>
 
+static void
+_preventRecursion (NSException *exception)
+{
+}
+
 /*
  * AppKit exception handler (overrides Foundation)
  */
@@ -85,13 +90,26 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 #define DEBUG_BUTTON nil
 #endif
 
+  /*
+   * If there is no graphics context to run the alert panel in,
+   * use the default exception handler.
+   */
+  if (GSCurrentContext() == nil)
+    {
+      _NSUncaughtExceptionHandler = _preventRecursion;
+      fprintf(stderr, "Uncaught exception %s, reason: %s\n",
+	[[exception name] lossyCString], [[exception reason] lossyCString]);
+      exit(1);
+    }
+
   retVal = NSRunCriticalAlertPanel([[NSProcessInfo processInfo] processName],
 								   @"%@: %@",
 								   @"Abort", @"Ignore", DEBUG_BUTTON,
 								   [exception name], [exception reason]);
-
   if (retVal == NSAlertDefault)
-	abort();
+    {
+      abort();
+    }
 }
 
 /*
