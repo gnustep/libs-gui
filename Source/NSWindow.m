@@ -560,6 +560,35 @@ static NSMapTable* windowmaps = NULL;
   [super dealloc];
 }
 
+- (void) _initBackendWindow: (NSRect)frame
+{
+  NSGraphicsContext	*context = GSCurrentContext();
+
+  frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
+  DPSwindow(context, NSMinX(frame), NSMinY(frame),
+	    NSWidth(frame), NSHeight(frame),
+	    _backingType, &_windowNum);
+  DPSstylewindow(context, _styleMask, _windowNum);
+  DPSsetwindowlevel(context, [self level], _windowNum);
+
+  // Set window in new _gstate
+  DPSgsave(context);
+  DPSwindowdevice(context, _windowNum);
+  DPSgstate(context);
+  _gstate = GSWDefineAsUserObj(context);
+  DPSgrestore(context);
+  NSMapInsert (windowmaps, (void*)_windowNum, self);
+
+  if (NSIsEmptyRect([_wv frame]))
+    {
+      frame.origin = NSZeroPoint;
+      [_wv setFrame: frame];
+      [_wv setNeedsDisplay: YES];
+    }
+  NSDebugLLog(@"NSWindow", @"Created NSWindow frame %@",
+	      NSStringFromRect(_frame));
+}
+
 /*
  * Initializing and getting a new NSWindow object
  */
@@ -583,7 +612,6 @@ static NSMapTable* windowmaps = NULL;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
-  NSGraphicsContext	*context = GSCurrentContext();
   NSRect		cframe;
 
   NSDebugLog(@"NSWindow default initializer\n");
@@ -628,21 +656,16 @@ static NSMapTable* windowmaps = NULL;
      part a view is drawing in, so NSWindow only has to flush that portion */
   _rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]);
 
-  // FIXME: If flag is YES, the creation of the window should be defered
-  DPSwindow(context, NSMinX(contentRect), NSMinY(contentRect),
-	    NSWidth(contentRect), NSHeight(contentRect),
-	    bufferingType, &_windowNum);
-  DPSstylewindow(context, aStyle, _windowNum);
-  DPSsetwindowlevel(context, [self level], _windowNum);
-
-  // Set window in new _gstate
-  DPSgsave(context);
-  DPSwindowdevice(context, _windowNum);
-  DPSgstate(context);
-  _gstate = GSWDefineAsUserObj(context);
-  DPSgrestore(context);
-
-  NSMapInsert (windowmaps, (void*)_windowNum, self);
+  /* Create window (if not deferred) */
+  _windowNum = 0;
+  _gstate = 0;
+  if (flag == NO)
+    {
+      NSDebugLLog(@"NSWindow", @"Creating NSWindow\n");
+      [self _initBackendWindow: _frame];
+    }
+  else
+    NSDebugLLog(@"NSWindow", @"Defering NSWindow creation\n");
 
   NSDebugLog(@"NSWindow end of init\n");
   return self;
@@ -1037,6 +1060,9 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
+  NSGraphicsContext *context = GSCurrentContext();
+  BOOL display = NO;
+
   if (place == NSWindowOut)
     {
       _f.visible = NO;
@@ -1052,7 +1078,19 @@ static NSMapTable* windowmaps = NULL;
 	}
       [self _lossOfKeyOrMainWindow];
     }
-  DPSorderwindow(GSCurrentContext(), place, otherWin, _windowNum);
+  else
+    {
+      // create deferred window
+      if(_windowNum == 0)
+	{
+	  [self _initBackendWindow: _frame];
+	  display = YES;
+	}
+    }
+  DPSorderwindow(context, place, otherWin, _windowNum);
+  if (display)
+    [self display];
+
   if (place != NSWindowOut)
     {
       if (_rFlags.needs_display == NO)
@@ -1091,8 +1129,8 @@ static NSMapTable* windowmaps = NULL;
 	}
       if ([self isKeyWindow] == YES)
 	{
-	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarKey);
-	  DPSsetinputfocus(GSCurrentContext(), _windowNum);
+	  DPSsetinputstate(context, _windowNum, GSTitleBarKey);
+	  DPSsetinputfocus(context, _windowNum);
 	}
     }
 }
@@ -1272,8 +1310,11 @@ static NSMapTable* windowmaps = NULL;
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
+  if(_gstate)
   DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
     frameRect.size.width, frameRect.size.height, _windowNum);
+  else
+    _frame = frameRect;
 
   if (flag)
     [self display];
@@ -1381,6 +1422,9 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) display
 {
+  if (_gstate == 0 || _f.visible == NO)
+    return;
+
   _rFlags.needs_display = NO;
   // FIXME: Is the first responder processing needed here?
   if ((!_firstResponder) || (_firstResponder == self))
@@ -1472,10 +1516,11 @@ static NSMapTable* windowmaps = NULL;
        [[_rectsBeingDrawn objectAtIndex: i] rectValue]);
     }
 
-  DPSflushwindowrect(context,
-		     NSMinX(_rectNeedingFlush), NSMinY(_rectNeedingFlush),
-		     NSWidth(_rectNeedingFlush), NSHeight(_rectNeedingFlush),
-		     _windowNum);
+  if (_windowNum)
+    DPSflushwindowrect(context,
+		       NSMinX(_rectNeedingFlush), NSMinY(_rectNeedingFlush),
+		       NSWidth(_rectNeedingFlush), NSHeight(_rectNeedingFlush),
+		       _windowNum);
   _f.needs_flush = NO;
   _rectNeedingFlush = NSZeroRect;
 }

@@ -1259,8 +1259,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSGraphicsContext *ctxt = GSCurrentContext();
   struct NSWindow_struct *window_t;
   NSRect wrect;
+  int window_gstate;
 
   NSAssert(_window != nil, NSInternalInconsistencyException);
+  /* Check for deferred window */
+  if ((window_gstate = [_window gState]) == 0)
+    return;
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1280,12 +1284,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   else
     {
-      int window_gstate;
       NSAffineTransform *matrix;
       float x, y, w, h;
 
-      window_gstate = [_window gState];
-      NSAssert(window_gstate, NSInternalInconsistencyException);
       DPSsetgstate(ctxt, window_gstate);
       DPSgsave(ctxt);
       matrix = [self _matrixToWindow];
@@ -1331,6 +1332,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   NSAssert(_window != nil, NSInternalInconsistencyException);
+  /* Check for deferred window */
+  if ([_window gState] == 0)
+    return;
 
   /* Restore our original gstate */
   DPSgrestore(ctxt);

@@ -1,5 +1,18 @@
 2000-09-27  Adam Fedor  <fedor@gnu.org>
 
+	* Implementation of deferred windows (with the help of
+        mirko.viviani@rccr.cremona.it)
+	* Source/NSClipView.m (-setBoundsOrigin:): Make sure window
+	is not deferred before attempting to draw.
+	* Source/NSMenu.m (-init): Defer window.
+	* Source/NSView.m (-lockFocusInRect:): Don't lock if window is 
+	deferred.
+	(-unlockFocus): Likewise.
+	* Source/NSWindow.m (_initBackendWindow:): New method.
+	(-initWithContentRect:styleMask:backing:defer:screen:): Use it
+	if not deferring.
+	(-orderWindow:relativeTo:): Create window if deferred.
+	
 	* Source/tiff.m (NSTiffRead): For PHOTOMETRIC_PALETTE, don't free
 	colormap tables, they are owned by libtiff.
 

@@ -1295,7 +1295,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   self = [self initWithContentRect: NSZeroRect
 			 styleMask: NSBorderlessWindowMask
 			   backing: NSBackingStoreBuffered
-			     defer: NO];
+			     defer: YES];
   return self;
 }
 

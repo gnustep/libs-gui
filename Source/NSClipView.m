@@ -116,7 +116,7 @@
   if (_documentView == nil)
     return;
 
-  if (_copiesOnScroll && _window)
+  if (_copiesOnScroll && _window && [_window gState])
     {
       // copy the portion of the view that is common before 
       // and after scrolling.
