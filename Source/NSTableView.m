@@ -1101,15 +1101,6 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
 				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  if (_headerView != nil)
-	    {
-	      NSClipView *headerClipView 
-		= (NSClipView *)[_headerView superview];
-	      // Scroll the header view too 
-	      newOrigin = [headerClipView bounds].origin;
-	      newOrigin.x += columnRect.origin.x - visibleRect.origin.x;
-	      [headerClipView scrollToPoint: newOrigin];
-	    }
 	  return;
 	}
       diff = NSMaxX (columnRect) - NSMaxX (visibleRect);
@@ -1126,15 +1117,6 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
 				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
-	  if (_headerView != nil)
-	    {
-	      // Scroll the header view too
-	      NSClipView *headerClipView 
-		= (NSClipView *)[_headerView superview];
-	      newOrigin	= [headerClipView bounds].origin;
-	      newOrigin.x += diff;
-	      [headerClipView scrollToPoint: newOrigin];
-	    }
 	  return;
 	}
     }
