@@ -1,3 +1,10 @@
+Fri Oct 11 01:37:57 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* TextConverters/RTF/RTFConsumer.m ([RTFAttribute -currentFont]):
+	If the font can't be found in the usual ways, try to get it as a
+	composite font name like 'FontFamily-Face'
+	(Patch by Georg Fleischmann <georg@vhf.de> modified).
+
 Fri Oct 11 01:15:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSFont.m (getNSFont): If fontWithName:size: returns nil,
