@@ -67,6 +67,17 @@
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
+@interface NSObject (DragInfoBackend)
+- (void) dragImage: (NSImage*)anImage
+		at: (NSPoint)screenLocation
+	    offset: (NSSize)initialOffset
+	     event: (NSEvent*)event
+	pasteboard: (NSPasteboard*)pboard
+	    source: (id)sourceObject
+	 slideBack: (BOOL)slideFlag;
+- (void) postDragEvent: (NSEvent*)event;
+@end
+
 /*
  * Catagory for internal methods (for use only within the
  * NSWindow class itsself)
@@ -1423,7 +1434,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) center
 {
-  NSSize screenSize = [[NSScreen mainScreen] frame].size;
+  NSSize screenSize = [[self screen] frame].size;
   NSPoint origin = _frame.origin;
 
   origin.x = (screenSize.width - _frame.size.width) / 2;
@@ -2901,7 +2912,7 @@ resetCursorRectsForView(NSView *theView)
                            data2: action];
 
               _lastDragOperationMask = action;
-              [GSCurrentContext() _postExternalEvent: e];
+              [dragInfo postDragEvent: e];
               _lastDragView = v;
 	      break;
 
@@ -2922,10 +2933,9 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitDraggingDrop:
+	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && _f.accepts_drag)
 		{
-	          dragInfo = [GSCurrentContext() _dragInfo];
-
                   action = NO;
                   GSPerformDragSelector(_lastDragView,
 					@selector(prepareForDragOperation:),
@@ -2955,7 +2965,7 @@ resetCursorRectsForView(NSView *theView)
 			   subtype: GSAppKitDraggingFinished
 			   data1: [theEvent data1]
 			   data2: 0];
-	      [GSCurrentContext() _postExternalEvent: e];
+	      [dragInfo postDragEvent: e];
 	      break;
 
 	    case GSAppKitDraggingFinished:
@@ -3106,13 +3116,16 @@ resetCursorRectsForView(NSView *theView)
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {
-  [_wv dragImage: anImage
-	      at: baseLocation
-	  offset: initialOffset
-	   event: event
-      pasteboard: pboard
-	  source: sourceObject
-       slideBack: slideFlag];
+  id dragView = [GSCurrentContext() _dragInfo];
+
+  [NSApp preventWindowOrdering];
+  [dragView dragImage: anImage
+		   at: [self convertBaseToScreen: baseLocation]
+	       offset: initialOffset
+		event: event
+	   pasteboard: pboard
+	       source: sourceObject
+	    slideBack: slideFlag];
 }
 
 - (void) registerForDraggedTypes: (NSArray*)newTypes
@@ -3319,7 +3332,7 @@ resetCursorRectsForView(NSView *theView)
    * the window could be placed (ie a rectangle excluding the dock), but
    * there is no API for that yet - so we just use the screen at present.
    */
-  nRect = [[NSScreen mainScreen] frame];
+  nRect = [[self screen] frame];
 
   /*
    * FIXME - if the stored screen area is not the same as that currently
@@ -3393,7 +3406,7 @@ resetCursorRectsForView(NSView *theView)
    * the window could be placed (ie a rectangle excluding the dock), but
    * there is no API for that yet - so we just use the screen at present.
    */
-  sRect = [[NSScreen mainScreen] frame];
+  sRect = [[self screen] frame];
 
   return [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
     (int)fRect.origin.x, (int)fRect.origin.y,
