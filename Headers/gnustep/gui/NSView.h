@@ -48,8 +48,10 @@
 @class NSImage;
 @class NSCursor;
 @class NSScrollView;
+@class NSMenu;
 
 typedef int NSTrackingRectTag;
+typedef int NSToolTipTag;
 
 /*
  * constants representing the four types of borders that
@@ -311,6 +313,12 @@ enum {
 - (void) print: (id)sender;
 - (void) writeEPSInsideRect: (NSRect)rect
 	       toPasteboard: (NSPasteboard*)pasteboard;
+#ifndef STRICT_OPENSTEP
+- (NSData *)dataWithPDFInsideRect:(NSRect)aRect;
+- (void)writePDFInsideRect:(NSRect)aRect 
+	      toPasteboard:(NSPasteboard *)pboard;
+- (NSString *)printJobTitle;
+#endif
 
 /*
  * Pagination
@@ -326,6 +334,9 @@ enum {
 - (float) heightAdjustLimit;
 - (BOOL) knowsPagesFirst: (int*)firstPageNum
 		    last: (int*)lastPageNum;
+#ifndef STRICT_OPENSTEP
+- (BOOL) knowsPageRange: (NSRange*)range;
+#endif
 - (NSPoint) locationOfPrintRect: (NSRect)aRect;
 - (NSRect) rectForPage: (int)page;
 - (float) widthAdjustLimit;
@@ -357,6 +368,34 @@ enum {
 - (void) endPageSetup;
 - (void) endPage;
 - (void) endTrailer;
+#ifndef STRICT_OPENSTEP
+- (void)beginDocument;
+- (void)beginPageInRect:(NSRect)aRect 
+	    atPlacement:(NSPoint)location;
+- (void)endDocument;
+#endif
+
+
+#ifndef STRICT_OPENSTEP
+/*
+ * Menu operations
+ */
++ (NSMenu *) defaultMenu;
+- (NSMenu *) menuForEvent: (NSEvent *)theEvent;
+
+/*
+ * Tool Tips
+ */
+
+- (NSToolTipTag) addToolTipRect: (NSRect)aRect 
+			  owner: (id)anObject 
+		       userData: (void *)data;
+- (void) removeAllToolTips;
+- (void) removeToolTip: (NSToolTipTag)tag;
+- (void) setToolTip: (NSString *)string;
+- (NSString *) toolTip;
+
+#endif
 
 /*
  * NSCoding protocol

@@ -2397,16 +2397,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 /*
  * Printing
  */
-- (NSData*) dataWithEPSInsideRect: (NSRect)aRect
-{
-  NSMutableData *data = [NSMutableData data];
-  
-  [[NSPrintOperation EPSOperationWithView: self
-		     insideRect: aRect
-		     toData: data] runOperation];
-  return data;
-}
-
 - (void) fax: (id)sender
 {
   NSPrintInfo *aPrintInfo = [NSPrintInfo sharedPrintInfo];
@@ -2421,6 +2411,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [[NSPrintOperation printOperationWithView: self] runOperation];
 }
 
+- (NSData*) dataWithEPSInsideRect: (NSRect)aRect
+{
+  NSMutableData *data = [NSMutableData data];
+  
+  [[NSPrintOperation EPSOperationWithView: self
+		     insideRect: aRect
+		     toData: data] runOperation];
+  return data;
+}
+
 - (void) writeEPSInsideRect: (NSRect)rect
 	       toPasteboard: (NSPasteboard*)pasteboard
 {
@@ -2431,6 +2431,31 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		forType: NSPostScriptPboardType];
 }
 
+- (NSData *)dataWithPDFInsideRect:(NSRect)aRect
+{
+  NSMutableData *data = [NSMutableData data];
+  
+  [[NSPrintOperation PDFOperationWithView: self
+		     insideRect: aRect
+		     toData: data] runOperation];
+  return data;
+}
+
+- (void)writePDFInsideRect:(NSRect)aRect 
+	      toPasteboard:(NSPasteboard *)pboard
+{
+  NSData *data = [self dataWithPDFInsideRect: aRect];
+
+  if (data != nil)
+    [pboard setData: data
+	    forType: NSPDFPboardType];
+}
+
+- (NSString *)printJobTitle
+{
+  return nil;
+}
+
 /*
  * Pagination
  */
@@ -2439,6 +2464,33 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		      bottom: (float)oldBottom
 		       limit: (float)bottomLimit
 {
+  float bottom = oldBottom;
+
+  if (_rFlags.has_subviews)
+    {
+      id e, o;
+
+      e = [_sub_views objectEnumerator];
+      while ((o = [e nextObject]) != nil)
+	{
+          // FIXME: We have to convert this values for the subclass
+	  float oTop = [self convertPoint: NSMakePoint(0, oldTop) 
+			     toView: o].y;
+	  float oBottom = [self convertPoint: NSMakePoint(0, bottom) 
+				toView: o].y;
+	  float oLimit = [self convertPoint: NSMakePoint(0, bottomLimit) 
+			       toView: o].y;
+
+	  [o adjustPageHeightNew: &oBottom
+	     top: oTop
+	     bottom: oBottom
+	     limit: oLimit];
+	  bottom = [self convertPoint: NSMakePoint(0, oBottom) 
+			 fromView: o].y;
+	}
+    }
+
+  *newBottom = bottom;
 }
 
 - (void) adjustPageWidthNew: (float*)newRight
@@ -2446,6 +2498,33 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		      right: (float)oldRight
 		      limit: (float)rightLimit
 {
+  float right = oldRight;
+
+  if (_rFlags.has_subviews)
+    {
+      id e, o;
+
+      e = [_sub_views objectEnumerator];
+      while ((o = [e nextObject]) != nil)
+	{
+          // FIXME: We have to convert this values for the subclass
+	  float oLeft = [self convertPoint: NSMakePoint(oldLeft, 0) 
+			      toView: o].x;
+	  float oRight = [self convertPoint: NSMakePoint(right, 0) 
+			       toView: o].x;
+	  float oLimit = [self convertPoint: NSMakePoint(rightLimit, 0) 
+			       toView: o].x;
+
+	  [o adjustPageWidthNew: &oRight
+	     left: oLeft
+	     right: oRight
+	     limit: oLimit];
+	  right = [self convertPoint: NSMakePoint(oRight, 0) 
+			fromView: o].x;
+	}
+    }
+
+  *newRight = right;
 }
 
 - (float) heightAdjustLimit
@@ -2458,8 +2537,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return NO;
 }
 
+- (BOOL) knowsPageRange: (NSRange*)range
+{
+  return NO;
+}
+
 - (NSPoint) locationOfPrintRect: (NSRect)aRect
 {
+// FIXME: Should depend on the print info
   return NSZeroPoint;
 }
 
@@ -2538,6 +2623,19 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 - (void) endTrailer
+{
+}
+
+- (void)beginDocument
+{
+}
+
+- (void)beginPageInRect:(NSRect)aRect 
+	    atPlacement:(NSPoint)location
+{
+}
+
+- (void)endDocument
 {
 }
 
@@ -2726,6 +2824,47 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return _post_bounds_changes;
 }
 
+
+/*
+ * Menu operations
+ */
++ (NSMenu *)defaultMenu
+{
+  return nil;
+}
+
+- (NSMenu *)menuForEvent:(NSEvent *)theEvent
+{
+  return [self menu];
+}
+
+/*
+ * Tool Tips
+ */
+
+- (NSToolTipTag) addToolTipRect: (NSRect)aRect 
+			  owner: (id)anObject 
+		       userData: (void *)data
+{
+  return 0;
+}
+
+- (void) removeAllToolTips
+{
+}
+
+- (void) removeToolTip: (NSToolTipTag)tag
+{
+}
+
+- (void) setToolTip: (NSString *)string
+{
+}
+
+- (NSString *) toolTip
+{
+  return nil;
+}
 
 /*
  *	Private methods.
