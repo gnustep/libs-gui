@@ -4,7 +4,8 @@
 	code. New initialiser - initWithPopUpButton:. New ivar
 	menu_isBeholdenToPopUpButton.
 	* Source/NSMenuView.m: ditto. removed code that dealt with
-	popupbutton.
+	popupbutton. Also fixed bug which disallowed selecting an item if
+	you dragged of a popup and dragged back up.
 	* Source/NSPopUpButton.m: complete rewrite. now this class should
 	be almost completly MacOSX compliant. For kicks try
 	popupbuttons.app in core/Testing to see.

@@ -572,6 +572,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	        if (lastLocation.y > [[self window] frame].size.height
 	           || lastLocation.y < 0)
 	          {
+		    weWereOut = YES;
 		    [self setHighlightedItemIndex: -1];
 	          }
 
@@ -711,7 +712,7 @@ cell do the following */
 
 	  /* If we are a menu */
 
-	  if (menuv_menu)
+          if (![menuv_menu _isBeholdenToPopUpButton])
 	    {
 	      while (!finished)
 	        { // "forward"cursive menu find.
@@ -738,19 +739,20 @@ cell do the following */
 	          [window flushWindow];
 	        }
 	    }
+	  else
+	    {
+	      [menuv_menu close];
+	    }
+
 	}
     }
 
   /* If the mouse is released and there is no highlighted cell */
 
-  else if (menuv_highlightedItemIndex == -1 && menuv_popb)
+  else if (menuv_highlightedItemIndex == -1
+	&& [menuv_menu _isBeholdenToPopUpButton])
     {
-      NSLog(@"This is the popupbutton close if not selected test.\n");
-
-      if (menuv_popb)
-        {
-          [menuv_popb close];
-        }
+      [menuv_menu close];
     }
 
   /* We went to the left of the current NSMenuView. BOOL is a misnomer. */
