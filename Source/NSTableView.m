@@ -3533,10 +3533,14 @@ byExtendingSelection: (BOOL)flag
     {
       float visible_width = [self convertRect: [_super_view bounds] 
 				  fromView: _super_view].size.width;
-      
-      float table_width = 
-	_columnOrigins[_numberOfColumns - 1] +
-	[[_tableColumns objectAtIndex: _numberOfColumns - 1] width];
+      float table_width = 0;
+
+      if(_numberOfColumns > 0)
+        {
+          table_width = 
+            _columnOrigins[_numberOfColumns - 1] +
+            [[_tableColumns objectAtIndex: _numberOfColumns - 1] width];
+        }
       
       /*
 	NSLog(@"columnOrigins[0] %f", _columnOrigins[0]);
