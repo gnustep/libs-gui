@@ -326,14 +326,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   return text;
 }
 
-+ (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
-	       documentAttributes: (NSDictionary **)dict
-{
-  return [self parseFile: wrapper 
-	       documentAttributes: dict 
-	       class: [NSMutableAttributedString class]];
-}
-
 + (NSAttributedString*) parseData: (NSData *)rtfData 
 	       documentAttributes: (NSDictionary **)dict
 			    class: (Class)class
@@ -347,14 +339,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   RELEASE(consumer);
 
   return text;
-}
-
-+ (NSAttributedString*) parseData: (NSData *)rtfData
-	       documentAttributes: (NSDictionary **)dict
-{
-  return [self parseData: rtfData
-	       documentAttributes: dict 
-	       class: [NSMutableAttributedString class]];
 }
 
 - (id) init
@@ -386,12 +370,13 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
 + (NSAttributedString*) parseData: (NSData *)rtfData 
 	       documentAttributes: (NSDictionary **)dict
+			    class: (Class)class
 {
   NSAttributedString *str;
   NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
 			     initWithSerializedRepresentation: rtfData];
   
-  str = [self parseFile: wrapper documentAttributes: dict];
+  str = [self parseFile: wrapper  documentAttributes: dict  class: class];
   RELEASE (wrapper);
 
   return str;
