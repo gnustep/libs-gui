@@ -1,3 +1,8 @@
+Thu Dec 17 13:20:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSWindow.m: Reinstated changes lost in last update (to fix
+	recursion problem on menu creation) and added acceptsFirstResponder.
+
 Wed Dec 16 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSWindow.m acceptsFirstResponder implement.
