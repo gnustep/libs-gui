@@ -1,3 +1,8 @@
+Tue Jan  8 13:58:11 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Tools/exampleInfo.plist: Added German translation of service
+	strings (Patch by Martin Brecher <martin@mb-itconsulting.com>).
+
 Mon Jan  7 17:35:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSApplication.h (_windows_menu): Changed to
