@@ -271,8 +271,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [sub_views addObject: aView];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
+  [aView setNeedsDisplay: YES];
   RELEASE(aView);
-  [self setNeedsDisplayInRect: [aView frame]];
 }
 
 - (void) addSubview: (NSView*)aView
@@ -310,8 +310,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     [sub_views insertObject: aView atIndex: index+1];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
+  [aView setNeedsDisplay: YES];
   RELEASE(aView);
-  [self setNeedsDisplayInRect: [aView frame]];
 }
 
 - (NSView*) ancestorSharedWithView: (NSView*)aView
@@ -423,13 +423,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       [window makeFirstResponder: window];
     }
+  [super_view setNeedsDisplayInRect: [self frame]];
   RETAIN(self);
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
     {
       super_view->_rFlags.has_subviews = 0;
     }
-  [super_view setNeedsDisplayInRect: [self frame]];
   super_view = nil;
   [self viewWillMoveToWindow: nil];
   RELEASE(self);
@@ -460,8 +460,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [sub_views addObject: newView];
       _rFlags.has_subviews = 1;
       [newView resetCursorRects];
+      [newView setNeedsDisplay: YES];
       RELEASE(newView);
-      [self setNeedsDisplayInRect: [newView frame]];
     }
   else if ([sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
     {
@@ -494,8 +494,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  [sub_views addObject: newView];
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
+	  [newView setNeedsDisplay: YES];
 	  RELEASE(newView);
-	  [self setNeedsDisplayInRect: [newView frame]];
 	}
     }
 }
