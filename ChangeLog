@@ -1,3 +1,12 @@
+Mon Dec  6 13:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Additional DPS operator for telling backend to mark a document
+	window as being edited/up-to-date.
+	* Source/NSGraphicsContext.m: Added DPSdocedited()
+	* Headers/AppKit/NSGraphicsContext.h: ditto
+	* Headers/AppKit/DPSOperators.h: ditto
+	* Headers/AppKit/GSMethodTable.h: ditto
+
 Sat Dec  4 19:41:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Additional DPS operator in preparation for fixing window code to

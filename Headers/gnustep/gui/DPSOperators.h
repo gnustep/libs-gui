@@ -1,7 +1,7 @@
 /* DPSOperators - Drawing engine operators that require context
 
    Copyright (C) 1999 Free Software Foundation, Inc.
-   Written by:  Richard frith-Macdonald <richard@brainstorm.co.uk>
+   Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Based on code by Adam Fedor
    Date: Feb 1999
    
@@ -914,6 +914,10 @@ __attribute__((unused));
 
 static inline void
 DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
+__attribute__((unused));
+
+static inline void
+DPSdocedited(GSCTXT *ctxt, int edited, int window)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
@@ -2441,6 +2445,13 @@ DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
 {
   (ctxt->methods->DPSstyleoffsets_____)
     (ctxt, @selector(DPSstyleoffsets:::::), l, r, t, b, style);
+}
+
+static inline void
+DPSdocedited(GSCTXT *ctxt, int edited, int window)
+{
+  (ctxt->methods->DPSdocedited__)
+    (ctxt, @selector(DPSdocedited::), edited, window);
 }
 
 /* ----------------------------------------------------------------------- */

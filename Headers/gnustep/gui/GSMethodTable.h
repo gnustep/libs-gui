@@ -497,6 +497,8 @@ typedef struct {
         (NSGraphicsContext*, SEL, float, float, float, float, float, float, void *);
   void (*DPSstyleoffsets_____)
         (NSGraphicsContext*, SEL, float*, float*, float*, float*, int);
+  void (*DPSdocedited__)
+        (NSGraphicsContext*, SEL, int, int);
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

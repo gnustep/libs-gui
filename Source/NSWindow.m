@@ -1436,6 +1436,7 @@ resetCursorRectsForView(NSView *theView)
 	{
 	  [NSApp updateWindowsItem: self];
 	}
+      DPSdocedited(GSCurrentContext(), flag, window_num);
     }
 }
 

@@ -807,6 +807,10 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSimagecursor:::::::));
   methodTable.DPSsetcursorcolor_______ = 
     GET_IMP(@selector(DPSsetcursorcolor:::::::));
+  methodTable.DPSstyleoffsets_____ = 
+    GET_IMP(@selector(DPSstyleoffsets:::::));
+  methodTable.DPSdocedited__ = 
+    GET_IMP(@selector(DPSdocedited::));
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */
@@ -1953,6 +1957,11 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPSstyleoffsets: (float *) r : (float *) l : (float *) t : (float *) b : (int) style ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSdocedited: (int) edited : (int) window ;
 {
   [self subclassResponsibility: _cmd];
 }
