@@ -557,6 +557,7 @@ _attributesAtIndexEffectiveRange(
   if (range.length == 0)
     {
       NSWarnMLog(@"Attempt to set attribute for zero-length range", 0);
+      return;
     }
   if (attributes == nil)
     {

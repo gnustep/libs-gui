@@ -1,3 +1,16 @@
+2003-03-03 14:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSTypesetter.h, Source/GSTypesetter.m: Removed
+	-relayoutGlyphsInLayoutManager:glyphRange:lineFragmentRect:
+	textContainer:previousLineFragmentRect:. It was broken by design,
+	and a working soft invalidation system is now in place.
+
+	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
+	Add and implement -typesetter and -setTypesetter:.
+
+	* Source/GSTextStorage.m (-setAttributes:range:): Handle zero-length
+	attribute changes correctly.
+
 2003-03-02  Ludovic Marcotte <ludovic@Sophos.ca>
 
 	* Source/NSComboBoxCell.m: Modified so that we no longer
