@@ -568,6 +568,8 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   id delegate;
   SEL *didRunSelector;
   NSMutableDictionary *dict;
+  void (*didRun)(id, SEL, BOOL, id);
+
   if (success == YES)
     {
       NSPrintPanel *panel = [self printPanel];
@@ -580,9 +582,9 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   dict = [_printInfo dictionary];
   didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
   delegate = [dict objectForKey: @"GSModalRunDelegate"];
-  [delegate performSelector: *didRunSelector
-                   withObject: success
-                   withObject: contextInfo];
+  didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
+						    *didRunSelector];
+  didRun (delegate, *didRunSelector, success, contextInfo);
 }
 
 /** Run a print operation modally with respect to a window.
