@@ -1,3 +1,14 @@
+2000-05-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* gui/Source/NSTabView.m: General tidyup, minro fixes, and implemented
+	([-takeSelectedTabViewItemFromSender:])
+
+2000-05-09 Georg Fleischmann
+
+	* gui/Source/NSTabView.m
+	([-initWithFram:]): retain tab_font
+	([-dealloc]): new method
+
 2000-05-07  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m:
