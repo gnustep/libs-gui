@@ -178,8 +178,18 @@ static IMRecord _maskTable[] = {
       [c setCharacter: [noModChars characterAtIndex: i]];
       [c setModifiers: modifierFlags];
 
+
       result = [keyBindingTable getSelectorFromCharacter: c
 						selector: &sel];
+#if !defined NDEBUG
+      NSLog(@"%@: <-- %@", self, c);
+
+      if (sel)
+	NSLog(@"%@: --> %@", self, NSStringFromSelector(sel));
+      else
+	NSLog(@"%@: --> %@", self, [c stringValue]);
+#endif
+
       switch (result)
 	{
 	case IMNotFound:
@@ -489,39 +499,39 @@ static IMRecord _maskTable[] = {
     }
   switch (character)
     {
-    case 001:	return @"NUL";
-    case 002:	return @"SOH";
-    case 003:	return @"STX";
-    case 004:	return @"ETX";
-    case 005:	return @"ENQ";
-    case 006:	return @"ACK";
-    case 007:	return @"BEL";
-    case 010:	return @"BS";
-    case 011:	return @"HT";
-    case 012:	return @"LF";
-    case 013:	return @"VT";
-    case 014:	return @"FF";
-    case 015:	return @"CR";
-    case 016:	return @"SO";
-    case 017:	return @"SI";
-    case 020:	return @"DLE";
-    case 021:	return @"DC1";
-    case 022:	return @"DC2";
-    case 023:	return @"DC3";
-    case 024:	return @"DC4";
-    case 025:	return @"NAK";
-    case 026:	return @"SYN";
-    case 027:	return @"ETB";
-    case 030:	return @"CAN";
-    case 031:	return @"EM";
-    case 032:	return @"SUB";
-    case 033:	return @"ESC";
-    case 034:	return @"FS";
-    case 035:	return @"GS";
-    case 036:	return @"RS";
-    case 037:	return @"US";
-    case 040:	return @"SPACE";
-    case 0177:	return @"DEL";
+    case 0x0001:    return @"NUL";
+    case 0x0002:    return @"SOH";
+    case 0x0003:    return @"STX";  /* NSEnterCharacter */
+    case 0x0004:    return @"ETX";
+    case 0x0005:    return @"ENQ";
+    case 0x0006:    return @"ACK";
+    case 0x0007:    return @"BEL";
+    case 0x0008:    return @"BS";   /* NSBackspaceCharacter */
+    case 0x0009:    return @"HT";   /* NSTabCharacter */
+    case 0x000a:    return @"LF";   /* NSNewlineCharacter */
+    case 0x000b:    return @"VT";
+    case 0x000c:    return @"FF";   /* NSFormFeedCharacter */
+    case 0x000d:    return @"CR";   /* NSCarriageReturnCharacter */
+    case 0x000e:    return @"SO";
+    case 0x000f:    return @"SI";
+    case 0x0010:    return @"DLE";
+    case 0x0011:    return @"DC1";
+    case 0x0012:    return @"DC2";
+    case 0x0013:    return @"DC3";
+    case 0x0014:    return @"DC4";
+    case 0x0015:    return @"NAK";
+    case 0x0016:    return @"SYN";
+    case 0x0017:    return @"ETB";
+    case 0x0018:    return @"CAN";
+    case 0x0019:    return @"EM";   /* NSBackTabCharacter */
+    case 0x001a:    return @"SUB";
+    case 0x001b:    return @"ESC";
+    case 0x001c:    return @"FS";
+    case 0x001d:    return @"GS";
+    case 0x001e:    return @"RS";
+    case 0x001f:    return @"US";
+    case 0x0020:    return @"SPACE";
+    case 0x007f:    return @"DEL";  /* NSDeleteCharaceter */
     }
   return [NSString stringWithCharacters: &character
 				 length: 1];
@@ -605,9 +615,9 @@ static IMRecord _maskTable[] = {
 	  [compiledKey setShiftKeyMask];
 	}
 
-      /* Why does NSTextView handle Delete so specially? */
       if ([aKey isEqualToString: @"\177"])
 	{
+	  /* N.B.: NSTextView regards Delete as a function key. */
 	  [compiledKey setFunctionKeyMask];
 	  [compiledKey setCharacter: NSDeleteFunctionKey];
 	}
