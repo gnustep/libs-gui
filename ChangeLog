@@ -1,3 +1,15 @@
+2004-03-22 18:06  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m (-lockFocusInRect:): Don't convert the clipping
+	rect to the window's coordinate system; the clip is done in the
+	view's coordinate system. Reported by Georg Fleischmann.
+
+	(convert_rect_using_matrices): New function that (correctly)
+	converts rectangles between views.
+
+	(-convertRect:fromView:, -convertRect:toView:): Reimplement using
+	convert_rect_using_matrices. Document.
+
 2004-03-22 02:00  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSAffineTransform.m (-rotationAngle): Correct the sign of

@@ -1223,47 +1223,89 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return new;
 }
 
-- (NSRect) convertRect: (NSRect)aRect fromView: (NSView*)aView
+
+/* Helper for -convertRect:fromView: and -convertRect:toView:. */
+static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
+					  NSAffineTransform *matrix2)
 {
-  NSAffineTransform	*matrix;
-  NSRect	r;
+  NSRect r;
+  NSPoint p[4], min, max;
+  int i;
 
-  if (aView == nil)
-    {
-      aView = [[_window contentView] superview];
-    }
-  if (aView == self || aView == nil)
-    {
-      return aRect;
-    }
-  NSAssert(_window == [aView window], NSInvalidArgumentException);
+  for (i = 0; i < 4; i++)
+    p[i] = aRect.origin;
+  p[1].x += aRect.size.width;
+  p[2].y += aRect.size.height;
+  p[3].x += aRect.size.width;
+  p[3].y += aRect.size.height;
 
-  matrix = [aView _matrixToWindow];
-  r.origin = [matrix pointInMatrixSpace: aRect.origin];
-  r.size = [matrix sizeInMatrixSpace: aRect.size];
+  for (i = 0; i < 4; i++)
+    p[i] = [matrix1 pointInMatrixSpace: p[i]];
 
-  if (_coordinates_valid)
+  min = max = p[0] = [matrix2 pointInMatrixSpace: p[0]];
+  for (i = 1; i < 4; i++)
     {
-      matrix = _matrixFromWindow;
+      p[i] = [matrix2 pointInMatrixSpace: p[i]];
+      min.x = MIN(min.x, p[i].x);
+      min.y = MIN(min.y, p[i].y);
+      max.x = MAX(max.x, p[i].x);
+      max.y = MAX(max.y, p[i].y);
     }
-  else
-    {
-      matrix = [self _matrixFromWindow];
-    }
-  r.origin = [matrix pointInMatrixSpace: r.origin];
-  r.size = [matrix sizeInMatrixSpace: r.size];
 
-  if (aView->_rFlags.flipped_view  != _rFlags.flipped_view)
-    {
-      r.origin.y -= r.size.height;
-    }
+  r.origin = min;
+  r.size.width = max.x - min.x;
+  r.size.height = max.y - min.y;
+
   return r;
 }
 
+/**
+ * Converts aRect from the coordinate system of aView to the coordinate
+ * system of the receiver, ie. returns the bounding rectangle in the
+ * receiver of aRect in aView.
+ * <br />
+ * aView and the receiver must be in the same window. If aView is nil,
+ * converts from the receiver's window's coordinate system.
+ */
+- (NSRect) convertRect: (NSRect)aRect fromView: (NSView*)aView
+{
+  NSAffineTransform *matrix1, *matrix2;
+
+  if (aView == nil)
+    {
+      aView = [[_window contentView] superview];
+    }
+  if (aView == self || aView == nil)
+    {
+      return aRect;
+    }
+  NSAssert(_window == [aView window], NSInvalidArgumentException);
+
+  matrix1 = [aView _matrixToWindow];
+
+  if (_coordinates_valid)
+    {
+      matrix2 = _matrixFromWindow;
+    }
+  else
+    {
+      matrix2 = [self _matrixFromWindow];
+    }
+
+  return convert_rect_using_matrices(aRect, matrix1, matrix2);
+}
+
+/**
+ * Converts aRect from the coordinate system of the receiver to the
+ * coordinate system of aView, ie. returns the bounding rectangle in
+ * aView of aRect in the receiver.
+ * <br />
+ * aView and the receiver must be in the same window. If aView is nil,
+ * converts to the receiver's window's coordinate system.
+ */
 - (NSRect) convertRect: (NSRect)aRect toView: (NSView*)aView
 {
-  NSAffineTransform	*matrix;
-  NSRect	r;
+  NSAffineTransform *matrix1, *matrix2;
 
   if (aView == nil)
     {
@@ -1277,24 +1319,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_coordinates_valid)
     {
-      matrix = _matrixToWindow;
+      matrix1 = _matrixToWindow;
     }
   else
     {
-      matrix = [self _matrixToWindow];
+      matrix1 = [self _matrixToWindow];
     }
-  r.origin = [matrix pointInMatrixSpace: aRect.origin];
-  r.size = [matrix sizeInMatrixSpace: aRect.size];
 
-  matrix = [aView _matrixFromWindow];
-  r.origin = [matrix pointInMatrixSpace: r.origin];
-  r.size = [matrix sizeInMatrixSpace: r.size];
+  matrix2 = [aView _matrixFromWindow];
 
-  if (aView->_rFlags.flipped_view  != _rFlags.flipped_view)
-    {
-      r.origin.y -= r.size.height;
-    }
-  return r;
+  return convert_rect_using_matrices(aRect, matrix1, matrix2);
 }
 
 - (NSSize) convertSize: (NSSize)aSize fromView: (NSView*)aView
@@ -1597,10 +1631,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       NSAffineTransform *matrix;
       matrix = [self _matrixToWindow];
-      if ([matrix isRotated])
-	{
-	  [matrix boundingRectFor: rect result: &rect];
-	}
 
       if (_gstate)
 	{
