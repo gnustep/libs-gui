@@ -93,6 +93,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
       /* Should make up 23 for the default font */
       height = ([font boundingRectForFont].size.height) + 8;
+      if (height < 23)
+	height = 23;
     }
 
   return height;
@@ -656,7 +658,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   else
     {
-      [self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
+      [self setFrameSize: NSMakeSize(((howMany + 1) * _cellSize.width), 
 				     _cellSize.height + _leftBorderOffset)];
       [_titleView setFrame: NSMakeRect (0, 0,
 					_cellSize.width, _cellSize.height + 1)];
@@ -752,7 +754,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   else
     {
-      theRect.origin.x = _cellSize.width * index;
+      theRect.origin.x = _cellSize.width * (index + 1);
       theRect.origin.y = 0;
     }
   theRect.size = _cellSize;
@@ -1366,7 +1368,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	      withObject: self];
 
   [decoder decodeValueOfObjCType: @encode(id) at: &_font];
-  // FIXME: horizontal orientation related code shoul be removed
+  // FIXME: should be leaved even if horizontal menu code should be removed
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
   [decoder decodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
@@ -1466,11 +1468,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSPoint		lastLocation;
-  NSPoint		location;
-  unsigned	eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-  BOOL		done = NO;
-  NSDate		*theDistantFuture = [NSDate distantFuture];
+  NSPoint  lastLocation;
+  NSPoint  location;
+  NSPoint  oldOrigin;
+  NSPoint  newOrigin;
+  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask 
+                       | NSMouseMovedMask;
 
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
@@ -1478,38 +1481,51 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   if (![menu isTornOff] && [menu supermenu])
     {
-        [menu setTornOff: YES];
+      [menu setTornOff: YES];
     }
 
-  while (!done)
+  oldOrigin = [_window frame].origin;
+
+  while ([theEvent type] != NSLeftMouseUp)
     {
+      /* Inner loop that gets and (quickly) handles all events that have
+       * already arrived.*/
+      while (theEvent && [theEvent type] != NSLeftMouseUp)
+	{
+	  location = [_window convertBaseToScreen:
+	    [theEvent locationInWindow]];
+	  //	  location = [_window convertBaseToScreen: location];
+	  /* Note the event here. Don't do any expensive handling. 
+	   * Only get events that have already a$. */
+	  theEvent = [NSApp nextEventMatchingMask: eventMask
+	                                untilDate: [NSDate distantPast]
+	                                   inMode: NSEventTrackingRunLoopMode
+	                                  dequeue: YES];
+	} 
+
+      if ([theEvent type] == NSLeftMouseUp)
+	break;
+
+      /* Location is position of the cursor in screen coordinate system.
+	 lastLocation is the position of the cursor in the window. Thus, 
+	 we want the origin to satisfy origin+lastLocation=location: */
+      newOrigin.x = location.x - lastLocation.x;
+      newOrigin.y = location.y - lastLocation.y;
+
+      /* No more events right now. Do expensive handling, 
+	 like drawing, here. */
+      if (NSEqualPoints(oldOrigin, newOrigin) == NO)
+	{
+	  oldOrigin = newOrigin;
+	  [menu nestedSetFrameOrigin: newOrigin];
+	}
+
+      /* Get the next event, blocking if necessary.
+       * No limit, block until we get an event. */
       theEvent = [NSApp nextEventMatchingMask: eventMask
-        untilDate: theDistantFuture
-        inMode: NSEventTrackingRunLoopMode
-        dequeue: YES];
-
-      switch ([theEvent type])
-        {
-        case NSRightMouseUp:
-        case NSLeftMouseUp: 
-          done = YES; 
-          break;
-        case NSRightMouseDragged:
-        case NSLeftMouseDragged:   
-          location = [_window mouseLocationOutsideOfEventStream];
-          if (NSEqualPoints(location, lastLocation) == NO)
-            {
-              NSPoint origin = [_window frame].origin;
-
-              origin.x += (location.x - lastLocation.x);
-              origin.y += (location.y - lastLocation.y);
-              [menu nestedSetFrameOrigin: origin];
-            }
-          break;
-
-        default: 
-          break;
-        }
+	                            untilDate: nil 
+	                               inMode: NSEventTrackingRunLoopMode
+	                              dequeue: YES];
     }
 }
 

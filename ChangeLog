@@ -1,15 +1,20 @@
 2003-04-09  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSMenuView.m: return back horizontal menu code.
-	(sizeToFit): ditto.
+	(sizeToFit): ditto. Take into account title view's width when
+	calculating horizontal menu frame. 
 	(innerRect): ditto.
-	(rectOfItemAtIndex:): ditto.
+	(rectOfItemAtIndex:): ditto. Take into account title view's width 
+	when calculating placement of menu item in horizontal menu.
 	(locationForSubmenu:): ditto.
 	(setWindowFrameForAttachingToRect:): ditto.
 	(encodeWithCoder:): ditto.
 	(initWithCoder:): ditto.
 	(setHorizontal:): added.
 	(isHorizontal): added.
+	
+	([NSMenuWindowTitleView mouseDown]): Event loop changed to 
+	Michael Hanni's version.
 
 	* Headers/NSMenuView.h:
 	(setHorizontal:): added.
