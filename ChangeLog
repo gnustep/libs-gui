@@ -1,3 +1,14 @@
+2002-09-22 16:26  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSFontPanel.m (-init): Set sane defaults _before_ trying
+	to set values for the current font.
+
+	Move code to select a certain size in the size browser to
+	-_trySelectSize:. Update the size in the preview and the browser
+	when the size text field changes.
+
+	Mark private variables and constants as static.
+
 2002-09-22 01:23  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSView.h, Source/NSPanel.m, Source/NSText.m,

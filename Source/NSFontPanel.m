@@ -66,10 +66,10 @@ static inline void _setFloatValue (NSTextField *field, float size)
 }
 
 
-NSText *sizeFieldText = nil;
+static NSText *sizeFieldText = nil;
 
-float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 
-		 14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
+static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
+			14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
 
 /* Implemented in NSBrowser */
 @interface GSBrowserTitleCell : NSTextFieldCell
@@ -79,6 +79,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @interface NSFontPanel (Private)
 - (NSFont*) _fontForSelection: (NSFont*) fontObject;
+
+-(void) _trySelectSize: (float)size;
 
 // Some action methods
 - (void) cancel: (id) sender;
@@ -130,10 +132,10 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   //  if (![NSBundle loadNibNamed: @"FontPanel" owner: self]);
   [self _initWithoutGModel];
 
-  [self reloadDefaultFontFamilies];
   ASSIGN(_faceList, [NSArray array]);
   _face = -1;
   _family = -1;
+  [self reloadDefaultFontFamilies];
 
   return self;
 }
@@ -211,7 +213,6 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       NSString *fontName = [fontObject fontName];
       float size = [fontObject pointSize];
       NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
-      NSBrowser *sizeBrowser = [[self contentView] viewWithTag: NSFPSizeBrowser];
       NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
       NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
       NSString *face = @"";
@@ -252,13 +253,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
       // show point size and select the row if there is one
       _setFloatValue (sizeField, size);
-      for (i = 0; i < sizeof(sizes)/sizeof(float); i++)
-	{
-	  if (size == sizes[i])
-	    {
-	      [sizeBrowser selectRow: i inColumn: 0];
-	    }
-	}
+      [self _trySelectSize: size];
 
       // Use in preview
       [previewArea setFont: fontObject];
@@ -518,6 +513,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [sizeField setAlignment: NSCenterTextAlignment];
   [sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
   [sizeField setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
+  [sizeField setDelegate: self];
   [sizeField setTag: NSFPSizeField];
   [bottomSplit addSubview: sizeField];
   RELEASE(sizeField);
@@ -732,7 +728,36 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // FIXME: We should check if the font is correct
   return [NSFont fontWithName: fontName size: size];
 }
- 
+
+
+-(void) _trySelectSize: (float)size
+{
+  int i;
+  NSBrowser *sizeBrowser = [[self contentView] viewWithTag: NSFPSizeBrowser];
+
+  for (i = 0; i < sizeof(sizes) / sizeof(float); i++)
+    {
+      if (size == sizes[i])
+	{
+	  [sizeBrowser selectRow: i inColumn: 0];
+	  break;
+	}
+    }
+  if (i == sizeof(sizes) / sizeof(float))
+    {
+      /* TODO: No matching size found in the list. We should deselect
+      everything. */
+    }
+}
+
+- (void) controlTextDidChange: (NSNotification *)n
+{
+  NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+  float size = [sizeField floatValue];
+  [self _trySelectSize: size];
+  [self _doPreview];
+}
+
 @end
 
 
