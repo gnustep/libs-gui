@@ -1,4 +1,4 @@
-2000-11-06  Fred Kiefer  <FredKiefer@gmx.de>
+2000-11-12  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m: Renamed the ivars of
 	_GNULineLayoutInfo to correspond to those of
