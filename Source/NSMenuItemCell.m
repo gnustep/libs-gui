@@ -99,7 +99,7 @@ static NSImage	*arrowImageH = nil;
       [controlView lockFocus];
 
       mcell_highlighted = flag;
-      [self drawInteriorWithFrame: cellFrame inView: controlView];
+      [self drawInteriorWithFrame: cellFrame  inView: controlView];
 
       [controlView unlockFocus];
     }
