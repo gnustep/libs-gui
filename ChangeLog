@@ -1,3 +1,11 @@
+Tue Oct 19 11:33:46 1999  Lyndon Tremblay  <humasect@coolmail.com>
+
+	* Source/NSMenuView.m: ([-sizeToFit]) added handling for title width.
+	([-setTitleWidth:]) new private function called by NSMenu to
+	make the menu not get smaller than menu title.
+	* Source/NSMenu.m: (-[sizeToFit]) added handling for title width.
+	* Headers/AppKit/NSMenuView.h: added declaration for -setTitleWidth.
+	
 Tue Oct 19  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-terminate:]) modification based on

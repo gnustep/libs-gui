@@ -60,6 +60,7 @@
   float menuv_keyEqWidth;
   BOOL menuv_needsSizing;
   NSSize cellSize;
+  float i_titleWidth;
 @private
   id menuv_popb;
   id menuv_items_link;
@@ -117,6 +118,7 @@
             cellSize: (NSSize)aSize;
 - (void) setPopUpButton: (NSPopUpButton *)popb;
 - (NSPopUpButton *) popupButton;
+- (void)setTitleWidth:(float)titleWidth;
 @end
 
 #endif

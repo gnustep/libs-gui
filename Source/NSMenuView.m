@@ -59,13 +59,14 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (id)initWithFrame: (NSRect)aFrame
 {
   cellSize = NSMakeSize(110,20);
+  i_titleWidth = 110;
   menuv_highlightedItemIndex = -1;
 
   return [super initWithFrame: aFrame];
 }
 
 - (id)initWithFrame: (NSRect)aFrame
-	   cellSize: (NSSize)aSize
+ 	   cellSize: (NSSize)aSize
 {
   [self initWithFrame:aFrame];
 
@@ -315,12 +316,23 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return menuv_needsSizing;
 }
 
+/*
+================
+-setTitleWidth:
+================
+*/
+- (void)setTitleWidth:(float)titleWidth
+{
+  i_titleWidth = titleWidth;
+  [self sizeToFit];
+}
+
 - (void)sizeToFit
 {
   int i;
   int howMany = [menuv_items_link count];
   int howHigh = (howMany * cellSize.height);
-  float neededWidth = 0;
+  float neededWidth = i_titleWidth;
 
   for (i=0;i<howMany;i++)
   {
@@ -901,7 +913,7 @@ cell do the following */
 
 -(void) performKeyEquivalent: (NSEvent *)theEvent
 {
-  return [menuv_menu performKeyEquivalent: theEvent];
+  [menuv_menu performKeyEquivalent: theEvent];
 }
 
 @end

@@ -77,6 +77,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 - (id) init
 {
   return [self initWithTitle: @"Menu"];
+  //return self;
 }
 
 - (id) initWithPopUpButton: (NSPopUpButton *)popb
@@ -134,6 +135,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
   NSApplication* theApp = [NSApplication sharedApplication];
   NSRect winRect = {{0, 0}, {20, 17}};
+  //float titleWidth = 0;
 
   [super init];
 
@@ -366,7 +368,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
-  // FIXME should raise an exception if out of range.
+  if (index >= [menu_items count] || index < 0)
+	[NSException raise:NSRangeException format:@"menu index %i out of range",
+	index];
   return [menu_items objectAtIndex: index];
 }
 
@@ -717,8 +721,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   NSRect mFrame;
   NSSize size;
 
-  [menu_view sizeToFit];
-  
+
+  //-setTitleWidth: ends up calling -sizeToFit.
+  [menu_view setTitleWidth:[[NSFont systemFontOfSize:12] widthOfString:menu_title]];
   mFrame = [menu_view frame];
 
   size.width = mFrame.size.width;
