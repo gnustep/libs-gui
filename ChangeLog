@@ -1,3 +1,8 @@
+Wed Jun 19 15:54:39 2002  Georg Fleischmann <georg@vhf.de>
+
+	* Source/NSMenu.m ([-performActionForItemAtIndex:]): Select item
+	for any kind of popup action.
+
 2002-06-17  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Vague attempt to improve locating of apps
