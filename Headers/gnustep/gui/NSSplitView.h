@@ -5,8 +5,8 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author:  Robert Vasvari <vrobi@ddrummer.com>
+   Date: Jul 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,50 +29,54 @@
 #ifndef _GNUstep_H_NSSplitView
 #define _GNUstep_H_NSSplitView
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
-@class NSString;
-@class NSNotification;
+@class NSImage, NSColor, NSNotification;
 
-@interface NSSplitView : NSView <NSCoding>
+@interface NSSplitView : NSView
 {
-  // Attributes
+  id	delegate;
+  int dividerWidth, draggedBarWidth;
+  id splitCursor;
+  BOOL isVertical;
+  NSImage *dimpleImage;
+  NSColor *backgroundColor, *dividerColor;
 }
 
-//
-// Managing Component Views 
-//
-- (void)adjustSubviews;
-- (float)dividerThickness;
-- (void)drawDividerInRect:(NSRect)aRect;
+- (void) setDelegate: (id)anObject;
+- (id) delegate;
+- (void) adjustSubviews;
+- (void) drawDividerInRect: (NSRect)aRect;
 
-//
-// Assigning a Delegate 
-//
-- (id)delegate;
-- (void)setDelegate:(id)anObject;
+- (void) setVertical: (BOOL)flag;	/* Vertical splitview has a vertical split bar */ 
+- (BOOL) isVertical;
 
-//
-// Implemented by the Delegate 
-//
-- (void)splitView:(NSSplitView *)splitView
-  constrainMinCoordinate:(float *)min
-  maxCoordinate:(float *)max
-  ofSubviewAt:(int)offset;
-- (void)splitView:(NSSplitView *)sender
-  resizeSubviewsWithOldSize:(NSSize)oldSize;
-- (void)splitViewDidResizeSubviews:(NSNotification *)notification;
-- (void)splitViewWillResizeSubviews:(NSNotification *)notification;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/* extra methods to make it more usable */
+- (float) dividerThickness;  //defaults to 8
+- (void) setDividerThickNess: (float)newWidth;
+- (float) draggedBarWidth;
+- (void) setDraggedBarWidth: (float)newWidth;
+/* if flag is yes, dividerThickness is reset to the height/width of the dimple
+   image + 1;
+*/
+- (void) setDimpleImage: (NSImage *)anImage resetDividerThickness: (BOOL)flag;
+- (NSImage *) dimpleImage;
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)aColor;
+- (NSColor *) dividerColor;
+- (void) seDividerColor: (NSColor *)aColor;
 
 @end
 
+@interface NSObject(NSSplitViewDelegate)
+- (void) splitView: (RBSplitView *)sender resizeSubviewsWithOldSize: (NSSize)oldSize;
+- (void) splitView: (RBSplitView *)sender constrainMinCoordinate: (float *)min maxCoordinate: (float *)max ofSubviewAt: (int)offset;
+- (void) splitViewWillResizeSubviews: (NSNotification *)notification;
+- (void) splitViewDidResizeSubviews: (NSNotification *)notification;
+@end
+
+/* Notifications */
 extern NSString *NSSplitViewDidResizeSubviewsNotification;
 extern NSString *NSSplitViewWillResizeSubviewsNotification;
 
-#endif // _GNUstep_H_NSSplitView
+#endif

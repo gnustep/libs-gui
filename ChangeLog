@@ -1,16 +1,26 @@
+Tue Jul 28 13:02:43 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Source/NSSplitView.m: Implemention from Robert Vasvari
+	<vrobi@ddrummer.com>. 
+	* Headers/gnustep/gui/NSSplitView.h: Likewise.
+
 Tues July 28 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
-	* NSScroller.m in trackScrollButtons method added code to highlight cell 
-		prior to calling trackMouse.  In keeping with new behaviour of NSCell.
+	* NSScroller.m in trackScrollButtons method added code to
+ 	highlight cell prior to calling trackMouse.  In keeping with new
+ 	behaviour of NSCell.
 
 Sat July 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
-	* NSCell.m removed highlight/unhighlight behaviour from trackMouse method
-		per OS spec.  Behaviour is now as described for this method in 
-		NSControl, NSMatrix and NSCell.
-	* NSMatrix.m: rewrote mouseDown to more closely follow the OS spec.  There
-		are still some very subtle differences.
-	* NSButton.m: now highlights it's cell before invoking Cell's trackMouse.
+	* NSCell.m removed highlight/unhighlight behaviour from trackMouse
+ 	method per OS spec.  Behaviour is now as described for this method
+ 	in NSControl, NSMatrix and NSCell.
+
+	* NSMatrix.m: rewrote mouseDown to more closely follow the OS
+ 	spec.  There are still some very subtle differences.
+
+	* NSButton.m: now highlights it's cell before invoking Cell's
+ 	trackMouse.
 
 Mon Jul 20 10:37:22 1998  Adam Fedor  <fedor@ultra.doc.com>
 
