@@ -1292,6 +1292,14 @@ container
 
   NSGraphicsContext *ctxt = GSCurrentContext();
 
+  /*
+  For performance, it might (if benchmarks or profiling backs it up) be
+  worthwhile to cache this across calls to this method. However, this
+  color can change at runtime, so care would have to be taken to keep the
+  cache in sync with the actual color.
+  */
+  NSColor *defaultTextColor = [NSColor textColor];
+ 
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
   int gbuf_len;
@@ -1330,13 +1338,9 @@ container
   attributes = [_textStorage attributesAtIndex: char_pos
 			     effectiveRange: NULL];
   color = [attributes valueForKey: NSForegroundColorAttributeName];
-  if (color)
-    [color set];
-  else
-    {
-      DPSsetgray(ctxt, 0.0);
-      DPSsetalpha(ctxt, 1.0);
-    }
+  if (!color)
+    color = defaultTextColor;
+  [color set];
   f = glyph_run->font;
   [f set];
 
@@ -1378,6 +1382,8 @@ container
 	  attributes = [_textStorage attributesAtIndex: char_pos
 				     effectiveRange: NULL];
 	  new_color = [attributes valueForKey: NSForegroundColorAttributeName];
+	  if (!new_color)
+	    new_color = defaultTextColor;
 	  glyph = glyph_run->glyphs;
 	  if (glyph_run->font != f || new_color != color)
 	    {
@@ -1391,13 +1397,7 @@ container
 	      if (color != new_color)
 		{
 		  color = new_color;
-		  if (color)
-		    [color set];
-		  else
-		    {
-		      DPSsetgray(ctxt, 0.0);
-		      DPSsetalpha(ctxt, 1.0);
-		    }
+		  [color set];
 		}
 	      if (f != glyph_run->font)
 		{

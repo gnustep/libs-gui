@@ -1,3 +1,9 @@
+2003-11-01 18:19  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
+	If a range of glyphs has no color set, use the default text color
+	(as returned by [NSColor textColor]) instead of assuming black.
+
 2003-10-30 00:38  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSImage.m (iterate_reps_for_types, repd_for_rep): Make
