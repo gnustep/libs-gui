@@ -35,6 +35,48 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 
+
+/*
+ * Return the biggest integral (in device space) rect contained in rect. 
+ * Conversion to/from device space is done using view.
+ *
+ */
+static inline NSRect integralRect (NSRect rect, NSView *view)
+{
+  NSRect output;
+  int rounded;
+  
+  output = [view convertRect: rect  toView: nil];
+
+  rounded = (int)(output.origin.x);
+  if ((float)rounded != output.origin.x)
+    {
+      output.origin.x = rounded + 1;
+    }
+
+  rounded = (int)(output.origin.y);
+  if ((float)rounded != output.origin.y)
+    {
+      output.origin.y = rounded + 1;
+    }
+  
+  rounded = (int)(NSMaxX (output));
+  if ((float)rounded != NSMaxX (output))
+    {
+      output.size.width = rounded - output.origin.x;
+    }
+  
+  rounded = (int)(NSMaxY (output));
+  if ((float)rounded != NSMaxY (output))
+    {
+      output.size.height = rounded - output.origin.y;
+    }
+
+  return [view convertRect: output  fromView: nil];
+}
+
+
+
 @implementation NSClipView
 
 - (id) init
@@ -158,6 +200,10 @@
 	 can't copy bits which have been clipped (ie discarded) */
       intersection = NSIntersectionRect (intersection, [self visibleRect]);
 
+      /* Copying is done in device space so we only can copy by
+	 integral rects in device space - adjust our copy rect */
+      intersection = integralRect (intersection, self);
+
       /* At this point, intersection is the rectangle containing the
 	 image we can recycle from the old to the new situation.  We
 	 must not make any assumption on its position/size, because it
@@ -179,13 +225,21 @@
 	  float dy = newBounds.origin.y - originalBounds.origin.y;
 	  NSRect redrawRect;
 	  
+	  /* It is assumed these dx and dy will be integer in device
+	     space because they are the difference of the bounds
+	     origins, both of which should be integers in device space
+	     because of the code at the end of
+	     constrainScrollPoint:. */
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
-	  [self lockFocus];
-	  
-	  /* FIXME! copy only an integral rect in device space */
-	  NSCopyBits (0, intersection, destPoint);
 
+	  /* Now copy ! */
+	  [self lockFocus];
+	  /* NB: Because of all the previous comments, we are sure the
+             following is copying an integer rectangle by an integer
+             amount (`integer' in device space) - which should cause
+             no problems */
+	  NSCopyBits (0, intersection, destPoint);
 	  [self unlockFocus];
 
 	  /* Change coordinate system to the new one */
@@ -302,8 +356,11 @@
       new.y = NSMaxY(documentFrame) - _bounds.size.height;
     }
 
-  // make it an integer coordinate in device space
-  // to avoid some nice effects when scrolling
+  /* Make it an integer coordinate in device space - this is to make
+     sure that when the coordinates are changed and we need to copy to
+     do the scrolling, the difference is an integer and so we can copy
+     the image translating it by an integer in device space - and not
+     by a float. */
   new = [self convertPoint: new  toView: nil];
   new.x = (int)new.x;
   new.y = (int)new.y;
