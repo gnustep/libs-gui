@@ -1,3 +1,11 @@
+Thu Feb 21 11:01:43 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSApplication.m ([-changeWindowsItem:title:filename:]):
+	Only exit if the item exists with the same title as the one we
+	would add, otherwise, remove the old one and add it again to
+	permit changing window titles.  Fixed case of window being changed
+	from having a title to having no title.
+	
 Wed Feb 20 20:57:32 2002  Michael Hanni <mhanni@yahoo.com>
 
 	* Source/NSApplication.m ([-changeWindowsItem:]): If the item in
