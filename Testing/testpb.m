@@ -1,5 +1,7 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <AppKit/NSPasteboard.h>
 
 @interface	pbOwner : NSObject
@@ -19,7 +21,7 @@
 	    int		len;
 	    NSData*		d;
 
-	    ptr = [s cStringNoCopy];
+	    ptr = [s cString];
 	    len = strlen(ptr);
 	    d = [NSData dataWithBytes: ptr length: len];
     	    [pb setData: d forType: type];

@@ -35,6 +35,6 @@ testpb_OBJC_FILES = testpb.m
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/test.make
+include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/test-tool.make
 
 -include GNUmakefile.postamble

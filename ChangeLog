@@ -1,3 +1,8 @@
+Fri Jan  9 14:06:57 1998  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Model/GNUmakefile: Copy the header files to the AppKit directory
+	first.
+
 Fri Jan  9 12:25:41 1998  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Headers/gnustep/gui/NSImageView.h: New file.
