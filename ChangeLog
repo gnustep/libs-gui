@@ -1,3 +1,73 @@
+2001-03-27  Frederic De Jaeger  <dejaeger@free.fr>
+
+        * Tools/Functions.m: remove some dummy functions that are useless
+        now. 
+
+	* Source/NSWindow.m: remove GSWraps.h 
+	* Source/NSView.m: idem
+
+	* Source/NSScreen.m: removed declaration of
+	GSWindowDepthForScreen and GSAvailableDepthsForScreen.
+	include AppKit/NSView.h
+
+	* Source/NSGraphicsContext.m ([NSGraphicsContext
+	+_initializeMethodTable]): fill the gsMethodTable with the address
+	of the new methods
+	Dummy implementation of all the following functions :
+		NSEraseRect
+		NSHighlightRect
+		NSRectClip
+		NSRectClipList
+		NSRectFill
+		NSRectFillList
+		NSRectFillListWithGrays
+		NSDrawButton
+		NSDrawGrayBezel
+		NSDrawBezel
+		NSDrawGroove
+		NSDrawTiledRects
+		NSDrawWhiteBezel
+		NSDottedFrameRect
+		NSFrameRect
+		NSFrameRectWithWidth
+	        NSReadPixel
+	        NSCopyBitmapFromGState
+	        NSCopyBits
+		NSDrawBitmap
+		NSBeep
+		GSWDefineAsUserObj
+		GSWViewIsFlipped
+		GSWindowDepthForScreen
+		GSAvailableDepthsForScreen
+		+initializeBackend
+
+        * Source/NSApplication.m: 
+        (initialize_gnustep_backend): load the backend bundle if it is
+        compiled with -DBACKEND_BUNDLE and initialize it. By defaults, only
+	loads libgnustep-xgps, can be overrident with the GSBackend default. 
+	Only initialize the backend otherwise.
+
+        * Source/GNUmakefile.preamble (ADDITIONAL_CPPFLAGS): add
+        -DBACKEND_BUNDLE=1 in case we want the backend as a bundle.
+	
+	* Source/GNUmakefile (libgnustep-gui_HEADER_FILES): remove
+	GSWraps.h, add GStype.h
+
+	* Headers/AppKit/NSGraphicsContext.h: NSGraphicsContext(Ops)
+	  add some methods that implements some functions of NSGraphics.
+	  declare +initializeBackend.
+
+	* Headers/AppKit/NSGraphics.h (NSEraseRect): Replace declaration
+	of a bunch of backend dependant functions by inline definition of
+	stubs that call the new method define in NSGraphicsContext.m. The
+	call is done with a cached address of the method.
+
+	* Headers/AppKit/GSWraps.h: removed.
+
+	* Headers/AppKit/GSMethodTable.h: include AppKit/GStype.h,
+	add method that correspond to functions that are define in
+	AppKit/NSGraphics.h
+
 Thu Apr 12 15:09:34 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Model/GMArchiver.m ([GMUnarchiver

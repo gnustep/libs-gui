@@ -45,6 +45,9 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSUserDefaults.h>
+/*GG :
+ */
+#include <Foundation/NSBundle.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
 # include <Foundation/NSConnection.h>
@@ -70,6 +73,7 @@
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpPanel.h>
+
 
 /*
  * Base library exception handler
@@ -121,6 +125,62 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   /* The user said to go on - more fun I guess - turn the AppKit
      exception handler on again */
   NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+}
+
+/* GG :
+ */
+
+@interface GSBackend : NSGraphicsContext
+{}
++ (void) initializeBackend;
+@end
+
+BOOL
+initialize_gnustep_backend(void)
+{
+  static int first = 1;
+
+  if( first )
+    {
+
+      first = 0;
+#ifdef BACKEND_BUNDLE
+      {      
+	NSBundle *theBundle;
+	NSEnumerator *benum;
+	NSString *path, *bundleName;
+	NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+
+	/* What backend ? */
+	bundleName = [defs stringForKey: @"GSBackend"];
+	if ( bundleName == nil )
+	  bundleName = @"libgnustep-xgps.bundle";
+	else
+	  bundleName = [bundleName stringByAppendingString: @".bundle"];
+	NSDebugFLLog(@"BackendBundle", @"Looking for %@", bundleName);
+
+	/* Find the backend bundle */
+	benum = [NSStandardLibraryPaths() objectEnumerator];
+	while ((path = [benum nextObject]))
+	  {
+	    path = [path stringByAppendingPathComponent: @"Bundles"];
+	    path = [path stringByAppendingPathComponent: bundleName];
+	    if ([[NSFileManager defaultManager] fileExistsAtPath: path])
+	      break;
+	    path = nil;
+	  }
+	NSCAssert(path != nil, @"Unable to load backend, aborting");
+	NSDebugLog(@"Loading Backend from %@", path);
+
+	theBundle = [NSBundle bundleWithPath: path];
+	NSCAssert(theBundle != nil, @"Can't init backend bundle");
+	[[theBundle classNamed: @"GSBackend"] initializeBackend];
+      }
+#else
+      [GSBackend initializeBackend];
+#endif
+    }
+  return YES;
 }
 
 /*
@@ -411,6 +471,9 @@ static NSCell* tileCell = nil;
        our window server, so if someone wants to query information that might
        require the backend, they just need to instantiate a sharedApplication
     */
+
+    /* GG : Load the xgps bundle
+     */
     initialize_gnustep_backend();
 
     self = [super init];

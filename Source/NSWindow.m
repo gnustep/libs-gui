@@ -63,7 +63,6 @@
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
-#include <AppKit/GSWraps.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 

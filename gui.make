@@ -1,4 +1,4 @@
-#
+# -*-makefile-*-
 #   gui.make
 #
 #   Makefile flags and configs to build with the gui library.

@@ -34,8 +34,9 @@
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSSet.h>
 
-#include <AppKit/GSMethodTable.h>
 #include <AppKit/NSDragging.h>
+#include <AppKit/GSMethodTable.h>
+
 
 @class NSDate;
 @class NSDictionary;
@@ -45,6 +46,9 @@
 @class NSString;
 @class NSView;
 @class NSWindow;
+@class NSGraphicsContext;
+
+
 
 /*
  * Backing Store Types
@@ -166,7 +170,8 @@ NSGraphicsContext	*GSCurrentContext();
  */
 
 @interface NSGraphicsContext (Ops)
-
+/* initialize the backend */
++ (void)initializeBackend;
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -438,6 +443,70 @@ NSGraphicsContext	*GSCurrentContext();
 
 - (void) DPScurrentserverdevice: (void **)serverptr;
 - (void) DPScurrentwindowdevice: (int)win : (void **)windowptr;
+
+/* ----------------------------------------------------------------------- */
+/* NSGraphics Ops */	
+/* ----------------------------------------------------------------------- */
+/*
+ * Rectangle Drawing Functions
+ */
+- (void) NSEraseRect: (NSRect) aRect;
+- (void) NSHighlightRect: (NSRect) aRect;
+- (void) NSRectClip: (NSRect) aRect;
+- (void) NSRectClipList: (const NSRect *)rects : (int) count;
+- (void) NSRectFill: (NSRect) aRect;
+- (void) NSRectFillList: (const NSRect *)rects : (int) count;
+- (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
+				:(int) count;
+
+/*
+ * Draw a Bordered Rectangle
+ */
+- (void) NSDrawButton: (const NSRect) aRect : (const NSRect) clipRect;
+- (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect;
+- (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect;
+- (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect;
+- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
+			   : (const NSRectEdge *) sides 
+			   :  (const float *)grays : (int) count;
+- (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect;
+- (void) NSDottedFrameRect: (const NSRect) aRect;
+- (void) NSFrameRect: (const NSRect) aRect;
+- (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth;
+
+
+/*
+ * Read the Color at a Screen Position
+ */
+- (NSColor *) NSReadPixel: (NSPoint) location;
+
+/*
+ * Copy an image
+ */
+- (void) NSCopyBitmapFromGState: (int) srcGstate:  (NSRect) srcRect 
+			       : (NSRect) destRect;
+- (void) NSCopyBits: (int) srcGstate : (NSRect) srcRect : (NSPoint) destPoint;
+
+/*
+ * Render Bitmap Images
+ */
+- (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
+		     : (int) bitsPerSample : (int) samplesPerPixel 
+		     : (int) bitsPerPixel : (int) bytesPerRow : (BOOL) isPlanar
+		     : (BOOL) hasAlpha : (NSString *) colorSpaceName
+		     : (const unsigned char *const [5]) data;
+
+/*
+ * Play the System Beep
+ */
+- (void) NSBeep;
+
+/* Context helper wraps */
+- (unsigned int) GSWDefineAsUserObj;
+- (void) GSWViewIsFlipped: (BOOL) flipped;
+- (NSWindowDepth) GSWindowDepthForScreen: (int) screen;
+
+- (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen;
 
 @end
 

@@ -26,13 +26,41 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSCStringText.h>
 #include <AppKit/NSEvent.h>
-#include <AppKit/GSWraps.h>
 
 /*
  * Dummy definitions provided here to avoid errors when not linking with
  * a back end.
  */
 
+@interface  GMModel : NSObject
+@end
+
+@implementation GMModel
+@end
+
+@interface  GMUnarchiver : NSObject
+@end
+
+@implementation GMUnarchiver
+@end
+
+@interface  NSWindowView : NSObject
+@end
+
+@implementation NSWindowView
+@end
+
+@interface  GPSDrawContext : NSObject
+@end
+
+@implementation GPSDrawContext
+@end
+
+/*
+ * Should not be needed anymore
+ */
+
+#if 0
 BOOL initialize_gnustep_backend(void)
 {
   return YES;
@@ -64,29 +92,6 @@ void NSDottedFrameRect(NSRect aRect)
 unsigned int GSWDefineAsUserObj(NSGraphicsContext *ctxt) {return 0;}
 void GSWViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped) {}
 
-@interface  GMModel : NSObject
-@end
-
-@implementation GMModel
-@end
-
-@interface  GMUnarchiver : NSObject
-@end
-
-@implementation GMUnarchiver
-@end
-
-@interface  NSWindowView : NSObject
-@end
-
-@implementation NSWindowView
-@end
-
-@interface  GPSDrawContext : NSObject
-@end
-
-@implementation GPSDrawContext
-@end
 
 
 void NSDrawWhiteBezel(NSRect aRect, NSRect clipRect)
@@ -284,3 +289,4 @@ float NSLinkFrameThickness(void)
 NSWindowDepth GSWindowDepthForScreen(int screen) {}
 
 const NSWindowDepth *GSAvailableDepthsForScreen(int screen) {}
+#endif

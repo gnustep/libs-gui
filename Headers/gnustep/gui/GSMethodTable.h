@@ -25,11 +25,13 @@
 #define _GSMethodTable_h_INCLUDE
 
 #include <Foundation/NSObject.h>
+typedef int NSWindowDepth;
 
 @class NSDate;
 @class NSEvent;
 @class NSGraphicsContext;
 @class NSString;
+@class NSColor;
 
 typedef struct {
 
@@ -521,6 +523,78 @@ typedef struct {
 	(NSGraphicsContext*, SEL, void **);
   void (*DPScurrentwindowdevice__)
 	(NSGraphicsContext*, SEL, int, void **);
+
+/*
+ * Rectangle Drawing Functions
+ */
+
+  void (*NSEraseRect_)(NSGraphicsContext*, SEL, NSRect aRect);
+  void (*NSHighlightRect_)(NSGraphicsContext*, SEL, NSRect aRect);
+  void (*NSRectClip_)(NSGraphicsContext*, SEL, NSRect aRect);
+  void (*NSRectClipList__)(NSGraphicsContext*, SEL, const NSRect *rects, int count);
+  void (*NSRectFill_)(NSGraphicsContext*, SEL, NSRect aRect);
+  void (*NSRectFillList__)(NSGraphicsContext*, SEL, const NSRect *rects, int count);
+  void (*NSRectFillListWithGrays___)(NSGraphicsContext*, SEL, const NSRect *rects, 
+			     const float *grays, int count);
+
+/*
+ * Draw a Bordered Rectangle
+ */
+  void (*NSDrawButton__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
+  void (*NSDrawGrayBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
+  void (*NSDrawBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
+  void (*NSDrawGroove__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
+  NSRect (*NSDrawTiledRects_____)(NSGraphicsContext*, SEL, NSRect aRect, const NSRect clipRect, 
+			const NSRectEdge *sides, const float *grays, 
+			int count);
+  void (*NSDrawWhiteBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
+  void (*NSDottedFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
+  void (*NSFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
+  void (*NSFrameRectWithWidth__)(NSGraphicsContext*, SEL, const NSRect aRect, float frameWidth);
+
+
+/*
+ * Read the Color at a Screen Position
+ */
+  NSColor *(*NSReadPixel_)(NSGraphicsContext*, SEL, NSPoint location);
+
+/*
+ * Copy an image
+ */
+  void (*NSCopyBitmapFromGState___)(NSGraphicsContext*, SEL, int srcGstate, NSRect srcRect, 
+				    NSRect destRect);
+  void (*NSCopyBits___)(NSGraphicsContext*, SEL, int srcGstate, NSRect srcRect, NSPoint destPoint);
+
+/*
+ * Render Bitmap Images
+ */
+  void (*NSDrawBitmap___________)(NSGraphicsContext*, SEL, NSRect rect,
+                  int pixelsWide,
+                  int pixelsHigh,
+                  int bitsPerSample,
+                  int samplesPerPixel,
+                  int bitsPerPixel,
+                  int bytesPerRow, 
+                  BOOL isPlanar,
+                  BOOL hasAlpha, 
+                  NSString *colorSpaceName, 
+                  const unsigned char *const data[5]);
+
+/*
+ * Play the System Beep
+ */
+  void (*NSBeep)(NSGraphicsContext*, SEL);
+
+
+
+/* Context helper wraps */
+  unsigned int (*GSWDefineAsUserObj)(NSGraphicsContext*, SEL);
+  void (*GSWViewIsFlipped_)(NSGraphicsContext*, SEL, BOOL flipped);
+  NSWindowDepth (*GSWindowDepthForScreen_)(NSGraphicsContext*, SEL, int screen);
+
+  const NSWindowDepth *(*GSAvailableDepthsForScreen_)(NSGraphicsContext*, SEL,
+						       int screen);
+
 
 } gsMethodTable;
 

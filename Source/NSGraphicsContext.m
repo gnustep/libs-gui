@@ -836,6 +836,88 @@ NSGraphicsContext	*GSCurrentContext()
   methodTable.DPScurrentwindowdevice__ = 
     GET_IMP(@selector(DPScurrentwindowdevice::));
 
+/*
+ * Rectangle Drawing Functions
+ */
+
+  methodTable.NSEraseRect_ = 
+    GET_IMP(@selector(NSEraseRect:));
+  methodTable.NSHighlightRect_ =
+    GET_IMP(@selector(NSHighlightRect:));
+  methodTable.NSRectClip_ = 
+    GET_IMP(@selector(NSRectClip:));
+  methodTable.NSRectClipList__ = 
+    GET_IMP(@selector(NSRectClipList::));
+  methodTable.NSRectFill_ = 
+    GET_IMP(@selector(NSRectFill:));
+  methodTable.NSRectFillList__ = 
+    GET_IMP(@selector(NSRectFillList::));
+  methodTable.NSRectFillListWithGrays___ = 
+    GET_IMP(@selector(NSRectFillListWithGrays:::));
+  
+/*
+ * Draw a Bordered Rectangle
+ */
+
+  methodTable.NSDrawButton__ = 
+    GET_IMP(@selector(NSDrawButton::));
+  methodTable.NSDrawGrayBezel__ = 
+    GET_IMP(@selector(NSDrawGrayBezel::));
+  methodTable.NSDrawBezel__ = 
+    GET_IMP(@selector(NSDrawBezel::));
+  methodTable.NSDrawGroove__ = 
+    GET_IMP(@selector(NSDrawGroove::));
+  methodTable.NSDrawTiledRects_____ = 
+    GET_IMP(@selector(NSDrawTiledRects:::::));
+  methodTable.NSDrawWhiteBezel__ = 
+    GET_IMP(@selector(NSDrawWhiteBezel::));
+  methodTable.NSDottedFrameRect_ = 
+    GET_IMP(@selector(NSDottedFrameRect:));
+  methodTable.NSFrameRect_ = 
+    GET_IMP(@selector(NSFrameRect:));
+  methodTable.NSFrameRectWithWidth__ = 
+    GET_IMP(@selector(NSFrameRectWithWidth::));
+
+
+/*
+ * Read the Color at a Screen Position
+ */
+
+  methodTable.NSReadPixel_ = 
+    GET_IMP(@selector(NSReadPixel:));
+
+/*
+ * Copy an image
+ */
+
+  methodTable.NSCopyBitmapFromGState___ = 
+    GET_IMP(@selector(NSCopyBitmapFromGState:::));
+  methodTable.NSCopyBits___ = 
+    GET_IMP(@selector(NSCopyBits:::));
+
+/*
+ * Render Bitmap Images
+ */
+
+  methodTable.NSDrawBitmap___________ = 
+    GET_IMP(@selector(NSDrawBitmap:::::::::::));
+
+/*
+ * Play the System Beep
+ */
+  methodTable.NSBeep = 
+    GET_IMP(@selector(NSBeep));
+
+/* Context helper wraps */
+  methodTable.GSWDefineAsUserObj = 
+    GET_IMP(@selector(GSWDefineAsUserObj));
+  methodTable.GSWViewIsFlipped_ = 
+    GET_IMP(@selector(GSWViewIsFlipped:));
+  methodTable.GSWindowDepthForScreen_ = 
+    GET_IMP(@selector(GSWindowDepthForScreen:));
+  methodTable.GSAvailableDepthsForScreen_ = 
+    GET_IMP(@selector(GSAvailableDepthsForScreen:));
+
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
   return mptr;
@@ -2331,4 +2413,176 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/* ----------------------------------------------------------------------- */
+/* NSGraphics Ops */	
+/* ----------------------------------------------------------------------- */
+/*
+ * Rectangle Drawing Functions
+ */
+- (void) NSEraseRect: (NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSHighlightRect: (NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSRectClip: (NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSRectClipList: (const NSRect *)rects : (int) count
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSRectFill: (NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSRectFillList: (const NSRect *)rects : (int) count
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
+				:(int) count
+{
+  [self subclassResponsibility: _cmd];
+}
+
+
+/*
+ * Draw a Bordered Rectangle
+ */
+- (void) NSDrawButton: (const NSRect) aRect : (const NSRect) clipRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
+			   : (const NSRectEdge *) sides 
+			   :  (const float *)grays : (int) count
+{
+  [self subclassResponsibility: _cmd];
+  return NSZeroRect;
+}
+
+- (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSDottedFrameRect: (const NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSFrameRect: (const NSRect) aRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth
+{
+  [self subclassResponsibility: _cmd];
+}
+
+
+
+/*
+ * Read the Color at a Screen Position
+ */
+- (NSColor *) NSReadPixel: (NSPoint) location
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+
+
+/*
+ * Copy an image
+ */
+- (void) NSCopyBitmapFromGState: (int) srcGstate:  (NSRect) srcRect 
+			       : (NSRect) destRect
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) NSCopyBits: (int) srcGstate : (NSRect) srcRect : (NSPoint) destPoint
+{
+  [self subclassResponsibility: _cmd];
+}
+
+
+/*
+ * Render Bitmap Images
+ */
+- (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
+		     : (int) bitsPerSample : (int) samplesPerPixel 
+		     : (int) bitsPerPixel : (int) bytesPerRow : (BOOL) isPlanar
+		     : (BOOL) hasAlpha : (NSString *) colorSpaceName
+		     : (const unsigned char *const [5]) data
+{
+  [self subclassResponsibility: _cmd];
+}
+
+
+/*
+ * Play the System Beep
+ */
+- (void) NSBeep
+{
+  [self subclassResponsibility: _cmd];
+}
+
+
+/* Context helper wraps */
+- (unsigned int) GSWDefineAsUserObj
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+
+- (void) GSWViewIsFlipped: (BOOL) flipped
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (NSWindowDepth) GSWindowDepthForScreen: (int) screen
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+
+
+- (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen
+{
+  [self subclassResponsibility: _cmd];
+  return NULL;
+}
+
++ (void) initializeBackend
+{
+  [self subclassResponsibility: _cmd];
+}
 @end

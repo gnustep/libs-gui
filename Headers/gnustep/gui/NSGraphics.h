@@ -28,6 +28,10 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 
+#include <AppKit/NSGraphicsContext.h>
+
+
+
 @class NSString;
 @class NSColor;
 @class NSGraphicsContext;
@@ -45,7 +49,6 @@ extern NSString *NSDeviceCMYKColorSpace;
 extern NSString *NSNamedColorSpace;
 extern NSString *NSCustomColorSpace;
 
-typedef int NSWindowDepth;
 
 /*
  * Color function externs
@@ -84,32 +87,6 @@ extern NSString *NSDeviceIsPrinter;
 extern NSString *NSDeviceSize;
 
 /*
- * Rectangle Drawing Functions
- */
-void NSEraseRect(NSRect aRect);
-void NSHighlightRect(NSRect aRect);
-void NSRectClip(NSRect aRect);
-void NSRectClipList(const NSRect *rects, int count);
-void NSRectFill(NSRect aRect);
-void NSRectFillList(const NSRect *rects, int count);
-void NSRectFillListWithGrays(const NSRect *rects, 
-			     const float *grays, int count);
-
-/*
- * Draw a Bordered Rectangle
- */
-void NSDrawButton(const NSRect aRect, const NSRect clipRect);
-void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
-void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
-NSRect NSDrawTiledRects(NSRect aRect, const NSRect clipRect, 
-			const NSRectEdge *sides, const float *grays, 
-			int count);
-void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
-void NSDottedFrameRect(const NSRect aRect);
-void NSFrameRect(const NSRect aRect);
-void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
-
-/*
  * Get Information About Color Space and Window Depth
  */
 const NSWindowDepth *NSAvailableWindowDepths(void);
@@ -122,36 +99,6 @@ NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
 int NSNumberOfColorComponents(NSString *colorSpaceName);
 BOOL NSPlanarFromDepth(NSWindowDepth depth);
 
-/*
- * Read the Color at a Screen Position
- */
-NSColor *NSReadPixel(NSPoint location);
-
-/*
- * Copy an image
- */
-void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect);
-void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint);
-
-/*
- * Render Bitmap Images
- */
-void NSDrawBitmap(NSRect rect,
-                  int pixelsWide,
-                  int pixelsHigh,
-                  int bitsPerSample,
-                  int samplesPerPixel,
-                  int bitsPerPixel,
-                  int bytesPerRow, 
-                  BOOL isPlanar,
-                  BOOL hasAlpha, 
-                  NSString *colorSpaceName, 
-                  const unsigned char *const data[5]);
-
-/*
- * Play the System Beep
- */
-void NSBeep(void);
 
 /*
  * Functions for getting information about windows.
@@ -159,13 +106,231 @@ void NSBeep(void);
 void NSCountWindows(int *count);
 void NSWindowList(int size, int list[]);
 
+static inline void
+NSEraseRect(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSEraseRect_)
+    (ctxt, @selector(NSEraseRect:), aRect);
+}
+
+static inline void 
+NSHighlightRect(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSHighlightRect_)
+    (ctxt, @selector(NSHighlightRect:), aRect);
+}
+
+static inline void
+NSRectClip(NSRect aRect)      
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectClip_)
+    (ctxt, @selector(NSRectClip:), aRect);
+}
+
+static inline void
+NSRectClipList(const NSRect *rects, int count)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectClipList__)
+    (ctxt, @selector(NSRectClipList::), rects, count);
+}
+
+static inline void
+NSRectFill(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectFill_)
+    (ctxt, @selector(NSRectFill:), aRect);
+}
+
+static inline void
+NSRectFillList(const NSRect *rects, int count)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectFillList__)
+    (ctxt, @selector(NSRectFillList::), rects, count);
+}
+
+static inline void
+NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count) 
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectFillListWithGrays___)
+    (ctxt, @selector(NSRectFillListWithGrays:::), rects, grays, count);
+}
+
+static inline void
+NSDrawButton(const NSRect aRect, const NSRect clipRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawButton__)
+    (ctxt, @selector(NSDrawButton::), aRect, clipRect);
+}
+
+static inline void
+NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawGrayBezel__)
+    (ctxt, @selector(NSDrawGrayBezel::), aRect, clipRect);
+}
+
+static inline void
+NSDrawGroove(const NSRect aRect, const NSRect clipRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawGroove__)
+    (ctxt, @selector(NSDrawGroove::), aRect, clipRect);
+}
+
+static inline void
+NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawWhiteBezel__)
+    (ctxt, @selector(NSDrawWhiteBezel::), aRect, clipRect);
+}
+
+static inline void
+NSDrawBezel(NSRect aRect, NSRect clipRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawGrayBezel__)
+    (ctxt, @selector(NSDrawGrayBezel::), aRect, clipRect);
+}
+
+static inline NSRect
+NSDrawTiledRects(NSRect boundsRect, NSRect clipRect,
+  const NSRectEdge *sides, const float *grays, int count)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  return (ctxt->methods->NSDrawTiledRects_____)
+    (ctxt, @selector(NSDrawTiledRects:::::), boundsRect, clipRect,
+     sides, grays, count);
+}
+
+static inline void
+NSDottedFrameRect(NSRect aRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDottedFrameRect_)
+    (ctxt, @selector(NSDottedFrameRect:), aRect);
+}
+
+static inline void
+NSFrameRect(const NSRect aRect)  
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSFrameRect_)
+    (ctxt, @selector(NSFrameRect:), aRect);
+}
+
+static inline void
+NSFrameRectWithWidth(const NSRect aRect, float frameWidth)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSFrameRectWithWidth__)
+    (ctxt, @selector(NSFrameRectWithWidth::), aRect, frameWidth);
+}
+
+
+static inline NSColor*
+NSReadPixel(NSPoint location)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  return (ctxt->methods->NSReadPixel_)
+    (ctxt, @selector(NSReadPixel:), location);
+}
+
+static inline void
+NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSCopyBitmapFromGState___)
+    (ctxt, @selector(NSCopyBitmapFromGState:::), srcGstate, srcRect, destRect);
+}
+
+static inline void
+NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSCopyBits___)
+    (ctxt, @selector(NSCopyBits:::), srcGstate, srcRect, destPoint);
+}
+
+static inline void 
+NSDrawBitmap(NSRect rect,
+	     int pixelsWide,
+	     int pixelsHigh,
+	     int bitsPerSample,
+	     int samplesPerPixel,
+	     int bitsPerPixel,
+	     int bytesPerRow,
+	     BOOL isPlanar,
+	     BOOL hasAlpha,
+	     NSString *colorSpaceName,
+	     const unsigned char *const data[5])
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSDrawBitmap___________)
+    (ctxt, @selector(NSDrawBitmap:::::::::::),  rect,
+     pixelsWide,
+     pixelsHigh,
+     bitsPerSample,
+     samplesPerPixel,
+     bitsPerPixel,
+     bytesPerRow,
+     isPlanar,
+     hasAlpha,
+     colorSpaceName,
+     data);
+    }
+
+static inline void
+NSBeep(void)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSBeep)
+    (ctxt, @selector(NSBeep));
+}
+
+static inline unsigned int 
+GSWDefineAsUserObj(NSGraphicsContext *ctxt)
+{
+  return (ctxt->methods->GSWDefineAsUserObj)
+    (ctxt, @selector(GSWDefineAsUserObj));
+}
+
+static inline void
+GSWViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
+{
+  (ctxt->methods->GSWViewIsFlipped_)
+    (ctxt, @selector(GSWViewIsFlipped::), flipped);
+}
+
+static inline NSWindowDepth
+GSWindowDepthForScreen(NSGraphicsContext *ctxt, int screen_num)
+{
+  return (ctxt->methods->GSWindowDepthForScreen_)
+    (ctxt, @selector(GSWindowDepthForScreen::), screen_num);
+}
+
+static inline const NSWindowDepth*
+GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
+{
+  return (ctxt->methods->GSAvailableDepthsForScreen_)
+    (ctxt, @selector(GSAvailableDepthsForScreen::), screen_num);
+}
+
 #ifndef	NO_GNUSTEP
 @class	NSArray;
 @class	NSWindow;
 
 NSArray* GSAllWindows();
 NSWindow* GSWindowWithNumber(int num);
-
 #endif
 
 #endif /* __NSGraphics_h__ */

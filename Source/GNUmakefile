@@ -173,7 +173,6 @@ GSMethodTable.h \
 GSPasteboardServer.h \
 GSServicesManager.h \
 GSTrackingRect.h \
-GSWraps.h \
 GSHelpManagerPanel.h \
 GSTable.h \
 GSHbox.h \

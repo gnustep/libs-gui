@@ -43,9 +43,7 @@
 /* 
  * Forward references
  */ 
-NSWindowDepth GSWindowDepthForScreen(NSGraphicsContext *ctxt, int screen);
-const NSWindowDepth *GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, 
-						int screen);
+#include <AppKit/NSGraphics.h>
 
 /*
  * Returns a list of the screens attached to the system.

@@ -50,7 +50,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/GSTrackingRect.h>
-#include <AppKit/GSWraps.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSScrollView.h>
