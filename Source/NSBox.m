@@ -278,7 +278,7 @@
   if (_title_position != NSNoTitle)
     {
       NSSize titleSize = [_cell cellSize];
-      titleSize.width += 1;
+      titleSize.width += 6;
       if (f.size.width < titleSize.width)
 	f.size.width = titleSize.width;
     }
@@ -436,8 +436,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	// Adjust border rect by title cell
 	_border_rect = _bounds;
@@ -468,8 +468,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	// Adjust border rect by title cell
 	_border_rect = _bounds;
@@ -502,8 +502,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	_border_rect = _bounds;
 
@@ -538,8 +538,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	_border_rect = _bounds;
 
@@ -575,8 +575,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	// Adjust by the title
 	_border_rect = _bounds;
@@ -607,8 +607,8 @@
 	float c;
 
 	// Add spacer around title
-	titleSize.width += 1;
-	titleSize.height += 1;
+	titleSize.width += 6;
+	titleSize.height += 2;
 
 	_border_rect = _bounds;
 
