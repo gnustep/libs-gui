@@ -1,3 +1,24 @@
+2002-10-18  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/announce.texi: Fix grammer.
+
+	* Try to fix focus interaction with WindowMaker.
+	* Source/NSApplication.m ([NSIconWindow -canBecomeKeyWindow]):
+	Revert 2002-10-08 change.
+	(-appIconInit): Don't set input focus to app icon.
+	(-_windowWillClose:): Idem.
+	* Source/NSMenu.m: New class NSMenuPanel
+	(_createWindow): Use it.
+	* Source/NSWindow.m (-_lossOfKeyOrMainWindow): Make sure menu
+	window doesn't get key except as a last resort.
+	(-sendEvent: (GSAppKitWindowFocusIn)): Don't become key if app 
+	is hidden.
+
+	* Source/NSPanel.m (-sendEvent:): Same as change to NSWindow on
+	2002-10-03.
+
+	* Source/NSDocument.m (-init): Set default file type.
+
 Tue Oct 15 02:36:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (initialize_gnustep_backend): Get the

@@ -55,6 +55,10 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSAttributedString.h>
 
+/* Subclass of NSPanel since menus cannot become key */
+@interface NSMenuPanel : NSPanel
+@end
+
 /* A menu's title is an instance of this class */
 @interface NSMenuWindowTitleView : NSView
 {
@@ -80,8 +84,18 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSNotificationCenter *nc;
 
 @interface	NSMenu (GNUstepPrivate)
-- (NSString*) _locationKey;
-- (NSPanel*) _createWindow;
+- (NSString *) _locationKey;
+- (NSMenuPanel *) _createWindow;
+@end
+
+@implementation NSMenuPanel
+- (BOOL) canBecomeKeyWindow
+{
+  /* This should be NO, but there's currently a bug in the interaction
+     with WindowMaker that causes spurious deactivation of the app
+     if the app icon is the only window that can become key */
+  return YES;
+}
 @end
 
 @implementation	NSMenu (GNUstepPrivate)
@@ -111,9 +125,9 @@ static NSNotificationCenter *nc;
 }
 
 /* Create a non autorelease window for this menu.  */
-- (NSPanel*) _createWindow
+- (NSMenuPanel*) _createWindow
 {
-  NSPanel *win = [[NSPanel alloc] 
+  NSMenuPanel *win = [[NSMenuPanel alloc] 
 		     initWithContentRect: NSZeroRect
 		     styleMask: NSBorderlessWindowMask
 		     backing: NSBackingStoreBuffered

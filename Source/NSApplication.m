@@ -266,7 +266,7 @@ NSApplication	*NSApp = nil;
 
 - (BOOL) canBecomeKeyWindow
 {
-  return YES;
+  return NO;
 }
 
 - (BOOL) worksWhenModal
@@ -1002,7 +1002,7 @@ static NSCell* tileCell = nil;
   [_listener updateServicesMenu];
   [_main_menu update];
   DESTROY(_runLoopPool);
-  
+ 
   while (_app_is_running)
     {
       IF_NO_GC(_runLoopPool = [arpClass new]);
@@ -2468,8 +2468,6 @@ delegate.
   RELEASE(iv);
 
   [_app_icon_window orderFrontRegardless];
-  [GSServerForWindow(_app_icon_window) 	
-  	setinputfocus: [_app_icon_window windowNumber]];
   return self;
 }
 
@@ -2683,15 +2681,6 @@ delegate.
 		    }
 		}
 	    }
-	}
-      /*
-       * If the app has no key window - we must make sure the icon window
-       * has keyboard focus, even though it doesn't actually use kb events.
-       */
-      if ([self keyWindow] == nil)
-	{
-	  [GSServerForWindow(_app_icon_window)
-	          setinputfocus: [_app_icon_window windowNumber]];
 	}
     }
 }

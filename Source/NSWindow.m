@@ -97,6 +97,23 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 {
   [self displayIfNeeded];
 }
+
+/* We get here if we were ordered out or miniaturized. In this case if
+   we were the key or main window, go through the list of all windows
+   and try to find another window that can take our place as key
+   and/or main. Automatically ignore windows that cannot become
+   key/main and skip the main menu window (which is the only
+   non-obvious window that can become key) unless we have no choice
+   (i.e. all the candidate windows were ordered out.)
+
+   FIXME: It should be the appicon which can become key, not the main
+   menu, but there is currently an unsolved problem with WindowMaker
+   interaction that prevents me from doing this.
+
+   FIXME: It would really be better if we maintained a stack of the
+   most recent key/main windows and went through in order of most
+   recent to least recent. That's probably a lot of work, however.
+*/
 - (void) _lossOfKeyOrMainWindow
 {
   NSArray	*windowList = GSAllWindows();
@@ -107,6 +124,7 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
   if ([self isKeyWindow])
     {
+      NSWindow *menu_window= [[NSApp mainMenu] window];
       [self resignKeyWindow];
       i = pos + 1;
       if (i == c)
@@ -116,7 +134,7 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
       while (i != pos)
 	{
 	  w = [windowList objectAtIndex: i];
-	  if ([w isVisible] && [w canBecomeKeyWindow])
+	  if ([w isVisible] && [w canBecomeKeyWindow] && w != menu_window)
 	    {
 	      [w makeKeyWindow];
 	      break;
@@ -129,19 +147,14 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 	    }
 	}
       /*
-       * if we didn't find a possible key window - use the app icon or,
-       * failing that, use the menu window.
+       * if we didn't find a possible key window - use the main menu window
        */
       if (i == pos)
 	{
-	  w = [NSApp iconWindow];
-	  if (w == nil || [w isVisible] == NO)
+	  if (menu_window != nil)
 	    {
-	      w = [[NSApp mainMenu] window];
-	    }
-	  if (w != nil && [w isVisible] == YES)
-	    {
-	      [GSServerForWindow(w) setinputfocus: [w windowNumber]];
+	      [GSServerForWindow(menu_window) setinputfocus: 
+				  [menu_window windowNumber]];
 	    }
 	}
     }
@@ -2990,10 +3003,13 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		  /* Window Manager just deminiaturized us */
 		  [self _didDeminiaturize: self];
 		}
-	      if (_f.visible == NO)
+	      if ([NSApp isHidden])
 		{
-		  NSDebugLLog(@"Focus", @"WM take focus on hidden window %d",
-			      _windowNum);
+		  /* This often occurs when hidding an app, since a bunch
+		     of windows get hidden at once, and the WM is searching
+		     for a window to take focus after each one gets 
+		     hidden. */
+		  NSDebugLLog(@"Focus", @"WM take focus while hiding");
 		  break;
 		}
 	      if ([self canBecomeKeyWindow] == YES)

@@ -67,6 +67,9 @@
   [super init];
   _documentIndex = untitledCount++;
   _windowControllers = [[NSMutableArray alloc] init];
+
+  /* Set our default type */
+  [self setFileType: [[[self class] writableTypes] objectAtIndex: 0]];
   return self;
 }
 
