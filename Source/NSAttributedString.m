@@ -84,33 +84,39 @@ wordCSet()
   return cset;
 }
 
-@interface NSAttributedString(AttributedStringRTFDAdditions)
+/*
+ * Returns a String containing the attachment character
+ */
+static NSString *attachmentString()
+{
+  static NSString *attach  = nil;
 
-- (NSString*) RTFHeaderStringWithContext: (NSMutableDictionary*) contextDict;
-- (NSString*) RTFTrailerStringWithContext: (NSMutableDictionary*) contextDict;
-- (NSString*) RTFBodyStringWithContext: (NSMutableDictionary*) contextDict;
-- (NSString*) RTFDStringFromRange: (NSRange)range
-	       documentAttributes: (NSDictionary*)dict;
-@end
+  if (attach == nil)
+    {
+      unichar ch = NSAttachmentCharacter;
+      attach = [NSString stringWithCharacters: &ch 
+			 length: 1];
+    }
+  return attach;
+}
+
 
 @implementation NSAttributedString (AppKit)
 
 + (NSAttributedString *)attributedStringWithAttachment:(NSTextAttachment *)attachment
 {
-  unichar ch = NSAttachmentCharacter;
-  NSString *string = [NSString stringWithCharacters: &ch 
-			       length: 1];
   NSDictionary *attributes = [NSDictionary dictionaryWithObject: attachment
 					   forKey: NSAttachmentAttributeName];
 
-  return [[self alloc] initWithString: string 
-		       attributes: attributes];
+  return AUTORELEASE([[self alloc] initWithString: attachmentString() 
+				   attributes: attributes]);
 }
 
 - (BOOL) containsAttachments
 {
-  // FIXME: Currently there are no attachment in GNUstep.
-  return NO;
+  NSRange aRange = [[self string] rangeOfString: attachmentString()];
+
+  return aRange.length;
 }
 
 - (NSDictionary*) fontAttributesInRange: (NSRange)range
@@ -427,16 +433,17 @@ documentAttributes: (NSDictionary**)dict
       NSMutableDictionary *fileDict = [NSMutableDictionary dictionary];
       NSFileWrapper *txt = [[NSFileWrapper alloc]
 			     initRegularFileWithContents:
-			       [self RTFDFromRange: range
+			       [self RTFFromRange: range
 				     documentAttributes: dict]];
 
-      // FIXME: We have to add the attachements to the directory file wrapper
       [fileDict setObject: txt forKey: @"TXT.rtf"];
+      // FIXME: We have to add the attachments to the directory file wrapper
+      
       return [[NSFileWrapper alloc] initDirectoryWithFileWrappers: fileDict];
     }
   else
     return [[NSFileWrapper alloc] initRegularFileWithContents:
-				    [self RTFDFromRange: range
+				    [self RTFFromRange: range
 					  documentAttributes: dict]];
 }
 @end
@@ -658,51 +665,99 @@ documentAttributes: (NSDictionary**)dict
     }
 }
 
-- (void) fixAttachmentAttributeInRange: (NSRange)range
+- (void) fixAttachmentAttributeInRange: (NSRange)aRange
 {
-  unsigned	location = range.location;
-  unsigned	end = NSMaxRange(range);
+  NSString *string = [self string];
+  unsigned location = aRange.location;
+  unsigned end = NSMaxRange(aRange);
 
-  if (NSMaxRange(range) > [self length])
+  if (end > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixAttachmentAttributeInRange:"];
     }
 
+  // Check for attachments with the wrong character
   while (location < end)
     {
       NSDictionary	*attr;
+      NSRange range;
 
       attr = [self attributesAtIndex: location effectiveRange: &range];
       if ([attr objectForKey: NSAttachmentAttributeName] != nil)
 	{
 	  unichar	buf[range.length];
 	  unsigned	pos = 0;
+	  unsigned	start = range.location;
 
-	  [[self string] getCharacters: buf range: range];
-	  while (pos < range.length)
-	    {
-	      unsigned	start;
-	      unsigned	end;
-
-	      while (pos < range.length && buf[pos] == NSAttachmentCharacter)
-		pos++;
-	      start = pos;
-	      while (pos < range.length && buf[pos] == NSAttachmentCharacter)
-		pos++;
-	      end = pos;
-	      if (start != end)
-		[self removeAttribute: NSAttachmentAttributeName
-				range: NSMakeRange(start, end - start)];
-	    }
+	  // Leave only one character with the attachment
+	  [string getCharacters: buf range: range];
+	  while (pos < range.length && buf[pos] != NSAttachmentCharacter)
+	      pos++;
+	  if (pos)
+	    [self removeAttribute: NSAttachmentAttributeName
+		  range: NSMakeRange(start, pos)];
+	  pos++;
+	  if (pos < range.length)
+	    [self removeAttribute: NSAttachmentAttributeName
+		  range: NSMakeRange(start+pos, range.length - pos)];
 	}
+      location = NSMaxRange(range);
+    }
+
+  // Check for attachment characters without attachments
+  location = aRange.location;
+  while (location < end)
+    {
+      NSRange range = [string rangeOfString: attachmentString()
+			      options: NSLiteralSearch 
+			      range: NSMakeRange(location, end - location)];
+      NSTextAttachment *attachment;
+
+      if (!range.length)
+	break;
+
+      attachment = [self attribute: NSAttachmentAttributeName
+			 atIndex: range.location
+			 effectiveRange: NULL];
+
+      if (attachment == nil)
+        {
+	  [self deleteCharactersInRange: NSMakeRange(range.location, 1)];
+	  range.length--;
+	}
+
       location = NSMaxRange(range);
     }
 }
 
 - (void)updateAttachmentsFromPath:(NSString *)path
 {
-  // FIXME: Still missing
+  NSString *string = [self string];
+  unsigned location = 0;
+  unsigned end = [string length];
+
+  while (location < end)
+    {
+      NSRange range = [string rangeOfString: attachmentString()
+			      options: NSLiteralSearch 
+			      range: NSMakeRange(location, end - location)];
+      NSTextAttachment *attachment;
+      NSFileWrapper *fileWrapper;
+
+      if (!range.length)
+	break;
+
+      attachment = [self attribute: NSAttachmentAttributeName
+			 atIndex: range.location
+			 effectiveRange: NULL];
+      fileWrapper = [attachment fileWrapper];
+
+      // FIXME: Is this the correct thing to do?
+      [fileWrapper updateFromPath: [path stringByAppendingPathComponent: 
+					     [fileWrapper filename]]];
+      location = NSMaxRange(range);
+    }
 }
 
 @end
