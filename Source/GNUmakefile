@@ -335,7 +335,8 @@ IMLoading.h \
 GSLayoutManager.h \
 GSLayoutManager_internal.h \
 GSTypesetter.h \
-GSHorizontalTypesetter.h
+GSHorizontalTypesetter.h \
+GSToolbarView.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

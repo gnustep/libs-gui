@@ -96,12 +96,6 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (NSArray*) visibleItems;
 @end /* interface of NSToolbar */
 
-@class GSToolbarView;
-
-@interface NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView;
-@end
-
 /*
  * Methods Implemented by the Delegate
  */

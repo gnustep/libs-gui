@@ -58,21 +58,41 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 @interface NSToolbarItem : NSObject <NSCopying, NSValidatedUserInterfaceItem>
 {
   // externally visible variables
-  SEL _action;
   BOOL _allowsDuplicatesInToolbar;
-  BOOL _enabled;
-  NSImage *_image;
   NSString *_itemIdentifier;
   NSString *_label;
-  NSSize _maxSize;
   NSMenuItem *_menuFormRepresentation;
-  NSSize _minSize;
   NSString *_paletteLabel;
-  int _tag;
-  id _target;
+
+  // toolbar
   NSToolbar *_toolbar;
   NSString *_toolTip;
-  NSView *_view;
+  id _view;
+
+  // size
+  NSSize _maxSize;
+  NSSize _minSize;
+
+  // record the fact that the view responds to these
+  // to save time.
+  struct __tbflags
+  {
+    // gets
+    unsigned int viewRespondsToIsEnabled:1;
+    unsigned int viewRespondsToTag:1;
+    unsigned int viewRespondsToAction:1;
+    unsigned int viewRespondsToTarget:1;
+    unsigned int viewRespondsToImage:1;
+    // sets
+    unsigned int viewRespondsToSetEnabled:1;
+    unsigned int viewRespondsToSetTag:1;
+    unsigned int viewRespondsToSetAction:1;
+    unsigned int viewRespondsToSetTarget:1;
+    unsigned int viewRespondsToSetImage:1;
+    // other flags
+    unsigned int isUserRemovable:1;
+    unsigned int RESERVED:21; // to even out the long.
+  } _flags;
 }
 
 // Instance methods

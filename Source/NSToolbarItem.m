@@ -42,7 +42,11 @@
 
 - (NSImage *)image
 {
-  return _image;
+  if(_flags.viewRespondsToImage)
+    {
+      return [_view image];
+    }
+  return nil;
 }
 
 - (id)initWithItemIdentifier: (NSString *)itemIdentifier
@@ -53,7 +57,11 @@
 
 - (BOOL)isEnabled
 {
-  return _enabled;
+  if(_flags.viewRespondsToIsEnabled)
+    {
+      return [_view isEnabled];
+    }
+  return NO;
 }
 
 - (NSString *)itemIdentifier
@@ -88,17 +96,26 @@
 
 - (void)setAction: (SEL)action
 {
-  _action = action;
+  if(_flags.viewRespondsToSetAction)
+    {
+      [_view setAction: action];
+    }
 }
 
 - (void)setEnabled: (BOOL)enabled
 {
-  enabled = _enabled;
+  if(_flags.viewRespondsToSetEnabled)
+    {
+      [_view setEnabled: enabled];
+    }
 }
 
 - (void)setImage: (NSImage *)image
 {
-  ASSIGN(_image, image);
+  if(_flags.viewRespondsToSetImage)
+    {
+      [_view setImage: image];
+    }
 }
 
 - (void)setLabel: (NSString *)label
@@ -128,12 +145,18 @@
 
 - (void)setTag: (int)tag
 {
-  _tag = tag;
+  if(_flags.viewRespondsToTag)
+    {
+      [_view setTag: tag];
+    }
 }
 
 - (void)setTarget: (id)target
-{
-  ASSIGN(_target, target);
+ {
+   if(_flags.viewRespondsToTarget)
+    {
+      [_view setTarget: target];
+    }
 }
 
 - (void)setToolTip: (NSString *)toolTip
@@ -144,11 +167,27 @@
 - (void)setView: (NSView *)view
 {
   ASSIGN(_view, view);
+  // gets
+  _flags.viewRespondsToIsEnabled  = [_view respondsToSelector: @selector(isEnabled)];
+  _flags.viewRespondsToTag        = [_view respondsToSelector: @selector(tag)];
+  _flags.viewRespondsToAction     = [_view respondsToSelector: @selector(action)];
+  _flags.viewRespondsToTarget     = [_view respondsToSelector: @selector(target)];
+  _flags.viewRespondsToImage      = [_view respondsToSelector: @selector(image)];
+  // sets
+  _flags.viewRespondsToSetEnabled = [_view respondsToSelector: @selector(setEnabled:)];
+  _flags.viewRespondsToSetTag     = [_view respondsToSelector: @selector(setTag:)];
+  _flags.viewRespondsToSetAction  = [_view respondsToSelector: @selector(setAction:)];
+  _flags.viewRespondsToSetTarget  = [_view respondsToSelector: @selector(setTarget:)];
+  _flags.viewRespondsToSetImage   = [_view respondsToSelector: @selector(setImage:)];
 }
 
 - (int)tag
 {
-  return _tag;
+  if(_flags.viewRespondsToTag)
+    {
+      return [_view tag];
+    }
+  return 0;
 }
 
 - (NSString *)toolTip
@@ -165,7 +204,6 @@
 {
   // validate by default, we know that all of the
   // "standard" items are correct.
-  _enabled = YES;
 }
 
 - (NSView *)view
@@ -176,12 +214,20 @@
 // NSValidatedUserInterfaceItem protocol
 - (SEL)action
 {
-  return _action;
+  if(_flags.viewRespondsToAction)
+    {
+      return [_view action];
+    }
+  return 0;
 }
 
 - (id)target
 {
-  return _target;
+  if(_flags.viewRespondsToTarget)
+    {
+      return [_view target];
+    }
+  return nil;
 }
 
 // NSCopying protocol

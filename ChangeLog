@@ -1,3 +1,17 @@
+2003-08-23  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GNUmakefile: Added new header to the list.
+	* Source/GSNibTemplates.m: Added assertion to GSClassSwapper to 
+	prevent it from being initialized with superClassName and className
+	being the same.
+	* Source/NSToolbar.m: Added some more code to properly implement 
+	this class.
+	* Source/NSToolbarItem.m: Added code to implement this class.
+	* Headers/AppKit/NSToolbar.h: Added flags declaration.
+	* Headers/AppKit/NSToolbarItem.h: Added attributes.
+	* Headers/Additions/GNUStepGUI/GSToolbarView.h: Private class which
+	will be used to display the toolbar in the window.
+	
 2003-08-22  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/gsnd.m (main): Close any open file descriptors so

@@ -38,18 +38,11 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSNibLoading.h"
+#include "GNUstepGUI/GSToolbarView.h"
 
 // internal
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
-
-@interface GSToolbarView : NSView
-{
-  NSToolbar *_toolbar;
-}
-- (void) setToolbar: (NSToolbar *)toolbar;
-- (NSToolbar *) toolbar;
-@end
 
 @implementation GSToolbarView
 - (void) dealloc
@@ -61,6 +54,7 @@ static const int current_version = 1;
 - (void) setToolbar: (NSToolbar *)toolbar
 {
   ASSIGN(_toolbar, toolbar);
+  
 }
 - (NSToolbar *) toolbar
 {
@@ -69,7 +63,23 @@ static const int current_version = 1;
 
 - (void) drawRect: (NSRect)aRect
 {
+  NSArray *items = [_toolbar items];
+  NSEnumerator *en = [items objectEnumerator];
+  id item = nil;
+  float x = 0;
+
   [super drawRect: aRect];
+  while((item = [en nextObject]) != nil)
+    {
+      NSView *itemView = [item view];
+      NSRect itemFrame = [itemView frame];
+
+      // now we need to draw the items...
+      itemFrame.origin.x = x; // start at x
+      itemFrame.origin.y = 0; // reset to top of view.
+      [itemView drawRect: itemFrame];
+      x += NSWidth(itemFrame) + 2; // move over by the frame width plus 2 pixels.
+    }
 }
 @end
 
@@ -101,12 +111,11 @@ static const int current_version = 1;
 @end
 
 @implementation NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView
+- (id) _toolbarView
 {
   return _toolbarView;
 }
 @end
-
 
 @implementation NSToolbar
 // Initialize the class when it is loaded
@@ -309,5 +318,3 @@ static const int current_version = 1;
   return _visibleItems;
 }
 @end /* interface of NSToolbar */
-
-

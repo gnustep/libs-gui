@@ -380,9 +380,10 @@ static const int currentVersion = 1; // GSNibItem version number...
 {
   if((self = [self init]) != nil)
     {
-      NSLog(@"Created template %@ -> %@",NSStringFromClass([self class]), className);
+      NSDebugLog(@"Created template %@ -> %@",NSStringFromClass([self class]), className);
       ASSIGN(_object, object);
       ASSIGN(_className, className);
+      NSAssert(![className isEqualToString: superClassName], NSInvalidArgumentException);
       _superClass = NSClassFromString(superClassName);
       if(_superClass == nil)
 	{
