@@ -1649,6 +1649,8 @@ BOOL done = NO;
 {
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
+  if (delegate)
+    [nc removeObserver: delegate name: nil object: self];
   delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \

@@ -1180,8 +1180,40 @@ id result = nil;
 //
 // Assigning a delegate
 //
-- delegate                                      { return delegate; }
-- (void)setDelegate:anObject                    { delegate = anObject; }
+- (id) delegate
+{
+  return delegate;
+}
+
+- (void) setDelegate: (id)anObject
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  if (delegate)
+    [nc removeObserver: delegate name: nil object: self];
+  delegate = anObject;
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([delegate respondsToSelector:@selector(window##notif_name:)]) \
+    [nc addObserver:delegate \
+      selector:@selector(window##notif_name:) \
+      name:NSWindow##notif_name##Notification object:self]
+
+  SET_DELEGATE_NOTIFICATION(DidBecomeKey);
+  SET_DELEGATE_NOTIFICATION(DidBecomeMain);
+  SET_DELEGATE_NOTIFICATION(DidChangeScreen);
+  SET_DELEGATE_NOTIFICATION(DidDeminiaturize);
+  SET_DELEGATE_NOTIFICATION(DidExpose);
+  SET_DELEGATE_NOTIFICATION(DidMiniaturize);
+  SET_DELEGATE_NOTIFICATION(DidMove);
+  SET_DELEGATE_NOTIFICATION(DidResignKey);
+  SET_DELEGATE_NOTIFICATION(DidResignMain);
+  SET_DELEGATE_NOTIFICATION(DidResize);
+  SET_DELEGATE_NOTIFICATION(DidUpdate);
+  SET_DELEGATE_NOTIFICATION(WillClose);
+  SET_DELEGATE_NOTIFICATION(WillMiniaturize);
+  SET_DELEGATE_NOTIFICATION(WillMove);
+}
 
 //
 // Implemented by the delegate

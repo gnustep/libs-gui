@@ -1,3 +1,10 @@
+Wed Feb 17  4:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: ([-setDelegate:]) remove old delegate as
+	observer of application notifications.
+	* Source/NSWindow.m: ([-setDelegate:]) add delegate as observer for
+	window notifications.
+
 Tue Feb 16 17:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Additions provided by mgiddings@ypc.net -
