@@ -23,16 +23,22 @@
         <declared>Gui/NSView.h</declared>
         <conform>NSCoding</conform>
           <desc>
-          <p>NSView is an abstract class which provides facilities for drawing in a window and
-          receiving events.  It is the superclass of many of the visual elements of the GUI.</p>
 
-          <p>In order to display itself, a view must be placed in a window (represented by an 
-          NSWindow object).  Within the window is a hierarchy of NSViews, headed by the window's 
-          content view.  Every other view in a window is a descendant of this view.</p>
+          <p>NSView is an abstract class which provides facilities for
+          drawing in a window and receiving events.  It is the
+          superclass of many of the visual elements of the GUI.</p>
 
-          <p>Subclasses can override <code>drawRect:</code> in order to implement their 
-          appearance.  Other methods of NSView and NSResponder can also be overridden to handle
-          user generated events.</p>
+          <p>In order to display itself, a view must be placed in a
+          window (represented by an NSWindow object).  Within the
+          window is a hierarchy of NSViews, headed by the window's
+          content view.  Every other view in a window is a descendant
+          of this view.</p>
+
+          <p>Subclasses can override <code>drawRect:</code> in order
+          to implement their appearance.  Other methods of NSView and
+          NSResponder can also be overridden to handle user generated
+          events.</p>
+
           </desc>
         <method type="NSMenu*" factory="yes">
           <sel>defaultMenu</sel>
@@ -127,6 +133,16 @@
         <method type="void">
           <sel>allocateGState</sel>
           <desc>
+	  Tell the view to maintain a private gstate object which 
+	  encapsulates all the information about drawing, such as coordinate
+	  transforms, line widths, etc. If you do not invoke this method,
+	  a gstate object is constructed each time the view is lockFocused.
+	  Allocating a private gstate may improve the performance of views
+	  that are focused a lot and have a lot of customized drawing
+	  parameters.
+	  <p>
+	  View subclasses should override the setUpGstate method to set these
+	  custom parameters.
           </desc>
         </method>
         <method type="NSView*">
@@ -436,6 +452,12 @@
         <method type="int">
           <sel>gState</sel>
           <desc>
+	  Returns an identifier that represents the view's gstate object,
+	  which is used to encapsulate drawing information about the view.
+	  Most of the time a gstate object is created from scratch when
+	  the view is focused, so if the view is not currently focused or
+	  allocateGState has not been called, then this method will
+	  return 0.
           </desc>
         </method>
         <method type="float">
@@ -614,6 +636,8 @@
         <method type="void">
           <sel>releaseGState</sel>
           <desc>
+	  Frees the gstate object, if there is one. Note that the next time
+	  the view is lockFocused, the gstate will be allocated again.
           </desc>
         </method>
         <method type="void">
@@ -673,6 +697,8 @@
         <method type="void">
           <sel>renewGState</sel>
           <desc>
+	  Invalidates the view's gstate object so it will be set up
+	  again using setUpGState the next time the view is focused.
           </desc>
         </method>
         <method type="void">

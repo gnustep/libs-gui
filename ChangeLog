@@ -3,6 +3,7 @@
 	* Source/NSView.m (_invalidateCoordinates): release the gstate.
 	(-releaseGState): Don't reset _allocate_gstate flag.
 	(modified patch from Georg Fleischmann <georg@vhf.de>).
+	* Documentation/gsdoc/NSView.gsdoc: Document gstate methods.
 
 2001-04-14  Adam Fedor  <fedor@gnu.org>
 
