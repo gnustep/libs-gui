@@ -43,7 +43,6 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
-#include "AppKit/NSApplication.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSControl.h"
 #include "AppKit/NSImage.h"
@@ -51,8 +50,6 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSNibConnector.h"
-#include "AppKit/NSNibLoading.h"
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSApplication.h>
@@ -125,6 +122,8 @@ static const int currentVersion = 1; // GSNibItem version number...
 	  val = [nameTable objectForKey: [connection destination]];
 	  [connection setDestination: val];
 	  [connection establishConnection];
+	  // release the connections, now that they have been established.
+	  RELEASE(connection); 
 	}
 
       /*
