@@ -1,4 +1,4 @@
-Wed Mar 31 21:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Thu Apr  1 06:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: Make bezeled and bordered mutually exclusive
 	- bug report by Jonathan Gapen
