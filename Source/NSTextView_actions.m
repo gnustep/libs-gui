@@ -329,7 +329,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
   if (r.location == NSNotFound)
     return;
 
-  [self _changeAttribute: NSSuperscriptAttributeName
+  [self _changeAttribute: NSBaselineOffsetAttributeName
 		 inRange: r
 		   using: float_plus_one];
 }
@@ -464,7 +464,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
 		   using: float_minus_one];
 }
 
--(void) useStandardLigatures: (id)sender
+-(void) turnOffLigatures: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
@@ -475,14 +475,14 @@ static NSNumber *float_plus_one(NSNumber *cur)
 	    replacementString: nil])
     return;
   [_textStorage addAttribute: NSLigatureAttributeName
-		value: [NSNumber numberWithInt: 1]
+		value: [NSNumber numberWithInt: 0]
 		range: aRange];
-  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: 1]
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: 0]
     forKey: NSLigatureAttributeName];
   [self didChangeText];
 }
 
--(void) turnOffLigatures: (id)sender
+-(void) useStandardLigatures: (id)sender
 {
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
