@@ -1,5 +1,11 @@
 2004-05-21  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
+	* Source/NSInputManagerPriv.m: Remove the implementation of
+	  IMKeyBindingTable, whose functionality has already been taken
+	  over by GSTIMKeyBindingTable. 
+
+2004-05-21  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
 	Add marked text support to NSTextView.
 
 	* Headers/AppKit/NSTextView.h: Add the new ivar _markedRange.
