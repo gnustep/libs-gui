@@ -70,20 +70,19 @@
 
   _headerCell = [NSTableHeaderCell new];
   _dataCell = [NSTextFieldCell new];
-  // TODO: When things start to work with the other NSTable* classes, 
-  // set here default properties for the default cells to have them 
-  // display with the default table appearance.
 
   ASSIGN (_identifier, anObject);
   return self;
 }
+
 - (void)dealloc
 {
-  [_headerCell release];
-  [_dataCell release];
+  RELEASE (_headerCell);
+  RELEASE (_dataCell);
   TEST_RELEASE (_identifier);
   [super dealloc];
 }
+
 /*
  * Managing the Identifier
  */
@@ -91,6 +90,7 @@
 {
   ASSIGN (_identifier, anObject);
 }
+
 - (id)identifier
 {
   return _identifier;
@@ -104,10 +104,12 @@
   // On the contrary, aTableView is supposed to RETAIN us.
   _tableView = aTableView;
 }
+
 - (NSTableView *)tableView
 {
   return _tableView;
 }
+
 /*
  * Controlling size 
  */
@@ -125,45 +127,54 @@
   
   if (_tableView)
     {
-      [_tableView setNeedsDisplay: YES];
+      // Tiling also marks it as needing redisplay
+      [_tableView tile];
       
       [[NSNotificationCenter defaultCenter] 
 	postNotificationName: NSTableViewColumnDidResizeNotification
 	object: _tableView];
     }
 }
+
 - (float)width
 {
   return _width;
 }
+
 - (void)setMinWidth: (float)minWidth
 {
   _min_width = minWidth;
   if (_width < _min_width)
     [self setWidth: _min_width];
 }
+
 - (float)minWidth
 {
   return _min_width;
 }
+
 - (void)setMaxWidth: (float)maxWidth
 {
   _max_width = maxWidth;
   if (_width > _max_width)
     [self setWidth: _max_width];
 }
+
 - (float)maxWidth
 {
   return _max_width;
 }
+
 - (void)setResizable: (BOOL)flag
 {
   _is_resizable = flag;
 }
+
 - (BOOL)isResizable
 {
   return _is_resizable;
 }
+
 - (void)sizeToFit
 {
   float new_width;
@@ -179,6 +190,7 @@
   // For easier subclassing we dont do it directly
   [self setWidth: new_width];
 }
+
 /*
  * Controlling editability 
  */
@@ -186,10 +198,12 @@
 {
   _is_editable = flag;
 }
+
 - (BOOL)isEditable
 {
   return _is_editable;
 }
+
 /*
  * Setting component cells 
  */
@@ -202,10 +216,12 @@
     }
   ASSIGN (_headerCell, aCell);
 }
+
 - (NSCell*)headerCell
 {
   return _headerCell;
 }
+
 - (void)setDataCell: (NSCell*)aCell
 {
   if (aCell == nil)
@@ -215,6 +231,7 @@
     }
   ASSIGN (_dataCell, aCell);
 }
+
 - (NSCell*)dataCell
 {
   return _dataCell;
