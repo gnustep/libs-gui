@@ -202,7 +202,7 @@ initialize_gnustep_backend(void)
 	NSCAssert1 ([theBundle load],
 		    _(@"Can't load object file from backend at path %@"),
 		    path);
-
+	
 	/* Now get the GSBackend class, which should have just been loaded
 	 * from the bundle.  */
 	backend = NSClassFromString (@"GSBackend");
@@ -215,7 +215,7 @@ initialize_gnustep_backend(void)
       /* GSBackend will be in a separate library, so use the runtime
 	 to find the class and avoid an unresolved reference problem */
       backend = [[NSBundle gnustepBundle] classNamed: @"GSBackend"];
-      NSCAssert (backend, _(@"Can't find backend context");
+      NSCAssert (backend, _(@"Can't find backend context"));
       [backend initializeBackend];
 #endif
     }
@@ -231,6 +231,10 @@ struct _NSModalSession {
   NSWindow		*window;
   NSModalSession	previous;
 };
+ 
+@interface NSDocumentController (ApplicationPrivate)
++ (BOOL) isDocumentBasedApplication;
+@end
 
 @interface NSApplication (Private)
 - _appIconInit;
@@ -759,6 +763,10 @@ static NSCell* tileCell = nil;
       name: NSWindowDidResignMainNotification object: nil];
 
   [self activateIgnoringOtherApps: YES];
+
+  /* Instantiate the NSDocumentController if we are a doc-based app */
+  if ([NSDocumentController isDocumentBasedApplication])
+    [NSDocumentController sharedDocumentController];
 
   /*
    *	Now check to see if we were launched with arguments asking to
@@ -1608,6 +1616,13 @@ delegate.
     {
       return _delegate;
     }
+  if ([NSDocumentController isDocumentBasedApplication]
+      && [[NSDocumentController sharedDocumentController]
+	   respondsToSelector: aSelector])
+     {
+      return [NSDocumentController sharedDocumentController];
+    }
+   
   return nil;
 }
 

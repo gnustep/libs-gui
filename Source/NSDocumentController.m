@@ -70,11 +70,16 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 
 /** <p>
     NSDocumentController is a class that controls a set of NSDocuments
-    for an application. As the application delegate, it responds to
-    the typical File Menu commands for opening and creating new
-    documents, and making sure all documents have been saved when an
-    application quits. It also registers itself for the 
-    NSWorkspaceWillPowerOffNotification.
+    for an application. As an application delegate, it responds to the
+    typical File Menu commands for opening and creating new documents,
+    and making sure all documents have been saved when an application
+    quits. It also registers itself for the
+    NSWorkspaceWillPowerOffNotification.  Note that
+    NSDocumentController isn't truly the application delegate, but it
+    works in a similar way. You can still have your own application
+    delegate - but beware, if it responds to the same methods as
+    NSDocumentController, your delegate methods will get called, not
+    the NSDocumentController's.
     </p>
     <p>
     NSDocumentController also manages document types and the related
@@ -91,14 +96,14 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
      <item>NSUnixExtensions - Array of strings</item> 
      <item>NSDOSExtensions - Array of strings</item>
      <item>NSIcon - Icon name for these documents</item>
-     <item>NSRole - Class is a Viewer or Editor</item>
+     <item>NSRole - Viewer or Editor</item>
    </list>
    <p>
-   You can also use NSDocumentController to get a list of all open
+   You can use NSDocumentController to get a list of all open
    documents, the current document (The one whose window is Key) and
    other information about these documents. It also remebers the most 
    recently opened documents (through the user default key
-    _GSRecentDocuments). .
+    NSRecentDocuments). .
    </p>
    <p>
    You can subclass NSDocumentController to customize the behavior of
@@ -115,13 +120,18 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   if (sharedController == nil)
     {
       sharedController = [[self alloc] init];
-      /* Need to verify this is the correct behavior. Set ourselves as
-	 the app delegate if there isn't one already */
-      if ([NSApp delegate] == nil)
-	[NSApp setDelegate: self];
     }
 
   return sharedController;
+}
+
+/* Private method for use by NSApplication to determine if it should
+   instantiate an NSDocumentController.
+*/
++ (BOOL) isDocumentBasedApplication
+{
+  return ([[[NSBundle mainBundle] infoDictionary] objectForKey: NSTypesKey])
+	? YES : NO;
 }
 
 /** </init>Initializes the document controller class. The first
@@ -422,19 +432,23 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 */
 - (BOOL) closeAllDocuments
 {
-  NSDocument *document;
-  NSEnumerator *docEnum = [_documents objectEnumerator];
-  
-  while ((document = [docEnum nextObject]))
+  int count;
+  count = [_documents count];
+  if (count > 0)
     {
-      if (![document canCloseDocument]) 
+      NSDocument *array[count];
+      [_documents getObjects: array];
+      while (count-- > 0)
 	{
-	  return NO;
+	  NSDocument *document = array[count];
+	  if (![document canCloseDocument]) 
+	    {
+	      return NO;
+	    }
+	  [document close];
 	}
-      [document close];
-      [self removeDocument: document];
     }
-  
+
   return YES;
 }
 

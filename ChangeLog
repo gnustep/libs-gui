@@ -1,3 +1,19 @@
+2002-11-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-finishLaunching): Instantiate an
+	NSDocumentController if this is a doc-based app.
+	(-targetForAction:): Check if NSDocumentController responds
+	to action if this is a doc-based app.
+
+	* Source/NSDocument.m (-close): Rewrite to deal with removing
+	objects from array while enumerating.
+	* Source/NSDocumentController.m (-closeAllDocuments): Idem.
+	(-sharedDocumentController): Don't set ourselves as the app delegate.
+	(-isDocumentBasedApplication): Method for NSApplication.
+
+	* Source/NSWindow.m (-sendEvent:): Retain _lastView
+	just in case it's a temporary view.	
+
 2002-10-31  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: 

@@ -2822,7 +2822,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	}
 
       case NSLeftMouseUp:
-	v = _lastView;
+	v = AUTORELEASE(RETAIN(_lastView));
 	DESTROY(_lastView);
 	if (v == nil)
 	  break;

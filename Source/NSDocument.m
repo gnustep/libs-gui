@@ -730,11 +730,29 @@
     }
 }
 
+/** Closes all the windows owned by the document, then removes itself
+    from the list of documents known by the NSDocumentController. This
+    method does not ask the user if they want to save the document before
+    closing. It is closed without saving any information.
+ */
 - (void)close
 {
-  // We have an _docFlags.inClose flag, but I don't think we need to use it.
-  [_windowControllers makeObjectsPerformSelector:@selector(close)];
-  [[NSDocumentController sharedDocumentController] removeDocument:self];
+  if (_docFlags.inClose == NO)
+    {
+      int count = [_windowControllers count];
+      /* Closing a windowController will also send us a close, so make
+	 sure we don't go recursive */
+      _docFlags.inClose = YES;
+
+      if (count > 0)
+	{
+	  NSWindowController *array[count];
+	  [_windowControllers getObjects: array];
+	  while (count-- > 0)
+	    [array[count] close];
+	}
+      [[NSDocumentController sharedDocumentController] removeDocument:self];
+    }
 }
 
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController {}
