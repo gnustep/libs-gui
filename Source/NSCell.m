@@ -193,16 +193,19 @@ static NSColor	*shadowCol;
   else
     borderSize = NSZeroSize;
 
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      borderSize.height += 1;
+      borderSize.width  += 3;
+    }
+
   // Get Content Size
   switch (_cell.type)
     {
     case NSTextCellType:
       s = NSMakeSize([_cell_font widthOfString: _contents], 
-		     [_cell_font pointSize]);
-      // If text, add in a distance between text and borders
-      // otherwise the text will mess up with the borders
-      s.width += 2 * xDist;
-      s.height += 2 * yDist;
+		     [_cell_font boundingRectForFont].size.height);
       break;
     case NSImageCellType:
       s = [_cell_image size];
@@ -236,7 +239,7 @@ static NSColor	*shadowCol;
     borderSize = _sizeForBorderType (NSBezelBorder);
   else
     borderSize = NSZeroSize;
-  
+
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 
@@ -501,11 +504,24 @@ static NSColor	*shadowCol;
 	      delegate: (id)anObject
 		 event: (NSEvent *)theEvent
 {
+  NSRect frame;
+
   if (!controlView || !textObject || !_cell_font ||
 			(_cell.type != NSTextCellType))
     return;
 
-  [textObject setFrame: [self drawingRectForBounds: aRect]];
+  frame = [self drawingRectForBounds: aRect];
+  
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      frame.origin.x += 3;
+      frame.size.width -= 6;
+      frame.origin.y += 1;
+      frame.size.height -= 2;
+    }
+      
+  [textObject setFrame: frame];
   [controlView addSubview: textObject];  
   [textObject setText: _contents];
   [textObject setDelegate: anObject];
@@ -529,11 +545,24 @@ static NSColor	*shadowCol;
 		   start: (int)selStart
 		  length: (int)selLength
 {
+  NSRect frame;
+
   if (!controlView || !textObject || !_cell_font ||
 			(_cell.type != NSTextCellType))
     return;
 
-  [textObject setFrame: [self drawingRectForBounds: aRect]];
+  frame = [self drawingRectForBounds: aRect];
+  
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      frame.origin.x += 3;
+      frame.size.width -= 6;
+      frame.origin.y += 1;
+      frame.size.height -= 2;
+    }
+      
+  [textObject setFrame: frame];
   [controlView addSubview: textObject];
   [textObject setText: _contents];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
@@ -648,6 +677,11 @@ static NSColor	*shadowCol;
     [NSException raise: NSInvalidArgumentException
         format: @"Request to draw a text cell but no font specified!"];
   titleWidth = [_cell_font widthOfString: title];
+  // Important: text should always be vertically centered without
+  // considering descender [as if descender did not exist].
+  // At present (13/1/00) the following code produces the correct output,
+  // even if it seems to be trying to make it wrong.
+  // Please make sure the output remains always correct.
   titleHeight = [_cell_font pointSize] - [_cell_font descender];
 
   // Determine the y position of the text
@@ -696,6 +730,16 @@ static NSColor	*shadowCol;
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
+
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      cellFrame.origin.x += 3;
+      cellFrame.size.width -= 6;
+      cellFrame.origin.y += 1;
+      cellFrame.size.height -= 2;
+    }
+
   [controlView lockFocus];
 
   switch (_cell.type)
@@ -1257,13 +1301,13 @@ _sizeForBorderType (NSBorderType aType)
   // Returns the size of a border
   switch (aType)
     {
-      case NSLineBorder:
-        return NSMakeSize(1, 1);
-      case NSGrooveBorder:
-      case NSBezelBorder:
-        return NSMakeSize(2, 2);
-      case NSNoBorder:
-      default:
-        return NSZeroSize;
+    case NSLineBorder:
+      return NSMakeSize(1, 1);
+    case NSGrooveBorder:
+    case NSBezelBorder:
+      return NSMakeSize(2, 2);
+    case NSNoBorder: 
+    default:
+      return NSZeroSize;
     }
 }
