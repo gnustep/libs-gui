@@ -1,3 +1,22 @@
+Wed Feb  7 20:21:36 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-_adjustSubviews]): New method so that we
+	avoid posting notifications if the delegate is doing the resizing.
+	([-adjustSubviews]): Do not post notifications so it can be called
+	by the delegate method.  ([-resizeWithOldSuperviewSize:]): Call
+	_adjustSubviews: rather than adjustSubviews:.
+
+	* Headers/gnustep/gui/NSSplitView.h (_never_displayed_before): 
+	New ivar.
+	* Source/NSSplitView.m ([-initWithFrame:]): Set
+	_never_displayed_before to YES.  ([-displayRectIgnoringOpacity:]),
+	([-displayIfNeededInRectIgnoringOpacity:]): New methods.  Adjust
+	subviews the first time ever the split view is displayed.
+	([-addSubview:positioned:relativeTo:]), ([-addSubview:]): Removed.
+
+	* Source/NSFontPanel.m ([-_initWithoutGModel]): Removed hack to
+	set sizes of splitview's subviews right - no longer needed.
+	
 2001-02-07  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: Modified miniwindow view drawing to make titles
