@@ -33,6 +33,10 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSAutoreleasePool.h>
 
+#ifdef NEXT_PDO
+# include <Foundation/NSConnection.h>
+#endif
+
 #include <DPSClient/NSDPSContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
@@ -518,7 +522,7 @@ static id NSApp;
   //
   if ([aTarget respondsToSelector:aSelector])
     {
-      [aTarget perform:aSelector withObject:sender];
+      [aTarget performSelector:aSelector withObject:sender];
       return YES;
     }
 

@@ -482,7 +482,7 @@ static NSButtonCell* knobCell = nil;
 
 - (BOOL)sendAction:(SEL)action to:(id)target
 {
-  [target perform:action withObject:self];
+  [target performSelector:action withObject:self];
   return YES;
 }
 

@@ -60,7 +60,7 @@
 
 - (BOOL) draw
 {
-  [delegate perform: selector];
+  [delegate performSelector: selector];
   return YES;
 }
 

@@ -93,7 +93,7 @@
   // Can we perform the action -then do it
   if ([self respondsToSelector:anAction])
     {
-      [self perform:anAction withObject:anObject];
+      [self performSelector:anAction withObject:anObject];
       return YES;
     }
   else

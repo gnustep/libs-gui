@@ -1,3 +1,23 @@
+Wed Aug 27 14:04:38 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Headers/gnustep/gui/config.h.in (OBJC_MALLOC, OBJC_FREE): New defines
+	to make the GUI library compile with NeXT PDO.
+	* Source/NSApplication.m: Include Foundation/NSConnection.h for symbols
+	needed by NSRunLoop.
+	* Source/NSApplication.m: Changed perform:... with performSelector:.. .
+	* Source/NSCustomImageRep.m: Likewise.
+	* gui/Source/NSImage.m: Likewise.
+	* Source/NSMatrix.m: Likewise.
+	* Source/NSMenu.m: Likewise.
+	* Source/NSResponder.m: Likewise.
+	* Source/NSScroller.m: Likewise.
+	* Source/NSBitmapImageRep.m: Include config.h to get the OBJC_MALLOC
+	and OBJC_FREE definitions.
+	* Source/PSMatrix.m: Include Foundation/NSString.h.
+	* Source/NSMenu.m: Likewise.
+	* Source/NSMatrix.m: Likewise.
+	* gui/Source/NSImage.m: Likewise.
+
 Fri Aug 22 11:40:45 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	Fixed scrolling to work with the new scalation/rotation code.

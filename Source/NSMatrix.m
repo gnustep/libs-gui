@@ -33,6 +33,7 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSString.h>
 
 #include <AppKit/NSColor.h>
 #include <AppKit/NSActionCell.h>
@@ -1091,12 +1092,12 @@ static int mouseDownFlags = 0;
 
   if (theAction) {
     if (theTarget)
-      [selectedCell perform:theAction withObject:self];
+      [selectedCell performSelector:theAction withObject:self];
     else
-      [target perform:theAction withObject:self];
+      [target performSelector:theAction withObject:self];
   }
   else
-    [target perform:action withObject:self];
+    [target performSelector:action withObject:self];
 
   return YES;
 }
@@ -1112,7 +1113,7 @@ static int mouseDownFlags = 0;
       NSMutableArray* row = [cells objectAtIndex:i];
 
       for (j = 0; j < numCols; j++)
-	if (![anObject perform:aSelector
+	if (![anObject performSelector:aSelector
 		       withObject:[row objectAtIndex:j]])
 	  return;
     }
@@ -1124,7 +1125,7 @@ static int mouseDownFlags = 0;
 
       for (j = 0; j < numCols; j++)
 	if (row[i])
-	  if (![anObject perform:aSelector
+	  if (![anObject performSelector:aSelector
 			      withObject:[cellRow objectAtIndex:j]])
 	    return;
     }
@@ -1137,7 +1138,7 @@ static int mouseDownFlags = 0;
     return;
 
   if (doubleAction)
-    [target perform:doubleAction withObject:self];
+    [target performSelector:doubleAction withObject:self];
   else
     [self sendAction];
 }
@@ -1338,9 +1339,9 @@ static int mouseDownFlags = 0;
   }
 
   if ([selectedCell target])
-    [[selectedCell target] perform:[selectedCell action] withObject:self];
+    [[selectedCell target] performSelector:[selectedCell action] withObject:self];
   else if (target)
-    [target perform:action withObject:self];
+    [target performSelector:action withObject:self];
 
   [[self window] flushWindow];
   [self unlockFocus];
@@ -1360,7 +1361,7 @@ static int mouseDownFlags = 0;
     for (j = 0; j < numCols; j++) {
       NSCell* aCell = [row objectAtIndex:j];
 
-      if ([aCell isEnabled] && [[aCell keyEquivalent] isEqual:key]) {
+      if ([aCell isEnabled] && [[aCell keyEquivalent] isEqualToString:key]) {
 	NSCell* oldSelectedCell = selectedCell;
 
 	selectedCell = aCell;

@@ -38,6 +38,8 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSString.h>
+
 #include <AppKit/NSImage.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSCachedImageRep.h>
@@ -971,7 +973,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       NSArray* pb_list;
 
       // Have the image rep perform the operation
-      pb_list = [rep perform: method];
+      pb_list = [rep performSelector: method];
 
       // Iterate through the returned array
       // and add elements to types list, duplicates weeded.

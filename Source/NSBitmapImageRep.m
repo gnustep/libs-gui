@@ -37,6 +37,8 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/AppKitExceptions.h>
+
+#include <gnustep/gui/config.h>
 #include <gnustep/gui/nsimage-tiff.h>
 
 /* Maximum number of planes */

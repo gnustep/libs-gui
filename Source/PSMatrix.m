@@ -25,6 +25,8 @@
 
 #include <math.h>
 
+#include <Foundation/NSString.h>
+
 #include <AppKit/config.h>
 #include <AppKit/PSMatrix.h>
 

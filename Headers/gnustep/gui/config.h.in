@@ -50,5 +50,15 @@
 
 extern BOOL initialize_gnustep_backend (void);
 
+#ifndef OBJC_MALLOC
+# define OBJC_MALLOC(pointer, type, elements) \
+	(pointer = calloc (sizeof(type), elements))
+#endif
+
+#ifndef OBJC_FREE
+# define OBJC_FREE(pointer) \
+	if (pointer) free(pointer)
+#endif
+
 #endif /* _GNUstep_H_AppKitConfig */
 

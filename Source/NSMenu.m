@@ -28,6 +28,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSProcessInfo.h>
+#include <Foundation/NSString.h>
 
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSApplication.h>
@@ -588,7 +589,7 @@ static Class menuCellClass = nil;
 
   /* Search the target */
   if ((target = [cell target]) && [target respondsToSelector:action]) {
-    [target perform:action withObject:cell];
+    [target performSelector:action withObject:cell];
     return;
   }
 
@@ -597,7 +598,7 @@ static Class menuCellClass = nil;
   responder = [keyWindow firstResponder];
   while (responder) {
     if ([responder respondsToSelector:action]) {
-      [responder perform:action withObject:cell];
+      [responder performSelector:action withObject:cell];
       return;
     }
     responder = [responder nextResponder];
@@ -605,14 +606,14 @@ static Class menuCellClass = nil;
 
   /* Search the key window */
   if ([keyWindow respondsToSelector:action]) {
-    [keyWindow perform:action withObject:cell];
+    [keyWindow performSelector:action withObject:cell];
     return;
   }
 
   /* Search the key window's delegate */
   delegate = [keyWindow delegate];
   if ([delegate respondsToSelector:action]) {
-    [delegate perform:action withObject:cell];
+    [delegate performSelector:action withObject:cell];
     return;
   }
 
@@ -622,7 +623,7 @@ static Class menuCellClass = nil;
     responder = [mainWindow firstResponder];
     while (responder) {
       if ([responder respondsToSelector:action]) {
-	[responder perform:action withObject:cell];
+	[responder performSelector:action withObject:cell];
 	return;
       }
       responder = [responder nextResponder];
@@ -630,28 +631,28 @@ static Class menuCellClass = nil;
 
     /* Search the main window */
     if ([mainWindow respondsToSelector:action]) {
-      [mainWindow perform:action withObject:cell];
+      [mainWindow performSelector:action withObject:cell];
       return;
     }
 
     /* Search the main window's delegate */
     delegate = [mainWindow delegate];
     if ([delegate respondsToSelector:action]) {
-      [delegate perform:action withObject:cell];
+      [delegate performSelector:action withObject:cell];
       return;
     }
   }
 
   /* Search the NSApplication object */
   if ([theApp respondsToSelector:action]) {
-    [theApp perform:action withObject:cell];
+    [theApp performSelector:action withObject:cell];
     return;
   }
 
   /* Search the NSApplication object's delegate */
   delegate = [theApp delegate];
   if ([delegate respondsToSelector:action]) {
-    [delegate perform:action withObject:cell];
+    [delegate performSelector:action withObject:cell];
     return;
   }
 }
