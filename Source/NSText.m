@@ -11,7 +11,7 @@
    Date: July 1998
    Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-  
+   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -28,13 +28,17 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
-//	doDo:	contact autor
+//	doDo:	-caret blinking
+//			-formatting routine: broader than 1.5x width cause display problems
+//			-optimization: 1.deletion of single char in paragraph [opti hook 1]
+//			-optimization: 2.newline in first line
+//			-optimization: 3.paragraph made one less line due to delition of single char [opti hook 1; diff from 1.]
 
-#if !defined(ABS)	 
-    #define ABS(A)	({ typeof(A) __a = (A); __a < 0 ? -__a : __a; })
-#endif		// the definition in gstep-base produces warnings FIX ME FAR
+#if !defined(ABS)
+    #define ABS(A)     ({ typeof(A) __a = (A); __a < 0 ? -__a : __a; })
+#endif         // the definition in gstep-base produces warnings FIX ME FAR
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
@@ -49,7 +53,8 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSDragging.h>
+
+#include <AppKit/NSDragging.h> 
 #include <AppKit/NSStringDrawing.h>
 
 #include <Foundation/NSNotification.h>
@@ -58,34 +63,14 @@
 #include <Foundation/NSScanner.h>
 #include <Foundation/NSData.h>
 
-static NSRange MakeRangeFromAbs(int a1,int a2) // not the same as NSMakeRange!
-{
-  if (a1 < 0)
-    a1 = 0;
-  if (a2 < 0)
-    a2 = 0;
-  if (a1 < a2)
-    return NSMakeRange(a1,a2-a1);	
-  else
-    return NSMakeRange(a2,a1-a2);
-}
-
-extern BOOL	NSEqualRanges(NSRange range1, NSRange range2);	// should define in base FIX ME FAR
-
 #define HUGE 1e99
 
 enum {
-    NSBackspaceKey			= 8,
-    NSCarriageReturnKey			= 13,
-    NSDeleteKey				= 0x7f,
-    NSBacktabKey			= 25
+    NSBackspaceKey                     = 8,
+    NSCarriageReturnKey                = 13,
+    NSDeleteKey                        = 0x7f,
+    NSBacktabKey                       = 25
 };
-
-//*****************************************************************************
-//
-// 		_GNULineLayoutInfo 
-//
-//*****************************************************************************
 
 @interface _GNULineLayoutInfo:NSObject
 {	NSRange lineRange;
@@ -93,11 +78,11 @@ enum {
 	float	drawingOffset;
 	BOOL	dontDisplay;
 	unsigned	type;
-	NSString	*fingerprintString;	// used in lines before paragraphs for determining if update optimization is possible
+	NSString	*fingerprintString;	// obsolete, unused
 }
 
 typedef enum
-{	// do not use 0 in order to secure calls to nil!
+{	// do not use 0 in order to secure calls to nil (calls to nil return 0)!
 	LineLayoutInfoType_Text=1,
 	LineLayoutInfoType_Paragraph=2
 } _GNULineLayoutInfo_t;
@@ -138,7 +123,15 @@ typedef enum
 -(NSString*) fingerprintString {return fingerprintString;}
 
 -(void)	setLineRange:(NSRange) aRange {lineRange= aRange;}
--(void)	setLineRect:(NSRect) aRect {lineRect= aRect;}
+
+-(void)	setLineRect:(NSRect) aRect 
+{
+  //FIXME, line up textEditor with how text in text cell will be placed.
+  //  aRect.origin.y += 2;
+
+  lineRect= aRect;
+}
+
 -(void)	setDrawingOffset:(float) anOffset {drawingOffset= anOffset;}
 -(void)	setDontDisplay:(BOOL) flag		{dontDisplay=flag;}
 -(void)	setType:(unsigned) aType		{type=aType;}
@@ -162,18 +155,30 @@ typedef enum
 }
 @end
 
-// end: _GNULineLayoutInfo ----------------------------------------------------
+static NSRange MakeRangeFromAbs(int a1,int a2) // not the same as NSMakeRange!
+{
+  if (a1 < 0)
+    a1 = 0;
+  if (a2 < 0)
+    a2 = 0;
+  if (a1 < a2)
+    return NSMakeRange(a1,a2-a1);
+  else
+    return NSMakeRange(a2,a1-a2);
+}
 
-//*****************************************************************************
-//
-// 		_GNUTextScanner 
-//
-//*****************************************************************************
+/*
+static NSRange MakeRangeFromAbs(int a1,int a2)
+{	if(a1< a2)	return NSMakeRange(a1,a2-a1);	
+	else		return NSMakeRange(a2,a1-a2);
+}
+*/
+// end: _GNULineLayoutInfo ------------------------------------------------------------------------------------------
 
 // NeXT's NSScanner's scanCharactersFromSet and friends seem to be a bit sluggish on whitespaces and newlines
-//(have not tried GNUstep-base implementation though). so here is a more pedantic implementation:
+//(have not tried GNUstep-base implementation though). so here is a more pedantic (and faster) implementation:
 
-// ithis class should be considered private since it is not polished at all!
+// this class should be considered private since it is not polished at all!
 
 
 @interface _GNUTextScanner:NSObject
@@ -231,14 +236,10 @@ typedef enum
 }
 
 -(BOOL) isAtEnd
-{
-	return activeRange.location>= stringLength;
+{	return activeRange.location>= stringLength;
 }
 -(unsigned) scanLocation {return activeRange.location;}
--(void) setScanLocation:(unsigned) aLoc 
-{ 
-	activeRange=MakeRangeFromAbs(aLoc,stringLength);
-}
+-(void) setScanLocation:(unsigned) aLoc { activeRange=MakeRangeFromAbs(aLoc,stringLength);}
 
 -(void) dealloc
 {	[string release];
@@ -248,31 +249,35 @@ typedef enum
 }
 @end
 
-// end: _GNUTextScanner implementation ----------------------------------------
+// end: _GNUTextScanner implementation--------------------------------------
+
 
 @interface NSAttributedString(DrawingAddition)
 -(NSSize) sizeRange:(NSRange) aRange;
 -(void) drawRange:(NSRange) aRange atPoint:(NSPoint) aPoint;
+-(BOOL) areMultipleFontsInRange:(NSRange) aRange;
 @end
 
 @implementation NSAttributedString(DrawingAddition)
--(NSSize) sizeRange:(NSRange) currRange
+-(NSSize) sizeRange:(NSRange) lineRange
 {	NSRect				 retRect=NSZeroRect;
-	NSRange				 lineRange=currRange;
-	NSPoint				 currPoint;
+	NSRange				 currRange=NSMakeRange(lineRange.location,0);
+	NSPoint				 currPoint=NSMakePoint(0,0);
 	NSString			*string=[self string];
 
 	for(; NSMaxRange(currRange)< NSMaxRange(lineRange);)	// draw all "runs"
 	{	NSDictionary *attributes=[self attributesAtIndex:NSMaxRange(currRange) longestEffectiveRange:&currRange inRange:lineRange];
 		NSString	 *substring=[string substringWithRange:currRange];
-		NSRect		  sizeRect=NSZeroRect;
+		NSRect		  sizeRect=NSMakeRect(currPoint.x,0,0,0);
+
 		sizeRect.size=[substring sizeWithAttributes:attributes];
 		retRect=NSUnionRect(retRect,sizeRect);
 		currPoint.x+=sizeRect.size.width;
+		//<!> size attachments
 	} return retRect.size;
 }
--(void) drawRange:(NSRange) currRange atPoint:(NSPoint) aPoint
-{	NSRange				 lineRange=currRange;
+-(void) drawRange:(NSRange) lineRange atPoint:(NSPoint) aPoint
+{	NSRange				 currRange=NSMakeRange(lineRange.location,0);
 	NSPoint				 currPoint;
 	NSString			*string=[self string];
 
@@ -280,9 +285,18 @@ typedef enum
 	{	NSDictionary *attributes=[self attributesAtIndex:NSMaxRange(currRange) longestEffectiveRange:&currRange inRange:lineRange];
 		NSString	 *substring=[string substringWithRange:currRange];
 		[substring drawAtPoint:currPoint withAttributes:attributes];
-		currPoint.x+=[substring sizeWithAttributes: attributes].width;
+		currPoint.x+=[substring sizeWithAttributes:attributes].width;
+		//<!> draw attachments
 	}
 }
+
+-(BOOL) areMultipleFontsInRange:(NSRange) aRange
+{	NSRange longestRange;
+	[self attribute:NSFontAttributeName atIndex:aRange.location longestEffectiveRange:&longestRange inRange:aRange];
+	if(NSEqualRanges(NSIntersectionRange(longestRange,aRange),aRange)) return NO;
+	else return YES;
+}
+
 @end
 
 @interface _GNUSeekableArrayEnumerator:NSObject
@@ -328,11 +342,9 @@ typedef enum
 }
 @end
 
-//*****************************************************************************
-//
-// 		NSText 
-//
-//*****************************************************************************
+
+
+// begin: NSText------------------------------------------------------------
 
 @implementation NSText
 
@@ -340,19 +352,19 @@ typedef enum
 // Class methods
 //
 + (void)initialize
-{
+{	
   if (self == [NSText class])
-    {
-      NSArray	*r;
-      NSArray	*s;
-
-      [self setVersion:1];			// Initial version
+    { 
+      NSArray  *r;
+      NSArray  *s;
+      
+      [self setVersion:1];                     // Initial version
 
       r = [NSArray arrayWithObjects: NSStringPboardType, nil];
       s = [NSArray arrayWithObjects: NSStringPboardType, nil];
-
+ 
       [[NSApplication sharedApplication] registerServicesMenuSendTypes: s
-							   returnTypes: r];
+                                                          returnTypes: r];
     }
 }
 
@@ -425,36 +437,36 @@ typedef enum
 }
 
 /*
- *	Handle enabling/disabling of services menu items.
+ *     Handle enabling/disabling of services menu items.
  */
 - (id) validRequestorForSendType: (NSString*)sendType
-		      returnType: (NSString*)returnType
+                     returnType: (NSString*)returnType
 {
   if ((!sendType || [sendType isEqual: NSStringPboardType]) &&
       (!returnType || [returnType isEqual: NSStringPboardType]))
     {
       if (([self selectedRange].length || !sendType) &&
-	([self isEditable] || !returnType))
-	{
-	  return self;
-	}
+       ([self isEditable] || !returnType))
+       {
+         return self;
+       }
     }
   return [super validRequestorForSendType: sendType
-			       returnType: returnType];
-
+                              returnType: returnType];
+      
 }
-
+      
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pb
 {
-  NSArray	*types;
-  NSString	*string;
-  NSRange	range;
-
+  NSArray      *types;
+  NSString     *string;
+  NSRange      range;
+     
   types = [pb types];
   if ([types containsObject: NSStringPboardType] == NO)
-    {
+    {   
       return NO;
-    }
+    }   
   string = [pb stringForType: NSStringPboardType];
   range = [self selectedRange];
   [self deleteRange: range backspace: NO];
@@ -464,14 +476,14 @@ typedef enum
 
   return YES;
 }
-
+  
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pb
-			      types: (NSArray*)sendTypes
+                             types: (NSArray*)sendTypes
 {
-  NSArray	*types;
-  NSRange	range;
-  NSString	*string;
-
+  NSArray      *types;
+  NSRange      range;
+  NSString     *string;
+        
   if ([sendTypes containsObject: NSStringPboardType] == NO)
     {
       return NO;
@@ -574,12 +586,15 @@ typedef enum
 
 -(NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity
 {	NSCharacterSet	*set=nil;
-	unsigned		 lastIndex=[self textLength]-1,lpos=MIN(lastIndex,proposedCharRange.location),
-					 rpos=NSMaxRange(proposedCharRange);
+	unsigned	lastIndex=[self textLength]-1,lpos=MIN(lastIndex,proposedCharRange.location),
+					 rpos=NSMaxRange(proposedCharRange);	// <!>better: rpos=MAX(0,(int)NSMaxRange(proposedCharRange)-1);
 	NSString		*string=[self string];
 	BOOL			 rmemberstate,lmemberstate;
 
-	if(![string length]) return NSMakeRange(0,0);
+	if(![string length]) {
+	  NSLog(@"We have no length, our range is 0,0\n");
+	  return NSMakeRange(0,0);
+	}
 
 	switch(granularity)
 	{	case NSSelectByCharacter: return NSIntersectionRange(proposedCharRange,NSMakeRange(0,[self textLength]+1));
@@ -596,6 +611,10 @@ typedef enum
 	while (rpos<= lastIndex && [set characterIsMember:[string characterAtIndex:rpos]]== rmemberstate) rpos++;
 
 	while(lpos && [set characterIsMember:[string characterAtIndex:lpos]]== lmemberstate) lpos--;
+	if([set characterIsMember:[string characterAtIndex:lpos]] != lmemberstate && lpos < proposedCharRange.location) lpos++;
+
+	NSLog(@"lpos = %d, rpos = %d\n", lpos, rpos);
+
 	return MakeRangeFromAbs(lpos,rpos);
 }
 
@@ -619,12 +638,10 @@ typedef enum
 }
 
 -(void) replaceRange:(NSRange)range withString:(NSString*) aString
-{
-	if([self isRichText])
-	{ return [rtfContent replaceCharactersInRange:range
-withString:aString];
-	} else return [plainContent replaceCharactersInRange:range
-withString:aString]; }
+{	if([self isRichText])
+	{	return [rtfContent replaceCharactersInRange:range withString:aString];
+	} else return [plainContent replaceCharactersInRange:range withString:aString];
+}
 
 -(void) setText:(NSString*) aString range:(NSRange) aRange
 {	[self replaceRange:(NSRange)aRange withString:aString];
@@ -643,13 +660,10 @@ withString:aString]; }
 -(void) setString:(NSString *)string
 {	[plainContent release];
 	plainContent=[[NSMutableString stringWithString:string] retain];
-	[lineLayoutInformation autorelease]; 
-	lineLayoutInformation=nil;
-	// force complete re-layout
-//	[self setSelectedRange:NSMakeRange(0, [default_font widthOfString:string])];
-	NSLog(@"setSelectedRange called in setString\n");
-	[self setSelectedRange:NSMakeRange(0, 0)];
+	[lineLayoutInformation autorelease]; lineLayoutInformation=nil;	// force complete re-layout
 	[self setRichText:NO];
+
+	[self setNeedsDisplay:YES];
 }
 -(void) setText:(NSString *)string {[self setString:string];}
 
@@ -692,22 +706,18 @@ withString:aString]; }
 -(void) setRichText:(BOOL)flag
 {	is_rich_text = flag;
 	if(flag)
-	{
-	  if(!rtfContent) {
-    	     rtfContent=[[NSMutableAttributedString alloc] initWithString:plainContent? (NSString*)plainContent:@"" attributes:[self defaultTypingAttributes]];
-	  }
-	  [self rebuildRichLineLayoutInformationStartingAtLine:0];
-	} else {
-	  if(!plainContent) {
-	    plainContent=[[NSMutableString alloc] initWithString:rtfContent? [rtfContent string]:@""];
-	  }
-	  [self rebuildPlainLineLayoutInformationStartingAtLine:0];
+	{	if(!rtfContent) rtfContent=[[NSMutableAttributedString alloc] initWithString:plainContent? (NSString*)plainContent:@"" attributes:[self defaultTypingAttributes]];
+		[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
+		[self rebuildLineLayoutInformationStartingAtLine:0];
+	} else
+	{	if(!plainContent) plainContent=[[NSMutableString alloc] initWithString:rtfContent? [rtfContent string]:@""];
+		[self rebuildLineLayoutInformationStartingAtLine:0];
 	}
 
 	[self updateDragTypeRegistration];
 
 	[self sizeToFit];
-	[self setNeedsDisplay: YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)setSelectable:(BOOL)flag
@@ -782,14 +792,18 @@ withString:aString]; }
 
 - (void)setFont:(NSFont *)font ofRange:(NSRange)range
 {	if([self isRichText])
-	{	if(font) [rtfContent addAttribute:NSFontAttributeName value:font range:range];
+	{	if(font)
+		{	[rtfContent addAttribute:NSFontAttributeName value:font range:range];
+			[self rebuildFromCharacterIndex:range.location];
+NSLog(@"did set font");
+		}
 	} else {}
 }
 
 - (void)setTextColor:(NSColor *)color
 {	ASSIGN(text_color,color);
 
-	if(![self isRichText]) [self setNeedsDisplay: YES];
+	if(![self isRichText]) 	[self setNeedsDisplay:YES];
 }
 
 - (void)setUsesFontPanel:(BOOL)flag
@@ -804,18 +818,34 @@ withString:aString]; }
 
 
 -(BOOL) shouldDrawInsertionPoint
-{	return ([self selectedRange].length==0) && [self isEditable] && (![self isFieldEditor]);
+{	return ([self selectedRange].length==0) && [self isEditable];
 }
 -(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag
-{	if(flag)
-	{	[color set]; NSRectFill(rect);
-	} else
-	{	[[self backgroundColor] set]; NSRectFill(rect);
+{	BOOL	didLock=NO;
+
+	if (![self window])
+	  return;
+
+	if([self window] && [[self class] focusView] != self)
+	{	[self lockFocus];
+		didLock=YES;
+	}
+
+	if(flag) {
+	  [color set]; 
+	  NSRectFill(rect);
+	} else {
+	  [[self backgroundColor] set]; NSRectFill(rect);
+	}
+
+	if(didLock)
+	{	[self unlockFocus];
+		[[self window] flushWindow];
 	}
 }
 -(void) drawInsertionPointAtIndex:(unsigned)index color:(NSColor *)color turnedOn:(BOOL)flag
 {	NSRect		startRect=[self rectForCharacterIndex:index];
-	[self drawInsertionPointInRect:NSMakeRect(startRect.origin.x, startRect.origin.y,1.0,startRect.size.height)
+	[self drawInsertionPointInRect:NSMakeRect(startRect.origin.x, startRect.origin.y,0.5,startRect.size.height)
 							 color:[NSColor blackColor] turnedOn:flag];
 }
 
@@ -842,30 +872,28 @@ withString:aString]; }
 	} else [self drawInsertionPointAtIndex:aRange.location color:[NSColor blackColor] turnedOn:YES];
 }
 
+// low level selection setting including delegation
 -(void) setSelectedRangeNoDrawing:(NSRange)range
 {
+#if 0
+	//<!> ask delegate for selection validation
+#endif
+	selected_range = range;
 #if 0
 	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextViewDidChangeSelectionNotification object:self
 											userInfo:[NSDictionary dictionaryWithObjectsAndKeys:NSStringFromRange(selected_range),NSOldSelectedCharacterRange,
 																								nil]];
 #endif
-	selected_range = range;
 }
 
 
 -(void) setSelectedRange:(NSRange)range
 {	BOOL	didLock=NO;
 
-  NSLog(@"setSelectedRange:\n\tcurrentrange location = %d, length = %d. wantedrange location = %d, length = %d\n", 
-(int)selected_range.location,
-(int)selected_range.length,
-(int)range.location,
-(int)range.length);
+        if(![self window])
+                return;
 
-	if(![self window])
-		return;
-
-	if([[self class] focusView] != self)
+	if([self window] && [[self class] focusView] != self)
 	{	[self lockFocus];
 		didLock=YES;
 	}
@@ -882,8 +910,9 @@ withString:aString]; }
 	{	BOOL isMultiple=NO;
 		NSFont	*currentFont=nil;
 		if([self isRichText])
-		{	// if(are multiple fonts in selection) isMultiple=YES;
-			// else currentFont=[rtfContent attribute:NSFontAttributeName atIndex:range.location longestEffectiveRange:NULL inRange:range]
+		{	if([rtfContent areMultipleFontsInRange:selected_range]) isMultiple=YES;
+			else currentFont=[[rtfContent attribute:NSFontAttributeName atIndex:range.location longestEffectiveRange:NULL inRange:range]
+								objectForKey:NSFontAttributeName];
 		} else currentFont=[[self defaultTypingAttributes] objectForKey:NSFontAttributeName];
 		[[NSFontPanel sharedFontPanel] setPanelFont:currentFont isMultiple:isMultiple];
 	}
@@ -906,10 +935,13 @@ withString:aString]; }
 	}
 }
 
-
 //
 // Sizing the Frame Rectangle
 //
+-(void) setFrame:(NSRect)frameRect
+{
+	[super setFrame:frameRect];
+}
 
 -(BOOL) isHorizontallyResizable		{ return is_horizontally_resizable; }
 -(BOOL) isVerticallyResizable		{ return is_vertically_resizable; }
@@ -943,19 +975,13 @@ withString:aString]; }
 	_GNULineLayoutInfo	*currentInfo;
 	NSRect			 retRect=NSMakeRect(0,0,0,0);
 
-	for(lineEnum=[linesToDraw objectEnumerator]; (currentInfo=[lineEnum nextObject]);)
+	for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
 	{	retRect=NSUnionRect(retRect,[currentInfo lineRect]);
 	} return retRect;
 }
 
 -(void) disableDisplay {displayDisabled=YES;}
 -(void) reenableDisplay {displayDisabled=NO;}
-
--(void) setFrame:(NSRect)frameRect
-{
-  [super setFrame:frameRect];
-  [self sizeToFit];
-}
 
 -(void) sizeToFit
 {
@@ -972,7 +998,7 @@ withString:aString]; }
 			float	newHeight=rect.size.height;
 
 			if([[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph && NSMaxY(rect)<= newHeight)
-				newHeight+=[[lineLayoutInformation lastObject] lineRect].size.height;
+				newHeight+=[[lineLayoutInformation lastObject] lineRect].size.height;	// cursor in last line (virtual)
 
 			newHeight=MIN(maxSize.height,MAX(newHeight,minSize.height));
 			sizeToRect=NSMakeRect(sizeToRect.origin.x,sizeToRect.origin.y-(newHeight-sizeToRect.size.height),
@@ -1020,9 +1046,8 @@ withString:aString]; }
 
 		if([self selectedRange].length)
 		{	[rtfContent addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:doUnderline] range:[self selectedRange]];
-			//[self rebuildLineLayoutInformationStartingAtLine:lineIndex];
-			//[self displayRect:NSUnionRect([[lineLayoutInformation objectAtIndex:lineIndex] lineRect],[[lineLayoutInformation lastObject] lineRect])];
-		} else [[self typingAttributes] setObject:[NSNumber numberWithInt:doUnderline] forKey: NSUnderlineStyleAttributeName];
+			[self rebuildFromCharacterIndex:[self selectedRange].location];
+		} else [[self typingAttributes] setObject:[NSNumber numberWithInt:doUnderline] forKey: NSUnderlineStyleAttributeName];	// no redraw necess.
 	}
 }
 
@@ -1030,9 +1055,8 @@ withString:aString]; }
 {	if([self isRichText])
 	{	if([self selectedRange].length)
 		{	[rtfContent removeAttribute:NSUnderlineStyleAttributeName range:[self selectedRange]];
-			//[self rebuildLineLayoutInformationStartingAtLine:lineIndex];
-			//[self displayRect:NSUnionRect([[lineLayoutInformation objectAtIndex:lineIndex] lineRect],[[lineLayoutInformation lastObject] lineRect])];
-		} else [[self typingAttributes] removeObjectForKey:NSUnderlineStyleAttributeName];
+			[self rebuildFromCharacterIndex:[self selectedRange].location];
+		} else [[self typingAttributes] removeObjectForKey:NSUnderlineStyleAttributeName];	// no redraw necess.
 	}
 }
 
@@ -1066,7 +1090,7 @@ withString:aString]; }
 		[self updateDragTypeRegistration];
 		[self replaceRange:NSMakeRange(0,[self textLength]) withAttributedString:peek];
 		[self rebuildLineLayoutInformationStartingAtLine:0];
-		[self setNeedsDisplay: YES];
+		[self setNeedsDisplay:YES];
 		return YES;
 	}
 	return NO;
@@ -1095,7 +1119,7 @@ withString:aString]; }
 	if([lineLayoutInformation count] && anIndex>= NSMaxRange([[lineLayoutInformation lastObject] lineRange]))
 		return [lineLayoutInformation count]-1;
 
-	for(lineEnum=[lineLayoutInformation objectEnumerator]; (currentInfo=[lineEnum nextObject]);)
+	for(lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];)
 	{	NSRange lineRange=[currentInfo lineRange];
 		if(lineRange.location<= anIndex && anIndex<= NSMaxRange(lineRange)-([currentInfo type] == LineLayoutInfoType_Paragraph? 1:0))
 			return [lineLayoutInformation indexOfObject:currentInfo];
@@ -1174,8 +1198,8 @@ withString:aString]; }
 	} else [self drawSelectionAsRangeNoCaret:[self selectedRange]];
 
 //<!> make this non-blocking (or make use of timed entries)
-	for(currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask|NSMouseMovedMask]; [currentEvent type] != NSLeftMouseUp;
-	   (currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask|NSMouseMovedMask]), prevChosenRange=chosenRange)	// run modal loop
+	for(currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask];[currentEvent type] != NSLeftMouseUp;
+	   (currentEvent= [[self window] nextEventMatchingMask:NSLeftMouseDraggedMask|NSLeftMouseUpMask]), prevChosenRange=chosenRange)	// run modal loop
 	{	BOOL	didScroll=[self autoscroll:currentEvent];
 		point = [self convertPoint:[currentEvent locationInWindow] fromView:nil];
 		proposedRange=MakeRangeFromAbs([self characterIndexForPoint:point],startIndex);
@@ -1189,7 +1213,7 @@ withString:aString]; }
 			else continue;
 		}
 
-	// this  changes the selection without needing instance drawing (carefully thought out ;-) 
+	// this changes the selection without needing instance drawing (carefully thought out ;-) 
 		if(!didScroll)
 		{	[self drawSelectionAsRangeNoCaret:MakeRangeFromAbs(MIN(chosenRange.location, prevChosenRange.location),
 				MAX(chosenRange.location, prevChosenRange.location))];
@@ -1204,11 +1228,13 @@ withString:aString]; }
 
 		didDragging=YES;
 	}
-	NSLog(@"chosenRange. location = % d, length = %d\n",
+
+        NSLog(@"chosenRange. location = % d, length = %d\n",
 (int)chosenRange.location, (int)chosenRange.length);
+
 	[self setSelectedRangeNoDrawing:chosenRange];
 	if(!didDragging) [self drawSelectionAsRange:chosenRange];
-	else if(chosenRange.length== 0) [self drawInsertionPointAtIndex:chosenRange.location color:[NSColor blackColor] turnedOn:YES];
+	else if(chosenRange.length == 0) [self drawInsertionPointAtIndex:chosenRange.location color:[NSColor blackColor] turnedOn:YES];
 
 	currentCursorX=[self rectForCharacterIndex:chosenRange.location].origin.x;	// remember for column stable cursor up/down
 
@@ -1217,18 +1243,12 @@ withString:aString]; }
 }
 
 
--(void) redisplayForLineRange: (NSRange)redrawLineRange
-{
-  BOOL	didLock = NO;
+-(void) redisplayForLineRange:(NSRange) redrawLineRange
+{	BOOL	didLock=NO;
 
-  if ([self window] == nil)
-    return;
-
-  if ([[self class] focusView] != self)
-    {
-      [self lockFocus];
-      didLock = YES;
-    }
+	if([self window] && [[self class] focusView] != self)
+	{	[self lockFocus]; didLock=YES;
+	}
 
 	if([lineLayoutInformation count] && redrawLineRange.location < [lineLayoutInformation count] && redrawLineRange.length)
 	{	_GNULineLayoutInfo *firstInfo=[lineLayoutInformation objectAtIndex:redrawLineRange.location];
@@ -1252,13 +1272,13 @@ withString:aString]; }
 
 	if([self drawsBackground])	// clean up the remaining area under text of us
 	{	float	lowestY=0;
-		NSRect	f=[self frame];
+		NSRect	myFrame=[self frame];
 
 		if([lineLayoutInformation count]) lowestY=NSMaxY([[lineLayoutInformation lastObject] lineRect]);
 
-		if(![lineLayoutInformation count] || (lowestY < NSMaxY(f) && f.size.height<= [self minSize].height))
+		if(![lineLayoutInformation count] || (lowestY < NSMaxY(myFrame) && myFrame.size.height<= [self minSize].height))
 		{	[[self backgroundColor] set];
-			NSRectFill(NSMakeRect(0,lowestY,f.size.width,NSMaxY(f)-lowestY));
+			NSRectFill(NSMakeRect(0,lowestY,myFrame.size.width,NSMaxY(myFrame)-lowestY));
 			if(![lineLayoutInformation count] || [[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph)
 				[self drawSelectionAsRange:[self selectedRange]];
 		}
@@ -1268,75 +1288,25 @@ withString:aString]; }
 	}
 }
 
+-(void) rebuildFromCharacterIndex:(int) anIndex
+{	NSRange redrawLineRange;
+	int start,count=[self rebuildLineLayoutInformationStartingAtLine:start=[self lineLayoutIndexForCharacterIndex:anIndex]];
+	redrawLineRange=NSMakeRange(MAX(0,start-1),count+1);
+	redrawLineRange=NSIntersectionRange(redrawLineRange,[self lineRangeForRect:[self visibleRect]]);
+	[self redisplayForLineRange:redrawLineRange];
+NSLog(NSStringFromRange(redrawLineRange));
+}
+
 // central text inserting method (takes care of optimized redraw/ cursor positioning)
 
 -(void) insertText:insertObjc
 {	NSRange		selectedRange=[self selectedRange];
 	int			lineIndex=[self lineLayoutIndexForCharacterIndex:selectedRange.location],origLineIndex=lineIndex,caretLineIndex=lineIndex;
 	NSRange		redrawLineRange;
-	BOOL		layoutIncomplete=YES;
 	NSString	*insertString=nil;
 
 	if([insertObjc isKindOfClass:[NSString class]]) insertString=insertObjc;
 	else											insertString=[insertObjc string];
-
-
-#if 1
-	// speed optimization: newline insert: try patching change into layoutArray without actually relayouting the whole document
-	// this is a "tour de force" but performance really counts here!
-
-	if([insertString isEqualToString:[[self class] newlineString]] && lineIndex< [lineLayoutInformation count]-1 && !selectedRange.length)
-	{	BOOL	isLeftToPar=[[lineLayoutInformation objectAtIndex:lineIndex+1] type] == LineLayoutInfoType_Paragraph &&
-							[[lineLayoutInformation objectAtIndex:lineIndex+1] lineRange].location == selectedRange.location,
-				isRightToPar=(lineIndex && [[lineLayoutInformation objectAtIndex:lineIndex-1] type] == LineLayoutInfoType_Paragraph) &&
-							([[lineLayoutInformation objectAtIndex:lineIndex] type] == LineLayoutInfoType_Paragraph),
-				isLeftToLine=(selectedRange.location== [[lineLayoutInformation objectAtIndex:lineIndex] lineRange].location && 
-							 (lineIndex>1 && [[lineLayoutInformation objectAtIndex:lineIndex-1] type] == LineLayoutInfoType_Paragraph &&
-							  [[lineLayoutInformation objectAtIndex:lineIndex-2] type] == LineLayoutInfoType_Paragraph));
-
-		if(isRightToPar || isLeftToPar || isLeftToLine)
-		{	int insertIndex=lineIndex;
-			_GNULineLayoutInfo *templateInfo=nil,*newInfo;
-
-			if(!isRightToPar && isLeftToPar)
-			{	templateInfo=[lineLayoutInformation objectAtIndex:lineIndex+1];
-				insertIndex++; lineIndex+=2;
-			} else if(isRightToPar)
-			{	templateInfo=[lineLayoutInformation objectAtIndex:lineIndex];
-				lineIndex++;
-			} else if(isLeftToLine)
-			{	templateInfo=[lineLayoutInformation objectAtIndex:lineIndex-1];
-				insertIndex--;
-			}
-
-			[lineLayoutInformation insertObject:newInfo=[_GNULineLayoutInfo lineLayoutWithRange:
-							[templateInfo lineRange] rect:[templateInfo lineRect] drawingOffset:[templateInfo drawingOffset]
-							type:[templateInfo type]] atIndex:insertIndex];
-
-		//	remodel copied paragraph object to be a normal one (not line-terminating)
-			if(!isRightToPar && isLeftToPar)
-			{	_GNULineLayoutInfo *changeInfo=[lineLayoutInformation objectAtIndex:lineIndex];
-				NSRect				rect=[changeInfo lineRect];
-				[changeInfo setLineRect:NSMakeRect(0,rect.origin.y,[self frame].size.width,rect.size.height)];
-			}
-			// relocate (ylocation  and linerange) the lines below
-			{	NSArray		 *relocArray=[lineLayoutInformation subarrayWithRange:NSMakeRange(lineIndex,[lineLayoutInformation count]-lineIndex)];
-				NSEnumerator *relocEnum;
-				_GNULineLayoutInfo	*currReloc;
-				int	relocOffset=[insertString length];
-				NSSize advanceSize=[insertString sizeWithAttributes:[self isRichText]? (NSDictionary*)[self typingAttributes]: [self defaultTypingAttributes]];
-
-				for(relocEnum=[relocArray objectEnumerator]; (currReloc=[relocEnum nextObject]);)
-				{	NSRange range=[currReloc lineRange];
-					NSRect	rect=[currReloc lineRect];
-					[currReloc setLineRange:NSMakeRange(range.location+relocOffset,range.length)];
-					[currReloc setLineRect:NSMakeRect(rect.origin.x,rect.origin.y+advanceSize.height,rect.size.width,rect.size.height)];
-				}
-			} layoutIncomplete=NO;
-		}
-	}
-	// end: speed optimization ------------------------------------------------------------
-#endif
 
 	// in case e.g a space is inserted and a word actually shortened: redraw previous line to give it the chance to move up 
 	if([lineLayoutInformation count] && [[lineLayoutInformation objectAtIndex:origLineIndex] type] != LineLayoutInfoType_Paragraph &&
@@ -1346,22 +1316,16 @@ withString:aString]; }
 	redrawLineRange=MakeRangeFromAbs(origLineIndex,[lineLayoutInformation count]);
 
 	if([self isRichText])
-	{	NSDictionary *attributes=[rtfContent attributesAtIndex:[self selectedRange].location effectiveRange:NULL]; 
-		[self replaceRange:[self selectedRange]
+	{	[self replaceRange:[self selectedRange]
 			withAttributedString:[insertObjc isKindOfClass:[NSAttributedString class]]? insertObjc:
-				[[[NSAttributedString alloc] initWithString:insertString attributes:[self typingAttributes]] autorelease]];
-		if(layoutIncomplete)
-			redrawLineRange.length=[self rebuildRichLineLayoutInformationStartingAtLine:redrawLineRange.location
-																				  delta:[insertString length]-selectedRange.length
-																			 actualLine:caretLineIndex];
-		[self setTypingAttributes:attributes];
+				[[[NSAttributedString alloc] initWithString:insertString attributes:[self typingAttributes]]
+					autorelease]];
 	} else
 	{	[self replaceRange:[self selectedRange] withString:insertString];
-		if(layoutIncomplete)
-			redrawLineRange.length=[self rebuildPlainLineLayoutInformationStartingAtLine:redrawLineRange.location
-																				   delta:[insertString length]-selectedRange.length
-																			  actualLine:caretLineIndex];
 	}
+	redrawLineRange.length=[self rebuildLineLayoutInformationStartingAtLine:redrawLineRange.location
+																	  delta:[insertString length]-selectedRange.length
+																 actualLine:caretLineIndex];
 
 	[self sizeToFit];			// ScrollView interaction
 
@@ -1378,7 +1342,6 @@ withString:aString]; }
 {	int		redrawLineIndex,caretLineIndex,firstLineIndex,lastLineIndex,linePosition;
 	NSRange	redrawLineRange;
 	NSRange deleteRange;
-	BOOL	layoutIncomplete=YES;
 
 	if(!aRange.length && !flag) return;
 	if(!aRange.location && ! aRange.length) return;
@@ -1402,21 +1365,12 @@ withString:aString]; }
 	redrawLineIndex=MIN(redrawLineIndex,[lineLayoutInformation count]-1);
 	redrawLineRange=MakeRangeFromAbs(redrawLineIndex,[lineLayoutInformation count]);
 
-	if([self isRichText])
-	{	NSDictionary *attributes=[rtfContent attributesAtIndex:deleteRange.location effectiveRange:NULL]; 
-		[rtfContent deleteCharactersInRange:deleteRange];
-		if(layoutIncomplete)
-			redrawLineRange.length=[self rebuildRichLineLayoutInformationStartingAtLine:redrawLineRange.location
-																				  delta:-deleteRange.length
-																			 actualLine:caretLineIndex];
-		[self setTypingAttributes:attributes];
-	} else
-	{	[plainContent deleteCharactersInRange:deleteRange];
-		if(layoutIncomplete)
-			redrawLineRange.length=[self rebuildPlainLineLayoutInformationStartingAtLine:redrawLineRange.location
-																				   delta:-deleteRange.length
-																			  actualLine:caretLineIndex];
-	}
+	if([self isRichText])	[rtfContent   deleteCharactersInRange:deleteRange];
+	else					[plainContent deleteCharactersInRange:deleteRange];
+
+	redrawLineRange.length=[self rebuildLineLayoutInformationStartingAtLine:redrawLineRange.location
+																	  delta:-deleteRange.length
+																 actualLine:caretLineIndex];
 
 	[self sizeToFit];			// ScrollView interaction
 
@@ -1429,111 +1383,34 @@ withString:aString]; }
 }
 
 
+
 -(void) keyDown:(NSEvent *)theEvent
-{	
-unsigned short keyCode;
-
-	if(!is_editable) 
-		return; 		// If not editable then don't  recognize the key down
-
-fprintf(stderr, " NSText keyDown \n");	
-	
-	if((keyCode=[theEvent keyCode])) 
-		switch(keyCode)
-			{	
-			case NSUpArrowFunctionKey:
-				[self moveCursorUp:self];
-				return;
-			case NSDownArrowFunctionKey:
-				[self moveCursorDown:self];
-				return;
-			case NSLeftArrowFunctionKey:
-				[self moveCursorLeft:self];
-				return;
-			case NSRightArrowFunctionKey:
-				[self moveCursorRight:self];
-				return;
-			case NSBackspaceKey:
-				[self deleteRange:[self selectedRange] backspace:YES];
-				return;
-#if 1
-		case 0x6d:	// ende-taste för debugging: enforce complete re-layout
-
-			[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
-			[self rebuildLineLayoutInformationStartingAtLine:0];
-			[self setNeedsDisplay: YES];
-			return;
-#endif
-#if 1
-			case 0x45:	// num-lock: debugging
-				NSLog([lineLayoutInformation description]);
-				return;
-#endif
-			case NSCarriageReturnKey:	// return
-				if([self isFieldEditor])	//textShouldEndEditing delegation 
-					{					// is handled in resignFirstResponder
-#if 0
-// Movement codes for movement between fields; these codes are the intValue of the NSTextMovement key in NSTextDidEndEditing notifications
-					[NSNumber numberWithInt:NSIllegalTextMovement]
-					[NSNumber numberWithInt:NSReturnTextMovement]
-					[NSNumber numberWithInt:NSTabTextMovement]
-					[NSNumber numberWithInt:NSBacktabTextMovement]
-					[NSNumber numberWithInt:NSLeftTextMovement]
-					[NSNumber numberWithInt:NSRightTextMovement]
-					[NSNumber numberWithInt:NSUpTextMovement]
-					[NSNumber numberWithInt:NSDownTextMovement]
-#endif
-
-					[[self window] makeFirstResponder:[self nextResponder]];
-					[self textDidEndEditing:nil];	//[NSNumber numberWithInt:NSReturnTextMovement]
-					} 
-				else
-					{	
-					[self insertText:[[self class] newlineString]];
-fprintf(stderr, " NSText keyDown return \n");		
-			[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
-			[self rebuildLineLayoutInformationStartingAtLine:0];
-					return;
-					}
-				break;
-			}
-#if 0
-NSLog(@"keycode:%x",keyCode);
-#endif
-	{
-fprintf(stderr, " NSText keyDown insertText \n");		
-		// else
-		[self insertText:[theEvent characters]];
-	}
-}
-
--(void) keyDownO:(NSEvent *)theEvent
 {	unsigned short keyCode;
 	if(!is_editable) return; 					// If not editable then don't  recognize the key down
 
-fprintf(stderr, " NSText keyDown \n");		
-	if((keyCode=[theEvent keyCode])) switch(keyCode)
-	{	case 	0x64:	//NSUpArrowFunctionKey:
+	if(keyCode=[theEvent keyCode]) 
+	switch(keyCode)
+	{	case 	NSUpArrowFunctionKey:	//NSUpArrowFunctionKey:
 			[self moveCursorUp:self];
 		return;
-		case 	0x65:	//NSDownArrowFunctionKey:
+		case 	NSDownArrowFunctionKey:	//NSDownArrowFunctionKey:
 			[self moveCursorDown:self];
 		return;
-		case 	0x66:	//NSLeftArrowFunctionKey:
+		case 	NSLeftArrowFunctionKey:	//NSLeftArrowFunctionKey:
 			[self moveCursorLeft:self];
 		return;
-		case 	0x67:	//NSRightArrowFunctionKey:
+		case 	NSRightArrowFunctionKey: //NSRightArrowFunctionKey:
 			[self moveCursorRight:self];
 		return;
-		case 0x0e:	// backspace
+		case    NSBackspaceKey:	// backspace
 			[self deleteRange:[self selectedRange] backspace:YES];
 		return;
 #if 1
-		case 0x6d:	// ende-taste för debugging: enforce complete re-layout
+		case 0x6d:	// end-key: debugging: enforce complete re-layout
 
 			[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
 			[self rebuildLineLayoutInformationStartingAtLine:0];
-			[self setNeedsDisplay: YES];
+			[self setNeedsDisplay:YES];
 		return;
 #endif
 #if 1
@@ -1541,7 +1418,7 @@ fprintf(stderr, " NSText keyDown \n");
 			NSLog([lineLayoutInformation description]);
 		return;
 #endif
-		case 0x1c:	// return
+		case NSCarriageReturnKey:	// return
 			if([self isFieldEditor])	//textShouldEndEditing delegation is handled in resignFirstResponder
 			{
 #if 0
@@ -1557,10 +1434,10 @@ fprintf(stderr, " NSText keyDown \n");
 #endif
 
 				[[self window] makeFirstResponder:[self nextResponder]];
-				[self textDidEndEditing:nil];	//[NSNumber numberWithInt:NSReturnTextMovement]
+				[self textDidEndEditing:[NSNotification notificationWithName:NSTextDidEndEditingNotification object:self
+							   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:NSReturnTextMovement],@"NSTextMovement",nil]]];
 			} else
 			{	[self insertText:[[self class] newlineString]];
-fprintf(stderr, " NSText keyDown return \n");		
 				return;
 			}
 		break;
@@ -1579,63 +1456,52 @@ NSLog(@"keycode:%x",keyCode);
 	else return NO;
 }
 
-- (BOOL) resignFirstResponder
-{
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self lockFocus];
-      [self drawInsertionPointAtIndex: [self selectedRange].location
-			        color: nil
-			     turnedOn: NO];
-      [self unlockFocus];
-      //<!> stop timed entry
-    }
-  if ([self isEditable]) 
-    return [self textShouldEndEditing: self];
-  else
-    return YES;
+-(BOOL) resignFirstResponder
+{	if([self shouldDrawInsertionPoint])
+	{
+		[self lockFocus];
+		[self drawInsertionPointAtIndex:[self selectedRange].location color:nil turnedOn:NO];
+		[self unlockFocus];
+
+		//<!> stop timed entry
+	}
+	if([self isEditable]) return [self textShouldEndEditing:(NSText*)self];
+	return YES;
 }
 
-- (BOOL) becomeFirstResponder
-{
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self lockFocus];
-      [self drawInsertionPointAtIndex: [self selectedRange].location
-				color: [NSColor blackColor]
-			     turnedOn: YES];
-      [self unlockFocus];
-      //<!> restart timed entry
-    }
-  if ([self isEditable] && [self textShouldBeginEditing: self])
-    return YES;
-  else
-    return NO;
+-(BOOL) becomeFirstResponder
+{	if([self shouldDrawInsertionPoint])
+	{
+//		[self lockFocus];
+		[self drawInsertionPointAtIndex:[self selectedRange].location color:[NSColor blackColor] turnedOn:YES];
+//		[self unlockFocus];
+		//<!> restart timed entry
+	}
+	if([self isEditable] && [self textShouldBeginEditing:(NSText*)self]) return YES;
+	else return NO;
 }
 
 //
 // Managing the Delegate
 //
-- (id) delegate
-{
-  return delegate;
-}
+- delegate						{ return delegate; }
 
--(void) setDelegate: (id)anObject
+-(void) setDelegate:anObject
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   if (delegate)
     [nc removeObserver: delegate name: nil object: self];
-  delegate = anObject;
+  ASSIGN(delegate, anObject);
+//  delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([delegate respondsToSelector: @selector(text##notif_name:)]) \
     [nc addObserver: delegate \
-	   selector: @selector(text##notif_name:) \
-	       name: NSText##notif_name##Notification \
-	     object: self]
-
+          selector: @selector(text##notif_name:) \
+              name: NSText##notif_name##Notification \
+            object: self]  
+  
   SET_DELEGATE_NOTIFICATION(DidBeginEditing);
   SET_DELEGATE_NOTIFICATION(DidChange);
   SET_DELEGATE_NOTIFICATION(DidEndEditing);
@@ -1645,22 +1511,25 @@ NSLog(@"keycode:%x",keyCode);
 // Implemented by the Delegate
 //
 
--(void) textDidBeginEditing: (NSNotification*)aNotification
-{
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidBeginEditingNotification object: self];
+-(void) textDidBeginEditing:(NSNotification *)aNotification
+{	if ([delegate respondsToSelector:@selector(textDidBeginEditing:)])
+    	[delegate textDidBeginEditing:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidBeginEditingNotification object:self]];
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidBeginEditingNotification object:self];
 }
 
-- (void) textDidChange: (NSNotification*)aNotification
-{
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidChangeNotification object: self];
+- (void)textDidChange:(NSNotification *)aNotification
+{	if ([delegate respondsToSelector:@selector(textDidChange:)])
+		[delegate textDidChange:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidChangeNotification object:self]];
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidChangeNotification object:self];
 }
 
--(void) textDidEndEditing: (NSNotification*)aNotification
-{
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidEndEditingNotification object: self];
+-(void)textDidEndEditing:(NSNotification *)aNotification
+{	if ([delegate respondsToSelector:@selector(textDidEndEditing:)])
+    	[delegate textDidEndEditing:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidEndEditingNotification object:self]];
+
+	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidEndEditingNotification object:self];
 }
 
 -(BOOL) textShouldBeginEditing:(NSText *)textObject
@@ -1672,19 +1541,14 @@ NSLog(@"keycode:%x",keyCode);
 -(BOOL) textShouldEndEditing:(NSText *)textObject
 {	if ([delegate respondsToSelector:@selector(textShouldEndEditing:)])
     	return [delegate textShouldEndEditing:(NSText*)self];
-	else 
-		return YES;
+	else return YES;
 }
 
-
-//
-// Displaying
-//
-
-//<!>(currently unused; use code from drawRect:)
--(NSRange) characterRangeForBoundingRect:(NSRect)bounds
-{	if([self isRichText]) return NSMakeRange(0,[plainContent length]);
-	else return NSMakeRange(0,[rtfContent length]);
+-(NSRange) characterRangeForBoundingRect:(NSRect)boundsRect
+{	NSRange lineRange=[self lineRangeForRect:boundsRect];
+	if(lineRange.length) return MakeRangeFromAbs([[lineLayoutInformation objectAtIndex:lineRange.location] lineRange].location,
+												 NSMaxRange([[lineLayoutInformation objectAtIndex:NSMaxRange(lineRange)] lineRange]));
+	else return NSMakeRange(0,0);
 }
 
 
@@ -1698,7 +1562,7 @@ NSLog(@"keycode:%x",keyCode);
 
 	point.x=MAX(0,point.x); point.y=MAX(0,point.y);
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; (currentInfo=[lineEnum nextObject]);i++)
+	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
 	{	NSRect rect=[currentInfo lineRect];
 		if(NSMaxY(rect)>=point.y && rect.origin.y<point.y && rect.origin.x< point.x && point.x >= NSMaxX(rect) ) return NSMaxRange([currentInfo lineRange]);
 		if(NSPointInRect(point,rect))	// this loop holds some optimization potential (linear search)
@@ -1708,7 +1572,7 @@ NSLog(@"keycode:%x",keyCode);
 			for(retPos=range.location; retPos<=NSMaxRange(range); retPos++)		// this loop holds some optimization potential (linear search)
 			{	NSString *evalString=nil;
 
-				if([self isRichText])	// has to be done character wise
+				if([self isRichText])
 				{	if([rtfContent sizeRange:NSMakeRange(range.location,retPos-range.location)].width >= point.x) return MAX(0,retPos-1);
 				} else
 				{	evalString=[plainContent substringWithRange:NSMakeRange(range.location,retPos-range.location)];
@@ -1737,11 +1601,11 @@ NSLog(@"keycode:%x",keyCode);
 		return NSMakeRect(NSMaxX(rect), rect.origin.y,[self frame].size.width-NSMaxX(rect),rect.size.height);
 	}
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; (currentInfo=[lineEnum nextObject]);i++)
+	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
 	{	NSRange	range=[currentInfo lineRange];
 		if(NSLocationInRange(index,range))
 		{	NSRect rect=[currentInfo lineRect];
-			if([self isRichText])	// has to be done character wise
+			if([self isRichText])
 			{	NSSize	  stringSize=[rtfContent sizeRange:MakeRangeFromAbs(range.location,index)];
 				float	  x=rect.origin.x+stringSize.width;
 				return NSMakeRect(x,rect.origin.y,NSMaxX(rect)-x,rect.size.height);
@@ -1766,7 +1630,7 @@ NSLog(@"keycode:%x",keyCode);
 
 	point.x=MAX(0,point.x); point.y=MAX(0,point.y);
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; (currentInfo=[lineEnum nextObject]);i++)
+	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
 	{	NSRect rect=[currentInfo lineRect];
 		if(NSMaxY(rect)> point.y && rect.origin.y<= point.y && rect.origin.x< point.x && point.x >= NSMaxX(rect) )
 			return [lineLayoutInformation indexOfObject:currentInfo];
@@ -1777,7 +1641,7 @@ NSLog(@"keycode:%x",keyCode);
 			for(retPos=range.location; retPos<=NSMaxRange(range); retPos++)		// this loop holds some optimization potential (linear search)
 			{	NSString *evalString=nil;
 
-				if([self isRichText])	// has to be done character wise
+				if([self isRichText])
 				{	if([rtfContent sizeRange:NSMakeRange(range.location,retPos-range.location)].width >= point.x)
 						return [lineLayoutInformation indexOfObject:currentInfo];
 				} else
@@ -1789,53 +1653,27 @@ NSLog(@"keycode:%x",keyCode);
 	} return 0;
 }
 
-// internal method (not rich-text save: give it a range instead of a count)
--(void) addNewlines:(int) count intoLayoutArray:(NSMutableArray*) anArray attributes:(NSDictionary*) attributes atPoint:(NSPoint*) aPointP
-		width:(float) width characterIndex:(unsigned) startingLineIndex ghostEnumerator:(NSEnumerator*) prevArrayEnum
-{	NSSize advanceSize=[[[self class] newlineString] sizeWithAttributes:attributes];
-
-	while(--count>=0)
-	{	NSRect		currentLineRect=NSMakeRect(aPointP->x,aPointP->y,width-aPointP->x,advanceSize.height);
-		[anArray addObject:[_GNULineLayoutInfo lineLayoutWithRange:
-						NSMakeRange(startingLineIndex,1) rect:currentLineRect drawingOffset:0 type:LineLayoutInfoType_Paragraph]];
-		//[[anArray lastObject] setDontDisplay:YES];
-		startingLineIndex++; aPointP->x=0; aPointP->y+= advanceSize.height;
-
-		if(prevArrayEnum && ![prevArrayEnum nextObject]) prevArrayEnum=nil;
-	}
-}
-
-
-// begin: central line formatting method ---------------------------------------
-
-// <!>
--(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLineIndex
-{
-//- (NSDictionary *)attributesAtIndex:(unsigned)location longestEffectiveRange:(NSRange *)range inRange:(NSRange)rangeLimit;
-// or even better: [[rtfContent substringWithRange:aRange] size] and the algorithm from plain text
-
-	return 0;
-}
-
-// internal method
+// internal method <!> range is currently not passed as absolute
 -(void) addNewlines:(NSRange) aRange intoLayoutArray:(NSMutableArray*) anArray attributes:(NSDictionary*) attributes atPoint:(NSPoint*) aPointP
 		width:(float) width characterIndex:(unsigned) startingLineCharIndex ghostEnumerator:(_GNUSeekableArrayEnumerator*) prevArrayEnum
 		didShift:(BOOL*) didShift verticalDisplacement:(float*) verticalDisplacement
 {	NSSize advanceSize=[[[self class] newlineString] sizeWithAttributes:attributes];
-	int		count=aRange.length,charIndex;
-	_GNULineLayoutInfo *thisInfo,*ghostInfo=nil;
-	BOOL	isRich=[self isRichText];
+	int					 count=aRange.length,charIndex;
+   _GNULineLayoutInfo	*thisInfo,*ghostInfo=nil;
+	BOOL				 isRich=[self isRichText];
 
 	(*didShift)=NO;
 
 	for(charIndex=aRange.location;--count>=0;charIndex++)
-	{	NSRect		currentLineRect=NSMakeRect(aPointP->x,aPointP->y,width-aPointP->x,advanceSize.height);
+	{	NSRect		currentLineRect;
+
+		if(0&& isRich)
+		{	advanceSize=[rtfContent sizeRange:NSMakeRange(startingLineCharIndex,1)];
+		}
+		currentLineRect=NSMakeRect(aPointP->x,aPointP->y,width-aPointP->x,advanceSize.height);
 		[anArray addObject:thisInfo=[_GNULineLayoutInfo lineLayoutWithRange:
 						NSMakeRange(startingLineCharIndex,1) rect:currentLineRect drawingOffset:0 type:LineLayoutInfoType_Paragraph]];
 
-		if(isRich)
-		{	advanceSize=[rtfContent sizeRange:NSMakeRange(charIndex,1)];
-		}
 		startingLineCharIndex++; aPointP->x=0; aPointP->y+= advanceSize.height;
 
 		if(prevArrayEnum && !(ghostInfo=[prevArrayEnum nextObject])) prevArrayEnum=nil;
@@ -1849,6 +1687,7 @@ NSLog(@"keycode:%x",keyCode);
 	}
 }
 
+// private helper function
 static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray *ghostArray,int aLine,int relocOffset,int rebuildLineDrift,float yReloc)
 {	unsigned	  ret=[lineLayoutInformation count]-aLine;	// lines actually updated (optimized drawing)
 	NSArray		 *relocArray=[ghostArray subarrayWithRange:MakeRangeFromAbs(MAX(0,ret+rebuildLineDrift),[ghostArray count])];
@@ -1857,7 +1696,7 @@ static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray 
 
 	if(![relocArray count]) return ret;
 
-	for(relocEnum=[relocArray objectEnumerator]; (currReloc=[relocEnum nextObject]);)
+	for(relocEnum=[relocArray objectEnumerator]; currReloc=[relocEnum nextObject];)
 	{	NSRange range=[currReloc lineRange];
 		[currReloc setLineRange:NSMakeRange(range.location+relocOffset,range.length)];
 		if(yReloc)
@@ -1870,38 +1709,31 @@ static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray 
 }
 
 
+// begin: central line formatting method ---------------------------------------
 // returns count of lines actually updated
-// actually only implemented for [self isVerticallyResizable] (but i think this is ok)
 // <!> detachNewThreadSelector:selector toTarget:target withObject:argument;
 
--(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLineIndex
-{	NSDictionary	   	*attributes=[self defaultTypingAttributes];
-	NSPoint			drawingPoint=NSZeroPoint;
-   _GNUTextScanner	   	*parscanner;
-	float			width=[self frame].size.width;
-	unsigned		startingIndex=0,currentLineIndex;
-   _GNULineLayoutInfo  		*lastValidLineInfo=nil;
-	NSArray			*ghostArray=nil;	// for optimization detection
-   _GNUSeekableArrayEnumerator	*prevArrayEnum=nil;
-	NSCharacterSet	   	*invSelectionWordGranularitySet=[selectionWordGranularitySet invertedSet];
-	NSCharacterSet	   	*invSelectionParagraphGranularitySet=[selectionParagraphGranularitySet invertedSet];
-	NSString		*parsedString;
-	BOOL			isHorizontallyResizable=[self isHorizontallyResizable];
-	int			lineDriftOffset=0,rebuildLineDrift=0;
-	BOOL			frameshiftCorrection=NO,nlDidShift=NO,enforceOpti=NO;
-	float			yDisplacement=0;
-	BOOL			isRich=[self isRichText];
+-(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLineIndex
+{	NSDictionary	   *attributes=[self defaultTypingAttributes];
+	NSPoint				drawingPoint=NSZeroPoint;
+   _GNUTextScanner	   *parscanner;
+	float				width=[self frame].size.width;
+	unsigned			startingIndex=0,currentLineIndex;
+   _GNULineLayoutInfo  *lastValidLineInfo=nil;
+	NSArray			   *ghostArray=nil;	// for optimization detection
+   _GNUSeekableArrayEnumerator	   *prevArrayEnum=nil;
+	NSCharacterSet	   *invSelectionWordGranularitySet=[selectionWordGranularitySet invertedSet];
+	NSCharacterSet	   *invSelectionParagraphGranularitySet=[selectionParagraphGranularitySet invertedSet];
+	NSString		   *parsedString;
+	BOOL				isHorizontallyResizable=[self isHorizontallyResizable];
+	int					lineDriftOffset=0,rebuildLineDrift=0;
+	BOOL				frameshiftCorrection=NO,nlDidShift=NO,enforceOpti=NO;
+	float				yDisplacement=0;
+	BOOL				isRich=[self isRichText];
 
-	if(!lineLayoutInformation) {
-	  NSLog(@"lineLayoutInformation was just created.\n");
-	  lineLayoutInformation=[[NSMutableArray alloc] init];
-	} else { 
-	NSLog(@"aLine = %d, count = %d\n", (int)aLine,
-(int)[lineLayoutInformation count]);
-
-ghostArray=[lineLayoutInformation
-subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];
-// remember old array for optimization purposes
+	if(!lineLayoutInformation) lineLayoutInformation=[[NSMutableArray alloc] init];
+	else
+	{	ghostArray=[lineLayoutInformation subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];	// remember old array for optimization purposes
 		prevArrayEnum=[ghostArray seekableEnumerator];	// every time an object is added to lineLayoutInformation a nextObject has to be performed on prevArrayEnum!
 	}
 
@@ -1925,10 +1757,10 @@ subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];
 	currentLineIndex=aLine;
 
 // each paragraph
-	for(parscanner=[_GNUTextScanner scannerWithString:parsedString=[plainContent substringFromIndex:startingIndex]
+	for(parscanner=[_GNUTextScanner scannerWithString:parsedString=[[self string] substringFromIndex:startingIndex]
 												  set:selectionParagraphGranularitySet invertedSet:invSelectionParagraphGranularitySet];
 	   ![parscanner isAtEnd];)
-	{	_GNUTextScanner	*linescanner;
+	{  _GNUTextScanner	*linescanner;
 		NSString	*paragraph;
 		NSRange		 paragraphRange,leadingNlRange,trailingNlRange;
 		unsigned	 startingParagraphIndex=[parscanner scanLocation]+startingIndex,startingLineCharIndex=startingParagraphIndex;
@@ -1976,11 +1808,11 @@ subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];
 				if(trailingSpacesRange.length) currentStringRange=NSUnionRange(trailingSpacesRange,currentStringRange);
 
 			// evaluate size of current word and line so far
-				if(isRich)	advanceSize=[rtfContent sizeRange:NSMakeRange(currentStringRange.location+startingLineCharIndex,currentStringRange.length)];
+				if(isRich)	advanceSize=[rtfContent sizeRange:NSMakeRange(currentStringRange.location+paragraphRange.location+startingIndex,currentStringRange.length)];
 				else		advanceSize=[[paragraph substringWithRange:currentStringRange] sizeWithAttributes:attributes];
 				currentLineRect=NSUnionRect(currentLineRect,NSMakeRect(drawingPoint.x,drawingPoint.y, advanceSize.width, advanceSize.height));
 
-			// handle case where single word is broader than width (buckle word) <!> unfinished
+			// handle case where single word is broader than width (buckle word) <!> unfinished and untested for richText (absolute position see above)
 				if(!isHorizontallyResizable && advanceSize.width >= width)
 				{	if(isBuckled)
 					{	NSSize		currentSize=NSMakeSize(HUGE,0);
@@ -1999,7 +1831,7 @@ subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];
 						isBuckled=NO; inBuckling=YES;
 						scannerPosition=localLineStartIndex+(lastVisibleCharIndex-startingLineCharIndex);
 						currentLineRect.size.width=advanceSize.width=width;
-					} else	// undo layout of extralarge word for now
+					} else	// undo layout of extralarge word (will be done the next line [see above])
 					{	isBuckled=YES;
 						currentLineRect.size.width-=advanceSize.width;
 					}
@@ -2054,7 +1886,7 @@ NSLog(@"opti hook 1 (preferred)");
 							else if(currentLineIndex-1 == insertionLineIndex && ABS(insertionDelta)== 1)
 							{	erg=2;	// return 2: redisplay only this and previous line
 							}
-#if 0
+#if 1
 NSLog(@"opti for:%d",erg);
 #endif
 							return erg;
@@ -2125,62 +1957,64 @@ NSLog(@"opti hook 2");
 }
 // end: central line formatting method ------------------------------------
 
--(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine
-{	return [self rebuildPlainLineLayoutInformationStartingAtLine:aLine delta:0 actualLine:0];
-}
--(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine
-{	return [self rebuildRichLineLayoutInformationStartingAtLine:aLine delta:0 actualLine:0];
-}
-
 -(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine
-{	if([self isRichText])
-	{	return [self rebuildRichLineLayoutInformationStartingAtLine:0 delta:0 actualLine:0];
-	} else
-	{
-	  NSLog(@"- rebuildLineLayout atLine = %d\n", aLine);
-	  return [self rebuildPlainLineLayoutInformationStartingAtLine:0
-		delta:0 actualLine:0];
-	}
+{	return [self rebuildLineLayoutInformationStartingAtLine:aLine delta:0 actualLine:0];
 }
 
 // relies on lineLayoutInformation
 -(void) drawPlainLinesInLineRange:(NSRange) aRange
 {	if(NSMaxRange(aRange) > MAX(0,[lineLayoutInformation count]-1))	// lay out lines before drawing them
-	{	[self rebuildPlainLineLayoutInformationStartingAtLine:MAX(0,[lineLayoutInformation count]-1)];
+	{	[self rebuildLineLayoutInformationStartingAtLine:MAX(0,[lineLayoutInformation count]-1)];
 	}
 	{	NSArray				*linesToDraw=[lineLayoutInformation subarrayWithRange:aRange];
 		NSEnumerator		*lineEnum;
 		_GNULineLayoutInfo	*currentInfo;
 		NSDictionary		*attributes=[self defaultTypingAttributes];
 
-		for(lineEnum=[linesToDraw objectEnumerator]; (currentInfo=[lineEnum nextObject]);)
+		for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
 		{	if([currentInfo isDontDisplay] || [currentInfo type]== LineLayoutInfoType_Paragraph) continue;	// e.g. for nl
 			[[plainContent substringWithRange:[currentInfo lineRange]] drawAtPoint:[currentInfo lineRect].origin withAttributes:attributes];
+			// <!> make this use drawInRect:withAttributes: in the future (for proper adoption of layout information [e.g. centering])
 		}
 	}
 }
 
 -(void) drawRichLinesInLineRange:(NSRange) aRange
 {	if(NSMaxRange(aRange) > [lineLayoutInformation count]-1)	// lay out lines before drawing them
-	{	[self rebuildRichLineLayoutInformationStartingAtLine:[lineLayoutInformation count]-1];
+	{	[self rebuildLineLayoutInformationStartingAtLine:[lineLayoutInformation count]-1];
 	}
 	{	NSArray *linesToDraw=[lineLayoutInformation subarrayWithRange:aRange];
 		NSEnumerator		*lineEnum;
 		_GNULineLayoutInfo	*currentInfo;
 
-		for(lineEnum=[linesToDraw objectEnumerator]; (currentInfo=[lineEnum nextObject]);)
+		for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
 		{	if([currentInfo isDontDisplay] || [currentInfo type] == LineLayoutInfoType_Paragraph) continue;	// e.g. for nl
 			[rtfContent drawRange:[currentInfo lineRange] atPoint:[currentInfo lineRect].origin];
+			// <!> make this use drawRange: inRect: in the future (for proper adoption of layout information [e.g. centering])
 		}
 	}
 }
 
 -(NSRange) lineRangeForRect:(NSRect) rect
 {	NSPoint		upperLeftPoint=rect.origin, lowerRightPoint=NSMakePoint(NSMaxX(rect),NSMaxY(rect));
+	NSRange		myTest;
 	unsigned	startLine,endLine;
 	startLine=[self lineLayoutIndexForPoint:upperLeftPoint],
 	endLine=[self lineLayoutIndexForPoint:lowerRightPoint];
-	return MakeRangeFromAbs(startLine,endLine+1);
+//FIXME 	return MakeRangeFromAbs(startLine,endLine+1);
+	if ([plainContent length] != 0) {
+	  myTest = MakeRangeFromAbs(startLine,endLine+1);
+	  NSLog(@"myTest: length = %d, location = %d\n",
+(int)myTest.length,
+(int)myTest.location);
+	  return myTest;
+	} else {
+	  myTest = MakeRangeFromAbs(startLine,endLine);
+	  NSLog(@"myTest: length = %d, location = %d\n",
+(int)myTest.length,
+(int)myTest.location);
+	  return myTest;
+	}
 }
 
 -(void) drawRectNoSelection:(NSRect)rect
@@ -2205,12 +2039,6 @@ NSLog(@"opti hook 2");
 
 -(void) drawRect:(NSRect)rect
 {	if(displayDisabled) return;
-
-	NSLog(@"- drawRect: in NSText. x = %d, y = %d, width = %d, height = %d\n",
-(int)rect.origin.x,
-(int)rect.origin.y,
-(int)rect.size.width,
-(int)rect.size.height);
 
 	[self drawRectNoSelection:rect];
 	[self drawSelectionAsRange:[self selectedRange]];
@@ -2272,55 +2100,54 @@ NSLog(@"opti hook 2");
 //
 // NSCoding protocol
 //
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
+- (void)encodeWithCoder:aCoder
+{	[super encodeWithCoder:aCoder];
 
-  [aCoder encodeConditionalObject:delegate];
+	[aCoder encodeConditionalObject:delegate];
 
-  [aCoder encodeObject: plainContent];
-  [aCoder encodeObject: rtfContent];
+	[aCoder encodeObject: plainContent];
+	[aCoder encodeObject: rtfContent];
 
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &alignment];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-  [aCoder encodeObject: background_color];
-  [aCoder encodeObject: text_color];
-  [aCoder encodeObject: default_font];
-  [aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+	[aCoder encodeValueOfObjCType: "I" at: &alignment];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+	[aCoder encodeObject: background_color];
+	[aCoder encodeObject: text_color];
+	[aCoder encodeObject: default_font];
+	[aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  [super initWithCoder: aDecoder];
+- initWithCoder:aDecoder
+{	[super initWithCoder:aDecoder];
 
-  delegate = [aDecoder decodeObject];
+	delegate = [aDecoder decodeObject];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &plainContent];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &rtfContent];
+	plainContent= [aDecoder decodeObject];
+	rtfContent= [aDecoder decodeObject];
 
-  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &alignment];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &text_color];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &default_font];
-  [aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
-  return self;
+	[aDecoder decodeValueOfObjCType: "I" at: &alignment];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+	background_color = [aDecoder decodeObject];
+	text_color = [aDecoder decodeObject];
+	default_font=[aDecoder decodeObject];
+	[aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+
+	return self;
 }
 
 //

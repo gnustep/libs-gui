@@ -1,33 +1,33 @@
 /* 
-   NSText.h
+	 NSText.h
 
-   The text object
+	 The text object
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+	 Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
-   Date: July 1998
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
-   Date: August 1998
-  
-   This file is part of the GNUstep GUI Library.
+	 Author:	Scott Christley <scottc@net-community.com>
+	 Date: 1996
+	 Author:	Felipe A. Rodriguez <far@ix.netcom.com>
+	 Date: July 1998
+	 Author:	Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+	 Date: August 1998
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+	 This file is part of the GNUstep GUI Library.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+	 This library is free software; you can redistribute it and/or
+	 modify it under the terms of the GNU Library General Public
+	 License as published by the Free Software Foundation; either
+	 version 2 of the License, or (at your option) any later version.
+	 
+	 This library is distributed in the hope that it will be useful,
+	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
+	 Library General Public License for more details.
+
+	 You should have received a copy of the GNU Library General Public
+	 License along with this library; see the file COPYING.LIB.
+	 If not, write to the Free Software Foundation,
+	 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
 #ifndef _GNUstep_H_NSText
@@ -44,6 +44,7 @@
 @class NSColor;
 @class NSFont;
 
+#if GNUSTEP
 typedef enum _NSTextAlignment {
 	NSLeftTextAlignment,
 	NSRightTextAlignment,
@@ -55,13 +56,14 @@ typedef enum _NSTextAlignment {
 enum {
 	NSIllegalTextMovement	= 0,
 	NSReturnTextMovement	= 0x10,
-	NSTabTextMovement	 	= 0x11,
+	NSTabTextMovement	 = 0x11,
 	NSBacktabTextMovement	= 0x12,
 	NSLeftTextMovement	 = 0x13,
 	NSRightTextMovement	 = 0x14,
 	NSUpTextMovement	 = 0x15,
 	NSDownTextMovement	 = 0x16
 };	 	
+#endif
 
 // these definitions should migrate to NSTextView when implemented
 
@@ -71,16 +73,17 @@ typedef enum _NSSelectionGranularity
     NSSelectByParagraph = 2,
 } NSSelectionGranularity;
 
+#if GNUSTEP
 typedef enum _NSSelectionAffinity
 {	NSSelectionAffinityUpstream = 0,
     NSSelectionAffinityDownstream = 1,
 } NSSelectionAffinity;
-
+#endif
 
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
-{											
+{	// Attributes
 	id delegate;
-	unsigned int alignment;
+	unsigned int alignment;		//NSTextAlignment
 	BOOL is_editable;
 	BOOL is_rich_text;
 	BOOL is_selectable;
@@ -95,21 +98,23 @@ typedef enum _NSSelectionAffinity
 	NSColor *text_color;
 	NSFont *default_font;
 	NSRange selected_range;
-	
-	void *be_text_reserved;						// Reserved for back-end use
 
-	NSSize	minSize, maxSize;					// added for Daniel Bðhringer
+// added by Daniel Bðhringer
+
+	NSSize	minSize,maxSize;
+
+	NSMutableDictionary *typingAttributes;
+
 	// content
-	NSMutableString *plainContent;
-	NSMutableAttributedString *rtfContent;
-	NSCharacterSet *selectionWordGranularitySet; 	
-	NSCharacterSet *selectionParagraphGranularitySet;
+	NSMutableString				*plainContent;
+	NSMutableAttributedString	*rtfContent;
 
-	id lineLayoutInformation;
-	NSMutableDictionary *typingAttributes; 
-	float currentCursorX;	// column-stable cursor up/down
-	BOOL displayDisabled;
-	int spellCheckerDocumentTag;
+	// internal stuff
+	NSMutableArray 				*lineLayoutInformation;		// contains private _GNULineLayoutInfo objects
+	int							 spellCheckerDocumentTag;
+	NSCharacterSet				*selectionWordGranularitySet,*selectionParagraphGranularitySet;
+	BOOL						 displayDisabled;
+	float						 currentCursorX;			// column-stable cursor up/down
 }
 
 
@@ -293,8 +298,7 @@ typedef enum _NSSelectionAffinity
 // these are implementation specific (GNU extensions)
 //
 -(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine;	// returns count of lines actually updated (e.g. drawing optimization)
--(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// override for special layout of plain text
--(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// ditto for rich text
+-(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// override for special layout of text
 
 -(int) lineLayoutIndexForCharacterIndex:(unsigned) anIndex;		// return value is identical to the real line number (plus counted newline characters)
 -(void) redisplayForLineRange:(NSRange) redrawLineRange;
@@ -304,6 +308,7 @@ typedef enum _NSSelectionAffinity
 //
 // various GNU extensions
 //
+-(void) rebuildFromCharacterIndex:(int) anIndex;
 
 -(void) setSelectionWordGranularitySet:(NSCharacterSet*) aSet;
 -(void) setSelectionParagraphGranularitySet:(NSCharacterSet*) aSet;
@@ -313,8 +318,6 @@ typedef enum _NSSelectionAffinity
 //
 
 -(void) drawRectNoSelection:(NSRect)rect;
--(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine;	// low level never invoke (use rebuildLineLayoutInformationStartingAtLine:)
--(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine;	//  ditto
 
 @end
 
@@ -323,6 +326,7 @@ extern NSString *NSTextDidBeginEditingNotification;
 extern NSString *NSTextDidEndEditingNotification;
 extern NSString *NSTextDidChangeNotification;
 
+#ifdef GNUSTEP
 @interface NSObject(NSTextDelegate)
 - (BOOL)textShouldBeginEditing:(NSText *)textObject; /* YES means do it */
 - (BOOL)textShouldEndEditing:(NSText *)textObject; /* YES means do it */
@@ -330,5 +334,19 @@ extern NSString *NSTextDidChangeNotification;
 - (void)textDidEndEditing:(NSNotification *)notification;
 - (void)textDidChange:(NSNotification *)notification; /* Any keyDown or paste which changes the contents causes this */
 @end
+#endif
 
 #endif // _GNUstep_H_NSText
+
+#if 0
+NSFontAttributeName; /* NSFont, default Helvetica 12 */
+->  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
+NSForegroundColorAttributeName; /* NSColor, default blackColor */
+NSUnderlineStyleAttributeName; /* int, default 0: no underline */
+NSSuperscriptAttributeName; /* int, default 0 */
+NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
+->  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
+NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
+NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
+NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
+#endif

@@ -1,3 +1,19 @@
+1999-06-22  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSText.m: new file from Daniel. Modifications to allow it
+	to work with GNUstep. Plus multiple hacks to make it work with
+	NSTextField and NSTextView better.
+	* Source/NSTextView.m: ditto.
+	* Source/NSCell.m: modifications to editWithFrame:::: so our field
+	editor is a little better lined up. Plus fieldEditor gets our
+	mouseDown: event. Fixed flicker, I think.
+
+	TODO: 
+	* fix Caret. Without an insertion marker its hard to see. :-)
+	* fix buffer for using a fieldEditor in a cell. Possibly modify
+	  NSTextFieldCell so it doesn't draw text directly abutting the
+	  side?
+
 1999-06-21  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSText.m: a bunch of little tweaks. Will document today.

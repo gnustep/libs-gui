@@ -451,16 +451,21 @@ static Class	imageClass;
 (int)bRect.size.width,
 (int)bRect.size.height);
 
+  bRect.origin.x -= 2;
+  bRect.size.width += 2;
+
   [textObject setDelegate: anObject];
 
   [textObject setFrame: bRect];
-  [[NSColor redColor] set];
-  NSRectFill(aRect);
-//  NSEraseRect(aRect);
+  NSEraseRect(aRect);
 
   [textObject setText: [self stringValue]];
   
   [[[controlView window] contentView] addSubview: textObject];
+
+  if ([theEvent type] == NSLeftMouseDown)
+    [textObject mouseDown:theEvent];
+
   [textObject display];
   [controlView unlockFocus];
 }

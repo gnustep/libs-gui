@@ -1,38 +1,11 @@
 /*
-   NSTextView.h
+ *	GNUTextView.h
+ */
 
-	NSTextView is an NSText subclass that displays the glyphs laid  
-	out in one NSTextContainer.
+// GNUTextView is a NSText subclass that displays the glyphs laid out in one NSTextContainer.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
-
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
-   Date: August 1998
-   Source by Daniel Bðhringer integrated into GNUstep gui
-   by Felipe A. Rodriguez <far@ix.netcom.com> 
-   
-   This file is part of the GNUstep GUI Library.
-
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#ifndef _GNUstep_H_NSTextView
-#define _GNUstep_H_NSTextView
-
-#include <AppKit/NSText.h>
-#include <AppKit/NSTextAttachment.h>
+#import <AppKit/NSText.h>
+#import <AppKit/NSTextAttachment.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSRulerMarker.h>
 
@@ -41,16 +14,19 @@
 @class NSLayoutManager;
 
 //@interface NSTextView : NSText <NSTextInput>
-@interface NSTextView : NSText 
-{	NSTextContainer			*textContainer;
-	NSColor					*insertionPointColor;
-	BOOL					smartInsertDeleteEnabled;
-	NSSelectionAffinity 	selectionAffinity;
-	NSSelectionGranularity	selectionGranularity;
-	NSSize 					textContainerInset;
-	NSPoint 				textContainerOrigin;
-	NSLayoutManager			*layoutManager;
-	NSTextStorage			*textStorage;
+
+
+@interface NSTextView : NSText
+{
+        NSTextContainer                 *textContainer;
+        NSColor                                 *insertionPointColor;
+        BOOL                                    smartInsertDeleteEnabled;
+        NSSelectionAffinity     selectionAffinity;
+        NSSelectionGranularity  selectionGranularity;
+        NSSize                                  textContainerInset;
+        NSPoint                                 textContainerOrigin;
+        NSLayoutManager                 *layoutManager;
+        NSTextStorage                   *textStorage;
 }
 
 /**************************** Initializing ****************************/
@@ -150,7 +126,7 @@
 
 @interface NSTextView (NSSharing)
 
-// The methods in this category deal with settings that need to be shared by all the NSTextViews of a single NSLayoutManager.  Many of these methods are overrides of NSText or NSResponder methods.
+// The methods in this category deal with settings that need to be shared by all the GNUTextViews of a single NSLayoutManager.  Many of these methods are overrides of NSText or NSResponder methods.
 
 /*************************** Selected/Marked range ***************************/
 
@@ -172,7 +148,7 @@
 - (void)setMarkedTextAttributes:(NSDictionary *)attributeDictionary;
 - (NSDictionary *)markedTextAttributes;
 
-/*************************** Other NSTextView methods ***************************/
+/*************************** Other GNUTextView methods ***************************/
 
 - (void)setRulerVisible:(BOOL)flag;
 - (BOOL)usesRuler;
@@ -192,28 +168,28 @@
 
 /*************************** NSText methods ***************************/
 
-//- (BOOL)isSelectable;
-//- (void)setSelectable:(BOOL)flag;
-//- (BOOL)isEditable;
-//- (void)setEditable:(BOOL)flag;
-//- (BOOL)isRichText;
-//- (void)setRichText:(BOOL)flag;
-//- (BOOL)importsGraphics;
-//- (void)setImportsGraphics:(BOOL)flag;
-//- (id)delegate;
-//- (void)setDelegate:(id)anObject;
-//- (BOOL)isFieldEditor;
-//- (void)setFieldEditor:(BOOL)flag;
-//- (BOOL)usesFontPanel;
-//- (void)setUsesFontPanel:(BOOL)flag;
-//- (BOOL)isRulerVisible;
-//- (void)setBackgroundColor:(NSColor *)color;
-//- (NSColor *)backgroundColor;
-//- (void)setDrawsBackground:(BOOL)flag;
-//- (BOOL)drawsBackground;
+- (BOOL)isSelectable;
+- (void)setSelectable:(BOOL)flag;
+- (BOOL)isEditable;
+- (void)setEditable:(BOOL)flag;
+- (BOOL)isRichText;
+- (void)setRichText:(BOOL)flag;
+- (BOOL)importsGraphics;
+- (void)setImportsGraphics:(BOOL)flag;
+- (id)delegate;
+- (void)setDelegate:(id)anObject;
+- (BOOL)isFieldEditor;
+- (void)setFieldEditor:(BOOL)flag;
+- (BOOL)usesFontPanel;
+- (void)setUsesFontPanel:(BOOL)flag;
+- (BOOL)isRulerVisible;
+- (void)setBackgroundColor:(NSColor *)color;
+- (NSColor *)backgroundColor;
+- (void)setDrawsBackground:(BOOL)flag;
+- (BOOL)drawsBackground;
 
-//- (NSRange)selectedRange;
-//- (void)setSelectedRange:(NSRange)charRange;
+- (NSRange)selectedRange;
+- (void)setSelectedRange:(NSRange)charRange;
 
 /*************************** NSResponder methods ***************************/
 
@@ -238,7 +214,8 @@
 - (void)textView:(NSTextView *)textView doubleClickedOnCell:(id <NSTextAttachmentCell>)cell inRect:(NSRect)cellFrame;
     // Delegate only.
 
-- (void)textView:(NSTextView *)view draggedCell:(id <NSTextAttachmentCell>)cell inRect:(NSRect)rect event:(NSEvent *)event;	// Delegate only
+- (void)textView:(NSTextView *)view draggedCell:(id <NSTextAttachmentCell>)cell inRect:(NSRect)rect event:(NSEvent *)event;
+// Delegate only
 
 - (NSRange)textView:(NSTextView *)textView willChangeSelectionFromCharacterRange:(NSRange)oldSelectedCharRange toCharacterRange:(NSRange)newSelectedCharRange;
     // Delegate only.
@@ -258,5 +235,3 @@ extern NSString *NSTextViewWillChangeNotifyingTextViewNotification;
 extern NSString *NSTextViewDidChangeSelectionNotification;
     // NSOldSelectedCharacterRange -> NSValue with old range.
 
-
-#endif /* _GNUstep_H_NSTextView */

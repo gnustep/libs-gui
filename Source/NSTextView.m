@@ -1,29 +1,8 @@
 /*
-   NSTextView.m
+ *	NSTextView.h
+ */
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
-
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
-   Date: August 1998
-   Source by Daniel Bðhringer integrated into GNUstep gui
-   by Felipe A. Rodriguez <far@ix.netcom.com> 
-
-   This file is part of the GNUstep GUI Library.
-
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+// classes needed are: NSRulerView NSTextContainer NSLayoutManager
 
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSRulerView.h>
@@ -33,8 +12,6 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextStorage.h>
-
-// classes needed are: NSRulerView NSTextContainer NSLayoutManager
 
 @implementation NSTextView
 
@@ -56,14 +33,11 @@
 
 // container may be nil
 - initWithFrame:(NSRect)frameRect textContainer:(NSTextContainer *)container
-{	
-//	self=[super initWithFrame:frameRect];
-	[super initWithFrame:frameRect];
-
-if(container) [self setTextContainer: container];
+{	if(container) [self setTextContainer: container];
 	else	// set up a new container
 	{
 	}
+	self=[super initWithFrame:frameRect];
 	return self;
 }
 
@@ -113,13 +87,11 @@ if(container) [self setTextContainer: container];
 /************************* Key binding entry-point *************************/
 
 // This method is the funnel point for text insertion after keys pass through the key binder.
-
 #ifdef DEBUGG
 -(void) insertText:(NSString*) insertString
 {
-[super insertText: insertString];
 }
-#endif /* DEBUGG */
+#endif
 
 /*************************** Sizing methods ***************************/
 
@@ -204,7 +176,6 @@ if(container) [self setTextContainer: container];
 -(void) setNeedsDisplayInRect:(NSRect)rect avoidAdditionalLayout:(BOOL)fla
 {
 }
-
 #ifdef DEBUGG
 -(BOOL)shouldDrawInsertionPoint
 {
@@ -212,8 +183,7 @@ if(container) [self setTextContainer: container];
 -(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag
 {
 }
-#endif /* DEBUGG */
-
+#endif
 /*************************** Especially for subclassers ***************************/
 
 -(void) updateRuler
@@ -230,17 +200,14 @@ if(container) [self setTextContainer: container];
 	if([self importsGraphics])		[ret addObject:NSRTFDPboardType];
 	return ret;
 }
-
 #ifdef DEBUGG
 - (void)updateDragTypeRegistration
 {
 }
 
 - (NSRange)selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity
-{
-}
-#endif /* DEBUGG */
-
+{}
+#endif
 @end
 
 @implementation NSTextView (NSSharing)
@@ -286,7 +253,7 @@ if(container) [self setTextContainer: container];
 {
 }
 
-/*************************** Other NSTextView methods ***************************/
+/*************************** Other GNUTextView methods ***************************/
 
 -(void) setRulerVisible:(BOOL)flag
 {
@@ -332,7 +299,6 @@ if(container) [self setTextContainer: container];
 
 
 /*************************** NSResponder methods ***************************/
-
 #ifdef DEBUGG
 -(BOOL) resignFirstResponder
 {	return YES;
@@ -340,8 +306,7 @@ if(container) [self setTextContainer: container];
 -(BOOL) becomeFirstResponder
 {	return YES;
 }
-#endif /* DEBUGG */
-
+#endif
 /*************************** Smart copy/paste/delete support ***************************/
 
 -(BOOL)smartInsertDeleteEnabled		{return smartInsertDeleteEnabled;}
@@ -357,19 +322,18 @@ if(container) [self setTextContainer: container];
 
 - (void) setDelegate: (id) anObject
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
+  NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
+  
   [super setDelegate: anObject];
-
+ 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([delegate respondsToSelector: @selector(textView##notif_name:)]) \
     [nc addObserver: delegate \
-	   selector: @selector(textView##notif_name:) \
-	       name: NSTextView##notif_name##Notification \
-	     object: self]
-
+           selector: @selector(textView##notif_name:) \
+               name: NSTextView##notif_name##Notification \
+             object: self]
+ 
   SET_DELEGATE_NOTIFICATION(DidChangeSelection);
   SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
 }
-
 @end
