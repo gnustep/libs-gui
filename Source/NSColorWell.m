@@ -277,22 +277,29 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint point = [self convertPoint: [theEvent locationInWindow]
+  //
+  // OPENSTEP 4.2 and OSX behavior indicates that the colorwell doesn't
+  // work when the widget is marked as disabled.
+  //
+  if([self isEnabled])
+    {
+      NSPoint point = [self convertPoint: [theEvent locationInWindow]
                             fromView: nil];
 
-  if ([self mouse: point inRect: _wellRect])
-    {
-      [NSColorPanel dragColor: _the_color
-                    withEvent: theEvent
-                     fromView: self];
-    }
-  else if (_is_active == NO)
-    {
-      [self activate: YES];
-    }
-  else
-    {
-      [self deactivate];
+      if ([self mouse: point inRect: _wellRect])
+	{
+	  [NSColorPanel dragColor: _the_color
+			withEvent: theEvent
+			fromView: self];
+	}
+      else if (_is_active == NO)
+	{
+	  [self activate: YES];
+	}
+      else
+	{
+	  [self deactivate];
+	}
     }
 }
 

@@ -1,3 +1,8 @@
+2005-01-28 21:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSColorWell.m: [NSColorWell mouseDown:] prevent use
+	of the colorwell when it's disabled.
+
 2005-01-28 17:57  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): If our
