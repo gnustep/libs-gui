@@ -32,6 +32,7 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSPathUtilities.h>
+#include <AppKit/NSButtonCell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSColorPicker.h>
@@ -39,9 +40,10 @@
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/IMLoading.h>
 
-#define MAX_VALUE 100.0
+#define MAX_ALPHA_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;
 static NSColorPanel *_gs_gui_color_panel = nil;
 static int _gs_gui_color_picker_mask = NSColorPanelAllModesMask;
@@ -119,14 +121,20 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
           [_pickers addObject: picker];
         }
       else
-        NSLog(@"%@ does not contain a valid color picker.");
+        NSLog(@"%@ does not contain a valid color picker.", path);
     }
 }
 
 // FIXME - this is a HACK to get around problems in the gmodel code
 - (void) _fixupMatrix
 {
+  NSButtonCell *prototype;
+
   [_pickerMatrix setFrame: NSMakeRect(4, 190, 192, 36)];
+  prototype = [[NSButtonCell alloc] initImageCell: nil];
+  [prototype setButtonType: NSOnOffButton];
+  [_pickerMatrix setPrototype: prototype];
+  RELEASE(prototype);
 }
 
 - (void) _setupPickers
@@ -172,6 +180,162 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_pickerBox setContentView: [_currentPicker provideNewView: NO]];
 }
 
+- (id) _initWithoutGModel
+{
+  NSRect contentRect = {{352, 519}, {200, 270}};
+  NSRect topViewRect = {{0, 0}, {200, 270}};
+  NSRect magnifyRect = {{4, 230}, {50, 36}};
+  NSRect wellRect = {{58, 230}, {138, 36}};
+  NSRect matrixRect = {{4, 190}, {192, 36}};
+  NSRect splitRect = {{0, 0}, {200, 190}};
+  NSRect pickerViewRect = {{0, 40}, {200, 150}};
+  NSRect pickerRect = {{0, 20}, {200, 130}};
+  NSRect alphaRect = {{4, 4}, {160, 16}};
+  NSRect swatchRect = {{4, 4}, {200, 30}};
+  NSView *v;
+  NSButtonCell *pickerButton;
+  NSView *pickerView;
+  NSView *swatchView;
+  NSColorWell *well;
+  int i;
+  unsigned int style = NSTitledWindowMask | NSClosableWindowMask
+                      | NSResizableWindowMask;
+
+  self = [super initWithContentRect: contentRect 
+			  styleMask: style
+			    backing: NSBackingStoreRetained
+			      defer: NO
+			     screen: nil];
+  [self setTitle: @"Colors"];
+
+  v = [self contentView];
+
+  _topView = [[NSView alloc] initWithFrame: topViewRect];
+  [_topView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [v addSubview: _topView];
+  RELEASE(_topView);
+
+  _magnifyButton = [[NSButton alloc] initWithFrame: magnifyRect];
+  [_magnifyButton setAutoresizingMask: (NSViewMaxXMargin | NSViewMinYMargin)];
+  [_magnifyButton setImage: [NSImage imageNamed: @"MagnifyGlass"]];
+  [_magnifyButton setBordered: YES];
+  [_magnifyButton setAction: @selector(_magnify:)];
+  [_magnifyButton setTarget: self];
+  [_topView addSubview: _magnifyButton];
+
+  _colorWell = [[NSColorWell alloc] initWithFrame: wellRect];
+  [_colorWell setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
+  [_colorWell setBordered: NO];
+  // FIXME: How can we monitor colours that get dropped here?
+  [_topView addSubview: _colorWell];
+
+  // Prototype cell for the matrix
+  pickerButton = [[NSButtonCell alloc] initImageCell: nil];
+  [pickerButton setButtonType: NSOnOffButton];
+  [pickerButton setBordered: YES];
+
+  _pickerMatrix = [[NSMatrix alloc] initWithFrame: matrixRect
+				    mode: NSRadioModeMatrix
+				    prototype: pickerButton
+				    numberOfRows: 0
+				    numberOfColumns: 0];
+  RELEASE(pickerButton);
+  [_pickerMatrix setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
+  [_pickerMatrix setCellSize: matrixRect.size];
+  [_pickerMatrix setIntercellSpacing: NSMakeSize(1, 0)];
+  [_pickerMatrix setAutosizesCells: YES];
+  [_topView addSubview: _pickerMatrix];
+
+  _splitView = [[NSSplitView alloc] initWithFrame: splitRect];
+  [_splitView setVertical: NO];
+  [_splitView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_topView addSubview: _splitView];
+
+  pickerView = [[NSView alloc] initWithFrame: pickerViewRect];
+  [pickerView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+
+  _pickerBox = [[NSBox alloc] initWithFrame: pickerRect];
+  [_pickerBox setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_pickerBox setBorderType: NSNoBorder];
+  [_pickerBox setTitle: @""];
+  [_pickerBox setTitlePosition: NSNoTitle];
+  [pickerView addSubview: _pickerBox];
+
+  _alphaSlider = [[NSSlider alloc] initWithFrame: alphaRect];
+  [_alphaSlider setAutoresizingMask: (NSViewWidthSizable | NSViewMaxYMargin)];
+  [_alphaSlider setMinValue: 0.0];
+  [_alphaSlider setMaxValue: MAX_ALPHA_VALUE];
+  [_alphaSlider setFloatValue: MAX_ALPHA_VALUE];
+  [_alphaSlider setContinuous: YES];
+  [_alphaSlider setTitle: @"Opacity"];
+  [[_alphaSlider cell] setBezeled: YES];
+  [_alphaSlider setTarget: self];
+  [_alphaSlider setAction: @selector(_alphaChanged:)];
+  [pickerView addSubview: _alphaSlider];
+  _showsAlpha = YES;
+
+  swatchView = [[NSView alloc] initWithFrame: swatchRect];
+  [swatchView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  // Add all the subviews at the end
+  [_splitView addSubview: pickerView];
+  [_splitView addSubview: swatchView];
+  RELEASE(pickerView);
+  RELEASE(swatchView);
+
+  // FIXME: This should be loaded form somewhere. 
+  // Perhaps a colour list called "custom"? 
+  for (i = 0; i < 14; i++)
+  { 
+    NSColor *colour;
+    
+    switch (i)
+      {
+	default:
+	case 0: colour = [NSColor greenColor]; break;
+	case 1: colour = [NSColor whiteColor]; break;
+	case 2: colour = [NSColor blackColor]; break;
+	case 3: colour = [NSColor blueColor]; break;
+	case 4: colour = [NSColor brownColor]; break;
+	case 5: colour = [NSColor cyanColor]; break;
+	case 6: colour = [NSColor darkGrayColor]; break;
+	case 7: colour = [NSColor grayColor]; break;
+	case 8: colour = [NSColor lightGrayColor]; break;
+	case 9: colour = [NSColor magentaColor]; break;
+	case 10: colour = [NSColor orangeColor]; break;
+	case 11: colour = [NSColor purpleColor]; break;
+	case 12: colour = [NSColor redColor]; break;
+	case 13: colour = [NSColor yellowColor]; break;
+      }
+    well = [[NSColorWell alloc] initWithFrame: NSMakeRect(i * 13 + 5, 5, 12, 12)];
+    [well setColor: colour];
+    [well setBordered: NO];
+    [well setEnabled: NO];
+    [well setTarget: _colorWell];
+    [well setAction: @selector(takeColorFrom:)];
+    [swatchView addSubview: well];
+    RELEASE(well);
+  }
+
+  return self;
+}
+
+- (void) _alphaChanged: (id) sender
+{
+  [self setColor: [[self color] colorWithAlphaComponent: [self alpha]]];
+}
+
+- (void) _apply: (id) sender
+{
+  // This is currently not used
+  [NSApp sendAction: @selector(changeColor:) to: nil from: self];
+  if ((_action) && (_target != nil))
+    [NSApp sendAction: _action to: _target from: self];  
+}
+
+- (void) _maginify: (id) sender
+{
+  NSLog(@"Magnification is not implemented");
+}
 
 @end
 
@@ -200,16 +364,20 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [_gs_gui_color_panel_lock lock];
       if (!_gs_gui_color_panel)
         {
+	    _gs_gui_color_panel = [[self alloc] _initWithoutGModel];
+/*
           GSAppKitPanelController *panelCtrl = [GSAppKitPanelController new];
 
           if ([GMModel loadIMFile:@"ColorPanel" owner:panelCtrl])
             {
               _gs_gui_color_panel = panelCtrl->panel;
               [_gs_gui_color_panel _fixupMatrix];
-              [_gs_gui_color_panel _loadPickers];
+*/ 
+             [_gs_gui_color_panel _loadPickers];
               [_gs_gui_color_panel _setupPickers];
 	      [_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
-            }
+              [_gs_gui_color_panel setShowsAlpha: ![NSColor ignoresAlpha]];
+//            }
         }
       [_gs_gui_color_panel_lock unlock];
     }
@@ -265,12 +433,27 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 // Instance methods
 //
 
+- (void) dealloc
+{
+  // As there is only one this will never be called
+
+  RELEASE(_topView);
+  RELEASE(_colorWell);
+  RELEASE(_magnifyButton);
+  RELEASE(_pickerMatrix);
+  RELEASE(_pickerBox);
+  RELEASE(_alphaSlider);
+  RELEASE(_splitView);
+  RELEASE(_pickers);
+  [super dealloc];
+}
+
 //
 // Setting the NSColorPanel 
 //
 - (NSView *)accessoryView
 {
-  return [_accessoryBox contentView];
+  return _accessoryView;
 }
 
 - (BOOL)isContinuous
@@ -288,8 +471,13 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (void)setAccessoryView:(NSView *)aView
 {
-  [_accessoryBox setContentView: aView];
-  // [_accessoryBox sizeToFit];
+  if (_accessoryView == aView)
+    return;
+
+  if (_accessoryView != nil)
+    [_splitView removeSubview: _accessoryView];
+  _accessoryView = aView;
+  [_splitView addSubview: _accessoryView];
 }
 
 - (void)setAction:(SEL)aSelector
@@ -313,20 +501,18 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   for (i = 0; i < count; i++)
     {
       if ([[_pickers objectAtIndex: i] supportsMode: mode])
-        break;
-    }
-
-  // if i == count, no picker was found
-  if (i != count)
-    {
-      [_pickerMatrix selectCellWithTag: i];
-      [self _showNewPicker: _pickerMatrix];
+        {
+	  [_pickerMatrix selectCellWithTag: i];
+	  [self _showNewPicker: _pickerMatrix];
+	  [_currentPicker setMode: mode];
+	  break;
+	}
     }
 }
 
 - (void)setShowsAlpha:(BOOL)flag
 {
-  if (flag == [self showsAlpha])
+  if (flag == _showsAlpha)
     return;
 
   if (flag)
@@ -334,17 +520,21 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       NSRect newFrame = [_pickerBox frame];
       float offset = [_alphaSlider frame].size.height + 4;
 
+      [_alphaSlider setFrameOrigin: newFrame.origin];
+      [[_pickerBox superview] addSubview: _alphaSlider];
       newFrame.origin.y += offset;
       newFrame.size.height -= offset;
       [_pickerBox setFrame: newFrame];
     }
   else
     {
-      // This code is very simple-minded.  Instead of removing the alpha slider,
-      // why not just cover it up?
+      // Remove the alpha slider, and add its size to the pickeBox
+      [_alphaSlider removeFromSuperview];
       [_pickerBox setFrame: NSUnionRect([_pickerBox frame],
                                         [_alphaSlider frame])];
     }
+
+  _showsAlpha = flag;
 
   [_pickers makeObjectsPerformSelector: @selector(alphaControlAddedOrRemoved:)
                             withObject: self];
@@ -359,10 +549,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (BOOL)showsAlpha
 {
-  if (NSIntersectsRect([_pickerBox frame], [_alphaSlider frame]))
-    return NO;
-  else
-    return YES;
+  return _showsAlpha;
 }
 
 //
@@ -370,28 +557,14 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 //
 - (void)attachColorList:(NSColorList *)aColorList
 {
-  NSEnumerator *enumerator;
-  id picker;
-
-  if ((_pickers != nil) && ([_pickers count] > 0))
-    {
-      enumerator = [_pickers objectEnumerator];
-      while ((picker = [enumerator nextObject]))
-        [picker attachColorList: aColorList];
-    }
+  [_pickers makeObjectsPerformSelector: @selector(attachColorList:)
+                            withObject: aColorList];
 }
 
 - (void)detachColorList:(NSColorList *)aColorList
 {
-  NSEnumerator *enumerator;
-  id picker;
-
-  if ((_pickers != nil) && ([_pickers count] > 0))
-    {
-      enumerator = [_pickers objectEnumerator];
-      while ((picker = [enumerator nextObject]))
-        [picker detachColorList: aColorList];
-    }
+  [_pickers makeObjectsPerformSelector: @selector(detachColorList:)
+                            withObject: aColorList];
 }
 
 //
@@ -400,7 +573,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (float)alpha
 {
   if ([self showsAlpha])
-    return [_alphaSlider floatValue] / MAX_VALUE;
+    return [_alphaSlider floatValue] / MAX_ALPHA_VALUE;
   else
     return 1.0;
 }
@@ -415,7 +588,10 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_colorWell setColor: aColor];
   [_currentPicker setColor: aColor];
   if ([self showsAlpha])
-      [_alphaSlider setFloatValue: [aColor alphaComponent] * MAX_VALUE];
+    [_alphaSlider setFloatValue: [aColor alphaComponent] * MAX_ALPHA_VALUE];
+
+  if (_isContinuous && (_action) && (_target != nil))
+    [NSApp sendAction: _action to: _target from: self];  
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName: NSColorPanelColorChangedNotification
