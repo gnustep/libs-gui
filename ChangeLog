@@ -1,3 +1,20 @@
+2003-03-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m
+	Removed [becomeFirstResponder] and [resignFirstResponder] as the
+	handling of [showFirstResponder] is still unclear.
+	* Source/NSMenuView.m
+	Moved the computation of the cell size into the method [setFont:]
+	and use this in [init]. Added call to [setNeedsSizing:] in
+	[setHorizontalEdgePadding:]. In [locationForSubmenu:] check for
+	the interface style of the submenu.  Also cleaned up up coding style and
+	comments in the whole file.
+	* Headers/gnustep/gui/NSParagraphStyle.h
+	Added new ivar and methods from MacOSX to handle writing directions.
+	* Source/NSParagraphStyle.m
+	Implemented handling of writing directions. These are needed for the
+	upcoming new RTFProducer.
+	
 2003-04-26  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([setFrameFromString:]) try to adjust sensibly
