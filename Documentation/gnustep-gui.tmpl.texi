@@ -148,9 +148,12 @@ installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
 
 @menu
 * NSBrowserCell::               
+* GSHbox::                      
+* GSTable::                     
+* GSVbox::                      
 @end menu
 
-@node NSBrowserCell,  , Classes, Classes
+@node NSBrowserCell, GSHbox, Classes, Classes
 @section NSBrowserCell
 
 GNUstep NSBrowserCell has an experimental feature (disabled by default), 
@@ -173,6 +176,778 @@ which are drawn in (non bold) system font).
 
 For example, when the feature is on, in a SavePanel (or OpenPanel), directory 
 entries are drawn in bold, while simple files are drawn in non bold. 
+
+@node GSHbox, GSTable, NSBrowserCell, Classes
+@section GSHbox Reference
+
+@menu
+* GSHbox Class::
+* GSHbox Overview::             
+* GSHbox Method Description::   
+@end menu
+
+@node GSHbox Class, GSHbox Overview, GSHbox, GSHbox
+@subsection @code{GSHbox} Class
+
+@display
+Inherits from: @code{GSTable: NSView: NSResponder: NSObject}@*
+Conforms to:  @code{NSCoding} (from @code{NSResponder})@*
+@ @ @ @ @ @ @ @code{NSObject} (from @code{NSObject})@*
+Declared in: @file{AppKit/GSHbox.h}
+@end display
+
+@code{GSHbox} is a GNUstep GUI extension to the OpenStep specification. 
+
+@node GSHbox Overview, GSHbox Method Description, GSHbox Class, GSHbox
+@subsection Overview of the @code{GSHbox} Class
+
+@code{GSHbox} is a subclass of @code{GSTable} meant to provide an
+extremely simplified API for managing rows of views.  The only real
+difference between a @code{GSHbox} and a @code{GSTable} with 1 row is
+that @code{GSHbox} has a much simpler, easier and less powerful API.
+This difference makes programming with @code{GSHbox} (and @code{GSVbox})
+much faster than dealing directly with the underlying @code{GSTable}.
+
+If you use @code{GSHbox}, it is to take advantage of the simplified API.
+You shouldn't use @code{GSTable} methods with @code{GSHbox} (exception:
+methods explicitly listed in this documentation), because @code{GSHbox}
+is supposed to manage those methods for you.  If you need the power of
+the full @code{GSTable} API, you should simply be using @code{GSTable}
+and not @code{GSHbox}.
+
+A @code{GSHbox} is an invisible view (a logical device) which can
+contain some views.  The @code{GSHbox} controls the position and sizes
+of these views so that they are lined up in a row.
+
+To initialize a @code{GSHbox}, you should always use @code{-init}
+method.  Don't use @code{GSTable} methods.  The correct way to start
+using a new @code{GSHbox} is simply:
+
+@smallexample
+hbox = [GSHbox new];
+@end smallexample
+
+(well, of course, autoreleasing it if necessary).  You add a view to a
+@code{GSHbox} using the method @code{-addView:} and its variants.  The
+views you add to a @code{GSHbox} are placed by the @code{GSHbox} in its
+subview hierarchy, and moved (and/or resized in the vertical direction)
+so that they are positioned one after the other, from left to right, in
+a row.  Before adding views to a box, you should resize them to the
+least comfortable size you want them to have.  The @code{GSHbox}
+considers this size as the minimum size your view should ever have, and
+never resizes your view below this size.
+
+The initial size of the @code{GSHbox} is zero; each time you add a view
+in the @code{GSHbox}, the @code{GSHbox} resizes itself to fit the new
+contents.  Usually, you simply add objects to the @code{GSHbox}, and let
+it compute its size (this is the minimum size); you may get this
+resulting size by
+@smallexample
+size = [yourHBox size];
+@end smallexample
+for example, if the @code{GSHbox} is to be used as the content view of a window,
+you may create the window exactly with this size.
+
+You should never force a @code{GSHbox} in a size different from the one
+it has automatically computed.  It sounds quite pointless anyway.  The
+only correct (and meaningful) way to resize a @code{GSHbox} is through
+@code{-resizeWithOldSuperviewSize:} messages (in the view hierarchy).
+In other words, after you place your box in the view hierarchy, then you
+may resize the superview and (if the superview has autoresizing of
+subviews enabled) your box is resized automatically accordingly.
+
+By default, there is no space between the added views.  By using the method
+@code{-addView:withMinXMargin:} you may tell the @code{GSHbox} to insert
+some space (a @dfn{margin}) between the view you are adding and the
+previous one (the one at its left).
+
+@c Don't talk about setDefaultMinXMargin: here.
+
+If what you want is space around the @code{GSHbox}, and not between
+views in the @code{GSHbox}, you don't want a margin but a @dfn{border};
+you should then use @code{-setBorder:}, which will add an equal amount
+of space on all the sides of the box.  You can also set a different
+border on each side (see @code{-setMinXBorder:} and similar methods).
+
+A useful feature of @code{GSHbox} is that it supports @dfn{separators}.
+This facility is not directly available in @code{GSTable} (to add
+separators to a @code{GSTable} you need to create and handle them
+yourself).  A @code{GSHbox} separator is a vertical groove line, used to
+mark the separation between different elements of a box.  To add a
+separator, simply invoke the method @code{-addSeparator}.  The separator
+is put at the right of the last added view.
+
+To use @code{GSHbox} proficiently, it is crucial to set correctly the
+autoresizing mask of each view before adding it to the @code{GSHbox}.
+
+The @code{GSHbox} treats each view and its margins as a whole (see the
+@code{GSTable} class description for more information).
+
+When the @code{GSHbox} is resized in the vertical direction (as a
+consequence of user intervertion, for example), what happens is:
+@itemize @bullet
+@item if the new height is less than the minimum height of the @code{GSHbox} 
+(computed as the maximum of the minimum height of the added views), it
+simply resizes all the added views to this minimum height; part of them
+are clipped then.
+@item if the new height is greater than the @code{GSHbox}'s minimum height, 
+the @code{GSHbox} resizes all the added views to the new height.  This
+is done through the standard superview-subview resizing mechanism, so
+that, by setting the @code{autoresizingMask} of each view that you add,
+you are able to control exactly how the resizing effects each view and
+its margins.
+@end itemize
+
+When the @code{GSHbox} is resized in the horizontal direction, its
+behaviour is as follows:
+@itemize @bullet
+@item If the new width is less than 
+the minimum width, all the added views are sized to minimum width; part
+of them is clipped then.
+@item If the new width is greater than 
+the minimum width, some of the views are resized.  You may decide which
+views you want to be resized and which not; to disable resizing of a
+certain view in the horizontal direction, you should specify a @code{NO}
+value to the option @code{enablingXResizing} when you add the view to
+the box.  Views with X Resizing Not Enabled are always kept in their
+minimum width (the original one), and never resized.  If nothing is
+specified, a default of @code{YES} for @code{enablingXResizing} is
+understood.  So, when the new width is greater than the minimum width,
+the excess width is equally divided between the view with X Resizing
+Enabled.  The actual resizing is done through the usual
+superview-subview resizing mechanism, so that again you may influence
+the way the resizing affects each view by setting the autoresizing mask
+of each view.
+@end itemize
+
+@node GSHbox Method Description,  , GSHbox Overview, GSHbox
+@subsection @code{GSHbox} Method Description
+
+@menu
+* Initializing::                
+* Setting Box Borders::         
+* Adding a View::               
+* Adding a Separator::          
+* Setting Margins::             
+* Getting the Minimum Size::    
+* Resizing the Box::            
+* Getting the Number of Views::  
+@end menu
+
+@node Initializing, Setting Box Borders, GSHbox Method Description, GSHbox Method Description
+@subsubsection Initializing
+
+@noindent
+-(id) @b{init}
+
+Initialize the @code{GSHbox}.  
+This is the only allowed initialization method for @code{GSHbox}.
+
+@node Setting Box Borders, Adding a View, Initializing, GSHbox Method Description
+@subsubsection Setting the Box Borders 
+
+@noindent
+-(void) @b{setBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+        
+@noindent
+-(void) @b{setXBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@noindent
+-(void) @b{setYBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@noindent 
+-(void) @b{setMinXBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@noindent
+-(void) @b{setMaxXBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@noindent
+-(void) @b{setMinYBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@noindent
+-(void) @b{setMaxYBorder:} (float)@t{aBorder}
+
+See the @code{GSTable} class description.
+
+@node Adding a View, Adding a Separator, Setting Box Borders, GSHbox Method Description
+@subsubsection Adding a View
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}
+
+Add a view to the box, enabling X resizing, and with the default
+MinXMargin.
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{enablingXResizing:} (BOOL)@t{aFlag}
+
+Add a view to the box with the default MinXMargin, enabling X resizing
+only if @code{aFlag} is @code{YES},
+
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{withMinXMargin:} (float)@t{aMargin}
+
+Add a view to the box with @code{aMargin} MinXMargin, and enabing X
+resizing.
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{enablingXResizing:} (BOOL)@t{aFlag}@*
+@ @ @ @ @b{withMinXMargin:} (float)@t{aMargin}
+
+Add a view to the box, enabling X Resizing only if @code{flag} is
+@code{YES}, and a MinXMargin @code{aMargin}.  If @code{aFlag} is
+@code{YES} the [view and its margins] should be resized in the
+horizontal direction when the GSHbox is resized in the horizontal
+direction.  If @code{aFlag} is @code{NO} the view is never X-resized and
+always left in its original width.  The default is @code{YES}.
+
+The min X margin is used to separate the view from the preceding one.
+The first view added to the box has no min X margin; if you try setting
+one for it, it is ignored (zero is used instead).
+
+When views are added to the @code{GSHbox}, it might happen that some of
+the added views have a greater height than others.  When this happens,
+the @code{GSHbox} resizes all the views to the highest height.  As
+usual, each view is resized with its margins; the effect of the resizing
+on each view is determined by the autoresizing mask of the view.  The
+classical options are
+@table @code
+@item (NSViewMinYMargin | NSViewMaxYMargin)
+Center the view vertically
+@item NSViewMinYMargin
+Flush the view up (down if the @code{GSHbox} is flipped)
+@item NSViewMaxYMargin 
+Flush the view down (up if the @code{GSHbox} is flipped)
+@item NSViewHeightSizable
+Expand the view to the whole height
+@end table
+(you may need to @code{OR} these masks with the mask you use in the
+horizontal direction, if you use any).
+
+@node Adding a Separator, Setting Margins, Adding a View, GSHbox Method Description
+@subsubsection Adding a Separator
+
+@noindent
+-(void) @b{addSeparatorWithMinXMargin:} (float)@t{aMargin}
+
+Add a separator (a vertical groove line encompassing all the height of
+the @code{GSHbox}) to the @code{GSHbox}, inserting a margin
+@code{aMargin} between the separator and the last added view.
+
+@noindent
+-(void) @b{addSeparator}
+
+Add a separator with the default MinXMargin.
+
+
+@node Setting Margins, Getting the Minimum Size, Adding a Separator, GSHbox Method Description
+@subsubsection Setting Margins
+
+@noindent
+-(void) @b{setDefaultMinXMargin:} (float)@t{aMargin}
+
+If you change the default min X margin with this method, it will get
+used for all the views you add after changing it, when no particular
+margins are specified for those views.  This method does nothing on
+already added views; it only changes an internal @code{GSHbox} instance
+variable which is used only when a new view is added to the
+@code{GSHbox} without any min X margin specified.  Each @code{GSHbox}
+has its own default min X margin.
+
+@node Getting the Minimum Size, Resizing the Box, Setting Margins, GSHbox Method Description
+@subsubsection Getting the Minimum Size 
+
+@noindent
+-(NSSize) @b{minimumSize}
+
+See the @code{GSTable} class description.
+
+@node Resizing the Box, Getting the Number of Views, Getting the Minimum Size, GSHbox Method Description
+@subsubsection Resizing the Box 
+ 
+@noindent
+-(void) @b{sizeToFit}
+
+See the @code{GSTable} class description.
+
+@node Getting the Number of Views,  , Resizing the Box, GSHbox Method Description
+@subsubsection Getting the Number of Views
+
+@noindent
+-(int) @b{numberOfViews}
+
+Return the number of views (separators included) in the GSHbox.  
+
+@node GSTable, GSVbox, GSHbox, Classes
+@section GSTable Reference
+
+@menu
+* GSTable Class::               
+* GSTable Overview::            
+* Advanced Description of GSTable::  
+* GSTable Method Description::  
+@end menu
+
+@node GSTable Class, GSTable Overview, GSTable, GSTable
+@subsection @code{GSTable} Class
+
+@display
+@b{Inherits from:} @code{NSView: NSResponder: NSObject}@*
+@b{Conforms to:}  @code{NSCoding} (from @code{NSResponder}),
+@code{NSObject} (from @code{NSObject})@*
+@b{Declared in:} @file{AppKit/GSTable.h}
+@end display
+
+@code{GSTable} is a GNUstep GUI extension to the OpenStep specification. 
+
+@node GSTable Overview, Advanced Description of GSTable, GSTable Class, GSTable
+@subsection Overview of the @code{GSTable} Class
+
+A @code{GSTable} object is used to control the disposition (position and
+size) of a group of @code{NSView}s.  The @code{GSTable} object offers
+two main facilities to the programmer:
+@itemize @bullet
+@item 
+with a @code{GSTable} object, you do not need to specify the exact
+position and size of each view.  You only specify the logical position,
+relative to the other views in the table.  The actual frame of each view
+is then computed by the @code{GSTable} at run time.
+@item 
+when the @code{GSTable} is resized (for example, because the user has
+resized the window in which the @code{GSTable} is), the @code{GSTable}
+takes care of moving and resizing all its views automatically.  This is
+done in much a advanced and customizable way than in the usual standard
+@code{NSView}'s autoresizing mechanism.
+@end itemize
+
+You create a @code{GSTable} instance with a certain number of rows and
+columns.  The @code{GSTable} object itself is invisible; it is only a
+logical device used to specify the subview position.  Then, you place
+one by one the views you want to control in the @code{GSTable}, by
+calling a method of the family @code{-putView:atRow:column:}.  Before
+placing a view in the table, you should resize it to the minimum
+comfortable size you want it to have.  The table then automatically
+places the views, organizing them in well-ordered columns and rows.
+
+The initial size of the @code{GSTable} is zero; each time you put a view
+in the @code{GSTable}, the @code{GSTable} recomputes sizes and as a
+result resizes itself so that it exactly fits the views it contains.
+You should not force a @code{GSTable} in a size different from the one
+it has automatically computed.  The only acceptable, reasonable and
+meaningful way of resizing a @code{GSTable} is through the appropriate
+@code{-resizeWithOldSuperviewSize:} message when the @code{GSTable} is
+in the view hierarchy.
+
+When you add a view, you may specify some particular margins to be used
+for that view.  If nothing is specified, the view is added to the table
+with the margins of 0.  You should think of each view and its margins as
+a whole.  A position in the @code{GSTable} is free or filled with a view
+and its margins.
+
+The @code{GSTable} itself knows what is the minimum size it needs to
+have in order to comfortably display the views it contains.  You may get
+this size by calling the method @code{-minimumSize}.  When first filled,
+the table has this minimum size.  If in any moment you want the table to
+restore itself to this size, you should invoke the method
+@code{-sizeToFit}.
+
+When the @code{GSTable} receives a @code{-resizeWithOldSuperviewSize:}
+message, it automatically rearranges the views it contains:
+@itemize @bullet 
+@item 
+If the new width or height is equal or less than the table's minimum
+width or height, the @code{GSTable} simply arranges its views in the
+initial position.  In other words, the @code{GSTable} refuse to resize
+below its minimum width or height.  If you do that, part of the
+@code{GSTable} is clipped.
+@item 
+If the new width or height is bigger than the table's minimum width or
+height, the space in excess is equally distributed between the columns
+or rows which have X (or Y) resizing enabled.  When a column or a row is
+resized, each view in the column or row is resized together with its
+margins.  By setting the autoresizingMask of each view, you may decide
+how the resizing operation will act on that particular view and its
+margins.  For example, setting the autoresizingMask to
+@code{NSViewWidthSizable | NSViewHeightSizable} will always leave the
+margins fixed to their initial dimensions, and expand/reduce only the
+view, in all directions.  Setting the autoresizingMask to
+@code{NSViewMinXMargin | NSViewMaxXMargin} @code{| NSViewSizable |
+NSViewHeightSizable} will instead expand/reduce both the margins and the
+view in the horizontal direction, but leave the margins fixed and
+expand/reduce only the view in the vertical direction.  Whatever the
+autoresizingMask and the amount of the resizing, views and margins are
+never resized below their minimum comfortable size, as explained above.
+For more information on the autoresizingMask, please refer to the
+description of the @code{-setAutoresizingMask:} method of the
+@code{NSView} class.
+@end itemize
+
+You may find practical examples of the use of the @code{GSTable} class
+in the @file{Testing} directory of the source code of the GNUstep Library.
+
+@node Advanced Description of GSTable, GSTable Method Description, GSTable Overview, GSTable
+@subsection Advanced Description of @code{GSTable}
+
+We call any view which is added to the @code{GSTable} a @dfn{prisoner}.
+The purpose of the @code{GSTable} is to effectively manage its
+prisoners.  To do so, the @code{GSTable} creates a special view, called
+a @dfn{jail}, for each prisoner.  The jails are subviews of the
+@code{GSTable}; each prisoner, when added to the @code{GSTable}, is made
+a subview of its jail.  The @code{GSTable} always moves and resizes
+directly the jails.  The moving is automatically transmitted to the
+prisoners, which are subviews of the jails; the resizing is transmitted
+through the usual autoresizing machinery, because the jails always have
+autoresizing of subviews turned on.  This works because if a prisoner
+sends to its superview a @code{-frame} message, the frame of the jail
+(and @emph{not} the frame of the @code{GSTable}) is returned, so that
+each prisoner will autoresize itself in its jail frame.  Moreover, any
+prisoner, being a subview of its jail, is clipped in its jail frame.  If
+a prisoner draws something out of its jail frame, the output is
+discarded by the usual subview/view clipping machinery.  This prevents
+the prisoners from disturbing each other.  The dimension of the jail is
+the dimension of the prisoner plus its margins.  Since the
+@code{GSTable} manages directly the jails, each prisoner is managed
+together with its margins.  When the jail is resized, the prisoner
+receives a @code{-resizeWithOldSuperviewSize:}, which makes it resize
+itself and its margins in the new jail size, according to its
+autoresizingMask.
+
+@node GSTable Method Description,  , Advanced Description of GSTable, GSTable
+@subsection @code{GSTable} Method Description 
+
+@menu
+* Initializing a GSTable::      
+* Putting Views in a GSTable::  
+* Setting Borders::             
+* Minimum Size::                
+* Resizing::                    
+* Setting Row and Column Expand Flag::  
+* Adding Rows and Columns to GSTable::  
+* Getting GSTable Row and Column Number::  
+@end menu
+
+@c TODO: Add to texinfo a native command to produce Objective-C method 
+@c declarations.
+
+@node Initializing a GSTable, Putting Views in a GSTable, GSTable Method Description, GSTable Method Description
+@subsubsection Initializing a @code{GSTable}
+
+@noindent
+-(id) @b{initWithNumberOfRows:} (int)@t{rows}@*
+@ @ @ @b{numberOfColumns:} (int)@t{columns}
+
+Initialize a @code{GSTable} with @code{columns} columns and @code{rows}
+rows.  If @code{columns} or @code{rows} is negative or null, a warning
+is issued and a default of 2 is used instead.
+
+@noindent
+-(id) @b{init}
+
+Initialize a @code{GSTable} with 2 columns and 2 rows. 
+
+@node Putting Views in a GSTable, Setting Borders, Initializing a GSTable, GSTable Method Description
+@subsubsection Putting Views in a @code{GSTable}
+
+Use these methods to put views in the @code{GSTable}:
+  
+@noindent
+-(void) @b{putView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{atRow:} (int)@t{row}@*
+@ @ @ @ @b{column:} (int)@t{column}
+
+Put @code{aView} in the @code{GSTable}, in the specified @code{row} and
+@code{column}.  Zero (0) margins are used.  If the column @code{column}
+(or the row @code{row}) is not enough big to fully display @code{aView}
+and its margins, the column (or the row) is resized (regardless of the
+fact that X or Y Resizing is Enabled or not).  It is understood that
+this will affect each view (and its margins) in the column (or row)
+according to the autoresizing mask of each view.
+
+@noindent
+-(void) @b{putView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{atRow:} (int)@t{row}@*
+@ @ @ @ @b{column:} (int)@t{column}@*
+@ @ @ @ @b{withMargins:} (float)@t{margins}
+
+Put @code{aView} in the @code{GSTable}, using @code{margins} as margin
+in all directions: left, right, top, bottom.
+
+@noindent
+-(void) @b{putView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{atRow:} (int)@t{row}@*
+@ @ @ @ @b{column:} (int)@t{column}@*
+@ @ @ @ @b{withXMargins:} (float)@t{xMargins}@*
+@ @ @ @ @b{yMargins:} (float)@t{yMargins}@*
+
+Put @code{aView} in the @code{GSTable}, using @code{xMargins} as the
+left and right margins, and @code{yMargins} as the top and bottom
+margins.
+
+@noindent
+-(void) @b{putView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{atRow:} (int)@t{row}@*
+@ @ @ @ @b{column:} (int)@t{column}@*
+@ @ @ @ @b{withMinXMargin:} (float)@t{minXMargin}@*
+@ @ @ @ @b{maxXMargin:} (float)@t{maxXMargin}@*
+@ @ @ @ @b{minYMargin:} (float)@t{minYMargin}@*
+@ @ @ @ @b{maxYMargin:} (float)@t{maxYMargin}
+
+Put @code{aView} in the @code{GSTable}, using the specified margins.
+The names for the margins are chosen as to be as close as possible to
+the autoresizingMask convention.  The margins are to be interpreted as
+follows:
+@table @code
+@item minXMargin 
+Left Margin
+@item maxXMargin 
+Right Margin
+@item minYMargin 
+Lower Margin (Upper if view is flipped)
+@item maxYMargin 
+Upper Margin (Lower if view is flipped)
+@end table
+
+@node Setting Borders, Minimum Size, Putting Views in a GSTable, GSTable Method Description
+@subsubsection Setting Borders 
+
+@noindent
+-(void) @b{setBorder:} (float)@t{aBorder}
+
+Set the @code{GSTable} up, bottom, left and right borders to the same
+value @t{aBorder}.  The @code{GSTable} is immediately updated.  If
+@code{aBorder} is negative, the border is reset to the default, which is
+zero (0).  The border is simply unfilled space; it is measured in the
+@code{GSTable} coordinate system.
+
+@noindent
+-(void) @b{setXBorder:} (float)@t{aBorder} 
+
+Set the @code{GSTable} left and right borders to @t{aBorder}.  If
+@t{aBorder} is negative, the border is reset to zero.  The
+@code{GSTable} is immediately updated.
+
+@noindent
+-(void) @b{setYBorder:} (float)@t{aBorder}
+
+Same as @code{setXBorder:} but set the up and bottom borders. 
+
+@noindent
+-(void) @b{setMinXBorder:} (float)@t{aBorder}
+
+Same as @code{setXBorder:} but set only the left border. 
+
+@noindent
+-(void) @b{setMaxXBorder:} (float)@t{aBorder}
+
+Same as @code{setXBorder:} but set only the right border.
+
+@noindent
+-(void) @b{setMinYBorder:} (float)@t{aBorder}
+
+Same as @code{setXBorder:} but set only the lower border (upper 
+if the @code{GSTable} is flipped).
+
+@noindent
+-(void) @b{setMaxYBorder:} (float)@t{aBorder}
+
+Same as @code{setXBorder:} but set only the upper border (lower 
+if the @code{GSTable} is flipped).
+
+@node Minimum Size, Resizing, Setting Borders, GSTable Method Description
+@subsubsection Minimum Size. 
+
+@noindent
+-(NSSize) @b{minimumSize}
+
+Return the minimum size the Table should be resized to.  Trying to
+resize the Table below this size will only result in clipping (ie,
+making it disappear) part of the Table.
+
+@node Resizing, Setting Row and Column Expand Flag, Minimum Size, GSTable Method Description
+@subsubsection Resizing. 
+
+@noindent
+-(void) @b{sizeToFit}
+
+The table is resized to its minimum size; the views (with their margins)
+are moved and resized to their minimum size so that they exactly pack in
+the table.
+
+@node Setting Row and Column Expand Flag, Adding Rows and Columns to GSTable, Resizing, GSTable Method Description
+@subsubsection Setting Row and Column Expand Flag
+
+When the @code{GSTable} is resized, the extra space is equally divided
+between the Rows and Columns which have the X (or Y) resizing enabled.
+The following methods let you enable/disable the X (or Y) resizing of
+each row and column in the @code{GSTable}.  Note that when the
+@code{GSTable} is first created, all its columns and rows have by
+default resizing enabled.
+
+@noindent
+-(void) @b{setXResizingEnabled:} (BOOL)@t{aFlag}@*
+@ @ @ @ @b{forColumn:} (int)@t{aColumn}
+
+Enable/disable X Resizing for the column @code{aColumn} 
+according to @code{aFlag}.  Note: at present, enabling/disabling 
+X resizing after the table has been put in the view hierarchy 
+is not supported.  
+
+@noindent
+-(void) @b{setYResizingEnabled:} (BOOL)@t{aFlag}@*
+@ @ @ @ @b{forRow:} (int)@t{aRow}
+
+Enable/disable Y Resizing for the row @code{aRow} 
+according to @code{aFlag}.  Note: at present, enabling/disabling 
+Y resizing after the table has been put in the view hierarchy 
+is not supported. 
+
+@noindent
+-(BOOL) @b{isXResizingEnabledForColumn:} (int)@t{aColumn}
+
+Return whether X resizing is enabled for the column @code{aColumn}.
+
+@noindent
+-(BOOL) @b{isYResizingEnabledForRow:} (int)@t{aRow}
+
+Return whether Y resizing is enabled for the row @code{aRow}.
+
+@node Adding Rows and Columns to GSTable, Getting GSTable Row and Column Number, Setting Row and Column Expand Flag, GSTable Method Description
+@subsubsection Adding Rows and Columns
+
+These methods should be used to add more rows and columns to the table.
+Remember that it is faster to create a @code{GSTable} with the right
+number of rows and columns from the beginning.
+
+@noindent
+-(void) @b{addRow}
+
+Add a row to the @code{GSTable}.  The row is added void, with zero
+height and Y Resizing enabled.
+
+@noindent
+-(void)  @b{addColumn}
+
+Add a column to the @code{GSTable}.  The column is added void, with zero width 
+and X Resizing enabled.
+
+@node Getting GSTable Row and Column Number,  , Adding Rows and Columns to GSTable, GSTable Method Description
+@subsubsection Getting Row and Column Number
+
+@noindent
+-(int) @b{numberOfRows}
+
+Return the number of rows in the @code{GSTable}. 
+
+@noindent
+-(int) @b{numberOfColumns}
+
+Return the number of columns in the @code{GSTable}. 
+
+@node GSVbox,  , GSTable, Classes
+@section GSVbox Reference
+
+@menu
+* GSVbox Class::                
+* GSVbox Overview::             
+@end menu
+
+@node GSVbox Class, GSVbox Overview, GSVbox, GSVbox
+@subsection @code{GSVbox} Class
+
+@display
+@b{Inherits from:} @code{GSTable: NSView: NSResponder: NSObject}@*
+@b{Conforms to:}  @code{NSCoding} (from @code{NSResponder}), 
+@code{NSObject} (from @code{NSObject})@*
+@b{Declared in:} @file{AppKit/GSVbox.h}
+@end display
+
+@code{GSVbox} is a GNUstep GUI extension to the OpenStep specification. 
+
+@node GSVbox Overview,  , GSVbox Class, GSVbox
+@subsection @code{GSVbox} Overview
+
+A @code{GSVbox} is completely analogue to a @code{GSHbox}.  It
+implements the same methods; the only different is that it packs views
+from bottom to top (from top to bottom if flipped).
+
+It implements the following methods: 
+
+@noindent
+-(id) @b{init}
+
+@noindent
+-(void) @b{setBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{setXBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{setYBorder:} (float)@t{aBorder}
+
+@noindent 
+-(void) @b{setMinXBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{setMaxXBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{setMinYBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{setMaxYBorder:} (float)@t{aBorder}
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{enablingYResizing:} (BOOL)@t{aFlag}
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{withMinYMargin:} (float)@t{aMargin}
+
+@noindent
+-(void) @b{addView:} (NSView *)@t{aView}@*
+@ @ @ @ @b{enablingYResizing:} (BOOL)@t{aFlag}@*
+@ @ @ @ @b{withMinYMargin:} (float)@t{aMargin}
+
+@noindent
+-(void) @b{addSeparator}
+
+@noindent
+-(void) @b{addSeparatorWithMinYMargin:} (float)@t{aMargin}
+
+@noindent
+-(void) @b{setDefaultMinYMargin:} (float)@t{aMargin}
+
+@noindent
+-(NSSize) @b{minimumSize}
+
+@noindent
+-(void) @b{sizeToFit}
+
+@noindent
+-(int) @b{numberOfView}
+
+See the documentation for the corresponding @code{GSHbox} class methods
+for more information.
 
 @node Tools, Implementation, Classes, Top
 @chapter Tools Included with gstep-gui.
@@ -333,7 +1108,7 @@ argument was given.  The Info-gnustep.plist file could look like this:
 @chapter Special Setup Instructions.
 
 @menu
-* Keyboard Modifiers::                     
+* Keyboard Modifiers::          
 @end menu
 
 @node Keyboard Modifiers,  , Setup, Setup
@@ -473,11 +1248,6 @@ with the window manager keyboard shortcuts.
 Good window managers let you change the keyboard shortcuts, 
 so you may move the wm shortcuts that you do not use to keys 
 which do not conflict (at least not too much) with GNUstep.  
-Usually, to use GNUstep keyboard shortcuts efficiently 
-you need the @key{COMMAND} and @key{CONTROL} key free 
-from window manager interferences; you may perhaps share 
-the @key{ALTERNATE} key, which is used less, 
-or in conjunction with @key{COMMAND}.  
 
 @node Contributing, Concept Index, Setup, Top
 @chapter Contributing
