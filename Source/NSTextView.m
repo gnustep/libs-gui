@@ -305,6 +305,11 @@ static NSNotificationCenter *nc;
 	  return;
 	}
       _tvf.is_in_dealloc = YES;
+      /* Balance the RELEASE we sent to us to break the retain cycle
+	 in initWithFrame: or initWithCoder: (otherwise releasing the
+	 _textStorage will make our retain count go below zero ;-) */
+      RETAIN (self);
+
       /* This releases all the text objects (us included) in fall */
       RELEASE (_textStorage);
     }
