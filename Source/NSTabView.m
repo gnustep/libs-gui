@@ -2,6 +2,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTabView.h>
+#include <AppKit/NSTabViewItem.h>
 #include <AppKit/PSOperators.h>
 
 @implementation NSTabView
@@ -169,6 +170,9 @@
   NSGraphicsContext     *ctxt = GSCurrentContext();
   float borderThickness;
   int howMany = [tab_items count];
+  int i;
+  NSRect previousRect;
+  NSTabState previousState;
 
   DPSgsave(ctxt);
 
@@ -189,6 +193,92 @@
     case NSNoTabsNoBorder:
       borderThickness = 0;
       break;
+  }
+
+  for (i=0;i<howMany;i++) {
+    // where da tab be at?
+    NSSize s;
+    NSRect r;
+    NSPoint iP;
+    NSTabViewItem *anItem = [tab_items objectAtIndex:i];
+    NSTabState itemState;
+
+    if (i == 2) [anItem _setTabState:NSSelectedTab];
+
+    itemState = [anItem tabState];
+
+    s = [anItem sizeOfLabel:NO];
+    NSLog(@"Label: %@ Size: %d\n", [anItem label], (int)s.width);
+
+    if (i == 0) {
+
+      iP.x = rect.origin.x;
+      iP.y = rect.size.height;
+
+      if (itemState == NSSelectedTab)
+        [[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      else if (itemState == NSBackgroundTab)
+        [[NSImage imageNamed:@"common_TabUnSelectedLeft.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      else
+	NSLog(@"Not finished yet. Luff ya.\n");
+
+      r.origin.x = rect.origin.x + 13;
+      r.origin.y = rect.size.height;
+      r.size.width = s.width;
+      r.size.height = 20;
+
+      [anItem drawLabel:NO inRect:r];
+
+      previousRect = r;
+      previousState = itemState;
+    } else {
+      iP.x = previousRect.origin.x + previousRect.size.width;
+      iP.y = rect.size.height;
+
+      if (itemState == NSSelectedTab) {
+	iP.y -= 1;
+        [[NSImage imageNamed:@"common_TabUnSelectToSelectedJunction.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      }
+      else if (itemState == NSBackgroundTab) {
+	if (previousState == NSSelectedTab) {
+	  iP.y -= 1;
+          [[NSImage imageNamed:@"common_TabSelectedToUnSelectedJunction.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+	  iP.y += 1;
+	} else {
+          [[NSImage imageNamed:@"common_TabUnSelectedJunction.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+        }
+      } 
+      else
+	NSLog(@"Not finished yet. Luff ya.\n");
+
+      r.origin.x = iP.x + 13;
+      r.origin.y = rect.size.height;
+      r.size.width = s.width;
+      r.size.height = 20;
+
+      [anItem drawLabel:NO inRect:r];
+
+      previousRect = r;
+      previousState = itemState;
+    }  
+
+    if (i == howMany-1) {
+        iP.x += s.width + 13;
+
+      if ([anItem tabState] == NSSelectedTab)
+        [[NSImage imageNamed:@"common_TabSelectedRight.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      else if ([anItem tabState] == NSBackgroundTab)
+        [[NSImage imageNamed:@"common_TabUnSelectedRight.tiff"]
+	  compositeToPoint:iP operation: NSCompositeSourceOver];
+      else
+	NSLog(@"Not finished yet. Luff ya.\n");
+    }
   }
 
   DPSgrestore(ctxt);

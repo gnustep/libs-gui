@@ -1,5 +1,7 @@
 #include <AppKit/NSFont.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSTabViewItem.h>
+#include <AppKit/PSOperators.h>
 
 @implementation NSTabViewItem
 - (id) initWithIdentifier:(id)identifier
@@ -7,6 +9,7 @@
   [super init];
 
   ASSIGN(item_ident, identifier);
+  item_state = NSBackgroundTab;
 
   return self;
 }
@@ -83,6 +86,11 @@
   return item_state;
 }
 
+- (void)_setTabState:(NSTabState)tabState
+{
+  item_state = tabState;
+}
+
 // Tab view, this is the "super" view.
 
 - (void)_setTabView:(NSTabView *)tabView
@@ -111,7 +119,45 @@
 - (void)drawLabel:(BOOL)shouldTruncateLabel
 	   inRect:(NSRect)tabRect
 {
-  // Implement in backend?
+  NSGraphicsContext     *ctxt = GSCurrentContext();
+  NSRect lRect;
+  NSRect fRect;
+      
+  DPSgsave(ctxt);
+
+  DPSsetlinewidth(ctxt, 1);
+  DPSsetgray(ctxt, 1);
+
+  fRect = tabRect;
+
+  fRect.size.height -= 5;
+
+  if (item_state == NSSelectedTab) {
+    fRect.origin.y -= 1;
+    fRect.size.height += 1;
+    [[NSColor lightGrayColor] set];
+    NSRectFill(fRect);
+  } else if (item_state == NSBackgroundTab) {
+    [[NSColor lightGrayColor] set];
+    NSRectFill(fRect);
+  } else {
+    NSRectFill(fRect);
+  }
+
+  DPSsetgray(ctxt, 1);
+  DPSmoveto(ctxt, tabRect.origin.x, tabRect.origin.y+16);
+  DPSrlineto(ctxt, tabRect.size.width, 0);
+  DPSstroke(ctxt);
+
+  lRect = tabRect;
+  lRect.origin.y += 3;
+  [[item_tabview font] set];
+
+  DPSsetgray(ctxt, 0);
+  DPSmoveto(ctxt, lRect.origin.x, lRect.origin.y);
+  DPSshow(ctxt, [item_label cString]);
+
+  DPSgrestore(ctxt);
 }
 
 // NSCoding protocol.

@@ -57,6 +57,13 @@ common_SwitchOn.tiff \
 common_SwitchOff.tiff \
 common_SliderHoriz.tiff \
 common_SliderVert.tiff \
+common_TabSelectedLeft.tiff \
+common_TabSelectedRight.tiff \
+common_TabSelectedToUnSelectedJunction.tiff \
+common_TabUnSelectToSelectedJunction.tiff \
+common_TabUnSelectedJunction.tiff \
+common_TabUnSelectedLeft.tiff \
+common_TabUnSelectedRight.tiff \
 common_Tile.tiff \
 common_Nibble.tiff \
 common_Dimple.tiff \
