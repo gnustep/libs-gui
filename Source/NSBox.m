@@ -66,7 +66,7 @@
   [_cell setBordered: NO];
   [_cell setEditable: NO];
   [_cell setDrawsBackground: YES];
-  [_cell setBackgroundColor: [_window backgroundColor]];
+  //[_cell setBackgroundColor: [NSColor controlColor]];
   _offsets.width = 5;
   _offsets.height = 5;
   _border_rect = _bounds;
@@ -77,16 +77,14 @@
   _content_view = [NSView new];
   [super addSubview: _content_view];
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
-  [_content_view release];
+  RELEASE(_content_view);
 
   return self;
 }
 
 - (void) dealloc
 {
-  if (_cell) 
-    [_cell release];
-
+  TEST_RELEASE(_cell);
   [super dealloc];
 }
 
@@ -121,7 +119,12 @@
   [self setNeedsDisplay: YES];
 }
 
-// TODO: - (void) setTitleWithMnemonic: (NSString *)aString
+- (void) setTitleWithMnemonic: (NSString *)aString
+{
+  [_cell setTitleWithMnemonic: aString];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [self setNeedsDisplay: YES];
+}
 
 - (void) setTitleFont: (NSFont *)fontObj
 {
@@ -320,9 +323,10 @@
 //
 - (void) drawRect: (NSRect)rect
 {
+  NSColor *color = [_window backgroundColor];
   rect = NSIntersectionRect(_bounds, rect);
   // Fill inside
-  [[_window backgroundColor] set];
+  [color set];
   NSRectFill(rect);
 
   // Draw border
@@ -345,7 +349,7 @@
   // Draw title
   if (_title_position != NSNoTitle)
     {
-      [_cell setBackgroundColor: [_window backgroundColor]];
+      [_cell setBackgroundColor: color];
       [_cell drawWithFrame: _title_rect inView: self];
     }
 }
