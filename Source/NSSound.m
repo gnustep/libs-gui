@@ -83,8 +83,6 @@ static NSDictionary *nsmapping = nil;
 
 @end 
 
-static id<GSSoundSvr> the_server = nil;
-
 @interface NSSound (PrivateMethods)
 
 + (id<GSSoundSvr>) gsnd;
@@ -104,6 +102,8 @@ static id<GSSoundSvr> the_server = nil;
 @implementation NSSound (PrivateMethods)
 
 #ifdef HAVE_AUDIOFILE_H
+static id<GSSoundSvr> the_server = nil;
+
 + (id<GSSoundSvr>) gsnd
 {
   if (the_server == nil) 
