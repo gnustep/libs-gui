@@ -43,6 +43,7 @@
   NSImage *_dimpleImage;
   NSColor *_backgroundColor; 
   NSColor *_dividerColor;
+  BOOL     _never_displayed_before;
 }
 
 - (void) setDelegate: (id)anObject;
