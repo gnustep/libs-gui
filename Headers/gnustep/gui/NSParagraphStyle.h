@@ -46,6 +46,12 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
   NSLineBreakByTruncatingMiddle	/* Truncate middle of line:  "ab...yz" */
 } NSLineBreakMode;
 
+typedef enum _NSWritingDirection {
+    NSWritingDirectionNaturalDirection,
+    NSWritingDirectionLeftToRight,
+    NSWritingDirectionRightToLeft
+} NSWritingDirection;
+
 @interface NSTextTab : NSObject <NSCopying>
 {
   NSTextTabType	_tabStopType;
@@ -68,6 +74,7 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
   NSMutableArray *_tabStops;
   NSTextAlignment _alignment;
   NSLineBreakMode _lineBreakMode;
+  NSWritingDirection _baseDirection;
 }
 
 + (NSParagraphStyle*) defaultParagraphStyle;
@@ -124,8 +131,12 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
  *	0 implies no maximum.
  */ 
 - (float) maximumLineHeight;
-
 - (NSLineBreakMode) lineBreakMode;
+
+#ifndef	STRICT_OPENSTEP
++ (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language;
+- (NSWritingDirection) baseWritingDirection;
+#endif
 
 @end
 
@@ -147,4 +158,7 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
 - (void) setTabStops: (NSArray*)array;
 - (void) setParagraphStyle: (NSParagraphStyle*)obj;
 
+#ifndef	STRICT_OPENSTEP
+- (void) setBaseWritingDirection: (NSWritingDirection)direction;
+#endif
 @end
