@@ -1,9 +1,17 @@
+2003-01-28 17:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-layoutLineNewParagraph:): Try to make
+	sure each container gets at least one line frag rect.
+
+	* Source/NSTextView: Avoid making calls to the layout manager with
+	invalid arguments.
+
 2003-01-28 17:40  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m, Source/GSLayoutManager.m:
 	Whitespace cleanups and comments.
 
-	Source/NSLayoutManager.m: (-rectArrayForGlyphRange:
+	* Source/NSLayoutManager.m: (-rectArrayForGlyphRange:
 	withinSelectedGlyphRange:inTextContainer:rectCount:): Give better
 	error message for an invalid glyph range.
 

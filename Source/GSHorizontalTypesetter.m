@@ -408,7 +408,18 @@ restart:
       line_frags[num_line_frags - 1].rect = rect;
     }
   if (!num_line_frags)
-    return 1;
+    {
+      if (curPoint.y == 0.0 &&
+	  line_height > [curTextContainer containerSize].height)
+	{
+	  /* Try to make sure each container contains at least one line frag
+	  rect by shrinking our line height. */
+	  line_height = [curTextContainer containerSize].height;
+	  max_line_height = line_height;
+	  goto restart;
+	}
+      return 1;
+    }
 
   {
     unsigned int i = 0;
