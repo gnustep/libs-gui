@@ -45,7 +45,15 @@ include ./Version
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Source Images Model Tools Panels PrinterTypes TextConverters
+SUBPROJECTS = \
+Source \
+Images \
+Model \
+Tools \
+Panels \
+PrinterTypes \
+TextConverters \
+KeyBindings
 
 -include GNUmakefile.preamble
 
