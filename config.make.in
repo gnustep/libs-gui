@@ -1,0 +1,7 @@
+# -*-makefile-*-
+# Extra make variables for gui library
+#
+
+ADDITIONAL_INCLUDE_DIRS += @ADDITIONAL_INCLUDE_DIRS@
+ADDITIONAL_LDFLAGS += @ADDITIONAL_LDFLAGS@
+

@@ -32,6 +32,7 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
+include ../config.make
 
 # The library to be compiled
 LIBRARY_NAME=libgnustep-gui

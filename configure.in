@@ -30,6 +30,47 @@ AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rintf)
 
-AC_OUTPUT()
+#--------------------------------------------------------------------
+# Find for TIFF
+# Do a superficial find only - The tiff library is actually linked with
+# the backend, and typically in conjunction with other graphic libraries.
+#--------------------------------------------------------------------
+AC_ARG_WITH(tiff_library, 
+           [  --with-tiff-library=DIR TIFF library file are in DIR], ,
+           with_tiff_library=)
+AC_ARG_WITH(tiff_include,  
+	[  --with-tiff-include=DIR TIFF include files are in DIR], ,
+        with_tiff_include=)
+
+save_cpp=${CPPFLAGS}
+save_ldf=${LDFLAGS}
+if test "$with_tiff_include" != ""; then
+  CPPFLAGS="-I$with_tiff_include ${CPPFLAGS}"
+  ADDITIONAL_INCLUDE_DIRS="-I$with_tiff_include"
+fi
+if test -n "$with_tiff_library"; then
+  LDFLAGS="-L$with_tiff_library $LDFLAGS"
+  ADDITIONAL_LDFLAGS="-L$with_tiff_library"
+fi
+AC_CHECK_HEADER(tiffio.h)
+if test $ac_cv_header_tiffio_h = no; then
+    AC_MSG_WARN(Cannot find libtiff header tiffio)
+    echo "* The GUI library requres the TIFF library"
+    echo "* Use --with-tiff-include to specify the tiff header directory"
+    echo "* and --with-tiff-library to specify the tiff library directory"
+    echo "* if it is not in the usual place(s)"
+    AC_MSG_ERROR(gnustep-gui will not compile without tiff includes)
+fi
+AC_CHECK_LIB(tiff, main)
+CPPFLAGS="$save_cpp"
+LDFLAGS="$save_ldf"
+
+AC_SUBST(ADDITIONAL_LDFLAGS)
+AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
+
+AC_OUTPUT(config.make)
+
+
+
 
 
