@@ -44,6 +44,7 @@
 @class NSFont;
 @class NSTextStorage;
 @class NSTextContainer;
+@class NSLayoutManager;
 
 typedef enum _NSTextAlignment {
   NSLeftTextAlignment = 0,
@@ -93,11 +94,15 @@ typedef enum _NSSelectionAffinity {
 } NSSelectionAffinity;
 #endif
 
-@interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
+@interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords>
 {	
   id _delegate;
   // content
   NSTextStorage	*_textStorage;
+  NSTextContainer *_textContainer;
+
+  // contains layout information
+  NSLayoutManager *_layoutManager;  
   
   // Attributes
   struct GSTextFlagsType {
@@ -126,9 +131,6 @@ typedef enum _NSSelectionAffinity {
   
   // column-stable cursor up/down
   NSPoint _currentCursor;
-
-  // contains private _GNULineLayoutInfo objects
-  id _layoutManager;  
 }
 
 /*
@@ -297,8 +299,11 @@ typedef enum _NSSelectionAffinity {
 
 @interface NSText(NSTextView)
 // Methods that should be declared on NSTextView, but are usable for NSText
+- (id)initWithFrame:(NSRect)frameRect textContainer:(NSTextContainer *)container;
+- (void)setTextContainer:(NSTextContainer*) container;
 - (NSTextContainer *)textContainer;
 - (NSPoint)textContainerOrigin;
+- (NSSize) textContainerInset;
 - (void) setRulerVisible: (BOOL)flag;
 
 - (NSRange)rangeForUserTextChange;
