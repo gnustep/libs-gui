@@ -200,7 +200,6 @@ AppKit/NSColorList.h \
 AppKit/NSColorPanel.h \
 AppKit/NSColorPicker.h \
 AppKit/NSColorPicking.h \
-AppKit/NSColorPrivate.h \
 AppKit/NSColorWell.h \
 AppKit/NSComboBox.h \
 AppKit/NSComboBoxCell.h \
