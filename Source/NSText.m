@@ -191,7 +191,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void) setString: (NSString*)aString
 {
-  [self replaceCharactersInRange: NSMakeRange (0, [[self string] length])
+  [self replaceCharactersInRange: NSMakeRange (0, [self textLength])
 	withString: aString];
 }
 
@@ -359,78 +359,13 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 - (NSRange) selectedRange
 {
-  return _selected_range;
+  [self subclassResponsibility: _cmd];
+  return NSMakeRange (NSNotFound, 0);
 }
 
 - (void) setSelectedRange: (NSRange)range
 {
-  NSRange oldRange = _selected_range;
-  NSRange overlap;
-
-  // Nothing to do, if the range is still the same
-  if (NSEqualRanges(range, oldRange))
-    return;
-
-  //<!> ask delegate for selection validation
-
-  _selected_range  = range;
-  [self updateFontPanel];
-
-#if 0
-  [nc postNotificationName: NSTextViewDidChangeSelectionNotification
-      object: self
-      userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-				NSStringFromRange (_selected_range),
-			      NSOldSelectedCharacterRange, nil]];
-#endif
-
-  // display
-  if (range.length)
-    {
-      // <!>disable caret timed entry
-    }
-  else	// no selection
-    {
-      if (_tf.is_rich_text)
-	{
-	  [self setTypingAttributes: [_textStorage attributesAtIndex: range.location
-						   effectiveRange: NULL]];
-	}
-      // <!>enable caret timed entry
-    }
-
-  if (!_window)
-    return;
-
-  // Make the selected range visible
-  [self scrollRangeToVisible: _selected_range]; 
-
-  // Redisplay what has changed
-  // This does an unhighlight of the old selected region
-  overlap = NSIntersectionRange(oldRange, _selected_range);
-  if (overlap.length)
-    {
-      // Try to optimize for overlapping ranges
-      if (range.location != oldRange.location)
-	  [self setNeedsDisplayInRect: 
-		    [self rectForCharacterRange: 
-			      MakeRangeFromAbs(MIN(range.location,
-						   oldRange.location),
-					       MAX(range.location,
-						   oldRange.location))]];
-      if (NSMaxRange(range) != NSMaxRange(oldRange))
-	  [self setNeedsDisplayInRect: 
-		    [self rectForCharacterRange: 
-			      MakeRangeFromAbs(MIN(NSMaxRange(range),
-						   NSMaxRange(oldRange)),
-					       MAX(NSMaxRange(range),
-						   NSMaxRange (oldRange)))]];
-    }
-  else
-    {
-      [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
-      [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
-    }
+  [self subclassResponsibility: _cmd];
 }
 
 /*
@@ -454,20 +389,22 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 // Copy the current font to the font pasteboard
 - (void) copyFont: (id)sender
 {
-  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: NSFontPboard]
-	type: NSFontPboardType];
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
+
+  [self writeSelectionToPasteboard: pb  type: NSFontPboardType];
 }
 
 // Copy the current ruler settings to the ruler pasteboard
 - (void) copyRuler: (id)sender
 {
-  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: NSRulerPboard]
-	type: NSRulerPboardType];
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
+
+  [self writeSelectionToPasteboard: pb  type: NSRulerPboardType];
 }
 
 - (void) delete: (id)sender
 {
-  [self deleteRange: _selected_range backspace: NO];
+  [self deleteRange: _selected_range  backspace: NO];
 }
 
 - (void) cut: (id)sender
@@ -486,21 +423,21 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void) pasteFont: (id)sender
 {
-  [self readSelectionFromPasteboard:
-	    [NSPasteboard pasteboardWithName: NSFontPboard]
-	type: NSFontPboardType];
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
+
+  [self readSelectionFromPasteboard: pb  type: NSFontPboardType];
 }
 
 - (void) pasteRuler: (id)sender
 {
-  [self readSelectionFromPasteboard:
-	    [NSPasteboard pasteboardWithName: NSRulerPboard]
-	type: NSRulerPboardType];
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
+
+  [self readSelectionFromPasteboard: pb  type: NSRulerPboardType];
 }
 
 - (void) selectAll: (id)sender
 {
-  [self setSelectedRange: NSMakeRange(0, [self textLength])];
+  [self setSelectedRange: NSMakeRange (0, [self textLength])];
 }
 
 /*
@@ -521,10 +458,10 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 }
 
 /*
- * This action method changes the font of the selection for a rich text object,
- * or of all text for a plain text object. If the receiver doesn't use the Font
- * Panel, however, this method does nothing.
- */
+ * This action method changes the font of the selection for a rich
+ * text object, or of all text for a plain text object. If the
+ * receiver doesn't use the Font Panel, however, this method does
+ * nothing.  */
 - (void) changeFont: (id)sender
 {
   NSRange foundRange;
@@ -619,7 +556,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - (void) setAlignment: (NSTextAlignment) mode
 {
   [self setAlignment: mode
-	range: NSMakeRange(0, [_textStorage length])];
+	range: NSMakeRange(0, [self textLength])];
 }
 
 - (void) alignCenter: (id) sender
@@ -685,14 +622,14 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - (void) setColor: (NSColor*) color
 	  ofRange: (NSRange) aRange
 {
-  [self setTextColor: color range: aRange];
+  [self setTextColor: color  range: aRange];
 }
 
 - (void) setTextColor: (NSColor*) color
 {
-  NSRange fullRange = NSMakeRange(0, [_textStorage length]);
+  NSRange fullRange = NSMakeRange (0, [self textLength]);
 
-  [self setTextColor: color range: fullRange];
+  [self setTextColor: color  range: fullRange];
 }
 
 //
@@ -834,12 +771,14 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return NO;
 }
 
-- (BOOL) writeRTFDToFile: (NSString*)path atomically: (BOOL)flag
+- (BOOL) writeRTFDToFile: (NSString*)path  atomically: (BOOL)flag
 {
-  NSFileWrapper *wrapper = [_textStorage RTFDFileWrapperFromRange:
-					   NSMakeRange(0, [_textStorage length])
-					 documentAttributes: nil];
-  return [wrapper writeToFile: path atomically: flag updateFilenames: YES];
+  NSFileWrapper *wrapper;
+  NSRange range = NSMakeRange (0, [self textLength]);
+  
+  wrapper = [_textStorage RTFDFileWrapperFromRange: range  
+			  documentAttributes: nil];
+  return [wrapper writeToFile: path  atomically: flag  updateFilenames: YES];
 }
 
 - (NSData*) RTFDFromRange: (NSRange) aRange
@@ -1111,7 +1050,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
       return;
     }
 
-  [self insertText: [[self class] newlineString]];
+  [self insertText: @"\n"];
 }
 
 - (void) insertTab: (id) sender
@@ -1491,11 +1430,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 @implementation NSText(GNUstepExtension)
 
-+ (NSString*) newlineString
-{
-  return @"\n";
-}
-
 - (void) replaceRange: (NSRange) aRange
  withAttributedString: (NSAttributedString*) attrString
 {
@@ -1550,12 +1484,14 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return _spellCheckerDocumentTag;
 }
 
+// TODO: Remove
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	       replacementString: (NSString*)replacementString
 {
   return YES;
 }
 
+// TODO: Remove
 - (void) didChangeText
 {
   [nc postNotificationName: NSTextDidChangeNotification  object: self];
@@ -2122,7 +2058,7 @@ other than copy/paste or dragging. */
   [self didChangeText];
 }
 
-- (void) _illegalMovement: (int) textMovement
+- (void) _illegalMovement: (int)textMovement
 {
   // This is similar to [self resignFirstResponder],
   // with the difference that in the notification we need
@@ -2224,6 +2160,7 @@ other than copy/paste or dragging. */
   return [_layoutManager characterIndexForGlyphAtIndex: glyphIndex];
 }
 
+/* TODO: Move to NSTextView */
 - (NSRect) rectForCharacterIndex: (unsigned) index
 {
   NSRange glyphRange = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(index, 1)
@@ -2239,6 +2176,7 @@ other than copy/paste or dragging. */
   return rect;
 }
 
+/* TODO: Move to NSTextView */
 - (NSRect) rectForCharacterRange: (NSRange) aRange
 {
   NSRange glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
