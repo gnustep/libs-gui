@@ -55,7 +55,7 @@
 
  */
 
-static const float pi = 3.1415926535897932384626433;
+static const float pi = 3.1415926535897932384626434;
 
 @implementation NSAffineTransform
 
