@@ -77,10 +77,23 @@ AC_CHECK_LIB(tiff, main)
 CPPFLAGS="$save_cpp"
 LDFLAGS="$save_ldf"
 
+#--------------------------------------------------------------------
+# Record the version
+#--------------------------------------------------------------------
+AC_MSG_CHECKING(for version of gnustep-gui we are compiling)
+if test -f "Version"; then
+  . ./Version
+fi
+AC_MSG_RESULT($GNUSTEP_GUI_VERSION)
+AC_SUBST(GNUSTEP_GUI_VERSION)
+AC_SUBST(GNUSTEP_GUI_MAJOR_VERSION)
+AC_SUBST(GNUSTEP_GUI_MINOR_VERSION)
+AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
+
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
 
-AC_OUTPUT(config.make)
+AC_OUTPUT(config.make gui.make)
 
 
 
