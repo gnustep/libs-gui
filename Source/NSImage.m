@@ -888,6 +888,7 @@ static Class			cacheClass = 0;
 	  GSRepData	*validCache = nil;
 	  GSRepData	*reps[count];
 	  unsigned	i;
+	  BOOL		opaque = [rep isOpaque];
 
 	  [_reps getObjects: reps];
 
@@ -896,6 +897,8 @@ static Class			cacheClass = 0;
 	   * 'best' image rep.  See if we can notice any invalidated
 	   * cache as we go - if we don't find a valid cache, we want to
 	   * re-use an invalidated one rather than createing a new one.
+	   * NB. If the image rep is opaque, then any cached rep is valid
+	   * irrespective of the background color it was drawn with.
 	   */
 	  for (i = 0; i < count; i++)
 	    {
@@ -905,15 +908,18 @@ static Class			cacheClass = 0;
 		{
 		  if (repd->bg == nil)
 		    {
+NSDebugLLog(@"NSImage", @"Invalid %@ ... %@ %d", repd->bg, _color, repd->rep);
 		      invalidCache = repd;
 		    }
-		  else if ([repd->bg isEqual: _color] == YES)
+		  else if (opaque == YES || [repd->bg isEqual: _color] == YES)
 		    {
+NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %d", repd->bg, _color, repd->rep);
 		      validCache = repd;
 		      break;
 		    }
 		  else
 		    {
+NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
 		      partialCache = repd;
 		    }
 		}

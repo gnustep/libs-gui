@@ -809,6 +809,53 @@ static NSMutableDictionary	*colorStrings = nil;
     *alpha = alpha_component;
 }
 
+- (BOOL) isEqual: (id)other
+{
+  if (other == self)
+    return YES;
+  if ([other isKindOfClass: [NSColor class]] == NO)
+    return NO;
+  else
+    {
+      NSColor	*col = (NSColor*)other;
+
+      if (col->active_component != active_component)
+	return NO;
+      if (col->alpha_component != alpha_component)
+	return NO;
+      switch (active_component)
+	{
+	  case GNUSTEP_GUI_RGB_ACTIVE:
+	    if (col->RGB_component.red != RGB_component.red
+	      || col->RGB_component.green != RGB_component.green
+	      || col->RGB_component.blue != RGB_component.blue)
+	      return NO;
+	    return YES;
+
+	  case GNUSTEP_GUI_CMYK_ACTIVE:
+	    if (col->CMYK_component.cyan != CMYK_component.cyan
+	      || col->CMYK_component.magenta != CMYK_component.magenta
+	      || col->CMYK_component.yellow != CMYK_component.yellow
+	      || col->CMYK_component.black != CMYK_component.black)
+	      return NO;
+	    return YES;
+
+	  case GNUSTEP_GUI_HSB_ACTIVE:
+	    if (col->HSB_component.hue != HSB_component.hue
+	      || col->HSB_component.saturation != HSB_component.saturation
+	      || col->HSB_component.brightness != HSB_component.brightness)
+	      return NO;
+	    return YES;
+
+	  case GNUSTEP_GUI_WHITE_ACTIVE:
+	    if (col->white_component != white_component)
+	      return NO;
+	    return YES;
+	}
+      return NO;
+    }
+}
+
 //
 // Retrieving Individual Components
 //
@@ -1052,31 +1099,31 @@ static NSMutableDictionary	*colorStrings = nil;
 {
   switch (active_component)
     {
-    case GNUSTEP_GUI_RGB_ACTIVE:
-      NSDebugLLog(@"NSColor", @"RGB %f %f %f\n", RGB_component.red,
-		 RGB_component.green, RGB_component.blue);
-      PSsetrgbcolor(RGB_component.red, RGB_component.green, 
-		    RGB_component.blue);
-      break;
+      case GNUSTEP_GUI_RGB_ACTIVE:
+	NSDebugLLog(@"NSColor", @"RGB %f %f %f\n", RGB_component.red,
+		   RGB_component.green, RGB_component.blue);
+	PSsetrgbcolor(RGB_component.red, RGB_component.green, 
+		      RGB_component.blue);
+	break;
 
-    case GNUSTEP_GUI_CMYK_ACTIVE:
-      NSDebugLLog(@"NSColor", @"CMYK %f %f %f %f\n", CMYK_component.cyan, 
-		 CMYK_component.magenta,
-		 CMYK_component.yellow, CMYK_component.black);
-      PSsetcmykcolor(CMYK_component.cyan, CMYK_component.magenta,
-		     CMYK_component.yellow, CMYK_component.black);
-      break;
+      case GNUSTEP_GUI_CMYK_ACTIVE:
+	NSDebugLLog(@"NSColor", @"CMYK %f %f %f %f\n", CMYK_component.cyan, 
+		   CMYK_component.magenta,
+		   CMYK_component.yellow, CMYK_component.black);
+	PSsetcmykcolor(CMYK_component.cyan, CMYK_component.magenta,
+		       CMYK_component.yellow, CMYK_component.black);
+	break;
 
-    case GNUSTEP_GUI_HSB_ACTIVE:
-      NSDebugLLog(@"NSColor", @"HSB %f %f %f\n", HSB_component.hue,
-		 HSB_component.saturation, HSB_component.brightness);
-      PSsethsbcolor(HSB_component.hue, HSB_component.saturation,
-		    HSB_component.brightness);
-      break;
+      case GNUSTEP_GUI_HSB_ACTIVE:
+	NSDebugLLog(@"NSColor", @"HSB %f %f %f\n", HSB_component.hue,
+		   HSB_component.saturation, HSB_component.brightness);
+	PSsethsbcolor(HSB_component.hue, HSB_component.saturation,
+		      HSB_component.brightness);
+	break;
 
-    case GNUSTEP_GUI_WHITE_ACTIVE:
-      NSDebugLLog(@"NSColor", @"Gray %f\n", white_component);
-      PSsetgray(white_component);
+      case GNUSTEP_GUI_WHITE_ACTIVE:
+	NSDebugLLog(@"NSColor", @"Gray %f\n", white_component);
+	PSsetgray(white_component);
     }
   PSsetalpha(alpha_component);
 }

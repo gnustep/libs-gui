@@ -1,3 +1,8 @@
+Tue Dec  7 21:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSColor.m: Implemented ([-isEqual:])
+	* Source/NSImage.m: Fix so any cache is ok if the image rep is opaque.
+
 1999-12-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSColorWell.m: Added ([+cellClass]) to set cell class to
