@@ -48,6 +48,7 @@
   int modifiers;
   GSKeyBindingAction *a = nil;
   GSKeyBindingTable *t = nil;
+  BOOL isTable = NO;
   int i;
   
   if (![NSInputManager parseKey: key 
@@ -102,9 +103,11 @@
     }
   else if ([action isKindOfClass: [NSDictionary class]])
     {
-      t = [[GSKeyBindingTable alloc] init];
-      [t loadBindingsFromDictionary: (NSDictionary *)action];
-      AUTORELEASE (t);
+      /* Don't load the keybindings from action yet ... load them
+	 later on when we know if we need to create a new
+	 GSKeyBindingTable or if we need to merge them into an
+	 existing one.  */
+      isTable = YES;
     }
   else if ([action isKindOfClass: [GSKeyBindingAction class]])
     {
@@ -120,15 +123,41 @@
       if ((_bindings[i].character == character)  
 	  &&  (_bindings[i].modifiers == modifiers))
 	{
-	  /* Replace/override the existing action/table with the new
-	     ones.  */
+	  /* Replace/override the existing action with the new one if
+	     it's an action, or load the bindings into a (new or
+	     existing) table if it's a table.  */
+	  if (isTable)
+	    {
+	      /* If there was already a table, add keybindings to that
+		 table.  */
+	      if (_bindings[i].table != nil)
+		{
+		  t = _bindings[i].table;
+		}
+	      else
+		{
+		  /* Else, create a new one.  */
+		  t = [[GSKeyBindingTable alloc] init];
+		  AUTORELEASE (t);
+		}
+	      [t loadBindingsFromDictionary: (NSDictionary *)action];
+	    }
+
 	  ASSIGN (_bindings[i].action, a);
 	  ASSIGN (_bindings[i].table, t);
 	  return;
 	}
     }
 
-  /* Ok - allocate memory for the new binding.  */
+  /* Ok - new keystroke.  Create the table if needed.  */
+  if (isTable)
+    {
+      t = [[GSKeyBindingTable alloc] init];
+      AUTORELEASE (t);
+      [t loadBindingsFromDictionary: (NSDictionary *)action];
+    }
+
+  /* Allocate memory for the new binding.  */
   if (_bindingsCount == 0)
     {
       _bindingsCount = 1;
