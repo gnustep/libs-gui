@@ -31,21 +31,63 @@
 #define _GSToolbarView_h_INCLUDE
 
 #include <Foundation/NSObject.h>
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSToolbar.h"
-#include "AppKit/NSView.h"
+#include <Foundation/NSGeometry.h>
+
+@class NSMutableArray;
+@class NSToolbar;
+@class NSToolbarItem;
+@class NSView;
+@class NSClipView;
+@class GSToolbarClippedItemsButton;
+
+enum {
+  GSToolbarViewNoBorder = 0,
+  GSToolbarViewRightBorder = 2,
+  GSToolbarViewLeftBorder = 4,
+  GSToolbarViewTopBorder = 8,
+  GSToolbarViewBottomBorder = 16
+};
+
+typedef enum _ItemBackViewHeight {
+  _ItemBackViewDefaultHeight = 60,
+  _ItemBackViewRegularHeight = 60,
+  _ItemBackViewSmallHeight = 50
+} _ItemBackViewHeight;
+
+typedef enum _ItemViewWidth {
+  _ItemBackViewDefaultWidth = 60,
+  _ItemBackViewRegularWidth = 60,
+  _ItemBackViewSmallWidth = 50
+} _ItemBackViewWidth;
+
+static const int _ItemBackViewX = 0;
+static const int _ItemBackViewY = 0;
+static const int _InsetItemViewX = 10;
+static const int _InsetItemViewY = 26;
+static const int _InsetItemTextX = 3;
+static const int _InsetItemTextY = 4;
+
+static const int _ClippedItemsViewWidth = 28;
 
 @interface GSToolbarView : NSView
 {
   NSToolbar *_toolbar;
+  NSClipView *_clipView, *_clipViewForEditMode;
+  NSView *_loadedViewEdited;
+  GSToolbarClippedItemsButton *_clippedItemsMark;
+  NSMutableArray *_visibleBackViews;
+  BOOL _willBeVisible;
+  unsigned int _borderMask;
 }
-- (id) initWithToolbar: (NSToolbar *)toolbar;
-- (void) setToolbar: (NSToolbar *)toolbar;
-- (NSToolbar *) toolbar;
-@end
 
-@interface NSToolbar (GNUstepPrivate)
-- (id) _toolbarView;
+- (id) initWithFrame: (NSRect)frame; 
+
+// Accessors
+- (NSToolbar *) toolbar;
+- (void) setToolbar: (NSToolbar *)toolbar;
+- (unsigned int) borderMask;
+- (void) setBorderMask: (unsigned int)borderMask;
+
 @end
 
 #endif

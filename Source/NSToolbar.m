@@ -32,74 +32,75 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSLock.h>
 #include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSToolbar.h"
 #include "AppKit/NSView.h"
+#include "AppKit/NSClipView.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSNibLoading.h"
+#include "AppKit/NSBezierPath.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 // internal
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
-@implementation GSToolbarView
-- (id) initWithToolbar: (NSToolbar *)toolbar
-{
-  if((self = [super init]) != nil)
-    {
-      ASSIGN(_toolbar,toolbar);
-    }
-  return self;
-}
+static NSMutableArray *toolbars;
 
-- (void) dealloc
-{
-  RELEASE(_toolbar);
 
-  [super dealloc];
-}
-- (void) setToolbar: (NSToolbar *)toolbar
-{
-  ASSIGN(_toolbar, toolbar);
-  
-}
-- (NSToolbar *) toolbar
-{
-  return _toolbar;
-}
+@interface NSToolbar (GNUstepPrivate)
+// Private class methods
++ (NSArray *) _toolbars;
++ (NSArray *) _toolbarsForIdentifier: (NSString *)identifier;
 
-- (void) drawRect: (NSRect)aRect
-{
-  NSArray *items = [_toolbar items];
-  NSEnumerator *en = [items objectEnumerator];
-  id item = nil;
-  float x = 0;
+// ---
 
-  [super drawRect: aRect];
-  while((item = [en nextObject]) != nil)
-    {
-      NSView *itemView = [item view];
-      NSRect itemFrame = [itemView frame];
+- (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier atIndex: (int)index broadcast: (BOOL)broadcast;
 
-      // now we need to draw the items...
-      itemFrame.origin.x = x; // start at x
-      itemFrame.origin.y = 0; // reset to top of view.
-      [itemView drawRect: itemFrame];
-      x += NSWidth(itemFrame) + 2; // move over by the frame width plus 2 pixels.
-    }
-}
+// Private methods with broacast support
+- (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier atIndex: (int)index broadcast: (BOOL)broadcast;
+- (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast;
+- (void) _setAllowsUserCustomization: (BOOL)flag broadcast: (BOOL)broadcast;
+- (void) _setAutosavesConfiguration: (BOOL)flag broadcast: (BOOL)broadcast;
+- (void) _setConfigurationFromDictionary: (NSDictionary *)configDict broadcast: (BOOL)broadcast;
+- (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode broadcast: (BOOL)broadcast;
+- (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast;
+- (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast;
+
+// Few other private methods
+- (void) _build;
+- (void) _loadConfig;
+
+// Accessors
+- (void) _setToolbarView: (GSToolbarView *)toolbarView;
+- (GSToolbarView *) _toolbarView;
+- (void) _setWindow: (NSWindow *)window;
+- (NSWindow *) _window;
 @end
 
-@implementation NSToolbar (GNUstepPrivate)
-- (id) _toolbarView
-{
-  return _toolbarView;
-}
+@interface NSToolbarItem (GNUstepPrivate)
+- (void) _setToolbar: (NSToolbar *)toolbar;
 @end
+
+@interface GSToolbarView (GNUstepPrivate)
+- (void) _reload;
+- (NSArray *) _visibleBackViews;
+- (BOOL) _willBeVisible;
+- (void) _setWillBeVisible: (BOOL)willBeVisible;
+@end
+
+// ---
 
 @implementation NSToolbar
+
+// Class methods
+
 // Initialize the class when it is loaded
 + (void) initialize
 {
@@ -107,10 +108,142 @@ static const int current_version = 1;
     {
       [self setVersion: current_version];
       nc = [NSNotificationCenter defaultCenter];
+      toolbars = [[NSMutableArray alloc] init];
     }
 }
 
+// Private class methods
+
++ (NSArray *) _toolbars
+{
+  return toolbars;
+}
+
++ (NSArray *) _toolbarsForIdentifier: (NSString *)identifier
+{
+  NSMutableArray *wanted = [[NSMutableArray alloc] init];
+  NSArray *identifiers = [toolbars valueForKey: @"identifier"];
+  int i, n;
+  
+  if (identifiers == nil)
+    return nil;
+  
+  n = [identifiers count];
+  
+  for (i = 0; i < n; i++)
+    {
+      if ([[identifiers objectAtIndex: i] isEqualToString: identifier])
+        {
+          [wanted addObject: [toolbars objectAtIndex: i]];
+        }
+    }
+  
+  return wanted;
+}
+
+// ---
+
 // Instance methods
+
+- (id) initWithIdentifier: (NSString*)identifier
+{
+  NSArray *linked;
+  NSToolbar *toolbarModel = nil;
+  
+  [super init];
+  
+  ASSIGN(_identifier, identifier);
+  
+  _items = [[NSMutableArray alloc] init];
+
+  linked = [NSToolbar _toolbarsForIdentifier: _identifier];
+    
+  if (linked != nil && [linked count] > 0)
+    {
+      toolbarModel = [linked objectAtIndex: 0];
+    }
+  
+  if (toolbarModel != nil)
+    {
+      _customizationPaletteIsRunning = NO;
+      _allowsUserCustomization = [toolbarModel allowsUserCustomization];
+      _autosavesConfiguration = [toolbarModel autosavesConfiguration];
+      ASSIGN(_configurationDictionary, [toolbarModel configurationDictionary]);
+      _displayMode = [toolbarModel displayMode]; 
+      _visible = [toolbarModel isVisible];
+   
+      //[self _loadConfig];
+    
+      [self _setDelegate: [toolbarModel delegate] broadcast: NO];
+    }
+  else
+    {
+      _customizationPaletteIsRunning = NO;
+      _allowsUserCustomization = NO;
+      _autosavesConfiguration = NO;
+      _configurationDictionary = nil;
+      _displayMode = NSToolbarDisplayModeDefault; 
+      _visible = YES;
+      _items = [[NSMutableArray alloc] init];
+   
+      [self _loadConfig];
+    
+       _delegate = nil;
+    }
+  
+  [toolbars addObject: self];
+  
+  return self;
+}
+
+- (void) dealloc
+{
+  DESTROY (_identifier);
+  DESTROY (_configurationDictionary);
+
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
+  [super dealloc];
+}
+
+- (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
+			      atIndex: (int)index
+{
+  [self _insertItemWithItemIdentifier: itemIdentifier atIndex: index broadcast: YES];
+}
+
+- (void) removeItemAtIndex: (int)index
+{
+  [self _removeItemAtIndex: index broadcast: YES];
+}
+
+- (void) runCustomizationPalette: (id)sender
+{
+  _customizationPaletteIsRunning = [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" 
+					     owner: self];
+  if(!_customizationPaletteIsRunning)
+    {
+      NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
+    }
+}
+
+- (void) validateVisibleItems
+{
+  NSEnumerator *en = [[self visibleItems]  objectEnumerator];
+  NSToolbarItem *item = nil;
+
+  while((item = [en nextObject]) != nil)
+    {
+      [item validate];
+    }
+}
+
+// Accessors
+
 - (BOOL) allowsUserCustomization
 {
   return _allowsUserCustomization;
@@ -146,6 +279,118 @@ static const int current_version = 1;
   return _identifier;
 }
 
+- (BOOL) isVisible
+{
+  return _visible;
+}
+
+- (NSArray *) items
+{ 
+  return _items;
+}
+
+- (NSString *) selectedItemIdentifier
+{
+  return nil;
+}
+
+- (NSArray *) visibleItems
+{
+  return [[_toolbarView _visibleBackViews] valueForKey: @"toolbarItem"];
+}
+
+- (void) setAllowsUserCustomization: (BOOL)flag
+{
+  [self _setAllowsUserCustomization: flag broadcast: YES];
+}
+
+- (void) setAutosavesConfiguration: (BOOL)flag
+{
+  [self _setAutosavesConfiguration: flag broadcast: YES];
+}
+
+- (void) setConfigurationFromDictionary: (NSDictionary *)configDict
+{
+  ASSIGN(_configurationDictionary, configDict);
+}
+
+/**
+ * Sets the receivers delegate ... this is the object which will receive
+ * -toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:
+ * -toolbarAllowedItemIdentifiers: and -toolbarDefaultItemIdentifiers:
+ * messages.
+ */
+ 
+- (void) setDelegate: (id)delegate
+{ 
+  [self _setDelegate: delegate broadcast: YES];
+}
+
+- (void) setDisplayMode: (NSToolbarDisplayMode)displayMode
+{
+  [self _setDisplayMode: displayMode broadcast: YES];
+}
+
+- (void) setSelectedItemIdentifier: (NSString *)itemIdentifier
+{
+
+}
+
+- (void) setSizeMode: (NSToolbarSizeMode)sizeMode
+{
+
+}
+
+- (void) setVisible: (BOOL)shown
+{
+  [self _setVisible: shown broadcast: NO];
+}
+
+- (NSToolbarSizeMode) sizeMode
+{
+  return 0;
+}
+
+// Private methods
+
+- (void) _build
+{
+  /*
+   * toolbar build :
+   * will use the delegate when there is no toolbar model
+   */
+  
+  NSToolbar *toolbarModel;
+  NSArray *wantedItemIdentifiers;
+  NSEnumerator *e;
+  id itemIdentifier;
+  int i = 0;
+  
+  _build = YES;
+
+  RELEASE(_items);
+  _items = [[NSMutableArray alloc] init];
+    
+  toolbarModel = [[NSToolbar _toolbarsForIdentifier: _identifier] objectAtIndex: 0];
+  if (toolbarModel != nil && toolbarModel != self)
+    {
+      wantedItemIdentifiers = [[toolbarModel items] valueForKey: @"itemIdentifier"];
+    }
+  else
+    {
+      wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
+    }
+    
+  e = [wantedItemIdentifiers objectEnumerator];
+  while ((itemIdentifier = [e nextObject]) != nil) 
+    {
+      [self _insertItemWithItemIdentifier: itemIdentifier atIndex: i broadcast: NO];
+      i++;
+    }
+  
+  _build = NO;
+}
+
 - (void) _loadConfig
 {
   if(_identifier != nil)
@@ -165,156 +410,192 @@ static const int current_version = 1;
     }
 }
 
-- (id) initWithIdentifier: (NSString*)identifier
-{
-  [super init];
+/*
+ *
+ * The methods below handles the toolbar edition and broacasts each associated event
+ * to the other toolbars with identical identifiers. 
+ *
+ */
 
-  _customizationPaletteIsRunning = NO;
-  _allowsUserCustomization = NO;
-  _autosavesConfiguration = NO;
-  _configurationDictionary = nil;
-  _delegate = nil;
-  _displayMode = NSToolbarDisplayModeDefault; 
-  _visible = YES;
-  _items = nil;
-  _visibleItems = nil;
-  ASSIGN(_identifier, identifier);
-  [self _loadConfig];
-  
-  return self;
-}
-
-- (void) dealloc
-{
-  DESTROY (_identifier);
-  DESTROY (_configurationDictionary);
-
-  if (_delegate != nil)
-    {
-      [nc removeObserver: _delegate  name: nil  object: self];
-      _delegate = nil;
+#define TRANSMIT(signature) \
+  NSEnumerator *e = [[NSToolbar _toolbarsForIdentifier: _identifier] objectEnumerator]; \
+  NSToolbar *toolbar; \
+  \
+  while ((toolbar = [e nextObject]) != nil) \
+    { \
+      if (toolbar != self) \
+        [toolbar signature]; \
     }
 
-  [super dealloc];
-}
-
-
-- (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
-			      atIndex: (int)index
+- (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier atIndex: (int)index broadcast: (BOOL)broadcast
 {
   NSToolbarItem *item = nil;
   NSArray *allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
+  
   if([allowedItems containsObject: itemIdentifier])
     {
       item = [_delegate toolbar: self 
-			itemForItemIdentifier: itemIdentifier
-			willBeInsertedIntoToolbar: YES];
-      [nc postNotificationName: NSToolbarWillAddItemNotification
-	  object: self];
-      [_items insertObject: item atIndex: index];
-    }
+    	  itemForItemIdentifier: itemIdentifier
+      willBeInsertedIntoToolbar: YES];
+      
+      if (item != nil)
+        {
+          [nc postNotificationName: NSToolbarWillAddItemNotification object: self];
+          [item _setToolbar: self];
+          [_items insertObject: item atIndex: index];
+          if (!_build) // we reload the toolbarView each time a new item is added except when we build/create the toolbar
+            [_toolbarView _reload];
+    
+          if (broadcast)
+            {    
+              TRANSMIT(_insertItemWithItemIdentifier: itemIdentifier atIndex: index broadcast: NO);
+            }
+        }  
+    } 
+    
 }
 
-- (BOOL) isVisible
-{
-  return _visible;
-}
-
-- (NSArray *) items
-{
-  return _items;
-}
-
-- (void) removeItemAtIndex: (int)index
+- (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast
 {
   
-  id obj = [_items objectAtIndex: index]; 
   [_items removeObjectAtIndex: index];
-  [_visibleItems removeObject: obj];
+  [_toolbarView _reload];
   [nc postNotificationName: NSToolbarDidRemoveItemNotification
       object: self];
-}
 
-- (void) runCustomizationPalette: (id)sender
-{
-  _customizationPaletteIsRunning = [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" 
-					     owner: self];
-  if(!_customizationPaletteIsRunning)
+  if (broadcast) 
     {
-      NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
+      TRANSMIT(_removeItemAtIndex: index broadcast: NO);
     }
 }
 
-- (void) setAllowsUserCustomization: (BOOL)flag
+- (void) _setAllowsUserCustomization: (BOOL)flag broadcast: (BOOL)broadcast
 {
   _allowsUserCustomization = flag;
+     
+  if (broadcast) 
+    {
+      TRANSMIT(_setAllowsUserCustomization: _allowsUserCustomization broadcast: NO);
+    }
 }
 
-- (void) setAutosavesConfiguration: (BOOL)flag
+- (void) _setAutosavesConfiguration: (BOOL)flag broadcast: (BOOL)broadcast
 {
   _autosavesConfiguration = flag;
+     
+  if (broadcast) 
+    {
+      TRANSMIT(_setAutosavesConfiguration: _autosavesConfiguration broadcast: NO);
+    }
 }
 
-- (void) setConfigurationFromDictionary: (NSDictionary *)configDict
+- (void) _setConfigurationFromDictionary: (NSDictionary *)configDict broadcast: (BOOL)broadcast
 {
   ASSIGN(_configurationDictionary, configDict);
+    
+  if (broadcast) 
+    {
+      TRANSMIT(_setConfigurationFromDictionary: _configurationDictionary broadcast: NO);
+    }
 }
 
-/**
- * Sets the receivers delgate ... this is the object which will receive
- * -toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:
- * -toolbarAllowedItemIdentifiers: and -toolbarDefaultItemIdentifiers:
- * messages.
- */
-- (void) setDelegate: (id)delegate
-{ 
-#define CHECK_REQUIRED_METHOD(selector_name) \
+- (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode broadcast: (BOOL)broadcast
+{
+   _displayMode = displayMode;
+     
+   if (broadcast) 
+     {
+      TRANSMIT(_setDisplayMode: _displayMode broadcast: NO);
+     }
+}
+
+- (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast
+{
+  if (_visible != shown)
+    {  
+      if (_window) 
+        {
+          if (shown)
+	    [_toolbarView _setWillBeVisible: YES];
+	  
+	  [_window toggleToolbarShown: self];
+	  
+	  [_toolbarView _setWillBeVisible: NO];
+	  _visible = shown; 
+	  // Important to set _visible after the toolbar has been toggled
+	  // because NSWindow method contentViewWithoutToolbar uses [NSToolbar visible]
+	  // when we toggle the toolbar
+        }
+      else
+        {
+          NSLog(@"setVisible: doesn't work because the toolbar is not a window toolbar.");
+        }
+    }
+    
+    if (broadcast) 
+      {
+        TRANSMIT(_setVisible: _visible broadcast: NO);
+      }
+}
+
+- (void)_setDelegate: (id)delegate broadcast: (BOOL)broadcast
+{
+  #define CHECK_REQUIRED_METHOD(selector_name) \
   if (![delegate respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
-                 format: @"delegate does not respond to %@",@#selector_name]
+                format: @"delegate does not respond to %@",@#selector_name]
 
   CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:);
   CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
   CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
 
-  if (_delegate)
+  if (_delegate) 
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = delegate;
 
-
-#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
     [nc addObserver: _delegate \
-      selector: @selector(toolbar##notif_name:) \
-      name: NSToolbar##notif_name##Notification object: self]
+           selector: @selector(toolbar##notif_name:) \
+               name: NSToolbar##notif_name##Notification object: self]
   
   SET_DELEGATE_NOTIFICATION(DidRemoveItem);
   SET_DELEGATE_NOTIFICATION(WillAddItem);
-}
-
-- (void) setDisplayMode: (NSToolbarDisplayMode)displayMode
-{
-  _displayMode = displayMode;
-}
-
-- (void) setVisible: (BOOL)shown
-{
-  _visible = shown;
-}
-
-- (void) validateVisibleItems
-{
-  NSEnumerator *en = [_visibleItems objectEnumerator];
-  NSToolbarItem *item = nil;
-
-  while((item = [en nextObject]) != nil)
+    
+  if (_window != nil) // The delegate should be called when the toolbar will become visible (= window not nil)
     {
-      [item validate];
+      [self _build]; // Build the toolbar with the delegate or a toolbar model
+      [_toolbarView _reload];
     }
+  
+  // broadcast now...
+    
+  if (broadcast) 
+    {
+      TRANSMIT(_setDelegate: _delegate broadcast: NO);
+    } 
 }
 
-- (NSArray *) visibleItems
+// Private Accessors
+
+- (void) _setToolbarView: (GSToolbarView *)toolbarView
 {
-  return _visibleItems;
+  ASSIGN(_toolbarView, toolbarView);
 }
-@end /* interface of NSToolbar */
+
+- (GSToolbarView *) _toolbarView 
+{
+  return _toolbarView;
+}
+
+- (void)_setWindow: (NSWindow *)window 
+{
+  ASSIGN(_window, window); // call [NSWindow(Toolbar) setToolbar:] to set the toolbar window
+}
+
+- (NSWindow *) _window
+{
+  return _window;
+}
+
+@end

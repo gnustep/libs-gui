@@ -413,21 +413,7 @@
 
 - (BOOL) isOpaque
 {
-  /*
-   * MacOS-X says we should return !transparent && [self isBordered], 
-   * but that's wrong in our case, since if there is no border, 
-   * we draw the interior of the cell to fill completely the bounds.  
-   * They are likely to draw differently.
-   */
-
-  // This seems the best to achieve a correct behaviour
-  // (consistent with Nextstep)
-  if (!(_cell.is_bordered 
-	|| (_highlightsByMask & NSChangeBackgroundCellMask)
-	|| (_highlightsByMask & NSChangeGrayCellMask)))
-    return NO;
-    
-  return !_buttoncell_is_transparent;
+  return !_buttoncell_is_transparent && _cell.is_bordered;
 }
 
 - (NSBezelStyle)bezelStyle
@@ -706,15 +692,6 @@
       cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
     }
 
-  /* Determine the background color. */
-  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-    {
-      backgroundColor = [NSColor selectedControlColor];
-    }
-
-  if (backgroundColor == nil)
-    backgroundColor = [NSColor controlBackgroundColor];
-
   /* Draw the cell's background color.  
      We draw when there is a border or when highlightsByMask
      is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
@@ -723,8 +700,22 @@
       || (_highlightsByMask & NSChangeBackgroundCellMask)
       || (_highlightsByMask & NSChangeGrayCellMask))
     {
-      [backgroundColor set];
-      NSRectFill (cellFrame);
+      /* Determine the background color. */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+        {
+          backgroundColor = [NSColor selectedControlColor];
+        }
+      else if (_cell.is_bordered) 
+        {
+          backgroundColor = [NSColor controlBackgroundColor];
+        }
+      
+      if (backgroundColor != nil) 
+        {
+          [backgroundColor set];
+          NSRectFill (cellFrame);
+        }
+      
     }
 
   /*
@@ -800,10 +791,7 @@
 	titleRect = imageRect;
 	titleRect.origin.x += imageSize.width + xDist;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    titleRect.size.width -= 3;
-	  }
+        titleRect.size.width -= 3;
 	break;
 
       case NSImageRight: 
@@ -820,11 +808,8 @@
 	titleRect.origin = cellFrame.origin;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
 	titleRect.size.height = cellFrame.size.height;
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 3;
-	  }
+	titleRect.origin.x += 3;
+	titleRect.size.width -= 3;
 	break;
 
       case NSImageAbove: 
@@ -847,14 +832,13 @@
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
+	    imageRect.origin.x += 3;
 	    imageRect.size.width -= 6;
-	    imageRect.origin.x   += 3;
-	    titleRect.size.width -= 6;
-	    titleRect.origin.x   += 3;
 	    imageRect.size.height -= 1;
-	    titleRect.size.height -= 1;
-	    titleRect.origin.y    += 1;
 	  }
+	titleRect.origin.x += 3;
+	titleRect.origin.y += 4;
+	titleRect.size.width -= 6;
 	break;
 
       case NSImageBelow: 
@@ -879,12 +863,12 @@
 	  {
 	    imageRect.size.width -= 6;
 	    imageRect.origin.x   += 3;
-	    titleRect.size.width -= 6;
-	    titleRect.origin.x   += 3;
 	    imageRect.size.height -= 1;
 	    imageRect.origin.y    += 1;
-	    titleRect.size.height -= 1;
 	  }
+	titleRect.size.width -= 6;
+	titleRect.origin.x   += 3;
+	titleRect.size.height -= 4;
 	break;
 
       case NSImageOverlaps: 
@@ -919,12 +903,7 @@
   if (_cell.shows_first_responder
       && [[controlView window] firstResponder] == controlView)
     {
-      if (_cell.is_bordered || _cell.is_bezeled)
 	NSDottedFrameRect(cellFrame);
-      else if (ipos == NSImageOnly)
-	NSDottedFrameRect(cellFrame);
-      else
-	NSDottedFrameRect(titleRect);
     }
 }
 

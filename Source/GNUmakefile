@@ -103,7 +103,6 @@ NSMenu.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
-NSNib.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
@@ -152,6 +151,7 @@ NSTextStorage.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSView.m \
+NSWindow+Toolbar.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
@@ -182,7 +182,8 @@ GSTypesetter.m \
 GSHorizontalTypesetter.m \
 GSNibTemplates.m \
 GSNibCompatibility.m \
-GSTitleView.m
+GSTitleView.m \
+GSToolbarView.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -253,7 +254,6 @@ NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
-NSNib.h \
 NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \

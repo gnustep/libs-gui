@@ -31,9 +31,9 @@
 #define _GNUstep_H_NSToolbarItem
 
 #include <Foundation/NSObject.h>
-#include <AppKit/NSUserInterfaceValidation.h>
-#include <AppKit/AppKitDefines.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/AppKitDefines.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray;
 @class NSString;
@@ -63,11 +63,14 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   NSString *_label;
   NSMenuItem *_menuFormRepresentation;
   NSString *_paletteLabel;
+  NSImage *_image;
 
   // toolbar
   NSToolbar *_toolbar;
   NSString *_toolTip;
   id _view;
+  NSView *_backView;
+  BOOL _updated;
 
   // size
   NSSize _maxSize;
@@ -95,39 +98,43 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 }
 
 // Instance methods
-- (SEL)action;
-- (BOOL)allowsDuplicatesInToolbar;
-- (NSImage *)image;
 - (id)initWithItemIdentifier: (NSString *)itemIdentifier;
-- (BOOL)isEnabled;
-- (NSString *)itemIdentifier;
-- (NSString *)label;
-- (NSSize)maxSize;
-- (NSMenuItem *)menuFormRepresentation;
-- (NSSize)minSize;
-- (NSString *)paletteLabel;
-- (void)setAction: (SEL)action;
-- (void)setEnabled: (BOOL)enabled;
-- (void)setImage: (NSImage *)image;
-- (void)setLabel: (NSString *)label;
-- (void)setMaxSize: (NSSize)maxSize;
-- (void)setMenuFormRepresentation: (NSMenuItem *)menuItem;
-- (void)setMinSize: (NSSize)minSize;
-- (void)setPaletteLabel: (NSString *)paletteLabel;
-- (void)setTag: (int)tag;
-- (void)setTarget: (id)target;
-- (void)setToolTip: (NSString *)toolTip;
-- (void)setView: (NSView *)view;
-- (int)tag;
-- (id)target;
-- (NSString *)toolTip;
-- (NSToolbar *)toolbar;
+
 - (void)validate;
-- (NSView *)view;
+
+// Accessors
+- (SEL) action;
+- (BOOL) allowsDuplicatesInToolbar;
+- (NSImage *) image;
+- (BOOL) isEnabled;
+- (NSString *) itemIdentifier;
+- (NSString *) label;
+- (NSSize) maxSize;
+- (NSMenuItem *) menuFormRepresentation;
+- (NSSize) minSize;
+- (NSString *) paletteLabel;
+- (int) tag;
+- (id) target;
+- (NSString *) toolTip;
+- (NSToolbar *) toolbar;
+- (NSView *) view;
+- (void) setAction: (SEL)action;
+- (void) setEnabled: (BOOL)enabled;
+- (void) setImage: (NSImage *)image;
+- (void) setLabel: (NSString *)label;
+- (void) setMaxSize: (NSSize)maxSize;
+- (void) setMenuFormRepresentation: (NSMenuItem *)menuItem;
+- (void) setMinSize: (NSSize)minSize;
+- (void) setPaletteLabel: (NSString *)paletteLabel;
+- (void) setTag: (int)tag;
+- (void) setTarget: (id)target;
+- (void) setToolTip: (NSString *)toolTip;
+- (void) setView: (NSView *)view;
+
 @end /* interface of NSToolbarItem */
 
 @protocol NSToolbarItemValidation
-- (BOOL)validateToolbarItem: (NSToolbarItem *)theItem;
+- (BOOL) validateToolbarItem: (NSToolbarItem *)theItem;
 @end
 
 #endif /* _GNUstep_H_NSToolbarItem */
