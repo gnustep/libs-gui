@@ -1,3 +1,15 @@
+Wed Mar 31 21:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: Make bezeled and bordered mutually exclusive
+	- bug report by Jonathan Gapen
+	* Headers/AppKit/NSStringDrawing.h: Add all the string drawing stuff
+	* Source/NSStringDrawing.m: Rewrite from scratch - preliminary work.
+	* Source/NSButton.m: Removed redundant lock/unlock in drawing ops.
+	* Source/NSControl.m: tidy.
+	* Source/NSSplitView.m: avoid compiler warning.
+	* Source/NSTextFieldCell.m: tidy up, set draws background color in
+	initialisation, fix border/bezel drawing.
+
 Wed Mar 31 17:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView: ([-viewWithTag:]) complete rewrite to find nearest

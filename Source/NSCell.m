@@ -508,11 +508,15 @@
 - (void) setBezeled: (BOOL)flag
 {
   cell_bezeled = flag;
+  if (cell_bezeled)
+    cell_bordered = NO;
 }
 
 - (void) setBordered: (BOOL)flag
 {
   cell_bordered = flag;
+  if (cell_bordered)
+    cell_bezeled = NO;
 }
 
 //
@@ -670,14 +674,11 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   // draw the border if needed
   if ([self isBordered])
     {
-      if ([self isBezeled])
-        {
-          NSDrawWhiteBezel(cellFrame, cellFrame);
-        }
-      else
-        {
-          NSFrameRect(cellFrame);
-        }
+      NSFrameRect(cellFrame);
+    }
+  else if ([self isBezeled])
+    {
+      NSDrawWhiteBezel(cellFrame, cellFrame);
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];

@@ -57,7 +57,7 @@
   NSPoint	p;
   NSEvent	*e;
   NSRect	r, r1, bigRect, vis;
-  id		v, prev = nil;
+  id		v = nil, prev = nil;
   float		minCoord, maxCoord;
   NSArray	*subs = [self subviews];
   int		offset = 0,i,count = [subs count];
