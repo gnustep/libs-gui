@@ -1,0 +1,35 @@
+Mon Dec 13 03:51:30 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Cell optimizations: use a bitfield in NSCell to reduce memory
+ 	consumption; access cell ivars directly while drawing; minor speed
+ 	tricks here and there for cells; browser cells do not create any
+ 	longer an auxiliary cells each, thus hugely reducing time and
+ 	memory required to create browser cells.  To my great delight some
+ 	things are much faster now.
+	* Headers/AppKit/NSActionCell.h: Prefixed all ivars with
+ 	underscores.
+	* Headers/AppKit/NSBrowserCell.h: Removed unused ivar.
+	* Headers/AppKit/NSButtonCell.h: Prefixed all ivars with
+ 	underscores; removed unused ivar.
+	* Headers/AppKit/NSCell.h: Introduced a bitfield; prefixed all
+ 	ivars with underscores.
+	* Headers/AppKit/NSSliderCell.h: Removed unused ivar.  
+	* Source/NSActionCell.m: Optimizations.
+	* NSBrowserCell.m: Important optimizations, rewritten.
+  	([-setTextFieldCell:]), ([-setBranchImageCell:]),
+ 	([-setHighlightBranchImageCell:]): Removed unused private methods.
+	* Source/NSButtonCell.m: Updated.
+	* Source/NSCell.m: Important optimizations.
+	* Source/NSComboBoxCell.m: Updated.
+	* Source/NSFormCell.m: Optimizations.
+	* Source/NSImageCell.m: Optimizations.
+	* Source/NSMenuItemCell.m: Updated.
+	* Source/NSPopUpButtonCell.m: Updated; ([-dismissPopUp]): Use
+ 	GNUstep close menu method.
+	* Source/NSSliderCell.m: Tiny optimization.
+	* Source/NSTableHeaderCell.m: Updated.
+	* Source/NSTextFieldCell.m: Updated.
+	* Source/NSBox.m: Updated for new way of getting border sizes.
+	* Source/NSBrowser.m: idem.
+	* Source/NSSlider.m: Minor optimization.
+	
