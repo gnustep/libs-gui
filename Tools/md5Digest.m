@@ -40,6 +40,7 @@ main(int argc, char** argv, char **env_c)
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
 #endif
 
+  NSLog(@"This program expects to read utf8 text from stdin -");
   fh = [NSFileHandle fileHandleWithStandardInput];
   data = [fh readDataToEndOfFile];
   string = [[NSString alloc] initWithData: data
