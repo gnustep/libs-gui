@@ -1060,6 +1060,11 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 	  if (location && [location isKindOfClass: [NSString class]])
 	    {
 	      [aWindow setFrameFromString: location];
+	      /*
+	       * May need resize in case saved frame is out of sync
+	       * with number of items in menu.
+	       */
+	      [self sizeToFit];
 	    }
 	  else
 	    {

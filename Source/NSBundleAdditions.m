@@ -41,6 +41,8 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
@@ -346,6 +348,7 @@
       NSNibConnector	*connection;
       NSString		*key;
       NSArray		*visible;
+      NSMenu		*menu;
 
       _isAwake = YES;
       /*
@@ -406,6 +409,15 @@
 	    {
 	      [[visible objectAtIndex: pos] orderFront: self];
 	    }
+	}
+
+      /*
+       * See if there is a main menu to be set.
+       */
+      menu = [nameTable objectForKey: @"NSMenu"];
+      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
+	{
+	  [NSApp setMainMenu: menu];
 	}
 
       /*
