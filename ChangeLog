@@ -1,3 +1,11 @@
+Thu Feb 11 14:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Coordinate fixes by Benhur to -
+	* Source/NSClipView.m: Coordinate fixes by Benhur
+	* Source/NSColor.m: Retain things properly when decoding.
+	* Source/NSMatrix.m: Matrix coordinate system is flipped.
+	* Source/NSScroller.m: Coordinate fixes
+
 Wed Feb 10 12:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSClipView.m:  Tidy flip-view errors by Benhur

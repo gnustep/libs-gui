@@ -39,7 +39,7 @@
   [super init];
   [self setAutoresizesSubviews:YES];
   [self setBackgroundColor:[NSColor lightGrayColor]];
-  _copiesOnScroll = NO;
+  _copiesOnScroll = YES;
   return self;
 }
 
@@ -87,18 +87,16 @@
 
 - (void) scrollToPoint: (NSPoint)point
 {
+  [self setBoundsOrigin: [self constrainScrollPoint: point]];
+}
+
+- (void) setBoundsOrigin: (NSPoint)point
+{
   NSRect originalBounds = [self bounds];
   NSRect newBounds = originalBounds;
   NSRect intersection;
-#ifdef DEBUGLOG
-  NSPoint currentPoint = [self bounds].origin;
 
-  NSLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
-	currentPoint.x, currentPoint.y,
-	point.x, point.y);
-#endif
-
-  newBounds.origin = [self constrainScrollPoint: point];
+  newBounds.origin = point;
 
   if (NSEqualPoints(originalBounds.origin, newBounds.origin))
     return;
@@ -112,7 +110,7 @@
       if (NSEqualRects(intersection, NSZeroRect))
 	{
 	  // no intersection -- docview should draw everything
-	  [self setBoundsOrigin: newBounds.origin];
+	  [super setBoundsOrigin: newBounds.origin];
 	  [_documentView setNeedsDisplayInRect:
                   [self convertRect: newBounds toView: _documentView]];
 	}
@@ -127,7 +125,7 @@
 	  NSCopyBits(0, intersection, destPoint);
 	  [self unlockFocus];
 
-	  [self setBoundsOrigin: newBounds.origin];
+	  [super setBoundsOrigin: newBounds.origin];
 	  if (dx != 0)
 	    {
 	      // moved in x -- redraw a full-height rectangle at
@@ -182,10 +180,11 @@
   else
     {
       // dont copy anything -- docview draws it all
-      [self setBoundsOrigin: newBounds.origin];
+      [super setBoundsOrigin: newBounds.origin];
       [_documentView setNeedsDisplayInRect:
               [self convertRect: newBounds toView: _documentView]];
     }
+  [super_view reflectScrolledClipView:self];
 }
 
 - (NSPoint) constrainScrollPoint: (NSPoint)proposedNewOrigin
@@ -208,6 +207,13 @@
   else if (proposedNewOrigin.y
            >= documentFrame.size.height - bounds.size.height)
     new.y = documentFrame.size.height - bounds.size.height;
+
+  // make it an integer coordinate in device space
+  // to avoid some nice effects when scrolling
+  new = [self convertPoint:new toView:nil];
+  new.x = (int)new.x;
+  new.y = (int)new.y;
+  new = [self convertPoint:new fromView:nil];
 
   return new;
 }
@@ -264,12 +270,6 @@
 - (void) scaleUnitSquareToSize: (NSSize)newUnitSize
 {
   [super scaleUnitSquareToSize:newUnitSize];
-  [super_view reflectScrolledClipView:self];
-}
-
-- (void) setBoundsOrigin: (NSPoint)aPoint
-{
-  [super setBoundsOrigin:aPoint];
   [super_view reflectScrolledClipView:self];
 }
 

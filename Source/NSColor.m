@@ -1105,9 +1105,9 @@ static NSMutableDictionary	*colorStrings = nil;
   // +++ Coding cannot return class version yet
   //  if ([aDecoder versionForClassName: s] > 1)
     {
-      colorspace_name = [aDecoder decodeObject];
-      catalog_name = [aDecoder decodeObject];
-      color_name = [aDecoder decodeObject];
+      colorspace_name = [[aDecoder decodeObject] retain];
+      catalog_name = [[aDecoder decodeObject] retain];
+      color_name = [[aDecoder decodeObject] retain];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.cyan];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.magenta];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.yellow];

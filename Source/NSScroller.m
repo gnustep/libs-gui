@@ -271,9 +271,6 @@ static BOOL preCalcValues = NO;
 
 - (void) setFloatValue: (float)aFloat
 {
-  if (aFloat == _floatValue)
-    return;
-
   if (aFloat < 0)
     _floatValue = 0;
   else if (aFloat > 1)
@@ -791,8 +788,6 @@ static BOOL preCalcValues = NO;
 											  // calc the slot Height
 	  slotHeight = height - (arrowsPosition == NSScrollerArrowsNone ?
 			0 : 2 * (buttonsWidth + buttonsDistance));
-	  if (_isHorizontal)
-	    slotHeight -= 2;
 	  knobHeight = _knobProportion * slotHeight;
 	  if (knobHeight < buttonsWidth)
 	    knobHeight = buttonsWidth;

@@ -47,7 +47,7 @@
 
 
 /* Define the following symbol when NSView will support flipped views */
-//#define HAS_FLIPPED_VIEWS 1
+#define HAS_FLIPPED_VIEWS 1
 
 #ifdef MIN
 # undef MIN
@@ -994,30 +994,20 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   int i, j;
   int row1, col1;	// The cell at the upper left corner
   int row2, col2;	// The cell at the lower right corner
-  NSRect intRect, upperLeftRect;
-  NSArray* row;
 
-	if(drawsBackground)							
-		{										
-		[backgroundColor set];					
-		NSRectFill(rect);								// draw the background
-		}
+  if (drawsBackground)
+    {
+      // draw the background
+      [backgroundColor set];
+      NSRectFill(rect);
+    }
 
   [self _getRow:&row1 column:&col1
-#if HAS_FLIPPED_VIEWS
        forPoint:rect.origin
-#else
-      forPoint:NSMakePoint (rect.origin.x, rect.origin.y + rect.size.height)
-#endif
 	  above:NO right:NO
 	isBetweenCells:NULL];
   [self _getRow:&row2 column:&col2
-#if HAS_FLIPPED_VIEWS
-	  forPoint:NSMakePoint(rect.origin.x + rect.size.width,
-			       rect.origin.y + rect.size.height)
-#else
-	  forPoint:NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y)
-#endif
+	  forPoint:NSMakePoint(NSMaxX(rect), NSMaxY(rect))
 	  above:NO right:NO
 	  isBetweenCells:NULL];
 
@@ -1029,30 +1019,17 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 //NSLog (@"display cells between (%d, %d) and (%d, %d)",row1,col1, row2, col2);
 
   /* Draw the cells within the drawing rectangle. */
-  intRect = upperLeftRect = [self cellFrameAtRow:row1 column:col1];
-  for (i = row1; i <= row2 && i < numRows; i++) {
-    row = [cells objectAtIndex:i];
-    intRect.origin.x = upperLeftRect.origin.x;
-
-    for (j = col1; j <= col2 && j < numCols; j++) {
-      NSCell *aCell = [row objectAtIndex:j];
-      [aCell drawWithFrame:intRect inView:self];
-      intRect.origin.x += cellSize.width + intercell.width;
-    }
-#if HAS_FLIPPED_VIEWS
-    intRect.origin.y += cellSize.height + intercell.height;
-#else
-    intRect.origin.y -= cellSize.height + intercell.height;
-#endif
-  }
+  for (i = row1; i <= row2 && i < numRows; i++)
+    for (j = col1; j <= col2 && j < numCols; j++)
+      [self drawCellAtRow:i column:j];
 }
 
 - (void)drawCellAtRow:(int)row column:(int)column
 {
-NSCell *aCell = [self cellAtRow:row column:column];
-NSRect cellFrame = [self cellFrameAtRow:row column:column];
+  NSCell *aCell = [self cellAtRow:row column:column];
+  NSRect cellFrame = [self cellFrameAtRow:row column:column];
 
-	[aCell drawWithFrame:cellFrame inView:self];
+  [aCell drawWithFrame:cellFrame inView:self];
 }
 
 - (void)highlightCell:(BOOL)flag
