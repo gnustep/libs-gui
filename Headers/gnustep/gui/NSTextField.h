@@ -39,9 +39,10 @@
 @interface NSTextField : NSControl <NSCoding>
 {
   // Attributes
-  id text_delegate;
-  SEL error_action;
-  NSCursor *text_cursor;
+  id _delegate;
+  SEL _error_action;
+  NSCursor *_text_cursor;
+  NSText *_text_object;
 }
 
 //
@@ -106,11 +107,6 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
-
-//
-// Compatability with NSSecureTextField
-//
-- (id)_initFieldWithFrame:(NSRect)frameRect cellClass:(Class)cellClass;
 
 @end
 
