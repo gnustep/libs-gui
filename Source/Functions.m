@@ -417,14 +417,14 @@ NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect,
 void
 NSDrawButton(const NSRect aRect, const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge, 
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, 
-			     NSMaxXEdge, NSMaxYEdge, 
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			     NSMinXEdge, NSMinYEdge, 
 			     NSMaxXEdge, NSMaxYEdge};
-  float grays[] = {NSWhite, NSWhite, 
-		   NSBlack, NSBlack, 
+  float grays[] = {NSBlack, NSBlack, 
+		   NSWhite, NSWhite, 
 		   NSDarkGray, NSDarkGray};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();

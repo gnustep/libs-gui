@@ -1,3 +1,15 @@
+2001-09-09  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/Functions.m (NSDrawButton): rearrange the order of 
+	coloring to take into account the nature of NSDrawTiledRects; 
+	fixes visual irregularities (most noticeably in NSMenu).
+
+2001-09-08  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSBrowser.m (-matrixInColumn:): Return nil if caller 
+	requests column '-1'. Allows NSSave/OpenPanel to function. Hacky 
+	though, why are we requesting column '-1' anyways?
+
 2001-09-06  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-lockFocusInRect:): Switch back to gsave/grestore
