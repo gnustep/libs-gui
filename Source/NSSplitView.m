@@ -118,7 +118,7 @@ static NSNotificationCenter *nc = nil;
   BOOL          delegateConstrains = NO;
   SEL           constrainSel = 
     @selector(splitView:constrainSplitPosition:ofSubviewAt:);
-  IMP           constrainImp;
+  IMP           constrainImp = 0;
     
 
   /*  if there are less the two subviews, there is nothing to do */

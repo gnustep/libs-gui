@@ -1543,7 +1543,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSRect wrect;
-  int window_gstate;
+  int window_gstate = 0;
 
   if (viewIsPrinting == nil)
     {

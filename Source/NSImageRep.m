@@ -432,7 +432,7 @@ static Class NSImageRep_class = NULL;
 {
   BOOL ok, reset;
   NSGraphicsContext *ctxt;
-  NSAffineTransform *ctm;
+  NSAffineTransform *ctm = nil;
 
   if (_size.width == 0 && _size.height == 0)
     return NO;

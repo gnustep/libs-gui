@@ -254,8 +254,9 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	    {
 	      unsigned int  size = 1;
 	      unsigned char *dst = buf;
+	      unichar glyph = run->glyphs[i].glyph;
 
-	      GSFromUnicode(&dst, &size, &(run->glyphs[i].glyph), 1, enc, 0, 0);
+	      GSFromUnicode(&dst, &size, &glyph, 1, enc, 0, 0);
 	    }
 	  else
 	    {

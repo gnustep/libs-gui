@@ -4182,7 +4182,7 @@ byExtendingSelection: (BOOL)flag
       NSDate *distantFuture = [NSDate distantFuture];
       NSEvent *lastEvent;
       NSSet *_oldSelectedRows;
-      id delegateIfItTakesPart;
+      id delegateIfItTakesPart = nil; /* Is this ever used ? */
       BOOL mouseUp = NO;
       BOOL done = NO;
       BOOL draggingPossible = [self _isDraggingSource];
