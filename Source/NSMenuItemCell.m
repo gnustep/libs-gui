@@ -75,6 +75,14 @@ static NSImage	*arrowImageH = nil;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_menuItem);
+  RELEASE(_menuView);
+
+  [super dealloc];
+}
+
 - (void) setHighlighted:(BOOL)flag
 {
   _cell.is_highlighted = flag;
@@ -99,6 +107,11 @@ static NSImage	*arrowImageH = nil;
 - (void) setMenuView:(NSMenuView *)menuView
 {
   ASSIGN(_menuView, menuView);
+  if ([[_menuView menu] _ownedByPopUp])
+    {
+      _mcell_belongs_to_popupbutton = YES;
+      [self setImagePosition: NSImageRight];
+    }
 }
 
 - (NSMenuView *) menuView
