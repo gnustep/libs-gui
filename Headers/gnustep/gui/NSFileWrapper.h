@@ -29,49 +29,62 @@
 #ifndef _GNUstep_H_NSFileWrapper
 #define _GNUstep_H_NSFileWrapper
 
+#include <Foundation/NSDictionary.h>
+#include <AppKit/NSImage.h>
 
 @class NSImage;
-@class NSFont;
 @class NSString;
 
+typedef enum
+{
+  GSFileWrapperDirectoryType,
+  GSFileWrapperRegularFileType,
+  GSFileWrapperSymbolicLinkType
+} GSFileWrapperType;
+  
 @interface NSFileWrapper : NSObject 
-{											
+{
+  NSString		*_filename;
+  NSString		*_preferredFilename;
+  NSMutableDictionary	*_fileAttributes;
+  GSFileWrapperType	_wrapperType;
+  id			_wrapperData;
+  NSImage		*_iconImage;
 }
 
 //
 // Initialization 
 //
-										// Init instance of directory type
+
+// Init instance of directory type
 - (id)initDirectoryWithFileWrappers:(NSDictionary *)docs;	 
 
-										// Init instance of regular file type
+// Init instance of regular file type
 - (id)initRegularFileWithContents:(NSData *)data;		 
 
-										// Init instance of symbolic link type
+// Init instance of symbolic link type
 - (id)initSymbolicLinkWithDestination:(NSString *)path;
 
-										// Init an instance from the file,
-										// directory, or symbolic link at path. 
-										// This can create a tree of instances 
+// Init an instance from the file, directory, or symbolic link at path. 
+// This can create a tree of instances 
 - (id)initWithPath:(NSString *)path;	// with a directory instance at the top
 
-										// Init an instance from data in std
-										// serial format.  Serial format is the
-										// same as that used by NSText's 
-										// RTFDFromRange: method.  This can 
-										// create a tree of instances with a 
-										// directory instance at the top
+// Init an instance from data in standard serial format.  Serial format
+// is the same as that used by NSText's RTFDFromRange: method.  This can 
+// create a tree of instances with a directory instance at the top
 - (id)initWithSerializedRepresentation:(NSData *)data;
 
 //
 // General methods 
-//													// write instace to disk
-- (BOOL)writeToFile:(NSString *)path 				// at path. if directory
-		 atomically:(BOOL)atomicFlag 				// type this method is
-		 updateFilenames:(BOOL)updateFilenamesFlag;	// recursive, if flag is
-													// YES the wrapper will be 
-													// updated with the name
-													// used in writing the file
+//
+
+// write instace to disk at path. if directory type, this method is recursive
+// if flag is YES, the wrapper will be updated with the name used in writing
+// the file
+- (BOOL)writeToFile:(NSString *)path
+         atomically:(BOOL)atomicFlag
+    updateFilenames:(BOOL)updateFilenamesFlag;
+
 - (NSData *)serializedRepresentation;
 
 - (void)setFilename:(NSString *)filename;
@@ -95,25 +108,29 @@
 
 //								
 // Directory type methods 				  
-//									 											
-- (NSString *)addFileWrapper:(NSFileWrapper *)doc;			// methods for use
-- (void)removeFileWrapper:(NSFileWrapper *)doc;				// with directory
-- (NSDictionary *)fileWrappers;								// type instances
-- (NSString *)keyForFileWrapper:(NSFileWrapper *)doc;		// types they raise
-- (NSString *)addFileWithPath:(NSString *)path;				// an exception.
-- (NSString *)addRegularFileWithContents:(NSData *)data 
-					   preferredFilename:(NSString *)filename;
-- (NSString *)addSymbolicLinkWithDestination:(NSString *)path 
-					   	   preferredFilename:(NSString *)filename;
+//
 
-//								
+// these messages raise an exception when sent to non-directory type wrappers!
+- (NSString *)addFileWrapper:(NSFileWrapper *)doc;
+- (void)removeFileWrapper:(NSFileWrapper *)doc;
+- (NSDictionary *)fileWrappers;
+- (NSString *)keyForFileWrapper:(NSFileWrapper *)doc;
+- (NSString *)addFileWithPath:(NSString *)path;
+- (NSString *)addRegularFileWithContents:(NSData *)data 
+                       preferredFilename:(NSString *)filename;
+- (NSString *)addSymbolicLinkWithDestination:(NSString *)path 
+                           preferredFilename:(NSString *)filename;
+
+//
 // Regular file type methods 				  
-//									 											
+//
+
 - (NSData *)regularFileContents;
 
-//								
+//
 // Symbolic link type methods 				  
-//									 											
+//
+
 - (NSString *)symbolicLinkDestination;
 
 @end
