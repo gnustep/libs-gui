@@ -1,3 +1,8 @@
+2003-04-28  Nicola Pero  <nicola@nicola.brainstorm.co.uk>
+
+	* Resources/GNUmakefile (gui-resources_RESOURCE_FILES_INSTALL_DIR): Define
+	using the full relative path.
+
 2003-04-27  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSServicesManager.m (+newWithApplication:) Change
