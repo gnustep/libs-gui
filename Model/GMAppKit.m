@@ -451,7 +451,9 @@ void __dummy_GMAppKit_functionForLinking() {}
     nc = [unarchiver decodeIntWithName:@"numberOfColumns"];
     cell_array = [unarchiver decodeObjectWithName:@"cells"];
     [self renewRows:nr columns:nc];
+#if GNU_GUI_LIBRARY
     _selectedRow = _selectedColumn = 0;
+#endif
     for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++)
     {
         id	cell = [cell_array objectAtIndex:i];
