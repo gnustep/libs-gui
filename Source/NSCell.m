@@ -2082,27 +2082,28 @@ static NSColor	*shadowCol;
   return size;
 }
 
-- (void) _drawAttributedText: (NSAttributedString *)title 
-		     inFrame: (NSRect)cellFrame
+/**
+ * Private internal method to display an attributed string.
+ */
+- (void) _drawAttributedText: (NSAttributedString*)aString 
+		     inFrame: (NSRect)aRect
 {
   NSSize titleSize;
 
-  if (title == nil)
+  if (aString == nil)
     return;
 
-  titleSize = [title size];
+  titleSize = [aString size];
 
-  // Determine y position of text
-
-  /* Important: text should always be vertically centered without
+  /** Important: text should always be vertically centered without
    * considering descender [as if descender did not exist].
    * This is particularly important for single line texts.
    * Please make sure the output remains always correct.
    */
-  cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
-  cellFrame.size.height = titleSize.height;
+  aRect.origin.y = NSMidY (aRect) - titleSize.height/2; 
+  aRect.size.height = titleSize.height;
 
-  [title drawInRect: cellFrame];
+  [aString drawInRect: aRect];
 }
 
 - (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame
@@ -2116,9 +2117,7 @@ static NSColor	*shadowCol;
   attributes = [self _nonAutoreleasedTypingAttributes];
   titleSize = [aString sizeWithAttributes: attributes];
 
-  // Determine y position of text
-
-  /* Important: text should always be vertically centered without
+  /** Important: text should always be vertically centered without
    * considering descender [as if descender did not exist].
    * This is particularly important for single line texts.
    * Please make sure the output remains always correct.
