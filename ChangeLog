@@ -1,5 +1,11 @@
 2003-09-29  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h
+	* Source/GSLayoutManager.m
+	Added missing method [isValidGlyphIndex:].
+	
+2003-09-29  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBrowser.m
 	Patch by Christopher Culver:
 	Define empty [sizeToFit] method to override NSControl implementation.
