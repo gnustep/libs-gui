@@ -63,15 +63,20 @@
 - (id) init
 {
   static int untitledCount = 1;
+  NSArray *fileTypes;
   
   self = [super init];
   if (self != nil)
     {
       _documentIndex = untitledCount++;
       _windowControllers = [[NSMutableArray alloc] init];
+      fileTypes = [[self class] readableTypes];
 
       /* Set our default type */
-      [self setFileType: [[[self class] writableTypes] objectAtIndex: 0]];
+      if ([fileTypes count])
+       { 
+         [self setFileType: [fileTypes objectAtIndex: 0]];
+       }
     }
   return self;
 }

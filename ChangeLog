@@ -1,3 +1,9 @@
+2003-08-16  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSDocument.m ([NSDocument -init]): Check the count of the
+	types array and uses Viewer and Editor NSRoles to set the default
+	type.
+
 2003-08-13  David Ayers  <d.ayers@inode.at>
 
 	* Headers/gnustep/gui/*.h/*.h.in: Remove headers moved in header

@@ -1761,7 +1761,6 @@ static NSTextFieldCell *titleCell;
     }
 }
 
-
 /*
  * Setting the delegate
  */
