@@ -607,7 +607,31 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 			   preferredEdge: (NSRectEdge)edge
 		       popUpSelectedItem: (int)selectedItemIndex
 {
-  // Huh!?
+  NSRect r;
+
+  // Move the menu window to screen?
+  // TODO
+
+  // Compute position for popups, if needed
+  if (selectedItemIndex > -1)
+    {
+      screenRect.origin.y += ([self convertSize: cellSize
+				    toView: nil].height
+			      * selectedItemIndex);
+    }
+  
+  // Get the frameRect
+  r = [NSMenuWindow frameRectForContentRect: screenRect
+		       styleMask: [window styleMask]];
+  
+  // Update position,if needed, using the preferredEdge;
+  // It seems we should be calling [self resizeWindowWithMaxHeight: ];
+  // see the (quite obscure) doc.
+  // TODO
+
+  // Set the window frame
+  [window setFrame: r 
+	  display: YES]; 
 }
 
 //
@@ -790,7 +814,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
       [NSEvent stopPeriodicEvents];
       [menuv_menu performActionForItemAtIndex: index];
 
-      if (![menuv_menu isFollowTransient])
+      if (![menuv_menu isFollowTransient] && ![menuv_menu _ownedByPopUp])
 	[self setHighlightedItemIndex: -1];
     }
 
