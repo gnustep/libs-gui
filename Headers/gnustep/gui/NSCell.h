@@ -112,7 +112,8 @@ enum {
   NSString *_contents;
   NSImage *_cell_image;
   NSFont *_cell_font;
-  struct GSCellFlagsType {
+  struct GSCellFlagsType { 
+    // total 28 bits.  Any idea on how to use the other 4 ?
     unsigned	is_highlighted:1;
     unsigned	is_enabled:1;    
     unsigned	is_editable:1;   
@@ -122,18 +123,19 @@ enum {
     unsigned	is_selectable:1;
     unsigned	is_continuous:1;
     unsigned	float_autorange:1;
+    unsigned    state:2;          // 3 values
+    unsigned    text_align:3;     // 5 values
+    unsigned    image_position:4; // 7 values
+    unsigned    type:4;           // 8 values (see NSButtonCell)
+    unsigned    entry_type:4;     // 8 values
+    // 2 bits reserved for subclass use
+    unsigned    subclass_bool_one:1;
+    unsigned    subclass_bool_two:1;
   } _cell;
-  int _cell_state;
   unsigned int _cell_float_left;
   unsigned int _cell_float_right;
-  NSCellImagePosition _image_position;
-  NSCellType _cell_type;
-  NSTextAlignment _text_align;
-  int _entry_type;
-  NSView *_control_view;
-  NSSize _cell_size;
-  id _represented_object;
-  unsigned int _action_mask;
+  id _represented_object; 
+  unsigned int _action_mask; 
 }
 
 //
@@ -263,7 +265,6 @@ enum {
 // Displaying 
 //
 - (NSView *)controlView;
-- (void)setControlView:(NSView*)aView;
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
 		       inView:(NSView *)controlView;
