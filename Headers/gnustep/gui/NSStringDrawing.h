@@ -33,7 +33,6 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
-#include <gnustep/base/preface.h>
 
 						// global NSString attribute names used in ascessing  
 						// the respective property in a text attributes 
