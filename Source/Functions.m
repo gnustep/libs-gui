@@ -106,6 +106,7 @@ NSEventMaskFromType(NSEventType type)
       case NSFlagsChanged:	return NSFlagsChangedMask;
       case NSPeriodic:		return NSPeriodicMask;
       case NSCursorUpdate:	return NSCursorUpdateMask;
+      case NSScrollWheel:	return NSScrollWheelMask;
       case NSAppKitDefined:	return NSAppKitDefinedMask;
       case NSSystemDefined:	return NSSystemDefinedMask;
       case NSApplicationDefined: return NSApplicationDefinedMask;
@@ -584,6 +585,12 @@ NSCountWindowsForContext(int context, int *count)
 {
 // TODO
   *count = 0;
+}
+
+void 
+NSShowSystemInfoPanel(NSDictionary *options)
+{
+  [NSApp orderFrontStandardInfoPanelWithOptions: options];
 }
 
 void 
