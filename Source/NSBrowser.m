@@ -2896,21 +2896,17 @@ static double rint(double a)
 	    if (_passiveDelegate || [_browserDelegate respondsToSelector: 
 							@selector(browser:willDisplayCell:atRow:column:)])
 	      {
-		SEL sel1 = 
-		  @selector(browser:willDisplayCell:atRow:column:);
-		IMP imp1 =
-		  [_browserDelegate methodForSelector: sel1];
-		SEL sel2 = 
-		  @selector(cellAtRow:column:);
-		IMP imp2 =
-		  [matrix methodForSelector: sel2];
+		SEL sel1 = @selector(browser:willDisplayCell:atRow:column:);
+		IMP imp1 = [_browserDelegate methodForSelector: sel1];
+		SEL sel2 = @selector(cellAtRow:column:);
+		IMP imp2 = [matrix methodForSelector: sel2];
 		for (i = 0; i < n; i++)
 		  {
 		    aCell = (*imp2)(matrix, sel2, i, 0);
 		    if (![aCell isLoaded])
 		      {
-			(*imp1)(_browserDelegate, sel1,
-			       self, aCell, i, column);
+			(*imp1)(_browserDelegate, sel1, self, aCell, i, 
+				column);
 			[aCell setLoaded: YES];
 		      }
 		  }
@@ -2961,7 +2957,17 @@ static double rint(double a)
 	}
     }
 
-  [matrix sizeToFit];
+  /* Determine the height of a cell in the matrix, and set that as the 
+     cellSize of the matrix.  */
+  {
+    NSBrowserCell *b = [matrix cellAtRow: 0  column: 0]; 
+    
+    if (b != nil)
+      {
+	[matrix setCellSize: [b cellSize]];
+      }
+  }
+  
   [sc setNeedsDisplay: YES];
   [bc setIsLoaded: YES];
 }
