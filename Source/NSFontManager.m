@@ -49,7 +49,7 @@ static NSFontPanel	*fontPanel = nil;
 static Class		fontManagerClass = Nil;
 static Class		fontPanelClass = Nil;
 
-@interface NSFontManager (GNUstepBackend)
+@interface NSFontManager (GNUstepPrivate)
 - (BOOL) _includeFont: (NSString*)fontName;
 @end
 
@@ -110,8 +110,7 @@ static Class		fontPanelClass = Nil;
 
   _action = @selector(changeFont:);
   _storedTag = NSNoFontChangeAction;
-  _fontEnumerator = RETAIN([GSFontEnumerator  
-			     sharedEnumeratorWithFontManager: self]);
+  _fontEnumerator = RETAIN([GSFontEnumerator sharedEnumerator]);
 
   return self;
 }
@@ -129,7 +128,20 @@ static Class		fontPanelClass = Nil;
  */
 - (NSArray*) availableFonts
 {
-  return [_fontEnumerator availableFonts];
+  int i;
+  NSArray *fontsList = [_fontEnumerator availableFonts];
+  NSMutableArray *fontNames = [NSMutableArray 
+				  arrayWithCapacity: [fontsList count]];
+
+  for (i = 0; i < [fontsList count]; i++)
+    {
+      NSString *name = [fontsList objectAtIndex: i];
+      
+      if ([self _includeFont: name])
+	[fontNames addObject: name];
+    }
+
+  return fontNames;
 }
 
 - (NSArray*) availableFontFamilies
@@ -168,13 +180,23 @@ static Class		fontPanelClass = Nil;
   return fontNames;
 }
 
-/*
- * This are somewhat strange methods, as they are not in the list,
- * but their implementation is defined.
- */
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
-  return [_fontEnumerator availableMembersOfFontFamily: family];
+  int i;
+  NSArray *fontsList = [_fontEnumerator availableMembersOfFontFamily: family];
+  NSMutableArray *fonts = [NSMutableArray 
+			      arrayWithCapacity: [fontsList count]];
+
+  for (i = 0; i < [fontsList count]; i++)
+    {
+      NSArray *fontDef = [fontsList objectAtIndex: i];
+      NSString *name = [fontDef objectAtIndex: 0];
+      
+      if ([self _includeFont: name])
+	[fonts addObject: fontDef];
+    }
+
+  return fonts;
 }
 
 - (NSString*) localizedNameForFamily: (NSString*)family 
@@ -778,7 +800,7 @@ static Class		fontPanelClass = Nil;
 - (BOOL) fontNamed: (NSString*)typeface 
          hasTraits: (NSFontTraitMask)fontTraitMask;
 {
-  // TODO: THis method is implemented very slow, but I dont 
+  // TODO: This method is implemented very slow, but I dont 
   // see any use for it, so why change it?
   int i, j;
   NSArray *fontFamilies = [self availableFontFamilies];
@@ -793,7 +815,7 @@ static Class		fontPanelClass = Nil;
 	{
 	  NSArray *fontDef = [fontDefs objectAtIndex: j];
 	  
-	  if ([[fontDef objectAtIndex: 3] isEqualToString: typeface])
+	  if ([[fontDef objectAtIndex: 0] isEqualToString: typeface])
 	    {
 	      traits = [[fontDef objectAtIndex: 3] unsignedIntValue];
 	      // FIXME: This is not exactly the right condition
@@ -966,7 +988,7 @@ static Class		fontPanelClass = Nil;
 
 @end
 
-@implementation NSFontManager (GNUstepBackend)
+@implementation NSFontManager (GNUstepPrivate)
 
 /*
  * Ask delegate if to include a font
