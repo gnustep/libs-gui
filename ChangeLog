@@ -1,3 +1,115 @@
+2003-01-26 19:17  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSFontInfo.h, Headers/gnustep/gui/NSFont.h,
+	Headers/gnustep/gui/NSLayoutManager.h, Headers/gnustep/gui/NSText.h,
+	Headers/gnustep/gui/NSTextContainer.h,
+	Headers/gnustep/gui/NSTextStorage.h,
+	Headers/gnustep/gui/NSTextView.h, Source/GNUmakefile,
+	Source/GSFontInfo.m, Source/GSTextStorage.m, Source/NSFont.m,
+	Source/NSLayoutManager.m, Source/NSParagraphStyle.m,
+	Source/NSSecureTextField.m, Source/NSText.m,
+	Source/NSTextContainer.m, Source/NSTextStorage.m,
+	Source/NSTextView.m, Headers/gnustep/gui/GSHorizontalTypesetter.h,
+	Headers/gnustep/gui/GSLayoutManager.h,
+	Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Headers/gnustep/gui/GSTypesetter.h, Source/GSHorizontalTypesetter.m,
+	Source/GSLayoutManager.m, Source/GSTypesetter.m,
+	Source/NSTextView_actions.m: Merge in text-system-branch with the new
+	implementation of the text system.
+
+2002-12-13 02:00  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSText.h, Headers/gnustep/gui/NSTextView.h,
+	Source/NSText.m, Source/NSTextView.m: Moved ivars from NSText to
+	NSTextView. Added or updated documentation for many methods. Marked
+	primitive and non-openstep methods.
+
+	* Source/GSHorizontalTypesetter.m, Source/GSLayoutManager.m,
+	Source/GSTextStorage.m, Source/NSTextContainer.m,
+	Source/NSTextStorage.m: Cleaned up includes.
+
+2002-12-01 13:27  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Clean ups. Remove some old stuff. Add
+	some more comments.
+
+2002-11-26 16:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSTypesetter.h, Source/GSTypesetter.m,
+	Source/GSHorizontalTypesetter.m: Remove
+	-baselineOffsetInLayoutManager:glyphIndex: method. Cleanups. Changed
+	to conform to coding standards.
+
+2002-11-26 16:29  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m: Changed to conform to coding
+	standards. Cleanups.
+
+2002-11-26 15:41  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Changed to conform to coding standards.
+	Cleanups. Moved some more NSTextView references to NSLayoutManager.
+
+	Use _run_cache_attributes::, _run_copy_attributes::, and
+	_run_free_attributes: methods instead of functions.
+
+	(-_run_cache_attributes::): Ask typesetter for font to use and call
+	-substituteFontForFont:.
+
+	* Source/NSLayoutManager.m: Moved NSTextView references here.
+
+2002-11-26 12:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSFontInfo.h, Headers/gnustep/gui/NSFont.h,
+	Source/GSFontInfo.m, Source/NSFont.m: Add proper handling of
+	screen/printer fonts. Changes the backend GSFontInfo interface.
+
+2002-11-24 20:58  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSMenu.h: Declare NSMutableArray.
+
+2002-11-24 01:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSpellChecker (-_launchSpellCheckerForLanguage:): Don't
+	pass the error message through printf expansion twice.
+
+2002-11-24 00:56  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSFontInfo.m (-defaultLineHeightForFont): Round the linegap
+	to whole points.
+
+2002-11-23 22:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSecureTextField: Update to work with new text system.
+
+2002-11-23 22:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextContainer.h,
+	Headers/gnustep/gui/NSTextStorage.h Source/NSTextStorage.m: Use
+	GSLayoutManager instead of NSLayoutManager in these classes.
+
+2002-11-23 21:40  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSParagraphStyle ([NSMutableParagraphStyle -copyWithZone:]):
+	Implement.
+
+2002-11-23 21:31  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSHorizontalTypesetter.h,
+	Headers/gnustep/gui/GSLayoutManager.h,
+	Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Headers/gnustep/gui/GSTypesetter.h, Source/GSHorizontalTypesetter.m,
+	Source/GSLayoutManager.m, Source/GSTypesetter.m,
+	Headers/gnustep/gui/NSLayoutManager.h, Source/GNUmakefile,
+	Source/NSLayoutManager.m: Add the new text system.
+
+2002-11-23 18:45  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextContainer: Implement -lineFragmentRectForProposedRect:
+	sweepDirection:movementDirection:remainingRect:.
+
 2003-01-26 18:54  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSParagraphStyle.h,

@@ -76,7 +76,8 @@
 
 + (void) setDefaultClass: (Class)defaultClass;
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
-                             matrix: (const float *)fmatrix;
+                             matrix: (const float *)fmatrix
+			 screenFont: (BOOL)screenFont;
 
 + (int) weightForString: (NSString *)weightString;
 + (NSString *) stringForWeight: (int)weight;

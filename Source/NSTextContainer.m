@@ -2,6 +2,9 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author: Alexander Malmberg <alexander@malmberg.org>
+   Date: 2002-11-23
+
    Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
@@ -23,17 +26,22 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <AppKit/NSLayoutManager.h>
-#import <AppKit/NSTextContainer.h>
-#import <AppKit/NSTextStorage.h>
-#import <AppKit/NSTextView.h>
-#import <Foundation/NSGeometry.h>
-#import <Foundation/NSNotification.h>
+#include <Foundation/NSGeometry.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSDebug.h>
+#include <AppKit/GSLayoutManager.h>
+#include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSTextContainer.h>
+#include <AppKit/NSTextStorage.h>
+#include <AppKit/NSTextView.h>
 
 @interface NSTextContainer (TextViewObserver)
 - (void) _textViewFrameChanged: (NSNotification*)aNotification;
 @end
 
+
+/* TODO: rethink how this is is triggered.
+use bounds rectangle instead of frame? */
 @implementation NSTextContainer (TextViewObserver)
 
 - (void) _textViewFrameChanged: (NSNotification*)aNotification
@@ -110,14 +118,14 @@
   [super dealloc];
 }
 
-- (void) setLayoutManager: (NSLayoutManager*)aLayoutManager
+- (void) setLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   /* The layout manager owns us - so he retains us and we don't retain 
      him. */
   _layoutManager = aLayoutManager;
 }
 
-- (NSLayoutManager*) layoutManager
+- (GSLayoutManager*) layoutManager
 {
   return _layoutManager;
 }
@@ -126,7 +134,7 @@
  * Replaces the layout manager while maintaining the text object
  * framework intact.
  */
-- (void) replaceLayoutManager: (NSLayoutManager*)aLayoutManager
+- (void) replaceLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   if (aLayoutManager != _layoutManager)
     {
@@ -186,7 +194,9 @@
 	}
     }
 
-  [_layoutManager textContainerChangedTextView: self];
+  /* If someone's trying to set a NSTextView for us, the layout manager we
+  have must be capable of handling NSTextView:s. */
+  [(NSLayoutManager *)_layoutManager textContainerChangedTextView: self];
 }
 
 - (NSTextView*) textView
@@ -298,14 +308,104 @@
   return _lineFragmentPadding;
 }
 
-- (NSRect) lineFragmentRectForProposedRect: (NSRect)proposedRect
-			    sweepDirection: (NSLineSweepDirection)sweepDir
-			 movementDirection: (NSLineMovementDirection)moveDir
-			     remainingRect: (NSRect*)remainingRect
+-(NSRect) lineFragmentRectForProposedRect: (NSRect)proposed
+	sweepDirection: (NSLineSweepDirection)sweep
+	movementDirection: (NSLineMovementDirection)move
+	remainingRect: (NSRect *)remain
 {
-  // line fragment rectangle simply must fit within the container rectangle
-  *remainingRect = NSZeroRect;
-  return NSIntersectionRect (proposedRect, _containerRect);
+  float minx, maxx, miny, maxy;
+  float cminx, cmaxx, cminy, cmaxy;
+
+  minx = NSMinX(proposed);
+  maxx = NSMaxX(proposed);
+  miny = NSMinY(proposed);
+  maxy = NSMaxY(proposed);
+
+  cminx = NSMinX(_containerRect);
+  cmaxx = NSMaxX(_containerRect);
+  cminy = NSMinY(_containerRect);
+  cmaxy = NSMaxY(_containerRect);
+
+  *remain = NSZeroRect;
+
+  if (minx >= cminx && maxx <= cmaxx &&
+      miny >= cminy && maxy <= cmaxy)
+    {
+      return proposed;
+    }
+
+  switch (move)
+    {
+      case NSLineMoveLeft:
+	if (maxx < cminx)
+	  return NSZeroRect;
+	if (maxx > cmaxx)
+	  {
+	    minx -= maxx-cmaxx;
+	    maxx = cmaxx;
+	  }
+	break;
+
+      case NSLineMoveRight:
+	if (minx > cmaxx)
+	  return NSZeroRect;
+	if (minx < cminx)
+	  {
+	    maxx += cminx-minx;
+	    minx = cminx;
+	  }
+	break;
+
+      case NSLineMoveDown:
+	if (miny > cmaxy)
+	  return NSZeroRect;
+	if (miny < cminy)
+	  {
+	    maxy += cminy - miny;
+	    miny = cminy;
+	  }
+	break;
+
+      case NSLineMoveUp:
+	if (maxy < cminy)
+	  return NSZeroRect;
+	if (maxy > cmaxy)
+	  {
+	    miny -= maxy - cmaxy;
+	    maxy = cmaxy;
+	  }
+	break;
+
+      case NSLineDoesntMove:
+	break;
+    }
+
+  switch (sweep)
+    {
+      case NSLineSweepLeft:
+      case NSLineSweepRight:
+	if (minx < cminx)
+	  minx = cminx;
+	if (maxx > cmaxx)
+	  maxx = cmaxx;
+	break;
+
+      case NSLineSweepDown:
+      case NSLineSweepUp:
+	if (miny < cminy)
+	  miny = cminy;
+	if (maxy > cmaxy)
+	  maxy = cmaxy;
+	break;
+    }
+
+  if (minx < cminx || maxx > cmaxx ||
+      miny < cminy || maxy > cmaxy)
+    {
+      return NSZeroRect;
+    }
+
+  return NSMakeRect(minx, miny, maxx - minx, maxy - miny);
 }
 
 - (BOOL) isSimpleRectangularTextContainer

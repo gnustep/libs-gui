@@ -23,7 +23,7 @@
      
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
 
     You should have received a copy of the GNU Library General Public
@@ -42,19 +42,18 @@
  *
  * But you can still subclass NSText to implement your own text
  * editing class not derived from NSTextView.  NSText declares general
- * methods that a text editing object should have; it has ivars to
- * track the various options (editable, selectable, background color
- * etc) and implementations for methods setting and getting these
- * generic options and for some helper methods which are simple
- * wrappers around the real basic editing methods.  The real editing
- * methods are not implemented in NSText, which is why it is abstract.
- * To make a working subclass, you need to implement these methods.
+ * methods that a text editing object should have; it has some helper
+ * methods which are simple wrappers around the real basic editing
+ * methods.  The real editing methods are not implemented in NSText,
+ * which is why it is abstract. To make a working subclass, you need to
+ * implement these methods, marked as "PRIMITIVE" below.
+ *
  * The working subclass could potentially be implemented in absolutely
- * *any* way you want.  I have been told that some versions of Emacs
- * can be embedded as an X subwindow inside alien widgets and windows
- * - so yes, potentially if you are able to figure out how to embed 
- * Emacs inside the GNUstep NSView tree, you can write a subclass 
- * of NSText which just uses Emacs. */
+ * *any* way you want.  I have been told that some versions of Emacs can
+ * be embedded as an X subwindow inside alien widgets and windows - so
+ * yes, potentially if you are able to figure out how to embed Emacs
+ * inside the GNUstep NSView tree, you can write a subclass of NSText
+ * which just uses Emacs. */
  
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
@@ -84,7 +83,7 @@ enum {
   NSUpTextMovement	= 0x15,
   NSDownTextMovement	= 0x16
 };
-	 	
+
 enum {
   NSParagraphSeparatorCharacter	= 0x2029,
   NSLineSeparatorCharacter	= 0x2028,
@@ -110,81 +109,75 @@ enum {
 #include <AppKit/NSStringDrawing.h>
 
 @interface NSText : NSView <NSChangeSpelling, NSIgnoreMisspelledWords>
-{	
-  id _delegate;
-  struct GSTextFlagsType {
-    unsigned is_field_editor: 1;
-    unsigned is_editable: 1;
-    unsigned is_selectable: 1;
-    unsigned is_rich_text: 1;
-    unsigned imports_graphics: 1;
-    unsigned draws_background: 1;
-    unsigned is_horizontally_resizable: 1;
-    unsigned is_vertically_resizable: 1;
-    unsigned uses_font_panel: 1;
-    unsigned uses_ruler: 1;
-    unsigned is_ruler_visible: 1;
-  } _tf;
-  NSColor *_background_color;
-  NSSize _minSize;
-  NSSize _maxSize;
+{
 }
 
 /*
  * Getting and Setting Contents 
  */
+/* these aren't in OPENSTEP */
 - (void) replaceCharactersInRange: (NSRange)aRange  
 			  withRTF: (NSData*)rtfData;
 - (void) replaceCharactersInRange: (NSRange)aRange  
 			 withRTFD: (NSData*)rtfdData;
+/* PRIMITIVE */
 - (void) replaceCharactersInRange: (NSRange)aRange  
 		       withString: (NSString*)aString;
+/* PRIMITIVE */
+-(void) replaceCharactersInRange: (NSRange)aRange /* GNUstep extension */
+	    withAttributedString: (NSAttributedString *)aString;
+/* PRIMITIVE */
 - (void) setString: (NSString*)aString;
+/* PRIMITIVE */
 - (NSString*) string;
 
 /*
  * Old fashioned OpenStep methods (wrappers for the previous ones)
  */
-- (void) replaceRange: (NSRange)aRange  withString: (NSString*)aString;
+- (void) replaceRange: (NSRange)aRange  withString: (NSString*)aString; /* not OPENSTEP */
 - (void) replaceRange: (NSRange)aRange  withRTF: (NSData*)rtfData;
 - (void) replaceRange: (NSRange)aRange  withRTFD: (NSData*)rtfdData;
 - (void) setText: (NSString*)aString;
-- (void) setText: (NSString*)aString  range: (NSRange)aRange;
+- (void) setText: (NSString*)aString  range: (NSRange)aRange; /* not OPENSTEP */
 - (NSString*) text;
 
 /*
  * Graphic attributes
  */
+/* PRIMITIVE */
 - (NSColor*) backgroundColor;
+/* PRIMITIVE */
 - (BOOL) drawsBackground;
+/* PRIMITIVE */
 - (void) setBackgroundColor: (NSColor*)color;
+/* PRIMITIVE */
 - (void) setDrawsBackground: (BOOL)flag;
 
 /*
  * Managing Global Characteristics
  */
-- (BOOL) importsGraphics;
-- (BOOL) isEditable;
-- (BOOL) isFieldEditor;
-- (BOOL) isRichText;
-- (BOOL) isSelectable;
-- (void) setEditable: (BOOL)flag;
-- (void) setFieldEditor: (BOOL)flag;
-- (void) setImportsGraphics: (BOOL)flag;
-- (void) setRichText: (BOOL)flag;
-- (void) setSelectable: (BOOL)flag;
+- (BOOL) importsGraphics; /* PRIMITIVE */
+- (BOOL) isEditable; /* PRIMITIVE */
+- (BOOL) isFieldEditor; /* PRIMITIVE */
+- (BOOL) isRichText; /* PRIMITIVE */
+- (BOOL) isSelectable; /* PRIMITIVE */
+- (void) setEditable: (BOOL)flag; /* PRIMITIVE */
+- (void) setFieldEditor: (BOOL)flag; /* PRIMITIVE */
+- (void) setImportsGraphics: (BOOL)flag; /* PRIMITIVE */
+- (void) setRichText: (BOOL)flag; /* PRIMITIVE */
+- (void) setSelectable: (BOOL)flag; /* PRIMITIVE */
 
 /*
  * Using the font panel
  */ 
-- (void) setUsesFontPanel: (BOOL)flag;
-- (BOOL) usesFontPanel;
+- (void) setUsesFontPanel: (BOOL)flag; /* PRIMITIVE */
+- (BOOL) usesFontPanel; /* PRIMITIVE */
 
 /*
  * Managing the Ruler
  */
-- (BOOL) isRulerVisible;
-- (void) toggleRuler: (id)sender;
+- (BOOL) isRulerVisible; /* PRIMITIVE */
+- (void) toggleRuler: (id)sender; /* PRIMITIVE */
 
 /*
  * Managing the Selection
@@ -195,113 +188,103 @@ enum {
 /*
  * Responding to Editing Commands
  */
-- (void) copy: (id)sender;
-- (void) copyFont: (id)sender;
-- (void) copyRuler: (id)sender;
+- (void) copy: (id)sender; /* PRIMITIVE */
+- (void) copyFont: (id)sender; /* PRIMITIVE */
+- (void) copyRuler: (id)sender; /* PRIMITIVE */
 - (void) cut: (id)sender;
-- (void) delete: (id)sender;
-- (void) paste: (id)sender;
-- (void) pasteFont: (id)sender;
-- (void) pasteRuler: (id)sender;
+- (void) delete: (id)sender; /* PRIMITIVE */
+- (void) paste: (id)sender; /* PRIMITIVE */
+- (void) pasteFont: (id)sender; /* PRIMITIVE */
+- (void) pasteRuler: (id)sender; /* PRIMITIVE */
 - (void) selectAll: (id)sender;
 
 /*
  * Managing Font
  */
-- (void) changeFont: (id)sender;
-- (NSFont*) font;
-- (void) setFont: (NSFont*)font;
-- (void) setFont: (NSFont*)font  range: (NSRange)aRange;
-
+- (void) changeFont: (id)sender; /* PRIMITIVE */
+- (NSFont*) font; /* PRIMITIVE */
+- (void) setFont: (NSFont*)font; /* PRIMITIVE */
+- (void) setFont: (NSFont*)font  range: (NSRange)aRange; /* PRIMITIVE */
 /* Old OpenStep name for the same method.  */
-- (void) setFont: (NSFont*)font ofRange: (NSRange)aRange;
+- (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange;
 
 /*
  * Managing Alignment
  */
-- (NSTextAlignment) alignment;
-- (void) setAlignment: (NSTextAlignment)mode;
-- (void) alignCenter: (id)sender;
-- (void) alignLeft: (id)sender;
-- (void) alignRight: (id)sender;
+- (NSTextAlignment) alignment; /* PRIMITIVE */
+- (void) setAlignment: (NSTextAlignment)mode; /* PRIMITIVE */
+- (void) alignCenter: (id)sender; /* PRIMITIVE */
+- (void) alignLeft: (id)sender; /* PRIMITIVE */
+- (void) alignRight: (id)sender; /* PRIMITIVE */
 
 /*
  * Text colour
  */
-- (void) setTextColor: (NSColor*)color range: (NSRange)aRange;
-- (void) setColor: (NSColor*)color ofRange: (NSRange)aRange;
-- (void) setTextColor: (NSColor*)color;
-- (NSColor*) textColor;
+- (void) setTextColor: (NSColor*)color range: (NSRange)aRange; /* PRIMITIVE */ /* not OPENSTEP */
+- (void) setColor: (NSColor*)color ofRange: (NSRange)aRange; /* PRIMITIVE */
+- (void) setTextColor: (NSColor*)color; /* PRIMITIVE */
+- (NSColor*) textColor; /* PRIMITIVE */
 
 /*
  * Text attributes
  */
-- (void) subscript: (id)sender;
-- (void) superscript: (id)sender;
-- (void) underline: (id)sender;
-- (void) unscript: (id)sender;
+- (void) subscript: (id)sender; /* PRIMITIVE */
+- (void) superscript: (id)sender; /* PRIMITIVE */
+- (void) underline: (id)sender; /* PRIMITIVE */
+- (void) unscript: (id)sender; /* PRIMITIVE */
 
 /*
  * Reading and Writing RTFD Files
  */
--(BOOL) readRTFDFromFile: (NSString*)path;
--(BOOL) writeRTFDToFile: (NSString*)path atomically: (BOOL)flag;
--(NSData*) RTFDFromRange: (NSRange)aRange;
--(NSData*) RTFFromRange: (NSRange)aRange;
+-(BOOL) readRTFDFromFile: (NSString*)path; /* PRIMITIVE */
+-(BOOL) writeRTFDToFile: (NSString*)path atomically: (BOOL)flag; /* PRIMITIVE */
+-(NSData*) RTFDFromRange: (NSRange)aRange; /* PRIMITIVE */
+-(NSData*) RTFFromRange: (NSRange)aRange; /* PRIMITIVE */
 
 /*
  * Sizing the Frame Rectangle
  */
-- (BOOL) isHorizontallyResizable;
-- (BOOL) isVerticallyResizable;
-- (NSSize) maxSize;
-- (NSSize) minSize;
-- (void) setHorizontallyResizable: (BOOL)flag;
-- (void) setMaxSize: (NSSize)newMaxSize;
-- (void) setMinSize: (NSSize)newMinSize;
-- (void) setVerticallyResizable: (BOOL)flag;
-- (void) sizeToFit;
+- (BOOL) isHorizontallyResizable; /* PRIMITIVE */
+- (BOOL) isVerticallyResizable; /* PRIMITIVE */
+- (NSSize) maxSize; /* PRIMITIVE */
+- (NSSize) minSize; /* PRIMITIVE */
+- (void) setHorizontallyResizable: (BOOL)flag; /* PRIMITIVE */
+- (void) setMaxSize: (NSSize)newMaxSize; /* PRIMITIVE */
+- (void) setMinSize: (NSSize)newMinSize; /* PRIMITIVE */
+- (void) setVerticallyResizable: (BOOL)flag; /* PRIMITIVE */
+- (void) sizeToFit; /* PRIMITIVE */
 
 /*
  * Spelling
  */
-- (void) checkSpelling: (id)sender;
+- (void) checkSpelling: (id)sender; /* PRIMITIVE */
 - (void) showGuessPanel: (id)sender;
 
 /*
  * Scrolling
  */
-- (void) scrollRangeToVisible: (NSRange)aRange;
+- (void) scrollRangeToVisible: (NSRange)aRange; /* PRIMITIVE */
 
 /*
  * Managing the Delegate
  */
-- (id) delegate;
-- (void) setDelegate: (id)anObject;
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
+- (id) delegate; /* PRIMITIVE */
+- (void) setDelegate: (id)anObject; /* PRIMITIVE */
 
 /*
  * NSChangeSpelling protocol
  */
-- (void) changeSpelling: (id)sender;
+- (void) changeSpelling: (id)sender; /* PRIMITIVE */
 
 /*
  * NSIgnoreMisspelledWords protocol
  */
-- (void) ignoreSpelling: (id)sender;
+- (void) ignoreSpelling: (id)sender; /* PRIMITIVE */ /* not OPENSTEP */
 @end
 
 @interface NSText (GNUstepExtensions)
 
-- (void) replaceRange: (NSRange)aRange 
- withAttributedString: (NSAttributedString*)attrString;
-
-- (unsigned) textLength;
+- (unsigned) textLength; /* PRIMITIVE */
 
 @end
 

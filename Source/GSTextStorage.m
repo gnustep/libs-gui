@@ -45,6 +45,9 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSZone.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSThread.h>
+#include <Foundation/NSNotification.h>
 #include <AppKit/NSTextStorage.h>
 #include "GSTextStorage.h"
 

@@ -474,4 +474,14 @@ static NSParagraphStyle	*defaultStyle = nil;
   _tailIndent = p->_tailIndent;
 }
 
+- (id) copyWithZone: (NSZone*)aZone
+{
+  NSMutableParagraphStyle	*c;
+
+  c = (NSMutableParagraphStyle*)NSCopyObject (self, 0, aZone);
+  c->isa = [NSParagraphStyle class];
+  c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
+  return c;
+}
+
 @end

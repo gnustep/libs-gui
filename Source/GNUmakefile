@@ -146,7 +146,6 @@ NSTextContainer.m \
 NSTextField.m \
 NSTextFieldCell.m \
 NSTextStorage.m \
-NSTextView.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSView.m \
@@ -169,9 +168,13 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
-GSSimpleLayoutManager.m \
 GSKeyBindingAction.m \
-GSKeyBindingTable.m
+GSKeyBindingTable.m \
+NSTextView.m \
+NSTextView_actions.m \
+GSLayoutManager.m \
+GSTypesetter.m \
+GSHorizontalTypesetter.m
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
@@ -321,7 +324,11 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
-PSOperators.h
+PSOperators.h \
+GSLayoutManager.h \
+GSLayoutManager_internal.h \
+GSTypesetter.h \
+GSHorizontalTypesetter.h
 
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def

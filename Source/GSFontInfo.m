@@ -25,6 +25,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#include <math.h>
+
 #include <AppKit/GSFontInfo.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
@@ -91,7 +93,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
 @end
 
 @interface GSFontInfo (Backend)
--initWithFontName: (NSString *)fontName matrix: (const float *)fmatrix;
+-initWithFontName: (NSString *)fontName
+	   matrix: (const float *)fmatrix
+       screenFont: (BOOL)screenFont;
 @end
 
 @implementation GSFontInfo
@@ -102,10 +106,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)nfontName 
-                             matrix: (const float *)fmatrix;
+                             matrix: (const float *)fmatrix
+			 screenFont: (BOOL)screenFont;
 {
   return AUTORELEASE([[fontInfoClass alloc] initWithFontName: nfontName 
-						      matrix: fmatrix]);
+						      matrix: fmatrix
+						  screenFont: screenFont]);
 }
 
 + (int) weightForString: (NSString *)weightString
@@ -337,7 +343,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (float) defaultLineHeightForFont
 {
   // ascent plus descent plus some suitable linegap
-  return [self ascender] - [self descender] + [self pointSize]/ 11.0;
+  return [self ascender] - [self descender] + ceil([self pointSize]/ 11.0);
 }
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph

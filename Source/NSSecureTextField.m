@@ -29,21 +29,22 @@
 */
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSException.h>
 #include <AppKit/NSSecureTextField.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSTextContainer.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
-#include "GSSimpleLayoutManager.h"
 
 /* 'Secure' subclasses */
 @interface NSSecureTextView : NSTextView
 {}
 @end
 
-@interface GSSimpleSecureLayoutManager : GSSimpleLayoutManager
+@interface GSSimpleSecureLayoutManager : NSLayoutManager
 {}
 @end
 
