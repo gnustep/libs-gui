@@ -8,6 +8,8 @@
    Author:  Scott Christley <scottc@net-community.com>
    Author:  Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: Sept 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -48,108 +50,6 @@ static NSMutableDictionary* timers = nil;
 static NSRecursiveLock* timersLock = nil;
 
 //
-// Private methods
-//
-- (void)setType:(NSEventType)type
-{
-  event_type = type;
-}
-
-- (void)setLocation:(NSPoint)location
-{
-  location_point = location;
-}
-
-- (void)setFlags:(unsigned int)flags
-{
-  modifier_flags = flags;
-}
-
-- (void)setTime:(NSTimeInterval)time
-{
-  event_time = time;
-}
-
-- (void)setWindowNum:(int)windowNum
-{
-  window_num = windowNum;
-}
-
-- (void)setContext:(NSDPSContext *)context
-{
-  [context retain];
-  [event_context release];
-  event_context = context;
-}
-
-- (void)setMouseEventNumber:(int)eventNum
-{
-  event_data.mouse.event_num = eventNum;
-}
-
-- (void)setMouseClick:(int)clickNum
-{
-  event_data.mouse.click = clickNum;
-}
-
-- (void)setPressure:(float)pressureValue
-{
-  event_data.mouse.pressure = pressureValue;
-}
-
-- (void)setTrackingEventNumber:(int)eventNum
-{
-  event_data.tracking.event_num = eventNum;
-}
-
-- (void)setTrackingNumber:(int)trackingNum
-{
-  event_data.tracking.tracking_num = trackingNum;
-}
-
-- (void)setUserData:(void *)userData
-{
-  event_data.tracking.user_data = userData;
-}
-
-- (void)setRepeat:(BOOL)repeat
-{
-  event_data.key.repeat = repeat;
-}
-
-- (void)setCharacters:(NSString *)keys
-{
-  event_data.key.char_keys = keys;
-  [event_data.key.char_keys retain];
-}
-
-- (void)setUnmodifiedCharacters:(NSString *)ukeys
-{
-  event_data.key.unmodified_keys = ukeys;
-  [event_data.key.unmodified_keys retain];
-}
-
-- (void)setKeyCode:(unsigned short)code
-{
-  event_data.key.key_code = code;
-}
-
-- (void)setSubType:(short)subType
-{
-  event_data.misc.sub_type = subType;
-}
-
-- (void)setData1:(int)data1
-{
-  event_data.misc.data1 = data1;
-}
-
-- (void)setData2:(int)data2
-{
-  event_data.misc.data2 = data2;
-}
-
-//
 // Class methods
 //
 + (void)initialize
@@ -169,215 +69,201 @@ static NSRecursiveLock* timersLock = nil;
 // Creating NSEvent objects
 //
 + (NSEvent *)enterExitEventWithType:(NSEventType)type	
-			   location:(NSPoint)location
-		      modifierFlags:(unsigned int)flags
-			  timestamp:(NSTimeInterval)time
-		       windowNumber:(int)windowNum
-			    context:(NSDPSContext *)context	
-			eventNumber:(int)eventNum
-		     trackingNumber:(int)trackingNum
-			   userData:(void *)userData
+			   			   location:(NSPoint)location
+		      			   modifierFlags:(unsigned int)flags
+			  			   timestamp:(NSTimeInterval)time
+		       			   windowNumber:(int)windowNum
+			    		   context:(NSDPSContext *)context	
+				 		   eventNumber:(int)eventNum
+		     			   trackingNumber:(int)trackingNum
+			   			   userData:(void *)userData
 {
-  NSEvent *e;
+NSEvent *e = [[[NSEvent alloc] init] autorelease];
+															// do nothing if
+	if ((type != NSMouseEntered) && (type != NSMouseExited)	// event is not of
+			&& (type != NSCursorUpdate))					// a desired type
+		return nil;											
 
-  e = [[[NSEvent alloc] init] autorelease];
+	e->event_type = type;									// Set the event's
+	e->location_point = location;							// fields
+	e->modifier_flags = flags;
+	e->event_time = time;
+	e->window_num = windowNum;
+	e->event_context = context;
+	e->event_data.tracking.event_num = eventNum;
+	e->event_data.tracking.tracking_num = trackingNum;
+	e->event_data.tracking.user_data = userData;
 
-  // Make sure it is one of the right event types
-  if ((type != NSMouseEntered) && (type != NSMouseExited)
-       && (type != NSCursorUpdate))
-    return nil;
-
-  // Set the event fields
-  [e setType:type];
-  [e setLocation:location];
-  [e setFlags:flags];
-  [e setTime:time];
-  [e setWindowNum:windowNum];
-  [e setContext:context];
-  [e setTrackingEventNumber:eventNum];
-  [e setTrackingNumber:trackingNum];
-  [e setUserData:userData];
-
-  return e;
+	return e;
 }
 
 + (NSEvent *)keyEventWithType:(NSEventType)type
-		     location:(NSPoint)location
-		modifierFlags:(unsigned int)flags
-		    timestamp:(NSTimeInterval)time
-		 windowNumber:(int)windowNum
-		      context:(NSDPSContext *)context	
-		   characters:(NSString *)keys	
-  charactersIgnoringModifiers:(NSString *)ukeys
-		    isARepeat:(BOOL)repeatKey	
-		      keyCode:(unsigned short)code
+		     		 location:(NSPoint)location
+					 modifierFlags:(unsigned int)flags
+		    		 timestamp:(NSTimeInterval)time
+		 			 windowNumber:(int)windowNum
+		      		 context:(NSDPSContext *)context	
+		   			 characters:(NSString *)keys	
+  					 charactersIgnoringModifiers:(NSString *)ukeys
+		    		 isARepeat:(BOOL)repeatKey	
+		      		 keyCode:(unsigned short)code
 {
-  NSEvent *e;
+NSEvent *e = [[[NSEvent alloc] init] autorelease];
+															// do nothing if
+	if ((type != NSKeyDown) && (type != NSKeyUp))			// event is not of
+		return nil;											// a desired type
 
-  e = [[[NSEvent alloc] init] autorelease];
+	e->event_type = type;									// Set the event's
+	e->location_point = location;							// fields
+	e->modifier_flags = flags;
+	e->event_time = time;
+	e->window_num = windowNum;
+	e->event_context = context;
+	[keys retain];
+	e->event_data.key.char_keys = keys;
+	[ukeys retain];
+	e->event_data.key.unmodified_keys = ukeys;
+	e->event_data.key.repeat = repeatKey;
+	e->event_data.key.key_code = code;
 
-  // Make sure it is one of the right event types
-  if ((type != NSKeyDown) && (type != NSKeyUp))
-    return nil;
-
-  // Set the event fields
-  [e setType:type];
-  [e setLocation:location];
-  [e setFlags:flags];
-  [e setTime:time];
-  [e setWindowNum:windowNum];
-  [e setContext:context];
-  [e setCharacters:keys];
-  [e setUnmodifiedCharacters:ukeys];
-  [e setRepeat:repeatKey];
-  [e setKeyCode:code];
-
-  return e;
+	return e;
 }
 
 + (NSEvent *)mouseEventWithType:(NSEventType)type	
-		       location:(NSPoint)location
-		  modifierFlags:(unsigned int)flags
-		      timestamp:(NSTimeInterval)time
-		   windowNumber:(int)windowNum	
-			context:(NSDPSContext *)context	
-		    eventNumber:(int)eventNum	
-		     clickCount:(int)clickNum	
-		       pressure:(float)pressureValue
+						location:(NSPoint)location
+		  				modifierFlags:(unsigned int)flags
+		      			timestamp:(NSTimeInterval)time
+		   				windowNumber:(int)windowNum	
+						context:(NSDPSContext *)context	
+		    			eventNumber:(int)eventNum	
+		     			clickCount:(int)clickNum	
+		       			pressure:(float)pressureValue
 {
-  NSEvent *e;
+NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
+															// event is not of
+	if ((type != NSMouseMoved) && (type != NSLeftMouseUp)	// a desired type
+			&& (type != NSLeftMouseDown) && (type != NSRightMouseDown) 
+			&& (type != NSRightMouseUp) && (type != NSLeftMouseDragged) 
+			&& (type != NSRightMouseDragged))
+    	return nil;
 
-  e = [[[NSEvent alloc] init] autorelease];
+	e->event_type = type;									// Set the event's
+	e->location_point = location;							// fields
+	e->modifier_flags = flags;
+	e->event_time = time;
+	e->window_num = windowNum;
+	e->event_context = context;
+	e->event_data.mouse.event_num = eventNum;
+	e->event_data.mouse.click = clickNum;
+	e->event_data.mouse.pressure = pressureValue;
 
-  // Make sure it is one of the right event types
-  if ((type != NSLeftMouseDown) && (type != NSLeftMouseUp) &&
-      (type != NSRightMouseDown) && (type != NSRightMouseUp) &&
-      (type != NSLeftMouseDragged) && (type != NSRightMouseDragged) &&
-      (type != NSMouseMoved))
-    return nil;
-
-  // Set the event fields
-  [e setType:type];
-  [e setLocation:location];
-  [e setFlags:flags];
-  [e setTime:time];
-  [e setWindowNum:windowNum];
-  [e setContext:context];
-  [e setMouseEventNumber:eventNum];
-  [e setMouseClick:clickNum];
-  [e setPressure:pressureValue];
-
-  return e;
+	return e;
 }
 
 + (NSEvent *)otherEventWithType:(NSEventType)type	
-		       location:(NSPoint)location
-		  modifierFlags:(unsigned int)flags
-		      timestamp:(NSTimeInterval)time
-		   windowNumber:(int)windowNum	
-			context:(NSDPSContext *)context	
-			subtype:(short)subType	
-			  data1:(int)data1	
-			  data2:(int)data2
+		       			location:(NSPoint)location
+		  				modifierFlags:(unsigned int)flags
+		      			timestamp:(NSTimeInterval)time
+		   				windowNumber:(int)windowNum	
+						context:(NSDPSContext *)context	
+						subtype:(short)subType	
+			  			data1:(int)data1	
+			  			data2:(int)data2
 {
-  NSEvent *e;
+NSEvent *e = [[[NSEvent alloc] init] autorelease];
+															// do nothing if
+	if ((type != NSFlagsChanged) && (type != NSPeriodic))	// event is not of
+		return nil;											// a desired type
+	
+	e->event_type = type;									// Set the event's
+	e->location_point = location;							// fields
+	e->modifier_flags = flags;
+	e->event_time = time;
+	e->window_num = windowNum;
+	e->event_context = context;
+	e->event_data.misc.sub_type = subType;
+	e->event_data.misc.data1 = data1;
+	e->event_data.misc.data2 = data2;
 
-  e = [[[NSEvent alloc] init] autorelease];
-
-  // Make sure it is one of the right event types
-  if ((type != NSFlagsChanged) && (type != NSPeriodic))
-    return nil;
-
-  // Set the event fields
-  [e setType:type];
-  [e setLocation:location];
-  [e setFlags:flags];
-  [e setTime:time];
-  [e setWindowNum:windowNum];
-  [e setContext:context];
-  [e setSubType:subType];
-  [e setData1:data1];
-  [e setData2:data2];
-
-  return e;
+	return e;
 }
 
 //
 // Requesting Periodic Events
 //
 + (void)startPeriodicEventsAfterDelay:(NSTimeInterval)delaySeconds
-			   withPeriod:(NSTimeInterval)periodSeconds
+			   			   withPeriod:(NSTimeInterval)periodSeconds
 {
-  NSTimer* timer;
-  NSThread* currentThread = [NSThread currentThread];
+NSTimer* timer;
+NSThread* currentThread = [NSThread currentThread];
 
-  [timersLock lock];
+	[timersLock lock];
 
-  NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
-  /* Check for any pending timer for this thread */
-  if ([timers objectForKey:currentThread])
-    [NSException raise:NSInternalInconsistencyException
-		 format:@"Periodic events are already being generated for "
-			@"this thread %x", currentThread];
+	NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
+														// Check this thread 
+	if ([timers objectForKey:currentThread])			// for a pending timer
+		[NSException raise:NSInternalInconsistencyException
+		 			 format:@"Periodic events are already being generated for "
+					 @"this thread %x", currentThread];
+										// If the delay time is 0 then register  
+										// a timer immediately. Otherwise  
+										// register a timer with no repeat that  
+	if (!delaySeconds)					// when fired registers the real timer
+		timer = [NSTimer timerWithTimeInterval:periodSeconds	// register an
+						 target:self							// immediate
+						 selector:@selector(_timerFired:)		// timer
+						 userInfo:nil
+						 repeats:YES];
+	else													// register a one
+		timer = [NSTimer timerWithTimeInterval:delaySeconds	// shot timer to 
+						 target:self						// register a timer 
+						 selector:@selector(_registerRealTimer:)
+						 userInfo:[NSNumber numberWithDouble:periodSeconds]
+						 repeats:NO];
 
-  /* If the delay time is 0 then register a timer right now. Otherwise register
-     a timer with no repeat that when fired registers the real timer */
-  if (!delaySeconds)
-    timer = [NSTimer timerWithTimeInterval:periodSeconds
-		      target:self
-		      selector:@selector(_timerFired:)
-		      userInfo:nil
-		      repeats:YES];
-  else
-    timer = [NSTimer timerWithTimeInterval:delaySeconds
-		      target:self
-		      selector:@selector(_registerRealTimer:)
-		      userInfo:[NSNumber numberWithDouble:periodSeconds]
-		      repeats:NO];
+	[[NSRunLoop currentRunLoop] addTimer:timer 
+								forMode:NSEventTrackingRunLoopMode];
+	[timers setObject:timer forKey:currentThread];
 
-  [[NSRunLoop currentRunLoop]
-      addTimer:timer forMode:NSEventTrackingRunLoopMode];
-  [timers setObject:timer forKey:currentThread];
-
-  [timersLock unlock];
+	[timersLock unlock];
 }
 
 + (void)_timerFired:(NSTimer*)timer
 {
-  NSEvent* periodicEvent
-      = [self otherEventWithType:NSPeriodic
-	      location:NSZeroPoint
-	      modifierFlags:0
-	      timestamp:[[NSDate date] timeIntervalSinceReferenceDate]
-	      windowNumber:0
-	      context:[[NSApplication sharedApplication] context]
-	      subtype:0
-	      data1:0
-	      data2:0];
+NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
+NSApplication *theApp = [NSApplication sharedApplication];
+NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
+								location:NSZeroPoint
+								modifierFlags:0
+								timestamp:timeInterval
+								windowNumber:0
+								context:[theApp context]
+								subtype:0
+								data1:0
+								data2:0];
 
-  NSDebugLog (@"_timerFired:");
-  [[NSApplication sharedApplication] postEvent:periodicEvent atStart:NO];
-}
+	NSDebugLog (@"_timerFired:");
+	[theApp postEvent:periodicEvent atStart:NO];		// place a periodic
+}														// event in the queue 
 
 + (void)_registerRealTimer:(NSTimer*)timer
-{
-  NSTimeInterval periodSeconds = [[timer userInfo] doubleValue];
-  NSTimer* realTimer = [NSTimer timerWithTimeInterval:periodSeconds
-				target:self
-				selector:@selector(_timerFired:)
-				userInfo:nil
-				repeats:YES];
-  NSThread* currentThread = [NSThread currentThread];
+{													// this method provides a
+NSTimer* realTimer;									// means of delaying the
+													// start of periodic events
+	[timersLock lock];								  															
+	NSDebugLog (@"_registerRealTimer:");		
 
-  NSDebugLog (@"_registerRealTimer:");
-  [timersLock lock];
+	realTimer = [NSTimer timerWithTimeInterval:[[timer userInfo] doubleValue]
+						 target:self
+						 selector:@selector(_timerFired:)
+						 userInfo:nil
+						 repeats:YES];		// Add the real timer to the timers
+											// dictionary and to the run loop
+	[timers setObject:realTimer forKey:[NSThread currentThread]];	  
+	[[NSRunLoop currentRunLoop] addTimer:realTimer 		
+								forMode:NSEventTrackingRunLoopMode];
 
-  /* Add the real timer into the timers dictionary and to the run loop */
-  [timers setObject:realTimer forKey:currentThread];
-  [[NSRunLoop currentRunLoop]
-      addTimer:realTimer forMode:NSEventTrackingRunLoopMode];
-
-  [timersLock unlock];
+	[timersLock unlock];
 }
 
 + (void)stopPeriodicEvents
@@ -407,7 +293,7 @@ static NSRecursiveLock* timersLock = nil;
       [event_data.key.char_keys release];
       [event_data.key.unmodified_keys release];
     }
-  [event_context release];
+
   [super dealloc];
 }
 

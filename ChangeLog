@@ -1,3 +1,7 @@
+Mon Sep 14 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSEvent.m extensive optimization. 
+
 Tue Sep  8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSMenu.m->NSMenuMatrix in insertItemWithTitle: removed call to 

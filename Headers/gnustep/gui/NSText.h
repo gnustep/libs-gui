@@ -268,7 +268,7 @@ typedef enum _NSSelectionAffinity
 
 -(void) insertText:(NSString *)insertString;
 -(NSMutableDictionary*) typingAttributes;
--(void) setTypingAttributes:(NSDictionary *)attrs;
+-(void) setTypingAttributes:(NSDictionary *)dict;
 
 
 -(BOOL) shouldDrawInsertionPoint;
