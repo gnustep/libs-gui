@@ -41,11 +41,12 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSScrollView.h>
 
 @interface NSTableView (GNUstepPrivate)
 - (void) _userResizedTableColumn: (int)index
-		       leftWidth: (float)lwidth
-		      rightWidth: (float)rwidth;
+			   width: (float)width;
+- (float *) _columnOrigins;
 @end
 
 @implementation NSTableHeaderView
@@ -222,9 +223,13 @@
 
       if (location.x >= NSMaxX (rect) - 1)
 	{
-	  if (columnIndex != ([_tableView numberOfColumns] - 1))
+	  if (columnIndex != ([_tableView numberOfColumns]))
 	    {
 	      _resizedColumn = columnIndex;
+	    }
+	  else
+	    {
+	      NSLog(@"ohoh");
 	    }
 	}
       else if (location.x <= NSMinX (rect) + 2) 
@@ -243,19 +248,24 @@
 	  /* Dragging limits */
 	  float minCoord; 
 	  float maxCoord; 
+	  float minAbsCoord; 
+	  float maxAbsCoord; 
+	  float minVisCoord;
+	  float maxVisCoord;
+	  NSRect tvRect;
+	  NSPoint unconverted;
 	  NSArray *columns;
 	  /* Column on the left of resizing bound */
-	  NSTableColumn *columnLow;
+	  NSTableColumn *column;
 	  NSRect rectLow = [self headerRectOfColumn: _resizedColumn];
-	  /* Column on the right of resizing bound */
-	  NSTableColumn *columnHigh;
-	  NSRect rectHigh = [self headerRectOfColumn: (_resizedColumn + 1)];
 	  /* Old highlighted rect, used to avoid useless redrawing */
 	  NSRect oldRect = NSZeroRect;
 	  /* Current highlighted rect */
 	  NSRect r;
 	  /* Mouse position */
 	  float p;
+	  float q;
+	  BOOL outside = NO;
 	  /* YES if some highlighting was done and needs to be undone */
 	  BOOL lit = NO;
 	  /* YES if some dragging was actually done - to avoid
@@ -263,39 +273,28 @@
 	  BOOL dragged = NO;
 	  NSEvent *e;
 	  NSDate *farAway = [NSDate distantFuture];
-	  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+	  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask
+	    | NSPeriodicMask;
 
 	  /* Determine dragging limits, constrained to visible rect */
 	  rect = [self visibleRect];
-	  minCoord = MAX (NSMinX (rectLow), NSMinX (rect)) + divWidth;
-	  maxCoord = MIN (NSMaxX (rectHigh), NSMaxX (rect)) - divWidth;
+	  minVisCoord = MAX (NSMinX (rectLow), NSMinX (rect)) + divWidth;
+	  maxVisCoord = NSMaxX (rect) - divWidth;
 	  
 	  /* Then constrain to minimum and maximum column width if any */
 	  columns = [_tableView tableColumns];
 	  /* Column at the left */
-	  columnLow = [columns objectAtIndex: _resizedColumn];
-	  if ([columnLow isResizable] == NO)
+	  column = [columns objectAtIndex: _resizedColumn];
+	  if ([column isResizable] == NO)
 	    {
 	      return;
 	    }
 	  /* We use p as a temporary variable for a while */
-	  p = NSMinX (rectLow) + [columnLow minWidth];
-	  minCoord = MAX (p, minCoord);
-	  p = NSMinX (rectLow) + [columnLow maxWidth];
-	  maxCoord = MIN (p, maxCoord);
-
-	  /* Column at the right */
-	  columnHigh = [columns objectAtIndex: _resizedColumn + 1];
-	  if ([columnHigh isResizable] == NO)
-	    {
-	      return;
-	    }	  
-	  /* This is trickier - think to what happens at the column on
-	     the right when the user released the mouse somewhere */
-	  p = NSMaxX (rectHigh) - [columnHigh minWidth];
-	  maxCoord = MIN (p, maxCoord);
-	  p = NSMaxX (rectHigh) - [columnHigh maxWidth];
-	  minCoord = MAX (p, minCoord);
+	  minAbsCoord = NSMinX (rectLow) + [column minWidth];
+	  maxAbsCoord = NSMinX (rectLow) + [column maxWidth];
+	  minCoord = MAX (minAbsCoord, minVisCoord);
+	  maxCoord = MIN (maxAbsCoord, maxVisCoord);
+	  
 
 	  /* Do we need to check that we already fit into this area ? 
 	     We should */
@@ -308,7 +307,8 @@
 	  r.size.width = divWidth;
 	  r.size.height = NSHeight (rect);
 	  r.origin.y = NSMinY (rect);
-	      
+	  
+	  [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
 	  e = [NSApp nextEventMatchingMask: eventMask
 		     untilDate: farAway
 		     inMode: NSEventTrackingRunLoopMode
@@ -321,34 +321,91 @@
 
 	  while ([e type] != NSLeftMouseUp)
 	    {
-	      dragged = YES;
-	      p = [self convertPoint: [e locationInWindow] fromView: nil].x;
-	      if (p < minCoord)
+	      if ([e type] != NSPeriodic)
 		{
-		  p = minCoord;
-		}
-	      if (p > maxCoord)
-		{
-		  p = maxCoord;
-		}
-	      r.origin.x = p - (divWidth / 2.);
-	      
-	      if (NSEqualRects(r, oldRect) == NO)
-		{
-		  if (lit == YES)
+		  dragged = YES;
+		  unconverted = [e locationInWindow];
+		  p = [self convertPoint: unconverted fromView: nil].x;
+		  q = p;
+		  if (p > maxVisCoord || p < minVisCoord)
 		    {
-		      NSHighlightRect (oldRect);
+		      outside = YES;
 		    }
-		  NSHighlightRect (r);
-		  lit = YES;
-		  oldRect = r;
+		  else
+		    {
+		      outside = NO;
+		    }
+		  if (p < minCoord)
+		    {
+		      p = minCoord;
+		    }
+		  else if (p > maxCoord)
+		    {
+		      p = maxCoord;
+		    }
+		  r.origin.x = p - (divWidth / 2.);
+		  
+		  if (!outside && NSEqualRects(r, oldRect) == NO)
+		    {
+		      if (lit == YES)
+			{
+			  NSHighlightRect (oldRect);
+			}
+		      NSHighlightRect (r);
+		      lit = YES;
+		      oldRect = r;
+		    }
+		}
+	      else
+		{
+		  if (outside)
+		    {
+		      q = [self convertPoint: unconverted
+				fromView: nil].x;
+		      if (lit)
+			{
+			  NSHighlightRect (oldRect);
+			  lit = NO;
+			}
+		      tvRect = [_tableView visibleRect];
+		      if (q > maxVisCoord)
+			{
+			  if (q > maxAbsCoord + 5)
+			    q = maxAbsCoord + 5;
+			  tvRect.origin.x += (q - maxVisCoord)/2;
+			}
+		      else if (q < minVisCoord)
+			{
+			  if (q < minAbsCoord - 5)
+			    q = minAbsCoord - 5;
+			  tvRect.origin.x += (q - minVisCoord)/2;
+			}
+		      else // TODO remove this condition
+			{
+			  NSLog(@"not outside !");
+			}
+		      [_tableView scrollPoint: tvRect.origin];
+		      rect = [self visibleRect];
+		      minVisCoord = NSMinX (rect) + divWidth;
+		      maxVisCoord = NSMaxX (rect) - divWidth;
+		      minCoord = MAX (minAbsCoord, minVisCoord);
+		      maxCoord = MIN (maxAbsCoord, maxVisCoord);
+		    }
 		}
 	      e = [NSApp nextEventMatchingMask: eventMask
 			 untilDate: farAway
 			 inMode: NSEventTrackingRunLoopMode
 			 dequeue: YES];
 	    }
-	  
+	  [NSEvent stopPeriodicEvents];
+	  if (outside)
+	    {
+	      p = [self convertPoint: [e locationInWindow] fromView: nil].x;
+	      if (p > maxAbsCoord)
+		p = maxAbsCoord;
+	      else if (p < minAbsCoord)
+		p = minAbsCoord;
+	    }
 	  if (lit == YES)
 	    {
 	      NSHighlightRect(oldRect);
@@ -361,8 +418,7 @@
 	  if (dragged == YES)
 	    {
 	      [_tableView _userResizedTableColumn: _resizedColumn
-			  leftWidth: (p - NSMinX (rectLow))
-			  rightWidth: (NSMaxX (rectHigh) - p)];
+			  width: (p - NSMinX (rectLow))];
 	    }
 
 	  /* Clean up */
@@ -374,140 +430,234 @@
       /* Wait for mouse dragged events. 
 	 If mouse is dragged, move the column.
 	 If mouse is not dragged but released, select/deselect the column. */
-      {
-	BOOL mouseDragged = NO;
-	BOOL startedPeriodicEvents = NO;
-	unsigned int eventMask = (NSLeftMouseUpMask 
-				  | NSLeftMouseDraggedMask 
-				  | NSPeriodicMask);
-	unsigned int modifiers = [event modifierFlags];
-	NSEvent *lastEvent;
-	BOOL done = NO;
-	NSPoint mouseLocationWin;
-	NSDate *distantFuture = [NSDate distantFuture];
-	NSRect visibleRect = [self convertRect: [self visibleRect]
-				   toView: nil];
-	float minXVisible = NSMinX (visibleRect);
-	float maxXVisible = NSMaxX (visibleRect);
-	BOOL mouseLeft = NO;
-	/* We have three zones of speed. 
-	   0   -  50 pixels: period 0.2  <zone 1>
-	   50  - 100 pixels: period 0.1  <zone 2>
-	   100 - 150 pixels: period 0.01 <zone 3> */
-	float oldPeriod = 0;
-	inline float computePeriod ()
-	  {
-	    float distance = 0;
-	    
-	    if (mouseLocationWin.x < minXVisible) 
-	      {
-		distance = minXVisible - mouseLocationWin.x; 
-	      }
-	    else if (mouseLocationWin.x > maxXVisible)
-	      {
-		distance = mouseLocationWin.x - maxXVisible;
-	      }
-	    
-	    if (distance < 50) 
-	      return 0.2;
-	    else if (distance < 100) 
-	      return 0.1;
-	    else   
-	      return 0.01;
-	  }
-
-	while (done != YES)
-	  {
-	    lastEvent = [NSApp nextEventMatchingMask: eventMask 
-			       untilDate: distantFuture
-			       inMode: NSEventTrackingRunLoopMode 
-			       dequeue: YES]; 
-	    
-	    switch ([lastEvent type])
-	      {
-	      case NSLeftMouseUp:
-		done = YES;
-		break;
-	      case NSLeftMouseDragged:
-		if (mouseDragged == NO)
-		  {
-		    // TODO: Deselect the column, prepare for dragging
-		  }
-		mouseDragged = YES;
-		mouseLocationWin = [lastEvent locationInWindow]; 
-		if ((mouseLocationWin.x > minXVisible) 
-		    && (mouseLocationWin.x < maxXVisible))
-		  {
-		    NSPoint mouseLocationView;
-		    
-		    if (startedPeriodicEvents == YES)
-		      {
-			[NSEvent stopPeriodicEvents];
-			startedPeriodicEvents = NO;
-		      }
-		    mouseLocationView = [self convertPoint: 
-						mouseLocationWin 
-					      fromView: nil];
-		    // TODO: drag the column 
-
-		    //[_window flushWindow];
-		    // [nc postNotificationName: 
-		    //                   object: self];
-		      }
-		else /* Mouse dragged out of the table */
-		  {
-		    if (startedPeriodicEvents == YES)
-		      {
-			/* Check - if the mouse did not change zone, 
-			   we do nothing */
-			if (computePeriod () == oldPeriod)
-			  break;
-			
-			[NSEvent stopPeriodicEvents];
-		      }
-		    /* Start periodic events */
-		    oldPeriod = computePeriod ();
-		    
-		    [NSEvent startPeriodicEventsAfterDelay: 0
-			     withPeriod: oldPeriod];
-		    startedPeriodicEvents = YES;
-		    if (mouseLocationWin.x <= minXVisible) 
-		      mouseLeft = YES;
-		    else
-		      mouseLeft = NO;
-		  }
-		break;
-	      case NSPeriodic:
-		if (mouseLeft == YES) // mouse left the table
-		  {
-		    // TODO: Drag the column 
-		  }
-		else /* mouse right the table */
-		  {
-		    // TODO: Drag the column 
-		  }
-		// [nc postNotificationName: 
-		//                   object: self];
-		break;
-	      default:
-		break;
-	      }
-	  }
+      if ([_tableView allowsColumnReordering])
+	{
+	  int i = columnIndex;
+	  int j = columnIndex;
+	  float minCoord; 
+	  float maxCoord; 
+	  float minVisCoord;
+	  float maxVisCoord;
+	  float *_cO;
+	  float *_cO_minus1;
+	  int numberOfColumns = [_tableView numberOfColumns];
+	  unsigned int eventMask = (NSLeftMouseUpMask 
+				    | NSLeftMouseDraggedMask 
+				    | NSPeriodicMask);
+	  unsigned int modifiers = [event modifierFlags];
+	  NSEvent *e;
+	  NSDate *distantFuture = [NSDate distantFuture];
+	  NSRect visibleRect = [self visibleRect];
+	  NSRect tvRect;
+	  NSRect highlightRect, oldRect;
+	  BOOL outside = NO;
+	  BOOL lit = NO;
 	
-	if (mouseDragged == NO)
+	  BOOL mouseDragged = NO;
+	  float p;
+	  NSPoint unconverted;
+	  minVisCoord = NSMinX (visibleRect);
+	  maxVisCoord = NSMaxX (visibleRect);
 	  {
+	    NSRect bounds = [self bounds];
+	    minCoord = NSMinX(bounds);
+	    maxCoord = NSMaxX(bounds);
+	  }
+	  {
+	    float *_c = [_tableView _columnOrigins];
+	    _cO_minus1 = malloc((numberOfColumns + 3) * sizeof(float));
+	    _cO = _cO_minus1 + 1;
+	    memcpy(_cO, _c, numberOfColumns * sizeof(float));
+	    _cO[numberOfColumns] = maxCoord;
+	    _cO[numberOfColumns + 1] = maxCoord;
+	    _cO[-1] = minCoord;
+	  }
+
+	  highlightRect.size.height = NSHeight (visibleRect);
+	  highlightRect.origin.y = NSMinY (visibleRect);
+
+	  [self lockFocus];
+	  [[NSColor lightGrayColor] set];
+	  [NSEvent startPeriodicEventsAfterDelay: 0.05
+		   withPeriod: 0.05];
+	  e = [NSApp nextEventMatchingMask: eventMask 
+		     untilDate: distantFuture
+		     inMode: NSEventTrackingRunLoopMode 
+		     dequeue: YES];
+
+	  while ([e type] != NSLeftMouseUp)
+	    {
+	      switch ([e type])
+		{
+		case NSLeftMouseDragged:
+		  unconverted = [e locationInWindow];
+		  p = [self convertPoint: unconverted fromView: nil].x;
+		  if (mouseDragged == NO)
+		    {
+		      NSLog(@"TODO: Deselect the column");
+		    }
+		  mouseDragged = YES;
+		  if (p < minVisCoord || p > maxVisCoord)
+		    {
+		      outside = YES;
+		    }
+		  else
+		    {
+		      outside = NO;
+		      i = j;
+		      if (p > (_cO[i] + _cO[i+1]) / 2)
+			{
+			  while (p > (_cO[i] + _cO[i+1]) / 2)
+			    i++;
+			}
+		      else if (p < (_cO[i] + _cO[i-1]) / 2)
+			{
+			  while (p < (_cO[i] + _cO[i-1]) / 2)
+			    i--;
+			}
+		      if (i != columnIndex
+			  && i != columnIndex + 1)
+			{
+			  j = i;
+			  highlightRect.size.height = NSHeight (visibleRect);
+			  highlightRect.origin.y = NSMinY (visibleRect);
+			  highlightRect.size.width = 7;
+			  if (i == numberOfColumns)
+			    {
+			      highlightRect.origin.x = _cO[i] - 3;
+			    }
+			  else if (i == 0)
+			    {
+			      highlightRect.origin.x = _cO[i] - 3;
+			    }
+			  else
+			    {
+			      highlightRect.origin.x = _cO[i] - 3;
+			    }
+			  if (!NSEqualRects(highlightRect, oldRect))
+			    {
+			      if (lit)
+				NSHighlightRect(oldRect);
+			      NSHighlightRect(highlightRect);
+			    }
+			  else if (!lit)
+			    {
+			      NSHighlightRect(highlightRect);
+			    }
+			  oldRect = highlightRect;
+			  lit = YES;
+			}
+		      else
+			{
+			  i = columnIndex;
+			  highlightRect.size.height = NSHeight (visibleRect);
+			  highlightRect.origin.y = NSMinY (visibleRect);
+			  highlightRect.origin.x = _cO[columnIndex];
+			  highlightRect.size.width = 
+			    _cO[columnIndex + 1] - _cO[columnIndex];
+			
+			  if (!NSEqualRects(highlightRect, oldRect))
+			    {
+			      if (lit)
+				NSHighlightRect(oldRect);
+			      NSHighlightRect(highlightRect);
+			    }
+			  else if (!lit)
+			    {
+			      NSHighlightRect(highlightRect);
+			    }
+			  oldRect = highlightRect;
+			  lit = YES;
+			}
+		    }
+		  break;
+		case NSPeriodic:
+		  if (outside == YES)
+		    {
+		      if (lit)
+			{
+			  NSHighlightRect(oldRect);
+			  lit = NO;
+			  oldRect = NSZeroRect;
+			}
+		      p = [self convertPoint: unconverted
+				fromView: nil].x;
+		      tvRect = [_tableView visibleRect];
+		      if (p > maxVisCoord)
+			{
+			  if (p > maxCoord)
+			    tvRect.origin.x += (p - maxVisCoord)/8;
+			  else
+			    tvRect.origin.x += (p - maxVisCoord)/2;
+			}
+		      else if (p < minVisCoord)
+			{
+			  if (p < minCoord)
+			    tvRect.origin.x += (p - minVisCoord)/8;
+			  else
+			    tvRect.origin.x += (p - minVisCoord)/2;
+			}
+		      else // TODO remove this condition
+			{
+			  NSLog(@"not outside !");
+			}
+		      [_tableView scrollPoint: tvRect.origin];
+		      visibleRect = [self visibleRect];
+		      minVisCoord = NSMinX (visibleRect);
+		      maxVisCoord = NSMaxX (visibleRect);
+		    }
+		  break;
+		default:
+		  break;
+		}
+	      e = [NSApp nextEventMatchingMask: eventMask 
+			 untilDate: distantFuture
+			 inMode: NSEventTrackingRunLoopMode 
+			 dequeue: YES]; 
+	    }
+	  if (lit)
+	    {
+	      NSHighlightRect(highlightRect);
+	      lit = NO;
+	    }
+	
+	  [NSEvent stopPeriodicEvents];	
+	  [self unlockFocus];
+	  if (mouseDragged == NO)
+	    {
+	      [_tableView _selectColumn: columnIndex
+			  modifiers: modifiers];
+	    }
+	  else // mouseDragged == YES
+	    {
+	      if (i > columnIndex)
+		i--;
+	      [_tableView moveColumn: columnIndex
+			  toColumn: i];
+	    
+	      // TODO: Move the dragged column
+	    }
+	  free(_cO_minus1);
+	  return;
+	}
+      else
+	{
+	  NSPoint pDown;
+	  NSPoint pUp;
+	  NSEvent *e;
+	  unsigned int modifiers = [event modifierFlags];
+	  NSDate *distantFuture = [NSDate distantFuture];
+	  e = [NSApp nextEventMatchingMask: NSLeftMouseUpMask
+		     untilDate: distantFuture
+		     inMode: NSEventTrackingRunLoopMode
+		     dequeue: YES];
+	  pDown = [event locationInWindow];
+	  pUp = [e locationInWindow];
+	  if (pUp.x - pDown.x <= 2
+	      && pUp.y - pDown.y <= 2)
 	    [_tableView _selectColumn: columnIndex
 			modifiers: modifiers];
-	  }
-	else // mouseDragged == YES
-	  {
-	    if (startedPeriodicEvents == YES)
-	      [NSEvent stopPeriodicEvents];
-	    
-	    // TODO: Move the dragged column
-	  }
-	return;
-      }
+	}
     }
 }
 @end
