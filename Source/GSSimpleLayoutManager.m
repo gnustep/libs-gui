@@ -52,8 +52,8 @@
 
 #define HUGE 1e7
 
-static NSCharacterSet *selectionWordGranularitySet;
 static NSCharacterSet *newlines;
+static NSCharacterSet *selectionWordGranularitySet;
 static NSCharacterSet *invSelectionWordGranularitySet;
 
 @interface _GNULineLayoutInfo: NSObject
@@ -120,7 +120,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 - (NSRect) rectForCharacterIndex: (unsigned) index;
 - (NSRange) lineRangeForRect: (NSRect) aRect;
 - (NSSize) _sizeOfRange: (NSRange) range;
-- (float) width;
 
 // return value is identical to the real line number
 - (int) lineLayoutIndexForGlyphIndex: (unsigned) anIndex;
@@ -154,6 +153,14 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   [self setSelectionWordGranularitySet: whitespace];
 }
 
+- (id) init
+{
+  self = [super init];
+
+  _lineLayoutInformation = [[NSMutableArray alloc] init];
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_lineLayoutInformation);
@@ -163,7 +170,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
-  DESTROY(_lineLayoutInformation);
+  [_lineLayoutInformation removeAllObjects];
 
   [super setTextStorage: aTextStorage];
 }
@@ -180,7 +187,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
       for ((lineEnum = [_lineLayoutInformation objectEnumerator]);
 	   (currentInfo = [lineEnum nextObject]);)
 	{
-	  retRect = NSUnionRect (retRect, currentInfo->lineRect);
+	  retRect = NSUnionRect (retRect, currentInfo->usedRect);
 	}
       return retRect;
     }
@@ -392,6 +399,17 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   return NSMakeRange(0, [_textStorage length]);
 }
 
+- (void)invalidateGlyphsForCharacterRange:(NSRange)charRange 
+			   changeInLength:(int)delta
+		     actualCharacterRange:(NSRange*)actualCharRange
+{
+  // As we currenty dont have any glyph character mapping, we only have 
+  // to ajust the ranges in the line layout infos
+
+  if (actualCharRange)
+    *actualCharRange = charRange;
+}
+
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange*)actualRange
@@ -420,6 +438,10 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   // No editing
   if (!mask)
     return;
+
+  [self invalidateGlyphsForCharacterRange: invalidatedCharRange
+	changeInLength: delta
+	actualCharacterRange: NULL];
 
   lineRange = [self rebuildForRange: aRange
 		    delta: delta
@@ -493,21 +515,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
     return NSZeroSize;
 
   return [_textStorage sizeRange: aRange];
-}
-
-- (NSRect) frame
-{
-  if ([self firstTextView] == nil)
-    {
-      NSSize size =  [[_textContainers objectAtIndex: 0] containerSize];
-      return NSMakeRect(0, 0, size.width, size.height);
-    }
-  return [[self firstTextView] frame];
-}
-
-- (float) width
-{
-  return [[_textContainers objectAtIndex: 0] containerSize].width;
 }
 
 - (unsigned) lineLayoutIndexForPoint: (NSPoint)point
@@ -620,7 +627,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 // rect to the end of line
 - (NSRect) rectForCharacterIndex: (unsigned)index
 {
-  float width = [self width];
+  float width =  [[_textContainers objectAtIndex: 0] containerSize].width;
   _GNULineLayoutInfo *currentInfo;
   unsigned start;
   NSRect rect;
@@ -700,8 +707,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
 		     inTextContainer:(NSTextContainer *)aTextContainer 
 {
-  float width = [aTextContainer containerSize].width;
-
   if ([_lineLayoutInformation count]
       && redrawLineRange.location < [_lineLayoutInformation count]
       && redrawLineRange.length)
@@ -709,6 +714,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
       _GNULineLayoutInfo *firstInfo
 	= [_lineLayoutInformation objectAtIndex: redrawLineRange.location];
       NSRect displayRect = firstInfo->lineRect;
+      float width = [aTextContainer containerSize].width;
 
       if (redrawLineRange.length > 1)
 	  displayRect = NSUnionRect(displayRect,
@@ -717,13 +723,13 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 					     (int)NSMaxRange(redrawLineRange) - 1] lineRect]);
 
       displayRect.size.width = width - displayRect.origin.x;
-      [[self firstTextView] setNeedsDisplayInRect: displayRect];
+      [[aTextContainer textView] setNeedsDisplayInRect: displayRect];
     }
 }
 
 - (BOOL) _relocLayoutArray: (NSMutableArray*)ghostArray
 		    offset: (int)relocOffset
-		    floatTrift: (float*)yDisplacement
+		floatTrift: (float*)yDisplacement
 {
   _GNULineLayoutInfo *lastInfo = [_lineLayoutInformation lastObject];
   // The start character in the ghostArray
@@ -760,6 +766,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
       if (yReloc)
 	{
 	  currReloc->lineRect.origin.y += yReloc;
+	  currReloc->usedRect.origin.y += yReloc;
 	}
       [_lineLayoutInformation addObject:  currReloc];
     }
@@ -790,42 +797,27 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  delta: (int)insertionDelta
 	    inTextContainer:(NSTextContainer *)aTextContainer 
 {
-  int aLine = 0;
   NSPoint drawingPoint = NSZeroPoint;
-  float width = [aTextContainer containerSize].width;
+  float padding = [aTextContainer lineFragmentPadding];
   unsigned startingIndex = 0;
   unsigned currentLineIndex;
-  // for optimization detection
-  NSMutableArray *ghostArray;
   NSString *allText = [_textStorage string];
   unsigned length = [allText length];
   unsigned paraPos;
+  int maxLines = [_lineLayoutInformation count];
+  int aLine = 0;
+  // for optimization detection
+  NSMutableArray *ghostArray = nil;
 
-  // sanity check that it is possible to do the layout
-  if (width == 0.0)
+  if (maxLines)
     {
-      NSLog(@"NSText formatting with empty frame");
-      return NSMakeRange(0,0);
-    }
+	int insertionLineIndex = [self lineLayoutIndexForGlyphIndex: 
+					   aRange.location];
+	int nextLine = [self lineLayoutIndexForGlyphIndex: 
+				 NSMaxRange(aRange) - insertionDelta] + 1;
 
-  if (_lineLayoutInformation == nil)
-    {
-      _lineLayoutInformation = [[NSMutableArray alloc] init];
-      aLine = 0;
-      ghostArray = nil;
-    }
-  else
-    {
-      int insertionLineIndex = [self lineLayoutIndexForGlyphIndex: 
-					 aRange.location];
-      int nextLine = [self lineLayoutIndexForGlyphIndex: 
-				     NSMaxRange(aRange)] + 1;
-      int maxLines = [_lineLayoutInformation count];
-
-      aLine = MAX(0, insertionLineIndex - 1);
-
-      if (nextLine < maxLines)
-        {
+	if (nextLine < maxLines)
+	{
 	  // remember old array for optimization purposes
 	  ghostArray = AUTORELEASE([[_lineLayoutInformation
 					subarrayWithRange:
@@ -833,28 +825,27 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 							 maxLines - nextLine)]
 				       mutableCopy]);
 	}
-      else
-        {
-          ghostArray = nil;
-	}
-
-      if (aLine)
-	{
-	  _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
-						      objectAtIndex: aLine - 1];
-	  NSRect aRect = lastValidLineInfo->lineRect;
-
-	  startingIndex = NSMaxRange(lastValidLineInfo->lineRange);
-	  drawingPoint = aRect.origin;
-	  drawingPoint.y += aRect.size.height;
-	}
-
-      [_lineLayoutInformation removeObjectsInRange:
-	  NSMakeRange (aLine, [_lineLayoutInformation count] - aLine)];
+	
+	aLine = MAX(0, insertionLineIndex - 1);
+	if (aLine)
+	  {
+	    _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
+							objectAtIndex: aLine - 1];
+	    NSRect aRect = lastValidLineInfo->lineRect;
+	    
+	    startingIndex = NSMaxRange(lastValidLineInfo->lineRange);
+	    drawingPoint = aRect.origin;
+	    drawingPoint.y += aRect.size.height;
+	  }
+	
+	[_lineLayoutInformation removeObjectsInRange:
+				    NSMakeRange (aLine, maxLines - aLine)];
     }
 
   if (!length)
     {
+      float width = [aTextContainer containerSize].width;
+
       // FIXME: This should be done via extra line fragment
       // If there is no text add one empty box
       [_lineLayoutInformation
@@ -877,6 +868,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       BOOL	isBuckled = NO;
       NSString *paragraph;
       unsigned	position;	// Position in NSString.
+      NSRect remainingRect = NSZeroRect;
 
       // Determine the range of the next paragraph of text (in 'para') and set
       // 'paraPos' to point after the terminating newline character (if any).
@@ -898,12 +890,34 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       do
 	{
-	  NSRect currentLineRect = NSMakeRect (0, drawingPoint.y, 0, 0);
+	  NSRect fragmentRect;
+	  NSRect usedLineRect;
+	  float width;
 	  NSRange currentLineRange;
 	  // starts with zero, do not confuse with startingLineCharIndex
 	  unsigned localLineStartIndex = [lScanner scanLocation];
 	  unsigned scannerPosition = localLineStartIndex;
 
+	  if (NSIsEmptyRect(remainingRect))
+	    fragmentRect = NSMakeRect (0, drawingPoint.y, HUGE, HUGE);
+	  else 
+	    fragmentRect = remainingRect;
+
+	  fragmentRect = [aTextContainer lineFragmentRectForProposedRect: fragmentRect
+					 sweepDirection: NSLineSweepRight
+					 movementDirection: NSLineMoveDown
+					 remainingRect: &remainingRect];
+	  if (NSIsEmptyRect(fragmentRect))
+ 	    {
+	      // No more space in the text container, give up doing the layout
+	      return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
+	    }
+
+	  width = fragmentRect.size.width - 2 * padding;
+	  usedLineRect = fragmentRect;
+	  usedLineRect.origin.x += padding;
+	  usedLineRect.size = NSZeroSize;
+	  
 	  // scan the individual words to the end of the line
 	  while (![lScanner isAtEnd]) 
 	    {
@@ -927,14 +941,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		currentStringRange = NSUnionRange(trailingSpacesRange,
 						   currentStringRange);
 
-	      // evaluate size of current word and line so far
+	      // evaluate size of current word
 	      advanceSize = [self _sizeOfRange:
 				    NSMakeRange (currentStringRange.location + position,
 						 currentStringRange.length)];
 
 	      // handle case where single word is broader than width
-	      // (buckle word) <!> unfinished and untested
-	      // for richText (absolute position see above)
+	      // (buckle word)
 	      if (advanceSize.width > width)
 		{
 		  if (isBuckled)
@@ -950,7 +963,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 			      startingLineCharIndex, lastVisibleCharIndex)];
 			}
 		      isBuckled = NO;
-		      currentLineRect.size = currentSize;
+		      usedLineRect.size = currentSize;
 		      scannerPosition = localLineStartIndex + lastVisibleCharIndex +1;
 		      [lScanner setScanLocation: scannerPosition];
 		      break;
@@ -966,7 +979,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		isBuckled = NO;
 
 	      // line to long
-	      if (currentLineRect.size.width + advanceSize.width > width || 
+	      if (usedLineRect.size.width + advanceSize.width > width || 
 		  isBuckled)
 	        {
 		  // end of line -> word wrap
@@ -976,7 +989,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		}
 
 	      // Add next word
-	      currentLineRect = NSUnionRect (currentLineRect,
+	      usedLineRect = NSUnionRect (usedLineRect,
 					     NSMakeRect (drawingPoint.x,
 							 drawingPoint.y,
 							 advanceSize.width,
@@ -992,21 +1005,23 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	        {
 		  // Add information for the line break
 		  scannerPosition += eol.length;
-		  currentLineRect.size.width += 1;
+		  usedLineRect.size.width += 1;
 		  // FIXME: This should use the real font size!!
-		  if (!currentLineRect.size.height)
-		      currentLineRect.size.height = 12;
+		  if (!usedLineRect.size.height)
+		      usedLineRect.size.height = 12;
 		}
 	    }
 
 	  currentLineRange = NSMakeRange (startingLineCharIndex,
 					  scannerPosition - localLineStartIndex);
-	  [self setLineFragmentRect: currentLineRect
+	  // Adjust the height of the line fragment rect, as this will the to big
+	  fragmentRect.size.height = usedLineRect.size.height;
+	  [self setLineFragmentRect: fragmentRect
 		forGlyphRange: currentLineRange
-		usedRect: currentLineRect];
+		usedRect: usedLineRect];
 	  currentLineIndex++;
 	  startingLineCharIndex = NSMaxRange(currentLineRange);
-	  drawingPoint.y += currentLineRect.size.height;
+	  drawingPoint.y += usedLineRect.size.height;
 	  drawingPoint.x = 0;
 	  
 	  if (ghostArray != nil)
@@ -1044,3 +1059,4 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 // end: central line formatting method------------------------------------
 
 @end
+
