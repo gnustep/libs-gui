@@ -245,13 +245,13 @@ static GSFontEnumerator *sharedEnumerator = nil;
       else if ([encoding isEqualToString: @"4"])
 	return NSISOLatin4StringEncoding;
       else if ([encoding isEqualToString: @"5"])
-	return NSCyrillicStringEncoding;
+	return NSISOCyrillicStringEncoding;
       else if ([encoding isEqualToString: @"6"])
-	return NSArabicStringEncoding;
+	return NSISOArabicStringEncoding;
       else if ([encoding isEqualToString: @"7"])
-	return NSGreekStringEncoding;
+	return NSISOGreekStringEncoding;
       else if ([encoding isEqualToString: @"8"])
-	return NSHebrewStringEncoding;
+	return NSISOHebrewStringEncoding;
       // Other latin encodings are currently not supported
     }
   else if ([registry isEqualToString: @"iso10646"])
