@@ -483,6 +483,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
   // Resize it anyway.
   [self sizeToFit];
+
+  // Just quit here if we are a popup.
+  if ([_menu _ownedByPopUp])
+    return;
   
   if ([_menu isTornOff] && ![_menu isTransient])
     {
@@ -920,6 +924,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 /*
  * Drawing.
  */
+- (BOOL) isOpaque
+{
+  return YES;
+}
+
 - (void) drawRect: (NSRect)rect
 {
   int        i;
