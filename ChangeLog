@@ -1,3 +1,9 @@
+2002-11-23 22:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextContainer.h,
+	Headers/gnustep/gui/NSTextStorage.h Source/NSTextStorage.m: Use
+	GSLayoutManager instead of NSLayoutManager in these classes.
+
 2002-11-23 21:40  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSParagraphStyle ([NSMutableParagraphStyle -copyWithZone:]):

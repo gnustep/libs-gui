@@ -72,9 +72,9 @@ typedef enum {
 /*
  * Managing text components
  */
-- (void) setLayoutManager: (NSLayoutManager *)aLayoutManager;
-- (NSLayoutManager *) layoutManager;
-- (void) replaceLayoutManager: (NSLayoutManager *)aLayoutManager;
+- (void) setLayoutManager: (GSLayoutManager *)aLayoutManager;
+- (GSLayoutManager *) layoutManager;
+- (void) replaceLayoutManager: (GSLayoutManager *)aLayoutManager;
 - (void) setTextView: (NSTextView *)aTextView;
 - (NSTextView *) textView;
 

@@ -35,7 +35,7 @@
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKitDefines.h>
 
-@class NSLayoutManager;
+@class GSLayoutManager;
 
 /*
  * When edit:range:changeInLength: is called, it takes a mask saying
@@ -64,8 +64,8 @@ enum
   unsigned		_editCount;
 }
 
-- (void) addLayoutManager: (NSLayoutManager*)obj;
-- (void) removeLayoutManager: (NSLayoutManager*)obj;
+- (void) addLayoutManager: (GSLayoutManager*)obj;
+- (void) removeLayoutManager: (GSLayoutManager*)obj;
 - (NSArray*) layoutManagers;
 
 /*

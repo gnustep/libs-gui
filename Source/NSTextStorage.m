@@ -26,7 +26,7 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSTextStorage.h>
-#include <AppKit/NSLayoutManager.h>
+#include <AppKit/GSLayoutManager.h>
 
 @implementation NSTextStorage
 
@@ -87,9 +87,9 @@ static NSNotificationCenter *nc = nil;
 }
 
 /*
- *	Managing NSLayoutManagers
+ *	Managing GSLayoutManagers
  */
-- (void) addLayoutManager: (NSLayoutManager*)obj
+- (void) addLayoutManager: (GSLayoutManager*)obj
 {
   if ([_layoutManagers indexOfObjectIdenticalTo: obj] == NSNotFound)
     {
@@ -98,7 +98,7 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (void) removeLayoutManager: (NSLayoutManager*)obj
+- (void) removeLayoutManager: (GSLayoutManager*)obj
 {
   [obj setTextStorage: nil];
   [_layoutManagers removeObjectIdenticalTo: obj];
@@ -226,7 +226,7 @@ static NSNotificationCenter *nc = nil;
 
   for (i = 0; i < [_layoutManagers count]; i++)
     {
-      NSLayoutManager *lManager = [_layoutManagers objectAtIndex: i];
+      GSLayoutManager *lManager = [_layoutManagers objectAtIndex: i];
 
       [lManager textStorage: self  edited: _editedMask  range: r
 		changeInLength: _editedDelta  invalidatedRange: _editedRange];
