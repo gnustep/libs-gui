@@ -1883,6 +1883,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [mstyle setAlignment: alignment];
   // FIXME: Should use setTypingAttributes
   [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  RELEASE (mstyle);
 }
 
 - (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
