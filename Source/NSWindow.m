@@ -1457,14 +1457,26 @@ static Class	responderClass;
 /*
  * Dragging
  */
-- (void) dragImage: (NSImage *)anImage
-	       at: (NSPoint)baseLocation
-	       offset: (NSSize)initialOffset
-	       event: (NSEvent *)event
-	       pasteboard: (NSPasteboard *)pboard
-	       source: sourceObject
-	       slideBack: (BOOL)slideFlag
+- (void) dragImage: (NSImage*)anImage
+	        at: (NSPoint)baseLocation
+	    offset: (NSSize)initialOffset
+	     event: (NSEvent*)event
+        pasteboard: (NSPasteboard*)pboard
+	    source: (id)sourceObject
+	 slideBack: (BOOL)slideFlag
 {
+  /*
+   * Ensure we have a content view and it's associated window view.
+   */
+  if (content_view == nil)
+    [self setContentView: nil];
+  [[content_view superview] dragImage: anImage
+				   at: baseLocation
+			       offset: initialOffset
+			        event: event
+			   pasteboard: pboard
+			       source: sourceObject
+			    slideBack: slideFlag];
 }
 
 - (void) registerForDraggedTypes: (NSArray*)newTypes

@@ -1,3 +1,9 @@
+1999-07-03  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Implement 
+	([-dragImage:at:offset:event:pasteboard:source:slideBack:]) by calling
+	the mothod of the smae name in the window view.
+
 1999-07-03  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-run): Added destroyContext (so we can
