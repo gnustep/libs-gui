@@ -1,7 +1,21 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.3'.
+The currently released version of the library is `0.8.4'.
+
+Noteworthy changes in version `0.8.4'
+=====================================
+
+   This release features a brand new text and layout system thanks to
+Alexander Malmberg. Other improvements include:
+
+   * Various display optimizations.
+
+   * Default border to NSScrollView changed
+
+   * Printing fixes.
+
+   * NSToolbar partially implemented.
 
 Noteworthy changes in version `0.8.3'
 =====================================

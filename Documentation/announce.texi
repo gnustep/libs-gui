@@ -47,8 +47,9 @@ It also requires the GNUstep Base Library.
 
 @section Where do I send bug reports?
 
-Bug reports can be sent to 
-@email{bug-gnustep@@gnu.org}.
+Please log bug reports on the GNUstep project page
+@url{http://savannah.gnu.org/support/?group=gnustep} or send
+bug reports to @email{bug-gnustep@@gnu.org}.
 
 @section Obtaining GNU Software
 

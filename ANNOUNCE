@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.8.3 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.8.4 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,39 +28,36 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.8.3'
+Noteworthy changes in version `0.8.4'
 =====================================
 
-   * Additions for Gorm support.
+   This release features a brand new text and layout system thanks to
+Alexander Malmberg. Other improvements include:
 
-   * Alpha support for OpenGL
+   * Various display optimizations.
 
-   * Better ruler support - dragging of tab markers.
+   * Default border to NSScrollView changed
 
-   * Document support, recent files, etc.
+   * Printing fixes.
 
-   * Simple printing to printer and print previewing.
-
-   * Window focus fixes
-
-   * Key view handling rewritten.
+   * NSToolbar partially implemented.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.8.3.tar.gz distribution file has been placed on
+   The gstep-gui-0.8.4.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.
 
-   It also requires a FoundationKit library as specified by the OpenStep
-specification.  The only FoundationKit library known to work is the
-GNUstep Base Library.
+   It also requires the GNUstep Base Library.
 
 Where do I send bug reports?
 ============================
 
-   Bug reports can be sent to <bug-gnustep@gnu.org>.
+   Please log bug reports on the GNUstep project page
+<http://savannah.gnu.org/support/?group=gnustep> or send bug reports to
+<bug-gnustep@gnu.org>.
 
 Obtaining GNU Software
 ======================

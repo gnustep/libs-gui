@@ -9,6 +9,20 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.4}
+
+This release features a brand new text and layout system thanks
+to Alexander Malmberg. Other improvements include:
+
+@itemize @bullet
+@item Various display optimizations.
+@item Default border to NSScrollView changed
+@item Printing fixes.
+@item NSToolbar partially implemented.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.8.3}
 
 @itemize @bullet
@@ -20,8 +34,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item Window focus fixes
 @item Key view handling rewritten.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.2}
 

@@ -37,5 +37,4 @@ Classes that need work (well every class needs work!)
 @item NSComboBox, NSComboBoxCell
 @item NSProgressIndicator
 @item All the Text classes
-@item NSColorPanel
 @end itemize
