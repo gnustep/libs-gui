@@ -1,3 +1,8 @@
+Fri Jun 16 21:05:49 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSText.m ([NSText -scrollRangeToVisible:aRange]): Don't
+	try scrolling an ancestor clipview if we are field editors.  
+
 Fri Jun 16 19:32:11 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	Implemented double-click on NSTableView header and not editable
