@@ -39,6 +39,15 @@
 
 #include "GSTable.h"
 
+/** 
+  <unit>
+  <heading>GSVbox</heading>
+ 
+  <p> A GSVbox is completely analogue to a GSHbox.  It implements the
+  same methods; the only different is that it packs views from bottom
+  to top (from top to bottom if flipped).  </p>
+  </unit>
+*/
 @interface GSVbox: GSTable
 {
   BOOL _haveViews;
@@ -66,14 +75,18 @@
 //
 //  Adding a View. 
 //
+/** See the documentation for GSHbox */
 -(void) addView: (NSView *)aView;
 
+/** See the documentation for GSHbox */
 -(void) addView: (NSView *)aView
 enablingYResizing: (BOOL)aFlag;
 
+/** See the documentation for GSHbox */
 -(void) addView: (NSView *)aView
  withMinYMargin: (float)aMargin;
 
+/** See the documentation for GSHbox */
 -(void) addView: (NSView *)aView
 enablingYResizing: (BOOL)aFlag
  withMinYMargin: (float)aMargin;
@@ -81,13 +94,16 @@ enablingYResizing: (BOOL)aFlag
 //
 // Adding a Separator. 
 //
+/** See the documentation for GSHbox */
 -(void) addSeparator;
+/** See the documentation for GSHbox */
 -(void) addSeparatorWithMinYMargin: (float)aMargin;
 
 //
 //  Setting Margins.  
 //
--(void) setDefaultMinYMargin: (float)aMargin;
+
+//-(void) setDefaultMinYMargin: (float)aMargin;
 
 //
 // Minimum Size. 
@@ -106,6 +122,7 @@ enablingYResizing: (BOOL)aFlag
 //
 // Getting Number of Views
 //
+/** Return the number of views in the GSVbox (separators included).  */
 -(int) numberOfViews;
 @end
 

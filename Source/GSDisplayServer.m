@@ -498,7 +498,7 @@ GSCurrentServer(void)
   return [self window: frame : type : style : sn];
 }
 
-/** Like window::: only there is an additional argument to specify which
+/** Like -window::: only there is an additional argument to specify which
     screen the window will display on */
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen
@@ -514,7 +514,7 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Sets the style of the window. See [NSWindow -styleMask] for a
+/** Sets the style of the window. See [NSWindow-styleMask] for a
     description of the available styles */
 - (void) stylewindow: (unsigned int) style : (int) win
 {
@@ -550,7 +550,7 @@ GSCurrentServer(void)
 
 
 /** Sets the window device information for the current NSGraphicsContext,
-    typically by calling [NSGraphicsContext -GSSetDevice:::],
+    typically by calling [NSGraphicsContext-GSSetDevice:::],
     although depending on the concrete implmentation, more information
     than this may need to be exchanged. */
 - (void) windowdevice: (int) win

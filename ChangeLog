@@ -1,3 +1,13 @@
+2003-12-29  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-activateIgnoringOtherApps:): Change
+	location of _inactive count calculation.
+
+	* Documentation/gnustep-gui.texi: Move class documentation...
+	* Headers/Additions/GNUstepGUI/GSHbox.h: ...to here.
+	* Headers/Additions/GNUstepGUI/GSTable.h: and here.
+	* Headers/Additions/GNUstepGUI/GSVbox.h: and here.
+
 2003-12-28 19:33  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSMenuItem.h: Added documentation for many 

@@ -914,7 +914,7 @@ static NSCell* tileCell = nil;
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
-      unsigned			count = [_inactive count];
+      unsigned			count;
       unsigned			i;
 
      /*
@@ -926,6 +926,9 @@ static NSCell* tileCell = nil;
 
       _app_is_active = YES;
 
+      /* Make sure to calculate count after the notification, since
+	 inactive status might be changed by a notifiee.  */
+      count = [_inactive count];
       for (i = 0; i < count; i++)
 	{
 	  [[_inactive objectAtIndex: i] orderFrontRegardless];
@@ -2042,23 +2045,119 @@ image.
 /*
  * Showing Standard Panels
  */
-/* infoPanel, macosx API */
+/** Calls -orderFrontStandardAboutPanelWithOptions: with nil passed as
+    the options dictionary.
+*/
 - (void) orderFrontStandardAboutPanel: sender
 {
   [self orderFrontStandardAboutPanelWithOptions: nil];
 }
 
+/** Calls -orderFrontStandardInfoPanelWithOptions:
+*/
 - (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary
 {
   [self orderFrontStandardInfoPanelWithOptions: dictionary];
 }
 
 /* infoPanel, GNUstep API */
+/** Calls -orderFrontStandardInfoPanelWithOptions: with nil passed as
+    the options dictionary.
+*/
 - (void) orderFrontStandardInfoPanel: sender
 {
   [self orderFrontStandardInfoPanelWithOptions: nil];
 }
 
+/** 
+   <p> 
+   Orders front the standard info panel for the application,
+   taking the needed information from the <code>dictionary</code>
+   argument.  There is a single standard info panel per application;
+   it is created the first time that this method is invoked, and then
+   reused in all subsequent calls.  The application standard info
+   panel is immutable and can not be changed after creation.  Useful
+   keys for the <code>dictionary</code> are:
+   </p>
+
+   <deflist>
+   <term>ApplicationName</term>
+   <desc>A string with the name of the
+   application (eg, <var>"Gorm"</var>).  If not available, the
+   <file>Info-gnustep.plist</file> file is searched for the value of
+   <var>ApplicationName</var> followed by
+   <var>NSHumanReadableShortName</var>. If this also fails, the
+   string returned by [NSProcessInfo-processName] is used.
+   </desc>
+
+   <term>ApplicationDescription</term> 
+   <desc> A string with a very short
+   description of the application (eg, <var>"GNUstep Graphics
+   Objects Relationship Modeller"</var>).  If not available,
+   <file>Info-gnustep.plist</file> is searched for that key; if this
+   fails, no application description is shown.
+   </desc>
+
+   <term>ApplicationIcon</term> 
+   <desc> An image to be shown near the title.
+   If not available, <file>Info-gnustep.plist</file> is searched for
+   <var>ApplicationIcon</var>; if this fails, [NSApp-applicationIconImage]
+   is used instead.  
+   </desc>
+
+   <term>ApplicationRelease</term> 
+   <desc> A string with the name of the
+   application, release included (eg, <var>"Gorm 0.1"</var>).  If
+   not available, the value for <var>ApplicationVersion</var> is
+   used instead.  If this fails, <file>Info-gnustep.plist</file> is
+   searched for <var>ApplicationRelease</var> or
+   <var>NSAppVersion</var>, otherwise, <var>"Unknown"</var> is
+   used.
+   </desc>
+
+   <term>FullVersionID</term> 
+   <desc> A string with the full version of the
+   application (eg, <var>"0.1.2b"</var> or
+   <var>"snap011100"</var>).  If not available,
+   <var>Version</var> is used instead.  If this fails,
+   <file>Info-gnustep.plist</file> is looked for
+   <var>NSBuildVersion</var>.  If all fails, no full version is
+   shown.
+   </desc>
+ 
+   <term>Authors</term> 
+   <desc> An array of strings, each one with the name
+   of an author (eg, <var>[NSArray arrayWithObject: "Nicola Pero
+   <n.peromi.flashnet.it>"]</var>).  If not found,
+   <file>Info-gnustep.plist</file> is searched for <var>Authors</var>,
+   if this fails, <var>"Unknown"</var> is displayed.
+   </desc>
+
+   <term>URL</term> 
+   <desc> [This field is still under work, so it might be
+   changed] A string with an URL (eg, <var>"See
+   http://www.gnustep.org"</var>).
+   </desc>
+
+   <term>Copyright</term> 
+   <desc> A string with copyright owners (eg,
+   <var>"Copyright (C) 2000 The Free Software Foundation,
+   Inc."</var>).  Support for multiple line strings is planned but
+   not yet available.  If not found, <file>Info-gnustep.plist</file>
+   is searched for <var>Copyright</var> and then (failing this) for
+   <var>NSHumanReadableCopyright</var>.  If all fails,
+   <var>"Copyright Information Not Available"</var> is used.
+   </desc>
+
+   <term>CopyrightDescription</term>
+   <desc>A string describing the kind of
+   copyright (eg, <var>"Released under the GNU General Public
+   License 2.0"</var>).  If not available,
+   <file>Info-gnustep.plist</file> is searched for
+   <var>CopyrightDescription</var>.  If this fails, no copyright
+   description is shown.
+   </desc>
+ */
 - (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary
 {
   if (_infoPanel == nil)
