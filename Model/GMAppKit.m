@@ -982,8 +982,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeArray:[self itemArray] withName:@"itemArray"];
 #endif
 
-  //[archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
-  [archiver encodeString:[self title] withName:@"selectedItem"];
+  [archiver encodeString:[[self selectedItem] title] withName:@"selectedItem"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver

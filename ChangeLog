@@ -1,3 +1,9 @@
+2004-11-11  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m ([NSPopUpButton -encodeWithModelArchiver:]): 
+	More robust method for getting title (works on OPENSTEP, from
+	George Fleischmann).
+
 2004-11-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenu.h
