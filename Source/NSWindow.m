@@ -1106,8 +1106,11 @@ many times.
 
 - (void) setAlphaValue: (float)windowAlpha
 {
-  // FIXME
   _alphaValue = windowAlpha;
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) setalpha: _alphaValue : _windowNum];
+    }
 }
 
 - (float) alphaValue
@@ -4209,7 +4212,7 @@ resetCursorRectsForView(NSView *theView)
 
   _depthLimit = NSDefaultDepth;
   _disableFlushWindow = 0;
-  _alphaValue = 0.0;
+  _alphaValue = 1.0;
 
   _f.is_one_shot = NO;
   _f.is_autodisplay = YES;

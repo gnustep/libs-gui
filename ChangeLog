@@ -1,5 +1,14 @@
 2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-setalpha::): Declare.
+	* Source/GSDisplayServer.m (-setalpha::): New method for window
+	alpha setting, with empty default implementation.
+	* Source/NSWindow.m (-setAlphaValue:): Implemented alpha setting
+	via display server.
+	(-_initDefaults): Set _alphaValue to 1.0.
+
+2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Model/GMAppKit.m (NSButtonCell-initWithModelUnarchiver:):
 	Resorted code to work around AppKit change on button type
 	handling. Patch by Georg Fleischmann <georg@vhf.de>	
