@@ -35,9 +35,6 @@
 // NSColorList notifications
 NSString *NSColorListChangedNotification = @"NSColorListChange";
 
-// NSColorList exceptions
-NSString *NSColorListNotEditableException = @"NSColorListNotEditable";
-
 // global variable
 static NSMutableArray *gnustep_available_color_lists;
 static NSLock *gnustep_color_list_lock;

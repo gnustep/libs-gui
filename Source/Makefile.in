@@ -38,8 +38,9 @@ VPATH = @srcdir@
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-libdir = $(exec_prefix)/lib
-includedir = $(prefix)/include
+libdir = @libdir@
+includedir = @includedir@
+bindir = @bindir@
 
 MAKEDEFINES =
 
@@ -258,9 +259,9 @@ all: header_links src
 
 header_links:
 	-rm -rf ../Headers/AppKit
-	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
+	cp -r ../Headers/gnustep/gui ../Headers/AppKit
 	-rm -rf ../Headers/DPSClient
-	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
+	cp -r ../Headers/gnustep/dps ../Headers/DPSClient
 
 src: $(MAIN_FILE)$(libext)
 
@@ -289,10 +290,6 @@ installdirs:
 		$(includedir)/gnustep \
 		$(includedir)/gnustep/dps \
 		$(includedir)/gnustep/gui
-	if [ -d $(includedir)/AppKit ] ; then true ; else \
-		$(LN_S) $(includedir)/gnustep/gui $(includedir)/AppKit ; fi
-	if [ -d $(includedir)/DPSClient ] ; then true ; else \
-		$(LN_S) $(includedir)/gnustep/dps $(includedir)/DPSClient ; fi
 
 install-lib: $(MAIN_FILE)$(libext)
 	$(INSTALL_PROGRAM) $(MAIN_FILE)$(libext) $(libdir)
@@ -315,6 +312,8 @@ install-headers:
 		$(INSTALL_DATA) ../Headers/gnustep/$$file \
 			$(includedir)/gnustep/$$file ; \
 	done
+	cd $(includedir); rm -rf AppKit; cp -r ./gnustep/gui ./AppKit
+	cd $(includedir); rm -rf DPSClient; cp -r ./gnustep/dps ./DPSClient
 
 install-resource:
 	for file in $(GNUSTEP_RESOURCE); do \

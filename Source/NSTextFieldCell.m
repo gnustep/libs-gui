@@ -70,6 +70,7 @@
 
   [self setEnabled:YES];
   [self setBordered:YES];
+  [self setBezeled:YES];
   [self setScrollable:YES];
   [self setEditable:YES];
   [self setAlignment:NSLeftTextAlignment];

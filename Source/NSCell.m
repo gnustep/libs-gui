@@ -245,7 +245,7 @@
 
 - (NSString *)stringValue
 {
-  return contents;
+  return [NSString stringWithCString: [contents cString]];
 }
 
 - (void)setDoubleValue:(double)aDouble
@@ -291,7 +291,10 @@
 
 - (void)setStringValue:(NSString *)aString
 {
-  contents = aString;
+  if (!aString)
+    contents = @"";
+  else
+    contents = [NSString stringWithCString: [aString cString]];
 }
 
 //

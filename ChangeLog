@@ -1,3 +1,13 @@
+Thu Jan 23 15:10:13 1997  Scott Christley  <scottc@net-community.com>
+
+	* Makefile.in (install): Don't force make of source.
+	* Source/Makefile.in: Use configure variables for libdir,
+	includedir, bindir, and links.
+	* Source/NSCell.m (-stringValue, -setStringValue:): Make copies.
+	* Source/NSColorList.m (NSColorListNotEditableException): Already
+	defined in NSApplication.
+	* Source/NSTextFieldCell.m (-initWithFrame:): Bezeled by default.
+
 Thu Dec  5 06:58:51 1996  GNUstep Development  <gnustep@net-community.com>
 
 	* Source/NSColorList.m: Fill out implementation.
