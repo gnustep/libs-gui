@@ -822,9 +822,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   //[archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
   //[archiver encodeString:[self title] withName:@"selectedItem"];
   //[super encodeWithModelArchiver:archiver];
-#else // need frame for workarounds to know where to place the popup
-  [archiver encodeRect:[self frame] withName:@"frame"];
 #endif
+  [archiver encodeRect:[self frame] withName:@"frame"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
