@@ -2836,6 +2836,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
 - (void) dealloc
 {
+  [self abortEditing];
+
   RELEASE (_gridColor);
   RELEASE (_backgroundColor);
   RELEASE (_tableColumns);
