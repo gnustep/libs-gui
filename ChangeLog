@@ -1,4 +1,27 @@
 <<<<<<< ChangeLog
+Weds Aug 19 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSView.h added specific values and comments to resize constants enum. 
+	* NSView.m implemented resizeWithOldSuperviewSize (needs work). 
+	* NSMatrix.m mousedown clarified description comment. 
+	* NSSavePanel.m integrated source from Daniel Bðhringer into premliminary
+		implementations provided by Scott Christley. 
+	* NSSavePanel.h integrated source from Daniel Bðhringer into premliminary
+		implementations provided by Scott Christley. 
+	* NSOpenPanel.m integrated source from Daniel Bðhringer into premliminary
+		implementations provided by Scott Christley. 
+	* NSOpenPanel.h integrated source from Daniel Bðhringer into premliminary
+		implementations provided by Scott Christley. 
+	* NSStringDrawing.h defined NSAttributedString portion of extension. 
+	* NSAttributedString.h created preliminary implementation of extension. 
+	* Appkit.h added includes for NSAttributedString and NSStringDrawing. 
+	* NSPasteboard.h added extern NSRTFDPboardType define. 
+	* externs.m defined NSRTFDPboardType. 
+	* NSText.h integrated source from Daniel Bðhringer
+	* NSTextView.m preliminary implementation from Daniel Bðhringer
+	* NSTextView.h preliminary implementation from Daniel Bðhringer
+	* NSSplitView.m in drawRect use NSRectFill()
+
 Weds Aug 12 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSCell.m: Modified ([-copyWithZone:]) to use alloc-init to create
