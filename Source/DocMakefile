@@ -170,5 +170,7 @@ include $(GNUSTEP_MAKEFILES)/documentation.make
 #
 after-all::
 	$(RM) Gui.gsdoc
-	rmdir Gui
+	if [ -d Gui ]; then \
+	  rmdir Gui; \
+	fi
 
