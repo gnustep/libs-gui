@@ -74,6 +74,12 @@ static PlainInputServer *sharedInstance = nil;
 }
 
 
+- (void)inputMethodToggle: (id)sender
+{
+  NSLog(@"%@: inputMethodToggle: called", self);
+}
+
+
 /* ----------------------------------------------------------------------------
     NSInputServiceProvider protocol methods
  --------------------------------------------------------------------------- */

@@ -1,3 +1,16 @@
+2004-05-05  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Source/GSTIMKeyBindingTable.m (-compileBindings::): Modified to
+	  get an input manager to recognize any selector defined in an input
+	  server.
+	* Source/GSTIMKeyBindingTable.m (-selectorNumberFromString:): New.
+	  This implements the modification mentioned above.
+	* Source/GSTIMKeyBindingTable.m: #include <objc/objc-api.h> for
+	  sel_register_typed_name().
+	* InputManagers/PlainInputServer/PlainInputServer.m
+	  (-inputMethodToggle:): New stub.  Added for testing the modification
+	  above.
+
 2004-04-30  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* InputManagers/PlainInputServer/PlainInputServer.h:

@@ -31,9 +31,11 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSDebug.h>
+#include <objc/objc-api.h>
 #include "AppKit/NSEvent.h"
 #include "GSTIMKeyStroke.h"
 #include "GSTIMKeyBindingTable.h"
+
 
 @implementation GSTIMKeyBindingTable
 
@@ -230,6 +232,23 @@
 }
 
 
+/* Private method */
+- (NSNumber *)selectorNumberFromString: (NSString *)selectorName
+{
+  SEL	sel;
+
+  if (selectorName == nil || [selectorName length] == 0)
+    {
+      return [NSNumber numberWithUnsignedLong: 0UL];
+    }
+  if ((sel = NSSelectorFromString(selectorName)) == 0)
+    {
+      sel = sel_register_typed_name([selectorName cString], @encode(IMP));
+    }
+  return [NSNumber numberWithUnsignedLong: (unsigned long)sel];
+}
+
+
 - (void)compileBindings: (NSMutableDictionary *)draft
 	     withSource: (NSDictionary *)source
 {
@@ -237,8 +256,7 @@
   id		    stroke = nil;
   id		    obj = nil;
   GSTIMKeyStroke    *compiledKey = nil;
-  unsigned long	    selVal;
-  NSNumber	    *selHolder;
+  NSNumber	    *selNum;
 
   while ((stroke = [keyEnum nextObject]) != nil)
     {
@@ -254,11 +272,10 @@
 
       if ([obj isKindOfClass: [NSString class]])
 	{
-	  selVal = (unsigned long)NSSelectorFromString(obj);
-	  selHolder = [NSNumber numberWithUnsignedLong: selVal];
-	  if (selHolder)
+	  selNum = [self selectorNumberFromString: obj];
+	  if (selNum)
 	    {
-	      [draft setObject: [NSArray arrayWithObject: selHolder]
+	      [draft setObject: [NSArray arrayWithObject: selNum]
 			forKey: compiledKey];
 	    }
 	}
@@ -275,11 +292,10 @@
 		  continue;
 		}
 
-	      selVal = (unsigned long)NSSelectorFromString(selStr);
-	      selHolder = [NSNumber numberWithUnsignedLong: selVal];
-	      if (selHolder)
+	      selNum = [self selectorNumberFromString: selStr];
+	      if (selNum)
 		{
-		  [selArray addObject: selHolder];
+		  [selArray addObject: selNum];
 		}
 	    }
 	  if ([selArray count] > 0)
