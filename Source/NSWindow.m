@@ -189,7 +189,7 @@ static NSRecursiveLock	*windowsLock;
       RELEASE([content_view superview]);	/* Release the window view */
       RELEASE(content_view);
     }
-
+  [self setFrameAutosaveName: nil];
   TEST_RELEASE(_fieldEditor);
   TEST_RELEASE(background_color);
   TEST_RELEASE(represented_filename);
