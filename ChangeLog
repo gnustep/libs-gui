@@ -1,3 +1,8 @@
+Fri Nov 12  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* NSBrowser.m: [GSBrowserTitleCell] updated ivar draw_background
+	to the new name _draws_background.
+	
 Fri Nov 12 12:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMatrix.m: ([-setCellClass:]) was calling methodForSelector
