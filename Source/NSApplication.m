@@ -131,13 +131,19 @@ NSApplication	*NSApp = nil;
  */
 - (id) init
 {
-  if (NSApp != self)
+  if (NSApp != nil && NSApp != self)
     {
       RELEASE(self);
       return [NSApplication sharedApplication];
     }
 
-  [super init];
+  self = [super init];
+  NSApp = self;
+  if (NSApp == nil)
+    {
+      NSLog(@"Cannot allocate the application instance!\n");
+      return nil;
+    }
 
   NSDebugLog(@"Begin of NSApplication -init\n");
 

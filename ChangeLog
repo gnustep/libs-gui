@@ -1,3 +1,8 @@
+Sat Jul 10 14:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSapplication.m: In ([-init]) made changes suggested by
+	Pascal Bourguignon to eneable effective sublassing of NSAppklication.
+
 1999-07-9  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSTabView.m: perfected the mouse event work. now clicking
