@@ -44,6 +44,7 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
+#include <Foundation/NSConnection.h>
 
 #define stringify_it(X) #X
 #define	mkpath(X) stringify_it(X) "/Tools"
@@ -512,38 +513,66 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
     andDeactivate: (BOOL)flag
 {
   NSString      *port = [appName stringByDeletingPathExtension];
-  NSDate        *finish = [NSDate dateWithTimeIntervalSinceNow: 30.0];
   id            app;
 
   /*
-   *    Try to connect to the application - launches if necessary.
+   *	Try to contact a running application.
    */
-  app = GSContactApplication(appName, port, finish);
-  if (app == nil)
-    {
-      NSRunAlertPanel(nil,
-	[NSString stringWithFormat: 
-	    @"Failed to contact '%@' to open file", port],
-	@"Continue", nil, nil);
-      return NO;
-    }
-
   NS_DURING
     {
-      if (flag == NO)
-        [app application: nil openFileWithoutUI: fullPath];
-      else
-        [app application: nil openFile: fullPath];
+      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+                                                              host: @""];
     }
   NS_HANDLER
     {
-      NSRunAlertPanel(nil,
-	[NSString stringWithFormat: 
-	    @"Failed to contact '%@' to open file", port],
-	    @"Continue", nil, nil);
-      return NO;
+      app = nil;		/* Fatal error in DO	*/
     }
   NS_ENDHANDLER
+
+  if (app == nil)
+    {
+      NSString	*path;
+      NSArray	*args;
+
+      path = [self locateApplicationBinary: appName];
+      if (path == nil)
+	{
+	  NSRunAlertPanel(nil,
+	    [NSString stringWithFormat: 
+	      @"Failed to locate '%@' to open file", port],
+	    @"Continue", nil, nil);
+	  return NO;
+	}
+      args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
+      if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
+	{
+	  NSRunAlertPanel(nil,
+	    [NSString stringWithFormat: 
+	      @"Failed to launch '%@' to open file", port],
+	    @"Continue", nil, nil);
+	  return NO;
+	}
+      return YES;
+    }
+  else
+    {
+      NS_DURING
+	{
+	  if (flag == NO)
+	    [app application: nil openFileWithoutUI: fullPath];
+	  else
+	    [app application: nil openFile: fullPath];
+	}
+      NS_HANDLER
+	{
+	  NSRunAlertPanel(nil,
+	    [NSString stringWithFormat: 
+		@"Failed to contact '%@' to open file", port],
+		@"Continue", nil, nil);
+	  return NO;
+	}
+      NS_ENDHANDLER
+    }
 
   if (flag)
     [[NSApplication sharedApplication] deactivate];
@@ -797,55 +826,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	        autolaunch: (BOOL)autolaunch
 {
   NSString	*path;
-  NSString	*file;
-  NSBundle	*bundle;
 
-  if (appName == nil)
-    return NO;
-
-  path = appName;
-  appName = [path lastPathComponent];
-  if ([appName isEqual: path])
-    {
-      path = [self fullPathForApplication: appName];
-      appName = [[path lastPathComponent] stringByDeletingPathExtension];
-    }
-  else if ([appName pathExtension] == nil)
-    {
-      path = [path stringByAppendingPathExtension: @"app"];
-    }
-  else
-    {
-      appName = [[path lastPathComponent] stringByDeletingPathExtension];
-    }
-
+  path = [self locateApplicationBinary: appName];
   if (path == nil)
     return NO;
-
-  /*
-   *	See if the 'Info-gnustep.plist' specifies the location of the
-   *	executable - if it does, replace our app name with the specified
-   *	value.  If the executable name is an absolute path name, we also
-   *	replace the path with that specified.
-   */
-  bundle = [NSBundle bundleWithPath: path];
-  file = [[bundle infoDictionary] objectForKey: @"NSExecutable"];
-  if (file != nil)
-    {
-      NSString	*exepath;
-
-      appName = [file lastPathComponent];
-      exepath = [file stringByDeletingLastPathComponent];
-      if ([exepath isEqualToString: @""] == NO)
-	{
-	  if ([file isAbsolutePath] == YES)
-	    path = exepath;
-	  else
-	    path = [path stringByAppendingPathComponent: exepath];
-	}
-    }
-
-  path = [path stringByAppendingPathComponent: appName];
   if ([NSTask launchedTaskWithLaunchPath: path arguments: nil] == nil)
     return NO;
   return YES;
@@ -978,6 +962,60 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
     [self findApplications];
   map = [applications objectForKey: @"GSExtensionsMap"];
   return [map objectForKey: ext];
+}
+
+- (NSString*) locateApplicationBinary: (NSString*)appName
+{
+  NSString	*path;
+  NSString	*file;
+  NSBundle	*bundle;
+
+  if (appName == nil)
+    return nil;
+
+  path = appName;
+  appName = [path lastPathComponent];
+  if ([appName isEqual: path])
+    {
+      path = [self fullPathForApplication: appName];
+      appName = [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+  else if ([appName pathExtension] == nil)
+    {
+      path = [path stringByAppendingPathExtension: @"app"];
+    }
+  else
+    {
+      appName = [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+
+  if (path == nil)
+    return nil;
+
+  /*
+   *	See if the 'Info-gnustep.plist' specifies the location of the
+   *	executable - if it does, replace our app name with the specified
+   *	value.  If the executable name is an absolute path name, we also
+   *	replace the path with that specified.
+   */
+  bundle = [NSBundle bundleWithPath: path];
+  file = [[bundle infoDictionary] objectForKey: @"NSExecutable"];
+  if (file != nil)
+    {
+      NSString	*exepath;
+
+      appName = [file lastPathComponent];
+      exepath = [file stringByDeletingLastPathComponent];
+      if ([exepath isEqualToString: @""] == NO)
+	{
+	  if ([file isAbsolutePath] == YES)
+	    path = exepath;
+	  else
+	    path = [path stringByAppendingPathComponent: exepath];
+	}
+    }
+
+  return [path stringByAppendingPathComponent: appName];
 }
 
 - (void) setBestApp: (NSString*)appName

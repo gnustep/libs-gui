@@ -154,6 +154,7 @@
 		  forExtension: (NSString*)ext;
 - (NSString*) getBestIconForExtension: (NSString*)ext;
 - (NSDictionary*) infoForExtension: (NSString*)ext;
+- (NSString*) locateApplicationBinary: (NSString*)appName;
 - (void) setBestApp: (NSString*)appName
 	     inRole: (NSString*)role
        forExtension: (NSString*)ext;
