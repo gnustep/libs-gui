@@ -1,7 +1,11 @@
-Thu Jan  7 12:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Thu Jan  7 15:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Tools/make_services.m: Extended to build a map of extensions to
         application names in the applications cache.
+        * Source/GSServicesManager.m: Extensions for opening files.
+        * Source/NSWorkspaceManager.m: Initial code for handling opening files.
+        * GSServicesManager.m: GSConnectToApplication() function added to
+        connect to, and if necessary launch, an application.
 
 Wed Jan  6 21:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -40,6 +40,7 @@
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
 #include <Foundation/NSMethodSignature.h>
+#include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSPortNameServer.h>
@@ -1010,6 +1011,59 @@ static NSString         *disabledName = @".GNUstepDisabled";
 @end /* GSServicesManager */
 
 
+id
+GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
+{
+  id		app;
+
+  NS_DURING
+    {
+      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+                                                              host: @""];
+    }
+  NS_HANDLER
+    {
+      return nil;                /* Fatal error in DO    */
+    }
+  NS_ENDHANDLER
+
+  if (app == nil)
+    {
+      if ([[NSWorkspace sharedWorkspace] launchApplication: appName] == NO)
+	{
+	  return nil;		/* Unable to launch.	*/
+	}
+
+      NS_DURING
+	{
+	  app = [NSConnection
+			rootProxyForConnectionWithRegisteredName: port  
+							    host: @""];
+	  while (app == nil && [expire timeIntervalSinceNow] > 0.1)
+	    {
+	      NSRunLoop	*loop = [NSRunLoop currentRunLoop];
+	      NSDate	*next;
+
+	      [NSTimer scheduledTimerWithTimeInterval: 0.1
+					   invocation: nil
+					      repeats: NO];
+	      next = [NSDate dateWithTimeIntervalSinceNow: 0.2];
+	      [loop runUntilDate: next];
+	      app = [NSConnection
+			    rootProxyForConnectionWithRegisteredName: port  
+								host: @""];
+	    }
+	}
+      NS_HANDLER
+	{
+	  return nil;
+	}
+      NS_ENDHANDLER
+    }
+
+  return app;
+}
+
 BOOL
 NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 {
@@ -1070,70 +1124,14 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
       msgSel = sel_register_typed_name(name, type);
     }
 
-  NS_DURING
-    {
-      provider = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-								   host: @""];
-    }
-  NS_HANDLER
+  provider = GSContactApplication(appPath, port, finishBy);
+  if (provider == nil)
     {
       NSRunAlertPanel(nil,
 	[NSString stringWithFormat:
 	    @"Failed to contact service provider for '%@'", serviceItem],
 	@"Continue", nil, nil);
       return NO;
-    }
-  NS_ENDHANDLER
-
-  if (provider == nil)
-    {
-      if ([[NSWorkspace sharedWorkspace] launchApplication: appPath] == NO)
-	{
-	  NSRunAlertPanel(nil,
-	    [NSString stringWithFormat:
-		@"Failed to launch service provider for '%@'", serviceItem],
-	    @"Continue", nil, nil);
-	  return NO;		/* Unable to launch.	*/
-	}
-
-      NS_DURING
-	{
-	  provider = [NSConnection
-			rootProxyForConnectionWithRegisteredName: port  
-							    host: @""];
-	  while (provider == nil && [finishBy timeIntervalSinceNow] > 1.0)
-	    {
-	      NSRunLoop	*loop = [NSRunLoop currentRunLoop];
-	      NSDate	*next;
-
-	      [NSTimer scheduledTimerWithTimeInterval: 1.0
-					   invocation: nil
-					      repeats: NO];
-	      next = [NSDate dateWithTimeIntervalSinceNow: 5.0];
-	      [loop runUntilDate: next];
-	      provider = [NSConnection
-			    rootProxyForConnectionWithRegisteredName: port  
-								host: @""];
-	    }
-	}
-      NS_HANDLER
-	{
-	  NSRunAlertPanel(nil,
-	    [NSString stringWithFormat:
-		@"Failed to contact service provider for '%@'", serviceItem],
-	    @"Continue", nil, nil);
-	  return NO;
-	}
-      NS_ENDHANDLER
-    }
-
-  if (provider == nil)
-    {
-      NSRunAlertPanel(nil,
-	[NSString stringWithFormat:
-	    @"Failed to contact service provider for '%@'", serviceItem],
-	    @"Continue", nil, nil);
-      return NO;		/* Unable to contact.	*/
     }
 
   connection = [(NSDistantObject*)provider connectionForProxy];

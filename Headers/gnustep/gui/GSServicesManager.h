@@ -30,6 +30,7 @@
 @class	NSApplication;
 @class	NSArray;
 @class	NSCell;
+@class	NSDate;
 @class	NSMenu;
 @class	NSMutableArray;
 @class	NSMutableDictionary;
@@ -76,6 +77,8 @@
 - (BOOL) validateMenuItem: (NSCell*)item;
 - (void) updateServicesMenu;
 @end
+
+id GSContactApplication(NSString *appName, NSString *port, NSDate *expire);
 
 #endif
 
