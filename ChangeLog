@@ -1,3 +1,7 @@
+Wed Feb 24  Felipe A. Rodriguez  <farz@mindspring.com>
+
+	* NSSliderCell.m: knobRectFlipped: fix draw bugs in slider.app example.
+
 Mon Feb 22  8:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSView.m: Tidied coordinate conversion code to use new system with

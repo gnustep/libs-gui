@@ -81,28 +81,30 @@
 
 - (NSRect)knobRectFlipped:(BOOL)flipped
 {
-  NSImage* image = [_knobCell image];
-  NSSize size;
-  NSPoint origin;
-  float floatValue;
+NSImage* image = [_knobCell image];
+NSSize size;
+NSPoint origin;
+float floatValue;
 
-  if (_isVertical && flipped)
-    _floatValue = _maxValue + _minValue - _floatValue;
-
-  floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
-
-  size = [image size];
-
-  if (_isVertical) {
-    origin.x = 0;
-    origin.y = (_trackRect.size.height - size.height) * floatValue;
-  }
-  else {
-    origin.x = (_trackRect.size.width - size.width) * floatValue;
-    origin.y = 0;
-  }
-
-  return NSMakeRect (origin.x, origin.y, size.width, size.height);  
+	if (_isVertical && flipped)
+		_floatValue = _maxValue + _minValue - _floatValue;
+	
+	floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
+	
+	size = [image size];
+	
+	if (_isVertical) 
+		{
+		origin.x = 2;
+		origin.y = ((_trackRect.size.height - size.height) * floatValue) + 2;
+		}
+	else 
+		{
+		origin.x = ((_trackRect.size.width - size.width) * floatValue) + 2;
+		origin.y = 2;
+		}
+	
+	return NSMakeRect (origin.x, origin.y, size.width, size.height);  
 }
 
 - (void)drawKnob
