@@ -32,6 +32,7 @@
 #include <gnustep/gui/NSMenuPrivate.h>
 #include <Foundation/NSLock.h>
 #include <gnustep/base/NSCoder.h>
+#include <gnustep/gui/NSApplication.h>
 
 NSZone *gnustep_gui_nsmenu_zone = NULL;
 
@@ -76,6 +77,8 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 // Default initializer
 - (id)initWithTitle:(NSString *)aTitle
 {
+  NSApplication *theApp = [NSApplication sharedApplication];
+
   // Init our superclass but skip any of its backend implementation
   [super cleanInit];
 
@@ -83,8 +86,15 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
   menu_items = [NSMutableArray array];
   super_menu = nil;
   autoenables_items = NO;
-  menu_matrix = nil;
+  //  [self setContentView:[[NSView alloc] initWithFrame:frame]];
+  menu_matrix = [[NSMatrix alloc] initWithFrame: NSZeroRect];
+  [menu_matrix setCellClass: [NSMenuCell class]];
+  [menu_matrix setIntercellSpacing: NSZeroSize];
+  [self setContentView: menu_matrix];
   is_torn_off = NO;
+
+  // Register ourselves with the Application object
+  [theApp addWindowsItem:self title:window_title filename:NO];
 
   return self;
 }

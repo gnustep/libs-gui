@@ -47,13 +47,16 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 + (void)initialize
 {
-    if (self == [NSMatrix class])
-	{
-	    NSDebugLog(@"Initialize NSMatrix class\n");
+  if (self == [NSMatrix class])
+    {
+      NSDebugLog(@"Initialize NSMatrix class\n");
 
-	    // Set initial version
-	    [self setVersion: 1];
-	}
+      // Set initial version
+      [self setVersion: 1];
+
+      // Set the default cell class
+      NSMATRIX_DEFAULT_CELL_CLASS = [NSCell class];
+    }
 }
 
 //
@@ -74,51 +77,51 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 //
 - (void)createInitialMatrix
 {
-    NSSize cs;
-    int i, j;
-    id aRow, aFloat;
+  NSSize cs;
+  int i, j;
+  id aRow, aFloat;
 
-    // Determine cell width and height for uniform cell size
-    cs.width = (frame.size.width - (inter_cell.width * (num_cols - 1)))
-	/ num_cols;
-    cs.height = (frame.size.height - (inter_cell.height * (num_rows - 1)))
-	/ num_rows;
+  // Determine cell width and height for uniform cell size
+  cs.width = (frame.size.width - (inter_cell.width * (num_cols - 1)))
+    / num_cols;
+  cs.height = (frame.size.height - (inter_cell.height * (num_rows - 1)))
+    / num_rows;
 
-    // Save cell widths and heights in arrays
-    aFloat = [NSNumber numberWithFloat: cs.height];
-    for (i = 0;i < num_rows; ++i)
-	[row_heights addObject:aFloat];
-    aFloat = [NSNumber numberWithFloat: cs.width];
-    for (i = 0;i < num_cols; ++i)
-	[col_widths addObject:aFloat];
+  // Save cell widths and heights in arrays
+  aFloat = [NSNumber numberWithFloat: cs.height];
+  for (i = 0;i < num_rows; ++i)
+    [row_heights addObject:aFloat];
+  aFloat = [NSNumber numberWithFloat: cs.width];
+  for (i = 0;i < num_cols; ++i)
+    [col_widths addObject:aFloat];
 
-    for (i = 0;i < num_rows; ++i)
+  for (i = 0;i < num_rows; ++i)
+    {
+      aRow = [NSMutableArray arrayWithCapacity: num_cols];
+      [rows addObject: aRow];
+      for (j = 0;j < num_cols; ++j)
 	{
-	    aRow = [NSMutableArray arrayWithCapacity: num_cols];
-	    [rows addObject: aRow];
-	    for (j = 0;j < num_cols; ++j)
-		{
-		    if (cell_prototype != nil)
-			{
-			    [(NSMutableArray *)aRow addObject: 
-					       [cell_prototype copy]];
-			}
-		    else
-			{
-			    [(NSMutableArray *)aRow addObject: 
-					       [[cell_class alloc] init]];
-			}
-		}
+	  if (cell_prototype != nil)
+	    {
+	      [(NSMutableArray *)aRow addObject: 
+				 [cell_prototype copy]];
+	    }
+	  else
+	    {
+	      [(NSMutableArray *)aRow addObject: 
+				 [[cell_class alloc] init]];
+	    }
 	}
+    }
 }
 
 - (id)initWithFrame:(NSRect)frameRect
 {
-    return [self initWithFrame:frameRect
-		 mode:NSTrackModeMatrix
-		 cellClass:[NSCell class]
-		 numberOfRows:0
-		 numberOfColumns:0];
+  return [self initWithFrame: frameRect
+	       mode: NSTrackModeMatrix
+	       cellClass: NSMATRIX_DEFAULT_CELL_CLASS
+	       numberOfRows: 0
+	       numberOfColumns: 0];
 }
 
 - (id)initWithFrame:(NSRect)frameRect
@@ -127,48 +130,49 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
        numberOfRows:(int)rowsHigh
     numberOfColumns:(int)colsWide
 {
-    NSDebugLog(@"NSMatrix start -initWithFrame: ..cellClass:\n");
+  NSDebugLog(@"NSMatrix start -initWithFrame: ..cellClass:\n");
 
-    [super initWithFrame:frameRect];
+  [super initWithFrame:frameRect];
 
-    if (rowsHigh < 0)
+  if (rowsHigh < 0)
     {
-	NSLog(@"NSMatrix initWithFrame:mode: rows has to be >= 0.\n");
-	NSLog(@"Will create matrix with 0 rows.\n");
-
-	num_rows = 0;
+      NSLog(@"NSMatrix initWithFrame:mode: rows has to be >= 0.\n");
+      NSLog(@"Will create matrix with 0 rows.\n");
+      
+      num_rows = 0;
     }
-    else
+  else
     {
-	num_rows = rowsHigh;
+      num_rows = rowsHigh;
     }
-
-    if (colsWide < 0)
+  
+  if (colsWide < 0)
     {
-	NSLog(@"NSMatrix initWithFrame:mode: columns has to be >= 0.\n");
-	NSLog(@"Will create matrix with 0 columns.\n");
-
-	num_cols = 0;
+      NSLog(@"NSMatrix initWithFrame:mode: columns has to be >= 0.\n");
+      NSLog(@"Will create matrix with 0 columns.\n");
+      
+      num_cols = 0;
     }
-    else
+  else
     {
-	num_cols = colsWide;
+      num_cols = colsWide;
     }
 
-    rows = [[NSMutableArray alloc] init];    
-    row_heights = [[NSMutableArray alloc] init];
-    col_widths = [[NSMutableArray alloc] init];
-    selected_cells = [[NSMutableArray alloc] init];
-    inter_cell.width = inter_cell.height = 2;
+  rows = [[NSMutableArray alloc] init];    
+  row_heights = [[NSMutableArray alloc] init];
+  col_widths = [[NSMutableArray alloc] init];
+  selected_cells = [[NSMutableArray alloc] init];
+  inter_cell.width = inter_cell.height = 2;
+  allows_empty_selection = YES;
     
-    cell_prototype = nil;
-    cell_class = classId;
-    mode = aMode;
+  cell_prototype = nil;
+  cell_class = classId;
+  mode = aMode;
 
-    [self createInitialMatrix];
+  [self createInitialMatrix];
 
-    NSDebugLog(@"NSMatrix end -initWithFrame: ..cellClass:\n");
-    return self;
+  NSDebugLog(@"NSMatrix end -initWithFrame: ..cellClass:\n");
+  return self;
 }
 
 - (id)initWithFrame:(NSRect)frameRect
@@ -177,25 +181,25 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
        numberOfRows:(int)rowsHigh
     numberOfColumns:(int)colsWide
 {
-    [super initWithFrame:frameRect];
+  [super initWithFrame:frameRect];
 
-    if (aCell == nil)
+  if (aCell == nil)
     {
-	NSLog(@"NSMatrix ");
-	NSLog(@"initWithFrame:mode:prototype:numberOfRows:numberOfColumns: ");
-	NSLog(@"prototype can't be nil. ");
-	NSLog(@"Using NSCell as the default class.\n");
+      NSLog(@"NSMatrix ");
+      NSLog(@"initWithFrame:mode:prototype:numberOfRows:numberOfColumns: ");
+      NSLog(@"prototype can't be nil. ");
+      NSLog(@"Using NSCell as the default class.\n");
 	
-	cell_prototype = nil;
+      cell_prototype = nil;
 
-	cell_class = [NSCell class];
+      cell_class = [NSCell class];
     }
-    else
+  else
     {
-	cell_prototype = [aCell retain];
+      cell_prototype = [aCell retain];
     }
     
-    return self;
+  return self;
 }
 
 //
@@ -208,7 +212,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)setMode:(NSMatrixMode)aMode
 {
-    mode = aMode;
+  mode = aMode;
 }
 
 //
@@ -226,12 +230,12 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)setAllowsEmptySelection:(BOOL)flag
 {
-    allows_empty_selection = flag;
+  allows_empty_selection = flag;
 }
 
 - (void)setSelectionByRect:(BOOL)flag
 {
-    selection_by_rect = flag;
+  selection_by_rect = flag;
 }
 
 //
@@ -249,12 +253,12 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)setCellClass:(Class)classId
 {
-    cell_class = classId;
+  cell_class = classId;
 }
 
 - (void)setPrototype:(NSCell *)aCell
 {
-    cell_prototype = [aCell retain];
+  cell_prototype = [aCell retain];
 }
 
 //
@@ -262,9 +266,9 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 //
 - (void)addColumn
 {
-    int i;
-    NSNumber *anInt;
-    NSMutableArray *aRow;
+  int i;
+  NSNumber *anInt;
+  NSMutableArray *aRow;
 
     if (num_rows <= 0)
     {
@@ -299,7 +303,61 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)addColumnWithCells:(NSArray *)cellArray
 {
-    [self insertColumn:num_cols withCells:cellArray];
+  NSMutableArray *a;
+  id e, o;
+  id re, aRow;
+  int nrows, new_rows;
+  NSNumber *aFloat;
+  NSSize cs;
+  int i;
+
+  NSDebugLog(@"NSMatrix addColumnWithCells:\n");
+
+  // No array then forget the add
+  if (!cellArray)
+    return;
+
+  // Add more rows if need be
+  nrows = [cellArray count];
+  if (nrows > num_rows)
+    {
+      NSDebugLog(@"NSMatrix add more rows %d %d\n", nrows, num_rows);
+      new_rows = nrows - num_rows;
+      for (i = 0; i < new_rows; ++i)
+	{
+	  a = [[NSMutableArray alloc] init];
+	  [rows addObject: a];
+	  ++num_rows;
+	}
+    }
+  ++num_cols;
+  NSDebugLog(@"NSMatrix rows %d cols %d\n", num_rows, num_cols);
+
+  // Determine cell width and height for uniform cell size
+  cs.width = (frame.size.width - (inter_cell.width * (num_cols - 1)))
+    / num_cols;
+  cs.height = (frame.size.height - (inter_cell.height * (num_rows - 1)))
+    / num_rows;
+
+  // Save cell widths and heights in arrays
+  aFloat = [NSNumber numberWithFloat: cs.height];
+  for (i = 0;i < nrows; ++i)
+    [row_heights addObject:aFloat];
+  aFloat = [NSNumber numberWithFloat: cs.width];
+  [col_widths addObject:aFloat];
+  NSDebugLog(@"NSMatrix cell size %f %f\n", cs.width, cs.height);
+
+  e = [cellArray objectEnumerator];
+  o = [e nextObject];
+  re = [rows objectEnumerator];
+  aRow = [re nextObject];
+  while (o)
+    {
+      [aRow addObject: o];
+      [o retain];
+      o = [e nextObject];
+      aRow = [re nextObject];
+    }
 }
 
 - (void)addRow
@@ -346,7 +404,90 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)addRowWithCells:(NSArray *)cellArray
 {
-    [self insertRow:num_rows withCells:cellArray];
+  NSMutableArray *a;
+  id e, o;
+  float ncols;
+  NSNumber *aFloat;
+  NSSize cs;
+  int i;
+
+  NSDebugLog(@"NSMatrix addRowWithCells:\n");
+
+  // No array then forget the add
+  if (!cellArray)
+    return;
+
+  a = [[NSMutableArray alloc] init];
+  [rows addObject: a];
+  ++num_rows;
+  ncols = [cellArray count];
+
+  // Determine cell width and height for uniform cell size
+  cs.width = (frame.size.width - (inter_cell.width * (ncols - 1)))
+    / ncols;
+  cs.height = (frame.size.height - (inter_cell.height * (num_rows - 1)))
+    / num_rows;
+
+  // Save cell widths and heights in arrays
+  aFloat = [NSNumber numberWithFloat: cs.height];
+  [row_heights addObject:aFloat];
+  aFloat = [NSNumber numberWithFloat: cs.width];
+  for (i = 0;i < ncols; ++i)
+    [col_widths addObject:aFloat];
+
+  e = [cellArray objectEnumerator];
+  o = [e nextObject];
+  while (o)
+    {
+      [a addObject: o];
+      [o retain];
+      o = [e nextObject];
+    }
+}
+
+- (void)addRowWithCells:(NSArray *)cellArray
+	       rowSizes:(NSArray *)rowSizes
+	    columnSizes:(NSArray *)columnSizes
+{
+  NSMutableArray *a;
+  id e, o;
+  float ncols;
+  NSNumber *aFloat;
+  NSSize cs;
+  int i;
+
+  NSDebugLog(@"NSMatrix addRowWithCells:\n");
+
+  // No array then forget the insert
+  if (!cellArray)
+    return;
+
+  a = [[NSMutableArray alloc] init];
+  [rows addObject: a];
+  ++num_rows;
+  ncols = [cellArray count];
+
+  // Determine cell width and height for uniform cell size
+  cs.width = (frame.size.width - (inter_cell.width * (ncols - 1)))
+    / ncols;
+  cs.height = (frame.size.height - (inter_cell.height * (num_rows - 1)))
+    / num_rows;
+
+  // Save cell widths and heights in arrays
+  aFloat = [NSNumber numberWithFloat: cs.height];
+  [row_heights addObject:aFloat];
+  aFloat = [NSNumber numberWithFloat: cs.width];
+  for (i = 0;i < ncols; ++i)
+    [col_widths addObject:aFloat];
+
+  e = [cellArray objectEnumerator];
+  o = [e nextObject];
+  while (o)
+    {
+      [a addObject: o];
+      [o retain];
+      o = [e nextObject];
+    }
 }
 
 - (NSRect)cellFrameAtRow:(int)row
@@ -361,6 +502,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
     r.size.width = 0;
     r.size.height = 0;
 
+#if 0
     /* Validate arguments */
     if ((row >= num_rows) || (row < 0))
     {
@@ -371,6 +513,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
     {
 	return r;
     }    
+#endif
 
     /* Compute the x origin */
     for (i=0; i<column; i++)
@@ -383,14 +526,16 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
     r.size.width = [(NSNumber *)[col_widths objectAtIndex:i] floatValue];
 
     /* Compute the y origin */
-    for (i=0; i<row; i++)
+    r.origin.y = frame.size.height; 
+    r.origin.y -= [(NSNumber *)[row_heights objectAtIndex:0] floatValue];
+    for (i = 1;i < (row+1); i++)
     {
-	r.origin.y += [(NSNumber *)[row_heights objectAtIndex:i] floatValue];
-	r.origin.y += inter_cell.height;
+	r.origin.y -= inter_cell.height;
+	r.origin.y -= [(NSNumber *)[row_heights objectAtIndex:i] floatValue];
     }
 
     /* Get the height */
-    r.size.height = [(NSNumber *)[row_heights objectAtIndex:i] floatValue];
+    r.size.height = [(NSNumber *)[row_heights objectAtIndex:row] floatValue];
 
     NSDebugLog(@"NSMatrix cellFrameAtRow: %d column:%d is: %f %f %f %f\n",
 	    row, column,
@@ -513,32 +658,24 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)insertRow:(int)row withCells:(NSArray *)cellArray
 {
-    NSCell *newCell;
-    int i, count;
+  NSCell *newCell;
+  int i, count;
+  id e, o;
 
-    [self insertRow:row];
+  // No array then forget the insert
+  if (!cellArray)
+    return;
 
-    if (cellArray != nil)
+  [self insertRow:row];
+
+  e = [cellArray objectEnumerator];
+  o = [e nextObject];
+  i = 0;
+  while (o)
     {
-	count = [cellArray count];
-    }
-    else
-    {
-	count = 0;
-    }
-
-    for (i=0; i<num_cols; i++)
-    {
-	if (i < count)
-	{
-	    newCell = (NSCell *)[cellArray objectAtIndex:i];
-
-	    [self putCell:newCell atRow:row  column:i];
-	}
-	else
-	{
-	    break;
-	}
+      [self putCell: o atRow: row  column: i];
+      o = [e nextObject];
+      ++i;
     }
 }
 
@@ -697,66 +834,82 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 	column:(int *)column
       forPoint:(NSPoint)aPoint
 {
-    NSRect myFrame = [self bounds];
-    NSRect cFrame;
-    int i, j;
+  NSRect myFrame = [self bounds];
+  NSRect cFrame;
+  id re, ce;
+  id aRow, aCol;
+  int i, j;
 
-    /* Trivial rejection if the point is not in the Matrix's frame rect */
+  /* Trivial rejection if the point is not in the Matrix's frame rect */
 
-    if ((aPoint.x < myFrame.origin.x)
-	|| (aPoint.x > (myFrame.origin.x + myFrame.size.width))
-	|| (aPoint.y < myFrame.origin.y)
-	|| (aPoint.y > (myFrame.origin.y + myFrame.size.height)))
+  if (![self mouse: aPoint inRect: myFrame])
     {
-	NSDebugLog(@"NSMatrix point %f %f not in rect %f %f %f %f\n",
-		   aPoint.x, aPoint.y, myFrame.origin.x, myFrame.origin.y,
-		   myFrame.size.width, myFrame.size.height);
-	return NO;
+      NSDebugLog(@"NSMatrix point %f %f not in rect %f %f %f %f\n",
+		 aPoint.x, aPoint.y, myFrame.origin.x, myFrame.origin.y,
+		 myFrame.size.width, myFrame.size.height);
+      return NO;
     }
-    else
-    {
-	/* Here an optimized algo could be used at the expense of clarity */
 
-	for (i=0; i<num_rows; i++)
+  /* Here an optimized algo could be used at the expense of clarity */
+
+  re = [rows objectEnumerator];
+  aRow = [re nextObject];
+  i = 0;
+  while (aRow)
+    {
+      ce = [aRow objectEnumerator];
+      aCol = [ce nextObject];
+      j = 0;
+      while (aCol)
 	{
-	    for (j=0; j<num_cols; j++)
-	    {
-		cFrame = [self cellFrameAtRow:i column:j];
+	  cFrame = [self cellFrameAtRow:i column:j];
 
-		if ((aPoint.x >= cFrame.origin.x)
-		    && (aPoint.x <= (cFrame.origin.x + cFrame.size.width))
-		    && (aPoint.y >= cFrame.origin.y)
-		    && (aPoint.y <= (cFrame.origin.y + cFrame.size.height)))
-		{
-		    *row = i;
-		    *column = j;
-		    return YES;
-		}
+	  if ([self mouse: aPoint inRect: cFrame])
+	    {
+	      *row = i;
+	      *column = j;
+	      return YES;
 	    }
+	  aCol = [ce nextObject];
+	  ++j;
 	}
-	return NO;
+      aRow = [re nextObject];
+      ++i;
     }
+  return NO;
 }
 
 - (BOOL)getRow:(int *)row
 	column:(int *)column
 	ofCell:(NSCell *)aCell
 {
-    int i, j;
+  id re, ce;
+  id aRow, aCol;
+  int i, j;
 
-    for (i=0; i<num_rows; i++)
+  re = [rows objectEnumerator];
+  aRow = [re nextObject];
+  i = 0;
+  while (aRow)
     {
-	for (j=0; j<num_cols; j++)
+      ce = [aRow objectEnumerator];
+      aCol = [ce nextObject];
+      j = 0;
+      while (aCol)
 	{
-	    if ((NSCell *)[self cellAtRow:i column:j] == aCell)
+	  if ((NSCell *)[self cellAtRow:i column:j] == aCell)
 	    {
-		*row = i;
-		*column = j;
-		return YES;
+	      *row = i;
+	      *column = j;
+	      return YES;
 	    }
+	  aCol = [ce nextObject];
+	  ++j;
 	}
+      aRow = [re nextObject];
+      ++i;
     }
-    return NO;
+  return NO;
 }
 
 //
@@ -785,12 +938,19 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 //
 - (void)deselectAllCells
 {
+  if (allows_empty_selection)
     [selected_cells removeAllObjects];
 }
 
 - (void)deselectSelectedCell
 {
-    [selected_cells removeLastObject];
+  int cnt = [selected_cells count];
+
+  // Is anything even selected?
+  if (cnt > 0)
+    // Only empty array if empty selection is allowed
+    if ((cnt != 1) || (allows_empty_selection))
+      [selected_cells removeLastObject];
 }
 
 - (void)selectAll:(id)sender
@@ -802,17 +962,17 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 - (void)selectCellAtRow:(int)row
 		 column:(int)column
 {
-    int index;
-    id aCell = [self cellAtRow:row column:column];
+  int index;
+  id aCell = [self cellAtRow:row column:column];
     
-    NSDebugLog(@"NSMatrix select cell at %d %d\n", row, column);
-    if (aCell != nil)
+  NSDebugLog(@"NSMatrix select cell at %d %d\n", row, column);
+  if (aCell != nil)
     {
-	index = [selected_cells indexOfObject:aCell];
-
-	if ((index < 0) || (index > [selected_cells count]))
+      // Add to selected cell list if not already
+      index = [selected_cells indexOfObject:aCell];
+      if ((index < 0) || (index > [selected_cells count]))
 	{
-	    [selected_cells addObject:aCell];
+	  [selected_cells addObject:aCell];
 	}
     }
 }
@@ -838,7 +998,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (id)selectedCell
 {
-    return [selected_cells lastObject];
+  return [selected_cells lastObject];
 }
 
 /*
@@ -851,66 +1011,42 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (int)selectedColumn
 {
-    int row, col;
-    NSMutableArray *aRow, *aCol;
-    id aCell;
-    
-    if ([selected_cells count]) {
+  int row, col;
+  id aCell;
 
-	aCell = [selected_cells lastObject];
-	
-	for (row=0; row<num_rows; row++)
-	{
-	    aRow = [rows objectAtIndex:row];
+  if ([selected_cells count])
+    {
+      aCell = [selected_cells lastObject];
 
-	    for (col=0; col<num_cols; col++)
-	    {
-		aCol = [aRow objectAtIndex:col];
-		      
-		if ([aCol indexOfObject:aCell] < num_cols)
-		{
-		    return col;
-		}
-	    }
-	}
+      if ([self getRow: &row column: &col ofCell: aCell])
+	return col;
     }
 
-    return -1; /* not found */
+  // Not found
+  return -1;
 }
 
 - (int)selectedRow
 {
-    int row, col;
-    NSMutableArray *aRow, *aCol;
-    id aCell;
-    
-    if ([selected_cells count] > 0)
-    {
-	aCell = [selected_cells lastObject];
-	
-	for (row=0; row<num_rows; row++)
-	{
-	    aRow = [rows objectAtIndex:row];
+  int row, col;
+  id aCell;
 
-	    for (col=0; col<num_cols; col++)
-	    {
-		aCol = [aRow objectAtIndex:col];
-		      
-		if ([aCol indexOfObject:aCell] < num_cols)
-		{
-		    return row;
-		}
-	    }
-	}
+  if ([selected_cells count])
+    {
+      aCell = [selected_cells lastObject];
+
+      if ([self getRow: &row column: &col ofCell: aCell])
+	return row;
     }
 
-    return -1; /* not found */
+  // Not found
+  return -1;
 }
 
 - (void)setSelectionFrom:(int)startPos
 		      to:(int)endPos
 		  anchor:(int)anchorPos
-		      highlight:(BOOL)flag
+	       highlight:(BOOL)flag
 {}
 
 //
@@ -919,42 +1055,46 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 - (id)cellAtRow:(int)row
 	 column:(int)column
 {
-    if ((row >= num_rows) || (row < 0))
+  id aRow;
+
+  if ((row >= num_rows) || (row < 0))
     {
-	NSLog(@"NSMatrix cellAt:: invalid row (%d)\n", row);
-	return nil;
+      NSLog(@"NSMatrix cellAt:: invalid row (%d)\n", row);
+      return nil;
+    }
+  aRow = [rows objectAtIndex: row];
+
+  if ((column >= [aRow count]) || (column < 0))
+    {
+      NSLog(@"NSMatrix cellAt:: invalid column (%d)\n", column);
+      return nil;
     }
 
-    if ((column >= num_cols) || (column < 0))
-    {
-	NSLog(@"NSMatrix cellAt:: invalid column (%d)\n", column);
-	return nil;
-    }
-
-    return [(NSArray *)[rows objectAtIndex:row] objectAtIndex:column];
+  return [(NSArray *)aRow objectAtIndex:column];
 }
 
 - (id)cellWithTag:(int)anInt
 {
-    int i, j;
-    NSMutableArray *aRow;
-    NSCell *aCell;
-    
-    for (i=0; i<num_rows; i++)
-    {
-	aRow = (NSMutableArray *)[rows objectAtIndex:i];
+  id re, ce;
+  int i, j;
+  NSMutableArray *aRow;
+  NSCell *aCell;
 
-	for (j=0; j<num_cols; j++)
+  // Loop through the rows and columns and find the cell
+  re = [rows objectEnumerator];
+  aRow = [re nextObject];
+  while (aRow)
+    {
+      ce = [aRow objectEnumerator];
+      aCell = (NSCell *)[ce nextObject];
+      while (aCell)
 	{
-	    aCell = [aRow objectAtIndex:j];
-	    
-	    if ([aCell tag] == anInt)
-	    {
-		return (id)aCell;
-	    }
+	  if ([aCell tag] == anInt)
+	    return aCell;
+	  aCell = (NSCell *)[ce nextObject];
 	}
     }
-    return nil;
+  return nil;
 }
 
 - (NSArray *)cells
@@ -1171,54 +1311,60 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 //
 - (void)display;
 {
-    int row,col;
-    int rcnt, ccnt;
-    NSMutableArray *aRow;
+  id re, ce;
+  int row, col;
+  NSMutableArray *aRow;
+  id aCol;
 
-    NSDebugLog(@"NSMatrix display\n");
-    
-    rcnt = [rows count];
-    if (rcnt != num_rows) 
-	NSLog(@"NSMatrix internal error: num_rows != actual rows\n");
+  NSDebugLog(@"NSMatrix display %f %f %f %f\n", bounds.origin.x,
+	     bounds.origin.y, bounds.size.width, bounds.size.height);
 
-    for (row=0; row<rcnt; row++)
+  re = [rows objectEnumerator];
+  aRow = (NSMutableArray *)[re nextObject];
+  row = 0;
+  while (aRow)
     {
-	aRow = [rows objectAtIndex:row];
-	ccnt = [aRow count];
-	if (ccnt != num_cols) 
-	    NSLog(@"NSMatrix internal error: num_cols != actual columns\n");
-
-	for (col=0; col<ccnt; col++)
+      ce = [aRow objectEnumerator];
+      aCol = [ce nextObject];
+      col = 0;
+      while (aCol)
 	{
-	    [self drawCellAtRow: row column: col];
+	  [self drawCellAtRow: row column: col];
+	  ++col;
+	  aCol = [ce nextObject];
 	}
+      ++row;
+      aRow = [re nextObject];
     }
-    NSDebugLog(@"End NSMatrix display\n");
+  NSDebugLog(@"End NSMatrix display\n");
 }
 
 - (void)drawCellAtRow:(int)row
 	       column:(int)column
 {
-    NSMutableArray *aRow = [rows objectAtIndex: row];
+  NSMutableArray *aRow = [rows objectAtIndex: row];
+  NSCell *aCell = [aRow objectAtIndex: column];
 
-    [[aRow objectAtIndex:column] drawWithFrame:
-				 [self cellFrameAtRow:row column:column]
-				 inView:self];
+  NSDebugLog(@"NSMatrix draw cell %d %d %d %d\n", row, column, [rows count],
+	     [aRow count]);
+  [aCell drawWithFrame:
+	 [self cellFrameAtRow:row column:column]
+	 inView:self];
 }
 
 - (void)highlightCell:(BOOL)flag
 		atRow:(int)row
 	       column:(int)column
 {
-    NSCell *aCell = [self cellAtRow:row column:column];
-    NSRect cellFrame;
+  NSCell *aCell = [self cellAtRow:row column:column];
+  NSRect cellFrame;
+  BOOL did_lock = NO;
 
-    if (aCell != nil)
+  if (aCell != nil)
     {
-	cellFrame = [self cellFrameAtRow:row column:column];
-	[aCell highlight:flag withFrame:cellFrame inView:self];
+      cellFrame = [self cellFrameAtRow:row column:column];
+      [aCell highlight:flag withFrame:cellFrame inView:self];
     }
-
 }
 
 //

@@ -1,4 +1,21 @@
-Sat Sep 21 12:25:23 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+Wed Oct  2 10:40:23 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSWindow.h: Add additional instance variables
+	to fill out implementation.
+	(-initDefaults): New method.
+	* Source/NSApplication.m: Assign values to the global exception and
+	notification strings.  Post notifications to the default notification
+	center.  Fixed bug where the first event was being removed from the
+	queue versus removing the event actually being processed.
+	* Source/NSMatrix.m: Fill out implementation, reimplement many
+	methods, and fix lots of bugs.
+	* Source/NSMenu.m: Don't create NSView as content view, just make
+	the menu matrix the content view.
+	* Source/NSWindow.m: Assign values to the notification strings.
+	Implement many unimplemented methods. Post notifications to the
+	default notification center.
+
+Sat Sep 21 12:25:23 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Source/NSButtonCell.m (-initTextCell:): Make default font
 	be the user font instead of the user fixed pitch font.

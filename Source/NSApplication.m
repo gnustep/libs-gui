@@ -48,56 +48,62 @@ NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
 //
 // Global Exception Strings 
 //
-NSString *NSAbortModalException = @"AbortModalException";
-NSString *NSAbortPrintingException = @"AbortPrintingException";
-NSString *NSAppKitIgnoredException;
-NSString *NSAppKitVirtualMemoryException;
-NSString *NSBadBitmapParametersException;
-NSString *NSBadComparisonException;
-NSString *NSBadRTFColorTableException;
-NSString *NSBadRTFDirectiveException;
-NSString *NSBadRTFFontTableException;
-NSString *NSBadRTFStyleSheetException;
-NSString *NSBrowserIllegalDelegateException;
-NSString *NSColorListIOException;
-NSString *NSColorListNotEditableException;
-NSString *NSDraggingException;
-NSString *NSFontUnavailableException;
-NSString *NSIllegalSelectorException;
-NSString *NSImageCacheException;
-NSString *NSNibLoadingException;
-NSString *NSPPDIncludeNotFoundException;
-NSString *NSPPDIncludeStackOverflowException;
-NSString *NSPPDIncludeStackUnderflowException;
-NSString *NSPPDParseException;
-NSString *NSPasteboardCommunicationException;
-NSString *NSPrintOperationExistsException;
-NSString *NSPrintPackageException;
-NSString *NSPrintingCommunicationException;
-NSString *NSRTFPropertyStackOverflowException;
-NSString *NSTIFFException;
-NSString *NSTextLineTooLongException;
-NSString *NSTextNoSelectionException;
-NSString *NSTextReadException;
-NSString *NSTextWriteException;
-NSString *NSTypedStreamVersionException;
-NSString *NSWindowServerCommunicationException;
-NSString *NSWordTablesReadException;
-NSString *NSWordTablesWriteException;
+NSString *NSAbortModalException = @"AbortModal";
+NSString *NSAbortPrintingException = @"AbortPrinting";
+NSString *NSAppKitIgnoredException = @"AppKitIgnored";
+NSString *NSAppKitVirtualMemoryException = @"AppKitVirtualMemory";
+NSString *NSBadBitmapParametersException = @"BadBitmapParameters";
+NSString *NSBadComparisonException = @"BadComparison";
+NSString *NSBadRTFColorTableException = @"BadRTFColorTable";
+NSString *NSBadRTFDirectiveException = @"BadRTFDirective";
+NSString *NSBadRTFFontTableException = @"BadRTFFontTable";
+NSString *NSBadRTFStyleSheetException = @"BadRTFStyleSheet";
+NSString *NSBrowserIllegalDelegateException = @"BrowserIllegalDelegate";
+NSString *NSColorListIOException = @"ColorListIO";
+NSString *NSColorListNotEditableException = @"ColorListNotEditable";
+NSString *NSDraggingException = @"Draggin";
+NSString *NSFontUnavailableException = @"FontUnavailable";
+NSString *NSIllegalSelectorException = @"IllegalSelector";
+NSString *NSImageCacheException = @"ImageCache";
+NSString *NSNibLoadingException = @"NibLoading";
+NSString *NSPPDIncludeNotFoundException = @"PPDIncludeNotFound";
+NSString *NSPPDIncludeStackOverflowException = @"PPDIncludeStackOverflow";
+NSString *NSPPDIncludeStackUnderflowException = @"PPDIncludeStackUnderflow";
+NSString *NSPPDParseException = @"PPDParse";
+NSString *NSPasteboardCommunicationException = @"PasteboardCommunication";
+NSString *NSPrintOperationExistsException = @"PrintOperationExists";
+NSString *NSPrintPackageException = @"PrintPackage";
+NSString *NSPrintingCommunicationException = @"PrintingCommunication";
+NSString *NSRTFPropertyStackOverflowException = @"RTFPropertyStackOverflow";
+NSString *NSTIFFException = @"TIFF";
+NSString *NSTextLineTooLongException = @"TextLineTooLong";
+NSString *NSTextNoSelectionException = @"TextNoSelection";
+NSString *NSTextReadException = @"TextRead";
+NSString *NSTextWriteException = @"TextWrite";
+NSString *NSTypedStreamVersionException = @"TypedStreamVersion";
+NSString *NSWindowServerCommunicationException = @"WindowServerCommunication";
+NSString *NSWordTablesReadException = @"WordTablesRead";
+NSString *NSWordTablesWriteException = @"WordTablesWrite";
 
 // Application notifications
-NSString *NSApplicationDidBecomeActiveNotification;
-NSString *NSApplicationDidFinishLaunchingNotification;
-NSString *NSApplicationDidHideNotification;
-NSString *NSApplicationDidResignActiveNotification;
-NSString *NSApplicationDidUnhideNotification;
-NSString *NSApplicationDidUpdateNotification;
-NSString *NSApplicationWillBecomeActiveNotification;
-NSString *NSApplicationWillFinishLaunchingNotification;
-NSString *NSApplicationWillHideNotification;
-NSString *NSApplicationWillResignActiveNotification;
-NSString *NSApplicationWillUnhideNotification;
-NSString *NSApplicationWillUpdateNotification;
+NSString *NSApplicationDidBecomeActiveNotification 
+              = @"ApplicationDidBecomeActive";
+NSString *NSApplicationDidFinishLaunchingNotification 
+              = @"ApplicationDidFinishLaunching";
+NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
+NSString *NSApplicationDidResignActiveNotification 
+              = @"ApplicationDidResignActive";
+NSString *NSApplicationDidUnhideNotification = @"ApplicationDidUnhide";
+NSString *NSApplicationDidUpdateNotification = @"ApplicationDidUpdate";
+NSString *NSApplicationWillBecomeActiveNotification 
+              = @"ApplicationWillBecomeActive";
+NSString *NSApplicationWillFinishLaunchingNotification 
+              = @"ApplicationWillFinishLaunching";
+NSString *NSApplicationWillHideNotification = @"ApplicationWillHide";
+NSString *NSApplicationWillResignActiveNotification 
+              = @"ApplicationWillResignActive";
+NSString *NSApplicationWillUnhideNotification = @"ApplicationWillUnhide";
+NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 @implementation NSApplication
 
@@ -164,13 +170,17 @@ NSString *NSApplicationWillUpdateNotification;
 
 - (void)finishLaunching
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // notify that we will finish the launching
-  [self applicationWillFinishLaunching:self];
+  [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
+      object: self];
 
-	// finish the launching
+  // finish the launching
 
-	// notify that the launching has finished
-  [self applicationDidFinishLaunching:self];
+  // notify that the launching has finished
+  [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
+      object: self];
 }
 
 - (void)dealloc
@@ -352,6 +362,9 @@ NSString *NSApplicationWillUpdateNotification;
 
     if (!theEvent) return NO;
 
+    // Don't check the null event
+    if (theEvent == NullEvent) return NO;
+
     t = [theEvent type];
 
     if ((t == NSLeftMouseDown) && (mask & NSLeftMouseDownMask))
@@ -451,7 +464,9 @@ NSString *NSApplicationWillUpdateNotification;
       if ([self event: e matchMask: mask])
 	{
 	  if (e)
-	    e = [event_queue dequeueObject];
+	    {
+	      [event_queue removeObject: e];
+	    }
 	  done = YES;
 	}
     }

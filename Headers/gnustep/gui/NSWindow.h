@@ -49,7 +49,8 @@
 {
   // Attributes
   NSRect frame;
-  id frame_view;
+  NSSize minimum_size;
+  NSSize maximum_size;
   id content_view;
   id first_responder;
   id original_responder;
@@ -58,18 +59,33 @@
   NSColor *background_color;
   NSString *represented_filename;
   NSString *miniaturized_title;
+  NSImage *miniaturized_image;
   NSString *window_title;
   NSPoint last_point;
   NSBackingStoreType backing_type;
+  unsigned int style_mask;
+  int window_level;
+
+  BOOL is_one_shot;
+  BOOL needs_display;
+  BOOL is_autodisplay;
+  BOOL optimize_drawing;
+  BOOL views_need_display;
+  NSWindowDepth depth_limit;
+  BOOL dynamic_depth_limit;
+
+  BOOL cursor_rects_enabled;
 
   BOOL visible;
   BOOL is_key;
   BOOL is_main;
   BOOL is_edited;
+  BOOL is_released_when_closed;
   BOOL is_miniaturized;
   BOOL disable_flush_window;
-  unsigned int style_mask;
   BOOL menu_exclude;
+  BOOL hides_on_deactivate;
+  BOOL accepts_mouse_moved;
 
   // Reserved for back-end use
   void *be_wind_reserved;
@@ -315,7 +331,7 @@
 //
 // Printing and postscript
 //
-- (NSDate *)dataWithEPSInsideRect:(NSRect)rect;
+- (NSData *)dataWithEPSInsideRect:(NSRect)rect;
 - (void)fax:sender;
 - (void)print:sender;
 
@@ -354,9 +370,13 @@
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
+@end
+
 //
-// GNUstep additional methods
+// GNUstep backend methods
 //
+@interface NSWindow (GNUstepBackend)
+
 //
 // Mouse capture/release
 //
@@ -365,6 +385,7 @@
 
 // Allow subclasses to init without the backend class
 // attempting to create an actual window
+- (void)initDefaults;
 - cleanInit;
 
 @end

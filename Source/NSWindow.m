@@ -39,20 +39,20 @@
 #include <gnustep/base/NSCoder.h>
 
 // NSWindow notifications
-NSString *NSWindowDidBecomeKeyNotification;
-NSString *NSWindowDidBecomeMainNotification;
-NSString *NSWindowDidChangeScreenNotification;
-NSString *NSWindowDidDeminiaturizeNotification;
-NSString *NSWindowDidExposeNotification;
-NSString *NSWindowDidMiniaturizeNotification;
-NSString *NSWindowDidMoveNotification;
-NSString *NSWindowDidResignKeyNotification;
-NSString *NSWindowDidResignMainNotification;
-NSString *NSWindowDidResizeNotification;
-NSString *NSWindowDidUpdateNotification;
-NSString *NSWindowWillCloseNotification;
-NSString *NSWindowWillMiniaturizeNotification;
-NSString *NSWindowWillMoveNotification;
+NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
+NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
+NSString *NSWindowDidChangeScreenNotification = @"WindowDidChangeScreen";
+NSString *NSWindowDidDeminiaturizeNotification = @"WindowDidDeminiaturize";
+NSString *NSWindowDidExposeNotification = @"WindowDidExpose";
+NSString *NSWindowDidMiniaturizeNotification = @"WindowDidMiniaturize";
+NSString *NSWindowDidMoveNotification = @"WindowDidMove";
+NSString *NSWindowDidResignKeyNotification = @"WindowDidResignKey";
+NSString *NSWindowDidResignMainNotification = @"WindowDidResignMain";
+NSString *NSWindowDidResizeNotification = @"WindowDidResize";
+NSString *NSWindowDidUpdateNotification = @"WindowDidUpdate";
+NSString *NSWindowWillCloseNotification = @"WindowWillClose";
+NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
+NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 //
 // NSWindow implementation
@@ -82,15 +82,13 @@ NSString *NSWindowWillMoveNotification;
 + (NSRect)contentRectForFrameRect:(NSRect)aRect
 			styleMask:(unsigned int)aStyle
 {
-  NSRect t;
-  return t;
+  return aRect;
 }
 
 + (NSRect)frameRectForContentRect:(NSRect)aRect
 			styleMask:(unsigned int)aStyle
 {
-  NSRect t;
-  return t;
+  return aRect;
 }
 
 + (NSRect)minFrameWidthWithTitle:(NSString *)aTitle
@@ -103,7 +101,7 @@ NSString *NSWindowWillMoveNotification;
 // Screens and window depths
 + (NSWindowDepth)defaultDepthLimit
 {
-  return 0;
+  return 8;
 }
 
 //
@@ -159,39 +157,30 @@ NSString *NSWindowWillMoveNotification;
 	       screen:aScreen
 {
   NSApplication *theApp = [NSApplication sharedApplication];
+  NSRect r = [[NSScreen mainScreen] frame];
 
   NSDebugLog(@"NSWindow default initializer\n");
   if (!theApp)
     NSLog(@"No application!\n");
 
-  [super init];
-
   NSDebugLog(@"NSWindow start of init\n");
 
-  frame = contentRect;
+  // Initialize attributes and flags
+  [self cleanInit];
+
+  backing_type = bufferingType;
   style_mask = aStyle;
+
+  // Size attributes
+  frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
+  minimum_size = NSZeroSize;
+  maximum_size = r.size;
 
   // Next responder is the application
   [self setNextResponder:theApp];
 
-  // Initialize attributes and flags
-  frame_view = nil;
+  // Create our content view
   [self setContentView:[[NSView alloc] initWithFrame:frame]];
-  first_responder = nil;
-  delegate = nil;
-  window_num = 0;
-  background_color = [NSColor lightGrayColor];
-  represented_filename = @"Window";
-  miniaturized_title = @"Window";
-  window_title = @"Window";
-  visible = NO;
-  is_key = NO;
-  is_main = NO;
-  is_edited = NO;
-  is_miniaturized = NO;
-  menu_exclude = NO;
-  backing_type = bufferingType;
-  disable_flush_window = NO;
 
   // Register ourselves with the Application object
   [theApp addWindowsItem:self title:window_title filename:NO];
@@ -294,7 +283,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (BOOL)isOneShot
 {
-  return NO;
+  return is_one_shot;
 }
 
 - (void)setBackingType:(NSBackingStoreType)type
@@ -303,7 +292,9 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)setOneShot:(BOOL)flag
-{}
+{
+  is_one_shot = flag;
+}
 
 - (int)windowNumber
 {
@@ -320,7 +311,7 @@ NSString *NSWindowWillMoveNotification;
 //
 - (NSImage *)miniwindowImage
 {
-  return nil;
+  return miniaturized_image;
 }
 
 - (NSString *)miniwindowTitle
@@ -329,7 +320,9 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)setMiniwindowImage:(NSImage *)image
-{}
+{
+  miniaturized_image = image;
+}
 
 - (void)setMiniwindowTitle:(NSString *)title;
 {
@@ -353,20 +346,24 @@ NSString *NSWindowWillMoveNotification;
 //
 - (void)becomeKeyWindow
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // We are the key window
   is_key = YES;
 
   // Post notification
-  [self windowDidBecomeKey:self];
+  [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
 
 - (void)becomeMainWindow
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // We are the main window
   is_main = YES;
 
   // Post notification
-  [self windowDidBecomeMain:self];
+  [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
 }
 
 - (BOOL)canBecomeKeyWindow
@@ -381,7 +378,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (BOOL)hidesOnDeactivate
 {
-  return NO;
+  return hides_on_deactivate;
 }
 
 - (BOOL)isKeyWindow
@@ -406,7 +403,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (int)level
 {
-  return 0;
+  return window_level;
 }
 
 - (void)makeKeyAndOrderFront:sender
@@ -472,25 +469,33 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)resignKeyWindow
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   is_key = NO;
 
   // Post notification
-  [self windowDidResignKey: self];
+  [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
 }
 
 - (void)resignMainWindow
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   is_main = NO;
 
   // Post notification
-  [self windowDidResignMain: self];
+  [nc postNotificationName: NSWindowDidResignMainNotification object: self];
 }
 
 - (void)setHidesOnDeactivate:(BOOL)flag
-{}
+{
+  hides_on_deactivate = flag;
+}
 
 - (void)setLevel:(int)newLevel
-{}
+{
+  window_level = newLevel;
+}
 
 //
 // Moving and resizing the window
@@ -527,12 +532,12 @@ NSString *NSWindowWillMoveNotification;
 
 - (NSSize)minSize
 {
-  return NSZeroSize;
+  return minimum_size;
 }
 
 - (NSSize)maxSize
 {
-  return NSZeroSize;
+  return maximum_size;
 }
 
 - (void)setContentSize:(NSSize)aSize
@@ -542,23 +547,35 @@ NSString *NSWindowWillMoveNotification;
 - (void)setFrame:(NSRect)frameRect
 	 display:(BOOL)flag
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   frame = frameRect;
 
+  // post notification
+  [nc postNotificationName: NSWindowDidResizeNotification object: self];
+
+  // display if requested
   if (!flag) return;
   [self display];
 }
 
 - (void)setFrameOrigin:(NSPoint)aPoint
-{}
+{
+  frame.origin = aPoint;
+}
 
 - (void)setFrameTopLeftPoint:(NSPoint)aPoint
 {}
 
 - (void)setMinSize:(NSSize)aSize
-{}
+{
+  minimum_size = aSize;
+}
 
 - (void)setMaxSize:(NSSize)aSize
-{}
+{
+  maximum_size = aSize;
+}
 
 //
 // Converting coordinates
@@ -592,7 +609,10 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)displayIfNeeded
-{}
+{
+  if (needs_display)
+    [self display];
+}
 
 - (void)enableFlushWindow
 {
@@ -603,39 +623,56 @@ NSString *NSWindowWillMoveNotification;
 {}
 
 - (void)flushWindowIfNeeded
-{}
+{
+  if (!disable_flush_window)
+    [self flushWindow];
+}
 
 - (BOOL)isAutodisplay
 {
-  return YES;
+  return is_autodisplay;
 }
 
 - (BOOL)isFlushWindowDisabled
 {
-  return NO;
+  return disable_flush_window;
 }
 
 - (void)setAutoDisplay:(BOOL)flag
-{}
+{
+  is_autodisplay = flag;
+}
 
 - (void)setViewsNeedDisplay:(BOOL)flag
-{}
+{
+  views_need_display = flag;
+}
 
 - (void)update
-{}
+{
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  [nc postNotificationName: NSWindowDidUpdateNotification object: self];
+}
 
 - (void)useOptimizedDrawing:(BOOL)flag
-{}
+{
+  optimize_drawing = flag;
+}
 
 - (BOOL)viewsNeedDisplay
 {
-  return NO;
+  return views_need_display;
 }
 
 // Screens and window depths
 - (BOOL)canStoreColor
 {
-  return YES;
+  // If the depth is greater than a single bit
+  if (depth_limit > 1)
+    return YES;
+  else
+    return NO;
 }
 
 - (NSScreen *)deepestScreen
@@ -645,12 +682,12 @@ NSString *NSWindowWillMoveNotification;
 
 - (NSWindowDepth)depthLimit
 {
-  return 0;
+  return depth_limit;
 }
 
 - (BOOL)hasDynamicDepthLimit
 {
-  return YES;
+  return dynamic_depth_limit;
 }
 
 - (NSScreen *)screen
@@ -659,27 +696,35 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)setDepthLimit:(NSWindowDepth)limit
-{}
+{
+  depth_limit = limit;
+}
 
 - (void)setDynamicDepthLimit:(BOOL)flag
-{}
+{
+  dynamic_depth_limit = flag;
+}
 
 //
 // Cursor management
 //
 - (BOOL)areCursorRectsEnabled
 {
-  return NO;
+  return cursor_rects_enabled;
 }
 
 - (void)disableCursorRects
-{}
+{
+  cursor_rects_enabled = NO;
+}
 
 - (void)discardCursorRects
 {}
 
 - (void)enableCursorRects
-{}
+{
+  cursor_rects_enabled = YES;
+}
 
 - (void)invalidateCursorRectsForView:(NSView *)aView
 {}
@@ -692,20 +737,24 @@ NSString *NSWindowWillMoveNotification;
 //
 - (void)close
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // Notify our delegate
-  [self windowWillClose:self];
+  [nc postNotificationName: NSWindowWillCloseNotification object: self];
 
   [self performClose:self];
 }
 
 - (void)deminiaturize:sender
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // Set our flag to say we are not miniaturized
   is_miniaturized = NO;
   visible = YES;
 
   // Notify our delegate
-  [self windowDidDeminiaturize:self];
+  [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 
 - (BOOL)isDocumentEdited
@@ -715,18 +764,20 @@ NSString *NSWindowWillMoveNotification;
 
 - (BOOL)isReleasedWhenClosed
 {
-  return YES;
+  return is_released_when_closed;
 }
 
 - (void)miniaturize:sender
 {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
   // Notify our delegate
-  [self windowWillMiniaturize:self];
+  [nc postNotificationName: NSWindowWillMiniaturizeNotification object: self];
 
   [self performMiniaturize:self];
 
   // Notify our delegate
-  [self windowDidMiniaturize:self];
+  [nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
 }
 
 - (void)performClose:sender
@@ -746,17 +797,21 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)setDocumentEdited:(BOOL)flag
-{}
+{
+  is_edited = flag;
+}
 
 - (void)setReleasedWhenClosed:(BOOL)flag
-{}
+{
+  is_released_when_closed = flag;
+}
 
 //
 // Aiding event handling
 //
 - (BOOL)acceptsMouseMovedEvents
 {
-  return YES;
+  return accepts_mouse_moved;
 }
 
 - (NSEvent *)currentEvent
@@ -768,7 +823,11 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)discardEventsMatchingMask:(unsigned int)mask
 		      beforeEvent:(NSEvent *)lastEvent
-{}
+{
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  [theApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
+}
 
 - (NSResponder *)firstResponder
 {
@@ -821,7 +880,9 @@ NSString *NSWindowWillMoveNotification;
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 {
-  return nil;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  return [theApp nextEventMatchingMask: mask untilDate: nil
+		 inMode: @"" dequeue: YES];
 }
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
@@ -829,7 +890,9 @@ NSString *NSWindowWillMoveNotification;
 			    inMode:(NSString *)mode
 			 dequeue:(BOOL)deqFlag
 {
-  return nil;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  return [theApp nextEventMatchingMask: mask untilDate: expiration
+		 inMode: mode dequeue: deqFlag];
 }
 
 - (void)postEvent:(NSEvent *)event
@@ -841,7 +904,9 @@ NSString *NSWindowWillMoveNotification;
 }
 
 - (void)setAcceptsMouseMovedEvents:(BOOL)flag
-{}
+{
+  accepts_mouse_moved = flag;
+}
 
 - (void)checkTrackingRectangles:(NSView *)theView forEvent:(NSEvent *)theEvent
 {
@@ -1044,7 +1109,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (BOOL)worksWhenModal
 {
-  return YES;
+  return NO;
 }
 
 //
@@ -1116,7 +1181,7 @@ NSString *NSWindowWillMoveNotification;
 //
 // Printing and postscript
 //
-- (NSDate *)dataWithEPSInsideRect:(NSRect)rect
+- (NSData *)dataWithEPSInsideRect:(NSRect)rect
 {
   return nil;
 }
@@ -1319,9 +1384,12 @@ NSString *NSWindowWillMoveNotification;
   return self;
 }
 
+@end
+
 //
-// GNUstep additional methods
+// GNUstep backend methods
 //
+@implementation NSWindow (GNUstepBackend)
 
 //
 // Mouse capture/release
@@ -1338,9 +1406,45 @@ NSString *NSWindowWillMoveNotification;
 
 // Allow subclasses to init without the backend class
 // attempting to create an actual window
+- (void)initDefaults
+{
+  first_responder = nil;
+  original_responder = nil;
+  delegate = nil;
+  window_num = 0;
+  background_color = [NSColor lightGrayColor];
+  represented_filename = @"Window";
+  miniaturized_title = @"Window";
+  miniaturized_image = nil;
+  window_title = @"Window";
+  last_point = NSZeroPoint;
+  window_level = NSNormalWindowLevel;
+
+  is_one_shot = NO;
+  needs_display = NO;
+  is_autodisplay = YES;
+  optimize_drawing = YES;
+  views_need_display = NO;
+  depth_limit = 8;
+  dynamic_depth_limit = YES;
+  cursor_rects_enabled = NO;
+  visible = NO;
+  is_key = NO;
+  is_main = NO;
+  is_edited = NO;
+  is_released_when_closed = NO;
+  is_miniaturized = NO;
+  disable_flush_window = NO;
+  menu_exclude = NO;
+  hides_on_deactivate = NO;
+  accepts_mouse_moved = YES;
+}
+
 - cleanInit
 {
   [super init];
+
+  [self initDefaults];
   return self;
 }
 
