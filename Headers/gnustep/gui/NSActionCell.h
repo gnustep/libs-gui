@@ -34,9 +34,9 @@
 @interface NSActionCell : NSCell <NSCopying, NSCoding>
 {
   // Attributes
-  int tag;
-  id target;
-  SEL action;
+  int _tag;
+  id _target;
+  SEL _action;
 }
 
 //
