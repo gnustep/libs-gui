@@ -68,21 +68,75 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 		}
 }
 
-+ (NSView *)focusView
+/*
+ * return the view at the top of thread's focus stack 
+ * or nil if none is focused
+ */
++ (NSView *) focusView
 {
-NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-NSMutableArray *stack = [dict objectForKey: viewThreadKey];
-NSView *current_view = nil;
-														// return the view at
-	if (stack)											// the top of thread's
-		{												// focus stack or nil
-		unsigned count = [stack count];					// if none is focused
-														
-		if (count > 0)
-			current_view = [stack objectAtIndex: --count];
-		}
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: viewThreadKey];
+  NSView *current_view = nil;
 
-	return current_view;
+  if (stack)
+    {
+      unsigned count = [stack count];
+
+      if (count > 0)
+        current_view = [stack objectAtIndex: --count];
+    }
+
+  return current_view;
+}
+
+
++ (void) pushFocusView: (NSView *)focusView
+{
+  if (focusView)
+    {
+      NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+      NSMutableArray *stack = [dict objectForKey: viewThreadKey];
+
+      if (stack == nil)
+        {
+          stack = [[NSMutableArray alloc] initWithCapacity: 4];
+          [dict setObject: stack forKey: viewThreadKey];
+          [stack release];
+        }
+      [stack addObject: focusView];
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"Attempt to push a 'nil' focus view on to stack."];
+    }
+}
+
+
+/*
+ *	Remove the top focusView for the current thread from the stack
+ *	and return the new focusView (or nil if the stack is now empty).
+ */
++ (NSView *)popFocusView
+{
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: viewThreadKey];
+  NSView *v = nil;
+
+  if (stack)
+    {
+      unsigned count = [stack count];
+
+      if (count > 0)
+        {
+          [stack removeObjectAtIndex: --count];
+        }
+      if (count > 0)
+        {
+          v = [stack objectAtIndex: --count];
+        }
+    }
+  return v;
 }
 
 //
