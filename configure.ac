@@ -115,7 +115,7 @@ if test $enable_jpeg = yes; then
   if test "$have_jpeg" = yes; then
     AC_CHECK_LIB(jpeg, jpeg_destroy_decompress)
   else
-    ac_cv_lib_jpeg_jpeg_destroy_decompress = no
+    ac_cv_lib_jpeg_jpeg_destroy_decompress=no
   fi
 
   if test "$ac_cv_lib_jpeg_jpeg_destroy_decompress" = yes; then

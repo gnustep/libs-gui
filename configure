@@ -4535,7 +4535,7 @@ _ACEOF
 fi
 
   else
-    ac_cv_lib_jpeg_jpeg_destroy_decompress = no
+    ac_cv_lib_jpeg_jpeg_destroy_decompress=no
   fi
 
   if test "$ac_cv_lib_jpeg_jpeg_destroy_decompress" = yes; then

@@ -1,3 +1,8 @@
+2005-03-10  Nicola Pero <n.pero@mi.flashnet.it>
+
+	* configure.ac: Fixed setting variable when libjpeg can't be found.
+	* configure: Regenereated.
+
 2005-03-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSCell.h: Moved NSControlSize definition to ...
