@@ -2542,7 +2542,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)resizeSubviewsWithOldSize\n");
 #endif
 
-  [super resizeSubviewsWithOldSize: oldSize];
   [self tile];
 }
 
@@ -3058,6 +3057,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
       if (!_reusesColumns && i >= _maxVisibleColumns)
 	{
+	  [sc removeFromSuperview];
 	  [_browserColumns removeObject: bc];
 	  count--;
 	  i--;
