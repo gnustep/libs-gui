@@ -36,7 +36,7 @@
 
 static float GSMenuBarHeight = 25.0; // A wild guess.
 
-// FIXME Check this strange comment:
+// FIXME Check this strange comment: 
 // These private methods are used in NSPopUpButton. For NSPB we need to be
 // able to init with a frame, but have a very custom cell size.
 
@@ -46,31 +46,31 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 @implementation NSMenuView
 
-//
-// Class methods.
-//
-+ (float)menuBarHeight
+/*
+ * Class methods.
+ */
++ (float) menuBarHeight
 {
   return GSMenuBarHeight;
 }
 
-//
-// NSView overrides
-//
-- (BOOL)acceptsFirstMouse: (NSEvent *)theEvent
+/*
+ * NSView overrides
+ */
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return YES;
 }
 
-//
-// Init methods.
-//
-- (id)init
+/*
+ * Init methods.
+ */
+- (id) init
 {
   return [self initWithFrame: NSZeroRect];
 }
 
-- (id)initWithFrame: (NSRect)aFrame
+- (id) initWithFrame: (NSRect)aFrame
 {
   cellSize = NSMakeSize(110,20);
 
@@ -83,29 +83,29 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return [super initWithFrame: aFrame];
 }
 
-- (void)_setCellSize:(NSSize)aSize
+- (void) _setCellSize: (NSSize)aSize
 {
   cellSize = aSize;
 }
 
-- (id)initWithFrame: (NSRect)aFrame
- 	   cellSize: (NSSize)aSize
+- (id) initWithFrame: (NSRect)aFrame
+	    cellSize: (NSSize)aSize
 {
-  [self initWithFrame:aFrame];
+  [self initWithFrame: aFrame];
 
   cellSize = aSize;
 
   return self;
 }
 
-//
-// Getting and Setting Menu View Attributes
-//
-- (void)setMenu: (NSMenu *)menu
+/*
+ * Getting and Setting Menu View Attributes
+ */
+- (void) setMenu: (NSMenu*)menu
 {
-  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter	*theCenter = [NSNotificationCenter defaultCenter];
 
-  if (menuv_menu)
+  if (menuv_menu != nil)
     {
       // Remove this menu view from the old menu list of observers.
       [theCenter removeObserver: self name: nil object: menuv_menu];
@@ -135,32 +135,32 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (NSMenu *)menu
+- (NSMenu*) menu
 {
   return menuv_menu;
 }
 
-- (void)setHorizontal: (BOOL)flag
+- (void) setHorizontal: (BOOL)flag
 {
   menuv_horizontal = flag;
 }
 
-- (BOOL)isHorizontal
+- (BOOL) isHorizontal
 {
   return menuv_horizontal;
 }
 
-- (void)setFont: (NSFont *)font
+- (void) setFont: (NSFont*)font
 {
   ASSIGN(menuv_font, font);
 }
 
-- (NSFont *)font
+- (NSFont*) font
 {
   return menuv_font;
 }
 
-- (void)setHighlightedItemIndex: (int)index
+- (void) setHighlightedItemIndex: (int)index
 {
   id   aCell;
 
@@ -174,7 +174,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 	  aCell  = [menuv_itemCells objectAtIndex: menuv_highlightedItemIndex];
 
-	  [aCell highlight: NO withFrame:aRect inView: self];
+	  [aCell highlight: NO withFrame: aRect inView: self];
 
 	  [window flushWindow];
 
@@ -183,7 +183,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     } 
   else if (index >= 0)
     {
-      if ( menuv_highlightedItemIndex != -1)
+      if (menuv_highlightedItemIndex != -1)
 	{
 	  NSRect aRect = [self rectOfItemAtIndex: menuv_highlightedItemIndex];
 
@@ -221,13 +221,13 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self unlockFocus];
 }
 
-- (int)highlightedItemIndex
+- (int) highlightedItemIndex
 {
   return menuv_highlightedItemIndex;
 }
 
-- (void)setMenuItemCell: (NSMenuItemCell *)cell
-	 forItemAtIndex: (int)index
+- (void) setMenuItemCell: (NSMenuItemCell *)cell
+	  forItemAtIndex: (int)index
 {
   [menuv_itemCells replaceObjectAtIndex: index withObject: cell];
 
@@ -236,14 +236,14 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (NSMenuItemCell *)menuItemCellForItemAtIndex: (int)index
+- (NSMenuItemCell*) menuItemCellForItemAtIndex: (int)index
 {
   return [menuv_itemCells objectAtIndex: index];
 }
 
-- (NSMenuView *)attachedMenuView
+- (NSMenuView*) attachedMenuView
 {
-  NSMenu *attachedMenu;
+  NSMenu	*attachedMenu;
 
   if ((attachedMenu = [menuv_menu attachedMenu]))
     return [attachedMenu menuRepresentation];
@@ -251,35 +251,35 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     return nil;
 }
 
-- (NSMenu *)attachedMenu
+- (NSMenu*) attachedMenu
 {
   return [menuv_menu attachedMenu];
 }
 
-- (BOOL)isAttached
+- (BOOL) isAttached
 {
   return [menuv_menu isAttached];
 }
 
-- (BOOL)isTornOff
+- (BOOL) isTornOff
 {
   return [menuv_menu isTornOff];
 }
 
-- (void)setHorizontalEdgePadding: (float)pad
+- (void) setHorizontalEdgePadding: (float)pad
 {
   menuv_horizontalEdgePad = pad;
 }
 
-- (float)horizontalEdgePadding
+- (float) horizontalEdgePadding
 {
   return menuv_horizontalEdgePad;
 }
 
-//
-// Notification Methods
-//
-- (void) itemChanged: (NSNotification *)notification
+/*
+ * Notification Methods
+ */
+- (void) itemChanged: (NSNotification*)notification
 {
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
 		intValue];
@@ -291,7 +291,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (void) itemAdded: (NSNotification *)notification
+- (void) itemAdded: (NSNotification*)notification
 {
   int         index  = [[[notification userInfo]
 			  objectForKey: @"NSMenuItemIndex"] intValue];
@@ -314,7 +314,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-- (void) itemRemoved: (NSNotification *)notification
+- (void) itemRemoved: (NSNotification*)notification
 {
   int wasHighlighted = [self highlightedItemIndex];
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
@@ -334,10 +334,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsSizing: YES];
 }
 
-//
-// Working with Submenus.
-//
-- (void)detachSubmenu
+/*
+ * Working with Submenus.
+ */
+- (void) detachSubmenu
 {
   NSMenu     *attachedMenu = [menuv_menu attachedMenu];
   NSMenuView *attachedMenuView;
@@ -360,13 +360,14 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     [attachedMenu close];
 }
 
-- (void)attachSubmenuForItemAtIndex: (int)index
+- (void) attachSubmenuForItemAtIndex: (int)index
 {
-  // Transient menus are used for torn-off menus, which are already on the
-  // screen and for sons of transient menus.  As transients disappear as
-  // soon as we release the mouse the user will be able to leave submenus
-  // open on the screen and interact with other menus at the same time.
-
+  /*
+   * Transient menus are used for torn-off menus, which are already on the
+   * screen and for sons of transient menus.  As transients disappear as
+   * soon as we release the mouse the user will be able to leave submenus
+   * open on the screen and interact with other menus at the same time.
+   */
   NSMenu *attachableMenu = [[menuv_items_link objectAtIndex: index] submenu];
 
   if ([attachableMenu isTornOff] || [menuv_menu isFollowTransient])
@@ -380,10 +381,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     [attachableMenu display];
 }
 
-//
-// Calculating Menu Geometry
-//
-- (void)update
+/*
+ * Calculating Menu Geometry
+ */
+- (void) update
 {
   [menuv_menu update];
 
@@ -391,12 +392,12 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     [self sizeToFit];
 }
 
-- (void)setNeedsSizing: (BOOL)flag
+- (void) setNeedsSizing: (BOOL)flag
 {
   menuv_needsSizing = flag;
 }
 
-- (BOOL)needsSizing
+- (BOOL) needsSizing
 {
   return menuv_needsSizing;
 }
@@ -433,23 +434,23 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
       anImageWidth = [aCell imageWidth];
       switch ([aCell imagePosition])
 	{
-	  case NSNoImage:
+	  case NSNoImage: 
 	    anImageAndTitleWidth = aTitleWidth;
 	    break;
 
-	  case NSImageOnly:
+	  case NSImageOnly: 
 	    anImageAndTitleWidth = anImageWidth;
 	    break;
 
-	  case NSImageLeft:
-	  case NSImageRight:
+	  case NSImageLeft: 
+	  case NSImageRight: 
 	    anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
 	    break;
 
-	  case NSImageBelow:
-	  case NSImageAbove:
-	  case NSImageOverlaps:
-	  default:
+	  case NSImageBelow: 
+	  case NSImageAbove: 
+	  case NSImageOverlaps: 
+	  default: 
 	    if (aTitleWidth > anImageWidth)
 	      anImageAndTitleWidth = aTitleWidth;
 	    else
@@ -489,7 +490,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   menuv_needsSizing = NO;
 }
 
-- (float)stateImageOffset
+- (float) stateImageOffset
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -497,7 +498,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_stateImageOffset;
 }
 
-- (float)stateImageWidth
+- (float) stateImageWidth
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -505,7 +506,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_stateImageWidth;
 }
 
-- (float)imageAndTitleOffset
+- (float) imageAndTitleOffset
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -513,7 +514,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_imageAndTitleOffset;
 }
 
-- (float)imageAndTitleWidth
+- (float) imageAndTitleWidth
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -521,7 +522,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_imageAndTitleWidth;
 }
 
-- (float)keyEquivalentOffset
+- (float) keyEquivalentOffset
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -529,7 +530,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_keyEqOffset;
 }
 
-- (float)keyEquivalentWidth
+- (float) keyEquivalentWidth
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -537,7 +538,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_keyEqWidth;
 }
 
-- (NSRect)innerRect
+- (NSRect) innerRect
 {
   NSRect aRect = {{bounds.origin.x + 1, bounds.origin.y},
 		  {bounds.size.width - 1, bounds.size.height}};
@@ -545,7 +546,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return aRect;
 }
 
-- (NSRect)rectOfItemAtIndex: (int)index
+- (NSRect) rectOfItemAtIndex: (int)index
 {
   NSRect theRect;
 
@@ -562,7 +563,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return theRect;
 }
 
-- (int)indexOfItemAtPoint: (NSPoint)point
+- (int) indexOfItemAtPoint: (NSPoint)point
 {
   // The MacOSX API says that this method calls - rectOfItemAtIndex for
   // *every* cell to figure this out. Well, instead we will just do some
@@ -573,7 +574,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	  || point.x >  frame.size.width + frame.origin.x
 	  || point.y <= frame.origin.y
 	  || point.y >  frame.size.height + frame.origin.y) ?
-          -1 :
+          -1 : 
           (frame.size.height - point.y) / cellSize.height;
 }
 
@@ -584,7 +585,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [self setNeedsDisplayInRect: aRect];
 }
 
-- (NSPoint)locationForSubmenu: (NSMenu *)aSubmenu
+- (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu
 {
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -597,15 +598,15 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return NSZeroPoint;
 }
 
-- (void)resizeWindowWithMaxHeight: (float)maxHeight
+- (void) resizeWindowWithMaxHeight: (float)maxHeight
 {
   // set the menuview's window to max height in order to keep on screen?
 }
 
-- (void)setWindowFrameForAttachingToRect: (NSRect)screenRect 
-			        onScreen: (NSScreen *)screen
-			   preferredEdge: (NSRectEdge)edge
-		       popUpSelectedItem: (int)selectedItemIndex
+- (void) setWindowFrameForAttachingToRect: (NSRect)screenRect 
+				 onScreen: (NSScreen*)screen
+			    preferredEdge: (NSRectEdge)edge
+			popUpSelectedItem: (int)selectedItemIndex
 {
   NSRect r;
 
@@ -625,7 +626,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 		       styleMask: [window styleMask]];
   
   // Update position,if needed, using the preferredEdge;
-  // It seems we should be calling [self resizeWindowWithMaxHeight: ];
+  // It seems we should be calling [self resizeWindowWithMaxHeight:];
   // see the (quite obscure) doc.
   // TODO
 
@@ -634,10 +635,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	  display: YES]; 
 }
 
-//
-// Drawing.
-//
-- (void)drawRect: (NSRect)rect
+/*
+ * Drawing.
+ */
+- (void) drawRect: (NSRect)rect
 {
   int    i;
   NSRect aRect   = [self innerRect];
@@ -659,20 +660,20 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   aRect.size = cellSize;
 
   for (i = 0; i < howMany; i++)
-  {
-    id aCell;
+    {
+      id aCell;
 
-    aCell = [menuv_itemCells objectAtIndex: i];
+      aCell = [menuv_itemCells objectAtIndex: i];
 
-    [aCell drawWithFrame: aRect inView: self];
-    aRect.origin.y -= cellSize.height;
-  }
+      [aCell drawWithFrame: aRect inView: self];
+      aRect.origin.y -= cellSize.height;
+    }
 }
 
-//
-// Event Handling
-//
-- (void)performActionWithHighlightingForItemAtIndex: (int)index
+/*
+ * Event Handling
+ */
+- (void) performActionWithHighlightingForItemAtIndex: (int)index
 {
   NSMenu     *candidateMenu = menuv_menu;
   NSMenuView *targetMenuView;
@@ -680,9 +681,9 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   for (;;)
     {
-      if (![candidateMenu supermenu] ||
-	  [candidateMenu isAttached] ||
-	  [candidateMenu isTornOff])
+      if (![candidateMenu supermenu]
+	|| [candidateMenu isAttached]
+	|| [candidateMenu isTornOff])
 	{
 	  targetMenuView = [candidateMenu menuRepresentation];
 
@@ -711,7 +712,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 #define MOVE_THRESHOLD_DELTA 1.0
 #define DELAY_MULTIPLIER     12
 
-- (BOOL)trackWithEvent: (NSEvent *)event
+- (BOOL) trackWithEvent: (NSEvent *)event
 {
   NSApplication *theApp           = [NSApplication sharedApplication];  
   unsigned       eventMask        = NSLeftMouseUpMask 
@@ -735,7 +736,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  if ([menuv_menu isPartlyOffScreen])
 	    {
-	      NSPoint pointerLoc = [window convertBaseToScreen:
+	      NSPoint pointerLoc = [window convertBaseToScreen: 
 					     location];
 
 	      // TODO: Why 1 in the Y axis?
@@ -819,9 +820,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     }
 
   // Close menus if needed.
-  if (!menuv_keepAttachedMenus ||
-      index == -1 ||
-      (alreadyAttachedMenu && [alreadyAttachedMenu isFollowTransient]))
+  if (!menuv_keepAttachedMenus || index == -1
+    || (alreadyAttachedMenu && [alreadyAttachedMenu isFollowTransient]))
     {
       NSMenu     *parentMenu;
       NSMenu     *masterMenu;
@@ -843,7 +843,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return YES;
 }
 
-- (void)mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
   NSMenu     *candidateMenu;
   NSMenu     *masterMenu;
@@ -879,15 +879,15 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   menuv_keepAttachedMenus = NO;
 }
 
--(BOOL) performKeyEquivalent: (NSEvent *)theEvent
+- (BOOL) performKeyEquivalent: (NSEvent *)theEvent
 {
   return [menuv_menu performKeyEquivalent: theEvent];
 }
 
-//
-// NSCoding Protocol
-//
-- (void)encodeWithCoder:(NSCoder *)encoder
+/*
+ * NSCoding Protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)encoder
 {
   [super encodeWithCoder: encoder];
 
@@ -900,12 +900,12 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [encoder encodeValueOfObjCType: @encode(NSSize) at: &cellSize];
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
 
-  menuv_itemCells  = [decoder decodeObject];
-  menuv_font       = [decoder decodeObject];
+  [decoder decodeValueOfObjCType: @encode(id) at: &menuv_itemCells];
+  [decoder decodeValueOfObjCType: @encode(id) at: &menuv_font];
   menuv_menu       = [decoder decodeObject];
   menuv_items_link = [decoder decodeObject];
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &menuv_horizontal];
