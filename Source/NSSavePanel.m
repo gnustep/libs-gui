@@ -424,12 +424,17 @@ selectCellWithString: (NSString*)title
 
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
 {
-  if (path == nil || filename == nil)
-    [NSException raise: NSInvalidArgumentException
-		format: @"NSSavePanel runModalForDirectory:file: "
-		 @"does not accept nil arguments."];
-
-  ASSIGN (_directory, path);
+  if (path == nil)
+    {
+      if (_directory == nil)
+	ASSIGN(_directory, [_fm currentDirectoryPath]);
+    }
+  else
+    {
+      ASSIGN (_directory, path);
+    }
+  if (filename == nil)
+    filename = @"";
   ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
   [_browser setPath: _fullFileName];
 
@@ -779,29 +784,24 @@ selectCellWithString: (NSString*)title
 
 /**
  * Shows the save panel for the user. This method invokes
- * -runModalForDirectory:file: with empty strings for the directory and
- * filename.  Returns NSOKButton (if the user clicks the OK button) or
+ * -runModalForDirectory:file: with empty strings for the filename.
+ * Returns NSOKButton (if the user clicks the OK button) or
  * NSCancelButton (if the user clicks the Cancel button).
  */
 - (int) runModal
 {
-  if (_directory)
-    return [self runModalForDirectory: _directory 
-				 file: @""];
-  else
-    return [self runModalForDirectory: [_fm currentDirectoryPath] 
-				 file: @""];
+  return [self runModalForDirectory: nil file: @""];
 }
 
 /**
- * Initializes the panel to the directory specified by path 
- * and, optionally, the file specified by filename, then 
- * displays it and begins its modal event loop; path and 
- * filename can be empty strings, but cannot be nil.  The 
- * method invokes NSApplication:-runModalForWindow: method with 
- * self as the argument.  Returns NSOKButton (if the user 
- * clicks the OK button) or NSCancelButton (if the user clicks 
- * the Cancel button).
+ * Initializes the panel to the directory specified by path and,
+ * optionally, the file specified by filename, then displays it and
+ * begins its modal event loop; path and filename can be empty
+ * strings.  The method invokes [NSApplication:-runModalForWindow:]
+ * method with self as the argument.  Returns NSOKButton (if the user
+ * clicks the OK button) or NSCancelButton (if the user clicks the
+ * Cancel button). If path is nil then the panel displays the last
+ * selected directory or as a last resort, the current working directory.
  */
 - (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {

@@ -461,7 +461,6 @@ static NSCell* tileCell = nil;
 
       GSStringDrawingDummyFunction();
 
-      NSDebugLog(@"Initialize NSApplication class\n");
       [self setVersion: 1];
       
       /* Create the gui bundle we use to localize messages.  */
@@ -606,8 +605,6 @@ static NSCell* tileCell = nil;
      * those calls to succeed.  
      */
     NSApp = self;
-    
-    NSDebugLog(@"Begin of NSApplication -init\n");
     
     /* Initialize the backend here.  */
     initialize_gnustep_backend();
@@ -808,7 +805,6 @@ static NSCell* tileCell = nil;
 - (void) dealloc
 {
   GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
-  NSDebugLog(@"Freeing NSApplication\n");
 
   [nc removeObserver: self];
 
@@ -865,8 +861,6 @@ static NSCell* tileCell = nil;
       [nc postNotificationName: NSApplicationWillBecomeActiveNotification
 			object: self];
 
-      NSDebugLog(@"activateIgnoringOtherApps start.");
-
       _app_is_active = YES;
 
       for (i = 0; i < count; i++)
@@ -897,8 +891,6 @@ static NSCell* tileCell = nil;
 	{
 	  [[self mainWindow] orderFront: self];
 	}
-
-      NSDebugLog(@"activateIgnoringOtherApps end.");
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self];
@@ -982,8 +974,6 @@ static NSCell* tileCell = nil;
   NSEvent *e;
   id distantFuture = [NSDate distantFuture];     /* Cache this, safe */
   
-  NSDebugLog(@"NSApplication -run\n");
-
   if (_runLoopPool != nil)
     {
       [NSException raise: NSInternalInconsistencyException
@@ -1041,8 +1031,6 @@ static NSCell* tileCell = nil;
   IF_NO_GC(_runLoopPool = [arpClass new]);
 
   [[NSUserDefaults standardUserDefaults] synchronize];
-  NSDebugLog(@"NSApplication end of run loop\n");
-
   DESTROY (_runLoopPool);
 }
 
@@ -2566,7 +2554,6 @@ delegate.
      then we ask the delegate if the app is to be terminated. */
   if (wasMain && count == 0 && _app_is_running)
     {
-      NSDebugLog(@"asking delegate whether to terminate app...");
       if ([_delegate respondsToSelector:
 	@selector(applicationShouldTerminateAfterLastWindowClosed:)])
 	{

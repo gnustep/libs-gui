@@ -430,7 +430,8 @@
 //FIXME if we have accessory -- store the desired save type somewhere.
 }
 
-- (int)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView
+- (int)runModalSavePanel:(NSSavePanel *)savePanel 
+       withAccessoryView:(NSView *)accessoryView
 {
   [savePanel setAccessoryView:accessoryView];
   return [savePanel runModal];
@@ -453,10 +454,14 @@
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation
 {
   NSView *accessory = nil;
-  NSString *title = @"save";
+  NSString *title;
+  NSString *directory;
+  NSArray *extensions;
+  NSDocumentController *controller;
   NSSavePanel *savePanel = [NSSavePanel savePanel];
-  NSArray *extensions = [[NSDocumentController sharedDocumentController]
-			  fileExtensionsFromType:[self fileType]];
+
+  controller = [NSDocumentController sharedDocumentController];
+  extensions = [controller fileExtensionsFromType:[self fileType]];
   
   if ([self shouldRunSavePanelWithAccessoryView])
     {
@@ -473,15 +478,22 @@
 
   switch (saveOperation)
     {
-    case NSSaveOperation:   title = _(@"Save");    break;
     case NSSaveAsOperation: title = _(@"Save As"); break;
-    case NSSaveToOperation: title = _(@"Save To"); break;
-    }
+    case NSSaveToOperation: title = _(@"Save To"); break; 
+    case NSSaveOperation: 
+    default:
+      title = _(@"Save");    
+      break;
+   }
   
   [savePanel setTitle:title];
 
+  
   if ([self fileName])
-    [savePanel setDirectory:[[self fileName] stringByDeletingLastPathComponent]];
+    directory = [[self fileName] stringByDeletingLastPathComponent];
+  else
+    directory = [controller currentDirectory];
+  [savePanel setDirectory: directory];
 	
   if ([self runModalSavePanel:savePanel withAccessoryView:accessory])
     {

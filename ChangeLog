@@ -1,3 +1,24 @@
+2002-10-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m: Remove some NSDebugLogs.
+
+	* Source/NSDocument.m
+	(-fileNameFromRunningSavePanelForSaveOperation:): Set dicectory to
+	the currentDirectory if no fileName is set. Localize.
+	* Source/NSDocumentController.m: Document.
+	(+sharedDocumentController): Proper allocation/init. Set ourselves
+	as the application delegate if there isn't one already.
+	(-init): Retrieve list of recent documents.
+	(-reviewUnsavedDocumentsWithAlertTitle:cancellable:) Save
+	current directory. Localize.
+	(-currentDirectory): Rewrite according to docs.
+
+	* Source/NSOpenPanel.m (-runModalForTypes:): Use nil for
+	directory.
+	* Source/NSSavePanel.m (_setupForDirectory:file:): Use
+	current directory if nil, otherwise keep the old one.
+	(-runModal): Pass nil for directory.
+
 2002-10-25  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* configure.ac: fixed header/ldflags for freebsd.

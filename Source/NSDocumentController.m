@@ -33,7 +33,7 @@
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSDocumentFrameworkPrivate.h>
-
+#include <Foundation/NSUserDefaults.h>
 
 static NSString *NSTypesKey             = @"NSTypes";
 static NSString *NSNameKey              = @"NSName";
@@ -44,6 +44,11 @@ static NSString *NSDOSExtensionsKey     = @"NSDOSExtensions";
 //static NSString *NSMacOSTypesKey        = @"NSMacOSTypes";
 //static NSString *NSMIMETypesKey         = @"NSMIMETypes";
 static NSString *NSDocumentClassKey     = @"NSDocumentClass";
+
+static NSString *NSRecentDocuments      = @"NSRecentDocuments";
+static NSString *NSDefaultOpenDirectory = @"NSDefaultOpenDirectory";
+
+static NSDocumentController *sharedController = nil;
 
 #define TYPE_INFO(name) TypeInfoForName(_types, name)
 
@@ -63,42 +68,90 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return nil;
 }
 
+/** <p>
+    NSDocumentController is a class that controls a set of NSDocuments
+    for an application. As the application delegate, it responds to
+    the typical File Menu commands for opening and creating new
+    documents, and making sure all documents have been saved when an
+    application quits. It also registers itself for the 
+    NSWorkspaceWillPowerOffNotification.
+    </p>
+    <p>
+    NSDocumentController also manages document types and the related
+    NSDocument subclasses that handle them. This information comes
+    from the custom info property list (<ApplicationName>Info.plist)
+    loaded when NSDocumentController is initialized. The property list
+    contains an array of dictionarys with the key NSTypes. Each
+    dictionary contains a set of keys:
+   </p>
+   <list>
+     <item>NSDocumentClass - The name of the subclass</item>
+     <item>NSName - Short name of the document type</item>
+     <item>NSHumanReadableName - Longer document type name</item> 
+     <item>NSUnixExtensions - Array of strings</item> 
+     <item>NSDOSExtensions - Array of strings</item>
+     <item>NSIcon - Icon name for these documents</item>
+     <item>NSRole - Class is a Viewer or Editor</item>
+   </list>
+   <p>
+   You can also use NSDocumentController to get a list of all open
+   documents, the current document (The one whose window is Key) and
+   other information about these documents. It also remebers the most 
+   recently opened documents (through the user default key
+    _GSRecentDocuments). .
+   </p>
+   <p>
+   You can subclass NSDocumentController to customize the behavior of
+   certain aspects of the class, but it is very rare that you would
+   need to do this.
+   </p>
+*/
 @implementation NSDocumentController
 
-+ (void)initialize
-{
-}
-
-+ (id) documentController //private
-{
-  return [self sharedDocumentController];
-}
-
-+ (id) allocWithZone: (NSZone *)zone
-{
-  return [self sharedDocumentController];
-}
-
+/** Returns the shared instance of the document controller class. You
+    should always use this method to get the NSDocumentController. */
 + (id) sharedDocumentController
 {
-  static id instance = nil;
-  
-  if (instance == nil) 
+  if (sharedController == nil)
     {
-      instance = [[super allocWithZone:NULL] init];
+      sharedController = [[self alloc] init];
+      /* Need to verify this is the correct behavior. Set ourselves as
+	 the app delegate if there isn't one already */
+      if ([NSApp delegate] == nil)
+	[NSApp setDelegate: self];
     }
 
-  return instance;
+  return sharedController;
 }
 
+/** </init>Initializes the document controller class. The first
+    instance of a document controller class that gets initialized
+    becomes the shared instance.
+ */
 - init
 {
   NSDictionary *customDict = [[NSBundle mainBundle] infoDictionary];
 	
   ASSIGN (_types, [customDict objectForKey: NSTypesKey]);
   _documents = [[NSMutableArray alloc] init];
-  // FIXME: Should fill this list from some stored values
-  _recentDocuments = [[NSMutableArray alloc] init];
+  
+  /* Get list of recent documents */
+  _recentDocuments = [[NSUserDefaults standardUserDefaults] 
+		       objectForKey: NSRecentDocuments];
+  if (_recentDocuments)
+    {
+      int i, count;
+      _recentDocuments = [_recentDocuments mutableCopy];
+      count = [_recentDocuments count];
+      for (i = 0; i < count; i++)
+	{
+	  NSURL *url;
+	  url = [NSURL URLWithString: [_recentDocuments objectAtIndex: i]];
+	  [_recentDocuments replaceObjectAtIndex: i withObject: url];
+	}
+    } 
+  else
+    _recentDocuments = RETAIN([NSMutableArray array]);
   [self setShouldCreateUI:YES];
   
   [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -107,6 +160,8 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     name: NSWorkspaceWillPowerOffNotification
     object: nil];
 
+  if (sharedController == nil)
+    sharedController = self;
   return self;
 }
 
@@ -268,6 +323,9 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return openPanel;
 }
 
+/** Invokes [NSOpenPanel-runModelForTypes:] with the NSOpenPanel
+    object openPanel, and passes the openableFileExtensions file types 
+*/
 - (int) runModalOpenPanel: (NSOpenPanel *)openPanel 
 		forTypes: (NSArray *)openableFileExtensions
 {
@@ -289,6 +347,10 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return array;
 }
 
+/** Uses -runModalOpenPanel:forTypes: to allow the user to select
+    files to open (after initializing the NSOpenPanel). Returns the
+    list of files that the user has selected.
+*/
 - (NSArray *) fileNamesFromRunningOpenPanel
 {
   NSArray *types = [self _openableFileExtensions];
@@ -302,6 +364,10 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return nil;
 }
 
+/** Uses -runModalOpenPanel:forTypes: to allow the user to select
+    files to open (after initializing the NSOpenPanel). Returns the
+    list of files as URLs that the user has selected.
+*/
 - (NSArray *) URLsFromRunningOpenPanel
 {
   NSArray *types = [self _openableFileExtensions];
@@ -350,6 +416,10 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 }
 
 
+/** Iterates through all the open documents and asks each one in turn
+    if it can close using [NSDocument-canCloseDocument]. If the
+    document returns YES, then it is closed.
+*/
 - (BOOL) closeAllDocuments
 {
   NSDocument *document;
@@ -372,23 +442,38 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 		  didCloseAllSelector:(SEL)didAllCloseSelector 
 			  contextInfo:(void *)contextInfo
 {
-//FIXME
+  //FIXME
 }
 
+/** If there are any unsaved documents, this method displays an alert
+    panel asking if the user wants to review the unsaved documents. If
+    the user agrees to review the documents, this method calls
+    -closeAllDocuments to close each document (prompting to save a
+    document if it is dirty). If cancellable is YES, then the user is
+    not allowed to cancel this request, otherwise this method will
+    return NO if the user presses the Cancel button. Otherwise returns
+    YES after all documents have been closed (or if there are no
+    unsaved documents.)
+*/
 - (BOOL) reviewUnsavedDocumentsWithAlertTitle: (NSString *)title 
 				  cancellable: (BOOL)cancellable
 {
-  //FIXME -- localize.
-  NSString *cancelString = (cancellable)? @"Cancel" : nil;
+  NSString *cancelString = (cancellable)? _(@"Cancel") : nil;
   int      result;
   
+  /* Probably as good a place as any to do this */
+  [[NSUserDefaults standardUserDefaults] 
+    setObject: [self currentDirectory] forKey: NSDefaultOpenDirectory];
+
   if (![self hasEditedDocuments]) 
     {
       return YES;
     }
   
-  result = NSRunAlertPanel(title, @"You have unsaved documents.",
-			   @"Review Unsaved", cancelString, @"Quit Anyways");
+  result = NSRunAlertPanel(title, _(@"You have unsaved documents"),
+			   _(@"Review Unsaved"), 
+			   cancelString, 
+			   _(@"Quit Anyways"));
   
 #define ReviewUnsaved NSAlertDefaultReturn
 #define Cancel        NSAlertAlternateReturn
@@ -399,7 +484,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     case ReviewUnsaved:	return [self closeAllDocuments];
     case QuitAnyways:	return YES;
     case Cancel:
-    default:			return NO;
+    default:		return NO;
     }
 }
 
@@ -444,23 +529,26 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 
 - (BOOL) applicationShouldTerminate: (NSApplication *)sender
 {
-  return [self reviewUnsavedDocumentsWithAlertTitle: @"Quit"  
+  return [self reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
 	       cancellable: YES];
 }
 #endif
 
 - (void) _workspaceWillPowerOff: (NSNotification *)notification
 {
-  // FIXME -- localize.
-  [self reviewUnsavedDocumentsWithAlertTitle: @"Power"  cancellable: NO];
+  [self reviewUnsavedDocumentsWithAlertTitle: _(@"Power Off") cancellable: NO];
 }
 
 
+/** Returns an array of all open documents */
 - (NSArray *) documents
 {
   return _documents;
 }
 
+/** Returns YES if any documents are "dirty", e.g. changes have been
+    made to the document that have not been saved to the disk 
+*/
 - (BOOL) hasEditedDocuments
 {
   int i, count = [_documents count];
@@ -476,30 +564,43 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return NO;
 }
 
+/** Returns the document whose window is the keyWindow */
 - (id) currentDocument
 {
   return [self documentForWindow: 
 		 [[NSApplication sharedApplication] mainWindow]];
 }
 
+/** Returns the current directory. This method first checks if there
+    is a current document using the -currentDocument method. If this
+    returns a document and the document has a filename, this method
+    returns the directory this file is located in. Otherwise it
+    returns the directory of the most recently opened document or
+    NSHomeDirectory() if no document has been opened before.
+*/
 - (NSString *) currentDirectory
 {
   NSFileManager *manager = [NSFileManager defaultManager];
-  NSDocument *currentDocument = [self currentDocument];
-  NSString *directory = [[currentDocument fileName] stringByDeletingLastPathComponent];
+  NSDocument *document = [self currentDocument];
+  NSString *directory;
   BOOL isDir = NO;
 
-  if (directory &&
-      [manager fileExistsAtPath: directory  isDirectory: &isDir] && isDir)
+  if (document == nil)
+    document = [[self documents] lastObject];
+  directory = [[document fileName] stringByDeletingLastPathComponent];
+  if (directory == nil)
+    directory = [[NSUserDefaults standardUserDefaults] 
+		  objectForKey: NSDefaultOpenDirectory];
+  if (directory == nil
+      || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
+      || isDir == NO)
     {
-      return directory;
+      directory = NSHomeDirectory ();
     }
-
-  //FIXME -- need to remember last opened directory, and return that here.
-  //Only return NSHomeDirectory if nothing's been opened yet.
-  return NSHomeDirectory ();
+  return directory;
 }
 
+/** Returns the NSDocument class that controls window */
 - (id) documentForWindow: (NSWindow *)window
 {
   id document;
@@ -524,6 +625,9 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return document;
 }
 
+/** Returns the NSDocument class that controls the document with the
+    name fileName.
+*/
 - (id) documentForFileName: (NSString *)fileName
 {
   int i, count = [_documents count];
@@ -604,6 +708,8 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 - (IBAction) clearRecentDocuments: (id)sender
 {
   [_recentDocuments removeAllObjects];
+  [[NSUserDefaults standardUserDefaults] 
+    setObject: _recentDocuments forKey: NSRecentDocuments];
 }
 
 // The number of remembered recent documents
@@ -633,6 +739,8 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     }
 
   [_recentDocuments addObject: anURL];
+  [[NSUserDefaults standardUserDefaults] 
+    setObject: _recentDocuments forKey: NSRecentDocuments];
 }
 
 - (NSArray *) recentDocumentURLs
