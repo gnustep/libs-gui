@@ -28,7 +28,7 @@
 #include "config.h"
 #include "NSBitmapImageRep+GIF.h"
 
-#if HAVE_LIBUNGIF
+#if HAVE_LIBUNGIF || HAVE_LIBGIF
 
 /*
 gif_lib.h (4.1.0b1, possibly other versions) uses Object as the name of an
@@ -336,7 +336,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 
 @end
 
-#else /* !HAVE_LIBUNGIF */
+#else /* !HAVE_LIBUNGIF || !HAVE_LIBGIF */
 
 @implementation NSBitmapImageRep (GIFReading)
 + (BOOL) _bitmapIsGIF: (NSData *)imageData
@@ -351,5 +351,5 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 }
 @end
 
-#endif /* !HAVE_LIBUNGIF */
+#endif /* !HAVE_LIBUNGIF || !HAVE_LIBGIF */
 

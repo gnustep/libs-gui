@@ -133,7 +133,7 @@ static BOOL supports_lzw_compression = NO;
       types = [[NSArray alloc] initWithObjects:
 	@"tiff", @"tif",
 	@"pnm", @"ppm",
-#if HAVE_LIBUNGIF
+#if HAVE_LIBUNGIF || HAVE_LIBGIF
 	@"gif",
 #endif
 #if HAVE_LIBJPEG

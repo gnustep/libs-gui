@@ -85,6 +85,25 @@ AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rint rintf)
 
 #--------------------------------------------------------------------
+# Simple way to add a bunch of paths to the flags
+#--------------------------------------------------------------------
+AC_ARG_WITH(include-flags,
+    [  --with-include-flags=FLAGS specify all include flags at once],
+    include_flags="$withval", include_flags="no")
+if test ${include_flags} != "no"; then
+    CPPFLAGS="$CPPFLAGS ${include_flags}"
+    ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${include_flags}"
+fi
+
+AC_ARG_WITH(library-flags,
+    [  --with-library-flags=FLAGS specify all library flags at once],
+    library_flags="$withval", library_flags="no")
+if test ${library_flags} != "no"; then
+    LDFLAGS="$LDFLAGS ${library_flags}"
+    ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${library_flags}"
+fi
+
+#--------------------------------------------------------------------
 # Find JPEG
 #--------------------------------------------------------------------
 GRAPHIC_CFLAGS=
@@ -196,31 +215,20 @@ fi
 AC_ARG_ENABLE(ungif,
   [  --disable-ungif         Disable libungif-based GIF support],,
   enable_ungif=yes)
-
-AC_ARG_WITH(ungif_library, 
-           [  --with-ungif-library=DIR UNGIF library file are in DIR], ,
-           with_ungif_library=)
-AC_ARG_WITH(ungif_include,  
-	[  --with-ungif-include=DIR UNGIF include files are in DIR], ,
-        with_ungif_include=)
+AC_ARG_ENABLE(libgif,
+  [  --enable-libgif         Enable libgif-based GIF support],,
+  enable_libgif=no)
+if test "${enable_libgif}" = yes; then
+  enable_ungif=no
+fi
 
 if test "${enable_ungif}" = yes; then
-  orig_CPPFLAGS="${CPPFLAGS}"
-  orig_LDFLAGS="${LDFLAGS}"
-  orig_LIBS="${LIBS}"
-
-  if test -n "${with_ungif_library}"; then
-    with_ungif_library="-L$with_ungif_library"
-  fi
-  if test -n "${with_ungif_include}"; then
-    with_ungif_include="-I$with_ungif_include"
-  fi
-  CPPFLAGS="${with_ungif_include} ${CPPFLAGS}"
-  LDFLAGS="${with_ungif_library} ${LDFLAGS}"
-
   AC_CHECK_LIB(ungif, DGifOpen)
 
   if test "${with_x}" != no && test "${ac_cv_lib_ungif_DGifOpen}" = no; then
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LDFLAGS="${LDFLAGS}"
+    orig_LIBS="${LIBS}"
     AC_MSG_NOTICE([Checking if ungif is linked against -lX11])
     # This implies either that ungif is not installed at all, or that it
     # explicitly refers to the symbols defined in X11.  Now see if the latter
@@ -241,12 +249,42 @@ if test "${enable_ungif}" = yes; then
       # the flags so that -gui gets linked against the X11 library to support
       # ungif.
       AC_MSG_NOTICE([-gui will be linked against -lX11 to support ungif images])
-      GRAPHIC_CFLAGS="-I${ac_x_includes} ${with_ungif_include} $GRAPHIC_CFLAGS"
-      GRAPHIC_LFLAGS="-L${ac_x_libraries} ${with_ungif_library} $GRAPHIC_LFLAGS"
+      GRAPHIC_CFLAGS="-I${ac_x_includes} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} $GRAPHIC_LFLAGS"
     fi
-  else
-    GRAPHIC_CFLAGS="${with_ungif_include} $GRAPHIC_CFLAGS"
-    GRAPHIC_LFLAGS="${with_ungif_library} $GRAPHIC_LFLAGS"
+  fi
+fi
+
+if test "${enable_libgif}" = yes; then
+  AC_CHECK_LIB(gif, DGifOpen)
+
+  if test "${with_x}" != no && test "${ac_cv_lib_gif_DGifOpen}" = no; then
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LDFLAGS="${LDFLAGS}"
+    orig_LIBS="${LIBS}"
+    AC_MSG_NOTICE([Checking if libgif is linked against -lX11])
+    # This implies either that libgif is not installed at all, or that it
+    # explicitly refers to the symbols defined in X11.  Now see if the latter
+    # is the case.
+    CPPFLAGS="${CPPFLAGS} -I${ac_x_includes}"
+    LDFLAGS="${LDFLAGS} -L${ac_x_libraries}"
+    LIBS="${LIBS} -lX11"
+
+    AC_CHECK_LIB(gif, DGifCloseFile)
+    if test "${ac_cv_lib_gif_DGifCloseFile}" = no; then
+      # This indicates libgif is not installed at all.  The flags reverts to
+      # the orignal value.
+      CPPFLAGS="${orig_CPPFLAGS}"
+      LDFLAGS="${orig_LDFLAGS}"
+      LIBS="${orig_LIBS}"
+    else
+      # This indicates libgif actually refers to the X11's symbols.  We modify
+      # the flags so that -gui gets linked against the X11 library to support
+      # libgif.
+      AC_MSG_NOTICE([-gui will be linked against -lX11 to support libgif images])
+      GRAPHIC_CFLAGS="-I${ac_x_includes} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} $GRAPHIC_LFLAGS"
+    fi
   fi
 fi
 

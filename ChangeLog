@@ -1,3 +1,9 @@
+2005-03-21  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Check for libgif
+	* Source/NSBitmapImageRep+GIF.m: Support libgif
+	* Source/NSBitmapImageRem.m: Idem. (Fixes Bug #12362).
+
 2005-03-19  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/AppKit/DPSOperators.h, Headers/AppKit/NSGraphics.h:

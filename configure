@@ -852,6 +852,7 @@ Optional Features:
   --disable-jpeg          Disable JPEG support
   --disable-png           Disable PNG support
   --disable-ungif         Disable libungif-based GIF support
+  --enable-libgif         Enable libgif-based GIF support
   --disable-gsnd          Disable gsnd server
   --disable-cups          Disable cups printing support
 
@@ -859,12 +860,12 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
+  --with-include-flags=FLAGS specify all include flags at once
+  --with-library-flags=FLAGS specify all library flags at once
   --with-jpeg-library=DIR JPEG library file are in DIR
   --with-jpeg-include=DIR JPEG include files are in DIR
   --with-tiff-library=DIR TIFF library file are in DIR
   --with-tiff-include=DIR TIFF include files are in DIR
-  --with-ungif-library=DIR UNGIF library file are in DIR
-  --with-ungif-include=DIR UNGIF include files are in DIR
   --with-audiofile-library=DIR AUDIOFILE library file are in DIR
   --with-audiofile-include=DIR AUDIOFILE include files are in DIR
 
@@ -4014,6 +4015,35 @@ done
 
 
 #--------------------------------------------------------------------
+# Simple way to add a bunch of paths to the flags
+#--------------------------------------------------------------------
+
+# Check whether --with-include-flags or --without-include-flags was given.
+if test "${with_include_flags+set}" = set; then
+  withval="$with_include_flags"
+  include_flags="$withval"
+else
+  include_flags="no"
+fi;
+if test ${include_flags} != "no"; then
+    CPPFLAGS="$CPPFLAGS ${include_flags}"
+    ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${include_flags}"
+fi
+
+
+# Check whether --with-library-flags or --without-library-flags was given.
+if test "${with_library_flags+set}" = set; then
+  withval="$with_library_flags"
+  library_flags="$withval"
+else
+  library_flags="no"
+fi;
+if test ${library_flags} != "no"; then
+    LDFLAGS="$LDFLAGS ${library_flags}"
+    ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${library_flags}"
+fi
+
+#--------------------------------------------------------------------
 # Find JPEG
 #--------------------------------------------------------------------
 GRAPHIC_CFLAGS=
@@ -4997,38 +5027,18 @@ if test "${enable_ungif+set}" = set; then
 else
   enable_ungif=yes
 fi;
-
-
-# Check whether --with-ungif_library or --without-ungif_library was given.
-if test "${with_ungif_library+set}" = set; then
-  withval="$with_ungif_library"
+# Check whether --enable-libgif or --disable-libgif was given.
+if test "${enable_libgif+set}" = set; then
+  enableval="$enable_libgif"
 
 else
-  with_ungif_library=
+  enable_libgif=no
 fi;
-
-# Check whether --with-ungif_include or --without-ungif_include was given.
-if test "${with_ungif_include+set}" = set; then
-  withval="$with_ungif_include"
-
-else
-  with_ungif_include=
-fi;
+if test "${enable_libgif}" = yes; then
+  enable_ungif=no
+fi
 
 if test "${enable_ungif}" = yes; then
-  orig_CPPFLAGS="${CPPFLAGS}"
-  orig_LDFLAGS="${LDFLAGS}"
-  orig_LIBS="${LIBS}"
-
-  if test -n "${with_ungif_library}"; then
-    with_ungif_library="-L$with_ungif_library"
-  fi
-  if test -n "${with_ungif_include}"; then
-    with_ungif_include="-I$with_ungif_include"
-  fi
-  CPPFLAGS="${with_ungif_include} ${CPPFLAGS}"
-  LDFLAGS="${with_ungif_library} ${LDFLAGS}"
-
 
 echo "$as_me:$LINENO: checking for DGifOpen in -lungif" >&5
 echo $ECHO_N "checking for DGifOpen in -lungif... $ECHO_C" >&6
@@ -5105,6 +5115,9 @@ fi
 
 
   if test "${with_x}" != no && test "${ac_cv_lib_ungif_DGifOpen}" = no; then
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LDFLAGS="${LDFLAGS}"
+    orig_LIBS="${LIBS}"
     { echo "$as_me:$LINENO: Checking if ungif is linked against -lX11" >&5
 echo "$as_me: Checking if ungif is linked against -lX11" >&6;}
     # This implies either that ungif is not installed at all, or that it
@@ -5200,12 +5213,190 @@ fi
       # ungif.
       { echo "$as_me:$LINENO: -gui will be linked against -lX11 to support ungif images" >&5
 echo "$as_me: -gui will be linked against -lX11 to support ungif images" >&6;}
-      GRAPHIC_CFLAGS="-I${ac_x_includes} ${with_ungif_include} $GRAPHIC_CFLAGS"
-      GRAPHIC_LFLAGS="-L${ac_x_libraries} ${with_ungif_library} $GRAPHIC_LFLAGS"
+      GRAPHIC_CFLAGS="-I${ac_x_includes} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} $GRAPHIC_LFLAGS"
     fi
-  else
-    GRAPHIC_CFLAGS="${with_ungif_include} $GRAPHIC_CFLAGS"
-    GRAPHIC_LFLAGS="${with_ungif_library} $GRAPHIC_LFLAGS"
+  fi
+fi
+
+if test "${enable_libgif}" = yes; then
+
+echo "$as_me:$LINENO: checking for DGifOpen in -lgif" >&5
+echo $ECHO_N "checking for DGifOpen in -lgif... $ECHO_C" >&6
+if test "${ac_cv_lib_gif_DGifOpen+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgif  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char DGifOpen ();
+int
+main ()
+{
+DGifOpen ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_gif_DGifOpen=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_gif_DGifOpen=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_gif_DGifOpen" >&5
+echo "${ECHO_T}$ac_cv_lib_gif_DGifOpen" >&6
+if test $ac_cv_lib_gif_DGifOpen = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGIF 1
+_ACEOF
+
+  LIBS="-lgif $LIBS"
+
+fi
+
+
+  if test "${with_x}" != no && test "${ac_cv_lib_gif_DGifOpen}" = no; then
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LDFLAGS="${LDFLAGS}"
+    orig_LIBS="${LIBS}"
+    { echo "$as_me:$LINENO: Checking if libgif is linked against -lX11" >&5
+echo "$as_me: Checking if libgif is linked against -lX11" >&6;}
+    # This implies either that libgif is not installed at all, or that it
+    # explicitly refers to the symbols defined in X11.  Now see if the latter
+    # is the case.
+    CPPFLAGS="${CPPFLAGS} -I${ac_x_includes}"
+    LDFLAGS="${LDFLAGS} -L${ac_x_libraries}"
+    LIBS="${LIBS} -lX11"
+
+
+echo "$as_me:$LINENO: checking for DGifCloseFile in -lgif" >&5
+echo $ECHO_N "checking for DGifCloseFile in -lgif... $ECHO_C" >&6
+if test "${ac_cv_lib_gif_DGifCloseFile+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgif  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char DGifCloseFile ();
+int
+main ()
+{
+DGifCloseFile ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_gif_DGifCloseFile=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_gif_DGifCloseFile=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_gif_DGifCloseFile" >&5
+echo "${ECHO_T}$ac_cv_lib_gif_DGifCloseFile" >&6
+if test $ac_cv_lib_gif_DGifCloseFile = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGIF 1
+_ACEOF
+
+  LIBS="-lgif $LIBS"
+
+fi
+
+    if test "${ac_cv_lib_gif_DGifCloseFile}" = no; then
+      # This indicates libgif is not installed at all.  The flags reverts to
+      # the orignal value.
+      CPPFLAGS="${orig_CPPFLAGS}"
+      LDFLAGS="${orig_LDFLAGS}"
+      LIBS="${orig_LIBS}"
+    else
+      # This indicates libgif actually refers to the X11's symbols.  We modify
+      # the flags so that -gui gets linked against the X11 library to support
+      # libgif.
+      { echo "$as_me:$LINENO: -gui will be linked against -lX11 to support libgif images" >&5
+echo "$as_me: -gui will be linked against -lX11 to support libgif images" >&6;}
+      GRAPHIC_CFLAGS="-I${ac_x_includes} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} $GRAPHIC_LFLAGS"
+    fi
   fi
 fi
 
