@@ -1,7 +1,18 @@
 2004-01-12 Serg Stoyan <stoyan@on.com.ua>
 
-	* Source/GSTextTitle.m (setOwner): Recognize class that responds to
-	menuRepresetation method as NSMenu derived class. Fix for Gorm.
+	* Source/GSTitleView.m (setOwner): Recognize class that responds to
+	menuRepresentation method as NSMenu derived class. Fix for Gorm.
+
+	* Images/GNUmakefile: Added common_Miniaturize*.tiff to IMAGE_FILES.
+	* Images/common_CloseBroken.tiff: Updated.
+	* Images/common_CloseBrokenH.tiff: Added.
+
+	* Images/common_WMClose.tiff: Deleted.
+	* Images/common_WMCloseBroken.tiff: Ditto.
+
+	* Source/NSApplication.m: (setImageForWindowsItem:): Use common_Close 
+	and common_CloseBroken images instead of removed common_WMClose and
+	common_WMCloseBroken.
 	
 2004-01-11  Fred Kiefer <FredKiefer@gmx.de>
 
