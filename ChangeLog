@@ -1,3 +1,12 @@
+2003-11-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m (-tile) corrected computation of columnCount,
+	so that at least one column gets diplayed, even when this is
+	smaller than the minColumnwidth. 
+	* Source/NSMatrix.m (-drawRect:) corrected clipping of row2, here
+	row1 had been tested. 
+	* Source/NSScrollView.m (-drawRect:) removed the saving of the context.
+	
 2003-11-22 15:07  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSNibTemplates.m ([GSNibContainer -awakeWithContext:]):

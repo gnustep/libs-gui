@@ -1843,7 +1843,7 @@ static SEL getSel;
 
   if (row2 < 0)
     row2 = 0;
-  else if (row1 >= _numRows)
+  else if (row2 >= _numRows)
     row2 = _numRows - 1;
 
   if (col2 < 0)

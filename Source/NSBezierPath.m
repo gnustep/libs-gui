@@ -1668,6 +1668,155 @@ typedef struct _PathElement
 //
 // Hit detection  
 // 
+#if 1
+/*
+ * Return the contribution of a path segment from start to end to 
+ * the containsPoint method for point.
+ * see http://graphics.cs.ucdavis.edu/~okreylos/TAship/Spring2000/PointInPolygon.html 
+ */
+static 
+int contribution(NSPoint point, NSPoint start, NSPoint end)
+{
+  float t;
+
+  // Both point on the same half plain
+  if ((start.y < point.y) == (end.y < point.y))
+    {
+      return 0;
+    }
+  
+  t = (point.y - start.y) * (end.x - start.x) / (end.y - start.y) + start.x;
+  /*
+   * The original algorithm has a ">=" here, but this results in points 
+   * on the line to be regarded as inside
+   */
+  if (t > point.x)
+    {
+      return 1;
+    }
+  else 
+    {
+      return 0;
+    }
+}
+
+static
+int contribution_of_curve(NSPoint point, NSPoint coeff[], float flatness)
+{
+  NSBezierPath *path;
+  int sum = 0;
+
+  path = [NSBezierPath new];
+  [path moveToPoint: coeff[0]];
+  flatten(coeff, flatness, path);
+  [path closePath];
+  sum = [path contributionToContains: point];
+  sum -= contribution(point,  coeff[3],  coeff[0]);
+  RELEASE(path);
+  return sum;
+}
+
+- (int) contributionToContains: (NSPoint)point
+{
+  int i;
+  // Full total of contribution
+  int sum = 0;
+  // running total for the current subpath
+  int sub = 0;
+  NSBezierPathElement type;
+  NSPoint p, pts[3];
+  NSPoint coeff[4];
+  NSPoint first_p, last_p;
+  int count = [self elementCount];
+  BOOL first = YES;
+
+  for(i = 0; i < count; i++) 
+    {
+      type = [self elementAtIndex: i associatedPoints: pts];
+      
+      switch(type) 
+        {
+	  case NSMoveToBezierPathElement:
+	      // Was the last sub path closed without close?
+	      if (!first && NSEqualPoints(first_p, last_p))
+	        {
+		  sum += sub;
+		}
+	      first_p = last_p = pts[0];
+	      first = NO;
+	      break;
+	  case NSLineToBezierPathElement:
+	      p = pts[0];
+	      if (first)
+	        {
+		  first_p = last_p = p;
+		  first = NO;
+		}
+	      else
+	        {
+		  sub += contribution(point, last_p, p);  
+		  last_p = p;
+		}
+	      break;
+	  case NSCurveToBezierPathElement:
+	      if (first)
+	        {
+		  first_p = last_p = pts[2];
+		  first = NO;
+		}
+	      else
+	        {
+		  coeff[0] = last_p;
+		  coeff[1] = pts[0];
+		  coeff[2] = pts[1];
+		  coeff[3] = pts[2];
+		  sub += contribution_of_curve(point, coeff, [self flatness]);  
+		  last_p = pts[2];
+		}
+	      break;
+	  case NSClosePathBezierPathElement:
+	      sub +=  contribution(point, last_p, first_p);
+	      sum += sub;
+	      last_p = first_p;
+	      first = YES;
+	      break;
+	  default:
+	      break;
+	}
+    }  
+
+  /*
+   * Check if the last sub path was closed.
+   * It wont do any harm, if there was only one point in the subpath, 
+   * as this will result in a subtotal of 0.
+   */
+  if (!first && NSEqualPoints(first_p, last_p))
+    {
+      sum += sub;
+    }
+  
+  return sum;
+}
+
+- (BOOL)containsPoint:(NSPoint)point
+{
+  int sum;
+
+  if(![self elementCount])
+    return NO;
+
+  if (!NSPointInRect(point, [self bounds]))
+    return NO;
+
+  sum = [self contributionToContains: point];
+  if((sum % 2) == 1)
+    return YES;
+  else	
+    return NO;
+}
+
+#else
+
 #define PMAX 10000
 
 - (BOOL)containsPoint:(NSPoint)point
@@ -1769,6 +1918,7 @@ typedef struct _PathElement
   else	
     return NO;
 }
+# endif
 
 @end // GSBezierPath
 

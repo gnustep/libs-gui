@@ -1623,11 +1623,11 @@ static NSTextFieldCell *titleCell;
     {
       float colWidth = _minColumnWidth + scrollerWidth;
 
-      if ((int)(_frame.size.width > _minColumnWidth))
-	{
-	  if (_separatesColumns)
-	    colWidth += NSBR_COLUMN_SEP;
+      if (_separatesColumns)
+	colWidth += NSBR_COLUMN_SEP;
 
+      if (_frame.size.width > colWidth)
+	{
 	  columnCount = (int)(_frame.size.width / colWidth);
 	}
       else

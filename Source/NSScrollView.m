@@ -904,9 +904,10 @@ static float scrollerWidth;
 
 - (void) drawRect: (NSRect)rect
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext();
-  float horizLinePosition, horizLineLength = _bounds.size.width;
+  NSGraphicsContext *ctxt = GSCurrentContext();
   NSSize border = _sizeForBorderType(_borderType);
+  float horizLinePosition = border.width;
+  float horizLineLength = _bounds.size.width;
   float headerViewHeight = 0;
 
   if (_hasHeaderView == YES)
@@ -920,7 +921,6 @@ static float scrollerWidth;
 					  cornerView] frame].size.height;
     }
   
-  DPSgsave(ctxt);
   switch (_borderType)
     {
       case NSNoBorder:
@@ -940,10 +940,8 @@ static float scrollerWidth;
 	break;
     }
 
-  horizLinePosition = border.width;
-
+  [[NSColor controlDarkShadowColor] set];
   DPSsetlinewidth(ctxt, 1);
-  DPSsetgray(ctxt, 0);
   if (_hasVertScroller)
     {
       horizLinePosition = scrollerWidth + border.width;
@@ -978,8 +976,6 @@ static float scrollerWidth;
       DPSrlineto(ctxt, horizLineLength - 1, 0);
       DPSstroke(ctxt);
     }
-
-  DPSgrestore(ctxt);
 }
 
 - (NSRect) documentVisibleRect
