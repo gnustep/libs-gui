@@ -46,23 +46,23 @@
  *	perform tasks for the local NSPasteboard objects.
  */
 @protocol PasteboardObject
-- (int) addTypes: (bycopy NSArray*)types
+- (int) addTypes: (in bycopy NSArray*)types
 	   owner: (id)owner
       pasteboard: (NSPasteboard*)pb
         oldCount: (int)count;
-- (NSString*) availableTypeFromArray: (bycopy NSArray*)types
+- (NSString*) availableTypeFromArray: (in bycopy NSArray*)types
 			 changeCount: (int*)count;
 - (int) changeCount;
-- (NSData*) dataForType: (NSString*)type
+- (NSData*) dataForType: (in bycopy NSString*)type
 	       oldCount: (int)count
           mustBeCurrent: (BOOL)flag;
-- (int) declareTypes: (bycopy NSArray*)types
+- (int) declareTypes: (in bycopy NSArray*)types
 	       owner: (id)owner
           pasteboard: (NSPasteboard*)pb;
 - (NSString*) name;
 - (void) releaseGlobally;
-- (BOOL) setData: (NSData*)data
-         forType: (NSString*)type
+- (BOOL) setData: (in bycopy NSData*)data
+         forType: (in bycopy NSString*)type
           isFile: (BOOL)flag
         oldCount: (int)count;
 - (void) setHistory: (unsigned)length;
@@ -76,14 +76,22 @@
 @protocol PasteboardServer
 // Use this next to implement [+pasteboardByFilteringData:ofType:] and
 // [+pasteboardByFilteringFile:] methods.
-- (id<PasteboardObject>) pasteboardByFilteringData: (NSData*)data
-					    ofType: (NSString*)type
+- (id<PasteboardObject>) pasteboardByFilteringData: (in bycopy NSData*)data
+					    ofType: (in bycopy NSString*)type
 				            isFile: (BOOL)flag;
 - (id<PasteboardObject>) pasteboardByFilteringTypesInPasteboard: pb;
-- (id<PasteboardObject>) pasteboardWithName: (NSString*)name;
+- (id<PasteboardObject>) pasteboardWithName: (in bycopy NSString*)name;
 - (id<PasteboardObject>) pasteboardWithUniqueName;
-- (bycopy NSArray*) typesFilterableTo: (NSString*)type;
+- (bycopy NSArray*) typesFilterableTo: (in bycopy NSString*)type;
 @end
 
+/*
+ *	This protocol is used by the server to ask pasteboard clients to
+ *	provide additional data.
+ */
+@protocol PasteboardCallback
+- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type;
+- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type andVersion:(int)v;
+@end
 
 #endif // _GNUstep_H_PasteboardServer
