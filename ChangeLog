@@ -1,3 +1,11 @@
+1999-07-23  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m: Added ifndef's to comment out areas of code
+	that don't compile on OPENSTEP/MacOSX machines.
+	* Model/GMArchiver.m: Likewise.
+	* Model/IMConnectors.m (GSSetInstanceVariable): Dummy function
+	on non-gstep-base machines.
+
 Fri Jul 23 11:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/gpbs.m: In ihandler() reset signal handler.
