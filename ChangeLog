@@ -1,3 +1,8 @@
+2000-03-17  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSGraphics.h: Removed the inclusion of PSOps
+	that was messing up Functions.m in the Tools area.
+
 Thu Mar 16 13:15:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSText.m: Fixes by Fred Kiefer for rich text display.

@@ -27,7 +27,6 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
-#include <AppKit/PSOperators.h>
 
 @class NSString;
 @class NSColor;
@@ -142,6 +141,9 @@ void NSCountWindows(int *count);
 void NSWindowList(int size, int list[]);
 
 #ifndef	NO_GNUSTEP
+@class	NSArray;
+@class	NSWindow;
+
 NSArray* GSAllWindows();
 NSWindow* GSWindowWithNumber(int num);
 #endif
