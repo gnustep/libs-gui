@@ -59,11 +59,11 @@
 {
   mcell_has_submenu = NO;
   [super init];
-  [self setTarget:nil];
-  [self setHighlightsBy: NSChangeBackgroundCellMask];
-  [self setShowsStateBy: NSNoCellMask];
-  [self setImagePosition: NSNoImage];
-  [self setAlignment: NSLeftTextAlignment];
+  _target = nil;
+  _highlightsByMask = NSChangeBackgroundCellMask;
+  _showAltStateMask = NSNoCellMask;
+  _image_position = NSNoImage;
+  _text_align = NSLeftTextAlignment;
 
   _drawMethods[0] = (DrawingIMP)
     [self methodForSelector:@selector(drawStateImageWithFrame:inView:)];
@@ -130,7 +130,6 @@
   NSSize   componentSize;
   NSImage *anImage = nil;
   float    neededMenuItemHeight = 20;
-  NSFont  *aFont;
 
   // State Image
   if ([mcell_item changesState])
@@ -170,12 +169,11 @@
 
   // Title and Key Equivalent
   // FIXME: Calculate height (Lazaro).
-  aFont = [self font];
-  if (aFont)
+  if (_cell_font)
     {
-      mcell_titleWidth = [aFont widthOfString:[mcell_item title]];
+      mcell_titleWidth = [_cell_font widthOfString:[mcell_item title]];
       mcell_keyEquivalentWidth =
-	[aFont widthOfString:[mcell_item keyEquivalent]];
+	[_cell_font widthOfString:[mcell_item keyEquivalent]];
     }
   else
     {
@@ -255,7 +253,7 @@
     cellFrame.origin.x += [mcell_menuView stateImageWidth]
                        + 2 * [mcell_menuView horizontalEdgePadding];
 
-  switch ([self imagePosition])
+  switch (_image_position)
     {
       case NSNoImage: 
 	cellFrame = NSZeroRect;
@@ -314,7 +312,7 @@
     cellFrame.origin.x += [mcell_menuView stateImageWidth]
                         + 2 * [mcell_menuView horizontalEdgePadding];
 
-  switch ([self imagePosition])
+  switch (_image_position)
     {
       case NSNoImage:
       case NSImageOverlaps:
@@ -352,7 +350,7 @@
 - (void) drawBorderAndBackgroundWithFrame:(NSRect)cellFrame
 				  inView:(NSView *)controlView
 {
-  if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask))
+  if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
     {
       NSDrawGrayBezel(cellFrame, NSZeroRect);
     }
@@ -376,7 +374,7 @@
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
-  if ([control_view isFlipped])
+  if ([controlView isFlipped])
     position.y += size.height;
   [mcell_imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
 }
@@ -399,7 +397,7 @@
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
-      if ([control_view isFlipped])
+      if ([controlView isFlipped])
 	position.y += size.height;
       [arrowImage  compositeToPoint: position operation: NSCompositeCopy];
     }
@@ -446,7 +444,7 @@
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
-  if ([control_view isFlipped])
+  if ([controlView isFlipped])
     position.y += size.height;
   [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
 }
@@ -455,9 +453,9 @@
 		    inView:(NSView *)controlView
 {
   if ([mcell_item isEnabled])
-    [self setEnabled: YES];
+    _cell.is_enabled = YES;
   else
-    [self setEnabled: NO];
+    _cell.is_enabled = NO;
 
   [self _drawText: [mcell_item title]
 	  inFrame: [self titleRectForBounds: cellFrame]];
@@ -469,7 +467,7 @@
   [self setControlView: controlView];
 
   // Transparent buttons never draw
-  if ([self isTransparent])
+  if (_is_transparent)
     return;
 
   // Do nothing if cell's frame rect is zero
@@ -479,7 +477,7 @@
   [controlView lockFocus];
 
   // Draw the border if needed
-  if ([self isBordered])
+  if (_cell.is_bordered)
     [self drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -494,27 +492,27 @@
   NSColor  *backgroundColor = nil;
 
   // Transparent buttons never draw
-  if ([self isTransparent])
+  if (_is_transparent)
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
   // Pushed in buttons contents are displaced to the bottom right 1px
-  if ([self isBordered] && mcell_highlighted
-      && ([self highlightsBy] & NSPushInCellMask))
-    PStranslate(1., [control_view isFlipped] ? 1. : -1.);
+  if (_cell.is_bordered && mcell_highlighted
+      && (_highlightsByMask & NSPushInCellMask))
+    PStranslate(1., [controlView isFlipped] ? 1. : -1.);
 
   // Determine the background color
-  if ([self state])
+  if (_cell_state)
     {
-      if ([self showsStateBy]
+      if (_showAltStateMask
 	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
 	backgroundColor = [NSColor selectedMenuItemColor];
     }
 
   if (mcell_highlighted)
     {
-      if ([self highlightsBy]
+      if (_highlightsByMask
 	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
 	backgroundColor = [NSColor selectedMenuItemColor];
     }
@@ -536,18 +534,18 @@
    * drawing methods.
    */
   if (mcell_highlighted)
-    mask = [self highlightsBy];
+    mask = _highlightsByMask;
   else
-    mask = [self showsStateBy];
+    mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = [self state];
+    showAlternate = _cell_state;
 
   if (mcell_highlighted || showAlternate)
     {
-      mcell_imageToDisplay = [self alternateImage];
+      mcell_imageToDisplay = _altImage;
       if (!mcell_imageToDisplay)
 	mcell_imageToDisplay = [mcell_item image];
-      mcell_titleToDisplay = [self alternateTitle];
+      mcell_titleToDisplay = _altContents;
       if (mcell_titleToDisplay == nil || [mcell_titleToDisplay isEqual: @""])
         mcell_titleToDisplay = [mcell_item title];
     }
