@@ -1,3 +1,13 @@
+Wed Feb 17  8:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSSplitView.m: ([-setDelegate:]) corrected to register
+	delegate to recieve notifications.
+	* Source/NSText.m: ([-setDelegate:]) corrected to register
+	delegate to recieve notifications.
+	* Source/NSTextView.m: ([-setDelegate:]) implemented to register
+	delegate to recieve notifications.
+	* Source/externs.m: Added missing TextView notifications.
+
 Wed Feb 17  4:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-setDelegate:]) remove old delegate as

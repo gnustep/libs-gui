@@ -33,7 +33,6 @@
 #include <math.h>
 
 #import <Foundation/Foundation.h>
-#import <Foundation/NSRunLoop.h>
 
 #import <AppKit/AppKit.h>
 
@@ -265,11 +264,14 @@ RETURN_LABEL:
   [self display];
 }
 
-- (void)adjustSubviews
+- (void) adjustSubviews
 {
-  NSRect	fr = [self frame];
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSRect		fr = [self frame];
 
-NSLog (@"XRSplitView  adjustSubviews");
+  [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
+		    object: self];
+
   if(delegate && [delegate respondsToSelector:@selector(splitView:resizeSubviewsWithOldSize:)])
     {	
       [delegate splitView:self resizeSubviewsWithOldSize:fr.size];
@@ -348,8 +350,8 @@ NSLog (@"XRSplitView  adjustSubviews");
 	    }
 	}
     }
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:NSSplitViewDidResizeSubviewsNotification object:self];
+  [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
+		    object: self];
 }
 
 - (void)addSubview:(NSView *)aView
@@ -358,10 +360,6 @@ NSLog (@"XRSplitView  adjustSubviews");
 {	
   [super addSubview:aView positioned:place relativeTo:otherView];
 
-  /* register the subviews up for notification */
-  //[[NSNotificationCenter defaultCenter] addObserver:aView
-  //    selector:@selector(splitViewDidResizeSubviews:)
-  //    name:NSSplitViewDidResizeSubviewsNotification object:self];    
   [self adjustSubviews];
 }
 
@@ -522,16 +520,28 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
   [[self window] invalidateCursorRectsForView:self];
 }
 
-- delegate
+- (id) delegate
 {	
   return delegate;
 }
 
-- (void)setDelegate:anObject
+- (void) setDelegate: (id)anObject
 {	
-  if(delegate==anObject) return;
-  [delegate release];
-  delegate=[anObject retain];
+  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+
+  if (delegate)
+    [nc removeObserver: delegate name: nil object: self];
+  delegate = anObject;
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([delegate respondsToSelector: @selector(splitView##notif_name:)]) \
+    [nc addObserver: delegate \
+	   selector: @selector(splitView##notif_name:) \
+	       name: NSSplitView##notif_name##Notification \
+	     object: self]
+
+  SET_DELEGATE_NOTIFICATION(DidResizeSubviews);
+  SET_DELEGATE_NOTIFICATION(WillResizeSubviews);
 }
 
 - (NSColor *)dividerColor

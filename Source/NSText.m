@@ -1585,35 +1585,51 @@ NSLog(@"keycode:%x",keyCode);
 //
 // Managing the Delegate
 //
-- delegate						{ return delegate; }
+- (id) delegate
+{
+  return delegate;
+}
 
--(void) setDelegate:anObject
-{	delegate = anObject;
+-(void) setDelegate: (id)anObject
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  if (delegate)
+    [nc removeObserver: delegate name: nil object: self];
+  delegate = anObject;
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([delegate respondsToSelector: @selector(text##notif_name:)]) \
+    [nc addObserver: delegate \
+	   selector: @selector(text##notif_name:) \
+	       name: NSText##notif_name##Notification \
+	     object: self]
+
+  SET_DELEGATE_NOTIFICATION(DidBeginEditing);
+  SET_DELEGATE_NOTIFICATION(DidChange);
+  SET_DELEGATE_NOTIFICATION(DidEndEditing);
 }
 
 //
 // Implemented by the Delegate
 //
 
--(void) textDidBeginEditing:(NSNotification *)aNotification
-{	if ([delegate respondsToSelector:@selector(textDidBeginEditing:)])
-    	[delegate textDidBeginEditing:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidBeginEditingNotification object:self]];
-
-	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidBeginEditingNotification object:self];
+-(void) textDidBeginEditing: (NSNotification*)aNotification
+{
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextDidBeginEditingNotification object: self];
 }
 
-- (void)textDidChange:(NSNotification *)aNotification
-{	if ([delegate respondsToSelector:@selector(textDidChange:)])
-		[delegate textDidChange:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidChangeNotification object:self]];
-
-	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidChangeNotification object:self];
+- (void) textDidChange: (NSNotification*)aNotification
+{
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextDidChangeNotification object: self];
 }
 
--(void)textDidEndEditing:(NSNotification *)aNotification
-{	if ([delegate respondsToSelector:@selector(textDidEndEditing:)])
-    	[delegate textDidEndEditing:aNotification? aNotification:[NSNotification notificationWithName:NSTextDidEndEditingNotification object:self]];
-
-	[[NSNotificationCenter defaultCenter] postNotificationName:NSTextDidEndEditingNotification object:self];
+-(void) textDidEndEditing: (NSNotification*)aNotification
+{
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextDidEndEditingNotification object: self];
 }
 
 -(BOOL) textShouldBeginEditing:(NSText *)textObject

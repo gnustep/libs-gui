@@ -354,4 +354,21 @@ if(container) [self setTextContainer: container];
 {
 }
 
+- (void) setDelegate: (id) anObject
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  [super setDelegate: anObject];
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([delegate respondsToSelector: @selector(textView##notif_name:)]) \
+    [nc addObserver: delegate \
+	   selector: @selector(textView##notif_name:) \
+	       name: NSTextView##notif_name##Notification \
+	     object: self]
+
+  SET_DELEGATE_NOTIFICATION(DidChangeSelection);
+  SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
+}
+
 @end
