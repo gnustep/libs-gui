@@ -1689,7 +1689,7 @@ TODO: not really clear what these should do
 
 -(void) invalidateDisplayForCharacterRange: (NSRange)aRange
 {
-  if (layout_char < aRange.location)
+  if (layout_char <= aRange.location)
     return;
   if (layout_char < aRange.location + aRange.length)
     aRange.length = layout_char - aRange.location;
@@ -1777,6 +1777,7 @@ this file describes this.
   NSRange r;
   unsigned int original_last_glyph, new_last_glyph;
   int glyph_delta;
+  BOOL had_layout;
 
 /*  printf("\n*** invalidating\n");
   [self _dumpLayout];*/
@@ -1789,6 +1790,7 @@ this file describes this.
   TODO: make sure last_glyph is set as expected
   */
   original_last_glyph = layout_glyph;
+  had_layout = layout_char > 0;
 
   if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
@@ -1804,7 +1806,9 @@ this file describes this.
         layout_char = r.location;
     }
 
-  if (layout_char == [_textStorage length])
+  if (!layout_char)
+    new_last_glyph = 0;
+  else if (layout_char == [_textStorage length])
     new_last_glyph = [self numberOfGlyphs];
   else
     new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
@@ -1814,7 +1818,7 @@ this file describes this.
 /*  printf("original=%i, new=%i, delta %i\n",
     original_last_glyph,new_last_glyph,glyph_delta);*/
 
-  if (r.location <= layout_char)
+  if (had_layout && r.location <= layout_char)
     {
       unsigned int glyph_index, last_glyph;
       textcontainer_t *tc;
@@ -1827,7 +1831,11 @@ this file describes this.
       Note that r.location might equal layout_char, in which case
       r.location won't actually have any text container or line frag.
       */
-      if (r.location == [_textStorage length])
+      if (!r.location)
+	{
+	  glyph_index = 0;
+	}
+      else if (r.location == [_textStorage length])
 	{
 	  /*
 	  Since layout was built beyond r.location, glyphs must have been

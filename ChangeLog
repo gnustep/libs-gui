@@ -1,3 +1,10 @@
+2004-01-25 04:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-invalidateDisplayForCharacterRange:,
+	-textStorage:edited:range:changeInLength:invalidatedRange:): Adjust
+	a few edge cases so that no work is done if there is no existing
+	layout information.
+
 2004-01-24 15:17  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDataLink.h: Added ivars.
