@@ -358,7 +358,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   path = [str stringByAppendingPathComponent: disabledName];
   manager->disabledPath = [path copy];
   /*
-   *    Don't retain application object - that would reate a cycle.
+   *    Don't retain application object - that would create a cycle.
    */
   manager->application = app;
   manager->returnInfo = [[NSMutableSet alloc] initWithCapacity: 16];
@@ -1313,3 +1313,8 @@ NSShowsServicesMenuItem(NSString * name)
   return [[GSServicesManager manager] showsServicesMenuItem: name];
 }
 
+void
+NSUpdateDynamicServices(void)
+{
+  [[GSServicesManager manager] loadServices];
+}
