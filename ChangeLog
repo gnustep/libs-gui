@@ -1,3 +1,25 @@
+Fri Dec 17 23:44:53 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSBox.h: Prefixed ivars with underscores.
+	* Source/NSBox.m: Updated for ivar name change.
+	* Source/NSBox.m ([-initWithCoder:]): Set the first subview as the
+ 	content view; make sure that _title_rect and _border_rect are
+ 	automatically computed on decoding.  ([-encodeWithCoder:]): Do not
+ 	encode the content view, which is already encoded by NSView; do
+ 	not encode title_rect and border_rect.  ([-drawRect:]): Tiny
+ 	semplification.  ([-sizeToFit]): Access directly super_view ivar.
+  	([-setFrameFromContentFrame:]): idem.
+	* Source/NSMatrix.m ([-getRow:column:forPoint:]): Bug fix: manage
+ 	the case of no rows, no columns.
+	* Source/NSSavePanel.m
+ 	([-browser:selectCellWithString:inColumn:]): Now that
+ 	setNeedsDisplay: works, use it instead of display.
+	* Source/NSTextField.m ([-initWithCoder:]): Added setting of
+ 	delegate.
+	* Source/NSView.m ([-initWithCoder:]): Don't invoke self's
+ 	-addSubview: to set the subviews, because NSBox overrides that
+ 	method to do another job.  Interesting bit to reflect upon btw.
+
 Fri Dec 17 12:03:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Remove some inefficient code that was calling
