@@ -1,3 +1,9 @@
+2000-09-19 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: ([-string]) fix to return autoreleased
+	copy rather than internal data - pointed out by Fred.
+	* Source/NSText.m: ([-string]) don't copy
+
 2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m: 

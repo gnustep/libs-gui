@@ -230,7 +230,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 {
   // FIXME: As NSTextStorage returns the real characters we have to copy them.
   // This should also remove all the attachement characters.
-  return [[_textStorage string] copy];
+  return [_textStorage string];
 }
 
 // old methods
