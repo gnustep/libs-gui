@@ -1,3 +1,9 @@
+2002-12-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImageView.m
+	Use [mouseDown:] instead of [mouseDragged:] to start dragging as
+	the later only works when the view is not first responder.
+	
 2002-12-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSSimpleLayoutManager.m ([GSSimpleLayoutManager
