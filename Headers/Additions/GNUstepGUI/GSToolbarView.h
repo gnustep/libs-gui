@@ -62,7 +62,7 @@ typedef enum {
   NSToolbarDisplayMode _displayMode;
   NSToolbarSizeMode _sizeMode;
   NSRect _rectAvailable;
-  unsigned int _heightFromLayout;
+  float _heightFromLayout;
 }
 
 - (id) initWithFrame: (NSRect)frame;

@@ -238,6 +238,8 @@ static void initSystemExtensionsColors(void)
   return nil;
 }
 
+// Not really used, it is here to be used by the developer who want to adjust
+// easily a toolbar view attached to a toolbar which is not bind to a window
 - (void) layout {
   [self setFrameSize: NSMakeSize([self frame].size.width, 
     [[_toolbar _toolbarView] _heightFromLayout])];
@@ -342,31 +344,30 @@ static void initSystemExtensionsColors(void)
 {
   if ((self = [super initWithFrame: frame]) != nil)
     {
-      float toolbarViewHeight;
 
       _displayMode = displayMode;
       _sizeMode = sizeMode;
       
       switch (_sizeMode)
         {
-	      case NSToolbarSizeModeDefault:
-	        toolbarViewHeight = ToolbarViewDefaultHeight;
-	        break;
-	      case NSToolbarSizeModeRegular:
-	        toolbarViewHeight = ToolbarViewRegularHeight;
-	        break;
-	      case NSToolbarSizeModeSmall:
-	        toolbarViewHeight = ToolbarViewSmallHeight;
-	        break;
-	      default:
-	        // Raise exception
-	        toolbarViewHeight = 0;
-	    }
-  
+	  case NSToolbarSizeModeDefault:
+	    _heightFromLayout = ToolbarViewDefaultHeight;
+	    break;
+	  case NSToolbarSizeModeRegular:
+	    _heightFromLayout = ToolbarViewRegularHeight;
+	    break;
+	  case NSToolbarSizeModeSmall:
+	    _heightFromLayout = ToolbarViewSmallHeight;
+	    break;
+	  default:
+	    // Raise exception
+	    _heightFromLayout = 0;
+	}
+    
       [self setFrame: NSMakeRect(frame.origin.x, 
                                  frame.origin.y, 
                                frame.size.width,
-                            toolbarViewHeight)];
+                            _heightFromLayout)];
         
       // ---
                  
@@ -406,7 +407,7 @@ static void initSystemExtensionsColors(void)
 
 - (void) dealloc
 {
-  NSLog(@"Toolbar view dealloc");
+  //NSLog(@"Toolbar view dealloc");
   
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   
@@ -649,10 +650,11 @@ static void initSystemExtensionsColors(void)
   NSView *itemBackView;
   NSRect itemBackViewFrame;
   float x = 0;
+  float newHeight = 0;
   // ---
   NSArray *subviews = [self subviews];
   
-  _heightFromLayout = 0;
+  //_heightFromLayout = 0;
 
   while ((item = [e nextObject]) != nil) 
     {
@@ -674,10 +676,12 @@ static void initSystemExtensionsColors(void)
            itemBackViewFrame.size.height)];
       x += [itemBackView frame].size.width;
       
-      if (itemBackViewFrame.size.height > _heightFromLayout)
-        _heightFromLayout = itemBackViewFrame.size.height;
+      if (itemBackViewFrame.size.height > newHeight)
+       newHeight = itemBackViewFrame.size.height;
     }
     
+  if (newHeight > 0)
+    _heightFromLayout = newHeight;
 }
 
 - (void) _handleViewsVisibility
@@ -889,8 +893,7 @@ static void initSystemExtensionsColors(void)
     {
       height++; 
     }
-    
-  
+      
   return height;
 }
 

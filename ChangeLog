@@ -1,3 +1,28 @@
+2004-09-05  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h: Changed
+	_heightFromLayout from unsigned int to float.
+        * Source/GSToolbarView.m (-initWithFrame:displayMode:sizeMode:): Removed
+	the local variable toolbarViewHeight to use the ivar _heightFromLayout
+	in order to have a toolbar height which is not equal to zero when the
+	toolbar is empty. (the toolbar height now matches initially the height
+	associated with the selected size mode)
+	(-_handleBackViewsFrame): Added a local variable newHeight to store the
+	highest caculated height for a toolbar item in order to not have
+	_heightFromLayout set to zero when the toolbar is empty (no toolbar
+	items).
+	* Source/GSToolbar.m (-setDelegate:, -_setDelegate:broadcast:,
+	-setToolbarView:): Deactived the delegate
+	synchronization with broadcast set to NO for the method
+	-_setDelegate:broadcast: because it could produce strange segmentation
+	faults or exceptions with Cocoa applications which haven't been written
+	with this delegate synchronization behavior in mind.
+	(-setSelectedItemIdentifier:, -_build,
+	-_insertItemWithItemIdentifier:atIndex:broadcast:,
+	-_setDelegate:broadcast:): Added the nil delegate check because a nil
+	delegate could happen more easily without the delegate synchronization,
+	moreover it wasn't handled correctly before.
+
 2004-09-05 10:30  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSTableView.m: [NSTableView mouseDown:] removed code which
@@ -39,16 +64,17 @@
 
 2004-09-02  Quentin Mathe <qmathe@club-internet.fr>
         
-	* Headers/AppKit/NSToolbarItem.h: Added GSMovableToolbarPboardType 
+	* Headers/AppKit/NSToolbarItem.h: Added GSMovableToolbarItemPboardType 
 	declaration.
-	* Source/NSToolbarItem.m: Added the toolbar items rearranging possibility by 
-	implementing the dragging source methods.
-	* Source/GSToolbar.m: Added or reworked some methods to support model updates
-	without direct view effects to manipulate the toolbar items when a dragging 
-	session happens.
-	* Source/GSToolbarView.m: Added the toolbar items rearranging possibility by 
-	implementing the dragging destination methods. And added a method to 
-	support the insertion index calculation based on the mouse location.
+	* Source/NSToolbarItem.m: Added the toolbar items rearranging
+	possibility by implementing the dragging source methods.
+	* Source/GSToolbar.m: Added or reworked some methods to support model
+	updates without direct view effects to manipulate the toolbar items when
+	a dragging  session happens.
+	* Source/GSToolbarView.m: Added the toolbar items rearranging
+	possibility by implementing the dragging destination methods. And added
+	a method -_insertionIndexAtPoint: to support the insertion index
+	calculation based on the mouse location.
 
 2004-09-01  Adam Fedor  <fedor@gnu.org>
 

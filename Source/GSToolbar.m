@@ -597,12 +597,11 @@ static GSValidationCenter *vc;
       _configurationDictionary = nil;
 
       // [self _loadConfig];
-    
-       _delegate = nil;
     }
-    
+  
   _displayMode = displayMode; 
   _sizeMode = sizeMode;
+  _delegate = nil;
   
   [toolbars addObject: self];
   
@@ -611,7 +610,7 @@ static GSValidationCenter *vc;
 
 - (void) dealloc
 { 
-  NSLog(@"Toolbar dealloc %@", self);
+  //NSLog(@"Toolbar dealloc %@", self);
   
   [vc removeObserver: self window: nil];
   
@@ -782,7 +781,15 @@ static GSValidationCenter *vc;
  
 - (void) setDelegate: (id)delegate
 { 
-  [self _setDelegate: delegate broadcast: YES];
+  [self _setDelegate: delegate broadcast: NO];
+  //[self _setDelegate: delegate broadcast: YES];
+  
+  // Deactivated the delegate synchronization because it can create segmentation
+  // faults when the application has not been written specially to support it
+  // which is the case for the Cocoa applications. Moreover it can be
+  // difficult to understand how it works in detail because it doesn't fit
+  // exactly with the delegate philosophy.
+  // Will be made optional later in the case the developers want to use it.
 }
 
 - (void) setSelectedItemIdentifier: (NSString *)itemIdentifier
@@ -793,6 +800,9 @@ static GSValidationCenter *vc;
   NSToolbarItem *item;
   NSArray *selectableIdentifiers = nil;
   BOOL updated = NO;
+  
+  if (_delegate == nil)
+    return;  
   
   //  First, we have to deselect the previous selected toolbar items 
   selectedItems = [[self items] objectsWithValue: [self selectedItemIdentifier] 
@@ -879,16 +889,22 @@ static GSValidationCenter *vc;
 
   RELEASE(_items);
   _items = [[NSMutableArray alloc] init];
+  
+  if (_delegate == nil)
+    {
+      _build = NO;
+      return;
+    }
     
   toolbarModel = [self _toolbarModel];
 
-  if (toolbarModel != nil && [toolbarModel delegate] == _delegate)
+  if (toolbarModel != nil)
     {
       wantedItemIdentifiers = 
         [[toolbarModel items] valueForKey: @"_itemIdentifier"];
     }
   else
-    {
+    {	
       wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
     }
     
@@ -1008,7 +1024,12 @@ static GSValidationCenter *vc;
                              broadcast: (BOOL)broadcast
 {
   NSToolbarItem *item = nil;
-  NSArray *allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
+  NSArray *allowedItems;
+  
+  if (_delegate == nil)
+    return;
+  
+  allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
   
   if([allowedItems containsObject: itemIdentifier])
     {
@@ -1121,41 +1142,37 @@ static GSValidationCenter *vc;
 {   
   //if(_delegate)
   //  [nc removeObserver: _delegate name: nil object: self];
-  
-  if (_delegate == delegate 
-    || (broadcast == NO && [_delegate isMemberOfClass: [delegate class]]))
+
+  if (_delegate == delegate)
     return;
-  /* We don't reload instances which received this message and already have a
-   * delegate based on a class identical to the parameter delegate, it permits
-   * to use only one nib owner class as a toolbar delegate even if a new
-   * instance of the nib owner are created with each new window (see
-   * MiniController.m in the toolbar example application).
-   */
   
-  if(_delegate)
+  if (_delegate != nil)
     [nc removeObserver: _delegate name: nil object: self];
-  
-  #define CHECK_REQUIRED_METHOD(selector_name) \
-  if (![delegate respondsToSelector: @selector(selector_name)]) \
-    [NSException raise: NSInternalInconsistencyException \
-                format: @"delegate does not respond to %@",@#selector_name]
-
-  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
-    willBeInsertedIntoToolbar:); 
-  CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
-  CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
-
+    
   // Assign the delegate...
   _delegate = delegate;
-
-  #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
-    [nc addObserver: _delegate \
-           selector: @selector(toolbar##notif_name:) \
-               name: NSToolbar##notif_name##Notification object: self]
   
-  SET_DELEGATE_NOTIFICATION(DidRemoveItem);
-  SET_DELEGATE_NOTIFICATION(WillAddItem);
+  if (_delegate != nil)
+    {
+      #define CHECK_REQUIRED_METHOD(selector_name) \
+      if (![_delegate respondsToSelector: @selector(selector_name)]) \
+        [NSException raise: NSInternalInconsistencyException \
+                    format: @"delegate does not respond to %@",@#selector_name]
+
+      CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
+        willBeInsertedIntoToolbar:); 
+      CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
+      CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
+
+      #define SET_DELEGATE_NOTIFICATION(notif_name) \
+      if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
+        [nc addObserver: _delegate \
+               selector: @selector(toolbar##notif_name:) \
+                   name: NSToolbar##notif_name##Notification object: self]
+  
+      SET_DELEGATE_NOTIFICATION(DidRemoveItem);
+      SET_DELEGATE_NOTIFICATION(WillAddItem);
+    }
     
   [self _build];
   if (_toolbarView != nil)
@@ -1197,7 +1214,7 @@ static GSValidationCenter *vc;
 
 - (void) _setToolbarView: (GSToolbarView *)toolbarView
 {
-  GSToolbar *toolbarModel = [self _toolbarModel];
+  //GSToolbar *toolbarModel = [self _toolbarModel];
   
   if (_toolbarView != nil)
     {
@@ -1228,8 +1245,15 @@ static GSValidationCenter *vc;
    * Another toolbar load content would occur related to a probably different
    * delegate. 
    */    
-  if (_delegate == nil)
-   [self _setDelegate: [toolbarModel delegate] broadcast: NO];
+  //if (_delegate == nil)
+  //[self _setDelegate: [toolbarModel delegate] broadcast: NO];
+   
+  // Deactivated the delegate synchronization because it can create segmentation
+  // faults when the application has not been written specially to support it
+  // which is the case for the Cocoa applications. Moreover it can be
+  // difficult to understand how it works in detail because it doesn't fit
+  // exactly with the delegate philosophy.
+  // Will be made optional later in the case the developers want to use it.
 }
 
 - (GSToolbarView *) _toolbarView 
