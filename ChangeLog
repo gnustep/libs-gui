@@ -1,3 +1,8 @@
+2002-02-10  Michael Hanni <mhanni@sprintmail.com>
+
+        * Source/NSMenuView.m ([-drawRect:]): make this more efficent,    
+        only redraw cells that we clip.
+
 Mon Feb 11 00:35:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSLayoutManager.m ([-dealloc]): Modified to work for 

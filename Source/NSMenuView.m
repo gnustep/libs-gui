@@ -463,7 +463,7 @@
   if (![_menu _ownedByPopUp])
     _cellSize.width = accumulatedOffset + 3; // Add the border width
 
-  if (!_horizontal)
+  if (_horizontal == NO)
     {
       [self setFrameSize: NSMakeSize(_cellSize.width + 1, 
 				     (howMany * _cellSize.height))];
@@ -527,7 +527,7 @@
 
 - (NSRect) innerRect
 {
-  if (!_horizontal)
+  if (_horizontal == NO)
     {
       return NSMakeRect(_bounds.origin.x + 1, _bounds.origin.y,
 			_bounds.size.width - 1, _bounds.size.height);
@@ -543,10 +543,11 @@
 {
   NSRect theRect;
 
-  if (_needsSizing)
-    [self sizeToFit];
-
-  if (!_horizontal)
+  if (_needsSizing == YES)
+    {
+      [self sizeToFit];
+    }
+  if (_horizontal == NO)
     {
       theRect.origin.y = _bounds.size.height - (_cellSize.height * (index + 1));
       theRect.origin.x = 1;
@@ -572,7 +573,7 @@
       NSRect aRect = [self rectOfItemAtIndex: i];
 
       // Add the border to the rectangle
-      if (!_horizontal)
+      if (_horizontal == NO)
         {
 	  aRect.origin.x--;
 	  aRect.size.width++;
@@ -594,7 +595,7 @@
 {
   NSRect aRect = [self rectOfItemAtIndex: index];
 
-  if (!_horizontal)
+  if (_horizontal == NO)
     {
       aRect.origin.x--;
       aRect.size.width++;
@@ -677,7 +678,7 @@
     {
       float f;
 
-      if (!_horizontal)
+      if (_horizontal == NO)
 	{
 	    f = screenRect.size.height * (items - 1);
 	    screenFrame.size.height += f;
@@ -696,7 +697,7 @@
   // Compute position for popups, if needed
   if (selectedItemIndex > -1)
     {
-      if (!_horizontal)
+      if (_horizontal == NO)
         {
 	  screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
 	}
@@ -731,7 +732,7 @@
   DPSgsave(ctxt);
   DPSsetlinewidth(ctxt, 1);
   DPSsetgray(ctxt, NSDarkGray);
-  if (!_horizontal)
+  if (_horizontal == NO)
     {
 	DPSmoveto(ctxt, NSMinX(_bounds), NSMinY(_bounds));
 	DPSrlineto(ctxt, 0, _bounds.size.height);
@@ -747,13 +748,15 @@
   // Draw the menu cells.
   for (i = 0; i < howMany; i++)
     {
-      NSRect aRect;
-      NSMenuItemCell *aCell;
+      NSRect		aRect;
+      NSMenuItemCell	*aCell;
 
       aRect = [self rectOfItemAtIndex: i];
-      // FIXME: Should check if rect overlapps aRect
-      aCell = [_itemCells objectAtIndex: i];
-      [aCell drawWithFrame: aRect inView: self];
+      if (NSIntersectsRect(rect, aRect) == YES)
+        {
+          aCell = [_itemCells objectAtIndex: i];
+	  [aCell drawWithFrame: aRect inView: self];
+        }
     }
 }
 
