@@ -158,7 +158,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setTitlePosition:[unarchiver decodeIntWithName:@"titlePosition"]];
   [self setTitle:[unarchiver decodeStringWithName:@"title"]];
   [self setTitleFont:[unarchiver decodeObjectWithName:@"titleFont"]];
-  [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
+  [self setContentView: [unarchiver decodeObjectWithName:@"contentView"]];
 
   return self;
 }
@@ -1171,6 +1171,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   NSPoint wnOrigin = [self frame].origin;
   NSRect ctFrame = [[self contentView] frame];
+  unsigned int style;
 
   ctFrame.origin = wnOrigin;
 
@@ -1191,10 +1192,22 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeBOOL:[self hidesOnDeactivate]
 	    withName:@"hidesOnDeactivate"];
   [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
-  [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
-  [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
-  [archiver encodeConditionalObject:[self initialFirstResponder] 
-	    withName:@"initialFirstResponder"];
+
+  style = [self styleMask];
+#ifndef GNU_GUI_LIBRARY
+  /* Work around a bug in OpenStep, which doesn't set the
+   * NSTitledWindowMask properly.  If the window is not borderless,
+   * always add the title mask.  */
+  if (style != NSBorderlessWindowMask)
+    {
+      style |= NSTitledWindowMask;
+    }
+#endif
+
+  [archiver encodeUnsignedInt: style  withName: @"styleMask"];
+  [archiver encodeUnsignedInt: [self backingType]  withName: @"backingType"];
+  [archiver encodeConditionalObject: [self initialFirstResponder] 
+	    withName: @"initialFirstResponder"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
