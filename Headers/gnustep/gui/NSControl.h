@@ -33,6 +33,7 @@
 
 @class NSString;
 @class NSNotification;
+@class NSFormatter;
 
 @class NSCell;
 @class NSFont;
@@ -45,11 +46,6 @@
   id _cell; // id so compiler wont complain too much for subclasses
   BOOL _ignoresMultiClick;
 }
-
-//
-// Initializing an NSControl Object
-//
-- (id)initWithFrame:(NSRect)frameRect;
 
 //
 // Setting the Control's Cell 
@@ -110,6 +106,10 @@
 - (void)setFloatingPointFormat:(BOOL)autoRange
 			  left:(unsigned)leftDigits
 			 right:(unsigned)rightDigits;
+#ifndef STRICT_OPENSTEP
+- (void)setFormatter:(NSFormatter*)newFormatter;
+- (id)formatter;
+#endif
 
 //
 // Managing the Field Editor 
@@ -145,6 +145,14 @@
 - (void)setContinuous:(BOOL)flag;
 - (void)setTarget:(id)anObject;
 - (id)target;
+
+//
+// Attributed string handling
+//
+#ifndef STRICT_OPENSTEP
+- (NSAttributedString *)attributedStringValue;
+- (void)setAttributedStringValue:(NSAttributedString *)attribStr;
+#endif 
 
 //
 // Assigning a Tag 

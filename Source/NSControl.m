@@ -324,6 +324,21 @@ static Class actionCellClass;
     [self setNeedsDisplay: YES];
 }
 
+- (void) setFormatter: (NSFormatter*)newFormatter 
+{
+  if (_cell)
+    {
+      [_cell setFormatter: newFormatter];
+      if (![_cell isKindOfClass: actionCellClass])
+	[self setNeedsDisplay: YES];
+    }
+}
+
+- (id) formatter
+{
+  return [_cell formatter];
+}
+
 /*
  * Managing the Field Editor
  */
@@ -446,6 +461,36 @@ static Class actionCellClass;
 - (id) target
 {
   return [_cell target];
+}
+
+/*
+ * Attributed string handling
+ */
+- (void) setAttributedStringValue: (NSAttributedString*)attribStr
+{
+  NSCell *selected = [self selectedCell];
+
+  [self abortEditing];
+
+  [selected setAttributedStringValue: attribStr];
+  if (![selected isKindOfClass: actionCellClass])
+    [self setNeedsDisplay: YES];
+}
+
+- (NSAttributedString*) attributedStringValue
+{
+  NSCell *selected = [self selectedCell];
+
+  if (selected == nil)
+    {
+      return AUTORELEASE([NSAttributedString new]);
+    }
+
+  // As this mehtod is not defined for NSActionCell, we have 
+  // to do the validation here.
+  [self validateEditing];
+
+  return [selected attributedStringValue];
 }
 
 /*
