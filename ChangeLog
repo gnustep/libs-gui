@@ -8,6 +8,8 @@
 	* Source/Parser/RTFProducer.m
 	* Source/Parser/RTFProducer.h
 	New files for RTF output, code comes partly from Source/NSAttributedString
+	* Source/GNUmakefile
+	Include new file Parser/RTFProducer.m until it gets its own bundle
 	* Source/NSAttributedString.m
 	Moved RTF output code to Source/Parser/RTFProducer.m
 	Corrected [fixParagraphStyleAttributeInRange:] and removed all the
