@@ -1,3 +1,10 @@
+Fri Mar 22 13:09:03 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSRulerView.h: Merged new code from Diego
+	Kreutz (kreutz@inf.ufsm.br).
+	* Source/NSRulerView.m: Class contributed by Diego Kreutz
+	(kreutz@inf.ufsm.br).  I did some minor changes.
+	
 Fri Mar 22 11:40:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/IMLoading.m: Include AppKit/NSNibLoading.h for
