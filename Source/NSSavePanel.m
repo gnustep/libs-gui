@@ -1171,62 +1171,63 @@ createRowsForColumn: (int)column
   files = [[NSFileManager defaultManager] directoryContentsAtPath: path];
 
   /* Remove hidden files.  */
-  {
-    NSString *h;
-    NSArray *hiddenFiles;
-    BOOL gsSavePanelHideDotFiles;
+  if ([files containsObject: @".hidden"] == YES)
+    {
+      NSString *h;
+      NSArray *hiddenFiles;
+      BOOL gsSavePanelHideDotFiles;
 
-    /* We need to remove files listed in the xxx/.hidden file.  */
-    h = [path stringByAppendingPathComponent: @".hidden"];
-    h = [NSString stringWithContentsOfFile: h];
-    hiddenFiles = [h componentsSeparatedByString: @"\n"];
+      /* We need to remove files listed in the xxx/.hidden file.  */
+      h = [path stringByAppendingPathComponent: @".hidden"];
+      h = [NSString stringWithContentsOfFile: h];
+      hiddenFiles = [h componentsSeparatedByString: @"\n"];
 
-    /* We need to remove files starting with `.' (dot), but only if
-       the user asked for it in the defaults.  Perhaps we could add a
-       button turning on/off display of hidden files ?  */
+      /* We need to remove files starting with `.' (dot), but only if
+	 the user asked for it in the defaults.  Perhaps we could add a
+	 button turning on/off display of hidden files ?  */
 
-    /* NB: GWorkspace is using this same user default to determine
-       whether to hide or not dot files.  */
-    gsSavePanelHideDotFiles = [[NSUserDefaults standardUserDefaults]
-				boolForKey: @"GSFileBrowserHideDotFiles"];
+      /* NB: GWorkspace is using this same user default to determine
+	 whether to hide or not dot files.  */
+      gsSavePanelHideDotFiles = [[NSUserDefaults standardUserDefaults]
+				  boolForKey: @"GSFileBrowserHideDotFiles"];
+      
+      /* Now copy the files array into a mutable array - but only if
+	 strictly needed.  */
+      if (hiddenFiles != nil  ||  gsSavePanelHideDotFiles)
+	{
+	  /* We must make a mutable copy of the array because the API
+	     says that NSFileManager -directoryContentsAtPath: return a
+	     NSArray, not a NSMutableArray, so we shouldn't expect it to
+	     be mutable.  */
+	  NSMutableArray *mutableFiles = AUTORELEASE ([files mutableCopy]);
+	  
+	  /* Ok - now modify the mutable array removing unwanted files.  */
+	  if (hiddenFiles != nil)
+	    {
+	      [mutableFiles removeObjectsInArray: hiddenFiles];
+	    }
     
-    /* Now copy the files array into a mutable array - but only if
-       strictly needed.  */
-    if (hiddenFiles != nil  ||  gsSavePanelHideDotFiles)
-      {
-	/* We must make a mutable copy of the array because the API
-	   says that NSFileManager -directoryContentsAtPath: return a
-	   NSArray, not a NSMutableArray, so we shouldn't expect it to
-	   be mutable.  */
-	NSMutableArray *mutableFiles = AUTORELEASE ([files mutableCopy]);
-	
-	/* Ok - now modify the mutable array removing unwanted files.  */
-	if (hiddenFiles != nil)
-	  {
-	    [mutableFiles removeObjectsInArray: hiddenFiles];
-	  }
-  
-	if (gsSavePanelHideDotFiles)
-	  {
-	    /* Don't use i which is unsigned.  */
-	    int j = [mutableFiles count] - 1;
-	    
-	    while (j >= 0)
-	      {
-		NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
+	  if (gsSavePanelHideDotFiles)
+	    {
+	      /* Don't use i which is unsigned.  */
+	      int j = [mutableFiles count] - 1;
+	      
+	      while (j >= 0)
+		{
+		  NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
 
-		if ([file hasPrefix: @"."])
-		  {
-		    /* NSLog (@"Removing dot file %@", file); */
-		    [mutableFiles removeObjectAtIndex: j];
-		  }
-		j--;
-	      }
-	  }
-	
-	files = mutableFiles;
-      }
-  }
+		  if ([file hasPrefix: @"."])
+		    {
+		      /* NSLog (@"Removing dot file %@", file); */
+		      [mutableFiles removeObjectAtIndex: j];
+		    }
+		  j--;
+		}
+	    }
+	  
+	  files = mutableFiles;
+	}
+    }
 
   count = [files count];
 

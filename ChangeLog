@@ -1,3 +1,8 @@
+2002-10-13  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSavePanel.m: ([--browser:createRowsForColumn:inMatrix:])
+	Don't try to read .hidden file for processing unless it exists.
+
 2002-10-11  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSOpenPanel.h: Move comments to source file
