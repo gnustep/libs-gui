@@ -137,6 +137,21 @@ id _nsbuttonCellClass = nil;
   return [_cell state];
 }
 
+- (BOOL) allowsMixedState
+{
+  return [_cell allowsMixedState];
+}
+
+- (void) setAllowsMixedState: (BOOL)flag
+{
+  [_cell setAllowsMixedState: flag];
+}
+
+- (void)setNextState
+{
+  [_cell setNextState];
+}
+
 //
 // Setting the Repeat Interval
 //
