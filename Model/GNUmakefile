@@ -30,15 +30,15 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
-ifeq ($(FOUNDATION_LIB), nx)
-LIBRARY_NAME = libgmodel
+ifneq ($(GUI_LIB), gnu)
+  LIBRARY_NAME = libgmodel
 else
-BUNDLE_NAME = libgmodel
+  BUNDLE_NAME = libgmodel
 endif
 
 ifeq ($(BUILD_NIB2GMODEL), yes)
-TOOL_NAME = nib2gmodel
-ADDITIONAL_TOOL_LIBS += -lgmodel
+  TOOL_NAME = nib2gmodel
+  ADDITIONAL_TOOL_LIBS += -lgmodel
 endif
 
 #APP_NAME = test
@@ -57,8 +57,8 @@ test_RESOURCE_FILES = test.gmodel
 nib2gmodel_OBJC_FILES = IBClasses.m Translator.m nib2gmodel.m
 
 # Additional library directories the linker should search
-ifeq ($(FOUNDATION_LIB), nx)
-ADDITIONAL_LIB_DIRS += -framework AppKit
+ifneq ($(GUI_LIB), gnu)
+  ADDITIONAL_LIB_DIRS += -framework AppKit
 endif
 
 # Additional flags to pass to the Objective-C compiler
@@ -66,8 +66,8 @@ ADDITIONAL_OBJCFLAGS = -Wall
 ADDITIONAL_CPPFLAGS += $(RUNTIME_DEFINE) $(GUI_DEFINE) $(BACKEND_DEFINE)
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR) 
-ifneq ($(GUI_LIB), nx)
-ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
+ifeq ($(GUI_LIB), gnu)
+  ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
 endif
 
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
@@ -78,10 +78,10 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
-ifneq ($(GUI_LIB), nx)
-libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+ifeq ($(GUI_LIB), gnu)
+  libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
 else
-libgmodel_LIBRARIES_DEPEND_UPON = $(FND_LIBS)
+  libgmodel_LIBRARIES_DEPEND_UPON = $(FND_LIBS)
 endif
 libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
@@ -89,8 +89,8 @@ nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 
 -include GNUmakefile.local
 
-ifeq ($(FOUNDATION_LIB), nx)
-include $(GNUSTEP_MAKEFILES)/bundle.make
+ifneq ($(GUI_LIB), gnu)
+  include $(GNUSTEP_MAKEFILES)/bundle.make
 endif
 include $(GNUSTEP_MAKEFILES)/library.make
 include $(GNUSTEP_MAKEFILES)/tool.make
