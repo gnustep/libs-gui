@@ -80,8 +80,8 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
   for (i = 0; i < [fontsList count]; i++)
     {
-      NSFont	*font = (NSFont*)[fontsList objectAtIndex: i];
-      NSString	*name = [font fontName];
+      GSFontInfo *font = (GSFontInfo*)[fontsList objectAtIndex: i];
+      NSString	 *name = [font fontName];
       
       if ([fontManager _includeFont: name])
 	[fontNames addObject: name];
@@ -100,7 +100,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   fontFamilies = [NSMutableSet setWithCapacity: [fontsList count]];
   for (i = 0; i < [fontsList count]; i++)
     {
-      NSFont *font = (NSFont*)[fontsList objectAtIndex: i];
+      GSFontInfo *font = (GSFontInfo*)[fontsList objectAtIndex: i];
 
       [fontFamilies addObject: [font familyName]];
     }
@@ -201,19 +201,6 @@ static GSFontEnumerator *sharedEnumerator = nil;
   [self subclassResponsibility: _cmd];
 }
 
-- (GSFontInfo*) newTransformedFontInfoForMatrix: (const float*)fmatrix
-{
-  GSFontInfo* new = NSCopyObject(self, 0, [self zone]);
-
-  [new transformUsingMatrix: fmatrix];
-  return AUTORELEASE(new);
-}
-
-- (void) transformUsingMatrix: (const float*)matrix
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (NSDictionary*) afmDictionary
 {
   return fontDictionary;
@@ -242,6 +229,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (NSString*) familyName
 {
   return familyName;
+}
+
+- (float) pointSize
+{
+  return matrix[0];
 }
 
 - (NSString*) fontName

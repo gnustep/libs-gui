@@ -79,9 +79,6 @@
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
                              matrix: (const float *)fmatrix;
 
-- (GSFontInfo*) newTransformedFontInfoForMatrix: (const float*)fmatrix;
-- (void) transformUsingMatrix: (const float*)fmatrix;
-
 - (NSDictionary *)afmDictionary;
 - (NSString *)afmFileContents;
 - (NSRect)boundingRectForFont;

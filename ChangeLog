@@ -1,3 +1,8 @@
+2000-04-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSFontInfo.m: allFonts returns GSFontInfo objects.
+	[-pointSize]: Implement.
+
 2000-04-01 18:00 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSText.m: Now really uses a text storage instead of an
