@@ -69,6 +69,29 @@
 #include <AppKit/DPSOperators.h>
 
 /*
+ * AppKit exception handler (overrides Foundation)
+ */
+static void
+_NSAppKitUncaughtExceptionHandler (NSException *exception)
+{
+  int retVal;
+
+#ifdef DEBUG
+#define DEBUG_BUTTON @"Debug"
+#else
+#define DEBUG_BUTTON nil
+#endif
+
+  retVal = NSRunCriticalAlertPanel([[NSProcessInfo processInfo] processName],
+								   @"%@: %@",
+								   @"Abort", @"Ignore", DEBUG_BUTTON,
+								   [exception name], [exception reason]);
+
+  if (retVal == NSAlertDefault)
+	abort();
+}
+
+/*
  * Types
  */
 struct _NSModalSession {
@@ -250,6 +273,9 @@ static NSCell* tileCell = nil;
        * can prevent -release loops
        */
       gnustep_gui_app_is_in_dealloc = NO;
+
+	  // Set the AppKit exception handler.
+	  _NSUncaughtExceptionHandler = _NSAppKitUncaughtExceptionHandler;
     }
 }
 

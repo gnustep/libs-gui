@@ -1,3 +1,15 @@
+2000-09-26  Lyndon Tremblay  <humasect@home.com>
+
+	* Source/NSApplication.m ([NSApplication +initialize]): Override
+	Foundation's uncaught exception handler.
+
+	* Headers/AppKit/NSPanel.h (NSAlert*): #defines to comply
+	with MacOS X [apparently].
+	
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): Added
+	to show unhandled exceptions to the user in a cleaner way,
+	providing an option to ignore or debug [future use].
+
 Tue Sep 26 09:36:07 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* NSControl.m ([-copyWithZone:]): Fixed memory problem (found  

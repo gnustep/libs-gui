@@ -43,7 +43,12 @@ enum {
   NSAlertAlternateReturn = 0,
   NSAlertOtherReturn = -1,
   NSAlertErrorReturn  = -2
-};	 
+};
+
+// from MacOS X docs
+#define NSAlertDefault NSAlertDefaultReturn
+#define NSAlertAlternate NSAlertAlternateReturn
+#define NSAlertOther NSAlertOtherReturn
 
 #ifndef	STRICT_OPENSTEP
 #define	NS_ALERTDEFAULT		NSAlertDefaultReturn
