@@ -1,3 +1,7 @@
+2001-02-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: Center title in miniwindow view.
+
 Wed Feb  7 21:44:41 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([-reloadColumn:]): Save the selected cells

@@ -315,6 +315,7 @@ static NSCell	*tileCell = nil;
       [titleCell setSelectable: NO];
       [titleCell setEditable: NO];
       [titleCell setBordered: NO];
+      [titleCell setAlignment: NSCenterTextAlignment];
       [titleCell setDrawsBackground: YES];
       [titleCell setBackgroundColor: [NSColor blackColor]];
       [titleCell setTextColor: [NSColor whiteColor]];
