@@ -613,6 +613,12 @@ static NSNotificationCenter *nc = nil;
 			     defer: NO];
 }
 
+/*
+It is important to make sure that the window is in a meaningful state after
+this has been called, and that the backend window can be recreated later,
+since one-shot windows may have their backend windows created and terminated
+many times.
+*/
 - (void) _terminateBackendWindow
 {
   NSGraphicsContext *context = GSCurrentContext();
@@ -628,6 +634,7 @@ static NSNotificationCenter *nc = nil;
     {
       [GSServerForWindow(self) termwindow: _windowNum];
       NSMapRemove(windowmaps, (void*)_windowNum);
+      _windowNum = 0;
     }
 }
 
@@ -1394,7 +1401,7 @@ static NSNotificationCenter *nc = nil;
       /* Windows need to be constrained when displayed or resized - but only
 	 titled windows are constrained. Also, and this is the tricky part,
          don't constrain if we are merely unhidding the window or if it's
-         already visible and is just being reordered. */	    
+         already visible and is just being reordered. */
       if ((_styleMask & NSTitledWindowMask)
 	  && [NSApp isHidden] == NO
 	  && _f.visible == NO)
@@ -1419,7 +1426,7 @@ static NSNotificationCenter *nc = nil;
     [_contentView display];
   else
     [_contentView displayIfNeeded];
-    
+
   [srv orderwindow: place : otherWin : _windowNum];
   if (display)
     [self display];

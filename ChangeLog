@@ -1,3 +1,11 @@
+2003-05-13 20:19  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSButton.m (-setState:, -setNextState): Mark the view
+	as needing display, don't force a display.
+
+	* Source/NSWindow.m (-_terminateBackendWindow): Set _windowNum to 0
+	so the window will be recreated the next time it is needed.
+
 2003-05-12 17:30  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m (-lockFocusInRect:): Don't save the clipping path
