@@ -202,7 +202,7 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (NSSet *) usedFonts;
 
 /* Private backend methods */
-- (void) contextDevice: (int)num;
++ (void) handleExposeRect: (NSRect)rect forDriver: (void *)driver;
 @end
 #endif
 
@@ -338,9 +338,9 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentgcdrawable: (void**)gc : (void**)draw : (int*)x : (int*)y;
+- (void) GSCurrentDevice: (void**)device : (int*)x : (int*)y;
+- (void) GSSetDevice: (void*)device : (int)x : (int)y;
 - (void) DPScurrentoffset: (int*)x : (int*)y;
-- (void) DPSsetgcdrawable: (void*)gc : (void*)draw : (int)x : (int)y;
 - (void) DPSsetoffset: (short int)x : (short int)y;
 
 /*-------------------------------------------------------------------------*/

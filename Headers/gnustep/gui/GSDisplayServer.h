@@ -100,7 +100,6 @@ APPKIT_DECLARE GSDisplayServer * GSCurrentServer(void);
 - (void) orderwindow: (int) op : (int) otherWin : (int) win;
 - (void) movewindow: (NSPoint)loc : (int) win;
 - (void) placewindow: (NSRect)frame : (int) win;
-- (BOOL) findwindow: (NSPoint)loc : (int) op : (int) otherWin : (NSPoint *)floc : (int*) winFound;
 - (NSRect) windowbounds: (int) win;
 - (void) setwindowlevel: (int) level : (int) win;
 - (int) windowlevel: (int) win;

@@ -246,12 +246,12 @@ typedef struct {
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-  void (*DPScurrentgcdrawable____)
-        (NSGraphicsContext*, SEL, void**, void**, int*, int*);
+  void (*GSCurrentDevice___)
+        (NSGraphicsContext*, SEL, void**, int*, int*);
   void (*DPScurrentoffset__)
         (NSGraphicsContext*, SEL, int*, int*);
-  void (*DPSsetgcdrawable____)
-        (NSGraphicsContext*, SEL, void*, void*, int, int);
+  void (*GSSetDevice___)
+        (NSGraphicsContext*, SEL, void*, int, int);
   void (*DPSsetoffset__)
         (NSGraphicsContext*, SEL, short int, short int);
 

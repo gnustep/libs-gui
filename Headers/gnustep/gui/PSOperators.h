@@ -321,26 +321,6 @@ __attribute__((unused));
 
 
 
-/* ----------------------------------------------------------------------- */
-/* Window system ops */
-/* ----------------------------------------------------------------------- */
-static inline void
-PScurrentgcdrawable(void** gc, void** draw, int* x, int* y)
-__attribute__((unused));
-
-static inline void
-PScurrentoffset(int* x, int* y)
-__attribute__((unused));
-
-static inline void
-PSsetgcdrawable(void* gc, void* draw, int x, int y)
-__attribute__((unused));
-
-static inline void
-PSsetoffset(short int x, short int y)
-__attribute__((unused));
-
-
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
@@ -787,34 +767,6 @@ PSstroke()
   DPSstroke(DEFCTXT);
 }
 
-
-
-/* ----------------------------------------------------------------------- */
-/* Window system ops */
-/* ----------------------------------------------------------------------- */
-static inline void
-PScurrentgcdrawable(void** gc, void** draw, int* x, int* y)
-{
-  DPScurrentgcdrawable(DEFCTXT, gc, draw, x, y);
-}
-
-static inline void
-PScurrentoffset(int* x, int* y)
-{
-  DPScurrentoffset(DEFCTXT, x, y);
-}
-
-static inline void
-PSsetgcdrawable(void* gc, void* draw, int x, int y)
-{
-  DPSsetgcdrawable(DEFCTXT, gc, draw, x, y);
-}
-
-static inline void
-PSsetoffset(short int x, short int y)
-{
-  DPSsetoffset(DEFCTXT, x, y);
-}
 
 
 /*-------------------------------------------------------------------------*/

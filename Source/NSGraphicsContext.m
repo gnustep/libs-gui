@@ -370,7 +370,12 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 /* Private backend methods */
-- (void) contextDevice: (int)num
+/** Private backend method. Typically this is called by the window
+    server to tell the graphics context that it should flush output
+    to a window indicated by the device pointer. The device pointer
+    is an opaque type setup by the context so that it knows which 
+    context and/or buffer should be. */
++ (void) handleExposeRect: (NSRect)rect forDriver: (void *)driver
 {
 }
 
@@ -595,12 +600,12 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-  methodTable.DPScurrentgcdrawable____ =
-    GET_IMP(@selector(DPScurrentgcdrawable::::));
+  methodTable.GSCurrentDevice___ =
+    GET_IMP(@selector(GSCurrentDevice:::));
   methodTable.DPScurrentoffset__ =
     GET_IMP(@selector(DPScurrentoffset::));
-  methodTable.DPSsetgcdrawable____ =
-    GET_IMP(@selector(DPSsetgcdrawable::::));
+  methodTable.GSSetDevice___ =
+    GET_IMP(@selector(GSSetDevice:::));
   methodTable.DPSsetoffset__ =
     GET_IMP(@selector(DPSsetoffset::));
 
@@ -1198,7 +1203,13 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentgcdrawable: (void **)gc : (void **)draw : (int *)x : (int *)y
+/** This is a private method used between the window server and the context.
+    It should not be used in any application. Typically used by the
+    window server to find out what window the context is drawing graphics
+    to. The device pointer is an opaque type that contains information 
+    about the window. The x and y pointers indicate the offset of the
+    origin of the window from the lower left-hand corner */
+- (void) GSCurrentDevice: (void **)device : (int *)x : (int *)y
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1208,7 +1219,14 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetgcdrawable: (void *)gc : (void *)draw : (int)x : (int)y
+/** This is a private method used between the window server and the context.
+    It should not be used in any application. Typically called by the
+    window server to tell the context what window it should draw graphics
+    to. The device pointer is an opaque type that contains information 
+    about the window. The x and y values tell the context that it
+    should put the origin of the transform matrix at the indicated
+    x and y values from the lower left-hand corner of the window */
+- (void) GSSetDevice: (void *)device : (int)x : (int)y
 {
   [self subclassResponsibility: _cmd];
 }

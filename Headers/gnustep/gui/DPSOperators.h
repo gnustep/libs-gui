@@ -412,7 +412,7 @@ __attribute__((unused));
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentgcdrawable(GSCTXT *ctxt, void** gc, void** draw, int* x, int* y)
+GSCurrentDevice(GSCTXT *ctxt, void** device, int* x, int* y)
 __attribute__((unused));
 
 static inline void
@@ -420,7 +420,7 @@ DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
 __attribute__((unused));
 
 static inline void
-DPSsetgcdrawable(GSCTXT *ctxt, void* gc, void* draw, int x, int y)
+GSSetDevice(GSCTXT *ctxt, void* device, int x, int y)
 __attribute__((unused));
 
 static inline void
@@ -1107,10 +1107,10 @@ GSRectFillList(GSCTXT *ctxt, const NSRect * rects, int count)
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPScurrentgcdrawable(GSCTXT *ctxt, void** gc, void** draw, int* x, int* y)
+GSCurrentDevice(GSCTXT *ctxt, void** device, int* x, int* y)
 {
-  (ctxt->methods->DPScurrentgcdrawable____)
-    (ctxt, @selector(DPScurrentgcdrawable::::), gc, draw, x, y);
+  (ctxt->methods->GSCurrentDevice___)
+    (ctxt, @selector(GSCurrentGCDevice:::), device, x, y);
 }
 
 static inline void
@@ -1121,10 +1121,10 @@ DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
 }
 
 static inline void
-DPSsetgcdrawable(GSCTXT *ctxt, void* gc, void* draw, int x, int y)
+GSSetDevice(GSCTXT *ctxt, void* device, int x, int y)
 {
-  (ctxt->methods->DPSsetgcdrawable____)
-    (ctxt, @selector(DPSsetgcdrawable::::), gc, draw, x, y);
+  (ctxt->methods->GSSetDevice___)
+    (ctxt, @selector(GSSetGCDevice:::), device, x, y);
 }
 
 static inline void

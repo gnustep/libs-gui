@@ -499,13 +499,6 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (BOOL) findwindow: (NSPoint)loc : (int) op : (int) otherWin 
-		   : (NSPoint *)floc : (int*) winFound
-{
-  [self subclassResponsibility: _cmd];
-  return NO;
-}
-
 /** Retuns the frame of the window on the screen */
 - (NSRect) windowbounds: (int) win
 {
