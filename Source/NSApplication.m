@@ -566,12 +566,12 @@ NSApplication	*NSApp = nil;
   return theSession->runState;
 }
 
-- (BOOL) isRunningModalForWindow: (NSWindow *)theWindow
+- (NSWindow *) modalWindow
 {
-  if ((session) && (session->window == theWindow))
-    return YES;
+  if (session) 
+    return (session->window);
   else
-    return NO;
+    return nil;
 }
 
 - (void) stop: (id)sender
