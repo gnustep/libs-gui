@@ -63,7 +63,7 @@ typedef struct GSLayoutManager_glyph_run_head_s
   /* char_length must always be accurate. glyph_length is the number of
   valid glyphs counting from the start. For a level 0 head, it's the number
   of glyphs in that run. */
-  int glyph_length, char_length;
+  unsigned int glyph_length, char_length;
 
   /* Glyph generation is complete for all created runs. */
   unsigned int complete:1;
