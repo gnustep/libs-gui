@@ -35,6 +35,11 @@
 #include <AppKit/DPSOperators.h>
 
 //
+// Foundation
+//
+#include <Foundation/Foundation.h>
+
+//
 // GNUstep GUI Library functions
 //
 #include <AppKit/NSGraphics.h>
