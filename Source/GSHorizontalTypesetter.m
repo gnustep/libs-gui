@@ -28,10 +28,11 @@
 
 #include "AppKit/GSLayoutManager.h"
 
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSGeometry.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSValue.h>
-#include <Foundation/NSGeometry.h>
 
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSParagraphStyle.h"
@@ -504,19 +505,20 @@ restart:
     line_frag_t *lf = line_frags;
     int lfi = 0;
 
-    BOOL prev_was_attachment;
+    BOOL prev_had_non_nominal_width;
 
 
     last_p = p = NSMakePoint(0,0);
 
     g = cache;
     first_glyph = 0;
-    prev_was_attachment = NO;
+    prev_had_non_nominal_width = NO;
     /*
     Main glyph layout loop.
     */
     while (1)
       {
+//        printf("at %3i+%3i\n",cache_base,i);
 /*printf("at %3i+%2i, glyph %08x, char %04x (%i)\n",
 	cache_base,i,
 	g->g,
@@ -588,15 +590,45 @@ restart:
 	    g->pos = p;
 	    g->size.width = 0;
 	    g->dont_show = YES;
-	    g->nominal = !prev_was_attachment;
+	    g->nominal = !prev_had_non_nominal_width;
 	    i++;
 	    g++;
 	    last_glyph = NSNullGlyph;
 
-	    prev_was_attachment = NO;
+	    prev_had_non_nominal_width = NO;
 
 	    if (ch == 0xa)
 	      break;
+
+	    if (ch == 0x9)
+	      {
+		/*
+		Handle tabs. This is a very basic and stupid implementation.
+		TODO: implement properly
+		*/
+		NSArray *tabs = [curParagraphStyle tabStops];
+		NSTextTab *tab = nil;
+		int i, c = [tabs count];
+		/* Find first tab beyond our current position. */
+		for (i = 0; i < c; i++)
+		  {
+		    tab = [tabs objectAtIndex: i];
+		    if ([tab location] >= p.x + lf->rect.origin.x)
+		      break;
+		  }
+		if (i == c)
+		  {
+		    /* TODO: we're already past all the tab stops. what
+		    should we do? */
+		    continue;
+		  }
+		prev_had_non_nominal_width = YES;
+		p.x = [tab location] - lf->rect.origin.x;
+		continue;
+	      }
+
+	    NSDebugLLog(@"GSHorizontalTypesetter",
+	      @"ignoring unknown control character %04x\n", ch);
 
 	    continue;
 	  }
@@ -609,7 +641,7 @@ restart:
 	Currently, the attributes of the attachment character (eg. font)
 	affect the layout. Think hard about this.
 	*/
-	g->nominal = !prev_was_attachment;
+	g->nominal = !prev_had_non_nominal_width;
 
 	if (g->attributes.explicit_kern &&
 	    g->attributes.kern != 0)
@@ -757,7 +789,7 @@ restart:
 	    line frag rect (see above). */
 	    lf->last_used = g[-1].pos.x + g[-1].size.width;
 	    last_glyph = NSNullGlyph;
-	    prev_was_attachment = NO;
+	    prev_had_non_nominal_width = NO;
 
 	    lf++;
 	    lfi++;
@@ -772,11 +804,11 @@ restart:
 	    if (last_glyph == GSAttachmentGlyph)
 	      {
 		last_glyph = NSNullGlyph;
-		prev_was_attachment = YES;
+		prev_had_non_nominal_width = YES;
 	      }
 	    else
 	      {
-		prev_was_attachment = NO;
+		prev_had_non_nominal_width = NO;
 	      }
 	    i++;
 	    g++;
