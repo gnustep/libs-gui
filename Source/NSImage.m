@@ -899,6 +899,19 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	{
 	  repd->bg = [_color copy];
 	  [_color set];
+	  
+	  if ([_color alphaComponent] < 1)
+	    {
+	      /* With a Quartz-like alpha model, alpha can't be cleared
+	         with a rectfill, so we need to clear the alpha channel
+		 explictly. (A compositerect with NSCompositeCopy would
+		 be more efficient, but it doesn't seem like it's 
+		 implemented correctly in all backends yet (as of 
+		 2002-08-23). Also, this will work with both the Quartz-
+		 and DPS-model.) */
+	      PScompositerect(0, 0, _size.width, _size.height,
+			      NSCompositeClear);
+	    }
 	  NSRectFill(NSMakeRect(0, 0, _size.width, _size.height));
 	}
     }
