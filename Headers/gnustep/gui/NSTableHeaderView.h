@@ -38,6 +38,7 @@
 @interface NSTableHeaderView : NSView
 {
   NSTableView *_tableView;
+  int _resizedColumn;
 }
 /*
  * Setting the table view 
