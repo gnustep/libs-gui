@@ -1,3 +1,13 @@
+2002-11-23 21:31  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSHorizontalTypesetter.h,
+	Headers/gnustep/gui/GSLayoutManager.h,
+	Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Headers/gnustep/gui/GSTypesetter.h, Source/GSHorizontalTypesetter.m,
+	Source/GSLayoutManager.m, Source/GSTypesetter.m,
+	Headers/gnustep/gui/NSLayoutManager.h, Source/GNUmakefile,
+	Source/NSLayoutManager.m: Add the new text system.
+
 2002-11-23 18:45  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextContainer: Implement -lineFragmentRectForProposedRect:
