@@ -89,7 +89,7 @@ nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 
 -include GNUmakefile.local
 
-ifneq ($(GUI_LIB), gnu)
+ifeq ($(GUI_LIB), gnu)
   include $(GNUSTEP_MAKEFILES)/bundle.make
 endif
 include $(GNUSTEP_MAKEFILES)/library.make
