@@ -124,6 +124,8 @@ NSSliderCell.m \
 NSSpellChecker.m \
 NSSpellServer.m \
 NSSplitView.m \
+NSStepper.m \
+NSStepperCell.m \
 NSStringDrawing.m \
 NSTabView.m \
 NSTabViewItem.m \
@@ -277,6 +279,8 @@ NSSpellChecker.h \
 NSSpellProtocol.h \
 NSSpellServer.h \
 NSSplitView.h \
+NSStepper.h \
+NSStepperCell.h \
 NSStringDrawing.h \
 NSTabView.h \
 NSTabViewItem.h \
