@@ -1,3 +1,9 @@
+2003-05-12 17:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m (-lockFocusInRect:): Don't save the clipping path
+	in the gstate if one is allocated since it depends on the rectangle
+	focus is locked in.
+
 2003-05-11  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Add support for generic application icon.

@@ -1588,16 +1588,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       /* Allow subclases to make other modifications */
       [self setUpGState];
     }
-  else if (_gstate)
-    {
-      DPSsetgstate(ctxt, _gstate);
-      if (_renew_gstate)
-	{
-	  [self setUpGState];
-	}
-      _renew_gstate = 0;
-      DPSgsave(ctxt);
-    }
   else
     {
       NSAffineTransform *matrix;
@@ -1607,27 +1597,42 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  [matrix boundingRectFor: rect result: &rect];
 	}
 
-      DPSsetgstate(ctxt, window_gstate);
-      DPSgsave(ctxt);
-      [matrix concat];
-      /* Clip to the visible rectangle - which will never be greater
-       * than the bounds of the view.  This prevents drawing outside
-       * our bounds 
-       */
-      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect), 
-		      NSWidth(rect), NSHeight(rect));
-
-      /* Allow subclases to make other modifications */
-      [self setUpGState];
-      _renew_gstate = 0;
-      if (_allocate_gstate)
+      if (_gstate)
 	{
-	  _gstate = GSDefineGState(ctxt);
-	  /* Balance the previous gsave and install our own gstate */
-	  DPSgrestore(ctxt);
 	  DPSsetgstate(ctxt, _gstate);
+	  if (_renew_gstate)
+	    {
+	      [self setUpGState];
+	    }
+	  _renew_gstate = 0;
 	  DPSgsave(ctxt);
 	}
+      else
+	{
+
+	  DPSsetgstate(ctxt, window_gstate);
+	  DPSgsave(ctxt);
+	  [matrix concat];
+
+	  /* Allow subclases to make other modifications */
+	  [self setUpGState];
+	  _renew_gstate = 0;
+	  if (_allocate_gstate)
+	    {
+	      _gstate = GSDefineGState(ctxt);
+	      /* Balance the previous gsave and install our own gstate */
+	      DPSgrestore(ctxt);
+	      DPSsetgstate(ctxt, _gstate);
+	      DPSgsave(ctxt);
+	    }
+
+	}
+      /* Clip to the visible rectangle - which will never be greater
+       * than the bounds of the view.  This prevents drawing outside
+       * our bounds
+       */
+      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
+			NSWidth(rect), NSHeight(rect));
     }
   /* This is obsolete. Backends shouldn't depend on this */
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
@@ -3767,7 +3772,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 /**
  * <p>Returns the default menu to be used for instances of the 
- *    current class: if no menu has been set through setMenu:
+ *    current class; if no menu has been set through setMenu:
  *    this default menu will be used.
  * </p>
  * <p>NSView's implementation returns nil. You should override
