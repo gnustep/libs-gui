@@ -29,6 +29,7 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
