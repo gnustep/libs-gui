@@ -1,7 +1,20 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.4'.
+The currently released version of the library is `0.9.5'.
+
+Noteworthy changes in version `0.9.5'
+=====================================
+
+   * Beginnings of CUPS interface were added.
+
+   * Added new control colors and methods from 10.3 version of Cocoa.
+
+   * Added new font methods from 10.3 version of Cocoa.
+
+   * NSApplication -runModalSession behavior changed.
+
+   * You can find the GUI library's version using the Info.plist
 
 Noteworthy changes in version `0.9.4'
 =====================================

@@ -44,16 +44,12 @@
   // Attributes
   id                  delegate;
   NSString            *filename;
+  BOOL                delegateVerifiesLinks;
+  BOOL                interactsWithUser;
+  BOOL                isEdited;
+  BOOL                areLinkOutlinesVisible;
   NSMutableArray      *sourceLinks;
   NSMutableArray      *destinationLinks;
-
-  struct __dlmFlags {
-    unsigned areLinkOutlinesVisible:1;
-    unsigned delegateVerifiesLinks:1;
-    unsigned interactsWithUser:1;
-    unsigned isEdited:1;
-  } _flags;
-
 }
 
 //

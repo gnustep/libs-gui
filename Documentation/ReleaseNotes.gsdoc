@@ -19,6 +19,34 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.9.5</heading>
+	<p>
+	</p>
+	  <deflist>
+	    <term>NSColor colors</term>
+	    <desc>
+	    Added new control colors and methods from 10.3 version of Cocoa.
+	    </desc>
+	    <term>NSFont methods</term>
+	    <desc>
+	    Added new font methods from 10.3 version of Cocoa
+	    </desc>
+	    <term>NSApplication -runModalSession</term>
+	    <desc>
+	    Behavior of this method was changed. In particular it deviates
+	    from Cocoa documentation. See the GNUstep GUI documentation for
+	    specifics.
+	    </desc>
+	    <term>Runtime version discovery of library</term>
+	    <desc>
+	    A developer can discover the version of the gui library
+            that is loaded using the NSBundle methods <code>[[NSBundle
+            bundleForLibrary: @"gnustep-gui"] infoDictionary]</code>
+            and retrieving the <var>GSBundleVersion</var> key.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.9.4</heading>
 	<p>
 	</p>

@@ -9,6 +9,18 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.9.5}
+
+@itemize @bullet
+@item Beginnings of CUPS interface were added.
+@item Added new control colors and methods from 10.3 version of Cocoa.
+@item Added new font methods from 10.3 version of Cocoa.
+@item NSApplication -runModalSession behavior changed.
+@item You can find the GUI library's version using the Info.plist
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.9.4}
 
 @itemize @bullet
@@ -19,8 +31,6 @@ accommodate different native printing systems (Thanks to Chad Hardin).
 @item NSScroller, NSScrollView has a new ivar.
 @item Some improvement of NSDataLink classes.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.9.3}
 

@@ -108,10 +108,10 @@
     {
       ASSIGN(delegate,anObject);
       filename = nil;
-      _flags.delegateVerifiesLinks = NO;
-      _flags.interactsWithUser = NO;
-      _flags.isEdited = NO;
-      _flags.areLinkOutlinesVisible = NO;
+      delegateVerifiesLinks = NO;
+      interactsWithUser = NO;
+      isEdited = NO;
+      areLinkOutlinesVisible = NO;
     }
 
   return self;
@@ -126,10 +126,10 @@
     {
       ASSIGN(delegate,anObject);
       ASSIGN(filename,path);
-      _flags.delegateVerifiesLinks = NO;
-      _flags.interactsWithUser = NO;
-      _flags.isEdited = NO;
-      _flags.areLinkOutlinesVisible = NO;
+      delegateVerifiesLinks = NO;
+      interactsWithUser = NO;
+      isEdited = NO;
+      areLinkOutlinesVisible = NO;
     }
 
   return self;
@@ -229,7 +229,7 @@
 
 - (BOOL)delegateVerifiesLinks
 {
-  return _flags.delegateVerifiesLinks;
+  return delegateVerifiesLinks;
 }
 
 - (NSString *)filename
@@ -239,22 +239,22 @@
 
 - (BOOL)interactsWithUser
 {
-  return _flags.interactsWithUser;
+  return interactsWithUser;
 }
 
 - (BOOL)isEdited
 {
-  return _flags.isEdited;
+  return isEdited;
 }
 
 - (void)setDelegateVerifiesLinks:(BOOL)flag
 {
-  _flags.delegateVerifiesLinks = flag;
+  delegateVerifiesLinks = flag;
 }
 
 - (void)setInteractsWithUser:(BOOL)flag
 {
-  _flags.interactsWithUser = flag;
+  interactsWithUser = flag;
 }
 
 //
@@ -262,7 +262,7 @@
 //
 - (BOOL)areLinkOutlinesVisible
 {
-  return _flags.areLinkOutlinesVisible;
+  return areLinkOutlinesVisible;
 }
 
 - (NSEnumerator *)destinationLinkEnumerator
@@ -288,7 +288,7 @@
 
 - (void)setLinkOutlinesVisible:(BOOL)flag
 {
-  _flags.areLinkOutlinesVisible = flag;
+  areLinkOutlinesVisible = flag;
 }
 
 - (NSEnumerator *)sourceLinkEnumerator
@@ -307,13 +307,13 @@
   [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
   [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
 
-  flag = _flags.areLinkOutlinesVisible;
+  flag = areLinkOutlinesVisible;
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.delegateVerifiesLinks;
+  flag = delegateVerifiesLinks;
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.interactsWithUser;
+  flag = interactsWithUser;
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.isEdited;
+  flag = isEdited;
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
 }
 
@@ -330,13 +330,13 @@
       [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationLinks];
       
       [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.areLinkOutlinesVisible = flag;
+      areLinkOutlinesVisible = flag;
       [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.delegateVerifiesLinks = flag;
+      delegateVerifiesLinks = flag;
       [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.interactsWithUser = flag;
+      interactsWithUser = flag;
       [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.isEdited = flag;
+      isEdited = flag;
     }
   else
     {

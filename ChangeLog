@@ -1,3 +1,10 @@
+2005-03-30  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.9.5
+
+	* Headers/AppKit/NSDataLinkManager.h, Source/NSDataLinkManager.m: 
+	Partially revert 2005-03-05 patch for this release.
+
 2005-03-29 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSWorkspace.m (-_extIconForApp:info:): Check filename is
@@ -25,7 +32,7 @@
 2005-03-21  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c: Fix for FreeBSD
-	FTBFS (Fixes Bug #12316). Strip DOS LFs.
+	FTBFS (Fixes Bug #12316). Strip DOS CRs.
 
 2005-03-21  Adam Fedor  <fedor@gnu.org>
 
