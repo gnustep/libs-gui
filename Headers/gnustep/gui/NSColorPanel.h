@@ -29,7 +29,15 @@
 #ifndef _GNUstep_H_NSColorPanel
 #define _GNUstep_H_NSColorPanel
 
+#include <AppKit/NSBox.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSColorPicking.h>
+#include <AppKit/NSColorWell.h>
+#include <AppKit/NSMatrix.h>
+#include <AppKit/NSNibDeclarations.h>
 #include <AppKit/NSPanel.h>
+#include <AppKit/NSSlider.h>
+#include <AppKit/NSSplitView.h>
 
 @class NSView;
 @class NSColorList;
@@ -38,6 +46,23 @@
 @interface NSColorPanel : NSPanel <NSCoding>
 {
   // Attributes
+  NSView		*_topView;
+  NSColorWell		*_colorWell;
+  NSButton		*_magnifyButton;
+  NSMatrix		*_pickerMatrix;
+  NSBox			*_pickerBox;
+  NSSlider		*_alphaSlider;
+  NSBox			*_accessoryBox;
+
+  NSSplitView		*_splitView;
+
+  NSMatrix		*_swatches;
+
+  NSMutableArray	*_pickers;
+  id<NSColorPickingCustom>	_currentPicker;
+  id			_target;
+  SEL			_action;
+  BOOL			_isContinuous;
 }
 
 //
@@ -71,7 +96,7 @@
 //
 // Setting Color
 //
-+ (BOOL)dragColor:(NSColor **)aColor
++ (BOOL)dragColor:(NSColor *)aColor
 	withEvent:(NSEvent *)anEvent
 	 fromView:(NSView *)sourceView;
 - (float)alpha;
