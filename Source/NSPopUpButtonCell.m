@@ -675,7 +675,10 @@ static NSImage *_pbc_image[2];
       RELEASE(anItem);
       new = YES;
     }      
-  
+
+  /* Enable the menu item cell */
+  [self setEnabled: [[self menuItem] isEnabled]];
+
   /* We need to calc our size to get images placed correctly */
   [self calcSize];
   [super drawInteriorWithFrame: cellFrame inView: controlView];

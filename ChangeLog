@@ -1,3 +1,9 @@
+2003-09-06  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSPopUpButtonCell.m: -drawInteriorWithFrame:inView:
+	added setEnabled to enable the popup button cell.  A previous
+	change was causing all popup button cells to show up as disabled.
+
 2003-09-06 22:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFont.m (getNSFont): Set the explicit-size bit in the
