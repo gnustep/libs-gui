@@ -1,3 +1,16 @@
+2005-02-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSColor.h (-alternateSelectedControlColor,
+	-alternateSelectedControlTextColor,
+	-secondarySelectedControlColor,
+	controlAlternatingRowBackgroundColors): New MacOSX system colour methods.
+	* Source/NSColor.m (-alternateSelectedControlColor,
+	-alternateSelectedControlTextColor,
+	-secondarySelectedControlColor,
+	controlAlternatingRowBackgroundColors): Implemented the new
+	methods.
+	(initSystemColors): Added default values for new system coloure methods
+
 2005-02-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-initWithCoder):

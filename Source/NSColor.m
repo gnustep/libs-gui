@@ -186,7 +186,7 @@ void initSystemColors(void)
   
   colorStrings = [[NSMutableDictionary alloc]
 		     initWithObjectsAndKeys:
-			 lightGray, @"controlBackgroundColor",
+		     lightGray, @"controlBackgroundColor",
 		     lightGray, @"controlColor",
 		     lightGray, @"controlHighlightColor",
 		     white, @"controlLightHighlightColor",
@@ -214,6 +214,11 @@ void initSystemColors(void)
 		     lightGray, @"windowBackgroundColor",
 		     black, @"windowFrameColor",
 		     white, @"windowFrameTextColor",
+		     black, @"alternateSelectedControlColor",
+		     white, @"alternateSelectedControlTextColor",
+		     white, @"rowBackgroundColor",
+		     lightGray, @"alternateRowBackgroundColor",
+		     lightGray, @"secondarySelectedControlColor",
 		     //gray, @"windowFrameColor",
 		     //black, @"windowFrameTextColor",
 		     nil];
@@ -573,6 +578,16 @@ systemColorWithName(NSString *name)
 //
 // System colors stuff.
 //
++ (NSColor*) alternateSelectedControlColor
+{
+  return systemColorWithName(@"alternateSelectedControlColor");
+}
+
++ (NSColor*) alternateSelectedControlTextColor
+{
+  return systemColorWithName(@"alternateSelectedControlTextColor");
+}
+
 + (NSColor*) controlBackgroundColor
 {
   return systemColorWithName(@"controlBackgroundColor");
@@ -648,6 +663,11 @@ systemColorWithName(NSString *name)
   return systemColorWithName(@"scrollBarColor");
 }
 
++ (NSColor*) secondarySelectedControlColor
+{
+  return systemColorWithName(@"secondarySelectedControlColor");
+}
+
 + (NSColor*) selectedControlColor
 {
   return systemColorWithName(@"selectedControlColor");
@@ -711,6 +731,12 @@ systemColorWithName(NSString *name)
 + (NSColor*) windowFrameTextColor
 {
   return systemColorWithName(@"windowFrameTextColor");
+}
+
++ (NSArray*) controlAlternatingRowBackgroundColors
+{
+  return [NSArray arrayWithObjects: systemColorWithName(@"rowBackgroundColor"), 
+		  systemColorWithName(@"alternateRowBackgroundColor"), nil];
 }
 
 ////////////////////////////////////////////////////////////

@@ -191,6 +191,8 @@ typedef enum _NSControlTint {
 //
 // System colors stuff.
 //
++ (NSColor*) alternateSelectedControlColor;
++ (NSColor*) alternateSelectedControlTextColor;
 + (NSColor*) controlBackgroundColor;
 + (NSColor*) controlColor;
 + (NSColor*) controlHighlightColor;
@@ -206,6 +208,7 @@ typedef enum _NSControlTint {
 + (NSColor*) keyboardFocusIndicatorColor;
 + (NSColor*) knobColor;
 + (NSColor*) scrollBarColor;
++ (NSColor*) secondarySelectedControlColor;
 + (NSColor*) selectedControlColor;
 + (NSColor*) selectedControlTextColor;
 + (NSColor*) selectedKnobColor;
@@ -219,6 +222,8 @@ typedef enum _NSControlTint {
 + (NSColor*) windowBackgroundColor;
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
+
++ (NSArray*) controlAlternatingRowBackgroundColors;
 
 // Pattern colour
 - (NSImage*) patternImage;
