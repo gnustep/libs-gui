@@ -39,7 +39,7 @@
   [super init];
   [self setAutoresizesSubviews:YES];
   [self setBackgroundColor:[NSColor lightGrayColor]];
-  _copiesOnScroll = YES;
+  _copiesOnScroll = NO;
   return self;
 }
 

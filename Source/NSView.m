@@ -537,7 +537,7 @@ float sx, sy;
 	  PSMatrix	*flip = nil;
 	  float		vals[6] = { 1, 0, 0, -1, 0, 1 };
 
-	  vals[5] = parent->bounds.size.height;
+	  vals[5] = view->bounds.size.height;
 	  flip = [PSMatrix matrixFrom: vals];
 	  [matrix concatenateWith: flip];
 	}
