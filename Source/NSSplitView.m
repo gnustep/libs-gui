@@ -687,6 +687,9 @@ static NSNotificationCenter *nc = nil;
 	  [views[i] setFrameOrigin: newPoint];
 	}
     }
+
+  [self setNeedsDisplay: YES];
+    
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
       object: self];
 }
