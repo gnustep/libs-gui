@@ -1,3 +1,8 @@
+2004-08-23 17:29  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (-setFrameFromString:): Don't change the size
+	of the window if it isn't resizable.
+
 2004-08-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSComboBoxCell.m (-completedString:):  Handle a nil

@@ -3775,6 +3775,11 @@ resetCursorRectsForView(NSView *theView)
 	* (nRect.size.height / sRect.size.height);
     }
 
+  /* If we aren't resizable (ie. if we don't have a resize bar), make sure
+  we don't change the size. */
+  if (!(_styleMask & NSResizableWindowMask))
+    fRect.size = _frame.size;
+
   /*
    * Set frame.
    */
