@@ -181,7 +181,7 @@ typedef enum _GSColorSpace
 @end
 
 #ifndef	NO_GNUSTEP
-APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
+APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;

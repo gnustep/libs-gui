@@ -81,7 +81,7 @@ NSString *GSColorSpaceColorTable = @"GSColorSpaceColorTable";
 /*
  *	Function for rapid access to current graphics context.
  */
-NSGraphicsContext	*GSCurrentContext()
+NSGraphicsContext	*GSCurrentContext(void)
 {
 #ifdef GNUSTEP_BASE_LIBRARY
 /*

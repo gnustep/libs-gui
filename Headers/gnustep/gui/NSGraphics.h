@@ -202,7 +202,7 @@ GSWViewIsFlipped(NSGraphicsContext *ctxt)
 @class	NSArray;
 @class	NSWindow;
 
-APPKIT_EXPORT NSArray* GSAllWindows();
+APPKIT_EXPORT NSArray* GSAllWindows(void);
 APPKIT_EXPORT NSWindow* GSWindowWithNumber(int num);
 #endif
 

@@ -4109,7 +4109,7 @@ void NSWindowList(int size, int list[])
 /* FIXME - the list produced should be in window stacking order */
 }
 
-NSArray* GSAllWindows()
+NSArray* GSAllWindows(void)
 {
   return NSAllMapTableValues(windowmaps);
 }

@@ -1,3 +1,9 @@
+2003-01-26 18:46  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSGraphics.h,
+	Headers/gnustep/gui/NSGraphicsContext.h, Source/NSGraphicsContext,
+	Source/NSWindow.m: Clean up some prototypes.
+
 2003-01-20  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSImage.m (NSImageCacheMore): New enum and ivar.
