@@ -434,6 +434,10 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag;
 - (void) DPSmouselocation: (float*)x : (float*)y;
 - (void) DPSsetinputstate: (int)window : (int)state;
+
+- (void) DPScurrentserverdevice: (void **)serverptr;
+- (void) DPScurrentwindowdevice: (int)win : (void **)windowptr;
+
 @end
 
 #endif /* _NSGraphicsContext_h_INCLUDE */

@@ -517,6 +517,11 @@ typedef struct {
   void (*DPSsetinputstate__)
 	(NSGraphicsContext*, SEL, int, int);
 
+  void (*DPScurrentserverdevice_)
+	(NSGraphicsContext*, SEL, void **);
+  void (*DPScurrentwindowdevice__)
+	(NSGraphicsContext*, SEL, int, void **);
+
 } gsMethodTable;
 
 #endif

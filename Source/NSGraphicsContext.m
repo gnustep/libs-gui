@@ -829,6 +829,11 @@ NSGraphicsContext	*GSCurrentContext()
   methodTable.DPSsetinputstate__ = 
     GET_IMP(@selector(DPSsetinputstate::));
 
+  methodTable.DPScurrentserverdevice_ = 
+    GET_IMP(@selector(DPScurrentserverdevice:));
+  methodTable.DPScurrentwindowdevice__ = 
+    GET_IMP(@selector(DPScurrentwindowdevice::));
+
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
   return mptr;
@@ -2283,4 +2288,15 @@ NSGraphicsContext	*GSCurrentContext()
 {
   [self subclassResponsibility: _cmd];
 }
+
+- (void) DPScurrentserverdevice: (void **)serverptr
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowdevice: (int)win : (void **)windowptr
+{
+  [self subclassResponsibility: _cmd];
+}
+
 @end

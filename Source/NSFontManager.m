@@ -49,6 +49,10 @@ static NSFontPanel	*fontPanel = nil;
 static Class		fontManagerClass = Nil;
 static Class		fontPanelClass = Nil;
 
+@interface NSFont (Private)
+- (GSFontInfo *) fontInfo;
+@end
+
 @implementation NSFontManager
 
 /*
@@ -61,7 +65,7 @@ static Class		fontPanelClass = Nil;
       NSDebugLog(@"Initialize NSFontManager class\n");
 
       // Initial version
-      [self setVersion: 1];
+     [self setVersion: 1];
 
       // Set the factories
       [self setFontManagerFactory: [NSFontManager class]];
@@ -665,25 +669,12 @@ static Class		fontPanelClass = Nil;
 //
 - (NSFontTraitMask) traitsOfFont: (NSFont*)fontObject
 {
-  GSFontInfo       *info;
-  NSFontTraitMask  mask = 0;
-
-  info = [GSFontInfo fontInfoForFontName: [fontObject fontName]
-		                  matrix: [fontObject matrix]];
-
-  if (info)
-    mask = [info traits];
-  return mask;
+  return [[fontObject fontInfo] traits];
 }
 
 - (int) weightOfFont: (NSFont*)fontObject
 {
-  GSFontInfo       *info;
-
-  info = [GSFontInfo fontInfoForFontName: [fontObject fontName]
-		                  matrix: [fontObject matrix]];
-
-  return [info weight];
+  return [[fontObject fontInfo] weight];
 }
 
 - (BOOL) fontNamed: (NSString*)typeface 

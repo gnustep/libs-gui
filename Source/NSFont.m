@@ -201,6 +201,14 @@ void setNSFont(NSString* key, NSFont* font)
 }
 
 //
+// Private method for NSFontManager
+//
+- (GSFontInfo *) fontInfo
+{
+  return fontInfo;
+}
+
+//
 // NSCopying Protocol
 //
 - copyWithZone: (NSZone *)zone

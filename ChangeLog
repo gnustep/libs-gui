@@ -1,3 +1,19 @@
+2000-04-20  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/GSMethodTable.h: Added methods to get 
+	current server device (X display) and current window device (X window).
+	* Headers/gnustep/gui/DPSOperators.h: Likewise
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise
+	* Headers/gnustep/gui/PSOperators.h: Likewise
+	* Source/NSGraphicsContext.m: Likewise
+	* Source/NSBrowser.m (-setDelegate:): 
+	browser:willDisplayCell:atRow:column: is only requiired for a
+	passive browser delegate.
+
+	* Source/NSFont.m (-fontInfo): New private method.
+	* Source/NSFontManager.m (-traitsOfFont): Use it.
+	(-weightOfFont): Likewise.
+
 2000-04-18  Adam Fedor  <fedor@gnu.org>
 
 	* Hooks for using backend libraries to read images.

@@ -955,6 +955,14 @@ static inline void
 DPSsetinputstate(GSCTXT *ctxt, int window, int state)
 __attribute__((unused));
 
+static inline void
+DPScurrentserverdevice(GSCTXT *ctxt, void **serverptr)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
+__attribute__((unused));
+
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -2548,6 +2556,20 @@ DPSsetinputstate(GSCTXT *ctxt, int window, int state)
 {
   (ctxt->methods->DPSsetinputstate__)
     (ctxt, @selector(DPSsetinputstate::), window, state);
+}
+
+static inline void
+DPScurrentserverdevice(GSCTXT *ctxt, void **serverptr)
+{
+  (ctxt->methods->DPScurrentserverdevice_)
+    (ctxt, @selector(DPScurrentserverdevice:), serverptr);
+}
+
+static inline void
+DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
+{
+  (ctxt->methods->DPScurrentwindowdevice__)
+    (ctxt, @selector(DPScurrentwindowdevice::), win, windowptr);
 }
 
 #endif	

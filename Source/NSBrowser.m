@@ -475,8 +475,10 @@
     return aCell;
   else
     {
-      [_browserDelegate browser: self willDisplayCell: aCell
-			atRow: row column: column];
+      if (_passiveDelegate || [_browserDelegate respondsToSelector: 
+		  @selector(browser:willDisplayCell:atRow:column:)])
+	[_browserDelegate browser: self willDisplayCell: aCell
+			  atRow: row column: column];
       [aCell setLoaded: YES];
     }
 
@@ -1827,7 +1829,7 @@
 // Sets the NSBrowser's delegate to anObject.
 // Raises NSBrowserIllegalDelegateException if the delegate specified
 // by anObject doesn't respond to browser:willDisplayCell:atRow:column:
-// and either of the methods browser:numberOfRowsInColumn:
+// (if passive) and either of the methods browser:numberOfRowsInColumn:
 // or browser:createRowsForColumn:inMatrix:.
 //
 
@@ -1839,12 +1841,6 @@
 #if defined NSBTRACE_setDelegate || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)setDelegate\n");
 #endif
-
-  if (![anObject respondsToSelector: 
-		  @selector(browser:willDisplayCell:atRow:column:)])
-    [NSException raise: NSBrowserIllegalDelegateException
-		 format: @"Delegate does not respond to %s\n",
-		 "browser: willDisplayCell: atRow: column: "];
 
   if ([anObject respondsToSelector: 
 		  @selector(browser:numberOfRowsInColumn:)])
@@ -1866,6 +1862,12 @@
       flag = YES;
     }
 
+  if (_passiveDelegate && ![anObject respondsToSelector: 
+		  @selector(browser:willDisplayCell:atRow:column:)])
+    [NSException raise: NSBrowserIllegalDelegateException
+		 format: @"(Passive) Delegate does not respond to %s\n",
+		 "browser: willDisplayCell: atRow: column: "];
+
   if (!flag)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s or %s\n",
@@ -1878,9 +1880,7 @@
 		 "browser: numberOfRowsInColumn: ",
 		 "browser: createRowsForColumn: inMatrix: "];
 
-  [anObject retain];
-  [_browserDelegate release];
-  _browserDelegate = anObject;
+  ASSIGN(_browserDelegate, anObject);
 }
 
 
