@@ -30,35 +30,32 @@
 #define _GNUstep_H_NSImageCell
 
 #include <AppKit/NSCell.h>
-#include <AppKit/NSImageView.h>
 
-/*
-typedef enum _NSImageAlignment {
-  NSImageAlignLeft,
-  NSImageAlignRight,
-  NSImageAlignCenter,
-  NSImageAlignTop,
-  NSImageAlignBottom,
-  NSImageAlignTopLeft,
-  NSImageAlignTopRight,
-  NSImageAlignBottomLeft,
-  NSImageAlignBottomRight
+typedef enum {
+    NSScaleProportionally = 0,   // Fit propoRtionally
+    NSScaleToFit,                // Forced fit (distort if necessary)
+    NSScaleNone                  // Don't scale (clip)
+} NSImageScaling;
+
+typedef enum {
+    NSImageAlignCenter = 0,
+    NSImageAlignTop,
+    NSImageAlignTopLeft,
+    NSImageAlignTopRight,
+    NSImageAlignLeft,
+    NSImageAlignBottom,
+    NSImageAlignBottomLeft,
+    NSImageAlignBottomRight,
+    NSImageAlignRight
 } NSImageAlignment;
 
-typedef enum _NSImageFrameStyle {
-  NSImageFrameNone,
-  NSImageFramePhoto,
-  NSImageFrameGrayBezel,
-  NSImageFrameGroove,
-  NSImageFrameButton
+typedef enum {
+    NSImageFrameNone = 0,
+    NSImageFramePhoto,
+    NSImageFrameGrayBezel,
+    NSImageFrameGroove,
+    NSImageFrameButton
 } NSImageFrameStyle;
-
-typedef enum _NSImageScaling {
-  NSScaleProportionally,
-  NSScaleToFit,
-  NSScaleNone
-} NSImageScaling;
-*/
 
 @interface NSImageCell : NSCell <NSCopying, NSCoding>
 {
