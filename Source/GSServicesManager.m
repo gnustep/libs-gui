@@ -608,16 +608,15 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	      if (plist)
 		{
 		  NSMutableSet	*s;
-		  stamp = mod;
 		  changed = YES;
 		  s = (NSMutableSet*)[NSMutableSet setWithArray: plist];
 		  ASSIGN(_allDisabled, s);
 		}
 	    }
+	  /* Track most recent version of file loaded */
+	  ASSIGN(_disabledStamp, mod);
 	}
     }
-  /* Track most recent version of file loaded or last time we checked */
-  ASSIGN(_disabledStamp, stamp);
 
   stamp = [NSDate date];
   if ([mgr fileExistsAtPath: _servicesPath])
@@ -640,15 +639,14 @@ static NSString         *disabledName = @".GNUstepDisabled";
 						    mutableContainers: YES];
 	      if (plist)
 		{
-		  stamp = mod;
 		  ASSIGN(_allServices, plist);
 		  changed = YES;
 		}
 	    }
+	  /* Track most recent version of file loaded */
+	  ASSIGN(_servicesStamp, mod);
 	}
     }
-  /* Track most recent version of file loaded or last time we checked */
-  ASSIGN(_servicesStamp, stamp);
   if (changed)
     {
       [self rebuildServices];
@@ -742,7 +740,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   if (_servicesMenu != nil)
     {
-      NSArray           *itemArray;
       NSMutableSet      *keyEquivalents;
       unsigned          pos;
       unsigned          loc0;
@@ -750,13 +747,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
       SEL               sel = @selector(doService:);
       NSMenu            *submenu = nil;
 
-      itemArray = [[_servicesMenu itemArray] copy];
-      pos = [itemArray count];
-      while (pos > 0)
-        {
-          [_servicesMenu removeItem: [itemArray objectAtIndex: --pos]];
-        }
-      RELEASE(itemArray);
+      pos = [_servicesMenu numberOfItems];
+      for (; pos; pos--)
+        [_servicesMenu removeItemAtIndex: 0];
 
       keyEquivalents = [NSMutableSet setWithCapacity: 4];
       for (loc0 = pos = 0; pos < [_menuTitles count]; pos++)
