@@ -39,6 +39,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSSerialization.h>
+#include <Foundation/NSUserDefaults.h>
 
 // Pasteboard Type Globals 
 NSString *NSStringPboardType = @"NSStringPboardType";
@@ -110,8 +111,12 @@ static	id<PasteboardServer>	the_server = nil;
 + (id<PasteboardServer>) _pbs
 {
   if (the_server == nil) {
-    NSString*	host = [[NSProcessInfo processInfo] hostName];
+    NSString*	host;
 
+    host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+    if (host == nil) {
+      host = [[NSProcessInfo processInfo] hostName];
+    }
     the_server = (id<PasteboardServer>)[NSConnection
 	rootProxyForConnectionWithRegisteredName: PBSNAME
 					    host: host];
