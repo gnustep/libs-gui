@@ -1,3 +1,8 @@
+2003-06-05  Adam Fedor  <fedor@gnu.org>
+
+	* GMAppKit.m (-initWithModelUnarchiver:): #ifdef out ivar assignment
+	when compiling nib2gmodel.
+
 2003-06-04 23:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:): Use a (much)
