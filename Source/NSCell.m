@@ -895,7 +895,7 @@ static NSColor	*shadowCol;
  */
 - (BOOL) acceptsFirstResponder
 {
-  return !_cell.is_disabled && ([self refusesFirstResponder] == NO);
+  return _cell.is_disabled == NO && _cell.refuses_first_responder == NO;
 }
 
 - (void) setShowsFirstResponder: (BOOL)flag 
@@ -948,11 +948,15 @@ static NSColor	*shadowCol;
   return _mnemonic_location;
 }
 
+/* Apple Compatibility method - do not use - please test whether the
+   cell is enabled or disabled instead. */
 - (BOOL) refusesFirstResponder
 {
   return _cell.refuses_first_responder;
 }
 
+/* Apple Compatibility method - do not use - please disable the cell
+   instead. */
 - (void) setRefusesFirstResponder: (BOOL)flag
 {
   _cell.refuses_first_responder = flag;
