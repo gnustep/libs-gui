@@ -58,8 +58,6 @@
 #include "GNUstepGUI/GSNibTemplates.h"
 #include "GNUstepGUI/IMLoading.h"
 
-static const int currentVersion = 1;
-
 @implementation	NSNibConnector
 
 - (void) dealloc
