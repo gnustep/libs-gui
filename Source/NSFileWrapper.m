@@ -46,7 +46,7 @@
 //
 
 // Init instance of directory type
-- (id)initDirectoryWithFileWrappers:(NSDictionary *)docs
+- (id) initDirectoryWithFileWrappers: (NSDictionary*)docs
 {
   NSEnumerator *enumerator;
   id key;
@@ -59,7 +59,7 @@
   enumerator = [docs keyEnumerator];
   while ((key = [enumerator nextObject]))
     {
-      wrapper = (NSFileWrapper *)[docs objectForKey: key];
+      wrapper = (NSFileWrapper*)[docs objectForKey: key];
 
       if (![wrapper preferredFilename])
         [wrapper setPreferredFilename: key];
@@ -71,7 +71,7 @@
 }
     
 // Init instance of regular file type
-- (id)initRegularFileWithContents:(NSData *)data
+- (id) initRegularFileWithContents: (NSData*)data
 {
   [super init];
 
@@ -82,11 +82,11 @@
 }
 
 // Init instance of symbolic link type
-- (id)initSymbolicLinkWithDestination:(NSString *)path
+- (id) initSymbolicLinkWithDestination: (NSString*)path
 {
   [super init];
 
-  _wrapperData = path;
+  _wrapperData = [path copyWithZone: [self zone]];
   _wrapperType = GSFileWrapperSymbolicLinkType;
 
   return self;
@@ -96,7 +96,7 @@
 // This can create a tree of instances
 // with a directory instance at the top
 
-- (id)initWithPath:(NSString *)path
+- (id) initWithPath: (NSString*)path
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *fileType;
@@ -117,8 +117,8 @@
 
       while ((filename = [enumerator nextObject]))
         {
-          [fileWrappers addObject:
-            [[NSFileWrapper alloc] initWithPath:
+          [fileWrappers addObject: 
+            [[NSFileWrapper alloc] initWithPath: 
               [path stringByAppendingPathComponent: filename]]];
         }
       self = [self initDirectoryWithFileWrappers: 
@@ -126,12 +126,12 @@
     }
   else if ([fileType isEqualToString: @"NSFileTypeRegular"])
     {
-      self = [self initRegularFileWithContents:
+      self = [self initRegularFileWithContents: 
                  [[NSData alloc] initWithContentsOfFile: path]];
     }
   else if ([fileType isEqualToString: @"NSFileTypeSymbolicLink"])
     {
-      self = [self initSymbolicLinkWithDestination:
+      self = [self initSymbolicLinkWithDestination: 
                  [fm pathContentOfSymbolicLinkAtPath: path]];
     }
 
@@ -145,21 +145,17 @@
 // directory instance at the top
 
 // FIXME - implement
-- (id)initWithSerializedRepresentation:(NSData *)data
+- (id) initWithSerializedRepresentation: (NSData*)data
 {
   return nil;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  if (_filename)
-    [_filename release];
-  if (_preferredFilename)
-    [_preferredFilename release];
-  if (_wrapperData)
-    [_wrapperData release];
-  if (_iconImage)
-    [_iconImage release];
+  TEST_RELEASE(_filename);
+  TEST_RELEASE(_preferredFilename);
+  TEST_RELEASE(_wrapperData);
+  TEST_RELEASE(_iconImage);
 }
 
 //
@@ -170,15 +166,15 @@
 // method is recursive; if updateFilenamesFlag is YES, the wrapper
 // will be updated with the name used in writing the file
 
-- (BOOL)writeToFile:(NSString *)path
-         atomically:(BOOL)atomicFlag
-    updateFilenames:(BOOL)updateFilenamesFlag
+- (BOOL) writeToFile: (NSString*)path
+	  atomically: (BOOL)atomicFlag
+     updateFilenames: (BOOL)updateFilenamesFlag
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   BOOL pathExists = [fm fileExistsAtPath: path];
 
   NSDebugLLog(@"NSFileWrapper",
-              @"writeToFile: %@ atomically: updateFilenames:", path);
+              @"writeToFile: %@ atomically: updateFilenames: ", path);
 
   // don't overwrite existing paths
   if (pathExists && atomicFlag)
@@ -189,14 +185,14 @@
 
   switch (_wrapperType)
     {
-      case GSFileWrapperDirectoryType:
+      case GSFileWrapperDirectoryType: 
         {
           // FIXME - more robust save proceedure when atomicFlag set
           NSEnumerator *enumerator = [_wrapperData keyEnumerator];
           NSString *key;
 
           [fm createDirectoryAtPath: path attributes: _fileAttributes];
-          while ((key = (NSString *)[enumerator nextObject]))
+          while ((key = (NSString*)[enumerator nextObject]))
             {
               NSString *newPath =
                   [path stringByAppendingPathComponent: key];
@@ -206,11 +202,11 @@
             }
           return YES;
         }
-      case GSFileWrapperRegularFileType:
+      case GSFileWrapperRegularFileType: 
         {
           return [_wrapperData writeToFile: path atomically: atomicFlag];
         }
-      case GSFileWrapperSymbolicLinkType:
+      case GSFileWrapperSymbolicLinkType: 
         {
           return [fm createSymbolicLinkAtPath: path pathContent: _wrapperData];
         }
@@ -219,40 +215,40 @@
 }
 
 // FIXME - implement
-- (NSData *)serializedRepresentation
+- (NSData*) serializedRepresentation
 {
   return nil;
 }
 
-- (void)setFilename:(NSString *)filename
+- (void) setFilename: (NSString*)filename
 {
   if (filename == nil || [filename isEqualToString: @""])
     [NSException raise: NSInternalInconsistencyException
-                format: @"Empty or nil argument to setFilename:"];
+                format: @"Empty or nil argument to setFilename: "];
   else
     ASSIGN(_filename, filename);
 }
 
-- (NSString *)filename
+- (NSString*) filename
 {
   return _filename;
 }
 
-- (void)setPreferredFilename:(NSString *)filename
+- (void) setPreferredFilename: (NSString*)filename
 {
   if (filename == nil || [filename isEqualToString: @""])
     [NSException raise: NSInternalInconsistencyException
-                format: @"Empty or nil argument to setPreferredFilename:"];
+                format: @"Empty or nil argument to setPreferredFilename: "];
   else
     ASSIGN(_preferredFilename, filename);
 }
 
-- (NSString *)preferredFilename;
+- (NSString*) preferredFilename;
 {
   return _preferredFilename;
 }
 
-- (void)setFileAttributes:(NSDictionary *)attributes
+- (void) setFileAttributes: (NSDictionary*)attributes
 {
   if (_fileAttributes == nil)
     _fileAttributes = [NSMutableDictionary new];
@@ -260,12 +256,12 @@
   [_fileAttributes addEntriesFromDictionary: attributes];
 }
 
-- (NSDictionary *)fileAttributes
+- (NSDictionary*) fileAttributes
 {
   return _fileAttributes;
 }
 
-- (BOOL)isRegularFile
+- (BOOL) isRegularFile
 {
   if (_wrapperType == GSFileWrapperRegularFileType)
     return YES;
@@ -273,7 +269,7 @@
     return NO;
 }
 
-- (BOOL)isDirectory
+- (BOOL) isDirectory
 {
   if (_wrapperType == GSFileWrapperDirectoryType)
     return YES;
@@ -281,7 +277,7 @@
     return NO;
 }
 
-- (BOOL)isSymbolicLink
+- (BOOL) isSymbolicLink
 {
   if (_wrapperType == GSFileWrapperSymbolicLinkType)
     return YES;
@@ -289,12 +285,12 @@
     return NO;
 }
 
-- (void)setIcon:(NSImage *)icon
+- (void) setIcon: (NSImage*)icon
 {
   ASSIGN(_iconImage, icon);
 }
 
-- (NSImage *)icon;
+- (NSImage*) icon;
 {
   if (!_iconImage)
     return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
@@ -303,24 +299,24 @@
 }
 
 // FIXME - for directory wrappers
-- (BOOL)needsToBeUpdatedFromPath:(NSString *)path
+- (BOOL) needsToBeUpdatedFromPath: (NSString*)path
 {
   NSFileManager *fm = [NSFileManager defaultManager];
 
   switch (_wrapperType)
     {
-      case GSFileWrapperRegularFileType:
+      case GSFileWrapperRegularFileType: 
         if ([[self fileAttributes]
                 isEqualToDictionary: [fm fileAttributesAtPath: path
                                                  traverseLink: NO]])
           return NO;
         break;
-      case GSFileWrapperSymbolicLinkType:
-        if ([_wrapperData isEqualToString:
+      case GSFileWrapperSymbolicLinkType: 
+        if ([_wrapperData isEqualToString: 
                           [fm pathContentOfSymbolicLinkAtPath: path]])
           return NO;
         break;
-      case GSFileWrapperDirectoryType:
+      case GSFileWrapperDirectoryType: 
         break;
     }
 
@@ -328,7 +324,7 @@
 }
 
 // FIXME - implement
-- (BOOL)updateFromPath:(NSString *)path
+- (BOOL) updateFromPath: (NSString*)path
 {
   return NO;
 }
@@ -344,7 +340,7 @@
                             @" does not wrap a directory!", _cmd];
 
 // FIXME - handle duplicate names
-- (NSString *)addFileWrapper:(NSFileWrapper *)doc			
+- (NSString*) addFileWrapper: (NSFileWrapper*)doc			
 {
   NSString *key;
 
@@ -363,28 +359,28 @@
   return key;
 }
 
-- (void)removeFileWrapper:(NSFileWrapper *)doc				
+- (void) removeFileWrapper: (NSFileWrapper*)doc				
 {
   GSFileWrapperDirectoryTypeCheck();
 
   [_wrapperData removeObjectsForKeys: [_wrapperData allKeysForObject: doc]];
 }
 
-- (NSDictionary *)fileWrappers
+- (NSDictionary*) fileWrappers
 {
   GSFileWrapperDirectoryTypeCheck();
 
   return _wrapperData;
 }
 
-- (NSString *)keyForFileWrapper:(NSFileWrapper *)doc
+- (NSString*) keyForFileWrapper: (NSFileWrapper*)doc
 {
   GSFileWrapperDirectoryTypeCheck();
 
   return [[_wrapperData allKeysForObject: doc] objectAtIndex: 0];
 }
 
-- (NSString *)addFileWithPath:(NSString *)path
+- (NSString*) addFileWithPath: (NSString*)path
 {
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
@@ -396,8 +392,8 @@
     return nil;
 }
 
-- (NSString *)addRegularFileWithContents:(NSData *)data 
-                       preferredFilename:(NSString *)filename
+- (NSString*) addRegularFileWithContents: (NSData*)data 
+                       preferredFilename: (NSString*)filename
 {
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
@@ -412,8 +408,8 @@
     return nil;
 }
 
-- (NSString *)addSymbolicLinkWithDestination:(NSString *)path 
-                           preferredFilename:(NSString *)filename
+- (NSString*) addSymbolicLinkWithDestination: (NSString*)path 
+                           preferredFilename: (NSString*)filename
 {
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
@@ -431,7 +427,7 @@
 //								
 // Regular file type methods 				  
 //									 											
-- (NSData *)regularFileContents
+- (NSData*) regularFileContents
 {
   if (_wrapperType == GSFileWrapperRegularFileType)
     return _wrapperData;
@@ -445,7 +441,7 @@
 //								
 // Symbolic link type methods 				  
 //									 											
-- (NSString *)symbolicLinkDestination
+- (NSString*) symbolicLinkDestination
 {
   if (_wrapperType == GSFileWrapperSymbolicLinkType)
     return _wrapperData;
