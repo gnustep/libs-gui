@@ -1,6 +1,15 @@
 2001-12-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m
+	Added some NSResponder methods with empty code to keep the
+	NSInputManager quiet.
+	* Source/NSApplication.m
+	[initialize] retain the gui bundle and added an auto release pool
+	as this might be called without one installed.
+	
+2001-12-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
 	[writeSelectionToPasteboard:types:] corrected C binary operator
 	short cut logic	that prevented us froam adding more than one
 	string type to the pasteboard. Remember that || wont evaluate the
