@@ -1,3 +1,13 @@
+2002-03-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTableView.m ([NSTableView -encodeWithCoder:]): 
+	([NSTableView -initWithCoder:]): encodes _allowsColumnReordering.
+	* Source/NSTableView.m (computeNewSelection):
+	fixed bug when updating selection.
+	* Source/NSTableColumn.m ([NSTableColumn -encodeWithCoder:]):
+	([NSTableColumn -initWithCoder:]): new encoding scheme
+	(fixes a bug when decoding a tableview)
+
 Thu Mar 28 11:08:56 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patches by Jeff Teunissen <deek@d2dc.net>:

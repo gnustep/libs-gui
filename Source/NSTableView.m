@@ -48,7 +48,7 @@
 #include <math.h>
 static NSNotificationCenter *nc = nil;
 
-static const int currentVersion = 2;
+static const int currentVersion = 3;
 
 static NSRect oldDraggingRect;
 static int oldDropRow;
@@ -2227,7 +2227,7 @@ static void computeNewSelection
 		  if (((pos = [_selectedRows 
 			       indexOfObject: 
 				 [NSNumber numberWithInt: i]])
-		      != NSNotFound) && (count > 0))
+		      != NSNotFound) && (count > 1))
 		    {
 		      [tv setNeedsDisplayInRect:
 			    [tv rectOfRow: i]];
@@ -2261,7 +2261,7 @@ static void computeNewSelection
 		  if (((pos = [_selectedRows 
 			       indexOfObject: 
 				 [NSNumber numberWithInt: i]])
-		      != NSNotFound) && (count > 0))
+		      != NSNotFound) && (count > 1))
 		    {
 		      [tv setNeedsDisplayInRect:
 			    [tv rectOfRow: i]];
@@ -6320,6 +6320,7 @@ byExtendingSelection: (BOOL)flag
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 
 }
@@ -6332,6 +6333,55 @@ byExtendingSelection: (BOOL)flag
   id aDelegate;
 
   if (version == currentVersion)
+    {
+      self = [super initWithCoder: aDecoder];
+      
+      _dataSource      = [aDecoder decodeObject];
+      _tableColumns    = RETAIN([aDecoder decodeObject]);
+      _gridColor       = RETAIN([aDecoder decodeObject]);
+      _backgroundColor = RETAIN([aDecoder decodeObject]);
+      _headerView      = RETAIN([aDecoder decodeObject]);
+      _cornerView      = RETAIN([aDecoder decodeObject]);
+      aDelegate        = [aDecoder decodeObject];
+      _target          = [aDecoder decodeObject];
+      
+      [self setDelegate: aDelegate];
+      [_headerView setTableView: self];
+      [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
+		     withObject: self];
+      
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      _intercellSpacing = [aDecoder decodeSize];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      
+      ASSIGN (_selectedColumns, [NSMutableArray array]);
+      ASSIGN (_selectedRows, [NSMutableArray array]);
+      if (_numberOfColumns)
+	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof(float) * _numberOfColumns);
+      
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _selectingColumns = NO;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _editedColumn = -1;
+      _editedRow = -1;
+      [self tile];
+    }
+  else if (version == 2)
     {
       self = [super initWithCoder: aDecoder];
       
