@@ -79,7 +79,7 @@ extern NSString	*NSEventTrackingRunLoopMode;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
-
+  NSWindow		*_app_icon_window;
   BOOL			inTrackingLoop;
 
   // Reserved for back-end use
@@ -256,6 +256,9 @@ extern NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
                               types: (NSArray*)types;
 
+#ifndef	NO_GNUSTEP
+- (NSWindow*) iconWindow;
+#endif
 @end
 
 

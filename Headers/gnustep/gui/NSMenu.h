@@ -168,7 +168,7 @@
 
 @end
 
-
+#ifndef	NO_GNUSTEP
 @interface NSMenu (GNUstepExtra)
 - (BOOL)isFollowTransient;
 - (NSWindow *)window;
@@ -190,6 +190,7 @@
 - (void)shiftOnScreen;
 
 @end
+#endif
 
 /* A menu's title is an instance of this class */
 @interface NSMenuWindowTitleView : NSView

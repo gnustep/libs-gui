@@ -46,6 +46,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWindowController.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSTextField.h>
@@ -673,6 +674,76 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
+  if (place == NSWindowOut)
+    {
+      NSArray	*windowList = [NSWindow _windowList];
+      unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
+      unsigned	c = [windowList count];
+      unsigned	i;
+      NSWindow	*w;
+
+      if ([self isKeyWindow])
+	{
+	  [self resignKeyWindow];
+	  for (i = pos + 1; i != pos; i++)
+	    {
+	      if (i == c)
+		{
+		  i = 0;
+		}
+	      w = [windowList objectAtIndex: i];
+	      if ([w isVisible] && [w canBecomeKeyWindow])
+		{
+		  [w makeKeyWindow];
+		  break;
+		}
+	    }
+	  /*
+	   * if we didn't find a possible key window - use tha app icon or,
+	   * failing that, use the menu window.
+	   */
+	  if (i == pos)
+	    {
+	      w = [NSApp iconWindow];
+	      if (w != nil && [w isVisible] == YES)
+		{
+		  [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
+		}
+	      else
+		{
+		  w = [[NSApp mainMenu] window];
+		  [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
+		}
+	    }
+	}
+      if ([self isMainWindow])
+	{
+	  NSWindow	*w = [NSApp keyWindow];
+
+	  [self resignMainWindow];
+	  if (w != nil && [w canBecomeMainWindow])
+	    {
+	      [w makeKeyWindow];
+	    }
+	  else
+	    {
+	      for (i = pos + 1; i != pos; i++)
+		{
+		  if (i == c)
+		    {
+		      i = 0;
+		    }
+		  w = [windowList objectAtIndex: i];
+		  if ([w isVisible] && [w canBecomeMainWindow])
+		    {
+		      [w makeMainWindow];
+		      break;
+		    }
+		}
+	    }
+	}
+    }
+
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
 
@@ -1228,8 +1299,6 @@ resetCursorRectsForView(NSView *theView)
     RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
-  [self resignKeyWindow];
-  [self resignMainWindow];
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 

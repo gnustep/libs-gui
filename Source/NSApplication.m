@@ -86,7 +86,6 @@ struct _NSModalSession {
  * Class variables
  */
 static BOOL gnustep_gui_app_is_in_dealloc;
-static NSIconWindow *app_icon_window;
 static NSEvent *null_event;
 static NSString *NSAbortModalException = @"NSAbortModalException";
 
@@ -267,7 +266,7 @@ static NSCell* tileCell = nil;
   if (app_icon == nil)
     app_icon = [[NSImage imageNamed: @"GNUstep"] retain];
 
-  app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
+  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
 					    NSMakeRect(0,0,64,64)
 				styleMask: NSBorderlessWindowMask
 				  backing: NSBackingStoreRetained
@@ -275,11 +274,11 @@ static NSCell* tileCell = nil;
 				   screen: nil];
 
   iv = [[NSAppIconView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
-  [app_icon_window setContentView: iv];
+  [_app_icon_window setContentView: iv];
   [iv setImage: app_icon];
 
-  [app_icon_window orderFrontRegardless];
-  DPSsetinputfocus(context, [app_icon_window windowNumber]);
+  [_app_icon_window orderFrontRegardless];
+  DPSsetinputfocus(context, [_app_icon_window windowNumber]);
   return self;
 }
 
@@ -338,7 +337,6 @@ static NSCell* tileCell = nil;
       NSLog(@"Bogus attempt to resign key window");
     }
 }
-
 
 - (void) _windowWillClose: (NSNotification*) notification
 {
@@ -490,7 +488,7 @@ static NSCell* tileCell = nil;
 	{
 	  NSGraphicsContext	*context = GSCurrentContext();
 
-	  DPSsetinputfocus(context, [app_icon_window windowNumber]);
+	  DPSsetinputfocus(context, [_app_icon_window windowNumber]);
 	}
     }
 }
@@ -789,7 +787,7 @@ static NSCell* tileCell = nil;
 	    {
 	      continue;		/* Already invisible	*/
 	    }
-	  if (win == app_icon_window)
+	  if (win == _app_icon_window)
 	    {
 	      continue;		/* can't hide the app icon.	*/
 	    }
@@ -1345,13 +1343,18 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   [app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
   ASSIGN(app_icon, anImage);
-  [[app_icon_window contentView] setImage: anImage];
-  [[app_icon_window contentView] setNeedsDisplay: YES];
+  [[_app_icon_window contentView] setImage: anImage];
+  [[_app_icon_window contentView] setNeedsDisplay: YES];
 }
 
 - (NSImage*) applicationIconImage
 {
   return app_icon;
+}
+
+- (NSWindow*) iconWindow
+{
+  return _app_icon_window;
 }
 
 /*
@@ -1381,7 +1384,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	    {
 	      continue;		/* Already invisible	*/
 	    }
-	  if (win == app_icon_window)
+	  if (win == _app_icon_window)
 	    {
 	      continue;		/* can't hide the app icon.	*/
 	    }
