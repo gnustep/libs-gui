@@ -129,7 +129,7 @@ container? necessary? */
 		    inTextContainer: (NSTextContainer *)container
 			  rectCount: (unsigned int *)rectCount
 {
-  unsigned int last = glyphRange.location + glyphRange.length;
+  unsigned int last;
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
@@ -138,30 +138,44 @@ container? necessary? */
   NSRect r;
 
 
+  *rectCount = 0;
+
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->textContainer == container)
       break;
 //printf("container %i %@, %i+%i\n",i,tc->textContainer,tc->pos,tc->length);
-  [self _doLayoutToGlyph: last - 1];
+  [self _doLayoutToGlyph: NSMaxRange(glyphRange) - 1];
 //printf("   now %i+%i\n",tc->pos,tc->length);
-  if (i == num_textcontainers ||
-      tc->pos + tc->length < last ||
-      tc->pos > glyphRange.location)
+  if (i == num_textcontainers)
     {
       if (i == num_textcontainers)
 	NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
-      else
-	[NSException raise: NSRangeException
-		    format: @"%s invalid glyph range", __PRETTY_FUNCTION__];
-      *rectCount = 0;
       return NULL;
+    }
+
+  /* Silently clamp range to the text container.
+  TODO: is this good? */
+  if (tc->pos > glyphRange.location)
+    {
+      if (tc->pos > NSMaxRange(glyphRange))
+	return NULL;
+      glyphRange.length = NSMaxRange(glyphRange) - tc->pos;
+      glyphRange.location = tc->pos;
+    }
+
+  if (tc->pos + tc->length < NSMaxRange(glyphRange))
+    {
+      if (tc->pos + tc->length < glyphRange.location)
+        return NULL;
+      glyphRange.length = tc->pos + tc->length - glyphRange.location;
     }
 
   if (!glyphRange.length)
     {
-      *rectCount = 0;
       return NULL;
     }
+
+  last = NSMaxRange(glyphRange);
 
   num_rects = 0;
 
@@ -332,6 +346,8 @@ line frag rect. */
   [self _doLayoutToContainer: i
     point: NSMakePoint(NSMaxX(bounds),NSMaxY(bounds))];
 
+  tc = textcontainers + i;
+
   if (!tc->num_linefrags)
     return NSMakeRange(0, 0);
 
@@ -471,6 +487,8 @@ anything visible
     }
 
   [self _doLayoutToContainer: i  point: point];
+
+  tc = textcontainers + i;
 
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     {
@@ -629,10 +647,10 @@ has the same y origin and height as the line frag rect it is in.
       return NSMakeRect(1,1,1,13);
     }
 
+  [self _doLayoutToGlyph: glyph_index];
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyph_index)
       break;
-  [self _doLayoutToGlyph: glyph_index];
   if (i == num_textcontainers)
     {
       *textContainer = -1;
@@ -824,6 +842,7 @@ has the same y origin and height as the line frag rect it is in.
 	{
 	  [self _doLayoutToContainer: from_tc
 		point: NSMakePoint(target, distance + NSMaxY(from_rect))];
+	  tc = textcontainers + from_tc;
 	  /* Find the target line. Move at least (should be up to?)
 	  distance, and at least one line. */
 	  for (; i < tc->num_linefrags; i++, lf++)
@@ -970,8 +989,12 @@ container */
   first_char_pos = char_pos;
   while (1)
     {
-      rects = [self rectArrayForGlyphRange:
-		      NSMakeRange(glyph_pos + i, glyph_run->head.glyph_length - i)
+      NSRange r = NSMakeRange(glyph_pos + i, glyph_run->head.glyph_length - i);
+
+      if (NSMaxRange(r) > NSMaxRange(range))
+	r.length = NSMaxRange(range) - r.location;
+
+      rects = [self rectArrayForGlyphRange: r
 		    withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0)
 		    inTextContainer: textContainer
 		    rectCount: &count];
@@ -1023,15 +1046,17 @@ container */
 
     if (r.location < range.location)
       {
+	if (range.location - r.location > r.length)
+	  return;
 	r.length -= range.location - r.location;
 	r.location = range.location;
       }
     if (r.location + r.length > range.location + range.length)
       {
+	if (r.location > range.location + range.length)
+	  return;
 	r.length = range.location + range.length - r.location;
       }
-    if (r.length <= 0)
-      return;
 
     /* TODO: use the text view's selected text attributes */
     color = [NSColor selectedTextBackgroundColor];

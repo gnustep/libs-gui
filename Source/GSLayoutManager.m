@@ -1304,15 +1304,16 @@ it should still be safe. might lose opportunities to merge runs, though.
   textcontainer_t *tc;
   unsigned int next;
   NSRect prev;
+  BOOL delegate_responds;
 
-  next = 0;
+  delegate_responds = [_delegate respondsToSelector:
+    @selector(layoutManager:didCompleteLayoutForTextContainer:atEnd:)];
+
+  next = layout_glyph;
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
       if (tc->complete)
-	{
-	  next = tc->pos + tc->length;
-	  continue;
-	}
+	continue;
 
       while (1)
 	{
@@ -1330,8 +1331,25 @@ it should still be safe. might lose opportunities to merge runs, though.
 	    break;
 	}
       tc->complete = YES;
+      if (delegate_responds)
+	{
+	  [_delegate layoutManager: self
+	    didCompleteLayoutForTextContainer: tc->textContainer
+	    atEnd: j == 2];
+	  /* The call might have resulted in more text containers being
+	  added, so 'textcontainers' might have moved. */
+	  tc = textcontainers + i;
+	}
       if (j == 2)
-	break;
+	{
+	  break;
+	}
+      if (i == num_textcontainers && delegate_responds)
+	{
+	  [_delegate layoutManager: self
+	    didCompleteLayoutForTextContainer: nil
+	    atEnd: NO];
+	}
     }
 }
 
@@ -1740,6 +1758,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   if (effectiveRange)
     {
       [self _doLayoutToContainer: i];
+      tc = textcontainers + i;
       *effectiveRange = NSMakeRange(tc->pos, tc->length);
     }
   return tc->textContainer;
@@ -1878,6 +1897,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
   [self _doLayoutToContainer: i];
+  tc = textcontainers + i;
   used = NSZeroRect;
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     used = NSUnionRect(used, lf->used_rect);
@@ -1899,6 +1919,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
   [self _doLayoutToContainer: i];
+  tc = textcontainers + i;
   return NSMakeRange(tc->pos, tc->length);
 }
 

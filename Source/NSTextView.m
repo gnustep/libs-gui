@@ -1336,6 +1336,11 @@ incorrectly. */
 }
 
 
+/*
+TODO: There is code in TextEdit that implies that the minimum size is
+mostly ignored, and that the size of the containing clip view is always
+used instead. Should test on OS to find out what the proper behavior is.
+*/
 -(void) setConstrainedFrameSize: (NSSize)desiredSize
 {
   NSSize newSize;
@@ -2866,7 +2871,8 @@ Figure out how the additional layout stuff is supposed to work.
     }
 
   if (_layoutManager->_selected_range.length > 0 ||
-      _layoutManager->_selected_range.location == NSNotFound)
+      _layoutManager->_selected_range.location == NSNotFound ||
+      !restartFlag)
     {
       new = NSZeroRect;
     }

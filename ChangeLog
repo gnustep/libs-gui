@@ -1,3 +1,10 @@
+2003-02-10 15:09  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m, Source/NSLayoutManager.m,
+	Source/NSTextView.m: Many minor bug and behavior fixes to get the
+	text system to work with several text containers attached to one
+	layout manager.
+
 2003-02-09 21:08  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m: Clean up old debugging code, whitespace,
