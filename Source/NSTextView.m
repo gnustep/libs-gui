@@ -3008,6 +3008,14 @@ afterString in order over charRange. */
     }
 }
 
+- (void) becomeKeyWindow
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: YES];
+    }
+}
+
 - (void) drawRect: (NSRect)rect
 {
   /* TODO: Only do relayout if needed */
