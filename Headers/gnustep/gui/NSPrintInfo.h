@@ -49,7 +49,7 @@ typedef enum _NSPrintingPaginationMode {
   NSClipPagination
 } NSPrintingPaginationMode;
 
-@interface NSPrintInfo : NSObject <NSCoding>
+@interface NSPrintInfo : NSObject <NSCoding, NSCopying>
 {
   NSMutableDictionary *_info;
 }
