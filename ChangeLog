@@ -1,3 +1,13 @@
+Mon Jan  7 16:05:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-setMainMenu:]): Only manually set a
+	new windows menu if no one was already set.  When looking manually
+	for a Windows menu, look both for translated and untranslated
+	'Windows' menu items.  Translate it if not yet translated.
+	([-setWindowsMenu:]): If no translated 'Windows' menu item could
+	be found, try and look for an untranslated one.  Translate it if
+	found.
+	
 Sun Jan  6 13:56:53 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSpellChecker.m ([-_launchSpellCheckerForLanguage:]): 
