@@ -34,9 +34,9 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSPrinter.h>
+#include "AppKit/NSPrinter.h"
 
-#include <AppKit/NSPrintInfo.h>
+#include "AppKit/NSPrintInfo.h"
 
 #define NSNUMBER(val) [NSNumber numberWithInt: val]
 #define DICTSET(dict, obj, key) \

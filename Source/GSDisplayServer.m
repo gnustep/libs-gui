@@ -31,10 +31,10 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSThread.h>
 
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/GSDisplayServer.h>
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSWindow.h"
+#include "gnustep/gui/GSDisplayServer.h"
 
 #include "GSSlideView.h"
 

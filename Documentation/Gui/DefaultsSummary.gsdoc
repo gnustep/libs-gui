@@ -265,10 +265,11 @@
 	  <term>GSAppOwnsMiniwindow</term>
 	  <desc>
           <p>
-          A boolean value which defaults to <code>YES</code>. Some window
-          managers control the miniaturized versions of windows themselves.
-          Set this default to <code>NO</code> to let the window manager
-          have it's way, otherwise, GNUstep will create a miniwindow.
+	  GSAppOwnsMiniwindow is for miniwindows (not app icons). If
+	  it's YES or absent, GNUstep handles miniaturization itself
+	  and doesn't let the window manager do it. If it's NO, the
+	  window manager is allowed to do its own iconification. This
+	  does not affect app icons at all.
           </p>
 	  </desc>
 	  <term>GSFontAntiAlias</term>
@@ -288,7 +289,7 @@
           X-Server. A value of <code>"*-iso8859-1"</code> would only
           include fonts available with ISO Western encoding. This
           feature might be helpfull if the font_cacher program is having
-          problem with the X-Server.
+          problem with the X-Server (Xlib backend only).
           </p>
 	  </desc>
 	  <term>GraphicCompositing</term>
@@ -298,7 +299,8 @@
           <code>YES</code>, then the application uses various tricks
           to get alpha colors to work when compositing images. This
           may slow down drawing of images, but it is generally
-          recommended anyway, particularly on fast systems.
+          recommended anyway, particularly on fast systems
+	  (Xlib backend only).
           </p>
 	  </desc>
 	  <term>Keyboard Modifiers</term>
@@ -336,10 +338,12 @@
 	  <term>UseWindowMakerIcons</term>
 	  <desc>
           <p>
-          A boolean value which defaults to <code>YES</code>. If set to
-          <code>YES</code> then icon windows are controlled by the
-          window manager, otherwise they are controlled by the GNUstep
-          application.
+	  UseWindowMakerIcons is for app icons, and has no effect when
+	  the window manager isn't Window Maker. It displays the
+	  application's icon window in the window Window Maker
+	  provides instead of creating one controlled by the app. This
+	  allows the icon to be docked.  It is a boolean value which
+	  defaults to <code>YES</code>.
           </p>
 	  </desc>
 	  <term>XGPS-Shm</term>

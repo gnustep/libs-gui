@@ -30,15 +30,15 @@
     using the rect information.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSUserDefaults.h>
 
-#include <AppKit/NSCachedImageRep.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSCachedImageRep.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/PSOperators.h"
 
 @interface GSCacheW : NSWindow
 @end

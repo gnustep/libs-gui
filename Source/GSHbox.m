@@ -25,9 +25,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/GSHbox.h>
+#include "gnustep/gui/GSHbox.h"
 // For the separator
-#include <AppKit/NSBox.h>
+#include "AppKit/NSBox.h"
 
 @implementation GSHbox: GSTable
 //

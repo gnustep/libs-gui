@@ -47,11 +47,11 @@
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSLayoutManager.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSTextView.h>
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextView.h"
 
 /*
 These methods are for user actions, ie. they are normally called from

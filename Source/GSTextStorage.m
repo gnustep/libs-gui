@@ -48,7 +48,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSNotification.h>
-#include <AppKit/NSTextStorage.h>
+#include "AppKit/NSTextStorage.h"
 #include "GSTextStorage.h"
 
 #define		SANITY_CHECKS	0
@@ -62,7 +62,7 @@
 #define GSI_MAP_VTYPES	GSUNION_INT
 #define	GSI_MAP_NOCLEAN	1
 
-#include <base/GSIMap.h>
+#include <gnustep/base/GSIMap.h>
 
 static NSDictionary	*blank;
 static NSLock		*attrLock = nil;

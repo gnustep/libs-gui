@@ -29,19 +29,18 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSTextFieldCell.h>
-#include <AppKit/NSWindow.h>
-
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSTextField.h"
+#include "AppKit/NSTextFieldCell.h"
+#include "AppKit/NSWindow.h"
 static NSNotificationCenter *nc;
 
 /*

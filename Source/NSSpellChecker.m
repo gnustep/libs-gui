@@ -29,7 +29,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSDictionary.h>
@@ -37,21 +37,21 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSSpellServer.h>
-#include <AppKit/GSServicesManager.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSBrowser.h>
-#include <AppKit/NSBrowserCell.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/GSGuiPrivate.h>
+#include "AppKit/NSNibLoading.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSSpellChecker.h"
+#include "AppKit/NSSpellServer.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSTextField.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSBrowser.h"
+#include "AppKit/NSBrowserCell.h"
+#include "AppKit/NSPopUpButton.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSPanel.h"
+#include "gnustep/gui/GSGuiPrivate.h"
+#include "gnustep/gui/GSServicesManager.h"
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);

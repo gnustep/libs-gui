@@ -29,12 +29,14 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSBitmapImageRep.h>
-#include <AppKit/GSDisplayServer.h>
+
+#include "AppKit/NSColor.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSBitmapImageRep.h"
+
+#include "gnustep/gui/GSDisplayServer.h"
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;

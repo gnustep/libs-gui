@@ -30,7 +30,7 @@
 */ 
 
 #include <math.h>
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSData.h>
@@ -41,17 +41,17 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSAffineTransform.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPrinter.h>
-#include <AppKit/NSPrintPanel.h>
-#include <AppKit/NSPrintInfo.h>
-#include <AppKit/NSPrintOperation.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSPrinter.h"
+#include "AppKit/NSPrintPanel.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPrintOperation.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/PSOperators.h"
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 #define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]

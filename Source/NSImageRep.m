@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <string.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
@@ -35,14 +35,14 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSDebug.h>
-#include <AppKit/NSImageRep.h>
-#include <AppKit/NSBitmapImageRep.h>
-#include <AppKit/NSEPSImageRep.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/DPSOperators.h>
+#include "AppKit/NSImageRep.h"
+#include "AppKit/NSBitmapImageRep.h"
+#include "AppKit/NSEPSImageRep.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/DPSOperators.h"
 
 static NSMutableArray *imageReps = nil;
 static Class NSImageRep_class = NULL;

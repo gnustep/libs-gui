@@ -26,7 +26,7 @@
    */
 
 #include <Foundation/NSGeometry.h>
-#include <AppKit/NSView.h>
+#include "AppKit/NSView.h"
 
 @class NSCell;
 

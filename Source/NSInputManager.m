@@ -23,13 +23,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSInputManager.h>
-#include <AppKit/NSInputServer.h>
-#include <AppKit/NSText.h>
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSInputManager.h"
+#include "AppKit/NSInputServer.h"
+#include "AppKit/NSText.h"
 
 /* For NSBeep () */
-#include <AppKit/NSGraphics.h>
+#include "AppKit/NSGraphics.h"
 
 #include "GSKeyBindingAction.h"
 #include "GSKeyBindingTable.h"

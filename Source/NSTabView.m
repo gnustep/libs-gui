@@ -25,16 +25,16 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSForm.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSTabView.h>
-#include <AppKit/NSTabViewItem.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSForm.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSTabView.h"
+#include "AppKit/NSTabViewItem.h"
+#include "AppKit/PSOperators.h"
 
 @implementation NSTabView
 

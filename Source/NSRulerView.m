@@ -24,21 +24,21 @@
 */
 
 #include <math.h>
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSAttributedString.h>
-#include <AppKit/NSBezierPath.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSRulerMarker.h>
-#include <AppKit/NSRulerView.h>
-#include <AppKit/NSScrollView.h>
+#include "AppKit/NSAttributedString.h"
+#include "AppKit/NSBezierPath.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSRulerMarker.h"
+#include "AppKit/NSRulerView.h"
+#include "AppKit/NSScrollView.h"
 
 DEFINE_RINT_IF_MISSING
 

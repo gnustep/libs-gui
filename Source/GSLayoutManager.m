@@ -24,19 +24,19 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/GSLayoutManager_internal.h>
-
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
-#include <AppKit/GSTypesetter.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSTextContainer.h>
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextContainer.h"
 
 /* just for NSAttachmentCharacter */
-#include <AppKit/NSTextAttachment.h>
+#include "AppKit/NSTextAttachment.h"
+
+#include "gnustep/gui/GSTypesetter.h"
+#include "gnustep/gui/GSLayoutManager_internal.h"
 
 
 

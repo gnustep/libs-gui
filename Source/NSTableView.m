@@ -33,25 +33,25 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 
-#include <AppKit/NSTableView.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSCell.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/NSTableColumn.h>
-#include <AppKit/NSTableHeaderView.h>
-#include <AppKit/NSText.h>
-#include <AppKit/NSTextFieldCell.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSCachedImageRep.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSCustomImageRep.h>
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSCell.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSScroller.h"
+#include "AppKit/NSTableColumn.h"
+#include "AppKit/NSTableHeaderView.h"
+#include "AppKit/NSText.h"
+#include "AppKit/NSTextFieldCell.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/PSOperators.h"
+#include "AppKit/NSCachedImageRep.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSDragging.h"
+#include "AppKit/NSCustomImageRep.h"
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;

@@ -25,16 +25,16 @@
 */
 
 #include <math.h>                  // (float)rintf(float x)
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 
-#include <AppKit/NSSliderCell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSTextFieldCell.h>
+#include "AppKit/NSSliderCell.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSControl.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSTextFieldCell.h"
 
 DEFINE_RINT_IF_MISSING
 

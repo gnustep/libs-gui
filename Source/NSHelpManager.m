@@ -31,13 +31,13 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSArchiver.h>
-#include <AppKit/NSAttributedString.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/NSHelpManager.h>
-#include <AppKit/NSGraphics.h>
+#include "AppKit/NSAttributedString.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSHelpManager.h"
+#include "AppKit/NSGraphics.h"
 
-#include <AppKit/GSHelpManagerPanel.h>
+#include "gnustep/gui/GSHelpManagerPanel.h"
 
 @implementation NSBundle (NSHelpManager)
 

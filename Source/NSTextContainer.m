@@ -29,11 +29,11 @@
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSDebug.h>
-#include <AppKit/GSLayoutManager.h>
-#include <AppKit/NSLayoutManager.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSTextView.h>
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextView.h"
+#include "gnustep/gui/GSLayoutManager.h"
 
 @interface NSTextContainer (TextViewObserver)
 - (void) _textViewFrameChanged: (NSNotification*)aNotification;

@@ -23,13 +23,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSTabViewItem.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSAttributedString.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSTabViewItem.h"
+#include "AppKit/PSOperators.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSAttributedString.h"
 
 @implementation NSTabViewItem
 - (id) initWithIdentifier:(id)identifier

@@ -29,18 +29,18 @@
 
 #include <Foundation/NSRunLoop.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSMenuView.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/PSOperators.h"
 
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSImage.h>
+#include "AppKit/NSImage.h"
 
 /*
   NSMenuView contains:

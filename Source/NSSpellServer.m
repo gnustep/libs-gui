@@ -27,8 +27,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSSpellServer.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSSpellServer.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSFileManager.h>

@@ -28,8 +28,8 @@
 
 // See GSHbox.m for comments
 // This file is derived from GSVbox.m
-#include <AppKit/GSVbox.h>
-#include <AppKit/NSBox.h>
+#include "gnustep/gui/GSVbox.h"
+#include "AppKit/NSBox.h"
 
 @implementation GSVbox: GSTable
 //

@@ -24,12 +24,12 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSImageCell.h>
-#include <AppKit/NSImageView.h>
-#include <AppKit/NSPasteboard.h>
+#include "AppKit/NSDragging.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSImageCell.h"
+#include "AppKit/NSImageView.h"
+#include "AppKit/NSPasteboard.h"
 
 /*
  * Class variables

@@ -35,7 +35,7 @@
  * (This is not required in the OpenStep standard, but could be useful).
  */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
@@ -51,10 +51,10 @@
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSMapTable.h>
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSGraphics.h>
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSGraphics.h"
 
-#include <AppKit/NSPrinter.h>
+#include "AppKit/NSPrinter.h"
 
 // Define size used for the name and type maps - just use a small table
 #define NAMEMAPSIZE 0

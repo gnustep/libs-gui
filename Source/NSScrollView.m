@@ -30,16 +30,16 @@
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSCell.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSRulerView.h>
-#include <AppKit/NSTableHeaderView.h>
-#include <AppKit/NSTableView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSScroller.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSCell.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSRulerView.h"
+#include "AppKit/NSTableHeaderView.h"
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/PSOperators.h"
 
 @implementation NSScrollView
 

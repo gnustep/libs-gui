@@ -30,10 +30,10 @@
 */
 
 
-#include <AppKit/NSLayoutManager.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/DPSOperators.h>
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/DPSOperators.h"
 #include "GSTextStorage.h"
 
 /*

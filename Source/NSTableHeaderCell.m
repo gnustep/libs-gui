@@ -23,12 +23,12 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <AppKit/NSTableHeaderCell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/DPSOperators.h>
+#include "AppKit/NSTableHeaderCell.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/DPSOperators.h"
 
 // Cache the colors
 static NSColor *bgCol;

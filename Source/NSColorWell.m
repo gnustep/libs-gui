@@ -27,16 +27,16 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSActionCell.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSColorPanel.h>
-#include <AppKit/NSColorWell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSWindow.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSActionCell.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSColorPanel.h"
+#include "AppKit/NSColorWell.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSDragging.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSWindow.h"
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSNotification.h>
 

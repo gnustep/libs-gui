@@ -43,9 +43,9 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-#include <AppKit/NSTextView.h>
+#include "AppKit/NSTextView.h"
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
@@ -56,26 +56,26 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSTimer.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSColorPanel.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSFileWrapper.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSLayoutManager.h>
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSRulerMarker.h>
-#include <AppKit/NSRulerView.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSTextAttachment.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSWindow.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSColorPanel.h"
+#include "AppKit/NSControl.h"
+#include "AppKit/NSDragging.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSParagraphStyle.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSRulerMarker.h"
+#include "AppKit/NSRulerView.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSSpellChecker.h"
+#include "AppKit/NSTextAttachment.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSWindow.h"
 
 
 /*

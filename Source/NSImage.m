@@ -22,7 +22,7 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <string.h>
 
 #include <Foundation/NSString.h>
@@ -35,18 +35,18 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSImage.h>
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSBitmapImageRep.h>
-#include <AppKit/NSCachedImageRep.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSPrintOperation.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/GSDisplayServer.h>
+#include "AppKit/NSImage.h"
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSBitmapImageRep.h"
+#include "AppKit/NSCachedImageRep.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSPrintOperation.h"
+#include "AppKit/PSOperators.h"
+#include "gnustep/gui/GSDisplayServer.h"
 
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 

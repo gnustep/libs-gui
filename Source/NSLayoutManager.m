@@ -103,17 +103,17 @@ first. Remaining cases, highest priority first:
 #include <math.h>
 
 #include "AppKit/NSLayoutManager.h"
-#include "AppKit/GSLayoutManager_internal.h"
+#include "gnustep/gui/GSLayoutManager_internal.h"
 
 #include <Foundation/NSException.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSRulerMarker.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/DPSOperators.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSParagraphStyle.h"
+#include "AppKit/NSRulerMarker.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/DPSOperators.h"
 
 
 

@@ -24,7 +24,7 @@
 */ 
 
 #include "GSKeyBindingAction.h"
-#include <AppKit/NSInputManager.h>
+#include "AppKit/NSInputManager.h"
 
 @implementation GSKeyBindingAction
 - (void) performActionWithInputManager: (NSInputManager *)manager

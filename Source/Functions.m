@@ -30,14 +30,14 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSProcessInfo.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/DPSOperators.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/DPSOperators.h"
 
 char **NSArgv = NULL;
 

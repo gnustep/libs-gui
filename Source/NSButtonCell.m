@@ -30,25 +30,25 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
-#include "gnustep/base/GSCategories.h"
+#include <gnustep/base/GSCategories.h>
 
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSSound.h>
-#include <AppKit/NSWindow.h>
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSSound.h"
+#include "AppKit/NSWindow.h"
 
 @implementation NSButtonCell
 

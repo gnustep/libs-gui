@@ -1445,7 +1445,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 @end
 
-#include <AppKit/GSDisplayServer.h>
+#include "gnustep/gui/GSDisplayServer.h"
 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	

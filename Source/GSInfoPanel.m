@@ -25,12 +25,12 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/GSInfoPanel.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSTextField.h"
+#include "gnustep/gui/GSInfoPanel.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>

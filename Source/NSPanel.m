@@ -33,26 +33,26 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSBox.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/IMLoading.h>
-#include <AppKit/GMAppKit.h>
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSTextField.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSBox.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/IMLoading.h"
+#include "AppKit/GMAppKit.h"
 
-#include <AppKit/GMArchiver.h>
+#include "AppKit/GMArchiver.h"
 
-#include <AppKit/NSHelpManager.h>
+#include "AppKit/NSHelpManager.h"
 
 #ifdef ALERT_TITLE
 static NSString	*defaultTitle = @"Alert";

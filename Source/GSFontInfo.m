@@ -27,7 +27,7 @@
 
 #include <math.h>
 
-#include <AppKit/GSFontInfo.h>
+#include "gnustep/gui/GSFontInfo.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>

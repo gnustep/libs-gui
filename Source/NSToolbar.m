@@ -33,11 +33,11 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSToolbarItem.h>
-#include <AppKit/NSToolbar.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSNibLoading.h>
+#include "AppKit/NSToolbarItem.h"
+#include "AppKit/NSToolbar.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSNibLoading.h"
 
 // internal
 static NSNotificationCenter *nc = nil;

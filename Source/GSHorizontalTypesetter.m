@@ -24,7 +24,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "AppKit/GSHorizontalTypesetter.h"
+#include "gnustep/gui/GSHorizontalTypesetter.h"
 
 #include <math.h>
 
@@ -38,7 +38,7 @@
 #include "AppKit/NSTextAttachment.h"
 #include "AppKit/NSTextContainer.h"
 #include "AppKit/NSTextStorage.h"
-#include "AppKit/GSLayoutManager.h"
+#include "gnustep/gui/GSLayoutManager.h"
 
 
 

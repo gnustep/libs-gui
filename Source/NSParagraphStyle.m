@@ -31,7 +31,7 @@
 #include <Foundation/NSDebug.h>
 
 #include <Foundation/NSException.h>
-#include <AppKit/NSParagraphStyle.h>
+#include "AppKit/NSParagraphStyle.h"
 
 @implementation NSTextTab
 

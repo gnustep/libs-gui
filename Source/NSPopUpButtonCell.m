@@ -23,15 +23,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>  
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/NSPopUpButtonCell.h>
-#include <AppKit/NSWindow.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSMenuView.h"
+#include "AppKit/NSPopUpButton.h"
+#include "AppKit/NSPopUpButtonCell.h"
+#include "AppKit/NSWindow.h"
 
 /* The image to use in a specific popupbutton is
  * _pbc_image[_pbcFlags.pullsDown]; that is, _pbc_image[0] if it is a

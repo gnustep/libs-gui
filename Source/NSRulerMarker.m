@@ -26,13 +26,13 @@
 */ 
 
 #include <Foundation/NSException.h>
-#include <AppKit/NSRulerMarker.h>
-#include <AppKit/NSRulerView.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSCursor.h>
+#include "AppKit/NSRulerMarker.h"
+#include "AppKit/NSRulerView.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSCursor.h"
 
 @interface NSRulerView (GNUstepInternal)
 - (NSRect)_markersRect;

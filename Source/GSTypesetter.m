@@ -24,13 +24,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "AppKit/GSTypesetter.h"
+#include "gnustep/gui/GSTypesetter.h"
 
-#include "AppKit/GSLayoutManager.h"
-#include "AppKit/GSHorizontalTypesetter.h"
+#include "gnustep/gui/GSLayoutManager.h"
+#include "gnustep/gui/GSHorizontalTypesetter.h"
 
 #include <Foundation/NSDictionary.h>
-#include <AppKit/NSAttributedString.h>
+#include "AppKit/NSAttributedString.h"
 
 
 @implementation GSTypesetter

@@ -23,7 +23,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <AppKit/NSInputServer.h>
+#include "AppKit/NSInputServer.h"
 
 @implementation NSInputServer
 

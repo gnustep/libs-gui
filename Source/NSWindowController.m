@@ -19,10 +19,10 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSWindowController.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/NSDocumentFrameworkPrivate.h>
+#include "AppKit/NSWindowController.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSNibLoading.h"
+#include "AppKit/NSDocumentFrameworkPrivate.h"
 
 @implementation NSWindowController
 

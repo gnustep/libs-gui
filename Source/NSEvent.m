@@ -30,7 +30,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSTimer.h>
@@ -40,13 +40,14 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/GSDisplayServer.h>
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/PSOperators.h"
+
+#include "gnustep/gui/GSDisplayServer.h"
 
 /*
  *	gstep-base has a faster mechanism to get the current thread.

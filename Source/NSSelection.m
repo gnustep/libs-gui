@@ -29,11 +29,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
-#include <AppKit/NSSelection.h>
-#include <AppKit/NSPasteboard.h>
+#include "AppKit/NSSelection.h"
+#include "AppKit/NSPasteboard.h"
 
 //
 // Global instances of these selections

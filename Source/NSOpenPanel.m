@@ -43,13 +43,13 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSURL.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSBrowser.h>
-#include <AppKit/NSBrowserCell.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSForm.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSOpenPanel.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSBrowser.h"
+#include "AppKit/NSBrowserCell.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSForm.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSOpenPanel.h"
 
 static NSOpenPanel *_gs_gui_open_panel = nil;
 

@@ -26,9 +26,9 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
-#include <AppKit/NSAttributedString.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/GSLayoutManager.h>
+#include "AppKit/NSAttributedString.h"
+#include "AppKit/NSTextStorage.h"
+#include "gnustep/gui/GSLayoutManager.h"
 
 @implementation NSTextStorage
 

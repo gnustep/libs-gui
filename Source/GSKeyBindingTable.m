@@ -25,8 +25,8 @@
 
 #include "GSKeyBindingAction.h"
 #include "GSKeyBindingTable.h"
-#include <AppKit/NSInputManager.h>
-#include <AppKit/NSEvent.h>
+#include "AppKit/NSInputManager.h"
+#include "AppKit/NSEvent.h"
 
 @implementation GSKeyBindingTable : NSObject
 

@@ -26,11 +26,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/NSFileWrapper.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSFileWrapper.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSHost.h>
@@ -51,7 +51,7 @@
 #include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
-#include <gnustep/gui/GSPasteboardServer.h>
+#include "gnustep/gui/GSPasteboardServer.h"
 
 @interface NSPasteboard (Private)
 + (id<GSPasteboardSvr>) _pbs;

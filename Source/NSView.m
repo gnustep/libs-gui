@@ -31,7 +31,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <math.h>
 #include <float.h>
 
@@ -49,25 +49,25 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSSet.h>
 
-#include <AppKit/GSDisplayServer.h>
-#include <AppKit/GSTrackingRect.h>
-#include <AppKit/GSVersion.h>
-#include <AppKit/NSAffineTransform.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSDocumentController.h>
-#include <AppKit/NSDocument.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSPrintInfo.h>
-#include <AppKit/NSPrintOperation.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSDocumentController.h"
+#include "AppKit/NSDocument.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPrintOperation.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/PSOperators.h"
+#include "gnustep/gui/GSDisplayServer.h"
+#include "gnustep/gui/GSTrackingRect.h"
+#include "gnustep/gui/GSVersion.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -79,7 +79,7 @@
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <base/GSIArray.h>
+#include <gnustep/base/GSIArray.h>
 
 #define	nKV(O)	((GSIArray)(O->_nextKeyView))
 #define	pKV(O)	((GSIArray)(O->_previousKeyView))

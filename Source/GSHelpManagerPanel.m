@@ -25,14 +25,14 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSAttributedString.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSColor.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSColor.h"
 
-#include <AppKit/GSHelpManagerPanel.h>
+#include "gnustep/gui/GSHelpManagerPanel.h"
 
 @implementation GSHelpManagerPanel
 

@@ -24,15 +24,15 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSNotification.h>
 
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/PSOperators.h"
 
 #include <math.h>
 

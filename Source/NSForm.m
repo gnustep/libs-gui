@@ -25,10 +25,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSNotification.h>
-#include <AppKit/NSForm.h>
-#include <AppKit/NSFormCell.h>
+#include "AppKit/NSForm.h"
+#include "AppKit/NSFormCell.h"
 
 @implementation NSForm
 

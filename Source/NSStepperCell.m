@@ -23,15 +23,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/DPSOperators.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSStepperCell.h>
-#include <AppKit/NSText.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/DPSOperators.h"
+#include "AppKit/PSOperators.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSStepperCell.h"
+#include "AppKit/NSText.h"
 
 @implementation NSStepperCell
 + (void) initialize

@@ -25,23 +25,23 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSPathUtilities.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSColorPanel.h>
-#include <AppKit/NSColorPicker.h>
-#include <AppKit/NSColorPicking.h>
-#include <AppKit/NSColorWell.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/IMLoading.h>
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSColorPanel.h"
+#include "AppKit/NSColorPicker.h"
+#include "AppKit/NSColorPicking.h"
+#include "AppKit/NSColorWell.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/IMLoading.h"
 
 #define MAX_ALPHA_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;

@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
@@ -34,12 +34,12 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSFontManager.h>
-#include <AppKit/GSFontInfo.h>
-#include <AppKit/NSView.h>
-#include <gnustep/gui/GSFusedSilicaContext.h>
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSFontManager.h"
+#include "AppKit/NSView.h"
+#include "gnustep/gui/GSFontInfo.h"
+#include "gnustep/gui/GSFusedSilicaContext.h"
 
 
 /*

@@ -27,7 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSDictionary.h>
@@ -37,13 +37,13 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSColor.h>
-#include <AppKit/NSColorList.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/PSOperators.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSColorList.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/PSOperators.h"
 
 static Class	NSColorClass;
 

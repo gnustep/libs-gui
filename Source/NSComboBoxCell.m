@@ -29,19 +29,19 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSAutoreleasePool.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSBox.h>
-#include <AppKit/NSBrowser.h>
-#include <AppKit/NSBrowserCell.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSComboBox.h>
-#include <AppKit/NSComboBoxCell.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSScroller.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSBox.h"
+#include "AppKit/NSBrowser.h"
+#include "AppKit/NSBrowserCell.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSComboBox.h"
+#include "AppKit/NSComboBoxCell.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSScroller.h"
 
 @interface GSComboWindow : NSPanel
 {

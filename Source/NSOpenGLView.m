@@ -28,8 +28,8 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
-#include <AppKit/NSOpenGL.h>
-#include <AppKit/NSOpenGLView.h>
+#include "AppKit/NSOpenGL.h"
+#include "AppKit/NSOpenGLView.h"
 
 
 

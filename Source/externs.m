@@ -26,9 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSString.h>
-#include <AppKit/NSEvent.h>
+#include "AppKit/NSEvent.h"
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";

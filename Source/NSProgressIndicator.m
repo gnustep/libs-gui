@@ -24,9 +24,9 @@
 */
 
 #include <Foundation/NSTimer.h>
-#include <AppKit/NSProgressIndicator.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSWindow.h>
+#include "AppKit/NSProgressIndicator.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSWindow.h"
 
 @implementation NSProgressIndicator
 

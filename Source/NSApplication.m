@@ -29,7 +29,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <stdio.h>
 
 #include <Foundation/NSArray.h>
@@ -50,27 +50,27 @@
 # include <Foundation/NSConnection.h>
 #endif
 
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/GSDisplayServer.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSDocumentController.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSFontManager.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/NSMenuItemCell.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/GSServicesManager.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/NSPageLayout.h>
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSDocumentController.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSFontManager.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSMenuItem.h"
+#include "AppKit/NSMenuItemCell.h"
+#include "AppKit/NSMenuView.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSNibLoading.h"
+#include "AppKit/NSPageLayout.h"
 
-#include <AppKit/GSGuiPrivate.h>
-#include <AppKit/GSInfoPanel.h>
+#include "gnustep/gui/GSDisplayServer.h"
+#include "gnustep/gui/GSServicesManager.h"
+#include "gnustep/gui/GSGuiPrivate.h"
+#include "gnustep/gui/GSInfoPanel.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;

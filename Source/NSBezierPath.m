@@ -27,13 +27,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111 - 1307, USA.
 */
 
-#include <AppKit/NSBezierPath.h>
+#include "AppKit/NSBezierPath.h"
 
-#include <AppKit/NSAffineTransform.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/GSFontInfo.h>
+#include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/PSOperators.h"
+#include "AppKit/GSFontInfo.h"
 
 #include <math.h>
 
@@ -1434,7 +1434,7 @@ typedef struct _PathElement
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <base/GSIArray.h>
+#include <gnustep/base/GSIArray.h>
 
 @interface GSBezierPath : NSBezierPath
 {

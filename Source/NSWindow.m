@@ -30,7 +30,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
@@ -47,29 +47,29 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSUserDefaults.h>
 
-#include <AppKit/NSDocument.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSWindowController.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSTextFieldCell.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/GSTrackingRect.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSHelpManager.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/GSDisplayServer.h>
-#include <AppKit/NSCachedImageRep.h>
-#include <AppKit/NSToolbar.h>
+#include "AppKit/NSDocument.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSWindowController.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSTextFieldCell.h"
+#include "AppKit/NSTextField.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/PSOperators.h"
+#include "AppKit/NSDragging.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSHelpManager.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSCachedImageRep.h"
+#include "AppKit/NSToolbar.h"
+#include "gnustep/gui/GSTrackingRect.h"
+#include "gnustep/gui/GSDisplayServer.h"
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 

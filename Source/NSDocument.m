@@ -28,16 +28,16 @@
 */
 
 #include <Foundation/NSData.h>
-#include <AppKit/NSDocument.h>
-#include <AppKit/NSFileWrapper.h>
-#include <AppKit/NSSavePanel.h>
-#include <AppKit/NSPrintInfo.h>
-#include <AppKit/NSPageLayout.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/NSDocumentFrameworkPrivate.h>
+#include "AppKit/NSDocument.h"
+#include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSSavePanel.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPageLayout.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSPopUpButton.h"
+#include "AppKit/NSDocumentFrameworkPrivate.h"
 
-#include <AppKit/GSGuiPrivate.h>
+#include "gnustep/gui/GSGuiPrivate.h"
 
 @implementation NSDocument
 

@@ -26,11 +26,11 @@
 
 #include <Foundation/NSRunLoop.h>
 
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSSlider.h>
-#include <AppKit/NSSliderCell.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSApplication.h>
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSSlider.h"
+#include "AppKit/NSSliderCell.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSApplication.h"
 
 static inline 
 float _floatValueForMousePoint (NSPoint point, NSRect knobRect,

@@ -27,12 +27,12 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/NSDocumentController.h>
-#include <AppKit/NSOpenPanel.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/NSDocumentFrameworkPrivate.h>
+#include "AppKit/NSDocumentController.h"
+#include "AppKit/NSOpenPanel.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSMenuItem.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSDocumentFrameworkPrivate.h"
 #include <Foundation/NSUserDefaults.h>
 
 static NSString *NSTypesKey             = @"NSTypes";

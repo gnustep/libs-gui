@@ -41,13 +41,13 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSSplitView.h>
-#include <AppKit/NSWindow.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSSplitView.h"
+#include "AppKit/NSWindow.h"
 
 static NSNotificationCenter *nc = nil;
 

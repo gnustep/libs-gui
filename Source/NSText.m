@@ -35,11 +35,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111 - 1307, USA.
 */
 
-#include <AppKit/NSText.h>
-//#include <AppKit/NSTextView.h>
+#include "AppKit/NSText.h"
+//#include "AppKit/NSTextView.h"
 @class NSTextView;
-#include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSPanel.h>
+#include "AppKit/NSSpellChecker.h"
+#include "AppKit/NSPanel.h"
 
 
 static	Class	abstract;

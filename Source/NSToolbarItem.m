@@ -29,10 +29,10 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSString.h>
-#include <AppKit/NSToolbarItem.h>
-#include <AppKit/NSToolbar.h>
-#include <AppKit/NSMenuItem.h>
-#include <AppKit/NSImage.h>
+#include "AppKit/NSToolbarItem.h"
+#include "AppKit/NSToolbar.h"
+#include "AppKit/NSMenuItem.h"
+#include "AppKit/NSImage.h"
 
 @implementation NSToolbarItem
 - (BOOL)allowsDuplicatesInToolbar

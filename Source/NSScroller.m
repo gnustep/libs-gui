@@ -33,14 +33,14 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSDebug.h>
 
-#include <AppKit/NSScroller.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSButtonCell.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSGraphics.h>
+#include "AppKit/NSScroller.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSGraphics.h"
 
 
 @implementation NSScroller

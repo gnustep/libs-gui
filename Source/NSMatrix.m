@@ -48,7 +48,7 @@
      on OS42, command and shift on MacOSX).
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <stdlib.h>
 
 #include <Foundation/NSValue.h>
@@ -61,12 +61,12 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSZone.h>
 
-#include <AppKit/NSColor.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSActionCell.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSMatrix.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSActionCell.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSMatrix.h"
 
 #include <math.h>
 

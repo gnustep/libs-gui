@@ -27,7 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSClassDescription.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
@@ -45,24 +45,24 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSSound.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSNibConnector.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/GSNibTemplates.h>
-#include <AppKit/IMLoading.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSControl.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSSound.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSNibConnector.h"
+#include "AppKit/NSNibLoading.h"
+#include "gnustep/gui/GSNibTemplates.h"
+#include "AppKit/IMLoading.h"
 
 //
 // For the template classes since they need to know about any and all subclasses
 // of the parent classes covered by them.
 //
-#include <AppKit/AppKit.h>
+#include "AppKit/AppKit.h"
 
 static const int currentVersion = 1;
 

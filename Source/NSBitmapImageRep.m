@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <stdlib.h>
 #include <math.h>
 #include <tiff.h>
@@ -34,14 +34,13 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSBitmapImageRep.h>
-#include <AppKit/AppKitExceptions.h>
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSBitmapImageRep.h"
+#include "AppKit/AppKitExceptions.h"
 
-#include <gnustep/gui/config.h>
-#include <gnustep/gui/nsimage-tiff.h>
+#include "gnustep/gui/nsimage-tiff.h"
 
 /* Maximum number of planes */
 #define MAX_PLANES 5

@@ -31,17 +31,17 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
-#include <AppKit/NSTableHeaderCell.h>
-#include <AppKit/NSTableHeaderView.h>
-#include <AppKit/NSTableColumn.h>
-#include <AppKit/NSTableView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/DPSOperators.h>
-#include <AppKit/NSGraphics.h>
+#include "AppKit/NSTableHeaderCell.h"
+#include "AppKit/NSTableHeaderView.h"
+#include "AppKit/NSTableColumn.h"
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/DPSOperators.h"
+#include "AppKit/NSGraphics.h"
 
 @interface NSTableView (GNUstepPrivate)
 - (void) _userResizedTableColumn: (int)index

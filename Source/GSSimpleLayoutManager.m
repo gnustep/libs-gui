@@ -43,16 +43,16 @@
 #include <Foundation/NSScanner.h>
 #include <Foundation/NSCharacterSet.h>
 
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSText.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSStringDrawing.h>
-#include <AppKit/NSParagraphStyle.h>
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSText.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSStringDrawing.h"
+#include "AppKit/NSParagraphStyle.h"
 
-#include "GSSimpleLayoutManager.h"
+#include "gnustep/gui/GSSimpleLayoutManager.h"
 
 #define HUGE 1e7
 

@@ -25,7 +25,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/GSTable.h>
+#include "gnustep/gui/GSTable.h"
 
 @interface GSTable (Private)
 -(void) _updateForNewFrameSize: (NSSize)newFrameSize;

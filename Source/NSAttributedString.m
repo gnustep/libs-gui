@@ -32,18 +32,18 @@
 #include <Foundation/NSRange.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSFileManager.h>
-#include <AppKit/NSAttributedString.h>
-#include <AppKit/NSDocumentController.h>
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSTextAttachment.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFileWrapper.h>
-#include <AppKit/NSFont.h>
+#include "AppKit/NSAttributedString.h"
+#include "AppKit/NSDocumentController.h"
+#include "AppKit/NSParagraphStyle.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSTextAttachment.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSFont.h"
 // For the colour name spaces
-#include <AppKit/NSGraphics.h>
+#include "AppKit/NSGraphics.h"
 
-#include <AppKit/GSTextConverter.h>
+#include "gnustep/gui/GSTextConverter.h"
 
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;

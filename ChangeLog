@@ -1,3 +1,70 @@
+ 2003-06-08  David Ayers  <d.ayers@inode.at>
+ 	
+	* Headers/gnustep/gui/IMConnectors.h: Change syntax of include <>
+ 	to "" for local headers.  Change base/ to gnustep/base/ in
+ 	includes.  Change AppKit/GSFiles.h to gnustep
+ 	gnustep/gui/GSFiles.h includes.
+ 	* Source/Functions.m, Source/GSDisplayServer.m, Source/GSFontInfo.m,
+ 	Source/GSFusedSilica.m, Source/GSFusedSilicaContext.m,
+ 	Source/GSHbox.m, Source/GSHelpManagerPanel.m,
+ 	Source/GSInfoPanel.m, Source/GSKeyBindingAction.m,
+ 	Source/GSKeyBindingTable.m, Source/GSLayoutManager.m,
+ 	Source/GSMemoryPanel.m, Source/GSServicesManager.m,
+ 	Source/GSSimpleLayoutManager.m, Source/GSSlideView.h
+ 	Source/GSSlideView.m, Source/GSTable.m, Source/GSTextStorage.h
+ 	Source/GSTextStorage.m, Source/GSTrackingRect.m,
+ 	Source/GSTypesetter.m, Source/GSVbox.m, Source/NSActionCell.m,
+ 	Source/NSAffineTransform.m, Source/NSApplication.m,
+ 	Source/NSAttributedString.m, Source/NSBezierPath.m,
+ 	Source/NSBitmapImageRep.m, Source/NSBox.m, Source/NSBrowser.m,
+ 	Source/NSBrowserCell.m, Source/NSBundleAdditions.m,
+ 	Source/NSButton.m, Source/NSButtonCell.m,
+ 	Source/NSCachedImageRep.m, Source/NSCell.m, Source/NSClipView.m,
+ 	Source/NSColor.m, Source/NSColorList.m, Source/NSColorPanel.m,
+ 	Source/NSColorPicker.m, Source/NSColorWell.m,
+ 	Source/NSComboBox.m, Source/NSComboBoxCell.m, Source/NSControl.m,
+ 	Source/NSCursor.m, Source/NSCustomImageRep.m,
+ 	Source/NSDataLink.m, Source/NSDataLinkManager.m,
+ 	Source/NSDataLinkPanel.m, Source/NSDocument.m,
+ 	Source/NSDocumentController.m, Source/NSDrawer.m,
+ 	Source/NSEPSImageRep.m, Source/NSEvent.m, Source/NSFileWrapper.m,
+ 	Source/NSFont.m, Source/NSFontManager.m, Source/NSFontPanel.m,
+ 	Source/NSForm.m, Source/NSFormCell.m, Source/NSGraphicsContext.m,
+ 	Source/NSHelpManager.m, Source/NSHelpPanel.m, Source/NSImage.m,
+ 	Source/NSImageCell.m, Source/NSImageRep.m, Source/NSImageView.m,
+ 	Source/NSInputManager.m, Source/NSInputServer.m,
+ 	Source/NSInterfaceStyle.m, Source/NSLayoutManager.m,
+ 	Source/NSMatrix.m, Source/NSMenu.m, Source/NSMenuItem.m,
+ 	Source/NSMenuItemCell.m, Source/NSMenuView.m,
+ 	Source/NSOpenGLContext.m, Source/NSOpenGLPixelFormat.m,
+ 	Source/NSOpenGLView.m, Source/NSOpenPanel.m,
+ 	Source/NSOutlineView.m, Source/NSPageLayout.m, Source/NSPanel.m,
+ 	Source/NSParagraphStyle.m, Source/NSPasteboard.m,
+ 	Source/NSPopUpButton.m, Source/NSPopUpButtonCell.m,
+ 	Source/NSPrintInfo.m, Source/NSPrintOperation.m,
+ 	Source/NSPrintPanel.m, Source/NSPrinter.m,
+ 	Source/NSProgressIndicator.m, Source/NSResponder.m,
+ 	Source/NSRulerMarker.m, Source/NSRulerView.m,
+ 	Source/NSSavePanel.m, Source/NSScreen.m, Source/NSScrollView.m,
+ 	Source/NSScroller.m, Source/NSSecureTextField.m,
+ 	Source/NSSelection.m, Source/NSSlider.m, Source/NSSliderCell.m,
+ 	Source/NSSound.m, Source/NSSpellChecker.m,
+ 	Source/NSSpellServer.m, Source/NSSplitView.m, Source/NSStepper.m,
+ 	Source/NSStepperCell.m, Source/NSStringDrawing.m,
+ 	Source/NSTabView.m, Source/NSTabViewItem.m,
+ 	Source/NSStepperCell.m, Source/NSStringDrawing.m,
+ 	Source/NSTabView.m, Source/NSTabViewItem.m,
+ 	Source/NSTableColumn.m, Source/NSTableHeaderCell.m,
+ 	Source/NSTableHeaderView.m, Source/NSTableView.m,
+ 	Source/NSText.m, Source/NSTextAttachment.m,
+ 	Source/NSTextContainer.m, Source/NSTextField.m,
+ 	Source/NSTextFieldCell.m, Source/NSTextStorage.m,
+ 	Source/NSTextView.m, Source/NSTextView_actions.m,
+ 	Source/NSToolbar.m, Source/NSToolbarItem.m, Source/NSView.m,
+ 	Source/NSWindow.m, Source/NSWindowController.m,
+ 	Source/NSWorkspace.m, Source/externs.m, Source/linking.m,
+ 	Source/tiff.m: Ditto.
+ 
 2003-06-08  Kazunobu Kuriyama  <kazunobu.kuriyama@nifty.com>
 
         * configure.ac: Add --with-audiofile-include and --with-audiofile

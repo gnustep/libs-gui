@@ -23,7 +23,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDictionary.h>
@@ -34,13 +34,13 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuItemCell.h>
-#include <AppKit/NSMenuView.h>
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSMenuItemCell.h"
+#include "AppKit/NSMenuView.h"
 
 
 @implementation NSMenuItemCell

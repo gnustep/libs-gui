@@ -34,24 +34,24 @@
 */
 
 #include <math.h>                  // (float)rintf(float x)
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
-#include <AppKit/NSBrowser.h>
-#include <AppKit/NSBrowserCell.h>
-#include <AppKit/AppKitExceptions.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/NSCell.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSTableHeaderCell.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSBezierPath.h>
+#include "AppKit/NSBrowser.h"
+#include "AppKit/NSBrowserCell.h"
+#include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSScroller.h"
+#include "AppKit/NSCell.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSGraphics.h"
+#include "AppKit/NSMatrix.h"
+#include "AppKit/NSTableHeaderCell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSBezierPath.h"
 
 DEFINE_RINT_IF_MISSING
 

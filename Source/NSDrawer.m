@@ -27,9 +27,9 @@
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSNotification.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSDrawer.h>
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSDrawer.h"
 
 static NSNotificationCenter *nc = nil;
 

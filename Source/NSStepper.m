@@ -23,17 +23,17 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
-#include <AppKit/NSStepper.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSStepperCell.h>
+#include "AppKit/NSStepper.h"
+#include "AppKit/NSControl.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSStepperCell.h"
 
 //
 // class variables

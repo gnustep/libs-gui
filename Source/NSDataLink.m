@@ -23,9 +23,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#include <AppKit/NSDataLink.h>
-#include <AppKit/NSDataLinkManager.h>
+#include "gnustep/gui/config.h"
+#include "AppKit/NSDataLink.h"
+#include "AppKit/NSDataLinkManager.h"
 
 @implementation NSDataLink
 

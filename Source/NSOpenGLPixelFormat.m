@@ -28,8 +28,8 @@
 #include <Foundation/NSString.h>
 
 #include <Foundation/NSDebug.h>
-#include <AppKit/GSDisplayServer.h>
-#include <AppKit/NSOpenGL.h>
+#include "gnustep/gui/GSDisplayServer.h"
+#include "AppKit/NSOpenGL.h"
 
 
 // @interface GSGLPixelFormat : NSOpenGLPixelFormat

@@ -27,7 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSDictionary.h>
@@ -37,9 +37,9 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSString.h>
 
-#include <AppKit/NSColorList.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/AppKitExceptions.h>
+#include "AppKit/NSColorList.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/AppKitExceptions.h"
 
 // The list of available color lists is created only once -- this has
 // a drawback, that you need to restart your program to get the color

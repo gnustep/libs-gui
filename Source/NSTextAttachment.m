@@ -34,13 +34,13 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <AppKit/NSCell.h>
-#include <AppKit/NSFileWrapper.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSTextContainer.h>
-#include <AppKit/NSTextAttachment.h>
-#include <AppKit/NSTextView.h>
+#include "AppKit/NSCell.h"
+#include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextAttachment.h"
+#include "AppKit/NSTextView.h"
 
 
 @implementation NSTextAttachmentCell

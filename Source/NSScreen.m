@@ -27,12 +27,12 @@
 */ 
 
 #include <Foundation/Foundation.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/NSInterfaceStyle.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/GSDisplayServer.h>
-#include <AppKit/AppKitExceptions.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSInterfaceStyle.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/AppKitExceptions.h"
+#include "gnustep/gui/GSDisplayServer.h"
 
 @interface NSScreen (Private)
 - (id) _initWithScreenNumber: (int)screen;

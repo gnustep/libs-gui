@@ -29,7 +29,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
+#include "gnustep/gui/config.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSHost.h>
@@ -45,15 +45,15 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSURL.h>
 #include <Foundation/NSValue.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSScreen.h>
-#include <AppKit/GSServicesManager.h>
-#include <AppKit/GSDisplayServer.h>
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSScreen.h"
+#include "gnustep/gui/GSServicesManager.h"
+#include "gnustep/gui/GSDisplayServer.h"
 
 #define PosixExecutePermission	(0111)
 
