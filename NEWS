@@ -1,7 +1,24 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.2'.
+The currently released version of the library is `0.8.3'.
+
+Noteworthy changes in version `0.8.3'
+=====================================
+
+   * Additions for Gorm support.
+
+   * Alpha support for OpenGL
+
+   * Better ruler support - dragging of tab markers.
+
+   * Document support, recent files, etc.
+
+   * Simple printing to printer and print previewing.
+
+   * Window focus fixes
+
+   * Key view handling rewritten.
 
 Noteworthy changes in version `0.8.2'
 =====================================

@@ -1,3 +1,7 @@
+2002-11-21  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.8.3
+
 2002-11-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m

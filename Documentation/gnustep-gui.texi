@@ -1249,7 +1249,7 @@ argument was given.  The Info-gnustep.plist file could look like this:
 @node Keyboard Modifiers, Window Manager, Setup, Setup
 @section Keyboard Modifiers
 
-This section applies only to the xgps and the xdps backend. 
+This section applies only to the X-Windows based backend. 
 
 @subsection Default Settings
 The OPENstep specification requires 3 main different keyboard 

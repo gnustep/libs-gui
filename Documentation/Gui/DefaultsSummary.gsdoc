@@ -188,6 +188,7 @@
           NSRulerView class documentation). The default is
           Centimeters. Other possible values are Inches, Points, and Picas.
           </p>
+	  </desc>
 	  <term>NSPreviewApp</term>
 	  <desc>
           <p>
@@ -196,7 +197,6 @@
           connect to preview PostScript files, unless there is already
 	  an application registed as a Viewer of ps files.
           </p>
-	  </desc>
 	  </desc>
 	  <term><em>System Colors</em></term>
 	  <desc>

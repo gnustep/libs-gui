@@ -84,11 +84,11 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     <p>
     NSDocumentController also manages document types and the related
     NSDocument subclasses that handle them. This information comes
-    from the custom info property list (<ApplicationName>Info.plist)
+    from the custom info property list ({ApplicationName}Info.plist)
     loaded when NSDocumentController is initialized. The property list
     contains an array of dictionarys with the key NSTypes. Each
     dictionary contains a set of keys:
-   </p>
+    </p>
    <list>
      <item>NSDocumentClass - The name of the subclass</item>
      <item>NSName - Short name of the document type</item>
@@ -333,7 +333,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return openPanel;
 }
 
-/** Invokes [NSOpenPanel-runModelForTypes:] with the NSOpenPanel
+/** Invokes [NSOpenPanel-runModalForTypes:] with the NSOpenPanel
     object openPanel, and passes the openableFileExtensions file types 
 */
 - (int) runModalOpenPanel: (NSOpenPanel *)openPanel 
@@ -590,7 +590,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
     returns a document and the document has a filename, this method
     returns the directory this file is located in. Otherwise it
     returns the directory of the most recently opened document or
-    NSHomeDirectory() if no document has been opened before.
+    the user's home directory if no document has been opened before.
 */
 - (NSString *) currentDirectory
 {
