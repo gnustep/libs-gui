@@ -1012,6 +1012,36 @@ int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf,
 				  NSMultibyteGlyphPacking packing, 
 				  char *packedGlyphs)
 {
-// TODO
-  return 0;
+  int i;
+  int j;
+
+  j = 0;
+  for (i = 0; i < count; i++)
+    {
+      NSGlyph g = glBuf[i];
+
+      switch (packing)
+        {
+	    case NSOneByteGlyphPacking: 
+		packedGlyphs[j++] = (char)(g & 0xFF); 
+		break;
+	    case NSTwoByteGlyphPacking: 
+		packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
+		packedGlyphs[j++] = (char)(g & 0xFF); 
+		break;
+	    case NSFourByteGlyphPacking:
+		packedGlyphs[j++] = (char)((g & 0xFF000000) >> 24) ; 
+		packedGlyphs[j++] = (char)((g & 0xFF0000) >> 16); 
+		packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
+		packedGlyphs[j++] = (char)(g & 0xFF); 
+		break;	  
+	    case NSJapaneseEUCGlyphPacking:
+	    case NSAsciiWithDoubleByteEUCGlyphPacking:
+	    default:
+		// FIXME
+		break;
+	}
+    } 
+
+  return j;
 }
