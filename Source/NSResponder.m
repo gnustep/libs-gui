@@ -27,9 +27,11 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSInputManager.h>
