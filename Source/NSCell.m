@@ -646,17 +646,8 @@
   if (![self startTrackingAt: point inView: controlView])
     return NO;
 
-  // If point is in cellFrame then highlight the cell
-  if ([controlView mouse: point inRect: cellFrame]) {
-    [self highlight:YES withFrame:cellFrame inView:controlView];
-#if 1
-    [controlView setNeedsDisplayInRect:cellFrame];
-#else
-    [[controlView window] flushWindow];
-#endif
-  }
-  else
-    return NO;
+  if (![controlView mouse: point inRect: cellFrame]) 		 
+    return NO;											// point is not in cell
 
   if ([theEvent type] == NSLeftMouseDown
       && (action_mask & NSLeftMouseDownMask))
@@ -696,40 +687,14 @@
 
       pointIsInCell = NO;
 
-      // unhighlight cell is highlighted
-      if (cell_highlighted) {
-	[self highlight: NO withFrame: cellFrame 
-	      inView: controlView];
-#if 1
-	[controlView setNeedsDisplayInRect:cellFrame];
-#else
-	[self drawWithFrame: cellFrame inView: controlView];
-	[[controlView window] flushWindow];
-#endif
-      }
-      
-      // Do we now return or keep tracking
-      if (!([[self class] prefersTrackingUntilMouseUp] && flag)) {
+      // Do we return now or keep tracking
+      if (![[self class] prefersTrackingUntilMouseUp] && flag) {
 	NSDebugLog(@"NSCell return immediately\n");
 	done = YES;
       }
     }
-    else {
-      // Point is in cell
-      pointIsInCell = YES;
-
-      // highlight cell if not highlighted
-      if (!cell_highlighted) {
-	[self highlight: YES withFrame: cellFrame 
-	      inView: controlView];
-#if 1
-	[controlView setNeedsDisplayInRect:cellFrame];
-#else
-	//[self drawWithFrame: cellFrame inView: controlView];
-	[[controlView window] flushWindow];
-#endif
-      }
-    }
+    else 
+      pointIsInCell = YES;							// Point is in cell
 
     // should we continue tracking?
     if (!done
@@ -743,7 +708,7 @@
       NSDebugLog(@"NSCell mouse went up\n");
       mouseWentUp = YES;
       done = YES;
-      if ((action_mask & NSLeftMouseUpMask))
+     if ((action_mask & NSLeftMouseUpMask))
 	[(NSControl*)controlView sendAction:action to:target];
     }
     else {

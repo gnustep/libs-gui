@@ -314,6 +314,8 @@ id gnustep_gui_nsbutton_class = nil;
   e = theEvent;
   while (!done)
     {
+	[cell highlight: YES withFrame: bounds inView: self];	// highlight cell
+	[self setNeedsDisplayInRect:bounds];		
       mouseUp = [cell trackMouse: e inRect: bounds
 		      ofView:self untilMouseUp:YES];
       e = [theApp currentEvent];
