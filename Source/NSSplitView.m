@@ -147,7 +147,7 @@ static NSNotificationCenter *nc = nil;
         {
 	  if (NSMinY(r) >= p.y)
             {
-	      offset = i;
+	      offset = i - 1;
 
 	      /* get the enclosing rect for the two views */
 	      if (prev != nil)
@@ -176,7 +176,7 @@ static NSNotificationCenter *nc = nil;
         {
 	  if (NSMinX(r) >= p.x)
             {
-	      offset = i;
+	      offset = i - 1;
 
 	      /* get the enclosing rect for the two views */
 	      if (prev != nil)
