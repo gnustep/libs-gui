@@ -1,3 +1,8 @@
+Tue Apr 16 11:55:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Tools/gpbs.m (main): Fixed typo in log message - use gpbs, not
+	gdnc, as log prefix.
+
 2002-04-14  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.h (GSCurrentDevice): Change
