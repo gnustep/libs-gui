@@ -315,6 +315,10 @@ static NSMapTable* windowmaps = NULL;
   DPSgrestore(context);
 
   NSMapInsert (windowmaps, (void*)window_num, self);
+  /* I'm not sure we even need this if menu_exclude is set correctly */
+  if ([self level] >= NSDockWindowLevel)
+    [[NSApplication sharedApplication] removeWindowsItem: self];
+
   NSDebugLog(@"NSWindow end of init\n");
   return self;
 }

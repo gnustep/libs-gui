@@ -962,13 +962,38 @@ NSArray* array;
 @end
 
 @implementation NSMenuWindow
+
 + (void) initialize
 {
-  if (self == [NSMenu class])
+  if (self == [NSMenuWindow class])
     {
       [self setVersion: 1];
     }
 }
+
+- (BOOL) canBecomeMainWindow
+{
+  return NO;
+}
+
+- (BOOL) canBecomeKeyWindow
+{
+  return NO;
+}
+
+- (void) initDefaults
+{
+  [super initDefaults];
+  menu_exclude = YES;           // Don't show in windows menu.
+  window_level = NSSubmenuWindowLevel;
+  is_released_when_closed = NO;
+}
+
+- (BOOL) worksWhenModal
+{
+  return YES;
+}
+
 @end
 
 @implementation NSMenuWindowTitleView
