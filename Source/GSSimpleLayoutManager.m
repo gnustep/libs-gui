@@ -542,11 +542,19 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   int i;
   int min = 0;
-  int max = MAX(0, [_lineLayoutInformation count] - 1);
+  int max = MAX(0, (int)[_lineLayoutInformation count] - 1);
   float y = point.y;
-  float fmin = NSMinY([[_lineLayoutInformation objectAtIndex: 0] lineFragmentRect]);
-  float fmax = NSMaxY([[_lineLayoutInformation lastObject] lineFragmentRect]);
+  float fmin;
+  float fmax;
   NSRect rect;
+
+  if (max == 0)
+    {
+      return 0;
+    }
+
+  fmin = NSMinY([[_lineLayoutInformation objectAtIndex: 0] lineFragmentRect]);
+  fmax = NSMaxY([[_lineLayoutInformation lastObject] lineFragmentRect]);
 
   if (y >= fmax)
     return max;
@@ -590,8 +598,10 @@ forStartOfGlyphRange: (NSRange)glyphRange
   unsigned fmax;
   NSRange range;
 
-  if (!max)
-    return 0;
+  if (max == 0)
+    {
+      return 0;
+    }
 
   fmin = [[_lineLayoutInformation objectAtIndex: 0] glyphRange].location;
   fmax = NSMaxRange([[_lineLayoutInformation lastObject] glyphRange]);
@@ -635,6 +645,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
   unsigned endLine = NSMaxRange(aRange);
   unsigned startIndex;
   unsigned endIndex;
+
+  if ([_lineLayoutInformation count] == 0)
+    {
+      return NSMakeRange (0, 0);
+    }
 
   if (startLine >= [_lineLayoutInformation count])
     currentInfo = [_lineLayoutInformation lastObject];
@@ -727,9 +742,16 @@ forStartOfGlyphRange: (NSRange)glyphRange
 // relies on _lineLayoutInformation
 - (void) drawLinesInLineRange: (NSRange)aRange;
 {
-  NSArray *linesToDraw = [_lineLayoutInformation subarrayWithRange: aRange];
+  NSArray *linesToDraw;
   NSEnumerator *lineEnum;
   _GNULineLayoutInfo *currentInfo;
+
+  if ([_lineLayoutInformation count] == 0)
+    {
+      return;
+    }
+
+  linesToDraw = [_lineLayoutInformation subarrayWithRange: aRange];
 
   for ((lineEnum = [linesToDraw objectEnumerator]);
        (currentInfo = [lineEnum nextObject]);)
