@@ -31,6 +31,7 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
+#include <AppKit/NSFileWrapper.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
@@ -564,6 +565,36 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
+- (BOOL)writeFileWrapper:(NSFileWrapper *)wrapper
+{
+  NSString *filename = [wrapper preferredFilename];
+  NSData *data;
+  NSString *type;
+  BOOL ok = NO;
+
+  if (filename == nil)
+    [NSException raise: NSInvalidArgumentException
+		 format: @"Cannot put file on pastboard with no preferred filename"];
+
+  data = [wrapper serializedRepresentation];
+  type = NSCreateFileContentsPboardType([filename pathExtension]);
+  NS_DURING
+    {
+      ok = [target setData: data
+		   forType: type
+		    isFile: YES
+		  oldCount: changeCount];
+    }
+  NS_HANDLER
+    {
+      ok = NO;
+      [NSException raise: NSPasteboardCommunicationException
+		  format: @"%@", [localException reason]];
+    }
+  NS_ENDHANDLER
+  return ok;
+}
+
 /*
  * Determining Types 
  */
@@ -672,11 +703,24 @@ static  NSMapTable              *mimeMap = NULL;
       type = NSCreateFileContentsPboardType([filename pathExtension]);
     }
   d = [self dataForType: type];
+  if (d == nil)
+    d = [self dataForType: NSFileContentsPboardType];
+
   if ([d writeToFile: filename atomically: NO] == NO)
     {
       return nil;
     }
   return filename;
+}
+
+- (NSFileWrapper *)readFileWrapper
+{
+  NSData *d = [self dataForType: NSFileContentsPboardType];
+
+  if (d == nil)
+    return nil;
+
+  return AUTORELEASE([[NSFileWrapper alloc] initWithSerializedRepresentation: d]);
 }
 
 - (NSString*) stringForType: (NSString*)dataType

@@ -35,6 +35,7 @@
 @class NSString;
 @class NSArray;
 @class NSData;
+@class NSFileWrapper;
 
 //
 // Pasteboard Type Globals 
@@ -113,6 +114,7 @@ extern NSString *NSPasteboardCommunicationException;
 - (BOOL)setString:(NSString *)string
 	  forType:(NSString *)dataType;
 - (BOOL)writeFileContents:(NSString *)filename;
+- (BOOL)writeFileWrapper:(NSFileWrapper *)wrapper;
 
 //
 // Determining Types 
@@ -128,6 +130,7 @@ extern NSString *NSPasteboardCommunicationException;
 - (id)propertyListForType:(NSString *)dataType;
 - (NSString *)readFileContentsType:(NSString *)type
 			    toFile:(NSString *)filename;
+- (NSFileWrapper *)readFileWrapper;
 - (NSString *)stringForType:(NSString *)dataType;
 
 //
