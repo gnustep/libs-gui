@@ -1,3 +1,9 @@
+Tue Jul  6 16:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSMenuView.m: In ([-trackWithEvent:]) fixed indexing bug when mouse
+	dragged off bottom of menu and released, also reformatted to GNU
+	coding style.
+
 Tue Jul  6 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSAffineTransform.h: Removed macros
