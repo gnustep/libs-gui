@@ -78,6 +78,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 // Some action methods
 - (void) cancel: (id) sender;
 - (void) _togglePreview: (id) sender;
+- (void) _doPreview;
 - (void) ok: (id) sender;
 
 - (id)_initWithoutGModel;
@@ -162,8 +163,15 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 - (void) reloadDefaultFontFamilies
 {
-  ASSIGN(_familyList, [[NSFontManager sharedFontManager] 
-			availableFontFamilies]);
+  NSFontManager *fm = [NSFontManager sharedFontManager];
+  NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
+
+  ASSIGN(_familyList, [fm availableFontFamilies]);
+  // Reload the display. 
+  [familyBrowser loadColumnZero];
+  // Reselect the current font. (Hopefully still there)
+  [self setPanelFont: [fm selectedFont]
+	isMultiple: [fm isMultiple]];
 }
 
 /*
@@ -184,12 +192,12 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       return;
     }
 
-  [previewArea setFont: fontObject];
-  
   if (flag)
     {
       // TODO: Unselect all items and show a message
       [previewArea setStringValue: @"Multiple fonts selected"];
+      _family = -1;
+      _face = -1;
     }
   else
     {
@@ -202,10 +210,12 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
       NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
       NSString *face = @"";
-      //NSFontTraitMask traits = [fm traitsOfFont: fontObject];
-      //int weight = [fm weightOfFont: fontObject];
       int i;
-      
+ 
+      // Store style information for font
+      _traits = [fm traitsOfFont: fontObject];
+      _weight = [fm weightOfFont: fontObject];
+
       // Select the row for the font family
       for (i = 0; i < [_familyList count]; i++)
 	{
@@ -217,7 +227,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	  [familyBrowser selectRow: i inColumn: 0];
 	  _family = i;
 	  ASSIGN(_faceList, [fm availableMembersOfFontFamily: family]);
-	  [faceBrowser validateVisibleColumns];
+	  [faceBrowser loadColumnZero];
 	  _face = -1;
 	}
 
@@ -234,6 +244,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	  _face = i;
 	  face = [[_faceList objectAtIndex: i] objectAtIndex: 1];
 	}
+
       // show point size and select the row if there is one
       _setFloatValue (sizeField, size);
       for (i = 0; i < sizeof(sizes)/sizeof(float); i++)
@@ -243,9 +254,14 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	      [sizeBrowser selectRow: i inColumn: 0];
 	    }
 	}
-      
-      [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
-					     family, face, (int)size]];
+
+      // Use in preview
+      [previewArea setFont: fontObject];
+      if (_previewString == nil)
+        { 
+	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
+						 family, face, (int)size]];
+	}
     }
 }
 
@@ -491,7 +507,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   sizeField = [[NSTextField alloc] initWithFrame: sizeLabelRect];
   [sizeField setDrawsBackground: YES];
   [sizeField setEditable: YES];
-  //[sizeField setAllowsEditingTextAttributes: NO];
+  [sizeField setAllowsEditingTextAttributes: NO];
   [sizeField setAlignment: NSCenterTextAlignment];
   [sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
   [sizeField setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
@@ -564,7 +580,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [setButton setAutoresizingMask: NSViewMinXMargin];
   [bottomArea addSubview: setButton];
   // make it the default button
-  //[self setDefaultButtonCell: [setButton cell]];
+  [self setDefaultButtonCell: [setButton cell]];
   RELEASE(setButton);
 
   // set up the next key view chain
@@ -601,14 +617,30 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 - (void) _togglePreview: (id)sender
 {
   _preview = (sender == nil) ? YES : [sender state];
+  [self _doPreview];
+}
+
+- (void) _doPreview
+{
+  NSFont *font = nil;
+  NSTextField *previewArea = [[self contentView] viewWithTag: NSFPPreviewField];
+
   if (_preview)
     {
-      NSFont	*font = [self _fontForSelection: _panelFont];
+      font = [self _fontForSelection: _panelFont];
+      // build up a font and use it in the preview area
+      if (font != nil)
+	{
+	  [previewArea setFont: font];
+	}
+    }
+
+  if (_previewString == nil)
+    { 
       NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
       float	size = [sizeField floatValue];
       NSString	*faceName;
       NSString	*familyName;
-      NSTextField *previewArea = [[self contentView] viewWithTag: NSFPPreviewField];
       
       if (size == 0 && font != nil)
 	{
@@ -629,11 +661,6 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       else
 	{
 	  faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
-	}
-      // build up a font and use it in the preview area
-      if (font != nil)
-	{
-	  [previewArea setFont: font];
 	}
       [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
 					     familyName, faceName, (int)size]];
@@ -713,18 +740,36 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       {
 	NSFontManager *fm = [NSFontManager sharedFontManager];
 	NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
-	
+	int i;
+
 	ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
 				[_familyList objectAtIndex: row]]);
-	
 	_family = row;
-	[faceBrowser validateVisibleColumns];
-	_face = -1;
+	
+	// Select a face with similar properties
+	for (i = 0; i < [_faceList count]; i++)
+	{
+	  NSArray *font_info = [_faceList objectAtIndex: i];
+	  
+	  if (([[font_info objectAtIndex: 2]  intValue] == _weight) &&
+	      ([[font_info objectAtIndex: 3]  unsignedIntValue] == _traits))
+	    break;
+	}
+	if (i == [_faceList count])
+	  i = 0;
+
+	_face = i;
+	[faceBrowser loadColumnZero];
+	[faceBrowser selectRow: i inColumn: 0];
 	break;
       }
     case NSFPFaceBrowser:
       {
+	NSArray *font_info = [_faceList objectAtIndex: row];
+
 	_face = row;
+	_weight = [[font_info objectAtIndex: 2] intValue];
+	_traits = [[font_info objectAtIndex: 3] unsignedIntValue];
 	break;
       }
     case NSFPSizeBrowser:
@@ -738,10 +783,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       }
     }
   
-  if (_preview)
-    {
-      [self _togglePreview: nil];
-    }
+  [self _doPreview];
 
   return YES;
 }
