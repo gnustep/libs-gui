@@ -102,6 +102,7 @@ extern NSSize NSTokenSize;
   id            _contentView;
   id            _firstResponder;
   id            _originalResponder;
+  id            _futureFirstResponder;
   NSView        *_initialFirstResponder;
   id            _delegate;
   id            _fieldEditor;
@@ -474,6 +475,16 @@ extern NSSize NSTokenSize;
  */
 - (void) _setVisible: (BOOL)flag;
 
+@end
+#endif
+
+#ifndef NO_GNUSTEP
+@interface NSWindow (GNUstepTextView)
+/*
+ * Called from NSTextView's resignFirstResponder to know which is 
+ * the next first responder.
+ */
+- (id) _futureFirstResponder;
 @end
 #endif
 
