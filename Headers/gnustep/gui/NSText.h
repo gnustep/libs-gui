@@ -45,22 +45,22 @@
 @class NSFont;
 
 typedef enum _NSTextAlignment {
-  NSLeftTextAlignment,
-  NSRightTextAlignment,
-  NSCenterTextAlignment,
-  NSJustifiedTextAlignment,
-  NSNaturalTextAlignment
+	NSLeftTextAlignment,
+	NSRightTextAlignment,
+	NSCenterTextAlignment,
+	NSJustifiedTextAlignment,
+	NSNaturalTextAlignment
 } NSTextAlignment;
 
 enum {
-  NSIllegalTextMovement	= 0,
-  NSReturnTextMovement  = 0x10,
-  NSTabTextMovement		= 0x11,
-  NSBacktabTextMovement	= 0x12,
-  NSLeftTextMovement	= 0x13,
-  NSRightTextMovement   = 0x14,
-  NSUpTextMovement		= 0x15,
-  NSDownTextMovement	= 0x16
+	NSIllegalTextMovement	= 0,
+	NSReturnTextMovement	= 0x10,
+	NSTabTextMovement	 	= 0x11,
+	NSBacktabTextMovement	= 0x12,
+	NSLeftTextMovement	 = 0x13,
+	NSRightTextMovement	 = 0x14,
+	NSUpTextMovement	 = 0x15,
+	NSDownTextMovement	 = 0x16
 };	 	
 
 // these definitions should migrate to NSTextView when implemented
@@ -71,12 +71,11 @@ typedef enum _NSSelectionGranularity
     NSSelectByParagraph = 2,
 } NSSelectionGranularity;
 
-#if GNUSTEP
 typedef enum _NSSelectionAffinity
 {	NSSelectionAffinityUpstream = 0,
     NSSelectionAffinityDownstream = 1,
 } NSSelectionAffinity;
-#endif
+
 
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
 {											
@@ -108,21 +107,31 @@ typedef enum _NSSelectionAffinity
 	NSCharacterSet *selectionParagraphGranularitySet;
 }
 
+
+// GNU utility methods
+// return value is guaranteed to be a NSAttributedString even if data is only NSString
++(NSAttributedString*) attributedStringForData:(NSData*) aData;
++(NSData*) dataForAttributedString:(NSAttributedString*) aString;
+
++(NSString*) newlineString;	// GNU extension (override it if you want other characters treated as newline characters)
+
 //
 // Getting and Setting Contents 
 //
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)aString;
-- (void)replaceCharactersInRange:(NSRange)range withRTF:(NSData *)rtfData;
-- (void)replaceCharactersInRange:(NSRange)range withRTFD:(NSData *)rtfdData;
-- (void)replaceRange:(NSRange)range withRTF:(NSData *)rtfData;
-- (void)replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData;
-- (NSData *)RTFDFromRange:(NSRange)range;
-- (NSData *)RTFFromRange:(NSRange)range;
-- (void)setText:(NSString *)string;
-- (void)setText:(NSString *)string range:(NSRange)range;
-- (NSString *)text;
-- (NSString *)string;
-- (void)setString:(NSString *)string;					// old fashioned
+-(void) replaceRange:(NSRange)range withAttributedString:(NSAttributedString*)attrString;	// GNU extension
+-(void) replaceRange:(NSRange)range withString:(NSString*) aString;
+-(void) replaceRange:(NSRange)range withRTF:(NSData *)rtfData;
+-(void) replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData;
+-(NSData*) RTFDFromRange:(NSRange)range;
+-(NSData*) RTFFromRange:(NSRange)range;
+-(void) setString:(NSString *)string;
+-(void) setText:(NSString *)string;	// old fashioned
+-(void) setText:(NSString*) aString range:(NSRange) aRange;		// old fashioned
+-(NSString*) string;
+-(NSString*) text;				// old fashioned
+
+-(unsigned) textLength;			// GNU extension
+
 
 //
 // Managing Global Characteristics
@@ -147,6 +156,7 @@ typedef enum _NSSelectionAffinity
 - (void)changeFont:(id)sender;
 - (NSFont *)font;
 - (void)setBackgroundColor:(NSColor *)color;
+-(void) setTextColor:(NSColor *)color range:(NSRange)range;
 - (void)setColor:(NSColor *)color ofRange:(NSRange)range;
 - (void)setFont:(NSFont *)obj;
 - (void)setFont:(NSFont *)font ofRange:(NSRange)range;
@@ -203,8 +213,8 @@ typedef enum _NSSelectionAffinity
 //
 // Spelling
 //
-- (void)checkSpelling:(id)sender;
-- (void)showGuessPanel:(id)sender;
+-(void) checkSpelling:(id)sender;
+-(void) showGuessPanel:(id)sender;
 
 //
 // Scrolling
@@ -214,8 +224,8 @@ typedef enum _NSSelectionAffinity
 //
 // Reading and Writing RTFD Files
 //
-- (BOOL)readRTFDFromFile:(NSString *)path;
-- (BOOL)writeRTFDToFile:(NSString *)path atomically:(BOOL)flag;
+-(BOOL) readRTFDFromFile:(NSString *)path;
+-(BOOL) writeRTFDToFile:(NSString *)path atomically:(BOOL)flag;
 
 //
 // Managing the Field Editor
@@ -229,14 +239,6 @@ typedef enum _NSSelectionAffinity
 - (id)delegate;
 - (void)setDelegate:(id)anObject;
 
-//
-// Implemented by the Delegate
-//
-- (void)textDidBeginEditing:(NSNotification *)aNotification;
-- (void)textDidChange:(NSNotification *)aNotification;
-- (void)textDidEndEditing:(NSNotification *)aNotification;
-- (BOOL)textShouldBeginEditing:(NSText *)textObject;
-- (BOOL)textShouldEndEditing:(NSText *)textObject;
 
 //
 // NSCoding protocol
@@ -254,6 +256,50 @@ typedef enum _NSSelectionAffinity
 //
 - (void)ignoreSpelling:(id)sender;
 
+//
+// these NSTextView methods are here only informally
+//
+-(int) spellCheckerDocumentTag;
+
+-(void) insertText:(NSString *)insertString;
+-(NSMutableDictionary*) typingAttributes;
+-(void) setTypingAttributes:(NSDictionary *)attrs;
+
+
+-(BOOL) shouldDrawInsertionPoint;
+-(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag;
+
+-(NSArray*) acceptableDragTypes;
+-(void) updateDragTypeRegistration;
+
+-(NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity;
+
+//
+// these NSLayoutManager- like methods are here only informally
+//
+
+-(unsigned) characterIndexForPoint:(NSPoint)point;
+-(NSRect) rectForCharacterIndex:(unsigned) index;
+-(NSRect) boundingRectForLineRange:(NSRange)lineRange;
+-(NSRange) characterRangeForBoundingRect:(NSRect)bounds;
+
+//
+// these are implementation specific
+//
+-(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine;	// returns count of lines actually updated (e.g. drawing optimization)
+-(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine;
+-(int) lineLayoutIndexForCharacterIndex:(unsigned) anIndex;					// is identical to the real line number (not just counted return characters)
+-(void) redisplayForLineRange:(NSRange) redrawLineRange;
+-(void) drawRichLinesInLineRange:(NSRange) aRange;	// private (use redisplayForLineRange:)
+-(void) drawPlainLinesInLineRange:(NSRange) aRange;	// private (use redisplayForLineRange:)
+
+//
+// various GNU extensions
+//
+
+-(void) setSelectionWordGranularitySet:(NSCharacterSet*) aSet;
+-(void) setSelectionParagraphGranularitySet:(NSCharacterSet*) aSet;
+
 @end
 
 /* Notifications */
@@ -261,4 +307,25 @@ extern NSString *NSTextDidBeginEditingNotification;
 extern NSString *NSTextDidEndEditingNotification;
 extern NSString *NSTextDidChangeNotification;
 
+@interface NSObject(NSTextDelegate)
+- (BOOL)textShouldBeginEditing:(NSText *)textObject; /* YES means do it */
+- (BOOL)textShouldEndEditing:(NSText *)textObject; /* YES means do it */
+- (void)textDidBeginEditing:(NSNotification *)notification;
+- (void)textDidEndEditing:(NSNotification *)notification;
+- (void)textDidChange:(NSNotification *)notification; /* Any keyDown or paste which changes the contents causes this */
+@end
+
 #endif // _GNUstep_H_NSText
+
+#if 0
+NSFontAttributeName; /* NSFont, default Helvetica 12 */
+->  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
+NSForegroundColorAttributeName; /* NSColor, default blackColor */
+NSUnderlineStyleAttributeName; /* int, default 0: no underline */
+NSSuperscriptAttributeName; /* int, default 0 */
+NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
+->  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
+NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
+NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
+NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
+#endif

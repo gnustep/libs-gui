@@ -39,6 +39,7 @@ LIBRARY_NAME=libgnustep-gui
 libgnustep-gui_OBJC_FILES = libgnustep-gui.m \
 NSActionCell.m \
 NSApplication.m \
+NSAttributedString.m \
 NSBitmapImageRep.m \
 NSBox.m \
 NSBrowser.m \
@@ -79,6 +80,7 @@ NSMenuItem.m \
 NSOpenPanel.m \
 NSPageLayout.m \
 NSPanel.m \
+NSParagraphStyle.m \
 NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
@@ -120,6 +122,7 @@ libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \
+AppKit/NSAttributedString.h \
 AppKit/NSBitmapImageRep.h \
 AppKit/NSBox.h \
 AppKit/NSBrowser.h \
@@ -155,6 +158,7 @@ AppKit/NSHelpPanel.h \
 AppKit/NSImage.h \
 AppKit/NSImageRep.h \
 AppKit/NSImageView.h \
+AppKit/NSLayoutManager.h \
 AppKit/NSMatrix.h \
 AppKit/NSMenu.h \
 AppKit/NSMenuItem.h \
@@ -162,6 +166,7 @@ AppKit/NSNibLoading.h \
 AppKit/NSOpenPanel.h \
 AppKit/NSPageLayout.h \
 AppKit/NSPanel.h \
+AppKit/NSParagraphStyle.h \
 AppKit/NSPasteboard.h \
 AppKit/NSPopUpButton.h \
 AppKit/NSPrintInfo.h \
@@ -180,10 +185,14 @@ AppKit/NSSpellChecker.h \
 AppKit/NSSpellProtocol.h \
 AppKit/NSSpellServer.h \
 AppKit/NSSplitView.h \
+AppKit/NSTextStorage.h \
 AppKit/NSStringDrawing.h \
 AppKit/NSText.h \
+AppKit/NSTextAttachment.h \
+AppKit/NSTextContainer.h \
 AppKit/NSTextField.h \
 AppKit/NSTextFieldCell.h \
+AppKit/NSTextStorage.h \
 AppKit/NSTextView.h \
 AppKit/NSView.h \
 AppKit/NSWindow.h \

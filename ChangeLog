@@ -1,3 +1,12 @@
+Tues Sept 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* GNUmakefile added NSAttributedString.m, NSAttributedString.h, 
+		NSParagraphStyle.m, NSTextAttachment.h, NSTextContainer.h, 
+		NSTextStorage.h, NSLayoutManager.h and NSParagraphStyle.h. 
+	* Source added NSParagraphStyle.m. 
+	* Headers/Appkit added NSTextAttachment.h, NSTextContainer.h, 
+		NSTextStorage.h, NSLayoutManager.h and NSParagraphStyle.h files. 
+
 Sun Aug 30 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSApplication.h added windows_need_update as autodisplay ivar. 
