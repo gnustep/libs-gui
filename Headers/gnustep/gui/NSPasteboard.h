@@ -216,19 +216,49 @@ APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 
 @end
 
+/**
+ * The NSPasteboardOwner informal protocal defines the messages that
+ * the pasteboard system will send to a pasteboard owner if they are
+ * implemented.  These are needed to support lazy provision of
+ * pasteboard data.
+ */
 @interface NSObject (NSPasteboardOwner)
+/**
+ * This method is called by the pasteboard system when it does not have
+ * the data that has been asked for ... the pasteboard owner should
+ * supply the data to the pasteboard by calling -setData:forType: or one
+ * of the related methods.
+ */
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type;
+
+#ifndef	NO_GNUSTEP
+/**
+ * Implemented where GNUstep pasteboard extensions are required.<br />
+ * This method is called by the pasteboard system when it does not have
+ * the data that has been asked for ... the pasteboard owner should
+ * supply the data to the pasteboard by calling -setData:forType: or one
+ * of the related methods.
+ */
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type
 	 andVersion: (int)version;
+#endif
+
+/**
+ * This method is called by the pasteboard system when another object
+ * takes ownership of the pasteboard ... it lets the previous owner
+ * know that it is no longer required to supply data.
+ */
 - (void) pasteboardChangedOwner: (NSPasteboard*)sender;
+
 @end
 
 @interface NSPasteboard (GNUstepExtensions)
 + (NSString*) mimeTypeForPasteboardType: (NSString*)type;
 + (NSString*) pasteboardTypeForMimeType: (NSString*)mimeType;
 - (void) setChangeCount: (int)count;
+- (void) setHistory: (unsigned)length;
 @end
 
 #ifndef STRICT_OPENSTEP

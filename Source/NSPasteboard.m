@@ -369,14 +369,12 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
  * value will do.
  * </p>
  * <p>Each pasteboard has an <em>owner</em> ... an object which declares the
- * types of data it can provide.  That object is responsible for producing
- * the data for the pasteboard when it is called for (or it may send all
- * formats of data it supports to the pastebaord system before any other
- * application calls for it).<br />
- * The pasteboard owner needs to implement the 
- * -pasteboard:provideDataForType: and -pasteboardChangedOwner: methods,
- * and for extended (GNUstep specific) pastebaord support may implement
- * -pasteboard:provideDataForType:andVersion: too.
+ * types of data it can provide.  Unless versions of the pasteboard data
+ * corresponding to all the declared types are written to the pasteboard,
+ * the owner is responsible for producing the data for the pasteboard when
+ * it is called for (lazy provision of data).<br />
+ * The pasteboard owner needs to implement the methods of the
+ * NSPasteboardOwner informal protocl in order to do this.
  * </p>
  */
 @implementation NSPasteboard
@@ -1259,46 +1257,18 @@ static  NSMapTable              *mimeMap = NULL;
 
 
 /**
- * Methods to be implemented by pastebaord owners.
+ * GNUstep specific extensions ...<br />
+ * <p>GNUstep adds a mechanism for mapping between OpenStep pasteboard
+ * types and MIME types.  This is useful for interopration with other
+ * systems, as MIME types have come into common usage (long after the
+ * OpenStep specification was created).
+ * </p>
+ * <p>The other extension to the pasteboard system produced by GNUstep
+ * is the ability to keep a history of recent items placed in a
+ * pasteboard, and retrieve data from that history rather than just
+ * the current item.
+ * </p>
  */
-@implementation	NSObject (NSPasteboardOwner)
-/**
- * This method is called by the pasteboard system when it does not have
- * the data that has been asked for ... the pasteboard owner should
- * supply the data to the pasteboard by calling -setData:forType: or one
- * of the related methods.
- */
-- (void) pasteboard: (NSPasteboard*)sender
- provideDataForType: (NSString*)type
-{
-}
-
-/**
- * Implemented where GNUstep pasteboard extensions are required.<br />
- * This method is called by the pasteboard system when it does not have
- * the data that has been asked for ... the pasteboard owner should
- * supply the data to the pasteboard by calling -setData:forType: or one
- * of the related methods.
- */
-- (void) pasteboard: (NSPasteboard*)sender
- provideDataForType: (NSString*)type
-	 andVersion: (int)version
-{
-}
-
-/**
- * This method is called by the pasteboard system when another object
- * takes ownership of the pasteboard ... it lets the previous owner
- * know that it is no longer required to supply data.
- */
-- (void) pasteboardChangedOwner: (NSPasteboard*)sender
-{
-}
-
-@end
-
-
-
 @implementation NSPasteboard (GNUstepExtensions)
 
 /**
@@ -1410,12 +1380,21 @@ static  NSMapTable              *mimeMap = NULL;
 
 @end
 
+/**
+ * Category of NSURL providing convenience methods.
+ */
 @implementation NSURL (NSPasteboard)
+/**
+ * Creates a URL with data (of NSURLPboardType) from pasteBoard.
+ */
 + (NSURL *) URLFromPasteboard: (NSPasteboard *)pasteBoard
 {
   return [self URLWithString: [pasteBoard stringForType: NSURLPboardType]];
 }
 
+/**
+ * Writes the receiver (as data of NSURLPboardType) to pasteBoard.
+ */
 - (void) writeToPasteboard: (NSPasteboard *)pasteBoard
 {
   [pasteBoard setString: [self absoluteString]
@@ -1429,7 +1408,7 @@ static  NSMapTable              *mimeMap = NULL;
  * <p>Returns a standardised pasteboard type for file contents,
  * formed from the supplied file extension.
  * </p>
- * <p>Data written to a pastebaord with a file contents type should
+ * <p>Data written to a pasteboard with a file contents type should
  * be written using the [NSPasteboard-writeFileContents:] or
  * [NSPasteboard-writeFileWrapper:] method.  Similarly, the data should
  * be read using the [NSPasteboard-readFileContentsType:toFile:] or
@@ -1451,7 +1430,7 @@ NSCreateFileContentsPboardType(NSString *fileType)
  * <p>Returns a standardised pasteboard type for file names,
  * formed from the supplied file extension.
  * </p>
- * <p>Data written to a pastebaord with a file names type should
+ * <p>Data written to a pasteboard with a file names type should
  * be a single name writen using [NSPasteboard-setString:forType:] or
  * an array of strings written using
  * [NSPasteboard-setPropertyList:forType:].<br />
