@@ -187,11 +187,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
   else
     {
       copy = (GSFontInfo*) NSCopyObject (self, 0, zone);
-      [copy->fontDictionary copyWithZone: zone];
-      [copy->fontName copyWithZone: zone];
-      [copy->familyName copyWithZone: zone];
-      [copy->weight copyWithZone: zone];
-      [copy->encodingScheme copyWithZone: zone];
+      copy->fontDictionary = [fontDictionary copyWithZone: zone];
+      copy->fontName = [fontName copyWithZone: zone];
+      copy->familyName = [familyName copyWithZone: zone];
+      copy->weight = [weight copyWithZone: zone];
+      copy->encodingScheme = [encodingScheme copyWithZone: zone];
     }
   return copy;
 }

@@ -211,8 +211,8 @@ void setNSFont(NSString* key, NSFont* font)
   else
     {
       new_font = (NSFont *)NSCopyObject(self, 0, zone);
-      [new_font->fontName copyWithZone: zone];
-      [new_font->fontInfo copyWithZone: zone];
+      new_font->fontName = [fontName copyWithZone: zone];
+      new_font->fontInfo = [fontInfo copyWithZone: zone];
     }
   return new_font;
 }
