@@ -99,14 +99,17 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 + (NSView *)popFocusView
 {
   NSThread *current_thread = [NSThread currentThread];
+  id v;
 
   // Obtain lock so we can edit the dictionary
   [gnustep_gui_nsview_lock lock];
 
   // Remove from dictionary
+  v = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
   [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
 
   [gnustep_gui_nsview_lock unlock];
+  return v;
 }
 
 + (NSView *)focusView
@@ -789,13 +792,13 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
   [self lockFocus];
   [self drawRect:bounds];
+  [self unlockFocus];
 
   // Tell subviews to display
   j = [sub_views count];
   for (i = 0;i < j; ++i)
     [(NSView *)[sub_views objectAtIndex:i] display];
   [[self window] flushWindow];
-  [self unlockFocus];
 }
 
 - (void)displayIfNeeded

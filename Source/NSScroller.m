@@ -156,6 +156,7 @@ id gnustep_gui_nsscroller_class = nil;
     aFloat = 0;
   if (aFloat > 1)
     aFloat = 1;
+  [self setNeedsDisplay];
   [super setFloatValue: aFloat];
 }
 
@@ -275,6 +276,8 @@ id gnustep_gui_nsscroller_class = nil;
   NSRect barRect = [self boundsOfScrollerPart: NSScrollerKnobSlot];
   float pos;
 
+  [self lockFocus];
+
   // capture mouse
   [[self window] captureMouse: self];
 
@@ -318,12 +321,13 @@ id gnustep_gui_nsscroller_class = nil;
   // Release mouse
   [[self window] releaseMouse: self];
 
-  // Have the target perform the action
-  [self sendAction:[self action] to:[self target]];
-
   // Update the display
   [self drawParts];
+  [self unlockFocus];
   [[self window] flushWindow];
+
+  // Have the target perform the action
+  [self sendAction:[self action] to:[self target]];
 }
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
@@ -353,6 +357,8 @@ id gnustep_gui_nsscroller_class = nil;
       arrow = NSScrollerIncrementArrow;
       break;
     }
+
+  [self lockFocus];
 
   // capture mouse
   [[self window] captureMouse: self];
@@ -414,14 +420,16 @@ id gnustep_gui_nsscroller_class = nil;
       // unhighlight arrow
       [self drawArrow: arrow highlight: NO];
       [[self window] flushWindow];
-
-      // Have the target perform the action
-      [self sendAction:[self action] to:[self target]];
     }
 
   // Update the display
   [self drawParts];
+  [self unlockFocus];
   [[self window] flushWindow];
+
+  // Have the target perform the action
+  if ([self mouse: point inRect: partRect])
+    [self sendAction:[self action] to:[self target]];
 }
 
 //
@@ -457,8 +465,6 @@ id gnustep_gui_nsscroller_class = nil;
   // We must have hit a real part so record it
   hit_part = area;
 
-  [self lockFocus];
-
   // Track the knob if that's where it hit
   if ((hit_part == NSScrollerKnob) || (hit_part == NSScrollerKnobSlot))
     [self trackKnob: theEvent];
@@ -469,8 +475,6 @@ id gnustep_gui_nsscroller_class = nil;
       (hit_part == NSScrollerIncrementPage) ||
       (hit_part == NSScrollerIncrementLine))
     [self trackScrollButtons: theEvent];
-
-  [self unlockFocus];
 }
 
 //

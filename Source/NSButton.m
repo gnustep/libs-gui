@@ -325,46 +325,15 @@ id gnustep_gui_nsbutton_class = nil;
       [cell highlight: NO withFrame: bounds
 	    inView: self];
 
-#if 0
-      //
-      // Perform different state changes based upon our type
-      //
-      switch ([cell type])
-	{
-	case NSToggleButton:
-	case NSMomentaryChangeButton:
-	case NSMomentaryPushButton:
-	  /* No state changes */
-	  break;
-
-	case NSPushOnPushOffButton:
-	case NSSwitchButton:
-	case NSRadioButton:
-	case NSOnOffButton:
-	  // Toggle our state
-	  if ([self state])
-	    {
-	      [cell setState:0];
-	      NSDebugLog(@"toggle state off\n");
-	    }
-	  else
-	    {
-	      [cell setState:1];
-	      NSDebugLog(@"toggle state on\n");
-	    }
-	default:
-	  break;
-	}
-#endif
       [cell setState:![self state]];
-
-      // Have the target perform the action
-      [self sendAction:[self action] to:[self target]];
-
       [cell drawWithFrame:bounds inView:self];
+      [[self window] flushWindow];
     }
-  [[self window] flushWindow];
   [self unlockFocus];
+
+  // Have the target perform the action
+  if (mouseUp)
+    [self sendAction:[self action] to:[self target]];
 }
 
 - (void)performClick:(id)sender

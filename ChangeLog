@@ -1,6 +1,8 @@
 Thu Mar 20 10:40:51 1997  GNUstep Development  <gnustep@net-community.com>
 
-	* Source/NSControl.m (-copyWithZone:): Copy the object instead of
+	* Source/NSControl.m: Call displayIfNeeded after setting the
+	contents of the cell.
+	(-copyWithZone:): Copy the object instead of
 	allocating so that instance variable values are copied.  Retain
 	the cell because it will be released when we set a new one.
 	(-drawCell:, -drawCellInside:): Lock and unlock the focus
@@ -14,17 +16,23 @@ Thu Mar 20 10:40:51 1997  GNUstep Development  <gnustep@net-community.com>
 	for obtaining the extension.
 	* Source/NSScroller.m (-setFloatValue:knobProportion:): Set knob
 	proportion first before setting float value.
+	(-setFloatValue:): Indicate needs display.
 	(-drawRect:): Remove method.
 	(-drawParts): Flush window.
-	(-trackKnob:): Correct position of knob relative to pointer.
+	(-trackKnob:): Correct position of knob relative to pointer.  Lock
+	and unlock the focus; make sure it is unlocked before sending action.
 	(-trackScrollButtons:): Fill out implementation.
-	(-mouseDown:): Lock and unlock focus.
+	(-mouseDown:): Lock and unlock focus in the tracking methods instead.
 	* Source/NSTextField.m (-setTextCursor:, -copyWithZone:): New methods.
 	* Source/NSTextFieldCell.m (-initTextCell:): By default 
 	it draws the background.
 	* Source/NSView.m (-ancestoreSharedWithView:): Implement.
 	(-lockFocus, -unlockFocus): Make sure our superview locks or unlocks
 	the focus before us.
+	(-display): Unlock focus before drawing subviews.
+	(+popFocusView): Returned poped view.
+	* Source/NSButton.m (-mouseDown:): Remove unneeded code; rearrange
+	so that the focus is unlocked before sending the action.
 
 Fri Mar 14 18:23:18 1997  Ovidiu Predescu <ovidiu@net-community.com>
 

@@ -181,16 +181,19 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 - (void)setDoubleValue:(double)aDouble
 {
   [[self selectedCell] setDoubleValue:aDouble];
+  [self displayIfNeeded];
 }
 
 - (void)setFloatValue:(float)aFloat
 {
   [[self selectedCell] setFloatValue:aFloat];
+  [self displayIfNeeded];
 }
 
 - (void)setIntValue:(int)anInt
 {
   [[self selectedCell] setIntValue:anInt];
+  [self displayIfNeeded];
 }
 
 - (void)setNeedsDisplay
@@ -201,6 +204,7 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 - (void)setStringValue:(NSString *)aString
 {
   [[self selectedCell] setStringValue:aString];
+  [self displayIfNeeded];
 }
 
 - (NSString *)stringValue
@@ -214,21 +218,25 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 - (void)takeDoubleValueFrom:(id)sender
 {
   [[self selectedCell] takeDoubleValueFrom:sender];
+  [self displayIfNeeded];
 }
 
 - (void)takeFloatValueFrom:(id)sender
 {
   [[self selectedCell] takeFloatValueFrom:sender];
+  [self displayIfNeeded];
 }
 
 - (void)takeIntValueFrom:(id)sender
 {
   [[self selectedCell] takeIntValueFrom:sender];
+  [self displayIfNeeded];
 }
 
 - (void)takeStringValueFrom:(id)sender
 {
   [[self selectedCell] takeStringValueFrom:sender];
+  [self displayIfNeeded];
 }
 
 //
@@ -262,7 +270,7 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 
 - (void)setFloatingPointFormat:(BOOL)autoRange
 			  left:(unsigned)leftDigits
-right:(unsigned)rightDigits
+			 right:(unsigned)rightDigits
 {}
 
 //
@@ -321,13 +329,11 @@ right:(unsigned)rightDigits
 - (void)updateCell:(NSCell *)aCell
 {
   [self setNeedsDisplay:YES];
-//  [self drawCell:aCell];
 }
 
 - (void)updateCellInside:(NSCell *)aCell
 {
   [self setNeedsDisplay:YES];
-//  [self drawCellInside:aCell];
 }
 
 //
