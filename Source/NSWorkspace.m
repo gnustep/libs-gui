@@ -448,14 +448,14 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   if (role == nil || [role isEqualToString: @"Editor"])
     {
       appName = [prefs objectForKey: @"Editor"];
-      if (appName)
+      if (appName != nil)
 	{
 	  info = [apps objectForKey: appName];
-	  if (info)
+	  if (info != nil)
 	    {
-	      if (app)
+	      if (app != 0)
 		*app = appName;
-	      if (inf)
+	      if (inf != 0)
 		*inf = info;
 	      return YES;
 	    }
@@ -464,14 +464,14 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   if (role == nil || [role isEqualToString: @"Viewer"])
     {
       appName = [prefs objectForKey: @"Viewer"];
-      if (appName)
+      if (appName != nil)
 	{
 	  info = [apps objectForKey: appName];
-	  if (info)
+	  if (info != nil)
 	    {
-	      if (app)
+	      if (app != 0)
 		*app = appName;
-	      if (inf)
+	      if (inf != 0)
 		*inf = info;
 	      return YES;
 	    }
@@ -503,17 +503,17 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	  str = [info objectForKey: @"NSRole"];
 	  if (str == nil || [str isEqualToString: @"Editor"])
 	    {
-	      if (app)
+	      if (app != 0)
 		*app = appName;
-	      if (inf)
+	      if (inf != 0)
 		*inf = info;
 	      return YES;
 	    }
 	  else if ([str isEqualToString: @"Viewer"])
 	    {
-	      if (app)
+	      if (app != 0)
 		*app = appName;
-	      if (inf)
+	      if (inf != 0)
 		*inf = info;
 	      found = YES;
 	    }
@@ -531,9 +531,9 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	  if ((str == nil && [role isEqualToString: @"Editor"])
 	    || [str isEqualToString: role])
 	    {
-	      if (app)
+	      if (app != 0)
 		*app = appName;
-	      if (inf)
+	      if (inf != 0)
 		*inf = info;
 	      return YES;
 	    }
@@ -1280,7 +1280,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences)
+  if (extPreferences != nil)
     map = [extPreferences mutableCopy];
   else
     map = [NSMutableDictionary new];
@@ -1316,7 +1316,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   [map setObject: inf forKey: ext];
   RELEASE(inf);
   RELEASE(extPreferences);
-  extPreferences = inf;
+  extPreferences = map;
   data = [NSSerializer serializePropertyList: extPreferences];
   [data writeToFile: extPrefPath atomically: YES];
 }
@@ -1328,7 +1328,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences)
+  if (extPreferences != nil)
     map = [extPreferences mutableCopy];
   else
     map = [NSMutableDictionary new];
@@ -1343,7 +1343,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   [map setObject: inf forKey: ext];
   RELEASE(inf);
   RELEASE(extPreferences);
-  extPreferences = inf;
+  extPreferences = map;
   data = [NSSerializer serializePropertyList: extPreferences];
   [data writeToFile: extPrefPath atomically: YES];
 }

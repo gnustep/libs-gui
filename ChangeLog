@@ -1,3 +1,7 @@
+2000-04-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Fixed bug setting preferred application/icon.
+
 2000-04-27  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
 	* Headers/gnustep/gui/NSColorWell.h: Add ivar, prepend underscores.
