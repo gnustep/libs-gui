@@ -61,6 +61,7 @@ extern NSString	*NSEventTrackingRunLoopMode;
 
 @interface NSApplication : NSResponder <NSCoding>
 {
+  NSGraphicsContext	*_default_context;
   NSEvent		*_current_event;
   NSModalSession	_session;
   NSWindow		*_key_window;
