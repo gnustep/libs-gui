@@ -273,8 +273,8 @@ static NSCell* tileCell = nil;
        */
       gnustep_gui_app_is_in_dealloc = NO;
 
-	  // Set the AppKit exception handler.
-	  _NSUncaughtExceptionHandler = _NSAppKitUncaughtExceptionHandler;
+      // Set the AppKit exception handler.
+      _NSUncaughtExceptionHandler = _NSAppKitUncaughtExceptionHandler;
     }
 }
 
@@ -562,16 +562,16 @@ static NSCell* tileCell = nil;
     _inactive = [[NSMutableArray alloc] init];
     unhide_on_activation = YES;
     app_is_hidden = YES;
+    /* Ivar already automatically initialized to NO when the app is created */
     //app_is_active = NO;
     listener = [GSServicesManager newWithApplication: self];
     
     //main_menu = nil;
     windows_need_update = YES;
 
-	/* We shouldn't be so generous, NSEvent doesn't use -init */
-	
-    current_event = [NSEvent alloc];		// no current event
-    null_event = [NSEvent alloc];			// create dummy event
+    /* NSEvent doesn't use -init so we use +alloc instead of +new */
+    current_event = [NSEvent alloc]; // no current event
+    null_event = [NSEvent alloc];    // create dummy event
     
     /* We are the end of responder chain	*/
     [self setNextResponder: nil];
@@ -881,14 +881,13 @@ static NSCell* tileCell = nil;
 - (void) run
 {
   NSEvent *e;
-  //Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
-  NSAutoreleasePool *pool = nil;
+  Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
+  NSAutoreleasePool *pool;
   id distantFuture = [NSDate distantFuture];     /* Cache this, safe */
-
   
   NSDebugLog(@"NSApplication -run\n");
 
-  RECREATE_AUTORELEASE_POOL(pool);
+  pool = [arpClass new];
   /*
    *  Set this flag here in case the application is actually terminated
    *  inside -finishLaunching.
@@ -902,11 +901,11 @@ static NSCell* tileCell = nil;
 
   [listener updateServicesMenu];
   [main_menu update];
-  DESTROY(pool);
+  RELEASE (pool);
   
   while (app_should_quit == NO)
     {
-	  RECREATE_AUTORELEASE_POOL(pool);
+      pool = [arpClass new];
 
       e = [self nextEventMatchingMask: NSAnyEventMask
 			    untilDate: distantFuture
@@ -932,7 +931,7 @@ static NSCell* tileCell = nil;
 	  [self updateWindows];
 	}
 
-      DESTROY(pool);
+      RELEASE (pool);
     }
 
   [GSCurrentContext() destroyContext];
@@ -1069,20 +1068,20 @@ static NSCell* tileCell = nil;
 
 - (int) runModalSession: (NSModalSession)theSession
 {
-  NSAutoreleasePool	*pool = nil;
+  Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
+  NSAutoreleasePool	*pool;
   NSGraphicsContext	*ctxt;
   BOOL		found = NO;
   NSEvent	*event;
   NSDate	*limit;
   
-
   if (theSession != session)
     {
       [NSException raise: NSInvalidArgumentException
 		  format: @"runModalSession: with wrong session"];
     }
 
-  RECREATE_AUTORELEASE_POOL(pool);
+  pool = [arpClass new];
 
   [theSession->window orderFrontRegardless];
   if ([theSession->window canBecomeKeyWindow] == YES)
@@ -1118,14 +1117,15 @@ static NSCell* tileCell = nil;
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
 
+  RELEASE (pool);
   /*
    *	Deal with the events in the queue.
    */
-  DESTROY(pool);
-  RECREATE_AUTORELEASE_POOL(pool);
   
   while (found == YES && theSession->runState == NSRunContinuesResponse)
     {
+      pool = [arpClass new];
+
       event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
       if (event != nil)
 	{
@@ -1162,10 +1162,10 @@ static NSCell* tileCell = nil;
 	      [self updateWindows];
 	    }
 	}
+      RELEASE (pool);
     }
 
   NSAssert(session == theSession, @"Session was changed while running");
-  RELEASE(pool);
 
   return theSession->runState;
 }
