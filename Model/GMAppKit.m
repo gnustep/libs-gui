@@ -114,6 +114,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   [super encodeWithModelArchiver:archiver];
 
+  [archiver encodeSize:[self contentViewMargins]
+	      withName:@"contentViewMargins"];
   [archiver encodeInt:[self borderType] withName:@"borderType"];
   [archiver encodeInt:[self titlePosition] withName:@"titlePosition"];
   [archiver encodeString:[self title] withName:@"title"];
@@ -125,6 +127,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   self = [super initWithModelUnarchiver:unarchiver];
 
+  [self setContentViewMargins:[unarchiver decodeSizeWithName:@"contentViewMargins"]];
   [self setBorderType:[unarchiver decodeIntWithName:@"borderType"]];
   [self setTitlePosition:[unarchiver decodeIntWithName:@"titlePosition"]];
   [self setTitle:[unarchiver decodeStringWithName:@"title"]];
@@ -965,7 +968,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [archiver encodeRect:[self frame] withName:@"frame"];
+  [archiver encodeRect:[[self contentView]frame] withName:@"contentFrame"];
   [archiver encodeSize:[self maxSize] withName:@"maxSize"];
   [archiver encodeSize:[self minSize] withName:@"minSize"];
   [archiver encodeString:[self frameAutosaveName]
@@ -990,11 +993,13 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   unsigned backingType = [unarchiver decodeUnsignedIntWithName:@"backingType"];
   unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
-  NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+  NSRect ctRect = [unarchiver decodeRectWithName:@"contentFrame"];
   NSWindow* win = [[[NSWindow allocWithZone:[unarchiver objectZone]]
-			initWithContentRect:aRect
+			initWithContentRect:ctRect
 			styleMask:styleMask backing:backingType defer:YES]
 			autorelease];
+
+//  printf("content: %g, %g -- frame %g, %g\n", ctRect.size.width, ctRect.size.height, [win frame].size.width, [win frame].size.height);
 
   return win;
 }

@@ -1,5 +1,14 @@
-Mon Apr 26  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Tue Apr 27 15:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	Changes supplied by Tim.Bissell@dresdnerkb.com
+	* Source/NSBrowserCell.m: Use 3d arrow images.
+	* Images/GNUmakefile: Add 3d images
+	* Images/common_3DArrowRight.tiff: new file
+	* Images/common_3DArrowRightH.tiff: new file
+	* Model/IMCustomObject.m: minor bugfixes
+	* Model/GMAppKit.m: Partial fixes to handle window sizes correctly.
+
+Mon Apr 26  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	
         Changes based on report by Marc.Champesme@lipn.univ-paris13.fr
         * Headers/AppKit/NSHelpPanel.h: place in #ifndef STRICT_MACOS_X

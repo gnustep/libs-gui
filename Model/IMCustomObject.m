@@ -106,16 +106,19 @@ extern BOOL _fileOwnerDecoded;
     customView->extension = [unarchiver decodeObjectWithName:@"extension"];
     customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
     customView->realObject = _nibOwner;
+	[customView setFrame:[unarchiver decodeRectWithName:@"frame"]];
+
     return customView;
   }
 
   customView->className = [unarchiver decodeStringWithName:@"className"];
   customView->extension = [unarchiver decodeObjectWithName:@"extension"];
   customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
+  [customView setFrame:[unarchiver decodeRectWithName:@"frame"]];
 
   class = NSClassFromString (customView->className);
   if (class)
-    customView->realObject = [[class alloc] init];
+    customView->realObject = [[class alloc] initWithFrame:[customView frame]];
   else {
     NSLog (@"Class %@ not linked into application!", customView->className);
   }

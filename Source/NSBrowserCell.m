@@ -86,8 +86,8 @@ static NSImage *highlight_image;
   if (self == [NSBrowserCell class])
     {
       [self setVersion: 1];
-      ASSIGN(branch_image, [NSImage imageNamed: @"common_ArrowRight"]);
-      ASSIGN(highlight_image, [NSImage imageNamed: @"common_ArrowRightH"]);
+      ASSIGN(branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
+      ASSIGN(highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
     }
 }
 
