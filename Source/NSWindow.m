@@ -2735,7 +2735,8 @@ resetCursorRectsForView(NSView *theView)
 	     * a cursor rectangle then we need to determine if we should send a
 	     * cursor update event.
 	     */
-	    (*ccImp)(self, ccSel, _contentView, theEvent);
+	    if (_f.cursor_rects_enabled)
+	      (*ccImp)(self, ccSel, _contentView, theEvent);
 	  }
 
 	_lastPoint = [theEvent locationInWindow];

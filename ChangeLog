@@ -1,3 +1,14 @@
+2002-01-15  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-finishLaunching): Make main menu key
+	when there is no other key or main window.
+	(-runModalSession:): Update main menu.
+	(-targetForAction:): Search fixes. Return nil if in modal session
+	and key window does not respond to action.
+
+	* Source/NSWindow.m (-sendEvent:): Only check cursor rects
+	if isCursorRectsEnabled.
+
 2002-01-10  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSPopUpButton.m (-keyDown:): Handle obscure case of user

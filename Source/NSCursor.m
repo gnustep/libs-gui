@@ -28,6 +28,7 @@
 */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSGraphics.h>
@@ -123,6 +124,7 @@ static NSMutableDictionary *cursorDict = nil;
       [gnustep_gui_cursor_stack removeLastObject];
       gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
+      NSDebugLLog(@"NSCursor", @"Cursor pop");
       [gnustep_gui_current_cursor set];
     }
 }
@@ -334,6 +336,7 @@ backgroundColorHint:(NSColor *)bg
 {
   [gnustep_gui_cursor_stack addObject: self];
   [self set];
+  NSDebugLLog(@"NSCursor", @"Cursor push %p", _cid);
 }
 
 - (void) set

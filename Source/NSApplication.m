@@ -634,6 +634,17 @@ static NSCell* tileCell = nil;
     }
 
   /*
+   * If there is no main or key window, we need to make the main menu key
+   * so it can respond to menu shortcuts and deactivate the app properly
+   * when it looses focus.
+   */
+  if (_key_window == nil && _main_window == nil)
+    {
+      _key_window = [[self mainMenu] window];
+      [_key_window becomeKeyWindow];
+    }
+
+  /*
    * If there was more than one window set as key or main, we must make sure
    * that the one we have recorded is the real one by making it become key/main
    * again.
@@ -1039,6 +1050,18 @@ static NSCell* tileCell = nil;
   return code;
 }
 
+/** 
+<p>
+Processes one event for a modal session described by the theSession
+variable. Before processing the event, it makes the session window key
+and orders the window front, so there is no need to do this
+separately. When finished, it returns the state of the session (i.e.
+whether it is still running or has been stopped, etc) 
+<p>
+</p>
+See Also: -runModalForWindow:
+</p>
+*/
 - (int) runModalSession: (NSModalSession)theSession
 {
   NSAutoreleasePool	*pool;
@@ -1120,7 +1143,16 @@ static NSCell* tileCell = nil;
 
       if (found == YES)
 	{
+	  NSEventType	type = [_current_event type];
+
 	  [self sendEvent: _current_event];
+
+	  // update (en/disable) the services menu's items
+	  if (type != NSPeriodic && type != NSMouseMoved)
+	    {
+	      [_listener updateServicesMenu];
+	      [_main_menu update];
+	    }
 
 	  /*
 	   *	Check to see if the window has gone away - if so, end session.
@@ -1143,6 +1175,14 @@ static NSCell* tileCell = nil;
   return theSession->runState;
 }
 
+/**
+<p>
+   Returns the window that is part of the current modal session, if any.
+<p>
+</p>
+See -runModalForWindow:
+</p>
+*/
 - (NSWindow *) modalWindow
 {
   if (_session != 0) 
@@ -1384,6 +1424,15 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     }
 }
 
+/** 
+<p>
+Returns the target object that will respond to aSelector, if any. The
+method first checks if any of the key window's first responders, the
+key window or its delegate responds. Next it checks the main window in
+the same way. Finally it checks the receiver (NSApplication) and it's
+delegate.  
+</p>
+*/
 - (id) targetForAction: (SEL)aSelector
 {
   NSWindow	*keyWindow;
@@ -1394,7 +1443,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   if (keyWindow != nil)
     {
       resp = [keyWindow firstResponder];
-      while (resp != nil)
+      while (resp != nil && resp != keyWindow)
 	{
 	  if ([resp respondsToSelector: aSelector])
 	    {
@@ -1413,11 +1462,14 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	}
     }
 
+  if (_session != 0)
+    return nil;
+
   mainWindow = [self mainWindow];
   if (keyWindow != mainWindow && mainWindow != nil)
     {
       resp = [mainWindow firstResponder];
-      while (resp != nil)
+      while (resp != nil && resp != mainWindow)
 	{
 	  if ([resp respondsToSelector: aSelector])
 	    {
