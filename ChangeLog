@@ -1,3 +1,8 @@
+2003-04-07 13:05  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSFont.m (-initWithName:matrix:fix:screenFont:): Release
+	all memory if the fontInfo can't be created.
+
 2003-04-07 11:56  Alexander Malmberg <alexander@malmberg.org>
 
 	* TextConverters/RTF/rtfGrammer.y: Add error recovery rules.

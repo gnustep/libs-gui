@@ -653,7 +653,9 @@ setNSFont(NSString* key, NSFont* font)
 					     screenFont: screen]);
       if (fontInfo == nil)
 	{
-	  RELEASE (self);
+	  DESTROY(fontName);
+	  DESTROY(nameWithMatrix);
+	  RELEASE(self);
 	  return nil;
 	}
       
