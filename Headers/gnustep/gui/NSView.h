@@ -51,15 +51,22 @@
 
 typedef int NSTrackingRectTag;
 
-typedef enum _NSBorderType {			// constants representing the
-  NSNoBorder,					// four types of borders that
-  NSLineBorder,					// can appear around an NSView
+/*
+ * constants representing the four types of borders that
+ * can appear around an NSView
+ */
+typedef enum _NSBorderType {
+  NSNoBorder,
+  NSLineBorder,
   NSBezelBorder,
   NSGrooveBorder
 } NSBorderType;
-			// autoresize constants which NSView uses in
-			// determining the parts of a view which are
-			// resized when the view's superview is resized
+
+/*
+ * autoresize constants which NSView uses in
+ * determining the parts of a view which are
+ * resized when the view's superview is resized
+ */
 enum {
   NSViewNotSizable	= 0,	// view does not resize with its superview
   NSViewMinXMargin	= 1,	// left margin between views can stretch
@@ -102,114 +109,113 @@ enum {
   NSView *_previousKeyView;
 }
 
-//
-//Initializing NSView Objects
-//
-- (id)initWithFrame:(NSRect)frameRect;
+/*
+ * Initializing NSView Objects
+ */
+- (id) initWithFrame: (NSRect)frameRect;
 
-//
-// Managing the NSView Hierarchy
-//
-- (void)addSubview:(NSView *)aView;
-- (void)addSubview:(NSView *)aView
-	positioned:(NSWindowOrderingMode)place
-	relativeTo:(NSView *)otherView;
-- (NSView *)ancestorSharedWithView:(NSView *)aView;
-- (BOOL)isDescendantOf:(NSView *)aView;
-- (NSView *)opaqueAncestor;
-- (void)removeFromSuperviewWithoutNeedingDisplay;
-- (void)removeFromSuperview;
-- (void)replaceSubview:(NSView *)oldView
-		  with:(NSView *)newView;
-- (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare
-			  context:(void *)context;
-- (NSArray *)subviews;
-- (NSView *)superview;
-- (NSWindow *)window;
-- (void)viewWillMoveToSuperview:(NSView *)newSuper;
-- (void)viewWillMoveToWindow:(NSWindow *)newWindow;
+/*
+ * Managing the NSView Hierarchy
+ */
+- (void) addSubview: (NSView*)aView;
+- (void) addSubview: (NSView*)aView
+	 positioned: (NSWindowOrderingMode)place
+	 relativeTo: (NSView*)otherView;
+- (NSView*) ancestorSharedWithView: (NSView*)aView;
+- (BOOL) isDescendantOf: (NSView*)aView;
+- (NSView*) opaqueAncestor;
+- (void) removeFromSuperviewWithoutNeedingDisplay;
+- (void) removeFromSuperview;
+- (void) replaceSubview: (NSView*)oldView
+		   with: (NSView*)newView;
+- (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
+			   context: (void*)context;
+- (NSArray*) subviews;
+- (NSView*) superview;
+- (NSWindow*) window;
+- (void) viewWillMoveToSuperview: (NSView*)newSuper;
+- (void) viewWillMoveToWindow: (NSWindow*)newWindow;
 
-//
-// Modifying the Frame Rectangle
-//
-- (float)frameRotation;
-- (NSRect)frame;
-- (void)rotateByAngle:(float)angle;
-- (void)setFrame:(NSRect)frameRect;
-- (void)setFrameOrigin:(NSPoint)newOrigin;
-- (void)setFrameRotation:(float)angle;
-- (void)setFrameSize:(NSSize)newSize;
+/*
+ * Modifying the Frame Rectangle
+ */
+- (float) frameRotation;
+- (NSRect) frame;
+- (void) rotateByAngle: (float)angle;
+- (void) setFrame: (NSRect)frameRect;
+- (void) setFrameOrigin: (NSPoint)newOrigin;
+- (void) setFrameRotation: (float)angle;
+- (void) setFrameSize: (NSSize)newSize;
 
-//
-// Modifying the Coordinate System
-//
+/*
+ * Modifying the Coordinate System
+ */
+- (float) boundsRotation;
+- (NSRect) bounds;
+- (BOOL) isFlipped;
+- (BOOL) isRotatedFromBase;
+- (BOOL) isRotatedOrScaledFromBase;
+- (void) scaleUnitSquareToSize: (NSSize)newSize;
+- (void) setBounds: (NSRect)aRect;
+- (void) setBoundsOrigin: (NSPoint)newOrigin;
+- (void) setBoundsRotation: (float)angle;
+- (void) setBoundsSize: (NSSize)newSize;
+- (void) translateOriginToPoint: (NSPoint)point;
 
-- (float)boundsRotation;
-- (NSRect)bounds;
-- (BOOL)isFlipped;
-- (BOOL)isRotatedFromBase;
-- (BOOL)isRotatedOrScaledFromBase;
-- (void)scaleUnitSquareToSize:(NSSize)newSize;
-- (void)setBounds:(NSRect)aRect;
-- (void)setBoundsOrigin:(NSPoint)newOrigin;
-- (void)setBoundsRotation:(float)angle;
-- (void)setBoundsSize:(NSSize)newSize;
-- (void)translateOriginToPoint:(NSPoint)point;
+/*
+ * Converting Coordinates
+ */
+- (NSRect) centerScanRect: (NSRect)aRect;
+- (NSPoint) convertPoint: (NSPoint)aPoint
+		fromView: (NSView*)aView;
+- (NSPoint) convertPoint: (NSPoint)aPoint
+		  toView: (NSView*)aView;
+- (NSRect) convertRect: (NSRect)aRect
+	      fromView: (NSView*)aView;
+- (NSRect) convertRect: (NSRect)aRect
+		toView: (NSView*)aView;
+- (NSSize) convertSize: (NSSize)aSize
+	      fromView: (NSView*)aView;
+- (NSSize) convertSize: (NSSize)aSize
+		toView: (NSView*)aView;
 
-//
-// Converting Coordinates
-//
-- (NSRect)centerScanRect:(NSRect)aRect;
-- (NSPoint)convertPoint:(NSPoint)aPoint
-	       fromView:(NSView *)aView;
-- (NSPoint)convertPoint:(NSPoint)aPoint
-		 toView:(NSView *)aView;
-- (NSRect)convertRect:(NSRect)aRect
-	     fromView:(NSView *)aView;
-- (NSRect)convertRect:(NSRect)aRect
-	       toView:(NSView *)aView;
-- (NSSize)convertSize:(NSSize)aSize
-	     fromView:(NSView *)aView;
-- (NSSize)convertSize:(NSSize)aSize
-	       toView:(NSView *)aView;
+/*
+ * Notifying Ancestor Views
+ */
+- (void) setPostsFrameChangedNotifications: (BOOL)flag;
+- (BOOL) postsFrameChangedNotifications;
+- (void) setPostsBoundsChangedNotifications: (BOOL)flag;
+- (BOOL) postsBoundsChangedNotifications;
 
-//
-// Notifying Ancestor Views
-//
-- (void)setPostsFrameChangedNotifications:(BOOL)flag;
-- (BOOL)postsFrameChangedNotifications;
-- (void)setPostsBoundsChangedNotifications:(BOOL)flag;
-- (BOOL)postsBoundsChangedNotifications;
+/*
+ * Resizing Subviews
+ */
+- (void) resizeSubviewsWithOldSize: (NSSize)oldSize;
+- (void) setAutoresizesSubviews: (BOOL)flag;
+- (BOOL) autoresizesSubviews;
+- (void) setAutoresizingMask: (unsigned int)mask;
+- (unsigned int) autoresizingMask;
+- (void) resizeWithOldSuperviewSize: (NSSize)oldSize;
 
-//
-// Resizing Subviews
-//
-- (void)resizeSubviewsWithOldSize:(NSSize)oldSize;
-- (void)setAutoresizesSubviews:(BOOL)flag;
-- (BOOL)autoresizesSubviews;
-- (void)setAutoresizingMask:(unsigned int)mask;
-- (unsigned int)autoresizingMask;
-- (void)resizeWithOldSuperviewSize:(NSSize)oldSize;
+/*
+ * Graphics State Objects
+ */
+- (void) allocateGState;
+- (void) releaseGState;
+- (int) gState;
+- (void) renewGState;
+- (void) setUpGState;
 
-//
-// Graphics State Objects
-//
-- (void)allocateGState;
-- (void)releaseGState;
-- (int)gState;
-- (void)renewGState;
-- (void)setUpGState;
+/*
+ * Focusing
+ */
++ (NSView*) focusView;
+- (void) lockFocus;
+- (void) unlockFocus;
 
-//
-// Focusing
-//
-+ (NSView *)focusView;
-- (void)lockFocus;
-- (void)unlockFocus;
-
-//
-// Displaying
-//
+/*
+ * Displaying
+ */
 - (BOOL) canDraw;
 - (void) display;
 - (void) displayIfNeeded;
@@ -226,152 +232,146 @@ enum {
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect;
 - (BOOL) shouldDrawColor;
 
-//
-// Scrolling
-//
-- (NSRect)adjustScroll:(NSRect)newVisible;
-- (BOOL)autoscroll:(NSEvent *)theEvent;
+/*
+ * Scrolling
+ */
+- (NSRect) adjustScroll: (NSRect)newVisible;
+- (BOOL) autoscroll: (NSEvent*)theEvent;
 - (NSScrollView*) enclosingScrollView;
-- (void)reflectScrolledClipView:(NSClipView *)aClipView;
-- (void)scrollClipView:(NSClipView *)aClipView
-	       toPoint:(NSPoint)aPoint;
-- (void)scrollPoint:(NSPoint)aPoint;
-- (void)scrollRect:(NSRect)aRect
-		by:(NSSize)delta;
-- (BOOL)scrollRectToVisible:(NSRect)aRect;
+- (void) reflectScrolledClipView: (NSClipView*)aClipView;
+- (void) scrollClipView: (NSClipView*)aClipView
+		toPoint: (NSPoint)aPoint;
+- (void) scrollPoint: (NSPoint)aPoint;
+- (void) scrollRect: (NSRect)aRect
+		 by: (NSSize)delta;
+- (BOOL) scrollRectToVisible: (NSRect)aRect;
 
-//
-// Managing the Cursor
-//
-- (void)addCursorRect:(NSRect)aRect
-	       cursor:(NSCursor *)anObject;
-- (void)discardCursorRects;
-- (void)removeCursorRect:(NSRect)aRect
-		  cursor:(NSCursor *)anObject;
-- (void)resetCursorRects;
+/*
+ * Managing the Cursor
+ */
+- (void) addCursorRect: (NSRect)aRect
+		cursor: (NSCursor*)anObject;
+- (void) discardCursorRects;
+- (void) removeCursorRect: (NSRect)aRect
+		   cursor: (NSCursor*)anObject;
+- (void) resetCursorRects;
 
-//
-// Assigning a Tag
-//
-- (int)tag;
-- (id)viewWithTag:(int)aTag;
+/*
+ * Assigning a Tag
+ */
+- (int) tag;
+- (id) viewWithTag: (int)aTag;
 
-//
-// Aiding Event Handling
-//
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
-- (NSView *)hitTest:(NSPoint)aPoint;
-- (BOOL)mouse:(NSPoint)aPoint
-       inRect:(NSRect)aRect;
-- (BOOL)performKeyEquivalent:(NSEvent *)theEvent;
-- (void)removeTrackingRect:(NSTrackingRectTag)tag;
-- (BOOL)shouldDelayWindowOrderingForEvent:(NSEvent *)anEvent;
-- (NSTrackingRectTag)addTrackingRect:(NSRect)aRect
-			       owner:(id)anObject
-			    userData:(void *)data
-			       assumeInside:(BOOL)flag;
-- (void)setNextKeyView:(NSView *)aView;
-- (NSView *)nextKeyView;
-- (NSView *)nextValidKeyView;
-- (void)setPreviousKeyView:(NSView *)aView;
-- (NSView *)previousKeyView;
-- (NSView *)previousValidKeyView;
+/*
+ * Aiding Event Handling
+ */
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent;
+- (NSView*) hitTest: (NSPoint)aPoint;
+- (BOOL) mouse: (NSPoint)aPoint
+	inRect: (NSRect)aRect;
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
+- (void) removeTrackingRect: (NSTrackingRectTag)tag;
+- (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
+- (NSTrackingRectTag) addTrackingRect: (NSRect)aRect
+				owner: (id)anObject
+			     userData: (void*)data
+			 assumeInside: (BOOL)flag;
+- (void) setNextKeyView: (NSView*)aView;
+- (NSView*) nextKeyView;
+- (NSView*) nextValidKeyView;
+- (void) setPreviousKeyView: (NSView*)aView;
+- (NSView*) previousKeyView;
+- (NSView*) previousValidKeyView;
 
-//
-// Dragging
-//
-- (BOOL)dragFile:(NSString *)filename
-	fromRect:(NSRect)rect
-       slideBack:(BOOL)slideFlag
-	   event:(NSEvent *)event;
-- (void)dragImage:(NSImage *)anImage
-	       at:(NSPoint)viewLocation
-	   offset:(NSSize)initialOffset
-	    event:(NSEvent *)event
-       pasteboard:(NSPasteboard *)pboard
-	   source:(id)sourceObject
-	slideBack:(BOOL)slideFlag;
-- (void)registerForDraggedTypes:(NSArray *)newTypes;
-- (void)unregisterDraggedTypes;
+/*
+ * Dragging
+ */
+- (BOOL) dragFile: (NSString*)filename
+	 fromRect: (NSRect)rect
+	slideBack: (BOOL)slideFlag
+	    event: (NSEvent*)event;
+- (void) dragImage: (NSImage*)anImage
+		at: (NSPoint)viewLocation
+	    offset: (NSSize)initialOffset
+	     event: (NSEvent*)event
+	pasteboard: (NSPasteboard*)pboard
+	    source: (id)sourceObject
+	 slideBack: (BOOL)slideFlag;
+- (void) registerForDraggedTypes: (NSArray*)newTypes;
+- (void) unregisterDraggedTypes;
 
-//
-// Printing
-//
-- (NSData *)dataWithEPSInsideRect:(NSRect)aRect;
-- (void)fax:(id)sender;
-- (void)print:(id)sender;
-- (void)writeEPSInsideRect:(NSRect)rect
-	      toPasteboard:(NSPasteboard *)pasteboard;
+/*
+ * Printing
+ */
+- (NSData*) dataWithEPSInsideRect: (NSRect)aRect;
+- (void) fax: (id)sender;
+- (void) print: (id)sender;
+- (void) writeEPSInsideRect: (NSRect)rect
+	       toPasteboard: (NSPasteboard*)pasteboard;
 
-//
-// Pagination
-//
-- (void)adjustPageHeightNew:(float *)newBottom
-			top:(float)oldTop
-		     bottom:(float)oldBottom
-		      limit:(float)bottomLimit;
-- (void)adjustPageWidthNew:(float *)newRight
-		      left:(float)oldLeft
-		     right:(float)oldRight
-		     limit:(float)rightLimit;
-- (float)heightAdjustLimit;
-- (BOOL)knowsPagesFirst:(int *)firstPageNum
-		   last:(int *)lastPageNum;
-- (NSPoint)locationOfPrintRect:(NSRect)aRect;
-- (NSRect)rectForPage:(int)page;
-- (float)widthAdjustLimit;
+/*
+ * Pagination
+ */
+- (void) adjustPageHeightNew: (float*)newBottom
+			 top: (float)oldTop
+		      bottom: (float)oldBottom
+		       limit: (float)bottomLimit;
+- (void) adjustPageWidthNew: (float*)newRight
+		       left: (float)oldLeft
+		      right: (float)oldRight
+		      limit: (float)rightLimit;
+- (float) heightAdjustLimit;
+- (BOOL) knowsPagesFirst: (int*)firstPageNum
+		    last: (int*)lastPageNum;
+- (NSPoint) locationOfPrintRect: (NSRect)aRect;
+- (NSRect) rectForPage: (int)page;
+- (float) widthAdjustLimit;
 
-//
-// Writing Conforming PostScript
-//
-- (void)addToPageSetup;
-- (void)beginPage:(int)ordinalNum
-	    label:(NSString *)aString
-	     bBox:(NSRect)pageRect
-	    fonts:(NSString *)fontNames;
-- (void)beginPageSetupRect:(NSRect)aRect
-		 placement:(NSPoint)location;
-- (void)beginPrologueBBox:(NSRect)boundingBox
-	     creationDate:(NSString *)dateCreated
-		createdBy:(NSString *)anApplication
-		    fonts:(NSString *)fontNames
-		  forWhom:(NSString *)user
-		    pages:(int)numPages
-		    title:(NSString *)aTitle;
-- (void)beginSetup;
-- (void)beginTrailer;
-- (void)drawPageBorderWithSize:(NSSize)borderSize;
-- (void)drawSheetBorderWithSize:(NSSize)borderSize;
-- (void)endHeaderComments;
-- (void)endPrologue;
-- (void)endSetup;
-- (void)endPageSetup;
-- (void)endPage;
-- (void)endTrailer;
+/*
+ * Writing Conforming PostScript
+ */
+- (void) addToPageSetup;
+- (void) beginPage: (int)ordinalNum
+	      abel: (NSString*)aString
+	      bBox: (NSRect)pageRect
+	     fonts: (NSString*)fontNames;
+- (void) beginPageSetupRect: (NSRect)aRect
+		  placement: (NSPoint)location;
+- (void) beginPrologueBBox: (NSRect)boundingBox
+	      creationDate: (NSString*)dateCreated
+		 createdBy: (NSString*)anApplication
+		     fonts: (NSString*)fontNames
+		   forWhom: (NSString*)user
+		     pages: (int)numPages
+		     title: (NSString*)aTitle;
+- (void) beginSetup;
+- (void) beginTrailer;
+- (void) drawPageBorderWithSize: (NSSize)borderSize;
+- (void) drawSheetBorderWithSize: (NSSize)borderSize;
+- (void) endHeaderComments;
+- (void) endPrologue;
+- (void) endSetup;
+- (void) endPageSetup;
+- (void) endPage;
+- (void) endTrailer;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
 
 @class NSAffineTransform;
 
-//
-// GNUstep extensions
-// Methods whose names begin with an underscore must NOT be overridden.
-//
+/*
+ * GNUstep extensions
+ * Methods whose names begin with an underscore must NOT be overridden.
+ */
 #ifndef	NO_GNUSTEP
 @interface NSView (PrivateMethods)
-
-/*
- * If the view is rotated, [-_boundingRectFor:] returns the bounding box
- * of the rect in the "normal" coordinates
- */
-- (NSRect) _boundingRectFor: (NSRect)rect;
 
 /*
  * The [-_invalidateCoordinates] method marks the cached visible rectangles
@@ -382,8 +382,10 @@ enum {
 - (void) _invalidateCoordinates;
 - (void) _rebuildCoordinates;
 
-- (NSAffineTransform*)_matrixToWindow;
-- (NSAffineTransform*)_matrixFromWindow;
+- (NSAffineTransform*) _matrixToWindow;
+- (NSAffineTransform*) _matrixFromWindow;
+
+- (void) _removeSubview: (NSView*)aSubview;
 @end
 #endif
 

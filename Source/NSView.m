@@ -265,6 +265,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   RETAIN(aView);
   [aView removeFromSuperview];
+  if (aView->_coordinates_valid)
+    {
+      (*invalidateImp)(aView, invalidateSel);
+    }
   [aView viewWillMoveToWindow: _window];
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
@@ -301,6 +305,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   RETAIN(aView);
   [aView removeFromSuperview];
+  if (aView->_coordinates_valid)
+    {
+      (*invalidateImp)(aView, invalidateSel);
+    }
   [aView viewWillMoveToWindow: _window];
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
@@ -372,67 +380,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
-  /* This must be first because it invokes -resignFirstResponder:, 
-     which assumes the view is still in the view hierarchy */
-  if ([_window firstResponder] == self)
-    [_window makeFirstResponder: _window];
-  /*
-   * We MUST make sure that coordinates are invalidated even if we have
-   * no superview - cos they may have been rebuilt since we lost the
-   * superview and the fact that this method has been invoked probably
-   * means we are about to be placed in a new view where the coordinate
-   * system will be different.
-   */
-  if (_coordinates_valid)
+  if (_super_view != nil)
     {
-      (*invalidateImp)(self, invalidateSel);
+      [_super_view _removeSubview: self];
     }
-  if (!_super_view)
-    {
-      return;
-    }
-  RETAIN(self);
-  [_super_view->_sub_views removeObjectIdenticalTo: self];
-  if ([_super_view->_sub_views count] == 0)
-    {
-      _super_view->_rFlags.has_subviews = 0;
-    }
-  _super_view = nil;
-  [self viewWillMoveToWindow: nil];
-  RELEASE(self);
 }
 
 - (void) removeFromSuperview
 {
-  /* This must be first because it invokes -resignFirstResponder:, 
-     which assumes the view is still in the view hierarchy */
-  if ([_window firstResponder] == self)
-    [_window makeFirstResponder: _window];
-  /*
-   * We MUST make sure that coordinates are invalidated even if we have
-   * no superview - cos they may have been rebuilt since we lost the
-   * superview and the fact that this method has been invoked probably
-   * means we are about to be placed in a new view where the coordinate
-   * system will be different.
-   */
-  if (_coordinates_valid)
+  if (_super_view != nil)
     {
-      (*invalidateImp)(self, invalidateSel);
+      [_super_view setNeedsDisplayInRect: _frame];
+      [_super_view _removeSubview: self];
     }
-  if (!_super_view)
-    {
-      return;
-    }
-  [_super_view setNeedsDisplayInRect: _frame];
-  RETAIN(self);
-  [_super_view->_sub_views removeObjectIdenticalTo: self];
-  if ([_super_view->_sub_views count] == 0)
-    {
-      _super_view->_rFlags.has_subviews = 0;
-    }
-  _super_view = nil;
-  [self viewWillMoveToWindow: nil];
-  RELEASE(self);
 }
 
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
@@ -454,6 +414,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
        */
       RETAIN(newView);
       [newView removeFromSuperview];
+      if (newView->_coordinates_valid)
+	{
+	  (*invalidateImp)(newView, invalidateSel);
+	}
       [newView viewWillMoveToWindow: _window];
       [newView viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
@@ -486,6 +450,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	   */
 	  RETAIN(newView);
 	  [newView removeFromSuperview];
+	  if (newView->_coordinates_valid)
+	    {
+	      (*invalidateImp)(newView, invalidateSel);
+	    }
 	  index = [_sub_views indexOfObjectIdenticalTo: oldView];
 	  [oldView removeFromSuperview];
 	  [newView viewWillMoveToWindow: _window];
@@ -2766,5 +2734,33 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
+- (void) _removeSubview: (NSView*)aSubview
+{
+  /*
+   * This must be first because it invokes -resignFirstResponder:, 
+   * which assumes the view is still in the view hierarchy
+   */
+  if ([_window firstResponder] == aSubview)
+    {
+      [_window makeFirstResponder: _window];
+    }
+  /*
+   * We make sure that the coordinates are invalidated even though the
+   * code to add this view to another view will also invalidate them.
+   * This is for consistency so that when a view is not in the view
+   * hierarchy, its coordinates should not be valid.
+   */
+  if (aSubview->_coordinates_valid)
+    {
+      (*invalidateImp)(aSubview, invalidateSel);
+    }
+  aSubview->_super_view = nil;
+  [aSubview viewWillMoveToWindow: nil];
+  [_sub_views removeObjectIdenticalTo: aSubview];
+  if ([_sub_views count] == 0)
+    {
+      _rFlags.has_subviews = 0;
+    }
+}
 @end
 

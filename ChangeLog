@@ -1,3 +1,11 @@
+Fri Mar 10 06:46:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Added ([_removeSubview:]) and  make all subview
+	removals use it.  Modify addition of subviews to invalidate the
+	subview coordinates.
+	* Source/NSScrollView.m: Use _removeSubview
+	* Source/AppKit/NSView.h: tidyup and add new method.
+
 Fri Mar 10 02:12:34 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-mouseDown:]): Better management of the

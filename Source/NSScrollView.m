@@ -207,6 +207,22 @@ static Class rulerViewClass = nil;
   [self tile];
 }
 
+- (void) _removeSubview: (NSView*)aView
+{
+  if (aView == _contentView)
+    {
+      RETAIN(aView);
+      _contentView = nil;
+      [super _removeSubview: aView];
+      RELEASE(aView);
+      [self tile];
+    }
+  else
+    {
+      [super _removeSubview: aView];
+    }
+}
+
 - (void) setHorizontalScroller: (NSScroller*)aScroller
 {
   [_horizScroller removeFromSuperview];
