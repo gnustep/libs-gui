@@ -1,7 +1,19 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.2'.
+The currently released version of the library is `0.9.3'.
+
+Noteworthy changes in version `0.9.3'
+=====================================
+
+   * Spell checker reimplemented using libaspell
+
+   * New NSComboBox implementation
+
+   * NSToolbar much improved
+
+   * Binary incompatibilites from ivar additions in NSView and
+     subclasses.
 
 Noteworthy changes in version `0.9.2'
 =====================================
@@ -33,17 +45,16 @@ Noteworthy changes in version `0.9.1'
 Noteworthy changes in version `0.9.0'
 =====================================
 
-   Improvements in various classes, include NSPopUpButton,
+Improvements in various classes, include NSPopUpButton,
 NSBitmapImageRep, NSMenu, NSToolbar. Added support for thumbnail images
 in NSWorkspace.
 
 Noteworthy changes in version `0.8.9'
 =====================================
 
-   Note that many headers have moved to new locations (both in the
-package and when installed), so it is possible, although not likely
-that some applications may not compile because they cannot find the
-right header.
+Note that many headers have moved to new locations (both in the package
+and when installed), so it is possible, although not likely that some
+applications may not compile because they cannot find the right header.
 
    * New Language Setup documentation.
 
@@ -67,7 +78,7 @@ Noteworthy changes in version `0.8.7'
 Noteworthy changes in version `0.8.6'
 =====================================
 
-   Updated to install in new locations based on changes in gnustep-make
+Updated to install in new locations based on changes in gnustep-make
 1.7.0.
 
    * New implementation of RTF producer (from Axel "Mikesch" Katerbau)
@@ -79,12 +90,12 @@ Noteworthy changes in version `0.8.6'
 Noteworthy changes in version `0.8.5'
 =====================================
 
-   Bug fixes. NSStringDrawing now uses text system implementation.
+Bug fixes. NSStringDrawing now uses text system implementation.
 
 Noteworthy changes in version `0.8.4'
 =====================================
 
-   This release features a brand new text and layout system thanks to
+This release features a brand new text and layout system thanks to
 Alexander Malmberg. Other improvements include:
 
    * Various display optimizations.
@@ -164,11 +175,11 @@ Noteworthy changes in version `0.7.8'
 Noteworthy changes in version `0.7.7'
 =====================================
 
-   The graphics/window interface was completely revamped. Window
-functions were split into a separate class, GSDisplayServer, and many
-PS and DPS functions were removed that were never implemented. However,
-new functionality was added to make things faster and eventually
-implement Quartz compatibility.
+The graphics/window interface was completely revamped. Window functions
+were split into a separate class, GSDisplayServer, and many PS and DPS
+functions were removed that were never implemented. However, new
+functionality was added to make things faster and eventually implement
+Quartz compatibility.
 
    In addition, the old backends, xgps and xdps were depreciated in
 favor of a new backend, simply named back, which can be configured for a
@@ -312,9 +323,8 @@ recommend sticking with the xgps backend (the default) for now.
 Noteworthy changes in version `0.6.5'
 =====================================
 
-   Many of the basic GUI classes have been vastly improved or
-rewritten, thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many
-others.
+Many of the basic GUI classes have been vastly improved or rewritten,
+thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many others.
 
    * New Info Panel support
 
@@ -347,9 +357,9 @@ been written, thanks to Richard Frith-Macdonald
 Noteworthy changes in version `0.6.0'
 =====================================
 
-   A Huge amount of progress, although a lot still needs to be done.
-It's usable for a large base of moderately simple apps. Several
-NeXT/OpenStep apps and libraries have been ported with little changes.
+A Huge amount of progress, although a lot still needs to be done. It's
+usable for a large base of moderately simple apps. Several NeXT/OpenStep
+apps and libraries have been ported with little changes.
 
    * Drag and Drop support fleshed out but not completed.
 
@@ -378,7 +388,7 @@ NeXT/OpenStep apps and libraries have been ported with little changes.
 Noteworthy changes in version `0.5.5'
 =====================================
 
-   Too extensive to list.
+Too extensive to list.
 
    * A lot of rewritting has been done to the classes, with general
      cleanup of coordinate conversion code, etc.

@@ -14,24 +14,31 @@
     <chapter>
       <heading>Gui</heading>
       <p>
-	The GNUstep GUI library is a free software package implementing the
-        API of the OpenStep Application Kit, or AppKit (tm), including later
-        additions.  This documentation package describes the core of the GUI
-        library, for documentation on additional classes, see the
-        GuiAdditions documentation package.
+        Read the
+        <uref url="../ReleaseNotes/ReleaseNotes.html">Release Notes</uref>
+        for the current release.
       </p>
+      <section>
+        <heading>Compatibility</heading>
+        <p>
+          GNUstep is generally compatible with the OpenStep specification and
+          with recent developments of the MacOS (cocoa) API.  Where MacOS
+          deviates from the OpenStep API, GNUstep generally attempts to
+          support both versions.  In some cases the newer MacOS APIs are
+          incompatible with OpenStep, and GNUstep usually supports the richer
+          version. See the
+          <uref url="../General/OpenStepCompliance.html">OpenStep Compliance</uref> 
+	  section for more information on OpenStep Compliance.
+        </p>
+      </section>
+      <section>
+        <heading>Information and Setup</heading>
       <p>
-      	Read the
-	<uref url="../ReleaseNotes/ReleaseNotes.html">Release Notes</uref>
-	for the current release.
-      </p>
-
-
-      <p>
-	Nicola Pero and others have begun work on writing a
-	<uref url="../ProgrammingManual/manual_toc.html">manual</uref>
-	introducting the basic concepts and use of the GNUstep GUI library.
-      </p>
+	Nicola Pero has begun work on writing an
+	<uref url="Introduction.html">introduction</uref>
+	to the basic concepts and use of the GNUstep GUI library  - a free
+	software library compatible with the OpenStep Application Kit (tm).
+     </p>
       <p>
         Useful documentation for setting up GNUstep:
       </p>
@@ -39,6 +46,8 @@
         <item><uref url="../../../User/Gui/DefaultsSummary.html">Available User Defaults</uref></item>
         <item><uref url="../../../User/Gui/LanguageSetup.html">Language Setup</uref></item>
       </list>
+      </section>
+
     </chapter>
     <back>
       <index scope="project" type="class" />

@@ -1,19 +1,18 @@
 ANNOUNCE
 ********
 
-This is version 0.9.2 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.9.3 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
 
-   It is a library of graphical user interface classes written
-completely in the Objective-C language; the classes are based upon the
-OpenStep specification as release by NeXT Software, Inc.  The library
-has been enhanced in a number of ways to take advantage of the GNU
-system.  These classes include graphical objects such as buttons, text
-fields, popup lists, browser lists, and windows; there are also many
-associated classes for handling events, colors, fonts, pasteboards and
-images.
+It is a library of graphical user interface classes written completely
+in the Objective-C language; the classes are based upon the OpenStep
+specification as release by NeXT Software, Inc.  The library has been
+enhanced in a number of ways to take advantage of the GNU system.
+These classes include graphical objects such as buttons, text fields,
+popup lists, browser lists, and windows; there are also many associated
+classes for handling events, colors, fonts, pasteboards and images.
 
    The GNUstep GUI Library is designed in two parts.  The first part is
 the front-end component which is independent of platform and display
@@ -28,44 +27,37 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.9.2'
+Noteworthy changes in version `0.9.3'
 =====================================
 
-   * Working NSToolbar implementation
+   * Spell checker reimplemented using libaspell
 
-   * New Mac OS X methods in NSView and other classes
+   * New NSComboBox implementation
 
-   * Fixed some sheet handling problems.
+   * NSToolbar much improved
 
-   * Integrated gif, jpg, and png handling in front-end.
-
-   * Added overridable button and frame drawing functions
-
-   * Add some keyed decode/encoding to some classes
-
-   * NSStringDrawing redesigned.
-
-   * Much improved loading of gorm files
+   * Binary incompatibilites from ivar additions in NSView and
+     subclasses.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.9.2.tar.gz distribution file has been placed on
+The gstep-gui-0.9.3.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
-   Read the INSTALL file or the GNUstep-HOWTO for installation
+Read the INSTALL file or the GNUstep-HOWTO for installation
 instructions.
 
 Where do I send bug reports?
 ============================
 
-   Please log bug reports on the GNUstep project page
-<http://savannah.gnu.org/support/?group=gnustep> or send bug reports to
+Please log bug reports on the GNUstep project page
+<http://savannah.gnu.org/bugs/?group=gnustep> or send bug reports to
 <bug-gnustep@gnu.org>.
 
 Obtaining GNU Software
 ======================
 
-   Check out the GNUstep web site. (<http://www.gnustep.org/>), and the
+Check out the GNUstep web site. (<http://www.gnustep.org/>), and the
 GNU web site. (<http://www.gnu.org/>)
 

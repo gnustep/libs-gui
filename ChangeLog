@@ -1,3 +1,10 @@
+2004-07-14  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/General/OpenStepCompliance.gsdoc: Update.
+	* Documentation/Gui/Gui.gsdoc: Add compliance and release links
+	* Source/NSSavePanel.m: Remove extraneous ';' at end of some methods
+	* Source/NSTableView.m: Idem.
+
 2004-07-15 02:28  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSBezierPath.m (point_on_curve): New function.

@@ -879,13 +879,13 @@ selectCellWithString: (NSString*)title
   _allowsOtherFileTypes = flag;
 }
 
-- (NSArray *) allowedFileTypes;
+- (NSArray *) allowedFileTypes
 {
   // FIXME
   return nil;
 }
 
-- (BOOL) allowsOtherFileTypes;
+- (BOOL) allowsOtherFileTypes
 {
   return _allowsOtherFileTypes;
 }

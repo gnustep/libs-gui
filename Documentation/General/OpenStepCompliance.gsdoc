@@ -43,6 +43,7 @@
 	<item>NSEvent</item>
 	<item>NSFont</item>
 	<item>NSFontManager</item>
+	<item>NSFontPanel</item>
 	<item>NSForm</item>
 	<item>NSFormCell</item>
 	<item>NSImage</item>
@@ -85,8 +86,8 @@
 	<term>NSCell</term>
 	<desc>-setFloatingPointFormat:left:right: not implemented.
 	-setEntryType: not complete.</desc>
-	<term>NSFontPanel</term>
-	<desc>-setAccessoryView: not implemented. </desc>
+	<term>NSEPSImageRep</term>
+	<desc>Cannot interpret/draw EPS images</desc>
 	<term>NSMatrix</term>
 	<desc>-setValidateSize: not implemented</desc>
 	<term>NSPageLayout</term>
@@ -119,14 +120,13 @@
       the copyright to the Free Software Foundation.
       </p>
       <list>
-	<item>NSCStringText</item>
-	<item>NSCoderAdditions</item>
+	<item>NSCStringText (Unecessary NEXTSTEP compatibility)</item>
+	<item>NSCoderAdditions (Unecessary NEXTSTEP compatibility)</item>
 	<item>NSDataLink</item>
 	<item>NSDataLinkManager</item>
 	<item>NSDataLinkPanel</item>
-	<item>NSEPSImageRep</item>
-	<item>NSHelpPanel (replaced by NSHelpManager)</item>
-	<item>NSMenuCell (replaced by NSMenuItem[Cell])</item>
+	<item>NSHelpPanel (Replaced by NSHelpManager)</item>
+	<item>NSMenuCell (Replaced by NSMenuItem[Cell])</item>
       </list>
 
     </chapter>

@@ -2795,12 +2795,12 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
-- (NSIndexSet *) selectedColumnIndexes;
+- (NSIndexSet *) selectedColumnIndexes
 {
   return _selectedColumns;  
 }
 
-- (NSIndexSet *) selectedRowIndexes;
+- (NSIndexSet *) selectedRowIndexes
 {
   return _selectedRows;  
 }
@@ -3084,7 +3084,7 @@ byExtendingSelection: (BOOL)flag
   // FIXME
 }
 
-- (unsigned int) gridStyleMask;
+- (unsigned int) gridStyleMask
 {
   // FIXME
   return 0;
