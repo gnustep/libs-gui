@@ -37,7 +37,7 @@
 - (id) copyWithZone: (NSZone*)aZone
 {
   if (NSShouldRetainWithZone(self, aZone) == YES)
-    return [self retain];
+    return RETAIN(self);
   return NSCopyObject(self, 0, aZone);
 }
 
@@ -118,16 +118,17 @@ static NSParagraphStyle	*defaultStyle = nil;
 	  tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
 				       location: (i*1)*28.0];
 	  [style->tabStops addObject: tab];
-	  [tab release];
+	  RELEASE(tab);
 	}
 
-      defaultStyle = style;
       /*
        * If another thread was doing this at the same time, it may have
        * assigned it's own defaultStyle - if so we use that and discard ours.
        */
-      if (defaultStyle != style)
-	[style release];
+      if (defaultStyle != nil)
+	RELEASE(style);
+      else
+	defaultStyle = style;
     }
   return defaultStyle;
 }
@@ -139,7 +140,7 @@ static NSParagraphStyle	*defaultStyle = nil;
       NSLog(@"Argh - attempt to dealloc the default paragraph style!");
       return;
     }
-  [tabStops release];
+  RELEASE(tabStops);
   [super dealloc];
 }
 
@@ -155,6 +156,8 @@ static NSParagraphStyle	*defaultStyle = nil;
   minimumLineHeight = 0.0;
   paragraphSpacing = 0.0;
   tailIndent = 0.0;
+  // FIXME: I find it surprising that this is mutable, this propably was done to
+  // reuse it for NSMutableParagraphStyle. Still I think it is wrong.
   tabStops = [[NSMutableArray allocWithZone: [self zone]] initWithCapacity: 12];
   return self;
 }
@@ -218,7 +221,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (NSArray *) tabStops
 {
-  return [[tabStops copyWithZone: NSDefaultMallocZone()] autorelease];
+  return AUTORELEASE([tabStops copyWithZone: NSDefaultMallocZone()]);
 }
 
 /*
@@ -247,14 +250,13 @@ static NSParagraphStyle	*defaultStyle = nil;
 - (id) copyWithZone: (NSZone*)aZone
 {
   if (NSShouldRetainWithZone(self, aZone) == YES)
-    return [self retain];
+    return RETAIN(self);
   else
     {
       NSParagraphStyle	*c;
 
       c = (NSParagraphStyle*)NSCopyObject(self, 0, aZone);
-      c->tabStops = [NSMutableArray allocWithZone: aZone];
-      c->tabStops = [c->tabStops initWithArray: tabStops];
+      c->tabStops = [tabStops mutableCopyWithZone: aZone];
       return c;
     }
 }
@@ -271,8 +273,6 @@ static NSParagraphStyle	*defaultStyle = nil;
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   unsigned	count;
-
-  self = [super initWithCoder: aCoder];
 
   [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &alignment];
   [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) at: &lineBreakMode];
@@ -308,7 +308,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 	  tab = [NSTextTab alloc];
 	  tab = [tab initWithType: types[i] location: locations[i]];
 	  [tabStops addObject: tab];
-	  [tab release];
+	  RELEASE(tab);
 	}
     }
 
@@ -318,8 +318,6 @@ static NSParagraphStyle	*defaultStyle = nil;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   unsigned	count;
-
-  [super encodeWithCoder: aCoder];
 
   [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &alignment];
   [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) at: &lineBreakMode];
@@ -366,7 +364,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 + (NSParagraphStyle*) defaultParagraphStyle
 {
-  return [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+  return AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
 }
 
 - (void) setLineSpacing: (float)aFloat
