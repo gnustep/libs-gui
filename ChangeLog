@@ -7,6 +7,7 @@
 2000-10-19  Michael Hanni <mhanni@sprintmail.com>
 
 	* Source/NSTabView.m: a few bugfixes.
+	* Source/NSTabViewItem.m: fixed a few memory leaks.
 
 2000-10-17  Fred Kiefer  <FredKiefer@gmx.de>
 

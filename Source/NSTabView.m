@@ -111,6 +111,7 @@
       if ([[anItem identifier] isEqual: identifier])
         return i;
     }
+
   return NSNotFound;
 }
 
@@ -185,10 +186,10 @@
       tab_selected_item = [tab_items indexOfObject: tab_selected];
       [tab_selected _setTabState: NSSelectedTab];
 
-//      [self setNeedsDisplay: YES];
-
       if ([tab_selected view])
-	[self addSubview: [tab_selected view]];
+	{
+	  [self addSubview: [tab_selected view]];
+	}
 
       [self setNeedsDisplay: YES];
 
@@ -291,9 +292,6 @@
 {
   NSRect cRect = _bounds;
 
-//  cRect.origin.x = 0;
-//  cRect.origin.y = 0;
-
   if (tab_type == NSTopTabsBezelBorder)
     {
       cRect.origin.y += 1; 
@@ -336,8 +334,9 @@
   switch (tab_type)
     {
       case NSTopTabsBezelBorder: 
+	aRect.size.height -= 16;
 	rect.size.height -= 16;
-	NSDrawButton(rect, NSZeroRect);
+	NSDrawButton(aRect, NSZeroRect);
 	borderThickness = 2;
 	break;
 
@@ -656,10 +655,6 @@
     {
       [self selectTabViewItem: anItem];
     }
-
-  //  [self setNeedsDisplay: YES];
-
-//  [_window update];
 
   return [super hitTest: aPoint];
 }

@@ -60,6 +60,9 @@
 
 - (void)setView:(NSView *)view
 {
+  if (item_view)
+    RELEASE(item_view);
+
   ASSIGN(item_view, view);
 }
 
@@ -96,7 +99,7 @@
 
 - (void)_setTabView:(NSTabView *)tabView
 {
-  ASSIGN(item_tabview, tabView);
+  item_tabview = tabView;
 }
 
 - (NSTabView *)tabView
