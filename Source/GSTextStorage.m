@@ -577,7 +577,9 @@ SANITY();
 		  info = n;
 		}
 	      else
+		{
 		  break;
+		}
 	    }
 	}
       info->loc = NSMaxRange(range);
