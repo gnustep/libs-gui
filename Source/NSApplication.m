@@ -814,6 +814,16 @@ static NSCell* tileCell = nil;
   return _app_is_active;
 }
 
+- (void) hideOtherApplications: (id)sender
+{
+  // FIXME Currently does nothing
+}
+
+- (void) unhideAllApplications: (id)sender
+{
+  // FIXME Currently does nothing
+}
+
 /*
  * Running the main event loop
  */
@@ -1147,6 +1157,46 @@ static NSCell* tileCell = nil;
     }
   _session->runState = returnCode;
 }
+
+- (int) runModalForWindow: (NSWindow *)theWindow
+	relativeToWindow: (NSWindow *)docWindow
+{
+  // FIXME
+  return [self runModalForWindow: theWindow];
+}
+
+- (void) beginSheet: (NSWindow *)sheet
+     modalForWindow: (NSWindow *)docWindow
+      modalDelegate: (id)modalDelegate
+     didEndSelector: (SEL)didEndSelector
+	contextInfo: (void *)contextInfo
+{
+  // FIXME
+  int ret;
+
+  ret = [self runModalForWindow: sheet 
+	      relativeToWindow: docWindow];
+
+  if ([modalDelegate respondsToSelector: didEndSelector])
+    // FIXME Those this work on all platforms???
+    [modalDelegate performSelector: didEndSelector 
+		   withObject: (NSObject*)ret 
+		   withObject: contextInfo];
+}
+
+- (void) endSheet: (NSWindow *)sheet
+{
+  // FIXME
+  [self stopModal];
+}
+
+- (void) endSheet: (NSWindow *)sheet
+       returnCode: (int)returnCode
+{
+  // FIXME
+  [self stopModalWithCode: returnCode];
+}
+
 
 /*
  * Getting, removing, and posting events
@@ -1866,8 +1916,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 			   atIndex: i];
   [item setTarget: aWindow];
   // TODO: When changing for a window with a file, we should also set the image.
-  [menu sizeToFit];
-  [menu update];
 }
 
 - (void) removeWindowsItem: (NSWindow*)aWindow
@@ -1879,24 +1927,18 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     {
       NSArray	*itemArray;
       unsigned	count;
-      BOOL	found = NO;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
       while (count-- > 0)
 	{
-	  id	item = [itemArray objectAtIndex: count];
+	  id item = [itemArray objectAtIndex: count];
 
 	  if ([item target] == aWindow)
 	    {
-	      [menu removeItem: item];
-	      found = YES;
+	      [menu removeItemAtIndex: count];
+	      return;
 	    }
-	}
-      if (found == YES)
-	{
-	  [menu sizeToFit];
-	  [menu update];
 	}
     }
 }
@@ -1929,8 +1971,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 						 action: 0 
 					  keyEquivalent: @""
 					        atIndex: count];
-	  [_main_menu sizeToFit];
-	  [_main_menu update];
 	}
     }
 
@@ -1979,8 +2019,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 			 filename: [t isEqual: f]];
 	}
     }
-  [aMenu sizeToFit];
-  [aMenu update];
 }
 
 - (void) updateWindowsItem: (NSWindow*)aWindow
