@@ -1,3 +1,7 @@
+2003-02-23 00:02  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSParagraphStyle.m: Implement -isEqual: and -hash.
+
 2003-02-23 13:30  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow (-update): Don't redisplay the window.

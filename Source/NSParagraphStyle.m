@@ -351,6 +351,36 @@ static NSParagraphStyle	*defaultStyle = nil;
     }
 }
 
+
+- (BOOL) isEqual: (id)aother
+{
+  NSParagraphStyle *other = aother;
+  if (other == self)
+    return YES;
+  if ([other isKindOfClass: [NSParagraphStyle class]] == NO)
+    return NO;
+
+#define C(x) if (x != other->x) return NO
+  C(_lineSpacing);
+  C(_paragraphSpacing);
+  C(_headIndent);
+  C(_tailIndent);
+  C(_firstLineHeadIndent);
+  C(_minimumLineHeight);
+  C(_maximumLineHeight);
+  C(_alignment);
+  C(_lineBreakMode);
+#undef C
+
+  return [_tabStops isEqualToArray: other->_tabStops];
+}
+
+- (unsigned int) hash
+{
+  return _alignment + _lineBreakMode;
+}
+
+
 @end
 
 
