@@ -29,10 +29,11 @@
 #ifndef _GNUstep_H_NSResponder
 #define _GNUstep_H_NSResponder
 
-#include <Foundation/NSCoder.h>
+#include <Foundation/NSObject.h>
 #include <AppKit/NSInterfaceStyle.h>
 #include <AppKit/AppKitDefines.h>
 
+@class NSCoder;
 @class NSString;
 @class NSEvent;
 @class NSMenu;
