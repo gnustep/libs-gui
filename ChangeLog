@@ -1,3 +1,23 @@
+2001-08-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSMenuItem.h
+	Changed includes. Defined new method
+	[userKeyEquivalentModifierMask]. Removed all the methods
+	definitions from NSMenuItem. Dropped the mi prefix of the
+	ivars. Removed ivar for backend.
+	* Source/NSMenuItem.m
+	Adopted to changes in header. Implemented class for
+	separator. Exchanged role of the methods [init] and
+	[initWithTitle:...]. Simplified [setTitle:] and
+	[setKeyEquivalent:]. Implemented [userKeyEquivalentModifierMask]
+	and [setTitleWithMnemonic]. Reimplemented [copyWithZone:] to use
+	NSCopyObject().	
+	* Source/NSMenu.m
+	Cache the notification center. Simplified all the item handling
+	methods, e.g [insertItem:atIndex:], [insertItemWithTitle:...],
+	[removeItemAtIndex:], [indexOfItemWithSubmenu:].
+	Implemented [setMenuRepresentation:], [isEqual:] and [copyWithZone:].
+	
 Wed Aug 22 10:16:42 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-_autosaveTableColumns]): Use
