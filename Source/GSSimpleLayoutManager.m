@@ -373,7 +373,9 @@ static NSCharacterSet *invSelectionWordGranularitySet;
     {
       NSRect startRect = [self rectForCharacterIndex: aRange.location];
       NSRect endRect = [self rectForCharacterIndex: NSMaxRange (aRange)];
-      float width = [aTextContainer containerSize].width;
+      float width = 0;
+      if (aTextContainer)
+	width = [aTextContainer containerSize].width;
 
       if (startRect.origin.y  == endRect.origin.y)
 	{
@@ -649,13 +651,16 @@ forStartOfGlyphRange: (NSRange)glyphRange
 // rect to the end of line
 - (NSRect) rectForCharacterIndex: (unsigned)index
 {
-  float width =  [[self textContainerForGlyphAtIndex: index
-			effectiveRange: NULL] containerSize].width;
+  float width = 0;
+  id container;
   _GNULineLayoutInfo *currentInfo;
   unsigned start;
   NSRect rect;
   float x;
 
+  container = [self textContainerForGlyphAtIndex: index effectiveRange: NULL];
+  if (container)
+    width = [container containerSize].width;
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakeRect(0, 0, width, 12);
@@ -741,7 +746,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
       _GNULineLayoutInfo *firstInfo
 	= [_lineLayoutInformation objectAtIndex: redrawLineRange.location];
       NSRect displayRect = firstInfo->lineFragmentRect;
-      float width = [aTextContainer containerSize].width;
+      float width = 0;
+      if (aTextContainer)
+	width = [aTextContainer containerSize].width;
 
       if (redrawLineRange.length > 1)
 	  displayRect = NSUnionRect(displayRect,
@@ -871,7 +878,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   
   if (!length)
     {
-      float width = [aTextContainer containerSize].width;
+      float width = 0;
+      if (aTextContainer)
+        width = [aTextContainer containerSize].width;
 
       // FIXME: This should be done via extra line fragment
       // If there is no text add one empty box
@@ -1128,7 +1137,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
      engine, so we do it manually.  */
   if ([newlines characterIsMember: [allText characterAtIndex: (length - 1)]])
     {
-      float width = [aTextContainer containerSize].width;
+      float width = 0;
+      if (aTextContainer)
+	width = [aTextContainer containerSize].width;
 
       [_lineLayoutInformation
 	addObject: [_GNULineLayoutInfo

@@ -1,3 +1,9 @@
+Sat Mar  9 12:22:05 2002  Adam Fedor  <fedor@yogi.doc.com>
+
+	* Source/GSSimpleLayoutManager.m:
+ 	Check that object is not nil before asking for width (assigning
+ 	structs from nil objects crashes Solaris). Several locations.
+
 2002-03-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScrollView.m: Go through adding checks to avoid crashes
