@@ -32,7 +32,7 @@
 #ifndef _GNUstep_H_NSMenuItem
 #define _GNUstep_H_NSMenuItem
 
-#include <Foundation/NSString.h>
+@class NSString;
 
 @class NSMenu;
 @class NSImage;
