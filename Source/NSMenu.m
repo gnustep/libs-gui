@@ -102,9 +102,9 @@ static NSNotificationCenter *nc;
     }
 }
 
+/* Create a non autorelease window for this menu.  */
 - (NSPanel*) _createWindow
 {
-  // Create a non autorelease window for this menu
   NSPanel *win = [[NSPanel alloc] 
 		     initWithContentRect: NSZeroRect
 		     styleMask: NSBorderlessWindowMask
@@ -155,6 +155,8 @@ static NSNotificationCenter *nc;
 
 - (void) dealloc
 {
+  NSDebugLog (@"NSMenu `%@' dealloc", _title);
+
   [nc removeObserver: self];
 
   RELEASE(_notifications);
@@ -195,6 +197,11 @@ static NSNotificationCenter *nc;
   // Transient windows private stuff.
   // _oldAttachedMenu = nil;
 
+  /* Please note that we own all this menu network of objects.  So, 
+     none of these objects should be retaining us.  When we are deallocated,
+     we release all the objects we own, and that should cause deallocation
+     of the whole menu network.  */
+
   // Create the windows that will display the menu.
   _aWindow = [self _createWindow];
   _bWindow = [self _createWindow];
@@ -205,7 +212,8 @@ static NSNotificationCenter *nc;
 
   // Create the title view
   height = [[_view class] menuBarHeight];
-  _titleView = [[NSMenuWindowTitleView alloc] initWithFrame: NSMakeRect(0, 0, 50, height)];
+  _titleView = [[NSMenuWindowTitleView alloc] initWithFrame: 
+						NSMakeRect(0, 0, 50, height)];
   [_titleView setMenu: self];
 
   contentView = [_aWindow contentView];
@@ -553,6 +561,7 @@ static NSNotificationCenter *nc;
 
 - (void) setSupermenu: (NSMenu *)supermenu
 {
+  /* The supermenu retains us (indirectly).  Do not retain it.  */
   _superMenu = supermenu;
 }
 
@@ -929,7 +938,7 @@ static NSNotificationCenter *nc;
       if (sub != nil)
 	{
 	  [sub setSupermenu: nil];
-	  [self setSubmenu: sub forItem: item];
+	  [self setSubmenu: sub  forItem: item];
 	}
     }
   [self setMenuChangedMessagesEnabled: YES];
