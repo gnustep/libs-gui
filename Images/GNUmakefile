@@ -73,6 +73,8 @@ common_TabUnSelectedJunction.tiff \
 common_TabUnSelectedLeft.tiff \
 common_TabUnSelectedRight.tiff \
 common_Tile.tiff \
+common_UpAndDownArrowSmall.tiff \
+common_DownArrowSmall.tiff \
 common_Nibble.tiff \
 common_Dimple.tiff \
 common_ret.tiff \

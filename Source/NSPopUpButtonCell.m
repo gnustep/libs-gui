@@ -82,26 +82,32 @@
   if (cell_image)
     {
       [self _drawImage:cell_image inFrame:cellFrame];
-      return;
+
+      rect.size.width = 5;                         // calc image rect
+      rect.size.height = 11;
+      rect.origin.x = cellFrame.origin.x + cellFrame.size.width - 8;
+      rect.origin.y = cellFrame.origin.y + 3;
     }
+  else
+    {
+      [cell_font set];
 
-  [cell_font set];
+      point.y = rect.origin.y + (rect.size.height/2) - 4;
+      point.x = rect.origin.x + xDist;
+      rect.origin = point;  
 
-  point.y = rect.origin.y + (rect.size.height/2) - 4;
-  point.x = rect.origin.x + xDist;
-  rect.origin = point;  
-
-  [[NSColor blackColor] set];
+      [[NSColor blackColor] set];
   
-  // Draw the title.
+      // Draw the title.
 
-  DPSmoveto(ctxt, rect.origin.x, rect.origin.y);
-  DPSshow(ctxt, [contents cString]);
+      DPSmoveto(ctxt, rect.origin.x, rect.origin.y);
+      DPSshow(ctxt, [contents cString]);
 
-  rect.size.width = 15;                         // calc image rect
-  rect.size.height = cellFrame.size.height;
-  rect.origin.x = cellFrame.origin.x + cellFrame.size.width - (6 + 11);
-  rect.origin.y = cellFrame.origin.y;
+      rect.size.width = 15;                         // calc image rect
+      rect.size.height = cellFrame.size.height;
+      rect.origin.x = cellFrame.origin.x + cellFrame.size.width - (6 + 11);
+      rect.origin.y = cellFrame.origin.y;
+    }
 
   if ([view isKindOfClass:[NSMenuView class]])
     {
@@ -114,6 +120,13 @@
           else
             [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
 	}
+      else if ([[[popb selectedItem] representedObject] isEqual: cell_image])
+        {
+          if ([popb pullsDown] == NO)
+            [super _drawImage:[NSImage imageNamed:@"common_UpAndDownArrowSmall.tiff"] inFrame:rect];
+          else
+            [super _drawImage:[NSImage imageNamed:@"common_DownArrowSmall"] inFrame:rect];
+	}
     }
   else if ([view isKindOfClass:[NSPopUpButton class]])
     {
@@ -124,6 +137,13 @@
             [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
           else
             [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
+	}
+      else if ([[[(NSPopUpButton *)view selectedItem] representedObject] isEqual: cell_image])
+        {
+          if ([(NSPopUpButton *)view pullsDown] == NO)
+            [super _drawImage:[NSImage imageNamed:@"common_UpAndDownArrowSmall"] inFrame:rect];
+          else
+            [super _drawImage:[NSImage imageNamed:@"common_DownArrowSmall"] inFrame:rect];
 	}
     }
 }

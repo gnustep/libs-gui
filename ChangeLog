@@ -10,12 +10,17 @@
 	popupbuttons.app in core/Testing to see.
 	* Source/NSPopUpButtonCell.m: modifications to make NSPopUpButton
 	work. Also implemented representedObject as I think it should be.
+	Also made popupbutton arrow image work for popups that use images.
 	* Source/NSTableColumn.m: fixes to make some things work a little
 	better.
 	* Source/NSTableView.m: fixes to make things behave. Still doesn't
 	compile in, but it is getting there. Modifications will have to
 	be made to NSScrollView before we can use this class.
 	* Source/NSTabView.m: fixed (- contentRect) for the no tabs case.
+
+	* Images/: added common_UpAndDownArrowSmall.tiff and
+	common_DownArrowSmall.tiff for popupbuttons with images in them.
+
 	* Headers/NSMenu.h: mods for changes.
 	* Headers/NSPopUpButton.h: ditto.
 	* Headers/NSPopUpButtonCell.h: ditto, also changed to inherit from
