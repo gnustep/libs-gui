@@ -425,22 +425,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   return NSMakeRange(0, [_textStorage length]);
 }
 
-- (NSTextContainer*) textContainerForGlyphAtIndex: (unsigned)glyphIndex
-                                   effectiveRange: (NSRange*)effectiveRange
-{
-  if (effectiveRange)
-    *effectiveRange = NSMakeRange(0, [_textStorage length]);
-
-  if ([_textContainers count] == 0)
-    {
-      return nil;
-    }
-  else
-    {
-      return  [_textContainers objectAtIndex: 0];
-    }
-}
-
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 	    forGlyphRange: (NSRange)glyphRange
 {
@@ -787,6 +771,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       
       currReloc = [ghostArray objectAtIndex: 0];
       firstChar =  currReloc->glyphRange.location;
+NSLog(@"Reloc %@", NSStringFromRange(currReloc->glyphRange));
       if (firstChar == nextChar)
 	break;
       else if (firstChar > nextChar)
