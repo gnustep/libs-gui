@@ -50,7 +50,7 @@
 
 #include "AppKit/DPSOperators.h"
 
-NSNotificationCenter *nc = nil;
+static NSNotificationCenter *nc = nil;
 
 @implementation NSSplitView
 
