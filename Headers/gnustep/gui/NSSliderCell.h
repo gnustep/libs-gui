@@ -43,9 +43,6 @@
   id _knobCell;
   NSRect _trackRect;
   BOOL _isVertical;
-
-  // Reserved for back-end use
-  void *be_sc_reserved;
 }
 
 /* Asking about the cell's behavior */
