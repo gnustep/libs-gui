@@ -1,3 +1,14 @@
+2004-11-07  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/NSWindow.m (-constrainFrameRect:toScreen:): Modified the method
+	to match the specification and the constraints used when the user
+	moves/resizes the window with the cursor. That makes possible to have
+	resizable windows which extends below the bottom of the screen as long
+	as you can move them up to take back the resize control on the screen.
+	(-setFrame:display:): Modified the method to remove the possibility to
+	have the window title bar positioned over the top of the screen when
+	using -gui window decorations.
+
 2004-11-06 08:34 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Removed nibInstantiate.  This method

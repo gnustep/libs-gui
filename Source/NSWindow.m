@@ -1709,36 +1709,36 @@ many times.
 
   /* Move top edge of the window inside the screen */
   difference = NSMaxY (frameRect) - NSMaxY (screenRect);
-
   if (difference > 0)
     {
       frameRect.origin.y -= difference;
     }
-  else if (NSMinY (frameRect) < NSMinY (screenRect))
-    {
-      float diff1 = NSMinY (frameRect) - NSMinY (screenRect);
-      /* move bottom inside the screen, but keep top inside screen */
-      frameRect.origin.y -= MAX(difference, diff1);
-      difference = NSMaxY (frameRect) - NSMaxY (screenRect);
-    }
-
+  
   /* If the window is resizable, resize it (if needed) so that the
-     bottom edge is on the screen too */
+     bottom edge is on the screen or can be on the screen when the user moves 
+     the window */
+  difference = NSMaxY (screenRect) - NSMaxY (frameRect);
   if (_styleMask & NSResizableWindowMask)
     {
-      difference = screenRect.origin.y - frameRect.origin.y;
-      if (difference > 0)
-	{
-	  frameRect.size.height -= difference;
-	  frameRect.origin.y += difference;
-	}
-      /* Ensure that rewsizing doesn't makewindow smaller than minimum */
-      difference = _minimumSize.height - frameRect.size.height;
-      if (difference > 0)
-	{
-	  frameRect.size.height += difference;
-	  frameRect.origin.y -= difference;
-	}
+      float difference2;
+      
+      difference2 = screenRect.origin.y - frameRect.origin.y;
+      difference2 -= difference; 
+      // Take in account the space between the top of window and the top of the 
+      // screen which can be used to move the bottom of the window on the screen
+      if (difference2 > 0)
+        {
+          frameRect.size.height -= difference2;
+          frameRect.origin.y += difference2;
+        }
+        
+      /* Ensure that resizing doesn't makewindow smaller than minimum */
+      difference2 = _minimumSize.height - frameRect.size.height;
+      if (difference2 > 0)
+        {
+          frameRect.size.height += difference2;
+          frameRect.origin.y -= difference2;
+        }
     }
 
   return frameRect;
@@ -1787,17 +1787,16 @@ many times.
     {
       frameRect.size.height = _minimumSize.height;
     }
-
+      
+  /* Windows need to be constrained when displayed or resized - but only
+     titled windows are constrained */
+  if (_styleMask & NSTitledWindowMask)
+    {
+      frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
+    }
+	
   if (NSEqualSizes(frameRect.size, _frame.size) == NO)
     {
-      /* Windows need to be constrained when displayed or resized - but only
-	 titled windows are constrained */
-      if (_styleMask & NSTitledWindowMask)
-	{
-	  frameRect = [self constrainFrameRect: frameRect 
-			              toScreen: [self screen]];
-	}
-
       if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
 	{
 	  frameRect.size = [_delegate windowWillResize: self
