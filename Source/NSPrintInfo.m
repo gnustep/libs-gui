@@ -376,7 +376,7 @@ NSDictionary *paperSizes = nil;
 {
   NSUserDefaults *def;
   NSString *defPrinter, *str;
-  NSPrinter *printer;
+  NSPrinter *printer = nil;
 
   def = [NSUserDefaults standardUserDefaults];
   printInfoDefaults = [def objectForKey: @"DefaultPrinter"];
