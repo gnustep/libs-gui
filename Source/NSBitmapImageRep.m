@@ -344,8 +344,12 @@
   int i;
 
   if (data)
-    for (i=0; i < _numColors; i++)
-      data[i] = _imagePlanes[i];
+    {
+      for (i = 0; i < _numColors; i++)
+	{
+	  data[i] = _imagePlanes[i];
+	}
+    }
 }
 
 - (BOOL) draw
