@@ -1,3 +1,17 @@
+2001-10-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Headers/gnustep/gui/NSTableView.h:
+	* Source/NSTableView.m: 
+	[-sizeLastColumnToFit], [-sizeToFit], [-setAutoresizesAllColumnToFit],
+	[-autoresizesAllColumnsToFit] implementation
+	sizeToFit now behaves like OS4.2 (it did not)
+	Various changes for speed improvements ([-drawRect], [-updateCell])
+	New internal method ([-superviewFrameChanged:]) called by NSClipView
+	(conforms to OS4.2)
+	[-initWithCoder]: support for previously archived NSTableView
+	* Source/NSClipView.m: [-dealloc] and [-setDocumentView:]
+	Support for NSTableView superviewFrameChanged method
+
 2001-10-28  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSStepper.m: 
