@@ -1,4 +1,5 @@
 config.log
-Makefile
 config.status
 config.cache
+gnustep-gui.spec
+gnustep-gui-debug.spec
