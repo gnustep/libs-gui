@@ -60,6 +60,8 @@ typedef enum _GSTIMQueryResult
 
 - (GSTIMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
 				    selector: (SEL *)selector;
+- (GSTIMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
+				   selectors: (NSArray **)selectors;
 @end
 
 #endif /* _GNUstep_GSTIMKeyBindingTable_h */

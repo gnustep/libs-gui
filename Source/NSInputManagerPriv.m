@@ -28,6 +28,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSValue.h>
 #include <Foundation/NSDebug.h>
 #include "AppKit/NSEvent.h"
 #include "GSTIMKeyBindingTable.h"
@@ -46,7 +47,9 @@
   unsigned int	    modifierFlags   = 0;
   GSTIMKeyStroke    *aChar	    = nil;
   SEL		    sel		    = (SEL)0;
+  NSArray	    *selArray	    = nil;
   GSTIMQueryResult  result;
+  int		    i;
 
   if ([self wantsToInterpretAllKeystrokes])
     {
@@ -81,13 +84,19 @@
   [aChar setCharacter: [noModChars characterAtIndex: 0]];
   [aChar setModifiers: modifierFlags];
 
-  result = [keyBindingTable getSelectorFromCharacter: aChar 
-					    selector: &sel];
+  result = [keyBindingTable getSelectorFromCharacter: aChar
+					   selectors: &selArray];
 
   NSDebugMLLog(@"NSInputManager", @"<-- %@", aChar);
-  if (sel)
+  if (selArray && [selArray count] > 0)
     {
-      NSDebugMLLog(@"NSInputManager", @"--> %@", NSStringFromSelector(sel));
+      NSMutableArray *selStrArray = [NSMutableArray array];
+      for (i = 0; i < [selArray count]; i++)
+	{
+	  sel = (SEL)[[selArray objectAtIndex: i] unsignedLongValue];
+	  [selStrArray addObject: NSStringFromSelector(sel)];
+	}
+      NSDebugMLLog(@"NSInputManager", @"--> %@", selStrArray);
     }
   else
     {
@@ -101,9 +110,13 @@
       break;
 
     case GSTIMFound:
-      if (sel)
+      if (selArray && [selArray count] > 0)
 	{
-	  [self doCommandBySelector: sel];
+	  for (i = 0; i < [selArray count]; i++)
+	    {
+	      sel = (SEL)[[selArray objectAtIndex: i] unsignedLongValue];
+	      [self doCommandBySelector: sel];
+	    }
 	}
       else
 	{

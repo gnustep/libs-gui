@@ -1,3 +1,18 @@
+2004-04-06  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Add a support for "a single key stroke dispatching multiple
+	messages"
+
+	* Source/NSInputManagerPriv.m (-interpretSingleKeyEvent:):  
+	  Replace [GSTIMKeyBindingTable -getSelectorFromCharacter:selector]
+	  with [GSTIMKeyBindingTable -getSelectorFromCharacter:selectors],
+	  modifying some places accordingly.
+	* Source/GSTIMKeyBindingTable.h: Add the interface of the new method
+	  -getSelectorFromCharacter:selectors:.
+	* Source/GSTIMKeyBindingTable.m: Add the implementation of the new
+	  method -getSelectorFromCharacter:selectors:.
+	  
+
 2004-04-05  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Add a support for the tokens used in the traditional GNUstep

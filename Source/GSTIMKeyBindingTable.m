@@ -255,13 +255,39 @@
 
       if ([obj isKindOfClass: [NSString class]])
 	{
-	  NSNumber *sel = [[NSNumber alloc] initWithUnsignedLong:
-				(unsigned long)NSSelectorFromString(obj)];
+	  NSNumber *sel = [NSNumber numberWithUnsignedLong:
+			    (unsigned long)NSSelectorFromString(obj)];
 	  if (sel)
 	    {
-	      [draft setObject: sel
+	      [draft setObject: [NSArray arrayWithObject: sel]
 			forKey: compiledKey];
-	      [sel release], sel = nil;
+	    }
+	}
+      else if ([obj isKindOfClass: [NSArray class]])
+	{
+	  NSEnumerator	    *selStrEnum = [obj objectEnumerator];
+	  NSMutableArray    *selArray = [NSMutableArray array];
+	  id		    selStr;
+	  NSNumber	    *sel;
+
+	  while ((selStr = [selStrEnum nextObject]) != nil)
+	    {
+	      if ([selStr isKindOfClass: [NSString class]] == NO)
+		{
+		  continue;
+		}
+
+	      sel = [NSNumber numberWithUnsignedLong:
+		      (unsigned long)NSSelectorFromString(selStr)];
+	      if (sel)
+		{
+		  [selArray addObject: sel];
+		}
+	    }
+	  if ([selArray count] > 0)
+	    {
+	      [draft setObject: selArray
+			forKey: compiledKey];
 	    }
 	}
       else if ([obj isKindOfClass: [NSDictionary class]])
@@ -275,7 +301,6 @@
 	}
     }
 }
-
 
 - (GSTIMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
 				    selector: (SEL *)selector
@@ -314,6 +339,52 @@
   else if ([obj isKindOfClass: [NSNumber class]])
     {
       *selector = (SEL)[obj unsignedLongValue];
+      branch = nil;
+      result = GSTIMFound;
+    }
+
+  return result;
+}
+
+/* 'selectors' returns an NSArray whose elements are NSNumbers each of
+    which contains a SEL., or it returns nil. */
+- (GSTIMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
+				   selectors: (NSArray **)selectors
+{
+  GSTIMQueryResult  result	= GSTIMNotFound;
+  NSEnumerator	    *keyEnum    = nil;
+  id		    key		= nil;
+  id		    obj		= nil;
+
+  if (branch == nil)
+    {
+      branch = bindings;
+    }
+
+  keyEnum = [branch keyEnumerator];
+  for (obj = nil; (key = [keyEnum nextObject]) != nil; obj = nil)
+    {
+      if ([key isEqual: character])
+	{
+	  obj = [branch objectForKey: key];
+	  break;
+	}
+    }
+  if (obj == nil)
+    {
+      *selectors = nil;
+      branch = nil;
+      result = GSTIMNotFound;
+    }
+  else if ([obj isKindOfClass: [NSDictionary class]])
+    {
+      *selectors = nil;
+      branch = obj;
+      result = GSTIMPending;
+    }
+  else if ([obj isKindOfClass: [NSArray class]])
+    {
+      *selectors = [[obj mutableCopy] autorelease];
       branch = nil;
       result = GSTIMFound;
     }
