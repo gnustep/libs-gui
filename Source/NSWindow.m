@@ -1413,6 +1413,13 @@ static NSNotificationCenter *nc = nil;
 	  display = YES;
 	}
     }
+
+  // Draw content before backend window ordering
+  if (display)
+    [_contentView display];
+  else
+    [_contentView displayIfNeeded];
+    
   [srv orderwindow: place : otherWin : _windowNum];
   if (display)
     [self display];
