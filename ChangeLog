@@ -1,3 +1,8 @@
+Sat Mar 11 06:32:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSStringDrawing.m: Fix error in handling extent of
+	paragraph styles.
+
 Sat Mar 11 05:54:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPanel.m: Completely reformatted and added some fixes for
