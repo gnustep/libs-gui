@@ -75,6 +75,7 @@ NSDataLinkManager.m \
 NSDataLinkPanel.m \
 NSDocument.m \
 NSDocumentController.m \
+NSDrawer.m \
 NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapper.m \
@@ -216,6 +217,7 @@ NSDocument.h \
 NSDocumentController.h \
 NSDocumentFrameworkPrivate.h \
 NSDragging.h \
+NSDrawer.h \
 NSEPSImageRep.h \
 NSEvent.h \
 NSFileWrapper.h \
