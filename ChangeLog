@@ -1,3 +1,9 @@
+2000-05-04 Georg Fleischmann
+
+	* gui/Model/GMAppKit.m ([NSWindow -createObjectForModelUnarchiver:]):
+	use self instead of NSWindow class
+	to allow creation of subclasses of NSWindow
+
 2000-06-03 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAttributedString.m: ([-setAlignment:range:]) retain/release

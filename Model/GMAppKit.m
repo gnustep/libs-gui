@@ -1154,13 +1154,14 @@ void __dummy_GMAppKit_functionForLinking() {}
   unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
   NSRect ctRect = [unarchiver decodeRectWithName:@"contentFrame"];
 
-  NSWindow* win = [[[NSWindow allocWithZone:[unarchiver objectZone]]
-			initWithContentRect:ctRect
-			styleMask:styleMask backing:backingType defer:YES]
-			autorelease];
+  NSWindow	*win = [[self allocWithZone: [unarchiver objectZone]]
+			initWithContentRect: ctRect
+				  styleMask: styleMask
+				    backing: backingType
+				      defer: YES];
   //  printf("content: %g, %g -- frame %g, %g\n", ctRect.size.width, ctRect.size.height, [win frame].size.width, [win frame].size.height);
 
-  return win;
+  return AUTORELEASE(win);
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
