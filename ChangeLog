@@ -606,9 +606,9 @@ Tue Jun 13 17:22:24 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 2000-05-04 Georg Fleischmann
 
-	* gui/Model/GMAppKit.m ([NSWindow -createObjectForModelUnarchiver:]):
-	use self instead of NSWindow class
-	to allow creation of subclasses of NSWindow
+	* gui/Model/GMAppKit.m ([NSWindow
+	-createObjectForModelUnarchiver:]): use self instead of NSWindow
+	class to allow creation of subclasses of NSWindow
 
 2000-06-03 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -689,9 +689,8 @@ Thu Jun  1 21:50:34 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 2000-05-09 Georg Fleischmann
 
-	* gui/Source/NSTabView.m
-	([-initWithFram:]): retain tab_font
-	([-dealloc]): new method
+	* gui/Source/NSTabView.m ([-initWithFram:]): retain tab_font
+	([-dealloc]): new method.
 
 2000-05-07  Fred Kiefer  <FredKiefer@gmx.de>
 
