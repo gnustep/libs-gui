@@ -2154,18 +2154,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     return self;
 }
 
-- (BOOL) mouse: (NSPoint)aPoint inRect: (NSRect)aRect
+- (BOOL) mouse: (NSPoint)aPoint  inRect: (NSRect)aRect
 {
-  if (aPoint.x < aRect.origin.x)
-    return NO;
-  if (aPoint.y < aRect.origin.y)
-    return NO;
-  if (aPoint.x > (aRect.origin.x + aRect.size.width))
-    return NO;
-  if (aPoint.y > (aRect.origin.y + aRect.size.height))
-    return NO;
-
-  return YES;
+  return NSMouseInRect (aPoint, aRect, _rFlags.flipped_view);
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
