@@ -26,7 +26,6 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSAttributedString.h>
-#include <Foundation/NSGAttributedString.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSLayoutManager.h>
 
