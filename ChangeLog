@@ -1,3 +1,8 @@
+2003-04-30  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSScrollView.m: ([scrollWheel:]) enable horizontal scrolling
+	with shift key.
+
 2003-04-28 18:35  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextContainer.h: Documented.

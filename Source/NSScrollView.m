@@ -290,7 +290,7 @@ static float scrollerWidth;
 - (void) scrollWheel: (NSEvent *)theEvent
 {
   NSRect	clipViewBounds;
-  float		deltaY = [theEvent deltaY];
+  float		delta = [theEvent deltaY];
   float 	amount;
   NSPoint	point;
 
@@ -303,25 +303,46 @@ static float scrollerWidth;
       clipViewBounds = [_contentView bounds];
     }
   point = clipViewBounds.origin;
-  if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+
+
+  if (_hasHorizScroller == YES
+    && ([theEvent modifierFlags] & NSShiftKeyMask) == NSShiftKeyMask)
     {
-      amount = - (clipViewBounds.size.height - _vPageScroll) * deltaY;
+      if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+	{
+	  amount = - (clipViewBounds.size.width - _hPageScroll) * delta;
+	}
+      else
+	{
+	  amount = - _hLineScroll * delta;
+	}
+      NSDebugLLog (@"NSScrollView", 
+	@"increment/decrement: amount = %f, horizontal", amount);
+
+      point.x = clipViewBounds.origin.x + amount;
     }
   else
     {
-      amount = - _vLineScroll * deltaY;
-    }
+      if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+	{
+	  amount = - (clipViewBounds.size.height - _vPageScroll) * delta;
+	}
+      else
+	{
+	  amount = - _vLineScroll * delta;
+	}
 
-  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
-    {
-      /* If view is flipped reverse the scroll direction */
-      amount = -amount;
-    }
-  NSDebugLLog (@"NSScrollView", 
-	       @"increment/decrement: amount = %f, flipped = %d",
-	       amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+      if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+	{
+	  /* If view is flipped reverse the scroll direction */
+	  amount = -amount;
+	}
+      NSDebugLLog (@"NSScrollView", 
+	@"increment/decrement: amount = %f, flipped = %d",
+	amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 
-  point.y = clipViewBounds.origin.y + amount;
+      point.y = clipViewBounds.origin.y + amount;
+    }
 
   /* scrollToPoint: will call reflectScrolledClipView:, which will
    * update rules, headers, and scrollers.  */
