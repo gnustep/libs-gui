@@ -270,6 +270,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
   NSMutableArray	*lineLayoutInformation;
   NSText		*_textHolder;
   NSTextStorage	*_textStorage;
+  NSRect _rects[4];
 }
 
 - (id) initForText: (NSText*) aTextHolder;
@@ -291,6 +292,10 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (NSRect) _textBounds;
 
 - (unsigned) characterIndexForPoint: (NSPoint)point;
+- (NSRect*) rectArrayForCharacterRange:(NSRange)charRange 
+	  withinSelectedCharacterRange:(NSRange)selCharRange
+		       inTextContainer:(NSTextContainer *)aTextContainer 
+			     rectCount:(unsigned *)rectCount;
 - (NSRect) rectForCharacterIndex: (unsigned) index;
 - (NSRect) rectForCharacterRange: (NSRange) aRange;
 - (NSRange) characterRangeForBoundingRect: (NSRect)bounds;
@@ -370,13 +375,28 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (NSRect) frame
 {
   NSRect aRect = [_textHolder frame];
-
+/*
   if ([_textHolder isHorizontallyResizable])
     aRect.size.width = HUGE;
   if ([_textHolder isVerticallyResizable])
     aRect.size.height = HUGE;
-
+*/
   return aRect;
+}
+
+- (float) width
+{
+  return [_textHolder frame].size.width;
+}
+
+- (float) maxWidth
+{
+  NSRect aRect = [_textHolder frame];
+
+  if ([_textHolder isHorizontallyResizable])
+    return HUGE;
+  else
+    return aRect.size.width;
 }
 
 - (NSRange) characterRangeForLineLayoutRange: (NSRange)aRange;
@@ -571,7 +591,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 // rect to the end of line
 - (NSRect) rectForCharacterIndex: (unsigned)index
 {
-  float maxWidth = [self frame].size.width;
+  float maxWidth = [self width];
   _GNULineLayoutInfo *currentInfo;
   unsigned start;
   NSRect rect;
@@ -579,21 +599,20 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
   if (![_textStorage length])
     {
-      return NSMakeRect (0, 0, maxWidth,
-			 [self _sizeOfRange: NSMakeRange(0,1)].height);
+      return NSMakeRect(0, 0, maxWidth, 12);
     }
 
   if (index >= NSMaxRange([[lineLayoutInformation lastObject] lineRange]))
     {
       NSRect rect = [[lineLayoutInformation lastObject] lineRect];
-      if (NSMaxX (rect) >= maxWidth)
+      if (NSMaxX(rect) >= maxWidth)
 	{
-	  return NSMakeRect (0, NSMaxY(rect),
-			     maxWidth, rect.size.height);
+	  return NSMakeRect(0, NSMaxY(rect),
+			    maxWidth, rect.size.height);
 	}
-      return NSMakeRect (NSMaxX (rect), rect.origin.y,
-			 maxWidth - NSMaxX (rect),
-			 rect.size.height);
+      return NSMakeRect(NSMaxX (rect), rect.origin.y,
+			maxWidth - NSMaxX (rect),
+			rect.size.height);
     }
 
 
@@ -611,15 +630,14 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 - (NSRect) rectForCharacterRange: (NSRange)aRange
 {
-  float maxWidth = [self frame].size.width;
+  float maxWidth = [self width];
   _GNULineLayoutInfo *currentInfo;
   unsigned i1, i2;
   NSRect rect1, rect2;
 
   if (![_textStorage length])
     {
-      return NSMakeRect (0, 0, maxWidth,
-			 [self _sizeOfRange: NSMakeRange(0,1)].height);
+      return NSMakeRect(0, 0, maxWidth, 12);
     }
 
   i1 = [self lineLayoutIndexForCharacterIndex: aRange.location];
@@ -641,10 +659,70 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
   return NSUnionRect(rect1, rect2);
 }
 
+- (NSRect*) rectArrayForCharacterRange:(NSRange)aRange 
+	  withinSelectedCharacterRange:(NSRange)selCharRange
+		       inTextContainer:(NSTextContainer *)aTextContainer 
+			     rectCount:(unsigned *)rectCount;
+{
+  //FIXME: This currently ignores most of its arguments
+
+  if (!rectCount)
+      return _rects;
+
+  if (aRange.length)
+    {
+      NSRect startRect = [self rectForCharacterIndex: aRange.location];
+      NSRect endRect = [self rectForCharacterIndex: NSMaxRange (aRange)];
+      float maxWidth = [self width];
+
+      if (startRect.origin.y  == endRect.origin.y)
+	{
+	  // single line selection
+	  _rects[0] = NSMakeRect (startRect.origin.x, startRect.origin.y,
+				  endRect.origin.x - startRect.origin.x,
+				  startRect.size.height);
+	  *rectCount = 1;
+	}
+      else if (startRect.origin.y == endRect.origin.y - endRect.size.height)
+	{
+	  // two line selection
+
+	  // first line
+	  _rects[0] = NSMakeRect (startRect.origin.x, startRect.origin.y,
+				  maxWidth - startRect.origin.x,
+				  startRect.size.height);
+	  // second line
+	  _rects[1] = NSMakeRect (0, endRect.origin.y, endRect.origin.x,
+				  endRect.size.height);
+	  *rectCount = 2;
+	}
+      else
+	{
+	  //   3 Rects: multiline selection
+
+	  // first line
+	  _rects[0] = NSMakeRect (startRect.origin.x, startRect.origin.y,
+				  maxWidth - startRect.origin.x,
+				  startRect.size.height);
+	  // intermediate lines
+	  _rects[1] = NSMakeRect (0, NSMaxY(startRect),
+				  maxWidth,
+				  endRect.origin.y - NSMaxY (startRect));
+	  // last line
+	  _rects[2] = NSMakeRect (0, endRect.origin.y, endRect.origin.x,
+				  endRect.size.height);
+	  *rectCount = 3;
+	}
+    }
+  else 
+    *rectCount = 0;
+
+  return _rects;
+}
+
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
 {
-  NSRect myFrame = [self frame];
-  float maxWidth = myFrame.size.width;
+  float maxWidth = [self width];
 
   if ([lineLayoutInformation count]
       && redrawLineRange.location < [lineLayoutInformation count]
@@ -652,23 +730,19 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
     {
       _GNULineLayoutInfo *firstInfo
 	= [lineLayoutInformation objectAtIndex: redrawLineRange.location];
-      NSRect displayRect, firstRect = [firstInfo lineRect];
+      NSRect displayRect = [firstInfo lineRect];
 
       if ([firstInfo type]  == LineLayoutInfoType_Paragraph
-	  && firstRect.origin.x >0 && redrawLineRange.location)
+	  && displayRect.origin.x >0 && redrawLineRange.location)
       {
-	redrawLineRange.location--;
-	redrawLineRange.length++;
+	displayRect = [[lineLayoutInformation objectAtIndex: redrawLineRange.location] lineRect];
       }
 
-      displayRect
-	= NSUnionRect ([[lineLayoutInformation
-			  objectAtIndex: redrawLineRange.location]
-			 lineRect],
-		       [[lineLayoutInformation
-			  objectAtIndex:
-			    MAX (0, (int)NSMaxRange (redrawLineRange) - 1)]
-			 lineRect]);
+      if (redrawLineRange.length > 1)
+	  displayRect = NSUnionRect(displayRect,
+				    [[lineLayoutInformation
+					 objectAtIndex: (int)NSMaxRange(redrawLineRange) - 1]
+					lineRect]);
 
       displayRect.size.width = maxWidth - displayRect.origin.x;
       [_textHolder setNeedsDisplayInRect: displayRect];
@@ -677,6 +751,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
   // clean up the remaining area below the text
     {
+      NSRect myFrame = [self frame];
       float lowestY = 0;
 
       if ([lineLayoutInformation count])
@@ -686,10 +761,10 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 	  || (lowestY < NSMaxY(myFrame)))
 	{
 	  [_textHolder setNeedsDisplayInRect: NSMakeRect(0, lowestY,
-						  myFrame.size.width,
-						  NSMaxY (myFrame) - lowestY)];
+							 maxWidth, NSMaxY(myFrame) - lowestY)];
 	}
     }
+
 }
 
 - (void)textStorage:(NSTextStorage *)aTextStorage
@@ -822,7 +897,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   //unsigned newMax = oldMax + insertionDelta;
   NSPoint drawingPoint = NSZeroPoint;
   NSScanner *pScanner;
-  float	width = [self frame].size.width;
+  float	width = [self maxWidth];
   unsigned startingIndex = 0;
   unsigned currentLineIndex;
   // for optimization detection
@@ -901,9 +976,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	[lineLayoutInformation
 	    addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
-			   rect: NSMakeRect (0, 0, 0, 0)
+			   rect: NSMakeRect (0, 0, 0, 12)
 			   type: LineLayoutInfoType_Text]];
-	return NSMakeRange(0,0);
+	return NSMakeRange(0,1);
     }
       
 
@@ -1647,18 +1722,20 @@ static NSNotificationCenter *nc;
   if (overlap.length)
     {
       // Try to optimize for overlapping ranges
-      [self setNeedsDisplayInRect: 
-		[self rectForCharacterRange: 
-			  MakeRangeFromAbs(MIN(range.location,
-					       oldRange.location),
-					   MAX(range.location,
-					       oldRange.location))]];
-      [self setNeedsDisplayInRect: 
-		[self rectForCharacterRange: 
-			  MakeRangeFromAbs(MIN(NSMaxRange(range),
-					       NSMaxRange(oldRange)),
-					   MAX(NSMaxRange(range),
-					       NSMaxRange (oldRange)))]];
+      if (range.location != oldRange.location)
+	  [self setNeedsDisplayInRect: 
+		    [self rectForCharacterRange: 
+			      MakeRangeFromAbs(MIN(range.location,
+						   oldRange.location),
+					       MAX(range.location,
+						   oldRange.location))]];
+      if (NSMaxRange(range) != NSMaxRange(oldRange))
+	  [self setNeedsDisplayInRect: 
+		    [self rectForCharacterRange: 
+			      MakeRangeFromAbs(MIN(NSMaxRange(range),
+						   NSMaxRange(oldRange)),
+					       MAX(NSMaxRange(range),
+						   NSMaxRange (oldRange)))]];
     }
   else
     {
@@ -2428,8 +2505,8 @@ static NSNotificationCenter *nc;
   cursorIndex = _selected_range.location;
   cursorRect = [self rectForCharacterIndex: cursorIndex];
   cursorIndex = [self characterIndexForPoint:
-			NSMakePoint (_currentCursor.x + 0.001,
-				     NSMaxY (cursorRect) + 0.001)];
+			  NSMakePoint(_currentCursor.x + 0.001,
+				      NSMaxY (cursorRect) + 0.001)];
 
   newRange.location = cursorIndex;
   newRange.length = 0;
@@ -3494,48 +3571,15 @@ other than copy/paste or dragging. */
 
 - (void) drawSelectionAsRangeNoCaret: (NSRange) aRange
 {
-  if (aRange.length)
+  int i;
+  unsigned count;
+  NSRect *rects = [_layoutManager rectArrayForCharacterRange: aRange 
+				  withinSelectedCharacterRange: aRange
+				  inTextContainer: nil
+				  rectCount: &count];
+  for (i = 0; i < count; i++)
     {
-      NSRect startRect = [self rectForCharacterIndex: aRange.location];
-      NSRect endRect = [self rectForCharacterIndex: NSMaxRange (aRange)];
-      float maxWidth = _frame.size.width;
-
-      if (startRect.origin.y  == endRect.origin.y)
-	{
-	  // single line selection
-	  NSHighlightRect (NSMakeRect (startRect.origin.x, startRect.origin.y,
-				       endRect.origin.x - startRect.origin.x,
-				       startRect.size.height));
-	}
-      else if (startRect.origin.y == endRect.origin.y - endRect.size.height)
-	{
-	  // two line selection
-
-	  // first line
-	  NSHighlightRect (NSMakeRect (startRect.origin.x, startRect.origin.y,
-				       maxWidth - startRect.origin.x,
-				       startRect.size.height));
-	  // second line
-	  NSHighlightRect (NSMakeRect (0, endRect.origin.y, endRect.origin.x,
-				       endRect.size.height));
-
-	}
-      else
-	{
-	  //   3 Rects: multiline selection
-
-	  // first line
-	  NSHighlightRect (NSMakeRect (startRect.origin.x, startRect.origin.y,
-				       maxWidth - startRect.origin.x,
-				       startRect.size.height));
-	  // intermediate lines
-	  NSHighlightRect (NSMakeRect (0, NSMaxY(startRect),
-				       maxWidth,
-				       endRect.origin.y - NSMaxY (startRect)));
-	  // last line
-	  NSHighlightRect (NSMakeRect (0, endRect.origin.y, endRect.origin.x,
-				       endRect.size.height));
-	}
+	NSHighlightRect(rects[i]);
     }
 }
 
