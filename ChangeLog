@@ -1,4 +1,4 @@
-Tue Jul  6 19:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Tue Jul  6 21:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: Added new method to perform
 	window ordering.
@@ -6,6 +6,8 @@ Tue Jul  6 19:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	(_orderWindow:relativeTo:forWindow:])
 	* Source/NSWindow.m: Use new method to implement all window
 	ordering methods.
+	* Model/GMAppKit.m: Remove calls to ([NSWindow -setLevel:]) as these
+	have the unwaanted side-effect of ordering the window in to display.
 
 Tue Jul  6 16:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
