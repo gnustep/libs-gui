@@ -339,8 +339,6 @@ static NSInputManager *currentInputManager = nil;
 - (NSInputManager *) initWithName: (NSString *)inputServerName
 			     host: (NSString *)hostName
 {
-  NSString *defaultKeyBindings;
-  NSArray *customKeyBindings;
   NSUserDefaults *defaults;
   CREATE_AUTORELEASE_POOL (pool);
 
@@ -391,8 +389,6 @@ static NSInputManager *currentInputManager = nil;
   }
   
 
-  /* FIXME all the following is gonna change.  */
-
   /* Normally, when we start up, we load all the keybindings we find
      in the following files, in this order:
      
@@ -408,45 +404,47 @@ static NSInputManager *currentInputManager = nil;
      with your own.  These keybindings are normally used by all your
      applications (this is why they are in 'DefaultKeyBindings').
 
-     In addition, you can specify a list of additional key bindings
-     files to be loaded by setting the GSCustomKeyBindings default to
-     an array of file names.  We will attempt to load all those
-     keybindings in a way similar to what we do with the
-     DefaultKeyBindings.  We load them after the default ones, in the
-     order you specify.  This allows you to have application-specific
-     keybindings, where you put different keybindings in different
-     files, and run different applications with different
-     GSCustomKeyBindings, telling them to use different keybindings
-     files.
+     You can change this behaviour, by setting the GSKeyBindingsFiles
+     default to something else.  The GSKeyBindingsFiles default
+     contains an array of files which is loaded, in that order.  Each
+     file is searched first in GNUSTEP_SYSTEM_ROOT, then
+     GNUSTEP_LOCAL_ROOT, the GNUSTEP_NETWORK_ROOT, then
+     GNUSTEP_USER_ROOT.
 
-     Last, in special cases you might want to have the
-     DefaultKeybindings totally ignored.  In this case, you set the
-     GSDefaultKeyBindings variable to a different filename (different
-     from 'DefaultKeybindings').  We attempt to load all keybindings
-     stored in the files with that name where we normally would load
-     DefaultKeybindings.  */
+     Examples - 
+
+       GSKeyBindingsFiles = (DefaultKeyBindings, NicolaKeyBindings);
+
+     will first load DefaultKeyBindings.dict (as by default), then
+     NicolaKeyBindings.dict.
+
+       GSKeyBindingsFiles = (NicolaKeyBindings);
+
+     will not load DefaultKeyBindings.dict but only
+     NicolaKeyBindings.dict.
+
+     The default of course is 
+
+       GSKeyBindingsFiles = (DefaultKeyBindings);
+
+  */
 
   /* First, load the DefaultKeyBindings.  */
-  defaultKeyBindings = [defaults stringForKey: @"GSDefaultKeyBindings"];
-  
-  if (defaultKeyBindings == nil)
+  {
+    NSArray *keyBindingsFiles = [defaults arrayForKey: @"GSKeyBindingsFiles"];
+    
+    if (keyBindingsFiles == nil)
+      {
+	keyBindingsFiles = [NSArray arrayWithObject: @"DefaultKeyBindings"];
+      }
+    
     {
-      defaultKeyBindings = @"DefaultKeyBindings";
-    }
-  
-  [self loadBindingsWithName: defaultKeyBindings];
-  
-  /* Then, if any, the CustomKeyBindings, in the specified order.  */
-  customKeyBindings = [defaults arrayForKey: @"GSCustomKeyBindings"];
-  
-  if (customKeyBindings != nil)
-    {
-      int i, count = [customKeyBindings count];
       Class string = [NSString class];
-
-      for (i = 0; i < count; i++)
+      int i;
+    
+      for (i = 0; i < [keyBindingsFiles count]; i++)
 	{
-	  NSString *filename = [customKeyBindings objectAtIndex: i];
+	  NSString *filename = [keyBindingsFiles objectAtIndex: i];
 	  
 	  if ([filename isKindOfClass: string])
 	    {
@@ -454,6 +452,17 @@ static NSInputManager *currentInputManager = nil;
 	    }
 	}
     }
+  }
+
+  /* Then, load any manually specified keybinding.  */
+  {
+     NSDictionary *keyBindings = [defaults dictionaryForKey: @"GSKeyBindings"];
+
+     if ([keyBindings isKindOfClass: [NSDictionary class]])
+       {
+	 [_rootBindingTable loadBindingsFromDictionary: keyBindings];
+       }
+  }
 
   RELEASE (pool);
   
