@@ -1,3 +1,28 @@
+2002-09-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSColorPanel.h
+	* Source/NSColorPanel.m
+	Moved the method [NSApplication orderFrontColorPanel:] to here.
+	* Headers/gnustep/gui/NSHelpPanel.h
+	* Source/NSHelpPanel.m
+	Moved the method [NSApplication orderFrontHelpPanel:] to here.	
+	* Headers/gnustep/gui/NSDataLinkPanel.h
+	* Source/NSDataLinkPanel.m
+	Moved the method [NSApplication orderFrontDataLinkPanel:] to here.
+	* Headers/gnustep/gui/NSPageLayout.h
+	* Source/NSPageLayout.m
+	Moved the method [NSApplication runPageLayout:] to here.
+	* Headers/gnustep/gui/NSApplication.h
+	Removed methods that belong to other files. Added types and method
+	definitions for MacOSX.
+	* Source/NSApplication.m
+	Implemented [detachDrawingThread:toTarget:withObject:]. 
+	[sendAction:to:from:] now uses [targetForAction:to:from:]. Removed
+	moved methods. [orderFrontStandardAboutPanel:] now calles
+	[orderFrontStandardInfoPanelWithOptions:] so that subclasses only
+	have to overwritte this. Split up parts of [terminate:] into
+	[replyToApplicationShouldTerminate:]. 
+	
 Thu Sep  5 11:39:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m
