@@ -136,7 +136,7 @@ Class converter_bundles(NSString *format, BOOL producer)
 			    @selector(classForFormat:producer:)])
 		{
 		  converter_class = (Class)[bclass classForFormat: format
-					                 producer: producer];
+						   producer: producer];
 		}
 	      else
 		{
@@ -585,7 +585,8 @@ documentAttributes: (NSDictionary **)dict
 
   new = [converter_class(@"RTFD", NO) 
 			parseFile: wrapper
-			documentAttributes: dict];
+			documentAttributes: dict
+			class: [self class]];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -604,7 +605,8 @@ documentAttributes: (NSDictionary **)dict
 
   new = [converter_class(@"RTFD", NO)
 			parseData: data
-			documentAttributes: dict];
+			documentAttributes: dict
+			class: [self class]];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -623,7 +625,8 @@ documentAttributes: (NSDictionary **)dict
 
   new = [converter_class(@"RTF", NO) 
 			parseData: data
-			documentAttributes: dict];
+			documentAttributes: dict
+			class: [self class]];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -655,15 +658,17 @@ documentAttributes: (NSDictionary **)dict
        documentAttributes: (NSDictionary *)dict
 {
   return [converter_class(@"RTF", YES) 
-			 produceDataFrom: [self attributedSubstringFromRange: range]
+			 produceDataFrom: 
+			   [self attributedSubstringFromRange: range]
 			 documentAttributes: dict];
 }
 
 - (NSData *) RTFDFromRange: (NSRange)range
-       documentAttributes: (NSDictionary *)dict
+	documentAttributes: (NSDictionary *)dict
 {
   return [converter_class(@"RTFD", YES)  
-			 produceDataFrom: [self attributedSubstringFromRange: range]
+			 produceDataFrom: 
+			   [self attributedSubstringFromRange: range]
 			 documentAttributes: dict];
 }
 
@@ -671,7 +676,8 @@ documentAttributes: (NSDictionary **)dict
 			  documentAttributes: (NSDictionary *)dict
 {
   return [converter_class(@"RTFD", YES)
-			 produceFileFrom: [self attributedSubstringFromRange: range]
+			 produceFileFrom: 
+			   [self attributedSubstringFromRange: range]
 			 documentAttributes: dict];
 }
 
