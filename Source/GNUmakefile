@@ -108,7 +108,6 @@ NSWindow.m \
 NSWorkspace.m \
 GSTrackingRect.m \
 GSServicesManager.m \
-PSMatrix.m \
 tiff.m \
 externs.m
 
@@ -204,7 +203,6 @@ AppKit/NSView.h \
 AppKit/NSWindow.h \
 AppKit/NSWorkspace.h \
 AppKit/GSTrackingRect.h \
-AppKit/PSMatrix.h \
 AppKit/nsimage-tiff.h \
 AppKit/GSMethodTable.h \
 AppKit/DPSOperators.h \
