@@ -45,6 +45,43 @@ points inside line frag rects.
 "Nominally spaced", to this layout manager, is described at:
 http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 
+Lines are laid out as one unit. Ie. we never do layout for only a part of a
+line, or invalidate only some line frags in a line.
+
+Also, we assume that the limit of context on layout is the previous line.
+Thus, when we invalidate layout, we invalidate all lines with invalidated
+characters, and the line before the first invalidated line, and
+soft-invalidate everything after the last invalidated line.
+
+Consider:
+
+|...            |
+|foo bar zot    |
+|abcdefghij     |
+|...            |
+
+If we insert a space between the 'a' and the 'b' in "abcd...", the correct
+result is:
+
+|...            |
+|foo bar zot a  |
+|bcdefghij      |
+|...            |
+
+and to get this, we must invalidate the previous line.
+
+TODO: This is an important assumption, and the typesetter needs to make
+sure that it holds. I'm not entirely convinced that it holds for standard
+latin-text layout, but I haven't been able to come up with any
+counter-examples. If it turns out not to hold, we'll have to fix
+invalidation here (invalidate the entire paragraph? not good for
+performance, but correctness is more important), or change the typesetter
+behavior.
+
+Another assumption is that each text container will contain at least one
+line frag (unless there are no more glyphs to typeset).
+
+
 
 TODO: We often need to deal with the case where a glyph can't be typeset
 (because there's nowhere to typeset it, eg. all text containers are full).
@@ -1673,17 +1710,152 @@ TODO: not really clear what these should do
 }
 
 
--(void) textStorage: (NSTextStorage *)aTextStorage
-	     edited: (unsigned int)mask
-	      range: (NSRange)range
-     changeInLength: (int)lengthChange
-   invalidatedRange: (NSRange)invalidatedRange
+-(void) _didInvalidateLayout
 {
-  [super textStorage: aTextStorage
-	edited: mask
-	range: range
+  unsigned int g;
+  int i;
+
+  /* Invalidate from the first glyph not laid out (which will
+  generally be the first glyph to have been invalidated). */
+  g = layout_glyph;
+
+  [super _didInvalidateLayout];
+
+  for (i = 0; i < num_textcontainers; i++)
+    {
+      if (textcontainers[i].complete &&
+	  g < textcontainers[i].pos + textcontainers[i].length)
+        continue;
+
+      [[textcontainers[i].textContainer textView] _layoutManagerDidInvalidateLayout];
+    }
+}
+
+
+/*
+We completely override this method and use the extra information we have
+about layout to do smarter invalidation. The comments at the beginning of
+this file describes this.
+*/
+- (void) textStorage: (NSTextStorage *)aTextStorage
+	      edited: (unsigned int)mask
+	       range: (NSRange)range
+      changeInLength: (int)lengthChange
+    invalidatedRange: (NSRange)invalidatedRange
+{
+  NSRange r;
+
+  if (!(mask & NSTextStorageEditedCharacters))
+    lengthChange = 0;
+
+  [self invalidateGlyphsForCharacterRange: invalidatedRange
 	changeInLength: lengthChange
-	invalidatedRange: invalidatedRange];
+	actualCharacterRange: &r];
+
+  if (r.location <= layout_char)
+    {
+      unsigned int glyph_index;
+      textcontainer_t *tc;
+      linefrag_t *lf;
+      int i, j;
+      int new_num;
+      NSRange char_range;
+
+      if (r.location == [_textStorage length])
+	{
+	  /*
+	  Since layout was built beyond r.location, glyphs must have been
+	  too, so invalidation only removed trailing glyphs and we still
+	  have glyphs built up to the end. Thus, -numberOfGlyphs is cheap
+	  to call.
+	  */
+	  glyph_index = [self numberOfGlyphs];
+	  char_range.location = [_textStorage length];
+	}
+      else
+	{
+	  /*
+	  Will cause generation of glyphs, but I consider that acceptable
+	  for now. Soft-invalidation will cause even more glyph generation,
+	  anyway.
+	  */
+	  glyph_index =
+	    [self glyphRangeForCharacterRange: NSMakeRange(r.location,1)
+			 actualCharacterRange: &char_range].location;
+	}
+
+	/* glyph_index is the first index we should invalidate for. */
+	for (j = 0, tc = textcontainers; j < num_textcontainers; j++, tc++)
+	  if (tc->pos + tc->length >= glyph_index)
+	    break;
+
+	LINEFRAG_FOR_GLYPH(glyph_index);
+
+	/*
+	We invalidate the entire line containing lf, and the entire
+	previous line. Thus, we scan backwards to find the first line frag
+	on the previous line.
+	*/
+	while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
+	  lf--, i--;
+	/* Now we have the first line frag on this line. */
+	if (i > 0)
+	  {
+	    lf--, i--;
+	  }
+	else
+	  {
+	    /*
+	    The previous line isn't in this text container, so we move
+	    to the previous text container.
+	    */
+	    if (j > 0)
+	      {
+		j--;
+		tc--;
+		i = tc->num_linefrags - 1;
+		lf = tc->linefrags + i;
+	      }
+	  }
+	/* Last line frag on previous line. */
+	while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
+	  lf--, i--;
+	/* First line frag on previous line. */
+
+	new_num = i;
+	for (; i < tc->num_linefrags; i++)
+	  {
+	    if (lf->points)
+	      {
+		free(lf->points);
+		lf->points = NULL;
+	      }
+	    if (lf->attachments)
+	      {
+		free(lf->attachments);
+		lf->attachments = NULL;
+	      }
+	  }
+	tc->num_linefrags = new_num;
+	tc->was_invalidated = YES;
+	tc->complete = NO;
+	if (new_num)
+	  {
+	    tc->length = tc->linefrags[new_num-1].pos + tc->linefrags[new_num-1].length - tc->pos;
+	  }
+	else
+	  {
+	    tc->pos = tc->length = 0;
+	    tc->started = NO;
+	  }
+
+	/* This works even if j+1>=num_textcontainers, and it sets
+	layout_char and layout_glyph for us. */
+	[self _invalidateLayoutFromContainer: j + 1];
+    }
+
+  [self _didInvalidateLayout];
+
 
   if ((mask & NSTextStorageEditedCharacters) && lengthChange)
     {
@@ -1715,28 +1887,6 @@ TODO: not really clear what these should do
 	      _selected_range.length += lengthChange;
 	    }
 	}
-    }
-}
-
-
--(void) _didInvalidateLayout
-{
-  unsigned int g;
-  int i;
-
-  /* Invalidate from the first glyph not laid out (which will
-  generally be the first glyph to have been invalidated). */
-  g = layout_glyph;
-
-  [super _didInvalidateLayout];
-
-  for (i = 0; i < num_textcontainers; i++)
-    {
-      if (textcontainers[i].complete &&
-	  g < textcontainers[i].pos + textcontainers[i].length)
-        continue;
-
-      [[textcontainers[i].textContainer textView] _layoutManagerDidInvalidateLayout];
     }
 }
 
