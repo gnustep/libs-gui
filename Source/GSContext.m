@@ -46,9 +46,8 @@ NSZone *_globalGSZone = NULL;					// The memory zone where all
 //
 //  Class variables
 //
-static Class contextConcreteClass;				// actual class of GSContext's		
+static Class _concreteClass;					// actual class of GSContext		
 static NSMutableArray *contextList;				// list of drawing destinations
-static GSContext *_currentGSContext = nil;		// the current context
 
 
 
@@ -59,7 +58,7 @@ static GSContext *_currentGSContext = nil;		// the current context
 //
 + (void)initialize
 {
-	if (self == (contextConcreteClass = [GSContext class]))
+	if (self == (_concreteClass = [GSContext class]))
 		{
 		contextList = [[NSMutableArray arrayWithCapacity:2] retain];
 		NSDebugLog(@"Initialize GSContext class\n");
@@ -67,37 +66,50 @@ static GSContext *_currentGSContext = nil;		// the current context
 		}
 }
 
-+ (void) setConcreteClass: (Class)c			{ contextConcreteClass = c; }
-+ (Class) concreteClass						{ return contextConcreteClass; }
++ (void) setConcreteClass: (Class)c		{ _concreteClass = c; }
++ (Class) concreteClass					{ return _concreteClass; }
 
 + allocWithZone: (NSZone*)z
 {
-	return NSAllocateObject(contextConcreteClass, 0, z);
+	return NSAllocateObject(_concreteClass, 0, z);
 }
 
 + contextWithInfo: (NSDictionary *)info;
 {
 GSContext *context;
 
-	NSAssert(contextConcreteClass, @"Error: No default GSContext is set\n");
-	context = [[contextConcreteClass allocWithZone: _globalGSZone] 
-							 		 initWithContextInfo: info];
+	NSAssert(_concreteClass, @"Error: No concrete GSContext is set\n");
+	context = [[_concreteClass allocWithZone: _globalGSZone] 
+							   initWithContextInfo: info];
 	[context autorelease];
 
 	return context;
 }
 
-+ (GSContext *) currentContext			{ return _currentGSContext; }
++ (GSContext *) currentContext			{ return nil;}
 
 + (void) setCurrentContext: (GSContext *)context
 {
-	_currentGSContext = context;
+	[self subclassResponsibility:_cmd];
 }
 
-+ (void) destroyContext:(GSContext *) context		// remove context from the
-{													// list so that it gets  
-	[contextList removeObject: context];			// deallocated with the  
-}													// next autorelease pool
++ (void) destroyContext:(GSContext *) context		
+{													// if concrete class is not 
+	if(_concreteClass != [GSContext class])			// a GSContext invoke it's 
+		[_concreteClass destroyContext: context];	// equivalent method first
+	else
+		[self _destroyContext: context];			
+}													
+													// private method which
++ (void) _destroyContext:(GSContext *) context		// removes context from the
+{													// list so that it gets
+int top;											// deallocated with the
+													// next autorelease pool
+	[contextList removeObject: context];			 
+													// if not last context set 
+	if((top = [contextList count]) > 0)				// next in list as current
+		[_concreteClass setCurrentContext:[contextList objectAtIndex:top - 1]];
+}													
 
 //
 // Instance methods
@@ -110,8 +122,9 @@ GSContext *context;
 - initWithContextInfo: (NSDictionary *)info
 {													// designated initializer 	
 	[super init];									// for GSContext class
+
 	[contextList addObject: self];
-	[GSContext setCurrentContext: self];
+	[_concreteClass setCurrentContext: self];
 
 	if(info)
 		context_info = [info retain];
@@ -131,7 +144,7 @@ GSContext *context;
 
 - (void) destroy									// remove self from context
 {													// list so that self gets  
-	[GSContext destroyContext: self];				// deallocated with the  
+	[_concreteClass destroyContext: self];			// deallocated with the  
 }													// next autorelease pool
    
 - (void) dealloc

@@ -84,9 +84,6 @@ typedef enum _NSWindowOrderingMode {
 {
 	NSDictionary  *context_info;
 	NSMutableData *context_data;
-
-	// Reserverd for back-end use
-	void *be_context_reserved;
 }
 
 //
@@ -118,6 +115,7 @@ typedef enum _NSWindowOrderingMode {
 // Destroy the Context
 //
 + (void) destroyContext:(GSContext *) context;
++ (void) _destroyContext:(GSContext *) context;				// private use only		
 - (void) destroy;
 
 @end

@@ -801,6 +801,8 @@ int i, count;
       		[subview displayRect:intersection];
     		}
 		}
+
+	[window flushWindow];
 }
 
 - (void)displayRectIgnoringOpacity:(NSRect)aRect

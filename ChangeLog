@@ -1,24 +1,29 @@
+Fri Nov 27 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* GSContext.m/.h second rewrite and polish of API.   
+	* NSView.m displayrect add flushWindow at end. 
+
 Thu Nov 26 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSApplication.m add updateServicesMenu invocation accidently deleted 
-		during merge.  Move method from _eventMatchingMask to tail of run 
-		method for performance reasons.
+	during merge.  Move method from _eventMatchingMask to tail of run 
+	method for performance reasons.
 	* Tools/dummy.m add various new dummy functions.
 	* Panels/GNUmakefile make local targets double colon, add local clean to
-		fix make clean failure.
+	fix make clean failure.
 
 Wed Nov 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* move DPSOperators.h to XDPS.
 	* move GPS headers into a new backend.
 	* define GSContext.h/GSContext.m as abstract super for all drawing 
-		destinations (eliminates the need for DPS, GPS, DGS at the root of 
-		the AppKit) add appropriate defintion to various classes.
+	destinations (eliminates the need for DPS, GPS, DGS at the root of 
+	the AppKit) add appropriate defintion to various classes.
 	* NSMatrix.m add abstract backend code from xraw (eliminate backend). 
 	* NSSlider.m add abstract backend code from xraw (eliminate backend). 
 	* NSSliderCell.m add abstract backend code from xraw (eliminate backend).
 	* NSSplitView.m add abstract backend code from xraw (eliminate backend).  
-		replace private divider highlight method with NSHighlightRect()
+	replace private divider highlight method with NSHighlightRect()
 	* NSWindow.m add class method to create backend specific window view.
 	* NSTextField.m add abstract backend code from xraw (eliminate backend).
 	* NSForm.m add abstract backend code from xraw (eliminate backend).
