@@ -1,3 +1,11 @@
+2000-08-25  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/Parser/RTFProducer.m
+	[runStringForString:attributes:paragraphStart:] Improved output of
+	bold/italic formating. 
+	* Source/Parser/rtfScanner.c
+	Corrected function gethex().
+	
 2000-08-15 Georg Fleischmann
 
 	* gui/Source/NSText.m ([NSText sizeToFit:]): 'else' removed to
