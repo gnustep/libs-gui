@@ -49,6 +49,35 @@
 BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
+@implementation NSBundle (NSImageAdditions)
+
+- (NSString*) pathForImageResource: (NSString*)name
+{
+  NSString	*ext = [name pathExtension];
+  NSString	*path = nil;
+
+  if ((ext == nil) || [ext isEqualToString:@""])
+    {
+      NSArray	*types = [NSImage imageUnfilteredFileTypes];
+      unsigned	c = [types count];
+      unsigned	i;
+
+      for (i = 0; path == nil && i < c; i++)
+	{
+	  ext = [types objectAtIndex: i];
+	  path = [self pathForResource: name ofType: ext];
+	}
+    }
+  else
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
+    }
+  return path;
+}
+
+@end
+
 @interface	GSRepData : NSObject
 {
 @public
@@ -671,7 +700,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
         {
 	  NSRect rect = [(NSCachedImageRep *)rep rect];
-	  NSGraphicsContext *ctxt = GSCurrentContext();	  
 	  float y = aPoint.y;
 
 	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
@@ -752,7 +780,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
         {
 	  NSRect rect = [(NSCachedImageRep *)rep rect];
-	  NSGraphicsContext *ctxt = GSCurrentContext();	  
 	  float y = aPoint.y;
 
 	  // Move the drawing rectangle to the origin of the image rep
