@@ -6555,7 +6555,6 @@ byExtendingSelection: (BOOL)flag
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
-  NSLog(@"performDragOperation");
   if ([_dataSource respondsToSelector: @selector(tableView:acceptDrop:row:dropOperation:)])
     {
       return [_dataSource tableView: self
