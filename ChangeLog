@@ -1,3 +1,38 @@
+Fri Jan 21 01:22:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Contributed by Fred Kiefer, with changings of my own: 
+	* Source/NSMatrix.m ([-deselectAllCells]): Bug fix: set
+ 	_selectedCell to nil and _selectedRow and _selectedColumn to 0.
+	([-deselectSelectedCell]): Deselect all cells but without
+ 	redrawing, as in macosx.  ([-selectAll:]): Make the selected cell
+ 	the last cell in the matrix, not the first.
+  	([-selectCellAtRow:column:]): Deselect all cells and redisplay if
+ 	argument row or column is -1; select text of selected cell if cell
+ 	selectable.  ([-sendDoubleAction]): If the selected cell is
+ 	disabled, do nothing [macosx].
+  	([-setSelectionFrom:to:anchor:highlight:]): Moved three lines of
+ 	code for cleaness; initialize some variables to zero to stop
+ 	compiler complaints.  ([-textDidBeginEditing:]): Pass all the
+ 	notification user info when posting the new notification.
+	([-textDidEndEditing:]): Idem.
+	([-textDidChange:]): Idem, plus send textDidChange: to the
+ 	selected cell too [macosx].  ([-mouseDown:]): Simplified sending 
+	of actions.
+
+Fri Jan 21 01:22:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+	
+	* Headers/AppKit/NSCell.h: Added comment to deprecate use of the
+ 	macosx methods -acceptsFirstResponder, -refusesFirstResponder,
+ 	-setRefusesFirstResponder:, and to warn about the fact that
+ 	GNUstep does not have mnemonics in its interface.  
+
+Fri Jan 21 00:44:37 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+	
+	Contributed by Fred Kiefer:
+	* Headers/AppKit/NSCell.h: Added the NSCellAttribute
+ 	NSCellAllowsMixedState as in macosx; added declarations of the
+ 	macosx methods not in the OpenStep specifications.
+
 2000-01-18  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSCachedImageRep.m: Make "ImageCompositing" on by default.
