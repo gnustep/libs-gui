@@ -1,3 +1,12 @@
+Wed May 22 13:02:02 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/Functions.m (NSHighlightRect): Do not flush the window.
+	* Source/NSSplitView.m ([-mouseDown:]): Replace manual calls to PS
+	composite operators with NSHighlightRect; manually flush the
+	window after highlighting the appropriate rects.
+	* Source/NSTableHeaderView.m: Everywhere, added a flush window
+	after each call to NSHighlightRect.
+	
 Tue May 21 16:54:20 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([-setPath:]): Fixed bug - column variable
