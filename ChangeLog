@@ -1,3 +1,8 @@
+2003-12-31 00:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	Make sure oldRange is always initialized.
+
 2003-12-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBundleAdditions.m (-pathForNibResource:) ignore

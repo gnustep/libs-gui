@@ -2668,13 +2668,15 @@ afterString in order over charRange.
   if (stillSelectingFlag == YES)
     {
       /* Store the original range before the interactive selection
-         process begin.  That's because we will need to ask the delegate 
+	 process begin.  That's because we will need to ask the delegate
 	 if it's all right for him to do the change, and then notify 
 	 him we did.  In both cases, we need to post the original selection 
 	 together with the new one. */
       if (_layoutManager->_original_selected_range.location == NSNotFound)
 	{
-	  _layoutManager->_original_selected_range = _layoutManager->_selected_range;
+	  oldRange
+	    = _layoutManager->_original_selected_range
+	    = _layoutManager->_selected_range;
 	}
     }
   else 
