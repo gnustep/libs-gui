@@ -1506,18 +1506,7 @@ incorrectly. */
   if (!_tf.is_horizontally_resizable)
     size.width = _bounds.size.width;
   else
-    {
-      size.width += 2 * _textContainerInset.width;
-
-      /*
-      The +1 is to make sure that we always have one extra point on the right
-      where we can draw the insertion pointer for a character that touches
-      the right edge. This is a bit of a hack, but the insertion pointer
-      often disappears in field editors without this.
-      */
-      if (!_textContainerInset.width)
-	size.width += 1;
-    }
+    size.width += 2 * _textContainerInset.width;
 
   if (!_tf.is_vertically_resizable)
     size.height = _bounds.size.height;
@@ -2304,7 +2293,10 @@ Scroll so that the beginning of the range is visible.
 */
 -(void) scrollRangeToVisible: (NSRange)aRange
 {
-  NSRect rect;
+  NSRect rect, r;
+  NSView *cv;
+  float width;
+  NSPoint p0, p1;
 
   /*
   Make sure that our size is up-to-date. If the scroll is in response to
@@ -2319,15 +2311,123 @@ Scroll so that the beginning of the range is visible.
   if (aRange.length > 0)
     {
       aRange.length = 1;
-      [self scrollRectToVisible: 
-	      [self rectForCharacterRange: aRange]];
+      rect = [self rectForCharacterRange: aRange];
+    }
+  else
+    {
+      rect = [_layoutManager
+	insertionPointRectForCharacterIndex: aRange.location
+			    inTextContainer: _textContainer];
+      rect.origin.x += _textContainerOrigin.x;
+      rect.origin.y += _textContainerOrigin.y;
+    }
+
+  cv = [self superview];
+
+  /*
+  If we are a non-rich-text field editor in a clip view, we use some
+  magic to get scrolling to behave better; if not, just scroll and return.
+  */
+  if (!_tf.is_field_editor || _tf.is_rich_text
+      || ![cv isKindOfClass: [NSClipView class]])
+    {
+      [self scrollRectToVisible: rect];
       return;
     }
 
-  rect = [_layoutManager insertionPointRectForCharacterIndex: aRange.location
-					     inTextContainer: _textContainer];
-  rect.origin.x += _textContainerOrigin.x;
-  rect.origin.y += _textContainerOrigin.y;
+  /*
+  The basic principle is that we want to keep as much text as possible
+  visible, and we want the text to appear to keep its alignment. This is
+  especially important for centered text where the auto-scrolling will
+  scroll so it appears right- or left-aligned if we don't do anything here.
+  We also want to avoid spurious scrolling when the user is just moving
+  the insertion point.
+  */
+
+  width = [cv frame].size.width;
+
+  /* Get the left and right edges of the text. */
+  r = [_layoutManager
+	insertionPointRectForCharacterIndex: 0
+			    inTextContainer: _textContainer];
+  p0 = r.origin;
+  r = [_layoutManager
+	insertionPointRectForCharacterIndex: [_textStorage length]
+			    inTextContainer: _textContainer];
+  p1 = r.origin;
+  p1.x += r.size.width;
+
+  /* We only try to be smart for single-line text. */
+  if (p0.y != p1.y)
+    {
+      [self scrollRectToVisible: rect];
+      return;
+    }
+
+  p0.x += _textContainerOrigin.x;
+  p1.x += _textContainerOrigin.x;
+  switch ([self alignment])
+    {
+      case NSLeftTextAlignment:
+      case NSNaturalTextAlignment: /* TODO? check default writing direction
+				   for language? */
+      case NSJustifiedTextAlignment:
+	/* We don't want blank space to the right of the text; scroll
+	further to the left if possible. */
+	p1.x -= width;
+	if (p1.x < 0)
+	  p1.x = 0;
+
+	if (p1.x < rect.origin.x)
+	  {
+	    rect.size.width += rect.origin.x - p1.x;
+	    rect.origin.x = p1.x;
+	  }
+
+	break;
+
+      case NSRightTextAlignment:
+	/* We don't want blank space to the left of the text; scroll further
+	to the right if possible. */
+	p0.x += width;
+	if (p0.x > p1.x)
+	  p0.x = p1.x;
+
+	if (p0.x > NSMaxX(rect))
+	  {
+	    rect.size.width += p0.x - NSMaxX(rect);
+	  }
+
+	break;
+
+      case NSCenterTextAlignment:
+	/* If all the text fits in the clip view, just center on the text. */
+	if (p1.x - p0.x <= width)
+	  {
+	    rect.origin.x = (p1.x + p0.x - width) / 2;
+	    rect.size.width = width;
+	  }
+	else
+	  {
+	    /* Otherwise, fill the clip view with text; no blank space on
+	    either side. */
+	    float x;
+
+	    x = p1.x - width;
+	    if (x < rect.origin.x)
+	      {
+		rect.size.width += rect.origin.x - x;
+		rect.origin.x = x;
+	      }
+	    x = p0.x + width;
+	    if (x > NSMaxX(rect))
+	      {
+		rect.size.width += x - NSMaxX(rect);
+	      }
+	  }
+	break;
+    }
+
   [self scrollRectToVisible: rect];
 }
 
@@ -3094,6 +3194,14 @@ Figure out how the additional layout stuff is supposed to work.
 
       new.origin.x += _textContainerOrigin.x;
       new.origin.y += _textContainerOrigin.y;
+
+      /* If the insertion would extend outside the view (e.g. because it's
+      just to the right of a character on the far right edge of the view,
+      a common case for right-aligned text), we force it back in. */
+      if (NSMaxX(new) > NSMaxX(_bounds))
+	{
+	  new.origin.x = NSMaxX(_bounds) - new.size.width;
+	}
     }
 
   if (!NSEqualRects(new, _insertionPointRect))

@@ -1,3 +1,20 @@
+2004-11-11 15:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:): Reduce the
+	maximum size. Explicitly set the size of the text view, and make it
+	not resizable.
+	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:
+	withinSelectedGlyphRange:inTextContainer:rectCount:): Fix check for
+	whether the starting index is inside a line frag rect.
+	* Source/NSTextView.m (-sizeToFit): Don't increase the size if we
+	have no inset.
+	(-updateInsertionPointStateAndRestartTimer:): Force the insertion
+	point rect to be inside the text view.
+	(-scrollRangeToVisible:): If we are a non-rich-text field editor,
+	adjust the scrolling to make the auto-scrolling more useful.
+
+	Fixes bug #9279.
+
 2004-11-10  Matt Rice <ratmice@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-iconSize): New method

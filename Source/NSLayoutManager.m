@@ -269,7 +269,7 @@ container? necessary? */
   while (1)
     {
       /* Determine the starting x-coordinate for this line frag rect. */
-      if (lf->pos < glyphRange.location)
+      if (lf->pos <= glyphRange.location)
 	{
 	  /*
 	  The start index is inside the line frag rect, so we need to

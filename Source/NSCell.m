@@ -1783,7 +1783,8 @@ static NSColor	*shadowCol;
 		      editor: (NSText*)textObject
 {
   NSRect titleRect = [self titleRectForBounds: aRect];
-  NSSize maxSize = NSMakeSize(1e8, titleRect.size.height);
+  /* See comments in NSStringDrawing.m about the choice of maximum size. */
+  NSSize maxSize = NSMakeSize(1e6, titleRect.size.height);
   NSClipView *cv = [[NSClipView alloc] 
 		       initWithFrame: titleRect];
   NSTextContainer *ct = [(NSTextView*)textObject textContainer];
@@ -1792,8 +1793,8 @@ static NSColor	*shadowCol;
   RELEASE(cv);
   [cv setAutoresizesSubviews: NO];
   [cv setDocumentView: textObject];
-  [textObject setFrame: [cv bounds]];
-  [textObject setHorizontallyResizable: YES];
+  [textObject setFrame: NSMakeRect(0, 0, maxSize.width, maxSize.height)];
+  [textObject setHorizontallyResizable: NO];
   [textObject setVerticallyResizable: NO];
   [textObject setMaxSize: maxSize];
   [textObject setMinSize: titleRect.size];
