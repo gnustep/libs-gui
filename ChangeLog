@@ -1,3 +1,8 @@
+2003-09-22  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindowController.m (-setWindow:):  Set window's
+	releaseWhenClosed when document is not nil. Add documentation.
+
 2003-09-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m

@@ -144,6 +144,11 @@
   return _owner;
 }
 
+/** Sets the document associated with this controller. A document
+    automatically calls this method when adding a window controller to
+    its list of window controllers. You should not call this method
+    directly when using NSWindowController with an NSDocument
+    or subclass. */
 - (void) setDocument: (NSDocument *)document
 {
   // As the document retains us, we only keep a week reference.
@@ -161,7 +166,13 @@
       [_window setReleasedWhenClosed: NO];
     }
   else
-    [_window setReleasedWhenClosed: YES];
+    {
+      /* When a window owned by a document is closed, it is released
+	 and the window controller is removed from the documents
+	 list of controllers.
+       */
+      [_window setReleasedWhenClosed: YES];
+    }
 }
 
 - (id) document
@@ -275,6 +286,8 @@
   return _window;
 }
 
+/** Sets the window that this controller managers to aWindow. The old
+   window is released. */
 - (void) setWindow: (NSWindow *)aWindow
 {
   NSNotificationCenter *nc;
@@ -304,10 +317,17 @@
 	  name: NSWindowWillCloseNotification
 	  object: _window];
 
+      /* For information on the following, see the description in 
+	 -setDocument: */
       if (_document == nil)
-      {
-	[_window setReleasedWhenClosed: NO];
-      }
+	{
+	  [_window setReleasedWhenClosed: NO];
+	}
+      else
+	{
+	  [_window setReleasedWhenClosed: YES];
+	}
+
     }
 }
 
