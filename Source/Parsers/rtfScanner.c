@@ -23,9 +23,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "stdio.h"
-#include "stdlib.h"
-#include "ctype.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "Parsers/rtfScanner.h"
 #include "Parsers/rtfGrammer.tab.h"
 
@@ -162,7 +162,9 @@ BOOL	probeCommand(RTFscannerCtxt *lctxt)
 {
   int	c = lexGetchar(lctxt);
   lexUngetchar(lctxt, c);
-  return isalpha(c);
+  if (isalpha(c))
+    return YES;
+  return NO;
 }
 
 //	<N> According to spec a cmdLength of 32 is respected
@@ -239,7 +241,7 @@ GSLexError	readText(RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
 	}
       if (c == '\\')	// see <p>
 	{
-	  if (probeCommand(lctxt))
+	  if (probeCommand(lctxt) == YES)
 	    {
 	      lexUngetchar(lctxt, c);
 	      break;
@@ -275,7 +277,7 @@ int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide v
     case '}':	token = '}';
       break;
     case '\\':
-      if (probeCommand(lctxt))
+      if (probeCommand(lctxt) == YES)
 	{
 	  readCommand(lctxt, lvalp, &token);
 	  break;
