@@ -1084,13 +1084,13 @@ static NSNotificationCenter *nc = nil;
 {
   /* ask delegate if it can provide a field editor */
   if ((_delegate != anObject) 
-      && [_delegate respondsToSelector:
-		      @selector(windowWillReturnFieldEditor:toObject:)]) 
+    && [_delegate respondsToSelector:
+    @selector(windowWillReturnFieldEditor:toObject:)]) 
     {
       NSText *editor;
       
       editor = [_delegate windowWillReturnFieldEditor: self   
-			  toObject: anObject];
+					     toObject: anObject];
       
       if (editor != nil)
 	{
@@ -1584,7 +1584,7 @@ static NSNotificationCenter *nc = nil;
       if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
 	{
 	  frameRect.size = [_delegate windowWillResize: self
-					       toSize: frameRect.size];
+						toSize: frameRect.size];
 	}
     }
 
@@ -1599,7 +1599,7 @@ static NSNotificationCenter *nc = nil;
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
-  if(_windowNum)
+  if (_windowNum)
     [GSServerForWindow(self) placewindow: frameRect : _windowNum];
   else
     {
@@ -2397,8 +2397,8 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) keyDown: (NSEvent*)theEvent
 {
-  NSString *characters = [theEvent characters];
-  unichar character = 0;
+  NSString	*characters = [theEvent characters];
+  unichar	character = 0;
 
   if ([characters length] > 0)
     {
@@ -2426,19 +2426,19 @@ resetCursorRectsForView(NSView *theView)
       return;
     }
 
-  if(character == NSEnterCharacter ||
-     character == NSFormFeedCharacter ||
-     character == NSCarriageReturnCharacter)
+  if (character == NSEnterCharacter
+    || character == NSFormFeedCharacter
+    || character == NSCarriageReturnCharacter)
     {
-      if(_defaultButtonCell && _f.default_button_cell_key_disabled == NO)
+      if (_defaultButtonCell && _f.default_button_cell_key_disabled == NO)
 	{
-	  [_defaultButtonCell performClick:self];
+	  [_defaultButtonCell performClick: self];
 	  return;
 	}
     }
 
   // Discard null character events such as a Shift event after a tab key
-  if([characters length] == 0)
+  if ([characters length] == 0)
     return;
 
   // Try to process the event as a key equivalent
