@@ -2367,7 +2367,7 @@ resetCursorRectsForView(NSView *theView)
 /**
  * Miniaturize the receiver ... as long as its style mask includes
  * NSMiniaturizableWindowMask (and as long as the receiver is not an
- * icon or mini window itsself). Calls -miniaturize to do this.<br />
+ * icon or mini window itsself). Calls -miniaturize: to do this.<br />
  * Beeps if the window can't be miniaturised.<br />
  * Should ideally provide visual feedback (highlighting the miniaturize
  * button as if it had been clicked) first ... but that's not yet implemented.
