@@ -56,19 +56,6 @@
   return self;
 }
 
-- (id) initImageCell: (NSImage *)anImage
-{
-  NSDebugLLog(@"NSImageCell", @"NSImageCell -initImageCell");
-  [super initImageCell: anImage];
-
-  return self;
-}
-
-- (void) dealloc
-{
-  [super dealloc];
-}
-
 - (void) setImage:(NSImage *)anImage
 {
   [super setImage:anImage];
@@ -109,6 +96,8 @@
 
 - (void) setImageFrameStyle: (NSImageFrameStyle)aFrameStyle
 {
+  // We could set  _cell.is_bordered and _cell.is_bezeled here to reflect
+  // the border type, but this wont be used.
   _frameStyle = aFrameStyle;
 }
 
@@ -120,10 +109,9 @@
   NSDebugLLog(@"NSImageCell", @"NSImageCell -drawWithFrame");
 
   // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
+  if (NSIsEmptyRect(cellFrame) || ![controlView window])
     return;
   
-  [controlView lockFocus];
   // draw the border if needed
   switch (_frameStyle)
     {
@@ -134,18 +122,23 @@
 	// FIXME
 	break;
       case NSImageFrameGrayBezel:
+	[controlView lockFocus];
 	NSDrawGrayBezel(cellFrame, NSZeroRect);
+	[controlView unlockFocus];
 	break;
       case NSImageFrameGroove:
+	[controlView lockFocus];
 	NSDrawGroove(cellFrame, NSZeroRect);
+	[controlView unlockFocus];
 	break;
       case NSImageFrameButton:
+	[controlView lockFocus];
 	NSDrawButton(cellFrame, NSZeroRect);
+	[controlView unlockFocus];
 	break;
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
-  [controlView unlockFocus];
 }
 
 static inline float
@@ -213,12 +206,11 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
-  if (!_cell_image)
+  if (![controlView window] || !_cell_image)
     return;
 
   // leave room for the frame
   cellFrame = [self drawingRectForBounds: cellFrame];
-  [controlView lockFocus];
 
   switch (_imageScaling)
     {
@@ -298,7 +290,12 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     position.y += imageSize.height;
 
   // draw!
-  [_cell_image compositeToPoint: position operation: NSCompositeCopy];
+  [controlView lockFocus];
+  [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+
+  if (_cell.shows_first_responder)
+    NSDottedFrameRect(cellFrame);
+
   [controlView unlockFocus];
 }
 
@@ -333,12 +330,6 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   return s;
 }
 
-- (NSSize) cellSizeForBounds: (NSRect)aRect
-{
-  // TODO
-  return NSZeroSize;
-}
-
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   NSSize borderSize;
@@ -361,18 +352,6 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     }
 
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
-}
-
-- (id) copyWithZone: (NSZone *)zone
-{
-  NSImageCell *c = [super copyWithZone: zone];
-
-  //c->_imageAlignment = _imageAlignment;
-  //c->_frameStyle = _frameStyle;
-  //c->_imageScaling = _imageScaling;
-  //c->_original_image_size = _original_image_size;
-
-  return c;
 }
 
 //
