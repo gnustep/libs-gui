@@ -1,5 +1,10 @@
 2004-03-06  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSActionCell.m: 
+	Removed methods -setFloatValue:, -setIntValue: and setDoubleValue:
+
+2004-03-06  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Header/AppKit/NSSavePanel.h:
 	Added some ivars for new methods.
 	* Source/NSSavePanel.m: (-setDelegate:, -_selectTextInColumn:)

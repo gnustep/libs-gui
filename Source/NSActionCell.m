@@ -199,42 +199,11 @@ static Class controlClass;
 /**
  * Set the value of the receiver from aString.
  */
+// This method is currently needed, as NSCells implementation 
+// does not call setObjectValue:
 - (void) setStringValue: (NSString*)aString
 {
   [super setStringValue: aString];
-  if (_control_view)
-    if ([_control_view isKindOfClass: controlClass])
-      [(NSControl *)_control_view updateCell: self];
-}
-
-/**
- * Set the value of the receiver from aDouble.
- */
-- (void) setDoubleValue: (double)aDouble
-{
-  [super setDoubleValue: aDouble];
-  if (_control_view)
-    if ([_control_view isKindOfClass: controlClass])
-      [(NSControl *)_control_view updateCell: self];
-}
-
-/**
- * Set the value of the receiver from aFloat.
- */
-- (void) setFloatValue: (float)aFloat
-{
-  [super setFloatValue: aFloat];
-  if (_control_view)
-    if ([_control_view isKindOfClass: controlClass])
-      [(NSControl *)_control_view updateCell: self];
-}
-
-/**
- * Set the value of the receiver from anInt.
- */
-- (void) setIntValue: (int)anInt
-{
-  [super setIntValue: anInt];
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
