@@ -305,7 +305,7 @@ forKey:(NSString *)key;
 	    {
 	      range.location++;
 	      range.length = length - range.location - 4;
-	      fileName = [fileName substringWithRange:range];
+	      fileName = [fileName substringFromRange:range];
 	    }
 	  else
 	    fileName = [fileName substringToIndex:length - 4];
