@@ -1446,11 +1446,11 @@ See -runModalForWindow:
 
   if ([modalDelegate respondsToSelector: didEndSelector])
     {
-      void (*didEnd)(id, SEL, int, void*);
+      void (*didEnd)(id, SEL, id, int, void*);
 
-      didEnd = (void (*)(id, SEL, int, void*))[modalDelegate methodForSelector: 
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
 								 didEndSelector];
-      didEnd(modalDelegate, didEndSelector, ret, contextInfo);
+      didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
 }
 

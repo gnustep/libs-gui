@@ -1211,7 +1211,7 @@ int contribution(NSPoint point, float dir, NSPoint start, NSPoint end, BOOL *hit
   NSPoint first_p, last_p;
   int count = [self elementCount];
   BOOL first = YES;
-  float dir = 2 * PI * random() / RAND_MAX; 
+  float dir = 2 * PI * rand() / RAND_MAX; 
   BOOL hit;
 
   for(i = 0; i < count; i++) 

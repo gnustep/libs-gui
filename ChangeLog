@@ -1,3 +1,14 @@
+2004-02-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m: (-beginSheet:...contextInfo:)
+	Corrected signature of didEnd function.
+	* Source/NSMenu.m: (-update)
+	Tried to handle case for autoenabling correctly where a popup
+	button doesn't have an action.
+	* Source/NSBezierPath.m: (-contributionToContains:)
+	* Source/NSStringDrawing.m: (cache_match())
+	Replaced random() with rand() to increase portability.	
+
 2004-02-24  Quentin Mathé <qmathe@club-internet.fr>
 	committed by Gregory John Casamento <greg_casamento@yahoo.com>
 

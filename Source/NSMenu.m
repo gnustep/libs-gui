@@ -783,7 +783,14 @@ static NSNotificationCenter *nc;
 
 	  if (validator == nil)
 	    {
-	      shouldBeEnabled = NO;
+	      if ((action == NULL) && (_popUpButtonCell != nil))
+		{
+		  shouldBeEnabled = YES;
+		}
+	      else 
+		{
+		  shouldBeEnabled = NO;
+		}
 	    }
 	  else if ([validator
 		     respondsToSelector: @selector(validateMenuItem:)])

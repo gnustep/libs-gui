@@ -171,7 +171,7 @@ static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matche
 
   By starting at a random index, we avoid this kind of problem.
   */
-  j = random() % NUM_CACHE_ENTRIES;
+  j = rand() % NUM_CACHE_ENTRIES;
   for (i = 0; i < NUM_CACHE_ENTRIES; i++, j++)
     {
       if (j == NUM_CACHE_ENTRIES)
