@@ -57,9 +57,6 @@
 #include <AppKit/PSOperators.h>
 #include "GSLPRPrintOperation.h"
 
-#define NSNUMBER(a) [NSNumber numberWithInt: (a)]
-#define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]
-
 
 
 
@@ -76,7 +73,7 @@
 
 
 - (id)initWithView:(NSView *)aView
-	       printInfo:(NSPrintInfo *)aPrintInfo
+         printInfo:(NSPrintInfo *)aPrintInfo
 {
   self = [super initWithView: aView
                    printInfo: aPrintInfo];

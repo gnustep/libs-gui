@@ -148,7 +148,6 @@ static NSMutableDictionary* printerCache;
   NSEnumerator *keyEnum;
   NSString *key;
   NSPrinter *printer;
-
   
   //First, the cache has to be managed.
   //Take into account any deleted printers.
@@ -156,13 +155,13 @@ static NSMutableDictionary* printerCache;
   while( (key = [keyEnum nextObject]) )
     {
       NSEnumerator *namesEnum;
-      NSString *string;
+      NSString *validName;
       BOOL stillValid = NO;
 
       namesEnum = [[self printerNames] objectEnumerator];
-      while( (string = [namesEnum nextObject]) )
+      while( (validName = [namesEnum nextObject]) )
         {
-          if( [string isEqualToString: key] )
+          if( [validName isEqualToString: key] )
             {
               stillValid = YES;
               break;
@@ -171,8 +170,7 @@ static NSMutableDictionary* printerCache;
       
       if( stillValid == NO )
         {
-          NSDebugMLLog(@"GSPrinting", @"Printer named %@ removed from cache",
-                         name);
+          [printerCache removeObjectForKey: key];
         }
     }
 
@@ -180,16 +178,11 @@ static NSMutableDictionary* printerCache;
 
   if( printer )
     {
-      NSDebugMLLog(@"GSPrinting", @"Printer named %@ found in cache",
-                     name);
       return printer;
     }
   else
     {
       Class principalClass;
-
-      NSDebugMLLog(@"GSPrinting", @"Printer named %@ not found in cache",
-                         name);
 
       principalClass = [[GSPrinting printingBundle] principalClass];
 
@@ -202,8 +195,6 @@ static NSMutableDictionary* printerCache;
         {
           [printerCache setObject: printer
                            forKey: name];
-          NSDebugMLLog(@"GSPrinting", @"Printer named %@ added to cache",
-                         name);
         }
       return printer;
     }
@@ -237,15 +228,15 @@ static NSMutableDictionary* printerCache;
   while( (printerName = [printerNamesEnum nextObject]) )
     {
       NSPrinter *printer;
-    
+
       printer = [self printerWithName: printerName];
-    
+
       if( [[printer type] isEqualToString: type] )
         {
           return printer;
         }
     }
-    return nil;
+  return nil;
 }
 
 
@@ -317,44 +308,85 @@ static NSMutableDictionary* printerCache;
 //
 -(BOOL) acceptsBinary
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  // FIXME: I'm not sure if acceptsBinary is the same as BCP protocol?
+  NSString *result;
+  NSScanner *protocols;
+
+  result = [self stringForKey: @"Protocols" 
+                      inTable: @"PPD"];
+  if (!result)
+      return NO;
+
+  protocols = [NSScanner scannerWithString: result];
+
+  while( ![protocols isAtEnd] )
+    {
+      [protocols scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet]
+                                intoString: &result];
+
+      if ( [result isEqual:@"BCP"] )
+	  return YES;
+    }
+
+  return NO;    
 }
 
 -(NSRect) imageRectForPaper: (NSString*) paperName
 {
-  [self subclassResponsibility: _cmd];
-  return NSZeroRect;
+  NSString *key;
+ 
+  key = [NSString stringWithFormat: @"ImageableArea/%@", paperName];
+
+  return [self rectForKey: key
+                  inTable: @"PPD"];
 }
 
 -(NSSize) pageSizeForPaper: (NSString*) paperName
 {
-  [self subclassResponsibility: _cmd];
-  return NSZeroSize;
+  NSString *key;
+
+  key = [NSString stringWithFormat: @"PaperDimension/%@", paperName];
+
+  return [self sizeForKey: key
+                  inTable: @"PPD"];
 }
 
 -(BOOL) isColor
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  return [self booleanForKey: @"ColorDevice" 
+                     inTable: @"PPD"];
 }
 
 -(BOOL) isFontAvailable: (NSString*) fontName
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  NSString *key;
+
+  key = [NSString stringWithFormat: @"Font/%@", fontName];
+  return [self isKey: key
+             inTable: @"PPD"];
 }
 
 -(int) languageLevel
 {
-  [self subclassResponsibility: _cmd];
-  return 0;
+  return [self intForKey: @"LanguageLevel" 
+                 inTable: @"PPD"];
 }
 
 -(BOOL) isOutputStackInReverseOrder
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  // FIXME: Is this what is needed? I'm not sure how this is worked out.
+  NSString *result;
+  
+  result = [self stringForKey: @"DefaultOutputOrder" 
+                      inTable: @"PPD"];
+
+  if (!result)
+      return NO;
+  
+  if ( [result caseInsensitiveCompare: @"REVERSE"] == NSOrderedSame)
+    return YES;
+  else
+    return NO;
 }
 
 //
@@ -379,8 +411,74 @@ static NSMutableDictionary* printerCache;
 
 -(NSDictionary*) deviceDescription
 {
-  [self subclassResponsibility: _cmd];
-  return nil;
+  NSMutableDictionary *result;
+
+  result = [NSMutableDictionary dictionary];
+  
+  if( [self isKey: @"DefaultResolution" 
+          inTable:@"PPD"])
+    {
+      int dpi = [self intForKey: @"DefaultResolution" 
+                        inTable: @"PPD"];
+
+      [result setObject: [NSNumber numberWithInt: dpi]
+                forKey: NSDeviceResolution];
+    }
+
+  if( [self isKey: @"ColorDevice" 
+          inTable: @"PPD"])
+    {
+      BOOL color = [self booleanForKey: @"ColorDevice" 
+                      inTable: @"PPD"];
+
+      // FIXME: Should NSDeviceWhiteColorSpace be NSDeviceBlackColorSpace?
+      // FIXME #2: Are they calibrated?
+      // Basically I'm not sure which color spaces should be used...
+      if( color == YES )
+        {
+          [result setObject: NSDeviceCMYKColorSpace
+                     forKey: NSDeviceColorSpaceName];
+        }
+      else
+        {
+          [result setObject: NSDeviceWhiteColorSpace
+                     forKey: NSDeviceColorSpaceName];
+        }
+    }
+
+  if( [self isKey: @"DefaultBitsPerPixel" 
+          inTable: @"PPD"] )
+    {
+      int bits = [self intForKey: @"DefaultBitsPerPixel" 
+                         inTable: @"PPD"];
+
+      [result setObject: [NSNumber numberWithInt: bits]
+                 forKey: NSDeviceBitsPerSample];
+    }
+
+  if( [self isKey: @"DefaultPageSize"
+          inTable: @"PPD"] )
+    {
+      NSString* defaultPageSize = [self stringForKey: @"DefaultPageSize"
+                                             inTable: @"PPD"];
+
+      if( defaultPageSize )
+        {
+          NSSize paperSize = [self pageSizeForPaper: defaultPageSize];
+
+          [result setObject: [NSValue valueWithSize:paperSize]
+                     forKey: NSDeviceSize];
+        }
+    }
+
+  [result setObject: [NSNumber numberWithBool:NO]
+             forKey: NSDeviceIsScreen];
+
+  [result setObject: [NSNumber numberWithBool:YES]
+             forKey: NSDeviceIsPrinter];
+
+  NSDebugMLLog(@"GSPrinting", @"Device Description: %@", [result description]);
+  return result;
 }
 
 
@@ -793,7 +891,6 @@ static NSMutableDictionary* printerCache;
   NSString* ppdString;
   NSScanner* ppdData;
   NSString* keyword;
-
 
   
   //See if this ppd has been processed before

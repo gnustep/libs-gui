@@ -1,3 +1,13 @@
+2004-10-08  Chad Hardin  <cehardin@mac.com>
+
+	* Printing/GSLPR/GSLPRPrintOperation: Removed useless #defines and
+	did a minor format cleanup. 
+	* Printing/GSLPR/GSLPRPrinter.m: Took out a few PS specific methods so 
+	that they can be put into the parent class, NSPrinter.
+	* Source/NSPrinter: Received PS specific methods from GSLPRPrinter so
+	that they can be used by GSCUPS as well.  Also removed some useless
+	NSDebugs.
+
 2004-10-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GNUmakefile.postamble (libgnustep-gui.def): Search for both
