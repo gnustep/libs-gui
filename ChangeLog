@@ -1,3 +1,11 @@
+Wed Nov 4 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSApplication.h/NSApplication.m remove unused ivar recycledEventsQueue.
+	* NSApplication.m terminate: fix call to applicationShouldTerminate, should 
+		use self not sender.
+	* NSMenuItem.h and NSMenu.m aesthetic tweaks.
+	* NSWindow.m implement performClose and close per OS 4.2 docs.
+
 Tue Nov 3 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSMenuItem.h ADDITIONAL_WIDTH increase defined size (fix overlap in Edit)
