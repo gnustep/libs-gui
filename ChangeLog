@@ -1,3 +1,8 @@
+2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
+
+	* Images/common_WMCloseBroken.tiff,common_WMClose.tiff: remove 
+	background of image.
+
 Mon Apr 14 14:24:27 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/AppKit.h: Include NSDocument.h
