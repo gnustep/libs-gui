@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.7.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.7.5 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,26 +28,36 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep X/DPS GUI Backend.
 
-What's new in this release?
-===========================
-
-   The currently released version of the library is `0.7.0'.
-
-Noteworthy changes in version `0.7.0'
+Noteworthy changes in version `0.7.5'
 =====================================
 
-   * Much improvement in NSBrowser, NSMatrix, NSPopUpButton, combo
-     boxes.
+   * Drag and drop and image sliding much improved.
 
-   * NSTextAttachement implemented, many other text improvements.
+   * Better handling of remote startup/display.
 
-   * Fonts cached in the frontend.
+   * Some localization.
 
-   * Changes so that backend can be loaded as a bundle at runtime.
+   * Keybinding support.
 
-   * simpler, faster compilation and installation.
+   * Text handling improvements.
 
-   * NSColorWell works.
+   * New gopen command (like MacOSX open command).
+
+   * Implemented simple pagination and printing of views.
+
+   * Support for rulers.
+
+   * Spell checking support.
+
+   * Blinking insertion point.
+
+   * New NSStepper class.
+
+   * Implemented NSOutlineView, NSSelection, NSInputManager.
+
+   * Near rewrite of Menu handling code.
+
+   * Gmodel code compiled as a separate bundle.
 
 How can I get support for this software?
 ========================================
@@ -61,7 +71,7 @@ the GNUstep Web Pages for more information regarding GNUstep resources
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.7.0.tar.gz distribution file has been placed on
+   The gstep-gui-0.7.5.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.
@@ -70,14 +80,7 @@ Where can you get it?  How can you compile it?
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `1.0.2'.
-
-   The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
-anonymous ftp at any of the GNU archive sites.
-
-   For info about FTP via email, send email to <ftpmail@decwrl.dec.com>
-with no subject line, and two-line body with line one `help' and line
-two `quit'.
+GNUstep Base Library.
 
 Where do I send bug reports?
 ============================

@@ -1,7 +1,38 @@
 NEWS
 ****
 
-The currently released version of the library is `0.7.0'.
+The currently released version of the library is `0.7.5'.
+
+Noteworthy changes in version `0.7.5'
+=====================================
+
+   * Drag and drop and image sliding much improved.
+
+   * Better handling of remote startup/display.
+
+   * Some localization.
+
+   * Keybinding support.
+
+   * Text handling improvements.
+
+   * New gopen command (like MacOSX open command).
+
+   * Implemented simple pagination and printing of views.
+
+   * Support for rulers.
+
+   * Spell checking support.
+
+   * Blinking insertion point.
+
+   * New NSStepper class.
+
+   * Implemented NSOutlineView, NSSelection, NSInputManager.
+
+   * Near rewrite of Menu handling code.
+
+   * Gmodel code compiled as a separate bundle.
 
 Noteworthy changes in version `0.7.0'
 =====================================

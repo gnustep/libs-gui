@@ -28,7 +28,6 @@ The GNUstep GUI Library requires the GNU Objective-C compiler, the
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep X/DPS GUI Backend.
 
-@section What's new in this release?
 @set ANNOUNCE-ONLY
 @include news.texi
 @clear ANNOUNCE-ONLY

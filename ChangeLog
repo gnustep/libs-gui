@@ -1,3 +1,9 @@
+2002-01-30  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.7.5
+	* Documentation/announce.texi: Update.
+	* Documentation/news.texi: Likewise.
+
 2002-01-28  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* gui/Source/NSImage.m ([NSImage -initWithSize:]): round the size down
