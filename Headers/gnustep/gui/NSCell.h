@@ -99,10 +99,13 @@ enum {
   yDist = 2	// vertical distance between the text and image rects. 
 };
 
+/* 
+ * We try to do as in macosx. 
+ */
 enum { 
   NSOffState			= 0,
   NSOnState			= 1,
-  NSMixedState			= 2
+  NSMixedState			= -1
 };
 
 @interface NSCell : NSObject <NSCopying, NSCoding>
@@ -112,7 +115,7 @@ enum {
   NSImage *_cell_image;
   NSFont *_cell_font;
   struct GSCellFlagsType { 
-    // total 30 bits.  2 bits left.
+    // total 28 bits.  4 bits left.
     unsigned is_highlighted:1;
     unsigned is_disabled:1;    
     unsigned is_editable:1;   
@@ -124,7 +127,6 @@ enum {
     unsigned float_autorange:1;
     unsigned wraps:1;
     unsigned allows_mixed_state:1;
-    unsigned state:2;          // 3 values; 
     unsigned text_align:3;     // 5 values
     unsigned image_position:4; // 7 values
     unsigned type:4;           // 8 values (see NSButtonCell)
@@ -132,6 +134,9 @@ enum {
     // 2 bits reserved for subclass use
     unsigned subclass_bool_one:1;
     unsigned subclass_bool_two:1;
+    /* This is not in the bitfield now (for simpler macosx compatibility) 
+       but who knows in the future */
+    int state; // 3 values but one negative
   } _cell;
   unsigned int _cell_float_left;
   unsigned int _cell_float_right;

@@ -42,4 +42,7 @@
 	if (pointer) free(pointer)
 #endif
 
+/* Define if you have the rintf function.  */
+#undef HAVE_RINTF
+
 #endif /* _GNUstep_H_config */

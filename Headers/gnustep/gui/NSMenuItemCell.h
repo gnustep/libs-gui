@@ -54,6 +54,10 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   NSString *mcell_titleToDisplay;
   NSSize mcell_imageSize;
 
+  /* If we belong to a popupbutton, we display image on the extreme
+     right */
+  BOOL _mcell_belongs_to_popupbutton;
+
 @private
   NSColor *_backgroundColor;
 }
