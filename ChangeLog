@@ -1,3 +1,9 @@
+2001-11-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTabView.m
+	In [selectTabViewItem:] corrected setting the first responder of
+	the tab view. 
+	
 2001-11-09  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-addSubview:): Raise exception on adding nil
