@@ -1,3 +1,11 @@
+Sun Dec 17 14:32:11 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-_nonAutoreleasedTypingAttributes]): New
+	method replacing ([-_typingAttributes]), to reduce the number of
+	concurrent typing dictionaries allocated.
+	([-attributedStringValue]), ([-_sizeText:]),
+	([-_drawText:inFrame:]): Updated for the new method.
+
 Sat Dec 16 22:45:32 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSLayoutManager.m ([GSTextContainerLayoutInfo -dealloc]):
