@@ -1288,19 +1288,26 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   for (i = 0; i < [mounts count]; i++)
     {
-      NSArray	*parts;
-      NSString	*type;
-
-      parts = [[names objectAtIndex: i] componentsSeparatedByString: @" "];
-      type = [parts objectAtIndex: 2];
-      if ([type isEqualToString: @"proc"] == NO
-	&& [type isEqualToString: @"devpts"] == NO
-	&& [type isEqualToString: @"shm"] == NO)
+      NSString  *mount = [mounts objectAtIndex: i];
+    
+      if ([mount length]) 
         {
-	  [names addObject: [parts objectAtIndex: 1]];
-	}
+          NSArray  *parts = [mount componentsSeparatedByString: @" "];
+          
+          if ([parts count] >= 2) 
+            {          
+              NSString	*type = [parts objectAtIndex: 2];
+              
+              if ([type isEqualToString: @"proc"] == NO
+	          && [type isEqualToString: @"devpts"] == NO
+	          && [type isEqualToString: @"shm"] == NO)
+              {
+	         [names addObject: [parts objectAtIndex: 1]];
+	      }
+           }
+        }
     }
-
+  
   return names;
 }
 
