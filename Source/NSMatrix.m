@@ -1311,6 +1311,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   d = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
+  AUTORELEASE (d);
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidBeginEditingNotification
       object: self
@@ -1329,6 +1330,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   d = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
+  AUTORELEASE (d);
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
 
   [nc postNotificationName: NSControlTextDidChangeNotification
@@ -1385,7 +1387,9 @@ static SEL getSel = @selector(objectAtIndex:);
 
   [self validateEditing];
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: [aNotification userInfo]];
+  d = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  AUTORELEASE (d);
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidEndEditingNotification
       object: self
