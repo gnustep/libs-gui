@@ -1,3 +1,9 @@
+Mon Dec 20 15:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Fix removal of view from window such that we reset
+	the windows first responder if any of the removed views in first
+	responder (avoid crash iv views subsequently deallocated).
+
 Mon Dec 20 11:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSSavePanel.m: Use symbolic constants for resize mask.

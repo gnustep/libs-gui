@@ -387,10 +387,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       return;
     }
-  if ([window firstResponder] == self)
-    {
-      [window makeFirstResponder: window];
-    }
   RETAIN(self);
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
@@ -418,10 +414,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (!super_view)
     {
       return;
-    }
-  if ([window firstResponder] == self)
-    {
-      [window makeFirstResponder: window];
     }
   [super_view setNeedsDisplayInRect: frame];
   RETAIN(self);
@@ -519,17 +511,26 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
   if (newWindow == window)
-    return;
-
+    {
+      return;
+    }
   if (_rFlags.has_draginfo)
     {
       NSGraphicsContext	*ctxt = GSCurrentContext();
       NSArray		*t = GSGetDragTypes(self);
 
       if (window != nil)
-	[ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+	{
+	  [ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+	}
       if (newWindow != nil)
-        [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+	{
+	  [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+	}
+    }
+  if (newWindow == nil && [window firstResponder] == self)
+    {
+      [window makeFirstResponder: window];
     }
 
   window = newWindow;
@@ -545,7 +546,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 	  [sub_views getObjects: array];
 	  for (i = 0; i < count; ++i)
-	    [array[i] viewWillMoveToWindow: newWindow];
+	    {
+	      [array[i] viewWillMoveToWindow: newWindow];
+	    }
 	}
     }
 }

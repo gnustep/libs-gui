@@ -1478,8 +1478,6 @@ resetCursorRectsForView(NSView *theView)
   if ((first_responder) && (![first_responder resignFirstResponder]))
     return NO;
 
-// FIXME
-//  [first_responder resignFirstResponder];
   first_responder = aResponder;
   [first_responder becomeFirstResponder];
   return YES;
@@ -2765,7 +2763,6 @@ resetCursorRectsForView(NSView *theView)
 {
   BOOL		flag;
   NSPoint	p;
-  id		nxt = RETAIN([self nextResponder]);
 
   [super encodeWithCoder: aCoder];
 
@@ -2810,8 +2807,6 @@ resetCursorRectsForView(NSView *theView)
   [aCoder encodeConditionalObject: _initial_first_responder];
 
   NSDebugLog(@"NSWindow: finish encoding\n");
-
-  RELEASE(nxt);
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
