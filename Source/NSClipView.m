@@ -417,18 +417,21 @@
 - (void) setFrameSize: (NSSize)aSize
 {
   [super setFrameSize: aSize];
+  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
   [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setFrameOrigin: (NSPoint)aPoint
 {
   [super setFrameOrigin: aPoint];
+  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
   [_super_view reflectScrolledClipView: self];
 }
 
 - (void) setFrame: (NSRect)rect
 {
   [super setFrame: rect];
+  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
   [_super_view reflectScrolledClipView: self];
 }
 
