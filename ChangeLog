@@ -1,3 +1,15 @@
+Thu Nov 18  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-editWithFrame:inView:editor:delegate:event:]), 
+	([-selectWithFrame:inView:editor:delegate:start:length:]): 
+	Fixed bug.
+	* Source/NSWindow.m ([-keyViewSelectionDirection]): Implemented.
+	([-selectKeyViewFollowingView:]),([-selectKeyViewPrecedingView:]),
+	([-selectNextKeyView:]),([-selectPreviousKeyView:]): Improvement,
+ 	made ready to support TABbing with selection of text between views
+ 	which are not necessarily textfields, eg forms.
+	* Headers/AppKit/NSWindow.h: Added ivar _selection_direction.
+
 1999-11-18  David Lazaro Saz  <khelekir@encomix.es>
 
 	* Source/NSMenuView.m ([NSMenuView
