@@ -430,6 +430,9 @@ static Class cellClass;
   if (![self isEnabled])
     return;
 
+  if (_ignoresMultiClick && ([theEvent clickCount] > 1))
+    [super mouseDown: theEvent];
+
   if ([_cell isContinuous])
     oldActionMask = [_cell sendActionOn: 0];
   else
@@ -452,7 +455,7 @@ static Class cellClass;
 	  if ([_cell trackMouse: e
 		     inRect: bounds
 		     ofView: self
-		     untilMouseUp: YES])
+		     untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]])
 	    done = mouseUp = YES;
 	  else
 	    {
@@ -495,11 +498,12 @@ static Class cellClass;
 
 - (BOOL) ignoresMultiClick
 {
-  return NO;
+  return _ignoresMultiClick;
 }
 
 - (void) setIgnoresMultiClick: (BOOL)flag
 {
+  _ignoresMultiClick = flag;
 }
 
 /*
