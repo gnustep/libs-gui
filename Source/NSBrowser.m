@@ -1477,7 +1477,7 @@
 
 	  // If we are not reusing matrixes
 	  // then delete the old matrix and create a new one
-	  [oldm release];
+//	  [oldm release];											
 	  matrix = [[[_browserMatrixClass alloc]
 		     initWithFrame: matrixRect
 		     mode: NSListModeMatrix
@@ -1514,7 +1514,7 @@
 
 	  // If we are not reusing matrixes
 	  // then delete the old matrix and create a new one
-	  [oldm release];
+//	  [oldm release];										
 	  matrix = [[[_browserMatrixClass alloc]
 		     initWithFrame: matrixRect
 		     mode: NSListModeMatrix

@@ -8,6 +8,8 @@
    Author:  Scott Christley <scottc@net-community.com>
             Venkat Ajjanagadde <venkat@ocbi.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: June 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -364,10 +366,12 @@ static BOOL _needsFlushWindows = YES;
 - (void)endEditingFor:anObject
 {}
 
-- (NSText *)fieldEditor:(BOOL)createFlag
-	      forObject:anObject
+- (NSText *)fieldEditor:(BOOL)createFlag forObject:anObject
 {
-  return nil;
+	if(!_fieldEditor && createFlag)					// each window has a global
+		_fieldEditor = [[NSText alloc] init];		// text field editor 
+													 
+	return _fieldEditor;							
 }
 
 //

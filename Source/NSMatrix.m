@@ -374,6 +374,7 @@ static int mouseDownFlags = 0;
   cellSize = NSMakeSize(DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
   intercell = NSMakeSize(1, 1);
   [self setBackgroundColor:[NSColor lightGrayColor]];
+  [self setDrawsBackground:YES];
   [self setCellBackgroundColor:[NSColor lightGrayColor]];
   [self setSelectionByRect:YES];
   [self setAutosizesCells:YES];
@@ -382,7 +383,7 @@ static int mouseDownFlags = 0;
     [self selectCellAtRow:0 column:0];
   }
   else
-    selectedRow = selectedColumn = -1;
+    selectedRow = selectedColumn = 0;
 
   return self;
 }
@@ -1198,8 +1199,10 @@ static int mouseDownFlags = 0;
 	  /* At the first click, deselect the selected cell */
 	  if (!previousCell) {
 	    NSRect f = [self cellFrameAtRow:selectedRow column:selectedColumn];
+		[selectedCell highlight:NO withFrame:f inView:self];			// FAR
 
 	    [self deselectSelectedCell];
+		[self deselectAllCells];										// FAR
 	    [self setNeedsDisplayInRect:f];
 	  }
 	  else {
@@ -1211,7 +1214,14 @@ static int mouseDownFlags = 0;
 	  selectedRow = row;
 	  selectedColumn = column;
 	  [selectedCell highlight:YES withFrame:rect inView:self];
-	  [self setNeedsDisplayInRect:rect];
+	  ((tMatrix)selectedCells)->matrix[row][column] = YES;				// FAR
+//	  [self setNeedsDisplayInRect:rect];								// FAR
+
+		[self selectCellAtRow:row column:column];
+
+		if ([lastEvent clickCount] > 1)							// double click
+			[target performSelector:doubleAction withObject:self];
+
 	  break;
 
 	case NSListModeMatrix: {
@@ -1285,7 +1295,11 @@ static int mouseDownFlags = 0;
 	  break;
 	case NSLeftMouseUp:
 	  done = YES;
-	  shouldProceedEvent = YES;
+//	  shouldProceedEvent = YES;
+	  ASSIGN(lastEvent, theEvent);
+	  break;
+	case NSLeftMouseDown:
+//	  shouldProceedEvent = YES;
 	  ASSIGN(lastEvent, theEvent);
 	  break;
 	default:
@@ -1317,16 +1331,25 @@ static int mouseDownFlags = 0;
     case NSListModeMatrix:
       break;
   }
-
-  if ([selectedCell target])
-    [[selectedCell target] performSelector:[selectedCell action] withObject:self];
-  else if (target)
-    [target performSelector:action withObject:self];
+													
+	if ([selectedCell target])						// send single click action			
+		[[selectedCell target] performSelector:[selectedCell action] 
+									withObject:self];
+	else 
+		{
+		if (target)												
+			[target performSelector:action withObject:self];
+		}
+													
+	if (target && ([lastEvent clickCount] > 1))		// send double click action		
+		[target performSelector:doubleAction withObject:self];
 
   [self unlockFocus];
   if (mode != NSTrackModeMatrix)
     [NSEvent stopPeriodicEvents];
   [lastEvent release];
+
+	[self setNeedsDisplayInRect:rect];
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent

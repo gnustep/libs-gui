@@ -363,6 +363,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewFrameDidChangeNotification object:self];
+
+	[self setNeedsDisplay:YES];		// FAR
 }
 
 - (void)setFrameOrigin:(NSPoint)newOrigin
