@@ -1,3 +1,12 @@
+Thu Jan 30 12:34:30 1997  Scott Christley <scottc@net-community.com>
+
+	* Headers/gnustep/gui/NSDragging.h (NSDraggingInfo): Define
+	protocol before it is used by the NSObject category.
+	* Headers/gnustep/dps/DPSOperators.h: Eliminate unneeded code.
+	* Source/NSControl.m (-copyWithZone:): New method.
+	* Source/NSFontManager.m (-fontWithFamily:traits:weight:size:):
+	Add log error message when requesting invalid font.
+
 Wed Jan 29 07:44:32 1997  Simon Frankau <sgf@frankau.demon.co.uk>
 
 	* Headers/gnustep/gui/NSCStringText.h: New file.

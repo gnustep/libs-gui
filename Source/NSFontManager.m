@@ -247,7 +247,10 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
       return f;
     }
   else
-    return nil;
+    {
+      NSLog(@"Invalid font request\n");
+      return nil;
+    }
 }
 
 //

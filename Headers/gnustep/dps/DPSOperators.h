@@ -6,7 +6,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: September, 1995
+   Date: September 1995
    
    This file is part of the GNUstep GUI Library.
 
@@ -33,107 +33,8 @@
 #ifdef HAVE_DPSCLIENT
 
 #include <DPS/dpsclient.h>
-
-#else
-
-#include <Foundation/NSObject.h>
-#include <DPSClient/TypesandConstants.h>
-#include <Foundation/NSGeometry.h>
-
-@class NSColor;
-
-//////////////////////////////////////////////////////////////////////////
-//
-// Drawing operators
-//
-// path an arc in counterclockwise direction
-void
-PSarc(float x, float y, float radius, float angle1, float angle2);
-
-// path an arc in clockwise direction
-void
-PSarcn(float x, float y, float radius, float angle1, float angle2);
-
-// path a Bezier curve
-void
-PScurveto(float x1, float y1, float x2, float y2, float x3, float y3);
-
-// path a line
-void
-PSlineto(float x, float y);
-
-// set current point
-void
-PSmoveto(float x, float y);
-
-// path a Bezier curve relative to current point
-void
-PSrcurveto(float x1, float y1, float x2, float y2, float x3, float y3);
-
-// path a line relative to current point
-void
-PSrlineto(float x, float y);
-
-// set current point relative to current point
-void
-PSrmoveto(float x, float y);
-
-// path a text string
-void
-PSshow(char *string);
-
-//
-// Path operators
-//
-// close the path
-void
-PSclosepath();
-
-// start new path
-void
-PSnewpath();
-
-// fill the path
-void
-PSfill();
-
-// stroke the path
-void
-PSstroke();
-
-//
-// Graphic state operators
-//
-// get current line width
-float
-PScurrentlinewidth();
-
-// set current line width
-void
-PSsetlinewidth(float width);
-
-// get current point in path
-NSPoint
-PScurrentpoint();
-
-// flush graphic operations
-void
-PSflushgraphics();
-
-// set the color
-void
-PSsetcolor(NSColor *c);
-
-//
-// Convenience operations
-//
-// path a rectangle
-void
-PSrectstroke(float x, float y, float width, float height);
-
-// path and fill a rectangle
-void
-PSrectfill(float x, float y, float width, float height);
+#include <DPS/psops.h>
 
 #endif /* HAVE_DPSCLIENT */
+
 #endif /* _GNUstep_H_DPSOperators */

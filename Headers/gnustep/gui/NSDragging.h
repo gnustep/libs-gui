@@ -30,29 +30,9 @@
 
 #include <AppKit/stdappkit.h>
 
-@class NSDragOperation;
 @class NSWindow;
-@class NSPoint;
 @class NSPasteBoard;
 @class NSImage;
-
-@interface NSObject (NSDraggingDestination)
-
-//
-// Before the Image is Released
-//
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
-- (void)draggingExited:(id <NSDraggingInfo>)sender;
-
-//
-// After the Image is Released
-//
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender;
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
-- (void)concludeDragOperation:(id <NSDraggingInfo>)sender;
-
-@end
 
 @protocol NSDraggingInfo
 
@@ -76,6 +56,24 @@
 // Sliding the Image
 //
 - (void)slideDraggedImageTo:(NSPoint)screenPoint;
+
+@end
+
+@interface NSObject (NSDraggingDestination)
+
+//
+// Before the Image is Released
+//
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
+- (void)draggingExited:(id <NSDraggingInfo>)sender;
+
+//
+// After the Image is Released
+//
+- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender;
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender;
 
 @end
 

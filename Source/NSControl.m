@@ -98,6 +98,21 @@ NSString *NSControlTextDidChangeNotification;
 }
 
 //
+// Creating copies
+//
+- copyWithZone:(NSZone *)zone
+{
+  id c;
+  c = [super copyWithZone: zone];
+
+  NSLog(@"NSControl: copyWithZone\n");
+
+  // make sure the new copy also has a new copy of the cell
+  [c setCell: [cell copy]];
+  return c;
+}
+
+//
 // Setting the Control's Cell 
 //
 - (id)cell
