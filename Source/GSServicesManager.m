@@ -1270,7 +1270,7 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   [connection setRequestTimeout: seconds];
   [connection setReplyTimeout: seconds];
 
-  msgImp = get_imp(GSObjCClassOfObject(provider), msgSel);
+  msgImp = get_imp(GSObjCClass(provider), msgSel);
   NS_DURING
     {
       [provider performService: selName

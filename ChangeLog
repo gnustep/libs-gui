@@ -1,6 +1,6 @@
 2000-10-31  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSServicesManager.m: Use new GSObjCClassOfObject() function
+	* Source/GSServicesManager.m: Use new GSObjCClass() function
 	from NSObjCRuntime.h
 	* Source/GSTextStorage.m: Avoid static variable initialisation with
 	@selector() as it doesn't work with Apple runtime.
