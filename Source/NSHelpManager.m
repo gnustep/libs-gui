@@ -30,6 +30,7 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSArchiver.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
