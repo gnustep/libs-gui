@@ -1,3 +1,12 @@
+2000-04-17  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
+
+	* Headers/gnustep/gui/NSColorPanel.h: New ivars for panel objects.
+	* Panels/ColorPanel.gmodel: New file.
+	* Panels/GNUmakefile: Add above file.
+	* Source/NSApplication.m: [-orderFrontColorPanel:] Implement.
+	* Source/NSColorPanel.m: Rough draft implementation.
+	* Source/NSColorWell.m: Add drag 'n drop methods.
+
 2000-04-16  Adam Fedor  <fedor@gnu.org>
 
 	* Source/tiff.m (NSTiffGetInfo): Getting alpha info requires
