@@ -1,3 +1,9 @@
+Tue Dec 11 00:08:38 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-setStringValue:]): Use a NSDebugMLLog to warn
+	for attempts to use nil value, not NSWarnLog, as suggested by Wim
+	Oudshoorn <woudshoo@sct.com>.
+
 2001-12-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m
