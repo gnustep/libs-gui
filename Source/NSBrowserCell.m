@@ -31,6 +31,7 @@
 #include <AppKit/NSBrowserCell.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSEvent.h>
@@ -44,6 +45,12 @@ static NSImage	*highlight_image;
 
 static Class	cellClass;
 static Class	colorClass;
+
+static BOOL gsFontifyCells = NO;
+static NSColor *nonLeafColor;
+static NSFont *nonLeafFont;
+static NSColor *leafColor;
+static NSFont *leafFont;
 
 /*
  * Private methods
@@ -97,6 +104,20 @@ static Class	colorClass;
        */
       cellClass = [NSCell class];
       colorClass = [NSColor class];
+
+      // A GNUstep experimental feature
+      if ([[NSUserDefaults standardUserDefaults] 
+	    boolForKey: @"GSBrowserCellFontify"])
+	{ 
+	  gsFontifyCells = YES;
+	  cellClass = [NSTextFieldCell class];
+	  // TODO: Make these easily configurable
+	  nonLeafColor = RETAIN ([colorClass colorWithCalibratedWhite: 0.222
+					  alpha: 1.0]);
+	  nonLeafFont = RETAIN ([NSFont boldSystemFontOfSize: 0]);
+	  leafColor = RETAIN ([colorClass blackColor]);
+	  leafFont = RETAIN ([NSFont systemFontOfSize: 0]);
+	}
     }
 }
 
@@ -134,7 +155,9 @@ static Class	colorClass;
   [_browserText setAlignment: NSLeftTextAlignment];
 
   _alternateImage = nil;
-  _isLeaf = NO;
+  // To make the [self setLeaf: NO] effective
+  _isLeaf = YES; 
+  [self setLeaf: NO];
   _isLoaded = NO;
 
   [self setEditable: NO];
@@ -190,7 +213,24 @@ static Class	colorClass;
 
 - (void) setLeaf: (BOOL)flag
 {
+  if (_isLeaf == flag)
+    return;
+
   _isLeaf = flag;
+  
+  if (gsFontifyCells)
+    {
+      if (_isLeaf)
+	{
+	  [(NSTextFieldCell *)_browserText setFont: leafFont];
+	  [(NSTextFieldCell *)_browserText setTextColor: leafColor];
+	}
+      else 
+	{
+	  [(NSTextFieldCell *)_browserText setFont: nonLeafFont];
+	  [(NSTextFieldCell *)_browserText setTextColor: nonLeafColor]; 
+	}
+    }
 }
 
 /*
