@@ -1,3 +1,22 @@
+Fri Nov 14 09:34:45 1997  Scott Christley  <scottc@net-community.com>
+
+	* Headers/gnustep/gui/NSApplication.h (-getNextEvent): Method
+	no longer returns a value.
+	* Headers/gnustep/gui/NSWindowView.h: New file.
+	* Source/NSWindowView.m: New file.
+	* Source/NSView.m (-displayRect:): Remove debug code.
+	* Source/NSWindow.m: Use new class which represents the
+	view the window uses to draw its frame and title.  Many
+	changes throughout the file to update the window view instead
+	of the content view.
+	* Source/GNUmakefile: Don't install the config.h file.  Compile
+	and install NSWindowView.
+	* Source/NSApplication.m
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Rearrange
+	code so that that the flushing of windows is done before
+	runloop's limit date is retrieved.
+	(-getNextEvent): Method no longer returns a value.
+
 Sat Nov  1 11:30:40 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/GNUmakefile: Don't compile NSPasteboard.m if using

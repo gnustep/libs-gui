@@ -798,8 +798,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
     NSLog (@"warning: %@ %p has not have the PS matrices setup!",
 	  NSStringFromClass(isa), self);
 
-//  NSLog (@"NSView displayRect:");
-
   needs_display = NO;
 
   [self lockFocus];

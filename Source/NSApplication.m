@@ -217,6 +217,7 @@ static id NSApp;
   do
     {
       pool = [NSAutoreleasePool new];
+
       e = [self nextEventMatchingMask:NSAnyEventMask
 		untilDate:[NSDate distantFuture]
 		inMode:NSDefaultRunLoopMode dequeue:YES];
@@ -392,6 +393,8 @@ static id NSApp;
   NSEvent* event;
   int i, count;
 
+  [self getNextEvent];
+
   /* Get an event from the events queue */
   if ((count = [event_queue count])) {
     for (i = 0; i < count; i++) {
@@ -426,11 +429,17 @@ static id NSApp;
 
   // Not in queue so wait for next event
   while (!done) {
+    NSDate *limitDate, *originalLimitDate;
+
+    // flush any windows that need it
+    [NSWindow _flushWindows];
+    [self _flushCommunicationChannels];
+
     /* Retain the limitDate so it doesn't get release accidentally by
        runMode:beforeDate: if a timer which has this date as fire date gets
        released. */
-    NSDate* limitDate = [[currentLoop limitDateForMode:mode] retain];
-    NSDate* originalLimitDate = limitDate;
+    limitDate = [[currentLoop limitDateForMode:mode] retain];
+    originalLimitDate = limitDate;
 
     event = [self _eventMatchingMask:mask];
     if (event) {
@@ -443,11 +452,9 @@ static id NSApp;
     else
       limitDate = expiration;
 
-    [NSWindow _flushWindows];
-    [self _flushCommunicationChannels];
     [currentLoop runMode:mode beforeDate:limitDate];
-
     [originalLimitDate release];
+
     event = [self _eventMatchingMask:mask];
     if (event)
       break;
@@ -1088,10 +1095,9 @@ static id NSApp;
 }
 
 // Get next event
-- (NSEvent *)getNextEvent
+- (void)getNextEvent
 {
   [event_queue addObject:gnustep_gui_null_event];
-  return gnustep_gui_null_event;
 }
 
 - (NSEvent *)peekNextEvent

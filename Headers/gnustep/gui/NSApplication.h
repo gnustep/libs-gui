@@ -271,7 +271,7 @@ extern NSString *NSEventTrackingRunLoopMode;
 + (NSEvent *)getNullEvent;
 
 // Get next event
-- (NSEvent *)getNextEvent;
+- (void)getNextEvent;
 - (NSEvent *)peekNextEvent;
 
 // handle a non-translated event

@@ -45,6 +45,7 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/PSMatrix.h>
+#include <AppKit/NSWindowView.h>
 
 #define ASSIGN(variable, value) \
   [value retain]; \
@@ -128,6 +129,9 @@ static BOOL _needsFlushWindows = YES;
 
 - (void)dealloc
 {
+  // Release the window view
+  if (content_view) [[content_view superview] release];
+
   // Release the content view
   if (content_view) [content_view release];
 
@@ -212,10 +216,32 @@ static BOOL _needsFlushWindows = YES;
 
 - (void)setContentView:(NSView *)aView
 {
+  NSView *wv;
+
+  // Cannot have a nil content view
+  if (!aView)
+    aView = [[[NSView alloc] initWithFrame: frame] autorelease];
+
+  // If the window view hasn't been created yet
+  // then create it
+  if ((!content_view) || ([content_view superview] == nil))
+    {
+      wv = [[NSWindowView alloc] initWithFrame: frame];
+      [wv viewWillMoveToWindow: self];
+    }
+  else
+    wv = [content_view superview];
+
   if (content_view)
-    [content_view viewWillMoveToWindow:nil];
+    {
+      [content_view removeFromSuperview];
+      [content_view viewWillMoveToWindow:nil];
+    }
 
   ASSIGN(content_view, aView);
+
+  // Add to our window view
+  [wv addSubview: content_view];
 
   // Tell the view its changing windows
   [content_view viewWillMoveToWindow:self];
@@ -622,8 +648,8 @@ static BOOL _needsFlushWindows = YES;
   /* Temporary disable displaying */
   [self disableFlushWindow];
 
-  // Draw the content view
-  [content_view display];
+  // Draw the window view
+  [[content_view superview] display];
 
   /* Reenable displaying and flush the window */
   [self enableFlushWindow];
@@ -632,7 +658,7 @@ static BOOL _needsFlushWindows = YES;
 - (void)displayIfNeeded
 {
   if (needs_display) {
-    [content_view _displayNeededViews];
+    [[content_view superview] _displayNeededViews];
     needs_display = NO;
   }
 }
@@ -646,7 +672,7 @@ static BOOL _needsFlushWindows = YES;
 {
   needs_flush = NO;
   [_flushRectangles removeAllObjects];
-  [content_view _recursivelyResetNeedsDisplayInAllViews];
+  [[content_view superview] _recursivelyResetNeedsDisplayInAllViews];
 }
 
 - (void)flushWindowIfNeeded
@@ -671,9 +697,10 @@ static BOOL _needsFlushWindows = YES;
   originMatrix = [PSMatrix new];
   sizeMatrix = [PSMatrix new];
 
-  [content_view _collectInvalidatedRectanglesInArray:_flushRectangles
-		originMatrix:originMatrix
-		sizeMatrix:sizeMatrix];
+  [[content_view superview]
+    _collectInvalidatedRectanglesInArray:_flushRectangles
+    originMatrix:originMatrix
+    sizeMatrix:sizeMatrix];
 
   [originMatrix release];
   [sizeMatrix release];
@@ -787,7 +814,7 @@ static BOOL _needsFlushWindows = YES;
 
 - (void)discardCursorRects
 {
-  [self discardCursorRectsForView: content_view];
+  [self discardCursorRectsForView: [content_view superview]];
 }
 
 - (void)enableCursorRects
@@ -819,7 +846,7 @@ static BOOL _needsFlushWindows = YES;
 - (void)resetCursorRects
 {
   // Tell all the views to reset their cursor rects
-  [self resetCursorRectsForView: content_view];
+  [self resetCursorRectsForView: [content_view superview]];
 
   // Cursor rects are now valid
   cursor_rects_valid = YES;

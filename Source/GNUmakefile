@@ -97,6 +97,7 @@ NSTextField.m \
 NSTextFieldCell.m \
 NSView.m \
 NSWindow.m \
+NSWindowView.m \
 NSWorkspace.m \
 TrackingRectangle.m \
 PSMatrix.m \
@@ -178,9 +179,9 @@ AppKit/NSTextField.h \
 AppKit/NSTextFieldCell.h \
 AppKit/NSView.h \
 AppKit/NSWindow.h \
+AppKit/NSWindowView.h \
 AppKit/NSWorkspace.h \
 AppKit/TrackingRectangle.h \
-AppKit/config.h \
 AppKit/nsimage-tiff.h \
 AppKit/PSMatrix.h \
 DPSClient/NSDPSContext.h \
