@@ -1,5 +1,13 @@
 Mon Oct 25  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
+	The merit should all go to David Lee Ludwig <davidl@wpi.edu>, for
+ 	reporting the bug in border drawing, and suggesting the fix.
+	* Source/NSBrowser.m: ([GSBrowserTitleCell]): new class.
+	* Source/NSBrowser.m ([-initWithFrame:]): use GSBrowserTitleCell
+	to draw the titles.
+		
+Mon Oct 25  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
 	* Source/NSBrowser.m ([-initWithFrame:]): fixed bug in drawing
  	title background.  
 	
