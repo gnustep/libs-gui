@@ -521,7 +521,8 @@ byExtendingSelection: (BOOL) flag
 	 whether it should be supported at all.  If it is, perhaps
 	 it's going to be done through a private method between the
 	 tableview and the scrollview. */
-      NSLog (@"setHeaderView: called after NSTableView has been put in the view tree!"); 
+      NSLog (@"setHeaderView: called after NSTableView has been put "
+	     @"in the view tree!"); 
     }
   [_headerView setTableView: nil];
   ASSIGN (_headerView, aHeaderView);
@@ -878,8 +879,8 @@ byExtendingSelection: (BOOL) flag
   if (_dataSource == nil)
     return;
 
-  /* Using columnAtPoint: here would make it called twice per row per drawn rect
-     - so we avoid it and do it natively */
+  /* Using columnAtPoint: here would make it called twice per row per drawn 
+     rect - so we avoid it and do it natively */
 
   /* Determine starting column as fast as possible */
   x_pos = NSMinX (aRect);
@@ -930,7 +931,8 @@ byExtendingSelection: (BOOL) flag
   float maxX = NSMaxX (aRect);
   float minY = NSMinY (aRect);
   float maxY = NSMaxY (aRect);
-  /* Using columnAtPoint:, rowAtPoint: here calls them only twice per drawn rect */
+  /* Using columnAtPoint:, rowAtPoint: here calls them only twice 
+     per drawn rect */
   int startingRow    = [self rowAtPoint: 
 			       NSMakePoint (_bounds.origin.x, minY)];
   int endingRow      = [self rowAtPoint: 
@@ -1040,12 +1042,102 @@ byExtendingSelection: (BOOL) flag
 
 - (void) scrollRowToVisible: (int)rowIndex
 {
-  // TODO
+  if (_super_view != nil)
+    {
+      NSRect rowRect = [self rectOfRow: rowIndex];
+      NSRect visibleRect = [self convertRect: [_super_view bounds]
+				 toView: self];
+
+      // If the row is over the top, or it is partially visible 
+      // on top,
+      if ((rowRect.origin.y < visibleRect.origin.y))	
+	{
+	  // Then make it visible on top
+	  NSPoint newOrigin;  
+	  
+	  newOrigin.x = visibleRect.origin.x;
+	  newOrigin.y = rowRect.origin.y;
+	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
+				       newOrigin];
+	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
+	  return;
+	}
+      // If the row is under the bottom, or it is partially visible on
+      // the bottom,
+      if (NSMaxY (rowRect) > NSMaxY (visibleRect))
+	{
+	  // Then make it visible on bottom
+	  NSPoint newOrigin;  
+	  
+	  newOrigin.x = visibleRect.origin.x;
+	  newOrigin.y = visibleRect.origin.y;
+	  newOrigin.y += NSMaxY (rowRect) - NSMaxY (visibleRect);
+	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
+				       newOrigin];
+	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
+	  return;
+	}
+    }
 }
 
 - (void) scrollColumnToVisible: (int)columnIndex
 {
-  // TODO
+  if (_super_view != nil)
+    {
+      NSRect columnRect = [self rectOfColumn: columnIndex];
+      NSRect visibleRect = [self convertRect: [_super_view bounds]
+				 toView: self];
+      float diff;
+
+      // If the row is out on the left, or it is partially visible 
+      // on the left
+      if ((columnRect.origin.x < visibleRect.origin.x))	
+	{
+	  // Then make it visible on the left
+	  NSPoint newOrigin;  
+	  
+	  newOrigin.x = columnRect.origin.x;
+	  newOrigin.y = visibleRect.origin.y;
+	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
+				       newOrigin];
+	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
+	  if (_headerView != nil)
+	    {
+	      NSClipView *headerClipView 
+		= (NSClipView *)[_headerView superview];
+	      // Scroll the header view too 
+	      newOrigin = [headerClipView bounds].origin;
+	      newOrigin.x += columnRect.origin.x - visibleRect.origin.x;
+	      [headerClipView scrollToPoint: newOrigin];
+	    }
+	  return;
+	}
+      diff = NSMaxX (columnRect) - NSMaxX (visibleRect);
+      // If the row is out on the right, or it is partially visible on
+      // the right,
+      if (diff > 0)
+	{
+	  // Then make it visible on the right
+	  NSPoint newOrigin;
+
+	  newOrigin.x = visibleRect.origin.x;
+	  newOrigin.y = visibleRect.origin.y;
+	  newOrigin.x += diff;
+	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
+				       newOrigin];
+	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
+	  if (_headerView != nil)
+	    {
+	      // Scroll the header view too
+	      NSClipView *headerClipView 
+		= (NSClipView *)[_headerView superview];
+	      newOrigin	= [headerClipView bounds].origin;
+	      newOrigin.x += diff;
+	      [headerClipView scrollToPoint: newOrigin];
+	    }
+	  return;
+	}
+    }
 }
 
 
