@@ -243,7 +243,6 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 // GNU utility methods
 - (void) _illegalMovement: (int) notNumber;
-- (BOOL) performPasteOperation: (NSPasteboard*)pboard;
 
 /*
  * various GNU extensions
@@ -1282,8 +1281,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   if (self  == [NSText class])
     {
-      NSArray  *r;
-      NSArray  *s;
+      NSArray  *types;
 
       [self setVersion: 1];                     // Initial version
 
@@ -1292,11 +1290,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [self setSelectionParagraphGranularitySet:
 	      [NSCharacterSet characterSetWithCharactersInString:
 				[self newlineString]]];
-      r  = [NSArray arrayWithObjects: NSStringPboardType, nil];
-      s  = [NSArray arrayWithObjects: NSStringPboardType, nil];
+      types  = [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, NSRTFDPboardType, nil];
 
-      [[NSApplication sharedApplication] registerServicesMenuSendTypes: s
-                                                          returnTypes: r];
+      [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
+					 returnTypes: types];
     }
 }
 
@@ -1343,7 +1340,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void)dealloc
 {
-  [self unregisterDraggedTypes];
   RELEASE(_background_color);
   RELEASE(_caret_color);
   RELEASE(_textStorage);
@@ -1508,7 +1504,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (flag)
     _tf.is_rich_text = flag;
   _tf.imports_graphics = flag;
-  [self updateDragTypeRegistration];
 }
 
 - (void) setRichText: (BOOL)flag
@@ -1519,8 +1514,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       _tf.imports_graphics = flag;
       [self setString: [self string]];
     }
-
-  [self updateDragTypeRegistration];
 }
 
 - (void)setSelectable: (BOOL)flag
@@ -1620,77 +1613,31 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
  */
 - (void) copy: (id)sender
 {
-  NSMutableArray *types = [NSMutableArray arrayWithObject:
-					    NSStringPboardType];
-  NSPasteboard *pboard = [NSPasteboard generalPasteboard];
-
-  if (_tf.is_rich_text)
-    [types addObject: NSRTFPboardType];
+  NSMutableArray *types = [NSMutableArray array];
 
   if (_tf.imports_graphics)
     [types addObject: NSRTFDPboardType];
-
-  [pboard declareTypes: types owner: self];
-
-  [pboard setString: [[self string] substringWithRange: _selected_range]
-	  forType: NSStringPboardType];
-
   if (_tf.is_rich_text)
-    [pboard setData: [self RTFFromRange: _selected_range]
-	    forType: NSRTFPboardType];
+    [types addObject: NSRTFPboardType];
 
-  if (_tf.imports_graphics)
-    [pboard setData: [self RTFDFromRange: _selected_range]
-	    forType: NSRTFDPboardType];
+  [types addObject: NSStringPboardType];
+
+  [self writeSelectionToPasteboard: [NSPasteboard generalPasteboard]
+	types: types];
 }
 
 // Copy the current font to the font pasteboard
 - (void) copyFont: (id)sender
 {
-  NSMutableArray *types = [NSMutableArray arrayWithObject:
-					    NSFontPboardType];
-  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSFontPboard];
-
-  // FIXME: We should use fontAttributesInRange: with the selection
-  NSFont *font = [self font];
-  NSData *data = nil;
-
-  if (font != nil)
-    // FIXME: Should use different format here
-    data = [NSArchiver archivedDataWithRootObject: font];
-
-  if (data != nil)
-    {
-      [pboard declareTypes: types owner: self];
-      [pboard setData: data forType: NSFontPboardType];
-    }
+  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: NSFontPboard]
+	type: NSFontPboardType];
 }
 
 // Copy the current ruler settings to the ruler pasteboard
 - (void) copyRuler: (id)sender
 {
-  NSMutableArray *types = [NSMutableArray arrayWithObject:
-					    NSRulerPboardType];
-  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSRulerPboard];
-  NSParagraphStyle *style;
-  NSData * data = nil;
-
-  if (!_tf.is_rich_text)
-    return;
-
-  // FIXME: Should use rulerAttributesInRange:
-  style = [_textStorage attribute: NSParagraphStyleAttributeName
-			atIndex: _selected_range.location
-			effectiveRange: &_selected_range];
-
-  if (style != nil)
-    data = [NSArchiver archivedDataWithRootObject: style];
-
-  if (data != nil)
-    {
-      [pboard declareTypes: types owner: self];
-      [pboard setData: data forType: NSRulerPboardType];
-    }
+  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: NSRulerPboard]
+	type: NSRulerPboardType];
 }
 
 - (void) delete: (id)sender
@@ -1709,19 +1656,21 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) paste: (id)sender
 {
-  [self performPasteOperation: [NSPasteboard generalPasteboard]];
+  [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]];
 }
 
 - (void) pasteFont: (id)sender
 {
-  [self performPasteOperation:
-	  [NSPasteboard pasteboardWithName: NSFontPboard]];
+  [self readSelectionFromPasteboard:
+	    [NSPasteboard pasteboardWithName: NSFontPboard]
+	type: NSFontPboardType];
 }
 
 - (void) pasteRuler: (id)sender
 {
-  [self performPasteOperation:
-	  [NSPasteboard pasteboardWithName: NSRulerPboard]];
+  [self readSelectionFromPasteboard:
+	    [NSPasteboard pasteboardWithName: NSRulerPboard]
+	type: NSRulerPboardType];
 }
 
 - (void) selectAll: (id)sender
@@ -2030,9 +1979,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     {
       if (!_tf.is_rich_text)
 	{
-	  // not [self setRichText: YES] for efficiancy reasons
-	  _tf.is_rich_text = YES;
-	  [self updateDragTypeRegistration];
+	  [self setRichText: YES];
 	}
       [self replaceRange: NSMakeRange (0, [self textLength])
 	    withAttributedString: peek];
@@ -2561,15 +2508,14 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (id) validRequestorForSendType: (NSString*) sendType
 		      returnType: (NSString*) returnType
 {
-  if ((!sendType || [sendType isEqual: NSStringPboardType])
-      && (!returnType || [returnType isEqual: NSStringPboardType]))
+  if ((!sendType || (_selected_range.length && 
+		     [sendType isEqual: NSStringPboardType]))
+      && (!returnType || ([self isEditable] && 
+			  [returnType isEqual: NSStringPboardType])))
     {
-      if ((_selected_range.length || !sendType)
-	  && ([self isEditable] || !returnType))
-	{
-	  return self;
-	}
+      return self;
     }
+
   return [super validRequestorForSendType: sendType
 		returnType: returnType];
 
@@ -2702,7 +2648,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	     replacementString: [attrString string]])
     return;
   [_textStorage beginEditing];
-  if ([self isRichText])
+  if (_tf.is_rich_text)
     [_textStorage replaceCharactersInRange: aRange
 		  withAttributedString: attrString];
   else
@@ -2766,7 +2712,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (insertRange.location == NSNotFound)
     return;
 
-  if ([self isRichText])
+  if (_tf.is_rich_text)
     {
       [self replaceRange: insertRange
 	    withAttributedString: AUTORELEASE([[NSAttributedString alloc]
@@ -2959,21 +2905,286 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [_typingAttributes setObject: style forKey: NSParagraphStyleAttributeName];
 }
 
-- (NSArray*) acceptableDragTypes
+- (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
+		    restrictedToTypesFromArray: (NSArray*)allowedTypes
 {
-  NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSStringPboardType,
-					NSColorPboardType, nil];
+  NSEnumerator *enumerator;
+  NSString *type;
+
+  if (availableTypes == nil)
+    return nil;
+
+  if (allowedTypes == nil)
+    return [availableTypes objectAtIndex: 0];
+    
+  enumerator = [allowedTypes objectEnumerator];
+  while ((type = [enumerator nextObject]) != nil)
+    {
+      if ([availableTypes containsObject: type])
+        {
+	  return type;
+        }
+    }
+  return nil;  
+}
+
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
+{
+/*
+Reads the text view's preferred type of data from the pasteboard specified
+by the pboard parameter. This method
+invokes the preferredPasteboardTypeFromArray: restrictedToTypesFromArray: 
+method to determine the text view's
+preferred type of data and then reads the data using the
+readSelectionFromPasteboard: type: method. Returns YES if the
+data was successfully read.
+*/
+  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
+			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+  
+  if (type == nil)
+    return NO;
+
+  return [self readSelectionFromPasteboard: pboard
+	       type: type];
+}
+
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
+				type: (NSString*)type 
+{
+/*
+Reads data of the given type from pboard. The new data is placed at the
+current insertion point, replacing the current selection if one exists.
+Returns YES if the data was successfully read.
+
+You should override this method to read pasteboard types other than the
+default types. Use the rangeForUserTextChange method to obtain the range
+of characters (if any) to be replaced by the new data.
+*/
+
+  if ([type isEqualToString: NSStringPboardType])
+    {
+      [self insertText: [pboard stringForType: NSStringPboardType]];
+      return YES;
+    } 
 
   if ([self isRichText])
-    [ret addObject: NSRTFPboardType];
+    {
+      if ([type isEqualToString: NSRTFPboardType])
+	{
+	  [self replaceRange: [self rangeForUserTextChange]
+		withAttributedString: AUTORELEASE([[NSAttributedString alloc] 
+					 initWithRTF:
+					   [pboard dataForType: NSRTFPboardType]
+					 documentAttributes: NULL])];
+	  return YES;
+	}
+    }
+
   if (_tf.imports_graphics)
-    [ret addObject: NSRTFDPboardType];
+    {
+      // FIXME: Should also support: NSFileContentsPboardType and NSTIFFPboardType
+      if ([type isEqualToString: NSRTFDPboardType])
+	{
+	  [self replaceRange: [self rangeForUserTextChange]
+		withAttributedString: AUTORELEASE([[NSAttributedString alloc]
+					 initWithRTFD:
+					   [pboard dataForType: NSRTFDPboardType]
+					 documentAttributes: NULL])];
+	  return YES;
+	}
+    }
+
+  // color accepting
+  if ([type isEqualToString: NSColorPboardType])
+    {
+      NSColor *color = [NSColor colorFromPasteboard: pboard];
+      NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+      if (aRange.location != NSNotFound)
+	[self setTextColor: color range: aRange];
+
+      return YES;
+    }
+
+  // font pasting
+  if ([type isEqualToString: NSFontPboardType])
+    {
+      NSData *data = [pboard dataForType: NSFontPboardType];
+
+      if (data != nil)
+	{
+	  // FIXME: Should use different format here
+	  NSFont *font = [NSUnarchiver unarchiveObjectWithData: data];
+
+	  if (font != nil)
+	    {
+	      NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+	      if (aRange.location != NSNotFound)
+		[self setFont: font ofRange: aRange];
+
+	      return YES;
+	    }
+	}
+      return NO;
+    }
+
+  // ruler pasting
+  if ([type isEqualToString: NSRulerPboardType])
+    {
+      NSData *data = [pboard dataForType: NSRulerPboardType];
+
+      if (data != nil)
+	{
+	  // FIXME: Should use different format here
+	  NSParagraphStyle *style = [NSUnarchiver unarchiveObjectWithData: data];
+	  if (style != nil)
+	    {
+	      NSRange aRange = [self rangeForUserParagraphAttributeChange];
+
+	      if (aRange.location != NSNotFound)
+		  // FIXME: Pasting of ruler is missing
+		  ;
+	    }
+	}
+    }
+ 
+  return NO;
+}
+
+- (NSArray*) readablePasteboardTypes
+{
+  // get default types, what are they?
+    NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSRulerPboardType,
+					  NSColorPboardType, NSFontPboardType, nil];
+
+  if (_tf.imports_graphics)
+    {
+      [ret addObject: NSRTFDPboardType];
+      //[ret addObject: NSTIFFPboardType];
+      //[ret addObject: NSFileContentsPboardType];
+    }
+  if (_tf.is_rich_text)
+    [ret addObject: NSRTFPboardType];
+
+  [ret addObject: NSStringPboardType];
+
   return ret;
 }
 
-- (void) updateDragTypeRegistration
+- (NSArray*) writablePasteboardTypes
 {
-  [self registerForDraggedTypes: [self acceptableDragTypes]];
+  // the selected text can be written to the pasteboard with which types.
+  return [self readablePasteboardTypes];
+}
+
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
+			       type: (NSString*)type
+{
+/*
+Writes the current selection to pboard using the given type. Returns YES
+if the data was successfully written. You can override this method to add
+support for writing new types of data to the pasteboard. You should invoke
+super's implementation of the method to handle any types of data your
+overridden version does not.
+*/
+
+  return [self writeSelectionToPasteboard: pboard
+	       types: [NSArray arrayWithObject: type]];
+}
+
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
+			      types: (NSArray*)types
+{
+
+/* Writes the current selection to pboard under each type in the types
+array. Returns YES if the data for any single type was written
+successfully.
+
+You should not need to override this method. You might need to invoke this
+method if you are implementing a new type of pasteboard to handle services
+other than copy/paste or dragging. */
+  BOOL ret = NO;
+  NSEnumerator *enumerator;
+  NSString *type;
+
+  if (types == nil)
+    return NO;
+
+  [pboard declareTypes: types owner: self];
+    
+  enumerator = [types objectEnumerator];
+  while ((type = [enumerator nextObject]) != nil)
+    {
+      if ([type isEqualToString: NSStringPboardType])
+        {
+	  ret = ret || [pboard setString: [[self string] substringWithRange: _selected_range] 
+			       forType: NSStringPboardType];
+	}
+
+      if ([type isEqualToString: NSRTFPboardType])
+        {
+	  ret = ret || [pboard setData: [self RTFFromRange: _selected_range]
+			       forType: NSRTFPboardType];
+	}
+
+      if ([type isEqualToString: NSRTFDPboardType])
+        {
+	  ret = ret || [pboard setData: [self RTFDFromRange: _selected_range]
+			       forType: NSRTFDPboardType];
+	}
+
+      if ([type isEqualToString: NSColorPboardType])
+        {
+	  NSColor *color = [self textColor];
+
+	  if (color != nil)
+	    {
+	      [color writeToPasteboard:  pboard];
+	      ret = YES;
+	    }
+	}
+
+      if ([type isEqualToString: NSFontPboardType])
+        {
+	  // FIXME: We should use fontAttributesInRange: with the selection
+	  NSFont *font = [self font];
+	  NSData *data = nil;
+	  
+	  if (font != nil)
+	    // FIXME: Should use different format here
+	    data = [NSArchiver archivedDataWithRootObject: font];
+
+	  if (data != nil)
+	    {
+	      [pboard setData: data forType: NSFontPboardType];
+	      ret = YES;
+	    }
+	}
+
+      if ([type isEqualToString: NSRulerPboardType])
+        {
+	  NSParagraphStyle *style;
+	  NSData *data = nil;
+
+	  // FIXME: Should use rulerAttributesInRange:
+	  style = [_textStorage attribute: NSParagraphStyleAttributeName
+				atIndex: _selected_range.location
+				effectiveRange: &_selected_range];
+
+	  if (style != nil)
+	    data = [NSArchiver archivedDataWithRootObject: style];
+
+	  if (data != nil)
+	    {
+	      [pboard setData: data forType: NSRulerPboardType];
+	      ret = YES;
+	    }
+	}
+    }
+
+  return ret;
 }
 
 @end
@@ -3052,131 +3263,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
-  return [self performPasteOperation: [sender draggingPasteboard]];
+  return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
 }
 // end: drag accepting---------------------------------
-
-
-// <!>
-// handle ruler pasteboard as well!
-- (BOOL) performPasteOperation: (NSPasteboard*)pboard
-{
-  // color accepting
-  if ([pboard availableTypeFromArray: [NSArray arrayWithObject:
-						 NSColorPboardType]])
-    {
-      NSColor	*color = [NSColor colorFromPasteboard: pboard];
-
-      if ([self isRichText])
-	{
-	  [self setTextColor: color range: _selected_range];
-	}
-      else
-	[self setTextColor: color];
-      return YES;
-    }
-
-  // font pasting
-  if ([pboard availableTypeFromArray: [NSArray arrayWithObject:
-						 NSFontPboardType]])
-    {
-      NSData *data = [pboard dataForType: NSFontPboardType];
-
-      if (data != nil)
-	{
-	  // FIXME: Should use different format here
-	  NSFont *font = [NSUnarchiver unarchiveObjectWithData: data];
-
-	  if (font != nil)
-	    {
-	      if ([self isRichText])
-		{
-		  if (_selected_range.length)
-		    [self setFont: font ofRange: _selected_range];
-		  else
-		    [_typingAttributes
-		      setObject: font
-		      forKey: NSFontAttributeName];
-		}
-	      else
-		[self setFont: font];
-	      return YES;
-	    }
-	}
-      //return NO;
-    }
-
-  // FIXME: Pasting of ruler is missing
- 
-  if (_tf.imports_graphics)
-    {
-      NSArray *types = [NSArray arrayWithObjects: NSFileContentsPboardType,
-				NSRTFDPboardType, NSRTFPboardType,
-				NSStringPboardType, NSTIFFPboardType, nil];
-      if ([[pboard availableTypeFromArray: types]
-	    isEqualToString: NSRTFDPboardType])
-	{
-	  [self replaceRange: _selected_range
-		withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-					 initWithRTFD:
-					   [pboard dataForType: NSRTFDPboardType]
-					 documentAttributes: NULL])];
-	  return YES;
-	}
-      else if ([[pboard availableTypeFromArray: types]
-		 isEqualToString: NSRTFPboardType])
-	{
-	  [self replaceRange: _selected_range
-		withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-					 initWithRTF:
-					   [pboard dataForType: NSRTFPboardType]
-					 documentAttributes: NULL])];
-	  return YES;
-	}
-      else if ([[pboard availableTypeFromArray: types]
-		 isEqualToString: NSStringPboardType])
-	{
-	  [self insertText: [pboard stringForType: NSStringPboardType]];
-	  return YES;
-	}
-    }
-  else if ([self isRichText])
-    {
-      NSArray *types = [NSArray arrayWithObjects: NSRTFPboardType,
-				NSStringPboardType, nil];
-      if ([[pboard availableTypeFromArray: types]
-	    isEqualToString: NSRTFPboardType])
-	{
-	  [self replaceRange: _selected_range
-		withAttributedString: AUTORELEASE([[NSAttributedString alloc] 
-					 initWithRTF:
-					   [pboard dataForType: NSRTFPboardType]
-					 documentAttributes: NULL])];
-	  return YES;
-	}
-      else if ([[pboard availableTypeFromArray: types]
-		 isEqualToString: NSStringPboardType])
-	{
-	  [self insertText: [pboard stringForType: NSStringPboardType]];
-	  return YES;
-	}
-    }
-  else	// plain text
-    {
-      NSArray *types = [NSArray arrayWithObjects: NSStringPboardType, nil];
-      if ([[pboard availableTypeFromArray: types]
-	    isEqualToString: NSStringPboardType])
-	{
-	  [self insertText: [pboard stringForType: NSStringPboardType]];
-	  return YES;
-	}
-    }
-  return NO;
-}
 
 // central text deletion/backspace method
 // (takes care of optimized redraw/ cursor positioning)
