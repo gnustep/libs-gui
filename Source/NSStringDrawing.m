@@ -264,6 +264,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       DPSmoveto(draw->ctxt, origin.x, origin.y);
       DPSlineto(draw->ctxt, origin.x + run->width, origin.y);
+      DPSstroke(draw->ctxt);
     }
 }
 

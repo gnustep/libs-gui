@@ -1516,6 +1516,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  DPSgsave(ctxt);
 	}
     }
+  /* This is obsolete. Backends shouldn't depend on this */
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
 

@@ -1,3 +1,8 @@
+2002-05-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m: More documentation.
+	* Source/NSStringDrawing.m (drawRun): stroke the underline.	
+
 2002-05-02  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Update to autoconf 2.53 from configure.in
@@ -6,8 +11,8 @@
 
 2002-05-01  Adam Fedor  <fedor@gnu.org>
 
-	* Source/NSView.m (-resizeWithOldSuperviewSize:): Check supeview
-	before getting frame size (Solaris limintation).
+	* Source/NSView.m (-resizeWithOldSuperviewSize:): Check object
+	before getting struct. (Solaris limintation).
 
 2002-04-30  Adam Fedor  <fedor@gnu.org>
 

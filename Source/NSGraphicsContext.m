@@ -780,7 +780,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/** Sets the current color for fill operations. The values array
+/** Sets the current color for stroke operations. The values array
     should have n components, where n corresponds to the number of
     color components required to specify the color in the current
     colorspace. */
@@ -792,16 +792,27 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Text operations */
 /* ----------------------------------------------------------------------- */
+/** Displays a string as in the PostScript ashow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations and/or the -GSSetCharacterSpacing: method 
+*/
 - (void) DPSashow: (float)x : (float)y : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Displays a string as in the PostScript awidthshow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations and/or the -GSSetCharacterSpacing: method 
+*/
 - (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Appends to the current path a path that is equivalent to the
+    outlines of the glyphs in the string. This results in a path
+    that can be used for stroking, filling or clipping */
 - (void) DPScharpath: (const char *)s : (int)b 
 {
   [self subclassResponsibility: _cmd];
@@ -812,21 +823,37 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Displays a string as in the PostScript widthshow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations.
+*/
 - (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Displays a string as in the PostScript widthshow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations.
+*/
 - (void) DPSxshow: (const char *)s : (const float*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Displays a string as in the PostScript xyshow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations.
+*/
 - (void) DPSxyshow: (const char *)s : (const float*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Displays a string as in the PostScript yshow operator. This operator
+    is obsolete. You should instead use -DPSshow: with appropriate
+    -DPSrmoveto: operations.
+*/
 - (void) DPSyshow: (const char *)s : (const float*)numarray : (int)size 
 {
   [self subclassResponsibility: _cmd];
@@ -1256,6 +1283,9 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Generic method to draw an image into a rect. The image is defined
+    by imageref, an opaque structure. Support for this method hasn't
+    been implemented yet, so it should not be used anywhere. */
 - (void) GSDrawImage: (NSRect) rect: (void *) imageref
 {
   [self subclassResponsibility: _cmd];
@@ -1264,11 +1294,15 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Client functions */
 /* ----------------------------------------------------------------------- */
+/** Write the string (with printf substitutions) to a PostScript context.
+    Other output contexts will likely ignore this */
 - (void) DPSPrintf: (char *)fmt : (va_list)args
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Write the encoded data to a PostScript context.
+    Other output contexts will likely ignore this */
 - (void) DPSWriteData: (char *)buf : (unsigned int)count
 {
   [self subclassResponsibility: _cmd];
@@ -1280,17 +1314,17 @@ NSGraphicsContext	*GSCurrentContext()
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
 @implementation NSGraphicsContext (NSGraphics)
-/*
- * Read the Color at a Screen Position
- */
+/** Read the Color at a Screen Position
+*/
 - (NSColor *) NSReadPixel: (NSPoint) location
 {
   [self subclassResponsibility: _cmd];
   return nil;
 }
 
-/*
- * Render Bitmap Images
+/** Generic method to render bitmap images. This method shouldn't be used
+    anywhere except in the AppKit itself. It will be replaced by the more
+    flexible GSDrawImage method sometime in the future.
  */
 - (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
 		     : (int) bitsPerSample : (int) samplesPerPixel 
@@ -1301,18 +1335,21 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/*
- * Play the System Beep
- */
+/** Play the System Beep */
 - (void) NSBeep
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** This method is used by the backend, but has been rendered obsolete.
+    Do not use it in any code or in any backend implementation as it
+    may disappear at any point. */
 - (void) GSWSetViewIsFlipped: (BOOL) flipped
 {
 }
 
+/** Returns YES if the current focused view is flipped. This is an
+    obsolete method. Use [[NSView focusView] isFlipped] instead */
 - (BOOL) GSWViewIsFlipped
 {
   return [[self focusView] isFlipped];
