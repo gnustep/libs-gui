@@ -278,29 +278,40 @@ paraBreakCSet()
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return location;
+	return length;
       range = NSMakeRange(range.location, length - range.location);
       range = [str rangeOfCharacterFromSet: wordCSet()
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return location;
+	return length;
       return range.location;
     }
   else
     {
+      BOOL inWord = [wordCSet() characterIsMember: [str characterAtIndex: location]];
+      
       range = NSMakeRange(0, location);
+      if (!inWord)
+	{
+	    range = [str rangeOfCharacterFromSet: wordCSet()
+			 options: NSBackwardsSearch|NSLiteralSearch
+			 range: range];
+	    if (range.length == 0)
+	      return 0;
+	    range = NSMakeRange(0, range.location);
+	}
       range = [str rangeOfCharacterFromSet: wordBreakCSet()
-				   options: NSBackwardsSearch|NSLiteralSearch
-				     range: range];
+		   options: NSBackwardsSearch|NSLiteralSearch
+		   range: range];
       if (range.length == 0)
-	return location;
-      range = NSMakeRange(0, range.location);
+	return 0;
+      range = NSMakeRange(range.location, location - range.location);
       range = [str rangeOfCharacterFromSet: wordCSet()
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return location;
+	return 0;
       return range.location;
     }
 }
@@ -540,7 +551,7 @@ documentAttributes: (NSDictionary**)dict
   id value;
   unsigned loc = range.location;
   NSRange effRange;
-
+  
   if (range.location < 0 || NSMaxRange(range) > [self length])
     {
       [NSException raise: NSRangeException
@@ -555,6 +566,10 @@ documentAttributes: (NSDictionary**)dict
 
       if (value == nil)
 	value = [NSMutableParagraphStyle defaultParagraphStyle];
+      else if (!NSLocationInRange(effRange.location, range) || 
+	       !NSLocationInRange(NSMaxRange(effRange)-1, range))
+	// the range is not fully enclosed in the range that is changed 
+	value = [value mutableCopy];
 
       [value setAlignment: alignment];
 
