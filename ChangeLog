@@ -1,3 +1,18 @@
+Mon Sep 20  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPanel.m: Remove unnecessary -center messages.
+	* Source/NSApplication.m: Add explanatory comment about centering.
+
+Mon Sep 20  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-runModalForWindow:]): Automatically
+	invoke [-center] on the window, if the window is a panel.
+	(following the spec for NSWindow's center method.)  
+	* Source/NSSavePanel.m ([-runModalForDirectory:path:filename]):
+	Simplified, removed some useless comands:  NSApplication's 
+	-runModalForWindow: already both centers and
+	makeKeyAndOrderFronts the panel, as required by the specs.
+
 Sat Sep 18  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Applied N. Pero's fix for lockFocus.

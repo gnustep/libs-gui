@@ -423,6 +423,12 @@ NSApplication	*NSApp = nil;
   static NSModalSession theSession;
   static int code;
 
+  /*
+   * The NSWindow documentation says runModalForWindow centers panels.
+   */
+  if ([theWindow isKindOfClass: [NSPanel class]])
+    [theWindow center];
+
   theSession = NULL;
   code = NSRunContinuesResponse;
 

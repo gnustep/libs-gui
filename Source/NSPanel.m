@@ -557,7 +557,6 @@ NSGetAlertPanel(NSString *title,
 					 backing: NSBackingStoreRetained
 					 defer: YES
 					 screen: nil];
-	  [panel center];
 
 #endif
     }
@@ -691,7 +690,6 @@ NSRunAlertPanel(NSString *title,
       standardAlertPanel = panel;
     }
 
-  [panel center];
   if ([NSApp isActive])
     [panel makeKeyWindow];
   [panel orderFrontRegardless];
@@ -716,7 +714,6 @@ NSRunCriticalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
-  [panel center];
   if ([NSApp isActive])
     [panel makeKeyWindow];
   [panel orderFrontRegardless];
@@ -741,7 +738,6 @@ NSRunInformationalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
-  [panel center];
   if ([NSApp isActive])
     [panel makeKeyWindow];
   [panel orderFrontRegardless];
@@ -807,7 +803,6 @@ NSRunLocalizedAlertPanel(NSString *table,
       standardAlertPanel = panel;
     }
 
-  [panel center];
   if ([NSApp isActive])
     [panel makeKeyWindow];
   [panel orderFrontRegardless];

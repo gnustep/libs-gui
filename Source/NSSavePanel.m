@@ -386,8 +386,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (int) runModalForDirectory:(NSString *) path file:(NSString *) filename
 {
-  NSRect panelFrame = frame;
-  NSRect screenFrame = [[NSScreen mainScreen] frame];
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -runModalForDirectory: filename:");
 
   if ( !path || !filename )
@@ -400,10 +398,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [self setDirectory: path];
   [_form setStringValue: filename];
 
-  [self setFrameOrigin:
-      NSMakePoint(NSMidX(screenFrame) - NSWidth(panelFrame)/2.0,
-		  NSMidY(screenFrame) - NSHeight(panelFrame)/2.0)]; 
-  [self makeKeyAndOrderFront: self];
   return [NSApp runModalForWindow: self];
 }
 
