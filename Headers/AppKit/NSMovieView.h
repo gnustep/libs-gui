@@ -46,7 +46,7 @@ typedef enum {
     float _volume;
     struct NSMovieViewFlags {
       unsigned int muted: 1;
-      NSQTMovieLoopMode loopMode: 3;
+      unsigned int loopMode: 3;
       unsigned int plays_selection_only: 1;
       unsigned int plays_every_frame: 1;
       unsigned int is_controller_visible: 1;

@@ -1,3 +1,7 @@
+2004-07-13 00:21  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSMovieView.h: Make loopMode ivar an unsigned int.
+
 2004-07-13  Serg Stoyan <stoyan255@ukr.net>
 
 	* Source/NSButtonCell.m:
