@@ -30,10 +30,18 @@
 #define _GNUstep_H_NSTableView
 
 #include <AppKit/NSControl.h>
+#include <AppKit/NSDragging.h>
 
+@class NSArray;
 @class NSTableColumn;
 @class NSTableHeaderView;
 @class NSText;
+@class NSImage;
+
+typedef enum _NSTableViewDropOperation {
+  NSTableViewDropOn,
+  NSTableViewDropAbove
+} NSTableViewDropOperation;
 
 @interface NSTableView : NSControl
 {
@@ -150,7 +158,6 @@
 - (NSColor *) backgroundColor;
 
 /* Selecting Columns and Rows */
-/* NB: ALL TODOS */
 - (void) selectColumn: (int) columnIndex byExtendingSelection: (BOOL)flag;
 - (void) selectRow: (int) rowIndex byExtendingSelection: (BOOL)flag;
 - (void) deselectColumn: (int)columnIndex;
@@ -221,7 +228,6 @@
 - (void) textDidEndEditing: (NSNotification *)aNotification;
 
 /* Persistence */
-/* ALL TODOS */
 - (NSString *) autosaveName;
 - (BOOL) autosaveTableColumns;
 - (void) setAutosaveName: (NSString *)name;
@@ -230,6 +236,27 @@
 /* Delegate */
 - (void) setDelegate: (id)anObject;
 - (id) delegate;
+
+/* indicator image */
+/* NB: ALL TODOS */
+- (NSImage *) indicatorImageInTableColumn: (NSTableColumn *)aTableColumn;
+- (void) setIndicatorImage: (NSImage *)anImage
+	     inTableColumn: (NSTableColumn *)aTableColumn;
+
+/* highlighting columns */
+/* NB: ALL TODOS */
+- (NSTableColumn *) highlightedTableColumn;
+- (void) setHighlightedTableColumn: (NSTableColumn *)aTableColumn;
+
+/* dragging rows */
+/* NB: ALL TODOS */
+- (NSImage*) dragImageForRows: (NSArray*)dragRows
+			event: (NSEvent*)dragEvent
+	      dragImageOffset: (NSPoint*)dragImageOffset;
+- (void) setDropRow: (int)row
+      dropOperation: (NSTableViewDropOperation)operation;
+- (void) setVerticalMotionCanBeginDrag: (BOOL)flag;
+- (BOOL) verticalMotionCanBeginDrag;
 
 @end /* interface of NSTableView */
 
@@ -254,6 +281,18 @@ objectValueForTableColumn: (NSTableColumn *)aTableColumn
     forTableColumn: (NSTableColumn *)aTableColumn
 	       row: (int)rowIndex;
 
+/* Dragging */
+- (BOOL) tableView: (NSTableView*)tableView
+	acceptDrop: (id <NSDraggingInfo>)info
+	       row: (int)row
+     dropOperation: (NSTableViewDropOperation)operation;
+- (NSDragOperation) tableView: (NSTableView*)tableView
+		 validateDrop: (id <NSDraggingInfo>)info
+		  proposedRow: (int)row
+	proposedDropOperation: (NSTableViewDropOperation)operation;
+- (BOOL) tableView: (NSTableView *)tableView
+	 writeRows: (NSArray*)rows
+      toPasteboard: (NSPasteboard*)pboard;
 @end
 
 APPKIT_EXPORT NSString *NSTableViewColumnDidMoveNotification;
@@ -268,6 +307,12 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
 @interface NSObject (NSTableViewDelegate)
 
 - (BOOL) selectionShouldChangeInTableView: (NSTableView *)aTableView;
+- (void) tableView: (NSTableView*)tableView
+didClickTableColumn: (NSTableColumn *)tableColumn;
+- (void) tableView: (NSTableView*)tableView
+didDragTableColumn: (NSTableColumn *)tableColumn;
+- (void) tableView: (NSTableView*)tableView
+mouseDownInHeaderOfTableColumn: (NSTableColumn *)tableColumn;
 - (BOOL)tableView: (NSTableView *)aTableView 
 shouldEditTableColumn: (NSTableColumn *)aTableColumn 
 	      row: (int)rowIndex;

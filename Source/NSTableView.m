@@ -3133,6 +3133,74 @@ byExtendingSelection: (BOOL)flag
   return _delegate;
 }
 
+
+/* indicator image */
+- (NSImage *) indicatorImageInTableColumn: (NSTableColumn *)aTableColumn
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"indicatorImageInTableColumn:", "NSTableView");
+  return nil;
+}
+
+- (void) setIndicatorImage: (NSImage *)anImage
+	     inTableColumn: (NSTableColumn *)aTableColumn
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setIndicatorImage:inTableColumn:", "NSTableView");
+}
+
+/* highlighting columns */
+- (NSTableColumn *) highlightedTableColumn
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"highlightedTableColumn", "NSTableView");
+  return nil;
+}
+
+- (void) setHighlightedTableColumn: (NSTableColumn *)aTableColumn
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setHighlightedTableColumn:", "NSTableView");
+}
+
+/* dragging rows */
+- (NSImage*) dragImageForRows: (NSArray*)dragRows
+			event: (NSEvent*)dragEvent
+	      dragImageOffset: (NSPoint*)dragImageOffset
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"dragImageForRows:event:dragImageOffset:", "NSTableView");
+  return nil;
+}
+
+- (void) setDropRow: (int)row
+      dropOperation: (NSTableViewDropOperation)operation
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setDropRow:dropOperation:", "NSTableView");
+}
+
+- (void) setVerticalMotionCanBeginDrag: (BOOL)flag
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setVerticalMotionCanBeginDrag:", "NSTableView");
+}
+
+- (BOOL) verticalMotionCanBeginDrag
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"verticalMotionCanBeginDrag", "NSTableView");
+  return NO;
+}
+
 /*
  * Encoding/Decoding
  */
