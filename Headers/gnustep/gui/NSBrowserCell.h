@@ -33,7 +33,7 @@
 
 @class NSImage;
 
-@interface NSBrowserCell : NSCell <NSCoding>
+@interface NSBrowserCell : NSCell
 {
   // Attributes
   NSImage *_alternateImage;
@@ -68,12 +68,6 @@
 //
 - (void)reset;
 - (void)set;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
 
 @end
 
