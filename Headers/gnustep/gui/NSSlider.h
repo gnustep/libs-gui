@@ -37,24 +37,24 @@
 
 @interface NSSlider : NSControl
 
-- (NSImage *)image;
-- (int)isVertical;
-- (float)knobThickness;
-- (void)setImage:(NSImage *)backgroundImage;
-- (void)setKnobThickness:(float)aFloat;
-- (void)setTitle:(NSString *)aString;
-- (void)setTitleCell:(NSCell *)aCell;
-- (void)setTitleColor:(NSColor *)aColor;
-- (void)setTitleFont:(NSFont *)fontObject;
-- (NSString *)title;
-- (id)titleCell;
-- (NSColor *)titleColor;
-- (NSFont *)titleFont;
-- (double)maxValue;
-- (double)minValue;
-- (void)setMaxValue:(double)aDouble;
-- (void)setMinValue:(double)aDouble;
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
+- (NSImage*) image;
+- (int) isVertical;
+- (float) knobThickness;
+- (void) setImage: (NSImage*)backgroundImage;
+- (void) setKnobThickness: (float)aFloat;
+- (void) setTitle: (NSString*)aString;
+- (void) setTitleCell: (NSCell*)aCell;
+- (void) setTitleColor: (NSColor*)aColor;
+- (void) setTitleFont: (NSFont*)fontObject;
+- (NSString*) title;
+- (id) titleCell;
+- (NSColor*) titleColor;
+- (NSFont*) titleFont;
+- (double) maxValue;
+- (double) minValue;
+- (void) setMaxValue: (double)aDouble;
+- (void) setMinValue: (double)aDouble;
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent;
 
 @end
 
