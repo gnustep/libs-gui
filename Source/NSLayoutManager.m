@@ -327,7 +327,16 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
+  unsigned length = [aTextStorage length];
+  NSRange aRange = NSMakeRange(0, length);
+
   ASSIGN(_textStorage, aTextStorage);
+  // force complete re - layout
+  [self textStorage: aTextStorage
+	edited: NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
+	range: aRange
+	changeInLength: length 
+	invalidatedRange: aRange];
 }
 
 - (NSTextStorage*) textStorage
@@ -932,7 +941,7 @@ be redrawn when a range of glyphs changes. */
   if (_usesScreenFonts)
     return originalFont;
 
-  // FIXME: Should check if any NSTextView is scalled or rotated
+  // FIXME: Should check if any NSTextView is scaled or rotated
   replaceFont = [originalFont screenFont];
   
   if (replaceFont != nil)
@@ -969,7 +978,7 @@ be redrawn when a range of glyphs changes. */
 
 - (NSTextView*) firstTextView 
 {
-  return NULL;
+  return [[_textContainers objectAtIndex: 0] textView];
 }
 
 - (NSTextView*) textViewForBeginningOfSelection
