@@ -2531,8 +2531,6 @@ afterString in order over charRange. */
 
 - (void) moveToEndOfLine: (id)sender
 {
-- (void) moveToEndOfLine: (id)sender
-{
   NSRect ignored;
   NSRange line, glyphs;
   unsigned newLocation;
