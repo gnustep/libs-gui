@@ -1,3 +1,9 @@
+2002-01-20  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([-sendEvent:]) use ASSIGN() and DESTROY() to
+	update _lastDragView so we don't run into problems if something
+	deallocates it.
+
 Thu Jan 17 18:16:08 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-_blink:]): Fixed declaration - should take
