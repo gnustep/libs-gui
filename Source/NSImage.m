@@ -51,7 +51,8 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 
-BOOL	doesCaching = NO;
+BOOL	NSImageDoesCaching = NO;	/* enable caching	*/
+BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
 // Resource directories
 static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
@@ -491,8 +492,7 @@ static Class			cacheClass = 0;
     {
       GSRepData	 *repd = (GSRepData*)[_reps objectAtIndex: i];
 
-      if (repd->bg != nil
-	|| [repd->rep isKindOfClass: cacheClass] == NO)
+      if (repd->bg != nil || [repd->rep isKindOfClass: cacheClass] == NO)
 	{
 	  valid = YES;
 	  break;
@@ -580,7 +580,7 @@ static Class			cacheClass = 0;
   repd = repd_for_rep(_reps, [self bestRepresentationForDevice: deviceDesc]);
   rep = repd->rep;
 
-  if (doesCaching == YES)
+  if (NSImageDoesCaching == YES)
     {
       /*
        * If this is not a cached image rep - create a cache to be used to
@@ -800,7 +800,7 @@ static Class			cacheClass = 0;
     [NSException raise: NSInvalidArgumentException
       format: @"Cannot lock focus on nil rep"];
 
-  if (doesCaching == YES)
+  if (NSImageDoesCaching == YES)
     {
       NSWindow	*window;
 
@@ -867,7 +867,7 @@ static Class			cacheClass = 0;
 - (NSImageRep*) cacheForRep: (NSImageRep*)rep
 		   onDevice: (NSDictionary*)deviceDescription
 {
-  if (doesCaching == YES)
+  if (NSImageDoesCaching == YES)
     {
       NSImageRep	*cacheRep = nil;
       unsigned		count = [_reps count];
@@ -875,6 +875,7 @@ static Class			cacheClass = 0;
       if (count > 0)
 	{
 	  GSRepData	*invalidCache = nil;
+	  GSRepData	*partialCache = nil;
 	  GSRepData	*validCache = nil;
 	  GSRepData	*reps[count];
 	  unsigned	i;
@@ -902,23 +903,45 @@ static Class			cacheClass = 0;
 		      validCache = repd;
 		      break;
 		    }
+		  else
+		    {
+		      partialCache = repd;
+		    }
 		}
 	    }
 
 	  if (validCache != nil)
 	    {
-	      /*
-	       * If the image rep has transparencey and we are drawing
-	       * without a background (background is clear) then the
-	       * cache can't really be valid 'cos we might be drawing
-	       * transparency on top of anything.  So we invalidate
-	       * the cache by removing the background color information.
-	       */
-	      if ([rep hasAlpha] && [validCache->bg isEqual: clearColor])
+	      if (NSImageForceCaching == NO)
 		{
-		  DESTROY(validCache->bg);
+		  /*
+		   * If the image rep has transparencey and we are drawing
+		   * without a background (background is clear) then the
+		   * cache can't really be valid 'cos we might be drawing
+		   * transparency on top of anything.  So we invalidate
+		   * the cache by removing the background color information.
+		   */
+		  if ([rep hasAlpha] && [validCache->bg isEqual: clearColor])
+		    {
+		      DESTROY(validCache->bg);
+		    }
 		}
 	      cacheRep = validCache->rep;
+	    }
+	  else if (partialCache != nil)
+	    {
+	      if (NSImageForceCaching == NO)
+		{
+		  if (invalidCache != nil)
+		    {
+		      partialCache = invalidCache;
+		    }
+		  else
+		    {
+		      DESTROY(validCache->bg);
+		    }
+		}
+	      cacheRep = partialCache->rep;
 	    }
 	  else if (invalidCache != nil)
 	    {
