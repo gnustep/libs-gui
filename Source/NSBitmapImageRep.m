@@ -77,11 +77,13 @@
       if (wtypes != nil)
         {
 	  types = [wtypes mutableCopy];
-	  [(NSMutableArray *)types addObjectsFromArray: 
-				 [NSArray arrayWithObjects: @"tiff", @"tif", nil]];
+	  [(NSMutableArray *)types addObject: @"tiff"];
+	  [(NSMutableArray *)types addObject: @"tif"];
 	}
       else
-	types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
+	{
+	  types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
+	}
     }
 
   return types;
@@ -105,7 +107,9 @@
 
   array = [self imageRepsWithData: tiffData];
   if ([array count])
-    return [array objectAtIndex: 0];
+    {
+      return [array objectAtIndex: 0];
+    }
   return nil;
 }
 
@@ -128,9 +132,11 @@
   for (i = 0; i < images; i++)
     {
       NSBitmapImageRep* imageRep;
-      imageRep = [[[self class] alloc] _initFromTIFFImage: image number: i];
+      imageRep = [[self alloc] _initFromTIFFImage: image number: i];
       if (imageRep)
-	[array addObject: AUTORELEASE(imageRep)];
+	{
+	  [array addObject: AUTORELEASE(imageRep)];
+	}
     }
   NSTiffClose(image);
 
@@ -618,6 +624,7 @@
       NSLog(@"Extension missing from filename - '%@'", filename);
       return nil;
     }
+
   if ([[self imageUnfilteredFileTypes] indexOfObject: ext] != NSNotFound)
     {
       NSData* data = [NSData dataWithContentsOfFile: filename];
@@ -631,7 +638,9 @@
       imageRep = [[[self class] alloc] _initFromWrasterFile: filename 
 				                     number: images];
       if (imageRep)
-	[array addObject: AUTORELEASE(imageRep)];
+	{
+	  [array addObject: AUTORELEASE(imageRep)];
+	}
       images++;
     }
   while (imageRep);
