@@ -33,8 +33,10 @@
 
 @interface NSFormCell : NSActionCell <NSCoding>
 {
-  float titleWidth;
-  NSCell* titleCell;
+  float _titleWidth;
+  // YES if the titleWidth is automatically computed
+  BOOL _autoTitleWidth;
+  NSCell* _titleCell;
 }
 
 //
