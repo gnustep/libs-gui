@@ -4267,7 +4267,7 @@ byExtendingSelection: (BOOL)flag
       NSEvent *lastEvent;
       NSSet *_oldSelectedRows;
       id delegateIfItTakesPart;
-      BOOL mouseUp;
+      BOOL mouseUp = NO;
       BOOL done = NO;
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
