@@ -38,10 +38,12 @@
 @class NSBundle;
 @class NSURL;
 @class NSArray;
+@class NSMutableArray;
 
 @interface NSNib : NSObject <NSCoding>
 {
   NSData *_nibData;
+  NSMutableArray *_topLevelItems;
 }
 
 // reading the data...

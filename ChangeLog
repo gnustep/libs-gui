@@ -1,3 +1,8 @@
+2004-02-14 23:05  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSNib.[hm]: Corrected previous issue with NSNib.  
+	Uncommented the code and cleaned up the implementation.
+	
 2004-02-14 22:56  Matt Rice <ratmice@yahoo.com>
 		  Alexander Malmberg <alexander@malmberg.org>
 
