@@ -1,4 +1,4 @@
-/* 
+/*
    GSCUPSPrinter.h
 
    Class representing a printer's or printer model's capabilities.
@@ -32,6 +32,9 @@
 #include <AppKit/NSPrinter.h>
 
 
+@class NSString;
+
+extern NSString *GSCUPSDummyPrinterName;
 
 @interface GSCUPSPrinter : NSPrinter <NSCoding>
 {

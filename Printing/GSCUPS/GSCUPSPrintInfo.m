@@ -65,19 +65,19 @@
 
 +(NSPrinter*) defaultPrinter
 {
-  const char* defaultName;
+  const char *defaultName;
   
   defaultName = cupsGetDefault();
+  NSDebugLLog(@"GSCUPS", @"The default printer name is %s", defaultName);
 
-  if( defaultName )
+  if (defaultName)
     {
-      NSLog(@"The default printer name is %s", defaultName);
-      return [NSPrinter printerWithName: 
-              [NSString stringWithCString: defaultName]];
+      return [NSPrinter printerWithName:
+	       [NSString stringWithCString: defaultName]];
     }
   else
     {
-      return nil;
+      return [NSPrinter printerWithName: GSCUPSDummyPrinterName];
     }  
 }
 

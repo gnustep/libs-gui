@@ -1,3 +1,15 @@
+2005-01-12 00:41  Alexander Malmberg <alexander@malmberg.org>
+
+	* Printing/GSCUPS/GSCUPSPrinter.h (GSCUPSDummyPrinterName): New
+	variable.
+	* Printing/GSCUPS/GSCUPSPrinter.m (GSCUPSDummyPrinterName): New
+	variable.
+	(+printerWithName:): Warn and return a dummy printer when requested.
+	* Printing/GSCUPS/GSCUPSPrintInfo.m (defaultPrinter): If there's
+	no default CUPS printer set, return a dummy printer.
+
+	Fixes bug #10916.
+
 2005-01-11 23:50  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSBezierPath.h (NSWindingRule)

@@ -61,6 +61,8 @@
 #include <cups/cups.h>
 
 
+NSString *GSCUPSDummyPrinterName = @"GSCUPSDummyPrinter";
+
 @implementation GSCUPSPrinter
 
 //
@@ -90,6 +92,37 @@
 {
   NSPrinter* printer;
   const char* ppdFile;
+
+  if ([name isEqual: GSCUPSDummyPrinterName])
+    {
+      /* Create a dummy printer as a fallback.  */
+static BOOL didWarn;
+      NSString *ppdPath;
+
+      if (!didWarn)
+	{
+	  NSLog(@"Creating a default printer since no default printer has "
+		@"been set in CUPS.");
+	  didWarn = YES;
+	}
+
+      ppdPath = [NSBundle
+	pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
+			ofType: @"ppd"
+		   inDirectory: @"PostScript/PPD"];
+      NSAssert(ppdPath,
+	       @"Couldn't find the PPD file for the fallback printer.");
+
+      printer = [(GSCUPSPrinter*)[self alloc]
+		  initWithName: name
+		      withType: @"Unknown"
+		      withHost: @"Unknown"
+		      withNote: @"Automatically Generated"];
+
+      [printer parsePPDAtPath: ppdPath];
+
+      return printer;
+    }
 
   printer = [[GSCUPSPrinter alloc]
                     initWithName: name
