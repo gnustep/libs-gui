@@ -36,27 +36,6 @@
 @class NSPasteboard;
 @class NSImage;
 
-enum {
-  NSGrayModeColorPanel,
-  NSRGBModeColorPanel,
-  NSCMYKModeColorPanel,
-  NSHSBModeColorPanel,
-  NSCustomPaletteModeColorPanel,
-  NSColorListModeColorPanel,
-  NSWheelModeColorPanel 
-};
-
-enum {
-  NSColorPanelGrayModeMask,
-  NSColorPanelRGBModeMask,
-  NSColorPanelCMYKModeMask,
-  NSColorPanelHSBModeMask,
-  NSColorPanelCustomPaletteModeMask,
-  NSColorPanelColorListModeMask,
-  NSColorPanelWheelModeMask,
-  NSColorPanelAllModesMask  
-};
-
 typedef enum _NSControlTint {
     NSDefaultControlTint,
     NSClearControlTint
