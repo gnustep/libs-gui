@@ -169,11 +169,12 @@
 
 - (void) setAllowsUndo: (BOOL)flag
 {
+  _tf.allows_undo = flag;
 }
 
 - (BOOL) allowsUndo
 {
-  return NO;
+  return _tf.allows_undo;
 }
 
 - (void) setDrawsBackground: (BOOL)flag
