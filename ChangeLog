@@ -1,8 +1,14 @@
+2000-11-18  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: ([-setAttributes:range:]) fix for the case
+	where we set the same attributes in a range as already exist in
+	a range that overlaps the start of the one we give.
+
 2000-12-17 Georg Fleischmann
 
-	* gui/Source/NSView.m ([NSView -setFrameSize:]):
+	* Source/NSView.m ([NSView -setFrameSize:]):
 	scale bounds, if necessary
-	* gui/Source/NSView.m ([NSView -scaleUnitSquareSize:]):
+	* Source/NSView.m ([NSView -scaleUnitSquareSize:]):
 	scale from bounds instead of frame (like OpenStep)
 
 Sun Dec 17 14:32:11 2000  Nicola Pero  <n.pero@mi.flashnet.it>

@@ -619,12 +619,23 @@ SANITY();
    * otherwise, add a new slot and use that.
    */
   info = OBJECTAT(arrayIndex);
-  if (info->loc >= beginRangeLoc || info->attrs == attributes)
+  if (info->loc >= beginRangeLoc)
     {
       info->loc = beginRangeLoc;
-      unCacheAttributes(info->attrs);
-      RELEASE(info->attrs);
-      info->attrs = attributes;
+      if (info->attrs == attributes)
+	{
+	  unCacheAttributes(attributes);
+	}
+      else
+	{
+	  unCacheAttributes(info->attrs);
+	  RELEASE(info->attrs);
+	  info->attrs = attributes;
+	}
+    }
+  else if (info->attrs == attributes)
+    {
+      unCacheAttributes(attributes);
     }
   else
     {
