@@ -1,3 +1,16 @@
+2004-04-04  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Abandon IMCharacter and move its functionality to the new
+	GSTIMKeyStroke.
+
+	* Source/GSTIMKeyStroke.h: Created.
+	* Source/GSTIMKeyStroke.m: Created.
+	* Source/NSInputManagerPriv.m: Replace IMCharacter with
+	  GSTIMKeyStroke.
+	* Source/NSInputManagerPriv.h: Delete the IMCharacter's interface.
+	* Source/GNUmakefile: Add GSTIMKeyStroke.m to
+	  libgnustep-gui_OBJC_FILES.
+
 2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Replace the prefix IM with GSTIM (GNUstep Text Input Management)
@@ -13,7 +26,7 @@
 	  of IMInputServerInfo.
 	* Headers/AppKit/NSInputManager.h: Replace IMInputServerInfo class
 	  with GSTIMInputServerInfo class.
-	* Source/GNUmakefile: Add GSTIMInputServer.m to
+	* Source/GNUmakefile: Add GSTIMInputServerInfo.m to
 	  libgnustep-gui_OBJC_FILES.
 
 2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
