@@ -1,4 +1,7 @@
-/* This tool builds a cache of service specifications
+/* This tool builds a cache of service specifications like the
+   NeXTstep/ OPENSTEP 'make_services' tool.  In addition it builds a list of
+   applications and services-bundles found in the standard directories.
+
    Copyright (C) 1998 Free Software Foundation, Inc.
 
    Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
@@ -43,6 +46,7 @@ static	NSMutableDictionary	*serviceMap;
 static	NSMutableDictionary	*filterMap;
 static	NSMutableDictionary	*printMap;
 static	NSMutableDictionary	*spellMap;
+static	NSMutableDictionary	*applicationMap;
 
 int
 main(int argc, char** argv)
@@ -76,6 +80,7 @@ main(int argc, char** argv)
   filterMap = [NSMutableDictionary dictionaryWithCapacity: 66];
   printMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   spellMap = [NSMutableDictionary dictionaryWithCapacity: 8];
+  applicationMap = [NSMutableDictionary dictionaryWithCapacity: 64];
 
   env = [proc environment];
   args = [proc arguments];
@@ -190,6 +195,7 @@ main(int argc, char** argv)
   [fullMap setObject: filterMap forKey: @"ByFilter"];
   [fullMap setObject: printMap forKey: @"ByPrint"];
   [fullMap setObject: spellMap forKey: @"BySpell"];
+  [fullMap setObject: applicationMap forKey: @"Applications"];
 
   str = [usrRoot stringByAppendingPathComponent: cacheName];
   data = [NSSerializer serializePropertyList: fullMap];
@@ -227,6 +233,17 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	    {
 	      NSString	*infPath;
 
+	      /*
+	       *	All (non-debug) application paths are noted by name
+	       *	in the 'applicationMap' dictionary.
+	       */
+	      if ([ext isEqualToString: @"app"])
+		{
+		  if ([applicationMap objectForKey: name] == nil)
+		    {
+		      [applicationMap setObject: newPath forKey: name];
+		    }
+		}
 	      infPath = [newPath stringByAppendingPathComponent: infoLoc];
 	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
 		{
