@@ -493,7 +493,19 @@ static NSColor	*shadowCol;
  */
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
-  return nil;
+  if ([self isEnabled])
+    [textObject setTextColor: txtCol];
+  else
+    [textObject setTextColor: dtxtCol];
+  
+  if (cell_highlighted)
+    [textObject setBackgroundColor: hbgCol];
+  else
+    [textObject setBackgroundColor: bgCol];
+  
+  [textObject setFont: [self font]];
+  [textObject setAlignment: [self alignment]];
+  return textObject;
 }
 
 - (void) editWithFrame: (NSRect)aRect
@@ -506,13 +518,12 @@ static NSColor	*shadowCol;
 			(cell_type != NSTextCellType))
     return;
 
+  textObject = [self setUpFieldEditorAttributes: textObject];
   [textObject setDelegate: anObject];
-
-  aRect.origin.y -= 1;
-
   [textObject setFrame: aRect];
   [textObject setText: [self stringValue]];
   [controlView addSubview:textObject];  
+  [textObject display];
 
   [[controlView window] makeFirstResponder: textObject];
 
@@ -530,9 +541,10 @@ static NSColor	*shadowCol;
   [textObject retain];
   [textObject removeFromSuperview];
   [self setStringValue: [textObject text]];
-  [textObject setString:@""];
+  [textObject setString: @""];
 }
 
+// TODO: Check, what exactly this method is supposed to do?
 - (void) selectWithFrame: (NSRect)aRect
 		  inView: (NSView *)controlView
 		  editor: (NSText *)textObject
@@ -544,16 +556,13 @@ static NSColor	*shadowCol;
 			(cell_type != NSTextCellType))
     return;
 
-  [[controlView window] makeFirstResponder: textObject];
-
+  textObject = [self setUpFieldEditorAttributes: textObject];
   [textObject setFrame: aRect];
-  [textObject setAlignment: text_align];
   [textObject setText: [self stringValue]];
   [textObject setDelegate: anObject];
+  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [controlView addSubview: textObject];
-  [controlView lockFocus];
-  NSEraseRect(aRect);
-  [controlView unlockFocus];
+  [[controlView window] makeFirstResponder: textObject];
   [textObject display];
 }
 
