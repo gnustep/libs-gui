@@ -252,8 +252,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
   env = [[NSProcessInfo processInfo] environment];
   str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
   if (str == nil)
-    str = [NSString stringWithFormat: @"%@/GNUstep/Services",
+    str = [NSString stringWithFormat: @"%@/GNUstep",
 	    NSHomeDirectory()];
+  str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
   manager->servicesPath = [path retain];
   path = [str stringByAppendingPathComponent: disabledName];

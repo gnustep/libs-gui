@@ -116,8 +116,9 @@ static NSString* library_combo =
 
 	  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
 	  if (str == nil)
-	    str = [NSString stringWithFormat: @"%@/GNUstep/Services",
+	    str = [NSString stringWithFormat: @"%@/GNUstep",
 		NSHomeDirectory()];
+	  str = [str stringByAppendingPathComponent: @"Services"];
 	  str = [str stringByAppendingPathComponent: appListName];
 	  appListPath = [str retain];
 
