@@ -36,55 +36,55 @@
 @interface NSTableColumn : NSObject
 {
   id _identifier;
-  NSTableView* _tableView;
+  NSTableView *_tableView;
   float _width;
   float _min_width;
   float _max_width;
   BOOL _is_resizable;
   BOOL _is_editable;
-  NSCell* _headerCell;
-  NSCell* _dataCell;
+  NSCell *_headerCell;
+  NSCell *_dataCell;
 }
 /* 
  * Initializing an NSTableColumn instance 
  */
-- (NSTableColumn*)initWithIdentifier: (id)anObject;
+- (NSTableColumn *) initWithIdentifier: (id)anObject;
 /*
  * Managing the Identifier
  */
-- (void)setIdentifier: (id)anObject;
-- (id)identifier;
+- (void) setIdentifier: (id)anObject;
+- (id) identifier;
 /*
  * Setting the NSTableView 
  */
-- (void)setTableView: (NSTableView*)aTableView;
-- (NSTableView *)tableView;
+- (void) setTableView: (NSTableView *)aTableView;
+- (NSTableView *) tableView;
 /*
  * Controlling size 
  */
-- (void)setWidth: (float)newWidth;
-- (float)width; 
-- (void)setMinWidth: (float)minWidth;
-- (float)minWidth; 
-- (void)setMaxWidth: (float)maxWidth;
-- (float)maxWidth; 
-- (void)setResizable: (BOOL)flag;
-- (BOOL)isResizable; 
-- (void)sizeToFit;
+- (void) setWidth: (float)newWidth;
+- (float) width; 
+- (void) setMinWidth: (float)minWidth;
+- (float) minWidth; 
+- (void) setMaxWidth: (float)maxWidth;
+- (float) maxWidth; 
+- (void) setResizable: (BOOL)flag;
+- (BOOL) isResizable; 
+- (void) sizeToFit;
 /*
  * Controlling editability 
  */
-- (void)setEditable: (BOOL)flag;
-- (BOOL)isEditable;
+- (void) setEditable: (BOOL)flag;
+- (BOOL) isEditable;
 /*
  * Setting component cells 
  */
-- (void)setHeaderCell: (NSCell*)aCell;
-- (NSCell*)headerCell; 
-- (void)setDataCell: (NSCell*)aCell; 
-- (NSCell*)dataCell;
+- (void) setHeaderCell: (NSCell *)aCell;
+- (NSCell *) headerCell; 
+- (void) setDataCell: (NSCell *)aCell; 
+- (NSCell *) dataCell;
 @end
 
 /* Notifications */
-extern NSString* NSTableViewColumnDidResizeNotification;
+extern NSString *NSTableViewColumnDidResizeNotification;
 #endif
