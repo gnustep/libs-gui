@@ -18,6 +18,8 @@ Tue Oct 21 16:21:06 1997  Ovidiu Predescu <ovidiu@net-community.com>
 	* Source/NSScroller.m: Delete unnecessary commented out portions of
 	code.
 
+	* Documentation/news.tmpl.texi: Updated.
+
 Mon Oct 20 14:32:55 1997  Scott Christley  <scottc@net-community.com>
 
 	* Fill out NSBox implementation.
