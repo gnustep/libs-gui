@@ -30,6 +30,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSConnection.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSAutoreleasePool.h>
 
