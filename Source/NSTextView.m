@@ -302,19 +302,25 @@ static NSNotificationCenter *nc;
 {
   if (_tvf.owns_text_network == YES)
     {
-      /* Prevent recursive dealloc */
-      if (_tvf.is_in_dealloc == YES)
+      if (_textStorage != nil)
 	{
+	  /* Balance the RELEASE we sent to us to break the retain cycle
+	     in initWithFrame: or initWithCoder: (otherwise releasing the
+	     _textStorage will make our retain count go below zero ;-) */
+	  RETAIN (self);
+	  
+	  /* This releases all the text objects (us included) in
+	   * fall.  */
+	  DESTROY (_textStorage);
+
+	  /* When the rest of the text network is released, we'll be
+	   * released again and be deallocated for real.  That will
+	   * likely happen during the DESTROY of the _textStorage, or
+	   * later if parts of the text network are maybe retained
+	   * elsewhere (in autorelease pools etc) for slightly longer.
+	   */
 	  return;
 	}
-      _tvf.is_in_dealloc = YES;
-      /* Balance the RELEASE we sent to us to break the retain cycle
-	 in initWithFrame: or initWithCoder: (otherwise releasing the
-	 _textStorage will make our retain count go below zero ;-) */
-      RETAIN (self);
-
-      /* This releases all the text objects (us included) in fall */
-      RELEASE (_textStorage);
     }
 
   if (_insertionPointTimer != nil)
