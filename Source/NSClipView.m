@@ -51,20 +51,31 @@
 
   ASSIGN(_documentView, aView);
 
-  if (_documentView) {
-    [self addSubview:_documentView];
+  if (_documentView)
+    {
+      NSRect	df;
 
-    /* Register for notifications sent by the document view */
-    [_documentView setPostsFrameChangedNotifications:YES];
-    [_documentView setPostsBoundsChangedNotifications:YES];
+      [self addSubview: _documentView];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
+      df = [_documentView frame];
+      if ([_documentView isFlipped])
+	df.origin.y += bounds.size.height - df.size.height;
+      [self setBoundsOrigin: df.origin];
+      if ([aView respondsToSelector: @selector(backgroundColor)])
+	[self setBackgroundColor: [(id)aView backgroundColor]];
+
+
+      /* Register for notifications sent by the document view */
+      [_documentView setPostsFrameChangedNotifications:YES];
+      [_documentView setPostsBoundsChangedNotifications:YES];
+
+      [[NSNotificationCenter defaultCenter] addObserver:self
 	selector:@selector(viewFrameChanged:)
 	name:NSViewFrameDidChangeNotification object:_documentView];
-    [[NSNotificationCenter defaultCenter] addObserver:self
+      [[NSNotificationCenter defaultCenter] addObserver:self
 	selector:@selector(viewBoundsChanged:)
 	name:NSViewBoundsDidChangeNotification object:_documentView];
-  }
+    }
 
   /* TODO: invoke superview's reflectScrolledClipView:? */
   [[self superview] reflectScrolledClipView:self];
@@ -73,6 +84,15 @@
 - (void)resetCursorRects
 {
   [self addCursorRect:[self bounds] cursor:_cursor];
+}
+ 
+- (void) resizeSubviewsWithOldSize: (NSSize)old_size
+{
+  [super resizeSubviewsWithOldSize: old_size];
+  if ([_documentView isFlipped])
+    {
+      [self scrollToPoint: bounds.origin];
+    }
 }
 
 - (void)scrollToPoint:(NSPoint)point
@@ -85,31 +105,53 @@
 	point.x, point.y);
 #endif
 
-  point = [self constrainScrollPoint:point];
-  [self setBoundsOrigin:NSMakePoint(point.x, point.y)];
+  point = [self constrainScrollPoint: point];
+  [self setBoundsOrigin: NSMakePoint(point.x, point.y)];
 
+  [self setNeedsDisplay: YES];
   if (_copiesOnScroll)
-    /* TODO: move the visible portion of the document */;
+    /* TODO: move the visible portion of the document */
+    [_documentView displayRect: bounds];
   else
-    [_documentView setNeedsDisplay:YES];
+    [_documentView setNeedsDisplayInRect: bounds];
+//    [_documentView setNeedsDisplay: YES];
+[self display];
 }
 
 - (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin
 {
-  NSRect documentFrame = [self documentRect];
-  NSPoint new = proposedNewOrigin;
+  NSRect	documentFrame = [_documentView frame];
+  NSPoint	new = proposedNewOrigin;
 
-  if (proposedNewOrigin.x < documentFrame.origin.x)
+  if (documentFrame.size.width <= bounds.size.width)
+    new.x = 0.0;
+  else if (proposedNewOrigin.x <= documentFrame.origin.x)
     new.x = documentFrame.origin.x;
   else if (proposedNewOrigin.x
-	   > documentFrame.size.width - bounds.size.width)
+	   >= documentFrame.size.width - bounds.size.width)
     new.x = documentFrame.size.width - bounds.size.width;
 
-  if (proposedNewOrigin.y < documentFrame.origin.y)
-    new.y = documentFrame.origin.y;
-  else if (proposedNewOrigin.y
-	   > documentFrame.size.height - bounds.size.height)
-    new.y = documentFrame.size.height - bounds.size.height;
+  if ([_documentView isFlipped])
+    {
+      if (documentFrame.size.height <= bounds.size.height)
+	new.y = documentFrame.origin.y
+		+ (documentFrame.size.height - bounds.size.height);
+      else if (proposedNewOrigin.y <= 0)
+	new.y = 0;
+      else if (proposedNewOrigin.y
+	>= documentFrame.size.height - bounds.size.height)
+	new.y = documentFrame.size.height - bounds.size.height;
+    }
+  else
+    {
+      if (documentFrame.size.height <= bounds.size.height)
+	new.y = 0.0;
+      else if (proposedNewOrigin.y <= documentFrame.origin.y)
+	new.y = documentFrame.origin.y;
+      else if (proposedNewOrigin.y
+	   >= documentFrame.size.height - bounds.size.height)
+	new.y = documentFrame.size.height - bounds.size.height;
+    }
 
   return new;
 }
@@ -141,6 +183,12 @@
   return rect;
 }
 
+- (void) drawRect:(NSRect)rect
+{
+  [[self backgroundColor] set];
+  NSRectFill(rect);
+}
+
 - (BOOL)autoscroll:(NSEvent*)theEvent
 {
   return 0;
@@ -153,7 +201,7 @@
 
 - (void)viewFrameChanged:(NSNotification*)aNotification
 {
-  [self setBoundsOrigin:[self constrainScrollPoint:bounds.origin]];
+  [self setBoundsOrigin: [self constrainScrollPoint: bounds.origin]];
   [super_view reflectScrolledClipView:self];
 }
 
