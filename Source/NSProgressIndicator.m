@@ -258,8 +258,31 @@ NSImage *images[maxCount];
 	   r = NSIntersectionRect(r,rect);
 	   if (!NSIsEmptyRect(r))
 	     {
-	       [fillColour set];
-	       NSRectFill(r);
+               if (NSInterfaceStyleForKey(@"NSProgressIndicatorInterfaceStyle", nil)
+                    == GSGtkInterfaceStyle)
+	         {
+                   NSRectEdge sides[] = {NSMaxXEdge, NSMinYEdge,
+                                         NSMinXEdge, NSMaxYEdge,
+                                         NSMaxXEdge, NSMinYEdge};
+                   float grays[] = {NSBlack, NSBlack,
+                                    NSLightGray, NSLightGray,
+                                    NSDarkGray, NSDarkGray};
+                   NSRect rect;
+           
+                   rect = NSDrawTiledRects(r, r,
+                               sides, grays, 6);
+           
+		   /* This should perhaps be something else to ease in 
+		    * color themeing.
+		    */
+                   [[NSColor scrollBarColor] set];
+                   NSRectFill(rect);
+	         }
+	       else /* default case */
+	         {
+	           [fillColour set];
+	           NSRectFill(r);
+	         }
 	     }
 	 }
      }

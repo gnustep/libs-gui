@@ -243,7 +243,7 @@ static NSColor *scrollBarColor = nil;
   [upCell setImagePosition: NSImageOnly];
   [upCell setContinuous: YES];
   [upCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
-  [upCell setPeriodicDelay: 0.3 interval: 0.04];
+  [upCell setPeriodicDelay: 0.3 interval: 0.03];
 
   downCell = [NSButtonCell new];
   [downCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -252,7 +252,7 @@ static NSColor *scrollBarColor = nil;
   [downCell setImagePosition: NSImageOnly];
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
-  [downCell setPeriodicDelay: 0.3 interval: 0.04];
+  [downCell setPeriodicDelay: 0.3 interval: 0.03];
 
   leftCell = [NSButtonCell new];
   [leftCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -261,7 +261,7 @@ static NSColor *scrollBarColor = nil;
   [leftCell setImagePosition: NSImageOnly];
   [leftCell setContinuous: YES];
   [leftCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
-  [leftCell setPeriodicDelay: 0.3 interval: 0.04];
+  [leftCell setPeriodicDelay: 0.3 interval: 0.03];
 
   rightCell = [NSButtonCell new];
   [rightCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -270,7 +270,7 @@ static NSColor *scrollBarColor = nil;
   [rightCell setImagePosition: NSImageOnly];
   [rightCell setContinuous: YES];
   [rightCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
-  [rightCell setPeriodicDelay: 0.3 interval: 0.04];
+  [rightCell setPeriodicDelay: 0.3 interval: 0.03];
 
   knobCell = [NSButtonCell new];
   [knobCell setButtonType: NSMomentaryChangeButton];
@@ -583,23 +583,21 @@ static NSColor *scrollBarColor = nil;
 - (void) trackKnob: (NSEvent*)theEvent
 {
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			  | NSLeftMouseDraggedMask | NSMouseMovedMask
-			  | NSPeriodicMask;
+			  | NSLeftMouseDraggedMask | NSFlagsChangedMask;
   NSPoint	point;
-  NSPoint	apoint;
   float		lastPosition;
   float		newPosition;
   float		floatValue;
   float		offset;
-  NSDate	*theDistantFuture = [NSDate distantFuture];
-  NSEventType	eventType;
+  float		initialOffset;
+  NSEvent	*presentEvent;
+  NSEventType	eventType = [theEvent type];
   NSRect	knobRect;
   unsigned	flags = [theEvent modifierFlags];
 
   knobRect = [self rectForPart: NSScrollerKnob];
 
-  apoint = [theEvent locationInWindow];
-  point = [self convertPoint: apoint  fromView: nil];
+  point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   if (_isHorizontal)
     {
       lastPosition = NSMidX(knobRect);
@@ -611,138 +609,152 @@ static NSColor *scrollBarColor = nil;
       offset = lastPosition - point.y;
     }
 
+  initialOffset = offset; /* Save the initial offset value */
   _hitPart = NSScrollerKnob;
-  /*
-   * set periodic events rate to achieve max of ~30fps
-   */
-  [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.03];
-  [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
-  while ((eventType = [theEvent type]) != NSLeftMouseUp)
+  do
     {
-      CREATE_AUTORELEASE_POOL(arp);
-      if (eventType != NSPeriodic)
-	{
-	  apoint = [theEvent locationInWindow];
-	  flags = [theEvent modifierFlags];
-	}
-      else
-	{
-	  point = [self convertPoint: apoint fromView: nil];
-          if (_isHorizontal)
-	    newPosition = point.x + offset;
-          else
-	    newPosition = point.y + offset;
+       /* Inner loop that gets and (quickly) handles all events that have
+          already arrived. */
+       while (theEvent && eventType != NSLeftMouseUp)
+         {
+           /* Note the event here. Don't do any expensive handling. */
+	   if (eventType == NSFlagsChanged)
+             flags = [theEvent modifierFlags];
+	   presentEvent = theEvent;
 
-          if (newPosition != lastPosition)
-            {
-              if (flags & NSAlternateKeyMask)
-	        {
-	          float	diff;
+           theEvent = [NSApp nextEventMatchingMask: eventMask
+                         untilDate: [NSDate distantPast] /* Only get events that have already arrived. */
+                         inMode: NSEventTrackingRunLoopMode
+                         dequeue: YES];
+	   eventType = [theEvent type];
+         }
 
-	          diff = newPosition - lastPosition;
-	          diff = diff * 3 / 4;
-	          offset -= diff;
-	          newPosition -= diff;
-	        }
+       /* 
+        * No more events right now. Do expensive handling, like drawing, 
+	* here. 
+	*/
+       point = [self convertPoint: [presentEvent locationInWindow] 
+			 fromView: nil];
 
-              // only one coordinate (X or Y) is used to compute floatValue.
-              point = NSMakePoint(newPosition, newPosition);
-	      floatValue = [self _floatValueForMousePoint: point];
+       if (_isHorizontal)
+         newPosition = point.x + offset;
+       else
+	 newPosition = point.y + offset;
 
-	      if (floatValue != _floatValue)
-		{
-		  [self setFloatValue: floatValue];
-		  [self sendAction: _action to: _target];
-		}
+       if (newPosition != lastPosition)
+         {
+           if (flags & NSAlternateKeyMask)
+	     {
+	       float	diff;
+
+	       diff = newPosition - lastPosition;
+	       diff = diff * 3 / 4;
+	       offset -= diff;
+	       newPosition -= diff;
+	     }
+	   else /* Ok, we are no longer doing slow scrolling, lets go back 
+		   to our original offset. */
+	     {
+	       offset = initialOffset;
+	     }
+
+           // only one coordinate (X or Y) is used to compute floatValue.
+           point = NSMakePoint(newPosition, newPosition);
+	   floatValue = [self _floatValueForMousePoint: point];
+
+	   if (floatValue != _floatValue)
+	     {
+	       [self setFloatValue: floatValue];
+	       [self sendAction: _action to: _target];
+	     }
 	      
-	      lastPosition = newPosition;
-            }
-	}
+	     lastPosition = newPosition;
+         }
 
-      theEvent = [NSApp nextEventMatchingMask: eventMask
-				    untilDate: theDistantFuture
-				       inMode: NSEventTrackingRunLoopMode
-				      dequeue: YES];
-      DESTROY(arp);
-    }
-  [NSEvent stopPeriodicEvents];
+       /* 
+	* If our current event is actually the mouse up (perhaps the inner 
+	* loop got to this point) we want to update with the last info and 
+	* then quit.
+	*/
+       if (eventType == NSLeftMouseUp)
+         break;
+
+       /* Get the next event, blocking if necessary. */
+       theEvent = [NSApp nextEventMatchingMask: eventMask
+                     untilDate: nil /* No limit, block until we get an event. */
+                     inMode: NSEventTrackingRunLoopMode
+                     dequeue: YES];
+       eventType = [theEvent type];
+  } while (eventType != NSLeftMouseUp);
 }
 
 - (void) trackScrollButtons: (NSEvent*)theEvent
 {
-  NSApplication	*theApp = [NSApplication sharedApplication];
-  unsigned int	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-			  NSLeftMouseDraggedMask | NSMouseMovedMask;
-  BOOL		shouldReturn = NO;
   id		theCell = nil;
   NSRect	rect;
 
   [self lockFocus];
 
   NSDebugLog (@"trackScrollButtons");
-  do
+
+  _hitPart = [self testPart: [theEvent locationInWindow]];
+  rect = [self rectForPart: _hitPart];
+
+  /*
+   * A hit on a scroller button should be a page movement
+   * if the alt key is pressed.
+   */
+  switch (_hitPart)
     {
-      _hitPart = [self testPart: [theEvent locationInWindow]];
-      rect = [self rectForPart: _hitPart];
-
-      /*
-       * A hit on a scroller button should be a page movement
-       * if the alt key is pressed.
-       */
-      switch (_hitPart)
-	{
-	  case NSScrollerIncrementLine:
-	    if ([theEvent modifierFlags] & NSAlternateKeyMask)
-	      {
-		_hitPart = NSScrollerIncrementPage;
-	      }
-	    /* Fall through to next case */
-	  case NSScrollerIncrementPage:
-	    theCell = (_isHorizontal ? rightCell : downCell);
-	    break;
-
-	  case NSScrollerDecrementLine:
-	    if ([theEvent modifierFlags] & NSAlternateKeyMask)
-	      {
-		_hitPart = NSScrollerDecrementPage;
-	      }
-	    /* Fall through to next case */
-	  case NSScrollerDecrementPage:
-	    theCell = (_isHorizontal ? leftCell : upCell);
-	    break;
-
-	  default:
-	    theCell = nil;
-	    break;
-	}
-
-      if (theCell)
-	{
-	  [theCell highlight: YES withFrame: rect inView: self];
-	  [_window flushWindow];
-
-	  NSDebugLog (@"tracking cell %x", theCell);
-
-	  shouldReturn = [theCell trackMouse: theEvent
-				      inRect: rect
-				      ofView: self
-				untilMouseUp: YES];
-
-	  [theCell highlight: NO withFrame: rect inView: self];
-	  [_window flushWindow];
-	}
-
-      if (shouldReturn)
+      case NSScrollerIncrementLine:
+        if ([theEvent modifierFlags] & NSAlternateKeyMask)
+	  {
+	    _hitPart = NSScrollerIncrementPage;
+	  }
+	/* Fall through to next case */
+      case NSScrollerIncrementPage:
+	theCell = (_isHorizontal ? rightCell : downCell);
 	break;
 
-      theEvent = [theApp nextEventMatchingMask: eventMask
-				     untilDate: [NSDate distantFuture]
-					inMode: NSEventTrackingRunLoopMode
-				       dequeue: YES];
-    }
-  while ([theEvent type] != NSLeftMouseUp);
+      case NSScrollerDecrementLine:
+	if ([theEvent modifierFlags] & NSAlternateKeyMask)
+	  {
+	    _hitPart = NSScrollerDecrementPage;
+	  }
+	/* Fall through to next case */
+      case NSScrollerDecrementPage:
+	theCell = (_isHorizontal ? leftCell : upCell);
+	break;
 
+      default:
+	theCell = nil;
+	break;
+    }
+
+  /*
+   * If we don't find a cell this has been all for naught, but we 
+   * shouldn't ever be in that situation.
+   */
+  if (theCell)
+    {
+      [theCell highlight: YES withFrame: rect inView: self];
+      [_window flushWindow];
+
+      NSDebugLog (@"tracking cell %x", theCell);
+
+      /*
+       * The "tracking" in this method actually takes place within 
+       * NSCell's trackMouse: method. 
+       */
+      [theCell trackMouse: theEvent
+		   inRect: rect
+		   ofView: self
+	     untilMouseUp: YES];
+
+      [theCell highlight: NO withFrame: rect inView: self];
+      [_window flushWindow];
+    }
   [self unlockFocus];
 
   NSDebugLog (@"return from trackScrollButtons");

@@ -148,17 +148,14 @@
   PSrectfill(x - 1, y - 1, 2, 2);
 }
 
-
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSApplication *app = [NSApplication sharedApplication];
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			  | NSLeftMouseDraggedMask | NSMouseMovedMask
-			  | NSPeriodicMask;
+			  | NSLeftMouseDraggedMask;
   NSPoint point = [self convertPoint: [theEvent locationInWindow] 
 			fromView: nil];
   NSEventType eventType = [theEvent type];
-  NSDate *distantFuture = [NSDate distantFuture];
+  NSEvent *presentEvent;
 
   float new_hue, new_saturation;
   float old_x, old_y;
@@ -173,64 +170,79 @@
     cr = frame.size.height;
   cr = cr / 2 - 2;
 
-
-  [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
-  [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
-
   new_hue = hue;
   new_saturation = saturation;
 
   do
     {
-      if (eventType != NSPeriodic)
-	{
-	  point = [self convertPoint: [theEvent locationInWindow]
-			fromView: nil];
+       /* Inner loop that gets and (quickly) handles all events that have
+          already arrived. */
+       while (theEvent && eventType != NSLeftMouseUp)
+         {
+           /* Note the event here. Don't do any expensive handling. */
+	   presentEvent = theEvent;
 
-	  dx = point.x - cx;
-	  dy = point.y - cy;
+           theEvent = [NSApp nextEventMatchingMask: eventMask
+                         untilDate: [NSDate distantPast] /* Only get events that have arrived */
+                         inMode: NSEventTrackingRunLoopMode
+                         dequeue: YES];
+           eventType = [theEvent type];
+         }
+                           
+       /* No more events right now. Do expensive handling, like drawing, 
+        * here. 
+	*/
+       point = [self convertPoint: [presentEvent locationInWindow]
+			     fromView: nil];
 
-	  new_saturation = dx * dx + dy * dy;
-	  new_saturation = sqrt(new_saturation);
-	  new_saturation /= cr;
-	  if (new_saturation > 1)
-	    new_saturation = 1;
+       dx = point.x - cx;
+       dy = point.y - cy;
 
-	  new_hue = atan2(dy, dx);
-	  new_hue = new_hue / 2.0 / PI;
-	  if (new_hue < 0)
-	    new_hue += 1;
-	}
-      else
-	{
-	  if (new_hue != hue || new_saturation != saturation)
-	    {
-	      old_x = cos(hue * 2 * PI) * saturation * cr + cx;
-	      old_y = sin(hue * 2 * PI) * saturation * cr + cy;
+       new_saturation = dx * dx + dy * dy;
+       new_saturation = sqrt(new_saturation);
+       new_saturation /= cr;
+       if (new_saturation > 1)
+         new_saturation = 1;
 
-	      hue = new_hue;
-	      saturation = new_saturation;
+       new_hue = atan2(dy, dx);
+       new_hue = new_hue / 2.0 / PI;
+       if (new_hue < 0)
+         new_hue += 1;
 
-	      [self lockFocus];
-	      [self drawRect: NSMakeRect(old_x - 3, old_y - 3, 6, 6)];
-	      [self drawRect: NSMakeRect(point.x - 3, point.y - 3, 6, 6)];
-	      [self unlockFocus];
-	      [_window flushWindow];
+       if (new_hue != hue || new_saturation != saturation)
+         {
+	   old_x = cos(hue * 2 * PI) * saturation * cr + cx;
+	   old_y = sin(hue * 2 * PI) * saturation * cr + cy;
 
-	      if (target)
-		[target performSelector: action withObject: self];
-	    }
-	}
+	   hue = new_hue;
+	   saturation = new_saturation;
 
-      theEvent = [app nextEventMatchingMask: eventMask
-				  untilDate: distantFuture
-				     inMode: NSEventTrackingRunLoopMode
-				    dequeue: YES];
-      eventType = [theEvent type];
-    } while (eventType != NSLeftMouseUp);
-  [NSEvent stopPeriodicEvents];
+	   [self lockFocus];
+	   [self drawRect: NSMakeRect(old_x - 3, old_y - 3, 6, 6)];
+	   [self drawRect: NSMakeRect(point.x - 3, point.y - 3, 6, 6)];
+	   [self unlockFocus];
+	   [_window flushWindow];
+
+	   if (target)
+	     [target performSelector: action withObject: self];
+	 }
+
+       /*
+        * If our current event is actually the mouse up (perhaps the inner
+        * loop got to this point) we want to update with the last info and
+        * then quit.
+        */
+       if (eventType == NSLeftMouseUp)
+         break;
+
+       /* Get the next event, blocking if necessary. */
+       theEvent = [NSApp nextEventMatchingMask: eventMask
+                     untilDate: nil /* No limit, block until we get an event. */
+                     inMode: NSEventTrackingRunLoopMode
+                     dequeue: YES];
+       eventType = [theEvent type];
+  } while (eventType != NSLeftMouseUp);
 }
-
 @end
 
 

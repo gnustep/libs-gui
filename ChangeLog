@@ -1,5 +1,30 @@
 2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
 
+	Multiple outstanding commits.
+
+	* ColorPickers/GSWheelColorPicker.m:
+	(mouseDown:): Implemented new event loop that really speeds things 
+	up on slow machines.
+	* Source/NSScroller.m:
+	(init): Decreased periodic delay for scroller buttons.
+	(trackKnob:): Implemented new event loop to improve speed. Added 
+	code to "snap" back the scroller when you release the alternate 
+	key in mid-scroll (modeled after OS 4.2 behavior.)
+	(trackScrollButtons:): Removed event loop as we weren't using it 
+	anyways.
+	* Source/NSFontPanel.m:
+	(_trySelectSize:): Put size textfield update code here, make sure 
+	column is loaded.
+	(_familySelectionChanged:): Call _trySelectSize: to update the 
+	size column just like we do for the face browser.
+	* Source/NSProgressIndicator.m:
+	(drawRect:): Implement GSGtkInterfaceStyle for 
+	NSProgressIndicatorInterfaceStyle.
+	* Source/NSInterfaceStyle.m: added GSGtkInterfaceStyle.
+	* Headers/NSInterfaceStyle.h: ditto.
+
+2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
+
 	* Source/NSPopUpButton.m:
 	(mouseDown:): Beep and return if menu items array is empty.
 	(keyDown:): ditto.

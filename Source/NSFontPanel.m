@@ -209,7 +209,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       NSString *family = [fontObject familyName];
       NSString *fontName = [fontObject fontName];
       float size = [fontObject pointSize];
-      NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
       NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
       NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
       NSString *face = @"";
@@ -249,7 +248,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	}
 
       // show point size and select the row if there is one
-      _setFloatValue (sizeField, size);
       [self _trySelectSize: size];
 
       // Use in preview
@@ -733,11 +731,20 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 {
   int i;
   NSBrowser *sizeBrowser = [[self contentView] viewWithTag: NSFPSizeBrowser];
+  NSTextField *sizeField;
+
+  /* Make sure our sizeField is updated. */
+  sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+  _setFloatValue (sizeField, size);
+        
+  /* Make sure our column is loaded. */ 
+  [sizeBrowser loadColumnZero];
 
   for (i = 0; i < sizeof(sizes) / sizeof(float); i++)
     {
       if (size == sizes[i])
 	{
+          /* select the cell */
 	  [sizeBrowser selectRow: i inColumn: 0];
 	  break;
 	}
@@ -839,6 +846,9 @@ static int score_difference(int weight1, int traits1,
   _face = i;
   [faceBrowser loadColumnZero];
   [faceBrowser selectRow: i inColumn: 0];
+
+  /* Also make sure the size column is updated */
+  [self _trySelectSize: [[self _fontForSelection: _panelFont] pointSize]];
 
   [self _doPreview];
 }
