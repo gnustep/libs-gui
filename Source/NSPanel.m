@@ -553,6 +553,7 @@ setControl(NSView* content, id control, NSString *title)
       [defButton setKeyEquivalent: @"\r"];
       [defButton setImagePosition: NSImageRight];
       [defButton setImage: [NSImage imageNamed: @"common_ret"]];
+      [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
 
       altButton = [self _makeButtonWithRect: rect];
       othButton = [self _makeButtonWithRect: rect];

@@ -1,3 +1,18 @@
+2000-09-14  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSPanel.m ([GSAlertPanel
+	-initWithContentRect:styleMask:backing:defer:screen:]): set alternate
+	return image.
+	* Source/NSOpenPanel.m ([NSOpenPanel -controlTextDidEndEditing:]):
+	removed.
+	* Source/NSSavePanel.m ([NSSavePanel -controlTextDidEndEditing:]): 
+	repost currentEvent.
+	([NSSavePanel -_initWithoutGModel]): removed form cell action, set
+	_okButton image.
+	([NSSavePanel -_performReturn:]): removed.
+	* Images/common_retH.tiff: new file.
+	* Images/GNUmakefile (IMAGE_FILES): update.
+
 Thu Sep 14 14:01:10 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSMatrix.m ([-textDidBeginEditing:]),

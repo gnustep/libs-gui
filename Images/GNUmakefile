@@ -81,6 +81,7 @@ common_DownArrowSmall.tiff \
 common_Nibble.tiff \
 common_Dimple.tiff \
 common_ret.tiff \
+common_retH.tiff \
 common_WMClose.tiff \
 common_WMCloseBroken.tiff \
 common_Unknown.tiff \

@@ -82,7 +82,6 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _unmountMedia;
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
-- (void) _performReturn: (id)sender;
 
 @end /* NSSavePanel (PrivateMethods) */
 
@@ -149,9 +148,6 @@ static BOOL _gs_display_reading_progress = NO;
   [_bottomView addSubview: _form];
   [_form release];
 
-  [[_form cellAtIndex:0] setAction: @selector(_performReturn:)];
-  [[_form cellAtIndex:0] setTarget: self];
-
   r = NSMakeRect (43, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r]; 
   [button setBordered: YES];
@@ -213,7 +209,9 @@ static BOOL _gs_display_reading_progress = NO;
   [_okButton setBordered: YES];
   [_okButton setButtonType: NSMomentaryPushButton];
   [_okButton setTitle:  @"OK"];
-  [_okButton setImagePosition: NSNoImage]; 
+  [_okButton setImagePosition: NSImageRight]; 
+  [_okButton setImage: [NSImage imageNamed: @"common_ret"]];
+  [_okButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
   [_okButton setEnabled: NO];
@@ -384,30 +382,6 @@ static BOOL _gs_display_reading_progress = NO;
 	}
       else if(result == NSOrderedDescending)
 	break;
-    }
-}
-
-- (void) _performReturn: (id)sender
-{
-  if ([_okButton isEnabled] == YES)
-    {
-      NSMatrix *matrix;
-      int       selectedColumn;
-
-      selectedColumn = [_browser selectedColumn];
-
-      if (selectedColumn != -1 && selectedColumn == [_browser lastColumn])
-	{
-	  matrix = [_browser matrixInColumn: selectedColumn];
-
-	  if ([[matrix selectedCell] isLeaf] == NO)
-	    {
-	      [_form abortEditing];
-	      [[_form cellAtIndex: 0] setStringValue: nil];
-	    }
-	}
-
-      [_okButton performClick: self];
     }
 }
 
@@ -1194,10 +1168,9 @@ selectCellWithString: (NSString*)title
 	case NSDownTextMovement:
 	case NSLeftTextMovement:
 	case NSRightTextMovement:
-	  [self selectText:self];
-	  return;
-
 	case NSReturnTextMovement:
+	  [NSApp postEvent:[self currentEvent]
+		 atStart:YES];
 	  break;
 	}
     }

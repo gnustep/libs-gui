@@ -509,24 +509,9 @@ selectCellWithString: (NSString *)title
 // NSForm delegate methods
 //
 @interface NSOpenPanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification;
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 @end
 @implementation NSOpenPanel (FormDelegate)
-
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification
-{
-  NSMatrix      *matrix;
-  NSBrowserCell *selectedCell;
-
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
-  selectedCell = [matrix selectedCell];
-
-  if (!selectedCell)
-    [_form selectTextAtIndex:0];
-
-  [super controlTextDidEndEditing:aNotification];
-}
 
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 {
