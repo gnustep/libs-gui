@@ -59,8 +59,6 @@
       [self addSubview: _documentView];
 
       df = [_documentView frame];
-      if ([_documentView isFlipped])
-	df.origin.y += bounds.size.height - df.size.height;
       [self setBoundsOrigin: df.origin];
       if ([aView respondsToSelector: @selector(backgroundColor)])
 	[self setBackgroundColor: [(id)aView backgroundColor]];
@@ -87,15 +85,6 @@
   [self addCursorRect:[self bounds] cursor:_cursor];
 }
 
-- (void) resizeSubviewsWithOldSize: (NSSize)old_size
-{
-  [super resizeSubviewsWithOldSize: old_size];
-  if ([_documentView isFlipped])
-    {
-      [self scrollToPoint: bounds.origin];
-    }
-}
-
 - (void) scrollToPoint: (NSPoint)point
 {
   NSRect originalBounds = [self bounds];
@@ -114,7 +103,7 @@
   if (NSEqualPoints(originalBounds.origin, newBounds.origin))
     return;
 
-  if (_copiesOnScroll)
+  if (_copiesOnScroll && [self window])
     {
       // copy the portion of the view that is common before and after scrolling.
       // then tell docview to draw the exposed parts.
@@ -212,27 +201,13 @@
 	   >= documentFrame.size.width - bounds.size.width)
     new.x = documentFrame.size.width - bounds.size.width;
 
-  if ([_documentView isFlipped])
-    {
-      if (documentFrame.size.height <= bounds.size.height)
-	new.y = documentFrame.origin.y
-		+ (documentFrame.size.height - bounds.size.height);
-      else if (proposedNewOrigin.y <= 0)
-	new.y = 0;
-      else if (proposedNewOrigin.y
-	>= documentFrame.size.height - bounds.size.height)
-	new.y = documentFrame.size.height - bounds.size.height;
-    }
-  else
-    {
-      if (documentFrame.size.height <= bounds.size.height)
-	new.y = documentFrame.origin.y;
-      else if (proposedNewOrigin.y <= documentFrame.origin.y)
-	new.y = documentFrame.origin.y;
-      else if (proposedNewOrigin.y
-	   >= documentFrame.size.height - bounds.size.height)
-	new.y = documentFrame.size.height - bounds.size.height;
-    }
+  if (documentFrame.size.height <= bounds.size.height)
+    new.y = documentFrame.origin.y;
+  else if (proposedNewOrigin.y <= documentFrame.origin.y)
+    new.y = documentFrame.origin.y;
+  else if (proposedNewOrigin.y
+           >= documentFrame.size.height - bounds.size.height)
+    new.y = documentFrame.size.height - bounds.size.height;
 
   return new;
 }
