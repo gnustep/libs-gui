@@ -58,6 +58,7 @@ typedef enum _NSTableViewDropOperation {
   id                 _delegate;
   NSTableHeaderView *_headerView;
   NSView            *_cornerView;
+  SEL                _action;
   SEL                _doubleAction;
   id                 _target;
   int                _clickedRow;
