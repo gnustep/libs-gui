@@ -324,7 +324,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     [well setBordered: NO];
     [well setEnabled: NO];
     [well setTarget: _colorWell];
-    [well setAction: @selector(takeColorFrom:)];
+    [well setAction: @selector(_bottomWellAction:)];
     [swatchView addSubview: well];
     RELEASE(well);
   }
@@ -353,6 +353,11 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (void) _updatePicker: (id) sender
 {
   [_currentPicker setColor: [_colorWell color]];
+}
+
+- (void) _bottomWellAction: (id) sender
+{
+  [self setColor: [sender color]];
 }
 
 @end

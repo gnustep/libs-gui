@@ -1,3 +1,21 @@
+2002-10-27  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): 
+	new tracking code. The menu feels snappier now (at least for me).
+	
+	* Source/NSColorWell.m ([-activate:], [-deactivate])
+	register/unregister for NSColorPanelColorChangedNotification.
+	([NSColorWell _takeColorFromPanel:]): new method to prevent endless
+	loop when setting the well's color from the color panel.
+	([NSColorWell -initWithCoder:]): register for NSColorPboardType.
+	
+	* Source/NSColorPanel.m ([NSColorPanel -_bottomWellAction:]):
+	called when hitting one of the well at the bottom of the panel.
+	Previous behaviour would not send a 
+	NSColorPanelColorChangedNotification.
+	([NSColorPanel -initWithCoder:]): update bottom wells construction to
+	call _bottomWellAction: instead of takeColorFrom:.
+
 2002-10-26  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSOutlineView.m (-drawRow:clipRect:): Release imageCell

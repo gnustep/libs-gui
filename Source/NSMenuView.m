@@ -885,7 +885,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 }
 
 #define MOVE_THRESHOLD_DELTA 2.0
-#define DELAY_MULTIPLIER     6
+#define DELAY_MULTIPLIER     10
 
 - (BOOL) trackWithEvent: (NSEvent*)event
 {
@@ -899,7 +899,6 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   BOOL		delayedSelect = NO;
   int		delayCount = 0;
   float		xDelta = MOVE_THRESHOLD_DELTA;
-  float		yDelta = 0.0;
   NSEvent	*original;
   NSEventType	type = [event type];
   NSEventType	end;
@@ -951,45 +950,18 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 	  if (delayedSelect && mouseMoved && [event type] == NSPeriodic)
 	    {
 	      float	xDiff = location.x - lastLocation.x;
-	      float	yDiff = location.y - lastLocation.y;
 
-	      /*
-               * Once the mouse movement has started in one vertical
-	       * direction, it must continue in the same direction if
-	       * selection is to be delayed.
-	       */
-	      if (yDelta == 0.0)
+	      if (xDiff > xDelta)
 		{
-		  if (yDiff < 0.0)
-		    yDelta = -MOVE_THRESHOLD_DELTA;
-		  else if (yDiff > 0.0)
-		    yDelta = MOVE_THRESHOLD_DELTA;
-		}
-	      /*
-               * Check to see if movement is less than the threshold.
-	       */
-	      if (xDiff < xDelta
-		|| (yDelta < 0.0 && yDiff > yDelta)
-		|| (yDelta > 0.0 && yDiff < yDelta))
-		{
-		  /*
-		   * if we have had too many successive small movements, or
-		   * a single movement too far in the wrong direction, we
-		   * leave 'delayedSelect' mode.
-		   */
 		  delayCount++;
-		  if (delayCount >= DELAY_MULTIPLIER
-		    || (xDiff < 0)
-		    || (yDelta < 0.0 && yDiff > -yDelta)
-		    || (yDelta > 0.0 && yDiff < -yDelta))
-		    {
-		      delayedSelect = NO;
-		    }
+		  if (delayCount >= DELAY_MULTIPLIER)
+		    delayedSelect = NO;
 		}
 	      else
 		{
-		  delayCount = 0;
+		  delayedSelect = NO;
 		}
+
 	      lastLocation = location;
 	    }
 	}
@@ -1047,7 +1019,6 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 		      mouseMoved = NO;
 		      delayedSelect = YES;
 		      delayCount = 0;
-		      yDelta = 0.0;
 		    }
 		  else
 		    {

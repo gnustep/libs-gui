@@ -86,6 +86,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
              name: GSColorWellDidBecomeExclusiveNotification
            object: nil];
 
+  [nc addObserver: self
+         selector: @selector(_takeColorFromPanel:)
+             name: NSColorPanelColorChangedNotification
+           object: nil];
+
   _is_active = YES;
 
   [colorPanel setColor: _the_color];
@@ -233,6 +238,8 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       // Undo RETAIN by decoder
       TEST_RELEASE(_target);
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      [self registerForDraggedTypes:
+	[NSArray arrayWithObjects: NSColorPboardType, nil]];
     }
   return self;
 }
@@ -343,6 +350,19 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   if ([sender respondsToSelector: @selector(color)])
     {
       [self setColor: [sender color]];
+    }
+}
+
+- (void) _takeColorFromPanel: (NSNotification *) notification
+{
+  id sender = [notification object];
+
+  if ([sender respondsToSelector: @selector(color)])
+    {
+      ASSIGN(_the_color, [(id)sender color]);
+      
+      [self sendAction: _action to: _target];
+      [self setNeedsDisplay: YES];
     }
 }
 
