@@ -593,8 +593,8 @@ static NSMapTable* windowmaps = NULL;
     {
       frame.origin = NSZeroPoint;
       [_wv setFrame: frame];
-      [_wv setNeedsDisplay: YES];
     }
+  [_wv setNeedsDisplay: YES];
 
   /* Ok, now add the drag types back */
   if (dragTypes)
@@ -1349,7 +1349,13 @@ static NSMapTable* windowmaps = NULL;
     DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
 		   frameRect.size.width, frameRect.size.height, _windowNum);
   else
-    _frame = frameRect;
+    {
+      _frame = frameRect;
+      frameRect = [NSWindow contentRectForFrameRect: frameRect
+			    styleMask: _styleMask];
+      frameRect.origin = NSZeroPoint;
+      [_wv setFrame: frameRect];
+    }
 
   if (flag)
     [self display];
