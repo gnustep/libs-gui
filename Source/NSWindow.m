@@ -2036,10 +2036,14 @@ resetCursorRectsForView(NSView *theView)
   if (![aResponder acceptsFirstResponder])
     return NO;
 
+  /* So that the implementation of -resignFirstResponder in
+     _firstResponder might ask for what will be the new first
+     responder by calling our method _futureFirstResponder */
+  _futureFirstResponder = aResponder;
+
   /*
    * If there is a first responder tell it to resign.
-   * Change only if it replies Y
-   */
+   * Change only if it replies Y */
   if ((_firstResponder) && (![_firstResponder resignFirstResponder]))
     return NO;
 
@@ -3503,6 +3507,13 @@ resetCursorRectsForView(NSView *theView)
   _rFlags.needs_display = YES;
 }
 
+@end
+
+@implementation NSWindow (GNUstepTextView)
+- (id) _futureFirstResponder
+{
+  return _futureFirstResponder;
+}
 @end
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
