@@ -1,3 +1,13 @@
+Wed Feb  6 02:30:09 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m
+	([-rebuildForRange:delta:inTextContainer:]): Removed workaround
+	for bug in NSString.  Use a fake used rect width of 1 when
+	building the fake line fragment for no text, so that the insertion
+	point is displayed in that case.  Build a fake line fragment at
+	the end of text if there is a newline ending the text.  This hack
+	fixes the problems with typing enter at the end of text.
+
 Tue Feb  5 10:26:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-moveBackwardAndModifySelection:]): New
