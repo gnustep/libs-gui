@@ -307,6 +307,11 @@ static id _NSCONTROL_CELL_CLASS = nil;
 //
 // Displaying the Control and Cell
 //
+- (void) drawRect: (NSRect)aRect
+{
+  [self drawCell: cell];
+}
+
 - (void) drawCell: (NSCell *)aCell
 {
   if (cell == aCell)
