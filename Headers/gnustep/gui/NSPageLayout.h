@@ -49,6 +49,10 @@ enum {
 @interface NSPageLayout : NSPanel <NSCoding>
 {
   // Attributes
+  int _result;
+  float _old;
+  float _new;
+  NSPrintInfo *_printInfo;
 }
 
 //
