@@ -459,7 +459,6 @@ extern NSSize NSTokenSize;
 + (NSWindow*) _windowWithTag: (int)windowNumber;
 
 - (void) setWindowNumber: (int)windowNum;
-- (void) _setFrame: (NSRect)newFrame;
 
 /*
  * Mouse capture/release

@@ -1,13 +1,17 @@
-Tue Jul  6 12:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Tue Jul  6 13:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSEvent.h: Added event subtypes for appkit events
+	* Headers/AppKit/NSWindow.h: Removed ([_setFrame:]) - achieve same
+	effect using the event queue.
 	* Source/Functions.m: Rewrite for new event types.
+	* Source/NSWindow.m: Handle AppKit defined events for window movement
+	and resizing.
 
 Tue Jul  6  6:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: New method for window control -
 	([_setFrame:forWindow:])
-	* Headers/AppKit/NSWindow.m: New ivar 'autosave_name' and new method
+	* Headers/AppKit/NSWindow.h: New ivar 'autosave_name' and new method
 	([_setFrame:]) for backend to call when window frame has changed.
 	* Source/NSGraphicsContext.m: Dummy implementation of new method.
 	* Source/NSWindow.m: Rewrite all moving/sizing methods and methods

@@ -681,42 +681,6 @@ static NSRecursiveLock	*windowsLock;
     [self display];
 }
 
-/*
- *	Method called by graphics engine to notify window of a change to
- *	it's real frame.
- */
-- (void) _setFrame: (NSRect)newFrame
-{
-  if (NSEqualRects(frame, newFrame) == NO)
-    {
-      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-      NSRect			old = frame;
-
-      if (autosave_name != nil)
-	{
-	  [self saveFrameUsingName: autosave_name];
-	}
-      frame = newFrame;
-      if (NSEqualSizes(old.size, frame.size) == NO)
-	{
-	  if (content_view)
-	    {
-	      NSView	*wv = [content_view superview];			
-	      NSRect	rect = [self frame];	
-
-	      rect.origin = NSZeroPoint;
-	      [wv setFrame: rect];
-	      [wv setNeedsDisplay: YES];
-	    }
-	  [nc postNotificationName: NSWindowDidResizeNotification object: self];
-	}
-      if (NSEqualPoints(old.origin, frame.origin) == NO)
-	{
-	  [nc postNotificationName: NSWindowDidMoveNotification object: self];
-	}
-    }
-}
-
 - (void) setFrameOrigin: (NSPoint)aPoint
 {
   NSRect	r = frame;
@@ -1534,8 +1498,47 @@ static NSRecursiveLock	*windowsLock;
 	}
 	break;
 
-      case NSPeriodic: 
       case NSAppKitDefined:
+	{
+	  GSAppKitSubtype	sub = [theEvent subtype];
+	  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+	  switch (sub)
+	    {
+	      case GSAppKitWindowMoved:
+		frame.origin.x = (float)[theEvent data1];
+		frame.origin.y = (float)[theEvent data2];
+		if (autosave_name != nil)
+		  {
+		    [self saveFrameUsingName: autosave_name];
+		  }
+		[nc postNotificationName: NSWindowDidMoveNotification
+				  object: self];
+		break;
+
+	      case GSAppKitWindowResized:
+		frame.size.width = (float)[theEvent data1];
+		frame.size.height = (float)[theEvent data2];
+		if (content_view)
+		  {
+		    NSView	*wv = [content_view superview];			
+		    NSRect	rect = frame;
+
+		    rect.origin = NSZeroPoint;
+		    [wv setFrame: rect];
+		    [wv setNeedsDisplay: YES];
+		  }
+		[nc postNotificationName: NSWindowDidResizeNotification
+				  object: self];
+		break;
+
+	      default:
+		break;
+	    }
+	}
+	break;
+
+      case NSPeriodic: 
       case NSSystemDefined:
       case NSApplicationDefined:
 	break;
