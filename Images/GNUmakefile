@@ -103,6 +103,10 @@ GNUstep.tiff \
 GNUstepMenuImage.tiff \
 nsmapping.strings \
 NSComboArrow.tiff \
+common_RightTabStop.tiff \
+common_CenterTabStop.tiff \
+common_LeftTabStop.tiff \
+common_DecimalTabStop.tiff \
 common_Diamond.tiff
 
 -include GNUmakefile.preamble
