@@ -1,3 +1,12 @@
+Tue Dec 19 00:43:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSText.m: Made an abstract class always allocating 
+	instances of the NSTextView subclass.
+	* Source/NSTextView.m ([-initWithFrame:]), ([-dealloc]),
+	([-initWithCoder:]), ([-buildUpTextNetwork:]),
+	([-replaceCharactersInRange:withString:]): Began to move code from
+	superclass.
+	
 2000-11-18  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: ([-setAttributes:range:]) fix for the case
