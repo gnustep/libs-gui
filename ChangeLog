@@ -1,3 +1,16 @@
+Tue Jul  2 17:01:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GNUmakefile (libgnustep-gui_HEADER_FILES): Removed -
+	temporarily? - NSValidatedUserInterfaceItem.h - because that file
+	does not exist on CVS at the moment.
+
+Tue Jul  2 16:52:28 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Suggestion by Fred Kiefer, David Ayers <d.ayers@inode.at>:
+	* Source/NSTextView.m ([-resignKeyWindow]): New method - if needed
+	draw the insertion point, then stop blinking.
+	* Headers/gnuste/gui/NSTextView.h: Declare the method.
+
 2002-06-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSToolbarItem.h
