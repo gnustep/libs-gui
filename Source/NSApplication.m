@@ -871,9 +871,10 @@ static NSCell* tileCell = nil;
 - (void) abortModal
 {
   if (session == 0)
-    [NSException raise: NSAbortModalException
-		format: @"abortModal called while not in a modal session"];
-
+    {
+      [NSException raise: NSAbortModalException
+		  format: @"abortModal called while not in a modal session"];
+    }
   [NSException raise: NSAbortModalException format: @"abortModal"];
 }
 
@@ -896,32 +897,34 @@ static NSCell* tileCell = nil;
   NSModalSession tmp = session;
 
   if (theSession == 0)
-    [NSException raise: NSInvalidArgumentException
-		format: @"null pointer passed to endModalSession: "];
-
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"null pointer passed to endModalSession:"];
+    }
   /* Remove this session from linked list of sessions. */
-  while (tmp && tmp != theSession)
-    tmp = tmp->previous;
-
+  while (tmp != 0 && tmp != theSession)
+    {
+      tmp = tmp->previous;
+    }
   if (tmp == 0)
-    [NSException raise: NSInvalidArgumentException
-		format: @"unknown session passed to endModalSession: "];
-
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"unknown session passed to endModalSession:"];
+    }
   while (session != theSession)
     {
       tmp = session;
       session = tmp->previous;
       NSZoneFree(NSDefaultMallocZone(), tmp);
     }
-
   session = session->previous;
-  NSZoneFree(NSDefaultMallocZone(), session);
+  NSZoneFree(NSDefaultMallocZone(), theSession);
 }
 
 - (int) runModalForWindow: (NSWindow*)theWindow
 {
-  static NSModalSession theSession;
-  static int code;
+  NSModalSession theSession = 0;
+  int code = NSRunContinuesResponse;
 
   /*
    * The NSWindow documentation says runModalForWindow centers panels.
@@ -930,7 +933,6 @@ static NSCell* tileCell = nil;
     {
       [theWindow center];
     }
-
   [theWindow orderFrontRegardless];
   if ([self isActive] == YES)
     {
@@ -944,9 +946,6 @@ static NSCell* tileCell = nil;
 	}
     }
 
-  theSession = NULL;
-  code = NSRunContinuesResponse;
-
   NS_DURING
     {
       theSession = [self beginModalSessionForWindow: theWindow];
@@ -954,12 +953,11 @@ static NSCell* tileCell = nil;
 	{
 	  code = [self runModalSession: theSession];
 	}
-
       [self endModalSession: theSession];
     }
   NS_HANDLER
     {
-      if (theSession)
+      if (theSession != 0)
 	{
 	  NSWindow *win_to_close = theSession->window;
 	  
@@ -967,11 +965,12 @@ static NSCell* tileCell = nil;
 	  [win_to_close close];
 	}
       if ([[localException name] isEqual: NSAbortModalException] == NO)
-	[localException raise];
-      
+	{
+	  [localException raise];
+     	} 
       code = NSRunAbortedResponse;
     }
-    NS_ENDHANDLER
+  NS_ENDHANDLER
 
   return code;
 }
@@ -985,8 +984,10 @@ static NSCell* tileCell = nil;
   NSDate	*limit;
 
   if (theSession != session)
-    [NSException raise: NSInvalidArgumentException
-		format: @"runModalSession: with wrong session"];
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"runModalSession: with wrong session"];
+    }
 
   pool = [NSAutoreleasePool new];
 
@@ -1058,18 +1059,16 @@ static NSCell* tileCell = nil;
 	  /*
 	   *	Check to see if the window has gone away - if so, end session.
 	   */
-#if 0
-	  if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
-	    NSNotFound || [session->window isVisible] == NO)
-#else
 	  if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
 	    NSNotFound)
-#endif
-	    [self stopModal];
+	    {
+	      [self stopModal];
+	    }
 	  if (windows_need_update)
-	    [self updateWindows];
+	    {
+	      [self updateWindows];
+	    }
 	}
-
       RELEASE(pool);
     }
 
@@ -1080,7 +1079,7 @@ static NSCell* tileCell = nil;
 
 - (NSWindow *) modalWindow
 {
-  if (session) 
+  if (session != 0) 
     return (session->window);
   else
     return nil;
@@ -1088,7 +1087,7 @@ static NSCell* tileCell = nil;
 
 - (void) stop: (id)sender
 {
-  if (session)
+  if (session != 0)
     [self stopModal];
   else
     app_is_running = NO;
@@ -1102,13 +1101,15 @@ static NSCell* tileCell = nil;
 - (void) stopModalWithCode: (int)returnCode
 {
   if (session == 0)
-    [NSException raise: NSInvalidArgumentException
-		format: @"stopModalWithCode: when not in a modal session"];
-  else
-    if (returnCode == NSRunContinuesResponse)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"stopModalWithCode: when not in a modal session"];
+    }
+  else if (returnCode == NSRunContinuesResponse)
+    {
       [NSException raise: NSInvalidArgumentException
 		  format: @"stopModalWithCode: with NSRunContinuesResponse"];
-
+    }
   session->runState = returnCode;
 }
 

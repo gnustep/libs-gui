@@ -9,6 +9,11 @@ Tue Dec 14 19:40:12 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 	to ([-initTextCell:]),([-initImageCell:]); redundancies 
  	removed.
 
+Tue Dec 14 19:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: modal session fixes (and tidying) suggested
+	by georg@mondoshawan.unix.cslab.tuwien.ac.at
+
 Tue Dec 14 16:51:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: ([-becomeKeyWindow]) Don't ask the backend to
