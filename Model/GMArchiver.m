@@ -534,8 +534,10 @@
 - (void) encodePoint: (NSPoint)point withName: (NSString*)name
 {
   if (!findingConditionals && name) {
-    id valueString = NSStringFromPoint (point);
-
+    /* Macosx NSStringFromPoint is not OPENstep compliant, so we do it by hand. */
+    id valueString = [NSString stringWithFormat: @"{x=%f; y=%f}",
+			       point.x, point.y];
+    
     [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
@@ -543,7 +545,9 @@
 - (void) encodeSize: (NSSize)size withName: (NSString*)name
 {
   if (!findingConditionals) {
-    id valueString = NSStringFromSize (size);
+    /* Macosx NSStringFromSize is not OPENstep compliant, so we do it by hand. */
+    id valueString = [NSString stringWithFormat: @"{width=%f; height=%f}",
+			       size.width, size.height];
 
     [lastObjectRepresentation setObject: valueString forKey: name];
   }
@@ -552,8 +556,11 @@
 - (void) encodeRect: (NSRect)rect withName: (NSString*)name
 {
   if (!findingConditionals) {
-    id valueString = NSStringFromRect (rect);
-
+    /* Macosx NSStringFromRect is not OPENstep compliant, so we do it by hand. */
+    id valueString = [NSString stringWithFormat: 
+				 @"{x=%f; y=%f; width=%f; height=%f}",
+			       rect.origin.x, rect.origin.y, 
+			       rect.size.width, rect.size.height];
     [lastObjectRepresentation setObject: valueString forKey: name];
   }
 }
