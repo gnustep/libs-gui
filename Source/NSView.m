@@ -194,8 +194,20 @@ NSString *NSViewFocusChangedNotification;
 - (void)addSubview:(NSView *)aView
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![aView isKindOfClass:[NSView class]])
     {
+      return;
+    }
+#endif
+
+  // make sure we aren't making ourself a subview of ourself
+  if (self == aView)
+    {
+      NSLog(@"Attempt to make view a subview of itself\n");
       return;
     }
 
@@ -214,9 +226,14 @@ NSString *NSViewFocusChangedNotification;
 	relativeTo:(NSView *)otherView
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![aView isKindOfClass:[NSView class]]) return;
+#endif
 
-	// retain the object
+  // retain the object
   [aView retain];
 
   // Add to our subview list
@@ -245,7 +262,12 @@ NSString *NSViewFocusChangedNotification;
   BOOL found = NO;
 
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if o
   if (![aView isKindOfClass:[NSView class]]) return NO;
+#endif
 
   // Quick check
   if (aView == self) return YES;
@@ -287,7 +309,12 @@ NSString *NSViewFocusChangedNotification;
   NSView *v;
 
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![newView isKindOfClass:[NSView class]]) return;
+#endif
 
   j = [sub_views count];
   for (i = 0;i < j; ++i)
@@ -325,7 +352,12 @@ NSString *NSViewFocusChangedNotification;
 - (void)setSuperview:(NSView *)superview
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![superview isKindOfClass:[NSView class]]) return;
+#endif
 
   super_view = superview;
 }

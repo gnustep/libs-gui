@@ -1,3 +1,12 @@
+Thu Feb  6 19:31:54 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Fill out implementation of NSColorWell.
+	* Headers/gnustep/gui/NSColorWell.h: Add backend instance variable
+	and backend method.
+	* Source/NSColorWell.m: Initial implementation.
+	* NSView.m: Don't use -isKindOfClass: because it isn't working
+	as we expect with the backend classes doing a +poseAs:
+
 Fri Jan 31 05:30:40 1997  Scott Christley <scottc@net-community.com>
 
 	* Move and install resources to a more appropriate place.
