@@ -1,3 +1,10 @@
+Fri Feb 25 16:20:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSWindow.h: added has_closed flag
+	* Source/NSWindow.m: made close/deallocation sequence more robust
+	* Source/NSApplication.m: improve removal of windows from menus
+	on close.
+
 2000-02-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSCursor.m ([NSCursor -setImage:]): Implement.

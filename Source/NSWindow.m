@@ -218,6 +218,7 @@ static NSMapTable* windowmaps = NULL;
 	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
 			target: self
 		      argument: nil];
+  [NSApp removeWindowsItem: self];
 
   [self setFrameAutosaveName: nil];
   TEST_RELEASE(_wv);
@@ -776,6 +777,10 @@ static NSMapTable* windowmaps = NULL;
 					   NSModalPanelRunLoopMode,
 					   NSEventTrackingRunLoopMode, nil]];
 	}
+      if (_f.has_closed == YES)
+	{
+	  _f.has_closed = NO;	/* A closed window has re-opened	*/
+	}
       if (_f.has_opened == NO)
 	{
 	  _f.has_opened = YES;
@@ -1323,14 +1328,24 @@ resetCursorRectsForView(NSView *theView)
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   _f.has_opened = NO;
   [[NSRunLoop currentRunLoop]
-     cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-		    target: self
-		  argument: nil];
+	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+			target: self
+		      argument: nil];
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
   RELEASE(pool);
-  if (_f.is_released_when_closed)
-    RELEASE(self);
+  if (_f.has_closed == NO)
+    {
+      _f.has_closed = YES;
+      if (_f.is_released_when_closed)
+	{
+	  RELEASE(self);
+	}
+    }
+  else
+    {
+      NSWarnMLog(@"closing window (%@) that's already closed.", self);
+    }
 }
 
 - (void) deminiaturize: sender
@@ -2932,6 +2947,7 @@ resetCursorRectsForView(NSView *theView)
   _f.hides_on_deactivate = NO;
   _f.accepts_mouse_moved = NO;
   _f.has_opened = NO;
+  _f.has_closed = NO;
 }
 
 - (id) cleanInit

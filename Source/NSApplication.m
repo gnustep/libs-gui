@@ -1833,21 +1833,24 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       NSArray	*itemArray;
       unsigned	count;
-      unsigned	i;
+      BOOL	found = NO;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
-      for (i = 0; i < count; i++)
+      while (count-- > 0)
 	{
-	  id	item = [itemArray objectAtIndex: i];
+	  id	item = [itemArray objectAtIndex: count];
 
 	  if ([item target] == aWindow)
 	    {
 	      [menu removeItem: item];
-	      [menu sizeToFit];
-	      [menu update];
-	      break;
+	      found = YES;
 	    }
+	}
+      if (found == YES)
+	{
+	  [menu sizeToFit];
+	  [menu update];
 	}
     }
 }

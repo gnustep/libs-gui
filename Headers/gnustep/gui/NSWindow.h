@@ -143,6 +143,7 @@ extern NSSize NSTokenSize;
     unsigned	hides_on_deactivate:1;
     unsigned	accepts_mouse_moved:1;
     unsigned	has_opened:1;
+    unsigned	has_closed:1;
   } _f;
  
   /* Reserved for back-end use */
