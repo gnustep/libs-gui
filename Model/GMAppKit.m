@@ -722,30 +722,43 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY || XGPS_BACKEND_LIBRARY
-  [super encodeWithModelArchiver:archiver];
-#endif
-
+  [archiver encodeString:[self title] withName:@"title"];
+  [archiver encodeObject:[self image] withName:@"image"];
+  [archiver encodeObject:[self onStateImage] withName:@"onStateImage"];
+  [archiver encodeObject:[self offStateImage] withName:@"offStateImage"];
+  [archiver encodeObject:[self mixedStateImage] withName:@"mixedStateImage"];
+  [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
+  [archiver encodeInt:[self state] withName:@"state"];
   [archiver encodeObject:[self target] withName:@"target"];
   [archiver encodeSelector:[self action] withName:@"action"];
-  [archiver encodeString:[self title] withName:@"title"];
   [archiver encodeInt:[self tag] withName:@"tag"];
   [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
-  [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
+  [archiver encodeBOOL:[self changesState] withName:@"changesState"];
+  [archiver encodeConditionalObject:[self menu] withName:@"menu"];
+  [archiver encodeObject:[self submenu] withName:@"submenu"];
+  [archiver encodeConditionalObject:[self representedObject]
+	                   withName:@"representedObject"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY || XGPS_BACKEND_LIBRARY
-  self = [super initWithModelUnarchiver:unarchiver];
-#endif
-
+  [self setTitle:[unarchiver decodeStringWithName:@"title"]];
+  [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+  [self setOnStateImage:[unarchiver decodeObjectWithName:@"onStateImage"]];
+  [self setOffStateImage:[unarchiver decodeObjectWithName:@"offStateImage"]];
+  [self setMixedStateImage:[unarchiver
+			     decodeObjectWithName:@"mixedStateImage"]];
+  [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
+  [self setState:[unarchiver decodeIntWithName:@"state"]];
   [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
   [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
-  [self setTitle:[unarchiver decodeStringWithName:@"title"]];
   [self setTag:[unarchiver decodeIntWithName:@"tag"]];
   [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
-  [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
+  [self setChangesState:[unarchiver decodeBOOLWithName:@"changesState"]];
+  [self setMenu:[unarchiver decodeObjectWithName:@"menu"]];
+  [self setSubmenu:[unarchiver decodeObjectWithName:@"submenu"]];
+  [self setRepresentedObject:[unarchiver
+			       decodeObjectWithName:@"representedObject"]];
 
 #if 0
   NSLog (@"menu item %@: target = %@, isEnabled = %d",
@@ -762,9 +775,9 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
+  [archiver encodeString:[self title] withName:@"title"];
   [archiver encodeObject:[self itemArray] withName:@"itemArray"];
   [archiver encodeBOOL:[self autoenablesItems] withName:@"autoenablesItems"];
-  [archiver encodeString:[self title] withName:@"title"];
 }
 
 /* Define this method here because on OPENSTEP 4.x the NSMenu is inherited from
@@ -785,18 +798,14 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   for (i = 0, count = [decodedItems count]; i < count; i++)
     [self addItem:[decodedItems objectAtIndex:i]];
-//    [self addItemWithTitle:@"dummy" action:NULL keyEquivalent:@""];
 
-//  [itemArray replaceObjectsInRange:NSMakeRange(0, count)
-//	     withObjectsFromArray:decodedItems];
+  for (i = 0; i < count; i++)
+    {
+      id item = [itemArray objectAtIndex:i];
 
-  for (i = 0; i < count; i++) {
-    id item = [itemArray objectAtIndex:i];
-    id target = [item target];
-
-    if ([target isKindOfClass:[NSMenu class]])
-      [self setSubmenu:target forItem:item];
-  }
+      if ([item hasSubmenu])
+	[self setSubmenu:[item submenu] forItem:item];
+    }
 
   [self setAutoenablesItems:
 	  [unarchiver decodeBOOLWithName:@"autoenablesItems"]];
