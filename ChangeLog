@@ -1,3 +1,8 @@
+2003-12-03 02:54  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GNUmakefile.postamble (after-clean): Add a missing ':'.
+	Reported by Matt Rice.
+
 2003-12-02  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GNUmakefile.postamble (libgnustep-gui.def): Generate at   
