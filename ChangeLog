@@ -4,6 +4,7 @@ Fri Feb  5 19:46:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	Benhur-de-Oliveira.Stein@imag.fr
 	* Source/NSClipView.m: turn copy-on-scroll off by defualt until it's
 	working properly.
+	* Headers/.../NSView.h: Fixed superview methods
 
 Fri Feb  5  6:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

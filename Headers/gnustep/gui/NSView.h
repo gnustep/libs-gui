@@ -122,8 +122,8 @@ enum {							// resized when the view's superview is resized
 			  context:(void *)context;
 - (NSMutableArray *)subviews;
 - (NSView *)superview;
-- (void)setSuperview:(NSView *)superview;
 - (NSWindow *)window;
+- (void)viewWillMoveToSuperview:(NSView *)newSuper;
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow;
 
 //
