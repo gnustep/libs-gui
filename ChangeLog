@@ -1,3 +1,21 @@
+2000-09-02  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSFontInfo.m: 
+	Added missing RETAINs.
+	* Source/NSBrowser.m
+	* Source/NSFontPanel.m
+	* Source/NSLayoutManager.m
+	* Source/NSMenu.m
+	* Source/NSMenuItemCell.m
+	* Source/NSMenuView.m
+	* Source/NSPanel.m
+	* Source/NSStringDrawing.m
+	* Source/NSTableHeaderCell.m
+	* Source/NSTabView.m
+	* Source/NSText.m
+	Changed system fonts of size 12 to 0. This will use Nicolas font
+	cache and keep font sizes consistent when changed.
+	
 2000-09-01  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/GSFontInfo.h: 
