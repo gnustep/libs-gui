@@ -3621,7 +3621,7 @@ static SEL getSel;
 		    {
 		      rowSpace--;
 		    }
-		  else if (i < col)
+		  else
 		    {
 		      (*mkImp)(self, mkSel, i, j);
 		    }
@@ -3633,10 +3633,7 @@ static SEL getSel;
 		{
 		  _cells[i][j] = nil;
 		  _selectedCells[i][j] = NO;
-		  if (i < col)
-		    {
-		      (*mkImp)(self, mkSel, i, j);
-		    }
+		  (*mkImp)(self, mkSel, i, j);
 		}
 	    }
 	}
