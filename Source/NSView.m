@@ -84,9 +84,9 @@ static PSMatrix	*flip = nil;
 */
 + (NSView*) focusView
 {
-  NSMutableDictionary*dict = [[NSThread currentThread] threadDictionary];
-  NSMutableArray*stack = [dict objectForKey: viewThreadKey];
-  NSView*current_view = nil;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: viewThreadKey];
+  NSView *current_view = nil;
 
   if (stack)
     {
@@ -104,8 +104,8 @@ static PSMatrix	*flip = nil;
 {
   if (focusView)
     {
-      NSMutableDictionary*dict = [[NSThread currentThread] threadDictionary];
-      NSMutableArray*stack = [dict objectForKey: viewThreadKey];
+      NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+      NSMutableArray *stack = [dict objectForKey: viewThreadKey];
 
       if (stack == nil)
         {
@@ -127,11 +127,11 @@ static PSMatrix	*flip = nil;
 *	Remove the top focusView for the current thread from the stack
 *	and return the new focusView (or nil if the stack is now empty).
 */
-+ (NSView*)popFocusView
++ (NSView*) popFocusView
 {
-  NSMutableDictionary*dict = [[NSThread currentThread] threadDictionary];
-  NSMutableArray*stack = [dict objectForKey: viewThreadKey];
-  NSView*v = nil;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: viewThreadKey];
+  NSView *v = nil;
 
   if (stack)
     {
@@ -300,9 +300,9 @@ static PSMatrix	*flip = nil;
     return [super_view opaqueAncestor];
 }
 
-- (void) removeFromSuperviewWithoutNeedinfDisplay
+- (void) removeFromSuperviewWithoutNeedingDisplay
 {
-  NSMutableArray*views;
+  NSMutableArray	*views;
 
   if (!super_view)      // if no superview then just return
     return;
@@ -317,8 +317,8 @@ static PSMatrix	*flip = nil;
 
 - (void) removeFromSuperview
 {
-  NSMutableArray*views;
-  NSWindow*win;
+  NSMutableArray	*views;
+  NSWindow		*win;
 
   if (!super_view)	// if no superview then just return
     return;
@@ -1003,7 +1003,7 @@ static PSMatrix	*flip = nil;
 	  for (i = 0, count = [sub_views count]; i < count; i++)
 	    {
 	      NSRect intersection;
-	      NSView*subview = [sub_views objectAtIndex: i];
+	      NSView *subview = [sub_views objectAtIndex: i];
 	      NSRect subviewFrame = subview->frame;
 
 	      if ([subview->frameMatrix isRotated])
@@ -1093,7 +1093,7 @@ static PSMatrix	*flip = nil;
     }
   else
     {
-      NSView*firstOpaque = [self opaqueAncestor];
+      NSView *firstOpaque = [self opaqueAncestor];
 
       rect = [firstOpaque convertRect: rect fromView: self];
       [firstOpaque displayRectIgnoringOpacity: rect];
@@ -1159,8 +1159,10 @@ static PSMatrix	*flip = nil;
 - (void)drawRect: (NSRect)rect
 {}
 
-- (NSRect)visibleRect
+- (NSRect) visibleRect
 {
+  if (!window)
+    return NSZeroRect;
   if (!super_view)
     return bounds;
   else
@@ -1271,7 +1273,7 @@ static PSMatrix	*flip = nil;
 //
 - (void) addCursorRect: (NSRect)aRect cursor: (NSCursor*)anObject
 {
-  GSTrackingRect*m;
+  GSTrackingRect	*m;
 
   m = [[[GSTrackingRect alloc] initWithRect: aRect
 					tag: 0
@@ -1382,7 +1384,7 @@ static PSMatrix	*flip = nil;
 - (void) removeTrackingRect: (NSTrackingRectTag)tag
 {
   unsigned i, j;
-  GSTrackingRect*m;
+  GSTrackingRect	*m;
 
   j = [tracking_rects count];
   for (i = 0;i < j; ++i)

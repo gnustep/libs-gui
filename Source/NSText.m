@@ -1192,12 +1192,18 @@ typedef enum
 }
 
 
--(void) redisplayForLineRange:(NSRange) redrawLineRange
-{	BOOL	didLock=NO;
+-(void) redisplayForLineRange: (NSRange)redrawLineRange
+{
+  BOOL	didLock = NO;
 
-	if([self window] && [[self class] focusView] != self)
-	{	[self lockFocus]; didLock=YES;
-	}
+  if ([self window] == nil)
+    return;
+
+  if ([[self class] focusView] != self)
+    {
+      [self lockFocus];
+      didLock = YES;
+    }
 
 	if([lineLayoutInformation count] && redrawLineRange.location < [lineLayoutInformation count] && redrawLineRange.length)
 	{	_GNULineLayoutInfo *firstInfo=[lineLayoutInformation objectAtIndex:redrawLineRange.location];

@@ -1,3 +1,9 @@
+Wed Feb 17 11:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Tidyup - visibleRect is empty if we have no window.
+	* Source/NSText.m: ([-redisplayForLineRange:]) fixed error drawing
+	into wrong view.
+
 Wed Feb 17  9:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/make_services.m: Updated for change in NSProcessInfo
