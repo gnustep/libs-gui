@@ -1102,7 +1102,7 @@ static NSColor	*shadowCol;
 {
   unsigned int location = [aString rangeOfString: @"&"].location;
 
-  [self setStringValue: [aString stringByReplacingString: @"&"
+  [self setTitle: [aString stringByReplacingString: @"&"
 				 withString: @""]];
   // TODO: We should underline this character
   [self setMnemonicLocation: location];
@@ -1111,7 +1111,7 @@ static NSColor	*shadowCol;
 - (NSString*) mnemonic
 {
   unsigned int location = [self mnemonicLocation];
-  NSString *c = [self stringValue];
+  NSString *c = [self title];
 
   if ((location == NSNotFound) || location >= [c length])
     return @"";

@@ -1,3 +1,9 @@
+2003-11-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setTitleWithMnemonic:) use [setTitle:] instead
+	of [setStringValue:].
+	(-mnemonic) use [title] instead of [stringValue].
+
 2003-11-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m (-bezierPathByReversingPath) return create
