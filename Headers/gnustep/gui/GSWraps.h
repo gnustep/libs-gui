@@ -24,14 +24,9 @@
 
 #include <AppKit/NSGraphicsContext.h>
 
-#define	GSCTXT	NSGraphicsContext
-
-/* Graphics Wraps */
-extern void GSWSetMatrix(GSCTXT *ctxt, float m[6]);
-
 /* Context helper wraps */
-extern unsigned int GSWDefineAsUserObj(GSCTXT *ctxt);
+extern unsigned int GSWDefineAsUserObj(NSGraphicsContext *ctxt);
 
-extern void GSWViewIsFlipped(GSCTXT *ctxt, BOOL flipped);
+extern void GSWViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped);
 
 #endif
