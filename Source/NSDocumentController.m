@@ -33,6 +33,8 @@
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "gnustep/gui/GSGuiPrivate.h"
+
 #include <Foundation/NSUserDefaults.h>
 
 static NSString *NSTypesKey             = @"NSTypes";
