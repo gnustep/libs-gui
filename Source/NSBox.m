@@ -28,6 +28,7 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSBox.h>
@@ -35,7 +36,7 @@
 #include <AppKit/NSTextFieldCell.h>
 
 @interface NSBox (Private)
-- (NSRect)calcSizes;
+- (NSRect) calcSizes;
 @end
 
 @implementation NSBox
@@ -43,39 +44,39 @@
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSBox class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
 //
 // Instance methods
 //
-- initWithFrame:(NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
-	[super initWithFrame:frameRect];
+  [super initWithFrame: frameRect];
 	
-	cell = [[NSTextFieldCell alloc] initTextCell:@"Title"];
-	[cell setAlignment: NSCenterTextAlignment];
-	[cell setBordered: NO];
-	[cell setEditable: NO];
-	[cell setDrawsBackground: YES];
-	[cell setBackgroundColor: [window backgroundColor]];
-	offsets.width = 5;
-	offsets.height = 5;
-	border_rect = bounds;
-	border_type = NSLineBorder;
-	title_position = NSAtTop;
-	title_rect = NSZeroRect;
-	content_view = [NSView new];
-	[super addSubview:content_view];
-	[content_view release];
+  cell = [[NSTextFieldCell alloc] initTextCell: @"Title"];
+  [cell setAlignment: NSCenterTextAlignment];
+  [cell setBordered: NO];
+  [cell setEditable: NO];
+  [cell setDrawsBackground: YES];
+  [cell setBackgroundColor: [window backgroundColor]];
+  offsets.width = 5;
+  offsets.height = 5;
+  border_rect = bounds;
+  border_type = NSLineBorder;
+  title_position = NSAtTop;
+  title_rect = NSZeroRect;
+  content_view = [NSView new];
+  [super addSubview: content_view];
+  [content_view release];
 
-	return self;
+  return self;
 }
 
 - (void) dealloc
@@ -89,17 +90,17 @@
 //
 // Getting and Modifying the Border and Title 
 //
-- (NSRect)borderRect
+- (NSRect) borderRect
 {
   return border_rect;
 }
 
-- (NSBorderType)borderType
+- (NSBorderType) borderType
 {
   return border_type;
 }
 
-- (void)setBorderType:(NSBorderType)aType
+- (void) setBorderType: (NSBorderType)aType
 {
   if (border_type != aType)
     {
@@ -109,21 +110,21 @@
     }
 }
 
-- (void)setTitle:(NSString *)aString
+- (void) setTitle: (NSString *)aString
 {
-  [cell setStringValue:aString];
+  [cell setStringValue: aString];
   [content_view setFrame: [self calcSizes]];
   [self setNeedsDisplay: YES];
 }
 
-- (void)setTitleFont:(NSFont *)fontObj
+- (void) setTitleFont: (NSFont *)fontObj
 {
-  [cell setFont:fontObj];
+  [cell setFont: fontObj];
   [content_view setFrame: [self calcSizes]];
   [self setNeedsDisplay: YES];
 }
 
-- (void)setTitlePosition:(NSTitlePosition)aPosition
+- (void) setTitlePosition: (NSTitlePosition)aPosition
 {
   if (title_position != aPosition)
     {
@@ -133,27 +134,27 @@
     }
 }
 
-- (NSString *)title
+- (NSString*) title
 {
   return [cell stringValue];
 }
 
-- (id)titleCell
+- (id) titleCell
 {
   return cell;
 }
 
-- (NSFont *)titleFont
+- (NSFont*) titleFont
 {
   return [cell font];
 }
 
-- (NSTitlePosition)titlePosition
+- (NSTitlePosition) titlePosition
 {
   return title_position;
 }
 
-- (NSRect)titleRect
+- (NSRect) titleRect
 {
   return title_rect;
 }
@@ -161,17 +162,17 @@
 //
 // Setting and Placing the Content View 
 //
-- (id)contentView
+- (id) contentView
 {
   return content_view;
 }
 
-- (NSSize)contentViewMargins
+- (NSSize) contentViewMargins
 {
   return offsets;
 }
 
-- (void)setContentView:(NSView *)aView
+- (void) setContentView: (NSView*)aView
 {
   if (aView)
     {
@@ -181,8 +182,11 @@
     }
 }
 
-- (void)setContentViewMargins:(NSSize)offsetSize
+- (void) setContentViewMargins: (NSSize)offsetSize
 {
+  NSAssert(offsetSize.width >= 0 && offsetSize.height >= 0,
+	@"illegal margins supplied");
+
   offsets = offsetSize;
   [content_view setFrame: [self calcSizes]];
   [self setNeedsDisplay: YES];
@@ -191,11 +195,14 @@
 //
 // Resizing the Box 
 //
-- (void)setFrameFromContentFrame:(NSRect)contentFrame
+- (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
   // First calc the sizes to see how much we are off by
   NSRect r = [self calcSizes];
   NSRect f = [self frame];
+
+  NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
+	@"illegal content frame supplied");
 
   // Add the difference to the frame
   f.size.width = f.size.width + (contentFrame.size.width - r.size.width);
@@ -204,7 +211,7 @@
   [self setFrame: f];
 }
 
-- (void)sizeToFit
+- (void) sizeToFit
 {
   NSRect r = NSZeroRect;
   id o, e = [[content_view subviews] objectEnumerator];
@@ -255,40 +262,41 @@
 //
 // Displaying
 //
-- (void)drawRect:(NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
+  rect = NSIntersectionRect(bounds, rect);
   // Fill inside
   [[window backgroundColor] set];
-  NSRectFill(bounds);
+  NSRectFill(rect);
 
   // Draw border
-  switch(border_type)
+  switch (border_type)
     {
-    case NSNoBorder:
+    case NSNoBorder: 
       break;
-    case NSLineBorder:
+    case NSLineBorder: 
       NSFrameRect(border_rect);
       break;
-    case NSBezelBorder:
-      NSDrawGrayBezel(border_rect, bounds);
+    case NSBezelBorder: 
+      NSDrawGrayBezel(border_rect, rect);
       break;
-    case NSGrooveBorder:
-      NSDrawGroove(border_rect, bounds);
+    case NSGrooveBorder: 
+      NSDrawGroove(border_rect, rect);
       break;
     }
 
   // Draw title
-  switch(title_position)
+  switch (title_position)
     {
-    case NSNoTitle:
+    case NSNoTitle: 
       // Nothing to do
       break;
-    case NSAboveTop:
-    case NSAtTop:
-    case NSBelowTop:
-    case NSAboveBottom:
-    case NSAtBottom:
-    case NSBelowBottom:
+    case NSAboveTop: 
+    case NSAtTop: 
+    case NSBelowTop: 
+    case NSAboveBottom: 
+    case NSAtBottom: 
+    case NSBelowBottom: 
       [cell setBackgroundColor: [window backgroundColor]];
       [cell drawWithFrame: title_rect inView: self];
     }
@@ -337,7 +345,7 @@
 
   switch (title_position)
     {
-    case NSNoTitle:
+    case NSNoTitle: 
       {
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
 	border_rect = bounds;
@@ -353,7 +361,7 @@
 
 	break;
       }
-    case NSAboveTop:
+    case NSAboveTop: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -385,7 +393,7 @@
 
 	break;
       }
-    case NSBelowTop:
+    case NSBelowTop: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -419,7 +427,7 @@
 
 	break;
       }
-    case NSAtTop:
+    case NSAtTop: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -455,7 +463,7 @@
 
 	break;
       }
-    case NSAtBottom:
+    case NSAtBottom: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -492,7 +500,7 @@
 
 	break;
       }
-    case NSBelowBottom:
+    case NSBelowBottom: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -524,7 +532,7 @@
 
 	break;
       }
-    case NSAboveBottom:
+    case NSAboveBottom: 
       {
 	NSSize titleSize = [cell cellSize];
 	NSSize borderSize = [NSCell sizeForBorderType: border_type];
@@ -558,6 +566,11 @@
 	break;
       }
     }
+
+  if (r.size.width < 0)
+    r.size.width = 0;
+  if (r.size.height < 0)
+    r.size.height = 0;
 
   return r;
 }
