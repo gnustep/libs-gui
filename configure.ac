@@ -54,6 +54,10 @@ case "$target_os" in
 	      LDFLAGS="$LDFLAGS -Wl,-R/usr/pkg/lib -L/usr/pkg/lib";;
 esac
 
+AC_PATH_X	# Added for checking the existence of ungif.  Note that
+                # -gui uses the API of the underlying window system ONLY IF
+		# it is definitely necessary.  
+
 #--------------------------------------------------------------------
 # The following is so that headers and custom libraries
 # in the GNUstep root are used before the standard ones
@@ -191,7 +195,60 @@ if test $enable_png = yes; then
   fi
 fi
 
-AC_CHECK_LIB(ungif, DGifOpen)
+
+AC_ARG_ENABLE(ungif,
+  [  --disable-ungif         Disable libungif-based GIF support],,
+  enable_ungif=yes)
+
+AC_ARG_WITH(ungif_library, 
+           [  --with-ungif-library=DIR UNGIF library file are in DIR], ,
+           with_ungif_library=)
+AC_ARG_WITH(ungif_include,  
+	[  --with-ungif-include=DIR UNGIF include files are in DIR], ,
+        with_ungif_include=)
+
+if test "${enable_ungif}" = yes; then
+  orig_CPPFLAGS="${CPPFLAGS}"
+  orig_LDFLAGS="${LDFLAGS}"
+  orig_LIBS="${LIBS}"
+
+  if test -n "${with_ungif_library}"; then
+    with_ungif_library="-L$with_ungif_library"
+  fi
+  if test -n "${with_ungif_include}"; then
+    with_ungif_include="-I$with_ungif_include"
+  fi
+  CPPFLAGS="${with_ungif_include} ${CPPFLAGS}"
+  LDFLAGS="${with_ungif_library} ${LDFLAGS}"
+
+  AC_CHECK_LIB(ungif, DGifOpen)
+
+  if test "${with_x}" != no && test "${ac_cv_lib_ungif_DGifOpen}" = no; then
+    AC_MSG_NOTICE([Checking if ungif is linked against -lX11])
+    # This implies either that ungif is not installed at all, or that it
+    # explicitly refers to the symbols defined in X11.  Now see if the latter
+    # is the case.
+    CPPFLAGS="${CPPFLAGS} -I${ac_x_includes}"
+    LDFLAGS="${LDFLAGS} -L${ac_x_libraries}"
+    LIBS="${LIBS} -lX11"
+
+    AC_CHECK_LIB(ungif, DGifCloseFile)
+    if test "${ac_cv_lib_ungif_DGifCloseFile}" = no; then
+      # This indicates ungif is not installed at all.  The flags reverts to
+      # the orignal value.
+      CPPFLAGS="${orig_CPPFLAGS}"
+      LDFLAGS="${orig_LDFLAGS}"
+      LIBS="${orig_LIBS}"
+    else
+      # This indicates ungif actually refers to the X11's symbols.  We modify
+      # the flags so that -gui gets linked against the X11 library to support
+      # ungif.
+      AC_MSG_NOTICE([-gui will be linked against -lX11 to support ungif images])
+      ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $CPPFLAGS"
+      ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $LDFLAGS -lX11"
+    fi
+  fi
+fi
 
 
 #--------------------------------------------------------------------

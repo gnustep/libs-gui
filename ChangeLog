@@ -1,3 +1,11 @@
+2004-02-09 03:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* configure.ac: Check for X. Add --enable-ungif/--disable-ungif and
+	--with-ungif-include/--with-ungif-library options. If the check for
+	libungif fails and X was found, check for libungif again, including
+	the X libraries. Patch from Kazunobu Kuriyama.
+	* configure: Regenerate.
+
 2004-02-08 20:56  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Backout of NSNib modification.
