@@ -96,7 +96,7 @@ typedef	struct {
 - (void) setMatrix: (const float[6])replace;
 - (void) getMatrix: (float[6])replace;
 
-- (void) getMatrixFromTransform: (NSAffineTransform *)other;
+- (void) takeMatrixFromTransform: (NSAffineTransform *)other;
 
 @end
 #endif

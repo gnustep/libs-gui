@@ -2800,7 +2800,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  BOOL		wasFlipped = _super_view->_rFlags.flipped_view;
 	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
 
-	  [_matrixToWindow getMatrixFromTransform: pMatrix];
+	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
 	  (*appImp)(_matrixToWindow, appSel, _frameMatrix);
 	  if (_rFlags.flipped_view != wasFlipped)
 	    {
@@ -2813,7 +2813,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	      (*appImp)(_matrixToWindow, appSel, flip);
 	    }
 	  (*appImp)(_matrixToWindow, appSel, _boundsMatrix);
-	  [_matrixFromWindow getMatrixFromTransform: _matrixToWindow];
+	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
 	  [_matrixFromWindow inverse];
 
 	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]

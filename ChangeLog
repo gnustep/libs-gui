@@ -5,7 +5,7 @@ Tue Jan 16 12:01:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 Tue Jan 16 11:54:30 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Source/NSAffineTransform.m ([-getMatrixFromTransform:]): New
+	* Source/NSAffineTransform.m ([-takeMatrixFromTransform:]): New
 	method to get quickly the matrix from another transform.
 	* Headers/gnustep/gui/NSAffineTransform.h: Added corresponding
 	declaration.

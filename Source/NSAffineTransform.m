@@ -607,7 +607,7 @@ static NSAffineTransformStruct identityTransform = {
   replace[5] = matrix.ty;
 }
 
-- (void) getMatrixFromTransform: (NSAffineTransform *)other
+- (void) takeMatrixFromTransform: (NSAffineTransform *)other
 {
   matrix.m11 = other->matrix.m11;
   matrix.m12 = other->matrix.m12;
