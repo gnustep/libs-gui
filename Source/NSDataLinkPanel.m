@@ -104,7 +104,7 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
   if (self == [NSDataLinkPanel class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 0];
     }
 }
 

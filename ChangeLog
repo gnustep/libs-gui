@@ -1,3 +1,15 @@
+2005-03-05 10:53 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSDataLink.h
+	* Headers/AppKit/NSDataLinkManager.h: Added some ivars
+	* Source/Functions.m: Changed the NSLinkFrameThickness() function to
+	return 1 instead of 1.5.
+	* Source/NSDataLink.m: Implemented several methods.
+	* Source/NSDataLinkManager.m: Implemented several methods.
+	* Source/NSDataLinkPanel.m: Change version from 1 to 0.
+	* Source/NSSelection.m: Change version from 1 to 0, corrected 
+	but in initWithCoder:.
+
 2005-03-03  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Disable gsnd on darwin

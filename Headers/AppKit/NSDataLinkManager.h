@@ -33,7 +33,7 @@
 
 @class NSString;
 @class NSEnumerator;
-@class NSMutableDictionary;
+@class NSMutableArray;
 @class NSDataLink;
 @class NSSelection;
 @class NSPasteboard;
@@ -44,12 +44,16 @@
   // Attributes
   id                  delegate;
   NSString            *filename;
-  BOOL                delegateVerifiesLinks;
-  BOOL                interactsWithUser;
-  BOOL                isEdited;
-  BOOL                areLinkOutlinesVisible;
-  NSMutableDictionary *sourceLinks;
-  NSMutableDictionary *destinationLinks;
+  NSMutableArray      *sourceLinks;
+  NSMutableArray      *destinationLinks;
+
+  struct __dlmFlags {
+    unsigned areLinkOutlinesVisible:1;
+    unsigned delegateVerifiesLinks:1;
+    unsigned interactsWithUser:1;
+    unsigned isEdited:1;
+  } _flags;
+
 }
 
 //
@@ -108,9 +112,7 @@
 // Methods Implemented by the Delegate
 //
 @interface NSObject (NSDataLinkManagerDelegate)
-- (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
-		      at:(NSSelection *)selection
-	cheapCopyAllowed:(BOOL)flag;
+// data link management methods.
 - (void)dataLinkManager:(NSDataLinkManager *)sender 
 	   didBreakLink:(NSDataLink *)link;
 - (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
@@ -123,6 +125,11 @@
 - (void)dataLinkManagerDidEditLinks:(NSDataLinkManager *)sender;
 - (void)dataLinkManagerRedrawLinkOutlines:(NSDataLinkManager *)sender;
 - (BOOL)dataLinkManagerTracksLinksIndividually:(NSDataLinkManager *)sender;
+
+// selection management methods.
+- (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
+		      at:(NSSelection *)selection
+	cheapCopyAllowed:(BOOL)flag;
 - (BOOL)importFile:(NSString *)filename
 		at:(NSSelection *)selection;
 - (BOOL)pasteFromPasteboard:(NSPasteboard *)pasteboard 

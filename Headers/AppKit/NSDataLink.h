@@ -65,19 +65,32 @@ APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
   NSDataLinkNumber      linkNumber;
   NSDataLinkDisposition disposition;
   NSDataLinkUpdateMode  updateMode;
-  NSDataLinkManager    *manager;
 
   // info about the source.
-  NSDate               *lastUpdateTime;
-  NSString             *sourceApplicationName;
-  NSString             *sourceFilename;
-  NSSelection          *sourceSelection;
-  NSArray              *types;
+  NSDate                *lastUpdateTime;
+  NSString              *sourceApplicationName;
+  NSString              *sourceFilename;
+  NSSelection           *sourceSelection;
+  id                    sourceManager;
 
   // info about the destination
-  NSString             *destinationApplicationName;
-  NSString             *destinationFilename;
-  NSSelection          *destinationSelection;
+  NSString              *destinationApplicationName;
+  NSString              *destinationFilename;
+  NSSelection           *destinationSelection;
+  id                    destinationManager;
+  
+  // types.
+  NSArray               *types;
+
+  // other flags
+  struct __linkFlags {
+    unsigned   appVerifies:1;
+    unsigned   broken:1;
+    unsigned   canUpdateContinuously:1;
+    unsigned   isDirty:1;
+    unsigned   willOpenSource:1;
+    unsigned   willUpdate:1;
+  } _flags;
 }
 
 //
@@ -130,6 +143,9 @@ APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
 - (BOOL)updateDestination;
 - (NSDataLinkUpdateMode)updateMode;
 @end
+
+APPKIT_EXPORT NSString *NSDataLinkFilenameExtension;
+APPKIT_EXPORT NSString *NSDataLinkPboardType;
 
 #endif // _GNUstep_H_NSDataLink
 

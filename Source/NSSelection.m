@@ -96,7 +96,7 @@ typedef enum
   if (self == [NSSelection class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 0];
     }
 }
 
@@ -226,6 +226,8 @@ typedef enum
 	    at: &_isWellKnownSelection];
   [aDecoder decodeValueOfObjCType: @encode(int)
 	    at: &_selectionType];
+  [aDecoder decodeValueOfObjCType: @encode(id)
+	    at: _descriptionData];
 
   // if it's a well known selection then determine which one it is.
   if(_isWellKnownSelection)
@@ -248,11 +250,6 @@ typedef enum
 	  // Shouldn't get here.
 	  break;
 	}
-    }
-  else
-    {
-      [aDecoder decodeValueOfObjCType: @encode(id)
-		at: _descriptionData];
     }
 
   return self;

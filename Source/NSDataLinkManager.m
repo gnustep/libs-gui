@@ -1,7 +1,9 @@
 /** <title>NSDataLinkManager</title>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
 
+   Author: Gregory John Casamento <greg_casamento@yahoo.com>
+   Date: 2005
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    
@@ -26,8 +28,57 @@
 #include "config.h"
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSArray.h>
 #include <AppKit/NSDataLinkManager.h>
 #include <AppKit/NSDataLink.h>
+
+@interface NSDataLink (Private)
+- (void) setLastUpdateTime: (NSDate *)date;
+- (void) setSourceFilename: (NSString *)src;
+- (void) setDestinationFilename: (NSString *)dst;
+- (void) setSourceManager: (id)src;
+- (void) setDestinationManager: (id)dst;
+- (void) setSourceSelection: (id)src;
+- (void) setDestinationSelection: (id)dst;
+@end
+
+@implementation NSDataLink (Private)
+- (void) setLastUpdateTime: (NSDate *)date
+{
+  ASSIGN(lastUpdateTime, date);
+}
+
+- (void) setSourceFilename: (NSString *)src
+{
+  ASSIGN(sourceFilename,src);
+}
+
+- (void) setDestinationFilename: (NSString *)dst
+{
+  ASSIGN(destinationFilename, dst);
+}
+
+- (void) setSourceManager: (id)src
+{
+  ASSIGN(sourceManager,src);
+}
+
+- (void) setDestinationManager: (id)dst
+{
+  ASSIGN(destinationManager,dst);
+}
+
+- (void) setSourceSelection: (id)src
+{
+  ASSIGN(sourceSelection,src);
+}
+
+- (void) setDestinationSelection: (id)dst
+{
+  ASSIGN(destinationSelection,dst);
+}
+@end
+
 
 @implementation NSDataLinkManager
 
@@ -39,7 +90,7 @@
   if (self == [NSDataLinkManager class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 0];
     }
 }
 
@@ -53,12 +104,15 @@
 {
   self = [super init];
 
-  ASSIGN(delegate,anObject);
-  filename = nil;
-  delegateVerifiesLinks = NO;
-  interactsWithUser = NO;
-  isEdited = NO;
-  areLinkOutlinesVisible = NO;
+  if(self != nil)
+    {
+      ASSIGN(delegate,anObject);
+      filename = nil;
+      _flags.delegateVerifiesLinks = NO;
+      _flags.interactsWithUser = NO;
+      _flags.isEdited = NO;
+      _flags.areLinkOutlinesVisible = NO;
+    }
 
   return self;
 }
@@ -68,12 +122,15 @@
 {
   self = [super init];
 
-  ASSIGN(delegate,anObject);
-  ASSIGN(filename,path);
-  delegateVerifiesLinks = NO;
-  interactsWithUser = NO;
-  isEdited = NO;
-  areLinkOutlinesVisible = NO;
+  if(self != nil)
+    {
+      ASSIGN(delegate,anObject);
+      ASSIGN(filename,path);
+      _flags.delegateVerifiesLinks = NO;
+      _flags.interactsWithUser = NO;
+      _flags.isEdited = NO;
+      _flags.areLinkOutlinesVisible = NO;
+    }
 
   return self;
 }
@@ -84,7 +141,18 @@
 - (BOOL)addLink:(NSDataLink *)link
 	     at:(NSSelection *)selection
 {
-  return NO;
+  BOOL result = NO;
+
+  [link setDestinationSelection: selection];
+  [link setDestinationManager: self];
+
+  if([destinationLinks containsObject: link] == NO)
+    {
+      [destinationLinks addObject: link];
+      result = YES;
+    }
+
+  return result;
 }
 
 - (BOOL)addLinkAsMarker:(NSDataLink *)link
@@ -102,15 +170,10 @@
 
 - (void)breakAllLinks
 {
-  NSEnumerator *en = [self destinationLinkEnumerator];
+  NSArray *allLinks = [sourceLinks arrayByAddingObjectsFromArray: destinationLinks];
+  NSEnumerator *en = [allLinks objectEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
-    {
-      [obj break];
-    }
-
-  en = [self sourceLinkEnumerator];
   while((obj = [en nextObject]) != nil)
     {
       [obj break];
@@ -119,6 +182,14 @@
 
 - (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard
 {
+  NSArray *allLinks = [sourceLinks arrayByAddingObjectsFromArray: destinationLinks];
+  NSEnumerator *en = [allLinks objectEnumerator];
+  id obj = nil;
+
+  while((obj = [en nextObject]) != nil)
+    {
+      [obj writeToPasteboard: pasteboard];
+    }
 }
 
 //
@@ -158,7 +229,7 @@
 
 - (BOOL)delegateVerifiesLinks
 {
-  return delegateVerifiesLinks;
+  return _flags.delegateVerifiesLinks;
 }
 
 - (NSString *)filename
@@ -168,22 +239,22 @@
 
 - (BOOL)interactsWithUser
 {
-  return interactsWithUser;
+  return _flags.interactsWithUser;
 }
 
 - (BOOL)isEdited
 {
-  return isEdited;
+  return _flags.isEdited;
 }
 
 - (void)setDelegateVerifiesLinks:(BOOL)flag
 {
-  delegateVerifiesLinks = flag;
+  _flags.delegateVerifiesLinks = flag;
 }
 
 - (void)setInteractsWithUser:(BOOL)flag
 {
-  interactsWithUser = flag;
+  _flags.interactsWithUser = flag;
 }
 
 //
@@ -191,12 +262,12 @@
 //
 - (BOOL)areLinkOutlinesVisible
 {
-  return areLinkOutlinesVisible;
+  return _flags.areLinkOutlinesVisible;
 }
 
 - (NSEnumerator *)destinationLinkEnumerator
 {
-  return [destinationLinks keyEnumerator];
+  return [destinationLinks objectEnumerator];
 }
 
 - (NSDataLink *)destinationLinkWithSelection:(NSSelection *)destSel
@@ -217,12 +288,12 @@
 
 - (void)setLinkOutlinesVisible:(BOOL)flag
 {
-  areLinkOutlinesVisible = flag;
+  _flags.areLinkOutlinesVisible = flag;
 }
 
 - (NSEnumerator *)sourceLinkEnumerator
 {
-  return [sourceLinks keyEnumerator];
+  return [sourceLinks objectEnumerator];
 }
 
 //
@@ -230,10 +301,48 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL flag = NO;
+
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &filename];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
+
+  flag = _flags.areLinkOutlinesVisible;
+  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+  flag = _flags.delegateVerifiesLinks;
+  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+  flag = _flags.interactsWithUser;
+  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+  flag = _flags.isEdited;
+  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder*)aCoder
 {
+  int version = [aCoder versionForClassName: @"NSDataLinkManager"];
+
+  if(version == 0)
+    {
+      BOOL flag = NO;
+      
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &filename];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceLinks];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationLinks];
+      
+      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      _flags.areLinkOutlinesVisible = flag;
+      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      _flags.delegateVerifiesLinks = flag;
+      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      _flags.interactsWithUser = flag;
+      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      _flags.isEdited = flag;
+    }
+  else
+    {
+      return nil;
+    }
+
   return self;
 }
 
