@@ -85,6 +85,7 @@
 - (NSCell *) headerCell; 
 - (void) setDataCell: (NSCell *)aCell; 
 - (NSCell *) dataCell;
+- (NSCell *) dataCellForRow: (int)row;
 @end
 
 /* Notifications */
