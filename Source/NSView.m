@@ -259,7 +259,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (NSView *)opaqueAncestor
 {
-  return nil;
+  if ([self isOpaque] || !super_view)
+    return self;
+  else
+    return [super_view opaqueAncestor];
 }
 
 - (void)removeFromSuperview
@@ -833,7 +836,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
     NSRect superviewsVisibleRect
 	= [self convertRect:[super_view visibleRect] fromView:super_view];
 
-    return NSIntersectionRect (superviewsVisibleRect, frame);
+    return NSIntersectionRect (superviewsVisibleRect, bounds);
   }
 }
 

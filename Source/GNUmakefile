@@ -34,7 +34,7 @@ include ../Version
 LIBRARY_NAME=libgnustep-gui
 
 # The Objective-C source files to be compiled
-OBJC_FILES = libgnustep-gui.m \
+libgnustep-gui_OBJC_FILES = libgnustep-gui.m \
 NSActionCell.m \
 NSApplication.m \
 NSBitmapImageRep.m \
@@ -104,10 +104,10 @@ tiff.m \
 externs.m
 # NSPasteboard.m
 
-HEADER_FILES_DIR = ../Headers
-HEADER_FILES_INSTALL_DIR = /gnustep/gui
+libgnustep-gui_HEADER_FILES_DIR = ../Headers
+libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
 
-HEADER_FILES = \
+libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \

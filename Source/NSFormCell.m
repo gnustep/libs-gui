@@ -37,40 +37,47 @@
 
 - init
 {
-  self = [super init];
-  [self setBordered:NO];
-  [self setBezeled:NO];
+  return [self initTextCell:@"Field:"];
+}
+
+- initTextCell: (NSString *)aString
+{
+  self = [super initTextCell:@""];
+  [self setBordered:YES];
+  [self setBezeled:YES];
+  [self setAlignment:NSLeftTextAlignment];
   titleWidth = -1;
-  textCell = [NSTextFieldCell new];
-  [textCell setBordered:YES];
-  [textCell setBezeled:YES];
+  titleCell = [[NSCell alloc] initTextCell:aString];
+  [titleCell setBordered:NO];
+  [titleCell setBezeled:NO];
+  [titleCell setAlignment:NSRightTextAlignment];
   return self;
 }
 
 - (void)dealloc
 {
-  [textCell release];
+  [titleCell release];
   [super dealloc];
 }
 
 - (BOOL)isOpaque
 {
-  return [super isOpaque] && [textCell isOpaque];
+  return [super isOpaque] && [titleCell isOpaque];
 }
 
 - (void)setTitle:(NSString*)aString
 {
-  [self setStringValue:aString];
+  [titleCell setStringValue:aString];
 }
 
 - (void)setTitleAlignment:(NSTextAlignment)mode
 {
-  [self setAlignment:mode];
+  [titleCell setAlignment:mode];
 }
 
 - (void)setTitleFont:(NSFont*)fontObject
 {
-  [self setFont:fontObject];
+  [titleCell setFont:fontObject];
 }
 
 - (void)setTitleWidth:(float)width
@@ -80,23 +87,23 @@
 
 - (NSString*)title
 {
-  return [self stringValue];
+  return [titleCell stringValue];
 }
 
 - (NSTextAlignment)titleAlignment
 {
-  return [self alignment];
+  return [titleCell alignment];
 }
 
 - (NSFont*)titleFont
 {
-  return [self font];
+  return [titleCell font];
 }
 
 - (float)titleWidth
 {
   if (titleWidth < 0)
-    return [[self font] widthOfString:[self title]];
+    return [[titleCell font] widthOfString:[self title]];
   else
     return titleWidth;
 }
@@ -107,20 +114,17 @@
   return 0;
 }
 
-- (void)drawInteriorWithFrame:(NSRect)cellFrame
+- (void)drawWithFrame:(NSRect)cellFrame
   inView:(NSView*)controlView
 {
-  NSRect titleRect = cellFrame;
-  NSRect textRect;
+  NSRect titleFrame;
+  NSRect textFrame;
 
-  titleRect.size.width = [self titleWidth] + 4;
-  [super drawInteriorWithFrame:titleRect inView:controlView];
+  NSDivideRect(cellFrame, &titleFrame, &textFrame,
+               [self titleWidth] + 4, NSMinXEdge);
 
-  textRect.origin.x = cellFrame.origin.x + titleRect.size.width;
-  textRect.origin.y = cellFrame.origin.y;
-  textRect.size.width = cellFrame.size.width - titleRect.size.width;
-  textRect.size.height = cellFrame.size.height;
-  [textCell drawInteriorWithFrame:textRect inView:controlView];
+  [titleCell drawWithFrame:titleFrame inView:controlView];
+  [super drawWithFrame:textFrame inView:controlView];
 }
 
 - (void)encodeWithCoder:aCoder

@@ -64,8 +64,13 @@ static Class defaultCellClass = nil;
 - (NSFormCell*)insertEntry:(NSString*)title
 		    atIndex:(int)index
 {
+  NSFormCell *new_cell = [[[isa cellClass] alloc] initTextCell:title];
+
   [self insertRow:index];
-  return [self cellAtRow:index column:0];
+  [self putCell:new_cell atRow:index column:0];
+  [new_cell release];
+
+  return new_cell;
 }
 
 - (void)removeEntryAtIndex:(int)index

@@ -31,12 +31,10 @@
 
 #include <AppKit/NSActionCell.h>
 
-@class NSTextFieldCell;
-
 @interface NSFormCell : NSActionCell <NSCoding>
 {
   float titleWidth;
-  NSTextFieldCell* textCell;
+  NSCell* titleCell;
 }
 
 //
@@ -60,8 +58,8 @@
 //
 // Displaying 
 //
-- (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView*)controlView;
+- (void)drawWithFrame:(NSRect)cellFrame
+  inView:(NSView*)controlView;
 
 //
 // NSCoding protocol

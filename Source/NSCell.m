@@ -70,6 +70,7 @@
 //
 - _init
 {
+  self = [super init];
   cell_type = NSNullCellType;
   cell_image = nil;
   cell_font = nil;
@@ -92,9 +93,7 @@
 
 - init
 {
-  self = [super init];
-  [self _init];
-  return self;
+  return [self initTextCell:@""];
 }
 
 - (id)initImageCell:(NSImage *)anImage

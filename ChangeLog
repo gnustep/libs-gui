@@ -1,3 +1,23 @@
+Wed Oct 29 12:22:22 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	Bug fixes for NSForm and NSFormCell from Benhur Stein
+	<Benhur-de-Oliveira.Stein@imag.fr>.
+	* Headers/gnustep/gui/NSFormCell.h: The text field cell is keeping the
+	value now not the title. Changed drawInteriorWithFrame:inView: to
+	drawWithFrame:inView:.
+	* Source/NSForm.m: Likewise.
+	* Source/NSFormCell.m: Likewise.
+	(drawInteriorWithFrame:inView:): Changed to drawWithFrame:inView:.
+	* Source/NSCell.m (init): Make a text cell by default.
+	(_init): Invoke super's init.
+	* Source/NSView.m (opaqueAncestor): Implemented.
+	(visibleRect): Intersect the super view's visible rectangle with the
+	receiver's bounds instead of the receiver's frame.
+
+	* GNUmakefile: Fixed typo.
+	* Source/GNUmakefile: Changed the name of the variables to work with
+	the new multi-library building capabilities of library.make.
+
 Tue Oct 28 11:24:40 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Makefile: Changed to GNUmakefile.
