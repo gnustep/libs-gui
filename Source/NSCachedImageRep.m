@@ -50,6 +50,7 @@
   [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setAutodisplay: NO];
+  [self setReleasedWhenClosed: NO];
 }
 - (void) display
 {
