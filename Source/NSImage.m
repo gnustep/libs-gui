@@ -506,8 +506,11 @@ static NSDictionary* nsmapping = nil;
 
 - (void) setBackgroundColor: (NSColor *)aColor
 {
-  [_color autorelease];
-  _color = [aColor retain];
+  if (_color != aColor)
+    {
+      [_color release];
+      _color = [aColor retain];
+    }
 }
 
 - (NSColor *)backgroundColor
