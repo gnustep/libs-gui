@@ -657,17 +657,17 @@
   return nil;
 }
 
-- (NSView*) hitTest: (NSPoint)aPoint
+- (void) mouseDown: (NSEvent *)theEvent
 {
-  NSTabViewItem *anItem = [self tabViewItemAtPoint: aPoint];
-
-  if (anItem && ![anItem isEqual: _selected])
+  NSPoint location = [theEvent locationInWindow];
+  NSTabViewItem *anItem = [self tabViewItemAtPoint: location];
+  
+  if (anItem != nil  &&  ![anItem isEqual: _selected])
     {
       [self selectTabViewItem: anItem];
     }
-
-  return [super hitTest: aPoint];
 }
+
 
 - (NSControlSize)controlSize
 {
