@@ -1,3 +1,10 @@
+Wed Aug 30 19:36:19 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSForm.m ([-insertEntry:atIndex:]): Moved some code to
+	([putCell:atRow:column:]).  ([-putCell:atRow:column:]): New
+	method.  (patch prepared in cooperation with Georg Fleischmann
+	<georg@vhf.de>)
+	
 Wed Aug 30 13:07:06 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSMatrix.h: Added ivar for key cell; 
