@@ -27,20 +27,21 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
+#include ../config.make
 
 # The documents to be generated
-DOCUMENT_NAME = gnustep-gui ReleaseNotes
+DOCUMENT_NAME = ReleaseNotes
 
-SUBPROJECTS = General GuiUser
+SUBPROJECTS = General GuiUser manual
 
 # The text documents to be generated
 DOCUMENT_TEXT_NAME = \
 INSTALL NEWS README ANNOUNCE BUGS
 
 gnustep-gui_TEXI_FILES = \
-gnustep-gui.texi \
 version.texi 
 gnustep-gui_DOC_INSTALL_DIR = Developer/Gui/Manual
+GuiUser_DOC_INSTALL_DIR = User/Gui
 
 TOP_DOC_FILES = INSTALL NEWS README ANNOUNCE BUGS
 
@@ -84,6 +85,7 @@ GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Additions
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/documentation.make
+include $(GNUSTEP_MAKEFILES)/aggregate.make
 
 -include GNUmakefile.postamble
 
