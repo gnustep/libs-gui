@@ -1,3 +1,25 @@
+1999-07-17  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Headers/gnustep/gui/NSMenuView.h: added new private interface.
+	* Headers/gnustep/gui/NSPopUpButton.h: removed NSPopUpButtonMatrix
+	and tidied some ivars.
+	* Source/NSMenu.m: fixed a few problems.
+	* Source/NSMenuItemCell.m: likewise.
+	* Source/NSMenuView.m: added functionality (privately) so this
+	class can be used to draw NSPopUpButton. Also made sizeToFit code
+	only size the view, not the window.
+	* Source/NSPopUpButton.m: removed NSPopUpButtonMatrix. Rewrote to
+	use NSMenuView.
+	* Source/NSPopUpButtonCell.m: rewrote portions to handle new
+	system of NSMenuView.
+
+1999-07-16  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSText.m: add a patch to NSText from Daniel to do some
+	pasteboard related stuff. Also added a patch from Peter Rasmussen
+	that addressed my hackish NSClipView scrolling code. Still a hack,
+	but won't kill NSText if not used in conjunction with a ClipView.
+
 1999-07-15  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSPopupButton.m: if (count) == 0, return early in drawing

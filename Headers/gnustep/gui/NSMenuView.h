@@ -39,6 +39,7 @@
 #include <AppKit/NSMenuItemCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSPopUpButton.h>
 
 @class NSFont;
 
@@ -59,6 +60,9 @@
   float menuv_keyEqWidth;
   BOOL menuv_needsSizing;
   NSSize cellSize;
+@private
+  NSPopUpButton *menuv_popb;
+  id menuv_items_link;
 }
 + (float)menuBarHeight;
 
@@ -106,6 +110,13 @@
                        popUpSelectedItem:(int)selectedItemIndex;
 - (void)performActionWithHighlightingForItemAtIndex:(int)index;
 - (BOOL)trackWithEvent:(NSEvent *)event;
+@end
+
+@interface NSMenuView (Private)
+- (id) initWithFrame: (NSRect)aFrame
+            cellSize: (NSSize)aSize;
+- (void) setPopUpButton: (NSPopUpButton *)popb;
+- (NSPopUpButton *) popupButton;
 @end
 
 #endif

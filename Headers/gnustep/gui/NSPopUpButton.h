@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -41,40 +43,11 @@
 @class NSMatrix;
 @class NSPopUpButton;
 
-@interface NSPopUpButtonMatrix : NSControl <NSCopying>
-{
-  NSMutableArray* cells;
-  NSSize cellSize;
-  NSMenu* menu;
-  id selectedCell;
-  NSRect selectedCellRect;
-  BOOL pull_down;
-  int selected_cell;
-  NSPopUpButton *popup_button;
-}
-- initWithFrame:(NSRect)rect;
-- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-                                action:(SEL)aSelector
-                         keyEquivalent:(NSString*)charCode
-                               atIndex:(unsigned int)index;
-- (void)removeItem:(id <NSMenuItem>)anItem;
-- (NSArray*)itemArray;
-- (id <NSMenuItem>)itemWithTitle:(NSString*)aString;
-- (id <NSMenuItem>)itemWithTag:(int)aTag;
-- (NSRect)cellFrameAtRow:(int)index;
-- (NSSize)cellSize;
-- (void)setMenu:(NSMenu*)menu;
-- (void)setSelectedCell:(id)aCell;
-- (id)selectedCell;
-- (NSRect)selectedCellRect;
-- (void)setPopUpButton:(NSPopUpButton *)popb;
-- (void) setIndexOfSelectedItem:(int)itemNum;
-@end
-
 @interface NSPopUpButton : NSButton <NSCoding>
 {
   // Attributes
-  NSPopUpButtonMatrix *list_items;
+  NSMutableArray *list_items;
+  NSMenuView *popb_view;
   NSRect list_rect;
   int selected_item;
   id pub_target;

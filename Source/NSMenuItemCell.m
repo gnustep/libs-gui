@@ -3,6 +3,8 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: 1999
    
    This file is part of the GNUstep GUI Library.
 

@@ -34,243 +34,13 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuView.h>
 #include <AppKit/NSFont.h>
-
-@implementation NSPopUpButtonMatrix
-
-// Class variables
-static NSFont* menuFont = nil;
-
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
-{
-  return YES;
-}
-
-- (id) initWithFrame: (NSRect)rect
-{
-  [super initWithFrame: rect];
-  cells = [NSMutableArray new];
-
-  selected_cell = 0;
- 
-  cellSize = NSMakeSize (rect.size.width, rect.size.height);
-
-  return self;
-}
-
-- (void) dealloc
-{
-  NSDebugLog (@"NSMenuMatrix of menu '%@' dealloc", [menu title]);
-
-  [cells release];
-  [super dealloc];
-}
-
-- (id) copyWithZone: (NSZone*)zone
-{
-  NSPopUpButtonMatrix* copy = [[isa allocWithZone: zone] initWithFrame: [self frame]];
-  int i, count;
-
-  NSDebugLog (@"copy menu matrix of menu with title '%@'", [menu title]);
-  for (i = 0, count = [cells count]; i < count; i++)
-    {
-      id aCell = [cells objectAtIndex: i];
-      id cellCopy = [[aCell copyWithZone: zone] autorelease];
-
-      [copy->cells addObject: cellCopy];
-    }
-
-  copy->cellSize = cellSize;
-  copy->menu = menu;
-  if (selectedCell)
-    {
-      int index = [cells indexOfObject: selectedCell];
-
-      copy->selectedCell = [[cells objectAtIndex: index] retain];
-    }
-  copy->selectedCellRect = selectedCellRect;
-
-  return copy;
-}
-
-- (void) _resizeMenuForCellSize
-{
-  int i, count;
-  float titleWidth;
-
-  /* Compute the new width of the menu cells matrix */
-  cellSize.width = 0;
-  count = [cells count];
-  for (i = 0; i < count; i++)
-    {
-      titleWidth = [menuFont widthOfString: 
-				  [[cells objectAtIndex: i] stringValue]];
-      cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
-    }
-  cellSize.width = MAX([menuFont widthOfString: [menu title]]
-			  + ADDITIONAL_WIDTH,
-			cellSize.width);
-
-  /* Resize the frame to hold all the menu cells */
-  [super setFrameSize: NSMakeSize (cellSize.width,
-      count ? (cellSize.height + INTERCELL_SPACE)*count - INTERCELL_SPACE : 0)];
-}
-
-- (id <NSMenuItem>)insertItemWithTitle: (NSString*)aString
-                                action: (SEL)aSelector
-                         keyEquivalent: (NSString*)charCode
-                               atIndex: (unsigned int)index
-{ 
-  id menuCell = [[NSPopUpButtonCell new] autorelease];
-
-  [menuCell setFont:[NSFont systemFontOfSize:12]];
-  [menuCell setTitle: aString];
-//  [menuCell setAction: aSelector];
-//  [menuCell setKeyEquivalent: charCode];
-      
-  [cells insertObject: menuCell atIndex: index];
- 
-  return menuCell;
-}
-
-- (void) setIndexOfSelectedItem:(int)itemNum
-{
-  selected_cell = itemNum;
-}
-
-- (NSString *)titleOfSelectedItem
-{
-  return [[cells objectAtIndex:selected_cell] title];
-}
-
-- (void)setPopUpButton:(NSPopUpButton *)popb
-{
-  ASSIGN(popup_button, popb);
-}
-
-- (void)setPullsDown:(BOOL)pull
-{
-  pull_down = pull;
-}
-
-- (BOOL)pullsDown
-{
-  return pull_down;
-}
-
-- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
-{
-  return [menu performKeyEquivalent: theEvent];
-}
-
-- (void) removeItem: (id <NSMenuItem>)anItem
-{
-  int row = [cells indexOfObject: anItem];
-
-  if (row == -1)
-    return;
-
-  [cells removeObjectAtIndex: row];
-}
-
-- (NSArray*) itemArray
-{
-  return cells;
-}
-
-- (id <NSMenuItem>) itemWithTitle: (NSString*)aString
-{
-  unsigned i, count = [cells count];
-  id menuCell;
-
-  for (i = 0; i < count; i++)
-    {
-      menuCell = [cells objectAtIndex: i];
-      if ([[menuCell title] isEqual: aString])
-	return menuCell;
-    }
-  return nil;
-}
-
-- (id <NSMenuItem>) itemWithTag: (int)aTag
-{
-  unsigned i, count = [cells count];
-  id menuCell;
-
-  for (i = 0; i < count; i++)
-    {
-      menuCell = [cells objectAtIndex: i];
-      if ([menuCell tag] == aTag)
-	return menuCell;
-    }
-  return nil;
-}
-
-- (NSRect) cellFrameAtRow: (int)index
-{
-  unsigned count = [cells count];
-  NSRect rect;
-
-  NSAssert(index >= 0 && index < count+1, @"invalid row coordinate");
-
-  rect.origin.x = 0;
-  rect.origin.y = (count - index - 1)
-		  * (cellSize.height + INTERCELL_SPACE);
-  rect.size = cellSize;
-
-  return rect;
-}
-
-- (void)drawRect: (NSRect)rect
-{
-  unsigned i = 0, count = [cells count];
-  int max, howMany;
-  NSRect aRect = [self frame];
-
-  // If there are no cells then just return
-  if (count == 0) return;
-
-  aRect.origin.y = cellSize.height * (count - 1);
-  aRect.size = cellSize;
-
-  for (i=0;i<count;i++)
-  {
-    id aCell = [cells objectAtIndex:i];
- 
-    [aCell drawWithFrame:aRect inView:self];
-    aRect.origin.y -= cellSize.height;
-  }
-}
-
-- (NSSize) cellSize
-{
-  return cellSize;
-}
-
-- (void) setMenu: (NSMenu*)anObject
-{
-  menu = anObject;
-}
-
-- (void) setSelectedCell: (id)aCell
-{
-  selectedCell = aCell;
-}
-
-- (id) selectedCell
-{
-  return selectedCell;
-}
-
-- (NSRect) selectedCellRect
-{
-  return selectedCellRect;
-}
-@end
 
 //
 // NSPopUpButton implementation
 //
+
 @implementation NSPopUpButton
 
 ///////////////////////////////////////////////////////////////
@@ -303,9 +73,13 @@ static NSFont* menuFont = nil;
 	  pullsDown:(BOOL)flag
 {
   [super initWithFrame:frameRect];
-  list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
-  [list_items setPopUpButton:self];
-  [list_items setPullsDown:flag];
+  list_items = [NSMutableArray new];
+
+  popb_view = [[NSMenuView alloc] initWithFrame:frameRect 
+		cellSize: NSMakeSize (frameRect.size.width,
+		frameRect.size.height)];
+  [popb_view setPopUpButton: self];
+
   is_up = NO;
   pulls_down = flag;
   selected_item = 0;
@@ -351,7 +125,11 @@ static NSFont* menuFont = nil;
 
   [self synchronizeTitleAndSelectedItem];
 
+  [self close];
+
+  [self lockFocus];
   [self drawRect:[self frame]];
+  [self unlockFocus];
   [self setNeedsDisplay:YES];
 
   if (pub_target && pub_action)
@@ -363,11 +141,7 @@ static NSFont* menuFont = nil;
 //
 - (void)addItemWithTitle:(NSString *)title
 {
-  [list_items insertItemWithTitle:title
-			   action:nil
-		    keyEquivalent:nil
-                          atIndex:[[list_items itemArray] count]];
-  [self synchronizeTitleAndSelectedItem];
+  [self insertItemWithTitle:title atIndex:[list_items count]];
 }
 
 - (void)addItemsWithTitles:(NSArray *)itemTitles
@@ -381,10 +155,15 @@ static NSFont* menuFont = nil;
 - (void)insertItemWithTitle:(NSString *)title
 		    atIndex:(unsigned int)index
 {
-  [list_items insertItemWithTitle:title
-			   action:@selector(iveBeenHitCaptain:)
-		    keyEquivalent:nil
-                          atIndex:index];
+  id menuCell = [[NSPopUpButtonCell new] autorelease];
+
+  [menuCell setFont: [NSFont systemFontOfSize:12]];
+  [menuCell setTitle: title];
+  [menuCell setTarget: self];
+  [menuCell setAction: @selector(buttonSelected:)];
+                                
+  [list_items insertObject: menuCell atIndex: index];   
+
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -393,7 +172,7 @@ static NSFont* menuFont = nil;
 //
 - (void)removeAllItems
 {
-  [(NSMutableArray *)[list_items itemArray] removeAllObjects];
+  [list_items removeAllObjects];
 }
 
 - (void)removeItemWithTitle:(NSString *)title
@@ -401,12 +180,12 @@ static NSFont* menuFont = nil;
   int index = [self indexOfItemWithTitle:title];
 
   if (index != NSNotFound)
-    [(NSMutableArray *)[list_items itemArray] removeObjectAtIndex:index];
+    [list_items removeObjectAtIndex:index];
 }
 
 - (void)removeItemAtIndex:(int)index
 {
-  [(NSMutableArray *)[list_items itemArray] removeObjectAtIndex:index];
+  [list_items removeObjectAtIndex:index];
 }
 
 //
@@ -414,10 +193,10 @@ static NSFont* menuFont = nil;
 //
 - (int)indexOfItemWithTitle:(NSString *)title
 {
-  int i, count = [[list_items itemArray] count];
+  int i, count = [list_items count];
 
   for (i = 0; i < count; i++)
-    if ([[[[list_items itemArray] objectAtIndex:i] title] isEqual:title])
+    if ([[[list_items objectAtIndex:i] title] isEqual:title])
       return i;
 
   return NSNotFound;
@@ -430,31 +209,31 @@ static NSFont* menuFont = nil;
 
 - (int)numberOfItems
 {
-  return [[list_items itemArray] count];
+  return [list_items count];
 }
 
 - (id <NSMenuItem>)itemAtIndex:(int)index
 {
-  return [[list_items itemArray] objectAtIndex:index];
+  return [list_items objectAtIndex:index];
 }
 
 - (NSArray *)itemArray
 {
-  return [list_items itemArray];
+  return list_items;
 }
 
 - (NSString *)itemTitleAtIndex:(int)index
 {
-  return [[[list_items itemArray] objectAtIndex:index] title];
+  return [[list_items objectAtIndex:index] title];
 }
 
 - (NSArray *)itemTitles
 {
-  int i, count = [[list_items itemArray] count];
+  int i, count = [list_items count];
   NSMutableArray* titles = [NSMutableArray arrayWithCapacity:count];
 
   for (i = 0; i < count; i++)
-    [titles addObject:[[[list_items itemArray] objectAtIndex:i] title]];
+    [titles addObject:[[list_items objectAtIndex:i] title]];
 
   return titles;
 }
@@ -464,21 +243,21 @@ static NSFont* menuFont = nil;
   int index = [self indexOfItemWithTitle:title];
 
   if (index != NSNotFound)
-    return [[list_items itemArray] objectAtIndex:index];
+    return [list_items objectAtIndex:index];
   return nil;
 }
 
 - (id <NSMenuItem>)lastItem
 {
-  if ([[list_items itemArray] count])
-    return [[list_items itemArray] lastObject];
+  if ([list_items count])
+    return [list_items lastObject];
   else
     return nil;
 }
 
 - (id <NSMenuItem>)selectedItem
 {
-  return [[list_items itemArray] objectAtIndex:selected_item];
+  return [list_items objectAtIndex:selected_item];
 }
 
 - (NSString *)titleOfSelectedItem
@@ -501,7 +280,7 @@ static NSFont* menuFont = nil;
 
 - (void)selectItemAtIndex:(int)index
 {
-  if ((index >= 0) && (index < [[list_items itemArray] count]))
+  if ((index >= 0) && (index < [list_items count]))
     {
       selected_item = index;
       [self synchronizeTitleAndSelectedItem];
@@ -534,10 +313,10 @@ static NSFont* menuFont = nil;
 
 - (void)synchronizeTitleAndSelectedItem
 {
-  if (!pulls_down)
-    [list_items setIndexOfSelectedItem:selected_item];
-  else
-    [list_items setIndexOfSelectedItem:0];
+//  if (!pulls_down)
+//    [list_items setIndexOfSelectedItem:selected_item];
+//  else
+//    [list_items setIndexOfSelectedItem:0];
 }
 
 //
@@ -582,13 +361,13 @@ static NSFont* menuFont = nil;
 {
   id aCell;
 
-  if ([[list_items itemArray] count] == 0)
+  if ([list_items count] == 0)
     return;
 
   if (!pulls_down)
-    aCell  = [[list_items itemArray] objectAtIndex:selected_item]; 
+    aCell  = [list_items objectAtIndex:selected_item]; 
   else
-    aCell  = [[list_items itemArray] objectAtIndex:0]; 
+    aCell  = [list_items objectAtIndex:0]; 
 
   [aCell drawWithFrame:rect inView:self]; 
 }

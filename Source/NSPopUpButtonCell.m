@@ -1,3 +1,29 @@
+/*
+   NSPopUpButtonCell.m
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+   
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: 1999
+
+   This file is part of the GNUstep GUI Library.
+   
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version. 
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
 #include <gnustep/gui/config.h>  
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
@@ -19,7 +45,7 @@
 {
   return [super init];   
 }
-    
+
 - (void)drawWithFrame:(NSRect)cellFrame
                inView:(NSView*)view  
 {
@@ -36,9 +62,11 @@
   arect.origin.y += 2;
  
   if (cell_highlighted) {
+    NSLog(@"highlighted.");
     [[NSColor whiteColor] set];
     NSRectFill(arect);
   } else {
+    NSLog(@"unhighlighted.");
     [[NSColor lightGrayColor] set];  
     NSRectFill(arect);
   }
@@ -60,13 +88,28 @@
   rect.size.height = cellFrame.size.height;
   rect.origin.x = cellFrame.origin.x + cellFrame.size.width - (6 + 11);
   rect.origin.y = cellFrame.origin.y;
-  
-  if ([(NSPopUpButton *)view titleOfSelectedItem] == contents)
-  {
-    if ([(NSPopUpButton *)view pullsDown] == NO)
-      [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
-    else
-      [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
-  }
+
+  if ([view isKindOfClass:[NSMenuView class]])
+    {
+      NSPopUpButton *popb = [(NSMenuView *)view popupButton];
+
+      if ([popb titleOfSelectedItem] == contents)
+        {
+          if ([popb pullsDown] == NO)
+            [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+          else
+            [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
+	}
+    }
+  else if ([view isKindOfClass:[NSPopUpButton class]])
+    {
+      if ([(NSPopUpButton *)view titleOfSelectedItem] == contents)
+        {
+          if ([(NSPopUpButton *)view pullsDown] == NO)
+            [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+          else
+            [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
+	}
+    }
 }
 @end

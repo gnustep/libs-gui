@@ -3,6 +3,16 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: 1999
+
+   A completely rewritten version of the original source by Scott Christley.
+   and:
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: May 1997
+   and:
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: July 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -103,9 +113,9 @@ static NSZone *menuZone = NULL;
 - (void)insertItem:(id <NSMenuItem>)newItem
 	   atIndex:(int)index
 {
-  if ([newItem conformsToProtocol:@protocol(NSMenuItem)])
+  if ([(id)newItem conformsToProtocol:@protocol(NSMenuItem)])
     {
-      if ([newItem isKindOfClass:[NSMenuItemCell class]])
+      if ([(id)newItem isKindOfClass:[NSMenuItemCell class]])
         [menu_items insertObject:newItem atIndex:index];
       else
         {

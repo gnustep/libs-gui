@@ -3,6 +3,8 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,6 +31,9 @@
 #include <AppKit/PSOperators.h>
 
 static float GSMenuBarHeight = 25.0; // a guess.
+
+// These private methods are used in NSPopUpButton. For NSPB we need to be
+// able to init with a frame, but have a very custom cell size.
 
 @implementation NSMenuView
 
@@ -59,16 +64,40 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return [super initWithFrame: aFrame];
 }
 
+- (id)initWithFrame: (NSRect)aFrame
+	   cellSize: (NSSize)aSize
+{
+  [self initWithFrame:aFrame];
+
+  cellSize = aSize;
+
+  return self;
+}
+
 // Our menu.
 
 - (void)setMenu: (NSMenu *)menu
 {
   ASSIGN(menuv_menu, menu);
+  menuv_items_link = [menuv_menu itemArray];
 }
 
 - (NSMenu *)menu
 {
   return menuv_menu;
+}
+
+// Or random items.
+
+- (void) setPopUpButton: (NSPopUpButton *)popb;
+{
+  ASSIGN(menuv_popb, popb);
+  menuv_items_link = [menuv_popb itemArray];
+}
+
+- (NSPopUpButton *)popupButton
+{
+  return menuv_popb;
 }
 
 - (void)setHorizontal: (BOOL)flag
@@ -110,7 +139,6 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (void)setHighlightedItemIndex: (int)index
 {
-  NSArray *menu_items = [menuv_menu itemArray];
   id anItem;
   BOOL _closeASubmenu = NO;
 
@@ -118,17 +146,21 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
   if (index == -1) {
     if (menuv_highlightedItemIndex != -1) {
-      anItem  = [menu_items objectAtIndex: menuv_highlightedItemIndex];
+      anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
 
       [anItem highlight: NO
 	      withFrame: [self rectOfItemAtIndex: menuv_highlightedItemIndex]
 	         inView: self];
+
+      if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
+        [[anItem target] close];
+
       [anItem setState: 0];
       menuv_highlightedItemIndex = -1;
     }
   } else if (index >= 0) {
     if ( menuv_highlightedItemIndex != -1 ) {
-      anItem  = [menu_items objectAtIndex: menuv_highlightedItemIndex];
+      anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
 
       [anItem highlight: NO
 	    withFrame: [self rectOfItemAtIndex: menuv_highlightedItemIndex]
@@ -141,7 +173,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
     }
 
     if (menuv_highlightedItemIndex != index) {
-      anItem = [menu_items objectAtIndex: index];
+      anItem = [menuv_items_link objectAtIndex: index];
 
       [anItem highlight: YES
   	      withFrame: [self rectOfItemAtIndex: index]
@@ -149,7 +181,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
       [anItem setState: 1];
 
-      if ([anItem hasSubmenu])
+      if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
         [[anItem target] display];
 
       // set ivar to new index
@@ -181,7 +213,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (NSMenuItemCell *)menuItemCellForItemAtIndex: (int)index
 {
-  return [[menuv_menu itemArray] objectAtIndex: index];
+  return [menuv_items_link objectAtIndex: index];
 }
 
 - (NSMenuView *)attachedMenuView
@@ -260,15 +292,15 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (void)sizeToFit
 {
   int i;
-  int howMany = [[menuv_menu itemArray] count];
-  int howHigh = (howMany * cellSize.height) + 21;
+  int howMany = [menuv_items_link count];
+  int howHigh = (howMany * cellSize.height);
   float neededWidth = 0;
 
-  for (i=0;i<[[menuv_menu itemArray] count];i++)
+  for (i=0;i<howMany;i++)
   {
     float aWidth;
 
-    NSMenuItemCell *anItem = [[menuv_menu itemArray] objectAtIndex: i];
+    NSMenuItemCell *anItem = [menuv_items_link objectAtIndex: i];
     aWidth = [anItem titleWidth];
 
     if (aWidth > neededWidth)
@@ -277,8 +309,13 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
   cellSize.width = 7 + neededWidth + 7 + 7 + 5;
 
-  [[self window] setFrame: NSMakeRect(300,300,cellSize.width,howHigh) display: YES];
-  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh-21)];
+  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
+}
+
+- (void)sizeToFitForPopUpButton
+{
+  int howHigh = ([menuv_items_link count] * cellSize.height);
+  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
 }
 
 - (float)stateImageOffset
@@ -368,7 +405,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (void)setNeedsDisplayForItemAtIndex: (int)index
 {
-  [[[menuv_menu itemArray] objectAtIndex: index] setNeedsDisplay: YES];  
+  [[menuv_items_link objectAtIndex: index] setNeedsDisplay: YES];  
 }
 
 - (NSPoint)locationForSubmenu: (NSMenu *)aSubmenu
@@ -402,18 +439,18 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (void)drawRect: (NSRect)rect
 {
   int i;
-  NSArray *menuCells = [menuv_menu itemArray];
   NSRect aRect = [self frame];
+  int howMany = [menuv_items_link count];
 
   // This code currently doesn't take intercell spacing into account. I'll
   // need to fix that.
 
-  aRect.origin.y = cellSize.height * ([menuCells count] - 1);
+  aRect.origin.y = cellSize.height * (howMany - 1);
   aRect.size = cellSize;
 
-  for (i=0;i<[menuCells count];i++)
+  for (i=0;i<howMany;i++)
   {
-    id aCell = [menuCells objectAtIndex: i];
+    id aCell = [menuv_items_link objectAtIndex: i];
 
     [aCell drawWithFrame: aRect inView: self];
     aRect.origin.y -= cellSize.height;
@@ -439,7 +476,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
   BOOL          done = NO;
   NSApplication *theApp = [NSApplication sharedApplication];  
   NSDate        *theDistantFuture = [NSDate distantFuture];
-  int theCount = [[menuv_menu itemArray] count];
+  int theCount = [menuv_items_link count];
   id selectedCell;
 
 // These 3 BOOLs are misnomers. I'll rename them later. -Michael. FIXME.
@@ -519,7 +556,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		NSRect aRect = [self rectOfItemAtIndex: lastIndex];
 		if (lastLocation.y > aRect.origin.y
 		  && lastLocation.y < aRect.origin.y + aRect.size.height
-		  && [[[menuv_menu itemArray] objectAtIndex: lastIndex]
+		  && [[menuv_items_link objectAtIndex: lastIndex]
 		  hasSubmenu])
 		  {
 		    weLeftMenu = YES;
@@ -569,25 +606,26 @@ static float GSMenuBarHeight = 25.0; // a guess.
   if (!weLeftMenu && !weRightMenu && !weWereOut
     && menuv_highlightedItemIndex != -1)
     {
-      if (![[[menuv_menu itemArray] objectAtIndex: menuv_highlightedItemIndex]
+      if (![[menuv_items_link objectAtIndex: menuv_highlightedItemIndex]
 	hasSubmenu])
 	{
 	  BOOL finished = NO;
 	  NSMenu *aMenu = menuv_menu;
 
 	  if (index >= 0 && index < theCount)
-	    selectedCell = [[menuv_menu itemArray] objectAtIndex: index];
+	    selectedCell = [menuv_items_link objectAtIndex: index];
 	  else
 	    selectedCell = nil;
 
 	  [self setHighlightedItemIndex: -1];
 
-	  if ([selectedCell action])
-	    [menuv_menu performActionForItem: 
-	      [[menuv_menu itemArray] objectAtIndex: lastIndex]];
+	  NSLog(@"just mouseUp'ed.");
 
-	  if ([selectedCell hasSubmenu])
-	    [[selectedCell target] close];
+	  if ([selectedCell action] && ![selectedCell target])
+	    [menuv_menu performActionForItem: 
+	      [menuv_items_link objectAtIndex: lastIndex]];
+	  else
+	    [menuv_popb performSelector:[selectedCell action] withObject:selectedCell];
 
 	  while (!finished)
 	    { // "forward"cursive menu find.
@@ -606,7 +644,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	      if ([aMenu supermenu] && ![aMenu isTornOff])
 		{
 		  [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
-		  [aMenu close];
+//		  [aMenu close];
 		  aMenu = [aMenu supermenu];
 		} 
 	      else
@@ -614,6 +652,17 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 	      [window flushWindow];
 	    }
+	}
+      else if ([[menuv_items_link objectAtIndex:
+menuv_highlightedItemIndex]
+	hasSubmenu] && [[[menuv_items_link objectAtIndex:
+menuv_highlightedItemIndex] target] isTornOff])
+	{
+	  // This code does not work. Please ignore. FIXME, Michael.
+	  // close transient.
+//	  [self setHighlightedItemIndex: -1];
+//
+//	  [[[menuv_menu supermenu] menuView] setHighlightedItemIndex: -1];
 	}
     }
   else if (weRightMenu)
@@ -653,7 +702,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
       NSLog(@"Urph.\n");
 
-      selectedCell = [[menuv_menu itemArray] objectAtIndex: lastIndex];
+      selectedCell = [menuv_items_link objectAtIndex: lastIndex];
       if ([selectedCell hasSubmenu])
 	{
 	  [self mouseUp: 

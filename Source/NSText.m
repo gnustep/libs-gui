@@ -456,28 +456,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
                               returnType: returnType];
       
 }
-      
-- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pb
-{
-  NSArray      *types;
-  NSString     *string;
-  NSRange      range;
-     
-  types = [pb types];
-  if ([types containsObject: NSStringPboardType] == NO)
-    {   
-      return NO;
-    }   
-  string = [pb stringForType: NSStringPboardType];
-  range = [self selectedRange];
-  [self deleteRange: range backspace: NO];
-  [self insertText: string];
-  range.length = [string length];
-  [self setSelectedRange: range];
 
-  return YES;
-}
-  
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pb
                              types: (NSArray*)sendTypes
 {
@@ -538,6 +517,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	} return NO;
 }
 
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pb
+{       return [self performPasteOperation:pb];
+}
 
 // begin: dragging of colors and files ---------------
 -(unsigned int) draggingEntered:(id <NSDraggingInfo>)sender
@@ -1012,7 +994,10 @@ NSLog(@"did set font");
       if([[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph && NSMaxY(rect)<= newHeight)
         newHeight+=[[lineLayoutInformation lastObject] lineRect].size.height;
 
-      tRect = [(NSClipView*)[self superview] documentVisibleRect];
+      if ( [[self superview] isKindOfClass: [NSClipView class]] )
+        tRect = [(NSClipView*)[self superview] documentVisibleRect];
+      else
+        tRect = [self bounds];
 
       if (currentCursorY < tRect.size.height + tRect.origin.y -
 [[lineLayoutInformation lastObject] lineRect].size.height)
