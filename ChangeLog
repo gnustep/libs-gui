@@ -1,3 +1,8 @@
+2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSFontInfo.m: 
+	[encodingForRegistry:encoding:] added more encodings
+
 Tue Sep 12 22:53:22 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]):
