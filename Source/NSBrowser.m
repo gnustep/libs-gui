@@ -1031,14 +1031,24 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Make sure the column even exists
   if (column >= (int)[_browserColumns count])
-    return;
+    {
+      return;
+    }
 
-  if (!(bc = [_browserColumns objectAtIndex: column]))
-    return;
 
-  // If the column has not be loaded then do not reload
+  bc = [_browserColumns objectAtIndex: column];
+  
+  if (bc == nil)
+    {
+      return;
+    }
+  
+
+  // If the column has not been already loaded then do not reload
   if (![bc isLoaded])
-    return;
+    {
+      return;
+    }
 
   // Perform the data load
   [self _performLoadOfColumn: column];
@@ -1289,7 +1299,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Returns the title displayed for the column at index column.
 //
 
-- (NSString *)titleOfColumn: (int)column
+- (NSString *) titleOfColumn: (int)column
 {
   id bc;
 
@@ -1307,8 +1317,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Sets the title of the column at index column to aString.
 //
 
-- (void)setTitle: (NSString *)aString
-	ofColumn: (int)column
+- (void) setTitle: (NSString *)aString
+	 ofColumn: (int)column
 {
   id bc;
 
@@ -1709,7 +1719,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // and between browsers.
 //
 
-- (void)setAcceptsArrowKeys: (BOOL)flag
+- (void) setAcceptsArrowKeys: (BOOL)flag
 {
   _acceptsArrowKeys = flag;
 }
@@ -1719,7 +1729,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // it also sends the action message specified by setAction:.
 //
 
-- (BOOL)sendsActionOnArrowKeys
+- (BOOL) sendsActionOnArrowKeys
 {
   return _sendsActionOnArrowKeys;
 }
@@ -1729,7 +1739,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // to be sent (in addition to causing scrolling).
 //
 
-- (void)setSendsActionOnArrowKeys: (BOOL)flag
+- (void) setSendsActionOnArrowKeys: (BOOL)flag
 {
   _sendsActionOnArrowKeys = flag;
 }
@@ -1746,7 +1756,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Returns the rectangle containing the column at index column.
 //
 
-- (NSRect)frameOfColumn: (int)column
+- (NSRect) frameOfColumn: (int)column
 {
   NSRect r = NSZeroRect;
   NSSize bs = _sizeForBorderType (NSBezelBorder);
@@ -1802,7 +1812,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // not including borders.
 //
 
-- (NSRect)frameOfInsideOfColumn: (int)column
+- (NSRect) frameOfInsideOfColumn: (int)column
 {
 #if defined NSBTRACE_frameOfInsideOfColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (NSRect)frameOfInsideOfColumn: %d\n", column);
@@ -1826,7 +1836,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // It's invoked any time the appearance of the NSBrowser changes.
 //
 
-- (void)tile
+- (void) tile
 {
   NSSize bs = _sizeForBorderType (NSBezelBorder);
   int i, num = _maxVisibleColumns;
@@ -1916,7 +1926,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Returns the NSBrowser's delegate.
 //
 
-- (id)delegate
+- (id) delegate
 {
   return _browserDelegate;
 }
@@ -1929,7 +1939,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // or browser:createRowsForColumn:inMatrix:.
 //
 
-- (void)setDelegate: (id)anObject
+- (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
   BOOL both = NO;
@@ -1991,7 +2001,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Returns the NSBrowser's double-click action method.
 //
 
-- (SEL)doubleAction
+- (SEL) doubleAction
 {
   return _doubleAction;
 }
@@ -2000,7 +2010,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Sets the NSBrowser's double-click action to aSelector.
 //
 
-- (void)setDoubleAction: (SEL)aSelector
+- (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
 }
@@ -2010,9 +2020,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // NO if no target for the message could be found. 
 //
 
-- (BOOL)sendAction
+- (BOOL) sendAction
 {
-  return [self sendAction: [self action] to: [self target]];
+  return [self sendAction: [self action]  to: [self target]];
 }
 
 
@@ -2027,7 +2037,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Responds to (single) mouse clicks in a column of the NSBrowser.
 //
 
-- (void)doClick: (id)sender
+- (void) doClick: (id)sender
 {
   NSArray        *a;
   NSMutableArray *selectedCells;
