@@ -277,46 +277,41 @@ static Class	colorClass;
   control_view = controlView;		// remember last view cell was drawn in
   [controlView lockFocus];
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
-    {
+  {
       backColor = [colorClass selectedControlColor];
       [backColor set];
       if (!_isLeaf)
-	{
-	  image = _highlightBranchImage;
-	  image_rect.size.height = cellFrame.size.height;
-	  image_rect.size.width = image_rect.size.height;
-													  // Right justify
-	  image_rect.origin.x += cellFrame.size.width - image_rect.size.width;
-	  image_rect.origin.y
-	    = MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
-	}
+      {
+          image = _highlightBranchImage;
+      }
       else
-	image_rect = NSZeroRect;
-    }
+          image_rect = NSZeroRect;
+  }
   else
-    {
+  {
       backColor = [[controlView window] backgroundColor];
       [backColor set];
       if (!_isLeaf)
-	{
-	  image = _branchImage;
-	  image_rect.size.height = cellFrame.size.height;
-	  image_rect.size.width = image_rect.size.height;
-	  // Right justify
-	  image_rect.origin.x += cellFrame.size.width - image_rect.size.width;
-	  image_rect.origin.y
-	    = MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
-	}
+      {
+          image = _branchImage;
+      }
       else
-	image_rect = NSZeroRect;
-    }
+          image_rect = NSZeroRect;
+  }
+
+  image_rect.size = [image size];
+													  // Right justify
+  image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 1.0;
+  image_rect.origin.y += (cellFrame.size.height - image_rect.size.height) / 2.0;
+//MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
+
   NSRectFill(cellFrame);	// Clear the background
 
   title_rect.size.width -= image_rect.size.width + 4;	// draw the title cell
   [_browserText drawWithFrame: title_rect inView: controlView];
 
   if (image)
-    {
+  {
       NSPoint position = image_rect.origin;
 
       [image setBackgroundColor: backColor];
@@ -343,13 +338,13 @@ static Class	colorClass;
   NSPoint location = [controlView convertPoint: [theEvent locationInWindow]
 				      fromView: nil];
 
-fprintf(stderr, " NSBrowserCell: editWithFrame --- ");
+  NSDebugLog(@" NSBrowserCell: editWithFrame --- ");
 
   [_browserText _setCursorLocation: location];
   [_browserText _setCursorVisibility: YES];
 
   if ([[controlView window] makeFirstResponder: controlView])
-    fprintf(stderr, " XRBrowserCell: we are now first responder --- ");
+    NSDebugLog(@" NSBrowserCell: we are now first responder --- ");
 
   [self drawInteriorWithFrame: aRect inView: controlView];
 }
@@ -361,7 +356,7 @@ fprintf(stderr, " NSBrowserCell: editWithFrame --- ");
 
 - (void) _handleKeyEvent: (NSEvent*)keyEvent
 {
-  fprintf(stderr, " NSBrowserCell: _handleKeyEvent --- ");
+  NSDebugLog(@" NSBrowserCell: _handleKeyEvent --- ");
 
   [_browserText _handleKeyEvent: keyEvent];
 

@@ -183,32 +183,6 @@
   [self setContinuous: YES];
 }
 
-- (void) performClick: (id)sender
-{
-  NSView	*cv;
-
-  if (control_view)
-    cv = control_view;
-  else 
-    cv = [NSView focusView];
-
-  [self highlight: YES withFrame: [cv frame] inView: cv];
-  if (action)
-    {
-      NS_DURING
-	{
-	  [(NSControl*)cv sendAction: action to: target];
-	}
-      NS_HANDLER
-	{
-	  [self highlight: NO withFrame: [cv frame] inView: cv];
-          [localException raise];
-	}
-      NS_ENDHANDLER
-    }
-  [self highlight: NO withFrame: [cv frame] inView: cv];
-}
-
 //
 // Setting the Key Equivalent
 //

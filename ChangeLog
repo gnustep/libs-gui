@@ -1,3 +1,12 @@
+1999-09-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): Put
+	arrow at extreme right of cell (patch from Tim Bissell
+	<tim_bissell@yahoo.co.uk>).
+
+	* Source/NSButtonsCell.m (-performClick:) Remove (duplicate of
+	NSCell method).
+
 Tue Sep 15  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	(NB. The above date reflects submission of the patch - sorry I didn't
