@@ -1,3 +1,9 @@
+Mon Sep 23 15:23:23 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (initialize_gnustep_backend): Improved
+	error messages.  Try to be as descriptive and verbose as possible
+	about what exactly went wrong when loading the backend fails.
+
 2002-09-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m
