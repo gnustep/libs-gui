@@ -766,11 +766,11 @@ static NSCell* tileCell = nil;
 	  [self unhide: nil];
 	}
 
-      if ([[self keyWindow] != nil)
+      if ([self keyWindow] != nil)
 	{
 	  [[self keyWindow] orderFront: self];
 	}
-      else if ([[self mainWindow] != nil)
+      else if ([self mainWindow] != nil)
 	{
 	  [[self mainWindow] orderFront: self];
 	}
