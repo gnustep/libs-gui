@@ -1,3 +1,12 @@
+2004-03-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSSavePanel.h:
+	Added some ivars for new methods.
+	* Source/NSSavePanel.m: (-setDelegate:, -_selectTextInColumn:)
+	implemented delegete calls on selection and directory change,
+	based on patch by Fabien Vallon.
+	Basic implementation for some of the new Cocoa methods.
+
 2004-02-29  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbar.m: Added code in 

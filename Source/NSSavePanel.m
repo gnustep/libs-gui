@@ -383,24 +383,32 @@ static BOOL _gs_display_reading_progress = NO;
   selectedCell = [matrix selectedCell];
   isLeaf = [selectedCell isLeaf];
 
+  if (_delegateHasSelectionDidChange) 
+    {
+      [_delegate panelSelectionDidChange: self];
+    }
+
   if (isLeaf)
     {
       [[_form cellAtIndex: 0] setStringValue: [selectedCell stringValue]];
       //      [_form selectTextAtIndex:0];
-      [_form setNeedsDisplay:YES];
-      [_okButton setEnabled:YES];
+      [_okButton setEnabled: YES];
     }
   else
     {
+      if (_delegateHasDirectoryDidChange)
+        {
+	  [_delegate panel: self directoryDidChange: [_browser pathToColumn: column]];
+	}
+
       if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
 	{
-	  [_okButton setEnabled:YES];
-	  [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
+	  [_okButton setEnabled: YES];
+	  [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
 	  //	  [_form selectTextAtIndex:0];
-	  [_form setNeedsDisplay:YES];
 	}
       else
-	[_okButton setEnabled:NO];
+	[_okButton setEnabled: NO];
     }
 }
 
@@ -623,7 +631,9 @@ selectCellWithString: (NSString*)title
 -(id) init
 {
   [self _initWithoutGModel];
-  
+
+/*
+ * All these are set automatically  
   _directory = nil;
   _fullFileName = nil;
   _requiredFileType = nil;
@@ -633,6 +643,9 @@ selectCellWithString: (NSString*)title
   _delegateHasCompareFilter = NO;
   _delegateHasShowFilenameFilter = NO;
   _delegateHasValidNameFilter = NO;
+  _delegateHasDirectoryDidChange = NO;
+  _delegateHasSelectionDidChange = NO;
+*/
 
   [self _getOriginalSize];
   return self;
@@ -804,7 +817,7 @@ selectCellWithString: (NSString*)title
 - (NSString *) nameFieldLabel
 {
   // FIXME
-  return @"Save As";
+  return _(@"Save As");
 }
 
 - (void) setMessage: (NSString *)message
@@ -863,7 +876,7 @@ selectCellWithString: (NSString*)title
 
 - (void) setAllowsOtherFileTypes: (BOOL)flag
 {
-  // FIXME
+  _allowsOtherFileTypes = flag;
 }
 
 - (NSArray *) allowedFileTypes;
@@ -874,8 +887,7 @@ selectCellWithString: (NSString*)title
 
 - (BOOL) allowsOtherFileTypes;
 {
-  // FIXME
-  return NO;
+  return _allowsOtherFileTypes;
 }
 
 /** Returns YES if file packages are shown as directories. The default
@@ -914,13 +926,12 @@ selectCellWithString: (NSString*)title
 
 - (void) setCanCreateDirectories: (BOOL)flag
 {
-  // FIXME
+  _canCreateDirectories = flag;
 }
 
 - (BOOL) canCreateDirectories
 {
-  // FIXME
-  return NO;
+  return _canCreateDirectories;
 }
 
 /**
@@ -1180,28 +1191,36 @@ selectCellWithString: (NSString*)title
   else
     _delegateHasUserEnteredFilename = NO;
 
+  if ([aDelegate respondsToSelector: @selector(panel:directoryDidChange:)])
+     _delegateHasDirectoryDidChange = YES;
+  else 
+    _delegateHasDirectoryDidChange = NO;      
+
+  if ([aDelegate respondsToSelector: @selector(panelSelectionDidChange:)])
+     _delegateHasSelectionDidChange = YES;
+  else 
+    _delegateHasSelectionDidChange = NO;      
+
   [super setDelegate: aDelegate];
 }
 
 - (void) setCanSelectHiddenExtension: (BOOL) flag
 {
-  // FIXME
+  _canSelectHiddenExtension = flag;
 }
 - (BOOL) canSelectHiddenExtension
 {
-  // FIXME
-  return NO;
+  return _canSelectHiddenExtension;
 }
 
 - (BOOL) isExtensionHidden
 {
-  // FIXME
-  return NO;
+  return _isExtensionHidden;
 }
 
 - (void) setExtensionHidden: (BOOL) flag
 {
-  // FIXME
+  _isExtensionHidden = flag;
 }
 
 - (BOOL) isExpanded
@@ -1213,17 +1232,20 @@ selectCellWithString: (NSString*)title
 //
 // NSCoding protocol
 //
-- (id) initWithCoder: (NSCoder*)aCoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // TODO
+  self = [super initWithCoder: aDecoder];
 
-  return nil;
+  // TODO
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [super encodeWithCoder: aCoder]; 
   // TODO
 }
+
 @end
 
 //

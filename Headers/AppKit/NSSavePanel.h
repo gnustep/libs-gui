@@ -73,10 +73,17 @@ enum {
   NSString *_fullFileName;
 
   BOOL _treatsFilePackagesAsDirectories;
+  BOOL _allowsOtherFileTypes;
+  BOOL _canCreateDirectories;
+  BOOL _canSelectHiddenExtension;
+  BOOL _isExtensionHidden;
+
   BOOL _delegateHasCompareFilter;
   BOOL _delegateHasShowFilenameFilter;
   BOOL _delegateHasValidNameFilter;
   BOOL _delegateHasUserEnteredFilename;
+  BOOL _delegateHasDirectoryDidChange;
+  BOOL _delegateHasSelectionDidChange;
 
   // YES when we stopped because the user pressed 'OK'
   BOOL _OKButtonPressed;
