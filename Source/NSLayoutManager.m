@@ -671,5 +671,28 @@ for (i=0;i<gbuf_len;i++) printf("   %3i : %04x\n",i,gbuf[i]);*/
 
 
 @implementation NSLayoutManager
+
+- (void) insertTextContainer: (NSTextContainer *)aTextContainer
+		     atIndex: (unsigned int)index
+{
+  int i;
+
+  [super insertTextContainer: aTextContainer
+  	atIndex: index];
+
+  for (i = 0; i < num_textcontainers; i++)
+    [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
+}
+
+- (void) removeTextContainerAtIndex: (unsigned int)index
+{
+  int i;
+
+  [super removeTextContainerAtIndex: index];
+
+  for (i = 0; i < num_textcontainers; i++)
+    [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
+}
+
 @end
 

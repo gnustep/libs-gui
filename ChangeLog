@@ -1,3 +1,17 @@
+2002-11-26 15:41  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Changed to conform to coding standards.
+	Cleanups. Moved some more NSTextView references to NSLayoutManager.
+
+	Use _run_cache_attributes::, _run_copy_attributes::, and
+	_run_free_attributes: methods instead of functions.
+
+	(-_run_cache_attributes::): Ask typesetter for font to use and call
+	-substituteFontForFont:.
+
+	* Source/NSLayoutManager.m: Moved NSTextView references here.
+
 2002-11-26 12:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSFontInfo.h, Headers/gnustep/gui/NSFont.h,

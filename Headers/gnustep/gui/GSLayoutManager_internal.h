@@ -155,6 +155,11 @@ typedef struct GSLayoutManager_textcontainer_s
 
 
 @interface GSLayoutManager (glyphs_helpers)
+
+-(void) _run_cache_attributes: (glyph_run_t *)r : (NSDictionary *)attributes;
+-(void) _run_copy_attributes: (glyph_run_t *)dst : (const glyph_run_t *)src;
+-(void) _run_free_attributes: (glyph_run_t *)r;
+
 -(void) _initGlyphs;
 -(void) _freeGlyphs;
 
