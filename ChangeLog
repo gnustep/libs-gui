@@ -1,3 +1,8 @@
+2001-01-12  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Tools/Functions.m
+	Undid last change and removed Function GSWSetMatrix().
+
 Thu Jan 11 22:09:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-deleteBackward:]), ([-deleteForward:]):
