@@ -149,6 +149,7 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
+GSSimpleLayoutManager.m \
 Parsers/attributedStringConsumer.m \
 Parsers/RTFProducer.m
 
