@@ -829,6 +829,36 @@ static NSNotificationCenter *nc = nil;
   return _windowTitle;
 }
 
+- (void) setHasShadow: (BOOL)hasShadow;
+{
+  _f.has_shadow = hasShadow;
+}
+
+- (BOOL) hasShadow;
+{
+  return _f.has_shadow;
+}
+
+- (void) setAlphaValue: (float)windowAlpha;
+{
+  _alphaValue = windowAlpha;
+}
+
+- (float) alphaValue;
+{
+  return _alphaValue;
+}
+
+- (void) setOpaque: (BOOL)isOpaque;
+{
+  _f.is_opaque = isOpaque;
+}
+
+- (BOOL) isOpaque
+{
+  return _f.is_opaque;
+}
+
 /*
  * Window device attributes
  */
@@ -1048,6 +1078,16 @@ static NSNotificationCenter *nc = nil;
 - (BOOL) hidesOnDeactivate
 {
   return _f.hides_on_deactivate;
+}
+
+- (void) setCanHide: (BOOL)flag;
+{
+  _f.can_hide = flag;
+}
+
+- (BOOL) canHide;
+{
+  return _f.can_hide;
 }
 
 - (BOOL) isKeyWindow
@@ -1275,6 +1315,37 @@ static NSNotificationCenter *nc = nil;
 {
   // FIXME: The implementation of this method is missing
   return NSZeroPoint;
+}
+
+- (BOOL) showsResizeIndicator
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"showsResizeIndicator", "NSWindow");
+  return YES;
+}
+
+- (void) setShowsResizeIndicator: (BOOL)show
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setShowsResizeIndicator:", "NSWindow");
+}
+
+- (void) setFrame: (NSRect)frameRect
+	  display: (BOOL)displayFlag
+	  animate: (BOOL)animationFlag
+{
+  // TODO
+  [self setFrame: frameRect display: displayFlag];
+}
+
+- (NSTimeInterval) animationResizeTime: (NSRect)newFrame;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"animationResizeTime:", "NSWindow");
+  return 333;
 }
 
 - (void) center
@@ -2788,8 +2859,15 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) tryToPerform: (SEL)anAction with: (id)anObject
 {
-  // FIXME: On NO we should hand it on to the delegate
-  return ([super tryToPerform: anAction with: anObject]);
+  if ([super tryToPerform: anAction with: anObject])
+    return YES;
+  else if (_delegate && [_delegate respondsToSelector: anAction])
+    {
+      [_delegate performSelector: anAction withObject: anObject];
+      return YES;
+    }
+  else
+    return NO;
 }
 
 - (BOOL) worksWhenModal
@@ -3175,6 +3253,13 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
+- (BOOL) setFrameUsingName: (NSString *)name
+		    force: (BOOL)force
+{
+  // FIXME
+  return [self setFrameUsingName: name];
+}
+
 - (NSString *) stringWithSavedFrame
 {
   NSRect	fRect;
@@ -3203,6 +3288,12 @@ resetCursorRectsForView(NSView *theView)
 {
   return [_contentView dataWithEPSInsideRect: 
 			   [_contentView convertRect: rect fromView: nil]];
+}
+
+- (NSData *)dataWithPDFInsideRect:(NSRect)aRect
+{
+  return [_contentView dataWithPDFInsideRect: 
+			   [_contentView convertRect: aRect fromView: nil]];
 }
 
 - (void) fax: (id)sender
@@ -3438,19 +3529,65 @@ resetCursorRectsForView(NSView *theView)
   return self;
 }
 
-- (NSInterfaceStyle) interfaceStyle
+- (NSArray *) drawers
 {
-  return [super interfaceStyle];
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"drawers", "NSWindow");
+  return nil;
 }
 
-- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle
+- (void) setToolbar: (NSToolbar*)toolbar;
 {
-  [super setInterfaceStyle: aStyle];
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"drawers", "NSWindow");
+}
+
+- (NSToolbar *) toolbar;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"drawers", "NSWindow");
+  return nil;
+}
+
+- (void) toggleToolbarShown: (id)sender;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"toggleToolbarShown:", "NSWindow");
+}
+
+- (void) runToolbarCustomizationPalette: (id)sender;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"runToolbarCustomizationPalette:", "NSWindow");
+}
+
+- (NSWindow *) initWithWindowRef: (void *)windowRef;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"initWithWindowRef:", "NSWindow");
+  return nil;
+}
+
+- (void *)windowRef;
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"windowRef", "NSWindow");
+  return (void *) 0;
 }
 
 - (void *) windowHandle
 {
   // FIXME: Should only be defined on MS Windows
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"windowHandle", "NSWindow");
   return (void *) 0;
 }
 
@@ -3529,6 +3666,7 @@ resetCursorRectsForView(NSView *theView)
 
   _depthLimit = 8;
   _disableFlushWindow = 0;
+  _alphaValue = 0.0;
 
   _f.is_one_shot = NO;
   _f.is_autodisplay = YES;
@@ -3546,7 +3684,10 @@ resetCursorRectsForView(NSView *theView)
   _f.accepts_mouse_moved = NO;
   _f.has_opened = NO;
   _f.has_closed = NO;
-  
+  _f.can_hide = YES;
+  _f.has_shadow = NO;
+  _f.is_opaque = YES;
+
   _rFlags.needs_display = YES;
 }
 
@@ -3595,5 +3736,3 @@ NSWindow* GSWindowWithNumber(int num)
 {
   return (NSWindow*)NSMapGet(windowmaps, (void*)num);
 }
-
-
