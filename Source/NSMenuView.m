@@ -674,7 +674,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [targetMenuView setHighlightedItemIndex: -1];
 }
 
-#define MOVE_THRESHOLD_DELTA 1
+#define MOVE_THRESHOLD_DELTA 1.0
+#define DELAY_MULTIPLIER     12
 
 - (BOOL)trackWithEvent: (NSEvent *)event
 {
@@ -689,6 +690,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   NSPoint  lastLocation = {0,0};
   NSMenu  *alreadyAttachedMenu = NO;
   BOOL     delayedSelect = NO;
+  int      delayCount = DELAY_MULTIPLIER;
 
   do
     {
@@ -708,6 +710,17 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 		  - 1)
 		[menuv_menu shiftOnScreen];
 	    }
+
+	  if ([event type] == NSPeriodic && delayedSelect && !delayCount)
+	    {
+	      if (location.x - lastLocation.x < MOVE_THRESHOLD_DELTA ||
+		  abs(location.y - lastLocation.y) < MOVE_THRESHOLD_DELTA)
+		delayedSelect = NO;
+
+	      lastLocation = location;
+	    }
+
+	  delayCount   = delayCount ? --delayCount : DELAY_MULTIPLIER;
 	}
 
       if (index == -1)
@@ -731,15 +744,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  if (index != menuv_highlightedItemIndex)
 	    {
-	      if ([event type] == NSPeriodic && delayedSelect)
-		{
-		  if (location.x - lastLocation.x < MOVE_THRESHOLD_DELTA ||
-		      abs(location.y - lastLocation.y) < MOVE_THRESHOLD_DELTA)
-		    delayedSelect = NO;
-
-		  lastLocation = location;
-		}
-
 	      if (![menuv_menu attachedMenu] || !delayedSelect)
 		{
 		  [self setHighlightedItemIndex: index];
@@ -752,6 +756,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 		    {
 		      [self attachSubmenuForItemAtIndex: index];
 		      delayedSelect = YES;
+		      delayCount    = DELAY_MULTIPLIER;
+		    }
+		  else
+		    {
+		      delayedSelect = NO;
 		    }
 		}
 	    }

@@ -1,3 +1,9 @@
+1999-11-19  David Lazaro Saz  <khelekir@encomix.es>
+
+	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): Added two
+	defines (MOVE_THRESHOLD_DELTA and DELAY_MULTIPLIER) to make nicer the
+	menu traversing.
+
 1999-11-18  David Lazaro Saz  <khelekir@encomix.es>
 
 	* Source/NSPopUpButton.m ([NSPopUpButton +initialize]): Fixed core
