@@ -1,3 +1,14 @@
+2004-07-13  Serg Stoyan <stoyan255@ukr.net>
+
+	* Source/NSButtonCell.m:
+	(_init): Set default values of _gradient_type and 
+	_image_dims_when_disabled.
+	(drawGradientWithFrame:inView:): Implemented. Draws gradient 
+	according to the _gradient_type ivar value.
+	(drawInteriorWithFrame:inView:): Call drawGradientWithFrame:inView
+	if _gradient_type was set and cell is no highlighted. Dissolve
+	image if cell is disabled and _image_dims_when_disabled was set.
+	
 2004-07-11  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Added code to allow the switching
