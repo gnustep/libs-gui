@@ -41,7 +41,7 @@ typedef	struct {
   float	ty;
 } NSAffineTransformStruct;
 
-@interface NSAffineTransform : NSObject <NSCopying>
+@interface NSAffineTransform : NSObject <NSCopying, NSCoding>
 {
 @public
   NSAffineTransformStruct	matrix;
@@ -65,8 +65,10 @@ typedef	struct {
 - (NSSize) transformSize: (NSSize)aSize;
 - (NSAffineTransformStruct) transformStruct;
 - (void) translateXBy: (float)tranX yBy: (float)tranY;
+@end
 
 #ifndef	NO_GNUSTEP
+@interface NSAffineTransform (GNUstep)
 + (NSAffineTransform*) matrixFrom: (const float[6])matrix;
 - (void) translateToPoint: (NSPoint)point;
 - (void) rotateByAngle: (float)angle;
