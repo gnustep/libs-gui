@@ -1,3 +1,11 @@
+Fri Dec 15 21:40:49 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+	
+	* Headers/gnustep/gui/NSTextStorage.h: Prefixed all ivars with
+	underscores.
+	* Source/NSTextStorage.m: Updated for ivar name change.
+	([-processEditing]): Fixed invalidated range passed to
+	NSLayoutManagers.
+
 Wed Dec 13 16:02:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSAttributedString.m: Optimizations: cache class
