@@ -73,13 +73,15 @@
 - (id)init
 {
   NSRect pf = {{100,100}, {300,300}};
-  NSRect ts = {{0,250}, {300,50}};
-  NSRect bs = {{0,0}, {300,300}};
-  NSRect pa = {{5,5}, {290,40}};
-  NSRect l = {{5,215}, {110, 20}};
-  NSRect ss = {{5,50}, {110, 160}};
+  NSRect ts = {{0,0}, {300,40}};
+  NSRect bs = {{0,0}, {300,182}};
+  NSRect pa = {{7,0}, {286,40}};
+  NSRect l = {{7,162}, {110,20}};
+  NSRect ss = {{7,0}, {110,160}};
   NSRect b = {{60,5}, {75,25}};
   NSView *v;
+  NSView *topArea;
+  NSView *bottomArea;
   NSView *topSplit;
   NSView *bottomSplit;
   NSSplitView *splitView;
@@ -101,11 +103,13 @@
 		screen:nil];
   [self setTitle:@"Font Panel"];
 
-//  v = [self contentView];
+  v = [self contentView];
 
-  splitView = [NSSplitView new];  
+  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,238)];
+
+  splitView = [[NSSplitView alloc] initWithFrame:NSMakeRect(0,0,300,238)];  
   [splitView setVertical:NO]; 
-  [self setContentView:splitView];
+  [topArea addSubview:splitView];
 
   topSplit = [[NSView alloc] initWithFrame:ts];
 
@@ -118,6 +122,7 @@
 
   label = [[NSTextField alloc] initWithFrame:l];
   [label setAlignment: NSCenterTextAlignment];
+  [label setFont:[NSFont boldSystemFontOfSize:12]];
   [label setStringValue:@"Family"];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
@@ -132,6 +137,7 @@
   l.origin.x = 120;
 
   label = [[NSTextField alloc] initWithFrame:l];
+  [label setFont:[NSFont boldSystemFontOfSize:12]];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
@@ -146,10 +152,11 @@
   [typeScroll setHasVerticalScroller:YES];
   [bottomSplit addSubview:typeScroll];
 
-  l.origin.x = 235;
+  l.origin.x = 233;
   l.size.width = 60;
 
   label = [[NSTextField alloc] initWithFrame:l];
+  [label setFont:[NSFont boldSystemFontOfSize:12]];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
@@ -160,8 +167,8 @@
 
   // last label, this is the size input. We don't release this one.
 
-  l.origin.x = 235;
-  l.origin.y = 190;
+  l.origin.x = 233;
+  l.origin.y = 140;
   l.size.height = 20;
   l.size.width = 60;
 
@@ -170,8 +177,7 @@
   [label setBackgroundColor:[NSColor whiteColor]];
   [bottomSplit addSubview:label];
 
-  ss.origin.x = 235;
-  ss.origin.y = 50;
+  ss.origin.x = 233;
   ss.size.height = 135;
   ss.size.width = 60;
 
@@ -179,34 +185,33 @@
   [sizeScroll setHasVerticalScroller:YES];
   [bottomSplit addSubview:sizeScroll];
 
+  bottomArea = [[NSView alloc] initWithFrame:NSMakeRect(0,0,300,100)];
+
   revertButton = [[NSButton alloc] initWithFrame:b];
   [revertButton setStringValue:@"Revert"];
-  [bottomSplit addSubview:revertButton];
+  [bottomArea addSubview:revertButton];
 
   b.origin.x = 140;
 
   previewButton = [[NSButton alloc] initWithFrame:b];
   [previewButton setStringValue:@"Preview"];
-  [bottomSplit addSubview:previewButton];
+  [bottomArea addSubview:previewButton];
 
   b.origin.x = 220;
 
   setButton = [[NSButton alloc] initWithFrame:b];
   [setButton setStringValue:@"Set"];
-  [bottomSplit addSubview:setButton];
+  [bottomArea addSubview:setButton];
 
   [splitView addSubview:bottomSplit];
   [splitView addSubview:topSplit];
 
+  [v addSubview:topArea];
+  [v addSubview:bottomArea];
+
   return self;
 }
 
-/*
-- initWithFrame:(NSRect)aFrame
-{
-  [super initWithFrame:aFrame];
-}
-*/
 - (NSFont *)panelConvertFont:(NSFont *)fontObject
 {
   return panel_font;
