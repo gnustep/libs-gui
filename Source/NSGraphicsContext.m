@@ -657,6 +657,8 @@ struct NSWindow_struct
     GET_IMP(@selector(DPSDiscardEventsMatchingMask:beforeEvent:));
   methodTable.DPSPostEvent_atStart_ = 
     GET_IMP(@selector(DPSPostEvent:atStart:));
+  methodTable.DPSmouselocation__ = 
+    GET_IMP(@selector(DPSmouselocation::));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
@@ -1825,4 +1827,8 @@ struct NSWindow_struct
     [event_queue addObject: anEvent];
 }
 
+- (void) DPSmouselocation: (float*)x : (float*)y 
+{
+  [self subclassResponsibility: _cmd];
+}
 @end

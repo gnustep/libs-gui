@@ -1,5 +1,11 @@
 Wed Jun  9  8:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Headers/AppKit/DPSOperators.h: Add DPSmouselocation()
+	* Headers/AppKit/PSOperators.h: Add PSmouselocation()
+	* Headers/AppKit/NSGraphicsContext.h: Add ([-DPSmouselocation::])
+	* Headers/AppKit/GSMethodTable.h: Add ([-DPSmouselocation::])
+	* Source/NSWindow.m: Use DPSmouselocation()
+	* Source/NSGraphicsContext.m: Add ([-DPSmouselocation::])
 	* Source/NSApplication.m: Fix retain/release problems introduced by
 	event system changes.
 

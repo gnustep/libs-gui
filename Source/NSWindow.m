@@ -50,6 +50,7 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/PSOperators.h>
 
 
 @interface GSWindowView : NSView
@@ -207,12 +208,11 @@ static Class	responderClass;
 		     defer: (BOOL)flag
                     screen: (NSScreen*)aScreen
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
   NSRect r = [[NSScreen mainScreen] frame];
   NSRect cframe;
 
   NSDebugLog(@"NSWindow default initializer\n");
-  if (!theApp)
+  if (!NSApp)
     NSLog(@"No application!\n");
 
   NSDebugLog(@"NSWindow start of init\n");
@@ -226,7 +226,7 @@ static Class	responderClass;
   minimum_size = NSZeroSize;
   maximum_size = r.size;
                                                     // Next responder is the
-  [self setNextResponder: theApp];                 // application
+  [self setNextResponder: NSApp];                 // application
 
   cursor_rects_enabled = YES;                     // Cursor management
   cursor_rects_valid = NO;
@@ -311,7 +311,7 @@ static Class	responderClass;
     && ((represented_filename != nil && old == nil)
       || (represented_filename == nil && old != nil)))
     {
-      [[NSApplication sharedApplication] updateWindowsItem: self];
+      [NSApp updateWindowsItem: self];
     }
 }
 
@@ -403,9 +403,9 @@ static Class	responderClass;
   if ([title isEqual: represented_filename])
     isDoc = YES;
   if (menu_exclude == NO)
-    [[NSApplication sharedApplication] changeWindowsItem: self
-                                                   title: title
-                                                filename: isDoc];
+    [NSApp changeWindowsItem: self
+		       title: title
+		    filename: isDoc];
 }
 
 //
@@ -508,22 +508,18 @@ static Class	responderClass;
 
 - (void) makeKeyWindow
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
   if (![self canBecomeKeyWindow])
     return;
-  [[theApp keyWindow] resignKeyWindow];
+  [[NSApp keyWindow] resignKeyWindow];
 
   [self becomeKeyWindow];
 }
 
 - (void) makeMainWindow
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
   if (![self canBecomeMainWindow])
     return;
-  [[theApp mainWindow] resignMainWindow];
+  [[NSApp mainWindow] resignMainWindow];
   [self becomeMainWindow];
 }
 
@@ -761,7 +757,7 @@ static Class	responderClass;
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
   needs_display = flag;
-  [[NSApplication sharedApplication] setWindowsNeedUpdate: YES];
+  [NSApp setWindowsNeedUpdate: YES];
 }
 
 - (BOOL) viewsNeedDisplay
@@ -896,7 +892,6 @@ static Class	responderClass;
 - (void) close
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  NSApplication	*theApp = [NSApplication sharedApplication];
 
   /*
    * If 'is_released_when_closed' then the window will be removed from the
@@ -908,7 +903,7 @@ static Class	responderClass;
     RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
-  [theApp removeWindowsItem: self];
+  [NSApp removeWindowsItem: self];
   [self orderOut: self];
 
   if (is_released_when_closed)
@@ -1009,7 +1004,7 @@ static Class	responderClass;
       is_edited = flag;
       if (menu_exclude == NO)
         {
-          [[NSApplication sharedApplication] updateWindowsItem: self];
+          [NSApp updateWindowsItem: self];
         }
     }
 }
@@ -1029,15 +1024,13 @@ static Class	responderClass;
 
 - (NSEvent *) currentEvent
 {
-  return [[NSApplication sharedApplication] currentEvent];
+  return [NSApp currentEvent];
 }
 
 - (void) discardEventsMatchingMask: (unsigned int)mask
                        beforeEvent: (NSEvent *)lastEvent
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
-  [theApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
+  [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
 }
 
 - (NSResponder*) firstResponder
@@ -1072,18 +1065,24 @@ static Class	responderClass;
 }
 
 /* Return mouse location in reciever's base coord system, ignores event
- * loop status (backend) */
+ * loop status */
 - (NSPoint) mouseLocationOutsideOfEventStream
 {
-  return NSZeroPoint;
+  float	x;
+  float	y;
+
+  DPSmouselocation(GSCurrentContext(), &x, &y);
+  x -= frame.origin.x;
+  y -= frame.origin.y;
+  return NSMakePoint(x, y);
 }
 
 - (NSEvent *) nextEventMatchingMask: (unsigned int)mask
 {
-  return [[NSApplication sharedApplication] nextEventMatchingMask: mask
-                                              untilDate: nil
-                                              inMode: NSEventTrackingRunLoopMode
-                                              dequeue: YES];
+  return [NSApp nextEventMatchingMask: mask
+			    untilDate: nil
+			       inMode: NSEventTrackingRunLoopMode
+			      dequeue: YES];
 }
 
 - (NSEvent *) nextEventMatchingMask: (unsigned int)mask
@@ -1091,15 +1090,15 @@ static Class	responderClass;
 			     inMode: (NSString *)mode
 			    dequeue: (BOOL)deqFlag
 {
-  return [[NSApplication sharedApplication] nextEventMatchingMask: mask
-					    untilDate: expiration
-					    inMode: mode
-					    dequeue: deqFlag];
+  return [NSApp nextEventMatchingMask: mask
+			    untilDate: expiration
+			       inMode: mode
+			      dequeue: deqFlag];
 }
 
 - (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
-  [[NSApplication sharedApplication] postEvent: event atStart: flag];
+  [NSApp postEvent: event atStart: flag];
 }
 
 - (void) setAcceptsMouseMovedEvents: (BOOL)flag
@@ -1486,9 +1485,8 @@ static Class	responderClass;
 				      returnType: returnType];
 
   if (result == nil)
-    result = [[NSApplication sharedApplication]
-                                 validRequestorForSendType: sendType
-						returnType: returnType];
+    result = [NSApp validRequestorForSendType: sendType
+				   returnType: returnType];
   return result;
 }
 

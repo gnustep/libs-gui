@@ -1767,4 +1767,10 @@ PSPostEvent(NSEvent* anEvent, BOOL atStart)
   DPSPostEvent(DEFCTXT, anEvent, atStart);
 }
 
+static inline void
+PSmouselocation(float *x, float *y)
+{
+  DPSmouselocation(DEFCTXT, x, y);
+}
+
 #endif	

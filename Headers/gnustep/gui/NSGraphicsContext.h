@@ -356,6 +356,7 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSDiscardEventsMatchingMask: (unsigned)mask
 			  beforeEvent: (NSEvent*)limit;
 - (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag;
+- (void) DPSmouselocation: (float*)x : (float*)y;
 @end
 
 #endif /* _NSGraphicsContext_h_INCLUDE */

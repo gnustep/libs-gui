@@ -1931,4 +1931,11 @@ DPSPostEvent(GSCTXT *ctxt, NSEvent* anEvent, BOOL atStart)
     (ctxt, @selector(DPSPostEvent:atStart:), anEvent, atStart);
 }
 
+static inline void
+DPSmouselocation(GSCTXT *ctxt, float *x, float *y)
+{
+  (ctxt->methods->DPSmouselocation__)
+    (ctxt, @selector(DPSmouselocation::), x, y);
+}
+
 #endif	
