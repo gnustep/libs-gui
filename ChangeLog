@@ -1,3 +1,20 @@
+2002-09-15  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSMenuView.m:
+	New private method [NSMenuView -_itemCell] in newly created
+	GNUstepPrivate category.
+	* Source/NSMenu.m:
+	Add GNUstepPrivate interface of NSMenuView.
+	[NSMenu -_setOwnedByPopUp:]: update itemCells' menuView
+	(fix NSPopUpButtonCell-decoding problem).
+	* Source/NSPopUpButtonCell.m 
+	([NSPopUpButtonCell -synchronizeTitleAndSelectedItem]):
+	Fix "mouseUp outside of menu" problem. Now the previous
+	selected item stay selected.
+	([NSPopUpButtonCell -initWithCoder:]):
+	Set the selectedItem properly.
+	
+
 2002-09-15 13:17  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSImage.m (compositeToPoint:fromRect:operation:,,

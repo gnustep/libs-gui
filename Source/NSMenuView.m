@@ -1175,3 +1175,10 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 }
 
 @end
+
+@implementation NSMenuView (GNUstepPrivate)
+- (NSArray *)_itemCells
+{
+  return _itemCells;
+}
+@end

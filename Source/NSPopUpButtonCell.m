@@ -377,7 +377,10 @@ static NSImage *_pbc_image[2];
       int index = [[_menu menuRepresentation] highlightedItemIndex];
       
       if (index < 0)
+	index = [self indexOfSelectedItem];
+      if (index < 0)
 	index = 0;
+
       [self selectItemAtIndex: index];
     }
 }
@@ -629,10 +632,11 @@ static NSImage *_pbc_image[2];
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   int flag;
+  id<NSMenuItem> selectedItem;
 
   self = [super initWithCoder: aDecoder];
   _menu = [aDecoder decodeObject];
-  _selectedItem = [aDecoder decodeObject];
+  selectedItem = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.pullsDown = flag;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
@@ -645,6 +649,7 @@ static NSImage *_pbc_image[2];
   _pbcFlags.arrowPosition = flag;
 
   [_menu _setOwnedByPopUp: self];
+  [self selectItem: selectedItem];
   return self;
 }
 

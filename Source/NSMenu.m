@@ -70,6 +70,11 @@
 
 @end
 
+@interface NSMenuView (GNUstepPrivate)
+- (NSArray *)_itemCells;
+@end
+
+
 static NSZone	*menuZone = NULL;
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSNotificationCenter *nc;
@@ -1338,7 +1343,17 @@ static NSNotificationCenter *nc;
 	  [_aWindow setLevel: NSPopUpMenuWindowLevel];
 	  [_bWindow setLevel: NSPopUpMenuWindowLevel];
 	}
-      // FIXME
+
+      {
+	NSArray *itemCells = [_view _itemCells];
+	int i;
+	int count = [itemCells count];
+	
+	for ( i = 0; i < count; i++ )
+	  {
+	    [[itemCells objectAtIndex: i] setMenuView: _view];
+	  }
+      }
     }
 }
 
