@@ -1,3 +1,9 @@
+Thu Jun 15 20:29:13 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSView.m ([-scrollRectToVisible:]): Don't need to send
+	reflectScrolledClipView to the clipview's superview.  This is done
+	automatically by the clipview.
+
 Thu Jun 15 20:09:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSScrollView.m ([-reflectScrolledClipView:]): If needed,
