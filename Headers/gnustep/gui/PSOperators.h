@@ -1658,22 +1658,27 @@ PScapturegstate(int *gst)
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */
 static inline NSEvent*
-PSGetEventMatchingMaskBeforeDateInModeDequeue(unsigned mask, NSDate* limit, NSString *mode, BOOL dequeue)
+PSGetEvent(unsigned mask, NSDate* limit, NSString *mode)
 {
-  return DPSGetEventMatchingMaskBeforeDateInModeDequeue(DEFCTXT,
-    mask, limit, mode, dequeue);
+  return DPSGetEvent(DEFCTXT, mask, limit, mode);
+}
+
+static inline NSEvent*
+PSPeekEvent(unsigned mask, NSDate* limit, NSString *mode)
+{
+  return DPSPeekEvent(DEFCTXT, mask, limit, mode);
 }
 
 static inline void
-PSDiscardEventsMatchingMaskBeforeEvent(unsigned mask, NSEvent* limit)
+PSDiscardEvents(unsigned mask, NSEvent* limit)
 {
-  DPSDiscardEventsMatchingMaskBeforeEvent(DEFCTXT, mask, limit);
+  DPSDiscardEvents(DEFCTXT, mask, limit);
 }
 
 static inline void
-PSPostEventAtStart(NSEvent* anEvent, BOOL atStart)
+PSPostEvent(NSEvent* anEvent, BOOL atStart)
 {
-  DPSPostEventAtStart(DEFCTXT, anEvent, atStart);
+  DPSPostEvent(DEFCTXT, anEvent, atStart);
 }
 
 #endif	
