@@ -309,8 +309,14 @@
   int howMany = [tab_items count];
   int i;
 
+  point = [self convertPoint:point fromView:nil];
+
   for (i=0;i<howMany;i++) {
     NSTabViewItem *anItem = [tab_items objectAtIndex:i];
+    NSRect tRect = [anItem _tabRect];
+
+    NSLog(@"point (%f, %f) and rect (%f, %f) (%f, %f)", point.x, point.y,
+tRect.origin.x, tRect.origin.y, tRect.size.width, tRect.size.height);
 
     if(NSPointInRect(point,[anItem _tabRect]))
       return anItem;
