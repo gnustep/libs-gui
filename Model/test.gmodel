@@ -62,7 +62,7 @@
         backgroundColor = "Object    8"; 
         backingType = 0; 
         contentView = "Object   10"; 
-        frame = "{x = 0; y = 0; width = 193; height = 208}"; 
+        frame = "{x = 100; y = 100; width = 193; height = 208}"; 
         frameAutosaveName = nil; 
         hidesOnDeactivate = NO; 
         isAutodisplay = NO; 
@@ -92,7 +92,7 @@
         backgroundColor = "Object    8"; 
         backingType = 2; 
         contentView = "Object   12"; 
-        frame = "{x = 258; y = 511; width = 422; height = 304}"; 
+        frame = "{x = 100; y = 100; width = 422; height = 304}"; 
         frameAutosaveName = nil; 
         hidesOnDeactivate = NO; 
         isAutodisplay = YES; 
@@ -455,7 +455,7 @@
         saturation = 0.000000; 
     }; 
     "Object   30" = {isa = NSPopUpButton; pullsDown = NO; }; 
-    "Object   31" = {className = MyView; isa = IMCustomView; }; 
+    "Object   31" = {className = MyView; isa = NSView; }; 
     "Object   32" = {
         backgroundColor = "Object    8"; 
         backingType = 2; 

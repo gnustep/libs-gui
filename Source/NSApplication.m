@@ -149,7 +149,7 @@ NSString* mainModelFile;
 		{
 		if (![GMModel loadIMFile:mainModelFile
 					  owner:[NSApplication sharedApplication]])
-		NSLog (@"Cannot load the main model file '%@", mainModelFile);
+			NSLog (@"Cannot load the main model file '%@", mainModelFile);
 		}
 													// post notification that 
 													// launch will finish

@@ -124,8 +124,8 @@ static BOOL _needsFlushWindows = YES;
 int style;
 
 	NSDebugLog(@"NSWindow -init\n");
-															// default style
-	style = NSTitledWindowMask | NSClosableWindowMask		// mask		
+															// default window
+	style = NSTitledWindowMask | NSClosableWindowMask		// style mask		
 			| NSMiniaturizableWindowMask | NSResizableWindowMask;
 
 	return [self initWithContentRect:NSZeroRect 

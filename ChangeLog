@@ -1,3 +1,9 @@
+Thu Nov 5 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* Model/GNUmakefile enable build of test app, fix resource files ref.
+	* Model/test.gmodel remove ref to IMCustomView.
+	* Model/GMAppKit.m add test for XRAW backend.
+
 Wed Nov 4 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSApplication.h/NSApplication.m remove unused ivar recycledEventsQueue.

@@ -13,16 +13,17 @@
 }
 @end
 
-
 int main (int argc, char** argv, char** env)
 {
-  id pool;
-  NSArray* arguments;
-  NSProcessInfo* processInfo;
+id pool = [NSAutoreleasePool new];
+NSArray* arguments;
+NSProcessInfo* processInfo;
 
-  pool = [NSAutoreleasePool new];
 #if LIB_FOUNDATION_LIBRARY
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env];
+#endif
+#ifndef NX_CURRENT_COMPILER_RELEASE
+  initialize_gnustep_backend();
 #endif
 
 #if 0
@@ -32,10 +33,6 @@ int main (int argc, char** argv, char** env)
     printf ("usage: %s gmodel-file\n", [[processInfo processName] cString]);
     exit (1);
   }
-#endif
-
-#ifndef NX_CURRENT_COMPILER_RELEASE
-  initialize_gnustep_backend();
 #endif
 
 #if 0
