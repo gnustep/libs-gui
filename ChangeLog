@@ -1,3 +1,10 @@
+2005-01-18 17:06  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSWindow.m
+	(-initWithContentRect:styleMask:backing:defer:screen:): Assert that
+	the shared application instance has been created instead of just
+	calling NSLog. Make the message clearer.
+
 2005-01-18 16:53  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSCell.m (-setUpFieldEditorAttributes:): Clear the

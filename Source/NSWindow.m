@@ -912,8 +912,9 @@ many times.
 {
   NSRect  cframe;
 
-  if (!NSApp)
-    NSLog(@"No application!\n");
+  NSAssert(NSApp,
+    @"The shared NSApplication instance must be created before windows "
+    @"can be created.");
 
   NSDebugLLog(@"NSWindow", @"NSWindow start of init\n");
   if (!windowmaps)
@@ -3109,7 +3110,7 @@ resetCursorRectsForView(NSView *theView)
 	break;
 
       case NSScrollWheel:
-  	v = [_wv hitTest: [theEvent locationInWindow]];
+	v = [_wv hitTest: [theEvent locationInWindow]];
 	[v scrollWheel: theEvent];
 	break;
 
