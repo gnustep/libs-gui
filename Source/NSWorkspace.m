@@ -44,6 +44,7 @@
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSURL.h>
+#include <Foundation/NSValue.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
@@ -1119,6 +1120,34 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
+- (NSDictionary*) activeApplication
+{
+  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+
+  return [NSDictionary dictionaryWithObjectsAndKeys:
+	[processInfo processName], @"NSApplicationName",
+	[[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
+	[NSNumber numberWithInt: [processInfo processIdentifier]], 
+		       @"NSApplicationProcessIdentifier",
+	nil];
+}
+
+- (NSArray*) launchedApplications
+{
+  NSDictionary *dict;
+  NSString *app;
+  NSMutableArray *apps = [NSMutableArray array];
+  NSEnumerator *enumerator = [_launched keyEnumerator];
+
+  while ((app = [enumerator nextObject]) != nil)
+    {
+      dict = [NSDictionary dictionaryWithObject: app forKey: @"NSApplicationName"];
+      [apps addObject: dict];
+    }
+  
+  return apps;
+}
+
 /*
  * Unmounting a Device	
  */
@@ -1911,9 +1940,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        * App being launched, send
        * NSWorkspaceWillLaunchApplicationNotification
        */
-      userinfo = [NSDictionary dictionaryWithObject:
-	[[appName lastPathComponent] stringByDeletingPathExtension]
-	forKey: @"NSApplicationName"];
+      userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	[[appName lastPathComponent] stringByDeletingPathExtension], 
+			       @"NSApplicationName",
+	appName, @"NSApplicationPath",
+	nil];
       [_workspaceCenter
 	postNotificationName: NSWorkspaceWillLaunchApplicationNotification
 	object: self
