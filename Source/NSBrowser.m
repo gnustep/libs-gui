@@ -258,6 +258,29 @@
 }
 
 //
+// Target-actions stuff
+//
+- (void) setTarget: (id)t
+{
+  _target = t;
+}
+
+- (id) target
+{
+  return _target;
+}
+
+- (void) setAction: (SEL)s
+{
+  _action = s;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+//
 // Setting the Delegate
 //
 - (id)delegate

@@ -1,4 +1,9 @@
-Thu Mar 25 20:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Sat Mar 27  05:5800 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBrowser.m: Override target, setTarget, action, setAction
+	* Headers/AppKit/NSBrowser.h: Add _action and _target ivars.
+
+FRi Mar 26 20:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSImage.m: Incorporated fixes suggested by dave@turbocat.de
 

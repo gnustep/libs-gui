@@ -49,18 +49,18 @@
   BOOL _allowsBranchSelection;
   BOOL _allowsEmptySelection;
   BOOL _allowsMultipleSelection;
-  BOOL _reusesColumns;
   int _maxVisibleColumns;
   float _minColumnWidth;
+  BOOL _reusesColumns;
   BOOL _separatesColumns;
   BOOL _takesTitleFromPreviousColumn;
   BOOL _isTitled;
-  BOOL _hasHorizontalScroller;
   NSScroller *_horizontalScroller;
+  BOOL _hasHorizontalScroller;
   BOOL _acceptsArrowKeys;
   BOOL _sendsActionOnArrowKeys;
-  id _browserDelegate;
   BOOL _passiveDelegate;
+  id _browserDelegate;
   SEL _doubleAction;
   NSMutableArray *_browserColumns;
   id _titleCell;
@@ -68,6 +68,8 @@
   int _lastColumnLoaded;
   int _firstVisibleColumn;
   int _lastVisibleColumn;
+  id _target;
+  SEL _action;
 }
 
 //
