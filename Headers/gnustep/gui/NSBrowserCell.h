@@ -49,6 +49,7 @@
 + (NSImage *)highlightedBranchImage;
 - (NSImage *)alternateImage;
 - (void)setAlternateImage:(NSImage *)anImage;
+- (NSColor *)highlightColorInView: (NSView *)controlView;
 
 //
 // Placing in the Browser Hierarchy 

@@ -745,22 +745,60 @@ static BOOL _gs_display_reading_progress = NO;
 {
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell;
+  NSString      *filename;
 
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  matrix = [_browser matrixInColumn: [_browser lastColumn]];
   selectedCell = [matrix selectedCell];
 
   if (selectedCell && [selectedCell isLeaf] == NO)
     {
-      [_browser doClick:matrix];
+      [_browser doClick: matrix];
       return;
+    }
+
+  if (_delegateHasUserEnteredFilename)
+    {
+      filename = [_delegate panel: self
+			    userEnteredFilename: _fullFileName
+			    confirmed: YES];
+      if (!filename)
+	return;
+      else if (![_fullFileName isEqual: filename])
+	{
+	  ASSIGN (_directory, [filename stringByDeletingLastPathComponent]);
+	  ASSIGN (_fullFileName, filename);
+	  [_browser setPath: _fullFileName];
+
+	  filename = [_fullFileName lastPathComponent];
+
+	  [self _selectCellName: filename];
+	  [[_form cellAtIndex: 0] setStringValue: filename];
+	  [_form selectTextAtIndex: 0];
+	  [_form setNeedsDisplay: YES];
+	}
     }
 
   ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
   ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-				       [[_form cellAtIndex:0] stringValue]]);
+				       [[_form cellAtIndex: 0] stringValue]]);
+
+  if ([_fm fileExistsAtPath: [self filename] isDirectory: NULL])
+    {
+      int result;
+
+      //FIXME -- localize
+      result = NSRunAlertPanel(@"Save",
+			       @"The file '%@' in '%@' exists. Replace it?",
+			       @"Replace", @"Cancel", nil,
+			       [[_form cellAtIndex: 0] stringValue],
+			       _directory);
+
+      if (result != NSAlertDefaultReturn)
+	return;
+    }
 
   if (_delegateHasValidNameFilter)
-    if (![_delegate panel:self isValidFilename: [self filename]])
+    if (![_delegate panel: self isValidFilename: [self filename]])
       return;
 
   _OKButtonPressed = YES;
@@ -828,17 +866,22 @@ static BOOL _gs_display_reading_progress = NO;
     _delegateHasCompareFilter = YES;
   else 
     _delegateHasCompareFilter = NO;
-  
+
   if ([aDelegate respondsToSelector: @selector(panel:shouldShowFilename:)])
     _delegateHasShowFilenameFilter = YES;      
   else
     _delegateHasShowFilenameFilter = NO;      
-  
+
   if ([aDelegate respondsToSelector: @selector(panel:isValidFilename:)])
     _delegateHasValidNameFilter = YES;
   else
     _delegateHasValidNameFilter = NO;
-  
+
+  if ([aDelegate respondsToSelector: @selector(panel:userEnteredFilename:confirmed:)])
+    _delegateHasUserEnteredFilename = YES;
+  else
+    _delegateHasUserEnteredFilename = NO;
+
   [super setDelegate: aDelegate];
 }
 
@@ -1139,25 +1182,6 @@ selectCellWithString: (NSString*)title
   m = [sender matrixInColumn: column];
   isLeaf = [[m selectedCell] isLeaf];
   path = [sender pathToColumn: column];
-
-  if([self isKindOfClass:[NSOpenPanel class]] == NO)
-    {
-      event = [self currentEvent];
-      if(event && [event type] == NSKeyDown && isLeaf == YES)
-	{
-	  NSString *characters = [event characters];
-	  unichar character = 0;
-
-	  if ([characters length] > 0)
-	    {
-	      character = [characters characterAtIndex: 0];
-	    }
-
-	  if(character != NSRightArrowFunctionKey ||
-	     [sender selectedRowInColumn:column] != 0)
-	    return NO;
-	}
-    }
 
   if (isLeaf)
     {

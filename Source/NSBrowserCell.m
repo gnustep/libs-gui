@@ -155,6 +155,11 @@ static NSFont *_leafFont;
   ASSIGN(_alternateImage, anImage);
 }
 
+- (NSColor *)highlightColorInView: (NSView *)controlView
+{
+  return [_colorClass selectedControlColor];
+}
+
 /*
  * Placing in the Browser Hierarchy
  */
@@ -229,7 +234,7 @@ static NSFont *_leafFont;
 
   if (_cell.is_highlighted || _cell.state)
     {
-      backColor = [_colorClass selectedControlColor];
+      backColor = [self highlightColorInView: controlView];
       [backColor set];
       if (!_browsercell_is_leaf)
 	image = [isa highlightedBranchImage];
@@ -274,7 +279,7 @@ static NSFont *_leafFont;
   title_rect.size.width -= 2;
   
   // Draw the body of the cell
-  if ((_cell.type == NSImageCellType) 
+  if ((_cell.type == NSImageCellType)
       && (_cell.is_highlighted || _cell.state)
       && _alternateImage)
     {

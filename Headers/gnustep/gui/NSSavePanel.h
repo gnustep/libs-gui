@@ -78,6 +78,7 @@ enum {
   BOOL _delegateHasCompareFilter;
   BOOL _delegateHasShowFilenameFilter;
   BOOL _delegateHasValidNameFilter;
+  BOOL _delegateHasUserEnteredFilename;
   BOOL _selfHasShowExtensionFilter;
 
   // YES when we stopped because the user pressed 'OK'
@@ -220,6 +221,9 @@ enum {
 			with: (NSString *)filename2
 	       caseSensitive: (BOOL)caseSensitive;	 
 - (BOOL) panel: (id)sender shouldShowFilename: (NSString *)filename;
+- (NSString *)panel: (id)sender
+userEnteredFilename: (NSString *)fileName
+          confirmed: (BOOL)okFlag;
 @end
 
 #endif /* _GNUstep_H_NSSavePanel */

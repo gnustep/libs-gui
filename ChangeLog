@@ -1,3 +1,60 @@
+2001-05-13  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* configure.in: added /usr/local/include and /usr/local/lib for
+	FreeBSD. Use ADDITIONAL_LIB_DIRS instead of ADDITIONAL_LD_FLAGS.
+	* config.make.in (ADDITIONAL_LIB_DIRS): renamed.
+	* config.guess: new file.
+	* config.sub: new file.
+	* install-sh: new file.
+	
+	* Source/NSSavePanel.m ([NSSavePanel -setDelegate:]): check for -panel:
+	userEnteredFilename:confirmed:
+	([NSSavePanel -ok:]): call delegate method -panel:userEnteredFilename:
+	confirmed: (MacOS X). Run an alert panel if the filename already exists
+	([NSSavePanel -browser:selectCellWithString:inColumn:]): removed
+	keyboard handling.
+
+	* Headers/gnustep/gui/NSSavePanel.h: added ivar.
+
+	* Source/NSBrowserCell.m ([NSBrowserCell -highlightColorInView:]):
+	return the highlight color of the cell. (Mac OS X)
+	([NSBrowserCell -drawInteriorWithFrame:inView:]): use highlight color
+	from previous method.
+
+	* Headers/gnustep/gui/NSBrowserCell.h: added method.
+
+	* Source/NSMatrix.m ([NSMatrix -_mouseDownNonListMode:]): when
+	tracking the mouse use cell's +prefersTrackingUntilMouseUp
+	([NSMatrix -_move:]): new private method.
+	Fixed deselection of cells in NSRadioModeMatrix and NSListModeMatrix.
+	([NSMatrix -moveUp:]): use _move: to reduce maintance.
+	([NSMatrix -moveDown:]): likewise.
+	([NSMatrix -moveLeft:]): likewise.
+	([NSMatrix -moveRight:]): likewise.
+	([NSMatrix -getRow:column:ofCell:]): if cell does not exist set row and
+	column to -1.
+	([NSMatrix -mouseDown:]): does not select and highlight a cell at the
+	same time. Ensure that only a cell at a time has the dotted outile.
+
+	* Source/NSBrowser.m ([NSBrowser -addColumn]): load a column and scroll
+	if necessary.
+	([NSBrowser -doClick:]): rearranged for the new -addColumn
+	([NSBrowser -setPath:]): likewise and removed additional redisplay.
+	([NSBrowser -_createColumn]): method to create a new NSBrowserColumn.
+	([NSBrowser -setMaxVisibleColumns:]): use _createColumn
+	([NSBrowser -initWithFrame:]): likewise.
+	([NSBrowser -doClick:]): fixed selection problems.
+	([NSBrowser -selectRow:inColumn:]): fixed cell selection and perform
+	load of column if cell is not a leaf.
+	([NSBrowser -loadColumnZero]): use -addColumn to load column zero.
+	([NSBrowser -setLastColumn:]): check for min value of column.
+	([NSBrowser -reloadColumn:]): check with _lastColumnLoaded instead in
+	the column browser.
+	([NSBrowser -moveLeft:]): fixed an index out of bound exception when
+	it was selected the first column.
+	([NSBrowser -moveRight:]): does nothing if multiple cells are selected
+	or if the cell is a leaf.
+
 2000-05-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSFont.h
