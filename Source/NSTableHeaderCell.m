@@ -199,4 +199,19 @@ static NSColor *clearCol = nil;
       break;
     }
 }
+
+- (void)setHighlighted: (BOOL) flag
+{
+  _cell.is_highlighted = flag;
+  
+  if (flag == YES)
+    {
+      [self setBackgroundColor: [NSColor controlColor]];
+    }
+  else
+    {
+      [self setBackgroundColor: [NSColor controlShadowColor]];
+    }
+}
+
 @end
