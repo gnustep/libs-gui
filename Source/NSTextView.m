@@ -29,7 +29,6 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
-#include <AppKit/NSMatrix.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
@@ -39,10 +38,10 @@
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSFontPanel.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSColorPanel.h>
 
 @implementation NSTextView
 
@@ -50,8 +49,6 @@
 
 + (void) initialize
 {
-  [super initialize];
-
   if ([self class] == [NSTextView class])
     {
       [self setVersion: 1];
@@ -61,17 +58,12 @@
 
 + (void) registerForServices
 {
-  NSArray	*r;
-  NSArray	*s;
+  NSArray *types;
       
-  /*
-   * FIXME - should register for all types of data we support, not just string.
-   */
-  r  = [NSArray arrayWithObjects: NSStringPboardType, nil];
-  s  = [NSArray arrayWithObjects: NSStringPboardType, nil];
+  types  = [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, NSRTFDPboardType, nil];
  
-  [[NSApplication sharedApplication] registerServicesMenuSendTypes: s
-						       returnTypes: r];
+  [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
+						       returnTypes: types];
 }
 
 /* Initializing Methods */
@@ -83,6 +75,8 @@
 
   [self setTextContainer: aTextContainer];
   [self setEditable: YES];
+  [self setUsesFontPanel: YES];
+  [self setUsesRuler: YES];
 
   return self;
 }
@@ -106,6 +100,8 @@
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
   ASSIGN(_textContainer, aTextContainer);
+  // FIXME: Could also get a reference to the layout manager
+  ASSIGN(_textStorage, [[aTextContainer layoutManager] textStorage]);
 }
 
 - (NSTextContainer*) textContainer
@@ -248,6 +244,7 @@
     _tf.imports_graphics = flag;
 
   _tf.is_rich_text = flag;
+  [self updateDragTypeRegistration];
 }
 
 - (BOOL) isRichText
@@ -261,6 +258,7 @@
     _tf.is_rich_text = flag;
 
   _tf.imports_graphics = flag;
+  [self updateDragTypeRegistration];
 }
 
 - (BOOL) importsGraphics
@@ -395,8 +393,8 @@
 - (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
 		    restrictedToTypesFromArray: (NSArray*)allowedTypes
 {
-  // No idea.
-  return nil;
+  return [super preferredPasteboardTypeFromArray: availableTypes
+		restrictedToTypesFromArray: allowedTypes];
 }
 
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
@@ -410,8 +408,7 @@ preferred type of data and then reads the data using the
 readSelectionFromPasteboard: type: method. Returns YES if the
 data was successfully read.
 */
-
-  return NO;
+  return [super readSelectionFromPasteboard: pboard];
 }
 
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
@@ -427,19 +424,20 @@ default types. Use the rangeForUserTextChange method to obtain the range
 of characters (if any) to be replaced by the new data.
 */
 
-  return NO;
+  return [super readSelectionFromPasteboard: pboard
+		type: type];
 }
 
 - (NSArray*) readablePasteboardTypes
 {
   // get default types, what are they?
-  return nil;
+  return [super readablePasteboardTypes];
 }
 
 - (NSArray*) writablePasteboardTypes
 {
   // the selected text can be written to the pasteboard with which types.
-  return nil;
+  return [super writablePasteboardTypes];
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
@@ -453,13 +451,13 @@ super's implementation of the method to handle any types of data your
 overridden version does not.
 */
 
-  return NO;
+  return [super writeSelectionToPasteboard: pboard
+		type: type];
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
 			      types: (NSArray*)types
 {
-
 /* Writes the current selection to pboard under each type in the types
 array. Returns YES if the data for any single type was written
 successfully.
@@ -467,19 +465,8 @@ successfully.
 You should not need to override this method. You might need to invoke this
 method if you are implementing a new type of pasteboard to handle services
 other than copy/paste or dragging. */
-
-  NSArray      *mytypes;
-  NSString     *string;
-
-  if ([types containsObject: NSStringPboardType] == NO)
-    {
-      return NO;
-    }
-  mytypes = [NSArray arrayWithObjects: NSStringPboardType, nil];
-  [pboard declareTypes: mytypes owner: nil];
-  string = [self string];
-  string = [string substringWithRange: _selected_range];
-  return [pboard setString: string forType: NSStringPboardType];
+  return [super writeSelectionToPasteboard: pboard
+		types: types];
 }
 
 - (void) alignJustified: (id)sender
@@ -726,12 +713,14 @@ replacing the selection.
 
 - (void) pasteAsPlainText: (id)sender
 {
-  [self insertText: [sender string]];
+  [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
+				type: NSStringPboardType];
 }
 
 - (void) pasteAsRichText: (id)sender
 {
-  [self insertText: [sender string]];
+  [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
+				type: NSRTFPboardType];
 }
 
 - (void) updateFontPanel
@@ -746,12 +735,18 @@ replacing the selection.
 
 - (NSArray*) acceptableDragTypes
 {
-  return nil;
+  return [self readablePasteboardTypes];
 }
 
 - (void) updateDragTypeRegistration
 {
+  // FIXME: Should change registration for all our text views
+  if (_tf.is_editable && _tf.is_rich_text)
+    [self registerForDraggedTypes: [self acceptableDragTypes]];
+  else
+    [self unregisterDraggedTypes];
 }
+
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedSelRange
 			       granularity: (NSSelectionGranularity)granularity
@@ -773,6 +768,35 @@ replacing the selection.
 - (NSRange) rangeForUserTextChange
 {
   return [super rangeForUserTextChange];
+}
+
+
+- (id) validRequestorForSendType: (NSString*)sendType
+		      returnType: (NSString*)returnType
+{
+/*
+Returns self if sendType specifies a type of data the text view can put on
+the pasteboard and returnType contains a type of data the text view can
+read from the pasteboard; otherwise returns nil.
+*/
+
+ return [super validRequestorForSendType: sendType
+		returnType: returnType];
+}
+
+- (int) spellCheckerDocumentTag
+{
+  return [super spellCheckerDocumentTag];
+}
+
+- (void) insertText: (NSString*)aString
+{
+  [super insertText: aString];
+}
+
+- (void) sizeToFit
+{
+  [super sizeToFit];
 }
 
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
@@ -814,14 +838,28 @@ the affected range or replacement string before beginning changes, pass
 
 - (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
 {
-// FIXME.
+  // FIXME.
   return proposedCharRange;
+}
+
+- (NSString *)smartInsertAfterStringForString: (NSString *)aString 
+			       replacingRange: (NSRange)charRange
+{
+  // FIXME.
+  return nil;
+}
+
+- (NSString *)smartInsertBeforeStringForString: (NSString *)aString 
+				replacingRange: (NSRange)charRange
+{
+  // FIXME.
+  return nil;
 }
 
 - (void) smartInsertForString: (NSString*)aString
 	       replacingRange: (NSRange)charRange
-		 beforeString: (NSString*)beforeString 
-		  afterString: (NSString*)afterString
+		 beforeString: (NSString**)beforeString 
+		  afterString: (NSString**)afterString
 {
 
 /* Determines whether whitespace needs to be added around aString to
@@ -840,7 +878,13 @@ NSTextView uses this method as necessary. You can also use it in
 implementing your own methods that insert text. To do so, invoke this
 method with the proper arguments, then insert beforeString, aString, and
 afterString in order over charRange. */
+  if (beforeString)
+    *beforeString = [self smartInsertBeforeStringForString: aString 
+			  replacingRange: charRange];
 
+  if (afterString)
+    *afterString = [self smartInsertAfterStringForString: aString 
+			 replacingRange: charRange];
 }
 
 - (BOOL) resignFirstResponder
@@ -874,27 +918,6 @@ afterString in order over charRange. */
     }
 */
   return YES;
-}
-
-- (id) validRequestorForSendType: (NSString*)sendType
-		      returnType: (NSString*)returnType
-{
-/*
-Returns self if sendType specifies a type of data the text view can put on
-the pasteboard and returnType contains a type of data the text view can
-read from the pasteboard; otherwise returns nil.
-*/
-
- return nil;
-}
-
-- (int) spellCheckerDocumentTag
-{
-/*
-  if (!_spellCheckerDocumentTag)
-    _spellCheckerDocumentTag = [[NSSpellingServer sharedServer] uniqueSpellDocumentTag];
-*/
-  return _spellCheckerDocumentTag;
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
@@ -1018,16 +1041,6 @@ container, returning the modified location. */
  
   SET_DELEGATE_NOTIFICATION(DidChangeSelection);
   SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
-}
-
-- (void) insertText: (NSString*)aString
-{
-  [super insertText: aString];
-}
-
-- (void) sizeToFit
-{
-  [super sizeToFit];
 }
 
 - (void) drawRect: (NSRect)aRect
