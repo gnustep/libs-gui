@@ -1,3 +1,8 @@
+2004-01-08 23:26  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSBitmapImageRep+GIF.m: Re-#define Object across the
+	include of gif_lib.h . (Reported by Stefan Kleine Stegemann.)
+
 2004-01-08 19:41  Alexander Malmberg <alexander@malmberg.org>
 
 	* configure.ac: Add a check for libungif.

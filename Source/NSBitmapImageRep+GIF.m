@@ -30,7 +30,14 @@
 
 #if HAVE_LIBUNGIF
 
+/*
+gif_lib.h (4.1.0b1, possibly other versions) uses Object as the name of an
+argument to a function. This causes a conflict with Object declared by the
+objective-c headers.
+*/
+#define Object GS_GifLib_Object
 #include <gif_lib.h>
+#undef Object
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSData.h>
