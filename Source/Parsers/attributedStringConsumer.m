@@ -53,215 +53,384 @@ readNSString(StringContext *ctxt)
   we must implement from the rtfConsumerSkeleton.h file (Supporting files)
   this includes the yacc error handling and output
 */
+#define	GSfontDictName		@"fonts"
+#define	GScurrentTextPosition	@"textPosition"
+#define	GSresultName		@"result"
+#define	GSchanged		@"changed"
+
+#define	GSparagraph		@"paragraph"
+#define	GSfontName		@"fontName"
+#define	GSfontSize		@"fontSize"
+#define	GSbold			@"bold"
+#define	GSitalic		@"italic"
+#define	GSunderline		@"underline"
+#define	GSscript		@"script"
+
+#define	GSdocumentAttributes	@"documentAttributes"
+
 #define	CTXT	((NSMutableDictionary *)ctxt)
-#define	FONTS	[CTXT objectForKey:GSRTFfontDictName]
-#define	RESULT	[CTXT objectForKey:GSRTFresultName]
+#define	FONTS	[CTXT objectForKey: GSfontDictName]
+#define	RESULT	[CTXT objectForKey: GSresultName]
+#define	CHANGED	[[CTXT objectForKey: GSchanged] boolValue]
+#define	SETCHANGED(flag) [CTXT setObject: [NSNumber numberWithBool: flag] forKey: GSchanged]
+#define	PARAGRAPH [CTXT objectForKey: GSparagraph]
 
-#define	GSRTFfontDictName			@"fonts"
-#define	GSRTFcurrentTextPosition	@"textPosition"
-#define	GSRTFresultName				@"result"
-#define	GSRTFboldRange				@"boldOn"
-#define	GSRTFitalicRange			@"italicOn"
-#define	GSRTFunderlineRange			@"underlineOn"
-#define	GSRTFcurrentFont			@"currentFont"
-#define	GSRTFdocumentAttributes		@"documentAttributes"
+#define	halfpoints2points(a)	((a)/2.0)
+// FIXME: How to convert twips to points???
+#define	twips2points(a)	((a)/500.0)
 
-static NSRange MakeRangeFromAbs(int a1,int a2)
+
+static int textPosition(void *ctxt)
 {
-  if(a1< a2)	return NSMakeRange(a1,a2-a1);	
-  else		return NSMakeRange(a2,a1-a2);
+  return [[CTXT objectForKey: GScurrentTextPosition] intValue];
 }
 
-/*	handle errors (this is the yacc error mech)	*/
-void	GSRTFerror(const char *msg)
+static NSFont *currentFont(void *ctxt)
+{
+  NSFont *font;
+  BOOL boldOn;
+  BOOL italicOn;
+  NSString *name;
+  float size;
+  NSFontTraitMask traits = 0;
+  int weight;
+
+  name = [CTXT objectForKey: GSfontName];
+  size = [[CTXT objectForKey: GSfontSize] floatValue];
+  boldOn = [[CTXT objectForKey: GSbold] boolValue];
+  italicOn = [[CTXT objectForKey: GSitalic] boolValue];
+
+  if (boldOn)
+    {
+      weight = 9;
+      traits |= NSBoldFontMask;
+    }
+  else
+    {
+      weight = 6;
+      traits |= NSUnboldFontMask;
+    }
+
+  if (italicOn)
+    {
+      traits |= NSItalicFontMask;
+    }
+  else
+    {
+      traits |= NSUnitalicFontMask;
+    }
+
+  font = [[NSFontManager sharedFontManager] fontWithFamily: name
+					    traits: traits
+					    weight: weight
+					    size: size];
+  return font;
+}
+
+/* handle errors (this is the yacc error mech)	*/
+void GSRTFerror(const char *msg)
 {
   [NSException raise:NSInvalidArgumentException 
 	       format:@"Syntax error in RTF:%s", msg];
 }
 
-void	GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
+void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
 {
-  fprintf(stderr, "encountered rtf cmd:%s", cmd.name);
-  if (cmd.isEmpty) fprintf(stderr, " argument is empty\n");
-  else		   fprintf(stderr, " argument is %d\n", cmd.parameter);
+  NSLog(@"encountered rtf cmd:%s", cmd.name);
+  if (cmd.isEmpty) 
+      NSLog(@" argument is empty\n");
+  else
+      NSLog(@" argument is %d\n", cmd.parameter);
 }
 
 //Start: we're doing some initialization
-void	GSRTFstart(void *ctxt)
+void GSRTFstart(void *ctxt)
 {
-  [CTXT setObject:[NSNumber numberWithInt:0] forKey: GSRTFcurrentTextPosition];
-  [CTXT setObject:[NSFont userFontOfSize:12] forKey: GSRTFcurrentFont];
-  [CTXT setObject:[NSMutableDictionary dictionary] forKey: GSRTFfontDictName];
+  NSFont *font = [NSFont userFontOfSize:12];
+
+  [CTXT setObject: [NSNumber numberWithInt:0] forKey: GScurrentTextPosition];
+  [CTXT setObject: [NSMutableDictionary dictionary] forKey: GSfontDictName];
+  SETCHANGED(YES);
+
+  [CTXT setObject: [NSMutableParagraphStyle defaultParagraphStyle] 
+	forKey: GSparagraph];
+
+  [CTXT setObject: [font familyName] forKey: GSfontName];
+  [CTXT setObject: [NSNumber numberWithFloat: 12.0] forKey: GSfontSize];
+  [CTXT setObject: [NSNumber numberWithBool: NO] forKey: GSbold];
+  [CTXT setObject: [NSNumber numberWithBool: NO] forKey: GSitalic];
+  [CTXT setObject: [NSNumber numberWithBool: NO] forKey: GSunderline];
+  [CTXT setObject: [NSNumber numberWithInt: 0] forKey: GSscript];
+  
   [RESULT beginEditing];
 }
 
 // Finished to parse one piece of RTF.
-void	GSRTFstop(void *ctxt)
+void GSRTFstop(void *ctxt)
 {
   //<!> close all open bolds et al.
-  [RESULT beginEditing];
+  [RESULT endEditing];
 }
 
-void	GSRTFopenBlock(void *ctxt)
+void GSRTFopenBlock(void *ctxt)
 {
+    // FIXME: Should push the current state on a stack
 }
 
-void	GSRTFcloseBlock(void *ctxt)
+void GSRTFcloseBlock(void *ctxt)
 {
+    // FIXME: Should pop the current state from a stack
 }
 
-void	GSRTFmangleText(void *ctxt, const char *text)
+void GSRTFmangleText(void *ctxt, const char *text)
 {
-  int  oldPosition=[[CTXT objectForKey: GSRTFcurrentTextPosition] intValue],
-    textlen=strlen(text), 
-    newPosition=oldPosition + textlen;
-  NSRange		insertionRange=NSMakeRange(oldPosition,0);
-  NSDictionary *attributes=[NSDictionary dictionaryWithObjectsAndKeys:
-					 [CTXT objectForKey:GSRTFcurrentFont],
-					 NSFontAttributeName,nil];
-  
-  [CTXT setObject:[NSNumber numberWithInt:newPosition] 
-	forKey: GSRTFcurrentTextPosition];
-  
-  [RESULT replaceCharactersInRange:insertionRange 
-	  withString:[NSString stringWithCString:text]];
-  [RESULT setAttributes:attributes range:NSMakeRange(oldPosition,textlen)];
+  int  oldPosition = textPosition(ctxt);
+  int  textlen = strlen(text); 
+  int  newPosition = oldPosition + textlen;
+  NSRange insertionRange = NSMakeRange(oldPosition,0);
+  NSDictionary *attributes;
+  NSFont *font;
+
+  if (textlen)
+    {
+      [CTXT setObject:[NSNumber numberWithInt: newPosition] 
+	    forKey: GScurrentTextPosition];
+      
+      [RESULT replaceCharactersInRange: insertionRange 
+	      withString: [NSString stringWithCString:text]];
+
+      if (CHANGED)
+        {
+	  font = currentFont(ctxt);
+	  attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+					 font, NSFontAttributeName, 
+				     [CTXT objectForKey: GSscript], NSSuperscriptAttributeName,
+				     PARAGRAPH, NSParagraphStyleAttributeName,
+				     nil];
+	  [RESULT setAttributes: attributes range: 
+		      NSMakeRange(oldPosition, textlen)];
+	  SETCHANGED(NO);
+	}
+    }
 }
 
-void	GSRTFregisterFont(void *ctxt, const char *fontName, 
-			  RTFfontFamily family, int fontNumber)
+void GSRTFregisterFont(void *ctxt, const char *fontName, 
+		       RTFfontFamily family, int fontNumber)
 {
-  NSMutableDictionary	*fonts = FONTS;
   NSString		*fontNameString;
-  NSNumber		*fontId = [NSNumber numberWithInt:fontNumber];
+  NSNumber		*fontId = [NSNumber numberWithInt: fontNumber];
 
-  if (!fontName || !*fontName || !fontId)	// <?> fontId ist nie null
+  if (!fontName || !*fontName)
     {	
       [NSException raise:NSInvalidArgumentException 
 		   format:@"Error in RTF (font omitted?), position:%d",
-		   [[CTXT objectForKey:GSRTFcurrentTextPosition] intValue]];
+		   textPosition(ctxt)];
     }
-  //	exclude trailing ';' from fontName
-  fontNameString = [NSString stringWithCString:fontName length:strlen(fontName)-1];
-  [fonts setObject:fontNameString forKey:fontId];
+  // exclude trailing ';' from fontName
+  fontNameString = [NSString stringWithCString: fontName 
+			     length: strlen(fontName)-1];
+  [FONTS setObject: fontNameString forKey: fontId];
 }
 
-void	GSRTFchangeFontTo(void *ctxt, int fontNumber)
+void GSRTFfontNumber(void *ctxt, int fontNumber)
 {
-  NSDictionary	*fonts = FONTS;
-  NSNumber	*fontId = [NSNumber numberWithInt:fontNumber];
-  NSFont	*font=[NSFont fontWithName:[fonts objectForKey:fontId] 
-			      size:[[CTXT objectForKey:GSRTFcurrentFont] pointSize]];
+  NSNumber *fontId = [NSNumber numberWithInt: fontNumber];
+  NSString *fontName = [FONTS objectForKey: fontId];
 
-  if (!font)	/* we're about to set an unknown font */
+  if (fontName == nil)
     {
-      [NSException raise:NSInvalidArgumentException 
-		   format:@"Error in RTF (referring to undefined font \\f%d), position:%d",
+      /* we're about to set an unknown font */
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Error in RTF (referring to undefined font \\f%d), position:%d",
 		   fontNumber,
-		   [[CTXT objectForKey:GSRTFcurrentTextPosition] intValue]];
-    } else {
-      font=[[NSFontManager sharedFontManager] 
-	     convertFont:[CTXT objectForKey:GSRTFcurrentFont] 
-	     toFamily:[font familyName]];
-      [CTXT setObject:font forKey: GSRTFcurrentFont];
+		   textPosition(ctxt)];
+    } 
+  else 
+    {
+      if (![fontName isEqual: [CTXT objectForKey: GSfontName]])
+        {
+	    [CTXT setObject: fontName forKey: GSfontName];
+	    SETCHANGED(YES);
+	}
     }
 }
 
 //	<N> fontSize is in halfpoints according to spec
-#define	fs2points(a)	((a)/2.0)
-void	GSRTFchangeFontSizeTo(void *ctxt, int fontSize)
+void GSRTFfontSize(void *ctxt, int fontSize)
 {
-  [CTXT setObject:[[NSFontManager sharedFontManager] 
-		    convertFont:[CTXT objectForKey:GSRTFcurrentFont] 
-		    toSize:fs2points(fontSize)]
-	forKey:GSRTFcurrentFont];
-}
-
-
-static NSRange rangeForContextAndAttribute(void *ctxt, NSString *attrib)
-{
-  NSString *attribStartString=[CTXT objectForKey:GSRTFboldRange];
+  float size = halfpoints2points(fontSize);
   
-  if(!attribStartString)
+  if (size != [[CTXT objectForKey: GSfontSize] floatValue])
     {
-      NSLog(@"RTF anomality (attribute:%@ off statement unpaired with on statement), position:%d",
-	    attrib, [[CTXT objectForKey:GSRTFcurrentTextPosition] intValue]);
-      return NSMakeRange(0, 0);
-    }
-  return MakeRangeFromAbs([attribStartString intValue],
-			  [[CTXT objectForKey:GSRTFcurrentTextPosition] intValue]);
-}
-
-void	GSRTFhandleItalicAttribute(void *ctxt, BOOL state)
-{
-  if(!state)	// this indicates a bold off
-    {	
-      [RESULT addAttribute:NSFontAttributeName
-	      value:[[NSFontManager sharedFontManager] 
-		      convertFont:[CTXT objectForKey:GSRTFcurrentFont] 
-		      toHaveTrait:NSItalicFontMask]
-	      range:rangeForContextAndAttribute(ctxt,GSRTFboldRange)];
-    } else {	
-      [CTXT setObject:[CTXT objectForKey:GSRTFcurrentTextPosition] forKey:GSRTFitalicRange];
+      [CTXT setObject: [NSNumber numberWithFloat: size]
+	    forKey: GSfontSize];
+      SETCHANGED(YES);
     }
 }
 
-void	GSRTFhandleBoldAttribute(void *ctxt, BOOL state)
-{
-  if(!state)	// this indicates a bold off
-    {	
-      [RESULT addAttribute:NSFontAttributeName
-	      value:[[NSFontManager sharedFontManager] 
-		      convertFont:[CTXT objectForKey:GSRTFcurrentFont] 
-		      toHaveTrait:NSBoldFontMask]
-	      range:rangeForContextAndAttribute(ctxt,GSRTFboldRange)];
-    } else {	
-      [CTXT setObject:[CTXT objectForKey:GSRTFcurrentTextPosition] 
-	    forKey:GSRTFboldRange];
-      }
-}
-
-void	GSRTFhandleDocumentAttribute(void *ctxt, int attrib)
+void GSRTFpaperWidth(void *ctxt, int width)
 {
 }
 
-NSMutableAttributedString	*attributedStringFromRTF(NSString *rtfString)
+void GSRTFpaperHeight(void *ctxt, int height)
+{
+}
+
+void GSRTFmarginLeft(void *ctxt, int margin)
+{
+}
+
+void GSRTFmarginRight(void *ctxt, int margin)
+{
+}
+
+void GSRTFfirstLineIndent(void *ctxt, int indent)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float findent = twips2points(indent);
+
+  if ([para firstLineHeadIndent] != findent)
+    {
+      [para setFirstLineHeadIndent: findent];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFleftIndent(void *ctxt, int indent)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float findent = twips2points(indent);
+
+  if ([para headIndent] != findent)
+    {
+      [para setHeadIndent: findent];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFalignCenter(void *ctxt)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+
+  if ([para alignment] != NSCenterTextAlignment)
+    {
+      [para setAlignment: NSCenterTextAlignment];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFalignLeft(void *ctxt)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+
+  if ([para alignment] != NSLeftTextAlignment)
+    {
+      [para setAlignment: NSLeftTextAlignment];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFalignRight(void *ctxt)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+
+  if ([para alignment] != NSRightTextAlignment)
+    {
+      [para setAlignment: NSRightTextAlignment];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFstyle(void *ctxt, int style)
+{
+}
+
+void GSRTFcolorbg(void *ctxt, int color)
+{
+}
+
+void GSRTFcolorfg(void *ctxt, int color)
+{
+}
+
+void GSRTFsubscript(void *ctxt, int script)
+{
+  script = (int) -halfpoints2points(script);
+
+  if (script != [[CTXT objectForKey: GSscript] intValue])
+    {
+      [CTXT setObject: [NSNumber numberWithInt: script]
+	    forKey: GSscript];
+      SETCHANGED(YES);
+    }    
+}
+
+void GSRTFsuperscript(void *ctxt, int script)
+{
+  script = (int) halfpoints2points(script);
+
+  if (script != [[CTXT objectForKey: GSscript] intValue])
+    {
+      [CTXT setObject: [NSNumber numberWithInt: script]
+	    forKey: GSscript];
+      SETCHANGED(YES);
+    }    
+}
+
+void GSRTFitalic(void *ctxt, BOOL state)
+{
+  if (state != [[CTXT objectForKey: GSitalic] boolValue])
+    {
+      [CTXT setObject: [NSNumber numberWithBool: state] forKey: GSitalic];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFbold(void *ctxt, BOOL state)
+{
+  if (state != [[CTXT objectForKey: GSbold] boolValue])
+    {
+      [CTXT setObject: [NSNumber numberWithBool: state] forKey: GSbold];
+      SETCHANGED(YES);
+    }
+}
+
+void GSRTFunderline(void *ctxt, BOOL state)
+{
+  if (state != [[CTXT objectForKey: GSunderline] boolValue])
+    {
+      [CTXT setObject: [NSNumber numberWithBool: state] forKey: GSunderline];
+      SETCHANGED(YES);
+    }
+}
+
+
+
+BOOL parseRTFintoAttributedString(NSString *rtfString, 
+				  NSMutableAttributedString *result,
+				  NSDictionary **dict)
 {
   RTFscannerCtxt	scanner;
   StringContext		stringCtxt;
   NSMutableDictionary	*myDict = [NSMutableDictionary dictionary];
-  NSMutableAttributedString  *result=[[NSMutableAttributedString alloc] init];
   
-  [myDict setObject:result forKey: GSRTFresultName];
+  [myDict setObject: result forKey: GSresultName];
   initStringContext(&stringCtxt, rtfString);
   lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readNSString);
   GSRTFparse(myDict, &scanner);
-  
-  return [result autorelease];
+
+  // document attributes
+  if (dict)
+    (*dict)=[myDict objectForKey: GSdocumentAttributes];
+
+  return YES;
 }
 
-@implementation NSAttributedString (RTFParser)
-
-- (id) initWithRTF: (NSData*)data
-  documentAttributes: (NSDictionary**)dict
+NSMutableAttributedString *attributedStringFromRTF(NSString *rtfString)
 {
-  RTFscannerCtxt       scanner;
-  StringContext	       stringCtxt;
-  NSMutableDictionary  *myDict = [NSMutableDictionary dictionary];
-  NSString	       *parseString = [NSString stringWithCString:[data bytes] 
-						length:[data length]];
-  NSMutableAttributedString  *result =
-    [[[NSMutableAttributedString alloc] init] autorelease];
+  NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
   
-  [myDict setObject:result forKey: GSRTFresultName];
-  initStringContext(&stringCtxt, parseString);
-  lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readNSString);
-  GSRTFparse(myDict, &scanner);
-  
-  if (dict && [myDict objectForKey:GSRTFdocumentAttributes])
-    (*dict)=[myDict objectForKey:GSRTFdocumentAttributes];	// document 
-  [self autorelease];
-  return [[[self class] alloc] initWithAttributedString:result];
-}
+  parseRTFintoAttributedString(rtfString, result, NULL);
 
-@end
+  return AUTORELEASE(result);
+}

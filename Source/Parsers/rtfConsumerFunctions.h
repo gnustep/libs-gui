@@ -60,17 +60,49 @@ void	GSRTFmangleText(void *ctxt, const char *text);
 	font functions
 */
 
-/* get noticed that a particular font is introduced the font number is
-   introduced by an prededing GSRTFchangeFontTo call this state
-   can be recognized by the fact that the fontNumber in question
-   is unseen by then */
+/* get noticed that a particular font is introduced */
 void	GSRTFregisterFont(void *ctxt, const char *fontName, 
 			  RTFfontFamily family, int fontNumber);
 
-/* this function is twofold: change font in character stream [you must
-   maintain stream info in ctxt]; introduce fonts in the first place */
-void	GSRTFchangeFontTo(void *ctxt, int fontNumber);
-/*	subject says it all */
-void	GSRTFchangeFontSizeTo(void *ctxt, int fontSize);
+/* change font number */
+void GSRTFfontNumber(void *ctxt, int fontNumber);
+/* change font size in half points*/
+void GSRTFfontSize(void *ctxt, int fontSize);
+
+/* set paper width in twips */
+void GSRTFpaperWidth(void *ctxt, int width);
+/* set paper height in twips */
+void GSRTFpaperHeight(void *ctxt, int height);
+/* set left margin in twips */
+void GSRTFmarginLeft(void *ctxt, int margin);
+/* set right margin in twips */
+void GSRTFmarginRight(void *ctxt, int margin);
+/* set first line indent */
+void GSRTFfirstLineIndent(void *ctxt, int indent);
+/* set left indent */
+void GSRTFleftIndent(void *ctxt, int indent);
+/* set center alignment */
+void GSRTFalignCenter(void *ctxt);
+/* set left alignment */
+void GSRTFalignLeft(void *ctxt);
+/* set right alignment */
+void GSRTFalignRight(void *ctxt);
+/* set paragraph style */
+void GSRTFstyle(void *ctxt, int style);
+/* set background colour */
+void GSRTFcolorbg(void *ctxt, int color);
+/* set foreground colour */
+void GSRTFcolorfg(void *ctxt, int color);
+/* set subscript in half points */
+void GSRTFsubscript(void *ctxt, int script);
+/* set superscript in half points */
+void GSRTFsuperscript(void *ctxt, int script);
+/* Switch bold mode on or off */
+void GSRTFbold(void *ctxt, BOOL on);
+/* Switch italic mode on or off */
+void GSRTFitalic(void *ctxt, BOOL on);
+/* Switch underline mode on or off */
+void GSRTFunderline(void *ctxt, BOOL on);
 
 #endif
+

@@ -74,16 +74,20 @@ void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext,
   lctxt->lgetchar = getcharFunction;
   lctxt->customContext = customContext;
 }
+
 int	lexGetchar(RTFscannerCtxt *lctxt)
 {
   int	c;
   if (lctxt->pushbackCount)
     {
       lctxt->pushbackCount--;
-      return lctxt->pushbackBuffer[lctxt->pushbackCount];
+      c = lctxt->pushbackBuffer[lctxt->pushbackCount];
     }
-  lctxt->streamPosition++;
-  c = lctxt->lgetchar(lctxt->customContext);
+  else
+    {
+	lctxt->streamPosition++;
+	c = lctxt->lgetchar(lctxt->customContext);
+    }
   if (c == '\n') 
     lctxt->streamLineNumber++;
   return c;
@@ -137,9 +141,16 @@ int	findStringFromKeywordArray(const char *string, const LexKeyword *array,
 
 //	<!> must be sorted
 LexKeyword	RTFcommands[]={
+	"ansi",		token(RTFansi),
 	"b",		token(RTFbold),
+	"blue",		token(RTFblue),
+	"cb",		token(RTFcolorbg),
+	"cf",		token(RTFcolorfg),
+	"colortbl",	token(RTFcolortable),
+	"dn",		token(RTFsubscript),
 	"f", 		token(RTFfont),
 	"fdecor",	token(RTFfamilyDecor),
+	"fi", 		token(RTFfirstLineIndent),
 	"fmodern",	token(RTFfamilyModern),
 	"fnil",		token(RTFfamilyNil),
 	"fonttbl",	token(RTFfontListStart),
@@ -148,14 +159,28 @@ LexKeyword	RTFcommands[]={
 	"fscript",	token(RTFfamilyScript),
 	"fswiss",	token(RTFfamilySwiss),
 	"ftech",	token(RTFfamilyTech),
+	"green",	token(RTFgreen),
 	"i",		token(RTFitalic),
+	"li", 		token(RTFleftIndent),
+	"mac",	        token(RTFmac),
 	"margl",	token(RTFmarginLeft),
 	"margr",	token(RTFmarginRight),
 	"paperh",	token(RTFpaperHeight),
 	"paperw",	token(RTFpaperWidth),
+	"par",	        token(RTFparagraph),
+	"pard",	        token(RTFdefaultParagraph),
+	"pc",	        token(RTFpc),
+	"pca",	        token(RTFpca),
+	"qc",	        token(RTFalignCenter),
+	"ql",	        token(RTFalignLeft),
+	"qr",	        token(RTFalignRight),
+	"red",		token(RTFred),
 	"rtf",		token(RTFstart),
+	"s",	        token(RTFstyle),
+	"tab",	        token(RTFtabulator),
 	"ul",		token(RTFunderline),
-	"ulnone",	token(RTFunderlineStop)
+	"ulnone",	token(RTFunderlineStop),
+	"up",	        token(RTFsuperscript)
 };
 
 BOOL	probeCommand(RTFscannerCtxt *lctxt)
@@ -212,7 +237,8 @@ GSLexError	readCommand(RTFscannerCtxt *lctxt, YYSTYPE *lvalp, int *token)	// the
 	lexUngetchar(lctxt, c); 	// <N> ungetc non-digit
       // the consumption of the space seems necessary on NeXT but
       // is not according to spec
-      lvalp->cmd.isEmpty = NO, lvalp->cmd.parameter = atoi(argumentBf);
+      lvalp->cmd.isEmpty = NO;
+      lvalp->cmd.parameter = atoi(argumentBf);
     } 
   else 
     {
@@ -234,20 +260,11 @@ GSLexError	readText(RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
     {
       c = lexGetchar(lctxt);
       
-      if (c == EOF || c == '{' || c == '}')
+      if (c == EOF || c == '{' || c == '}' || c == '\\')
 	{
 	  lexUngetchar(lctxt, c);
 	  break;
 	}
-      if (c == '\\')	// see <p>
-	{
-	  if (probeCommand(lctxt) == YES)
-	    {
-	      lexUngetchar(lctxt, c);
-	      break;
-	    }
-	  appendChar(&text, lexGetchar(lctxt));
-	} 
       else 
 	{
 	  if (c != '\n' && c != '\r')	// <N> newline and cr are ignored if not quoted
@@ -259,10 +276,41 @@ GSLexError	readText(RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
   return NoError;
 }
 
+// read in a character as two hex digit
+static int gethex(RTFscannerCtxt *lctxt)
+{
+    int c = 0;
+    int i;
+
+    for (i = 0; i < 2; i++)
+      {
+	  int c1 = lexGetchar(lctxt);
+
+	  if (!isxdigit(c1))
+	    {
+	      lexUngetchar(lctxt, c1);
+	      break;
+	    }
+	  else 
+	    {
+		c = c * 16;
+		if (isdigit(c1))
+		    c += c1 - '0';
+		else if (isupper(c1))
+		    c += c1 - 'A';
+		else
+		    c += c1 - 'a';
+	    }
+      }
+
+    return c;
+}
+
 int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide value and position in the params */ 
 {
   int	c;
   int	token = 0;
+  char *cv;
   
   do	
     c = lexGetchar(lctxt);
@@ -280,7 +328,57 @@ int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide v
       if (probeCommand(lctxt) == YES)
 	{
 	  readCommand(lctxt, lvalp, &token);
-	  break;
+	  if (token == RTFparagraph || token == RTFdefaultParagraph)
+	    {	      
+		// release is up to the consumer
+		cv = calloc(1, 2);
+		cv[0] = '\n';
+		cv[1] = '\0';
+		lvalp->text = cv;
+		token = RTFtext;
+		return token;
+	    }
+	  else if (token == RTFtabulator)
+	      c = '\t';
+	  else 
+	      break;
+	}
+      else
+        {
+	  c = lexGetchar(lctxt);
+	  switch (c)
+	  {
+	      case EOF: token = 0;
+		  return token;
+	      case '\'':
+		  // Convert the next two hex digits into a char
+		  c = gethex(lctxt);
+		  break;
+	      case '*': return RTFignore;
+	      case '|': 
+	      case '-': 
+	      case ':':
+		  // Ignore these characters
+		  c = lexGetchar(lctxt);
+		  break;
+	      case '_': c = '-';
+		  break;
+	      case '~': c = ' ';
+		  break;
+	      case '\n':
+		  // release is up to the consumer
+		  cv = calloc(1, 2);
+		  cv[0] = '\n';
+		  cv[1] = '\0';
+		  lvalp->text = cv;
+		  token = RTFtext;
+		  return token;
+	      case '{':
+	      case '}':
+	      case '\\':
+	      default:
+		  // fall through
+	  }
 	}
       // else fall through to default: read text <A>
       // no break <A>

@@ -32,4 +32,8 @@
 /*	external symbols from the grammer	*/
 int	GSRTFparse(void *ctxt, RTFscannerCtxt *lctxt);
 
+BOOL parseRTFintoAttributedString(NSString *rtfString, 
+				  NSMutableAttributedString *result,
+				  NSDictionary **dict);
+
 #endif

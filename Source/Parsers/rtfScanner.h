@@ -37,17 +37,12 @@ typedef enum { NoError, LEXoutOfMemory, LEXsyntaxError } GSLexError;
 
 typedef struct _RTFscannerCtxt {
 	int	(*lgetchar)(void *);
-	char	pushbackBuffer[2];	// gaurantee 2 chars of pushback
+	char	pushbackBuffer[4];	// gaurantee 4 chars of pushback
 	int	pushbackCount;
 	int	streamPosition;
 	int	streamLineNumber;
 	void	*customContext;
 } RTFscannerCtxt;
-
-typedef struct {
-	BOOL	isEmpty;
-	int	number;
-} RTFparameter;
 
 typedef struct {
 	BOOL	isEmpty;

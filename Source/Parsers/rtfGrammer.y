@@ -76,16 +76,38 @@ typedef void	* GSRTFctxt;
 /*	<!><p> RTFtext values have to be freed	*/
 %token <text> RTFtext
 %token RTFstart
+%token RTFansi
+%token RTFmac
+%token RTFpc
+%token RTFpca
+%token RTFignore
+%token <cmd> RTFred
+%token <cmd> RTFgreen
+%token <cmd> RTFblue
+%token <cmd> RTFcolorbg
+%token <cmd> RTFcolorfg
+%token <cmd> RTFcolortable
 %token <cmd> RTFfont
 %token <cmd> RTFfontSize
 %token <cmd> RTFpaperWidth
 %token <cmd> RTFpaperHeight
 %token <cmd> RTFmarginLeft
 %token <cmd> RTFmarginRight
+%token <cmd> RTFfirstLineIndent
+%token <cmd> RTFleftIndent
+%token <cmd> RTFalignCenter
+%token <cmd> RTFalignLeft
+%token <cmd> RTFalignRight
+%token <cmd> RTFstyle
 %token <cmd> RTFbold
 %token <cmd> RTFitalic
 %token <cmd> RTFunderline
 %token <cmd> RTFunderlineStop
+%token <cmd> RTFsubscript
+%token <cmd> RTFsuperscript
+%token <cmd> RTFtabulator
+%token <cmd> RTFparagraph
+%token <cmd> RTFdefaultParagraph
 %token <cmd> RTFOtherStatement
 %token RTFfontListStart
 
@@ -100,22 +122,31 @@ typedef void	* GSRTFctxt;
 %token	RTFfamilyDecor
 %token	RTFfamilyTech
 
-%type	<number> rtfFontFamily rtfStatement rtfGeneralStatement rtfBlockStatement rtfFontStatement
+%type	<number> rtfFontFamily rtfCharset rtfFontStatement
 
 /*	let's go	*/
 
 %%
 
-rtfText:	{ GSRTFstart(ctxt); } rtfBlock { GSRTFstop(ctxt); }
+rtfFile:	'{' { GSRTFstart(ctxt); } RTFstart rtfCharset rtfIngredients { GSRTFstop(ctxt); } '}'
 		;
 
-rtfBlock:	'{' { GSRTFopenBlock(ctxt); } rtfIngredients '}' { GSRTFcloseBlock(ctxt); }
+rtfCharset: RTFansi { $$ = 1; }
+		|	RTFmac { $$ = 2; }
+		|	RTFpc  { $$ = 3; }
+		|	RTFpca { $$ = 4; }
 		;
 
 rtfIngredients:	/*	empty	*/
+		|	rtfIngredients rtfFontList
+		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
 		|	rtfIngredients RTFtext		{ GSRTFmangleText(ctxt, $2); free((void *)$2); }
 		|	rtfIngredients rtfBlock
+		;
+
+rtfBlock:	'{' { GSRTFopenBlock(ctxt); } rtfIngredients '}' { GSRTFcloseBlock(ctxt); }
+		|	'{' { GSRTFopenBlock(ctxt); } RTFignore rtfIngredients '}' { GSRTFcloseBlock(ctxt); }
 		;
 
 
@@ -123,33 +154,124 @@ rtfIngredients:	/*	empty	*/
 	RTF statements start with a '\', have a alpha name and a number argument
 */
 
-rtfGeneralStatement:	rtfBlockStatement
-		|	rtfStatement
-		;
+rtfStatement: RTFfont				{ int font;
+		    
+						  if ($1.isEmpty)
+						      font = 0;
+						  else
+						      font = $1.parameter;
+						  GSRTFfontNumber(ctxt, font); }
+		|	RTFfontSize		{ int size;
 
-rtfBlockStatement:	'{' rtfStatement '}'	{ $$=0; }
-		;
+						  if ($1.isEmpty)
+						      size = 24;
+						  else
+						      size = $1.parameter;
+						  GSRTFfontSize(ctxt, size); }
+		|	RTFpaperWidth		{ int width; 
+		
+		                                  if ($1.isEmpty)
+						      width = 12240;
+						  else
+						      width = $1.parameter;
+						  GSRTFpaperWidth(ctxt, width);}
+		|	RTFpaperHeight		{ int height; 
+		
+		                                  if ($1.isEmpty)
+						      height = 15840;
+						  else
+						      height = $1.parameter;
+						  GSRTFpaperHeight(ctxt, height);}
+		|	RTFmarginLeft		{ int margin; 
+		
+		                                  if ($1.isEmpty)
+						      margin = 1800;
+						  else
+						      margin = $1.parameter;
+						  GSRTFmarginLeft(ctxt, margin);}
+		|	RTFmarginRight		{ int margin; 
+		
+		                                  if ($1.isEmpty)
+						      margin = 1800;
+						  else
+						      margin = $1.parameter;
+						  GSRTFmarginRight(ctxt, margin); }
+		|	RTFfirstLineIndent	{ int indent; 
+		
+		                                  if ($1.isEmpty)
+						      indent = 0;
+						  else
+						      indent = $1.parameter;
+						  GSRTFfirstLineIndent(ctxt, indent); }
+		|	RTFleftIndent		{ int indent; 
+		
+		                                  if ($1.isEmpty)
+						      indent = 0;
+						  else
+						      indent = $1.parameter;
+						  GSRTFleftIndent(ctxt, indent);}
+		|	RTFalignCenter		{ GSRTFalignCenter(ctxt); }
+		|	RTFalignLeft		{ GSRTFalignLeft(ctxt); }
+		|	RTFalignRight		{ GSRTFalignRight(ctxt); }
+		|	RTFstyle		{ GSRTFstyle(ctxt, $1.parameter); }
+		|	RTFcolorbg		{ int color; 
+		
+		                                  if ($1.isEmpty)
+						      color = 0;
+						  else
+						      color = $1.parameter;
+						  GSRTFcolorbg(ctxt, color); }
+		|	RTFcolorfg		{ int color; 
+		
+		                                  if ($1.isEmpty)
+						      color = 0;
+						  else
+						      color = $1.parameter;
+						  GSRTFcolorfg(ctxt, color); }
+		|	RTFsubscript		{ int script;
+		
+		                                  if ($1.isEmpty)
+						      script = 6;
+						  else
+						      script = $1.parameter;
+						  GSRTFsubscript(ctxt, script); }
+		|	RTFsuperscript		{ int script;
+		
+		                                  if ($1.isEmpty)
+						      script = 6;
+						  else
+						      script = $1.parameter;
+						  GSRTFsuperscript(ctxt, script); }
+		|	RTFbold			{ BOOL on;
 
-rtfStatement: RTFstart			{ $$=0; }
-		|	rtfFontList			{ $$=0; }
-		|	RTFfont				{ $$=0; GSRTFchangeFontTo(ctxt, $1.parameter); }
-		|	RTFfontSize			{ $$=0; GSRTFchangeFontSizeTo(ctxt, $1.parameter); }
-		|	RTFpaperWidth		{ $$=0; }
-		|	RTFpaperHeight		{ $$=0; }
-		|	RTFmarginLeft		{ $$=0; }
-		|	RTFmarginRight		{ $$=0; }
-		|	RTFbold				{ $$=0; GSRTFhandleBoldAttribute(ctxt, $1.isEmpty || !!$1.parameter); }
-		|	RTFitalic			{ $$=0; GSRTFhandleItalicAttribute(ctxt, $1.isEmpty || !!$1.parameter); }
-		|	RTFunderline		{ $$=0; }
-		|	RTFunderlineStop	{ $$=0; }
-		|	RTFOtherStatement	{ $$=0; GSRTFgenericRTFcommand(ctxt, $1); }
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFbold(ctxt, on); }
+		|	RTFitalic		{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFitalic(ctxt, on); }
+		|	RTFunderline		{ BOOL on;
+
+		                                  if ($1.isEmpty || $1.parameter)
+						      on = YES;
+						  else
+						      on = NO;
+						  GSRTFunderline(ctxt, on); }
+		|	RTFunderlineStop	{ GSRTFunderline(ctxt, NO); }
+		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(ctxt, $1); }
 		;
 
 /*
 	Font description
 */
 
-rtfFontList: RTFfontListStart rtfFonts
+rtfFontList: '{' RTFfontListStart rtfFonts '}'
 		;
 
 rtfFonts:
@@ -158,11 +280,10 @@ rtfFonts:
 
 		;
 
-					/* the first RTFfont tags the font with a number */
-					/* RTFtext introduces the fontName */
-rtfFontStatement:	RTFfont rtfFontFamily RTFtext	{	$$=0; GSRTFregisterFont(ctxt, $3, $2, $1.parameter);
-														free((void *)$3);
-													}
+/* the first RTFfont tags the font with a number */
+/* RTFtext introduces the fontName */
+rtfFontStatement:	RTFfont rtfFontFamily RTFtext	{ GSRTFregisterFont(ctxt, $3, $2, $1.parameter);
+                                                          free((void *)$3); }
 		;
 
 rtfFontFamily:
@@ -179,6 +300,18 @@ rtfFontFamily:
 /*
 	Font description end
 */
+
+rtfColorDef: '{' RTFcolortable rtfColors '}'
+		;
+
+rtfColors: /* empty */
+ 		|	rtfColors rtfColorStatement
+		;
+
+/* We get the ';' as RTFText */
+rtfColorStatement: RTFred RTFgreen RTFblue RTFtext { free((void *)$4);}
+ 		|	RTFtext { free((void *)$1);}
+		;
 
 /*
 	some cludgy trailer
