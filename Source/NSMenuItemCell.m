@@ -430,9 +430,26 @@ static NSImage	*arrowImageH = nil;
 	[imageToDraw setBackgroundColor: _backgroundColor];
       [imageToDraw compositeToPoint: position operation: NSCompositeSourceOver];
     }
-  else
-    [self _drawText: [_menuItem keyEquivalent] inFrame: cellFrame];
+  /* FIXME/TODO here - decide a consistent policy for images.
+   *
+   * The reason of the following code is that we draw the key
+   * equivalent, but not if we are a popup button and are displaying
+   * an image (the image is displayed in the title or selected entry
+   * in the popup, it's the small square on the right). In that case,
+   * the image will be drawn in the same position where the key
+   * equivalent would be, so we do not display the key equivalent,
+   * else they would be displayed one over the other one.
+   */
+  else if (![[_menuView menu] _ownedByPopUp])
+    {    
+      [self _drawText: [_menuItem keyEquivalent] inFrame: cellFrame];
+    }
+  else if (_imageToDisplay == nil)
+    {
+      [self _drawText: [_menuItem keyEquivalent] inFrame: cellFrame];
+    }
 }
+
 
 - (void) drawSeparatorItemWithFrame:(NSRect)cellFrame
 			    inView:(NSView *)controlView
