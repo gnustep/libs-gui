@@ -2235,15 +2235,121 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // TODO
   [super encodeWithCoder: aCoder];
+
+  [aCoder encodeValueOfObjCType: @encode (int) at: &_mode];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
+  [aCoder encodeSize: _cellSize];
+  [aCoder encodeSize: _intercell];
+  [aCoder encodeObject: _backgroundColor];
+  [aCoder encodeObject: _cellBackgroundColor];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
+  [aCoder encodeObject: NSStringFromClass (_cellClass)];
+  [aCoder encodeObject: _cellPrototype];
+  [aCoder encodeValueOfObjCType: @encode (int) at: &_numRows];
+  [aCoder encodeValueOfObjCType: @encode (int) at: &_numCols];
+  
+  /* This is slower, but does not expose NSMatrix internals and will work 
+     with subclasses */
+  [aCoder encodeObject: [self cells]];
+  
+  [aCoder encodeConditionalObject: _delegate];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_action];
+  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
+  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_errorAction];
+  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
+  [aCoder encodeObject: _keyCell];
+  /* We do not encode information on selected cells, because this is saved 
+     with the cells themselves */
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // TODO
+  Class class;
+  id cell;
+  int rows, columns;
+  NSArray *array;
+  int i, count;
+
   [super initWithCoder: aDecoder];
 
+  _myZone = [self zone];
+  [aDecoder decodeValueOfObjCType: @encode (int) at: &_mode];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
+  _cellSize = [aDecoder decodeSize];
+  _intercell = [aDecoder decodeSize];
+  [aDecoder decodeValueOfObjCType: @encode (id) at: &_backgroundColor];
+  [aDecoder decodeValueOfObjCType: @encode (id) at: &_cellBackgroundColor];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
+
+  class = NSClassFromString ((NSString *)[aDecoder decodeObject]);
+  if (class != Nil)
+    {
+      [self setCellClass: class]; 
+    }
+
+  cell = [aDecoder decodeObject];
+  if (cell != nil)
+    {
+      [self setPrototype: cell];
+    }
+
+  if (_cellPrototype == nil)
+    {
+      [self setCellClass: [isa cellClass]];
+    }
+
+  [aDecoder decodeValueOfObjCType: @encode (int) at: &rows];
+  [aDecoder decodeValueOfObjCType: @encode (int) at: &columns];
+
+  /* NB: This works without changes for NSForm */
+  array = [aDecoder decodeObject];
+  [self renewRows: rows  columns: columns];
+  count = [array count];
+  if (count != rows * columns)
+    {
+      NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
+      // Quick fix to do what we can
+      if (count > rows * columns)
+	{
+	  count = rows * columns;
+	}
+    }
+
+  _selectedRow = _selectedColumn = 0;
+
+  for (i = 0; i < count; i++)
+    {
+      int row, column;
+      cell = [array objectAtIndex: i];
+
+      row = i / columns;
+      column = i % columns;
+      
+      [self putCell:cell   atRow: row   column: column];
+      if ([cell state])
+	 {
+	   [self selectCellAtRow: row   column: column];
+	 }
+     }
+
+  [aDecoder decodeValueOfObjCType: @encode (id) at: &_delegate];
+  [aDecoder decodeValueOfObjCType: @encode (id) at: &_target];
+  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_action];
+  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
+  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_errorAction];
+  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
+  [self setKeyCell: [aDecoder decodeObject]];
+  
   return self;
 }
 
