@@ -455,6 +455,8 @@ static Class textFieldCellClass;
 
   [_cell endEditing: [aNotification object]];
 
+  _text_object = nil;
+
   d = [NSDictionary dictionaryWithObject: [aNotification object] 
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidEndEditingNotification
@@ -487,7 +489,6 @@ static Class textFieldCellClass;
 	  break;
 	}
     }
-  _text_object = nil;
 }
 
 - (BOOL) textShouldBeginEditing: (NSText *)textObject
