@@ -35,6 +35,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSView.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/AppKitExceptions.h>
@@ -49,63 +50,53 @@
 @interface NSBitmapImageRep (Backend)
 + (NSArray *) _wrasterFileTypes;
 - _initFromWrasterFile: (NSString *)filename number: (int)imageNumber;
+
+// GNUstep extension
+- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
 @end
 
 @implementation NSBitmapImageRep 
 
-/* Given a TIFF image (from the libtiff library), load the image information
-   into our data structure.  Reads the specified image. */
-- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber
++ (BOOL) canInitWithData: (NSData *)data
 {
-  NSString* space;
-  NSTiffInfo* info;
+  TIFF	*image = NULL;
+  image = NSTiffOpenDataRead((char *)[data bytes], [data length]);
+  NSTiffClose(image);
 
-  /* Seek to the correct image and get the dictionary information */
-  info = NSTiffGetInfo(imageNumber, image);
-  if (!info) 
+  return (image) ? YES : NO;
+}
+
++ (NSArray *) imageUnfilteredFileTypes
+{
+  static NSArray *types = nil;
+
+  if (types == nil)
     {
-      RELEASE(self);
-      NSLog(@"Tiff read invalid TIFF info in directory %d", imageNumber);
-      return nil;
+      NSArray *wtypes = [self _wrasterFileTypes];
+
+      if (wtypes != nil)
+        {
+	  types = [wtypes mutableCopy];
+	  [(NSMutableArray *)types addObjectsFromArray: 
+				 [NSArray arrayWithObjects: @"tiff", @"tif", nil]];
+	}
+      else
+	types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
     }
 
-  /* 8-bit RGB will be converted to 24-bit by the tiff routines, so account
-     for this. */
-  space = nil;
-  switch(info->photoInterp) 
+  return types;
+}
+
++ (NSArray *) imageUnfilteredPasteboardTypes
+{
+  static NSArray *types = nil;
+
+  if (types == nil)
     {
-    case PHOTOMETRIC_MINISBLACK: space = NSDeviceWhiteColorSpace; break;
-    case PHOTOMETRIC_MINISWHITE: space = NSDeviceBlackColorSpace; break;
-    case PHOTOMETRIC_RGB: space = NSDeviceRGBColorSpace; break;
-    case PHOTOMETRIC_PALETTE: 
-      space = NSDeviceRGBColorSpace; 
-      info->samplesPerPixel = 3;
-      break;
-    default:
-      break;
+      types = [[NSArray alloc] initWithObjects: NSTIFFPboardType, nil];
     }
-
-  [self initWithBitmapDataPlanes: NULL
-		pixelsWide: info->width
-		pixelsHigh: info->height
-		bitsPerSample: info->bitsPerSample
-		samplesPerPixel: info->samplesPerPixel
-		hasAlpha: (info->extraSamples > 0)
-		isPlanar: (info->planarConfig == PLANARCONFIG_SEPARATE)
-		colorSpaceName: space
-		bytesPerRow: 0
-		bitsPerPixel: 0];
-  _compression = info->compression;
-  _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
-
-  if (NSTiffRead(image, info, [self bitmapData]))
-    {
-      RELEASE(self);
-      NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
-      return nil;
-    }
-
-  return self;
+  
+  return types;
 }
 
 + (id) imageRepWithData: (NSData *)tiffData
@@ -168,7 +159,10 @@
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
   // TODO
-  return [self notImplemented: _cmd];
+  [self notImplemented: _cmd];
+
+  RELEASE(self);
+  return nil;
 }
 
 /* This is the designated initializer */
@@ -208,15 +202,42 @@
     rowBytes = ceil((float)width * _bitsPerPixel / 8);
   _bytesPerRow            = rowBytes;
 
+  _imagePlanes = NSZoneMalloc([self zone], sizeof(unsigned char*) * MAX_PLANES);
   if (planes) 
     {
       int i;
-      OBJC_MALLOC(_imagePlanes, unsigned char*, MAX_PLANES);
+
       for (i = 0; i < MAX_PLANES; i++)
  	_imagePlanes[i] = NULL;
       for (i = 0; i < ((_isPlanar) ? _numColors : 1); i++)
  	_imagePlanes[i] = planes[i];
     }
+  else
+    {
+      unsigned char* bits;
+      long length;
+      int i;
+
+      // No image data was given, allocate it.
+      length = (long)((_isPlanar) ? _numColors : 1) * _bytesPerRow * 
+	  _pixelsHigh * sizeof(unsigned char);
+      _imageData = [[NSMutableData alloc] initWithLength: length];
+      bits = [_imageData mutableBytes];
+      _imagePlanes[0] = bits;
+      if (_isPlanar) 
+	{
+	  for (i=1; i < _numColors; i++) 
+	    _imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
+	  for (i= _numColors; i < MAX_PLANES; i++) 
+	    _imagePlanes[i] = NULL;
+	}
+      else
+	{
+	  for (i= 1; i < MAX_PLANES; i++) 
+	    _imagePlanes[i] = NULL;
+	}      
+    }
+
   if (alpha)
     {
       unsigned char	*bData = (unsigned char*)[self bitmapData];
@@ -270,51 +291,9 @@
 
 - (void) dealloc
 {
-  OBJC_FREE(_imagePlanes);
+  NSZoneFree([self zone],_imagePlanes);
   RELEASE(_imageData);
   [super dealloc];
-}
-
-+ (BOOL) canInitWithData: (NSData *)data
-{
-  TIFF	*image = NULL;
-  image = NSTiffOpenDataRead((char *)[data bytes], [data length]);
-  NSTiffClose(image);
-
-  return (image) ? YES : NO;
-}
-
-+ (NSArray *) imageUnfilteredFileTypes
-{
-  static NSArray *types = nil;
-
-  if (types == nil)
-    {
-      NSArray *wtypes = [self _wrasterFileTypes];
-
-      if (wtypes != nil)
-        {
-	  types = [wtypes mutableCopy];
-	  [(NSMutableArray *)types addObjectsFromArray: 
-				 [NSArray arrayWithObjects: @"tiff", @"tif", nil]];
-	}
-      else
-	types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
-    }
-
-  return types;
-}
-
-+ (NSArray *) imageUnfilteredPasteboardTypes
-{
-  static NSArray *types = nil;
-
-  if (types == nil)
-    {
-      types = [[NSArray alloc] initWithObjects: NSTIFFPboardType, nil];
-    }
-  
-  return types;
 }
 
 //
@@ -364,32 +343,6 @@
 {
   int i;
 
-  if (!_imagePlanes || !_imagePlanes[0])
-    {
-      long length;
-      unsigned char* bits;
-      
-      length = (long)_numColors * _bytesPerRow * _pixelsHigh 
- 	* sizeof(unsigned char);
-      _imageData = RETAIN([NSMutableData dataWithLength: length]);
-      if (!_imagePlanes)
- 	OBJC_MALLOC(_imagePlanes, unsigned char*, MAX_PLANES);
-      bits = [_imageData mutableBytes];
-      _imagePlanes[0] = bits;
-      if (_isPlanar) 
-	{
-	  for (i=1; i < _numColors; i++) 
-	    _imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
-	  for (i= _numColors; i < MAX_PLANES; i++) 
-	    _imagePlanes[i] = NULL;
-	}
-      else
-	{
-	  for (i= 1; i < MAX_PLANES; i++) 
-	    _imagePlanes[i] = NULL;
-	}
-      
-    }
   if (data)
     for (i=0; i < _numColors; i++)
       data[i] = _imagePlanes[i];
@@ -591,8 +544,32 @@
 
   copy = (NSBitmapImageRep*)[super copyWithZone: zone];
 
-  copy->_imagePlanes = 0;
   copy->_imageData = [_imageData copyWithZone: zone];
+  copy->_imagePlanes = NSZoneMalloc(zone, sizeof(unsigned char*) * MAX_PLANES);
+  if (_imageData == nil)
+    {
+      memcpy(copy->_imagePlanes, _imagePlanes, sizeof(unsigned char*) * MAX_PLANES);
+    }
+  else
+    {
+      unsigned char* bits;
+      int i;
+
+      bits = [copy->_imageData mutableBytes];
+      copy->_imagePlanes[0] = bits;
+      if (_isPlanar) 
+	{
+	  for (i=1; i < _numColors; i++) 
+	    copy->_imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
+	  for (i= _numColors; i < MAX_PLANES; i++) 
+	    copy->_imagePlanes[i] = NULL;
+	}
+      else
+	{
+	  for (i= 1; i < MAX_PLANES; i++) 
+	    copy->_imagePlanes[i] = NULL;
+	}
+    }
 
   return copy;
 }
@@ -656,6 +633,61 @@
   while (imageRep);
 
   return array;
+}
+
+/* Given a TIFF image (from the libtiff library), load the image information
+   into our data structure.  Reads the specified image. */
+- _initFromTIFFImage: (TIFF *)image number: (int)imageNumber
+{
+  NSString* space;
+  NSTiffInfo* info;
+
+  /* Seek to the correct image and get the dictionary information */
+  info = NSTiffGetInfo(imageNumber, image);
+  if (!info) 
+    {
+      RELEASE(self);
+      NSLog(@"Tiff read invalid TIFF info in directory %d", imageNumber);
+      return nil;
+    }
+
+  /* 8-bit RGB will be converted to 24-bit by the tiff routines, so account
+     for this. */
+  space = nil;
+  switch(info->photoInterp) 
+    {
+    case PHOTOMETRIC_MINISBLACK: space = NSDeviceWhiteColorSpace; break;
+    case PHOTOMETRIC_MINISWHITE: space = NSDeviceBlackColorSpace; break;
+    case PHOTOMETRIC_RGB: space = NSDeviceRGBColorSpace; break;
+    case PHOTOMETRIC_PALETTE: 
+      space = NSDeviceRGBColorSpace; 
+      info->samplesPerPixel = 3;
+      break;
+    default:
+      break;
+    }
+
+  [self initWithBitmapDataPlanes: NULL
+		pixelsWide: info->width
+		pixelsHigh: info->height
+		bitsPerSample: info->bitsPerSample
+		samplesPerPixel: info->samplesPerPixel
+		hasAlpha: (info->extraSamples > 0)
+		isPlanar: (info->planarConfig == PLANARCONFIG_SEPARATE)
+		colorSpaceName: space
+		bytesPerRow: 0
+		bitsPerPixel: 0];
+  _compression = info->compression;
+  _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
+
+  if (NSTiffRead(image, info, [self bitmapData]))
+    {
+      RELEASE(self);
+      NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
+      return nil;
+    }
+
+  return self;
 }
 
 // This are just placeholders for the implementation in the backend
