@@ -2878,12 +2878,8 @@ adjust:
   new.origin.x += _textContainerOrigin.x;
   new.origin.y += _textContainerOrigin.y;
 
-  printf("at %i (%i) got (%g %g)+(%g %g)\n",l,after,
-    new.origin.x,new.origin.y,new.size.width,new.size.height);
-
   if (!NSEqualRects(new, _insertionPointRect))
     {
-      printf("not equal, redisplaying\n");
       [self setNeedsDisplayInRect: _insertionPointRect];
       _insertionPointRect = new;
       [self setNeedsDisplayInRect: _insertionPointRect];
