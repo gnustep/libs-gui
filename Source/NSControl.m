@@ -562,7 +562,6 @@ static Class actionCellClass;
     }
   
   [_window _captureMouse: self];
-  [self lockFocus];
 
   e = theEvent;
   while (!done) 		// loop until mouse goes up
@@ -574,8 +573,8 @@ static Class actionCellClass;
       if ((location.x >= 0) && (location.x < _bounds.size.width) &&
 		      (location.y >= 0 && location.y < _bounds.size.height))
 	{
-	  [_cell highlight: YES withFrame: _bounds inView: self];
-	  [_window flushWindow];
+	  [_cell setHighlighted: YES];
+	  [self setNeedsDisplay: YES];
 	  if ([_cell trackMouse: e
 		     inRect: _bounds
 		     ofView: self
@@ -583,8 +582,8 @@ static Class actionCellClass;
 	    done = mouseUp = YES;
 	  else
 	    {
-	      [_cell highlight: NO withFrame: _bounds inView: self];
-	      [_window flushWindow];
+	      [_cell setHighlighted: NO];
+	      [self setNeedsDisplay: YES];
 	    }
 	}
 
@@ -603,12 +602,9 @@ static Class actionCellClass;
 
   if (mouseUp)
     {
-//      	[cell setState: ![cell state]];
-      [_cell highlight: NO withFrame: _bounds inView: self];
-      [_window flushWindow];
+      [_cell setHighlighted: NO];
+      [self setNeedsDisplay: YES];
     }
-
-  [self unlockFocus];
 
   [_cell sendActionOn: oldActionMask];
 

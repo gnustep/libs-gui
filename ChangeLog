@@ -1,3 +1,9 @@
+2003-11-07 15:28  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSControl.m (-mouseDown:): Rewrite to use -setHighlighted:
+	and the normal drawing mechanisms instead of trying to draw and flush
+	manually. (Fixes a bunch of visual glitches.)
+
 2003-11-07 14:42  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSInputManager.m (-loadBindingsFromFile:): Handle errors
