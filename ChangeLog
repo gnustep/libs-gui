@@ -1,3 +1,12 @@
+Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Patch from Niico Pero <n.pero@mi.flashnet.it> modified to use
+	controlDarkShadowColor rather than blackColor.
+	* Source/NSBox.m: draw line borders in correct color.
+	* Source/NSCell.m ditto
+	* Source/NSScrollView.m: ditto
+	* Source/NSTabView.m: ditto
+
 Sun Aug 22 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: ([-viewWillMoveToWindow:]) fixed to call method

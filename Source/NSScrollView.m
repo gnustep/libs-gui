@@ -32,6 +32,7 @@
 
 #include <Foundation/NSException.h>
 #include <AppKit/NSScroller.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSRulerView.h>
@@ -543,6 +544,7 @@ static Class rulerViewClass = nil;
 
       case NSLineBorder:
 	borderThickness = 1;
+	[[NSColor controlDarkShadowColor] set];
 	NSFrameRect(rect);
 	break;
 

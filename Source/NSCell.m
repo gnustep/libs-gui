@@ -708,6 +708,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   // draw the border if needed
   if ([self isBordered])
     {
+      [[NSColor controlDarkShadowColor] set];
       NSFrameRect(cellFrame);
     }
   else if ([self isBezeled])

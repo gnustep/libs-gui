@@ -276,6 +276,7 @@
     case NSNoBorder: 
       break;
     case NSLineBorder: 
+      [[NSColor controlDarkShadowColor] set];
       NSFrameRect(border_rect);
       break;
     case NSBezelBorder: 
