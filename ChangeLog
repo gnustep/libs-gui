@@ -1,3 +1,9 @@
+Thu May 27 19:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPasteboard.m: Tidy formatting and improve style slightly.
+	Add private method so the pasteboard server can be the same process
+	as the pasteboard owners - for use with X selection integration.
+
 1999-05-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSStringDrawing.m ([NSAttributesString -drawInRect:]):
