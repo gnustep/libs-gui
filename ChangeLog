@@ -1,3 +1,9 @@
+2003-10-03  Benhur Stein <benhur@inf.ufsm.br>
+
+	* Source/NSWindow.m (class variables, +initialize,
+	+removeFrameUsingName:, -dealloc, -saveFrameUsingName:,
+	-setFrameAutosaveName:): removed variable windowsLock
+
 2003-10-02  David Ayers  <d.ayers@inode.at>
 
 	* Source/NSBrowser.m (-[NSBrowser setDelegate]):

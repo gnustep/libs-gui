@@ -499,7 +499,6 @@ static IMP	ctImp;
 static Class	responderClass;
 static Class	viewClass;
 static NSMutableSet	*autosaveNames;
-static NSRecursiveLock	*windowsLock;
 static NSMapTable* windowmaps = NULL;
 static NSNotificationCenter *nc = nil;
 
@@ -519,7 +518,6 @@ static NSNotificationCenter *nc = nil;
       responderClass = [NSResponder class];
       viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
-      windowsLock = [NSRecursiveLock new];
       nc = [NSNotificationCenter defaultCenter];
     }
 }
@@ -531,9 +529,7 @@ static NSNotificationCenter *nc = nil;
       NSString	*key;
 
       key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
-      [windowsLock lock];
       [[NSUserDefaults standardUserDefaults] removeObjectForKey: key];
-      [windowsLock unlock];
     }
 }
 
@@ -650,13 +646,11 @@ many times.
 		      argument: nil];
   [NSApp removeWindowsItem: self];
 
-  [windowsLock lock];
   if (_autosaveName != nil)
     {
       [autosaveNames removeObject: _autosaveName];
       _autosaveName = nil;
     }
-  [windowsLock unlock];
 
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
@@ -3508,12 +3502,10 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   NSString		*key;
   id			obj;
 
-  [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
   obj = [self stringWithSavedFrame];
   key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
   [defs setObject: obj forKey: key];
-  [windowsLock unlock];
 }
 
 - (BOOL) setFrameAutosaveName: (NSString*)name
@@ -3525,10 +3517,8 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
       return YES;		/* That's our name already.	*/
     }
 
-  [windowsLock lock];
   if ([autosaveNames member: name] != nil)
     {
-      [windowsLock unlock];
       return NO;		/* Name in use elsewhere.	*/
     }
   if (_autosaveName != nil)
@@ -3560,7 +3550,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
       [defs removeObjectForKey: key];
       RELEASE(nameToRemove);
     }
-  [windowsLock unlock];
   return YES;
 }
 
@@ -3678,11 +3667,9 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   id			obj;
   NSString		*key;
 
-  [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
   key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
   obj = [defs objectForKey: key];
-  [windowsLock unlock];
   if (obj == nil)
     return NO;
   [self setFrameFromString: obj];
