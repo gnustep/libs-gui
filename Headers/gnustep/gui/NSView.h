@@ -80,7 +80,7 @@ enum {
   NSViewMaxYMargin	= 32 	// top margin between views can stretch
 };
 
-@interface NSView : NSResponder <NSCoding>
+@interface NSView : NSResponder
 {
   NSRect _frame;
   NSRect _bounds;
@@ -141,13 +141,24 @@ enum {
 - (NSWindow*) window;
 - (void) viewWillMoveToSuperview: (NSView*)newSuper;
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow;
+#ifndef STRICT_OPENSTEP
+- (void) didAddSubview: (NSView *)subview;
+- (void) viewDidMoveToSuperview;
+- (void) viewDidMoveToWindow;
+- (void) willRemoveSubview: (NSView *)subview;
+#endif
+
+/*
+ * Assigning a Tag
+ */
+- (int) tag;
+- (id) viewWithTag: (int)aTag;
 
 /*
  * Modifying the Frame Rectangle
  */
 - (float) frameRotation;
 - (NSRect) frame;
-- (void) rotateByAngle: (float)angle;
 - (void) setFrame: (NSRect)frameRect;
 - (void) setFrameOrigin: (NSPoint)newOrigin;
 - (void) setFrameRotation: (float)angle;
@@ -158,15 +169,18 @@ enum {
  */
 - (float) boundsRotation;
 - (NSRect) bounds;
-- (BOOL) isFlipped;
-- (BOOL) isRotatedFromBase;
-- (BOOL) isRotatedOrScaledFromBase;
-- (void) scaleUnitSquareToSize: (NSSize)newSize;
 - (void) setBounds: (NSRect)aRect;
 - (void) setBoundsOrigin: (NSPoint)newOrigin;
 - (void) setBoundsRotation: (float)angle;
 - (void) setBoundsSize: (NSSize)newSize;
+
 - (void) translateOriginToPoint: (NSPoint)point;
+- (void) scaleUnitSquareToSize: (NSSize)newSize;
+- (void) rotateByAngle: (float)angle;
+
+- (BOOL) isFlipped;
+- (BOOL) isRotatedFromBase;
+- (BOOL) isRotatedOrScaledFromBase;
 
 /*
  * Converting Coordinates
@@ -204,6 +218,36 @@ enum {
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize;
 
 /*
+ * Focusing
+ */
++ (NSView*) focusView;
+- (void) lockFocus;
+- (void) unlockFocus;
+#ifndef STRICT_OPENSTEP
+- (BOOL) lockFocusIfCanDraw;
+#endif
+
+/*
+ * Displaying
+ */
+- (void) display;
+- (void) displayIfNeeded;
+- (void) displayIfNeededIgnoringOpacity;
+- (void) displayIfNeededInRect: (NSRect)aRect;
+- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect;
+- (void) displayRect: (NSRect)aRect;
+- (void) displayRectIgnoringOpacity: (NSRect)aRect;
+- (BOOL) needsDisplay;
+- (void) setNeedsDisplay: (BOOL)flag;
+- (void) setNeedsDisplayInRect: (NSRect)invalidRect;
+- (BOOL) isOpaque;
+
+- (void) drawRect: (NSRect)rect;
+- (NSRect) visibleRect;
+- (BOOL) canDraw;
+- (BOOL) shouldDrawColor;
+
+/*
  * Graphics State Objects
  */
 - (void) allocateGState;
@@ -212,82 +256,14 @@ enum {
 - (void) renewGState;
 - (void) setUpGState;
 
-/*
- * Focusing
- */
-+ (NSView*) focusView;
-- (void) lockFocus;
-- (void) unlockFocus;
-
-/*
- * Displaying
- */
-- (BOOL) canDraw;
-- (void) display;
-- (void) displayIfNeeded;
-- (void) displayIfNeededIgnoringOpacity;
-- (void) displayIfNeededInRect: (NSRect)aRect;
-- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect;
-- (void) displayRect: (NSRect)aRect;
-- (void) displayRectIgnoringOpacity: (NSRect)aRect;
-- (void) drawRect: (NSRect)rect;
-- (NSRect) visibleRect;
-- (BOOL) isOpaque;
-- (BOOL) needsDisplay;
-- (void) setNeedsDisplay: (BOOL)flag;
-- (void) setNeedsDisplayInRect: (NSRect)invalidRect;
-- (BOOL) shouldDrawColor;
-
-/*
- * Scrolling
- */
-- (NSRect) adjustScroll: (NSRect)newVisible;
-- (BOOL) autoscroll: (NSEvent*)theEvent;
-- (NSScrollView*) enclosingScrollView;
-- (void) reflectScrolledClipView: (NSClipView*)aClipView;
-- (void) scrollClipView: (NSClipView*)aClipView
-		toPoint: (NSPoint)aPoint;
-- (void) scrollPoint: (NSPoint)aPoint;
-- (void) scrollRect: (NSRect)aRect
-		 by: (NSSize)delta;
-- (BOOL) scrollRectToVisible: (NSRect)aRect;
-
-/*
- * Managing the Cursor
- */
-- (void) addCursorRect: (NSRect)aRect
-		cursor: (NSCursor*)anObject;
-- (void) discardCursorRects;
-- (void) removeCursorRect: (NSRect)aRect
-		   cursor: (NSCursor*)anObject;
-- (void) resetCursorRects;
-
-/*
- * Assigning a Tag
- */
-- (int) tag;
-- (id) viewWithTag: (int)aTag;
-
-/*
- * Aiding Event Handling
- */
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent;
 - (NSView*) hitTest: (NSPoint)aPoint;
 - (BOOL) mouse: (NSPoint)aPoint
 	inRect: (NSRect)aRect;
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
-- (void) removeTrackingRect: (NSTrackingRectTag)tag;
-- (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
-- (NSTrackingRectTag) addTrackingRect: (NSRect)aRect
-				owner: (id)anObject
-			     userData: (void*)data
-			 assumeInside: (BOOL)flag;
-- (void) setNextKeyView: (NSView*)aView;
-- (NSView*) nextKeyView;
-- (NSView*) nextValidKeyView;
-- (void) setPreviousKeyView: (NSView*)aView;
-- (NSView*) previousKeyView;
-- (NSView*) previousValidKeyView;
+#ifndef STRICT_OPENSTEP
+- (BOOL) performMnemonic: (NSString *)aString;
+#endif
 
 /*
  * Dragging
@@ -305,13 +281,79 @@ enum {
 	 slideBack: (BOOL)slideFlag;
 - (void) registerForDraggedTypes: (NSArray*)newTypes;
 - (void) unregisterDraggedTypes;
+- (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
+
+/*
+ * Managing the Cursor
+ */
+- (void) addCursorRect: (NSRect)aRect
+		cursor: (NSCursor*)anObject;
+- (void) discardCursorRects;
+- (void) removeCursorRect: (NSRect)aRect
+		   cursor: (NSCursor*)anObject;
+- (void) resetCursorRects;
+
+#ifndef STRICT_OPENSTEP
+/*
+ * Tool Tips
+ */
+- (NSToolTipTag) addToolTipRect: (NSRect)aRect 
+			  owner: (id)anObject 
+		       userData: (void *)data;
+- (void) removeAllToolTips;
+- (void) removeToolTip: (NSToolTipTag)tag;
+- (void) setToolTip: (NSString *)string;
+- (NSString *) toolTip;
+#endif
+
+/*
+ * Tracking rectangles
+ */
+- (void) removeTrackingRect: (NSTrackingRectTag)tag;
+- (NSTrackingRectTag) addTrackingRect: (NSRect)aRect
+				owner: (id)anObject
+			     userData: (void*)data
+			 assumeInside: (BOOL)flag;
+
+/*
+ * Scrolling
+ */
+- (NSRect) adjustScroll: (NSRect)newVisible;
+- (BOOL) autoscroll: (NSEvent*)theEvent;
+- (NSScrollView*) enclosingScrollView;
+- (void) scrollPoint: (NSPoint)aPoint;
+- (void) scrollRect: (NSRect)aRect
+		 by: (NSSize)delta;
+- (BOOL) scrollRectToVisible: (NSRect)aRect;
+
+- (void) reflectScrolledClipView: (NSClipView*)aClipView;
+- (void) scrollClipView: (NSClipView*)aClipView
+		toPoint: (NSPoint)aPoint;
+
+#ifndef STRICT_OPENSTEP
+/*
+ * Menu operations
+ */
++ (NSMenu *) defaultMenu;
+- (NSMenu *) menuForEvent: (NSEvent *)theEvent;
+#endif
+
+/*
+ * Aiding Event Handling
+ */
+- (void) setNextKeyView: (NSView*)aView;
+- (NSView*) nextKeyView;
+- (NSView*) nextValidKeyView;
+- (void) setPreviousKeyView: (NSView*)aView;
+- (NSView*) previousKeyView;
+- (NSView*) previousValidKeyView;
 
 /*
  * Printing
  */
-- (NSData*) dataWithEPSInsideRect: (NSRect)aRect;
 - (void) fax: (id)sender;
 - (void) print: (id)sender;
+- (NSData*) dataWithEPSInsideRect: (NSRect)aRect;
 - (void) writeEPSInsideRect: (NSRect)rect
 	       toPasteboard: (NSPasteboard*)pasteboard;
 #ifndef STRICT_OPENSTEP
@@ -375,34 +417,6 @@ enum {
 	    atPlacement:(NSPoint)location;
 - (void)endDocument;
 #endif
-
-
-#ifndef STRICT_OPENSTEP
-/*
- * Menu operations
- */
-+ (NSMenu *) defaultMenu;
-- (NSMenu *) menuForEvent: (NSEvent *)theEvent;
-
-/*
- * Tool Tips
- */
-
-- (NSToolTipTag) addToolTipRect: (NSRect)aRect 
-			  owner: (id)anObject 
-		       userData: (void *)data;
-- (void) removeAllToolTips;
-- (void) removeToolTip: (NSToolTipTag)tag;
-- (void) setToolTip: (NSString *)string;
-- (NSString *) toolTip;
-
-#endif
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
