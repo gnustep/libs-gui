@@ -183,9 +183,10 @@ before-all::    ../Documentation/Gui
 #
 # Clean up temporary files used while generating documentation.
 #
-after-all::
+after-clean::
 	$(RM) Gui.gsdoc
 	if [ -d Gui ]; then \
+	  $(RM) Gui/stamp; \
 	  rmdir Gui; \
 	fi
 
