@@ -1,3 +1,7 @@
+iThu Sep  9 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m: implemented missing method ([-cellSize]).
+
 1999-09-09  Gerrit van Dyk <gerritvd@decillion.net>
 
 	* Headers/NSComboBox.h: Added NSComboBox

@@ -548,6 +548,112 @@
     }
 }
 
+- (NSSize) cellSize 
+{
+  NSSize s;
+  NSSize borderSize;
+  BOOL		showAlternate = NO;
+  unsigned	mask;
+  NSImage	*imageToDisplay;
+  NSString	*titleToDisplay;
+  NSSize	imageSize;
+  NSSize	titleSize;
+  
+  // 
+  // The following code must be kept in sync with -drawInteriorWithFrame
+  //
+  
+  if ([self isHighlighted])
+    mask = [self highlightsBy];
+  else
+    mask = [self showsStateBy];
+  if (mask & NSContentsCellMask)
+    showAlternate = [self state];
+  
+  if (showAlternate || [self isHighlighted])
+    {
+      imageToDisplay = [self alternateImage];
+      if (!imageToDisplay)
+	imageToDisplay = [self image];
+      titleToDisplay = [self alternateTitle];
+      if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
+	titleToDisplay = [self title];
+    }
+  else
+    {
+      imageToDisplay = [self image];
+      titleToDisplay = [self title];
+    }
+  
+  if (imageToDisplay)
+    imageSize = [imageToDisplay size];
+  else 
+    imageSize = NSZeroSize;
+  
+  if (titleToDisplay)
+    titleSize = NSMakeSize ([cell_font widthOfString: titleToDisplay], 
+			    [cell_font pointSize]);
+  else 
+    titleSize = NSZeroSize;
+  
+  switch ([self imagePosition])
+    {
+    case NSNoImage: 
+      s = titleSize;
+      break;
+      
+    case NSImageOnly: 
+      s = imageSize;
+      break;
+      
+    case NSImageLeft: 
+    case NSImageRight: 
+      s.width = imageSize.width + titleSize.width + xDist;
+      if (imageSize.height > titleSize.height)
+	s.height = imageSize.height;
+      else 
+	s.height = titleSize.height;
+      break;
+      
+    case NSImageBelow: 
+    case NSImageAbove: 
+      if (imageSize.width > titleSize.width)
+	s.height = imageSize.width;
+      else 
+	s.width = titleSize.width;
+      s.height = imageSize.height + titleSize.height; // + yDist ??
+      break;
+      
+    case NSImageOverlaps: 
+      if (imageSize.width > titleSize.width)
+	s.width = imageSize.width;
+      else
+	s.width = titleSize.width;
+      
+      if (imageSize.height > titleSize.height)
+	s.height = imageSize.height;
+      else
+	s.height = titleSize.height;
+
+      break;
+    }
+  
+  // Add spacing between text/image and border
+  s.width += 2 * xDist;
+  s.height += 2 * yDist;
+ 
+  // Get border size
+  if ([self isBordered])
+    borderSize = [NSCell sizeForBorderType: NSBezelBorder];
+  else
+    borderSize = [NSCell sizeForBorderType: NSNoBorder];
+  
+  // Add border size
+  s.width += 2 * borderSize.width;
+  s.height += 2 * borderSize.height;
+  
+  return s;
+}
 
 - (id) copyWithZone: (NSZone*)zone
 {
