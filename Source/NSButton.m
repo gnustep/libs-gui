@@ -325,6 +325,7 @@ id _nsbuttonCellClass = nil;
 
 - (BOOL) becomeFirstResponder
 {
+  [_window disableKeyEquivalentForDefaultButtonCell];
   [_cell setShowsFirstResponder: YES];
   [self setNeedsDisplay: YES];
 
@@ -333,6 +334,7 @@ id _nsbuttonCellClass = nil;
 
 - (BOOL) resignFirstResponder
 {
+  [_window enableKeyEquivalentForDefaultButtonCell];
   [_cell setShowsFirstResponder: NO];
   [self setNeedsDisplay: YES];
 

@@ -1,7 +1,23 @@
 NEWS
 ****
 
-The currently released version of the library is `0.6.7'.
+The currently released version of the library is `0.7.0'.
+
+Noteworthy changes in version `0.7.0'
+=====================================
+
+   * Much improvement in NSBrowser, NSMatrix, NSPopUpButton, combo
+     boxes.
+
+   * NSTextAttachement implemented, many other text improvements.
+
+   * Fonts cached in the frontend.
+
+   * Changes so that backend can be loaded as a bundle at runtime.
+
+   * simpler, faster compilation and installation.
+
+   * NSColorWell works.
 
 Noteworthy changes in version `0.6.7'
 =====================================

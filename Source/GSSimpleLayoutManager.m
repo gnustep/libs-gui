@@ -272,7 +272,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 {
   _GNULineLayoutInfo *currentInfo;
 
-  if (![_textStorage length])
+  if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakeRect(0, 0, 0, 12);
     }
@@ -294,7 +294,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   _GNULineLayoutInfo *currentInfo;
   NSRect rect;
 
-  if (![_textStorage length])
+  if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakePoint(0, 0);
     }
@@ -321,7 +321,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   unsigned i1, i2;
   NSRect rect1;
 
-  if (![_textStorage length])
+  if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakeRect(0, 0, width, 12);
     }
@@ -609,11 +609,17 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   int i;
   int min = 0;
-  int max = MAX(0, [_lineLayoutInformation count] - 1);
+  int max = MAX(0, (int)[_lineLayoutInformation count] - 1);
   unsigned y = anIndex;
-  unsigned fmin = [[_lineLayoutInformation objectAtIndex: 0] glyphRange].location;
-  unsigned fmax = NSMaxRange([[_lineLayoutInformation lastObject] glyphRange]);
+  unsigned fmin;
+  unsigned fmax;
   NSRange range;
+
+  if (!max)
+    return 0;
+
+  fmin = [[_lineLayoutInformation objectAtIndex: 0] glyphRange].location;
+  fmax = NSMaxRange([[_lineLayoutInformation lastObject] glyphRange]);
 
   if (y >= fmax)
     return max;
@@ -680,7 +686,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   NSRect rect;
   float x;
 
-  if (![_textStorage length])
+  if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakeRect(0, 0, width, 12);
     }
@@ -696,15 +702,15 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
 
- currentInfo = [_lineLayoutInformation 
-		   objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					    index]];
- start = currentInfo->glyphRange.location;
- rect = currentInfo->lineFragmentRect;
- x = rect.origin.x + [self _sizeOfRange: NSMakeRange(start, index-start)].width;
+  currentInfo = [_lineLayoutInformation 
+		  objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
+					 index]];
+  start = currentInfo->glyphRange.location;
+  rect = currentInfo->lineFragmentRect;
+  x = rect.origin.x + [self _sizeOfRange: NSMakeRange(start, index-start)].width;
      
- return NSMakeRect(x, rect.origin.y, NSMaxX (rect) - x,
-		   rect.size.height);
+  return NSMakeRect(x, rect.origin.y, NSMaxX (rect) - x,
+		    rect.size.height);
 }
 
 - (void) drawSelectionAsRangeNoCaret: (NSRange)aRange

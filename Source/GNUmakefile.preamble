@@ -87,4 +87,4 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
 
-LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) -ltiff
+LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) $(ADDITIONAL_DEPENDS)

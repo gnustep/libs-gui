@@ -75,9 +75,7 @@ static NSNotificationCenter *nc;
   _visibleItems = 10;
   _intercellSpacing = NSMakeSize(3.0, 2.0);
   _itemHeight = 16;
-  // The specification uses -1 as the flag for no selection,
-  // but we use NSNotFound to be consistent with other methods.
-  _selectedItem = NSNotFound;
+  _selectedItem = -1;
 
   _popRect = NSZeroRect;
   //_mUpEvent = nil;
@@ -157,18 +155,24 @@ static NSNotificationCenter *nc;
 
 - (void) selectItemAtIndex: (int)index
 {
-  _selectedItem = index;
-  // TODO: Notify popup
-  [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
-      object: [self controlView]
-      userInfo: nil];
+  if (index < -1)
+    index = -1;
+
+  if (_selectedItem != index)
+    {
+      _selectedItem = index;
+      // TODO: Notify popup
+      [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+	  object: [self controlView]
+	  userInfo: nil];
+    }
 }
 
 - (void) deselectItemAtIndex: (int)index
 {
   if (_selectedItem == index)
   {
-    _selectedItem = NSNotFound;
+    _selectedItem = -1;
     // TODO: Notify popup
     [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
 	object: [self controlView]
@@ -278,8 +282,10 @@ static NSNotificationCenter *nc;
    {
      int i = [_popUpList indexOfObject: object];
 
-     if (i != NSNotFound)
-	 [self selectItemAtIndex: i];
+     if (i == NSNotFound)
+       i = -1;
+
+     [self selectItemAtIndex: i];
    }
 }
 
@@ -305,7 +311,7 @@ static NSNotificationCenter *nc;
     {
       int index = [self indexOfSelectedItem];
 
-      if (index == NSNotFound)
+      if (index == -1)
 	return nil;
       else
 	return [_popUpList objectAtIndex: index];

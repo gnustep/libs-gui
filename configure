@@ -12,6 +12,10 @@ ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
+  --with-jpeg-library=DIR JPEG library file are in DIR"
+ac_help="$ac_help
+  --with-jpeg-include=DIR JPEG include files are in DIR"
+ac_help="$ac_help
   --with-tiff-library=DIR TIFF library file are in DIR"
 ac_help="$ac_help
   --with-tiff-include=DIR TIFF include files are in DIR"
@@ -578,7 +582,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:582: checking host system type" >&5
+echo "configure:586: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -599,7 +603,7 @@ host_os=`echo $host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$host" 1>&6
 
 echo $ac_n "checking target system type""... $ac_c" 1>&6
-echo "configure:603: checking target system type" >&5
+echo "configure:607: checking target system type" >&5
 
 target_alias=$target
 case "$target_alias" in
@@ -617,7 +621,7 @@ target_os=`echo $target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$target" 1>&6
 
 echo $ac_n "checking build system type""... $ac_c" 1>&6
-echo "configure:621: checking build system type" >&5
+echo "configure:625: checking build system type" >&5
 
 build_alias=$build
 case "$build_alias" in
@@ -641,7 +645,7 @@ test "$host_alias" != "$target_alias" &&
 
 
 echo $ac_n "checking for main in -lm""... $ac_c" 1>&6
-echo "configure:645: checking for main in -lm" >&5
+echo "configure:649: checking for main in -lm" >&5
 ac_lib_var=`echo m'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -649,14 +653,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lm  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 653 "configure"
+#line 657 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:660: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:664: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -686,12 +690,12 @@ fi
 for ac_func in rintf
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:690: checking for $ac_func" >&5
+echo "configure:694: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 695 "configure"
+#line 699 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -714,7 +718,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:718: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:722: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -740,46 +744,47 @@ done
 
 
 #--------------------------------------------------------------------
-# Find for TIFF
-# Do a superficial find only - The tiff library is actually linked with
-# the backend, and typically in conjunction with other graphic libraries.
+# Find for JPEG
 #--------------------------------------------------------------------
-# Check whether --with-tiff_library or --without-tiff_library was given.
-if test "${with_tiff_library+set}" = set; then
-  withval="$with_tiff_library"
+GRAPHIC_LIBS=
+GRAPHIC_CFLAGS=
+GRAPHIC_LFLAGS=
+
+# Check whether --with-jpeg_library or --without-jpeg_library was given.
+if test "${with_jpeg_library+set}" = set; then
+  withval="$with_jpeg_library"
   :
 else
-  with_tiff_library=
+  with_jpeg_library=
 fi
 
-# Check whether --with-tiff_include or --without-tiff_include was given.
-if test "${with_tiff_include+set}" = set; then
-  withval="$with_tiff_include"
+# Check whether --with-jpeg_include or --without-jpeg_include was given.
+if test "${with_jpeg_include+set}" = set; then
+  withval="$with_jpeg_include"
   :
 else
-  with_tiff_include=
+  with_jpeg_include=
 fi
 
 
-case "$target_os" in
-  freebsd*)	CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-		LDFLAGS="$LDFLAGS -L/usr/local/lib"
-		ADDITIONAL_INCLUDE_DIRS="-I/usr/local/include"
-		ADDITIONAL_LIB_DIRS="-L/usr/local/lib";;
-esac
+if test "$with_jpeg_library" = ""; then
+  case "$target_os" in
+    freebsd*)	with_jpeg_include="/usr/local/include"
+		with_jpeg_library="/usr/local/lib";;
+  esac
+fi
 
-save_cpp=${CPPFLAGS}
-save_ldf=${LDFLAGS}
-if test "$with_tiff_include" != ""; then
-  CPPFLAGS="-I$with_tiff_include ${CPPFLAGS}"
-  ADDITIONAL_INCLUDE_DIRS="-I$with_tiff_include"
+if test -n "$with_jpeg_library"; then
+  with_jpeg_library="-L$with_jpeg_library"
 fi
-if test -n "$with_tiff_library"; then
-  LDFLAGS="-L$with_tiff_library $LDFLAGS"
-  ADDITIONAL_LIB_DIRS="-L$with_tiff_library"
+if test -n "$with_jpeg_include"; then
+  with_jpeg_include="-I$with_jpeg_include"
 fi
+
+
+
 echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-echo "configure:783: checking how to run the C preprocessor" >&5
+echo "configure:788: checking how to run the C preprocessor" >&5
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
   CPP=
@@ -794,13 +799,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 798 "configure"
+#line 803 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:804: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:809: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -811,13 +816,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 815 "configure"
+#line 820 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:821: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:826: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -828,13 +833,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -nologo -E"
   cat > conftest.$ac_ext <<EOF
-#line 832 "configure"
+#line 837 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:838: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:843: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   :
@@ -858,19 +863,274 @@ else
 fi
 echo "$ac_t""$CPP" 1>&6
 
-ac_safe=`echo "tiffio.h" | sed 'y%./+-%__p_%'`
+jpeg_check_lib_save_header=${CPPFLAGS}
+CPPFLAGS="${with_jpeg_library} ${with_jpeg_include} ${CPPFLAGS}"
+
+echo $ac_n "checking for jpeg_destroy_decompress in -ljpeg""... $ac_c" 1>&6
+echo "configure:871: checking for jpeg_destroy_decompress in -ljpeg" >&5
+ac_lib_var=`echo jpeg'_'jpeg_destroy_decompress | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-ljpeg  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 879 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char jpeg_destroy_decompress();
+
+int main() {
+jpeg_destroy_decompress()
+; return 0; }
+EOF
+if { (eval echo configure:890: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+  jpeg_ok=yes
+else
+  echo "$ac_t""no" 1>&6
+jpeg_ok=no
+fi
+
+if test "$jpeg_ok" = yes; then
+  echo $ac_n "checking for jpeglib.h""... $ac_c" 1>&6
+echo "configure:913: checking for jpeglib.h" >&5
+  cat > conftest.$ac_ext <<EOF
+#line 915 "configure"
+#include "confdefs.h"
+#include <stdio.h>
+              #undef PACKAGE
+	      #undef VERSION
+	      #undef HAVE_STDLIB_H
+              #include <jpeglib.h>
+EOF
+ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+{ (eval echo configure:924: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+if test -z "$ac_err"; then
+  rm -rf conftest*
+  jpeg_ok=yes
+else
+  echo "$ac_err" >&5
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  jpeg_ok=no
+fi
+rm -f conftest*
+  echo "$ac_t""$jpeg_ok" 1>&6
+
+  if test "$jpeg_ok" = yes; then
+    GRAPHIC_LFLAGS="${with_jpeg_library} $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="${with_jpeg_include} $GRAPHIC_CFLAGS"
+  fi
+fi
+CPPFLAGS="${jpeg_check_lib_save_header}"
+
+#--------------------------------------------------------------------
+# Find for TIFF
+#--------------------------------------------------------------------
+# Check whether --with-tiff_library or --without-tiff_library was given.
+if test "${with_tiff_library+set}" = set; then
+  withval="$with_tiff_library"
+  :
+else
+  with_tiff_library=
+fi
+
+# Check whether --with-tiff_include or --without-tiff_include was given.
+if test "${with_tiff_include+set}" = set; then
+  withval="$with_tiff_include"
+  :
+else
+  with_tiff_include=
+fi
+
+
+if test "$with_tiff_library" = ""; then
+  case "$target_os" in
+    freebsd*)	with_tiff_include="/usr/local/include"
+		with_tiff_library="/usr/local/lib";;
+  esac
+fi
+
+if test -n "$with_tiff_library"; then
+  with_tiff_library="-L$with_tiff_library"
+fi
+if test -n "$with_tiff_include"; then
+  with_tiff_include="-I$with_tiff_include"
+fi
+
+
+
+tiff_check_lib_save_header=${CPPFLAGS}
+tiff_check_lib_save_libs=${LIBS}
+CPPFLAGS="${with_tiff_library} ${JPEG_LIB} ${with_tiff_include} ${JPEG_INCLUDE} ${CPPFLAGS}"
+echo $ac_n "checking for main in -lz""... $ac_c" 1>&6
+echo "configure:986: checking for main in -lz" >&5
+ac_lib_var=`echo z'_'main | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lz  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 994 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+EOF
+if { (eval echo configure:1001: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+  HAVE_LIBZ=1
+else
+  echo "$ac_t""no" 1>&6
+HAVE_LIBZ=0
+fi
+
+
+echo $ac_n "checking for -ltiff without -ljpeg nor -lz""... $ac_c" 1>&6
+echo "configure:1024: checking for -ltiff without -ljpeg nor -lz" >&5
+LIBS="-ltiff -lm $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1027 "configure"
+#include "confdefs.h"
+char TIFFReadScanline();
+int main() {
+TIFFReadScanline()
+; return 0; }
+EOF
+if { (eval echo configure:1034: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  jpeg_notneeded=yes
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  jpeg_notneeded=no
+fi
+rm -f conftest*
+echo "$ac_t""$jpeg_notneeded" 1>&6
+LIBS=${tiff_check_lib_save_libs}
+JPEG=
+if test "$jpeg_notneeded" = no; then
+  JPEG=-ljpeg
+fi
+
+if test $HAVE_LIBZ = 1; then
+  echo $ac_n "checking for -ltiff without -lz""... $ac_c" 1>&6
+echo "configure:1053: checking for -ltiff without -lz" >&5
+  LIBS="-ltiff $JPEG -lm $LIBS"
+  cat > conftest.$ac_ext <<EOF
+#line 1056 "configure"
+#include "confdefs.h"
+char TIFFReadScanline();
+int main() {
+TIFFReadScanline()
+; return 0; }
+EOF
+if { (eval echo configure:1063: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  libz_notneeded=yes
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  libz_notneeded=no
+fi
+rm -f conftest*
+  echo "$ac_t""$libz_notneeded" 1>&6
+  LIBS=${tiff_check_lib_save_libs}
+  if test "$libz_notneeded" = no; then
+    JPEG="$JPEG -lz"
+  fi
+fi
+
+echo $ac_n "checking for TIFFReadScanline in -ltiff""... $ac_c" 1>&6
+echo "configure:1081: checking for TIFFReadScanline in -ltiff" >&5
+ac_lib_var=`echo tiff'_'TIFFReadScanline | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-ltiff $JPEG -lm $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1089 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char TIFFReadScanline();
+
+int main() {
+TIFFReadScanline()
+; return 0; }
+EOF
+if { (eval echo configure:1100: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+  tiff_ok=yes
+else
+  echo "$ac_t""no" 1>&6
+tiff_ok=no
+fi
+
+if test "$tiff_ok" = yes; then
+  ac_safe=`echo "tiffio.h" | sed 'y%./+-%__p_%'`
 echo $ac_n "checking for tiffio.h""... $ac_c" 1>&6
-echo "configure:864: checking for tiffio.h" >&5
+echo "configure:1124: checking for tiffio.h" >&5
 if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 869 "configure"
+#line 1129 "configure"
 #include "confdefs.h"
 #include <tiffio.h>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:874: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:1134: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -886,74 +1146,49 @@ rm -f conftest*
 fi
 if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
   echo "$ac_t""yes" 1>&6
-  :
+  tiff_ok=yes
 else
   echo "$ac_t""no" 1>&6
+tiff_ok=no
 fi
 
-if test $ac_cv_header_tiffio_h = no; then
+  if test "$tiff_ok" = yes; then
+    GRAPHIC_LFLAGS="${with_tiff_library} $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="${with_tiff_include} $GRAPHIC_CFLAGS"
+    GRAPHIC_LIBS="-ltiff $JPEG $GRAPHIC_LIBS"
+  else
     echo "configure: warning: Cannot find libtiff header tiffio" 1>&2
     echo "* The GUI library requres the TIFF library"
     echo "* Use --with-tiff-include to specify the tiff header directory"
     echo "* and --with-tiff-library to specify the tiff library directory"
     echo "* if it is not in the usual place(s)"
     { echo "configure: error: gnustep-gui will not compile without tiff includes" 1>&2; exit 1; }
-fi
-echo $ac_n "checking for main in -ltiff""... $ac_c" 1>&6
-echo "configure:904: checking for main in -ltiff" >&5
-ac_lib_var=`echo tiff'_'main | sed 'y%./+-%__p_%'`
-if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
+  fi
 else
-  ac_save_LIBS="$LIBS"
-LIBS="-ltiff  $LIBS"
-cat > conftest.$ac_ext <<EOF
-#line 912 "configure"
-#include "confdefs.h"
-
-int main() {
-main()
-; return 0; }
-EOF
-if { (eval echo configure:919: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=yes"
-else
-  echo "configure: failed program was:" >&5
-  cat conftest.$ac_ext >&5
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=no"
+  echo "configure: warning: Cannot find libtiff" 1>&2
+  echo "* The GUI library reqiures the TIFF library"
+  echo "* Use --with-tiff-library to specify the tiff library"
+  echo "* directory if it is not in the usual place(s)"
+  echo "* You may also have to specify --with-jpeg-library if the jpeg"
+  echo "* library is needed by tiff",
+  { echo "configure: error: gnustep-gui will not compile without tiff" 1>&2; exit 1; }
 fi
-rm -f conftest*
-LIBS="$ac_save_LIBS"
+CPPFLAGS="${tiff_check_lib_save_header}"
 
-fi
-if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
-  echo "$ac_t""yes" 1>&6
-    ac_tr_lib=HAVE_LIB`echo tiff | sed -e 's/[^a-zA-Z0-9_]/_/g' \
-    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
-  cat >> confdefs.h <<EOF
-#define $ac_tr_lib 1
-EOF
-
-  LIBS="-ltiff $LIBS"
-
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-CPPFLAGS="$save_cpp"
-LDFLAGS="$save_ldf"
+ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS"
+ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 
 #--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 echo $ac_n "checking for the version of gnustep-gui we are compiling""... $ac_c" 1>&6
-echo "configure:953: checking for the version of gnustep-gui we are compiling" >&5
+echo "configure:1187: checking for the version of gnustep-gui we are compiling" >&5
 if test -f "Version"; then
   . ./Version
 fi
 echo "$ac_t""$GNUSTEP_GUI_VERSION" 1>&6
+
 
 
 
@@ -1116,6 +1351,7 @@ s%@GNUSTEP_GUI_MINOR_VERSION@%$GNUSTEP_GUI_MINOR_VERSION%g
 s%@GNUSTEP_GUI_SUBMINOR_VERSION@%$GNUSTEP_GUI_SUBMINOR_VERSION%g
 s%@ADDITIONAL_LIB_DIRS@%$ADDITIONAL_LIB_DIRS%g
 s%@ADDITIONAL_INCLUDE_DIRS@%$ADDITIONAL_INCLUDE_DIRS%g
+s%@ADDITIONAL_DEPENDS@%$ADDITIONAL_DEPENDS%g
 
 CEOF
 EOF

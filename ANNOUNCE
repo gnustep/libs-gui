@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.6.7 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.7.0 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -9,11 +9,11 @@ What is the GNUstep GUI Library?
    It is a library of graphical user interface classes written
 completely in the Objective-C language; the classes are based upon the
 OpenStep specification as release by NeXT Software, Inc.  The library
-does not completely conform to the specification and has been enhanced
-in a number of ways to take advantage of the GNU system.  These classes
-include graphical objects such as buttons, text fields, popup lists,
-browser lists, and windows; there are also many associated classes for
-handling events, colors, fonts, pasteboards and images.
+has been enhanced in a number of ways to take advantage of the GNU
+system.  These classes include graphical objects such as buttons, text
+fields, popup lists, browser lists, and windows; there are also many
+associated classes for handling events, colors, fonts, pasteboards and
+images.
 
    The GNUstep GUI Library is designed in two parts.  The first part is
 the front-end component which is independent of platform and display
@@ -31,34 +31,23 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.6.7'.
+   The currently released version of the library is `0.7.0'.
 
-Noteworthy changes in version `0.6.7'
+Noteworthy changes in version `0.7.0'
 =====================================
 
-   * App Icons can support documents dropped using DnD.
+   * Much improvement in NSBrowser, NSMatrix, NSPopUpButton, combo
+     boxes.
 
-   * Added color conversions, working color picker and panel.
+   * NSTextAttachement implemented, many other text improvements.
 
-   * Almost complete rewrite of NSBezierPath
+   * Fonts cached in the frontend.
 
-   * Loads of improvements to Text classes.
+   * Changes so that backend can be loaded as a bundle at runtime.
 
-   * NSImage, NSButton, NSCell, etc, implemented many missing methods.
+   * simpler, faster compilation and installation.
 
-   * ...and even more changes to the Text classes.
-
-   * Starting implementation of printing.
-
-   * Scrollview fixes.
-
-   * Implemented deferred windows.
-
-   * NSTableView implemented.
-
-   * Implemented object value and formatter support in NSCell
-
-   * Support middle mouse button.
+   * NSColorWell works.
 
 How can I get support for this software?
 ========================================
@@ -72,17 +61,16 @@ the GNUstep Web Pages for more information regarding GNUstep resources
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.6.7.tar.gz distribution file has been placed on
+   The gstep-gui-0.7.0.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.
 
-   The Display Ghostscript System version 0.5.10 and the TIFF Graphics
-library version 3.4 may be required depending on the backend you choose.
+   the TIFF Graphics library version 3.4 is required.
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `0.6.6'.
+GNUstep Base Library version `1.0.2'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.
@@ -90,9 +78,6 @@ anonymous ftp at any of the GNU archive sites.
    For info about FTP via email, send email to <ftpmail@decwrl.dec.com>
 with no subject line, and two-line body with line one `help' and line
 two `quit'.
-
-   The most recent (not necessarily tested) snapshots of the library
-will be placed in <ftp://alpha.gnu.org/gnu/gnustep>.
 
 Where do I send bug reports?
 ============================
@@ -102,13 +87,6 @@ Where do I send bug reports?
 Obtaining GNU Software
 ======================
 
-   Check out the GNU web site. (<http://www.gnu.org/>)
-
-   Check out the GNUstep web site. (<http://www.gnustep.org/>)
-
-   The GNUstep GUI Library was donated to the Free Software Foundation
-as part of the On-line Community project of NET-Community.
-NET-Community is a company that develops and supports free software.
-Check out their web site to learn more.
-(<http://www.net-community.com/>)
+   Check out the GNUstep web site. (<http://www.gnustep.org/>), and the
+GNU web site. (<http://www.gnu.org/>)
 
