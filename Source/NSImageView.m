@@ -46,7 +46,7 @@ static Class imageCellClass;
 {
   if (self == [NSImageView class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       imageCellClass = [NSImageCell class];
       usedCellClass = imageCellClass;
     }
@@ -193,6 +193,7 @@ static Class imageCellClass;
   else 
     {
       [self setImage: image];
+      [self sendAction: _action to: _target];
       RELEASE(image);
       return YES;
     }
@@ -235,6 +236,52 @@ static Class imageCellClass;
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
   return NSDragOperationCopy;
+}
+
+//
+//  Target and Action
+//
+//  Target and action are handled by NSImageView itself, not its own cell.
+//
+- (id) target
+{
+  return _target;
+}
+
+- (void) setTarget: (id)anObject
+{
+  _target = anObject;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+- (void) setAction: (SEL)aSelector
+{
+  _action = aSelector;
+}
+
+//
+//  NSCoding Protocol
+//
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [super encodeWithCoder: aCoder];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+}
+
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  if ([aDecoder versionForClassName: @"NSImageView"] >= 2)
+    {
+      _target = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+    }
+  return self;
 }
 
 @end

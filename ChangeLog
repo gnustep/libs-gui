@@ -1,3 +1,10 @@
+2004-01-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSImageView.h: Added ivars for traget and action.
+	* Source/NSImageView.m: Implemented target and action handling and
+	sending of the action when an image gets dropped on the
+	view. Patch by Kazunobu Kuriyama (kazunobu.kuriyama@nifty.com)
+
 2004-01-15 Serg Stoyan <stoyan@on.com.ua>
 
 	* Images/common_MiniWindowTile.m: New file.

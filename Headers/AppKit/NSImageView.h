@@ -31,6 +31,8 @@
 
 @interface NSImageView : NSControl
 {
+  id _target;
+  SEL _action;
 }
 
 - (NSImage *)image;
