@@ -496,25 +496,23 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 	inTextContainer: aTextContainer];
 }
 
-/* FIXME: According to the doc, the following method should be able to
- * draw in any view after the focus has been locked on it. */
-- (void)drawBackgroundForGlyphRange:(NSRange)glyphRange 
-			    atPoint:(NSPoint)containerOrigin
+- (void)drawBackgroundForGlyphRange: (NSRange)glyphRange 
+			    atPoint: (NSPoint)containerOrigin
 {
-  NSTextContainer *aTextContainer = [self textContainerForGlyphAtIndex: glyphRange.location
-					  effectiveRange: NULL];
-  NSRect rect = [self boundingRectForGlyphRange: glyphRange 
-		      inTextContainer: aTextContainer];
+  NSTextContainer *aTextContainer;
+  
+  aTextContainer = [self textContainerForGlyphAtIndex: glyphRange.location
+			 effectiveRange: NULL];
 
-  /* FIXME: Which means that the following <which assumes we are
-     drawing in a text view> can't be correct */
-  // clear area under text
   [[[aTextContainer textView] backgroundColor] set];
-  NSRectFill(rect);
+  
+  NSRectFill ([self boundingRectForGlyphRange: glyphRange 
+		    inTextContainer: aTextContainer]);
+  
 }
 
-- (void)drawGlyphsForGlyphRange:(NSRange)glyphRange 
-			atPoint:(NSPoint)containerOrigin
+- (void)drawGlyphsForGlyphRange: (NSRange)glyphRange 
+			atPoint: (NSPoint)containerOrigin
 {
   NSRange newRange;
   NSRange selectedRange = [[self firstTextView] selectedRange];
@@ -563,7 +561,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
 - (NSSize) _sizeOfRange: (NSRange)aRange
 {
-  if (aRange.length == 0  ||  _textStorage == nil 
+  if (aRange.length == 0  
+      ||  _textStorage == nil 
       ||  NSMaxRange(aRange) > [_textStorage length])
     {
       return NSZeroSize;
@@ -935,9 +934,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       unsigned	position;	// Position in NSString.
       NSRect remainingRect = NSZeroRect;
 
-      // Determine the range of the next paragraph of text (in 'para') and set
-      // 'paraPos' to point after the terminating newline character (if any).
-      para = NSMakeRange(paraPos, length - paraPos);
+      /* Determine the range of the next paragraph of text (in 'para')
+	 and set 'paraPos' to point after the terminating newline
+	 character (if any).  */
+      para = NSMakeRange (paraPos, length - paraPos);
       eol = [allText rangeOfCharacterFromSet: newlines
 		     options: NSLiteralSearch
 		     range: para];
@@ -954,6 +954,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       position = para.location;
 
       paragraph = [allText substringWithRange: para];
+
       lScanner = [NSScanner scannerWithString: paragraph];
       [lScanner setCharactersToBeSkipped: nil];
 
