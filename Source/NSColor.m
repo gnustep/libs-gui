@@ -1065,24 +1065,24 @@ static NSMutableDictionary	*colorStrings = nil;
 - (void)encodeWithCoder:aCoder
 {
   // Version 1
-  [aCoder encodeValueOfObjCType: "f" at: &RGB_component.red];
-  [aCoder encodeValueOfObjCType: "f" at: &RGB_component.green];
-  [aCoder encodeValueOfObjCType: "f" at: &RGB_component.blue];
-  [aCoder encodeValueOfObjCType: "f" at: &alpha_component];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &RGB_component.red];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &RGB_component.green];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &RGB_component.blue];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &alpha_component];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_clear];
 
   // Version 2
   [aCoder encodeObject: colorspace_name];
   [aCoder encodeObject: catalog_name];
   [aCoder encodeObject: color_name];
-  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.cyan];
-  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.magenta];
-  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.yellow];
-  [aCoder encodeValueOfObjCType: "f" at: &CMYK_component.black];
-  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.hue];
-  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.saturation];
-  [aCoder encodeValueOfObjCType: "f" at: &HSB_component.brightness];
-  [aCoder encodeValueOfObjCType: "f" at: &white_component];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &CMYK_component.cyan];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &CMYK_component.magenta];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &CMYK_component.yellow];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &CMYK_component.black];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &HSB_component.hue];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &HSB_component.saturation];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &HSB_component.brightness];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &white_component];
   [aCoder encodeValueOfObjCType: @encode(int) at: &active_component];
   [aCoder encodeValueOfObjCType: @encode(int) at: &valid_components];
 }
@@ -1092,10 +1092,10 @@ static NSMutableDictionary	*colorStrings = nil;
   NSString *s;
 
   // Version 1
-  [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.red];
-  [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.green];
-  [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.blue];
-  [aDecoder decodeValueOfObjCType: "f" at: &alpha_component];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &RGB_component.red];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &RGB_component.green];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &RGB_component.blue];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &alpha_component];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_clear];
 
   // Get our class name
@@ -1108,15 +1108,14 @@ static NSMutableDictionary	*colorStrings = nil;
       colorspace_name = [aDecoder decodeObject];
       catalog_name = [aDecoder decodeObject];
       color_name = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.cyan];
-      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.magenta];
-      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.yellow];
-      [aDecoder decodeValueOfObjCType: "f" at: &CMYK_component.black];
-      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.hue];
-      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.saturation];
-      [aDecoder decodeValueOfObjCType: "f" at: &HSB_component.brightness];
-      [aDecoder decodeValueOfObjCType: "f" at: &white_component];
-      [aDecoder decodeValueOfObjCType: "i" at: &active_component];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.cyan];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.magenta];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.yellow];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.black];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &HSB_component.hue];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &HSB_component.saturation];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &HSB_component.brightness];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &white_component];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &active_component];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &valid_components];
     }
