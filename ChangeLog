@@ -1,3 +1,25 @@
+2004-07-06 22:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Add
+	-handlesWindowDecorations.
+	* Headers/AppKit/NSWindow.h: Document _frame ivar and add update
+	for -gui-managed window decorations.
+	(+minFrameWidthWithTitle:styleMask:): Change return type to float.
+	* Source/GNUmakefile: Add GSWindowDecorationView.m and
+	GSStandardWindowDecorationView.m .
+	* Source/GSDisplayServer.m (-handlesWindowDecorations): Provide a
+	default implementation.
+	* Source/NSPanel.m (-sendEvent:): Reimplement using
+	-_sendEvent:becomesKeyOnlyIfNeeded: .
+	(setControl): Only call -setStringValue: on the cell if it doesn't
+	respond to -setTitle: .
+	* Source/NSWindow.m: Reorganize management of the top-level view.
+	Implement -gui-managed window decorations.
+	(-_sendEvent:becomesKeyOnlyIfNeeded:): New method.
+	(-sendEvent:): Reimplement using -_sendEvent:becomesKeyOnlyIfNeeded: .
+	* Source/GSWindowDecorationView.h, Source/GSWindowDecorationView.m,
+	Source/GSStandardWindowDecorationView.m: New files.
+
 2004-07-05  Gregory John Casamento <greg_casamento@yahoo.com>
 	
 	* Source/NSToolbar.m: [NSToolbar _setWindow:] added logic

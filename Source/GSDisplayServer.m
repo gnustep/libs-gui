@@ -278,6 +278,12 @@ GSCurrentServer(void)
 }
 
 
+- (BOOL) handlesWindowDecorations
+{
+  return YES;
+}
+
+
 /* Drag and drop support. */
 /** Convienience method that calls -addDragTypes:toWindow: using the
     server that controls win.

@@ -186,7 +186,9 @@ GSNibTemplates.m \
 GSNibCompatibility.m \
 GSTitleView.m \
 GSToolbar.m \
-GSToolbarView.m
+GSToolbarView.m \
+GSStandardWindowDecorationView.m \
+GSWindowDecorationView.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits

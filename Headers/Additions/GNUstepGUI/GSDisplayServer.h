@@ -72,6 +72,8 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - glContextClass;
 - glPixelFormatClass;
 
+- (BOOL) handlesWindowDecorations;
+
 /* Drag and drop support. */
 + (BOOL) addDragTypes: (NSArray*)types toWindow: (NSWindow *)win;
 + (BOOL) removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
@@ -109,7 +111,10 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen;
 - (void) termwindow: (int) win;
+
+/* Only if handlesWindowDecorations returns YES. */
 - (void) stylewindow: (unsigned int) style : (int) win;
+
 - (void) windowbacking: (NSBackingStoreType)type : (int) win;
 - (void) titlewindow: (NSString *) window_title : (int) win;
 - (void) miniwindow: (int) win;

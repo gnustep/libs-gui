@@ -194,65 +194,8 @@ static NSString	*defaultTitle = @" ";
 
 - (void) sendEvent: (NSEvent*)theEvent
 {
-/*
-Code shared with [NSWindow -sendEvent:], remember to update both places.
-*/
-  NSView	*v;
-  NSEventType	type;
-
-  type = [theEvent type];
-  if (type == NSLeftMouseDown)
-    {
-      if (_f.visible)
-	{
-	  BOOL	wasKey = _f.is_key;
-
-	  if (_f.has_closed == NO)
-	    {
-	      v = [_contentView hitTest: [theEvent locationInWindow]];
-	      if (_f.is_key == NO)
-		{
-		  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
-		  if (!_becomesKeyOnlyIfNeeded || [v needsPanelToBecomeKey])
-		    [self makeKeyAndOrderFront: self];
-		}
-	      /* Activate the app *after* making the receiver key, as app
-		 activation tries to make the previous key window key. */
-	      if ([NSApp isActive] == NO 
-		  && (NSWindow*)self != [NSApp iconWindow])
-		{
-		  [NSApp activateIgnoringOtherApps: YES];
-		}
-	      if (_firstResponder != v)
-		{
-		  [self makeFirstResponder: v];
-		}
-	      if (_lastView)
- 		{
-		  DESTROY(_lastView);
-		}
-	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
-		{
-		  if ([NSHelpManager isContextHelpModeActive])
-		    {
-		      [v helpRequested: theEvent];
-		    }
-		  else
-		    {
-		      ASSIGN(_lastView, v);
-		      [v mouseDown: theEvent];
-		    }
-		}
-	      else
-		{
-		  [self mouseDown: theEvent];
-		}
-	    }
-	  _lastPoint = [theEvent locationInWindow];
-	}
-      return;
-    }
-  [super sendEvent: theEvent];
+  [self _sendEvent: theEvent
+    becomesKeyOnlyIfNeeded: _becomesKeyOnlyIfNeeded];
 }
 
 @end /* NSPanel */
@@ -504,7 +447,7 @@ setControl(NSView* content, id control, NSString *title)
 	{
 	  [control setTitle: title];
 	}
-      if ([control respondsToSelector: @selector(setStringValue:)])
+      else if ([control respondsToSelector: @selector(setStringValue:)])
 	{
 	  [control setStringValue: title];
 	}

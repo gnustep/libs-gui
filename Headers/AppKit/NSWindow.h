@@ -60,6 +60,8 @@
 @class NSWindowController;
 @class NSCachedImageRep;
 
+@class GSWindowDecorationView;
+
 /*
  * Window levels are taken from MacOS-X
  * NSDesktopWindowLevel is copied from Window maker and is intended to be
@@ -101,12 +103,39 @@ APPKIT_EXPORT NSSize NSTokenSize;
 
 @interface NSWindow : NSResponder <NSCoding>
 {
+  /*
+  A window really has three interesting frames:
+  
+  The screen frame. This is the frame of the _entire_ window on the screen,
+  including all decorations and borders (regardless of where they come from).
+  (On X, we can only guess what the screen frame is.)
+
+  The window frame. This is the frame of the backend window for this window,
+  and is thus the base of the coordinate system for the window. IOW, it's
+  the frame of the area we can draw into.
+
+  The contect rect. This is the frame of the content view.
+
+  Wrt. size, ScreenFrame >= WindowFrame >= ContentRect. When -gui doesn't
+  manage the window decorations, WindowFrame == ContentRect. When -gui does
+  manage the window decorations, WindowFrame will include the decorations,
+  and ScreenFrame == WindowFrame.
+
+
+  To get coordinate transforms and stuff right wrt. OpenStep, we really want
+  the window frame here. However, for hysterical reasons, _frame is actually
+  the screen frame. (The other rectangles/sizes passed around in NSWindow
+  methods are likely a mix of screen and window frames.) Only if -gui manages
+  decorations will this match the semantics properly.
+  */
   NSRect        _frame;
+
+
   NSSize        _minimumSize;
   NSSize        _maximumSize;
   NSSize        _increments;
   NSString	*_autosaveName;
-  id		_wv;
+  GSWindowDecorationView *_wv;
   id            _contentView;
   id            _firstResponder;
   id            _futureFirstResponder;
@@ -193,8 +222,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
-+ (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
-			styleMask: (unsigned int)aStyle;
++ (float) minFrameWidthWithTitle: (NSString *)aTitle
+		       styleMask: (unsigned int)aStyle;
 
 
 /*
