@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: November 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,37 +29,42 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <AppKit/NSTextFieldCell.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSText.h>
 
-//
-// TextFieldCell implementation
-//
+static NSColor	*bgCol;
+static NSColor	*txtCol;
+
+@interface NSTextFieldCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n;
+@end
+
+@implementation	NSTextFieldCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n
+{
+  ASSIGN(bgCol, [NSColor textBackgroundColor]);
+  ASSIGN(txtCol, [NSColor textColor]); 
+}
+@end
+
 @implementation NSTextFieldCell
-
-///////////////////////////////////////////////////////////////
-//
-// Class methods
-//
-
 + (void) initialize
 {
   if (self == [NSTextFieldCell class])
     {
       [self setVersion: 1];
+      [[NSNotificationCenter defaultCenter] 
+	addObserver: self
+	selector: @selector(_systemColorsChanged:)
+	name: NSSystemColorsDidChangeNotification
+	object: nil];
+      [self _systemColorsChanged: nil];
     }
 }
 
-///////////////////////////////////////////////////////////////
-//
-// Instance methods
-//
 //
 // Initialization
 //
@@ -70,29 +77,28 @@
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
+  text_align = NSLeftTextAlignment;
 
-  [self setAlignment: NSLeftTextAlignment];
-  [self setBackgroundColor: [NSColor textBackgroundColor]];
-  [self setTextColor: [NSColor textColor]];
-  [self setFont: [NSFont systemFontOfSize: 0]];
-  draw_background = NO;
+  ASSIGN(_text_color, txtCol);
+  ASSIGN(_background_color, bgCol);
+  _draws_background = NO;
   return self;
 }
 
 - (void) dealloc
 {
-  [background_color release];
-  [text_color release];
+  [_background_color release];
+  [_text_color release];
   [super dealloc];
 }
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSTextFieldCell	*c = [super copyWithZone: zone];
+  NSTextFieldCell *c = [super copyWithZone: zone];
 
-  [c setBackgroundColor: background_color];
-  [c setTextColor: text_color];
-  [c setDrawsBackground: draw_background];
+  [c setBackgroundColor: _background_color];
+  [c setTextColor: _text_color];
+  [c setDrawsBackground: _draws_background];
 
   return c;
 }
@@ -100,107 +106,51 @@
 //
 // Modifying Graphic Attributes 
 //
-- (NSColor *) backgroundColor
-{
-  return background_color;
-}
-
-- (BOOL) drawsBackground
-{
-  return draw_background;
-}
-
 - (void) setBackgroundColor: (NSColor *)aColor
 {
-  [aColor retain];
-  [background_color release];
-  background_color = aColor;
+  ASSIGN (_background_color, aColor); 
+}
+
+- (NSColor *) backgroundColor
+{
+  return _background_color;
 }
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  draw_background = flag;
+  _draws_background = flag;
+}
+
+- (BOOL) drawsBackground
+{
+  return _draws_background;
 }
 
 - (void) setTextColor: (NSColor *)aColor
 {
-  [aColor retain];
-  [text_color release];
-  text_color = aColor;
+  ASSIGN (_text_color, aColor);
+}
+
+- (NSColor *) textColor
+{
+  return _text_color;
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
   textObject = [super setUpFieldEditorAttributes: textObject];
-  [textObject setDrawsBackground: draw_background];
-  [textObject setBackgroundColor: background_color];
-  [textObject setTextColor: text_color];
+  [textObject setDrawsBackground: _draws_background];
+  [textObject setBackgroundColor: _background_color];
+  [textObject setTextColor: _text_color];
   return textObject;
-}
-
-- (NSColor *) textColor
-{
-  return text_color;
-}
-
-- (void) setFont: (NSFont *)fontObject
-{
-  [super setFont: fontObject];
-}
-
-//
-// Editing Text 
-//
-- (void) selectText: (id)sender
-{
-}
-
-- (double) doubleValue
-{
-  return [super doubleValue];
-}
-
-- (void) setDoubleValue: (double)aDouble
-{
-  [super setDoubleValue: aDouble];
-}
-
-- (float) floatValue
-{
-  return [super floatValue];
-}
-
-- (void) setFloatValue: (float)aFloat
-{
-  [super setFloatValue: aFloat];
-}
-
-- (int) intValue
-{
-  return [super intValue];
-}
-
-- (void) setIntValue: (int)anInt
-{
-  [super setIntValue: anInt];
-}
-
-- (NSString *) stringValue
-{
-  return [super stringValue];
-}
-
-- (void) setStringValue: (NSString *)aString
-{
-  [super setStringValue: aString];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  if (draw_background)
+  if (_draws_background)
     {
       [controlView lockFocus];
-      [background_color set];
+      [_background_color set];
       NSRectFill ([self drawingRectForBounds: cellFrame]);
       [controlView unlockFocus];
     }
@@ -214,18 +164,18 @@
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(id) at: &background_color];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &text_color];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &draw_background];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &text_color];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &draw_background];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
 
   return self;
 }
