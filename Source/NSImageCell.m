@@ -211,7 +211,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
-  NSSize        imageSize;
+  NSSize        imageSize, realImageSize;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
@@ -221,12 +221,14 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   // leave room for the frame
   cellFrame = [self drawingRectForBounds: cellFrame];
 
+  realImageSize = [_cell_image size];
+
   switch (_imageScaling)
     {
       case NSScaleProportionally:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-	  imageSize = scaleProportionally ([_cell_image size], cellFrame);
+	  imageSize = scaleProportionally (realImageSize, cellFrame);
 	  break;
 	}
       case NSScaleToFit:
@@ -239,7 +241,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
       case NSScaleNone:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleNone");
-	  imageSize = [_cell_image size];
+	  imageSize = realImageSize;
 	  break;
 	}
     }
@@ -290,20 +292,12 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     position.y += imageSize.height;
 
   // draw!
-  /* TODO: Clean this up when bug #11712 is fixed.  */
-  if (NSEqualSizes(imageSize, [_cell_image size]))
-    [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
-  else
-    {
-      BOOL wasScalable = [_cell_image scalesWhenResized];
-      [_cell_image setScalesWhenResized: YES];
-      [_cell_image drawRepresentation:
-	  [_cell_image bestRepresentationForDevice: nil]
-	inRect:
-	  NSMakeRect(position.x, position.y, imageSize.width,
-		     imageSize.height)];
-      [_cell_image setScalesWhenResized: wasScalable];
-    }
+  [_cell_image drawInRect: NSMakeRect(position.x, position.y,
+				      imageSize.width, imageSize.height)
+		 fromRect: NSMakeRect(0, 0, realImageSize.width,
+				      realImageSize.height)
+		operation: NSCompositeSourceOver
+		 fraction: 1.0];
 
   if (_cell.shows_first_responder)
     NSDottedFrameRect(cellFrame);

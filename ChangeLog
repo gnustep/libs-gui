@@ -1,3 +1,8 @@
+2005-01-25 01:05  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Use
+	-drawInRect:fromRect:operation:fraction: to draw the image.
+
 2005-01-25 00:29  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Headers/AppKit/NSImage.h (-drawAtPoint:fromRect:fraction:)
