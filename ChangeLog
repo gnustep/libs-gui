@@ -1,3 +1,15 @@
+Sat Aug 11 07:41:45 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([NSMatrix -getRow:column:forPoint:]): Fixed
+	case of no rows or no columns in the matrix; return NO and set row
+	and column to -1 if needed.
+	
+Sat Aug 11 07:41:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([NSMatrix -getRow:column:forPoint:]):
+	Consider points on the boundaries of cells to be inside cells.
+	(Patch from Georg Fleischmann <georg@vhf.de>).
+
 2001-08-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSImage.h
