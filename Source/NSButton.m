@@ -105,14 +105,6 @@ id _nsbuttonCellClass = nil;
 }
 
 //
-// Identifying the Selected Cell
-//
-- (id) selectedCell
-{
-  return cell;
-}
-
-//
 // Setting the State
 //
 - (void) setIntValue: (int)anInt

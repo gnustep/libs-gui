@@ -258,11 +258,6 @@ id _nsTextfieldCellClass = nil;
   return [cell textColor];
 }
 
-- (id) selectedCell
-{
-  return cell;
-}
-
 //
 // Target and Action
 //
