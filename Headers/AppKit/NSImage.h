@@ -102,6 +102,11 @@ typedef enum {
 // Referring to Images by Name 
 //
 + (id) imageNamed: (NSString*)aName;
+#ifndef STRICT_OPENSTEP
+#ifndef NO_GNUSTEP
++ (NSImage*) _standardImageWithName: (NSString*)name;
+#endif
+#endif
 - (BOOL) setName: (NSString*)aName;
 - (NSString*) name;
 

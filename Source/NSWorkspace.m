@@ -175,14 +175,11 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 @end
 
-
 
 @interface NSWorkspace (Private)
 
 // Icon handling
 - (NSImage*) _extIconForApp: (NSString*)appName info: (NSDictionary*)extInfo;
-- (NSImage*) _getImageWithName: (NSString*)name
-		     alternate: (NSString*)alternate;
 - (NSImage*) unknownFiletypeImage;
 - (NSImage*) _saveImageFor: (NSString*)iconPath;
 - (NSString*) thumbnailForFile: (NSString *)file;
@@ -853,9 +850,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		{
 		  if (rootImage == nil)
 		    {
-		      rootImage = RETAIN([self _getImageWithName:
-			@"Root_PC.tiff"
-			alternate: @"common_Root_PC.tiff"]);
+		      rootImage = RETAIN([NSImage _standardImageWithName:
+			@"Root_PC.tiff"]);
 		    }
 
 		  image = rootImage;
@@ -864,9 +860,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		{
 		  if (homeImage == nil)
 		    {
-		      homeImage = RETAIN([self _getImageWithName:
-			@"HomeDirectory.tiff"
-			alternate: @"common_HomeDirectory.tiff"]);
+		      homeImage = RETAIN([NSImage _standardImageWithName:
+			@"HomeDirectory.tiff"]);
 		    }
 		  image = homeImage;
 		}
@@ -874,8 +869,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		{
 		  if (folderImage == nil)
 		    {
-		      folderImage = RETAIN([self _getImageWithName:
-			@"Folder.tiff" alternate: @"common_Folder.tiff"]);
+		      folderImage = RETAIN([NSImage _standardImageWithName:
+			@"Folder.tiff"]);
 		    }
 		  image = folderImage;
 		}
@@ -916,9 +911,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		{
 		  if (unknownTool == nil)
 		    {
-		      unknownTool = RETAIN([self _getImageWithName:
-			@"UnknownTool.tiff" alternate:
-			@"common_UnknownTool.tiff"]);
+		      unknownTool = RETAIN([NSImage _standardImageWithName:
+			@"UnknownTool.tiff"]);
 		    }
 		  image = unknownTool;
 		}
@@ -1679,17 +1673,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return nil;
 }
 
-- (NSImage*) _getImageWithName: (NSString*)name
-		     alternate: (NSString*)alternate
-{
-  NSImage	*image = nil;
-
-  image = [NSImage imageNamed: name];
-  if (image == nil)
-    image = [NSImage imageNamed: alternate];
-  return image;
-}
-
 /** Returns the default icon to display for a directory */
 - (NSImage*) unknownFiletypeImage
 {
@@ -1697,8 +1680,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   if (image == nil)
     {
-      image = RETAIN([self _getImageWithName: @"Unknown.tiff"
-				   alternate: @"common_Unknown.tiff"]);
+      image = RETAIN([NSImage _standardImageWithName: @"Unknown.tiff"]);
     }
 
   return image;
@@ -1830,9 +1812,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	    {
 	      if (unknownApplication == nil)
 		{
-		  unknownApplication = RETAIN([self _getImageWithName:
-		    @"UnknownApplication.tiff" alternate:
-		    @"common_UnknownApplication.tiff"]);
+		  unknownApplication = RETAIN([NSImage _standardImageWithName:
+		    @"UnknownApplication.tiff"]);
 		}
 	      icon = unknownApplication;
 	    }

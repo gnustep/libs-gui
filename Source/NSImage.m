@@ -273,6 +273,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return image;
 }
 
++ (NSImage *) _standardImageWithName: (NSString *)name
+{
+  NSImage	*image = nil;
+
+  image = [NSImage imageNamed: name];
+  if (image == nil)
+    image = [NSImage imageNamed: [@"common_" stringByAppendingString: name]];
+  return image;
+}
+
 - (id) init
 {
   return [self initWithSize: NSMakeSize(0, 0)];

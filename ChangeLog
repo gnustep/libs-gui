@@ -1,3 +1,10 @@
+2004-10-30  Alex Perez  <aperez@student.santarosa.edu>
+
+	* Headers/AppKit/NSImage.h (+_standardImageWithName:): New method.
+	* Source/NSImage.m (+_standardImageWithName:): New method.
+	* Source/NSWorkspace.m (_getImageForName:alternate:): Remove. Update
+	callers to use +_standardImageWithName: instead.
+
 2004-10-25  Quentin Mathe <qmathe@club-internet.fr>
 
         * Source/NSWorkspace.m: Moved the code which looks for the application
