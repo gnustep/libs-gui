@@ -1,3 +1,13 @@
+Thu Nov 19 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSWindowView.m, NSScrollView.m and NSClipView.m add view isOpaque method.
+	* NSWindow.m and NSView.m remove non OS display and flushing methods 
+		(move them to XDPS) reimplement these per the OS 4.2 docs. 
+	* NSText.m setSelectedRange: test that view is in a window first.
+	* NSScroller.m add view isOpaque method.
+	* NSScrollView.m reflectScrolledClipView: tweak auto display of scrollers.
+	* NSApplication.m replace ASSIGN with CONVEY macro.
+
 1998-11-19 16:40  Lyndon Tremblay <tremblay2@home.com>
 
 	* Model/IMLoading.m: -loadIMFile automatically searches in 
