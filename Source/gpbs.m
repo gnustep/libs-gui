@@ -113,6 +113,9 @@ NSMutableDictionary*	pasteboards = nil;
 
 - (NSData*) data
 {
+  if (verbose) {
+    printf("get data for %x\n", (unsigned)self);
+  }
   return data;
 }
 
@@ -120,13 +123,13 @@ NSMutableDictionary*	pasteboards = nil;
 {
   if (data == nil && (owner && pboard)) {
     if (hasGNUDataForType) {
-      [owner pasteboard: pboard provideDataForType: type andVersion: version];
+      [pboard askOwner:owner toProvideDataForType: type andVersion: version];
     }
     else if (hasStdDataForType) {
-      [owner pasteboard: pboard provideDataForType: type];
+      [pboard askOwner:owner toProvideDataForType: type];
     }
   }
-  return data;
+  return [self data];
 }
 
 - (id) owner
@@ -141,6 +144,9 @@ NSMutableDictionary*	pasteboards = nil;
 
 - (void) setData: (NSData*)d
 {
+  if (verbose) {
+    printf("set data for %x\n", (unsigned)self);
+  }
   [d retain];
   [data release];
   data = d;
@@ -208,7 +214,7 @@ NSMutableDictionary*	pasteboards = nil;
       e->hasStdDataForType = YES;
     }
     if (anOwner && [anOwner respondsToSelector:
-		@selector(pasteboard:provideDataForType:version:)]) {
+		@selector(pasteboard:provideDataForType:andVersion:)]) {
       e->hasGNUDataForType = YES;
     }
 
@@ -247,7 +253,7 @@ NSMutableDictionary*	pasteboards = nil;
     StdData = YES;
   }
   if (owner && [owner respondsToSelector:
-		@selector(pasteboard:provideDataForType:version:)]) {
+		@selector(pasteboard:provideDataForType:andVersion:)]) {
     GNUData = YES;
   }
 
@@ -296,7 +302,7 @@ NSMutableDictionary*	pasteboards = nil;
 
     [d checkConnection: c];
     if ([d data] == nil && [d owner] == nil) {
-      [items removeObjectAtIndex:i];
+      [items removeObjectAtIndex:i-1];
     }
   }
 }
@@ -535,6 +541,10 @@ NSMutableDictionary*	pasteboards = nil;
   else {
     e = [self entryByCount:count];
   }
+  if (verbose) {
+    printf("get data for type '%s' version %d\n",
+		[type cStringNoCopy], e ? [e refNum] : -1);
+  }
   if (e) {
     PasteboardData*	d = [e itemForType: type];
 
@@ -612,8 +622,13 @@ NSMutableDictionary*	pasteboards = nil;
           isFile: (BOOL)flag
         oldCount: (int)count
 {
-  PasteboardEntry*  e = [self entryByCount: count];
+  PasteboardEntry*  e;
 
+  if (verbose) {
+    printf("set data for type '%s' version %d\n",
+		[type cStringNoCopy], count);
+  }
+  e = [self entryByCount: count];
   if (e) {
     PasteboardData*	d;
 
@@ -625,17 +640,30 @@ NSMutableDictionary*	pasteboards = nil;
       else {
         return NO;
       }
+      if (type && [type isEqual: NSFileContentsPboardType] == NO) {
+        d = [e itemForType: type];
+        if (d) {
+          [d setData: data];
+        }
+        else {
+          return NO;
+        }
+      }
+      return YES;
     }
-    if (type && ![type isEqual: NSFileContentsPboardType]) {
+    else if (type) {
       d = [e itemForType: type];
       if (d) {
         [d setData: data];
+        return YES;
       }
       else {
         return NO;
       }
     }
-    return YES;
+    else {
+      return NO;
+    }
   }
   else {
     return NO;
