@@ -1,6 +1,9 @@
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextAttachment.h>
+#include <AppKit/NSFont.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSRange.h>
 
 /*
  * function to return a character set containing characters that
@@ -563,5 +566,296 @@ documentAttributes: (NSDictionary**)dict
 	}
       location = NSMaxRange(range);
     }
+}
+@end
+
+
+
+
+/* AttributedStringRTFDAdditions.m created by daniel on Wed 24-Nov-1999 */
+
+@interface NSString (Replacing)
+- (NSString*) stringByReplacingEveryOccurrenceOfString: (NSString*)aString
+					    withString: (NSString*)other;
+@end
+
+@implementation NSString (Replacing)
+
+- (NSString*) stringByReplacingEveryOccurrenceOfString: (NSString*)aString
+					    withString: (NSString*)other
+{
+  unsigned		len = [self length];
+  NSMutableString	*erg = [NSMutableString string];
+  NSRange		currRange = [self rangeOfString: aString];
+  unsigned		prevLocation = 0;
+
+  while (currRange.length > 0)
+    {
+      if (currRange.location > 0)
+	{
+	  NSRange	r;
+
+	  r = NSMakeRange(prevLocation, currRange.location - prevLocation);
+	  [erg appendString: [self substringWithRange: r]];
+	}
+      [erg appendString: other];
+      currRange.location += currRange.length;
+      currRange.length = len - currRange.location;
+      prevLocation = currRange.location;
+      currRange = [self rangeOfString: aString
+			      options: NSLiteralSearch
+				range: currRange];
+    }
+  if (prevLocation < len)
+    {
+      NSRange	r;
+
+      r = NSMakeRange(prevLocation, len - prevLocation);
+      [erg appendString: [self substringWithRange: r]];
+    }
+
+  return erg;
+}
+@end
+
+@implementation NSAttributedString(AttributedStringRTFDAdditions)
+
+- (NSString*) RTFHeaderStringWithContext: (NSMutableDictionary*) contextDict
+{
+  NSMutableString	*result;
+  NSMutableDictionary	*fontDict;
+
+  result = (id)[NSMutableString stringWithString: @"{\\rtf0\\ansi"];
+  fontDict = [contextDict objectForKey: @"Fonts"];
+
+  // write Font Table
+  if (fontDict != nil)
+    {
+      NSMutableString	*fontlistString = [NSMutableString string];
+      NSString		*table;
+      NSEnumerator	*fontEnum;
+      id		currFont;
+      NSArray		*keyArray;
+
+      keyArray = [fontDict allKeys];
+      keyArray = [keyArray sortedArrayUsingSelector: @selector(compare:)];
+
+      fontEnum = [keyArray objectEnumerator];
+      while ((currFont = [fontEnum nextObject]) != nil)
+	{
+	  NSString	*fontFamily;
+	  NSString	*detail;
+
+	  fontFamily = [[NSFont fontWithName: currFont size: 12] familyName];
+
+	  detail = [NSString stringWithFormat: @"%@\\f%@ %@;",
+	    [fontDict objectForKey: currFont], fontFamily, currFont];
+	  [fontlistString appendString: detail];
+	}
+      table = [NSString stringWithFormat: @"{\\fonttbl%@}\n", fontlistString];
+      [result appendString: table];
+    }
+  return result;
+}
+
+- (NSString*) RTFTrailerStringWithContext: (NSMutableDictionary*) contextDict
+{
+  return @"}";
+}
+
+- (NSString*) RTFBodyStringWithContext: (NSMutableDictionary*) contextDict
+{
+  NSRange		completeRange;
+  NSRange		currRange;
+  NSString		*string = [self string];
+  NSMutableString	*result = [NSMutableString string];
+  NSFont		*currentFont = nil;
+
+  completeRange = NSRangeFromString([contextDict objectForKey: @"Range"]);
+  currRange = NSMakeRange(completeRange.location, 0);
+
+  while (NSMaxRange(currRange) < NSMaxRange(completeRange))  // save all "runs"
+    {
+      NSDictionary	*attributes;
+      NSString		*substring;
+      BOOL		useBraces = NO;
+      NSMutableString	*headerString;
+      NSMutableString	*trailerString;
+      NSEnumerator	*attribEnum;
+      id		currAttrib;
+
+      attributes = [self attributesAtIndex: NSMaxRange(currRange)
+		     longestEffectiveRange: &currRange
+				   inRange: completeRange];
+      substring = [string substringWithRange: currRange];
+      headerString = (id)[NSMutableString string];
+      trailerString = (id)[NSMutableString string];
+
+      /*
+       * analyze attributes of current run
+       */
+      attribEnum = [attributes keyEnumerator];
+      while ((currAttrib = [attribEnum nextObject]) != nil)
+	{
+	  /*
+	   * handle fonts
+	   */
+	  if ([currAttrib isEqualToString: NSFontAttributeName])
+	    {
+	      NSFont			*font;
+	      NSMutableDictionary	*peekDict;
+	      NSString			*fontToken;
+	      NSString			*fontName;
+	      NSFontTraitMask		traits;
+
+	      font = [attributes objectForKey: NSFontAttributeName];
+	      peekDict = [contextDict objectForKey: @"Fonts"];
+	      fontName = [font familyName];
+	      traits = [[NSFontManager sharedFontManager] traitsOfFont: font];
+
+	      /*
+	       * maintain a dictionary for the used fonts
+	       * (for rtf-header generation)
+	       */
+	      if (peekDict == nil)
+		{
+		  peekDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+		    @"\\f0", fontName, nil];
+		  [contextDict setObject: peekDict forKey: @"Fonts"];
+		}
+	      else
+		{
+		  if ([peekDict objectForKey: fontName] == nil)
+		    {
+		      unsigned	count = [peekDict count];
+		      NSString	*fCount;
+
+		      fCount = [NSString stringWithFormat: @"\\f%d", count];
+		      [peekDict setObject: fCount forKey: fontName];
+		    }
+		}
+	      fontToken = [peekDict objectForKey: fontName];
+	      /*
+	       * font name
+	       */
+	      if (![fontName isEqualToString: [currentFont familyName]]
+		|| currentFont == nil)
+		{
+		  [headerString appendString: fontToken];
+		}
+	      /*
+	       * font size
+	       */
+	      if ([font pointSize] != [currentFont pointSize])
+		{
+		  int		points = (int)[font pointSize]*2;
+		  NSString	*pString;
+
+		  pString = [NSString stringWithFormat: @"\\fs%d", points];
+		  [headerString appendString: pString];
+		}
+	      /*
+	       * font attributes
+	       */
+	      if (traits & NSItalicFontMask)
+		{
+		  [headerString appendString: @"\n\\i "];
+		}
+	      if (traits & NSBoldFontMask)
+		{
+		  [headerString appendString: @"\n\\b "];
+		  [trailerString appendString: @"\n\\b0"];
+		}
+	      currentFont = font;
+	    }
+	  else if ([currAttrib isEqualToString: NSParagraphStyleAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSForegroundColorAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSUnderlineStyleAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSSuperscriptAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSBackgroundColorAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSAttachmentAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSLigatureAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSBaselineOffsetAttributeName])
+	    {
+	    }
+	  else if ([currAttrib isEqualToString: NSKernAttributeName])
+	    {
+	    }
+	}
+    // write down current run
+      substring = [substring stringByReplacingString: @"\\"
+					  withString: @"\\\\"];
+      substring = [substring stringByReplacingString: @"\n"
+					  withString: @"\\\n"];
+      substring = [substring stringByReplacingString: @"{"
+					  withString: @"\\{"];
+      substring = [substring stringByReplacingString: @"}"
+					  withString: @"\\}"];
+      if (useBraces)
+	{
+	  NSString	*braces;
+
+	  braces = [NSString stringWithFormat: @"{%@%@%@}",
+	    headerString, substring, trailerString];
+	  [result appendString: braces];
+	}
+      else
+	{
+	  NSString	*nobraces;
+
+	  nobraces = [NSString stringWithFormat: @"%@%@%@",
+	    headerString, substring, trailerString];
+	  [result appendString: nobraces];
+	}
+    }
+  return result;
+}
+
+
+- (NSString*) RTFDStringFromRange: (NSRange)range
+	       documentAttributes: (NSDictionary*)dict
+{
+  NSMutableString	*output = [NSMutableString string];
+  NSString		*headerString;
+  NSString		*trailerString;
+  NSString		*bodyString;
+  NSMutableDictionary	*context = [NSMutableDictionary dictionary];
+
+  [context setObject: (dict ? dict : [NSMutableDictionary dictionary])
+	      forKey: @"DocumentAttributes"];
+  [context setObject: NSStringFromRange(range) forKey: @"Range"];
+
+  /*
+   * do not change order! (esp. body has to be generated first; builds context)
+   */
+  bodyString = [self RTFBodyStringWithContext: context];
+  trailerString = [self RTFTrailerStringWithContext: context];
+  headerString = [self RTFHeaderStringWithContext: context];
+
+  [output appendString: headerString];
+  [output appendString: bodyString];
+  [output appendString: trailerString];
+  return (NSString*)output;
+}
+
+- (NSData*) RTFDFromRange: (NSRange)range
+       documentAttributes: (NSDictionary*)dict
+{
+  return [[self RTFDStringFromRange: range documentAttributes: dict]
+    dataUsingEncoding: NSNEXTSTEPStringEncoding];
 }
 @end
