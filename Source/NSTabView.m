@@ -32,6 +32,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSForm.h>
 #include <AppKit/NSMatrix.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSTabView.h>
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/PSOperators.h>
