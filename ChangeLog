@@ -1,3 +1,13 @@
+2003-03-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSFontInfo.m
+	Removed creation of fontDictionary from [init] method. This now
+	gets done on demand in [afmDictionary].
+	* Source/NSFontPanel.m:
+	[_familySelectionChanged:] made the call to [_trySelectSize:]
+	safer against none existing fonts. This used to result in a NaN
+	being displayed as font size. 
+
 2003-04-25  Benhur Stein <benhur@inf.ufsm.br>
 
 	* Source/NSRulerView.m:
