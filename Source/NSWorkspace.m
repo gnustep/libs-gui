@@ -47,6 +47,9 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 
+#define stringify_it(X) #X
+#define	mkpath(X) stringify_it(X) "/Tools"
+
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 @interface	_GSWorkspaceCenter: NSNotificationCenter
