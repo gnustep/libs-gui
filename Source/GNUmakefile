@@ -333,8 +333,7 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
-PSOperators.h \
-nsimage-tiff.h
+PSOperators.h
 
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def

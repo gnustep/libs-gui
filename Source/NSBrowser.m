@@ -51,6 +51,7 @@
 #include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSBezierPath.h>
 
 DEFINE_RINT_IF_MISSING
 
@@ -58,7 +59,7 @@ DEFINE_RINT_IF_MISSING
 static float scrollerWidth; // == [NSScroller scrollerWidth]
 static NSTextFieldCell *titleCell;
 
-#define NSBR_COLUMN_SEP 6
+#define NSBR_COLUMN_SEP 4
 #define NSBR_VOFFSET 2
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
@@ -1096,11 +1097,27 @@ static NSTextFieldCell *titleCell;
 /** Sets whether to separate columns with bezeled borders. */
 - (void) setSeparatesColumns: (BOOL)flag
 {
-  if (_separatesColumns != flag)
+  NSBrowserColumn *bc;
+  NSScrollView    *sc;
+  NSBorderType    bt;
+  int             i, columnCount;
+
+  // if this flag already set or browser is titled -- do nothing
+  if (_separatesColumns == flag || _isTitled)
+    return;
+
+  columnCount = [_browserColumns count];
+  bt = flag ? NSBezelBorder : NSNoBorder;
+  for (i = 0; i < columnCount; i++)
     {
-      _separatesColumns = flag;
-      [self tile];
+      bc = [_browserColumns objectAtIndex: i];
+      sc = [bc columnScrollView];
+      [sc setBorderType:bt];
     }
+
+  _separatesColumns = flag;
+  [self setNeedsDisplay:YES];
+  [self tile];
 }
 
 /** Returns YES if the title of a column is set to the string value of 
@@ -1162,12 +1179,12 @@ static NSTextFieldCell *titleCell;
 /** Sets whether columns display titles. */
 - (void) setTitled: (BOOL)flag
 {
-  if (_isTitled != flag)
-    {
-      _isTitled = flag;
-      [self tile];
-      [self setNeedsDisplay: YES];
-    }
+  if (_isTitled == flag || !_separatesColumns)
+    return;
+  
+  _isTitled = flag;
+  [self tile];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) drawTitleOfColumn: (int)column 
@@ -1480,17 +1497,31 @@ static NSTextFieldCell *titleCell;
     {
       r.origin.x += n * NSBR_COLUMN_SEP;
     }
+  else
+    {
+      if (column == _firstVisibleColumn)
+        r.origin.x = (n * _columnSize.width) + 2;
+      else
+	r.origin.x = (n * _columnSize.width) + (n + 2);
+    }
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
     {
-      r.origin.y = scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
+      if (_separatesColumns)
+	r.origin.y = (scrollerWidth - 2) + (2 * bs.height) + NSBR_VOFFSET;
+      else
+	r.origin.y = scrollerWidth + 2;
     }
 
   // Padding : _columnSize.width is rounded in "tile" method
   if (column == _lastVisibleColumn)
     {
-      r.size.width = _frame.size.width - r.origin.x;
+      if (_separatesColumns)
+	r.size.width = _frame.size.width - r.origin.x;
+      else
+	r.size.width = _frame.size.width 
+	  - (r.origin.x + (2 * bs.width) + ([self numberOfVisibleColumns] - 1));
     }
 
   if (r.size.width < 0)
@@ -1526,6 +1557,7 @@ static NSTextFieldCell *titleCell;
 {
   NSSize bs = _sizeForBorderType (NSBezelBorder);
   int i, num, columnCount, delta;
+  float  frameWidth;
 
   _columnSize.height = _frame.size.height;
   
@@ -1539,12 +1571,20 @@ static NSTextFieldCell *titleCell;
   if (_hasHorizontalScroller)
     {
       _scrollerRect.origin.x = bs.width;
-      _scrollerRect.origin.y = bs.height;
-      _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
+      
+      // 	  if (_separatesColumns)
+      //       _scrollerRect.origin.y = bs.height;
+      // 	  else
+      _scrollerRect.origin.y = bs.height - 1;
+      
+      _scrollerRect.size.width = (_frame.size.width - (2 * bs.width)) + 1;
       _scrollerRect.size.height = scrollerWidth;
-
-      _columnSize.height -= scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
-
+      
+      if (_separatesColumns)
+	_columnSize.height -= (scrollerWidth - 2) + (2 * bs.height) + NSBR_VOFFSET;
+      else
+	_columnSize.height -= scrollerWidth + (2 * bs.height);
+      
       if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
         {
           [_horizontalScroller setFrame: _scrollerRect];
@@ -1598,15 +1638,11 @@ static NSTextFieldCell *titleCell;
 
   // Columns
   if (_separatesColumns)
-    {
-      _columnSize.width = (int)((_frame.size.width - ((columnCount - 1)
-						      * NSBR_COLUMN_SEP)) 
-				/ (float)columnCount);
-    }
+    frameWidth = _frame.size.width - ((columnCount - 1) * NSBR_COLUMN_SEP);
   else
-    {
-      _columnSize.width = (int)(_frame.size.width / (float)columnCount);
-    }
+    frameWidth = _frame.size.width - (columnCount + (2 * bs.width));
+
+  _columnSize.width = (int)(frameWidth / (float)columnCount);
 
   if (_columnSize.height < 0)
     _columnSize.height = 0;
@@ -1926,6 +1962,7 @@ static NSTextFieldCell *titleCell;
   _lastColumnLoaded = -1;
   _firstVisibleColumn = 0;
   _lastVisibleColumn = 0;
+  _maxVisibleColumns = 3;
   [self _createColumn];
 
   return self;
@@ -2014,13 +2051,39 @@ static NSTextFieldCell *titleCell;
 
       scrollerBorderRect.origin.x = 0;
       scrollerBorderRect.origin.y = 0;
-      scrollerBorderRect.size.width += 2 * bs.width;
-      scrollerBorderRect.size.height += 2 * bs.height;
+      scrollerBorderRect.size.width += 2 * bs.width - 1;
+      scrollerBorderRect.size.height += (2 * bs.height) - 1;
 
       if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)
       	{
       	  NSDrawGrayBezel (scrollerBorderRect, rect);
 	}
+    }
+
+  if (!_separatesColumns)
+    {
+      NSPoint p1,p2;
+      NSRect  browserRect;
+      int     i, visibleColumns;
+      
+      // Columns borders
+      browserRect = NSMakeRect(0, 0, rect.size.width, rect.size.height);
+      NSDrawGrayBezel (browserRect, rect);
+      
+      [[NSColor blackColor] set];
+      visibleColumns = [self numberOfVisibleColumns]; 
+      for (i = 1; i < visibleColumns; i++)
+	{
+	  p1 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), 
+			   _columnSize.height + scrollerWidth + 2);
+	  p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), scrollerWidth + 3);
+	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+	}
+      
+      // Horizontal scroller border
+      p1 = NSMakePoint(2, scrollerWidth + 2);
+      p2 = NSMakePoint(rect.size.width - 2, scrollerWidth + 2);
+      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
     }
 }
 

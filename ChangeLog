@@ -1,3 +1,14 @@
+2002-10-04  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowser.m: Implement non-separated columns.
+	(-setSeparatesColumns:): Remove borders if not separated.
+	(-setTitled:): Return without chaging if we are not separated.
+	(-frameOfColumn:): Compute properly with{out} separation.
+	(-tile): Idem.
+	(-initWithFrame:): Set maxVisibleColumns to 3.
+	(-drawRect:): Draw properly with{out} separation.
+	(Patch from Serg Stoyan <stoyan@hologr.com>).
+
 2002-10-03  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSWindow.h: New _lastView ivar.
