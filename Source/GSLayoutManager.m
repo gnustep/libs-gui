@@ -1259,7 +1259,7 @@ places where we switch.
 		new->head.complete = 0;
 	      }
 	    new->head.char_length += rng.length;
-	    ch += new->head.char_length;
+	    ch = NSMaxRange(rng);
 	    continue;
 	  }
 
