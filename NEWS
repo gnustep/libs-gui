@@ -27,7 +27,7 @@ Noteworthy changes in version `0.2.0'
    * Initial implementation of NSCursor class.
 
    * Almost complete implementation of NSButton and NSButtonCell class.
-     Buttons can not display images and/or text, handles all of the
+     Buttons can now display images and/or text, handles all of the
      OpenStep button types and styles.
 
    * Fill out implementation of NSScroller class.
