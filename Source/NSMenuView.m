@@ -898,4 +898,10 @@ cell do the following */
 {
   [self trackWithEvent: theEvent];
 }
+
+-(void) performKeyEquivalent: (NSEvent *)theEvent
+{
+  return [menuv_menu performKeyEquivalent: theEvent];
+}
+
 @end
