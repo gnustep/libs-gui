@@ -1,3 +1,8 @@
+2002-11-23 18:45  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextContainer: Implement -lineFragmentRectForProposedRect:
+	sweepDirection:movementDirection:remainingRect:.
+
 2002-11-21  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.8.3
