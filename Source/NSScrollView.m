@@ -304,7 +304,7 @@ static Class rulerViewClass = nil;
 	}
       else
 	{
-	  if ([_contentView isFlipped])
+	  if (![_contentView isFlipped])
 	    {
 	      // If view is flipped
 	      // reverse the scroll direction

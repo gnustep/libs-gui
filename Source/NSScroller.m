@@ -8,6 +8,8 @@
    Date: July 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Author:  Richard frith-Macdonald <richard@brainstorm.co.uk>
+   Date: Mar 1999 - Use flipped views and make conform to spec
 
    This file is part of the GNUstep GUI Library.
 
@@ -47,10 +49,10 @@
 //
 // Class variables
 //
-static NSButtonCell* upCell = nil;						// button cells used by
-static NSButtonCell* downCell = nil;					// scroller instances
-static NSButtonCell* leftCell = nil;					// to draw scroller
-static NSButtonCell* rightCell = nil;					// buttons and knob.
+static NSButtonCell* upCell = nil;		// button cells used by
+static NSButtonCell* downCell = nil;		// scroller instances
+static NSButtonCell* leftCell = nil;		// to draw scroller
+static NSButtonCell* rightCell = nil;		// buttons and knob.
 static NSButtonCell* knobCell = nil;
 
 static const float scrollerWidth = 17;
@@ -80,6 +82,11 @@ static BOOL preCalcValues = NO;
 + (float) scrollerWidth
 {
   return scrollerWidth;
+}
+
+- (BOOL) isFlipped
+{
+  return YES;
 }
 
 - (NSScrollArrowPosition) arrowsPosition
@@ -158,9 +165,15 @@ static BOOL preCalcValues = NO;
   [super initWithFrame: frameRect];
 
   if (_isHorizontal)
-    _arrowsPosition = NSScrollerArrowsMinEnd;
+    {
+      _arrowsPosition = NSScrollerArrowsMinEnd;
+      _floatValue = 0.0;
+    }
   else
-    _arrowsPosition = NSScrollerArrowsMaxEnd;
+    {
+      _arrowsPosition = NSScrollerArrowsMaxEnd;
+      _floatValue = 1.0;
+    }
 
   _hitPart = NSScrollerNoPart;
   [self drawParts];
@@ -239,16 +252,26 @@ static BOOL preCalcValues = NO;
 
 - (void) checkSpaceForParts
 {
-  NSSize frameSize = [self frame].size;
-  float size = (_isHorizontal ? frameSize.width : frameSize.height);
-  float scrollerWidth = [isa scrollerWidth];
+  NSSize	frameSize = [self frame].size;
+  float		size = (_isHorizontal ? frameSize.width : frameSize.height);
+  float		scrollerWidth = [isa scrollerWidth];
 
-  if (size > 3 * scrollerWidth + 2)
-    _usableParts = NSAllScrollerParts;
-  else if (size > 2 * scrollerWidth + 1)
-    _usableParts = NSOnlyScrollerArrows;
+  if (_arrowsPosition == NSScrollerArrowsNone)
+    {
+      if (size > scrollerWidth + 1)
+	_usableParts = NSAllScrollerParts;
+      else
+	_usableParts = NSNoScrollerParts;
+    }
   else
-    _usableParts = NSNoScrollerParts;
+    {
+      if (size > 3 * scrollerWidth + 2)
+	_usableParts = NSAllScrollerParts;
+      else if (size > 2 * scrollerWidth + 1)
+	_usableParts = NSOnlyScrollerArrows;
+      else
+	_usableParts = NSNoScrollerParts;
+    }
 }
 
 - (void) setEnabled: (BOOL)flag
@@ -346,10 +369,6 @@ static BOOL preCalcValues = NO;
   if ([self mouse: thePoint inRect: rect])
     return NSScrollerKnob;
 
-  rect = [self rectForPart: NSScrollerKnobSlot];
-  if ([self mouse: thePoint inRect: rect])
-    return NSScrollerKnobSlot;
-
   rect = [self rectForPart: NSScrollerDecrementPage];
   if ([self mouse: thePoint inRect: rect])
     return NSScrollerDecrementPage;
@@ -357,6 +376,10 @@ static BOOL preCalcValues = NO;
   rect = [self rectForPart: NSScrollerIncrementPage];
   if ([self mouse: thePoint inRect: rect])
     return NSScrollerIncrementPage;
+
+  rect = [self rectForPart: NSScrollerKnobSlot];
+  if ([self mouse: thePoint inRect: rect])
+    return NSScrollerKnobSlot;
 
   return NSScrollerNoPart;
 }
@@ -406,7 +429,6 @@ static BOOL preCalcValues = NO;
       // Compute float value given the knob size
       floatValue = (position - (slotRect.origin.y + halfKnobRectHeight)) /
 		  (slotRect.size.height - knobRect.size.height);
-      floatValue = 1 - floatValue;
     }
 
   return floatValue;
@@ -463,7 +485,6 @@ static BOOL preCalcValues = NO;
 
       floatValue = (position - slotOriginPlusKnobHeight) /
 				    slotHeightMinusKnobHeight;
-      floatValue = 1 - floatValue;
     }
 
   return floatValue;
@@ -627,12 +648,12 @@ static BOOL preCalcValues = NO;
 	{
 	  case NSScrollerIncrementLine:
 	  case NSScrollerIncrementPage:
-	    theCell = (_isHorizontal ? rightCell : upCell);
+	    theCell = (_isHorizontal ? rightCell : downCell);
 	    break;
 
 	  case NSScrollerDecrementLine:
 	  case NSScrollerDecrementPage:
-	    theCell = (_isHorizontal ? leftCell : downCell);
+	    theCell = (_isHorizontal ? leftCell : upCell);
 	    break;
 
 	  default:
@@ -681,11 +702,11 @@ static BOOL preCalcValues = NO;
   NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
 	    rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
+  [self drawKnobSlot];
+  [self drawKnob];
   [self drawArrow: NSScrollerDecrementArrow highlight: NO];
   [self drawArrow: NSScrollerIncrementArrow highlight: NO];
 
-  [self drawKnobSlot];
-  [self drawKnob];
 }
 
 - (void) drawArrow: (NSScrollerArrow)whichButton highlight: (BOOL)flag
@@ -701,10 +722,10 @@ static BOOL preCalcValues = NO;
   switch (whichButton)
     {
       case NSScrollerDecrementArrow:
-	theCell = (_isHorizontal ? leftCell : downCell);
+	theCell = (_isHorizontal ? leftCell : upCell);
 	break;
       case NSScrollerIncrementArrow:
-	theCell = (_isHorizontal ? rightCell : upCell);
+	theCell = (_isHorizontal ? rightCell : downCell);
 	break;
     }
 
@@ -730,11 +751,30 @@ static BOOL preCalcValues = NO;
   NSRectFill(rect);
 }
 
+- (void) highlight: (BOOL)flag
+{
+  switch (_hitPart)
+    {
+      case NSScrollerIncrementLine:
+      case NSScrollerIncrementPage:
+	[self drawArrow: NSScrollerIncrementArrow highlight: flag];
+	break;
+
+      case NSScrollerDecrementLine:
+      case NSScrollerDecrementPage:
+	[self drawArrow: NSScrollerDecrementArrow highlight: flag];
+	break;
+
+      default:	// No button currently hit for highlighting.
+	break;
+    }
+}
+
 - (NSRect) rectForPart: (NSScrollerPart)partCode
 {
   NSRect scrollerFrame = frame;
-  float x = 1, y = 1, width = 0, height = 0, floatValue;
-  NSScrollArrowPosition arrowsPosition;
+  float x = 0, y = 0;
+  float width, height;
   NSUsableScrollerParts usableParts;
 										  // If the scroller is disabled then the scroller buttons and the
   // knob are not displayed at all.
@@ -743,41 +783,21 @@ static BOOL preCalcValues = NO;
   else
     usableParts = _usableParts;
 
-  // Since we haven't yet flipped views we have
-  // to swap the meaning of the arrows position
-  // if the scroller's orientation is vertical.
-  if (!_isHorizontal)
-    {
-      if (_arrowsPosition == NSScrollerArrowsMaxEnd)
-	arrowsPosition = NSScrollerArrowsMinEnd;
-      else
-	{
-	  if (_arrowsPosition == NSScrollerArrowsMinEnd)
-	    arrowsPosition = NSScrollerArrowsMaxEnd;
-	  else
-	    arrowsPosition = NSScrollerArrowsNone;
-	}
-    }
-  else
-    arrowsPosition = _arrowsPosition;
-
   // Assign to `width' and `height' values describing
   // the width and height of the scroller regardless
-  // of its orientation.  Also compute the `floatValue'
-  // which is essentially the same width as _floatValue
+  // of its orientation.
   // but keeps track of the scroller's orientation.
   if (_isHorizontal)
     {
       width = scrollerFrame.size.height;
       height = scrollerFrame.size.width;
-      floatValue = _floatValue;
     }
   else
     {
       width = scrollerFrame.size.width;
       height = scrollerFrame.size.height;
-      floatValue = 1 - _floatValue;
     }
+
   // The x, y, width and height values are computed below for the vertical
   // scroller.  The height of the scroll buttons is assumed to be equal to
   // the width.
@@ -791,17 +811,17 @@ static BOOL preCalcValues = NO;
 	      usableParts == NSOnlyScrollerArrows)
 	    return NSZeroRect;
 											  // calc the slot Height
-	  slotHeight = height - (arrowsPosition == NSScrollerArrowsNone ?
+	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone ?
 			0 : 2 * (buttonsWidth + buttonsDistance));
 	  knobHeight = _knobProportion * slotHeight;
 	  if (knobHeight < buttonsWidth)
 	    knobHeight = buttonsWidth;
 											  // calc knob's position
-	  knobPosition = floatValue * (slotHeight - knobHeight);
+	  knobPosition = _floatValue * (slotHeight - knobHeight);
 	  knobPosition = (float)floor(knobPosition);	// avoid rounding error
 											  // calc actual position
-	  y = knobPosition + (arrowsPosition == NSScrollerArrowsMaxEnd
-	      || arrowsPosition == NSScrollerArrowsNone ?
+	  y = knobPosition + (_arrowsPosition == NSScrollerArrowsMaxEnd
+	      || _arrowsPosition == NSScrollerArrowsNone ?
 		0 : 2 * (buttonsWidth + buttonsDistance));
 	  height = knobHeight;
 	  width = buttonsWidth;
@@ -813,27 +833,18 @@ static BOOL preCalcValues = NO;
       case NSScrollerKnobSlot:
 	// if the scroller does not have buttons the slot completely
 	// fills the scroller.
-	x = 0;
-	width = scrollerWidth;
 	if (usableParts == NSNoScrollerParts)
 	  {
-	    y = 0;	// `height' unchanged
 	    break;
 	  }
-	if (arrowsPosition == NSScrollerArrowsMaxEnd)
+	if (_arrowsPosition == NSScrollerArrowsMaxEnd)
 	  {
-	    y = 0;
-	    height -= 2 * (buttonsWidth + buttonsDistance) + 1;
+	    height -= 2 * (buttonsWidth + buttonsDistance);
 	  }
-	else
+	else if (_arrowsPosition == NSScrollerArrowsMinEnd)
 	  {
-	    if (arrowsPosition == NSScrollerArrowsMinEnd)
-	      {
-		y = 2 * (buttonsWidth + buttonsDistance) + 1;
-		height -= y;
-	      }
-	    else
-	      y = 0;	// `height' unchanged
+	    y = 2 * (buttonsWidth + buttonsDistance);
+	    height -= y;
 	  }
 	break;
 
@@ -842,16 +853,17 @@ static BOOL preCalcValues = NO;
 	// if scroller has no parts or knob then return a zero rect
 	if (usableParts == NSNoScrollerParts)
 	  return NSZeroRect;
-	width = buttonsWidth;
-	if (arrowsPosition == NSScrollerArrowsMaxEnd)
-	  y = height - 2 * (buttonsWidth + buttonsDistance);
-	else
+	if (_arrowsPosition == NSScrollerArrowsMaxEnd)
 	  {
-	    if (arrowsPosition == NSScrollerArrowsMinEnd)
-	      y = 1;
-	    else
-	      return NSZeroRect;
+	    y = height - 2 * (buttonsWidth + buttonsDistance);
 	  }
+	else if (_arrowsPosition == NSScrollerArrowsMinEnd)
+	  {
+	    y = buttonsDistance;
+	  }
+	else
+	  return NSZeroRect;
+	width = buttonsWidth;
 	height = buttonsWidth;
 	break;
 
@@ -859,17 +871,18 @@ static BOOL preCalcValues = NO;
       case NSScrollerIncrementPage:
 	if (usableParts == NSNoScrollerParts)
 	  return NSZeroRect;
-	width = buttonsWidth;
-	if (arrowsPosition == NSScrollerArrowsMaxEnd)
-	  y = height - (buttonsWidth + buttonsDistance);
-	else
+	if (_arrowsPosition == NSScrollerArrowsMaxEnd)
 	  {
-	    if (arrowsPosition == NSScrollerArrowsMinEnd)
-	      y = buttonsWidth + buttonsDistance + 1;
-	    else
-	      return NSZeroRect;
+	    y = height - (buttonsWidth + buttonsDistance);
 	  }
+	else if (_arrowsPosition == NSScrollerArrowsMinEnd)
+	  {
+	    y = buttonsWidth + buttonsDistance;
+	  }
+	else
+	  return NSZeroRect;
 	height = buttonsWidth;
+	width = buttonsWidth;
 	break;
 
       case NSScrollerNoPart:

@@ -1,3 +1,11 @@
+Sun Mar 14 10:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSScroller.m: Rewrite and tidy various stuff to bring into
+	conformance with MacOS-X documentation and to be more compatible -
+	Scrollers are now flipped views.
+	* Source/NSScrollView.m: Minor changes to work with corrections to
+	NSScroller.
+
 Thu Mar 11  Felipe A. Rodriguez  <farz@mindspring.com>
 
 	* gui/Images: common_Right.tiff add alpha channel to image.
