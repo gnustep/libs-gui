@@ -1,6 +1,19 @@
+Thu Mar 25 20:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Mostly fixes to cope with case where tracking rectangles are
+	removed from a window while an event that refers to them is still
+	in the queue.
+	* Source/NSView.m: Handle invalidation of cursor rectangles.
+	* Source/NSWindow.m: Cope with invalidated cursor rects.
+	* Source/NSEvent.m: Retain tracking rectangles.
+	* Source/GSTrackingRect.m: Added support for invalidation.
+	* Source/NSApplication.m: Deactivate app on hide.
+	* Headers/AppKit/NSApplication.h: flag to decide whether to unhide
+	on application activation.
+
 Thu Mar 25 09:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	Source/NSCell.m: Added all the exceptions mentioned in the docs.
+	* Source/NSCell.m: Added all the exceptions mentioned in the docs.
 
 Wed Mar 24 10:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
