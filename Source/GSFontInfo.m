@@ -195,6 +195,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 			   [NSNumber numberWithInt: 14], @"obese",
 			   [NSNumber numberWithInt: 14], @"nord",
 			   nil];
+      RETAIN(dict);
     }
 
   if ((weightString == nil) || 
@@ -220,6 +221,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 		     @"bold", @"extrabold", @"heavy",
 		     @"black", @"ultrablack", @"extrablack", 
 		     nil];
+      RETAIN(arr);
     }
 
   if ((aWeight < 1) || (aWeight > 14))
