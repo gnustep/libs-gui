@@ -577,32 +577,38 @@ static Class menuCellClass = nil;
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  id cells = [menuCells itemArray];
-  int i, count = [cells count];
-  NSEventType type = [theEvent type];
+  id		cells = [menuCells itemArray];
+  unsigned	i;
+  unsigned	count = [cells count];
+  NSEventType	type = [theEvent type];
 
   if (type != NSKeyDown && type != NSKeyUp)
     return NO;
 
-  for (i = 0; i < count; i++) {
-    id<NSMenuItem> cell = [cells objectAtIndex: i];
+  for (i = 0; i < count; i++)
+    {
+      id<NSMenuItem> cell = [cells objectAtIndex: i];
 
-    if ([cell hasSubmenu]) {
-      if ([[cell target] performKeyEquivalent: theEvent])
-	/* The event has been handled by a cell in submenu */
-	return YES;
+      if ([cell hasSubmenu])
+	{
+	  if ([[cell target] performKeyEquivalent: theEvent])
+	    {
+	      /* The event has been handled by a cell in submenu */
+	      return YES;
+	    }
+	}
+      else
+	{
+	  if ([[cell keyEquivalent] isEqual:
+	    [theEvent charactersIgnoringModifiers]])
+	    {
+	      [menuCells lockFocus];
+	      [(id)cell performClick: self];
+	      [menuCells unlockFocus];
+	      return YES;
+	    }
+	}
     }
-    else {
-      if ([[cell keyEquivalent] isEqual: [theEvent charactersIgnoringModifiers]]
-	  && [cell keyEquivalentModifierMask] == [theEvent modifierFlags]) {
-	[menuCells lockFocus];
-	[(id)cell performClick: self];
-	[menuCells unlockFocus];
-	return YES;
-      }
-    }
-  }
-
   return NO;
 }
 
