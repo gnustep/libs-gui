@@ -1,3 +1,7 @@
+Fri Jan 29 15:32:48 1999  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Documentation/todo.tmpl.texi: Update.
+
 1999-01-28  Adam Fedor  <fedor@doc.com>
 
 	* Model/GNUmakefile (libgmodel_OBJC_FILES): Add GMArchiver.m.
