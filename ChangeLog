@@ -3,7 +3,7 @@ Sat Dec 28 01:42:40 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSWindow.m ([-_initBackendWindow:]): Fixed code resetting
 	then restoring the drag types for a deferred window -- there was a
 	small confusion where NSArray and NSCountedSet were used
-	interchangeably, while they are not.  Drag&drop works again on
+	interchangeably, while they are not.  Drag&drop now works with
 	deferred windows for me.
 
 Wed Dec 25 17:01:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
