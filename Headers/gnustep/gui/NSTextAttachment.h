@@ -136,6 +136,16 @@ enum {
 
 @end
 
+@interface NSAttributedString (NSTextAttachment)
++ (NSAttributedString*) attributedStringWithAttachment: 
+                 (NSTextAttachment*)attachment;
+- (BOOL) containsAttachments;
+@end
+
+@interface NSMutableAttributedString (NSTextAttachment)
+- (void) updateAttachmentsFromPath: (NSString *)path;
+@end
+
 #endif
 
 #endif /* _GNUstep_H_NSTextAttachment */
