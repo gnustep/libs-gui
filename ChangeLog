@@ -1,3 +1,11 @@
+Fri Sep  8 18:42:10 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSWindow.m ([-setFrame:display:]): Call
+	[-constrainFrameRect:toScreen:] before resizing.
+	([-constrainFrameRect:toScreen:]): Rewritten to be compliant with
+	specs.  ([-initWithContentRect:styleMask:backing:defer:screen:]):
+	Do not set maximum size as the size of the screen. 
+
 2000-09-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenu.m: ([-setSupermenu:]) don't retain supermenu.
