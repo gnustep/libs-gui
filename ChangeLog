@@ -1,3 +1,12 @@
+2001-05-05  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSSavePanel.m ([NSSavePanel -browser:createRowsForColumn:
+	inMatrix:]): do not treat a file package a directory with an empty
+	extension.
+	* Source/NSMatrix.m ([NSMatrix -_mouseDownNonListMode:]): retain the
+	currentEvent. Fix to prevent theEvent to become nil.
+	Do not allow empty selection in NSRadioModeMatrix.
+
 2000-05-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/GSMethodTable.h: 

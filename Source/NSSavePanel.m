@@ -1057,7 +1057,8 @@ createRowsForColumn: (int)column
 			      shouldShowFilename: pathAndFile];
 	}
 
-      if (_treatsFilePackagesAsDirectories == NO && isDir == YES && exists)
+      if (_treatsFilePackagesAsDirectories == NO && isDir == YES && exists
+	  && ![extension isEqualToString: @""])
 	{
 	  // Ones with more chance first
 	  if ([self isMemberOfClass: [NSSavePanel class]] == YES)

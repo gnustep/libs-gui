@@ -1948,6 +1948,9 @@ static SEL getSel;
 		     column: &mouseColumn
 		     forPoint: mouseLocation];
 
+      if (!onCell)
+	scrolling = NO;
+
       if (onCell)
 	{
 	  mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
@@ -1956,8 +1959,7 @@ static SEL getSel;
 	  if (_autoscroll)
 	    scrolling = [self scrollRectToVisible: mouseCellFrame];
 
-	  if ([mouseCell isEnabled]
-	      && [self mouse: mouseLocation inRect: mouseCellFrame])
+	  if ([mouseCell isEnabled])
 	    {
 	      if ([mouseCell acceptsFirstResponder])
 		{
@@ -2009,7 +2011,7 @@ static SEL getSel;
 
 	      if (_mode != NSTrackModeMatrix)
 		{
-		  if(_mode == NSRadioModeMatrix && !_allowsEmptySelection)
+		  if(_mode == NSRadioModeMatrix)
 		    {
 		      if (!mouseUpInCell)
 			[mouseCell setState: NSOnState];
@@ -2025,9 +2027,10 @@ static SEL getSel;
 
 	      if (!mouseUpInCell)
 		{
-		  currentEvent = [NSApp currentEvent];
+		  ASSIGN(currentEvent, [NSApp currentEvent]);
 
-		  if (currentEvent && [currentEvent type] != NSPeriodic)
+		  if (currentEvent && currentEvent != theEvent
+		      && [currentEvent type] != NSPeriodic)
 		    {
 		      if (!scrolling)
 			{
@@ -2036,11 +2039,11 @@ static SEL getSel;
 			}
 		    }
 		  else
-		    currentEvent = nil;
+		    DESTROY(currentEvent);
 		}
 	    }
 	}
-      else if (_mode != NSRadioModeMatrix || _allowsEmptySelection)
+      else if (_mode != NSRadioModeMatrix)
         {
           // mouse is not over a Cell
 	  if (_selectedCell != nil)
@@ -2061,7 +2064,7 @@ static SEL getSel;
       if (!mouseUpInCell)
 	{
 	  theEvent = [NSApp nextEventMatchingMask: eventMask
-			    untilDate: !scrolling && currentEvent
+			    untilDate: !scrolling || !currentEvent
 			    ? [NSDate distantFuture]
 			    : [NSDate dateWithTimeIntervalSinceNow: 0.05]
 			    inMode: NSEventTrackingRunLoopMode
@@ -2070,9 +2073,11 @@ static SEL getSel;
 	  if (scrolling && !theEvent)
 	    theEvent = currentEvent;
 	  else
-	    currentEvent = nil;
+	    DESTROY(currentEvent);
 	}
     }
+
+  RELEASE(currentEvent);
 
   // the mouse went up.
   // if it was inside a cell, the cell has already sent the action.
@@ -2081,7 +2086,7 @@ static SEL getSel;
   // anyway, the action has to be sent
   if (!mouseUpInCell)
     {
-      if (_mode != NSRadioModeMatrix || _allowsEmptySelection)
+      if (_mode != NSRadioModeMatrix)
 	{
 	  if (_selectedCell != nil)
 	    {
