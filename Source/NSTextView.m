@@ -1451,6 +1451,10 @@ here. */
   return [_textStorage attributedSubstringFromRange: theRange];
 }
 
+/*
+TODO: make sure this is only called when _layoutManager is known non-nil,
+or add guards
+*/
 -(unsigned int) characterIndexForPoint: (NSPoint)point
 {
   unsigned	index;
@@ -1503,7 +1507,7 @@ here. */
 
 -(NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
-  unsigned rectCount;
+  unsigned int rectCount = 0; /* If there's no layout manager, it'll be 0 after the call too. */
   NSRect *rects = [_layoutManager 
 		      rectArrayForCharacterRange: theRange
 		      withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
@@ -2037,7 +2041,7 @@ Returns the ranges to which various kinds of user changes should apply.
 
 -(NSRange) rangeForUserCharacterAttributeChange
 {
-  if (!_tf.is_editable || !_tf.uses_font_panel)
+  if (!_tf.is_editable || !_tf.uses_font_panel || !_layoutManager)
     {
       return NSMakeRange(NSNotFound, 0);
     }
@@ -2054,7 +2058,7 @@ Returns the ranges to which various kinds of user changes should apply.
 
 -(NSRange) rangeForUserParagraphAttributeChange
 {
-  if (!_tf.is_editable || !_tf.uses_ruler)
+  if (!_tf.is_editable || !_tf.uses_ruler || !_layoutManager)
     {
       return NSMakeRange(NSNotFound, 0);
     }
@@ -2072,7 +2076,7 @@ Returns the ranges to which various kinds of user changes should apply.
 
 -(NSRange) rangeForUserTextChange
 {
-  if (!_tf.is_editable)
+  if (!_tf.is_editable || !_layoutManager)
     {
       return NSMakeRange(NSNotFound, 0);
     }  
@@ -2286,6 +2290,9 @@ ugly_hack_done:
 {
   BOOL sendOK = NO;
   BOOL returnOK = NO;
+
+  if (!_layoutManager)
+    return [super validRequestorForSendType: sendType  returnType: returnType];
 
   if (sendType == nil)
     {
@@ -2724,6 +2731,8 @@ Figure out how the additional layout stuff is supposed to work.
 
 - (BOOL) shouldDrawInsertionPoint
 {
+  if (!_layoutManager)
+    return NO;
   return (_layoutManager->_selected_range.length == 0) && _tf.is_editable
     && [_window isKeyWindow] && ([_window firstResponder] == self);
 }
@@ -2834,9 +2843,16 @@ Figure out how the additional layout stuff is supposed to work.
   NSRange gr;
   NSRect new;
 
+  if (!_layoutManager)
+    {
+      _insertionPointRect = NSZeroRect;
+      return;
+    }
+
   if (_layoutManager->_selected_range.length > 0 ||
       _layoutManager->_selected_range.location == NSNotFound)
     {
+      [self setNeedsDisplayInRect: _insertionPointRect];
       _insertionPointRect = NSZeroRect;
       return;
     }
@@ -3887,6 +3903,9 @@ other than copy/paste or dragging. */
     {
       return;
     }
+
+  if (!_layoutManager)
+    return;
 
   /* Otherwise, NSWindow has already made us first responder (if
      possible) */
