@@ -751,6 +751,8 @@ that makes decoding and encoding compatible with the old code.
       if (!did_register_for_services)
 	[isa registerForServices];
 
+      [self updateDragTypeRegistration];
+
       [self setPostsFrameChangedNotifications: YES];
       [notificationCenter addObserver: self
 			  selector: @selector(_updateState:)
