@@ -47,7 +47,6 @@
 
 static Class	colorClass = 0;		/* Cache color class.	*/
 static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
-static NSImage	*arrowImageH = nil;
 
 
 + (void) initialize
@@ -57,7 +56,6 @@ static NSImage	*arrowImageH = nil;
       [self setVersion: 2];
       colorClass = [NSColor class];
       arrowImage = [[NSImage imageNamed: @"common_3DArrowRight"] copy];
-      arrowImageH = [[NSImage imageNamed: @"common_3DArrowRightH"] copy];
     }
 }
 
@@ -387,8 +385,6 @@ static NSImage	*arrowImageH = nil;
   if ([controlView isFlipped])
     position.y += size.height;
 
-  if (nil != _backgroundColor)
-    [_imageToDisplay setBackgroundColor: _backgroundColor];
   [_imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
 }
 
@@ -401,13 +397,8 @@ static NSImage	*arrowImageH = nil;
     {
       NSSize	size;
       NSPoint	position;
-      NSImage	*imageToDraw;
 
-      if (_cell.is_highlighted)
-	imageToDraw = arrowImageH;
-      else
-	imageToDraw = arrowImage;
-      size = [imageToDraw size];
+      size = [arrowImage size];
       position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
       position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
       /*
@@ -417,9 +408,7 @@ static NSImage	*arrowImageH = nil;
       if ([controlView isFlipped])
 	position.y += size.height;
 
-      if (nil != _backgroundColor)
-	[imageToDraw setBackgroundColor: _backgroundColor];
-      [imageToDraw compositeToPoint: position operation: NSCompositeSourceOver];
+      [arrowImage compositeToPoint: position operation: NSCompositeSourceOver];
     }
   /* FIXME/TODO here - decide a consistent policy for images.
    *
@@ -490,10 +479,6 @@ static NSImage	*arrowImageH = nil;
       position.y += size.height;
     }
   
-  if (nil != _backgroundColor)
-    {
-      [imageToDisplay setBackgroundColor: _backgroundColor];
-    }
   [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
 }
 

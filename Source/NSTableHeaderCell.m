@@ -165,13 +165,6 @@ static NSColor *clearCol = nil;
 	    bg = hbgCol;
 	  [bg set];
 	  NSRectFill (cellFrame);
-	  if (_cell_image)
-	    [_cell_image setBackgroundColor: bg];
-	}
-      else
-	{
-	  if (_cell_image)
-	    [_cell_image setBackgroundColor: clearCol];
 	}
       // Draw the image
       if (_cell_image)

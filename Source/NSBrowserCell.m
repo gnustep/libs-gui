@@ -260,7 +260,6 @@ static NSFont *_leafFont;
       image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 4.0;
       image_rect.origin.y
 	+= (cellFrame.size.height - image_rect.size.height) / 2.0;
-      [image setBackgroundColor: backColor];
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.

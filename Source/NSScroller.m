@@ -242,36 +242,32 @@ static NSColor *scrollBarColor = nil;
     return;
 
   upCell = [NSButtonCell new];
-  [upCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
+  [upCell setHighlightsBy: NSChangeBackgroundCellMask];
   [upCell setImage: [NSImage imageNamed: @"common_ArrowUp"]];
-  [upCell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
   [upCell setImagePosition: NSImageOnly];
   [upCell setContinuous: YES];
   [upCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [upCell setPeriodicDelay: 0.3 interval: 0.03];
 
   downCell = [NSButtonCell new];
-  [downCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
+  [downCell setHighlightsBy: NSChangeBackgroundCellMask];
   [downCell setImage: [NSImage imageNamed: @"common_ArrowDown"]];
-  [downCell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
   [downCell setImagePosition: NSImageOnly];
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [downCell setPeriodicDelay: 0.3 interval: 0.03];
 
   leftCell = [NSButtonCell new];
-  [leftCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
+  [leftCell setHighlightsBy: NSChangeBackgroundCellMask];
   [leftCell setImage: [NSImage imageNamed: @"common_ArrowLeft"]];
-  [leftCell setAlternateImage: [NSImage imageNamed: @"common_ArrowLeftH"]];
   [leftCell setImagePosition: NSImageOnly];
   [leftCell setContinuous: YES];
   [leftCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [leftCell setPeriodicDelay: 0.3 interval: 0.03];
 
   rightCell = [NSButtonCell new];
-  [rightCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
+  [rightCell setHighlightsBy: NSChangeBackgroundCellMask];
   [rightCell setImage: [NSImage imageNamed: @"common_ArrowRight"]];
-  [rightCell setAlternateImage: [NSImage imageNamed: @"common_ArrowRightH"]];
   [rightCell setImagePosition: NSImageOnly];
   [rightCell setContinuous: YES];
   [rightCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];

@@ -1,3 +1,24 @@
+2003-07-31  Michael Hanni  <mhanni@yahoo.com>
+
+        * Source/NSBrowserCell.m (drawInteriorWithFrame:inView:): Remove
+        unnecessary code to set the background of an image.
+        * Source/NSButtonCell.m: ditto.
+        * Source/NSMenuItemCell.m: remove usage of system image
+        "common_3DArrowRightH" as it is unneeded.
+        (drawImageWithFrame:inView:): remove unnecessary code to set the
+        background of an image.
+        (drawKeyEquivalentWithFrame:inView:): ditto.
+        (drawStateImageWithFrame:inView:): ditto.
+        * Source/NSScroller.m: remove usage of system images
+        (common_ArrowUpH, common_ArrowDownH, common_ArrowLeftH,
+        common_ArrowRightH) as they are unnecessary.
+        (drawParts): reset HighlightsBy: code for all the cells, remove
+        all the alternate images.
+        * Source/NSTableHeaderCell.m (drawInteriorWithFrame:inView:):
+        remove unnecessary call to set the background of an image.
+        * Images/(common_ArrowUpH, common_ArrowDownH, common_ArrowLeftH,
+        common_ArrowRightH).tiff: removed.
+
 2003-07-31  Yen-Ju Chen <yjchenx@hotmail.com>
 
 	* Documentation/Gui/LanguageSetup.gsdoc: Updated.

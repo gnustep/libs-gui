@@ -718,12 +718,6 @@
 
   if (imageToDisplay)
     {
-      /* FIXME - the following is a hack!  Because we don't seem to be
-	 getting alpha composing of images right, we use this hack of
-	 hard-setting manually the background color of the image to
-	 the wanted background color ... this should go away when
-	 alpha composing of images works 100%.  */
-      [imageToDisplay setBackgroundColor: backgroundColor];
       imageSize = [imageToDisplay size];
     }
 
