@@ -127,6 +127,17 @@ typedef enum _GSWindowInputState
 + (NSGraphicsContext*) currentContext;
 + (void) setCurrentContext: (NSGraphicsContext*)context;
 
++ (BOOL) currentContextDrawingToScreen;
++ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes;
++ (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow;
++ (void) restoreGraphicsState;
++ (void) saveGraphicsState;
++ (void) setGraphicsState: (int)graphicsState;
+
+- (NSDictionary *) attributes;
+- (void)flushGraphics;
+- (void *)graphicsPort;
+
 - (void) flush;
 - (BOOL) isDrawingToScreen;
 - (void) restoreGraphicsState;
