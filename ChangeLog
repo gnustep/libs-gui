@@ -1,3 +1,8 @@
+Mon Feb 11 00:35:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSLayoutManager.m ([-dealloc]): Modified to work for 
+	objects which have not been -init.
+
 Sun Feb 10 23:53:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.m
