@@ -1,3 +1,8 @@
+2005-01-18 15:46  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSApplication.m (-finishLaunching): Don't attempt to open
+	an untitled file if we were autolaunched.
+
 2005-01-18 14:16  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSAffineTransform.m (pi): Correct the rounding.

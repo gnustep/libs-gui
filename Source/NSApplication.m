@@ -686,7 +686,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   GSDisplayServer *srv;
   /* Initialization must be enclosed in an autorelease pool.  */
   CREATE_AUTORELEASE_POOL (_app_init_pool);
-  
+
   /* 
    * Set NSApp as soon as possible, since other gui classes (which
    * we refer or use in this method) might be calling [NSApplication
@@ -694,26 +694,26 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
    * those calls to succeed.  
    */
   NSApp = self;
-  
+
   /* Initialize the backend here.  */
   initialize_gnustep_backend();
 
   /* Load user-defined bundles */
   gsapp_user_bundles();
-  
+
   /* Connect to our window server.  */
   srv = [GSDisplayServer serverWithAttributes: nil];
   RETAIN(srv);
   [GSDisplayServer setCurrentServer: srv];
-  
+
   /* Create a default context.  */
   _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
   RETAIN(_default_context);
   [NSGraphicsContext setCurrentContext: _default_context];
-  
+
   /* Initialize font manager.  */
   [NSFontManager sharedFontManager];
-  
+
   _hidden = [[NSMutableArray alloc] init];
   _inactive = [[NSMutableArray alloc] init];
   _unhide_on_activation = YES;
@@ -723,19 +723,19 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   //_app_is_active = NO;
   //_main_menu = nil;
   _windows_need_update = YES;
-  
+
   /* Set a new exception handler for the gui library.  */
   NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
-  
+
   _listener = [GSServicesManager newWithApplication: self];
-  
+
   /* NSEvent doesn't use -init so we use +alloc instead of +new.  */
   _current_event = [NSEvent alloc]; // no current event
   null_event = [NSEvent alloc];    // create dummy event
-  
+
   /* We are the end of responder chain.  */
   [self setNextResponder: nil];
-  
+
   RELEASE (_app_init_pool);
 }
 
@@ -926,10 +926,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_listener application: self printFile: filePath];
       [self terminate: self];
     }
-  else if ([_delegate respondsToSelector:
-    @selector(applicationShouldOpenUntitledFile:)]
-    && ([_delegate applicationShouldOpenUntitledFile: self] == YES)
-    && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
+  else if (![defs boolForKey: @"autolaunch"]
+	   && [_delegate respondsToSelector:
+		@selector(applicationShouldOpenUntitledFile:)]
+	   && ([_delegate applicationShouldOpenUntitledFile: self])
+	   && [_delegate respondsToSelector:
+		@selector(applicationOpenUntitledFile:)])
     {
       [_delegate applicationOpenUntitledFile: self];
     }
@@ -1559,7 +1561,7 @@ See -runModalForWindow:
 - (void) sendEvent: (NSEvent *)theEvent
 {
   NSEventType type;
-  
+
   type = [theEvent type];
   switch (type)
     {
