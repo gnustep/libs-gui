@@ -34,7 +34,11 @@
   symbol from the category's file in order to force it link.
  */
 
-#import <Foundation/NSData.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSData.h>
+#endif
 
 
 @implementation NSObject (ModelArchivingMethods)

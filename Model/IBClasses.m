@@ -25,10 +25,11 @@
 
 #include <stdio.h>
 
-#import <Foundation/NSCoder.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSArray.h>
-#import <gnustep/gui/GMArchiver.h>
+#ifdef GNUSTEP
+#include <Foundation/NSString.h>
+#include <Foundation/NSArray.h>
+#endif
+#include <gnustep/gui/GMArchiver.h>
 
 #ifdef __APPLE__
 #import <AppKit/NSNibConnector.h>
@@ -36,10 +37,10 @@
 #import <AppKit/NSNibControlConnector.h>
 #endif
 
-#import "IBClasses.h"
-#import "Translator.h"
-#import "IMConnectors.h"
-#import "gnustep/gui/IMCustomObject.h"
+#include "IBClasses.h"
+#include "Translator.h"
+#include "IMConnectors.h"
+#include "gnustep/gui/IMCustomObject.h"
 
 //#define DEBUG
 

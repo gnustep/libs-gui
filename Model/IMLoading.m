@@ -23,10 +23,14 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSFileManager.h>
-#import <Foundation/NSPathUtilities.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSPathUtilities.h>
+#endif
 
 #include "gnustep/gui/GMArchiver.h"
 #include "gnustep/gui/IMLoading.h"
@@ -204,7 +208,7 @@ BOOL _fileOwnerDecoded = NO;
 
 
 #if GNU_RUNTIME
-#import "IMConnectors.h"
+#include "IMConnectors.h"
 
 static void __dummyFunctionForLinking (void)
 {

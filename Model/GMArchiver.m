@@ -26,16 +26,20 @@
 /* Portions of the code are based on NSArchiver from libFoundation. See the
    COPYING file from libFoundation for copyright information. */
 
-#import <Foundation/NSString.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSData.h>
-#import <Foundation/NSDebug.h>
-#import <Foundation/NSObjCRuntime.h>
-#import <Foundation/NSEnumerator.h>
-#import <Foundation/NSScanner.h>
-#import <Foundation/NSException.h>
-#import <Foundation/NSArchiver.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSString.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSData.h>
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSEnumerator.h>
+#include <Foundation/NSScanner.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSArchiver.h>
+#endif
 
 #ifndef AUTORELEASE
 #define AUTORELEASE(object)     [object autorelease]

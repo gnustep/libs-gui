@@ -1,7 +1,12 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.4'.
+The currently released version of the library is `0.8.5'.
+
+Noteworthy changes in version `0.8.5'
+=====================================
+
+   Bug fixes. NSStringDrawing now uses text system implementation.
 
 Noteworthy changes in version `0.8.4'
 =====================================

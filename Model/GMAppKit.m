@@ -23,8 +23,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/NSArray.h>
-#import <Foundation/NSException.h>
 #include "gnustep/gui/GMAppKit.h"
 
 #ifndef AUTORELEASE

@@ -26,7 +26,11 @@
 #ifndef _GNUstep_H_Translator
 #define _GNUstep_H_Translator
 
-#import <Foundation/NSObject.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSObject.h>
+#endif
 
 @class NSMutableArray;
 

@@ -29,7 +29,11 @@
 #ifndef _GNUstep_H_IBClasses
 #define _GNUstep_H_IBClasses
 
-#import <AppKit/NSView.h>
+#ifndef GNUSTEP
+#include <AppKit/AppKit.h>
+#else
+#include <AppKit/NSView.h>
+#endif
 
 @class NSString;
 
