@@ -140,10 +140,7 @@ static Class cellClass;
  */
 - (id) selectedCell
 {
-  if ([cell state])
-    return cell;
-  else
-    return nil;
+  return cell;
 }
 
 - (int) selectedTag
