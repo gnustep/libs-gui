@@ -997,77 +997,89 @@ void __dummy_GMAppKit_functionForLinking() {}
 @end  /* NSSavePanel (GMArchiverMethods) */
 
 
-/*
-@implementation NSTextFieldCell (GMArchiverMethods)
+@implementation NSBrowser (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver :(GMArchiver*)archiver
 {
-    //NSTextFieldCell
-    [archiver encodeObject:[self textColor] withName:@"textColor"];
-    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
-    [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
-    
-    //NSActionCell
-    [archiver encodeString:[self stringValue] withName:@"stringValue"];
-    [archiver encodeSelector:[self action] withName:@"action"];
-    [archiver encodeObject:[self target] withName:@"target"];
-    [archiver encodeUnsignedInt:[self tag] withName:@"tag"];
+    [super encodeWithModelArchiver:archiver];
 
-    //NSCell
-    [archiver encodeUnsignedInt:[self cellAttribute]withName:@"cellAttribute"];
-    [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
-    [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
-    [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
-    [archiver encodeUnsignedInt:[self state] withName:@"state"];
-    [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
-    [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
-    [archiver encodeUnsignedInt:[self alignment] withName:@"alignment"];
-    [archiver encodeObject:[self font] withName:@"font"];
-    [archiver encodeBOOL:[self wraps] withName:@"wraps"];
-    [archiver encodeBOOL:[self allowsEditingTextAttributes]
-             withName:@"allowsEditingTextAttributes"];
-    [archiver encodeBOOL:[self importsGraphics] withName:@"importsGraphics"];
-    [archiver encodeObject:[self image] withName:@"image"];
+    //NSBrowser
+    [archiver encodeString:[self path] withName:@"path"];
+    [archiver encodeString:[self pathSeparator] withName:@"pathSeparator"];
+    [archiver encodeBOOL:[self allowsBranchSelection] 
+            withName:@"allowsBranchSelection"];
+    [archiver encodeBOOL:[self allowsEmptySelection]
+            withName:@"allowsEmptySelection"];
+    [archiver encodeBOOL:[self allowsMultipleSelection]
+            withName:@"allowsMultipleSelection"];
+    [archiver encodeBOOL:[self reusesColumns] withName:@"reusesColumns"];
+    [archiver encodeUnsignedInt:[self maxVisibleColumns]
+            withName:@"maxVisibleColumns"];
+    [archiver encodeUnsignedInt:[self minColumnWidth]
+            withName:@"minColumnWidth"];
+    [archiver encodeBOOL:[self separatesColumns]
+            withName:@"separatesColumns"];
+    [archiver encodeBOOL:[self takesTitleFromPreviousColumn]
+            withName:@"takesTitleFromPreviousColumn"];
+    [archiver encodeBOOL:[self isTitled] withName:@"isTitled"];
+    [archiver encodeBOOL:[self hasHorizontalScroller]
+            withName:@"hasHorizontalScroller"];
+    [archiver encodeBOOL:[self acceptsArrowKeys]
+            withName:@"acceptsArrowKeys"];
+    [archiver encodeBOOL:[self sendsActionOnArrowKeys]
+            withName:@"sendsActionOnArrowKeys"];
 
-    //-isOpaque has no -setOpaque.
-
-    //TODO: menus
+    [archiver encodeObject:[self delegate] withName:@"delegate"];
+    [archiver encodeSelector:[self doubleAction] withName:@"doubleAction"];
 }
 
-- (id)initWithModelArchiver :(GMUnarchiver*)unarchiver
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-    //NSTextFieldCell
-    [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
-    [self setBackgroundColor:
-          [unarchiver decodeObjectWithName:@"backgroundColor"]];
-    [self setDrawsBackground:[unarchiver
-			     decodeBOOLWithName:@"drawsBackground"]];
+    unsigned backingType = [unarchiver decodeUnsignedIntWithName:
+			   @"backingType"];
+    unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
+    NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+    NSBrowser* browser = [[[NSBrowser allocWithZone:[unarchiver objectZone]]
+			  initWithContentRect:aRect
+			  styleMask:styleMask backing:backingType defer:YES]
+			 autorelease];
 
-    //NSActionCell
-    [self setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
-    [self setAction:[unarchiver decodeObjectWithName:@"action"]];
-    [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
-    [self setTag:[unarchiver decodeUnsignedIntWithName:@"tag"]];
-    
-    //NSCell
-    [self setCellAttribute:
-             [unarchiver decodeUnsignedIntWithName:@"cellAttribute"]];
-    [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
-    [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
-    [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
-    [self setState:[unarchiver decodeUnsignedIntWithName:@"state"]];
-    [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
-    [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
-    [self setAlignment:[unarchiver decodeUnsignedIntWithName:@"alignment"]];
-    [self setFont:[unarchiver decodeObjectWithName:@"font"]];
-    [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
-    [self setAllowsEditingTextAttributes:
-         [unarchiver decodeBOOLWithName:@"allowsEditingTextAttributes"]];
-    [self setImportsGraphics:
-         [unarchiver decodeBOOLWithName:@"importsGraphics"]];
-    [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+    return browser;
 }
 
+- (id)initWithModelUnarchiver :(GMUnarchiver *)unarchiver
+{
+    self = [super initWithModelUnarchiver:unarchiver];
+    
+    [self setPath:[unarchiver decodeStringWithName:@"path"]];
+    [self setPathSeparator:[unarchiver decodeStringWithName:@"pathSeparator"]];
+    [self setAllowsBranchSelection:[unarchiver
+		       decodeBOOLWithName:@"allowsBranchSelection"]];
+    [self setAllowsEmptySelection:[unarchiver
+		       decodeBOOLWithName:@"allowsEmptySelection"]];
+    [self setAllowsMultipleSelection:[unarchiver
+		       decodeBOOLWithName:@"allowsMultipleSelection"]];
 
-@end
-*/
+    [self setReusesColumns:[unarchiver decodeBOOLWithName:@"reusesColumns"]];
+    [self setMaxVisibleColumns:[unarchiver
+		       decodeUnsignedIntWithName:@"maxVisibleColumns"]];
+    [self setMinColumnWidth:[unarchiver
+		       decodeUnsignedIntWithName:@"minColumnWidth"]];
+    [self setSeparatesColumns:[unarchiver
+		       decodeBOOLWithName:@"separatesColumns"]];
+    [self setTakesTitleFromPreviousColumn:[unarchiver 
+		       decodeBOOLWithName:@"takesTitleFromPreviousColumn"]];
+    [self setTitled:[unarchiver 
+		       decodeBOOLWithName:@"isTitled"]];
+    [self setHasHorizontalScroller:[unarchiver
+		       decodeBOOLWithName:@"hasHorizontalScroller"]];
+    [self setAcceptsArrowKeys:[unarchiver 
+                       decodeBOOLWithName:@"acceptsArrowKeys"]];
+    [self setSendsActionOnArrowKeys:[unarchiver
+		       decodeBOOLWithName:@"sendsActionOnArrowKeys"]];
+
+    [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
+    [self setDoubleAction:[unarchiver decodeBOOLWithName:@"doubleAction"]];
+}
+
+@end  /* NSBrowser (GMArchiverMethods) */
