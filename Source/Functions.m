@@ -337,7 +337,6 @@ void NSHighlightRect(NSRect aRect)
   DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
 		   NSWidth(aRect), NSHeight(aRect), 
 		   NSCompositeHighlight);
-  [[[ctxt focusView] window] flushWindow];
 }
 
 void NSRectClip(NSRect aRect)
