@@ -217,7 +217,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   contentView = [aWindow contentView];
   [contentView addSubview: menu_view];
   [contentView addSubview: titleView];
-  
+
   [titleView setMenu: self];
 
   // Set up the notification to start the process of redisplaying
@@ -1339,7 +1339,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   frameRect.origin = aPoint;
   DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
-    frameRect.size.width, frameRect.size.height, [self windowNumber]);
+		 frameRect.size.width, frameRect.size.height, 
+		 [self windowNumber]);
 }
 
 @end
@@ -1366,15 +1367,15 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   NSRect workRect = [self bounds];
   NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
   float grays[] = {NSDarkGray, NSDarkGray};
-  NSDictionary *attr;
+  /* Cache the title attributes */
+  static NSDictionary *attr = nil;
 
   // Draw the dark gray upper left lines.
-  workRect = NSDrawTiledRects(workRect, workRect,
-			      sides, grays, 2);
-
+  workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
+  
   // Draw the title box's button.
   NSDrawButton(workRect, workRect);
-
+  
   // Paint it Black!
   workRect.origin.x += 1;
   workRect.origin.y += 2;
@@ -1383,18 +1384,21 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [[NSColor windowFrameColor] set];
   NSRectFill(workRect);
 
-  // Draw the title.
-  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-			       [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
-			       [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
-			       nil];
+  // Draw the title
+  if (attr == nil)
+    {
+      attr = [[NSDictionary alloc] 
+	       initWithObjectsAndKeys: 
+		 [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
+	       [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	       nil];
+    }
 
-  // This gives the correct position, but I don't quite understand it.
+  // This gives the correct position
   workRect.origin.x += 5;
   workRect.size.width -= 5;
   workRect.size.height -= 2;
-  [[menu title] drawInRect: workRect withAttributes: attr];
-  RELEASE(attr);
+  [[menu title] drawInRect: workRect  withAttributes: attr];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
