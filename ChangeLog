@@ -1,3 +1,72 @@
+Fri Jan 14 07:03:14 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSliderCell.m ([-isFlipped]): Fixed typo, this method
+ 	was called 'isFliped'.
+
+Fri Jan 14 04:33:21 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Work to improve appearance.
+	* Source/NSBox.m ([-sizeToFit]): More space around title.
+	([-calcSizesAllowingNegative:]): idem.
+	* Source/NSBrowserCell.m ([-drawInteriorWithFrame:inView:]): Skip
+ 	2 points from left border before drawing text.
+	* Source/NSButtonCell.m ([-cellSize]): Changed space between borders
+ 	and contents if needed; fixed font height.
+  	([-drawInteriorWithFrame:inView:]): When drawing both image and
+ 	text, add space between image and border.
+	* Source/NSCell.m ([-cellSize]): Fixed font height; removed
+ 	additional height; added space between border and contents if needed.
+	([NSCell -editWithFrame:inView:editor:delegate:event:]): Added
+ 	spacing between border and contents.
+  	([-selectWithFrame:inView:editor:delegate:start:length:]):
+ 	idem. ([-drawInteriorWithFrame:inView:]): Added spacing between
+ 	border and contents.	
+	* Source/NSFormCell.m ([-cellSize]): Use super's cellSize.
+  	([-cellSize]), ([-drawingRectForBounds:]),
+ 	([-drawWithFrame:inView:]): Changed spacing between title and
+ 	editable field to 3.
+	* Source/NSForm.m 
+	([-initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:]),
+	([-initWithFrame:mode:prototype:numberOfRows:numberOfColumns:]): 
+	Added methods to set the standard interline spacing to 4 during
+ 	initialization.
+	* Source/NSPanel.m (GSAlertPanel): Added ivar originalSize,
+ 	updated encoding/decoding methods.
+	([GSAlertPanel
+ 	-initWithContentRect:styleMask:backing:defer:screen:]): Fixed
+ 	autoresizingMask and position of messageField, changed
+ 	autoresizingMask of titleField to suit our needs.
+	([GSAlertPanel -setTitle:message:def:alt:other:]): Implemented
+ 	advanced automatic resizing of buttons and of the panel.  All
+ 	buttons are made of a same size computed to be comfortable for
+ 	all, and panel is resized whenever needed to display long messages
+ 	or big buttons.
+	* Source/NSPopUpButtonCell.m ([-drawWithFrame:inView:]): Skip 5
+ 	points from left side before drawing text.
+	* Source/NSSavePanel.m ([-_initWithoutGModel]): Fixed heights 
+	of buttons and of the form; fixed position of title.
+	
+	Code to have NSForm's editable fields aligned in a row.  This was
+ 	tricky.
+	* Headers/AppKit/NSForm.h: Added ivar _title_width_needs_update.
+	* core/gui/Source/NSForm.m ([-insertEntry:atIndex:]): We observe
+ 	each added cell for messages _NSFormCellDidChangeTitleWidth.
+  	([-removeEntryAtIndex:]): Remove notification for removed cell.
+  	([-dealloc]): Added method to remove self from notification
+ 	center.  ([-_setTitleWidthNeedsUpdate:]): Added private method
+ 	invoke by the notification center.  ([-drawRect:]): Added method;
+ 	needs to invoke calcSize if needed before drawing.
+  	([-setValidateSize:]): Added method.  ([-calcSize]): Added method.
+	* Headers/AppKit/NSFormCell.h: Changed ivar name; added declaration 
+	of notification _NSFormCellDidChangeTitleWidthNotification.
+	* Source/NSFormCell.m ([-initTextCell:]): Minor optimizations.
+	([-setTitleWidth:]): Fixed bug.  ([-calcDrawInfo:]): New method.
+	([-setTitle:]), ([-setTitleFont:]), ([-setTitleWidth:]): Post
+ 	notification _NSFormCellDidChangeTitleWidthNotification.
+	([-initWithCoder:]), ([-encodeWithCoder:]): Implemented.
+	* Source/externs.m: Added
+ 	_NSFormCellDidChangeTitleWidthNotification.
+
 Thu Jan 13 20:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenu.m: minor tidyups and fixes for Gorm
