@@ -1,3 +1,8 @@
+Sat Feb 15 13:26:03 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/AppKit.h: Include NSRulerView.h
+	and NSRulerMarker.h, reported missing by Benhur Stein.
+
 2003-02-14 17:47  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m,
