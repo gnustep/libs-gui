@@ -1,3 +1,17 @@
+Thu Jan 30 02:55:17 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-scrollPageDown:], [-scrollPageUp:]): Do
+	not mark rulers as needing redisplay.
+	([-scrollWheel:]): Do not scroll header view; do not mark rulers as
+	needing redisplay.
+
+Thu Jan 30 02:51:49 2003  Benhur Stein <benhur@inf.ufsm.br>
+	
+	* Source/NSScrollView.m ([-_doScroll:]): Do not scroll header
+	view; do not mark rulers as needing redisplay.
+	([-reflectScrolledClipView:]): Mark the rulers as needing
+	redisplay.  Do not constrain the scrollpoint of the header view.
+
 2003-01-29 21:14  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-setTextStorage:): Tell our text
