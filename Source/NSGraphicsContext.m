@@ -32,6 +32,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSRunLoop.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
@@ -153,6 +154,7 @@ struct NSWindow_struct
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
+  DESTROY(event_queue);
   [super dealloc];
 }
 
@@ -178,6 +180,8 @@ struct NSWindow_struct
   context_info = [info retain];
   focus_stack = [[NSMutableArray allocWithZone: [self zone]]
 			initWithCapacity: 1];
+  event_queue = [[NSMutableArray allocWithZone: [self zone]]
+			initWithCapacity: 32];
 
   /*
    * The classMethodTable dictionary and the list of all contexts must both
@@ -1542,19 +1546,273 @@ struct NSWindow_struct
 			      inMode: (NSString*)mode
 			     dequeue: (BOOL)flag
 {
-  [self subclassResponsibility: _cmd];
-  return nil;
+  unsigned	pos = 0;	/* Position in queue scanned so far	*/
+  NSRunLoop	*loop = nil;
+
+  do
+    {
+      unsigned	count = [event_queue count];
+      NSEvent	*event;
+      unsigned	i = 0;
+
+      if (count == 0)
+	{
+	  event = nil;
+	}
+      else if (mask == NSAnyEventMask)
+	{
+	  /*
+	   * Special case - if the mask matches any event, we just get the
+	   * first event on the queue.
+	   */
+	  event = [event_queue objectAtIndex: 0];
+	}
+      else
+	{
+	  event = nil;
+	  /*
+	   * Scan the queue from the last position we have seen, up to the end.
+	   */
+	  if (count > pos)
+	    {
+	      unsigned	end = count - pos;
+	      NSRange	r = NSMakeRange(pos, end);
+	      NSEvent	*events[end];
+
+	      [event_queue getObjects: events range: r];
+	      for (i = 0; i < end; i++)
+		{
+		  BOOL	matched = NO;
+
+		  switch ([events[i] type])
+		    {
+		      case NSLeftMouseDown:
+			if (mask & NSLeftMouseDownMask)
+			  matched = YES;
+			break;
+
+		      case NSLeftMouseUp:
+			if (mask & NSLeftMouseUpMask)
+			  matched = YES;
+			break;
+
+		      case NSRightMouseDown:
+			if (mask & NSRightMouseDownMask)
+			  matched = YES;
+			break;
+
+		      case NSRightMouseUp:
+			if (mask & NSRightMouseUpMask)
+			  matched = YES;
+			break;
+
+		      case NSMouseMoved:
+			if (mask & NSMouseMovedMask)
+			  matched = YES;
+			break;
+
+		      case NSMouseEntered:
+			if (mask & NSMouseEnteredMask)
+			  matched = YES;
+			break;
+
+		      case NSMouseExited:
+			if (mask & NSMouseExitedMask)
+			  matched = YES;
+			break;
+
+		      case NSLeftMouseDragged:
+			if (mask & NSLeftMouseDraggedMask)
+			  matched = YES;
+			break;
+
+		      case NSRightMouseDragged:
+			if (mask & NSRightMouseDraggedMask)
+			  matched = YES;
+			break;
+
+		      case NSKeyDown:
+			if (mask & NSKeyDownMask)
+			  matched = YES;
+			break;
+
+		      case NSKeyUp:
+			if (mask & NSKeyUpMask)
+			  matched = YES;
+			break;
+
+		      case NSFlagsChanged:
+			if (mask & NSFlagsChangedMask)
+			  matched = YES;
+			break;
+
+		      case NSPeriodic:
+			if (mask & NSPeriodicMask)
+			  matched = YES;
+			break;
+
+		      case NSCursorUpdate:
+			if (mask & NSCursorUpdateMask)
+			  matched = YES;
+			break;
+
+		      default:
+			break;
+		    }
+		  if (matched)
+		    {
+		      event = events[i];
+		      break;
+		    }
+		}
+	    }
+	}
+
+      /*
+       * Note the positon we have read up to.
+       */
+      pos += i;
+
+      /*
+       * If we found a matching event, we (depending on the flag) de-queue it.
+       * We return the event RETAINED - the caller must release it.
+       */
+      if (event)
+	{
+	  RETAIN(event);
+	  if (flag)
+	    {
+	      [event_queue removeObjectAtIndex: pos];
+	    }
+	  return AUTORELEASE(event);
+	}
+      if (loop == nil)
+	loop = [NSRunLoop currentRunLoop];
+    }
+  while ([loop runMode: mode beforeDate: limit] == YES);
+
+  return nil;	/* No events in specified time	*/
 }
 
 - (void) DPSDiscardEventsMatchingMask: (unsigned)mask
 			  beforeEvent: (NSEvent*)limit
 {
-  [self subclassResponsibility: _cmd];
+  unsigned		index = [event_queue count];
+
+  /*
+   *	If there is a range to use - remove all the matching events in it
+   *    which were created before the specified event.
+   */
+  if (index > 0)
+    {
+      NSTimeInterval	when = [limit timestamp];
+      NSEvent		*events[index];
+
+      [event_queue getObjects: events];
+
+      while (index-- > 0)
+	{
+	  NSEvent	*event = events[index];
+
+	  if ([event timestamp] < when)
+	    {	
+	      BOOL	shouldRemove = NO;
+
+	      if (mask == NSAnyEventMask)
+		{
+		  shouldRemove = YES;
+		}
+	      else
+		{
+		  switch ([event type])
+		    {
+		      case NSLeftMouseDown:
+			if (mask & NSLeftMouseDownMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSLeftMouseUp:
+			if (mask & NSLeftMouseUpMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSRightMouseDown:
+			if (mask & NSRightMouseDownMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSRightMouseUp:
+			if (mask & NSRightMouseUpMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSMouseMoved:
+			if (mask & NSMouseMovedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSMouseEntered:
+			if (mask & NSMouseEnteredMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSMouseExited:
+			if (mask & NSMouseExitedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSLeftMouseDragged:
+			if (mask & NSLeftMouseDraggedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSRightMouseDragged:
+			if (mask & NSRightMouseDraggedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSKeyDown:
+			if (mask & NSKeyDownMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSKeyUp:
+			if (mask & NSKeyUpMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSFlagsChanged:
+			if (mask & NSFlagsChangedMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSPeriodic:
+			if (mask & NSPeriodicMask)
+			  shouldRemove = YES;
+			break;
+
+		      case NSCursorUpdate:
+			if (mask & NSCursorUpdateMask)
+			  shouldRemove = YES;
+			break;
+
+		      default:
+			break;
+		    }
+		}
+	      if (shouldRemove)
+		[event_queue removeObjectAtIndex: index];
+	    }
+	}
+    }
 }
 
 - (void) DPSPostEvent: (NSEvent*)anEvent atStart: (BOOL)flag
 {
-  [self subclassResponsibility: _cmd];
+  if (flag)
+    [event_queue insertObject: anEvent atIndex: 0];
+  else
+    [event_queue addObject: anEvent];
 }
 
 @end

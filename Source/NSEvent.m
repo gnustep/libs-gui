@@ -10,6 +10,8 @@
    Date: 1996
    Author: 	Felipe A. Rodriguez <far@ix.netcom.com>
    Date: Sept 1998
+   Updated: 	Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: June 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -47,30 +49,34 @@
  *	gstep-base has a faster mechanism to get the current thread.
  */
 #ifndef GNUSTEP_BASE_LIBRARY
-#define	GSCurrentThread()	[NSThread currentThread]
+#define	GSCurrentThread()		[NSThread currentThread]
 #define	GSCurrentThreadDictionary()	[[NSThread currentThread] threadDictionary]
 #endif
 
 @implementation NSEvent
 
-// Class variables
+/*
+ * Class variables
+ */
 static NSString	*timerKey = @"NSEventTimersKey";
+static Class eventClass;
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSEvent class])
     {
       NSDebugLog(@"Initialize NSEvent class\n");
       [self setVersion: 1];
+      eventClass = [NSEvent class];
     }
 }
 
-//
-// Creating NSEvent objects
-//
+/*
+ * Creating NSEvent objects
+ */
 + (NSEvent*) enterExitEventWithType: (NSEventType)type
 			   location: (NSPoint)location
 		      modifierFlags: (unsigned int)flags
@@ -81,12 +87,18 @@ static NSString	*timerKey = @"NSEventTimersKey";
 		     trackingNumber: (int)trackingNum
 			   userData: (void *)userData
 {
-  NSEvent *e = [[[NSEvent alloc] init] autorelease];
+  NSEvent	*e;
 
   if (type == NSCursorUpdate)
-    [(id)userData retain];
+    RETAIN((id)userData);
   else if ((type != NSMouseEntered) && (type != NSMouseExited))
-    return nil;
+    [NSException raise: NSInvalidArgumentException
+		format: @"enterExitEvent with wrong type"];
+
+  e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+  if (self != eventClass)
+    e = [e init];
+  AUTORELEASE(e);
 
   e->event_type = type;
 
@@ -113,10 +125,16 @@ static NSString	*timerKey = @"NSEventTimersKey";
 		    isARepeat: (BOOL)repeatKey
 		      keyCode: (unsigned short)code
 {
-  NSEvent *e = [[[NSEvent alloc] init] autorelease];
+  NSEvent	*e;
 
-  if ((type != NSKeyDown) && (type != NSKeyUp))
-    return nil;
+  if (type < NSKeyDown || type > NSFlagsChanged)
+    [NSException raise: NSInvalidArgumentException
+		format: @"keyEvent with wrong type"];
+
+  e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+  if (self != eventClass)
+    e = [e init];
+  AUTORELEASE(e);
 
   e->event_type = type;
   e->location_point = location;
@@ -124,9 +142,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
   e->event_time = time;
   e->window_num = windowNum;
   e->event_context = context;
-  [keys retain];
+  RETAIN(keys);
   e->event_data.key.char_keys = keys;
-  [ukeys retain];
+  RETAIN(ukeys);
   e->event_data.key.unmodified_keys = ukeys;
   e->event_data.key.repeat = repeatKey;
   e->event_data.key.key_code = code;
@@ -144,13 +162,16 @@ static NSString	*timerKey = @"NSEventTimersKey";
 		     clickCount: (int)clickNum
 		       pressure: (float)pressureValue
 {
-  NSEvent *e = [[[NSEvent alloc] init] autorelease];
+  NSEvent	*e;
 
-  if ((type != NSMouseMoved) && (type != NSLeftMouseUp)
-    && (type != NSLeftMouseDown) && (type != NSRightMouseDown)
-    && (type != NSRightMouseUp) && (type != NSLeftMouseDragged)
-    && (type != NSRightMouseDragged))
-    return nil;
+  if (type < NSLeftMouseDown || type > NSRightMouseDragged)
+    [NSException raise: NSInvalidArgumentException
+		format: @"mouseEvent with wrong type"];
+
+  e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+  if (self != eventClass)
+    e = [e init];
+  AUTORELEASE(e);
 
   e->event_type = type;
   e->location_point = location;
@@ -175,10 +196,16 @@ static NSString	*timerKey = @"NSEventTimersKey";
 			  data1: (int)data1
 			  data2: (int)data2
 {
-  NSEvent *e = [[[NSEvent alloc] init] autorelease];
+  NSEvent	*e;
 
-  if ((type != NSFlagsChanged) && (type != NSPeriodic))
-    return nil;
+  if (type < NSAppKitDefined || type > NSPeriodic)
+    [NSException raise: NSInvalidArgumentException
+		format: @"otherEvent with wrong type"];
+
+  e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+  if (self != eventClass)
+    e = [e init];
+  AUTORELEASE(e);
 
   e->event_type = type;
   e->location_point = location;
@@ -193,9 +220,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
   return e;
 }
 
-//
-// Requesting Periodic Events
-//
+/*
+ * Requesting Periodic Events
+ */
 + (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds
 			    withPeriod: (NSTimeInterval)periodSeconds
 {
@@ -209,8 +236,10 @@ static NSString	*timerKey = @"NSEventTimersKey";
 		format: @"Periodic events are already being generated for "
 		        @"this thread %x", GSCurrentThread()];
 
-  // If the delay time is 0 then register a timer immediately. Otherwise
-  // register a timer with no repeat that when fired registers the real timer
+  /*
+   * If the delay time is 0 then register a timer immediately. Otherwise
+   * register a timer with no repeat that when fired registers the real timer
+   */
   if (!delaySeconds)
     timer = [NSTimer timerWithTimeInterval: periodSeconds
 				    target: self
@@ -225,33 +254,37 @@ static NSString	*timerKey = @"NSEventTimersKey";
 				   repeats: NO];
 
   [[NSRunLoop currentRunLoop] addTimer: timer
-			forMode: NSEventTrackingRunLoopMode];
+			       forMode: NSEventTrackingRunLoopMode];
   [dict setObject: timer forKey: timerKey];
 }
 
 + (void) _timerFired: (NSTimer*)timer
 {
-  NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
-  NSApplication *theApp = [NSApplication sharedApplication];
-  NSEvent* periodicEvent = [self otherEventWithType: NSPeriodic
-					   location: NSZeroPoint
-				      modifierFlags: 0
-					  timestamp: timeInterval
-				       windowNumber: 0
-					    context: [theApp context]
-					    subtype: 0
-					      data1: 0
-					      data2: 0];
+  NSTimeInterval	timeInterval;
+  NSEvent		*periodicEvent;
+
+  timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
+  periodicEvent = [self otherEventWithType: NSPeriodic
+				  location: NSZeroPoint
+			     modifierFlags: 0
+				 timestamp: timeInterval
+			      windowNumber: 0
+				   context: [NSApp context]
+				   subtype: 0
+				     data1: 0
+				     data2: 0];
 
   NSDebugLog (@"_timerFired: ");
-  [theApp postEvent: periodicEvent atStart: NO];
+  [NSApp postEvent: periodicEvent atStart: NO];
 }
 
-// this method provides a means of delaying the start of periodic events
+/*
+ * This method provides a means of delaying the start of periodic events
+ */
 + (void) _registerRealTimer: (NSTimer*)timer
 {
-  NSTimer* realTimer;
-  NSMutableDictionary *dict = GSCurrentThreadDictionary();
+  NSTimer		*realTimer;
+  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"_registerRealTimer: ");
 
@@ -267,8 +300,8 @@ static NSString	*timerKey = @"NSEventTimersKey";
 
 + (void) stopPeriodicEvents
 {
-  NSTimer* timer;
-  NSMutableDictionary *dict = GSCurrentThreadDictionary();
+  NSTimer		*timer;
+  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"stopPeriodicEvents");
   timer = [dict objectForKey: timerKey];
@@ -276,25 +309,25 @@ static NSString	*timerKey = @"NSEventTimersKey";
   [dict removeObjectForKey: timerKey];
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (void) dealloc
 {
   if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
     {
-      [event_data.key.char_keys release];
-      [event_data.key.unmodified_keys release];
+      RELEASE(event_data.key.char_keys);
+      RELEASE(event_data.key.unmodified_keys);
     }
   else if (event_type == NSCursorUpdate)
-    [(id)event_data.tracking.user_data release];
+    RELEASE((id)event_data.tracking.user_data);
 
-  [super dealloc];
+  NSDeallocateObject(self);
 }
 
-//
-// Getting General Event Information
-//
+/*
+ * Getting General Event Information
+ */
 - (NSGraphicsContext*) context
 {
   return event_context;
@@ -330,13 +363,14 @@ static NSString	*timerKey = @"NSEventTimersKey";
   return window_num;
 }
 
-//
-// Getting Key Event Information
-//
+/*
+ * Getting Key Event Information
+ */
 - (NSString *) characters
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return nil;
+    [NSException raise: NSInvalidArgumentException
+		format: @"characters requested for non-keyboard event"];
 
   return event_data.key.char_keys;
 }
@@ -344,7 +378,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
 - (NSString *) charactersIgnoringModifiers
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return nil;
+    [NSException raise: NSInvalidArgumentException
+		format: @"charactersIgnoringModifiers requested for "
+			@"non-keyboard event"];
 
   return event_data.key.unmodified_keys;
 }
@@ -352,43 +388,41 @@ static NSString	*timerKey = @"NSEventTimersKey";
 - (BOOL) isARepeat
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return NO;
+    [NSException raise: NSInvalidArgumentException
+		format: @"isARepeat requested for non-keyboard event"];
 
   return event_data.key.repeat;
 }
 
 - (unsigned short) keyCode
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return 0;
+  if ((event_type != NSKeyUp) && (event_type != NSKeyDown)
+    && (event_type != NSFlagsChanged))
+    [NSException raise: NSInvalidArgumentException
+		format: @"keyCode requested for non-keyboard event"];
 
   return event_data.key.key_code;
 }
 
-//
-// Getting Mouse Event Information
-//
+/*
+ * Getting Mouse Event Information
+ */
 - (int) clickCount
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp)
-    && (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp)
-    && (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged)
-    && (event_type != NSMouseMoved))
-    return 0;
+  /* Make sure it is one of the right event types */
+  if (event_type < NSLeftMouseDown || event_type > NSRightMouseDragged)
+    [NSException raise: NSInvalidArgumentException
+		format: @"clickCount requested for non-mouse event"];
 
   return event_data.mouse.click;
 }
 
 - (int) eventNumber
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp)
-    && (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp)
-    && (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged)
-    && (event_type != NSMouseMoved) && (event_type != NSMouseEntered)
-    && (event_type != NSMouseExited))
-    return 0;
+  /* Make sure it is one of the right event types */
+  if (event_type < NSLeftMouseDown || event_type > NSMouseExited)
+    [NSException raise: NSInvalidArgumentException
+		format: @"eventNumber requested for non-mouse event"];
 
   if ((event_type == NSMouseEntered) || (event_type == NSMouseExited))
     return event_data.tracking.event_num;
@@ -398,70 +432,70 @@ static NSString	*timerKey = @"NSEventTimersKey";
 
 - (float) pressure
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp)
-    && (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp)
-    && (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged)
-    && (event_type != NSMouseMoved))
-    return 0;
+  /* Make sure it is one of the right event types */
+  if (event_type < NSLeftMouseDown || event_type > NSRightMouseDragged)
+    [NSException raise: NSInvalidArgumentException
+		format: @"pressure requested for non-mouse event"];
 
   return event_data.mouse.pressure;
 }
 
-//
-// Getting Tracking Event Information
-//
+/*
+ * Getting Tracking Event Information
+ */
 - (int) trackingNumber
 {
-  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
-    && (event_type != NSCursorUpdate))
-    return 0;
+  if (event_type != NSMouseEntered && event_type != NSMouseExited
+    &&  event_type != NSCursorUpdate)
+    [NSException raise: NSInvalidArgumentException
+		format: @"trackingNumber requested for non-tracking event"];
 
   return event_data.tracking.tracking_num;
 }
 
 - (void *) userData
 {
-  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
-    && (event_type != NSCursorUpdate))
-    return NULL;
+  if (event_type != NSMouseEntered && event_type != NSMouseExited
+    &&  event_type != NSCursorUpdate)
+    [NSException raise: NSInvalidArgumentException
+                format: @"userData requested for non-tracking event"];
 
   return event_data.tracking.user_data;
 }
 
-//
-// Getting Information about Specially Defined Events
-//
+/*
+ * Getting Information about Specially Defined Events
+ */
 - (int) data1
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+  if (event_type < NSAppKitDefined || event_type > NSPeriodic)
+    [NSException raise: NSInvalidArgumentException
+		format: @"data1 requested for invalid event type"];
 
   return event_data.misc.data1;
 }
 
 - (int) data2
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+  if (event_type < NSAppKitDefined || event_type > NSPeriodic)
+    [NSException raise: NSInvalidArgumentException
+		format: @"data2 requested for invalid event type"];
 
   return event_data.misc.data2;
 }
 
 - (short) subtype
 {
-  // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+  if (event_type < NSAppKitDefined || event_type > NSPeriodic)
+    [NSException raise: NSInvalidArgumentException
+		format: @"subtype requested for invalid event type"];
 
   return event_data.misc.sub_type;;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(NSEventType) at: &event_type];
@@ -469,11 +503,7 @@ static NSString	*timerKey = @"NSEventTimersKey";
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &modifier_flags];
   [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &window_num];
-  // We don't want to encode the context, right?
-  // DPSContext doesn't conform to NSCoding
-  //[aCoder encodeObjectReference: event_context withName: @"Context"];
 
-  // Encode the event date based upon the event type
   switch (event_type)
     {
       case NSLeftMouseDown:
@@ -506,6 +536,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
 
       case NSFlagsChanged:
       case NSPeriodic:
+      case NSAppKitDefined:
+      case NSSystemDefined:
+      case NSApplicationDefined:
 	[aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 		&event_data.misc.data1, &event_data.misc.data2];
 	break;
@@ -553,6 +586,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
 
       case NSFlagsChanged:
       case NSPeriodic:
+      case NSAppKitDefined:
+      case NSSystemDefined:
+      case NSApplicationDefined:
 	[aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 		&event_data.misc.data1, &event_data.misc.data2];
 	break;
@@ -565,8 +601,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
 {
   const char* eventTypes[] = { "leftMouseDown", "leftMouseUp",
     "rightMouseDown", "rightMouseUp", "mouseMoved", "leftMouseDragged",
-    "rightMouseDragged", "mouseEntered", "mouseExited", "keyDown", "keyUp",
-    "flagsChanged", "periodic", "cursorUpdate"
+    "rightMouseDragged", "mouseEntered", "mouseExited",
+    "keyDown", "keyUp", "flagsChanged", "appKitDefined",
+    "systemDefined", "applicationDefined", "periodic", "cursorUpdate"
   };
 
   switch (event_type)
@@ -617,6 +654,9 @@ static NSString	*timerKey = @"NSEventTimersKey";
       case NSFlagsChanged:
       case NSPeriodic:
       case NSCursorUpdate:
+      case NSAppKitDefined:
+      case NSSystemDefined:
+      case NSApplicationDefined:
 	return [NSString stringWithFormat:
 	      @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 	      @" time = %f, window = %d, dpsContext = %p, "

@@ -3,7 +3,7 @@
 
    The event class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -37,6 +37,10 @@
 @class NSWindow;
 @class NSGraphicsContext;
 
+/*
+ * Enumerated type for events - order IS significant as ranges of values
+ * are used for testing for valid event types.
+ */
 typedef enum _NSEventType {
   NSLeftMouseDown,
   NSLeftMouseUp,
@@ -50,27 +54,32 @@ typedef enum _NSEventType {
   NSKeyDown,
   NSKeyUp,
   NSFlagsChanged,
+  NSAppKitDefined,
+  NSSystemDefined,
+  NSApplicationDefined,
   NSPeriodic,
   NSCursorUpdate
 } NSEventType;
 
 enum {
-  NSLeftMouseDownMask = 1,
-  NSLeftMouseUpMask = 2,
-  NSRightMouseDownMask = 4,
-  NSRightMouseUpMask = 8,
-  NSMouseMovedMask = 16,
-  NSLeftMouseDraggedMask = 32,
-  NSRightMouseDraggedMask = 64,
-  NSMouseEnteredMask = 128,
-  NSMouseExitedMask = 256,
-  NSKeyDownMask = 512,
-  NSKeyUpMask = 1024,
-  NSFlagsChangedMask = 2048,
-  NSPeriodicMask = 4096,
-  NSCursorUpdateMask = 8192,
-// Note that NSAnyEventMask is an OR-combination of all other event masks
-  NSAnyEventMask = 16383
+  NSLeftMouseDownMask = (1 << NSLeftMouseDown),
+  NSLeftMouseUpMask = (1 << NSLeftMouseUp),
+  NSRightMouseDownMask = (1 << NSRightMouseDown),
+  NSRightMouseUpMask = (1 << NSRightMouseUp),
+  NSMouseMovedMask = (1 << NSMouseMoved),
+  NSLeftMouseDraggedMask = (1 << NSLeftMouseDragged),
+  NSRightMouseDraggedMask = (1 << NSRightMouseDragged),
+  NSMouseEnteredMask = (1 << NSMouseEntered),
+  NSMouseExitedMask = (1 << NSMouseExited),
+  NSKeyDownMask = (1 << NSKeyDown),
+  NSKeyUpMask = (1 << NSKeyUp),
+  NSFlagsChangedMask = (1 << NSFlagsChanged),
+  NSAppKitDefinedMask = (1 << NSAppKitDefined),
+  NSSystemDefinedMask = (1 << NSSystemDefined),
+  NSApplicationDefinedMask = (1 << NSApplicationDefined),
+  NSPeriodicMask = (1 << NSPeriodic),
+  NSCursorUpdateMask = (1 << NSCursorUpdate),
+  NSAnyEventMask = 0xffffffff
 };
 
 enum {
@@ -86,139 +95,138 @@ enum {
 
 @interface NSEvent : NSObject <NSCoding>
 {
-  // Attributes
-  NSEventType event_type;
-  NSPoint location_point;
-  unsigned int modifier_flags;
-  NSTimeInterval event_time;
-  int window_num;
-  NSGraphicsContext*event_context;
+  NSEventType		event_type;
+  NSPoint		location_point;
+  unsigned int		modifier_flags;
+  NSTimeInterval	event_time;
+  int			window_num;
+  NSGraphicsContext	*event_context;
   union _MB_event_data
-  {
-    struct
-      {
-	int event_num;
-	int click;
-	float pressure;
-      } mouse;
+    {
       struct
 	{
-	  BOOL repeat;
-	  NSString *char_keys;
-	  NSString *unmodified_keys;
+	  int	event_num;
+	  int	click;
+	  float	pressure;
+	} mouse;
+      struct
+	{
+	  BOOL		repeat;
+	  NSString	*char_keys;
+	  NSString	*unmodified_keys;
 	  unsigned short key_code;
 	} key;
-	struct
-	  {
-	    int event_num;
-	    int tracking_num;
-	    void *user_data;
-	  } tracking;
-	  struct
-	    {
-	      short sub_type;
-	      int data1;
-	      int data2;
-	    } misc;
-  } event_data;
+      struct
+	{
+	  int		event_num;
+	  int		tracking_num;
+	  void		*user_data;
+	} tracking;
+      struct
+	{
+	  short		sub_type;
+	  int		data1;
+	  int		data2;
+	} misc;
+    } event_data;
 }
 
-//
-// Creating NSEvent objects
-//
+/*
+ * Creating NSEvent objects
+ */
 
-+ (NSEvent *)enterExitEventWithType:(NSEventType)type	
-			   location:(NSPoint)location
-		      modifierFlags:(unsigned int)flags
-			  timestamp:(NSTimeInterval)time
-		       windowNumber:(int)windowNum
-			    context:(NSGraphicsContext*)context	
-			eventNumber:(int)eventNum
-		     trackingNumber:(int)trackingNum
-			   userData:(void *)userData; 
++ (NSEvent*) enterExitEventWithType: (NSEventType)type	
+			   location: (NSPoint)location
+		      modifierFlags: (unsigned int)flags
+			  timestamp: (NSTimeInterval)time
+		       windowNumber: (int)windowNum
+			    context: (NSGraphicsContext*)context	
+			eventNumber: (int)eventNum
+		     trackingNumber: (int)trackingNum
+			   userData: (void *)userData; 
 
-+ (NSEvent *)keyEventWithType:(NSEventType)type
-		     location:(NSPoint)location
-		modifierFlags:(unsigned int)flags
-		    timestamp:(NSTimeInterval)time
-		 windowNumber:(int)windowNum
-		      context:(NSGraphicsContext*)context	
-		   characters:(NSString *)keys	
-  charactersIgnoringModifiers:(NSString *)ukeys
-		    isARepeat:(BOOL)repeatKey	
-		      keyCode:(unsigned short)code;
++ (NSEvent*) keyEventWithType: (NSEventType)type
+		     location: (NSPoint)location
+		modifierFlags: (unsigned int)flags
+		    timestamp: (NSTimeInterval)time
+		 windowNumber: (int)windowNum
+		      context: (NSGraphicsContext*)context	
+		   characters: (NSString *)keys	
+  charactersIgnoringModifiers: (NSString *)ukeys
+		    isARepeat: (BOOL)repeatKey	
+		      keyCode: (unsigned short)code;
 
-+ (NSEvent *)mouseEventWithType:(NSEventType)type	
-		       location:(NSPoint)location
-		  modifierFlags:(unsigned int)flags
-		      timestamp:(NSTimeInterval)time
-		   windowNumber:(int)windowNum	
-			context:(NSGraphicsContext*)context	
-		    eventNumber:(int)eventNum	
-		     clickCount:(int)clickNum	
-		       pressure:(float)pressureValue;
++ (NSEvent*) mouseEventWithType: (NSEventType)type	
+		       location: (NSPoint)location
+		  modifierFlags: (unsigned int)flags
+		      timestamp: (NSTimeInterval)time
+		   windowNumber: (int)windowNum	
+			context: (NSGraphicsContext*)context	
+		    eventNumber: (int)eventNum	
+		     clickCount: (int)clickNum	
+		       pressure: (float)pressureValue;
 
-+ (NSEvent *)otherEventWithType:(NSEventType)type	
-		       location:(NSPoint)location
-		  modifierFlags:(unsigned int)flags
-		      timestamp:(NSTimeInterval)time
-		   windowNumber:(int)windowNum	
-			context:(NSGraphicsContext*)context	
-			subtype:(short)subType	
-			  data1:(int)data1	
-			  data2:(int)data2;
++ (NSEvent*) otherEventWithType: (NSEventType)type	
+		       location: (NSPoint)location
+		  modifierFlags: (unsigned int)flags
+		      timestamp: (NSTimeInterval)time
+		   windowNumber: (int)windowNum	
+			context: (NSGraphicsContext*)context	
+			subtype: (short)subType	
+			  data1: (int)data1	
+			  data2: (int)data2;
 
-//
-// Getting General Event Information
-//
-- (NSGraphicsContext*)context;
-- (NSPoint)locationInWindow;
-- (unsigned int)modifierFlags;
-- (NSTimeInterval)timestamp;
-- (NSEventType)type;
-- (NSWindow *)window;
-- (int)windowNumber;
+/*
+ * Getting General Event Information
+ */
+- (NSGraphicsContext*) context;
+- (NSPoint) locationInWindow;
+- (unsigned int) modifierFlags;
+- (NSTimeInterval) timestamp;
+- (NSEventType) type;
+- (NSWindow *) window;
+- (int) windowNumber;
 
-//
-// Getting Key Event Information
-//
-- (NSString *)characters;
-- (NSString *)charactersIgnoringModifiers;
-- (BOOL)isARepeat;
-- (unsigned short)keyCode;
+/*
+ * Getting Key Event Information
+ */
+- (NSString *) characters;
+- (NSString *) charactersIgnoringModifiers;
+- (BOOL) isARepeat;
+- (unsigned short) keyCode;
 
-//
-// Getting Mouse Event Information
-//
-- (int)clickCount;
-- (int)eventNumber;
-- (float)pressure;
+/*
+ * Getting Mouse Event Information
+ */
+- (int) clickCount;
+- (int) eventNumber;
+- (float) pressure;
 
-//
-// Getting Tracking Event Information
-//
-- (int)trackingNumber;
-- (void *)userData;
+/*
+ * Getting Tracking Event Information
+ */
+- (int) trackingNumber;
+- (void *) userData;
 
-//
-// Requesting Periodic Events
-//
-+ (void)startPeriodicEventsAfterDelay:(NSTimeInterval)delaySeconds
-			   withPeriod:(NSTimeInterval)periodSeconds;
-+ (void)stopPeriodicEvents;
+/*
+ * Requesting Periodic Events
+ */
++ (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds
+			    withPeriod: (NSTimeInterval)periodSeconds;
++ (void) stopPeriodicEvents;
 
-//
-// Getting Information about Specially Defined Events
-//
-- (int)data1;
-- (int)data2;
-- (short)subtype;
+/*
+ * Getting Information about Specially Defined Events
+ */
+- (int) data1;
+- (int) data2;
+- (short) subtype;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
@@ -297,10 +305,10 @@ enum {
   NSModeSwitchFunctionKey = 0xF747
 };
 
-//
-// Convert an Event Mask Type to a Mask
-//
+/*
+ * Convert an Event Mask Type to a Mask
+ */
 unsigned int NSEventMaskFromType(NSEventType type);
 
 
-#endif // _GNUstep_H_NSEvent
+#endif /* _GNUstep_H_NSEvent */

@@ -99,6 +99,7 @@ typedef enum _NSWindowOrderingMode
   NSDictionary		*context_info;
   NSMutableData		*context_data;
   NSMutableArray	*focus_stack;
+  NSMutableArray	*event_queue;
 }
 
 + (NSGraphicsContext*) currentContext;

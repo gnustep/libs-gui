@@ -1,3 +1,12 @@
+Sun Jun  6 20:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSEvent.h: Added new event types and masks and tidied.
+	* Headers/AppKit/NSGraphicsContext.h: Added event queue ivar
+	* Source/NSEvent.m: Rewrite to add new event types, optimise, and
+	generate all the exceptions it should.
+	* Source/NSGraphicsContext.m: Incorporate event handling code from
+	backend libraries.
+
 Sun Jun  6  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSScrollView.m: tidyup
