@@ -249,6 +249,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (void) dealloc
 {
+  DESTROY(usedFonts);
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
@@ -257,32 +258,35 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (id) init
 {
-  return [self initWithContextInfo: NULL];
+  return [self initWithContextInfo: nil];
 }
 
-/* designated initializer for the NSGraphicsContext class */
+/** <init />
+ */
 - (id) initWithContextInfo: (NSDictionary *)info
 {
-  [super init];
-
-  ASSIGN(context_info, info);
-  focus_stack = [[NSMutableArray allocWithZone: [self zone]]
-			initWithCapacity: 1];
-  usedFonts = nil;
-
-  /*
-   * The classMethodTable dictionary and the list of all contexts must both
-   * be protected from other threads.
-   */
-  [contextLock lock];
-  if (!(methods = [[classMethodTable objectForKey: [self class]] pointerValue]))
+  self = [super init];
+  if (self != nil)
     {
-      methods = [[self class] _initializeMethodTable];
-      [classMethodTable setObject: [NSValue valueWithPointer: methods]
-			   forKey: [self class]];
-    }
-  [contextLock unlock];
+      ASSIGN(context_info, info);
+      focus_stack = [[NSMutableArray allocWithZone: [self zone]]
+				  initWithCapacity: 1];
+      usedFonts = nil;
 
+      /*
+       * The classMethodTable dictionary and the list of all contexts must both
+       * be protected from other threads.
+       */
+      [contextLock lock];
+      methods = [[classMethodTable objectForKey: [self class]] pointerValue];
+      if (methods == 0)
+	{
+	  methods = [[self class] _initializeMethodTable];
+	  [classMethodTable setObject: [NSValue valueWithPointer: methods]
+			       forKey: [self class]];
+	}
+      [contextLock unlock];
+    }
   return self;
 }
 
@@ -367,15 +371,14 @@ NSGraphicsContext	*GSCurrentContext(void)
     return;
 
   if (usedFonts == nil)
-    usedFonts = RETAIN([NSMutableSet setWithCapacity: 2]);
+    usedFonts = [[NSMutableSet alloc] initWithCapacity: 2];
 
   [usedFonts addObject: name];
 }
 
 - (void) resetUsedFonts
 {
-  if (usedFonts)
-    [usedFonts removeAllObjects];
+  [usedFonts removeAllObjects];
 }
 
 - (NSSet *) usedFonts

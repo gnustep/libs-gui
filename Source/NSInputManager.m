@@ -473,6 +473,7 @@ static NSInputManager *currentInputManager = nil;
 
 - (void) dealloc
 {
+  TEST_RELEASE (_pendingKeyEvents);
   RELEASE (_rootBindingTable);
   [super dealloc];
 }

@@ -3,6 +3,11 @@
 	* Source/NSFileWrapper.m: Tidy initialisation and fix leak in
 	dealloc.
 	* Source/NSTextAttachment.m: ditto.
+	* Source/NSGraphicsContext.m: Memory leak fixes (suggested by Andrew
+	Ruder) and initialisation tidyups.
+	* Source/NSInputManager.m: ditto
+	* Source/NSOpenPanel.m: ditto
+
 
 2003-07-19  Adam Fedor  <fedor@gnu.org>
 

@@ -79,15 +79,19 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 {
   BOOL found = YES;
 
-  if (_fileTypes)
+  if (_fileTypes != nil)
     {
       if ([_fileTypes containsObject: extension] == YES)
 	{
 	  if ([self treatsFilePackagesAsDirectories] == NO)
-	    *isDir = NO;
+	    {
+	      *isDir = NO;
+	    }
 	}
       else
-	found = NO;
+	{
+	  found = NO;
+	}
     }
 
   if (*isDir == YES || (found == YES && _canChooseFiles == YES))
@@ -274,15 +278,23 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   return _gs_gui_open_panel;
 }
 
+- (void) dealloc
+{
+  TEST_RELEASE(_fileTypes);
+  [super dealloc];
+}
+
 - (id) init
 {
-  [super init];
-  _canChooseDirectories = YES;
-  _canChooseFiles = YES;
+  self = [super init];
+  if (self != nil)
+    {
+      _canChooseDirectories = YES;
+      _canChooseFiles = YES;
+    }
   return self;
 }
 
-// dealloc is the same as NSSavePanel
 
 /*
  * Filtering Files
@@ -427,7 +439,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   ASSIGN (_fileTypes, fileTypes);
 
   return [self runModalForDirectory: path 
-	       file: name];  
+			       file: name];  
 }
 
 - (int)runModalForDirectory:(NSString *)path
@@ -438,8 +450,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   ASSIGN (_fileTypes, fileTypes);
 
   return [self runModalForDirectory: path 
-	       file: name
-	       relativeToWindow: window];
+			       file: name
+		   relativeToWindow: window];
 }
 
 - (void)beginSheetForDirectory:(NSString *)path

@@ -169,6 +169,7 @@
 - (void) dealloc
 {
   TEST_RELEASE(_filename);
+  TEST_RELEASE(_fileAttributes);
   TEST_RELEASE(_preferredFilename);
   TEST_RELEASE(_wrapperData);
   TEST_RELEASE(_iconImage);
