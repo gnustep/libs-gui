@@ -162,6 +162,15 @@ provideDataForType:(NSString *)type
 - (void)setChangeCount: (int)changeCount;
 @end
 
+#ifndef STRICT_OPENSTEP
+#include <Foundation/NSURL.h>
+
+@interface NSURL (NSPasteboard)
++ (NSURL *) URLFromPasteboard: (NSPasteboard *)pasteBoard;
+- (void) writeToPasteboard: (NSPasteboard *)pasteBoard;
+@end
+
+#endif
 //
 // Return File-related Pasteboard Types
 //
