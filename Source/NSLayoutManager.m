@@ -809,7 +809,7 @@ has the same y origin and height as the line frag rect it is in.
   if (direction == GSInsertionPointMoveUp ||
       direction == GSInsertionPointMoveDown)
     {
-      NSRect orig_rect;
+      NSRect orig_rect, prev_rect;
       int orig_tc;
       float target;
       textcontainer_t *tc;
@@ -902,17 +902,29 @@ has the same y origin and height as the line frag rect it is in.
 	}
 
       /* Now find the target character in the line. */
+      new_rect = [self _insertionPointRectForCharacterIndex: new
+					      textContainer: &new_tc];
       while (new < length)
 	{
+	  prev_rect = new_rect;
 	  new_rect = [self _insertionPointRectForCharacterIndex: new + 1
 						  textContainer: &new_tc];
 	  if (new_tc != from_tc)
 	    break;
 	  if (new_rect.origin.y != lf->rect.origin.y)
 	    break;
-	  new++;
 	  if (NSMinX(new_rect) >= target)
-	    break;
+	    {
+	      /*
+	      'new+1' is beyond 'target', so either 'new' or 'new+1' is the
+	      character we want. Pick the closest one. (Note that 'new' might
+	      also be beyond 'target'.)
+	      */
+	      if (fabs(NSMinX(new_rect) - target) < fabs(NSMinX(prev_rect) - target))
+		new++;
+	      return new;
+	    }
+	  new++;
 	}
       return new;
     }
