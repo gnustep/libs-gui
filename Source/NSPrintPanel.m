@@ -102,7 +102,8 @@ NSPrintPanel *shared_instance;
 		    screen: (NSScreen*)aScreen
 {
   int i;
-  NSArray *subviews;
+  id control;
+  NSArray *subviews, *list;
   NSString *panel;
   NSDictionary *table;
 
@@ -140,8 +141,17 @@ NSPrintPanel *shared_instance;
       [_contentView addSubview: [subviews objectAtIndex: i]];
     }
   DESTROY(_panel);
-  /* Now set _panel to point to our options panel */
-  _panel = RETAIN([CONTROL(self, NSPPOptionsButton) target]);
+
+  /* Setup the layout popup */
+  control = CONTROL(self, NSPPLayoutButton);
+  list = [NSArray arrayWithObjects: @"1up", @"2up", @"3up", @"4up", nil];
+  [control removeAllItems];
+  for (i = 0; i < [list count]; i++)
+    {
+      [control addItemWithTitle: [list objectAtIndex: i]];
+    }
+  [control selectItemAtIndex: 0];
+
   return self;
 }
 
@@ -174,7 +184,7 @@ NSPrintPanel *shared_instance;
 {
   _picked = NSOKButton;
   [NSApp runModalForWindow: self];
-  [_panel orderOut: self];
+  [_optionPanel orderOut: self];
   [self orderOut: self];
   return (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton;
 }
@@ -191,7 +201,7 @@ NSPrintPanel *shared_instance;
          modalDelegate: delegate
          didEndSelector: didEndSelector
          contextInfo: contextInfo];
-  [_panel orderOut: self];
+  [_optionPanel orderOut: self];
   [self orderOut: self];
 }
 
@@ -206,19 +216,7 @@ NSPrintPanel *shared_instance;
   result = [sp runModal];
   if (result == NSOKButton)
     {
-      NSFileManager     *mgr = [NSFileManager defaultManager];
-      NSString          *path = [sp filename];
-
-      if ([path isEqual: _savePath] == NO
-        && [mgr fileExistsAtPath: path] == YES)
-        {
-          if (NSRunAlertPanel(NULL, @"A document with that name exists",
-            @"Replace", @"Cancel", NULL) != NSAlertDefaultReturn)
-            {
-              return NO;
-            }
-        }
-      _savePath = RETAIN(path);
+      _savePath = RETAIN([sp filename]);
     }
   return (result == NSOKButton);
 }
@@ -257,6 +255,19 @@ NSPrintPanel *shared_instance;
   else if (tag == NSOKButton)
     {
       _picked = NSOKButton;
+    }
+  else if (tag == NSPPOptionsButton)
+    {
+      /* Open the options panel */
+      NSLog(@"Running _optionPanel modal");
+      [NSApp runModalForWindow: _optionPanel];
+      [_optionPanel orderOut: self];
+      return;
+    }
+  else if (tag == NSPPOptionOKButton)
+    {
+      NSLog(@"order out options");
+      /* Do nothing. Just stops model on the options panel */
     }
   else
     {
@@ -328,6 +339,8 @@ NSPrintPanel *shared_instance;
   NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
 
   printer = [info printer];
+  dict = [info dictionary];
+
   /* Setup printer information */
   [CONTROL(self, NSPPNameField) setStringValue: [printer name] ];
   [CONTROL(self, NSPPNoteField) setStringValue: [printer note] ];
@@ -359,26 +372,10 @@ NSPrintPanel *shared_instance;
   if (layout > 4)
     layout = 4;
   control = CONTROL(self, NSPPLayoutButton);
-  if ([control numberOfItems] < 2)
-    {
-      int i;
-      NSArray *list = [NSArray arrayWithObjects: @"1up", @"2up", @"3up",
-			       @"4up", nil];
-      [control removeAllItems];
-      for (i = 0; i < [list count]; i++)
-	{
-	  [control addItemWithTitle: [list objectAtIndex: i]];
-	}
-      [control selectItemAtIndex: layout-1];
-    }
-  else
-    {
-      /* We've already been setup */
-      [control selectItemAtIndex: layout-1];
-    }
+  [control selectItemAtIndex: layout-1];
 
   /* Setup the resolution popup */
-  control = CONTROL(_panel, NSPPResolutionButton);
+  control = CONTROL(_optionPanel, NSPPResolutionButton);
   [control removeAllItems];
   /* FIXME: Get default from printInfo? */
   str = [printer stringForKey:@"DefaultResolution" inTable: @"PPD"];
@@ -418,7 +415,7 @@ NSPrintPanel *shared_instance;
     [control addItemWithTitle: @"Unknown"];
 
   /* Setup the paper feed popup */
-  control = CONTROL(_panel, NSPPPaperFeedButton);
+  control = CONTROL(_optionPanel, NSPPPaperFeedButton);
   [control removeAllItems];
   str = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
   if (str)
@@ -525,7 +522,7 @@ NSPrintPanel *shared_instance;
   /* Here we take advantage of the fact the names in the popup list
      are in the same order as the PPD file, so we don't actually compare
      the values */
-  control = CONTROL(_panel, NSPPResolutionButton);
+  control = CONTROL(_optionPanel, NSPPResolutionButton);
   list = [printer stringListForKey: @"Resolution" inTable: @"PPD"];
   if (list)
     {
@@ -546,7 +543,7 @@ NSPrintPanel *shared_instance;
     }
   
   /* Input Slot */
-  control = CONTROL(_panel, NSPPPaperFeedButton);
+  control = CONTROL(_optionPanel, NSPPPaperFeedButton);
   list = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
   if (list)
     {

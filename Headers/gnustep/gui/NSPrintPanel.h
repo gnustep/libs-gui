@@ -55,12 +55,14 @@ enum {
   NSPPOptionsButton	= 33,
   NSPPPaperFeedButton	= 34,
   NSPPLayoutButton	= 35,
-  NSPPResolutionButton	= 36
+  NSPPResolutionButton	= 36,
+  NSPPOptionOKButton	= 40
 };
 
 @interface NSPrintPanel : NSPanel
 {
   id _panel;
+  id _optionPanel;
   id _accessoryView;
   id _savePath;
   int _picked;

@@ -10,11 +10,11 @@
     };
     NSControl = {
 	Actions = (
-	    "takeDoubleValueFrom:",
-	    "takeFloatValueFrom:",
-	    "takeIntValueFrom:",
-	    "takeObjectValueFrom:",
-	    "takeStringValueFrom:"
+	    takeDoubleValueFrom:,
+	    takeFloatValueFrom:,
+	    takeIntValueFrom:,
+	    takeObjectValueFrom:,
+	    takeStringValueFrom:
 	);
 	Outlets = (
 	    target
@@ -37,11 +37,12 @@
     };
     NSPrintPanel = {
 	Actions = (
-	    "_pickedButton:",
-	    "_pickedPage:",
-	    "_pickedPrintOp:"
+	    _pickedButton:,
+	    _pickedPage:,
+	    _pickedPrintOp:
 	);
 	Outlets = (
+	    _optionPanel,
 	    _panel
 	);
 	Super = NSPanel;
@@ -63,8 +64,8 @@
     };
     NSWindow = {
 	Actions = (
-	    "orderFront:",
-	    "orderOut:"
+	    orderFront:,
+	    orderOut:
 	);
 	Outlets = (
 	    delegate
