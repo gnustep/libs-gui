@@ -1,3 +1,8 @@
+2001-04-14  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImage.m ([NSImage -compositeToPoint:fromRect:operation:]): 
+	intersect fromRect with image rect to get proper composite rect. 
+
 2001-03-27  Frederic De Jaeger  <dejaeger@free.fr>
 
         * Tools/Functions.m: remove some dummy functions that are useless

@@ -627,7 +627,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  // FIXME: This undos the change done in NSCell, perhaps we can remove both?
 	  if ([[ctxt focusView] isFlipped])
 	    y -= rect.size.height;
-	  // FIXME This should be able to cut out part of the image
+	  
+	  rect = NSIntersectionRect(aRect, rect);
 	  PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
 	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);
 	}
