@@ -2100,6 +2100,8 @@ resetCursorRectsForView(NSView *theView)
 {
   if (_f.has_closed == NO)
     {
+      CREATE_AUTORELEASE_POOL(pool);
+
       /* The NSWindowCloseNotification might result in us being
          deallocated. To make sure self stays valid as long as is
          necessary, we retain ourselves here and balance it with a
@@ -2110,8 +2112,6 @@ resetCursorRectsForView(NSView *theView)
 	{
 	  RETAIN(self);
 	}
-
-      CREATE_AUTORELEASE_POOL(pool);
 
       [nc postNotificationName: NSWindowWillCloseNotification object: self];
       _f.has_opened = NO;
