@@ -94,7 +94,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   NSMenu* mainMenu = [self mainMenu];
 
   [mainMenu update];
-#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY
+#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY || XGPS_BACKEND_LIBRARY
   [mainMenu display];
 #endif
 
@@ -688,7 +688,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY
+#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY || XGPS_BACKEND_LIBRARY
   [super encodeWithModelArchiver:archiver];
 #endif
 
@@ -702,7 +702,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY
+#if XDPS_BACKEND_LIBRARY || XRAW_BACKEND_LIBRARY || XGPS_BACKEND_LIBRARY
   self = [super initWithModelUnarchiver:unarchiver];
 #endif
 
