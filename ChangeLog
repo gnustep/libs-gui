@@ -1,3 +1,22 @@
+2003-01-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	Changed all the internal methods ([replaceCharacterRange:withString:], 
+	[setFont:range:], [setTextColor:range:], [setalignment:range:], 
+	[replaceRange:withAttributedString:], [setAtrributes:range:]) not
+	to call [shouldChangeTextInRange:replacementString:], so that they
+	can be called for a non editable text view.
+	Added this call to the methods: [insertText:], [transpose:],
+	[changeColor:], [alignCenter:], [alignLeft:], [alignRight:],
+	[alignJustified:], [readSelectionFromPasteboard:type:].
+	* Source/NSCell.m
+	In [selectWithFrame:...length:] removed duplicate setting of delegate.
+	* Source/NSBrowserCell.m
+	Use method calls in [initWithCoder:] to get fontification correct.
+	* Source/NSClipView.m
+	Use method calls in [initWithCoder:] so opaque flag is set
+	correctly.
+	
 Tue Dec 31 16:30:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GNUmakefile: Build gmodel bundle when GUI_LIB is gnu, not
