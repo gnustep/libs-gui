@@ -415,11 +415,13 @@ static const int currentVersion = 1; // GSNibItem version number...
   return _className;
 }
 
+/*
 - (void) dealloc
 {
   RELEASE(_className);
   [super dealloc];
 }
+*/
 
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -519,8 +521,8 @@ static const int currentVersion = 1; // GSNibItem version number...
 	
 	// set the content view back
 	[obj setContentView: contentView];
-	// RELEASE(self);
       }
+      RELEASE(self);
     }
   return obj;
 }
@@ -546,8 +548,11 @@ static const int currentVersion = 1; // GSNibItem version number...
   id obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      NSRect theFrame = [obj frame];
-      obj =  [obj initWithFrame: theFrame];
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	NSRect theFrame = [obj frame];
+	obj =  [obj initWithFrame: theFrame];
+      }
       RELEASE(self);
     }
   return obj;
@@ -569,8 +574,11 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      NSRect theFrame = [obj frame]; 
-      obj = [obj initWithFrame: theFrame];
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	NSRect theFrame = [obj frame]; 
+	obj = [obj initWithFrame: theFrame];
+      }
       RELEASE(self);
     }
   return obj;
@@ -592,10 +600,13 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      NSRect theFrame = [obj frame];
-      id textContainer = [obj textContainer];
-      obj = [obj initWithFrame: theFrame 
-		 textContainer: textContainer];
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	NSRect theFrame = [obj frame];
+	id textContainer = [obj textContainer];
+	obj = [obj initWithFrame: theFrame 
+		   textContainer: textContainer];
+      }
       RELEASE(self);
     }
   return obj;
@@ -617,8 +628,11 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      NSString *theTitle = [obj title]; 
-      obj = [obj initWithTitle: theTitle];
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	NSString *theTitle = [obj title]; 
+	obj = [obj initWithTitle: theTitle];
+      }
       RELEASE(self);
     }
   return obj;
@@ -641,8 +655,14 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      // NSRect theFrame = [obj frame]; 
-      // obj = [obj initWithFrame: theFrame];
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	//if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+	//{
+	//  NSRect theFrame = [obj frame]; 
+	//  obj = [obj initWithFrame: theFrame];
+	//}
+      }
       RELEASE(self);
     }
   return obj;
@@ -663,7 +683,10 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      // obj = [self init];
+      //if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      //{
+      //  obj = [self init];
+      //}
       RELEASE(self);
     }
   return obj;

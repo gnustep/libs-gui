@@ -1,3 +1,9 @@
+2003-08-28  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* GSNibTemplates.m: Removed an extra release which was causing
+	a segfault.  Added code to prevent calling the designated initializer
+	when isInterfaceBuilder is defined.
+
 2003-08-27  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/gsnd.m (main): Set daemon flag when forking.
