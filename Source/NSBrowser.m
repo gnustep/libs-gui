@@ -1421,7 +1421,7 @@
     shiftAmount = _firstVisibleColumn;
 
   // No amount to shift then nothing to do
-  if (shiftAmount == 0)
+  if (shiftAmount <= 0)
     return;
 
   // Notify the delegate
@@ -1461,7 +1461,7 @@
     shiftAmount = _lastColumnLoaded - _lastVisibleColumn;
 
   // No amount to shift then nothing to do
-  if (shiftAmount == 0)
+  if (shiftAmount <= 0)
     return;
 
   // Notify the delegate

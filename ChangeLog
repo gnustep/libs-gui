@@ -1,3 +1,7 @@
+Sat Jan 15 11:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBrowser.m: Don't permit scrolling by negative values.
+
 Sat Jan 15 07:29:37 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m ([-_initWithoutGModel]): Tidyup for
