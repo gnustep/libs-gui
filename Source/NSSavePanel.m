@@ -709,6 +709,10 @@ createRowsForColumn: (int)column
   unsigned      base_frac = 1;
   BOOL          display_progress = NO;
   NSString*     progressString = nil;
+  /* We create lot of objects in this method, so we use a pool */
+  NSAutoreleasePool *pool;
+
+  pool = [NSAutoreleasePool new];
   
   path = [_browser pathToColumn: column];
   files = [_fm directoryContentsAtPath: path];
@@ -727,7 +731,10 @@ createRowsForColumn: (int)column
 
   // if array is empty, just return (nothing to display)
   if (count == 0)
-    return;
+    {
+      RELEASE (pool);
+      return;
+    }
 
   // Prepare Messages on title bar if directory is big and user wants them
   if (_gs_display_reading_progress && (count > 100))
@@ -758,8 +765,6 @@ createRowsForColumn: (int)column
   else
     files = [files sortedArrayUsingSelector: @selector(compare:)];
 
-  // Create the column.
-  [matrix addColumn];
   addedRows = 0;
   for (i = 0; i < count; i++)
     {
@@ -803,8 +808,18 @@ createRowsForColumn: (int)column
       
       if (exists)
 	{
-	  if (addedRows >0)
-	    [matrix addRow];
+	  if (addedRows == 0)
+	    {
+	      [matrix addColumn];	      
+	    }
+	  else // addedRows > 0
+	    {
+	      /* Same as [matrix addRow] */
+	      [matrix insertRow: addedRows  withCells: nil];
+	      /* Possible TODO: Faster would be to create all the
+		 cells at once with a single call instead of resizing 
+		 the matrix each time a cell is inserted. */
+	    }
 
 	  cell = [matrix cellAtRow: addedRows column: 0];
 	  [cell setStringValue: file];
@@ -818,14 +833,13 @@ createRowsForColumn: (int)column
 	}
     }
 
-  if (addedRows == 0)
-    [matrix removeColumn: 0];
-
   if (display_progress)
     {
       [super setTitle: @""];
       [GSCurrentContext() flush];
     }
+
+  RELEASE (pool);
 }
 
 - (BOOL) browser: (NSBrowser*)sender
@@ -874,7 +888,7 @@ selectCellWithString: (NSString*)title
       [[_form cellAtIndex: 0] setStringValue: @""];
       [_form setNeedsDisplay: YES];
     }
-
+  
   return YES;
 }
 
