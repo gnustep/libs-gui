@@ -339,6 +339,20 @@ Class _nspopupbuttonCellClass = 0;
   [self synchronizeTitleAndSelectedItem];  
 }
 
+/* Private method which covers an obscure case where the user uses the
+   keyboard to open a popup, but subsequently uses the mouse to select
+   an item. We'll never know this was done (and thus cannot dismiss
+   the popUp) without getting this notification */
+- (void) _handleNotification: (NSNotification*)aNotification
+{
+  NSString      *name = [aNotification name];
+  if ([name isEqual: NSMenuDidSendActionNotification] == YES)
+    {
+      [_cell dismissPopUp];
+      [self synchronizeTitleAndSelectedItem];
+    }
+}
+
 - (void) keyDown: (NSEvent*)theEvent
 {
   if ([self isEnabled])
@@ -358,26 +372,40 @@ Class _nspopupbuttonCellClass = 0;
 	case NSCarriageReturnCharacter:
 	case ' ':
 	  {
+	    int selectedIndex;
 	    NSMenuView *menuView;
+	    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 	    menuView = [[_cell menu] menuRepresentation];
 	    if ([[menuView window] isVisible] == NO)
 	      {
-		int selectedIndex;
 
 		// Attach the popUp
 		[_cell attachPopUpWithFrame: _bounds
 		       inView: self];
 
-		selectedIndex = [self indexOfSelectedItem];
 
+		selectedIndex = [self indexOfSelectedItem];
 		if (selectedIndex > -1)
 		  [menuView setHighlightedItemIndex: selectedIndex];
+
+		/* This covers an obscure case where the user subsequently
+		   uses the mouse to select an item. We'll never know
+		   this was done (and thus cannot dismiss the popUp) without
+		   getting this notification */
+		[nc addObserver: self
+		       selector: @selector(_handleNotification:)
+		           name: NSMenuDidSendActionNotification
+		         object: [_cell menu]];
+
 	      }
 	    else
 	      {
-		[[_cell menu] performActionForItemAtIndex: 
-				  [self indexOfSelectedItem]];
+		[nc removeObserver: self
+		              name: NSMenuDidSendActionNotification
+		            object: [_cell menu]];
+		selectedIndex = [menuView highlightedItemIndex];
+		[[_cell menu] performActionForItemAtIndex: selectedIndex];
 
 		// Dismiss the popUp
 		[_cell dismissPopUp];

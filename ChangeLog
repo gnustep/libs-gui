@@ -1,3 +1,9 @@
+2002-01-10  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPopUpButton.m (-keyDown:): Handle obscure case of user
+	opening menu with key and selecting with mouse. Upon key selection,
+	get selected index from menuView highlightedItemIndex.
+
 2002-01-10  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Improve handling of -NSHost user default
