@@ -1,3 +1,21 @@
+Fri Jun 16 19:32:11 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	Implemented double-click on NSTableView header and not editable
+	cells.
+	* Headers/AppKit/NSTableView.h: Added ivars _clickedRow,
+	_clickedColumn, _target; added declaration of private method
+	below.
+	* Source/NSTableView.m ([-setTarget:]): Implemented.
+	([-target]): Idem.  ([-clickedColumn]): Idem.
+	([-clickedRow]): Idem.  ([-mouseDown:]): Implemented double-click
+	to send double action when cell is not editable.
+	([-_sendDoubleActionForColumn:]): New private method for use by
+	NSTableHeaderView.
+	* Source/NSTableHeaderView.m ([-mouseDown:]): Implemented
+	double-click.
+	* Source/NSTableView.m ([-scrollColumnToVisible:]): Tiny fix for
+	coordinate change. ([-scrollRowToVisible:]): Idem.
+
 2000-06-16  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/Parser/attributedStringConsumer.m
