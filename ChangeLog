@@ -1,3 +1,19 @@
+2001-09-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuItemCell.m
+	Added [dealloc]. In [setMenuView:], if the menu belongs to a popup
+	set the ivar _mcell_belongs_to_popupbutton.
+	* Source/NSPopupButtonCell.m
+	Removed additional method on NSMenuItemCell. Removed code in
+	[insertItemWithTitle:atIndex:] to set the NSMenuItemCell to belong
+	to a popup. Simplified [attachPopUpWithFrame:inView:] and [selectItem:]
+	* Header/gnustep/gui/NSMenuView.h
+	Removed [_setCellSize:].
+	* Source/NSMenuView.m
+	Added [dealloc]. [setWindowFrameForAttachingToRect:...] now
+	expects the screenRect to be the frame of the cell to attach to.
+	Removed [_setCellSize:].
+
 2001-09-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
