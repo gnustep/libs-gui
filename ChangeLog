@@ -1,3 +1,15 @@
+2001-08-21  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
+
+	* Source/NSTableColumn.m
+	* Headers/gnustep/gui/NSTableColumn.h
+	added MOSX method [NSTableColumn -dataCellForRow:]
+	* Source/NSTableView.m : various change to take [-dataCellForRow]
+	into account, including 
+	[NSTableView -updateCell:] redefined, now only redraw the part of the 
+	table that uses the updated cell.
+	* Source/NSTableView.m : redefinition of [-setFrame:]: it now calls
+	[self sizeToFit]
+
 2001-08-20  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSStepper.m
