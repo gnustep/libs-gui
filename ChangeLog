@@ -9,6 +9,10 @@
 
 	* Source/NSSavePanel.m: ([--browser:createRowsForColumn:inMatrix:])
 	Don't try to read .hidden file for processing unless it exists.
+	* Source/DocMakefile: New makefile for building documentation
+	without having to build binaries. Also add flag for macros template.
+	* Source/GNUmakefile: Removed documentation building rules.
+	* Documentation/GNUmakefile: Use DocMakefile
 
 2002-10-11  Adam Fedor  <fedor@gnu.org>
 

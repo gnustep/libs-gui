@@ -29,7 +29,7 @@
 # in the source directory to generate library reference documentation from
 # the source code.
 after-all::
-	$(MAKE) -C ../Source doc=yes
+	$(MAKE) -C ../Source -f DocMakefile
 	$(MAKE) -C Gui
 
 # Things to do before installing

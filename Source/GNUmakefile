@@ -178,24 +178,24 @@ endif
 libgnustep-gui_HEADER_FILES_DIR = ../Headers/AppKit
 libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
 
-DOCUMENT_NAME = Gui
-
-Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc $(AUTOGSDOC_HEADERS)
-Gui_AGSDOC_FLAGS = \
-	-DocumentationDirectory ../Documentation/Gui \
-	-HeaderDirectory ../Headers/AppKit \
-	-Declared AppKit \
-	-Standards YES \
-	-ConstantsTemplate TypesAndConstants \
-	-FunctionsTemplate Functions \
-	-TypedefsTemplate TypesAndConstants \
-	-VariablesTemplate TypesAndConstants \
-	-WordMap '{\
-	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
-	}' -Up Gui
-
-# These are gui headers that are also classes documented with autogsdoc
-AUTOGSDOC_HEADERS = \
+libgnustep-gui_HEADER_FILES = \
+AppKit.h \
+GSVersion.h \
+AppKitDefines.h \
+AppKitExceptions.h \
+DPSOperators.h \
+GMAppKit.h \
+GMArchiver.h \
+GSFontInfo.h \
+GSMemoryPanel.h \
+GSInfoPanel.h \
+GSMethodTable.h \
+GSPasteboardServer.h \
+GSServicesManager.h \
+GSTextConverter.h \
+GSTrackingRect.h \
+GSHelpManagerPanel.h \
+GSNibTemplates.h \
 GSDisplayServer.h \
 GSFusedSilica.h \
 GSTable.h \
@@ -303,27 +303,7 @@ NSToolbarItem.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
-NSWorkspace.h
-
-libgnustep-gui_HEADER_FILES = \
-AppKit.h \
-GSVersion.h \
-AppKitDefines.h \
-AppKitExceptions.h \
-DPSOperators.h \
-GMAppKit.h \
-GMArchiver.h \
-GSFontInfo.h \
-GSMemoryPanel.h \
-GSInfoPanel.h \
-GSMethodTable.h \
-GSPasteboardServer.h \
-GSServicesManager.h \
-GSTextConverter.h \
-GSTrackingRect.h \
-GSHelpManagerPanel.h \
-GSNibTemplates.h \
-$(AUTOGSDOC_HEADERS) \
+NSWorkspace.h \
 IMConnectors.h \
 IMCustomObject.h \
 IMLoading.h \
@@ -347,10 +327,5 @@ include GNUmakefile.preamble
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/library.make
-
-# Only build the doc if doc=yes was passed on the command line
-ifeq ($(doc),yes)
-include $(GNUSTEP_MAKEFILES)/documentation.make
-endif
 
 include GNUmakefile.postamble
