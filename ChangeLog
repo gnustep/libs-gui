@@ -1,3 +1,8 @@
+2000-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: ([-setAlignment:range:]) retain/release
+	problem fixed.
+
 Thu Jun  1 21:50:34 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSScrollView.m ([NSScrollView -tile]): Fixed position of

@@ -177,7 +177,7 @@ paraBreakCSet()
 		  atIndex: range.location
 	   effectiveRange: &range];
 
-  if (style)
+  if (style != nil)
     {
       return [NSDictionary dictionaryWithObject: style
 					 forKey: NSParagraphStyleAttributeName];
@@ -294,12 +294,12 @@ paraBreakCSet()
       range = NSMakeRange(0, location);
       if (!inWord)
 	{
-	    range = [str rangeOfCharacterFromSet: wordCSet()
+	  range = [str rangeOfCharacterFromSet: wordCSet()
 			 options: NSBackwardsSearch|NSLiteralSearch
 			 range: range];
-	    if (range.length == 0)
-	      return 0;
-	    range = NSMakeRange(0, range.location);
+	  if (range.length == 0)
+	    return 0;
+	  range = NSMakeRange(0, range.location);
 	}
       range = [str rangeOfCharacterFromSet: wordBreakCSet()
 		   options: NSBackwardsSearch|NSLiteralSearch
@@ -548,9 +548,8 @@ documentAttributes: (NSDictionary**)dict
 - (void) setAlignment: (NSTextAlignment)alignment
 		range: (NSRange)range
 {
-  id value;
-  unsigned loc = range.location;
-  NSRange effRange;
+  id		value;
+  unsigned	loc = range.location;
   
   if (range.location < 0 || NSMaxRange(range) > [self length])
     {
@@ -560,20 +559,34 @@ documentAttributes: (NSDictionary**)dict
 
   while (loc < NSMaxRange(range))
     {
+      BOOL	copiedStyle = NO;
+      NSRange	effRange;
+      NSRange	newRange;
+
       value = [self attribute: NSParagraphStyleAttributeName
-		    atIndex: loc
-		    effectiveRange: &effRange];
+		      atIndex: loc
+	       effectiveRange: &effRange];
+      newRange = NSIntersectionRange(effRange, range);
 
       if (value == nil)
-	value = [NSMutableParagraphStyle defaultParagraphStyle];
+	{
+	  value = [NSMutableParagraphStyle defaultParagraphStyle];
+	}
       else
-	value = [value mutableCopy];
+	{
+	  value = [value mutableCopy];
+	  copiedStyle = YES;
+	}
 
       [value setAlignment: alignment];
 
       [self addAttribute: NSParagraphStyleAttributeName
-	    value: value
-	    range: NSIntersectionRange(effRange, range)];
+		   value: value
+		   range: newRange];
+      if (copiedStyle == YES)
+	{
+	  RELEASE(value);
+	}
       loc = NSMaxRange(effRange);
     }
 }
@@ -592,7 +605,6 @@ documentAttributes: (NSDictionary**)dict
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixFontAttributeInRange:"];
     }
-
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
@@ -1007,24 +1019,24 @@ documentAttributes: (NSDictionary**)dict
 	      float firstLineIndent;
 	      float lineIndent;
 	      NSParagraphStyle *paraStyle = [attributes objectForKey:
-							  NSParagraphStyleAttributeName];
+		NSParagraphStyleAttributeName];
 	      NSTextAlignment alignment = [paraStyle alignment];
 
 	      switch (alignment)
 		{
-		case NSRightTextAlignment:
-		  [headerString appendString: @"\\qr"];
-		  break;
-		case NSCenterTextAlignment:
-		  [headerString appendString: @"\\qc"];
-		  break;
-		case NSLeftTextAlignment:
-		  [headerString appendString: @"\\ql"];
-		  break;
-		case NSJustifiedTextAlignment:
-		  [headerString appendString: @"\\qj"];
-		  break;
-		default: break;
+		  case NSRightTextAlignment:
+		    [headerString appendString: @"\\qr"];
+		    break;
+		  case NSCenterTextAlignment:
+		    [headerString appendString: @"\\qc"];
+		    break;
+		  case NSLeftTextAlignment:
+		    [headerString appendString: @"\\ql"];
+		    break;
+		  case NSJustifiedTextAlignment:
+		    [headerString appendString: @"\\qj"];
+		    break;
+		  default: break;
 		}
 
 	      // write first line indent and left indent
