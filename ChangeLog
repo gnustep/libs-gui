@@ -1,7 +1,12 @@
+2003-04-21  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSMenuView.m:
+	(mouseDown:): Generate periodic events every 0.01 seconds.
+	
 2003-04-17  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSMenuItemCell.m:
-	(setMenuView:): Setting image position and
+	(setMenuView:): Removed setting image position and
 	_mcell_belongs_to_popupbutton ivar for popup button cell.
 	(calcSize): Removed code from setMenuView placed here.
 	

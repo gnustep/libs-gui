@@ -1317,7 +1317,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       originalTopLeft.y += originalFrame.size.height;
     }
   
-  [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.05];
+  [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.01];
   [self trackWithEvent: theEvent];
   [NSEvent stopPeriodicEvents];
 
@@ -1532,7 +1532,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       /* Get the next event, blocking if necessary.
        * No limit, block until we get an event. */
       theEvent = [NSApp nextEventMatchingMask: eventMask
-	                            untilDate: nil 
+	                            untilDate: nil
 	                               inMode: NSEventTrackingRunLoopMode
 	                              dequeue: YES];
     }
