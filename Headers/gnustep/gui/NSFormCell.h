@@ -33,7 +33,11 @@
 
 @interface NSFormCell : NSActionCell <NSCoding>
 {
-  float _titleWidth;
+  // NB: this is the titleWidth which is effectively used -- takes in
+  // account all the other cells' titleWidths.
+  // If its value is -1, it means it must be recomputed.
+  float _displayedTitleWidth;
+
   // Think the following as a BOOL ivar
   // YES if the titleWidth is automatically computed
 #define _formcell_auto_title_width _cell.subclass_bool_one
@@ -71,5 +75,8 @@
 - initWithCoder:aDecoder;
 
 @end
+
+
+extern NSString *_NSFormCellDidChangeTitleWidthNotification;
 
 #endif // _GNUstep_H_NSFormCell
