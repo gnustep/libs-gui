@@ -1,3 +1,8 @@
+Sat Jan 15 07:29:37 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m ([-_initWithoutGModel]): Tidyup for
+ 	readability; use a NSButton for the application icon.
+
 Fri Jan 14 07:03:14 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSliderCell.m ([-isFlipped]): Fixed typo, this method
