@@ -123,6 +123,16 @@ NSString *NSColorListChangedNotification = @"NSColorListChange";
 NSString *NSColorPanelColorChangedNotification =
 @"NSColorPanelColorChangedNotification";
 
+// NSComboBox notifications
+NSString *NSComboBoxWillPopUpNotification = 
+@"NSComboBoxWillPopUpNotification";
+NSString *NSComboBoxWillDismissNotification = 
+@"NSComboBoxWillDismissNotification";
+NSString *NSComboBoxSelectionDidChangeNotification = 
+@"NSComboBoxSelectionDidChangeNotification";
+NSString *NSComboBoxSelectionIsChangingNotification = 
+@"NSComboBoxSelectionIsChangingNotification";
+
 // NSControl notifications
 NSString *NSControlTextDidBeginEditingNotification =
 @"NSControlTextDidBeginEditingNotification";
