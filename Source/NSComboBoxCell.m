@@ -1345,8 +1345,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-//  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);
-    NSRect rect = cellFrame;
+  NSRect rect = cellFrame;
 
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen]) 
@@ -1361,15 +1360,15 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       [super drawWithFrame: rect inView: controlView];
     }
     
-  _lastValidFrame = cellFrame; // Used by GSComboWindow to appear in the right position
+  // Used by GSComboWindow to appear in the right position
+  _lastValidFrame = cellFrame; 
 }
 
 - (void) highlight: (BOOL)flag
 	 withFrame: (NSRect)cellFrame
 	    inView: (NSView *)controlView
 {
-//  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);  
-      NSRect rect = cellFrame;
+  NSRect rect = cellFrame;
 
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen])
