@@ -149,8 +149,9 @@
   NSMenuItem *anItem = [NSMenuItem new];
 
   [anItem setTitle: title];
-  [anItem setTarget: [self target]];
-  [anItem setAction: [self action]];
+  // Not bad as defaults:
+  [anItem setTarget: nil];
+  [anItem setAction: NULL];
 
   [_menu insertItem: anItem atIndex: [_menu numberOfItems]];
   RELEASE(anItem);
@@ -177,6 +178,9 @@
     index = [_menu numberOfItems];
 
   [anItem setTitle: title];
+  // Not bad as defaults:
+  [anItem setTarget: nil];
+  [anItem setAction: NULL];
 
   [_menu insertItem: anItem atIndex: index];
   RELEASE(anItem);
