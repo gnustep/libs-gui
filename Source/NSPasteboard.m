@@ -29,7 +29,7 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSPasteboard.h>
-#include <AppKit/PasteboardServer.h>
+#include "../Tools/PasteboardServer.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
@@ -102,6 +102,10 @@ static	id<PasteboardServer>	the_server = nil;
               selector: @selector(_lostServer:)
               name: NSConnectionDidDieNotification
               object: conn];
+    }
+    else {
+      NSLog(@"Unable to contact pasteboard server - "
+	@"please ensure that gpbs is running.\n");
     }
   }
   return the_server;
