@@ -109,29 +109,31 @@ enum {
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
-  NSString *contents;
-  NSImage *cell_image;
-  NSFont *cell_font;
-  BOOL cell_state;
-  BOOL cell_highlighted;
-  BOOL cell_enabled;
-  BOOL cell_editable;
-  BOOL cell_bordered;
-  BOOL cell_bezeled;
-  BOOL cell_scrollable;
-  BOOL cell_selectable;
-  BOOL cell_continuous;
-  BOOL cell_float_autorange;
-  unsigned int cell_float_left;
-  unsigned int cell_float_right;
-  NSCellImagePosition image_position;
-  int cell_type;
-  NSTextAlignment text_align;
-  int entry_type;
-  NSView *control_view;
-  NSSize cell_size;
-  id represented_object;
-  unsigned int action_mask;
+  NSString *_contents;
+  NSImage *_cell_image;
+  NSFont *_cell_font;
+  struct GSCellFlagsType {
+    unsigned	is_highlighted:1;
+    unsigned	is_enabled:1;    
+    unsigned	is_editable:1;   
+    unsigned	is_bordered:1;   
+    unsigned	is_bezeled:1;   
+    unsigned	is_scrollable:1;
+    unsigned	is_selectable:1;
+    unsigned	is_continuous:1;
+    unsigned	float_autorange:1;
+  } _cell;
+  int _cell_state;
+  unsigned int _cell_float_left;
+  unsigned int _cell_float_right;
+  NSCellImagePosition _image_position;
+  NSCellType _cell_type;
+  NSTextAlignment _text_align;
+  int _entry_type;
+  NSView *_control_view;
+  NSSize _cell_size;
+  id _represented_object;
+  unsigned int _action_mask;
 }
 
 //
@@ -342,16 +344,6 @@ enum {
 @end
 
 //
-// Methods the backend should implement
-//
-@interface NSCell (GNUstepBackend)
-
-// Returns the size of a border
-+ (NSSize)sizeForBorderType:(NSBorderType)aType;
-
-@end
-
-//
 // Methods that are private GNUstep extensions
 //
 @interface NSCell (PrivateMethods)
@@ -359,6 +351,14 @@ enum {
 - (void) _drawText: (NSString*)aString inFrame: (NSRect)aRect;
 
 @end
+
+//
+// Function which should be somewhere else
+//
+inline NSSize 
+_sizeForBorderType (NSBorderType aType);
+
+
 
 #endif // _GNUstep_H_NSCell
 
