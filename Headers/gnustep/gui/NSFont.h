@@ -127,7 +127,6 @@ extern const float *NSFontIdentityMatrix;
 - (float)underlineThickness;
 - (float)xHeight;
 - (float)widthOfString:(NSString *)string;
-- (float *)widths;
 - (float)defaultLineHeightForFont;
 
 //
