@@ -40,9 +40,6 @@
   NSColor *the_color;
   BOOL is_active;
   BOOL is_bordered;
-
-  // Reserved for back-end use
-  void *be_cwell_reserved;
 }
 
 //

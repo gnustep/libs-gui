@@ -72,9 +72,6 @@ typedef enum _NSScrollerArrow {
   NSScrollerPart _hitPart;
   NSScrollArrowPosition _arrowsPosition;
   NSUsableScrollerParts _usableParts;
-
-  // Reserved for back-end use
-  void *be_scroll_reserved;
 }
 
 //
