@@ -504,7 +504,11 @@ _attributesAtIndexEffectiveRange(
 
 - (NSString*) string
 {
-  return AUTORELEASE([_textChars copyWithZone: NSDefaultMallocZone()]);
+  if (_textProxy == nil)
+    {
+      _textProxy = RETAIN([_textChars immutableProxy]);
+    }
+  return _textProxy;
 }
 
 - (NSDictionary*) attributesAtIndex: (unsigned)index
@@ -777,6 +781,7 @@ changeInLength: [aString length] - range.length];
 
 - (void) dealloc
 {
+  TEST_RELEASE(_textProxy);
   RELEASE(_textChars);
   RELEASE(_infoArray);
   [super dealloc];

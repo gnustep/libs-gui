@@ -3,6 +3,10 @@
 	* Source/NSWindow.m: ([-sendEvent:]) handle mouse down in window if
 	no view accepts it.  ([-mouseDown:]) implement to quietly ignore
 	event.
+	* Source/GSTextStorage.h: additional ivar
+	* Source/GSTextStorage.m: hand out a proxy to our internal storage,
+	to avoid either copying it (inefficient) or exposing the mutable
+	string (unsafe).
 
 Wed Feb  6 02:30:09 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
