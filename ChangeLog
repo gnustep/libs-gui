@@ -1,3 +1,9 @@
+Sat Jan  8 02:40:12 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSColorList.h: Prefixed ivars with underscores, 
+	changed names.
+	* Source/NSColorList.m: Class rewritten; untested.
+
 Fri Jan  7 20:30:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSResponder.m: Changed _rightMouseDisplay to take the event
