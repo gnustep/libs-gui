@@ -27,6 +27,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSNotification.h>
 #include <AppKit/NSForm.h>
 #include <AppKit/NSFormCell.h>
 
@@ -56,6 +57,37 @@ static Class defaultCellClass = nil;
   defaultCellClass = classId;
 }
 
+- (id) initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+	   cellClass: (Class)class
+        numberOfRows: (int)rowsHigh
+     numberOfColumns: (int)colsWide
+{
+  self = [super initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+	   cellClass: (Class)class
+        numberOfRows: (int)rowsHigh
+     numberOfColumns: (int)colsWide];
+
+  [self setIntercellSpacing:NSMakeSize (0, 4)];
+  return self;
+}
+- (id) initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+	   prototype: (NSCell*)prototype
+        numberOfRows: (int)rowsHigh
+     numberOfColumns: (int)colsWide
+{
+  self = [super initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+		prototype: (NSCell*)prototype
+		numberOfRows: (int)rowsHigh
+		numberOfColumns: (int)colsWide];
+
+  [self setIntercellSpacing:NSMakeSize (0, 4)];  
+  return self;
+}
+
 - (NSFormCell*)addEntry:(NSString*)title
 {
   return [self insertEntry:title atIndex:[self numberOfRows]];
@@ -69,13 +101,36 @@ static Class defaultCellClass = nil;
   [self insertRow:index];
   [self putCell:new_cell atRow:index column:0];
   [new_cell release];
-
+  
+  [self setValidateSize: YES];
+  
+  [[NSNotificationCenter defaultCenter] 
+    addObserver: self 
+    selector: @selector(_setTitleWidthNeedsUpdate:)
+    name: _NSFormCellDidChangeTitleWidthNotification
+    object: new_cell];
+  
   return new_cell;
 }
 
 - (void)removeEntryAtIndex:(int)index
 {
+  [[NSNotificationCenter defaultCenter] 
+    removeObserver: self 
+    name: _NSFormCellDidChangeTitleWidthNotification
+    object: [self cellAtRow:index column:0]];
+  
   [self removeRow:index];
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] 
+    removeObserver: self 
+    name: _NSFormCellDidChangeTitleWidthNotification
+    object: nil];  
+
+  [super dealloc];
 }
 
 - (void)setBezeled:(BOOL)flag
@@ -178,6 +233,51 @@ static Class defaultCellClass = nil;
 - (id)cellAtIndex:(int)index
 {
   return [self cellAtRow:index column:0];
+}
+
+-(void) _setTitleWidthNeedsUpdate: (NSNotification*)notification
+{
+  [self setValidateSize: YES];
+}
+
+- (void) setValidateSize: (BOOL)flag
+{
+  _title_width_needs_update = flag;
+  // TODO: Think about reducing redisplaying
+  if (flag)
+    [self setNeedsDisplay];
+}
+
+- (void) calcSize
+{
+  int i, count = [self numberOfRows];
+  float new_title_width = 0;
+  float candidate_title_width = 0;
+  NSRect rect;
+
+  // Compute max of title width in the cells
+  for (i = 0; i < count; i++)
+    {
+      candidate_title_width = [cells[i][0] titleWidth];
+      if (candidate_title_width > new_title_width)  
+	new_title_width = candidate_title_width;
+    }
+
+  // Suggest this max as title width to all cells 
+  rect = NSMakeRect (0, 0, new_title_width, 0);
+  for (i = 0; i < count; i++)
+    {
+      [cells[i][0] calcDrawInfo: rect];
+    }
+  _title_width_needs_update = NO;
+}
+
+- (void) drawRect: (NSRect)rect
+{
+  if (_title_width_needs_update)
+    [self calcSize];
+
+  [super drawRect: rect];
 }
 
 - (void)drawCellAtIndex:(int)index
