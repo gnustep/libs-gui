@@ -24,10 +24,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#ifndef	STRICT_OPENSTEP
-
 #ifndef _GNUstep_H_NSInterfaceStyle
 #define _GNUstep_H_NSInterfaceStyle
+
+#ifndef	STRICT_OPENSTEP
 
 #include <AppKit/AppKitDefines.h>
 
@@ -53,6 +53,8 @@ APPKIT_EXPORT NSString	*NSInterfaceStyleDefault;
 APPKIT_EXPORT NSInterfaceStyle
 NSInterfaceStyleForKey(NSString *key, NSResponder *responder);
 
-#endif // _GNUstep_H_NSInterfaceStyle
 #endif // STRICT_OPENSTEP
+
+#endif // _GNUstep_H_NSInterfaceStyle
+
 
