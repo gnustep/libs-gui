@@ -41,7 +41,7 @@ Tue Aug 21 19:38:00 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 	([-setAutosaveName:]): Implemented.
 	([-setAutosaveTableColumns:]): Implemented.
 	([-_autoloadTableColumns]): New method.
-	([-_autosaveTableColumns]): New methods.
+	([-_autosaveTableColumns]): New method.
 	([-moveColumn:toColumn:]): Invoke _autosaveTableColumns.
 	([-dealloc]): Release _autosaveName if needed.  Remove self from
 	observing notifications about column resizings.
