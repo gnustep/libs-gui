@@ -1,3 +1,12 @@
+2002-11-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSTabView.m ([NSTabView -selectedTabViewItem]): Check
+	that the array count is > 0
+
+2002-11-24  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/example.m: Include NSProcessInfo.h 
+
 2002-11-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSSavePanel.h

@@ -43,9 +43,7 @@ file has been placed on @samp{@value{GNUSTEP-GUI-FTP-MACHINE}} in
 the TIFF Graphics library version
 @value{GNUSTEP-GUI-LIBTIFF} is required.
 
-It also requires a FoundationKit library as specified by the OpenStep
-specification.  The only FoundationKit library known to work is the GNUstep
-Base Library.
+It also requires the GNUstep Base Library.
 
 @section Where do I send bug reports?
 

@@ -159,7 +159,7 @@
 
 - (NSTabViewItem*) selectedTabViewItem
 {
-  if (_selected_item == NSNotFound)
+  if (_selected_item == NSNotFound || [_items count] == 0)
     return nil;
   return [_items objectAtIndex: _selected_item];
 }
