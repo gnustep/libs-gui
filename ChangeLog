@@ -1,3 +1,49 @@
+Sat Jan 22 00:23:31 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-_init]): Updated for change in superclass' 
+	defaults: set text align to center.
+
+Sat Jan 22 00:05:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Contributed by Fred Kiefer, with changings of mine: 
+	* Source/NSCell.m: Reordered methods.  ([+defaultMenu]): New
+	method, void implementation.  ([-initTextCell:]): Set default text
+	alignment to NSNaturalTextAlignment.  ([-cellSize]): Fixed
+	returned size when cell is of type NSImageCellType but no image
+	set.  ([-cellSizeForBounds:]): Semi-implemented.
+	([-titleRectForBounds:]): Implemented.  ([-setType:]): Set
+	standard font and title if of type text, and nil image if of type
+	image [macosx].  ([-allowsMixedState]): New method, implemented.
+	([-setAllowsMixedState]): New method, implemented.
+	([-nextState]): New method, implemented.  ([-setNextState]): New
+	method, implemented.  ([-image]): Return nil if cell is not of
+	type image.  ([-hasValidObjectValue]), ([-objectValue]),
+	([-setObjectValue:]): Added methods but real implementation still
+	to do.  ([-takeObjectValueFrom:]): Added method.  ([-wraps]),
+	([-setWraps:]): Implemented [though wrapping is not implemented at
+	all].  ([-setImportsGraphics:]), ([-importsGraphics]),
+	([-setAllowsEditingTextAttributes:]), ([-attributedStringValue]),
+	([-setAttributedStringValue:]): Added methods with void
+	implementation.
+	([-editWithFrame:inView:editor:delegate:event:]): Use
+	titleRectForBounds.
+	([-selectWithFrame:inView:editor:delegate:event:]): Use
+	titleRectForBounds.  ([-setEntryType:]): Set also cell to text
+	type.  ([-menu]), ([-menuForEvent:inRect:ofView:]), ([-setMenu:]),
+	([-setSendsActionOnEndEditing:]), ([-sendsActionOnEndEditing]):
+	([-formatter]), ([-setFormatter:]): Added method with void
+	implementation.  ([-acceptsFirstResponder]): Refined.
+	([-setMnemonicLocation:]), ([-mnemonic]), ([-mnemonicLocation]),
+	([-setTitleWithMnemonic:]), ([-showsFirstResponder]),
+	([-setShowsFirstResponder:]), ([-acceptsFirstResponder]),
+	([-refusesFirstResponder]), ([-setRefusesFirstResponder:]): Added
+	methods with more or less trivial or void implementations.
+	([-initWithCoder:]), ([-encodeWithCoder:]): Updated for new bits
+	_cell.allows_mixed_state and _cell.wraps.
+
+	* Headers/gnustep/gui/NSCell.h: Added wraps and allows_mixed_state
+	bits to the _cell struct.
+
 Fri Jan 21 01:22:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Contributed by Fred Kiefer, with changings of my own: 
