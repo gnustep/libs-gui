@@ -339,6 +339,10 @@ static Class cellClass;
 {
   [self setNeedsDisplay: YES];
 }
+- (void) performClick: (id)sender
+{
+  [cell performClick: sender];
+}
 
 /*
  * Target and Action
