@@ -41,8 +41,6 @@
 
 @implementation NSSecureTextField
 
-id _nsSecureTextFieldCellClass = nil;
-
 /*
 ==============
 +initialize
@@ -52,28 +50,8 @@ id _nsSecureTextFieldCellClass = nil;
 {
   if (self == [NSSecureTextField class]) {
 	[self setVersion:1];
-	[self setCellClass:[NSSecureTextFieldCell class]];
+	[self setCellClass: [NSSecureTextFieldCell class]];
   }
-}
-
-/*
-============
-+cellClass
-============
-*/
-+ (Class)cellClass
-{
-  return _nsSecureTextFieldCellClass;
-}
-
-/*
-===============
-+setCellClass:
-===============
-*/
-+ (void)setCellClass:(Class)classID
-{
-  _nsSecureTextFieldCellClass = classID;
 }
 
 /*
@@ -83,10 +61,8 @@ id _nsSecureTextFieldCellClass = nil;
 */
 - (id)initWithFrame:(NSRect)frameRect
 {
-  if ((self = [super _initFieldWithFrame:frameRect
-			  cellClass:_nsSecureTextFieldCellClass])) {
-	[cell setEchosBullets:YES];
-  }
+  [super initWithFrame: frameRect];
+  [cell setEchosBullets:YES];
 
   return self;
 }
