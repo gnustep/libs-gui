@@ -538,7 +538,7 @@ static NSNotificationCenter *nc;
 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
-  if (index >= [_items count] || index < 0)
+  if (index >= (int)[_items count] || index < 0)
     [NSException  raise: NSRangeException
 		 format: @"Range error in method -itemAtIndex: "];
 
@@ -1343,7 +1343,8 @@ static NSNotificationCenter *nc;
 
   if (_transient == NO)
     {
-      NSDebugLLog (@"NSMenu", @"Closing transient: %@ while it is NOT transient now", _title);
+      NSDebugLLog (@"NSMenu",
+	@"Closing transient: %@ while it is NOT transient now", _title);
       return;
     }
   
@@ -1359,7 +1360,7 @@ static NSNotificationCenter *nc;
     {
       _superMenu->_attachedMenu = _oldAttachedMenu;
       [[_superMenu menuRepresentation] setHighlightedItemIndex:
-                                         [_superMenu indexOfItemWithSubmenu: _superMenu->_attachedMenu]];
+	[_superMenu indexOfItemWithSubmenu: _superMenu->_attachedMenu]];
     }
 
   [[self menuRepresentation] setHighlightedItemIndex: _oldHiglightedIndex];
@@ -1430,7 +1431,8 @@ static NSNotificationCenter *nc;
   // the user can never access submenus of this menu.
   else if (NSMaxX (frameRect) > NSMaxX (screenRect) - 3)
     {
-      vector.x = -MIN (SHIFT_DELTA, NSMaxX (frameRect) - NSMaxX (screenRect) + 3);
+      vector.x
+	= -MIN (SHIFT_DELTA, NSMaxX (frameRect) - NSMaxX (screenRect) + 3);
       moveIt = YES;
     }
 

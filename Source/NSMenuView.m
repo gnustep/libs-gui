@@ -594,7 +594,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
       float menuBarHeight = [[self class] menuBarHeight];
       
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-				     (howMany * _cellSize.height) + menuBarHeight)];
+	(howMany * _cellSize.height) + menuBarHeight)];
       [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
                                         NSWidth (_bounds), menuBarHeight)];
     }
@@ -660,12 +660,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   if (_horizontal == NO)
     {
       return NSMakeRect(_bounds.origin.x + _leftBorderOffset, _bounds.origin.y,
-			_bounds.size.width - _leftBorderOffset, _bounds.size.height);
+	_bounds.size.width - _leftBorderOffset, _bounds.size.height);
     }
   else
     {
       return NSMakeRect(_bounds.origin.x, _bounds.origin.y +  _leftBorderOffset,
-			_bounds.size.width, _bounds.size.height - _leftBorderOffset);
+	_bounds.size.width, _bounds.size.height - _leftBorderOffset);
     }
 }
 
@@ -711,7 +711,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 - (int) indexOfItemAtPoint: (NSPoint)point
 {
   unsigned howMany = [_itemCells count];
-  int i;
+  unsigned i;
 
   for (i = 0; i < howMany; i++)
     {
@@ -726,7 +726,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
         aRect = _addLeftBorderOffsetToRect(aRect, _horizontal);
 
       if (NSMouseInRect(point, aRect, NO))
-	return i;
+	return (int)i;
     }
 
   return -1;
@@ -1072,14 +1072,18 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
           location     = [_window mouseLocationOutsideOfEventStream];
           index        = [self indexOfItemAtPoint: location];
 
-          // 1 - if menus is only partly visible and the mouse is at the
-          //     edge of the screen we move the menu so it will be visible.
-          
+	  /*
+           * 1 - if menus is only partly visible and the mouse is at the
+           *     edge of the screen we move the menu so it will be visible.
+           */ 
 	  if ([_menu isPartlyOffScreen])
 	    {
 	      NSPoint pointerLoc = [_window convertBaseToScreen: location];
-              // The +/-1 in the y - direction is because the flipping between X-coordinates
-              // and GNUstep coordinates let the GNUstep screen coordinates start with 1.
+              /*
+	       * The +/-1 in the y - direction is because the flipping
+	       * between X-coordinates and GNUstep coordinates let the
+	       * GNUstep screen coordinates start with 1.
+	       */
 	      if (pointerLoc.x == 0 || pointerLoc.y == 1
                   || pointerLoc.x == [[_window screen] frame].size.width - 1
                   || pointerLoc.y == [[_window screen] frame].size.height)
@@ -1087,8 +1091,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 	    }
 
 
-          // 2 - Check if we have to reset the justAttachedNewSubmenu flag to NO.
-          if (justAttachedNewSubmenu && index != -1 && index != _highlightedItemIndex)
+          /*
+	   * 2 - Check if we have to reset the justAttachedNewSubmenu
+	   * flag to NO.
+	   */
+          if (justAttachedNewSubmenu && index != -1
+	    && index != _highlightedItemIndex)
             { 
               if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
                 {
@@ -1114,41 +1122,50 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
               
               subMenusNeedRemoving = NO;
               
-              locationInScreenCoordinates = [_window convertBaseToScreen: location];
+              locationInScreenCoordinates
+		= [_window convertBaseToScreen: location];
 
-              // 3a - Check if moved into one of the ancester menus.
-              //      This is tricky, there are a few possibilities:
-              //          We are a transient attached menu of a non-transient menu
-              //          We are a non-transient attached menu
-              //          We are a root: isTornOff of AppMenu
+	      /*
+               * 3a - Check if moved into one of the ancester menus.
+               *      This is tricky, there are a few possibilities:
+               *          We are a transient attached menu of a
+	       *          non-transient menu
+               *          We are a non-transient attached menu
+               *          We are a root: isTornOff of AppMenu
+	       */
               candidateMenu = [_menu supermenu];
               while (candidateMenu  
-                     && !NSMouseInRect (locationInScreenCoordinates, [[candidateMenu window] frame], NO) // not found yet
-                     && (! ([candidateMenu isTornOff] && ![candidateMenu isTransient]))  // no root of display tree
-                     && [candidateMenu isAttached]) // has displayed parent
+		&& !NSMouseInRect (locationInScreenCoordinates, [[candidateMenu window] frame], NO) // not found yet
+		&& (! ([candidateMenu isTornOff] && ![candidateMenu isTransient]))  // no root of display tree
+		&& [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
                 }
               
-              if (candidateMenu != nil && NSMouseInRect (locationInScreenCoordinates,
-                                                         [[candidateMenu window] frame], NO))
+              if (candidateMenu != nil
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [[candidateMenu window] frame], NO))
                 {
                   // The call to fetch attachedMenu is not needed.  But putting
                   // it here avoids flicker when we go back to an ancester meu
                   // and the attached menu is alreay correct.
-                  [[[candidateMenu attachedMenu] menuRepresentation] detachSubmenu];
+                  [[[candidateMenu attachedMenu] menuRepresentation]
+		    detachSubmenu];
                   return [[candidateMenu menuRepresentation]
                            trackWithEvent: original];
                 }
 
               // 3b - Check if we enter the attached submenu
               windowUnderMouse = [[_menu attachedMenu] window];
-              if (windowUnderMouse != nil && NSMouseInRect (locationInScreenCoordinates,
-                                                            [windowUnderMouse frame], NO))
+              if (windowUnderMouse != nil
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [windowUnderMouse frame], NO))
                 {
                   BOOL wasTransient = [_menu isTransient];
-                  BOOL subMenuResult = [[self attachedMenuView] trackWithEvent: original];
+                  BOOL subMenuResult;
                   
+                  subMenuResult
+		    = [[self attachedMenuView] trackWithEvent: original];
                   if (subMenuResult && wasTransient == [_menu isTransient])
                     {
                       [self detachSubmenu];
@@ -1185,35 +1202,38 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
     }
   while (type != end);
 
-
-  // Ok, we released the mouse
-  // There are now a few possibilities:
-  // A - We released the mouse outside the menu.
-  //     Then we want the situation as it was before
-  //     we entered everything.
-  // B - We released the mouse on a submenu item
-  //     (i) - this was highlighted before we started clicking:
-  //           Remove attached menus
-  //     (ii) - this was not highlighted before pressed the mouse button;
-  //            Keep attached menus.
-  // C - We released the mouse above an ordinary action:
-  //     Execute the action.
-  //
-  //  In case A, B and C we want the transient menus to be removed
-  //  In case A and C we want to remove the menus that were created
-  //  during the dragging.
-
-  //  So we should do the following things:
-  // 
-  // 1 - Stop periodic events,
-  // 2 - Determine the action.
-  // 3 - Remove the Transient menus from the screen.
-  // 4 - Perform the action if there is one.
+  /*
+   * Ok, we released the mouse
+   * There are now a few possibilities:
+   * A - We released the mouse outside the menu.
+   *     Then we want the situation as it was before
+   *     we entered everything.
+   * B - We released the mouse on a submenu item
+   *     (i) - this was highlighted before we started clicking:
+   *           Remove attached menus
+   *     (ii) - this was not highlighted before pressed the mouse button;
+   *            Keep attached menus.
+   * C - We released the mouse above an ordinary action:
+   *     Execute the action.
+   *
+   *  In case A, B and C we want the transient menus to be removed
+   *  In case A and C we want to remove the menus that were created
+   *  during the dragging.
+   *
+   *  So we should do the following things:
+   * 
+   * 1 - Stop periodic events,
+   * 2 - Determine the action.
+   * 3 - Remove the Transient menus from the screen.
+   * 4 - Perform the action if there is one.
+   */
   
   [NSEvent stopPeriodicEvents];
 
-  // We need to store this, because _highlightedItemIndex
-  // will not be valid after we removed this menu from the screen.
+  /*
+   * We need to store this, because _highlightedItemIndex
+   * will not be valid after we removed this menu from the screen.
+   */
   indexOfActionToExecute = _highlightedItemIndex;
   
   // remove transient menus. --------------------------------------------
@@ -1259,10 +1279,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
   [_menu performActionForItemAtIndex: indexOfActionToExecute];
 
-  // Remove highlighting.
-  // We first check if it still highlighted because it could be the
-  // case that we choose an action in a transient window which
-  // has already dissappeared.  
+  /*
+   * Remove highlighting.
+   * We first check if it still highlighted because it could be the
+   * case that we choose an action in a transient window which
+   * has already dissappeared.  
+   */
   if (indexOfActionToExecute == _highlightedItemIndex)
     {
       [self setHighlightedItemIndex: -1];
@@ -1403,7 +1425,8 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 - (void) drawRect: (NSRect)rect
 {
   NSRect workRect = [self bounds];
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};  float grays[] = {NSDarkGray, NSDarkGray};
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray};
   /* Cache the title attributes */
   static NSDictionary *attr = nil;
 
@@ -1508,7 +1531,8 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   [button setAction: @selector(_performMenuClose:)];
   [button setAutoresizingMask: NSViewMinXMargin];
   
-  [self setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
+  [self setAutoresizingMask:
+    NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
 }
             
 - (void) removeCloseButton
