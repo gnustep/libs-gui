@@ -1,3 +1,19 @@
+Sat Oct 30  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Still work in progress, but this is a first preview 
+	of the new NSSavePanel, NSOpenPanel.  I am aiming at 
+	making these classes fully compliant soon. 
+	* Source/NSOpenPanel.m: Completely rewritten.  A lot of
+	functionalities which were missing have now been implemented.
+	* Source/NSSavePanel.m: Rewritten a lot of parts, mainly:
+	allocation/initialization (but could not test the gmodel loading),
+	browser delegate methods, appearance (the gmodel has not been
+	updated -- when we have IM it will be very easy), and with the specs
+	in hand I checked all the code and did a lot of improvements.
+	* Headers/AppKit/NSOpenPanel.h: Changed ivars.
+	* Headers/AppKit/NSSavePanel.h: Changed ivars.
+	* Model/GMAppKit.m: Added NSOpenPanel.
+	
 1999-10-29  Adam Fedor  <fedor@gnu.org>
 
 	* Remove backend application, cursor, and screen classes and use 
