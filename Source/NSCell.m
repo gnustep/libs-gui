@@ -892,6 +892,7 @@
 	  NSDebugLog(@"NSCell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
+          [self setState:![self state]];
 	  if ((action_mask & NSLeftMouseUpMask))
 	    [(NSControl*)controlView sendAction: action to:target];
 	}

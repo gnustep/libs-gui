@@ -1034,42 +1034,40 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 }
 
 - (void)highlightCell:(BOOL)flag
-				atRow:(int)row
-	       		column:(int)column
+                atRow:(int)row
+               column:(int)column
 {
-NSCell *aCell = [self cellAtRow:row column:column];
-NSRect cellFrame;
+  NSCell *aCell = [self cellAtRow:row column:column];
 
-	if (aCell) 
-		{
-		cellFrame = [self cellFrameAtRow:row column:column];
-		[aCell highlight:flag
-			   withFrame:[self cellFrameAtRow:row column:column]
-			   inView:self];
-		}
+  if (aCell)
+    {
+      [aCell highlight:flag
+             withFrame:[self cellFrameAtRow:row column:column]
+                inView:self];
+    }
 }
+
+
+- (BOOL)sendAction:(SEL)theAction
+		to:(id)theTarget
+{
+  if (theAction) {
+    if (theTarget)
+      return [super sendAction: theAction to: theTarget];
+    else
+      return [super sendAction: theAction to: [self target]];
+  }
+  else
+    return [super sendAction: [self action] to: [self target]];
+}
+
 
 - (BOOL)sendAction
 {
-  SEL theAction;
-  id theTarget;
-
   if (![selectedCell isEnabled])
     return NO;
 
-  theAction = [selectedCell action];
-  theTarget = [selectedCell target];
-
-  if (theAction) {
-    if (theTarget)
-      [selectedCell performSelector:theAction withObject:self];
-    else
-      [target performSelector:theAction withObject:self];
-  }
-  else
-    [target performSelector:action withObject:self];
-
-  return YES;
+  return [self sendAction: [selectedCell action] to: [selectedCell target]];
 }
 
 - (void)sendAction:(SEL)aSelector
@@ -1118,6 +1116,137 @@ NSRect cellFrame;
 	return mode == NSListModeMatrix ? NO : YES;
 }
 
+- (void)_mouseDownNonListMode:(NSEvent *)theEvent
+{
+  BOOL mouseUpInCell = NO;
+  NSCell *highlightedCell = nil;
+  int highlightedRow = 0;
+  int highlightedColumn = 0;
+  NSCell *mouseCell;
+  int mouseRow;
+  int mouseColumn;
+  NSPoint mouseLocation;
+  NSRect mouseCellFrame;
+  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
+                     | NSMouseMovedMask  | NSLeftMouseDraggedMask;
+  
+  [self lockFocus];
+
+  if ((mode == NSRadioModeMatrix) && selectedCell)
+    {
+      [selectedCell setState: NSOffState];
+      [self drawCellAtRow: selectedRow column: selectedColumn];
+      [window flushWindow];
+      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;				
+      selectedCell = nil;
+      selectedRow = selectedColumn = -1;
+    }
+
+  while (!mouseUpInCell && ([theEvent type] != NSLeftMouseUp))
+    {
+      mouseLocation = [self convertPoint: [theEvent locationInWindow]
+                                fromView: nil];
+      [self getRow: &mouseRow column: &mouseColumn forPoint: mouseLocation];
+      mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
+            
+      if (((mode == NSRadioModeMatrix) && ![self allowsEmptySelection])
+          || [self mouse: mouseLocation inRect: mouseCellFrame])
+        {
+          mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
+            
+          selectedCell = mouseCell;
+          selectedRow = mouseRow;
+          selectedColumn = mouseColumn;
+          ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = YES;				
+
+          if (((mode == NSRadioModeMatrix) || (mode == NSHighlightModeMatrix))
+              && (highlightedCell != mouseCell))
+            {
+              if (highlightedCell)
+                [self highlightCell: NO
+                              atRow: highlightedRow
+                             column: highlightedColumn];
+            
+              highlightedCell = mouseCell;
+              highlightedRow = mouseRow;
+              highlightedColumn = mouseColumn;
+              [self highlightCell: YES
+                            atRow: highlightedRow
+                           column: highlightedColumn];
+              [window flushWindow];
+            }
+            
+          mouseUpInCell = [mouseCell trackMouse: theEvent
+                                         inRect: mouseCellFrame
+                                         ofView: self
+                                   untilMouseUp: YES];
+
+          if (mode == NSHighlightModeMatrix)
+            {
+              [self highlightCell: NO
+                            atRow: highlightedRow
+                           column: highlightedColumn];
+              highlightedCell = nil;
+              [window flushWindow];
+            }
+        }
+      else
+        {
+          // mouse is not over a Cell
+          if (highlightedCell)
+            {
+              [self highlightCell: NO
+                            atRow: highlightedRow
+                           column: highlightedColumn];
+              highlightedCell = nil;
+              [window flushWindow];
+            }
+        }
+
+      // if mouse didn't go up, take next event
+      if (!mouseUpInCell)
+        theEvent = [NSApp nextEventMatchingMask: eventMask
+                                      untilDate: [NSDate distantFuture]
+                                         inMode: NSEventTrackingRunLoopMode
+                                        dequeue: YES];
+    }
+    
+    // the mouse went up.
+    // if it was inside a cell, the cell has already sent the action.
+    // if not, selectedCell is the last cell that had the mouse, and
+    // it's state is Off. It must be set into a consistent state.
+    // anyway, the action has to be sent
+    if (!mouseUpInCell)
+      {
+        if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
+          {
+            [selectedCell setState: NSOnState];
+            [window flushWindow];
+          }
+        else
+          {
+            if (selectedCell)
+              {
+                ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+                selectedCell = nil;
+                selectedRow = selectedColumn = -1;
+              }
+          }
+        [self sendAction];
+      }
+      
+    if (highlightedCell)
+      {
+        [self highlightCell: NO
+                      atRow: highlightedRow
+                     column: highlightedColumn];
+        [window flushWindow];
+      }
+
+    [self unlockFocus];
+}
+
+
 - (void)mouseDown:(NSEvent*)theEvent
 {
 BOOL isBetweenCells, insideBounds;
@@ -1134,6 +1263,17 @@ NSApplication *app = [NSApplication sharedApplication];
 static MPoint anchor = {0, 0};
 
 	mouseDownFlags = [theEvent modifierFlags];
+        
+        if (mode != NSListModeMatrix)
+          {
+            [self _mouseDownNonListMode: theEvent];
+            return;
+          }
+          
+//FIXME list mode is not working well. there is a flipping coordinates bug
+//      when selecting by rect. the code here should be cleaned to eliminate
+//      references to other modes.
+
 	lastLocation = [self convertPoint:lastLocation fromView:nil];
 	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix)) 
 		[NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
@@ -1549,7 +1689,7 @@ fprintf(stderr, " NSMatrix: keyDown --- ");
 
   /* First check the limit cases */
   if (point.x > theBounds.size.width) {
-    SET_POINTER_VALUE(column, numCols);
+    SET_POINTER_VALUE(column, numCols - 1);
     colReady = YES;
   }
   else if (point.x < 0) {
@@ -1558,7 +1698,7 @@ fprintf(stderr, " NSMatrix: keyDown --- ");
   }
 
   if (point.y > theBounds.size.height) {
-    SET_POINTER_VALUE(row, numRows);
+    SET_POINTER_VALUE(row, numRows - 1);
     rowReady = YES;
   }
   else if (point.y < 0) {

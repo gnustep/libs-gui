@@ -397,7 +397,7 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 									// drawn presseddown (NSView's displayRect)
 									// so we call it again, one of these needs
 									// to be optimized out FAR  FIX ME
-      	[cell setState:![cell state]];
+//      	[cell setState:![cell state]];
      	[cell highlight: NO withFrame: bounds inView: self];	// Unhighlight
       	[window flushWindow];
     	}
