@@ -642,8 +642,16 @@ void GSRTFregisterFont (void *ctxt, const char *fontName,
 		   TEXTPOSITION];
     }
   // exclude trailing ';' from fontName
-  fontNameString = [NSString stringWithCString: fontName 
-			     length: strlen(fontName)-1];
+  if (';' == fontName[strlen(fontName)-1])
+    {
+      fontNameString = [NSString stringWithCString: fontName 
+				 length: strlen(fontName)-1];
+    }
+  else 
+    {
+      fontNameString = [NSString stringWithCString: fontName 
+				 length: strlen(fontName)];
+    }
   [FONTS setObject: fontNameString forKey: fontId];
 }
 
