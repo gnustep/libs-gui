@@ -1,3 +1,15 @@
+2003-12-23 13:46  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: Added a loop which retains only the
+	top level objects in the nameTable.  Also added some conditions
+	which prevent some of the special entries in the nametable from
+	having awakeFromNib called unnecessarily.  Added code
+	which implements the NSTopLevelObjects undocumented feature which
+	allows users to get the top level objects in an array so that they
+	can be easily released.  Tightened up memory management.
+	* Source/NSBundleAdditions.m: Removed extra retain which was 
+	causing the container to leak.
+	
 2003-12-23 18:13  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-_handleWindowNeedsDisplay:): Disable flushing

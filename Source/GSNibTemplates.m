@@ -25,7 +25,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-// #include "gnustep/gui/config.h"
 #include <Foundation/NSClassDescription.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
@@ -96,6 +95,8 @@ static const int currentVersion = 1; // GSNibItem version number...
       NSString		*key;
       NSArray		*visible;
       NSMenu		*menu;
+      NSMutableArray    *topLevelObjects; 
+      id                 obj;
 
       _isAwake = YES;
       /*
@@ -162,7 +163,12 @@ static const int currentVersion = 1; // GSNibItem version number...
       while ((key = [enumerator nextObject]) != nil)
 	{
 	  if ([context objectForKey: key] == nil || 
-	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
+	      ([key isEqualToString: @"NSOwner"] && // we want to send the message to the owner
+	       [key isEqualToString: @"NSWindowsMenu"] == NO && // we don't want to send a message to these menus twice, 
+	       [key isEqualToString: @"NSServicesMenu"] == NO && // if they're custom classes.
+	       [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
+	       [key isEqualToString: @"NSDeferred"] == NO &&
+	       [key isEqualToString: @"NSTopLevelObjects"] == NO)) 
 	    {
 	      id	o;
 
@@ -170,6 +176,63 @@ static const int currentVersion = 1; // GSNibItem version number...
 	      if ([o respondsToSelector: @selector(awakeFromNib)])
 		{
 		  [o awakeFromNib];
+		}
+	    }
+	}
+
+      
+      /* 
+       * See if the user has passed in the NSTopLevelObjects key.
+       * This is an implementation of an undocumented, but commonly used feature
+       * of nib files to allow the release of the top level objects in the nib
+       * file.
+       */
+      obj = [context objectForKey: @"NSTopLevelObjects"];
+      if([obj isKindOfClass: [NSMutableArray class]])
+	{
+	  topLevelObjects = obj;
+	}
+      else
+	{
+	  topLevelObjects = nil; 
+	}
+
+      /*
+       * Retain all "top level" items so that, when the container is released, they will remain.
+       */
+      enumerator = [nameTable keyEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+	{
+	  if ([context objectForKey: key] == nil || 
+	      ([key isEqualToString: @"NSOwner"] == NO && // dont retain the owner.
+	       [key isEqualToString: @"NSWindowsMenu"] == NO && // exclude special sections.
+	       [key isEqualToString: @"NSServicesMenu"] == NO &&
+	       [key isEqualToString: @"NSVisible"] == NO && 
+	       [key isEqualToString: @"NSDeferred"] == NO &&
+	       [key isEqualToString: @"NSTopLevelObjects"] == NO)) 
+	    {
+	      id	o = [nameTable objectForKey: key];
+	      // RETAIN all top-level items...
+	      if (([o isKindOfClass: [NSMenu class]] == YES &&
+		   [key isEqualToString: @"NSMenu"] == YES) || // the main menu...
+		  ([o isKindOfClass: [NSWindow class]] == YES) || // any windows...
+		  ([o isKindOfClass: [NSObject class]] == YES &&
+		   [o isKindOfClass: [NSView class]] == NO)) // any objects which are not views..
+		{
+		  if(topLevelObjects == nil)
+		    {
+		      // It is expected, if the NSTopLevelObjects key is not passed in,
+		      // that the user has opted to either allow these objects to leak or
+		      // to release them explicitly.
+		      RETAIN(o);
+		    }
+		  else
+		    {
+		      // We don't want to do the extra retain if the items are added to the
+		      // array, since the array will do the retain for us.   When the array
+		      // is released, the top level objects should be released as well.
+		      [topLevelObjects addObject: o];
+		    }
 		}
 	    }
 	}

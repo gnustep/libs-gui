@@ -286,9 +286,6 @@ Class gmodel_class(void)
 		{
 		  id	obj;
 		  
-		  // font fallback and automatic translation...
-		  // [unarchiver decodeClassName: @"NSString" asClassName: @"GSStringProxy"];
-
 		  NSDebugLog(@"Invoking unarchiver");
 		  [unarchiver setObjectZone: zone];
 		  obj = [unarchiver decodeObject];
@@ -298,12 +295,6 @@ Class gmodel_class(void)
 			{
 			  NSDebugLog(@"Calling awakeWithContext");
 			  [obj awakeWithContext: context];
-			  /*
-			   *Ok - it's all done now - just retain the nib container
-			   *so that it will not be released when the unarchiver
-			   *is released, and the nib contents will persist.
-			   */
-			  RETAIN(obj);
 			  loaded = YES;
 			}
 		      else

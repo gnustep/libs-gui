@@ -303,7 +303,7 @@ findMisspelledWordInString:(NSString *)stringToCheck
 	      else
 		if(![outputScanner scanUpToCharactersFromSet: 
 				     [NSCharacterSet whitespaceAndNewlineCharacterSet]
-				                  intoString: &guessWord])		  	      
+				   intoString: &guessWord])		  	      
 		  {
 		    break;
 		  }
