@@ -240,10 +240,18 @@ static GSFontEnumerator *sharedEnumerator = nil;
 	return NSISOLatin1StringEncoding;
       else if ([encoding isEqualToString: @"2"])
 	return NSISOLatin2StringEncoding;
+      else if ([encoding isEqualToString: @"3"])
+	return NSISOLatin3StringEncoding;
+      else if ([encoding isEqualToString: @"4"])
+	return NSISOLatin4StringEncoding;
       else if ([encoding isEqualToString: @"5"])
-	return NSWindowsCP1251StringEncoding;
+	return NSCyrillicStringEncoding;
+      else if ([encoding isEqualToString: @"6"])
+	return NSArabicStringEncoding;
       else if ([encoding isEqualToString: @"7"])
-	return NSWindowsCP1253StringEncoding;
+	return NSGreekStringEncoding;
+      else if ([encoding isEqualToString: @"8"])
+	return NSHebrewStringEncoding;
       // Other latin encodings are currently not supported
     }
   else if ([registry isEqualToString: @"iso10646"])
@@ -270,6 +278,26 @@ static GSFontEnumerator *sharedEnumerator = nil;
     {
       if ([encoding isEqualToString: @"roman"])
 	return NSMacOSRomanStringEncoding;
+    }
+  else if ([registry isEqualToString: @"jisx0201.1976"])
+    {
+      if ([encoding isEqualToString: @"0"])
+	return NSShiftJISStringEncoding;
+    }
+  else if ([registry isEqualToString: @"iso646.1991"])
+    {
+      if ([encoding isEqualToString: @"irv"])
+	return NSASCIIStringEncoding;
+    }
+  else if ([registry isEqualToString: @"koi8"])
+    {
+      if ([encoding isEqualToString: @"r"])
+	return NSKOI8RStringEncoding;
+    }
+  else if ([registry isEqualToString: @"gb2312.1980"])
+    {
+      if ([encoding isEqualToString: @"0"])
+	return NSGB2312StringEncoding;
     }
 
   return NSASCIIStringEncoding;
