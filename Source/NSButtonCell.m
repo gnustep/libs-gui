@@ -41,6 +41,7 @@
 
 #include "AppKit/AppKitExceptions.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSColor.h"
@@ -51,6 +52,8 @@
 #include "AppKit/NSSound.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
+
+#include <math.h>
 
 @implementation NSButtonCell
 
@@ -82,6 +85,8 @@
   _keyEquivalentModifierMask = NSCommandKeyMask;
   _keyEquivalent = @"";
   _altContents = @"";
+  _gradient_type = NSGradientNone;
+  _image_dims_when_disabled = NO;
 
   return self;
 }
@@ -121,12 +126,12 @@
 /*
  * Setting the Titles
  */
-- (NSString*) title						
+- (NSString*) title
 {
   return [self stringValue];
 }
 
-- (NSString*) alternateTitle					
+- (NSString*) alternateTitle
 {
   return _altContents;
 }
@@ -224,7 +229,7 @@
     }
 }
 
-- (void) setFont: (NSFont*)fontObject		
+- (void) setFont: (NSFont*)fontObject
 {
   int size;
 
@@ -401,7 +406,7 @@
 /*
  * Modifying Graphic Attributes
  */
-- (BOOL) isTransparent					
+- (BOOL) isTransparent
 {
   return _buttoncell_is_transparent;
 }
@@ -416,22 +421,22 @@
   return !_buttoncell_is_transparent && _cell.is_bordered;
 }
 
-- (NSBezelStyle)bezelStyle
+- (NSBezelStyle) bezelStyle
 {
   return _bezel_style;
 }
 
-- (void)setBezelStyle:(NSBezelStyle)bezelStyle
+- (void) setBezelStyle: (NSBezelStyle)bezelStyle
 {
   _bezel_style = bezelStyle;
 }
 
-- (BOOL)showsBorderOnlyWhileMouseInside
+- (BOOL) showsBorderOnlyWhileMouseInside
 {
   return _shows_border_only_while_mouse_inside;
 }
 
-- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show
+- (void) setShowsBorderOnlyWhileMouseInside: (BOOL)show
 {
   if (_shows_border_only_while_mouse_inside == show)
     {
@@ -442,22 +447,22 @@
   // FIXME Switch mouse tracking on
 }
 
-- (NSGradientType)gradientType
+- (NSGradientType) gradientType
 {
   return _gradient_type;
 }
 
-- (void)setGradientType:(NSGradientType)gradientType
+- (void) setGradientType: (NSGradientType)gradientType
 {
   _gradient_type = gradientType;
 }
 
-- (BOOL)imageDimsWhenDisabled
+- (BOOL) imageDimsWhenDisabled
 {
   return _image_dims_when_disabled;
 }
 
-- (void)setImageDimsWhenDisabled:(BOOL)flag
+- (void) setImageDimsWhenDisabled:(BOOL)flag
 {
   _image_dims_when_disabled = flag;
 }
@@ -465,17 +470,17 @@
 /*
  * Modifying Graphic Attributes
  */
-- (int) highlightsBy						
+- (int) highlightsBy
 {
   return _highlightsByMask;
 }
 
-- (void) setHighlightsBy: (int)mask	
+- (void) setHighlightsBy: (int)mask
 {
   _highlightsByMask = mask;
 }
 
-- (void) setShowsStateBy: (int)mask	
+- (void) setShowsStateBy: (int)mask
 {
   _showAltStateMask = mask;
 }
@@ -541,17 +546,17 @@
     }
 }
 
-- (int) showsStateBy						
+- (int) showsStateBy
 {
   return _showAltStateMask;
 }
 
-- (void) setIntValue: (int)anInt		
+- (void) setIntValue: (int)anInt
 {
   [self setState: (anInt != 0)];
 }
 
-- (void) setFloatValue: (float)aFloat	
+- (void) setFloatValue: (float)aFloat
 {
   [self setState: (aFloat != 0)];
 }
@@ -561,22 +566,22 @@
   [self setState: (aDouble != 0)];
 }
 
-- (int) intValue							
+- (int) intValue
 {
   return _cell.state;
 }
 
-- (float) floatValue						
+- (float) floatValue
 {
   return _cell.state;
 }
 
-- (double) doubleValue					
+- (double) doubleValue
 {
   return _cell.state;
 }
 
-- (void) setObjectValue: (id)object 
+- (void) setObjectValue: (id)object
 {
   if (object == nil)
     {
@@ -651,6 +656,105 @@
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+- (void) drawGradientWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  float   start_white = 0.0;
+  float   end_white = 0.0;
+  float   white = 0.0;
+  float   white_step = 0.0;
+  float   h, s, v, a;
+  NSColor *lightGray = nil;
+  NSColor *gray = nil;
+  NSColor *darkGray = nil;
+  NSPoint p1, p2;
+
+  lightGray = [NSColor colorWithDeviceRed:0.83 green:0.83 blue:0.83 alpha:1.0];
+  gray = [NSColor colorWithDeviceRed:0.50 green:0.50 blue:0.50 alpha:1.0];
+  darkGray = [NSColor colorWithDeviceRed:0.32 green:0.32 blue:0.32 alpha:1.0];
+
+  switch (_gradient_type)
+    {
+    case NSGradientNone:
+      return;
+      break;
+
+    case NSGradientConcaveWeak:
+      [gray getHue: &h saturation: &s brightness: &v alpha: &a];
+      start_white = [lightGray brightnessComponent];
+      end_white = [gray brightnessComponent];
+      break;
+      
+    case NSGradientConvexWeak:
+      [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+      start_white = [gray brightnessComponent];
+      end_white = [lightGray brightnessComponent];
+      break;
+      
+    case NSGradientConcaveStrong:
+      [lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
+      start_white = [lightGray brightnessComponent];
+      end_white = [darkGray brightnessComponent];
+      break;
+      
+    case NSGradientConvexStrong:
+      [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+      start_white = [darkGray brightnessComponent];
+      end_white = [lightGray brightnessComponent];
+      break;
+
+    default:
+      break;
+    }
+
+  white = start_white;
+  white_step = fabs(start_white - end_white)/
+               (cellFrame.size.width + cellFrame.size.height);
+
+  // Start from top left
+  p1 = NSMakePoint(cellFrame.origin.x, 
+		   cellFrame.size.height + cellFrame.origin.y);
+  p2 = NSMakePoint(cellFrame.origin.x, 
+		   cellFrame.size.height + cellFrame.origin.y);
+
+  // Move by Y
+  while (p1.y > cellFrame.origin.y)
+    {
+      [[NSColor 
+	colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+      
+      if (start_white > end_white)
+	white -= white_step;
+      else
+	white += white_step;
+
+      p1.y -= 1.0;
+      if (p2.x < (cellFrame.size.width + cellFrame.origin.x))
+	p2.x += 1.0;
+      else
+	p2.y -= 1.0;
+    }
+      
+  // Move by X
+  while (p1.x < (cellFrame.size.width + cellFrame.origin.x))
+    {
+      [[NSColor 
+	colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+      
+      if (start_white > end_white)
+	white -= white_step;
+      else
+	white += white_step;
+
+      p1.x += 1.0;
+      if (p2.x >= (cellFrame.size.width + cellFrame.origin.x))
+	p2.y -= 1.0;
+      else
+	p2.x += 1.0;
+    }
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -877,6 +981,14 @@
 	// TODO: Add distance from border if needed
 	break;
     }
+
+  // Draw gradient
+  if (!_cell.is_highlighted && _gradient_type != NSGradientNone)
+    {
+      [self drawGradientWithFrame: cellFrame inView: controlView];
+    }
+    
+  // Draw image
   if (imageToDisplay != nil)
     {
       NSSize size;
@@ -893,13 +1005,25 @@
 	{
 	  position.y += size.height;
 	}
-      [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
+	
+      if (_cell.is_disabled && _image_dims_when_disabled)
+	{
+	  [imageToDisplay dissolveToPoint: position fraction: 0.5];
+	}
+      else
+	{
+	  [imageToDisplay compositeToPoint: position 
+	                         operation: NSCompositeSourceOver];
+	}
     }
+
+  // Draw title
   if (titleToDisplay != nil)
     {
       [self _drawAttributedText: titleToDisplay inFrame: titleRect];
     }
 
+  // Draw first responder
   if (_cell.shows_first_responder
       && [[controlView window] firstResponder] == controlView)
     {
@@ -907,7 +1031,7 @@
     }
 }
 
-- (NSSize) cellSize 
+- (NSSize) cellSize
 {
   NSSize s;
   NSSize borderSize;
