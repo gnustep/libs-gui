@@ -146,6 +146,37 @@ installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
 @node Classes, Tools, Configuration, Top
 @chapter Special Features of GUI Classes.
 
+@menu
+* NSBrowserCell::               
+@end menu
+
+@node NSBrowserCell,  , Classes, Classes
+@section NSBrowserCell
+
+GNUstep NSBrowserCell has an experimental feature (disabled by default), 
+which you may turn on by setting the @code{GSBrowserCellFontify} 
+user default to @code{YES}.  
+
+To turn it on, issue the command: 
+@smallexample
+defaults write NSGlobalDomain GSBrowserCellFontify YES
+@end smallexample
+
+To turn it off: 
+@smallexample
+defaults delete NSGlobalDomain GSBrowserCellFontify
+@end smallexample
+
+When the feature is on, NSBrowserCell draws its text with a different 
+font and color depending on whether it is a leaf or not a leaf.  
+
+For example, when the feature is on, in a SavePanel (or OpenPanel), directory 
+entries are drawn in darkgray bold system font, while non-directory 
+entries are drawn in black non-bold system font.  
+
+This feature is experimental, and is very likely to be changed 
+if not completely removed in future versions of GNUstep. 
+
 @node Tools, Implementation, Classes, Top
 @chapter Tools Included with gstep-gui.
 
@@ -322,7 +353,10 @@ modifiers: @key{CONTROL}, @key{COMMAND} and @key{ALTERNATE}.
 for menus or buttons); for example, usually 'Quit' on the main 
 menu of an application is bound to 'q', so you may usually quit 
 a GNUstep application by pressing @kbd{Command - q}. 
-@item @key{CONTROL} and @key{ALTERNATE} are two additional modifiers. 
+@item @key{CONTROL} and @key{ALTERNATE} are two additional modifiers.
+A typical use of @key{ALTERNATE} is to scroll by pages rather than 
+by lines; you have to press @key{ALTERNATE} while acting on a scrollbar 
+with the mouse. 
 @end itemize
 @c
 By default, GNUstep uses @code{Control_L} (left Ctrl) 
@@ -444,9 +478,9 @@ so you may move the wm shortcuts that you do not use to keys
 which do not conflict (at least not too much) with GNUstep.  
 Usually, to use GNUstep keyboard shortcuts efficiently 
 you need the @key{COMMAND} and @key{CONTROL} key free 
-from window manager interferences; you may instead share 
+from window manager interferences; you may perhaps share 
 the @key{ALTERNATE} key, which is used less, 
-or in conjunction with @key{COMMAND}. 
+or in conjunction with @key{COMMAND}.  
 
 @node Contributing, Concept Index, Setup, Top
 @chapter Contributing
