@@ -449,7 +449,6 @@ NSApplication	*NSApp = nil;
 	  DPSPostEvent(ctxt, event, YES);
 	  found = YES;
 	}
-      RELEASE(event);
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
 
@@ -461,7 +460,7 @@ NSApplication	*NSApp = nil;
     {
       pool = [NSAutoreleasePool new];
 
-      event = DPSGetEvent(ctxt, NSAnyEventMask, nil, NSDefaultRunLoopMode);
+      event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
       if (event != nil && [event window] == theSession->window)
 	{
 	  ASSIGN(current_event, event);
@@ -469,7 +468,6 @@ NSApplication	*NSApp = nil;
         }
       else
 	{
-	  RELEASE(event);
 	  found = NO;
 	}
 
