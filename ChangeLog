@@ -1,3 +1,7 @@
+Mon Nov 30 10:43:09 1998  Adam Fedor  <fedor@doc.com>
+
+	* Panels/GNUmakefile: Use normal install rules.
+
 Mon Nov 30 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSAttributedString.m and NSAttributedString.h remove.
