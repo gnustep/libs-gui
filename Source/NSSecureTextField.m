@@ -134,7 +134,7 @@
 */
 - (void)setSelectable:(BOOL)flag
 {
-  cell_selectable = NO;
+  _cell.is_selectable = NO;
 }
 
 /*
