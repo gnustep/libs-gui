@@ -284,6 +284,10 @@ main(int argc, char** argv)
 
 /*
  * Load information about the types of files that an application supports.
+ * For each extension found, produce a dictionary, keyed by app name, that
+ * contains dictionaries giving type info for that extension.
+ * NB. in order to make extensions case-insensiteve - we always convert
+ * to lowercase.
  */
 static void addExtensionsForApplication(NSDictionary *info, NSString *app)
 {
@@ -316,11 +320,6 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
               return;
             }
           t = (NSDictionary*)o1;
-          s = [t objectForKey: @"NSRole"];
-          if (s == nil || [s isEqual: @"None"] == YES)
-            {
-              continue; /* Not an extension we open.    */
-            }
           o1 = [t objectForKey: @"NSUnixExtensions"];
           if (o1 == nil)
             {
@@ -335,19 +334,19 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
           j = [a1 count];
           while (j-- > 0)
             {
-              NSString              *e;
-              NSMutableArray        *a;
+              NSString			*e;
+              NSMutableDictionary	*d;
 
-              e = [[a1 objectAtIndex: j] uppercaseString];
-              a = [extensionsMap objectForKey: e];
-              if (a == nil)
+              e = [[a1 objectAtIndex: j] lowercaseString];
+              d = [extensionsMap objectForKey: e];
+              if (d == nil)
                 {
-                  a = [NSMutableArray arrayWithCapacity: 1];
-                  [extensionsMap setObject: a forKey: e];
+                  d = [NSMutableDictionary dictionaryWithCapacity: 1];
+                  [extensionsMap setObject: d forKey: e];
                 }
-              if ([a containsObject: app] == NO)
+              if ([d objectForKey: app] == NO)
                 {
-                  [a addObject: app];
+                  [d setObject: o0 forKey: app];
                 } 
             }
         }
@@ -358,7 +357,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
        *    If we have an old format list of extensions
        *    handled by this application - ensure that
        *    the name of the application is listed in
-       *    the array of applications handling each of
+       *    the dictionary of applications handling each of
        *    the extensions.
        */
       o0 = [info objectForKey: @"NSExtensions"];
@@ -375,19 +374,23 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
       i = [a0 count];
       while (i-- > 0)
         {
-          NSString              *e;
-          NSMutableArray        *a;
+          NSString		*e;
+          NSMutableDictionary	*d;
 
-          e = [[a0 objectAtIndex: i] uppercaseString];
-          a = [extensionsMap objectForKey: e];
-          if (a == nil)
+          e = [[a0 objectAtIndex: i] lowercaseString];
+          d = [extensionsMap objectForKey: e];
+          if (d == nil)
             {
-              a = [NSMutableArray arrayWithCapacity: 1];
-              [extensionsMap setObject: a forKey: e];
+	      d = [NSMutableDictionary dictionaryWithCapacity: 1];
+	      [extensionsMap setObject: d forKey: e];
             }
-          if ([a containsObject: app] == NO)
+          if ([d objectForKey: app] == nil)
             {
-              [a addObject: app];
+	      NSDictionary	*info;
+
+	      info = [NSDictionary dictionaryWithObjectsAndKeys:
+			nil];
+              [d setObject: info forKey: app];
             } 
         }
     }
@@ -408,9 +411,9 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       NSString	*newPath;
       BOOL	isDir;
 
-
       if (ext != nil &&
-	  ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]))
+	  ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
+	  || [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)

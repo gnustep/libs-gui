@@ -51,45 +51,45 @@
 //
 // Opening Files
 //
-- (BOOL)openFile:(NSString *)fullPath;
-- (BOOL)openFile:(NSString *)fullPath
-       fromImage:(NSImage *)anImage
-	      at:(NSPoint)point
-	  inView:(NSView *)aView;
-- (BOOL)openFile:(NSString *)fullPath
-  withApplication:(NSString *)appName;
-- (BOOL)openFile:(NSString *)fullPath
-  withApplication:(NSString *)appName
-  andDeactivate:(BOOL)flag;
-- (BOOL)openTempFile:(NSString *)fullPath;
+- (BOOL)openFile: (NSString *)fullPath;
+- (BOOL)openFile: (NSString *)fullPath
+       fromImage: (NSImage *)anImage
+	      at: (NSPoint)point
+	  inView: (NSView *)aView;
+- (BOOL)openFile: (NSString *)fullPath
+  withApplication: (NSString *)appName;
+- (BOOL)openFile: (NSString *)fullPath
+  withApplication: (NSString *)appName
+  andDeactivate: (BOOL)flag;
+- (BOOL)openTempFile: (NSString *)fullPath;
 
 //
 // Manipulating Files	
 //
-- (BOOL)performFileOperation:(NSString *)operation
-		      source:(NSString *)source
-		 destination:(NSString *)destination
-		       files:(NSArray *)files
-			 tag:(int *)tag;
-- (BOOL)selectFile:(NSString *)fullPath
-  inFileViewerRootedAtPath:(NSString *)rootFullpath;
+- (BOOL)performFileOperation: (NSString *)operation
+		      source: (NSString *)source
+		 destination: (NSString *)destination
+		       files: (NSArray *)files
+			 tag: (int *)tag;
+- (BOOL)selectFile: (NSString *)fullPath
+  inFileViewerRootedAtPath: (NSString *)rootFullpath;
 
 //
 // Requesting Information about Files
 //
-- (NSString *)fullPathForApplication:(NSString *)appName;
-- (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
-		     isRemovable:(BOOL *)removableFlag
-		      isWritable:(BOOL *)writableFlag
-		    isUnmountable:(BOOL *)unmountableFlag
-		      description:(NSString **)description
-			     type:(NSString **)fileSystemType;
-- (BOOL)getInfoForFile:(NSString *)fullPath
-	   application:(NSString **)appName
-		  type:(NSString **)type;
-- (NSImage *)iconForFile:(NSString *)fullPath;
-- (NSImage *)iconForFiles:(NSArray *)pathArray;
-- (NSImage *)iconForFileType:(NSString *)fileType;
+- (NSString *)fullPathForApplication: (NSString *)appName;
+- (BOOL)getFileSystemInfoForPath: (NSString *)fullPath
+		     isRemovable: (BOOL *)removableFlag
+		      isWritable: (BOOL *)writableFlag
+		    isUnmountable: (BOOL *)unmountableFlag
+		      description: (NSString **)description
+			     type: (NSString **)fileSystemType;
+- (BOOL)getInfoForFile: (NSString *)fullPath
+	   application: (NSString **)appName
+		  type: (NSString **)type;
+- (NSImage *)iconForFile: (NSString *)fullPath;
+- (NSImage *)iconForFiles: (NSArray *)pathArray;
+- (NSImage *)iconForFileType: (NSString *)fileType;
 
 //
 // Tracking Changes to the File System
@@ -106,15 +106,15 @@
 // Launching and Manipulating Applications	
 //
 - (void)hideOtherApplications;
-- (BOOL)launchApplication:(NSString *)appName;
-- (BOOL)launchApplication:(NSString *)appName
-		 showIcon:(BOOL)showIcon
-	       autolaunch:(BOOL)autolaunch;
+- (BOOL)launchApplication: (NSString *)appName;
+- (BOOL)launchApplication: (NSString *)appName
+		 showIcon: (BOOL)showIcon
+	       autolaunch: (BOOL)autolaunch;
 
 //
 // Unmounting a Device	
 //
-- (BOOL)unmountAndEjectDeviceAtPath:(NSString *)path;
+- (BOOL)unmountAndEjectDeviceAtPath: (NSString *)path;
 
 //
 // Tracking Status Changes for Devices
@@ -137,17 +137,29 @@
 //
 // Animating an Image	
 //
-- (void)slideImage:(NSImage *)image
-	      from:(NSPoint)fromPoint
-		to:(NSPoint)toPoint;
+- (void)slideImage: (NSImage *)image
+	      from: (NSPoint)fromPoint
+		to: (NSPoint)toPoint;
 
 //
 // Requesting Additional Time before Power Off or Logout
 //
-- (int)extendPowerOffBy:(int)requested;
+- (int)extendPowerOffBy: (int)requested;
 
 @end
 
+#ifndef	NO_GNUSTEP
+@interface	NSWorkspace (GNUstep)
+- (NSString*) getBestAppInRole: (NSString*)role
+		  forExtension: (NSString*)ext;
+- (NSString*) getBestIconForExtension: (NSString*)ext;
+- (NSDictionary*) infoForExtension: (NSString*)ext;
+- (void) setBestApp: (NSString*)appName
+	     inRole: (NSString*)role
+       forExtension: (NSString*)ext;
+- (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext;
+@end
+#endif
 
 /* Notifications */
 extern NSString *NSWorkspaceDidLaunchApplicationNotification;
