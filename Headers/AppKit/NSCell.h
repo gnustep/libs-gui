@@ -443,7 +443,7 @@ typedef enum _NSControlSize {
 //
 @interface NSCell (PrivateMethods)
 
-- (NSMutableDictionary*) _nonAutoreleasedTypingAttributes;
+- (NSDictionary*) _nonAutoreleasedTypingAttributes;
 - (NSColor*) textColor;
 - (NSSize) _sizeText: (NSString*) title;
 - (void) _drawText: (NSString*)aString  inFrame: (NSRect)cellFrame;
