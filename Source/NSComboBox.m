@@ -30,201 +30,223 @@
 - (NSEvent *)_mouseUpEvent;
 @end
 
+/*
+ * Class variables
+ */
+static Class usedCellClass;
+static Class comboBoxCellClass;
+
 @implementation NSComboBox
 
 + (void)initialize
 {
-   if (self == [NSComboBox class])
-      [self setCellClass:[NSComboBoxCell class]];
+  if (self == [NSComboBox class])
+    {
+       [self setVersion: 1];
+       comboBoxCellClass = [NSComboBoxCell class];
+       usedCellClass = comboBoxCellClass;
+    }
 }
 
-- (NSComboBoxCell *)comboCell
+/*
+ * Setting the Cell class
+ */
++ (Class) cellClass
 {
-   return (NSComboBoxCell *)[self cell];
+  return usedCellClass;
 }
+
++ (void) setCellClass: (Class)factoryId
+{
+  usedCellClass = factoryId ? factoryId : comboBoxCellClass;
+}
+
 
 - (BOOL)hasVerticalScroller
 {
-   return [[self comboCell] hasVerticalScroller];
+  return [_cell hasVerticalScroller];
 }
 
 - (void)setHasVerticalScroller:(BOOL)flag
 {
-   [[self comboCell] setHasVerticalScroller:flag];
+  [_cell setHasVerticalScroller:flag];
 }
 
 - (NSSize)intercellSpacing
 {
-   return [[self comboCell] intercellSpacing];
+  return [_cell intercellSpacing];
 }
 
 - (void)setIntercellSpacing:(NSSize)aSize
 {
-   [[self comboCell] setIntercellSpacing:aSize];
+  [_cell setIntercellSpacing:aSize];
 }
 
 - (float)itemHeight
 {
-   return [[self comboCell] itemHeight];
+  return [_cell itemHeight];
 }
 
 - (void)setItemHeight:(float)itemHeight
 {
-   [[self comboCell] setItemHeight:itemHeight];
+  [_cell setItemHeight:itemHeight];
 }
 
 - (int)numberOfVisibleItems
 {
-   return [[self comboCell] numberOfVisibleItems];
+  return [_cell numberOfVisibleItems];
 }
 
 - (void)setNumberOfVisibleItems:(int)visibleItems
 {
-   [[self comboCell] setNumberOfVisibleItems:visibleItems];
+  [_cell setNumberOfVisibleItems:visibleItems];
 }
 
 - (void)reloadData
 {
-   [[self comboCell] reloadData];
+  [_cell reloadData];
 }
 
 - (void)noteNumberOfItemsChanged
 {
-   [[self comboCell] noteNumberOfItemsChanged];
+  [_cell noteNumberOfItemsChanged];
 }
 
 - (BOOL)usesDataSource
 {
-   return [[self comboCell] usesDataSource];
+  return [_cell usesDataSource];
 }
 
 - (void)setUsesDataSource:(BOOL)flag
 {
-   [[self comboCell] setUsesDataSource:flag];
+  [_cell setUsesDataSource:flag];
 }
 
 - (void)scrollItemAtIndexToTop:(int)index
 {
-   [[self comboCell] scrollItemAtIndexToTop:index];
+  [_cell scrollItemAtIndexToTop:index];
 }
 
 - (void)scrollItemAtIndexToVisible:(int)index
 {
-   [[self comboCell] scrollItemAtIndexToVisible:index];
+  [_cell scrollItemAtIndexToVisible:index];
 }
 
 - (void)selectItemAtIndex:(int)index
 {
-   [[self comboCell] selectItemAtIndex:index];
+  [_cell selectItemAtIndex:index];
 }
 
 - (void)deselectItemAtIndex:(int)index
 {
-   [[self comboCell] deselectItemAtIndex:index];
+  [_cell deselectItemAtIndex:index];
 }
 
 - (int)indexOfSelectedItem
 {
-   return [[self comboCell] indexOfSelectedItem];
+  return [_cell indexOfSelectedItem];
 }
 
 - (int)numberOfItems
 {
-   return [[self comboCell] numberOfItems];
+  return [_cell numberOfItems];
 }
 
 - (id)dataSource
 {
-   return [[self comboCell] dataSource];
+  return [_cell dataSource];
 }
 
 - (void)setDataSource:(id)aSource
 {
-   [[self comboCell] setDataSource:aSource];
+  [_cell setDataSource:aSource];
 }
 
 - (void)addItemWithObjectValue:(id)object
 {
-   [[self comboCell] addItemWithObjectValue:object];
+  [_cell addItemWithObjectValue:object];
 }
 
 - (void)addItemsWithObjectValues:(NSArray *)objects
 {
-   [[self comboCell] addItemsWithObjectValues:objects];
+  [_cell addItemsWithObjectValues:objects];
 }
 
 - (void)insertItemWithObjectValue:(id)object atIndex:(int)index
 {
-   [[self comboCell] insertItemWithObjectValue:object atIndex:index];
+  [_cell insertItemWithObjectValue:object atIndex:index];
 }
 
 - (void)removeItemWithObjectValue:(id)object
 {
-   [[self comboCell] removeItemWithObjectValue:object];
+  [_cell removeItemWithObjectValue:object];
 }
 
 - (void)removeItemAtIndex:(int)index
 {
-   [[self comboCell] removeItemAtIndex:index];
+  [_cell removeItemAtIndex:index];
 }
 
 - (void)removeAllItems
 {
-   [[self comboCell] removeAllItems];
+  [_cell removeAllItems];
 }
 
 - (void)selectItemWithObjectValue:(id)object
 {
-   [[self comboCell] selectItemWithObjectValue:object];
+  [_cell selectItemWithObjectValue:object];
 }
 
 - (id)itemObjectValueAtIndex:(int)index
 {
-   return [[self comboCell] itemObjectValueAtIndex:index];
+  return [_cell itemObjectValueAtIndex:index];
 }
 
 - (id)objectValueOfSelectedItem
 {
-   return [[self comboCell] objectValueOfSelectedItem];
+  return [_cell objectValueOfSelectedItem];
 }
 
 - (int)indexOfItemWithObjectValue:(id)object
 {
-   return [[self comboCell] indexOfItemWithObjectValue:object];
+  return [_cell indexOfItemWithObjectValue:object];
 }
 
 - (NSArray *)objectValues
 {
-   return [[self comboCell] objectValues];
+  return [_cell objectValues];
+}
+
+- (void)setCompletes:(BOOL)completes
+{
+  [_cell setCompletes: completes];
+}
+
+- (BOOL)completes
+{
+  return [_cell completes];
 }
 
 // Overridden
 - (void)mouseDown:(NSEvent *)theEvent
 {
-   id		aCell;
-   NSEvent	*cEvent;
+  NSEvent *cEvent;
 
-   aCell = [self cell];
-   [aCell trackMouse:theEvent inRect:[self bounds]
-	  ofView:self untilMouseUp:YES];
-   if ([aCell respondsToSelector: @selector(_mouseUpEvent)])
-      cEvent = [aCell _mouseUpEvent];
-   else
-      cEvent = nil;
-   if ([aCell isSelectable])
-   {
+  [_cell trackMouse: theEvent inRect: [self bounds]
+	 ofView: self untilMouseUp: YES];
+  if ([_cell respondsToSelector: @selector(_mouseUpEvent)])
+    cEvent = [_cell _mouseUpEvent];
+  else
+    cEvent = nil;
+  if ([_cell isSelectable])
+    {
       if (!cEvent)
-	 cEvent = [NSApp currentEvent];
+	cEvent = [NSApp currentEvent];
       if ([cEvent type] == NSLeftMouseUp &&
 	  ([cEvent windowNumber] == [[self window] windowNumber]))
-	 [NSApp postEvent:cEvent atStart:NO];
-      [super mouseDown:theEvent];
-   }
+	[NSApp postEvent: cEvent atStart: NO];
+      [super mouseDown: theEvent];
+    }
 }
 
 @end
-
-NSString *NSComboBoxWillPopUpNotification = @"NSComboBoxWillPopUpNotification";
-NSString *NSComboBoxWillDismissNotification = @"NSComboBoxWillDismissNotification";
-NSString *NSComboBoxSelectionDidChangeNotification = @"NSComboBoxSelectionDidChangeNotification";
-NSString *NSComboBoxSelectionIsChangingNotification = @"NSComboBoxSelectionIsChangingNotification";
