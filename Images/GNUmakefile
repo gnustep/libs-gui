@@ -54,6 +54,8 @@ common_SliderHoriz.tiff \
 common_SliderVert.tiff \
 common_Dimple.tiff \
 common_ret.tiff \
+common_WMClose.tiff \
+common_WMCloseBroken.tiff \
 nsmapping.strings
 
 -include GNUmakefile.preamble
