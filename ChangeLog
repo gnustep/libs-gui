@@ -1,3 +1,9 @@
+Sat Jan 13 12:24:55 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler):
+	Attempt at making the meaning of the panel more clear for end
+	users by adding the word `Error' to the message title.
+
 2001-01-12  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Tools/Functions.m
