@@ -312,11 +312,6 @@ setNSFont(NSString* key, NSFont* font)
   return [fontInfo widthOfString: string];
 }
 
-- (float*) widths
-{
-  return [fontInfo widths];
-}
-
 /* The following methods have to implemented by backends*/
 
 //
