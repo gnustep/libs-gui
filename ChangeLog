@@ -1,3 +1,8 @@
+2003-05-13 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m 
+	(-setFont:): Set cell height at least to 20 pixels.
+	
 2003-05-13 20:19  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSButton.m (-setState:, -setNextState): Mark the view
