@@ -47,9 +47,6 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 
-#define stringify_it(X) #X
-#define	mkpath(X) stringify_it(X) "/Tools"
-
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 @interface	_GSWorkspaceCenter: NSNotificationCenter
@@ -179,7 +176,7 @@ static NSString			*_rootPath = @"/";
       env = [[NSProcessInfo processInfo] environment];
       if (!env || !(home = [env objectForKey: @"GNUSTEP_USER_ROOT"]))
 	{
-	  home = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+	  home = [NSHomeDirectory() stringByAppendingPathComponent: @"GNUstep"];
 	}
 
       /*

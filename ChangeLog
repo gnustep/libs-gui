@@ -1,3 +1,8 @@
+Fri Feb 25 07:07:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWorkspace.m: Removed a little unused code and fixed a
+	minor portabilitym problem with path usage.
+
 Tue Feb 22 17:51:52 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Still much to do in the font classes, but thanks to Fred Kiefer
