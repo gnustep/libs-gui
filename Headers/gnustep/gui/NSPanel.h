@@ -85,20 +85,20 @@ enum {
 //
 // Create an Attention Panel without Running It Yet
 //
-APPKIT_DECLARE id NSGetAlertPanel(NSString *title,
+APPKIT_EXPORT id NSGetAlertPanel(NSString *title,
 				  NSString *msg,
 				  NSString *defaultButton,
 				  NSString *alternateButton, 
 				  NSString *otherButton, ...);
 
 #ifndef	STRICT_OPENSTEP
-APPKIT_DECLARE id NSGetCriticalAlertPanel(NSString *title,
+APPKIT_EXPORT id NSGetCriticalAlertPanel(NSString *title,
 					  NSString *msg,
 					  NSString *defaultButton,
 					  NSString *alternateButton, 
 					  NSString *otherButton, ...);
 
-APPKIT_DECLARE id NSGetInformationalAlertPanel(NSString *title,
+APPKIT_EXPORT id NSGetInformationalAlertPanel(NSString *title,
 					       NSString *msg,
 					       NSString *defaultButton,
 					       NSString *alternateButton, 
@@ -108,20 +108,20 @@ APPKIT_DECLARE id NSGetInformationalAlertPanel(NSString *title,
 //
 // Create and Run an Attention Panel
 //
-APPKIT_DECLARE int NSRunAlertPanel(NSString *title,
+APPKIT_EXPORT int NSRunAlertPanel(NSString *title,
 				   NSString *msg,
 				   NSString *defaultButton,
 				   NSString *alternateButton,
 				   NSString *otherButton, ...);
 
 #ifndef	STRICT_OPENSTEP
-APPKIT_DECLARE int NSRunCriticalAlertPanel(NSString *title,
+APPKIT_EXPORT int NSRunCriticalAlertPanel(NSString *title,
 					   NSString *msg,
 					   NSString *defaultButton,
 					   NSString *alternateButton, 
 					   NSString *otherButton, ...);
 
-APPKIT_DECLARE int NSRunInformationalAlertPanel(NSString *title,
+APPKIT_EXPORT int NSRunInformationalAlertPanel(NSString *title,
 						NSString *msg,
 						NSString *defaultButton,
 						NSString *alternateButton, 
@@ -129,7 +129,7 @@ APPKIT_DECLARE int NSRunInformationalAlertPanel(NSString *title,
 #endif
 
 #ifndef	STRICT_MACOS_X
-APPKIT_DECLARE int NSRunLocalizedAlertPanel(NSString *table,
+APPKIT_EXPORT int NSRunLocalizedAlertPanel(NSString *table,
 					    NSString *title,
 					    NSString *msg,
 					    NSString *defaultButton, 
@@ -141,7 +141,7 @@ APPKIT_DECLARE int NSRunLocalizedAlertPanel(NSString *table,
 //
 // New alert interface of Mac OS X
 //
-APPKIT_DECLARE void NSBeginAlertSheet(NSString *title, 
+APPKIT_EXPORT void NSBeginAlertSheet(NSString *title, 
 				      NSString *defaultButton, 
 				      NSString *alternateButton, 
 				      NSString *otherButton, 
@@ -152,7 +152,7 @@ APPKIT_DECLARE void NSBeginAlertSheet(NSString *title,
 				      void *contextInfo, 
 				      NSString *msg, ...);
 
-APPKIT_DECLARE void NSBeginCriticalAlertSheet(NSString *title, 
+APPKIT_EXPORT void NSBeginCriticalAlertSheet(NSString *title, 
 					      NSString *defaultButton, 
 					      NSString *alternateButton, 
 					      NSString *otherButton, 
@@ -163,7 +163,7 @@ APPKIT_DECLARE void NSBeginCriticalAlertSheet(NSString *title,
 					      void *contextInfo, 
 					      NSString *msg, ...);
 
-APPKIT_DECLARE void NSBeginInformationalAlertSheet(NSString *title, 
+APPKIT_EXPORT void NSBeginInformationalAlertSheet(NSString *title, 
 						   NSString *defaultButton, 
 						   NSString *alternateButton, 
 						   NSString *otherButton,
@@ -179,6 +179,6 @@ APPKIT_DECLARE void NSBeginInformationalAlertSheet(NSString *title,
 //
 // Release an Attention Panel
 //
-APPKIT_DECLARE void NSReleaseAlertPanel(id panel);
+APPKIT_EXPORT void NSReleaseAlertPanel(id panel);
 
 #endif // _GNUstep_H_NSPanel

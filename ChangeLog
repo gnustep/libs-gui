@@ -3,6 +3,12 @@
 	* configure.ac: Add NetBSD header/ldflag support (Patch from
 	Peter Cooper). Cleanup freebsd support.
 
+	* Headers/gnustep/gui/GSDisplayServer.h: Replace APPKIT_DECLARE
+	with APPKIT_EXPORT.
+	* Headers/gnustep/gui/NSGraphics.h: Idem.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Idem.
+	* Headers/gnustep/gui/NSPanel.h: Idem.
+
 Fri Aug  9 12:12:18 2002  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSWindow.m ([-setFrameFromString:]),

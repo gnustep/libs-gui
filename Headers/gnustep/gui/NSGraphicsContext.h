@@ -181,7 +181,7 @@ typedef enum _GSColorSpace
 @end
 
 #ifndef	NO_GNUSTEP
-APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
+APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
@@ -390,17 +390,17 @@ APPKIT_EXPORT NSString *NSGraphicsContextPSFormat;
 APPKIT_EXPORT NSString *NSGraphicsContextRepresentationFormatAttributeName;
 
 /* Colorspace constants */
-APPKIT_DECLARE NSString *GSColorSpaceName;
-APPKIT_DECLARE NSString *GSColorSpaceWhitePoint;
-APPKIT_DECLARE NSString *GSColorSpaceBlackPoint;
-APPKIT_DECLARE NSString *GSColorSpaceGamma;
-APPKIT_DECLARE NSString *GSColorSpaceMatrix;
-APPKIT_DECLARE NSString *GSColorSpaceRange;
-APPKIT_DECLARE NSString *GSColorSpaceComponents;
-APPKIT_DECLARE NSString *GSColorSpaceProfile;
-APPKIT_DECLARE NSString *GSAlternateColorSpace;
-APPKIT_DECLARE NSString *GSBaseColorSpace;
-APPKIT_DECLARE NSString *GSColorSpaceColorTable;
+APPKIT_EXPORT NSString *GSColorSpaceName;
+APPKIT_EXPORT NSString *GSColorSpaceWhitePoint;
+APPKIT_EXPORT NSString *GSColorSpaceBlackPoint;
+APPKIT_EXPORT NSString *GSColorSpaceGamma;
+APPKIT_EXPORT NSString *GSColorSpaceMatrix;
+APPKIT_EXPORT NSString *GSColorSpaceRange;
+APPKIT_EXPORT NSString *GSColorSpaceComponents;
+APPKIT_EXPORT NSString *GSColorSpaceProfile;
+APPKIT_EXPORT NSString *GSAlternateColorSpace;
+APPKIT_EXPORT NSString *GSBaseColorSpace;
+APPKIT_EXPORT NSString *GSColorSpaceColorTable;
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
 

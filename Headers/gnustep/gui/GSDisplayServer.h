@@ -45,13 +45,13 @@
 @class GSDisplayServer;
 
 #ifndef	NO_GNUSTEP
-APPKIT_DECLARE GSDisplayServer * GSServerForWindow(NSWindow *window);
-APPKIT_DECLARE GSDisplayServer * GSCurrentServer(void);
+APPKIT_EXPORT GSDisplayServer * GSServerForWindow(NSWindow *window);
+APPKIT_EXPORT GSDisplayServer * GSCurrentServer(void);
 
 /* Display attributes */
-APPKIT_DECLARE NSString * GSDisplayName;
-APPKIT_DECLARE NSString * GSDisplayNumber;
-APPKIT_DECLARE NSString * GSScreenNumber;
+APPKIT_EXPORT NSString * GSDisplayName;
+APPKIT_EXPORT NSString * GSDisplayNumber;
+APPKIT_EXPORT NSString * GSScreenNumber;
 
 @interface GSDisplayServer : NSObject
 {
