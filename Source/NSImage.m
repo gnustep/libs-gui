@@ -700,7 +700,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NS_HANDLER
     {
       NSLog(@"NSImage: composite failed due to %@: %@", 
-	    [exception name], [exception reason]);
+	    [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
 	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
@@ -781,7 +781,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NS_HANDLER
     {
       NSLog(@"NSImage: dissolve failed due to %@: %@", 
-	    [exception name], [exception reason]);
+	    [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
 	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
