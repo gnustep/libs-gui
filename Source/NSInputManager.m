@@ -60,21 +60,44 @@
 #include "NSInputManagerPriv.h"
 
 
+/* Possible keys of the file Info */
+static NSString *_executableNameKey	= @"ExecutableName";
+static NSString *_connectionNameKey	= @"ConnectionName";
+static NSString *_displayNameKey	= @"DisplayName";
+static NSString *_defaultKeyBindingsKey	= @"DefaultKeyBindings";
+static NSString *_localizedNamesKey	= @"LocalizedNames";
+static NSString *_languageNameKey	= @"LanguageName";
+
+/*
+    Possible prefixes are 
+	(1) $(GNUSTEP_USER_ROOT)/Library/InputManager and
+	(2) $(GNUSTEP_SYSTEM_ROOT)/Library/InputManager.
+   The file Info is to be searched in that order.
+ */
+static NSString *_parentComponent	= @"InputManagers";
+static NSString *_extName		= @"app";
+static NSString *_resourcesComponent	= @"Resources";
+static NSString *_infoFileName		= @"Info";
+
+
 
 @interface NSInputManager (Private)
 + (void)addToInputServerList: (id)inputServer;
 + (void)removeFromInputServerList: (id)inputServer;
 
 - (BOOL)readInputServerInfo: (NSString *)inputServerName;
-- (BOOL)createKeyBindingsTable;
+- (BOOL)createKeyBindingTable;
 - (BOOL)establishConnectionToInputServer: (NSString *)host;
 - (void)becomeObserver;
 - (void)resignObserver;
 
 - (void)setServerInfo: (id)info;
-- (id)serverInfo;
 - (void)setServerProxy: (id)proxy;
+- (void)setKeyBindingTable: (IMKeyBindingTable *)table;
+
+- (IMInputServerInfo *)serverInfo;
 - (id)serverProxy;
+- (IMKeyBindingTable *)keyBindingTable;
 
 - (NSString *)standardKeyBindingAbsolutePath;
 - (NSString *)defaultKeyBindingAbsolutePath;
@@ -84,13 +107,13 @@
 
 
 /* To ease traffic jam */
-@protocol UnifiedProtocolForInputServer <NSInputServiceProvider,
+@protocol IMUnifiedProtocolForInputServer <NSInputServiceProvider,
                                          NSInputServerMouseTracker>
-@end /* @protocol UnifiedProtocolForInputServer */
+@end /* @protocol IMUnifiedProtocolForInputServer */
 
 
 /* Class encapsulating input server's Info file */
-@interface InputServerInfo : NSObject
+@interface IMInputServerInfo : NSObject
 {
   NSString	*serverName;
   NSDictionary	*info;
@@ -119,27 +142,607 @@
 @end /* @interface ServerInfo : NSObject */
 
 
-@implementation InputServerInfo
+@implementation NSInputManager
 
-/* Possible keys of the file Info */
-static NSString *_executableNameKey	= @"ExecutableName";
-static NSString *_connectionNameKey	= @"ConnectionName";
-static NSString *_displayNameKey	= @"DisplayName";
-static NSString *_defaultKeyBindingsKey	= @"DefaultKeyBindings";
-static NSString *_localizedNamesKey	= @"LocalizedNames";
-static NSString *_languageNameKey	= @"LanguageName";
+static NSMutableArray *_inputServerList = nil;
 
-/*
-    Possible prefixes are 
-	(1) $(GNUSTEP_USER_ROOT)/Library/InputManager and
-	(2) $(GNUSTEP_SYSTEM_ROOT)/Library/InputManager.
-   The file Info is to be searched in that order.
- */
-static NSString *_parentComponent	= @"InputManagers";
-static NSString *_extName		= @"app";
-static NSString *_resourcesComponent	= @"Resources";
-static NSString *_infoFileName		= @"Info";
 
++ (NSInputManager *)currentInputManager
+{
+  return [_inputServerList lastObject];
+}
+
+
+/* Deprecated */
++ (void)cycleToNextInputLanguage: (id)sender
+{ }
+
+
+/* Deprecated */
++ (void)cycleToNextInputServerInLanguage: (id)sender
+{ }
+
+
+- (BOOL)handleMouseEvent: (NSEvent *)theMouseEvent
+{
+  unsigned int	flags;
+  NSPoint	point;
+  unsigned	index;
+  BOOL		consumed;
+
+  flags = [theMouseEvent modifierFlags];
+  point = [theMouseEvent locationInWindow];
+  index = [[self client] characterIndexForPoint: point];
+
+  switch ([theMouseEvent type])
+    {
+    case NSLeftMouseDown:
+      consumed = [serverProxy mouseDownOnCharacterIndex: index
+					   atCoordinate: point
+					   withModifier: flags
+						 client: [self client]];
+      return YES;
+
+    case NSLeftMouseDragged:
+      consumed = [serverProxy mouseDraggedOnCharacterIndex: index
+					      atCoordinate: point
+					      withModifier: flags
+						    client: [self client]];
+      return YES;
+
+    case NSLeftMouseUp:
+      [serverProxy mouseUpOnCharacterIndex: index
+			      atCoordinate: point
+			      withModifier: flags
+				    client: [self client]];
+      return YES;
+
+    default:
+      return NO;
+    }
+  /* Not reached */
+}
+
+
+/* Deprecated */
+- (NSImage *)image
+{ return nil; }
+
+
+- (NSInputManager *)initWithName: (NSString *)inputServerName
+			    host: (NSString *)host
+{
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+  if ((self = [super init]) == nil)
+    {
+      NSLog(@"NSInputManager: Initialization failed");
+      return nil;
+    }
+  if ([self standardKeyBindingAbsolutePath] == nil)
+    {
+      NSLog(@"%@: Couldn't read StandardKeyBinding.dict",
+	    self, [self standardKeyBindingAbsolutePath]);
+      [self release];
+      return nil;
+    }
+  if (inputServerName)
+    {
+      if ([self readInputServerInfo: inputServerName] == NO ||
+	  [self createKeyBindingTable] == NO ||
+	  [self establishConnectionToInputServer: host] == NO)
+	{
+	  [self release];
+	  return nil;
+	}
+    }
+  else
+    {
+      if ([self createKeyBindingTable] == NO)
+	{
+	  [self release];
+	  return nil;
+	}
+    }
+  [NSInputManager addToInputServerList: self];
+
+  [pool release], pool = nil;
+
+  return self;
+}
+
+
+- (NSString *)language
+{
+  return [serverInfo languageName];
+}
+
+
+- (NSString *)localizedInputManagerName
+{
+  return [serverInfo localizedName];
+}
+
+
+- (void)markedTextAbandoned: (id)client
+{
+  [serverProxy markedTextAbandoned: client];
+}
+
+
+- (void)markedTextSelectionChanged: (NSRange)newSel
+			    client: (id)client
+{
+  [serverProxy markedTextSelectionChanged: newSel
+				   client: client];
+}
+
+
+/* Deprecated */
+- (NSInputServer *)server
+{
+  return serverProxy;
+}
+
+
+- (BOOL)wantsToDelayTextChangeNotifications
+{
+  if (serverProxy)
+    {
+      return [serverProxy wantsToDelayTextChangeNotifications];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+- (BOOL)wantsToHandleMouseEvents
+{
+  if (serverProxy)
+    {
+      return [serverProxy wantsToHandleMouseEvent];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+- (BOOL)wantsToInterpretAllKeystrokes
+{
+  if (serverProxy)
+    {
+      return [serverProxy wantsToInterpretAllKeystrokes];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+- (void)dealloc
+{
+  [serverProxy inputClientResignActive: self];
+  [serverProxy terminate: self];
+
+  [self resignObserver];
+
+  [NSInputManager removeFromInputServerList: self]; 
+
+  [self setKeyBindingTable: nil];
+  [self setServerProxy: nil];
+  [self setServerInfo: nil];
+  [super dealloc];
+}
+
+
+/* ----------------------------------------------------------------------------
+    NSTextInput protocol methods
+ --------------------------------------------------------------------------- */
+- (NSAttributedString *)attributedSubstringFromRange: (NSRange)theRange
+{
+  return [[self client] attributedSubstringFromRange: theRange];
+}
+
+
+- (unsigned int)characterIndexForPoint: (NSPoint)thePoint
+{
+  return [[self client] characterIndexForPoint: thePoint];
+}
+
+
+- (long)conversationIdentifier
+{
+  return [[self client] conversationIdentifier];
+}
+
+
+/* text view -> input server */
+- (void)doCommandBySelector: (SEL)aSelector
+{
+  if (serverProxy)
+    {
+      [serverProxy doCommandBySelector: aSelector
+				client: [self client]];
+    }
+  else
+    {
+      [[self client] doCommandBySelector: aSelector];
+    }
+}
+
+
+- (NSRect)firstRectForCharacterRange: (NSRange)theRange
+{
+  return [[self client] firstRectForCharacterRange: theRange];
+}
+
+
+- (BOOL)hasMarkedText
+{
+  return [[self client] hasMarkedText];
+}
+
+
+/* text view -> input server */
+- (void)insertText: (id)aString
+{
+  if (serverProxy)
+    {
+      [serverProxy insertText: aString
+		       client: [self client]];
+    }
+  else
+    {
+      [[self client] insertText: aString];
+    }
+}
+
+
+- (NSRange)markedRange
+{
+  return [[self client] markedRange];
+}
+
+
+- (NSRange)selectedRange
+{
+  return [[self client] selectedRange];
+}
+
+
+- (void)setMarkedText: (id)aString
+	selectedRange: (NSRange)selRange
+{
+  return [[self client] setMarkedText: aString
+			selectedRange: selRange];
+}
+
+
+- (void)unmarkText
+{
+  [[self client] unmarkText];
+}
+
+
+- (NSArray *)validAttributesForMarkedText
+{
+  return [[self client] validAttributesForMarkedText];
+}
+
+@end /* @implementation NSInputManager */
+
+
+@implementation NSInputManager (Private)
+
++ (void)addToInputServerList: (id)inputServer
+{
+  if (_inputServerList == nil)
+    {
+      _inputServerList = [[NSMutableArray alloc] init];
+    }
+  [_inputServerList addObject: inputServer];
+}
+
+
++ (void)removeFromInputServerList: (id)inputServer
+{
+  [_inputServerList removeObjectIdenticalTo: inputServer];
+  if ([_inputServerList count] == 0)
+    {
+      [_inputServerList release];
+      _inputServerList = nil;
+    }
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)readInputServerInfo: (NSString *)inputServerName
+{
+  IMInputServerInfo *info;
+
+  if ((info = [[IMInputServerInfo alloc] initWithName: inputServerName]) == nil)
+    {
+      NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
+      return NO;
+    }
+  else if ([info executableAbsolutePath] == nil)
+    {
+      NSLog(@"%@: Couldn't find the executable for %@", self, inputServerName);
+      [self release];
+      return NO;
+    }
+  [self setServerInfo: [info autorelease]];
+  return YES;
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)createKeyBindingTable
+{
+  NSMutableDictionary	*src	= [[NSMutableDictionary alloc] init];
+  NSDictionary		*dict	= nil;
+  NSString		*path	= nil;
+  IMKeyBindingTable	*table	= nil;
+
+  if ([self wantsToInterpretAllKeystrokes] == NO)
+    {
+      if ((path = [self standardKeyBindingAbsolutePath]) == nil)
+	{
+	  NSLog(@"%@: Couldn't read StandardKeyBinding.dict", self);
+	  return NO;
+	}
+      else
+	{
+	  dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+	  [src addEntriesFromDictionary: dict];
+	  [dict release], dict = nil;
+	}
+
+      if ((path = [self defaultKeyBindingAbsolutePath]))
+	{
+	  dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+	  [src addEntriesFromDictionary: dict];
+	  [dict release], dict = nil;
+	}
+    }
+
+  if ((path = [serverInfo defaultKeyBindingsAbsolutePath]))
+    {
+      dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+      [src addEntriesFromDictionary: dict];
+      [dict release], dict = nil;
+    }
+
+  if ([src count] == 0)
+    {
+      NSLog(@"%@: Couldn't construct a key-binding table");
+      [src release], src = nil;
+      return NO;
+    }
+
+  table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
+  if (table == nil)
+    {
+      NSLog(@"%@: Couldn't construct a key-binding table");
+      [src release], src = nil;
+      return NO;
+    }
+  [self setKeyBindingTable: [table autorelease]];
+
+  return YES;
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)establishConnectionToInputServer: (NSString *)host
+{
+  NSString	*name	    = [serverInfo connectionName];
+  NSString	*exec	    = [serverInfo executableAbsolutePath];
+  const float	interval    = 5.0;
+  int		count	    = 0;
+  const int	limit	    = 3;
+  id		proxy;
+
+  if (host == nil)
+    {
+      NSLog(@"%@: Host name wasn't specified", self);
+      return NO;
+    }
+
+  do
+    {
+      proxy = [NSConnection rootProxyForConnectionWithRegisteredName: name
+								host: host];
+      if (proxy)
+	{
+	  break;
+	}
+
+      NSLog(@"%@: Trying to launch %@", self, exec);
+      [NSTask launchedTaskWithLaunchPath: exec
+			       arguments: nil];
+      [NSTimer scheduledTimerWithTimeInterval: interval
+				   invocation: nil
+				      repeats: NO];
+      [[NSRunLoop currentRunLoop] runUntilDate:
+	  [NSDate dateWithTimeIntervalSinceNow: interval]];
+    }
+  while (count++ < limit && proxy == nil);
+
+  if (proxy == nil)
+    {
+      NSLog(@"%@: Failed to connect to server", self);
+      return NO;
+    }
+
+  [self setServerProxy: proxy];
+
+  [self becomeObserver];
+  [proxy setProtocolForProxy: @protocol(IMUnifiedProtocolForInputServer)];
+  [proxy inputClientBecomeActive: self];
+
+
+  return YES;
+}
+
+
+- (void)becomeObserver
+{
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(lostConnection:)
+	   name: NSConnectionDidDieNotification
+	 object: [serverProxy connectionForProxy]];
+}
+
+
+- (void)resignObserver
+{
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+	      name: NSConnectionDidDieNotification
+	    object: [serverProxy connectionForProxy]];
+}
+
+
+- (void)setServerInfo: (id)info
+{
+  [info retain];
+  [serverInfo release];
+  serverInfo = info;
+}
+
+
+- (IMInputServerInfo *)serverInfo
+{
+  return serverInfo;
+}
+
+
+- (void)setServerProxy: (id)proxy
+{
+  [proxy retain];
+  [serverProxy release];
+  serverProxy = proxy;
+}
+
+
+- (id)serverProxy
+{
+  return serverProxy;
+}
+
+
+- (void)setKeyBindingTable: (IMKeyBindingTable *)table
+{
+  [table retain];
+  [keyBindingTable release];
+  keyBindingTable = table;
+}
+
+
+- (IMKeyBindingTable *)keyBindingTable
+{
+  return keyBindingTable;
+}
+
+
+/* Return nil if not readable. */
+- (NSString *)standardKeyBindingAbsolutePath
+{
+  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						       NSSystemDomainMask,
+						       YES);
+  NSString *path = [array objectAtIndex: 0];
+  path = [path stringByAppendingPathComponent: _parentComponent];
+  path = [path stringByAppendingPathComponent: @"StandardKeyBinding"];
+  path = [path stringByAppendingPathExtension: @"dict"];
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
+    {
+      path = nil;
+    }
+  return path;
+}
+
+
+/* Return nil if not readable. */
+- (NSString *)defaultKeyBindingAbsolutePath;
+{
+  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						       NSUserDomainMask,
+						       YES);
+  NSString *path = [array objectAtIndex: 0];
+  path = [path stringByAppendingPathComponent: @"KeyBindings"];
+  path = [path stringByAppendingPathComponent: @"DefaultKeyBinding"];
+  path = [path stringByAppendingPathExtension: @"dict"];
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
+    {
+      path = nil;
+    }
+  return path;
+}
+
+
+- (id)client
+{
+  id obj = [[[NSApplication sharedApplication] keyWindow] firstResponder];
+
+  while (obj)
+    {
+      if ([obj conformsToProtocol: @protocol(NSTextInput)])
+	{
+	  return obj;
+	}
+      obj = [obj isKindOfClass: [NSResponder class]]
+		? [obj nextResponder]
+		: nil;
+    }
+  NSLog(@"%@: Couldn't specify client", self);
+  return nil;
+}
+
+
+- (void)lostConnection: (NSNotification *)aNotification
+{
+  NSMutableDictionary	*src	= [[NSMutableDictionary alloc] init];
+  NSDictionary		*dict	= nil;
+  NSString		*path	= nil;
+  IMKeyBindingTable	*table	= nil;
+
+  NSLog(@"%@: Lost connection to input server %@", [serverProxy serverName]);
+  /* Release all resources to related to the server */
+  [self resignObserver];
+  [self setKeyBindingTable: nil];
+  [self setServerProxy: nil];
+  [self setServerInfo: nil];
+
+  /* To fall back to the stand-alone internal input manager, re-initialize
+     the key-binding table.  No error check because this is the last resort. */
+  if ((path = [self standardKeyBindingAbsolutePath]))
+    {
+      dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+      [src addEntriesFromDictionary: dict];
+      [dict release], dict = nil;
+    }
+  if ((path = [self defaultKeyBindingAbsolutePath]))
+    {
+      dict = [[NSDictionary alloc] initWithContentsOfFile: path];
+      [src addEntriesFromDictionary: dict];
+      [dict release], dict = nil;
+    }
+  table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
+  [self setKeyBindingTable: [table autorelease]];
+}
+
+@end /* @implementation NSInputManager (Private) */
+
+
+@implementation IMInputServerInfo
 
 - (id)initWithName: (NSString *)inputServerName
 {
@@ -364,515 +967,6 @@ static NSString *_infoFileName		= @"Info";
   return absPath;
 }
 
-@end /* @implementation	InputServerInfo */
+@end /* @implementation	IMInputServerInfo */
 
 
-@implementation NSInputManager
-
-static NSMutableArray *_inputServerList = nil;
-
-
-+ (NSInputManager *)currentInputManager
-{
-  return [_inputServerList lastObject];
-}
-
-
-/* Deprecated */
-+ (void)cycleToNextInputLanguage: (id)sender
-{ }
-
-
-/* Deprecated */
-+ (void)cycleToNextInputServerInLanguage: (id)sender
-{ }
-
-
-- (void)dealloc
-{
-  [serverProxy inputClientResignActive: self];
-  [serverProxy terminate: self];
-  [self resignObserver];
-  [NSInputManager removeFromInputServerList: self]; 
-  [self setServerProxy: nil];
-  [self setServerInfo: nil];
-  [super dealloc];
-}
-
-
-- (BOOL)handleMouseEvent: (NSEvent *)theMouseEvent
-{
-  unsigned int	flags;
-  NSPoint	point;
-  unsigned	index;
-  BOOL		consumed;
-
-  flags = [theMouseEvent modifierFlags];
-  point = [theMouseEvent locationInWindow];
-  index = [[self client] characterIndexForPoint: point];
-
-  switch ([theMouseEvent type])
-    {
-    case NSLeftMouseDown:
-      consumed = [serverProxy mouseDownOnCharacterIndex: index
-					   atCoordinate: point
-					   withModifier: flags
-						 client: [self client]];
-      return YES;
-
-    case NSLeftMouseDragged:
-      consumed = [serverProxy mouseDraggedOnCharacterIndex: index
-					      atCoordinate: point
-					      withModifier: flags
-						    client: [self client]];
-      return YES;
-
-    case NSLeftMouseUp:
-      [serverProxy mouseUpOnCharacterIndex: index
-			      atCoordinate: point
-			      withModifier: flags
-				    client: [self client]];
-      return YES;
-
-    default:
-      return NO;
-    }
-  /* Not reached */
-}
-
-
-/* Deprecated */
-- (NSImage *)image
-{ return nil; }
-
-
-- (NSInputManager *)initWithName: (NSString *)inputServerName
-			    host: (NSString *)host
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-  if ((self = [super init]) == nil)
-    {
-      NSLog(@"NSInputManager: Initialization failed");
-      return nil;
-    }
-  if ([self standardKeyBindingAbsolutePath] == nil)
-    {
-      NSLog(@"%@: Couldn't read StandardKeyBinding.dict",
-	    self, [self standardKeyBindingAbsolutePath]);
-      [self release];
-      return nil;
-    }
-  if (inputServerName)
-    {
-      if ([self readInputServerInfo: inputServerName] == NO ||
-	  [self createKeyBindingsTable] == NO ||
-	  [self establishConnectionToInputServer: host] == NO)
-	{
-	  [self release];
-	  return nil;
-	}
-    }
-  else
-    {
-#if 0
-      if ([self createKeyBindingsTable] == NO)
-	{
-	  [self release];
-	  return nil;
-	}
-#endif
-    }
-  [NSInputManager addToInputServerList: self];
-
-  [pool release], pool = nil;
-
-  return self;
-}
-
-
-- (NSString *)language
-{
-  return [serverInfo languageName];
-}
-
-
-- (NSString *)localizedInputManagerName
-{
-  return [serverInfo localizedName];
-}
-
-
-- (void)markedTextAbandoned: (id)client
-{
-  [serverProxy markedTextAbandoned: client];
-}
-
-
-- (void)markedTextSelectionChanged: (NSRange)newSel
-			    client: (id)client
-{
-  [serverProxy markedTextSelectionChanged: newSel
-				   client: client];
-}
-
-
-/* Deprecated */
-- (NSInputServer *)server
-{
-  return serverProxy;
-}
-
-
-- (BOOL)wantsToDelayTextChangeNotifications
-{
-  if (serverProxy)
-    {
-      return [serverProxy wantsToDelayTextChangeNotifications];
-    }
-  else
-    {
-      return NO;
-    }
-}
-
-
-- (BOOL)wantsToHandleMouseEvents
-{
-  if (serverProxy)
-    {
-      return [serverProxy wantsToHandleMouseEvent];
-    }
-  else
-    {
-      return NO;
-    }
-}
-
-
-- (BOOL)wantsToInterpretAllKeystrokes
-{
-  if (serverProxy)
-    {
-      return [serverProxy wantsToInterpretAllKeystrokes];
-    }
-  else
-    {
-      return NO;
-    }
-}
-
-
-/* ----------------------------------------------------------------------------
-    NSTextInput protocol methods
- --------------------------------------------------------------------------- */
-- (NSAttributedString *)attributedSubstringFromRange: (NSRange)theRange
-{
-  return [[self client] attributedSubstringFromRange: theRange];
-}
-
-
-- (unsigned int)characterIndexForPoint: (NSPoint)thePoint
-{
-  return [[self client] characterIndexForPoint: thePoint];
-}
-
-
-- (long)conversationIdentifier
-{
-  return [[self client] conversationIdentifier];
-}
-
-
-/* text view -> input server */
-- (void)doCommandBySelector: (SEL)aSelector
-{
-  if (serverProxy)
-    {
-      [serverProxy doCommandBySelector: aSelector
-				client: [self client]];
-    }
-  else
-    {
-      [[self client] doCommandBySelector: aSelector];
-    }
-}
-
-
-- (NSRect)firstRectForCharacterRange: (NSRange)theRange
-{
-  return [[self client] firstRectForCharacterRange: theRange];
-}
-
-
-- (BOOL)hasMarkedText
-{
-  return [[self client] hasMarkedText];
-}
-
-
-/* text view -> input server */
-- (void)insertText: (id)aString
-{
-  if (serverProxy)
-    {
-      [serverProxy insertText: aString
-		       client: [self client]];
-    }
-  else
-    {
-      [[self client] insertText: aString];
-    }
-}
-
-
-- (NSRange)markedRange
-{
-  return [[self client] markedRange];
-}
-
-
-- (NSRange)selectedRange
-{
-  return [[self client] selectedRange];
-}
-
-
-- (void)setMarkedText: (id)aString
-	selectedRange: (NSRange)selRange
-{
-  return [[self client] setMarkedText: aString
-			selectedRange: selRange];
-}
-
-
-- (void)unmarkText
-{
-  [[self client] unmarkText];
-}
-
-
-- (NSArray *)validAttributesForMarkedText
-{
-  return [[self client] validAttributesForMarkedText];
-}
-
-@end /* @implementation NSInputManager */
-
-
-@implementation NSInputManager (Private)
-
-+ (void)addToInputServerList: (id)inputServer
-{
-  if (_inputServerList == nil)
-    {
-      _inputServerList = [[NSMutableArray alloc] init];
-    }
-  [_inputServerList addObject: inputServer];
-}
-
-
-+ (void)removeFromInputServerList: (id)inputServer
-{
-  [_inputServerList removeObjectIdenticalTo: inputServer];
-  if ([_inputServerList count] == 0)
-    {
-      [_inputServerList release];
-      _inputServerList = nil;
-    }
-}
-
-
-/* Return YES if succeeded, NO otherwise. */
-- (BOOL)readInputServerInfo: (NSString *)inputServerName
-{
-  InputServerInfo *info;
-
-  if ((info = [[InputServerInfo alloc] initWithName: inputServerName]) == nil)
-    {
-      NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
-      return NO;
-    }
-  else if ([info executableAbsolutePath] == nil)
-    {
-      NSLog(@"%@: Couldn't find the executable for %@", self, inputServerName);
-      [self release];
-      return NO;
-    }
-  [self setServerInfo: [info autorelease]];
-  return YES;
-}
-
-
-/* Return YES if succeeded, NO otherwise. */
-- (BOOL)createKeyBindingsTable
-{
-  /* Not implemented */
-  return NO;
-}
-
-
-/* Return YES if succeeded, NO otherwise. */
-- (BOOL)establishConnectionToInputServer: (NSString *)host
-{
-  NSString	*name	    = [serverInfo connectionName];
-  NSString	*exec	    = [serverInfo executableAbsolutePath];
-  const float	interval    = 2.0;
-  int		count	    = 0;
-  const int	limit	    = 5;
-  id		proxy;
-
-  if (host == nil)
-    {
-      NSLog(@"%@: Host name wasn't specified", self);
-      return NO;
-    }
-
-  do
-    {
-      proxy = [NSConnection rootProxyForConnectionWithRegisteredName: name
-								host: host];
-      if (proxy)
-	{
-	  break;
-	}
-
-      NSLog(@"%@: Trying to launch %@", self, exec);
-      [NSTask launchedTaskWithLaunchPath: exec
-			       arguments: nil];
-      [NSTimer scheduledTimerWithTimeInterval: interval
-				   invocation: nil
-				      repeats: NO];
-      [[NSRunLoop currentRunLoop] runUntilDate:
-	  [NSDate dateWithTimeIntervalSinceNow: interval]];
-    }
-  while (count++ < limit && proxy == nil);
-
-  if (proxy == nil)
-    {
-      NSLog(@"%@: Failed to connect to server", self);
-      return NO;
-    }
-
-  [self setServerProxy: proxy];
-
-  [self becomeObserver];
-  [proxy setProtocolForProxy: @protocol(UnifiedProtocolForInputServer)];
-  [proxy inputClientBecomeActive: self];
-
-
-  return YES;
-}
-
-
-- (void)becomeObserver
-{
-  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(lostConnection:)
-	   name: NSConnectionDidDieNotification
-	 object: [serverProxy connectionForProxy]];
-}
-
-
-- (void)resignObserver
-{
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-	      name: NSConnectionDidDieNotification
-	    object: [serverProxy connectionForProxy]];
-}
-
-
-/* Return YES if succeeded, NO otherwise. */
-- (void)setServerInfo: (id)info
-{
-  [info retain];
-  [serverInfo release];
-  serverInfo = info;
-}
-
-
-- (id)serverInfo
-{
-  return serverInfo;
-}
-
-
-- (void)setServerProxy: (id)proxy
-{
-  [proxy retain];
-  [serverProxy release];
-  serverProxy = proxy;
-}
-
-
-- (id)serverProxy
-{
-  return serverProxy;
-}
-
-
-/* Return nil if not readable. */
-- (NSString *)standardKeyBindingAbsolutePath
-{
-  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-						       NSSystemDomainMask,
-						       YES);
-  NSString *path = [array objectAtIndex: 0];
-  path = [path stringByAppendingPathComponent: _parentComponent];
-  path = [path stringByAppendingPathComponent: @"StandardKeyBinding"];
-  path = [path stringByAppendingPathExtension: @"dict"];
-  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
-    {
-      path = nil;
-    }
-  return path;
-}
-
-
-/* Return nil if not readable. */
-- (NSString *)defaultKeyBindingAbsolutePath;
-{
-  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-						       NSUserDomainMask,
-						       YES);
-  NSString *path = [array objectAtIndex: 0];
-  path = [path stringByAppendingPathComponent: @"KeyBindings"];
-  path = [path stringByAppendingPathComponent: @"DefaultKeyBinding"];
-  path = [path stringByAppendingPathExtension: @"dict"];
-  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
-    {
-      path = nil;
-    }
-  return path;
-}
-
-
-- (id)client
-{
-  id obj = [[[NSApplication sharedApplication] keyWindow] firstResponder];
-
-  while (obj)
-    {
-      if ([obj conformsToProtocol: @protocol(NSTextInput)])
-	{
-	  return obj;
-	}
-      obj = [obj isKindOfClass: [NSResponder class]]
-		? [obj nextResponder]
-		: nil;
-    }
-  NSLog(@"%@: Couldn't specify client", self);
-  return nil;
-}
-
-
-- (void)lostConnection: (NSNotification *)aNotification
-{
-  [self resignObserver];
-  [self setServerProxy: nil];
-  NSLog(@"%@: Lost connection to input server");
-}
-
-@end /* @implementation NSInputManager (Private) */

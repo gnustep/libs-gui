@@ -37,7 +37,8 @@
 @class NSEvent;
 @class NSInputServer;
 @class NSImage;
-@class InputServerInfo;
+@class IMInputServerInfo;
+@class IMKeyBindingTable;
 
 
 @protocol NSTextInput
@@ -59,8 +60,9 @@
 
 @interface NSInputManager : NSObject <NSTextInput>
 {
-  InputServerInfo   *serverInfo;
-  id		    serverProxy;
+  IMInputServerInfo	*serverInfo;
+  id			serverProxy;
+  IMKeyBindingTable	*keyBindingTable;
 }
 
 + (NSInputManager *)currentInputManager;

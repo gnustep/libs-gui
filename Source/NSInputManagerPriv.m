@@ -29,6 +29,7 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSValue.h>
 
 #if !defined USE_INPUT_MANAGER_UTILITIES
 #define USE_INPUT_MANAGER_UTILITIES
@@ -45,7 +46,9 @@ typedef struct _IMRecord {
 } IMRecord;
 
 
-static IMRecord functionKeyTable[] = {
+static NSString *_plain	  = @"1234567890-=qwertyuiop[]asdfghjkl;'\\zxcvbnm,./";
+static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
+static IMRecord _functionKeyTable[] = {
     { @"UpArrow",	    NSUpArrowFunctionKey },
     { @"DownArrow",	    NSDownArrowFunctionKey },
     { @"LeftArrow",	    NSLeftArrowFunctionKey },
@@ -119,9 +122,7 @@ static IMRecord functionKeyTable[] = {
     { @"Help",		    NSHelpFunctionKey },
     { @"Mode",		    NSModeSwitchFunctionKey },
 };
-
-
-static IMRecord maskTable[] = {
+static IMRecord _maskTable[] = {
     { @"AlphaShiftKey",	    NSAlphaShiftKeyMask },
     { @"ShiftKey",	    NSShiftKeyMask },
     { @"ControlKey",	    NSControlKeyMask },
@@ -133,50 +134,71 @@ static IMRecord maskTable[] = {
 };
 
 
-@interface NSInputManager (Debug)
-- (NSString *)modifierFlagsToString: (unsigned int)flags;
-- (NSString *)nonprintableToPrintable:(NSString *)str;
-@end /* @interface NSInputManager (Debug) */
-
-
 @implementation NSInputManager (KeyEventHandling)
 
 - (void)interpretSingleKeyEvent: (NSEvent *)event
 {
-  NSString	*characters = [event characters];
-  NSString	*noModifiers = [event charactersIgnoringModifiers];
-  unsigned int	modifierFlags = [event modifierFlags];
+  NSString	*chars		= [event characters];
+  unsigned int  charsLen	= 0;
+  NSString	*noModChars	= nil;
+  unsigned int	noModCharsLen	= 0;
+  unsigned int	modifierFlags	= 0;
+  IMCharacter	*c		= [[IMCharacter alloc] init];
+  SEL		sel		= (SEL)0;
+  unsigned int	i;
+  IMQueryResult	result;
 
-  /* TODO: Under experiment */
   if ([self wantsToInterpretAllKeystrokes])
     {
-      [self insertText: characters];
+      [self insertText: chars];
+      return;
     }
 
-  /* For debugging */
-  NSLog(@"%@ -> %@ (%@)",
-	characters,
-	[self nonprintableToPrintable: noModifiers],
-	[self modifierFlagsToString: modifierFlags]);
+  charsLen	= [chars length];
+  noModChars	= [event charactersIgnoringModifiers];
+  noModCharsLen	= [noModChars length];
+  modifierFlags = [event modifierFlags];
 
-  if ([[event characters] characterAtIndex: 0] == 010) /* Backspace */
+  /* TODO: Special treatment for localized characters: They are actually
+     modified in -back, nonetheless, -charactersIgnoringModifiers returns 0.
+     So they look as if they were a control key sequence.
+
+     This will be deprecated when a customized input server is put in
+     place. */
+  if (charsLen > 0 && noModCharsLen == 0)
     {
-      /* Interestingly, Ctrl-h comes here.  Who does this conversion? */
-      [self doCommandBySelector: @selector(deleteBackward:)];
+      [self insertText: chars];
+      return;
     }
-  else if ([characters characterAtIndex: 0] == 015) /* CR */
+
+  for (i = 0; i < noModCharsLen; i++)
     {
-      [self doCommandBySelector: @selector(insertNewline:)];
-    }
-  else if ([characters characterAtIndex: 0] == 011) /* TAB */
-    {
-      [self doCommandBySelector: @selector(insertTab:)];
-    }
-  else if (modifierFlags == 0 ||
-	   (modifierFlags & NSShiftKeyMask) == NSShiftKeyMask ||
-	   (modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
-    {
-      [self insertText: [event characters]];
+      [c setCharacter: [noModChars characterAtIndex: i]];
+      [c setModifiers: modifierFlags];
+
+      NSLog(@"<-- %@", c);
+      result = [keyBindingTable getSelectorFromCharacter: c
+						selector: &sel];
+      switch (result)
+	{
+	case IMNotFound:
+	  if ([c isNotModified] || [c isShiftedOnly])
+	    {
+	      [self insertText: [c stringValue]];
+	    }
+	  break;
+
+	case IMFound:
+	  if (sel)
+	    {
+	      [self doCommandBySelector: sel];
+	    }
+	  break;
+
+	case IMPending:
+	  /* Do nothing */
+	  break;
+	}
     }
 }
 
@@ -197,6 +219,14 @@ static IMRecord maskTable[] = {
 
 @implementation IMCharacter
 
++ (id)characterWithCharacter: (unichar)c
+		   modifiers: (unsigned int)flags
+{
+  return [[[[self class] alloc] initWithCharacter: c
+					modifiers: flags] autorelease];
+}
+
+
 - (id)init
 {
   return [self initWithCharacter: 0
@@ -213,13 +243,6 @@ static IMRecord maskTable[] = {
       [self setModifiers: flags];
     }
   return self;
-}
-
-
-- (id)characterWithCharacter: (unichar)c
-		   modifiers: (unsigned int)flags
-{
-  return [[[self class] initWithCharacter: c modifiers: flags] autorelease];
 }
 
 
@@ -249,16 +272,15 @@ static IMRecord maskTable[] = {
 
 - (id)copyWithZone: (NSZone *)zone
 {
-  IMCharacter *c = [[[self class] allocWithZone: zone]
-				initWithCharacter: [self character]
-					modifiers: [self modifiers]];
-  return c;
+  return [[[self class] allocWithZone: zone]
+	    initWithCharacter: [self character]
+		    modifiers: [self modifiers]];
 }
 
 
-- (BOOL)equalTo: (id)anObject
+- (BOOL)isEqual: (id)anObject
 {
-  if ([anObject isMemberOf: [IMCharacter class]])
+  if ([anObject isKindOfClass: [IMCharacter class]])
     {
       return ([anObject character] == [self character]) &&
 	     ([anObject modifiers] == [self modifiers]);
@@ -290,8 +312,241 @@ static IMRecord maskTable[] = {
 
 - (NSString *)description
 {
-  /* TODO: Under construction */
-  return nil;
+  return [NSString stringWithFormat: @"%@ %@",
+	                             [self convertCharacterToString],
+				     [self convertModifiersToString]];
+}
+
+
+- (BOOL)isAlphaShiftKeyOn
+{
+  return modifiers & NSAlphaShiftKeyMask;
+}
+
+
+- (void)setAlphaShiftKeyMask
+{
+  modifiers |= NSAlphaShiftKeyMask;
+}
+
+
+- (void)clearAlphaShiftKeyMask
+{
+  modifiers &= ~NSAlphaShiftKeyMask;
+}
+
+
+- (BOOL)isShiftKeyOn
+{
+  return modifiers & NSShiftKeyMask;
+}
+
+
+- (void)setShiftKeyMask
+{
+  modifiers |= NSShiftKeyMask;
+}
+
+
+- (void)clearShiftKeyMask
+{
+  modifiers &= ~NSShiftKeyMask;
+}
+
+
+- (BOOL)isControlKeyOn
+{
+  return modifiers & NSControlKeyMask;
+}
+
+
+- (void)setControlKeyMask
+{
+  modifiers |= NSControlKeyMask;
+}
+
+
+- (void)clearControlKeyMask
+{
+  modifiers &= ~NSControlKeyMask;
+}
+
+
+- (BOOL)isAlternateKeyOn
+{
+  return modifiers & NSAlternateKeyMask;
+}
+
+
+- (void)setAlternateKeyMask
+{
+  modifiers |= NSAlternateKeyMask;
+}
+
+
+- (void)clearAlternateKeyMask
+{
+  modifiers &= ~NSAlternateKeyMask;
+}
+
+
+- (BOOL)isCommandKeyOn
+{
+  return modifiers & NSCommandKeyMask;
+}
+
+
+- (void)setCommandKeyMask
+{
+  modifiers |= NSCommandKeyMask;
+}
+
+
+- (void)clearCommandKeyMask
+{
+  modifiers &= ~NSCommandKeyMask;
+}
+
+
+- (BOOL)isNumericPadKeyOn
+{
+  return modifiers & NSNumericPadKeyMask;
+}
+
+
+- (void)setNumericPadKeyMask
+{
+  modifiers |= NSNumericPadKeyMask;
+}
+
+
+- (void)clearNumericPadKeyMask
+{
+  modifiers &= ~NSNumericPadKeyMask;
+}
+
+
+- (BOOL)isHelpKeyOn
+{
+  return modifiers & NSHelpKeyMask;
+}
+
+
+- (void)setHelpKeyMask
+{
+  modifiers |= NSHelpKeyMask;
+}
+
+
+- (void)clearHelpKeyMask
+{
+  modifiers &= ~NSHelpKeyMask;
+}
+
+
+- (BOOL)isFunctionKeyOn
+{
+  return modifiers & NSFunctionKeyMask;
+}
+
+
+- (void)setFunctionKeyMask
+{
+  modifiers |= NSFunctionKeyMask;
+}
+
+
+- (void)clearFunctionKeyMask
+{
+  modifiers &= ~NSFunctionKeyMask;
+}
+
+
+- (BOOL)isNotModified
+{
+  return modifiers == 0;
+}
+
+
+- (BOOL)isShiftedOnly
+{
+  return [self isShiftKeyOn] || [self isAlphaShiftKeyOn];
+}
+
+
+/* Unprintable characters are converted into its names. */
+- (NSString *)convertCharacterToString
+{
+  unsigned int	i;
+
+  for (i = 0; i < NumberOf(_functionKeyTable); i++)
+    {
+      if (character == _functionKeyTable[i].value)
+	{
+	  return _functionKeyTable[i].key;
+	}
+    }
+  switch (character)
+    {
+    case 001:	return @"NUL";
+    case 002:	return @"SOH";
+    case 003:	return @"STX";
+    case 004:	return @"ETX";
+    case 005:	return @"ENQ";
+    case 006:	return @"ACK";
+    case 007:	return @"BEL";
+    case 010:	return @"BS";
+    case 011:	return @"HT";
+    case 012:	return @"LF";
+    case 013:	return @"VT";
+    case 014:	return @"FF";
+    case 015:	return @"CR";
+    case 016:	return @"SO";
+    case 017:	return @"SI";
+    case 020:	return @"DLE";
+    case 021:	return @"DC1";
+    case 022:	return @"DC2";
+    case 023:	return @"DC3";
+    case 024:	return @"DC4";
+    case 025:	return @"NAK";
+    case 026:	return @"SYN";
+    case 027:	return @"ETB";
+    case 030:	return @"CAN";
+    case 031:	return @"EM";
+    case 032:	return @"SUB";
+    case 033:	return @"ESC";
+    case 034:	return @"FS";
+    case 035:	return @"GS";
+    case 036:	return @"RS";
+    case 037:	return @"US";
+    case 040:	return @"SPACE";
+    case 0177:	return @"DEL";
+    }
+  return [NSString stringWithCharacters: &character
+				 length: 1];
+}
+
+
+- (NSString *)convertModifiersToString
+{
+  NSMutableArray    *array = [NSMutableArray array];
+  unsigned int	    i;
+
+  for (i = 0; i < NumberOf(_maskTable); i++)
+    {
+      if (modifiers & _maskTable[i].value)
+	{
+	  [array addObject: _maskTable[i].key];
+	}
+    }
+  return [array description];
+}
+
+
+- (NSString *)stringValue
+{
+  return [NSString stringWithCharacters: &character
+				 length: 1];
 }
 
 @end /* @implementation IMCharacter */
@@ -299,22 +554,232 @@ static IMRecord maskTable[] = {
 
 @implementation IMKeyBindingTable
 
-- (id)initWithKeyBindingDictionary: (NSDictionary *)bindings
+- (id)initWithKeyBindingDictionary: (NSDictionary *)bindingDictionary
 {
   if ((self = [super init]) != nil)
     {
-      /* TODO: Under construction */
+      NSMutableDictionary *draft = [[NSMutableDictionary alloc] init];
+      [self compileBindings: draft
+		 withSource: bindingDictionary];
+      [self setBindings: draft];
+      [draft release], draft = nil;
     }
-  return nil;
+  return self;
 }
 
 
-- (IMQueryResult)getSelectorForCharacter: (IMCharacter *)c
-				selector: (SEL *)sel
+- (void)setBindings: (NSDictionary *)newBindings
 {
-  /* TODO: Under construction */
-  return IMNotFound;
+  [newBindings retain];
+  [bindings release];
+  bindings = newBindings;
 }
+
+
+- (NSDictionary *)bindings
+{
+  return bindings;
+}
+
+
+- (IMCharacter *)compileForKey: (NSString *)aKey
+{
+  IMCharacter	    *compiledKey = [IMCharacter characterWithCharacter: 0
+							     modifiers: 0];
+  NSMutableString   *key = nil;
+  NSRange	    range;
+  unsigned int	    i;
+
+  if ([aKey length] == 1)
+    {
+      range = [_plain rangeOfString: aKey];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey clearShiftKeyMask];
+	}
+
+      range = [_shifted rangeOfString: aKey];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setShiftKeyMask];
+	}
+
+      /* Why does NSTextView handle Delete so specially? */
+      if ([aKey isEqualToString: @"\177"])
+	{
+	  [compiledKey setFunctionKeyMask];
+	  [compiledKey setCharacter: NSDeleteFunctionKey];
+	}
+      else
+	{
+	  [compiledKey setCharacter: [aKey characterAtIndex: 0]];
+	}
+
+      return compiledKey;
+    }
+
+  key = [aKey mutableCopy];
+  while (1)
+    {
+      NSString *original = [key copy];
+
+      range = [key rangeOfString: @"~"];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setAlternateKeyMask];
+	  [key deleteCharactersInRange: range];
+	}
+
+      range = [key rangeOfString: @"^"];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setControlKeyMask];
+	  [key deleteCharactersInRange: range];
+	}
+
+      range = [key rangeOfString: @"$"];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setShiftKeyMask];
+	  [key deleteCharactersInRange: range];
+	}
+
+      range = [key rangeOfString: @"#"];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setNumericPadKeyMask];
+	  [key deleteCharactersInRange: range];
+	}
+
+      if ([key isEqualToString: original])
+	{
+	  [original release], original = nil;
+	  break;
+	}
+      [original release], original = nil;
+    }
+  for (i = 0; i < NumberOf(_functionKeyTable); i++)
+    {
+      if (key && [key isEqualToString: _functionKeyTable[i].key])
+	{
+	  [compiledKey setFunctionKeyMask];
+	  [compiledKey setCharacter: _functionKeyTable[i].value];
+	  break;
+	}
+    }
+  if (i == NumberOf(_functionKeyTable) && [key length] == 1)
+    {
+      range = [_plain rangeOfString: key];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey clearShiftKeyMask];
+	}
+
+      range = [_shifted rangeOfString: key];
+      if (range.location != NSNotFound)
+	{
+	  [compiledKey setShiftKeyMask];
+	}
+
+      [compiledKey setCharacter: [key characterAtIndex: 0]];
+    }
+  [key release], key = nil;
+
+  return compiledKey;
+}
+
+
+- (void)compileBindings: (NSMutableDictionary *)draft
+	     withSource: (NSDictionary *)source
+{
+  NSEnumerator	*keyEnum = [source keyEnumerator];
+  id		key = nil;
+  id		obj = nil;
+  IMCharacter	*compiledKey = nil;
+
+  while ((key = [keyEnum nextObject]) != nil)
+    {
+      if ([key isKindOfClass: [NSString class]] == NO)
+	{
+	  continue;
+	}
+      if ((compiledKey = [self compileForKey: key]) == nil)
+	{
+	  continue;
+	}
+      obj = [source objectForKey: key];
+
+      if ([obj isKindOfClass: [NSString class]])
+	{
+	  NSNumber *sel = [[NSNumber alloc] initWithUnsignedLong:
+				(unsigned long)NSSelectorFromString(obj)];
+	  if (sel)
+	    {
+	      [draft setObject: sel
+			forKey: compiledKey];
+	      [sel release], sel = nil;
+	    }
+	}
+      else if ([obj isKindOfClass: [NSDictionary class]])
+	{
+	  NSMutableDictionary *subDraft = [[NSMutableDictionary alloc] init];
+	  [self compileBindings: subDraft
+		     withSource: obj];
+	  [draft setObject: subDraft
+		    forKey: compiledKey];
+	  [subDraft release], subDraft = nil;
+	}
+    }
+}
+
+
+- (IMQueryResult)getSelectorFromCharacter: (IMCharacter *)character
+				 selector: (SEL *)selector
+{
+  IMQueryResult	result	    = IMNotFound;
+  NSEnumerator	*keyEnum    = nil;
+  id		key	    = nil;
+  id		obj	    = nil;
+
+  if (branch == nil)
+    {
+      branch = bindings;
+    }
+
+  keyEnum = [branch keyEnumerator];
+  for (obj = nil; (key = [keyEnum nextObject]) != nil; obj = nil)
+    {
+      if ([key isEqual: character])
+	{
+	  obj = [branch objectForKey: key];
+	  break;
+	}
+    }
+  if (obj == nil)
+    {
+      *selector = (SEL)0;
+      branch = nil;
+      result = IMNotFound;
+      NSLog(@"--> NotFound: %@", character);
+    }
+  else if ([obj isKindOfClass: [NSDictionary class]])
+    {
+      *selector = (SEL)0;
+      branch = obj;
+      result = IMPending;
+      NSLog(@"--> Pending: %@", character);
+    }
+  else if ([obj isKindOfClass: [NSNumber class]])
+    {
+      *selector = (SEL)[obj unsignedLongValue];
+      branch = nil;
+      result = IMFound;
+      NSLog(@"--> Found: %@ -> %@", character, NSStringFromSelector(*selector));
+    }
+
+  return result;
+}
+
 
 - (void)dealloc
 {
@@ -325,167 +790,3 @@ static IMRecord maskTable[] = {
 }
 
 @end /* @implementation IMKeyBindingTable */
-
-
-@implementation NSInputManager (Debug)
-
-- (NSString *)modifierFlagsToString: (unsigned int)flags
-{
-  NSString *str = [NSString stringWithString: @""];
-  unsigned i;
-
-  for (i = 0; i < NumberOf(maskTable); i++)
-    {
-      if (flags & maskTable[i].value)
-	{
-	  str = [str stringByAppendingString: maskTable[i].key];
-	  str = [str stringByAppendingString: @" "];
-	}
-    }
-  return str;
-}
-
-
-- (NSString *)nonprintableToPrintable:(NSString *)chars
-{
-  NSString	*str = [NSString stringWithString: @""];
-  unsigned int	i, j;
-  unichar	c;
-
-  for (i = 0; i < [chars length]; i++)
-    {
-      c = [chars characterAtIndex: i];
-
-      for (j = 0; j < NumberOf(functionKeyTable); j++)
-	{
-	  if (functionKeyTable[j].value == c)
-	    {
-	      str = [str stringByAppendingString: functionKeyTable[j].key];
-	      str = [str stringByAppendingString: @" "];
-	      break;
-	    }
-	}
-      if (j == NumberOf(functionKeyTable))
-	{
-	  if ((c > 040 && c < 0177) ||	/* Printable ASCII */
-	      c >= 0200)		/* non-ASCII */
-	    {
-	      str = [str stringByAppendingString:
-			[NSString stringWithCharacters: &c length: 1]];
-	    }
-	  else
-	    {
-	      /* Non-printable ASCII */
-	      switch (c)
-		{
-		case 000:
-		  str = [str stringByAppendingString: @"NUL"];	/* \0 */
-		  break;
-		case 001:
-		  str = [str stringByAppendingString: @"SOH"];
-		  break;
-		case 002:
-		  str = [str stringByAppendingString: @"STX"];
-		  break;
-		case 003:
-		  str = [str stringByAppendingString: @"ETX"];
-		  break;
-		case 004:
-		  str = [str stringByAppendingString: @"EOT"];
-		  break;
-		case 005:
-		  str = [str stringByAppendingString: @"ENQ"];
-		  break;
-		case 006:
-		  str = [str stringByAppendingString: @"ACK"];
-		  break;
-		case 007:
-		  str = [str stringByAppendingString: @"BEL"];	/* \a */
-		  break;
-		case 010:
-		  str = [str stringByAppendingString: @"BS"];	/* \b */
-		  break;
-		case 011:
-		  str = [str stringByAppendingString: @"TAB"];	/* \t */
-		  break;
-		case 012:
-		  str = [str stringByAppendingString: @"LF"];	/* \n */
-		  break;
-		case 013:
-		  str = [str stringByAppendingString: @"VT"];	/* \v */
-		  break;
-		case 014:
-		  str = [str stringByAppendingString: @"FF"];	/* \f */
-		  break;
-		case 015:
-		  str = [str stringByAppendingString: @"CR"];	/* \r */
-		  break;
-		case 016:
-		  str = [str stringByAppendingString: @"SO"];
-		  break;
-		case 017:
-		  str = [str stringByAppendingString: @"SI"];
-		  break;
-		case 020:
-		  str = [str stringByAppendingString: @"DLE"];
-		  break;
-		case 021:
-		  str = [str stringByAppendingString: @"DC1"];
-		  break;
-		case 022:
-		  str = [str stringByAppendingString: @"DC2"];
-		  break;
-		case 023:
-		  str = [str stringByAppendingString: @"DC3"];
-		  break;
-		case 024:
-		  str = [str stringByAppendingString: @"DC4"];
-		  break;
-		case 025:
-		  str = [str stringByAppendingString: @"NAK"];
-		  break;
-		case 026:
-		  str = [str stringByAppendingString: @"SYN"];
-		  break;
-		case 027:
-		  str = [str stringByAppendingString: @"ETB"];
-		  break;
-		case 030:
-		  str = [str stringByAppendingString: @"CAN"];
-		  break;
-		case 031:
-		  str = [str stringByAppendingString: @"EM"];
-		  break;
-		case 032:
-		  str = [str stringByAppendingString: @"SUB"];
-		  break;
-		case 033:
-		  str = [str stringByAppendingString: @"ESC"];	/* Esc */
-		  break;
-		case 034:
-		  str = [str stringByAppendingString: @"FS"];
-		  break;
-		case 035:
-		  str = [str stringByAppendingString: @"GS"];
-		  break;
-		case 036:
-		  str = [str stringByAppendingString: @"RS"];
-		  break;
-		case 037:
-		  str = [str stringByAppendingString: @"US"];
-		case 040:
-		  str = [str stringByAppendingString: @"SPACE"];
-		  break;
-		case 0177:
-		  str = [str stringByAppendingString: @"DEL"];
-		  break;
-		default:
-		  break;
-		}
-	    }
-	}
-    }
-  return str;
-}
-
-@end /* NSInputManager (Debug) */
