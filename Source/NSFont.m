@@ -45,6 +45,11 @@ static BOOL boldSystemCacheNeedsRecomputing = NO;
 static BOOL userCacheNeedsRecomputing = NO;
 static BOOL userFixedCacheNeedsRecomputing = NO;
 
+@interface NSFont (Private)
+- (id) initWithName: (NSString*)name 
+	     matrix: (const float*)fontMatrix;
+@end
+
 @implementation NSFont
 
 /* Class variables*/
@@ -54,6 +59,10 @@ NSArray *_preferredFonts;
 
 /* Class for fonts */
 static Class	NSFontClass = 0;
+
+/* Store all created fonts for reuse. 
+   ATTENTION: This way a font will never get freed! */
+static NSMutableDictionary* globalFontDictionary = nil;
 
 static NSUserDefaults	*defaults = nil;
 
@@ -99,6 +108,8 @@ setNSFont(NSString* key, NSFont* font)
   if (self == [NSFont class])
     {
       NSFontClass = self;
+      globalFontDictionary = [NSMutableDictionary new];
+
       if (defaults == nil)
 	{
 	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
@@ -363,15 +374,6 @@ setNSFont(NSString* key, NSFont* font)
   return 12.0;
 }
 
-- (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
-{
-  fontName = [name copy];
-  memcpy(matrix, fontMatrix, sizeof(matrix));
-  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
-					     matrix: fontMatrix]);
-  return self;
-}
-
 + (NSFont*) fontWithName: (NSString*)name 
 		  matrix: (const float*)fontMatrix
 {
@@ -400,6 +402,35 @@ setNSFont(NSString* key, NSFont* font)
 //
 // Instance methods
 //
+- (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
+{
+  NSFont *font;
+  NSString *nameWithMatrix;
+
+  nameWithMatrix = [NSString stringWithFormat:
+                             @"%@ %.3f %.3f %.3f %.3f %.3f %.3f",
+                             name,
+                             fontMatrix[0], fontMatrix[1], fontMatrix[2], 
+			     fontMatrix[3], fontMatrix[4], fontMatrix[5]];
+
+  /* Check whether the font is cached */
+  font = [globalFontDictionary objectForKey: nameWithMatrix];
+  if(font != nil)
+    {
+      RELEASE(self);
+      // retain to act like we were alloc'd
+      return RETAIN(font);
+    }
+  /* Cache the font for later use */
+  [globalFontDictionary setObject: self forKey: nameWithMatrix];
+
+  fontName = [name copy];
+  memcpy(matrix, fontMatrix, sizeof(matrix));
+  fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
+					     matrix: fontMatrix]);
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(fontName);
