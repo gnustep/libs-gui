@@ -179,14 +179,25 @@ NSApplication	*NSApp = nil;
   NSBundle		*mainBundle = [NSBundle mainBundle];
   NSDictionary		*infoDict = [mainBundle infoDictionary];
   NSString		*mainModelFile;
+  NSString		*appIconFile;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
-
   if (mainModelFile && ![mainModelFile isEqual: @""])
     {
       if (![GMModel loadIMFile: mainModelFile
 			 owner: [NSApplication sharedApplication]])
 	NSLog (@"Cannot load the main model file '%@", mainModelFile);
+    }
+
+  appIconFile = [infoDict objectForKey: @"NSIcon"];
+  if (appIconFile && ![appIconFile isEqual: @""])
+    {
+      NSImage	*image = [NSImage imageNamed: appIconFile];
+
+      if (image != nil)
+	{
+	  [self setApplicationIconImage: image];
+	}
     }
 
   /* post notification that launch will finish */

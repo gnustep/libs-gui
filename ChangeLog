@@ -1,3 +1,8 @@
+Tue Apr 27 15:48:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: Load image specified in Info-gnustep.plist
+	and use it as app icon if possible.
+
 Tue Apr 27 15:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Changes supplied by Tim.Bissell@dresdnerkb.com
