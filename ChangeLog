@@ -1,3 +1,8 @@
+1999-11-18  David Lazaro Saz  <khelekir@encomix.es>
+
+	* Source/NSPopUpButton.m ([NSPopUpButton +initialize]): Fixed core
+	dump on init.  Remains core on select.
+
 Thu Nov 18  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCell.m ([-editWithFrame:inView:editor:delegate:event:]), 
