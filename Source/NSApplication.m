@@ -1648,7 +1648,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
        * If we are not in a tracking loop, we may want to unhide a hidden
        * because the mouse has been moved.
        */
-      if (mode != NSEventTrackingRunLoopMode)
+      if (mode != NSEventTrackingRunLoopMode && event != null_event)
 	{
 	  if ([NSCursor isHiddenUntilMouseMoves])
 	    {

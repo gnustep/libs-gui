@@ -1,3 +1,9 @@
+2004-01-17 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSApplication.m
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Check that
+	event is not 'null_event' before using it to unhide mouse.
+
 2005-01-17  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSBrowserCell.m (-setType:): New method, does nothing to
