@@ -36,12 +36,16 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSTask.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
 
 #include	<signal.h>
 
 @interface ExampleServices : NSObject
+- (void) openURL: (NSPasteboard*)bp
+	userData: (NSString*)ud
+	   error: (NSString**)err;
 - (void) tolower: (NSPasteboard*)bp
 	userData: (NSString*)ud
 	   error: (NSString**)err;
@@ -51,6 +55,39 @@
 @end
 
 @implementation ExampleServices
+- (void) openURL: (NSPasteboard*)pb
+	userData: (NSString*)ud
+	   error: (NSString**)err
+{
+  NSString	*url;
+  NSArray	*types;
+  NSArray	*args;
+  NSString	*path;
+  NSTask	*task;
+
+  types = [pb types];
+  if (![types containsObject: NSStringPboardType])
+    {
+      *err = @"No string type supplied on pasteboard";
+      return;
+    }
+
+  url = [pb stringForType: NSStringPboardType];
+  if (url == nil)
+    {
+      *err = @"No string value supplied on pasteboard";
+      return;
+    }
+
+  path = @"/bin/sh";
+  args = [NSArray arrayWithObjects:
+		@"-c",
+		[NSString stringWithFormat: @"netscape -remote \"openURL(%@)\"",
+			url],
+		nil];
+  task = [NSTask launchedTaskWithLaunchPath: path
+				  arguments: args];
+}
 - (void) tolower: (NSPasteboard*)pb
 	userData: (NSString*)ud
 	   error: (NSString**)err

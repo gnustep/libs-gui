@@ -1,6 +1,21 @@
   NSServices = (
     {
       NSPortName = ExampleServices;
+      NSMessage = openURL;
+      NSSendTypes = (
+	NSStringPboardType
+      );
+      NSMenuItem = {
+	default = "Open URL";
+	English = "Open URL";
+      };
+      NSKeyEquivalent = {
+	default = O;
+	English = O;
+      };
+    },
+    {
+      NSPortName = ExampleServices;
       NSMessage = tolower;
       NSSendTypes = (
 	NSStringPboardType
