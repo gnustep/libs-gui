@@ -266,6 +266,21 @@ static inline void cache_init ()
 		  format: @"RangeError in method -doubleClickAtIndex:"];
     }
 
+  /*
+   * If the location lies between words, a double click selects only
+   * the character actually clicked on.
+   */
+  if ([wordBreakCSet characterIsMember: [str characterAtIndex: location]])
+    {
+      if (location == 0 || location == length - 1
+	|| [str characterAtIndex: location] != '\''
+	|| ! [wordCSet characterIsMember: [str characterAtIndex: location - 1]]
+	|| ! [wordCSet characterIsMember: [str characterAtIndex: location + 1]])
+	{
+	  return NSMakeRange(location, 1);
+	}
+    }
+
   scanRange = NSMakeRange (0, location);
   startRange = [str rangeOfCharacterFromSet: wordBreakCSet
 				    options: NSBackwardsSearch|NSLiteralSearch
@@ -299,7 +314,7 @@ static inline void cache_init ()
     {
       location = endRange.location + 1;
       scanRange = NSMakeRange (location, length - location);
-      startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+      endRange = [str rangeOfCharacterFromSet: wordBreakCSet
 	options: NSLiteralSearch range: scanRange];
     }
 

@@ -1,3 +1,13 @@
+2000-12-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: ([-doubleClickAtIndex:]),
+	Fixed infinite loop.  Added code to cope with double click on the
+	space between words.
+	* Source/NSTextView.m: ([-selectionRangeForProposedRange:granularity])
+	Re-implemented word selection using ([-doubleClickAtIndex:])
+	([-mouseDown:]) creatre proposed range for selection by merging old
+	selectin range with new location.
+
 2000-12-24  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSButton.h:

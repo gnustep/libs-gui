@@ -1975,6 +1975,7 @@ afterString in order over charRange. */
       /* Compute the new selection */
       startIndex = [self characterIndexForPoint: startPoint];
       proposedRange = NSMakeRange (startIndex, 0);
+      proposedRange = NSUnionRange (_selected_range, proposedRange);
       proposedRange = [self selectionRangeForProposedRange: proposedRange
 			    granularity: granularity];
       /* Merge it with the old one */
@@ -2591,41 +2592,21 @@ container, returning the modified location. */
   switch (granul)
     {
     case NSSelectByWord:
-      /* FIXME: The following code (or the routines it calls) does the
-	 wrong thing when you double-click on the space between two
-	 words */
-      if ((proposedCharRange.location + 1) < length)
+      index = proposedCharRange.location;
+      if (index >= length)
 	{
-	  index = [_textStorage nextWordFromIndex: 
-				  (proposedCharRange.location + 1)
-				forward: NO];
+	  index = length - 1;
 	}
-      else
+      newRange = [_textStorage doubleClickAtIndex: index];
+      if (proposedCharRange.length > 1)
 	{
-	  /* Exception: end of text */
-	  index = [_textStorage nextWordFromIndex: proposedCharRange.location
-				forward: NO];
-	}
-      newRange.location = index;
-      index = [_textStorage nextWordFromIndex: NSMaxRange (proposedCharRange)
-                                      forward: YES];
-      if (index <= newRange.location)
-	{
-	  newRange.length = 0;
-	}
-      else
-	{
-	  if (index == length)
+	  index = NSMaxRange(proposedCharRange) - 1;
+	  if (index >= length)
 	    {
-	      /* We are at the end of text ! */
-	      newRange.length = index - newRange.location;
+	      index = length - 1;
 	    }
-	  else 
-	    {
-	      /* FIXME: The following will not work if there is more than a 
-		 single character between the two words ! */
-	      newRange.length = index - 1 - newRange.location;
-	    }
+	  aRange = [_textStorage doubleClickAtIndex: index];
+	  newRange = NSUnionRange(newRange, aRange);
 	}
       return newRange;
 
