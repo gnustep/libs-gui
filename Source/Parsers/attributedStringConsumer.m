@@ -355,7 +355,7 @@ void GSRTFcolorfg(void *ctxt, int color)
 
 void GSRTFsubscript(void *ctxt, int script)
 {
-  script = (int) -halfpoints2points(script);
+  script = (int) (-halfpoints2points(script) / 3.0);
 
   if (script != [[CTXT objectForKey: GSscript] intValue])
     {
@@ -367,7 +367,7 @@ void GSRTFsubscript(void *ctxt, int script)
 
 void GSRTFsuperscript(void *ctxt, int script)
 {
-  script = (int) halfpoints2points(script);
+  script = (int) (halfpoints2points(script) / 3.0);
 
   if (script != [[CTXT objectForKey: GSscript] intValue])
     {
