@@ -43,12 +43,14 @@
     "ColorPanel" = {
         backgroundColor = "BackgroundColor";
         backingType = 2;
+        becomesKeyOnlyIfNeeded = YES;
         contentFrame = "{x = 352; y = 519; width = 200; height = 270}";
         contentView = "ContentView";
         frameAutosaveName = nil;
         hidesOnDeactivate = YES;
         initialFirstResponder = nil;
         isAutodisplay = YES;
+        isFloatingPanel = YES;
         isReleasedWhenClosed = NO;
         isVisible = NO;
         isa = NSColorPanel;
