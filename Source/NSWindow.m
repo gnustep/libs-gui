@@ -732,7 +732,6 @@ static NSMapTable* windowmaps = NULL;
 - (void) setLevel: (int)newLevel
 {
   window_level = newLevel;
-  [self orderWindow: NSWindowAbove relativeTo: 0];
 }
 
 /*

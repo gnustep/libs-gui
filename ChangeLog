@@ -1,5 +1,9 @@
 1999-11-17  David Lazaro Saz  <khelekir@encomix.es>
 
+	* Source/NSWindow.m ([NSWindow -setLevel:]):
+	Removed orderWindow:RelativeTo: message that made impossible to setup
+	the window level before displaying the window.
+
 	* Source/NSApplication.m ([NSApplication -setMainMenu:]): The window
 	level for the main menu is set here to NSMainMenuWindowLevel.  The old
 	main menu window level is reverted to NSSubmenuWindowLevel.
