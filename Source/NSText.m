@@ -55,11 +55,11 @@
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
-#include <AppKit/NSClipView.h>
 
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSTextContainer.h>
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSArchiver.h>
@@ -69,22 +69,16 @@
 
 #define HUGE 1e99
 
-enum {
-  NSBackspaceKey      = 8,
-  NSCarriageReturnKey = 13,
-  NSDeleteKey         = 0x7f,
-  NSBacktabKey        = 25
-};
-
 static NSCharacterSet *selectionWordGranularitySet;
 static NSCharacterSet *selectionParagraphGranularitySet;
+static NSCharacterSet *invSelectionWordGranularitySet;
+static NSCharacterSet *invSelectionParagraphGranularitySet;
 
 @interface _GNULineLayoutInfo: NSObject
 {
 @public
   NSRange	lineRange;
   NSRect	lineRect;
-  float		drawingOffset;
   unsigned	type;
 }
 
@@ -97,17 +91,14 @@ typedef enum
 
 + (id) lineLayoutWithRange: (NSRange)aRange
 		      rect: (NSRect)aRect
-	     drawingOffset: (float)anOffset
 		      type: (unsigned)aType;
 
 - (NSRange) lineRange;
 - (NSRect) lineRect;
-- (float) drawingOffset;
 - (unsigned) type;
 
 - (void) setLineRange: (NSRange)aRange;
 - (void) setLineRect: (NSRect)aRect;
-- (void) setDrawingOffset: (float)anOffset;
 - (void) setType: (unsigned)aType;
 
 - (NSString*) description;
@@ -115,17 +106,15 @@ typedef enum
 
 @implementation _GNULineLayoutInfo
 
-+ (id) lineLayoutWithRange: (NSRange)aRange
++ (_GNULineLayoutInfo *) lineLayoutWithRange: (NSRange)aRange
 		      rect: (NSRect)aRect
-	     drawingOffset: (float)anOffset
 		      type: (unsigned)aType
 {
-  id ret = AUTORELEASE([_GNULineLayoutInfo new]);
+  _GNULineLayoutInfo *ret = AUTORELEASE([_GNULineLayoutInfo new]);
 
-  [ret setLineRange: aRange];
-  [ret setLineRect: aRect];
-  [ret setDrawingOffset: anOffset];
-  [ret setType: aType];
+  ret->lineRange = aRange;
+  ret->lineRect =aRect;
+  ret->type = aType;
   return ret;
 }
 
@@ -144,11 +133,6 @@ typedef enum
   return lineRect;
 }
 
-- (float) drawingOffset
-{
-  return drawingOffset;
-}
-
 - (void) setLineRange: (NSRange)aRange
 {
   lineRange = aRange;
@@ -156,15 +140,7 @@ typedef enum
 
 - (void) setLineRect: (NSRect)aRect
 {
-  //FIXME, line up textEditor with how text in text cell will be placed.
-  //  aRect.origin.y += 2;
-
   lineRect = aRect;
-}
-
-- (void) setDrawingOffset: (float)anOffset
-{
-  drawingOffset = anOffset;
 }
 
 - (void) setType: (unsigned)aType
@@ -302,7 +278,20 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 }
 
 - (id) initForText: (NSText*) aTextHolder;
+- (NSTextStorage*) textStorage;
 - (void) setTextStorage: (NSTextStorage*) aTextStorage;
+- (void)textStorage:(NSTextStorage *)aTextStorage
+	     edited:(unsigned int)mask
+	      range:(NSRange)range
+     changeInLength:(int)lengthChange
+   invalidatedRange:(NSRange)invalidatedCharRange;
+/*
+- (NSRect *) rectArrayForCharacterRange: (NSRange)charRange 
+	   withinSelectedCharacterRange: (NSRange)selCharRange
+			inTextContainer: (NSTextContainer *)aTextContainer 
+			      rectCount: (unsigned int *)rectCount;
+*/
+
 - (NSSize) _sizeOfRange: (NSRange) range;
 - (NSRect) _textBounds;
 
@@ -318,16 +307,9 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (NSRange) characterRangeForLineLayoutRange: (NSRange) aRange;
 
 - (void) setNeedsDisplayForLineRange: (NSRange) redrawLineRange;
-- (void)textStorage:(NSTextStorage *)aTextStorage
-	     edited:(unsigned int)mask
-	      range:(NSRange)range
-     changeInLength:(int)lengthChange
-   invalidatedRange:(NSRange)invalidatedCharRange;
-- (int) rebuildLineLayoutInformation;
 // override for special layout of text
-- (int) rebuildLineLayoutInformationStartingAtLine: (int)aLine
-					     delta: (int)insertionDelta
-					actualLine: (int)insertionLine;
+- (NSRange) rebuildForRange: (NSRange)aRange
+		  delta: (int)insertionDelta;
 // low level, override but never invoke (use setNeedsDisplayForLineRange:)
 - (void) drawLinesInLineRange: (NSRange)aRange;
 - (NSRange) drawRectCharacters: (NSRect)rect;
@@ -342,8 +324,22 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
+  unsigned length = [aTextStorage length];
+  NSRange aRange = NSMakeRange(0, length);
   ASSIGN(_textStorage, aTextStorage);
-  [self rebuildLineLayoutInformation];
+  // force complete re - layout
+  RELEASE(lineLayoutInformation);
+  lineLayoutInformation = nil;
+  [self textStorage: aTextStorage
+	edited: NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
+	range: aRange
+	changeInLength: length 
+	invalidatedRange: aRange];
+}
+
+- (NSTextStorage*) textStorage
+{
+  return _textStorage;
 }
 
 - (NSSize) _sizeOfRange: (NSRange)aRange
@@ -375,27 +371,16 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
     return NSZeroRect;
 }
 
-- (int) lineLayoutIndexForCharacterIndex: (unsigned)anIndex
+- (NSRect) frame
 {
-  NSEnumerator		*lineEnum;
-  _GNULineLayoutInfo	*currentInfo;
+  NSRect aRect = [_textHolder frame];
 
-  if ([lineLayoutInformation count]
-      && anIndex >= NSMaxRange ([[lineLayoutInformation lastObject] lineRange]))
-    return [lineLayoutInformation count] - 1;
+  if ([_textHolder isHorizontallyResizable])
+    aRect.size.width = HUGE;
+  if ([_textHolder isVerticallyResizable])
+    aRect.size.height = HUGE;
 
-  // should use a faster search here
-  for ((lineEnum = [lineLayoutInformation objectEnumerator]);
-       (currentInfo = [lineEnum nextObject]);)
-    {
-      NSRange lineRange = [currentInfo lineRange];
-      if (lineRange.location<= anIndex
-	  && (anIndex <= NSMaxRange (lineRange)
-	      - ([currentInfo type] == LineLayoutInfoType_Paragraph? 1: 0)))
-	return [lineLayoutInformation indexOfObject: currentInfo];
-    }
-
-  return 0;
+  return aRect;
 }
 
 - (NSRange) characterRangeForLineLayoutRange: (NSRange)aRange;
@@ -418,7 +403,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
     currentInfo = [lineLayoutInformation objectAtIndex: endLine];
   endIndex = NSMaxRange([currentInfo lineRange]);
 
-  return MakeRangeFromAbs(startIndex, endIndex);
+  return NSMakeRange(startIndex, endIndex - startIndex);
 }
 
 - (NSRange) characterRangeForBoundingRect: (NSRect)boundsRect
@@ -431,61 +416,172 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
     return NSMakeRange (0, 0);
 }
 
-- (unsigned) characterIndexForPoint: (NSPoint)point
+- (unsigned) lineLayoutIndexForPoint: (NSPoint)point
 {
   int i;
-  NSEnumerator *lineEnum;
-  _GNULineLayoutInfo *currentInfo;
+  int min = 0;
+  int max = MAX(0, [lineLayoutInformation count] - 1);
+  float y = point.y;
+  float fmin = NSMinY([[lineLayoutInformation objectAtIndex: 0] lineRect]);
+  float fmax = NSMaxY([[lineLayoutInformation lastObject] lineRect]);
+  NSRect rect;
 
-  if (point.y >= NSMaxY([[lineLayoutInformation lastObject] lineRect]))
-    return [_textStorage length];
+  if (y >= fmax)
+    return max;
 
-  point.x = MAX(0,point.x);
-  point.y = MAX(0,point.y);
+  if (y <= fmin)
+    return min;
 
-  for (i = 0, (lineEnum = [lineLayoutInformation objectEnumerator]);
-       (currentInfo = [lineEnum nextObject]);
-       i++)
-    // this loop holds some optimization potential (linear search)
+  // this should give a good starting index for binary search
+  i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
+  while (min < max)
     {
-      NSRect rect = [currentInfo lineRect];
+      _GNULineLayoutInfo *ci = [lineLayoutInformation objectAtIndex: i];
 
-      if (NSMaxY(rect)>= point.y
-	  && rect.origin.y<point.y
-	  && rect.origin.x< point.x
-	  && point.x >= NSMaxX(rect))
-	return NSMaxRange ([currentInfo lineRange]);
+      rect = [ci lineRect];
 
-      if (NSPointInRect (point, rect))
+      if (NSMaxY(rect) < y)
 	{
-	  int retPos = 0;
-	  NSRange range = [currentInfo lineRange];
-
-	  for (retPos = range.location; retPos<= NSMaxRange(range); retPos++)
-	    // this loop holds some optimization potential (linear search)
-	    {
-	      if ([self _sizeOfRange:
-			  NSMakeRange (range.location,
-				       retPos - range.location)].width
-		  >= point.x)
-		return MAX (0, retPos - 1);
-	    }
-	  return range.location;
+	  min = i + 1;
+	  i = (max + min) / 2;
+	  continue;
 	}
-    }
+      if (NSMinY(rect) > y)
+	{
+	  max = i - 1;
+	  i = (max + min) / 2;
+	  continue;
+	}
 
-  return 0;
+      // As the newline char generates its own lineLayoutinfo box
+      // there may be two in one line, we have to check for this
+      if ((NSMinX(rect) > point.x)  && (i > 0) &&
+	  ([ci type] == LineLayoutInfoType_Paragraph))
+	{
+	  _GNULineLayoutInfo *bi = [lineLayoutInformation objectAtIndex: i - 1];
+	  rect = [bi lineRect];
+	  if (NSPointInRect(point, rect))
+	    return i - 1;
+	}
+      if ((NSMaxX(rect) < point.x) && (i < [lineLayoutInformation count] - 1) &&
+	  ([ci type] == LineLayoutInfoType_Text))
+	{
+	  _GNULineLayoutInfo *bi = [lineLayoutInformation objectAtIndex: i + 1];
+	  rect = [bi lineRect];
+	  if (NSPointInRect(point, rect))
+	    return i + 1;
+	}
+ 
+      return i;
+    }
+  return min;
+}
+
+- (unsigned) characterIndexForPoint: (NSPoint)point
+{
+  _GNULineLayoutInfo *currentInfo = [lineLayoutInformation 
+				      objectAtIndex: 
+					[self lineLayoutIndexForPoint: point]];
+  NSRect rect = [currentInfo lineRect];
+  NSRange range = [currentInfo lineRange];
+  int i;
+  int min = range.location;
+  int max = NSMaxRange(range);
+  float x = point.x;
+  float fmin = rect.origin.x;
+  float fmax = NSMaxX(rect);
+  float w1, w2;
+
+  if (x <= fmin)
+    return MAX(0, min - 1);
+  if (x >= fmax)
+    return MAX(0, max - 1);
+  if (range.length == 1)
+    return min;
+
+  // this should give a good starting index for binary search
+  i = (int)((max - min) * (x - fmin) / (fmax - fmin)) + min;
+  while (min < max)
+    {
+      w1 = [self _sizeOfRange:
+		  NSMakeRange (range.location,
+			       i - range.location)].width + fmin;
+      if (i > range.location)
+	w2 = [self _sizeOfRange:
+		     NSMakeRange (range.location,
+				  i-1 - range.location)].width + fmin;
+      else
+	w2 = fmin;
+
+      if (w1 < x)
+	{
+	  min = i + 1;
+	  i = (max + min) / 2;
+	  continue;
+	}
+      if (w2 > x)
+	{
+	  max = i - 1;
+	  i = (max + min) / 2;
+	  continue;
+	}
+      return MAX(0, i-1);
+    }
+  return MAX(0, min - 1);
+}
+
+- (int) lineLayoutIndexForCharacterIndex: (unsigned)anIndex
+{
+  int i;
+  int min = 0;
+  int max = MAX(0, [lineLayoutInformation count] - 1);
+  unsigned y = anIndex;
+  unsigned fmin = [[lineLayoutInformation objectAtIndex: 0] lineRange].location;
+  unsigned fmax = NSMaxRange([[lineLayoutInformation lastObject] lineRange]);
+  NSRange range;
+
+  if (y >= fmax)
+    return max;
+
+  if (y <= fmin)
+    return min;
+
+  // this should give a good starting index for binary search
+  i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
+  while (min < max)
+    {
+      _GNULineLayoutInfo *ci = [lineLayoutInformation objectAtIndex: i];
+
+      range = [ci lineRange];
+
+      if (NSMaxRange(range) <= y)
+	{
+	  min = i + 1;
+	  i = (max + min) / 2;
+	  continue;
+	}
+      if (range.location > y)
+	{
+	  max = i - 1;
+	  i = (max + min) / 2;
+	  continue;
+	}
+      // Do we need a special treatment for paragraph infos?
+      return i;
+    }
+  return min;
 }
 
 // rect to the end of line
 - (NSRect) rectForCharacterIndex: (unsigned)index
 {
-  int i;
-  float maxWidth = [_textHolder frame].size.width;
-  NSEnumerator *lineEnum;
+  float maxWidth = [self frame].size.width;
   _GNULineLayoutInfo *currentInfo;
+  unsigned start;
+  NSRect rect;
+  float x;
 
-  if (![lineLayoutInformation count])
+  if (![_textStorage length])
     {
       return NSMakeRect (0, 0, maxWidth,
 			 [self _sizeOfRange: NSMakeRange(0,1)].height);
@@ -504,70 +600,22 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 			 rect.size.height);
     }
 
-  for (i = 0, (lineEnum = [lineLayoutInformation objectEnumerator]);
-       (currentInfo = [lineEnum nextObject]); i++)
-    {
-      NSRange	range = [currentInfo lineRange];
-      if (NSLocationInRange (index, range))
-	{
-	  NSRect rect = [currentInfo lineRect];
-	  NSSize stringSize
-	    = [self _sizeOfRange: MakeRangeFromAbs (range.location, index)];
-	  float x = rect.origin.x + stringSize.width;
 
-	  return NSMakeRect (x, rect.origin.y, NSMaxX (rect) - x,
-			     rect.size.height);
-	}
-    }
-
-  return NSZeroRect;
-}
-
-- (unsigned) lineLayoutIndexForPoint: (NSPoint)point
-{
-  int i;
-  NSEnumerator *lineEnum;
-  _GNULineLayoutInfo *currentInfo;
-
-  if  (point.y >= NSMaxY ([[lineLayoutInformation lastObject] lineRect]))
-    return [lineLayoutInformation count] - 1;
-
-  point.x = MAX (0, point.x);
-  point.y = MAX (0, point.y);
-
-  for (i = 0, (lineEnum = [lineLayoutInformation objectEnumerator]);
-       (currentInfo = [lineEnum nextObject]); i++)
-    {
-      NSRect rect = [currentInfo lineRect];
-      if (NSMaxY(rect) > point.y
-	  && rect.origin.y <= point.y
-	  && rect.origin.x < point.x
-	  && point.x >= NSMaxX (rect))
-	return [lineLayoutInformation indexOfObject: currentInfo];
-      if (NSPointInRect (point, rect))
-	{
-	  // this loop holds some optimization potential (linear search)
-	  int retPos = 0;
-	  NSRange range = [currentInfo lineRange];
-
-	  // this loop holds some optimization potential (linear search)
-	  for (retPos = range.location; retPos<= NSMaxRange (range); retPos++)
-	    {
-	      if ([self _sizeOfRange:
-			  NSMakeRange (range.location,
-				       retPos - range.location)].width
-		  >= point.x)
-		return [lineLayoutInformation indexOfObject: currentInfo];
-	    }
-	  return [lineLayoutInformation indexOfObject: currentInfo];
-	}
-    }
-  return 0;
+ currentInfo = [lineLayoutInformation 
+		   objectAtIndex: [self lineLayoutIndexForCharacterIndex: 
+					    index]];
+ start = [currentInfo lineRange].location;
+ rect = [currentInfo lineRect];
+ x = rect.origin.x + [self _sizeOfRange: MakeRangeFromAbs(start, 
+							  index)].width;
+     
+ return NSMakeRect (x, rect.origin.y, NSMaxX (rect) - x,
+		    rect.size.height);
 }
 
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
 {
-  NSRect myFrame = [_textHolder frame];
+  NSRect myFrame = [self frame];
   float maxWidth = myFrame.size.width;
 
   if ([lineLayoutInformation count]
@@ -622,14 +670,11 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
      changeInLength:(int)delta
    invalidatedRange:(NSRange)invalidatedCharRange;
 {
-  int start = [self lineLayoutIndexForCharacterIndex: aRange.location];
-  int count;
-  int origLineIndex = MAX(0, start - 1);
+  NSRange lineRange;
 
-  count = [self rebuildLineLayoutInformationStartingAtLine: origLineIndex
-		delta: delta
-		actualLine: start];
-  [self setNeedsDisplayForLineRange: NSMakeRange(origLineIndex, MAX(1, count))];
+  lineRange = [self rebuildForRange: aRange
+		delta: delta];
+  [self setNeedsDisplayForLineRange: lineRange];
 }
 
 // internal method <!> range is currently not passed as absolute
@@ -644,33 +689,30 @@ verticalDisplacement: (float*)verticalDisplacement
 {
   NSSize advanceSize = [self _sizeOfRange:
 			       NSMakeRange (startingLineCharIndex, 1)];
-  int count = aRange.length,charIndex;
-  _GNULineLayoutInfo *thisInfo,*ghostInfo = nil;
+  int count = aRange.length;
+  int charIndex;
+  _GNULineLayoutInfo *ghostInfo = nil;
 
   (*didShift) = NO;
 
   for (charIndex = aRange.location; --count >= 0; charIndex++)
     {
-      NSRect currentLineRect;
-
-      currentLineRect = NSMakeRect (aPointP ->x, aPointP ->y,
-				    width - aPointP ->x, advanceSize.height);
       [anArray addObject:
-		 thisInfo = [_GNULineLayoutInfo
-			      lineLayoutWithRange:
-				NSMakeRange (startingLineCharIndex, 1)
-			      rect: currentLineRect
-			      drawingOffset: 0
-			      type: LineLayoutInfoType_Paragraph]];
+		 [_GNULineLayoutInfo
+		   lineLayoutWithRange:
+		     NSMakeRange (startingLineCharIndex, 1)
+		   rect: NSMakeRect (aPointP->x, aPointP->y,
+				     width - aPointP->x, advanceSize.height)
+		   type: LineLayoutInfoType_Paragraph]];
 
       startingLineCharIndex++;
-      aPointP ->x = 0;
-      aPointP ->y += advanceSize.height;
+      aPointP->x = 0;
+      aPointP->y += advanceSize.height;
 
       if (prevArrayEnum && !(ghostInfo = [prevArrayEnum nextObject]))
 	prevArrayEnum = nil;
 
-      if (ghostInfo && ([thisInfo type] != [ghostInfo type]))
+      if (ghostInfo && ([ghostInfo type] != LineLayoutInfoType_Paragraph))
 	{
 	  _GNULineLayoutInfo *prevInfo = [prevArrayEnum previousObject];
 	  prevArrayEnum = nil;
@@ -681,13 +723,11 @@ verticalDisplacement: (float*)verticalDisplacement
 }
 
 // private helper function
-static unsigned
-_relocLayoutArray (NSMutableArray *lineLayoutInformation,
-		   NSArray *ghostArray,
-		   int aLine,
-		   int relocOffset,
-		   int rebuildLineDrift,
-		   float yReloc)
+- (unsigned) _relocLayoutArray: (NSArray*)ghostArray
+			atLine: (int) aLine
+			offset: (int) relocOffset
+		     lineTrift: (int) rebuildLineDrift
+		    floatTrift: (float) yReloc
 {
   // lines actually updated (optimized drawing)
   unsigned ret = [lineLayoutInformation count] - aLine;
@@ -741,35 +781,34 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 // returns count of lines actually updated
 // <!> detachNewThreadSelector: selector toTarget: target withObject: argument;
 
-- (int) rebuildLineLayoutInformationStartingAtLine: (int)aLine
-					     delta: (int)insertionDelta
-					actualLine: (int)insertionLineIndex
+- (NSRange) rebuildForRange: (NSRange)aRange
+		  delta: (int)insertionDelta
 {
-  NSPoint		drawingPoint = NSZeroPoint;
-  NSScanner		*pScanner;
-  float			width = [_textHolder frame].size.width;
-  unsigned		startingIndex = 0;
-  unsigned              currentLineIndex;
-  NSArray		*ghostArray;	// for optimization detection
+  int aLine = 0;
+  int insertionLineIndex = 0;
+  unsigned oldMax = NSMaxRange(aRange);
+  unsigned newMax = oldMax + insertionDelta;
+  NSPoint drawingPoint = NSZeroPoint;
+  NSScanner *pScanner;
+  float	width = [self frame].size.width;
+  unsigned startingIndex = 0;
+  unsigned currentLineIndex;
+  // for optimization detection
+  NSArray *ghostArray;
   _GNUSeekableArrayEnumerator *prevArrayEnum;
-  NSCharacterSet *invSelectionWordGranularitySet
-    = [selectionWordGranularitySet invertedSet];
-  NSCharacterSet *invSelectionParagraphGranularitySet
-    = [selectionParagraphGranularitySet invertedSet];
   NSString *parsedString;
-  BOOL isHorizontallyResizable = [_textHolder isHorizontallyResizable];
   int lineDriftOffset = 0, rebuildLineDrift = 0;
-  BOOL frameshiftCorrection = NO, nlDidShift = NO, enforceOpti = NO;
+  BOOL frameshiftCorrection = NO, nlDidShift = NO;
   float	yDisplacement = 0;
 
   // sanity check that it is possible to do the layout
   if (width == 0.0)
     {
       NSLog(@"NSText formatting with empty frame");
-      return 0;
+      return NSMakeRange(0,0);
     }
 
-  if (!lineLayoutInformation)
+  if (lineLayoutInformation == nil)
     {
       lineLayoutInformation = [[NSMutableArray alloc] init];
       aLine = 0;
@@ -778,6 +817,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
   else
     {
+      insertionLineIndex = [self lineLayoutIndexForCharacterIndex: 
+				     aRange.location];
+      aLine = MAX(0, insertionLineIndex - 1);
+
       // remember old array for optimization purposes
       ghostArray = [lineLayoutInformation
 		     subarrayWithRange:
@@ -788,16 +831,18 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       if (aLine)
 	{
-	  _GNULineLayoutInfo	*lastValidLineInfo;
+	  _GNULineLayoutInfo *lastValidLineInfo = [lineLayoutInformation 
+						      objectAtIndex: aLine - 1];
+	  NSRect aRect = [lastValidLineInfo lineRect];
 
-	  lastValidLineInfo = [lineLayoutInformation objectAtIndex: aLine - 1];
-	  drawingPoint = [lastValidLineInfo lineRect].origin;
-	  drawingPoint.y += [lastValidLineInfo lineRect].size.height;
 	  startingIndex = NSMaxRange([lastValidLineInfo lineRange]);
+	  drawingPoint = aRect.origin;
+	  drawingPoint.y += aRect.size.height;
 	  if ([lastValidLineInfo type] == LineLayoutInfoType_Paragraph)
 	    {
 	      drawingPoint.x = 0;
 	    }
+
 	  // keep paragraph - terminating space on same line as paragraph
 	  if ((((int)[lineLayoutInformation count]) - 1) >= aLine)
 	    {
@@ -806,7 +851,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	      NSRect anchorRect = [anchorLine lineRect];
 
 	      if (anchorRect.origin.x > drawingPoint.x
-		  && [lastValidLineInfo lineRect].origin.y == anchorRect.origin.y)
+		  && aRect.origin.y == anchorRect.origin.y)
 		{
 		  drawingPoint = anchorRect.origin;
 		}
@@ -817,6 +862,18 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	removeObjectsInRange:
 	  NSMakeRange (aLine, [lineLayoutInformation count] - aLine)];
     }
+
+  if (![_textStorage length])
+    {
+	// If there is no text add one empty box
+	[lineLayoutInformation
+	    addObject: [_GNULineLayoutInfo
+			   lineLayoutWithRange: NSMakeRange (0, 0)
+			   rect: NSMakeRect (0, 0, 0, 0)
+			   type: LineLayoutInfoType_Text]];
+	return NSMakeRange(0,0);
+    }
+      
 
   currentLineIndex = aLine;
 
@@ -836,11 +893,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       leadingNlRange
 	= scanRange(pScanner, selectionParagraphGranularitySet);
-      paragraphRange
-	= scanRange(pScanner, invSelectionParagraphGranularitySet);
-      trailingNlRange
-	= scanRange(pScanner, selectionParagraphGranularitySet);
-
       if (leadingNlRange.length > 0)
 	{
 	  [self addNewlines: leadingNlRange
@@ -872,6 +924,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	}
 
       // each line
+      paragraphRange
+	= scanRange(pScanner, invSelectionParagraphGranularitySet);
       paragraph = [parsedString substringWithRange: paragraphRange];
       lScanner = [NSScanner scannerWithString: paragraph];
       [lScanner setCharactersToBeSkipped: nil];
@@ -922,7 +976,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	      // handle case where single word is broader than width
 	      // (buckle word) <!> unfinished and untested
 	      // for richText (absolute position see above)
-	      if (!isHorizontallyResizable && advanceSize.width >= width)
+	      if (advanceSize.width >= width)
 		{
 		  if (isBuckled)
 		    {
@@ -958,8 +1012,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	      // end of line -> word wrap
 
 	      // >= : wichtig för abknicken (isBuckled)
-	      if (!isHorizontallyResizable
-		  && (currentLineRect.size.width >= width || isBuckled))				{
+	      if (currentLineRect.size.width >= width || isBuckled)
+	        {
 		_GNULineLayoutInfo *ghostInfo = nil, *thisInfo;
 
 		// undo layout of last word
@@ -977,7 +1031,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 				    NSMakeRange (startingLineCharIndex,
 						 scannerPosition - localLineStartIndex)
 				  rect: currentLineRect
-				  drawingOffset: 0
 				  type: LineLayoutInfoType_Text])];
 
 		currentLineIndex++;
@@ -1035,15 +1088,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		    if ((currentLineIndex - 1 > insertionLineIndex
 			 && !inBuckling && !isBuckled)
 			&& (!(lineDriftOffset - insertionDelta)
-			    || (nlDidShift && !lineDriftOffset)
-			    || enforceOpti))
+			    || (nlDidShift && !lineDriftOffset)))
 		      {
-			unsigned erg = _relocLayoutArray (lineLayoutInformation,
-							  ghostArray,
-							  aLine,
-							  insertionDelta,
-							  rebuildLineDrift,
-							  yDisplacement);
+			unsigned erg =  [self _relocLayoutArray: ghostArray
+					      atLine: aLine
+					      offset: insertionDelta
+					      lineTrift: rebuildLineDrift
+					      floatTrift: yDisplacement];
 
 			// y displacement: redisplay all remaining lines
 			if (frameshiftCorrection)
@@ -1057,7 +1108,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 #if 0
 			NSLog(@"opti for: %d",erg);
 #endif
-			return erg;
+			return NSMakeRange(aLine, MAX(1, erg));
 		      }
 		  }
 		// end: optimization stuff--------------------------
@@ -1077,7 +1128,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 				      NSMakeRange (startingLineCharIndex,
 						   scannerPosition - localLineStartIndex)
 				    rect: currentLineRect
-				    drawingOffset: 0
 				    type: LineLayoutInfoType_Text])];
 		  currentLineIndex++;
 		  startingLineCharIndex = NSMaxRange ([thisInfo lineRange]);
@@ -1136,6 +1186,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	    }
 	}
       // add the trailing newlines of current paragraph if any
+      trailingNlRange
+	= scanRange(pScanner, selectionParagraphGranularitySet);
       if (trailingNlRange.length)
 	{
 	  [self addNewlines: trailingNlRange
@@ -1165,20 +1217,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
 
   // lines actually updated (optimized drawing)
-  return [lineLayoutInformation count] - aLine;
+  return NSMakeRange(aLine, MAX(1, [lineLayoutInformation count] - aLine));
 }
 // end: central line formatting method------------------------------------
-
-- (int) rebuildLineLayoutInformation
-{
-  // force complete re - layout
-  RELEASE(lineLayoutInformation);
-  lineLayoutInformation = nil;
-  return [self rebuildLineLayoutInformationStartingAtLine: 0
-	       delta: 0
-	       actualLine: 0];
-}
-
 
 // relies on lineLayoutInformation
 - (void) drawLinesInLineRange: (NSRange)aRange;
@@ -1331,6 +1372,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [_textStorage beginEditing];
   [_textStorage replaceCharactersInRange: aRange withString: aString];
   [_textStorage endEditing];
+  [self sizeToFit];
 }
 
 - (void) setString: (NSString*)aString
@@ -1600,6 +1642,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSData *data = nil;
 
   if (font != nil)
+    // FIXME: Should use diverent format here
     data = [NSArchiver archivedDataWithRootObject: font];
 
   if (data != nil)
@@ -2330,7 +2373,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   unsigned cursorIndex;
   NSPoint cursorPoint;
-  NSRange oldRange = _selected_range;
 
   if (_tf.is_field_editor)
     {
@@ -2355,16 +2397,12 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self setSelectedRange: [self selectionRangeForProposedRange:
 				  NSMakeRange (cursorIndex, 0)
 				granularity: NSSelectByCharacter]];
-  // FIXME: We redisplay the line the cursor was on.
-  [self setNeedsDisplayInRect: [self rectForCharacterIndex:
-				       oldRange.location]];
 }
 
 - (void) moveDown: (id) sender
 {
   unsigned cursorIndex;
   NSRect cursorRect;
-  NSRange oldRange = _selected_range;
 
   if (_tf.is_field_editor)
     {
@@ -2389,9 +2427,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self setSelectedRange: [self selectionRangeForProposedRange:
 				  NSMakeRange (cursorIndex, 0)
 				granularity: NSSelectByCharacter]];
-  // FIXME: We redisplay the line the cursor was on
-  [self setNeedsDisplayInRect: [self rectForCharacterIndex:
-				       oldRange.location]];
 }
 
 - (void) moveLeft: (id) sender
@@ -2406,9 +2441,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		granularity: NSSelectByCharacter]];
   _currentCursor.x = [self rectForCharacterIndex:
 			   _selected_range.location].origin.x;
-  // FIXME: We redisplay the line the cursor is on.
-  [self setNeedsDisplayInRect: [self rectForCharacterIndex:
-				       _selected_range.location + 1]];
 }
 
 - (void) moveRight: (id) sender
@@ -2424,9 +2456,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		granularity: NSSelectByCharacter]];
   _currentCursor.x = [self rectForCharacterIndex:
 			   _selected_range.location].origin.x;
-  // FIXME: We redisplay the line the cursor is on.
-  [self setNeedsDisplayInRect: [self rectForCharacterIndex:
-				       _selected_range.location - 1]];
 }
 
 - (BOOL) acceptsFirstResponder
@@ -2447,10 +2476,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   // Add any clean-up stuff here
 
   if ([self shouldDrawInsertionPoint])
-    {
+  {
+      [self lockFocus];
       [self drawInsertionPointAtIndex: _selected_range.location
 	    color: nil turnedOn: NO];
-
+      [self unlockFocus];
       //<!> stop timed entry
     }
 
@@ -2640,6 +2670,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     [_textStorage replaceCharactersInRange: aRange
 		  withString: [attrString string]];
   [_textStorage endEditing];
+  // ScrollView interaction
+  [self sizeToFit];
 }
 
 - (unsigned) textLength
@@ -2676,9 +2708,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [self replaceCharactersInRange: _selected_range
 	    withString: insertString];
     }
-
-  // ScrollView interaction
-  [self sizeToFit];
 
   // move cursor <!> [self selectionRangeForProposedRange: ]
   [self setSelectedRange:
@@ -2734,7 +2763,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  if (NSEqualRanges (longestRange, _selected_range))
 	    isMultiple = NO;
 	  else
+	  {
 	    isMultiple = YES;
+	  }
 	}
       else
 	currentFont = _default_font;
@@ -2753,16 +2784,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 			    color: (NSColor*)color
 			 turnedOn: (BOOL)flag
 {
-  BOOL	didLock  = NO;
-
   if (!_window)
     return;
-
-  if ([[self class] focusView] != self)
-    {
-      [self lockFocus];
-      didLock  = YES;
-    }
 
   if (flag)
     {
@@ -2773,12 +2796,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     {
       [[self backgroundColor] set];
       NSRectFill(rect);
+      // FIXME: We should redisplay the character the cursor was on.
+      //[self setNeedsDisplayInRect: rect];
     }
 
-  if (didLock)
-    {
-      [self unlockFocus];
-    }
+  [_window flushWindow];
 }
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
@@ -2855,11 +2877,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 + (void) setSelectionWordGranularitySet: (NSCharacterSet*) aSet
 {
   ASSIGN(selectionWordGranularitySet, aSet);
+  ASSIGN(invSelectionWordGranularitySet, [aSet invertedSet]);
 }
 
 + (void) setSelectionParagraphGranularitySet: (NSCharacterSet*) aSet
 {
   ASSIGN(selectionParagraphGranularitySet, aSet);
+  ASSIGN(invSelectionParagraphGranularitySet, [aSet invertedSet]);
 }
 
 - (NSDictionary*) defaultTypingAttributes
@@ -2973,6 +2997,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       if (data != nil)
 	{
+	  // FIXME: Should use diverent format here
 	  NSFont *font = [NSUnarchiver unarchiveObjectWithData: data];
 
 	  if (font != nil)
