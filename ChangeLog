@@ -1,3 +1,11 @@
+2004-08-10 00:06  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m: Formatting cleanups.
+	(-_reuseSoftInvalidatedLayout): New method. Contains soft invalidated
+	layout info handling, moved here from ...
+	(-layoutLineNewParagraph:): ...here. Cache the imp for
+	-advancementForGlyph: and send it directly to the fontInfo.
+
 2004-08-09 21:45  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: Add

@@ -151,7 +151,7 @@ the last time or not, we wouldn't need to clear the cache every time */
     {
       int delta = glyph - cache_base;
       cache_length -= delta;
-      memmove(cache,&cache[delta],sizeof(glyph_cache_t) * cache_length);
+      memmove(cache, &cache[delta], sizeof(glyph_cache_t) * cache_length);
       cache_base = glyph;
       return;
     }
@@ -172,7 +172,7 @@ the last time or not, we wouldn't need to clear the cache every time */
 				    effectiveRange: &attributeRange];
       [self _cacheAttributes];
 
-      paragraphRange = NSMakeRange(i,[curTextStorage length] - i);
+      paragraphRange = NSMakeRange(i, [curTextStorage length] - i);
       curParagraphStyle = [curTextStorage attribute: NSParagraphStyleAttributeName
 					atIndex: i
 					longestEffectiveRange: &paragraphRange
@@ -193,7 +193,7 @@ the last time or not, we wouldn't need to clear the cache every time */
   if (cache_size < new_length)
     {
       cache_size = new_length;
-      cache = realloc(cache,sizeof(glyph_cache_t) * cache_size);
+      cache = realloc(cache, sizeof(glyph_cache_t) * cache_size);
     }
 
   for (g = &cache[cache_length]; cache_length < new_length; cache_length++, g++)
@@ -206,7 +206,6 @@ the last time or not, we wouldn't need to clear the cache every time */
 	  break;
 	}
       g->char_index = [curLayoutManager characterIndexForGlyphAtIndex: cache_base + cache_length];
-//		printf("cache glyph %i, char %i\n",cache_base + cache_length,g->char_index);
       if (g->char_index >= paragraphRange.location + paragraphRange.length)
 	{
 	  at_end = YES;
@@ -268,7 +267,7 @@ including gi will have been cached.
 	      g->pos.x += g[-1].size.width;
 	    }
 	  else
-	    g->pos = NSMakePoint(0,0);
+	    g->pos = NSMakePoint(0, 0);
 	  g->size.width = 0;
 	  return gi + 1 + cache_base;
 	}
@@ -289,17 +288,17 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 
 -(void) fullJustifyLine: (line_frag_t *)lf : (int)num_line_frags
 {
-  unsigned int i,start;
-  float extra_space,delta;
+  unsigned int i, start;
+  float extra_space, delta;
   unsigned int num_spaces;
   NSString *str = [curTextStorage string];
   glyph_cache_t *g;
   unichar ch;
 
-  for (start = 0;num_line_frags;num_line_frags--,lf++)
+  for (start = 0; num_line_frags; num_line_frags--, lf++)
     {
       num_spaces = 0;
-      for (i = start,g = cache + i;i < lf->last_glyph;i++,g++)
+      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
 	{
 	  if (g->dont_show)
 	    continue;
@@ -313,7 +312,7 @@ typedef struct GSHorizontalTypesetter_line_frag_s
       extra_space = lf->rect.size.width - lf->last_used;
       extra_space /= num_spaces;
       delta = 0;
-      for (i = start,g = cache + i;i < lf->last_glyph;i++,g++)
+      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
 	{
 	  g->pos.x += delta;
 	  if (!g->dont_show && [str characterAtIndex: g->char_index] == 0x20)
@@ -335,10 +334,10 @@ typedef struct GSHorizontalTypesetter_line_frag_s
   float delta;
   glyph_cache_t *g;
 
-  for (i = 0,g = cache;num_line_frags;num_line_frags--,lf++)
+  for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = lf->rect.size.width - lf->last_used;
-      for (;i < lf->last_glyph;i++,g++)
+      for (; i < lf->last_glyph; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
@@ -350,15 +349,79 @@ typedef struct GSHorizontalTypesetter_line_frag_s
   float delta;
   glyph_cache_t *g;
 
-  for (i = 0,g = cache;num_line_frags;num_line_frags--,lf++)
+  for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = (lf->rect.size.width - lf->last_used) / 2.0;
-      for (;i < lf->last_glyph;i++,g++)
+      for (; i < lf->last_glyph; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
 }
 
+
+-(BOOL) _reuseSoftInvalidatedLayout
+{
+  /*
+  We only handle the simple-horizontal-text-container case currently.
+  */
+  NSRect r0, r;
+  NSSize shift;
+  int i;
+  unsigned int g, g2, first;
+  float container_height;
+  /*
+  Ask the layout manager for soft-invalidated layout for the current
+  glyph. If there is a set of line frags starting at the current glyph,
+  and we can get rects with the same size and horizontal position, we
+  tell the layout manager to use the soft-invalidated information.
+  */
+  r0 = [curLayoutManager _softInvalidateLineFragRect: 0
+					  firstGlyph: &first
+					   nextGlyph: &g
+				     inTextContainer: curTextContainer];
+
+  container_height = [curTextContainer containerSize].height;
+  if (!(curPoint.y + r0.size.height <= container_height))
+    return NO;
+
+  /*
+  We can shift the rects and still have things fit. Find all the line
+  frags in the line and shift them.
+  */
+  shift.width = 0;
+  shift.height = curPoint.y - r0.origin.y;
+  i = 1;
+  curPoint.y = NSMaxY(r0) + shift.height;
+  for (; 1; i++)
+    {
+      r = [curLayoutManager _softInvalidateLineFragRect: i
+					     firstGlyph: &first
+					      nextGlyph: &g2
+					inTextContainer: curTextContainer];
+
+      /*
+      If there's a gap in soft invalidated information, we need to
+      fill it in before we can continue.
+      */
+      if (first != g)
+	{
+	  break;
+	}
+
+      if (NSIsEmptyRect(r) || NSMaxY(r) + shift.height > container_height)
+	break;
+
+      g = g2;
+      curPoint.y = NSMaxY(r) + shift.height;
+    }
+
+  [curLayoutManager _softInvalidateUseLineFrags: i
+				      withShift: shift
+				inTextContainer: curTextContainer];
+
+  curGlyph = g;
+  return YES;
+}
 
 /*
 Return values 0, 1, 2 are mostly the same as from
@@ -409,66 +472,8 @@ Return values 0, 1, 2 are mostly the same as from
   if ([curTextContainer isSimpleRectangularTextContainer] &&
       [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
     {
-      /*
-      We only handle the simple-horizontal-text-container case currently.
-      */
-      NSRect r0, r;
-      NSSize shift;
-      int i;
-      unsigned int g, g2, first;
-      float container_height;
-      /*
-      Ask the layout manager for soft-invalidated layout for the current
-      glyph. If there is a set of line frags starting at the current glyph,
-      and we can get rects with the same size and horizontal position, we
-      tell the layout manager to use the soft-invalidated information.
-      */
-      r0 = [curLayoutManager _softInvalidateLineFragRect: 0
-					      firstGlyph: &first
-					       nextGlyph: &g
-					 inTextContainer: curTextContainer];
-
-      container_height = [curTextContainer containerSize].height;
-      if (curPoint.y + r0.size.height <= container_height)
-	{
-	  /*
-	  We can shift the rects and still have things fit. Find all the line
-	  frags in the line and shift them.
-	  */
-	  shift.width = 0;
-	  shift.height = curPoint.y - r0.origin.y;
-	  i = 1;
-	  curPoint.y = NSMaxY(r0) + shift.height;
-	  for (; 1; i++)
-	    {
-	      r = [curLayoutManager _softInvalidateLineFragRect: i
-						     firstGlyph: &first
-						      nextGlyph: &g2
-						inTextContainer: curTextContainer];
-
-	      /*
-	      If there's a gap in soft invalidated information, we need to
-	      fill it in before we can continue.
-	      */
-	      if (first != g)
-		{
-		  break;
-		}
-
-	      if (NSIsEmptyRect(r) || NSMaxY(r) + shift.height > container_height)
-		break;
-
-	      g = g2;
-	      curPoint.y = NSMaxY(r) + shift.height;
-	    }
-
-	  [curLayoutManager _softInvalidateUseLineFrags: i
-					      withShift: shift
-					inTextContainer: curTextContainer];
-
-	  curGlyph = g;
-	  return 4;
-	}
+      if ([self _reuseSoftInvalidatedLayout])
+	return 4;
     }
 
 
@@ -486,7 +491,9 @@ Return values 0, 1, 2 are mostly the same as from
       float hindent, tindent;
 
       if (!newParagraph || !curGlyph)
-	return 2;
+	{
+	  return 2;
+	}
 
       /*
       We aren't actually interested in the glyph data, but we want the
@@ -572,10 +579,10 @@ Return values 0, 1, 2 are mostly the same as from
       } \
   } while (0)
 
-restart:
-//	printf("start: at (%g %g)  line_height = %g, baseline = %g\n",curPoint.x,curPoint.y,line_height,baseline);
+
+restart: ;
   {
-    float hindent,tindent = [curParagraphStyle tailIndent];
+    float hindent, tindent = [curParagraphStyle tailIndent];
 
     if (newParagraph)
       hindent = [curParagraphStyle firstLineHeadIndent];
@@ -606,7 +613,7 @@ restart:
 			     sweepDirection: NSLineSweepRight
 			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
 			     remainingRect: &remain];
-      if (NSEqualRects(rect,NSZeroRect))
+      if (NSEqualRects(rect, NSZeroRect))
 	break;
 
       line_frags_num++;
@@ -640,6 +647,18 @@ restart:
     NSPoint p;
     
     NSFont *f = cache->font;
+
+    /*
+    TODO: This is kindof ugly, but -advancementForGlyph: is responsible for
+    ~10% of execution time when handling huge amounts of text (according to
+    profiling, 2004-08-09). Would be cleaner to get rid of the font/fontInfo
+    indirection.
+    */
+    id fontInfo =  [f fontInfo];
+    NSSize (*advancementForGlyph)(id, SEL, NSGlyph)
+      = (NSSize(*)(id, SEL, NSGlyph))[fontInfo methodForSelector:
+	  @selector(advancementForGlyph:)];
+
     float f_ascender = [f ascender], f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
@@ -652,7 +671,7 @@ restart:
     BOOL prev_had_non_nominal_width;
 
 
-    last_p = p = NSMakePoint(0,0);
+    last_p = p = NSMakePoint(0, 0);
 
     g = cache;
     first_glyph = 0;
@@ -664,28 +683,28 @@ restart:
     from this loop */
     while (1)
       {
-//        printf("at %3i+%3i\n",cache_base,i);
+//        printf("at %3i+%3i\n", cache_base, i);
 	/* Update the cache. */
 	if (i >= cache_length)
 	  {
 	    if (at_end)
 	      {
-	        newParagraph = NO;
-	        break;
+		newParagraph = NO;
+		break;
 	      }
 	    [self _cacheGlyphs: cache_length + CACHE_STEP];
 	    if (i >= cache_length)
 	      {
-	        newParagraph = NO;
-	        break;
+		newParagraph = NO;
+		break;
 	      }
 	    g = cache + i;
 	  }
 
 /*printf("at %3i+%2i, glyph %08x, char %04x (%i)\n",
-	cache_base,i,
+	cache_base, i,
 	g->g,
-	[[curTextStorage string] characterAtIndex: g->char_index],g->char_index);*/
+	[[curTextStorage string] characterAtIndex: g->char_index], g->char_index);*/
 
 	/*
 	At this point:
@@ -717,6 +736,9 @@ restart:
 	  {
 	    float new_height;
 	    f = g->font;
+	    fontInfo = [f fontInfo];
+	    advancementForGlyph = (NSSize(*)(id, SEL, NSGlyph))
+	      [fontInfo methodForSelector: @selector(advancementForGlyph:)];
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
@@ -751,8 +773,8 @@ restart:
 
 	    if (ch == 0xa)
 	      {
-	        newParagraph = YES;
-	        break;
+		newParagraph = YES;
+		break;
 	      }
 
 	    if (ch == 0x9)
@@ -861,7 +883,7 @@ restart:
 	    if (!cell)
 	      {
 		g->pos = p;
-		g->size = NSMakeSize(0,0);
+		g->size = NSMakeSize(0, 0);
 		g->dont_show = YES;
 		g->nominal = YES;
 		i++;
@@ -922,7 +944,10 @@ restart:
 	      }*/
 
 	    last_p = g->pos = p;
-	    g->size = [f advancementForGlyph: g->g]; /* only width is used */
+	    /* Only the width is used. */
+	    g->size = advancementForGlyph(fontInfo,
+					  @selector(advancementForGlyph:),
+					  g->g);
 	    p.x += g->size.width;
 	  }
 
@@ -951,7 +976,7 @@ restart:
 	    if (lf->last_glyph <= first_glyph)
 	      lf->last_glyph = i + 1;
 
-	    last_p = p = NSMakePoint(0,0);
+	    last_p = p = NSMakePoint(0, 0);
 	    i = lf->last_glyph;
 	    g = cache + i;
 	    /* The -1 is always valid since there's at least one glyph in the
@@ -1033,7 +1058,7 @@ restart:
 	  used_rect.size.height = lf->rect.size.height;
 
 	  [curLayoutManager setLineFragmentRect: lf->rect
-			    forGlyphRange: NSMakeRange(cache_base + i,lf->last_glyph - i)
+			    forGlyphRange: NSMakeRange(cache_base + i, lf->last_glyph - i)
 			    usedRect: used_rect];
 	  p = g->pos;
 	  /* TODO: probably don't need to call unless the flags are YES */
@@ -1070,7 +1095,7 @@ restart:
 	  if (i != j)
 	    {
 	      [curLayoutManager setLocation: p
-				forStartOfGlyphRange: NSMakeRange(cache_base + j,i - j)];
+				forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
 	      if (g[-1].g == GSAttachmentGlyph)
 		{
 		  [curLayoutManager setAttachmentSize: g[-1].size
@@ -1081,7 +1106,7 @@ restart:
     }
   }
 
-  curPoint = NSMakePoint(0,NSMaxY(line_frags->rect));
+  curPoint = NSMakePoint(0, NSMaxY(line_frags->rect));
 
   if (newParagraph)
     return 3;
@@ -1123,7 +1148,7 @@ NS_DURING
   curTextContainer = textContainer;
   curTextStorage = [layoutManager textStorage];
 
-/*	printf("*** layout some stuff |%@|\n",curTextStorage);
+/*	printf("*** layout some stuff |%@|\n", curTextStorage);
 	[curLayoutManager _glyphDumpRuns];*/
 
   curGlyph = glyphIndex;
@@ -1132,7 +1157,7 @@ NS_DURING
 
 
   real_ret = 4;
-  curPoint = NSMakePoint(0,NSMaxY(previousLineFragRect));
+  curPoint = NSMakePoint(0, NSMaxY(previousLineFragRect));
   while (1)
     {
       if (real_ret == 4)
@@ -1187,11 +1212,11 @@ NS_DURING
 NS_HANDLER
   [lock unlock];
   [localException raise];
+  ret=0; /* This is never reached, but it shuts up the compiler. */
 NS_ENDHANDLER
   [lock unlock];
   return ret;
 }
-
 
 @end
 
