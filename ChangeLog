@@ -1,3 +1,10 @@
+Mon Jun 25 11:47:50 2001  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Panels/SpellPanel.gmodel changed value of hidesOnDeactivate to
+	YES so that the spell panel will hide itself when the app is no
+	longer selected.   This is consistent w/ behavior under
+	OPENSTEP.
+	
 Mon Jun 25 10:55:03 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/AppKit.h: Removed useless @class directives.
