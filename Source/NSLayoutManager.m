@@ -312,9 +312,10 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
     }
 }
 
-// Designated Initializer. Sets up this instance. Finds the shared 
-// NSGlyphGenerator and the shared default NSTypesetter. 
-// The NSLayoutManager starts off without a NSTextStorage
+/* Designated Initializer. Sets up this instance. Finds the shared 
+ * NSGlyphGenerator and the shared default NSTypesetter. 
+ * The NSLayoutManager starts off without a NSTextStorage
+ */
 - (id) init
 {
   [super init];
