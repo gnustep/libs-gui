@@ -57,8 +57,6 @@
 
 #include <math.h>
 
-DEFINE_RINT_IF_MISSING
-
 static NSNotificationCenter *nc;
 
 #define	STRICT	0
@@ -204,21 +202,25 @@ static SEL getSel;
   _myZone = [self zone];
   [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
   _mode = aMode;
-  [self setFrame: frameRect];
-
   if ((_numCols > 0) && (_numRows > 0))
-    _cellSize = NSMakeSize (rint(frameRect.size.width/_numCols),
-			    rint(frameRect.size.height/_numRows));
+    {
+      _cellSize = NSMakeSize (frameRect.size.width/_numCols,
+			      frameRect.size.height/_numRows);
+    }
   else
-    _cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
+    {
+      _cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
+    }
 
   _intercell = NSMakeSize(1, 1);
+  [self setAutosizesCells: YES];
+  [self setFrame: frameRect];
+
   _tabKeyTraversesCells = YES;
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
   [self setDrawsBackground: YES];
   [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
   [self setSelectionByRect: YES];
-  [self setAutosizesCells: YES];
   _dottedRow = _dottedColumn = -1;
   if (_mode == NSRadioModeMatrix && _numRows > 0 && _numCols > 0)
     {
@@ -1649,7 +1651,7 @@ static SEL getSel;
     nr = 1;
   newSize.width = nc * (_cellSize.width + _intercell.width) - _intercell.width;
   newSize.height = nr * (_cellSize.height + _intercell.height) - _intercell.height;
-  [self setFrameSize: newSize];
+  [super setFrameSize: newSize];
 }
   
 - (void) sizeToFit
@@ -1821,8 +1823,10 @@ static SEL getSel;
 				     && [_window firstResponder] == self)];
 	}
       else
-	[aCell setShowsFirstResponder: NO];
-
+	{
+	  [aCell setShowsFirstResponder: NO];
+	}
+      
       [aCell drawWithFrame: cellFrame inView: self];
       [aCell setShowsFirstResponder: NO];
     }
@@ -2778,88 +2782,82 @@ static SEL getSel;
   return YES;
 }
 
-- (void) resizeWithOldSuperviewSize: (NSSize)oldSize
+- (void) _rebuildLayoutAfterResizing
 {
-  NSSize oldBoundsSize = _bounds.size;
-  NSSize newBoundsSize;
-  NSSize change;
-  int nc = _numCols;
-  int nr = _numRows;
-
-  [super resizeWithOldSuperviewSize: oldSize];
-
-  newBoundsSize = _bounds.size;
-
-  change.height = newBoundsSize.height - oldBoundsSize.height;
-  change.width = newBoundsSize.width - oldBoundsSize.width;
-
   if (_autosizesCells)
     {
-      if (change.height != 0)
+      /* Keep the intercell as it is, and adjust the cell size to fit.  */
+      if (_numRows > 1)
 	{
-	  if (nr <= 0) nr = 1;
-	  if (_cellSize.height == 0)
-	    {
-	      _cellSize.height = oldBoundsSize.height
-		- ((nr - 1) * _intercell.height);
-	      _cellSize.height = _cellSize.height / nr;
-	    }
-	  change.height = change.height / nr;
-	  _cellSize.height += change.height;
-	  _cellSize.height = rint(_cellSize.height);
+	  _cellSize.height = _bounds.size.height - ((_numRows - 1) * _intercell.height);
+	  _cellSize.height = _cellSize.height / _numRows;
 	  if (_cellSize.height < 0)
-	    _cellSize.height = 0;
-	}
-      if (change.width != 0)
-	{
-	  if (nc <= 0) nc = 1;
-	  if (_cellSize.width == 0)
 	    {
-	      _cellSize.width = oldBoundsSize.width
-		- ((nc - 1) * _intercell.width);
-	      _cellSize.width = _cellSize.width / nc;
+	      _cellSize.height = 0;
 	    }
-	  change.width = change.width / nc;
-	  _cellSize.width += change.width;
-	  _cellSize.width = rint(_cellSize.width);
+	}
+      else
+	{
+	  _cellSize.height = _bounds.size.height;
+	}
+      
+      if (_numCols > 1)
+	{
+	  _cellSize.width = _bounds.size.width - ((_numCols - 1) * _intercell.width);
+	  _cellSize.width = _cellSize.width / _numCols;
 	  if (_cellSize.width < 0)
-	    _cellSize.width = 0;
+	    {
+	      _cellSize.width = 0;
+	    }
+	}
+      else
+	{
+	  _cellSize.width = _bounds.size.width;
 	}
     }
   else // !autosizesCells
     {
-      if (change.height != 0)
+      /* Keep the cell size as it is, and adjust the intercell to fit.  */
+      if (_numRows > 1)
 	{
-	  if (nr > 1)
+	  _intercell.height = _bounds.size.height - (_numRows * _cellSize.height);
+	  _intercell.height = _intercell.height / (_numRows - 1);
+	  if (_intercell.height < 0)
 	    {
-	      if (_intercell.height == 0)
-		{
-		  _intercell.height = oldBoundsSize.height - (nr * _cellSize.height);
-		  _intercell.height = _intercell.height / (nr - 1);
-		}
-	      change.height = change.height / (nr - 1);
-	      _intercell.height += change.height;
-	      if (_intercell.height < 0)
-		_intercell.height = 0;
+	      _intercell.height = 0;
 	    }
 	}
-      if (change.width != 0)
+      else
 	{
-	  if (nc > 1)
+	  _intercell.height = 0;
+	}
+
+      if (_numCols > 1)
+	{
+	  _intercell.width = _bounds.size.width - (_numCols * _cellSize.width);
+	  _intercell.width = _intercell.width / (_numCols - 1);
+	  if (_intercell.width < 0)
 	    {
-	      if (_intercell.width == 0)
-		{
-		  _intercell.width = oldBoundsSize.width - (nc * _cellSize.width);
-		  _intercell.width = _intercell.width / (nc - 1);
-		}
-	      change.width = change.width / (nc - 1);
-	      _intercell.width += change.width;
-	      if (_intercell.width < 0)
-		_intercell.width = 0;
+	      _intercell.width = 0;
 	    }
 	}
-    }
-  [self setNeedsDisplay: YES];
+      else
+	{
+	  _intercell.width = 0;
+	}
+    }  
+}
+
+- (void) setFrame: (NSRect)aFrame
+{
+  [super setFrame: aFrame];
+  [self _rebuildLayoutAfterResizing];
+}
+
+- (void) setFrameSize: (NSSize)aSize
+{
+  [super setFrameSize: aSize];
+  [self _rebuildLayoutAfterResizing];
 }
 
 - (void)_move:(unichar)pos
