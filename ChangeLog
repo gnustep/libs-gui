@@ -1,3 +1,11 @@
+2003-09-20  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindowController.m ([NSWindowController -setDocument:]): 
+	Set window to releaseWhenClosed if document is not nil.
+	* Source/NSApplication.m ([NSApplication -targetForAction:]): Revert
+	last change.
+	* Source/NSWindow.m ([NSWindow -performClose:]): Idem.
+
 2003-09-19  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSApplication.m ([NSApplication -targetForAction:]): Check

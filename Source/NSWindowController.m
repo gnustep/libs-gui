@@ -160,6 +160,8 @@
 	 released. */
       [_window setReleasedWhenClosed: NO];
     }
+  else
+    [_window setReleasedWhenClosed: YES];
 }
 
 - (id) document
