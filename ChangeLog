@@ -1,7 +1,48 @@
+Mon Jan 10 00:32:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSView.h: Prefixed all ivars with underscores;
+ 	removed old unused ivar.
+	* Source/NSApplication.m: Updated for ivar name change.
+	* Source/NSBox.m: idem.	
+	* Source/NSBrowser.m: idem.
+	* Source/NSButton.m: idem.
+	* Source/NSClipView.m: idem.
+	* Source/NSColorWell.m: idem. 
+	* Source/NSControl.m: idem. 
+	* Source/NSMatrix.m: idem. 
+	* Source/NSMenu.m: idem.
+	* Source/NSMenuView.m: idem. 
+	* Source/NSPopUpButton.m: idem.
+	* Source/NSProgressIndicator.m: idem.
+	* Source/NSScroller.m: idem.
+	* Source/NSScrollView.m: idem.
+	* Source/NSSlider.m: idem.
+	* Source/NSSplitView.m: idem.
+	* Source/NSTabView.m: idem. 
+	* Source/NSTableHeaderView.m: idem.
+	* Source/NSTextField.m: idem.
+	* Source/NSView.m: idem.
+	* Source/NSWindow.m: idem.
+	* Model/GMAppKit.m: idem. 
+	
+	* Source/NSApplication.m ([NSAppIconView -drawRect:]): Fixed bug
+ 	in app icon images drawing.
+	* Source/NSBrowser.m ([-_performLoadOfColumn:]): Tiny tidy ups.
+	* Source/NSColor.m ([+colorFromString:]): Fixed typo.
+	* Source/NSScroller.m ([-drawRect:]): Fixed bug: should fill
+ 	_bounds, not _frame.	
+	* Source/NSText.m: Access ivars _frame, _bounds, _window directly.
+	* Source/NSWindow.m ([-sendEvent:]), ([-setFrame:display:]),
+ 	([-orderWindow:relativeTo:]), ([-becomeKeyWindow]): Access ivar
+ 	window_num.
+	* Source/GSTable.m ([-resizeWithOldSuperviewSize:]): Don't access
+ 	ivar _frame directly, so that the class can be easily ported to
+ 	other OpenStep implementations.
+
 Sun Jan  9 15:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-        * Source/GSTextStorage.m: ([-attributesAtIndex:effectiveRange:])
-        fixed illegal parameter - reported by jagapen@whitewater.chem.wisc.edu
+	* Source/GSTextStorage.m: ([-attributesAtIndex:effectiveRange:])
+	fixed illegal parameter - reported by jagapen@whitewater.chem.wisc.edu
 
 Sat Jan  8 23:50:38 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
