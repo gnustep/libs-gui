@@ -37,10 +37,6 @@
 //	 - optimization: 3.paragraph made one less line due to delition 
 //                         of single char [opti hook 1; diff from 1.]
 
-#if !defined(ABS)
-    #define ABS(A)     ({ typeof(A) __a  = (A); __a < 0 ? - __a : __a; })
-#endif         // the definition in gstep-base produces warnings FIX ME FAR
-
 #include <gnustep/gui/config.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
@@ -68,6 +64,23 @@
 
 #define HUGE 1e99
 
+/*
+ * A little utility function to determine the range of characters in a scanner
+ * that are present in a specified character set.
+ */
+static inline NSRange
+scanRange(NSScanner *scanner, NSCharacterSet* aSet)
+{
+  unsigned	start = [scanner scanLocation];
+  unsigned	end = start;
+
+  if ([scanner scanCharactersFromSet: aSet intoString: 0] == YES)
+    {
+      end = [scanner scanLocation];
+    }
+  return NSMakeRange(start, end - start);
+}
+
 enum {
   NSBackspaceKey      = 8,
   NSCarriageReturnKey = 13,
@@ -82,7 +95,6 @@ enum {
   float	drawingOffset;
   BOOL	dontDisplay;
   unsigned	type;
-  NSString	*fingerprintString;	// obsolete, unused
 }
 
 typedef enum
@@ -106,8 +118,6 @@ typedef enum
 - (void) setDrawingOffset: (float) anOffset;
 - (void) setDontDisplay: (BOOL) flag;
 - (void) setType: (unsigned) aType;
-- (NSString*) fingerprintString;
-- (void) setFingerprintString: (NSString*) aString;
 - (BOOL) isLineTerminatingParagraph;
 
 - (NSString*) description;
@@ -151,11 +161,6 @@ typedef enum
   return drawingOffset;
 }
 
-- (NSString*) fingerprintString 
-{
-  return fingerprintString;
-}
-
 - (void) setLineRange: (NSRange) aRange 
 {
   lineRange = aRange;
@@ -184,17 +189,11 @@ typedef enum
   type = aType;
 }
 
-- (void) setFingerprintString: (NSString*) aString
-{
-  ASSIGN (fingerprintString, aString);
-}
-
 - (NSString*) description
 {	
   return [[NSDictionary dictionaryWithObjectsAndKeys: 	
 			  NSStringFromRange(lineRange), @"LineRange",
 			  NSStringFromRect(lineRect), @"LineRect",
-			  fingerprintString, @"fingerprint",
 			  nil] 
 	   description];
 }
@@ -204,13 +203,6 @@ typedef enum
   // sort of hackish
   return type  == LineLayoutInfoType_Paragraph && lineRect.origin.x> 0;
 }	
-
-- (void) dealloc
-{
-  if (fingerprintString) 
-    [fingerprintString release];
-  [super dealloc];
-}
 @end
 
 static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
@@ -232,118 +224,6 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 }
 */
 // end: _GNULineLayoutInfo------------------------------------------------------------------------------------------
-
-// NeXT's NSScanner's scanCharactersFromSet and friends seem to be 
-// a bit sluggish on whitespaces and newlines
-// (have not tried GNUstep - base implementation though). 
-// so here is a more pedantic (and faster) implementation: 
-
-// this class should be considered private since it is not polished at all!
-
-
-@interface _GNUTextScanner: NSObject
-{
-  NSString *string;
-  NSCharacterSet *set,*iSet;
-  unsigned stringLength;
-  NSRange activeRange;
-}
-+ (_GNUTextScanner*) scannerWithString: (NSString*) aStr 
-				   set: (NSCharacterSet*) aSet 
-			   invertedSet: (NSCharacterSet*) anInvSet;
-- (void) setString: (NSString*) aString set: (NSCharacterSet*) 
-     aSet invertedSet: (NSCharacterSet*) anInvSet;
-- (NSRange) _scanCharactersInverted: (BOOL) inverted;
-- (NSRange) scanSetCharacters;
-- (NSRange) scanNonSetCharacters;
-- (BOOL) isAtEnd;
-- (unsigned) scanLocation;
-- (void) setScanLocation: (unsigned) aLoc;
-@end
-
-@implementation _GNUTextScanner
-+ (_GNUTextScanner*) scannerWithString: (NSString*) aStr 
-				   set: (NSCharacterSet*) aSet 
-			   invertedSet: (NSCharacterSet*) anInvSet
-{
-  _GNUTextScanner *ret = [[self alloc] init];
-  [ret setString: aStr set: aSet invertedSet: anInvSet];
-  return [ret autorelease];
-}
-
-- (void) setString: (NSString*) aString set: (NSCharacterSet*) aSet 
-       invertedSet: (NSCharacterSet*) anInvSet
-{	
-  ASSIGN (string, aString); 
-  stringLength = [string length]; 
-  activeRange = NSMakeRange (0, stringLength);
-  ASSIGN (set, aSet); 
-  ASSIGN (iSet, anInvSet);
-}
-
-- (NSRange) _scanCharactersInverted: (BOOL) inverted
-{	
-  NSRange range = NSMakeRange (activeRange.location, 0);
-  NSCharacterSet *currentSet = inverted? iSet: set;
-  NSCharacterSet *currentISet = inverted? set: iSet;
-  
-  if (activeRange.location >= stringLength) 
-    return range;
-  
-  if ([currentSet characterIsMember: [string characterAtIndex: 
-					       activeRange.location]])
-    {	
-      range = [string rangeOfCharacterFromSet: currentSet options: 0 
-		      range: activeRange];
-    }
-  
-  if (range.length)
-    {
-      NSRange iRange = range;
-      iRange = [string rangeOfCharacterFromSet: currentISet options: 0 
-		       range: MakeRangeFromAbs (NSMaxRange (range), 
-						stringLength)];
-      if (iRange.length)	
-	range = MakeRangeFromAbs (range.location, iRange.location);
-      else				
-	range = MakeRangeFromAbs (range.location, stringLength);
-      
-      activeRange = MakeRangeFromAbs (NSMaxRange(range), stringLength);
-    }
-  return range;
-}
-
-- (NSRange) scanSetCharacters
-{
-  return [self _scanCharactersInverted: NO];
-}
-- (NSRange) scanNonSetCharacters
-{
-  return [self _scanCharactersInverted: YES];
-}
-
-- (BOOL) isAtEnd
-{	
-  return activeRange.location >= stringLength;
-}
-- (unsigned) scanLocation 
-{
-  return activeRange.location;
-}
-- (void) setScanLocation: (unsigned) aLoc 
-{ 
-  activeRange = MakeRangeFromAbs (aLoc, stringLength);
-}
-- (void) dealloc
-{
-  [string release];
-  [set release];
-  [iSet release];
-  [super dealloc];
-}
-@end
-
-// end: _GNUTextScanner implementation--------------------------------------
 
 /*
 @interface NSAttributedString(DrawingAddition)
@@ -602,7 +482,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   if ((!sendType || [sendType isEqual: NSStringPboardType]) 
       && (!returnType || [returnType isEqual: NSStringPboardType]))
     {
-      if (([self selectedRange].length || !sendType)
+      if ((selected_range.length || !sendType)
 	  && ([self isEditable] || !returnType))
 	{
 	  return self;
@@ -617,7 +497,6 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
                              types: (NSArray*)sendTypes
 {
   NSArray      *types;
-  NSRange      range;
   NSString     *string;
         
   if ([sendTypes containsObject: NSStringPboardType] == NO)
@@ -626,9 +505,8 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     }
   types = [NSArray arrayWithObjects: NSStringPboardType, nil];
   [pb declareTypes: types owner: nil];
-  range = [self selectedRange];
   string = [self string];
-  string = [string substringWithRange: range];
+  string = [string substringWithRange: selected_range];
   return [pb setString: string forType: NSStringPboardType];
 }
 
@@ -645,7 +523,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
       
       if ([self isRichText])
 	{
-	  [self setTextColor: color range: [self selectedRange]];
+	  [self setTextColor: color range: selected_range];
 	}
       else
 	[self setTextColor: color];
@@ -788,7 +666,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
       return NSMakeRange(0,0);
     }
 
-  switch(granularity)
+  switch (granularity)
     {
     case NSSelectByCharacter: 
       return NSIntersectionRange (proposedCharRange, 
@@ -1033,12 +911,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     {	
       if ([self isRichText])
 	{
-	  NSRange selectedRange = [self selectedRange];
-	  NSRange searchRange = selectedRange;
+	  NSRange searchRange = selected_range;
 	  NSRange foundRange;
 	  int maxSelRange;
 	  
-	  for (maxSelRange = NSMaxRange(selectedRange); 
+	  for (maxSelRange = NSMaxRange(selected_range); 
 	       searchRange.location < maxSelRange;
 	       searchRange = NSMakeRange (NSMaxRange (foundRange), 
 					  maxSelRange - NSMaxRange(foundRange)))
@@ -1158,7 +1035,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 - (BOOL) shouldDrawInsertionPoint
 {	
-  return ([self selectedRange].length == 0) && [self isEditable];
+  return (selected_range.length == 0) && [self isEditable];
 }
 
 - (void) drawInsertionPointInRect: (NSRect)rect
@@ -1540,16 +1417,16 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     {
       BOOL doUnderline = YES;
       if ([[rtfContent attribute: NSUnderlineStyleAttributeName 
-		       atIndex: [self selectedRange].location 
+		       atIndex: selected_range.location 
 		       effectiveRange: NULL] intValue])	
 	doUnderline = NO;
       
-      if ([self selectedRange].length)
+      if (selected_range.length)
 	{
 	  [rtfContent addAttribute: NSUnderlineStyleAttributeName 
 		      value: [NSNumber numberWithInt: doUnderline] 
-		      range: [self selectedRange]];
-	  [self rebuildFromCharacterIndex: [self selectedRange].location];
+		      range: selected_range];
+	  [self rebuildFromCharacterIndex: selected_range.location];
 	} 
       else  // no redraw necess.
 	[[self typingAttributes] 
@@ -1562,11 +1439,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 {
   if ([self isRichText])
     {
-      if ([self selectedRange].length)
+      if (selected_range.length)
 	{
 	  [rtfContent removeAttribute: NSUnderlineStyleAttributeName 
-		      range: [self selectedRange]];
-	  [self rebuildFromCharacterIndex: [self selectedRange].location];
+		      range: selected_range];
+	  [self rebuildFromCharacterIndex: selected_range.location];
 	} 
       else // no redraw necess.
 	[[self typingAttributes] 
@@ -1595,9 +1472,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 {
   [self scrollRectToVisible: 
 	  NSUnionRect ([self rectForCharacterIndex: 
-			       [self selectedRange].location],
+			       selected_range.location],
 		       [self rectForCharacterIndex: 
-			       NSMaxRange ([self selectedRange])])];
+			       NSMaxRange (selected_range)])];
 }
 
 //
@@ -1679,14 +1556,18 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   unsigned cursorIndex;
   NSPoint cursorPoint;
 
-  if ([self selectedRange].length) 
+  /* Do nothing if we are at beginning of text */
+  if (selected_range.location == 0)
+    return;
+
+  if (selected_range.length) 
     {
       currentCursorX = [self rectForCharacterIndex: 
-			       [self selectedRange].location].origin.x;
+			       selected_range.location].origin.x;
       currentCursorY = [self rectForCharacterIndex: 
-			       [self selectedRange].location].origin.y;
+			       selected_range.location].origin.y;
     }
-  cursorIndex = [self selectedRange].location;
+  cursorIndex = selected_range.location;
   cursorPoint = [self rectForCharacterIndex: cursorIndex].origin;
   cursorIndex = [self characterIndexForPoint: 
 			NSMakePoint (currentCursorX + 0.001, 
@@ -1703,14 +1584,18 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   unsigned cursorIndex;
   NSRect cursorRect;
 
-  if ([self selectedRange].length) 
+  /* Do nothing if we are at end of text */
+  if (selected_range.location == [self textLength])
+    return;
+
+  if (selected_range.length) 
     {
       currentCursorX = [self rectForCharacterIndex: 
-			       NSMaxRange ([self selectedRange])].origin.x;
+			       NSMaxRange (selected_range)].origin.x;
       currentCursorY = [self rectForCharacterIndex: 
-			       NSMaxRange ([self selectedRange])].origin.y;
+			       NSMaxRange (selected_range)].origin.y;
     }
-  cursorIndex = [self selectedRange].location;
+  cursorIndex = selected_range.location;
   cursorRect = [self rectForCharacterIndex: cursorIndex];
   cursorIndex = [self characterIndexForPoint: 
 			NSMakePoint (currentCursorX + 0.001, 
@@ -1723,22 +1608,30 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 }
 - (void) moveCursorLeft: sender
 {	
+  /* Do nothing if we are at beginning of text */
+  if (selected_range.location == 0)
+    return;
+
   [self setSelectedRange: 
 	  [self selectionRangeForProposedRange: 
-		  NSMakeRange ([self selectedRange].location - 1, 0) 
+		  NSMakeRange (selected_range.location - 1, 0) 
 		granularity: NSSelectByCharacter]];
   currentCursorX = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.x;
+			   selected_range.location].origin.x;
 }
 - (void) moveCursorRight: sender
 {
+  /* Do nothing if we are at end of text */
+  if (selected_range.location == [self textLength])
+    return;
+
   [self setSelectedRange: 
 	  [self selectionRangeForProposedRange: 
-		  NSMakeRange (MIN (NSMaxRange ([self selectedRange]) + 1, 
+		  NSMakeRange (MIN (NSMaxRange (selected_range) + 1, 
 				    [self textLength]), 0)
 		granularity: NSSelectByCharacter]];
   currentCursorX = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.x;
+			   selected_range.location].origin.x;
 }
 
 //
@@ -1759,7 +1652,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
   [_window makeFirstResponder: self];
   
-  switch([theEvent clickCount])
+  switch ([theEvent clickCount])
     {
     case 1: granularity = NSSelectByCharacter;
       break;
@@ -1780,13 +1673,13 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   [self lockFocus];
   
   // clean up before doing the dragging
-  if ([self selectedRange].length == 0)	// remove old cursor
+  if (selected_range.length == 0)	// remove old cursor
     {
-      [self drawInsertionPointAtIndex: [self selectedRange].location 
+      [self drawInsertionPointAtIndex: selected_range.location 
 	    color: nil turnedOn: NO];
     } 
   else 
-    [self drawSelectionAsRangeNoCaret: [self selectedRange]];
+    [self drawSelectionAsRangeNoCaret: selected_range];
   
   //<!> make this non - blocking (or make use of timed entries)
   for (currentEvent = [_window 
@@ -1906,7 +1799,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	{
 	  [self drawPlainLinesInLineRange: redrawLineRange];
 	}
-      [self drawSelectionAsRange: [self selectedRange]];
+      [self drawSelectionAsRange: selected_range];
     }
   
   if ([self drawsBackground])	// clean up the remaining area under text of us
@@ -1927,7 +1820,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	  if (![lineLayoutInformation count] 
 	      || [[lineLayoutInformation lastObject] 
 		   type] == LineLayoutInfoType_Paragraph)
-	    [self drawSelectionAsRange: [self selectedRange]];
+	    [self drawSelectionAsRange: selected_range];
 	}
     } 
   
@@ -1958,7 +1851,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 - (void) insertText: insertObjc
 {
-  NSRange selectedRange = [self selectedRange];
+  NSRange selectedRange = selected_range;
   int lineIndex = [self lineLayoutIndexForCharacterIndex: 
 			  selectedRange.location]; 
   int origLineIndex = lineIndex;
@@ -1986,7 +1879,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   
   if ([self isRichText])
     {
-      [self replaceRange: [self selectedRange]
+      [self replaceRange: selected_range
 	    withAttributedString: [insertObjc isKindOfClass: 
 						[NSAttributedString class]]? 
 	    insertObjc: 
@@ -1997,7 +1890,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     } 
   else
     {
-      [self replaceRange: [self selectedRange] withString: insertString];
+      [self replaceRange: selected_range withString: insertString];
     }
   redrawLineRange.length = [self rebuildLineLayoutInformationStartingAtLine: 
 				   redrawLineRange.location
@@ -2011,14 +1904,15 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   // move cursor <!> [self selectionRangeForProposedRange: ]
   [self 
     setSelectedRange: 
-      NSMakeRange ([self selectedRange].location + [insertString length], 0)];	
+      NSMakeRange (selected_range.location + [insertString length], 0)];
 
   // remember x for row - stable cursor movements
   currentCursorX = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.x;		
+			   selected_range.location].origin.x;
+
   // remember x for row - stable cursor movements
   currentCursorY = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.y;		
+			   selected_range.location].origin.y;
   
   redrawLineRange = NSIntersectionRange (redrawLineRange, 
 					 [self lineRangeForRect: 
@@ -2103,10 +1997,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   
   // remember x for row - stable cursor movements
   currentCursorX = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.x;		
+			   selected_range.location].origin.x;		
+  
   // remember x for row - stable cursor movements
   currentCursorY = [self rectForCharacterIndex: 
-			   [self selectedRange].location].origin.y;		
+			   selected_range.location].origin.y;		
 
   redrawLineRange 
     = NSIntersectionRange (redrawLineRange, 
@@ -2192,7 +2087,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     }
 
   // Special Characters for generic NSText
-  switch(keyCode)
+  switch (keyCode)
     {	
     case NSUpArrowFunctionKey: 
       [self moveCursorUp: self];
@@ -2206,8 +2101,20 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     case NSRightArrowFunctionKey:
       [self moveCursorRight: self];
       return;
+    case NSDeleteFunctionKey:
+      if (selected_range.location != [self textLength])
+	{
+	  /* Not at the end of text -- delete following character */
+	  [self deleteRange: 
+		  [self selectionRangeForProposedRange: 
+			  NSMakeRange (selected_range.location, 1)
+			granularity: NSSelectByCharacter]
+		backspace: NO];
+	  return;
+	}
+      /* end of text: behave the same way as NSBackspaceKey */
     case NSBackspaceKey: 
-      [self deleteRange: [self selectedRange] backspace: YES];
+      [self deleteRange: selected_range backspace: YES];
       return;
 #if 1
     case 0x6d: 	// end - key: debugging: enforce complete re - layout
@@ -2252,7 +2159,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
   if ([self shouldDrawInsertionPoint])
     {
-      [self drawInsertionPointAtIndex: [self selectedRange].location 
+      [self drawInsertionPointAtIndex: selected_range.location 
 	    color: nil turnedOn: NO];
       
       //<!> stop timed entry
@@ -2278,7 +2185,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   //if ([self shouldDrawInsertionPoint])
   //  {
   //   [self lockFocus];
-  //   [self drawInsertionPointAtIndex: [self selectedRange].location 
+  //   [self drawInsertionPointAtIndex: selected_range.location 
   //      color: [NSColor blackColor] turnedOn: YES];
   //   [self unlockFocus];
   //   //<!> restart timed entry
@@ -2619,13 +2526,13 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 					     delta: (int) insertionDelta 
 					actualLine: (int) insertionLineIndex
 {
-  NSDictionary *attributes = [self defaultTypingAttributes];
-  NSPoint drawingPoint = NSZeroPoint;
-  _GNUTextScanner *parscanner;
-  float	width = _frame.size.width;
-  unsigned startingIndex = 0,currentLineIndex;
-  _GNULineLayoutInfo  *lastValidLineInfo = nil;
-  NSArray *ghostArray = nil;	// for optimization detection
+  NSDictionary		*attributes = [self defaultTypingAttributes];
+  NSPoint		drawingPoint = NSZeroPoint;
+  NSScanner		*pScanner;
+  float			width = _frame.size.width;
+  unsigned		startingIndex = 0,currentLineIndex;
+  _GNULineLayoutInfo	*lastValidLineInfo = nil;
+  NSArray		*ghostArray = nil;	// for optimization detection
   _GNUSeekableArrayEnumerator *prevArrayEnum = nil;
   NSCharacterSet *invSelectionWordGranularitySet 
     = [selectionWordGranularitySet invertedSet];
@@ -2684,37 +2591,39 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
   currentLineIndex = aLine;
   
 // each paragraph
-  for (parscanner 
-	 = [_GNUTextScanner 
-	     scannerWithString: parsedString = [[self string] 
-						 substringFromIndex: 
-						   startingIndex] 
-	     set: selectionParagraphGranularitySet 
-	     invertedSet: invSelectionParagraphGranularitySet];
-       ![parscanner isAtEnd];)
+
+  parsedString = [[self string] substringFromIndex: startingIndex];
+  pScanner = [NSScanner scannerWithString: parsedString];
+  [pScanner setCharactersToBeSkipped: nil];
+  while ([pScanner isAtEnd] == NO)
     {
-      _GNUTextScanner *linescanner;
+      NSScanner	*lScanner;
       NSString	*paragraph;
-      NSRange paragraphRange, leadingNlRange, trailingNlRange;
-      unsigned startingParagraphIndex 
-	= [parscanner scanLocation] + startingIndex; 
-      unsigned startingLineCharIndex = startingParagraphIndex;
-      BOOL isBuckled = NO, inBuckling = NO;
-      
-      leadingNlRange = [parscanner scanSetCharacters];
-      // add the leading newlines of current paragraph 
-      // if any (only the first time)
-      if (leadingNlRange.length)	
-	{	
-	  [self addNewlines: leadingNlRange 
-		intoLayoutArray: lineLayoutInformation 
-		attributes: attributes 
-		atPoint: &drawingPoint 
-		width: width
-		characterIndex: startingLineCharIndex 
-		ghostEnumerator: prevArrayEnum
-		didShift: &nlDidShift 
-		verticalDisplacement: &yDisplacement];
+      NSRange	paragraphRange, leadingNlRange, trailingNlRange;
+      unsigned	currentLoc = [pScanner scanLocation];
+      unsigned	startingParagraphIndex = currentLoc + startingIndex; 
+      unsigned	startingLineCharIndex = startingParagraphIndex;
+      BOOL	isBuckled = NO, inBuckling = NO;
+
+      leadingNlRange
+	= scanRange(pScanner, selectionParagraphGranularitySet);
+      paragraphRange
+	= scanRange(pScanner, invSelectionParagraphGranularitySet);
+      trailingNlRange
+	= scanRange(pScanner, selectionParagraphGranularitySet);
+
+      if (leadingNlRange.length > 0)
+	{
+	  [self addNewlines: leadingNlRange
+	    intoLayoutArray: lineLayoutInformation 
+		 attributes: attributes 
+		    atPoint: &drawingPoint 
+		      width: width
+	     characterIndex: startingLineCharIndex 
+	    ghostEnumerator: prevArrayEnum
+		   didShift: &nlDidShift 
+       verticalDisplacement: &yDisplacement];
+
 	  if (nlDidShift)
 	    {
 	      if (insertionDelta  == 1)
@@ -2733,43 +2642,41 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 	  startingLineCharIndex += leadingNlRange.length; 
 	  currentLineIndex += leadingNlRange.length;
 	}
-      paragraphRange = [parscanner scanNonSetCharacters];
-      
-      trailingNlRange = [parscanner scanSetCharacters];
+
       
       // each line
-      for (linescanner 
-	     = [_GNUTextScanner 
-		 scannerWithString: paragraph = [parsedString 
-						  substringWithRange: 
-						    paragraphRange]
-		 set: selectionWordGranularitySet 
-		 invertedSet: invSelectionWordGranularitySet];
-	   ![linescanner isAtEnd];)
+      paragraph = [parsedString substringWithRange: paragraphRange];
+      lScanner = [NSScanner scannerWithString: paragraph];
+      [lScanner setCharactersToBeSkipped: nil];
+      while ([lScanner isAtEnd] == NO)
 	{
-	  NSRect currentLineRect = NSMakeRect (0, drawingPoint.y, 0, 0);
+	  NSRect	currentLineRect = NSMakeRect (0, drawingPoint.y, 0, 0);
 	  // starts with zero, do not confuse with startingLineCharIndex
-	  unsigned localLineStartIndex = [linescanner scanLocation];		
-	  NSSize advanceSize = NSZeroSize;
+	  unsigned	localLineStartIndex = [lScanner scanLocation];
+	  NSSize	advanceSize = NSZeroSize;
 	  
 	  // scan the individual words to the end of the line
-	  for (; ![linescanner isAtEnd]; drawingPoint.x += advanceSize.width)
+	  for (; ![lScanner isAtEnd]; drawingPoint.x += advanceSize.width)
 	    {
-	      NSRange currentStringRange, trailingSpacesRange; 
-	      NSRange leadingSpacesRange;
-	      unsigned scannerPosition = [linescanner scanLocation];
+	      NSRange	currentStringRange, trailingSpacesRange; 
+	      NSRange	leadingSpacesRange;
+	      unsigned	scannerPosition = [lScanner scanLocation];
 	      
 	      // snack next word
 	      
 	      // leading spaces: only first time
-	      leadingSpacesRange = [linescanner scanSetCharacters];	
-	      currentStringRange = [linescanner scanNonSetCharacters];
-	      trailingSpacesRange = [linescanner scanSetCharacters];
+	      leadingSpacesRange
+		= scanRange(lScanner, selectionWordGranularitySet);
+	      currentStringRange
+		= scanRange(lScanner, invSelectionWordGranularitySet);
+	      trailingSpacesRange
+		= scanRange(lScanner, selectionWordGranularitySet);
+
 	      if (leadingSpacesRange.length) 
-		currentStringRange = NSUnionRange (leadingSpacesRange, 
+		currentStringRange = NSUnionRange(leadingSpacesRange, 
 						   currentStringRange);
 	      if (trailingSpacesRange.length) 
-		currentStringRange = NSUnionRange (trailingSpacesRange, 
+		currentStringRange = NSUnionRange(trailingSpacesRange, 
 						   currentStringRange);
 	      
 	      // evaluate size of current word and line so far
@@ -2849,7 +2756,7 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 		_GNULineLayoutInfo *ghostInfo = nil, *thisInfo;
 		
 		// undo layout of last word
-		[linescanner setScanLocation: scannerPosition];	
+		[lScanner setScanLocation: scannerPosition];	
 		  
 		currentLineRect.origin.x = 0; 
 		currentLineRect.origin.y = drawingPoint.y;
@@ -2952,10 +2859,10 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 		
 		// newline - induced premature lineending: flush
 	      } 
-	      else if ([linescanner isAtEnd])
+	      else if ([lScanner isAtEnd])
 		{
 		  _GNULineLayoutInfo *thisInfo;
-		  scannerPosition = [linescanner scanLocation];
+		  scannerPosition = [lScanner scanLocation];
 		  [lineLayoutInformation 
 		    addObject: (thisInfo 
 				= [_GNULineLayoutInfo 
@@ -3188,7 +3095,7 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
     return;
   
   [self drawRectNoSelection: rect];
-  [self drawSelectionAsRange: [self selectedRange]];
+  [self drawSelectionAsRange: selected_range];
 }
 
 // text lays out from top to bottom
@@ -3224,15 +3131,15 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
   
   [pboard declareTypes: types owner: self];
 
-  [pboard setString: [[self string] substringWithRange: [self selectedRange]] 
+  [pboard setString: [[self string] substringWithRange: selected_range] 
 	  forType: NSStringPboardType];
 
   if ([self isRichText])
-    [pboard setData: [self RTFFromRange: [self selectedRange]] 
+    [pboard setData: [self RTFFromRange: selected_range] 
 	    forType: NSRTFPboardType];
 
   if ([self importsGraphics])
-    [pboard setData: [self RTFDFromRange: [self selectedRange]] 
+    [pboard setData: [self RTFDFromRange: selected_range] 
 	    forType: NSRTFDPboardType];
 }
 
@@ -3248,11 +3155,11 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 
 - (void) delete: sender
 {	
-  [self deleteRange: [self selectedRange] backspace: NO];
+  [self deleteRange: selected_range backspace: NO];
 }
 - (void) cut: sender
 {	
-  if ([self selectedRange].length)
+  if (selected_range.length)
     {
       [self copy: self];
       [self delete: self];
@@ -3344,7 +3251,7 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
   NSRange errorRange 
     = [[NSSpellChecker sharedSpellChecker] 
 	checkSpellingOfString: [self string] 
-	startingAt: NSMaxRange ([self selectedRange])];
+	startingAt: NSMaxRange (selected_range)];
 
   if (errorRange.length) 
     [self setSelectedRange: errorRange];

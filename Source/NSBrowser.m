@@ -47,6 +47,10 @@
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/PSOperators.h>
 
+#ifndef HAVE_RINTF
+#define rintf rint
+#endif
+
 #define NSBR_COLUMN_SEP 6
 #define NSBR_VOFFSET 3
 
@@ -951,6 +955,7 @@
 
   // load column 0
   [self _performLoadOfColumn: 0];
+  [self _adjustMatrixOfColumn: 0];
 
   _isLoaded = YES;
 
@@ -984,6 +989,7 @@
 
   // Perform the data load
   [self _performLoadOfColumn: column];
+  [self _adjustMatrixOfColumn: column];
 
   // set last column loaded
   [self setLastColumn: column];
@@ -2592,7 +2598,6 @@
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
 	  // set new col matrix and release old
-	  [[bc columnMatrix] release];
 	  [bc setColumnMatrix: matrix];
 	  [sc setDocumentView: matrix];
 

@@ -6,17 +6,86 @@
 @include version.texi
 @end ifset
 
-@section Projects Looking for Volunteers
-
-If you think you can do one of these projects, please let me know.  Your
-help is greatly appreciated.  Send email to @email{scottc@@net-community.com}. 
+@section Bugs in the GUI library
 @end ifclear
 
+@subsection Windows
+
 @itemize @bullet
+@item Code to manage window decorations is not finished.  
+The reported frame origin of a window might be wrong. 
 
-@item Consolodate examples and tests [3, OpenStep] (980913).
-Also fix or document whatever bugs are there.
+@item Windows never get released.  Setting isReleasedWhenClosed 
+does not work.
 
-@item Need an rtf parser [6 - Objective-C, RTF] (980820).
+Fixing these bugs requires touching delicate parts of the library.
+This is why fixing them has been postponed after 0.6.5, to keep 0.6.5
+reasonably stable.
+@end itemize
 
+@subsection Texts
+
+@itemize @bullet
+@item The NSText code is particularly complex to work on and it has not 
+improved much since 0.6.0.  Many bugs are know in the code -- it is 
+somewhat usable though.  We hope on a big improvement of this area 
+for next release.
+@end itemize
+
+@subsection Matrices
+
+@itemize @bullet
+@item Encoding/Decoding of matrices is unimplemented.  There are some minor 
+known bugs with handling of mouse down in matrices.
+@end itemize
+
+@subsection Cells
+
+@itemize @bullet
+@item Since NSText does only left alignment, when you select or edit text 
+in a cell it becomes automatically left aligned regardless of the original 
+alignment.
+
+@item Multi line texts are unsupported; isScrollable, wordWraps etc do nothing.
+This restriction will hopefully be removed in next releases.
+@end itemize
+
+@subsection Images anf Graphics
+
+@itemize @bullet
+@item There are problems with alpha composing.  To avoid these problems, 
+you may set manually the background color of your image when displaying it.
+
+@item Only TIFF images are supported in 0.6.5.  Support at least for PNG and 
+JPEG images is planned for next release.
+
+@item alpha drawing and compositing of graphics doesn't work.
+
+@end itemize
+
+@subsection Alert, Info Panels
+
+@itemize @bullet
+@item Multi line messages are generally unsupported due to the similar 
+restriction in the cells code.
+@end itemize
+
+@subsection Unimplemented Classes
+
+The following classes are currently unimplemented or unfinished
+to such a degree to be unusable.
+
+@itemize @bullet
+@item NSColorPanel
+@item NSDataLink
+@item NSFontManager
+@item NSFontPanel
+@item NSHelpPanel
+@item NSLayoutManager
+@item NSPageLayout
+@item NSPrintPanel
+@item NSSecureTextField
+@item NSSpellChecker
+@item NSTableView
+@item NSTextView
 @end itemize

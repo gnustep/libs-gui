@@ -58,7 +58,7 @@ void subdiv(int degree, float coeff[], float t, float bleft[], float bright[]);
 NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 
 
-@interface PathElement : NSObject
+@interface PathElement : NSObject <NSCopying, NSCoding>
 {
 	NSPoint p[3];
 	NSBezierPathElement type;
@@ -138,6 +138,39 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 	PathElement *element = [[self alloc] init];
 	[element setPointAtIndex: 0 toPoint: NSMakePoint(0, 0)];
   	return AUTORELEASE(element);
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+	[super encodeWithCoder: aCoder];
+	[aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+	[aCoder encodeValueOfObjCType: @encode(NSPoint *) at: &p];
+}
+
+- (id)initWithCoder:(NSCoder *)aCoder
+{
+	self = [super initWithCoder: aCoder];
+   [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+   [aCoder decodeValueOfObjCType: @encode(NSPoint *) at: &p];
+	return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+	PathElement *element = [[PathElement allocWithZone: zone] init];
+	element->type = type;
+	if(type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) {
+		element->p[0].x = p[0].x;
+		element->p[0].y = p[0].y;
+	} else if(type == NSCurveToBezierPathElement) {
+		element->p[0].x = p[0].x;
+		element->p[0].y = p[0].y;
+		element->p[1].x = p[1].x;
+		element->p[1].y = p[1].y;
+		element->p[2].x = p[2].x;
+		element->p[2].y = p[2].y;
+	}
+	return AUTORELEASE(element);
 }
 
 - (void)setType:(NSBezierPathElement)t
@@ -491,7 +524,7 @@ static Class NSBezierPath_concrete_class = nil;
 //
 - (void)transformUsingAffineTransform:(NSAffineTransform *)transform
 {
-
+	[self subclassResponsibility:_cmd];
 }
 
 //
@@ -636,23 +669,24 @@ static Class NSBezierPath_concrete_class = nil;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:(NSCoder*)aCoder
+- (void)encodeWithCoder:(NSCoder *)aCoder
 {
-	[super encodeWithCoder: aCoder];
+	[self subclassResponsibility:_cmd];
 }
 
-- (id)initWithCoder:(NSCoder*)aCoder
+- (id)initWithCoder:(NSCoder *)aCoder
 {
-	[super initWithCoder: aCoder];
+	[self subclassResponsibility:_cmd];
 	return self;
 }
 
 //
 // NSCopying Protocol
 //
-- (id)copyWithZone:(NSZone*)zone
+- (id)copyWithZone:(NSZone *)zone
 {
-  	return self;
+	[self subclassResponsibility:_cmd];
+	return self;
 }
 
 @end
@@ -686,6 +720,9 @@ static Class NSBezierPath_concrete_class = nil;
 	if(self) {
 		pathElements = [[NSMutableArray alloc] initWithCapacity: 1];
 		subPaths = [[NSMutableArray alloc] initWithCapacity: 1];
+		[self setLineWidth: 1];
+		[self setLineCapStyle: NSButtLineCapStyle];
+		[self setLineJoinStyle: NSMiterLineJoinStyle];
 		[self setWindingRule: NSNonZeroWindingRule];
 		[self setBounds: NSZeroRect];
 		[self setControlPointBounds: NSZeroRect];
@@ -831,7 +868,6 @@ static Class NSBezierPath_concrete_class = nil;
 	PathElement *elm;
 	NSBezierPathElement t;
 	NSPoint *pts, origin;
-	float r, g, b, w;
 	int i;
 		
 	if(cachesBezierPath) {
@@ -842,12 +878,10 @@ static Class NSBezierPath_concrete_class = nil;
 			cacheimg = [[NSImage alloc] initWithSize: [self bounds].size];		
 			[self movePathToPoint: NSMakePoint(0, 0)];
 			
-			PScurrentrgbcolor(&r, &g, &b);
-			PScurrentlinewidth(&w);
-
 			[cacheimg lockFocus];
-			PSsetrgbcolor(r, g, b);
-			PSsetlinewidth(w);
+			PSsetlinewidth([self lineWidth]);
+			PSsetlinejoin([self lineJoinStyle]);
+			PSsetlinecap([self lineCapStyle]);
 			for(i = 0; i < [pathElements count]; i++) {
 				elm = [pathElements objectAtIndex: i];
 				pts = [elm points];
@@ -874,6 +908,9 @@ static Class NSBezierPath_concrete_class = nil;
 		}
 		[cacheimg compositeToPoint: origin operation: NSCompositeCopy];
 	} else {
+		PSsetlinewidth([self lineWidth]);
+		PSsetlinejoin([self lineJoinStyle]);
+		PSsetlinecap([self lineCapStyle]);
 		for(i = 0; i < [pathElements count]; i++) {
 			elm = [pathElements objectAtIndex: i];
 			pts = [elm points];
@@ -904,7 +941,6 @@ static Class NSBezierPath_concrete_class = nil;
 	PathElement *elm;
 	NSBezierPathElement t;
 	NSPoint *pts, origin;
-	float r, g, b;	
 	int i;
 
 	if(cachesBezierPath) {
@@ -914,10 +950,8 @@ static Class NSBezierPath_concrete_class = nil;
 				[cacheimg release];
 			cacheimg = [[NSImage alloc] initWithSize: [self bounds].size];		
 			[self movePathToPoint: NSMakePoint(0, 0)];
-			PScurrentrgbcolor(&r, &g, &b);
 			
 			[cacheimg lockFocus];
-			PSsetrgbcolor(r, g, b);
 			for(i = 0; i < [pathElements count]; i++) {
 				elm = [pathElements objectAtIndex: i];
 				pts = [elm points];
@@ -983,6 +1017,36 @@ static Class NSBezierPath_concrete_class = nil;
 - (void)setClip
 {
 
+}
+
+//
+// Applying transformations.
+//
+- (void)transformUsingAffineTransform:(NSAffineTransform *)transform
+{
+	PathElement *elm;
+	NSBezierPathElement t;
+	NSPoint p, *pts;
+	int i;
+
+	for(i = 0; i < [pathElements count]; i++) {
+		elm = [pathElements objectAtIndex: i];
+		pts = [elm points];
+		t = [elm type];
+		if(t == NSCurveToBezierPathElement) {
+			p = [transform transformPoint: pts[0]];
+			[elm setPointAtIndex: 0 toPoint: p];
+			p = [transform transformPoint: pts[1]];
+			[elm setPointAtIndex: 1 toPoint: p];
+			p = [transform transformPoint: pts[2]];
+			[elm setPointAtIndex: 2 toPoint: p];
+		} else {									
+			p = [transform transformPoint: pts[0]];
+			[elm setPointAtIndex: 0 toPoint: p];
+		}	
+	}
+	
+	[self calculateDraftPolygon];
 }
 
 //
@@ -1229,6 +1293,83 @@ static Class NSBezierPath_concrete_class = nil;
 		[self calculateDraftPolygon];
 }
 
+//
+// NSCoding protocol
+//
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+	float f;
+	int i;
+	NSRect r;
+	
+	[aCoder encodeValueOfObjCType: @encode(NSMutableArray) at: &pathElements];
+	[aCoder encodeValueOfObjCType: @encode(NSMutableArray) at: &subPaths];
+	r = [self bounds];
+	[aCoder encodeValueOfObjCType: @encode(NSRect) at: &r];
+	r = [self controlPointBounds];
+	[aCoder encodeValueOfObjCType: @encode(NSRect) at: &r];
+	f = [self lineWidth];
+	[aCoder encodeValueOfObjCType: @encode(float) at: &f];
+	i = [self lineCapStyle];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	i = [self lineJoinStyle];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	i = [self windingRule];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &i];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &cachesBezierPath];
+	[aCoder encodeValueOfObjCType: @encode(NSImage) at: &cacheimg];
+}
+
+- (id)initWithCoder:(NSCoder *)aCoder
+{
+	float f;
+	int i;
+	NSRect r;
+
+	self = [super init];
+	if(self) {
+		[aCoder decodeValueOfObjCType: @encode(NSMutableArray) at: &pathElements];
+		[aCoder decodeValueOfObjCType: @encode(NSMutableArray) at: &subPaths];
+		[aCoder decodeValueOfObjCType: @encode(NSRect) at: &r];
+		[self setBounds: r];
+		[aCoder decodeValueOfObjCType: @encode(NSRect) at: &r];
+		[self setControlPointBounds: r];		
+		[aCoder decodeValueOfObjCType: @encode(float) at: &f];
+		[self setLineWidth: f];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setLineCapStyle: i];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setLineJoinStyle: i];
+		[aCoder decodeValueOfObjCType: @encode(int) at: &i];
+		[self setWindingRule: i];
+		[aCoder decodeValueOfObjCType: @encode(BOOL) at: &cachesBezierPath];
+		[aCoder decodeValueOfObjCType: @encode(NSImage) at: &cacheimg];
+		isValid = NO;
+	}
+	return self;
+}
+
+//
+// NSCopying Protocol
+//
+- (id)copyWithZone:(NSZone *)zone
+{
+	GSBezierPath *path = [[GSBezierPath allocWithZone: zone] init];
+	
+	path->pathElements = [[pathElements copy] retain];
+	path->subPaths = [[subPaths copy] retain];
+	path->cachesBezierPath = cachesBezierPath;
+	if(cachesBezierPath && cacheimg)
+		path->cacheimg = [[cacheimg copy] retain];
+	[path setLineWidth: [self lineWidth]];
+	[path setLineCapStyle: [self lineCapStyle]];
+	[path setLineJoinStyle: [self lineJoinStyle]];
+	[path setWindingRule: [self windingRule]];
+	[path setBounds: [self bounds]];
+	[path setControlPointBounds: [self controlPointBounds]];
+
+	return path;
+}
 
 //
 // Private Methods 
@@ -1238,7 +1379,7 @@ static Class NSBezierPath_concrete_class = nil;
 	PathElement *elm;
 	NSBezierPathElement bpt;
 	NSPoint p, *pts;
-	double x, y, t, k = 0.025;
+	double x, y, t, k = 0.25;
 	float maxx, minx, maxy, miny;
 	float cpmaxx, cpminx, cpmaxy, cpminy;	
 	int i;

@@ -346,8 +346,18 @@ static NSColor	*shadowCol;
  */
 - (void) setState: (int)value
 {
-  // FIXME
-  _cell.state = value;
+  /* We do exactly as in macosx when value is not NSOnState,
+   * NSOffState, NSMixedState, even if their behaviour (value < 0 ==>
+   * NSMixedState) is a bit strange.  We could decide to do
+   * differently in the future, so please use always symbolic
+   * constants when calling this method, this way your code won't be
+   * broken by changes. */
+  if (value > 0)
+    _cell.state = NSOnState;
+  else if (value == 0 || (_cell.allows_mixed_state == NO))
+    _cell.state = NSOffState;
+  else 
+    _cell.state = NSMixedState;
 }
 
 - (int) state

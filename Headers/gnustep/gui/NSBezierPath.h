@@ -189,6 +189,7 @@ typedef enum {
 // Path modifications.
 //
 - (NSBezierPath *)bezierPathByFlatteningPath;
+
 - (NSBezierPath *)bezierPathByReversingPath;
 
 //

@@ -70,7 +70,6 @@ static Class imageClass;
 - (id) init
 {
   self = [super init];
-  mi_hasSubmenu = NO;
   mi_target = nil;
   mi_menu = nil;
   mi_mnemonicLocation = 255; // No mnemonic
@@ -395,7 +394,6 @@ static Class imageClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeConditionalObject: mi_menu];
   [aCoder encodeObject: mi_title];
   [aCoder encodeObject: mi_keyEquivalent];
   [aCoder encodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];
@@ -417,7 +415,6 @@ static Class imageClass;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  mi_menu = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_title];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_keyEquivalent];
   [aDecoder decodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];

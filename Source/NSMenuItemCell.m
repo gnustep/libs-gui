@@ -159,9 +159,11 @@ static NSImage	*arrowImageH = nil;
     }
 
   // Image
-  if ((anImage = [mcell_item image]))
+  if ((anImage = [mcell_item image]) && _cell.image_position == NSNoImage)
     [self setImagePosition: NSImageLeft];
-  componentSize = [anImage size];
+  componentSize = NSMakeSize(0,0);
+  if (anImage)
+    componentSize = [anImage size];
   mcell_imageWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
@@ -245,6 +247,13 @@ static NSImage	*arrowImageH = nil;
 //
 - (NSRect) imageRectForBounds:(NSRect)cellFrame
 {
+  if (_mcell_belongs_to_popupbutton && _cell.image_position)
+    {
+      /* Special case: draw image on the extreme right [FIXME check the distance]*/
+      cellFrame.origin.x  += cellFrame.size.width - mcell_imageWidth - 2;
+      cellFrame.size.width = mcell_imageWidth;
+      return cellFrame;
+    }
   // Calculate the image part of cell frame from NSMenuView
   cellFrame.origin.x  += [mcell_menuView imageAndTitleOffset];
   cellFrame.size.width = [mcell_menuView imageAndTitleWidth];

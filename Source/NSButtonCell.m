@@ -408,8 +408,10 @@
   NSString	*titleToDisplay;
   NSRect	titleRect;
   NSSize	imageSize = {0, 0};
+  NSSize        titleSize = {0, 0};
   NSColor	*backgroundColor = nil;
   BOOL		flippedView = [controlView isFlipped];
+  NSCellImagePosition ipos = _cell.image_position;
 
   // transparent buttons never draw
   if (_buttoncell_is_transparent)
@@ -484,11 +486,29 @@
 
   if (imageToDisplay)
     {
-      imageSize = [imageToDisplay size];
       [imageToDisplay setBackgroundColor: backgroundColor];
+      imageSize = [imageToDisplay size];
     }
 
-  switch (_cell.image_position)
+  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
+    {
+      titleSize = NSMakeSize([_cell_font widthOfString: titleToDisplay], 
+			     [_cell_font boundingRectForFont].size.height);
+    }
+
+  if (flippedView == YES)
+    {
+      if (ipos == NSImageAbove)
+	{
+	  ipos = NSImageBelow;
+	}
+      else if (ipos == NSImageBelow)
+	{
+	  ipos = NSImageAbove;
+	}
+    }
+  
+  switch (ipos)
     {
       case NSNoImage: 
 	imageToDisplay = nil;
@@ -541,44 +561,56 @@
 	break;
 
       case NSImageAbove: 
-	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = imageSize.height;
+	/* In this case, imageRect is all the space we can allocate above the text. 
+	   The drawing code below will then center the image in imageRect. */
 	titleRect.origin.x = cellFrame.origin.x;
+	titleRect.origin.y = cellFrame.origin.y;
 	titleRect.size.width = cellFrame.size.width;
-	titleRect.size.height = cellFrame.size.height - imageSize.height
-	  - yDist;
-	// TODO: Add distance from border if needed
-	if (flippedView)
+	titleRect.size.height = titleSize.height;
+
+	imageRect.origin.x = cellFrame.origin.x;
+	imageRect.origin.y = cellFrame.origin.y;
+	imageRect.origin.y += titleRect.size.height + yDist;
+	imageRect.size.width = cellFrame.size.width;
+	imageRect.size.height = cellFrame.size.height;
+	imageRect.size.height -= titleSize.height + yDist;
+
+	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.origin.y = NSMinY(cellFrame);
-	    titleRect.origin.y = NSMaxY(cellFrame) - titleRect.size.height;
-	  }
-	else
-	  {
-	    imageRect.origin.y = NSMaxY(cellFrame) - imageRect.size.height;
-	    titleRect.origin.y = NSMinY(cellFrame);
+	    imageRect.size.width -= 6;
+	    imageRect.origin.x   += 3;
+	    titleRect.size.width -= 6;
+	    titleRect.origin.x   += 3;
+	    imageRect.size.height -= 1;
+	    titleRect.size.height -= 1;
+	    titleRect.origin.y    += 1;
 	  }
 	break;
 
       case NSImageBelow: 
-	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = imageSize.height;
+	/* In this case, imageRect is all the space we can allocate below the text. 
+	   The drawing code below will then center the image in imageRect. */
 	titleRect.origin.x = cellFrame.origin.x;
+	titleRect.origin.y = cellFrame.origin.y + cellFrame.size.height;
+	titleRect.origin.y -= titleSize.height;
 	titleRect.size.width = cellFrame.size.width;
-	titleRect.size.height = cellFrame.size.height - imageSize.height
-	  - yDist;
-	// TODO: Add distance from border if needed
-	if (flippedView)
+	titleRect.size.height = titleSize.height;
+
+	imageRect.origin.x = cellFrame.origin.x;
+	imageRect.origin.y = cellFrame.origin.y;
+	imageRect.size.width = cellFrame.size.width;
+	imageRect.size.height = cellFrame.size.height;
+	imageRect.size.height -= titleSize.height + yDist;
+
+	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.origin.y = NSMaxY(cellFrame) - imageRect.size.height;
-	    titleRect.origin.y = NSMinY(cellFrame);
-	  }
-	else
-	  {
-	    imageRect.origin.y = NSMinY(cellFrame);
-	    titleRect.origin.y = NSMaxY(cellFrame) - titleRect.size.height;
+	    imageRect.size.width -= 6;
+	    imageRect.origin.x   += 3;
+	    titleRect.size.width -= 6;
+	    titleRect.origin.x   += 3;
+	    imageRect.size.height -= 1;
+	    imageRect.origin.y    += 1;
+	    titleRect.size.height -= 1;
 	  }
 	break;
 
@@ -683,7 +715,7 @@
     case NSImageBelow: 
     case NSImageAbove: 
       if (imageSize.width > titleSize.width)
-	s.height = imageSize.width;
+	s.width = imageSize.width;
       else 
 	s.width = titleSize.width;
       s.height = imageSize.height + titleSize.height; // + yDist ??
@@ -720,7 +752,7 @@
   // Add border size
   s.width += 2 * borderSize.width;
   s.height += 2 * borderSize.height;
-  
+
   return s;
 }
 

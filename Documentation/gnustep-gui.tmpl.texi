@@ -147,6 +147,7 @@ installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
 @chapter Special Features of GUI Classes.
 
 @menu
+* NSApplication::               
 * NSBrowserCell::               
 * NSSavePanel::               
 * GSHbox::                      
@@ -154,7 +155,111 @@ installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
 * GSVbox::                      
 @end menu
 
-@node NSBrowserCell, NSSavePanel, Classes, Classes
+@node NSApplication, NSBrowserCell, Classes, Classes
+@section NSApplication
+
+@menu
+* Standard Info Panel::
+@end menu
+
+@node Standard Info Panel,  , NSApplication, NSApplication
+@subsection Standard Info Panel
+
+GNUstep NSApplication provides the following two methods to easily
+create a standard Info Panel for your application:
+
+@noindent
+- (void) @b{orderFrontStandardInfoPanel:} (id)@t{sender}
+
+Invokes @code{orderFrontStandardInfoPanelWithOptions:} with a @code{nil}
+dictionary.  You may use this method as action of a menu item, even 
+if it is generally preferred to use the full method so that you can 
+fill in all the information to show in the Info Panel.
+
+@noindent
+- (void) @b{orderFrontStandardInfoPanelWithOptions:} (NSDictionary *)@t{dictionary}
+
+Orders front the standard info panel for the application, taking the
+needed information from the @t{dictionary} argument.  There is a single
+standard info panel per application; it is created the first time that
+this method is invoked, and then reused in all subsequent calls.  The 
+application standard info panel is immutable and can not be changed
+after creation.  Useful keys for the @t{dictionary} are:
+
+@code{ApplicationName}: A string with the name of the application (eg,
+@code{@@"Gorm"}).  If not available, the @file{Info-gnustep.plist} file is
+searched for the value of @code{ApplicationName}; if this fails, the
+@file{Info-gnustep.plist} file is searched for the value of
+@code{NSHumanReadableShortName}; if this also fails, the string returned 
+by @code{[[NSProcessInfo processInfo] processName]} is used.
+
+@code{ApplicationDescription}: A string with a very short description 
+of the application (eg, @code{@@"GNUstep Graphics Objects Relationship 
+Modeller"}).  If not available, @file{Info-gnustep.plist} is searched 
+for that key; if this fails, no application description is shown.
+
+@code{ApplicationIcon}: An image to be shown near the title.  If not
+available, @file{Info-gnustep.plist} is looked for
+@code{ApplicationIcon}; if this fails, @code{[NSApp
+applicationIconImage]} is used instead.  Since this is what you usually
+want, you usually do not need to set the @code{ApplicationIcon}
+key/value in the @code{dictionary}.
+
+@code{ApplicationRelease}: A string with the name of the application,
+release included (eg, @code{@@"Gorm 0.1"}).  If not available, the value
+for @code{ApplicationVersion} is used instead.  If this fails,
+@file{Info-gnustep.plist} is looked for @code{ApplicationRelease} or
+(failing this) for @code{NSAppVersion}.  If all fails, @code{"Unknown"}
+is used.
+
+@code{FullVersionID}: A string with the full version of the application
+(eg, @code{@@"0.1.2b"} or @code{@@"snap011100"}).  If not available,
+@code{Version} is used instead.  If this fails,
+@file{Info-gnustep.plist} is looked for @code{NSBuildVersion}.  If all
+fails, no full version is shown.
+ 
+@code{Authors}: An array of strings, each one with the name of an author
+(eg, 
+@code{[NSArray arrayWithObject: @@"Nicola Pero <n.pero@@mi.flashnet.it>"]}).  
+If not found, @file{Info-gnustep.plist} is
+looked for @code{Authors}, if this fails, @code{@@"Unknown"} is
+displayed.
+
+@code{URL}: [This field is still under work, so it might be changed] A
+string with an URL (eg, @code{@@"See http://www.gnustep.org"}).
+
+@code{Copyright}: A string with copyright owners (eg, @code{@@"Copyright
+(C) 2000 The Free Software Foundation, Inc."}).  Support for multiple
+line strings is planned but not yet available.  If not found,
+@file{Info-gnustep.plist} is searched for @code{Copyright} and then
+(failing this) for @code{NSHumanReadableCopyright}.  If all fails,
+@code{@@"Copyright Information Not Available"} is used.
+
+@code{CopyrightDescription}: A string describing the kind of copyright
+(eg, @code{@@"Released under the GNU General Public License 2.0"}).  If
+not available, @file{Info-gnustep.plist} is looked for
+@code{CopyrightDescription}.  If this fails, no copyright description 
+is shown.
+
+For compatibility reasons only, the following MacOSX API is also 
+available: 
+
+@noindent
+- (void) @b{orderFrontStandardAboutPanel:} (id)@t{sender}
+
+@noindent
+- (void) @b{orderFrontStandardAboutPanelWithOptions:} (NSDictionary *)@t{dictionary}
+
+These methods do the same as the ones above, but are deprecated.
+
+Please note that you are free to implement your own info panel for your
+app without breaking the GNUstep User Interface; the standard one is
+available only as a facility -- it's not at all compulsory to use the
+standard one -- you are encouraged to create your own if you like.  What
+is important instead is that you make your info panel available from the
+@t{Info...} item in the @t{Info} menu.
+
+@node NSBrowserCell, NSSavePanel, NSApplication, Classes
 @section NSBrowserCell
 
 @menu
@@ -1139,10 +1244,11 @@ argument was given.  The Info-gnustep.plist file could look like this:
 @chapter Special Setup Instructions.
 
 @menu
-* Keyboard Modifiers::          
+* Keyboard Modifiers::
+* Window Manager::
 @end menu
 
-@node Keyboard Modifiers,  , Setup, Setup
+@node Keyboard Modifiers, Window Manager, Setup, Setup
 @section Keyboard Modifiers
 
 This section applies only to the xgps and the xdps backend. 
@@ -1279,6 +1385,16 @@ with the window manager keyboard shortcuts.
 Good window managers let you change the keyboard shortcuts, 
 so you may move the wm shortcuts that you do not use to keys 
 which do not conflict (at least not too much) with GNUstep.  
+
+@node Window Manager,  , Keyboard Modifiers, Setup
+@section Window Manager Recommended Configuration
+
+If you are using GNUstep GUI library with the Window Maker window
+manager it is recommended that you set the Window Maker option "Input
+Focus Mouse" (under "Window Focus Preferences") to "Click Window To
+Focus".
+
+If you are using another window manager, look for a similar option.
 
 @node Contributing, Concept Index, Setup, Top
 @chapter Contributing

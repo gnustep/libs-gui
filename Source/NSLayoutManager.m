@@ -29,6 +29,24 @@
 */
 #include <AppKit/NSLayoutManager.h>
 
+/*
+ * A little utility function to determine the range of characters in a scanner
+ * that are present in a specified character set.
+ */
+static inline NSRange
+scanRange(NSScanner *scanner, NSCharacterSet* aSet)
+{
+  unsigned	start = [scanner scanLocation];
+  unsigned	end = start;
+
+  if ([scanner scanCharactersFromSet: aSet intoString: 0] == YES)
+    {
+      end = [scanner scanLocation];
+    }
+  return NSMakeRange(start, end - start);
+}
+
+
 // _GSRunSearchKey is an internal class which serves as the foundation for
 // all our searching. This may not be an elegant way to go about this, so
 // if someone wants to optimize this out, please do.
@@ -41,7 +59,7 @@
 @end
 
 @implementation _GSRunSearchKey
-- (id)init
+- (id) init
 {
   return [super init];
 }
@@ -60,7 +78,7 @@
 @end
 
 @implementation GSGlyphLocation
-- (id)init
+- (id) init
 {
   return [super init];
 }
@@ -80,7 +98,7 @@
 @end
 
 @implementation GSLineLayoutInfo
-- (id)init
+- (id) init
 {
   return [super init];
 }
@@ -94,13 +112,13 @@
 @interface GSTextContainerLayoutInfo : _GSRunSearchKey
 {
 @public
-  NSTextContainer *textContainer;
-  NSString *testString;
+  NSTextContainer	*textContainer;
+  NSString		*testString;
 }
 @end
 
 @implementation GSTextContainerLayoutInfo
-- (id)init
+- (id) init
 {
   return [super init];
 }
@@ -120,11 +138,11 @@
 
 static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 {
-  if (((_GSRunSearchKey *)(i0.obj))->glyphRange.location
-    < ((_GSRunSearchKey *)(i1.obj))->glyphRange.location)
+  if (((_GSRunSearchKey*)(i0.obj))->glyphRange.location
+    < ((_GSRunSearchKey*)(i1.obj))->glyphRange.location)
     return NSOrderedAscending;
-  else if (((_GSRunSearchKey *)(i0.obj))->glyphRange.location
-    >= NSMaxRange(((_GSRunSearchKey *)(i1.obj))->glyphRange))
+  else if (((_GSRunSearchKey*)(i0.obj))->glyphRange.location
+    >= NSMaxRange(((_GSRunSearchKey*)(i1.obj))->glyphRange))
     return NSOrderedDescending;
   else
     return NSOrderedSame;
@@ -135,17 +153,17 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   unsigned int _count;
   void *_runs;
 }
-- (void)insertObject:(id)anObject;
-- (void)insertObject:(id)anObject atIndex:(unsigned)theIndex;
-- (id)objectAtIndex:(unsigned)theIndex;
-- (unsigned)indexOfObject:(id)anObject;
-- (unsigned)indexOfObjectContainingLocation:(unsigned)aLocation;
-- (id)objectContainingLocation:(unsigned)aLocation;
-- (int)count;
+- (void) insertObject: (id)anObject;
+- (void) insertObject: (id)anObject atIndex: (unsigned)theIndex;
+- (id) objectAtIndex: (unsigned)theIndex;
+- (unsigned) indexOfObject: (id)anObject;
+- (unsigned) indexOfObjectContainingLocation: (unsigned)aLocation;
+- (id) objectContainingLocation: (unsigned)aLocation;
+- (int) count;
 @end
 
 @implementation GSRunStorage
-- (id)init
+- (id) init
 {
   NSZone *z;
 
@@ -159,10 +177,10 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return self;
 }
 
-- (void)insertObject:(id)anObject
+- (void) insertObject: (id)anObject
 {
   _GSRunSearchKey *aKey = [_GSRunSearchKey new];
-  _GSRunSearchKey *aObject = (_GSRunSearchKey *)anObject;
+  _GSRunSearchKey *aObject = (_GSRunSearchKey*)anObject;
   int position;
 
   aKey->glyphRange.location = aObject->glyphRange.location;
@@ -193,7 +211,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //	NSLog(@"=========> first item (zero index).");
 	GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
 //      GSIArrayInsertSorted(_runs, (GSIArrayItem)anObject, aSort);
-//      [self insertObject:anObject atIndex:position];
+//      [self insertObject: anObject atIndex: position];
     }
   else
     NSLog(@"dead. VERY DEAD DEAD DEAD DEAD.");
@@ -201,31 +219,31 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //  NSLog(@"==> %d item(s)", GSIArrayCount(_runs));
 }
 
-- (void)insertObject:(id)anObject
-	     atIndex:(unsigned)theIndex
+- (void) insertObject: (id)anObject
+	      atIndex: (unsigned)theIndex
 {
-  NSLog(@"insertObject:atIndex: called. %d item(s)", GSIArrayCount(_runs));
+  NSLog(@"insertObject: atIndex: called. %d item(s)", GSIArrayCount(_runs));
   GSIArrayInsertSorted(_runs, (GSIArrayItem)anObject, aSort);
 //  GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, theIndex);
-  NSLog(@"insertObject:atIndex: ended. %d item(s)", GSIArrayCount(_runs));
+  NSLog(@"insertObject: atIndex: ended. %d item(s)", GSIArrayCount(_runs));
 }
 
-- (void)removeObjectAtIndex:(int)theIndex
+- (void) removeObjectAtIndex: (int)theIndex
 {
   GSIArrayRemoveItemAtIndex(_runs, theIndex);
 }
 
-- (id)objectAtIndex:(unsigned)theIndex
+- (id) objectAtIndex: (unsigned)theIndex
 {
   return GSIArrayItemAtIndex(_runs, (unsigned)theIndex).obj;
 }
 
-- (unsigned)indexOfObject:(id)anObject
+- (unsigned) indexOfObject: (id)anObject
 {
   return NSNotFound;
 }
 
-- (unsigned)indexOfObjectContainingLocation:(unsigned)aLocation
+- (unsigned) indexOfObjectContainingLocation: (unsigned)aLocation
 {
   _GSRunSearchKey *aKey = [_GSRunSearchKey new];
   int position;
@@ -247,7 +265,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return -1;
 }
 
-- (id)objectContainingLocation:(unsigned)aLocation
+- (id) objectContainingLocation: (unsigned)aLocation
 {
   _GSRunSearchKey *aKey = [_GSRunSearchKey new];
   int position;
@@ -269,12 +287,12 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return nil;  
 }
 
-- (id)lastObject
+- (id) lastObject
 {
   return GSIArrayItemAtIndex(_runs, GSIArrayCount(_runs) - 1).obj;
 }
 
-- (int)count
+- (int) count
 {
   return GSIArrayCount(_runs);
 }
@@ -300,17 +318,17 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //
 // Setting the text storage
 //
-- (void)setTextStorage: (NSTextStorage *)aTextStorage
+- (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
   ASSIGN(_textStorage, aTextStorage);
 }
 
-- (NSTextStorage *)textStorage
+- (NSTextStorage*) textStorage
 {
   return _textStorage;
 }
 
-- (void)replaceTextStorage: (NSTextStorage *)newTextStorage
+- (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
   NSArray *layoutManagers = [_textStorage layoutManagers];
   NSEnumerator *enumerator = [layoutManagers objectEnumerator];
@@ -320,7 +338,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   // new one.  NSTextStorage's addLayoutManager invokes NSLayoutManager's
   // setTextStorage method automatically, and that includes self.
 
-  while( (object = (NSLayoutManager *)[enumerator nextObject]) )
+  while( (object = (NSLayoutManager*)[enumerator nextObject]) )
   {
     [_textStorage removeLayoutManager: object];
     [newTextStorage addLayoutManager: object];
@@ -330,27 +348,27 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //
 // Setting text containers
 //
-- (NSArray *)textContainers
+- (NSArray*) textContainers
 {
   return _textContainers;
 }
 
-- (void)addTextContainer: (NSTextContainer *)obj
+- (void) addTextContainer: (NSTextContainer*)obj
 {
-  if( [_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound )
+  if ( [_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound )
   {
     [_textContainers addObject: obj];
     [obj setLayoutManager: self];
   }
 }
 
-- (void)insertTextContainer: (NSTextContainer *)aTextContainer
-                    atIndex: (unsigned)index
+- (void) insertTextContainer: (NSTextContainer*)aTextContainer
+		     atIndex: (unsigned)index
 {
   [_textContainers insertObject: aTextContainer atIndex: index];
 }
 
-- (void)removeTextContainerAtIndex: (unsigned)index
+- (void) removeTextContainerAtIndex: (unsigned)index
 {
   [_textContainers removeObjectAtIndex: index];
 }
@@ -358,39 +376,39 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 //
 // Invalidating glyphs and layout
 //
-- (void)invalidateGlyphsForCharacterRange: (NSRange)aRange
-                           changeInLength: (int)lengthChange
-                     actualCharacterRange: (NSRange *)actualRange
+- (void) invalidateGlyphsForCharacterRange: (NSRange)aRange
+			    changeInLength: (int)lengthChange
+		      actualCharacterRange: (NSRange*)actualRange
 {
 }
 
-- (void)invalidateLayoutForCharacterRange: (NSRange)aRange
-                                   isSoft: (BOOL)flag
-                     actualCharacterRange: (NSRange *)actualRange
+- (void) invalidateLayoutForCharacterRange: (NSRange)aRange
+				    isSoft: (BOOL)flag
+		      actualCharacterRange: (NSRange*)actualRange
 {
 }
 
-- (void)invalidateDisplayForCharacterRange: (NSRange)aRange
+- (void) invalidateDisplayForCharacterRange: (NSRange)aRange
 {
 }
 
-- (void)invalidateDisplayForGlyphRange: (NSRange)aRange
+- (void) invalidateDisplayForGlyphRange: (NSRange)aRange
 {
 }
 
-- (void)textContainerChangedGeometry: (NSTextContainer *)aContainer
+- (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
 {
 }
 
-- (void)textContainerChangedTextView: (NSTextContainer *)aContainer
+- (void) textContainerChangedTextView: (NSTextContainer*)aContainer
 {
 }
 
-- (void)textStorage: (NSTextStorage *)aTextStorage
-             edited: (unsigned)mask
-              range: (NSRange)range
-     changeInLength: (int)lengthChange
-   invalidatedRange: (NSRange)invalidatedRange
+- (void) textStorage: (NSTextStorage*)aTextStorage
+	      edited: (unsigned)mask
+	       range: (NSRange)range
+      changeInLength: (int)lengthChange
+    invalidatedRange: (NSRange)invalidatedRange
 {
   NSLog(@"NSLayoutManager was just notified that a change in the text
 storage occured.");
@@ -402,7 +420,7 @@ invalidatedRange.length);
   if (mask == NSTextStorageEditedCharacters)
     {
       aLayoutHole = [[NSLayoutHole alloc]
-initWithCharacterRange:invalidatedRange isSoft:NO];
+initWithCharacterRange: invalidatedRange isSoft: NO];
     }
   else if (mask == NSTextStorageEditedAttributes)
     {
@@ -420,12 +438,12 @@ initWithCharacterRange:invalidatedRange isSoft:NO];
 // Turning on/off background layout
 //
 
-- (void)setBackgroundLayoutEnabled: (BOOL)flag
+- (void) setBackgroundLayoutEnabled: (BOOL)flag
 {
   _backgroundLayout = flag;
 }
 
-- (BOOL)backgroundLayoutEnabled
+- (BOOL) backgroundLayoutEnabled
 {
   return _backgroundLayout;
 }
@@ -433,40 +451,40 @@ initWithCharacterRange:invalidatedRange isSoft:NO];
 //
 // Accessing glyphs
 //
-- (void)insertGlyph: (NSGlyph)aGlyph
-       atGlyphIndex: (unsigned)glyphIndex
-     characterIndex: (unsigned)charIndex
+- (void) insertGlyph: (NSGlyph)aGlyph
+	atGlyphIndex: (unsigned)glyphIndex
+      characterIndex: (unsigned)charIndex
 {
 }
 
-- (NSGlyph)glyphAtIndex: (unsigned)index
+- (NSGlyph) glyphAtIndex: (unsigned)index
 {
   return NSNullGlyph;
 }
 
-- (NSGlyph)glyphAtIndex: (unsigned)index
-           isValidIndex: (BOOL *)flag
+- (NSGlyph) glyphAtIndex: (unsigned)index
+	    isValidIndex: (BOOL*)flag
 {
   *flag = NO;
   return NSNullGlyph;
 }
 
-- (void)replaceGlyphAtIndex: (unsigned)index
-                  withGlyph: (NSGlyph)newGlyph
+- (void) replaceGlyphAtIndex: (unsigned)index
+		   withGlyph: (NSGlyph)newGlyph
 {
 }
 
-- (unsigned)getGlyphs: (NSGlyph *)glyphArray
-                range: (NSRange)glyphRange
+- (unsigned) getGlyphs: (NSGlyph*)glyphArray
+		 range: (NSRange)glyphRange
 {
   return (unsigned)0;
 }
 
-- (void)deleteGlyphsInRange: (NSRange)aRange
+- (void) deleteGlyphsInRange: (NSRange)aRange
 {
 }
 
-- (unsigned)numberOfGlyphs
+- (unsigned) numberOfGlyphs
 {
   return 0;
 }
@@ -474,24 +492,24 @@ initWithCharacterRange:invalidatedRange isSoft:NO];
 //
 // Mapping characters to glyphs
 //
-- (void)setCharacterIndex: (unsigned)charIndex
-          forGlyphAtIndex: (unsigned)glyphIndex
+- (void) setCharacterIndex: (unsigned)charIndex
+	   forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
-- (unsigned)characterIndexForGlyphAtIndex: (unsigned)glyphIndex
+- (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex
 {
   return 0;
 }
 
-- (NSRange)characterRangeForGlyphRange: (NSRange)glyphRange
-                      actualGlyphRange: (NSRange *)actualGlyphRange
+- (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
+		       actualGlyphRange: (NSRange*)actualGlyphRange
 {
   return NSMakeRange(0, 0);
 }
 
-- (NSRange)glyphRangeForCharacterRange: (NSRange)charRange
-                  actualCharacterRange: (NSRange *)actualCharRange
+- (NSRange) glyphRangeForCharacterRange: (NSRange)charRange
+		   actualCharacterRange: (NSRange*)actualCharRange
 {
   return NSMakeRange(0, 0);
 }
@@ -502,14 +520,14 @@ initWithCharacterRange:invalidatedRange isSoft:NO];
 
 // Each NSGlyph has an attribute field, yes?
 
-- (void)setIntAttribute: (int)attribute
-                  value: (int)anInt
-        forGlyphAtIndex: (unsigned)glyphIndex
+- (void) setIntAttribute: (int)attribute
+		   value: (int)anInt
+	 forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
-- (int)intAttribute: (int)attribute
-    forGlyphAtIndex: (unsigned)glyphIndex
+- (int) intAttribute: (int)attribute
+     forGlyphAtIndex: (unsigned)glyphIndex
 {
   return 0;
 }
@@ -517,18 +535,18 @@ initWithCharacterRange:invalidatedRange isSoft:NO];
 //
 // Handling layout for text containers 
 //
-- (void)setTextContainer: (NSTextContainer *)aTextContainer
-           forGlyphRange: (NSRange)glyphRange
+- (void) setTextContainer: (NSTextContainer*)aTextContainer
+	    forGlyphRange: (NSRange)glyphRange
 {
-  GSTextContainerLayoutInfo *theLine = [GSTextContainerLayoutInfo new];
+  GSTextContainerLayoutInfo	*theLine = [GSTextContainerLayoutInfo new];
 
   theLine->glyphRange = glyphRange;
   ASSIGN(theLine->textContainer, aTextContainer);
   
-  [containerRuns insertObject:theLine];
+  [containerRuns insertObject: theLine];
 }
 
-- (NSRange)glyphRangeForTextContainer: (NSTextContainer *)aTextContainer
+- (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
 {
   int i;
 
@@ -537,7 +555,7 @@ textContainer(s) in containerRuns.", [containerRuns count]);
 
   for (i=0;i<[containerRuns count];i++)
     {
-      GSTextContainerLayoutInfo *aNewLine = [containerRuns objectAtIndex:i];
+      GSTextContainerLayoutInfo *aNewLine = [containerRuns objectAtIndex: i];
 
 /*
       NSLog(@"glyphRangeForTextContainer: (%d, %d)",
@@ -545,7 +563,7 @@ aNewLine->glyphRange.location,
 aNewLine->glyphRange.length);
 */
 
-      if ([aNewLine->textContainer isEqual:aTextContainer])
+      if ([aNewLine->textContainer isEqual: aTextContainer])
         {
 /*
 	  NSLog(@"glyphRangeForWantedTextContainer: (%d, %d)",
@@ -559,27 +577,28 @@ aNewLine->glyphRange.length);
   return NSMakeRange(NSNotFound, 0);
 }
 
-- (NSTextContainer *)textContainerForGlyphAtIndex: (unsigned)glyphIndex
-                                   effectiveRange: (NSRange *)effectiveRange
+- (NSTextContainer*) textContainerForGlyphAtIndex: (unsigned)glyphIndex
+                                   effectiveRange: (NSRange*)effectiveRange
 {
-  GSTextContainerLayoutInfo *theLine = [containerRuns objectContainingLocation:glyphIndex];
+  GSTextContainerLayoutInfo	*theLine;
 
-  if(theLine)
+  theLine = [containerRuns objectContainingLocation: glyphIndex];
+  if (theLine)
     {
-      (NSRange *)effectiveRange = &theLine->glyphRange;
+      (NSRange*)effectiveRange = &theLine->glyphRange;
       return theLine->textContainer;
     }
 
-  (NSRange *)effectiveRange = NULL;
+  (NSRange*)effectiveRange = NULL;
   return nil;
 }
 
 //
 // Handling line fragment rectangles 
 //
-- (void)setLineFragmentRect: (NSRect)fragmentRect
-              forGlyphRange: (NSRange)glyphRange
-                   usedRect: (NSRect)usedRect
+- (void) setLineFragmentRect: (NSRect)fragmentRect
+	       forGlyphRange: (NSRange)glyphRange
+		    usedRect: (NSRect)usedRect
 {
   GSLineLayoutInfo *aNewLine = [GSLineLayoutInfo new];
 
@@ -587,66 +606,68 @@ aNewLine->glyphRange.length);
   aNewLine->lineFragmentRect = fragmentRect;
   aNewLine->usedRect = usedRect;
 
-  [fragmentRuns insertObject:aNewLine];
+  [fragmentRuns insertObject: aNewLine];
 }
 
-- (NSRect)lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
-                           effectiveRange: (NSRange *)lineFragmentRange
+- (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
+			    effectiveRange: (NSRange*)lineFragmentRange
 {
-  GSLineLayoutInfo *theLine = [fragmentRuns objectContainingLocation:glyphIndex];
+  GSLineLayoutInfo	*theLine;
 
+  theLine = [fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
-      (NSRange *)lineFragmentRange = &theLine->glyphRange;
+      (NSRange*)lineFragmentRange = &theLine->glyphRange;
       return theLine->lineFragmentRect;
     }
 
-  (NSRange *)lineFragmentRange = NULL;
+  (NSRange*)lineFragmentRange = NULL;
   return NSZeroRect;
 }
 
-- (NSRect)lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
-                               effectiveRange: (NSRange *)lineFragmentRange
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
+				effectiveRange: (NSRange*)lineFragmentRange
 {
-  GSLineLayoutInfo *theLine = [fragmentRuns objectContainingLocation:glyphIndex];
+  GSLineLayoutInfo	*theLine;
 
+  theLine = [fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
-      (NSRange *)lineFragmentRange = &theLine->glyphRange;
+      (NSRange*)lineFragmentRange = &theLine->glyphRange;
       return theLine->usedRect;
     }
 
-  (NSRange *)lineFragmentRange = NULL;
+  (NSRange*)lineFragmentRange = NULL;
   return NSZeroRect;
 }
 
-- (void)setExtraLineFragmentRect: (NSRect)aRect
-                        usedRect: (NSRect)usedRect
-                   textContainer: (NSTextContainer *)aTextContainer
+- (void) setExtraLineFragmentRect: (NSRect)aRect
+			 usedRect: (NSRect)usedRect
+		    textContainer: (NSTextContainer*)aTextContainer
 {
 }
 
-- (NSRect)extraLineFragmentRect 
-{
-  return NSZeroRect;
-}
-
-- (NSRect)extraLineFragmentUsedRect 
+- (NSRect) extraLineFragmentRect 
 {
   return NSZeroRect;
 }
 
-- (NSTextContainer *)extraLineFragmentTextContainer 
+- (NSRect) extraLineFragmentUsedRect 
+{
+  return NSZeroRect;
+}
+
+- (NSTextContainer*) extraLineFragmentTextContainer 
 {
   return nil;
 }
 
-- (void)setDrawsOutsideLineFragment: (BOOL)flag
-                    forGlyphAtIndex: (unsigned)glyphIndex
+- (void) setDrawsOutsideLineFragment: (BOOL)flag
+		     forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
-- (BOOL)drawsOutsideLineFragmentForGlyphAtIndex: (unsigned)glyphIndex
+- (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned)glyphIndex
 {
   return NO;
 }
@@ -655,25 +676,27 @@ aNewLine->glyphRange.length);
 // Layout of glyphs 
 //
 
-- (void)setLocation: (NSPoint)aPoint
-        forStartOfGlyphRange: (NSRange)glyphRange
+- (void) setLocation: (NSPoint)aPoint
+forStartOfGlyphRange: (NSRange)glyphRange
 {
   GSGlyphLocation *aNewLine = [GSGlyphLocation new];
 
   aNewLine->glyphRange = glyphRange;
   aNewLine->point = aPoint;
 
-  [locationRuns insertObject:aNewLine];
+  [locationRuns insertObject: aNewLine];
 }
 
-- (NSPoint)locationForGlyphAtIndex: (unsigned)glyphIndex
+- (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
 {
   return NSZeroPoint;
 }
 
-- (NSRange)rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
+- (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
 {
-  GSLineLayoutInfo *theLine = [locationRuns objectContainingLocation:glyphIndex];
+  GSLineLayoutInfo	*theLine;
+
+  theLine = [locationRuns objectContainingLocation: glyphIndex];
 
   if (theLine)
     {
@@ -683,10 +706,10 @@ aNewLine->glyphRange.length);
   return NSMakeRange(NSNotFound, 0);
 }
 
-- (NSRect *)rectArrayForCharacterRange: (NSRange)charRange
+- (NSRect*) rectArrayForCharacterRange: (NSRange)charRange
           withinSelectedCharacterRange: (NSRange)selChareRange
-                       inTextContainer: (NSTextContainer *)aTextContainer
-                             rectCount: (unsigned *)rectCount
+                       inTextContainer: (NSTextContainer*)aTextContainer
+                             rectCount: (unsigned*)rectCount
 {
 /*
   GSLineLayoutInfo *theLine = [GSLineLayoutInfo new];
@@ -727,16 +750,16 @@ aNewLine->glyphRange.length);
 */
 }
 
-- (NSRect *)rectArrayForGlyphRange: (NSRange)glyphRange
+- (NSRect*) rectArrayForGlyphRange: (NSRange)glyphRange
           withinSelectedGlyphRange: (NSRange)selectedGlyphRange
-                   inTextContainer: (NSTextContainer *)aTextContainer
-                         rectCount: (unsigned *)rectCount
+                   inTextContainer: (NSTextContainer*)aTextContainer
+                         rectCount: (unsigned*)rectCount
 {
   return _cachedRectArray;
 }
 
-- (NSRect)boundingRectForGlyphRange: (NSRange)glyphRange
-                    inTextContainer: (NSTextContainer *)aTextContainer
+- (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
+		     inTextContainer: (NSTextContainer*)aTextContainer
 {
 
 /* Returns a single bounding rectangle enclosing all glyphs and other
@@ -746,7 +769,7 @@ underlining. This method is useful for determining the area that needs to
 be redrawn when a range of glyphs changes. */
 /*
   unsigned rectCount;
-  NSRect *rects = [self rectArrayForCharacterRange: [self glyphRangeForTextContainer:aTextContainer]
+  NSRect *rects = [self rectArrayForCharacterRange: [self glyphRangeForTextContainer: aTextContainer]
 		      withinSelectedCharacterRange: NSMakeRange(0,0)
 				   inTextContainer: aTextContainer
 					 rectCount: &rectCount];
@@ -770,21 +793,21 @@ be redrawn when a range of glyphs changes. */
   return NSZeroRect;
 }
 
-- (NSRange)glyphRangeForBoundingRect: (NSRect)aRect
-                     inTextContainer: (NSTextContainer *)aTextContainer
+- (NSRange) glyphRangeForBoundingRect: (NSRect)aRect
+		      inTextContainer: (NSTextContainer*)aTextContainer
 {
   return NSMakeRange(0, 0);
 }
 
-- (NSRange)glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
-                           inTextContainer: (NSTextContainer *)aTextContainer
+- (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
+                           inTextContainer: (NSTextContainer*)aTextContainer
 {
   return NSMakeRange(0, 0);
 }
 
-- (unsigned)glyphIndexForPoint: (NSPoint)aPoint
-               inTextContainer: (NSTextContainer *)aTextContainer
-fractionOfDistanceThroughGlyph: (float *)partialFraction
+- (unsigned) glyphIndexForPoint: (NSPoint)aPoint
+		inTextContainer: (NSTextContainer*)aTextContainer
+ fractionOfDistanceThroughGlyph: (float*)partialFraction
 {
   return 0;
 }
@@ -792,32 +815,32 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Display of special glyphs 
 //
-- (void)setNotShownAttribute: (BOOL)flag
-             forGlyphAtIndex: (unsigned)glyphIndex
+- (void) setNotShownAttribute: (BOOL)flag
+	      forGlyphAtIndex: (unsigned)glyphIndex
 {
 }
 
-- (BOOL)notShownAttributeForGlyphAtIndex: (unsigned)glyphIndex
+- (BOOL) notShownAttributeForGlyphAtIndex: (unsigned)glyphIndex
 {
   return YES;
 }
 
-- (void)setShowsInvisibleCharacters: (BOOL)flag
+- (void) setShowsInvisibleCharacters: (BOOL)flag
 {
   _showsInvisibleChars = flag;
 }
 
-- (BOOL)showsInvisibleCharacters 
+- (BOOL) showsInvisibleCharacters 
 {
   return _showsInvisibleChars;
 }
 
-- (void)setShowsControlCharacters: (BOOL)flag
+- (void) setShowsControlCharacters: (BOOL)flag
 {
   _showsControlChars = flag;
 }
 
-- (BOOL)showsControlCharacters
+- (BOOL) showsControlCharacters
 {
   return _showsControlChars;
 }
@@ -825,12 +848,12 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Controlling hyphenation 
 //
-- (void)setHyphenationFactor: (float)factor
+- (void) setHyphenationFactor: (float)factor
 {
   _hyphenationFactor = factor;
 }
 
-- (float)hyphenationFactor
+- (float) hyphenationFactor
 {
   return _hyphenationFactor;
 }
@@ -838,12 +861,12 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Finding unlaid characters/glyphs 
 //
-- (void)getFirstUnlaidCharacterIndex: (unsigned *)charIndex
-                          glyphIndex: (unsigned *)glyphIndex
+- (void) getFirstUnlaidCharacterIndex: (unsigned*)charIndex
+			   glyphIndex: (unsigned*)glyphIndex
 {
 }
 
-- (unsigned int)firstUnlaidCharacterIndex
+- (unsigned int) firstUnlaidCharacterIndex
 {
   return 0;
 }
@@ -851,17 +874,17 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Using screen fonts 
 //
-- (void)setUsesScreenFonts: (BOOL)flag
+- (void) setUsesScreenFonts: (BOOL)flag
 {
   _usesScreenFonts = flag;
 }
 
-- (BOOL)usesScreenFonts 
+- (BOOL) usesScreenFonts 
 {
   return _usesScreenFonts;
 }
 
-- (NSFont *)substituteFontForFont: (NSFont *)originalFont
+- (NSFont*) substituteFontForFont: (NSFont*)originalFont
 {
   return originalFont;
 }
@@ -869,17 +892,17 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Handling rulers 
 //
-- (NSView *)rulerAccessoryViewForTextView: (NSTextView *)aTextView
-                           paragraphStyle: (NSParagraphStyle *)paragraphStyle
-                                    ruler: (NSRulerView *)aRulerView
+- (NSView*) rulerAccessoryViewForTextView: (NSTextView*)aTextView
+                           paragraphStyle: (NSParagraphStyle*)paragraphStyle
+                                    ruler: (NSRulerView*)aRulerView
                                   enabled: (BOOL)flag
 {
   return NULL;
 }
 
-- (NSArray *)rulerMarkersForTextView: (NSTextView *)aTextView
-                      paragraphStyle: (NSParagraphStyle *)paragraphStyle
-                               ruler: (NSRulerView *)aRulerView
+- (NSArray*) rulerMarkersForTextView: (NSTextView*)aTextView
+                      paragraphStyle: (NSParagraphStyle*)paragraphStyle
+                               ruler: (NSRulerView*)aRulerView
 {
   return NULL;
 }
@@ -887,17 +910,17 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Managing the responder chain 
 //
-- (BOOL)layoutManagerOwnsFirstResponderInWindow: (NSWindow *)aWindow
+- (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow*)aWindow
 {
   return NO;
 }
 
-- (NSTextView *)firstTextView 
+- (NSTextView*) firstTextView 
 {
   return NULL;
 }
 
-- (NSTextView *)textViewForBeginningOfSelection
+- (NSTextView*) textViewForBeginningOfSelection
 {
   return NULL;
 }
@@ -905,19 +928,19 @@ fractionOfDistanceThroughGlyph: (float *)partialFraction
 //
 // Drawing 
 //
-- (void)drawBackgroundForGlyphRange: (NSRange)glyphRange
-                            atPoint: (NSPoint)containerOrigin
+- (void) drawBackgroundForGlyphRange: (NSRange)glyphRange
+			     atPoint: (NSPoint)containerOrigin
 {
 }
 
-- (void)drawGlyphsForGlyphRange: (NSRange)glyphRange
-                        atPoint: (NSPoint)containerOrigin
+- (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
+			 atPoint: (NSPoint)containerOrigin
 {
   int firstPosition, lastPosition, i;
 
   for (i=0;i<[fragmentRuns count];i++)
     {
-      GSLineLayoutInfo *info = [fragmentRuns objectAtIndex:i];
+      GSLineLayoutInfo *info = [fragmentRuns objectAtIndex: i];
 
 /*
       NSLog(@"i: %d glyphRange: (%d, %d) lineFragmentRect: (%f, %f) (%f, %f)",
@@ -931,9 +954,9 @@ info->lineFragmentRect.size.height);
 */
     }
 
-  firstPosition = [fragmentRuns indexOfObjectContainingLocation:glyphRange.location];
+  firstPosition = [fragmentRuns indexOfObjectContainingLocation: glyphRange.location];
   lastPosition = [fragmentRuns 
-indexOfObjectContainingLocation:(glyphRange.location+glyphRange.length-3)];
+indexOfObjectContainingLocation: (glyphRange.location+glyphRange.length-3)];
 
   NSLog(@"glyphRange: (%d, %d) position1: %d position2: %d",
 glyphRange.location, glyphRange.length, firstPosition, lastPosition);
@@ -948,7 +971,7 @@ glyphRange.location, glyphRange.length, firstPosition, lastPosition);
 
       for (i = firstPosition; i <= lastPosition; i++)
         {
-	  GSLineLayoutInfo *aLine = [fragmentRuns objectAtIndex:i];
+	  GSLineLayoutInfo *aLine = [fragmentRuns objectAtIndex: i];
 	  NSRect aRect = aLine->lineFragmentRect;
 	  aRect.size.height -= 4;
 
@@ -963,74 +986,58 @@ aLine->lineFragmentRect.size.height);
 */
 
           NSEraseRect (aRect);
-	  [_textStorage drawRange:aLine->glyphRange inRect:aLine->lineFragmentRect];
+	  [_textStorage drawRange: aLine->glyphRange inRect: aLine->lineFragmentRect];
         }
     }
 }
 
-- (void)drawUnderlineForGlyphRange: (NSRange)glyphRange
-                     underlineType: (int)underlineType
-                    baselineOffset: (float)baselineOffset
-                  lineFragmentRect: (NSRect)lineRect
-            lineFragmentGlyphRange: (NSRange)lineGlyphRange
-                   containerOrigin: (NSPoint)containerOrigin
+- (void) drawUnderlineForGlyphRange: (NSRange)glyphRange
+		      underlineType: (int)underlineType
+		     baselineOffset: (float)baselineOffset
+		   lineFragmentRect: (NSRect)lineRect
+	     lineFragmentGlyphRange: (NSRange)lineGlyphRange
+		    containerOrigin: (NSPoint)containerOrigin
 {
 }
 
-- (void)underlineGlyphRange: (NSRange)glyphRange
-              underlineType: (int)underlineType
-           lineFragmentRect: (NSRect)lineRect
-     lineFragmentGlyphRange: (NSRange)lineGlyphRange
-            containerOrigin: (NSPoint)containerOrigin
+- (void) underlineGlyphRange: (NSRange)glyphRange
+	       underlineType: (int)underlineType
+	    lineFragmentRect: (NSRect)lineRect
+      lineFragmentGlyphRange: (NSRange)lineGlyphRange
+	     containerOrigin: (NSPoint)containerOrigin
 {
 }
 
 //
 // Setting the delegate 
 //
-- (void)setDelegate: (id)aDelegate
+- (void) setDelegate: (id)aDelegate
 {
   _delegate = aDelegate;
 }
 
-- (id)delegate
+- (id) delegate
 {
   return _delegate;
 }
 
 @end /* NSLayoutManager */
 
-/* Thew methods laid out here are not correct, however the code they
+/* The methods laid out here are not correct, however the code they
 contain for the most part is. Therefore, my country and a handsome gift of
-Ghiradelli chocolate to he who puts all the pieces together :) */
-
-@interface _GNUTextScanner:NSObject
-{       NSString           *string;
-        NSCharacterSet *set,*iSet;
-        unsigned                stringLength;
-        NSRange                 activeRange;
-}
-+(_GNUTextScanner*) scannerWithString:(NSString*) aStr set:(NSCharacterSet*) aSet invertedSet:(NSCharacterSet*) anInvSet;
--(void)                         setString:(NSString*) aString set:(NSCharacterSet*) aSet invertedSet:(NSCharacterSet*) anInvSet;
--(NSRange)                      _scanCharactersInverted:(BOOL) inverted;
--(NSRange)                      scanSetCharacters;
--(NSRange)                      scanNonSetCharacters;
--(BOOL)                         isAtEnd;
--(unsigned)                     scanLocation;
--(void)                         setScanLocation:(unsigned) aLoc;
-@end
+Ghiradelli chocolate to he who puts all the pieces together : ) */
 
 @implementation NSLayoutManager (Private)
-- (int)_rebuildLayoutForTextContainer:(NSTextContainer *)aContainer
-		  startingAtGlyphIndex:(int)glyphIndex
+- (int) _rebuildLayoutForTextContainer: (NSTextContainer*)aContainer
+		  startingAtGlyphIndex: (int)glyphIndex
 {
   NSSize cSize = [aContainer containerSize];
   float i = 0.0;
   NSMutableArray *lineStarts = [NSMutableArray new];
   NSMutableArray *lineEnds = [NSMutableArray new];
   int indexToAdd;
-  _GNUTextScanner *lineScanner;
-  _GNUTextScanner *paragraphScanner;
+  NSScanner		*lineScanner;
+  NSScanner		*paragraphScanner;
   BOOL lastLineForContainerReached = NO;
   NSString *aString;
   int previousScanLocation;
@@ -1042,8 +1049,8 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
   NSFont *default_font = [NSFont systemFontOfSize: 12.0];
   int widthOfString;
   NSSize rSize;
-  NSCharacterSet *selectionParagraphGranularitySet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
-  NSCharacterSet *selectionWordGranularitySet = [NSCharacterSet characterSetWithCharactersInString:@" "];
+  NSCharacterSet *selectionParagraphGranularitySet = [NSCharacterSet characterSetWithCharactersInString: @"\n"];
+  NSCharacterSet *selectionWordGranularitySet = [NSCharacterSet characterSetWithCharactersInString: @" "];
   NSCharacterSet *invSelectionWordGranularitySet = [selectionWordGranularitySet invertedSet];
   NSCharacterSet *invSelectionParagraphGranularitySet = [selectionParagraphGranularitySet invertedSet];
   NSRange paragraphRange;
@@ -1073,30 +1080,32 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
   startIndex = glyphIndex;
 
-//  lineScanner = [NSScanner scannerWithString:[_textStorage string]];
+  paragraphScanner = [NSScanner scannerWithString: [_textStorage string]];
+  [paragraphScanner setCharactersToBeSkipped: nil];
 
-  paragraphScanner = [_GNUTextScanner scannerWithString:[_textStorage string] 
-			set:selectionParagraphGranularitySet invertedSet:invSelectionParagraphGranularitySet];
-
-  [paragraphScanner setScanLocation:startIndex];
+  [paragraphScanner setScanLocation: startIndex];
 
   NSLog(@"length of textStorage: %d", [[_textStorage string] length]);
 
 //  NSLog(@"buffer: %@", [_textStorage string]);
 
-  // This scanner eats one word at a time, we should have it imbeded in
-  // another scanner that snacks on paragraphs (i.e. lines that end with
-  // \n). Look in NSText.
-
+  /*
+   * This scanner eats one word at a time, we should have it imbeded in
+   * another scanner that snacks on paragraphs (i.e. lines that end with
+   * \n). Look in NSText.
+   */
   while (![paragraphScanner isAtEnd])
     {
       previousParagraphLocation = [paragraphScanner scanLocation];
       beginLineIndex = previousParagraphLocation;
       lineWidth = 0.0;
 
-      leadingNlRange=[paragraphScanner scanSetCharacters];
-      paragraphRange = [paragraphScanner scanNonSetCharacters];
-      trailingNlRange=[paragraphScanner scanSetCharacters];
+      leadingNlRange
+	= scanRange(paragraphScanner, selectionParagraphGranularitySet);
+      paragraphRange
+	= scanRange(paragraphScanner, invSelectionParagraphGranularitySet);
+      trailingNlRange
+	= scanRange(paragraphScanner, selectionParagraphGranularitySet);
 
 //      NSLog(@"leadingNlRange: (%d, %d)", leadingNlRange.location, leadingNlRange.length);
 
@@ -1107,26 +1116,30 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 
       NSLog(@"paragraphRange: (%d, %d)", paragraphRange.location, paragraphRange.length);
 
-      lineScanner = [_GNUTextScanner scannerWithString:[[_textStorage string] substringWithRange:paragraphRange]
-		      set:selectionWordGranularitySet invertedSet:invSelectionWordGranularitySet];
+      lineScanner = [NSScanner scannerWithString:
+	[[_textStorage string] substringWithRange: paragraphRange]];
+      [lineScanner setCharactersToBeSkipped: nil];
 
-      while(![lineScanner isAtEnd])
+      while (![lineScanner isAtEnd])
         {
           previousScanLocation = [lineScanner scanLocation];
 
            // snack next word
-          leadingSpacesRange = [lineScanner scanSetCharacters];    // leading spaces: only first time
-          currentStringRange = [lineScanner scanNonSetCharacters];
-          trailingSpacesRange= [lineScanner scanSetCharacters];
+          leadingSpacesRange
+	    = scanRange(lineScanner, selectionWordGranularitySet);
+          currentStringRange
+	    = scanRange(lineScanner, invSelectionWordGranularitySet);
+          trailingSpacesRange
+	    = scanRange(lineScanner, selectionWordGranularitySet);
 
           if (leadingSpacesRange.length)
-	    currentStringRange = NSUnionRange (leadingSpacesRange,currentStringRange);
+	    currentStringRange = NSUnionRange(leadingSpacesRange,currentStringRange);
           if (trailingSpacesRange.length)
-	    currentStringRange = NSUnionRange (trailingSpacesRange,currentStringRange);
+	    currentStringRange = NSUnionRange(trailingSpacesRange,currentStringRange);
 
-	  lSize = [_textStorage sizeRange:currentStringRange];
+	  lSize = [_textStorage sizeRange: currentStringRange];
 
-//	  lSize = [_textStorage sizeRange:
+//	  lSize = [_textStorage sizeRange: 
 //NSMakeRange(currentStringRange.location+paragraphRange.location+startIndex,
 //currentStringRange.length)];
 
@@ -1140,9 +1153,9 @@ Ghiradelli chocolate to he who puts all the pieces together :) */
 previousParagraphLocation,
 beginLineIndex);
 		  [lineStarts addObject: [NSNumber
-numberWithInt:beginLineIndex]];
+numberWithInt: beginLineIndex]];
 	          [lineEnds addObject: [NSNumber
-numberWithInt:(int)[lineScanner scanLocation] + previousParagraphLocation - (beginLineIndex)]];
+numberWithInt: (int)[lineScanner scanLocation] + previousParagraphLocation - (beginLineIndex)]];
 	          lineWidth = 0.0;
                 }
 
@@ -1157,7 +1170,7 @@ numberWithInt:(int)[lineScanner scanLocation] + previousParagraphLocation - (beg
                    break;
                  }
 
-	      [lineScanner setScanLocation:previousScanLocation];
+	      [lineScanner setScanLocation: previousScanLocation];
 	      indexToAdd = previousScanLocation + previousParagraphLocation
 - (beginLineIndex);
 
@@ -1171,8 +1184,8 @@ indexToAdd);
 	      lineWidth = 0.0;
 
 	      [lineStarts addObject: [NSNumber
-numberWithInt:beginLineIndex]];
-	      [lineEnds addObject:[NSNumber numberWithInt:indexToAdd]];
+numberWithInt: beginLineIndex]];
+	      [lineEnds addObject: [NSNumber numberWithInt: indexToAdd]];
 	      beginLineIndex = previousScanLocation + previousParagraphLocation;
 	    }
 	}
@@ -1187,20 +1200,20 @@ numberWithInt:beginLineIndex]];
 
   // set this container for that glyphrange
 
-  [self setTextContainer:aContainer
-	forGlyphRange:NSMakeRange(startIndex, endScanLocation - startIndex)];
+  [self setTextContainer: aContainer
+	forGlyphRange: NSMakeRange(startIndex, endScanLocation - startIndex)];
 
   NSLog(@"ok, move on to step 2.");
 
   // step 2. break the lines up and assign rects to them.
 
-  for (i=0;i<[lineStarts count];i++)
+  for (i=0; i < [lineStarts count]; i++)
     {
       NSRect aRect, bRect;
       float padding = [aContainer lineFragmentPadding];
       NSRange ourRange;
 
-//      NSLog(@"\t\t===> %d", [[lines objectAtIndex:i] intValue]);
+//      NSLog(@"\t\t===> %d", [[lines objectAtIndex: i] intValue]);
 
       ourRange = NSMakeRange ([[lineStarts objectAtIndex: i] intValue],
 			      [[lineEnds objectAtIndex: i] intValue]);
@@ -1209,17 +1222,17 @@ numberWithInt:beginLineIndex]];
       if (i == 0)
         {
           ourRange = NSMakeRange (startIndex, 
-			[[lines objectAtIndex:i] intValue] - startIndex);
+			[[lines objectAtIndex: i] intValue] - startIndex);
         }
       else
         {
-          ourRange = NSMakeRange ([[lines objectAtIndex:i-1] intValue],
-[[lines objectAtIndex:i] intValue] - [[lines objectAtIndex:i-1]
+          ourRange = NSMakeRange ([[lines objectAtIndex: i-1] intValue],
+[[lines objectAtIndex: i] intValue] - [[lines objectAtIndex: i-1]
 intValue]);
         }
 */
       NSLog(@"line: %@|", [[_textStorage string]
-substringWithRange:ourRange]);
+substringWithRange: ourRange]);
 
       firstProposedRect = NSMakeRect (0, i * 14, cSize.width, 14);
 
@@ -1239,20 +1252,20 @@ substringWithRange:ourRange]);
 
       // set the location for this string to be 'show'ed.
 
-      [self setLocation:NSMakePoint(secondProposedRect.origin.x + padding,
+      [self setLocation: NSMakePoint(secondProposedRect.origin.x + padding,
 				    secondProposedRect.origin.y + padding) 
 	    forStartOfGlyphRange: ourRange];
     }
 
 // bloody hack.
 //      if (moreText)
-//      	[delegate layoutManager:self
-//	  didCompleteLayoutForTextContainer:[textContainers objectAtIndex:i]
-//          atEnd:NO];
+//      	[delegate layoutManager: self
+//	  didCompleteLayoutForTextContainer: [textContainers objectAtIndex: i]
+//          atEnd: NO];
 //      else
-//      	[delegate layoutManager:self
-//	  didCompleteLayoutForTextContainer:[textContainers objectAtIndex:i]
-//          atEnd:YES];
+//      	[delegate layoutManager: self
+//	  didCompleteLayoutForTextContainer: [textContainers objectAtIndex: i]
+//          atEnd: YES];
 
   [lineStarts release];
   [lineEnds release];
@@ -1260,18 +1273,19 @@ substringWithRange:ourRange]);
   return endScanLocation;
 }
 
-- (void)_doLayout
+- (void) _doLayout
 {
-  int i;
-  BOOL moreText;
-  int gIndex = 0;
+  NSEnumerator		*enumerator;
+  NSTextContainer	*container;
+  int			gIndex = 0;
 
   NSLog(@"doLayout called.\n");
 
-  for (i=0;i<[_textContainers count];i++)
+  enumerator = [_textContainers objectEnumerator];
+  while ((container = [enumerator nextObject]) != nil)
     {
-      gIndex = [self _rebuildLayoutForTextContainer:[_textContainers objectAtIndex:i]
-	startingAtGlyphIndex:gIndex];
+      gIndex = [self _rebuildLayoutForTextContainer: container
+			       startingAtGlyphIndex: gIndex];
     }
 }
 @end

@@ -372,6 +372,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
+  /* This must be first because it invokes -resignFirstResponder:, 
+     which assumes the view is still in the view hierarchy */
+  if ([_window firstResponder] == self)
+    [_window makeFirstResponder: _window];
   /*
    * We MUST make sure that coordinates are invalidated even if we have
    * no superview - cos they may have been rebuilt since we lost the
@@ -400,6 +404,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) removeFromSuperview
 {
+  /* This must be first because it invokes -resignFirstResponder:, 
+     which assumes the view is still in the view hierarchy */
+  if ([_window firstResponder] == self)
+    [_window makeFirstResponder: _window];
   /*
    * We MUST make sure that coordinates are invalidated even if we have
    * no superview - cos they may have been rebuilt since we lost the
@@ -1703,6 +1711,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setNeedsDisplayInRect: (NSRect)rect
 {
+  NSView	*currentView = _super_view;
+
   /*
    *	Limit to bounds, combine with old _invalidRect, and then check to see
    *	if the result is the same as the old _invalidRect - if it isn't then
@@ -1713,7 +1723,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (NSEqualRects(rect, _invalidRect) == NO)
     {
       NSView	*firstOpaque = [self opaqueAncestor];
-      NSView	*currentView = _super_view;
 
       _rFlags.needs_display = YES;
       _invalidRect = rect;
@@ -1726,12 +1735,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  rect = [firstOpaque convertRect: _invalidRect fromView: self];
 	  [firstOpaque setNeedsDisplayInRect: rect];
 	}
-
-      while (currentView)
-	{
-	  currentView->_rFlags.needs_display = YES;
-	  currentView = currentView->_super_view;
-	}
+    }
+  /*
+   * Must make sure that superviews know that we need display.
+   * NB. we may have been marked as needing display and then moved to another
+   * parent, so we can't assume that our parent is marked simply because we are.
+   */
+  while (currentView)
+    {
+      currentView->_rFlags.needs_display = YES;
+      currentView = currentView->_super_view;
     }
 }
 
