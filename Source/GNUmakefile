@@ -105,7 +105,6 @@ NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
 NSMovie.m \
-NSMovieView.m \
 NSNib.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
