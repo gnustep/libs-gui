@@ -522,6 +522,23 @@ static BOOL preCalcValues = NO;
     {
       case NSScrollerIncrementLine:
       case NSScrollerDecrementLine:
+	/*
+	 * A hit on a scroller button should be a page meovement
+	 * if the alt key is pressed.
+	 */
+	if ([theEvent modifierFlags] & NSAlternateKeyMask)
+	  {
+	    if (_hitPart == NSScrollerIncrementLine)
+	      {
+		_hitPart = NSScrollerIncrementPage;
+	      }
+	    else
+	      {
+		_hitPart = NSScrollerDecrementPage;
+	      }
+	  }
+	/* Fall through to next case */
+
       case NSScrollerIncrementPage:
       case NSScrollerDecrementPage:
 	[self trackScrollButtons: theEvent];
@@ -693,14 +710,28 @@ static BOOL preCalcValues = NO;
       _hitPart = [self testPart: location];
       rect = [self rectForPart: _hitPart];
 
+      /*
+       * A hit on a scroller button should be a page meovement
+       * if the alt key is pressed.
+       */
       switch (_hitPart)
 	{
 	  case NSScrollerIncrementLine:
+	    if ([theEvent modifierFlags] & NSAlternateKeyMask)
+	      {
+		_hitPart = NSScrollerIncrementPage;
+	      }
+	    /* Fall through to next case */
 	  case NSScrollerIncrementPage:
 	    theCell = (_isHorizontal ? rightCell : downCell);
 	    break;
 
 	  case NSScrollerDecrementLine:
+	    if ([theEvent modifierFlags] & NSAlternateKeyMask)
+	      {
+		_hitPart = NSScrollerDecrementPage;
+	      }
+	    /* Fall through to next case */
 	  case NSScrollerDecrementPage:
 	    theCell = (_isHorizontal ? leftCell : upCell);
 	    break;

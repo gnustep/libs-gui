@@ -294,18 +294,40 @@ static Class rulerViewClass = nil;
     _knobMoved = YES;
   else
     {
-      //FIXME in a page scroll, amount should be the portion of the view that
-      // stays visible, not the one that disapears
       if (hitPart == NSScrollerIncrementLine)
-	amount = _lineScroll;
-      else if (hitPart == NSScrollerIncrementPage)
-	amount = _pageScroll;
+	{
+	  amount = _lineScroll;
+	}
       else if (hitPart == NSScrollerDecrementLine)
-	amount = -_lineScroll;
+	{
+	  amount = -_lineScroll;
+	}
+      else if (hitPart == NSScrollerIncrementPage)
+	{
+	  if (scroller == _horizScroller)
+	    {
+	      amount = clipViewBounds.size.width - _pageScroll;
+	    }
+	  else
+	    {
+	      amount = clipViewBounds.size.height - _pageScroll;
+	    }
+	}
       else if (hitPart == NSScrollerDecrementPage)
-	amount = -_pageScroll;
+	{
+	  if (scroller == _horizScroller)
+	    {
+	      amount = _pageScroll - clipViewBounds.size.width;
+	    }
+	  else
+	    {
+	      amount = _pageScroll - clipViewBounds.size.height;
+	    }
+	}
       else
-	return;
+	{
+	  return;
+	}
     }
 
   if (!_knobMoved)	/* button scrolling */
