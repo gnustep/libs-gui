@@ -79,7 +79,6 @@ static id<GSWindowDecorator> windowDecorator;
 
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
-static NSArray *modes = nil;
 
 @interface NSObject (DragInfoBackend)
 - (void) dragImage: (NSImage*)anImage
@@ -97,7 +96,9 @@ static NSArray *modes = nil;
  * or with other AppKit classes in the case of the _windowView method)
  */
 @interface	NSWindow (GNUstepPrivate)
-- (void) _handleWindowNeedsDisplay: (id)bogus;
++(void) _addAutodisplayedWindow: (NSWindow *)w;
++(void) _removeAutodisplayedWindow: (NSWindow *)w;
+
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
 // Method used to support validation in the toolbar implementation 
@@ -105,11 +106,38 @@ static NSArray *modes = nil;
 
 @implementation	NSWindow (GNUstepPrivate)
 
+
+/* Window autodisplay machinery. */
+- (void) _handleAutodisplay
+{
+  if (_f.is_autodisplay && _rFlags.needs_display)
+    {
+      [self disableFlushWindow];
+      [self displayIfNeeded];
+      [self enableFlushWindow];
+      [self flushWindowIfNeeded];
+    }
+}
+
+static NSArray *modes = nil;
+
+#define GSI_ARRAY_TYPES		0
+#define GSI_ARRAY_TYPE		NSWindow *
+#define GSI_ARRAY_NO_RELEASE	1
+#define GSI_ARRAY_NO_RETAIN	1
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <GNUstepBase/GSIArray.h>
+
+/* Array of windows we might need to handle autodisplay for (in practice
+a list of windows that are, wrt. -gui, on-screen). */
+static GSIArray_t autodisplayedWindows;
+
 /*
 This method handles all normal displaying. It is set to be run on each
-runloop iteration for each window that's on-screen. The performer is
-added when the window is ordered in and re-added each time it is run.
-If the window is ordered out, the performer is cancelled.
+runloop iteration when the first window is created
 
 The reason why this performer is always added, as opposed to adding it
 when display is needed and not re-adding it here, is that
@@ -120,22 +148,63 @@ events. If the performer were added in a call to another performer, it
 wouldn't be called until the next runloop iteration, ie. after the runloop
 has blocked and waited for events.
 */
-- (void) _handleWindowNeedsDisplay: (id)bogus
++(void) _handleAutodisplay: (id)bogus
 {
-  if (_f.is_autodisplay && _rFlags.needs_display)
-    {
-      [self disableFlushWindow];
-      [self displayIfNeeded];
-      [self enableFlushWindow];
-      [self flushWindowIfNeeded];
-    }
+  int i;
+  for (i = 0; i < GSIArrayCount(&autodisplayedWindows); i++)
+    [GSIArrayItemAtIndex(&autodisplayedWindows, i).ext _handleAutodisplay];
+
   [[NSRunLoop currentRunLoop]
-	 performSelector: @selector(_handleWindowNeedsDisplay:)
+	 performSelector: @selector(_handleAutodisplay:)
 		  target: self
 		argument: nil
 		   order: 600000
 		   modes: modes];
 }
+
++(void) _addAutodisplayedWindow: (NSWindow *)w
+{
+  int i;
+  /* If it's the first time we're called, set up the performer and modes
+  array. */
+  if (!modes)
+    {
+      modes = [[NSArray alloc] initWithObjects: NSDefaultRunLoopMode,
+			       NSModalPanelRunLoopMode,
+			       NSEventTrackingRunLoopMode, nil];
+      [[NSRunLoop currentRunLoop]
+	 performSelector: @selector(_handleAutodisplay:)
+		  target: self
+		argument: nil
+		   order: 600000
+		   modes: modes];
+      GSIArrayInitWithZoneAndCapacity(&autodisplayedWindows,
+	NSDefaultMallocZone(), 1);
+    }
+
+  /* O(n), but it's much more important that _handleAutodisplay: can iterate
+  quickly over the array. (_handleAutodisplay: is called once for every
+  event, this method is only called when windows are ordered in or out.) */
+  for (i = 0; i < GSIArrayCount(&autodisplayedWindows); i++)
+    if (GSIArrayItemAtIndex(&autodisplayedWindows, i).ext == w)
+      return;
+  GSIArrayAddItem(&autodisplayedWindows, (GSIArrayItem)w);
+}
+
++(void) _removeAutodisplayedWindow: (NSWindow *)w
+{
+  int i;
+  for (i = 0; i < GSIArrayCount(&autodisplayedWindows); i++)
+    if (GSIArrayItemAtIndex(&autodisplayedWindows, i).ext == w)
+      {
+	GSIArrayRemoveItemAtIndex(&autodisplayedWindows, i);
+	return;
+      }
+  /* This happens eg. if a window is ordered out twice. In such cases,
+  the window has already been removed from the list, so we don't need
+  to do anything here. */
+}
+
 
 /* We get here if we were ordered out or miniaturized. In this case if
    we were the key or main window, go through the list of all windows
@@ -485,9 +554,6 @@ static NSNotificationCenter *nc = nil;
       viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
       nc = [NSNotificationCenter defaultCenter];
-      modes = [[NSArray alloc] initWithObjects: NSDefaultRunLoopMode,
-			       NSModalPanelRunLoopMode,
-			       NSEventTrackingRunLoopMode, nil];
     }
 }
 
@@ -589,10 +655,7 @@ many times.
 - (void) dealloc
 {
   [nc removeObserver: self];
-  [[NSRunLoop currentRunLoop]
-	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-			target: self
-		      argument: nil];
+  [isa _removeAutodisplayedWindow: self];
   [NSApp removeWindowsItem: self];
   [NSApp _windowWillDealloc: self];
 
@@ -1394,10 +1457,7 @@ many times.
       /*
        * Don't keep trying to update the window while it is ordered out
        */
-      [[NSRunLoop currentRunLoop]
-	  cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-	  target: self
-	  argument: nil];
+      [isa _removeAutodisplayedWindow: self];
       [self _lossOfKeyOrMainWindow];
     }
   else
@@ -1449,12 +1509,7 @@ many times.
        * Once we are ordered back in, we will want to update the window
        * whenever there is anything to do.
        */
-      [[NSRunLoop currentRunLoop]
-	performSelector: @selector(_handleWindowNeedsDisplay:)
-		 target: self
-	       argument: nil
-		  order: 600000
-		  modes: modes];
+      [isa _addAutodisplayedWindow: self];
 
       if (_f.has_closed == YES)
 	{
@@ -2289,8 +2344,7 @@ resetCursorRectsForView(NSView *theView)
   
   /*
    * We must order the miniwindow in so that we will start sending
-   * it -_handleWindowNeedsDisplay: messages to tell it to display
-   * itsself when neccessary.
+   * it messages to tell it to display itsself when neccessary.
    */
   if (_counterpart != 0)
     {

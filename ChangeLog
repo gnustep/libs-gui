@@ -1,3 +1,13 @@
+2004-07-13 01:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (+_handleAutodisplay:, +_addAutodisplayedWindow:,
+	+_removeAutodisplayedWindow:): New methods.
+	Rename _handleWindowNeedsDisplay: to -_handleAutodisplay.
+	([NSWindow +initialize]): Don't initialize modes.
+	(-dealloc, -orderWindow:relativeTo:): Use +_addAutodisplayedWindow:
+	and +_removeAutodisplayedWindow: instead of adding/removing a runloop
+	performer.
+
 2004-07-13 00:23  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSSound.m: Only declare the_server if HAVE_AUDIOFILE_H
