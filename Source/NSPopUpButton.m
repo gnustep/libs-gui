@@ -340,7 +340,7 @@ this to return nil to indicate that we have no context menu.
 
   // Attach the popUp
   [_cell attachPopUpWithFrame: _bounds
-	 inView: self];
+	               inView: self];
   
   p = [_window convertBaseToScreen: [theEvent locationInWindow]];
   p = [menuWindow convertScreenToBase: p];
@@ -358,12 +358,18 @@ this to return nil to indicate that we have no context menu.
 	       pressure: [theEvent pressure]];
   [NSApp sendEvent: e];
 
-  // Selection remains unchanged if selected item is disabled
-  // or mouse left menu.
+  // Get highlighted item index from _cell because NSMenuView:
+  // - tells to NSPopUpButtonCell about current selected item index;
+  // - sets own selected item index to -1;
+  //
+  // So, at this point [mr highlightedItemIndex] always = -1
   highlightedItemIndex = [_cell indexOfSelectedItem];
-  if ((highlightedItemIndex >= 0 
-      && [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
-      || highlightedItemIndex == lastSelectedItem)
+
+  // Selection remains unchanged if selected item is disabled
+  // or mouse left menu (highlightedItemIndex == -1).
+  if ( highlightedItemIndex < 0
+       || highlightedItemIndex == lastSelectedItem
+       || [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
     {
       [mr setHighlightedItemIndex: lastSelectedItem];
     }
