@@ -2,6 +2,14 @@
 
 	* Documentation/GNUmakefile.postamble: Tweak for make update.
 	* Source/DocMakefile: ditto
+	* Headers/gnustep/gui/NSLayoutManager.h: documentation tweaks.
+	* Headers/gnustep/gui/NSRulerMarker.h: ditto
+	* Headers/gnustep/gui/NSText.h: ditto
+	* Headers/gnustep/gui/NSTextContainer.h: ditto
+	* Source/NSLayoutManager.m: ditto
+	* Source/NSPopUpButtonCell.m: ditto
+	* Source/NSTextContainer.m: ditto
+	* Source/NSWorkspace.m: ditto
 
 2003-07-22  Andrew Ruder <aeruder@ksu.edu>
 

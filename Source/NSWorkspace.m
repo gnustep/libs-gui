@@ -1130,7 +1130,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  * to it using [NSConnection+rootProxyForConnectionWithRegisteredName:host:]
  * passing the application name (normally the filesystem name excluding path
  * and file extension) and an empty host name.  This will let you communicate
- * with the the [NSApplication-delagate] of the launched application, and you
+ * with the the [NSApplication-delegate] of the launched application, and you
  * can generally use this as a test of whether an application is running
  * correctly.
  * </p>

@@ -314,7 +314,7 @@ static NSImage *_pbc_image[2];
     }
 }
 
-- (void)setImage:(NSImage *)anImage;
+- (void)setImage:(NSImage *)anImage
 {
   // Do nothing as the image is determined by the current item
 }

@@ -76,8 +76,8 @@ typedef enum {
 - (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window;
 
 -(NSArray *) rulerMarkersForTextView: (NSTextView *)textView
-		      paragraphStyle: (NSParagraphStyle *)style
-			       ruler: (NSRulerView *)ruler;
+		      paragraphStyle: (NSParagraphStyle *)paragraphStyle
+			       ruler: (NSRulerView *)aRulerView;
 -(NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView
 			   paragraphStyle: (NSParagraphStyle *)style
 				    ruler: (NSRulerView *)ruler

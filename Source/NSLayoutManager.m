@@ -892,7 +892,7 @@ has the same y origin and height as the line frag rect it is in.
 -(unsigned int) characterIndexMoving: (GSInsertionPointMovementDirection)direction
 		  fromCharacterIndex: (unsigned int)from
 	      originalCharacterIndex: (unsigned int)original
-			    distance: (float)distance;
+			    distance: (float)distance
 {
   NSRect from_rect, new_rect;
   int from_tc, new_tc;

@@ -77,7 +77,7 @@
 
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isDragging; 
-- (BOOL)trackMouse:(NSEvent *)theEvent adding:(BOOL)flag; 
+- (BOOL)trackMouse:(NSEvent *)theEvent adding:(BOOL)adding; 
 
 @end
 

@@ -318,33 +318,32 @@ framework intact.
   return _lineFragmentPadding;
 }
 
--(NSRect) lineFragmentRectForProposedRect: (NSRect)proposed
-	sweepDirection: (NSLineSweepDirection)sweep
-	movementDirection: (NSLineMovementDirection)move
-	remainingRect: (NSRect *)remain
+- (NSRect) lineFragmentRectForProposedRect: (NSRect)proposedRect
+			    sweepDirection: (NSLineSweepDirection)sweepDir
+			 movementDirection: (NSLineMovementDirection)moveDir
+			     remainingRect: (NSRect *)remainingRect
 {
   float minx, maxx, miny, maxy;
   float cminx, cmaxx, cminy, cmaxy;
 
-  minx = NSMinX(proposed);
-  maxx = NSMaxX(proposed);
-  miny = NSMinY(proposed);
-  maxy = NSMaxY(proposed);
+  minx = NSMinX(proposedRect);
+  maxx = NSMaxX(proposedRect);
+  miny = NSMinY(proposedRect);
+  maxy = NSMaxY(proposedRect);
 
   cminx = NSMinX(_containerRect);
   cmaxx = NSMaxX(_containerRect);
   cminy = NSMinY(_containerRect);
   cmaxy = NSMaxY(_containerRect);
 
-  *remain = NSZeroRect;
+  *remainingRect = NSZeroRect;
 
-  if (minx >= cminx && maxx <= cmaxx &&
-      miny >= cminy && maxy <= cmaxy)
+  if (minx >= cminx && maxx <= cmaxx && miny >= cminy && maxy <= cmaxy)
     {
-      return proposed;
+      return proposedRect;
     }
 
-  switch (move)
+  switch (moveDir)
     {
       case NSLineMoveLeft:
 	if (maxx < cminx)
@@ -390,7 +389,7 @@ framework intact.
 	break;
     }
 
-  switch (sweep)
+  switch (sweepDir)
     {
       case NSLineSweepLeft:
       case NSLineSweepRight:

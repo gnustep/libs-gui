@@ -125,7 +125,7 @@ enum {
 		       withString: (NSString*)aString;
 /* PRIMITIVE */
 -(void) replaceCharactersInRange: (NSRange)aRange /* GNUstep extension */
-	    withAttributedString: (NSAttributedString *)aString;
+	    withAttributedString: (NSAttributedString *)attrString;
 /* PRIMITIVE */
 - (void) setString: (NSString*)aString;
 /* PRIMITIVE */

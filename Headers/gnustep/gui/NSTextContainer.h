@@ -108,7 +108,7 @@ Initializes a new instance and sets the container size to aSize.
 
 
 /**
-<heading>Querying the region</heading>
+Querying the region
 */
 
 /**
@@ -176,7 +176,7 @@ Subclasses define regions by overriding this method.
 
 
 /**
-<heading>Managing the text network</heading>
+Managing the text network<br />
 
 A text container may be attached to one layout manager and one text view.
 The text container is retained by the layout manager, and retains the text
@@ -220,7 +220,7 @@ none.
 
 
 /**
-<heading>The container size</heading>
+The container size<br />
 
 A text container has a container size. The region defined by the text
 container must be a subset of the rectangle of this size with it's top-left
@@ -235,7 +235,7 @@ must be valid.
 
 
 /**
-<heading>Automatic resizing</heading>
+Automatic resizing<br />
 
 A text container can be set to automatically track the width and/or height
 of its NSTextView (TODO: frame? bounds?). For more information, see the
@@ -252,7 +252,7 @@ is resized.
 
 
 /**
-<heading>Line fragment padding</heading>
+Line fragment padding<br />
 
 The line fragment padding is an amount of space left empty at each end of
 a line fragment rectangle by the standard typesetter. The default is 0.0.
