@@ -587,6 +587,10 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSimage));
   methodTable.DPSimagemask =
     GET_IMP(@selector(DPSimagemask));
+  methodTable.DPScolorimage =
+    GET_IMP(@selector(DPScolorimage));
+  methodTable.DPSalphaimage =
+    GET_IMP(@selector(DPSalphaimage));
   methodTable.DPSkshow_ =
     GET_IMP(@selector(DPSkshow:));
   methodTable.DPSrectfill____ =
@@ -1415,6 +1419,16 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPSimagemask 
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScolorimage 
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSalphaimage 
 {
   [self subclassResponsibility: _cmd];
 }

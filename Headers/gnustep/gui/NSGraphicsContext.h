@@ -287,6 +287,8 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSfill;
 - (void) DPSimage;
 - (void) DPSimagemask;
+- (void) DPScolorimage;
+- (void) DPSalphaimage;
 - (void) DPSkshow: (const char *)s ;
 - (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h ;
 - (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h ;

@@ -273,6 +273,10 @@ typedef struct {
 	(NSGraphicsContext*, SEL);
   void (*DPSimagemask)
 	(NSGraphicsContext*, SEL);
+  void (*DPScolorimage)
+	(NSGraphicsContext*, SEL);
+  void (*DPSalphaimage)
+	(NSGraphicsContext*, SEL);
   void (*DPSkshow_)
 	(NSGraphicsContext*, SEL, const char*);
   void (*DPSrectfill____)

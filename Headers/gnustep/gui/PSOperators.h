@@ -489,6 +489,14 @@ PSimagemask()
 __attribute__((unused));
 
 static inline void
+PScolorimage()
+__attribute__((unused));
+
+static inline void
+PSalphaimage()
+__attribute__((unused));
+
+static inline void
 PSkshow(const char *s)
 __attribute__((unused));
 
@@ -1404,6 +1412,18 @@ static inline void
 PSimagemask()
 {
   DPSimagemask(DEFCTXT);
+}
+
+static inline void
+PScolorimage()
+{
+  DPScolorimage(DEFCTXT);
+}
+
+static inline void
+PSalphaimage()
+{
+  DPSalphaimage(DEFCTXT);
 }
 
 static inline void

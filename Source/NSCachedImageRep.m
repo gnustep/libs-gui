@@ -34,10 +34,14 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSUserDefaults.h>
 
 #include <AppKit/NSCachedImageRep.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/PSOperators.h>
+
+static BOOL NSImageCompositing = NO;
 
 @interface GSCacheW : NSWindow
 @end
@@ -68,6 +72,12 @@
 @end
 
 @implementation NSCachedImageRep
+
+- (void) initialize
+{
+  NSImageCompositing = [[NSUserDefaults standardUserDefaults]
+  	boolForKey: @"ImageCompositing"];
+}
 
 // Initializing an NSCachedImageRep 
 - (id) initWithSize: (NSSize)aSize
@@ -142,8 +152,13 @@
 
 - (BOOL)draw
 {
-  NSCopyBits([_window gState], _rect, _rect.origin);
-  return NO;
+  if (NSImageCompositing)
+    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+	      [_window gState], NSMinX(_rect), NSMinY(_rect),
+	      NSCompositeSourceOver);
+  else
+    NSCopyBits([_window gState], _rect, _rect.origin);
+  return YES;
 }
 
 - (BOOL) drawAtPoint: (NSPoint)aPoint
@@ -160,7 +175,12 @@
       if ([[ctxt focusView] isFlipped])
 	aPoint.y -= size.height;
     }
-  NSCopyBits([_window gState], _rect, aPoint);
+  if (NSImageCompositing)
+    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+	      [_window gState], aPoint.x, aPoint.y,
+	      NSCompositeSourceOver);
+  else
+    NSCopyBits([_window gState], _rect, aPoint);
   return NO;
 }
 
@@ -176,8 +196,13 @@
   ctxt = GSCurrentContext();
   if ([[ctxt focusView] isFlipped])
     aRect.origin.y -= NSHeight(aRect);
-  NSCopyBits([_window gState], _rect, aRect.origin);
-  return NO;
+  if (NSImageCompositing)
+    PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+	      [_window gState], NSMinX(aRect), NSMinY(aRect),
+	      NSCompositeSourceOver);
+  else
+    NSCopyBits([_window gState], _rect, aRect.origin);
+  return YES;
 }
 
 // NSCoding protocol

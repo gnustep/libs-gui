@@ -32,6 +32,7 @@
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSUserDefaults.h>
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSEPSImageRep.h>
@@ -51,7 +52,9 @@ static NSMutableArray*	imageReps = NULL;
   if (self == [NSImageRep class])
     {
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
-      //      [imageReps addObject: [NSBitmapImageRep class]];
+      if ([[NSUserDefaults standardUserDefaults] 
+      		boolForKey: @"ImageCompositing"])
+        [imageReps addObject: [NSBitmapImageRep class]];
       //      [imageReps addObject: [NSEPSImageRep class]];
     }
 }

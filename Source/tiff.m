@@ -84,7 +84,7 @@ static tsize_t
 TiffHandleRead(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLog (@"TiffHandleRead\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleRead\n");
   if (chand->position >= chand->size)
     return 0;
   if (chand->position + count > chand->size)
@@ -97,7 +97,7 @@ static tsize_t
 TiffHandleWrite(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLog (@"TiffHandleWrite\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleWrite\n");
   if (chand->mode == "r")
     return 0;
   if (chand->position + count > chand->size)
@@ -120,7 +120,7 @@ static toff_t
 TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLog (@"TiffHandleSeek\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleSeek\n");
   switch(mode) 
     {
     case SEEK_SET: chand->position = offset; break;
@@ -139,7 +139,7 @@ TiffHandleClose(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
 
-  NSDebugLog (@"TiffHandleClose\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleClose\n");
   /* Presumably, we don't need the handle anymore */
   OBJC_FREE(chand);
   return 0;
@@ -149,7 +149,7 @@ static toff_t
 TiffHandleSize(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLog (@"TiffHandleSize\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleSize\n");
   return chand->size;
 }
 
@@ -158,7 +158,7 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 {
   chandle_t* chand = (chandle_t *)handle;
   
-  NSDebugLog (@"TiffHandleMap\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleMap\n");
   *data = chand->data;
   *size = chand->size;
     
@@ -168,7 +168,7 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 static void
 TiffHandleUnmap(thandle_t handle, tdata_t data, toff_t size)
 {
-  NSDebugLog (@"TiffHandleUnmap\n");
+  NSDebugLLog(@"NSImage", @"TiffHandleUnmap\n");
   /* Nothing to unmap. */
 }
 
@@ -177,7 +177,7 @@ TIFF*
 NSTiffOpenDataRead(const char* data, long size)
 {
   chandle_t* handle;
-  NSDebugLog (@"NSTiffOpenData\n");
+  NSDebugLLog(@"NSImage", @"NSTiffOpenData\n");
   OBJC_MALLOC(handle, chandle_t, 1);
   handle->data = (char*)data;
   handle->outdata = 0;
@@ -197,7 +197,7 @@ TIFF*
 NSTiffOpenDataWrite(char **data, long *size)
 {
   chandle_t* handle;
-  NSDebugLog (@"NSTiffOpenData\n");
+  NSDebugLLog(@"NSImage", @"NSTiffOpenData\n");
   OBJC_MALLOC(handle, chandle_t, 1);
   handle->data = *data;
   handle->outdata = data;
@@ -378,7 +378,7 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
     case PHOTOMETRIC_RGB:
       if (newinfo->planarConfig == PLANARCONFIG_CONTIG) 
 	{
-	  NSDebugLog(@"PHOTOMETRIC_RGB: CONTIG\n");
+	  NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: CONTIG\n");
 	  for (row = 0; row < newinfo->height; ++row) 
 	    {
 	      READ_SCANLINE(0)
@@ -391,7 +391,7 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
 	} 
       else 
 	{
-	  NSDebugLog(@"PHOTOMETRIC_RGB: NOT CONTIG\n");
+	  NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: NOT CONTIG\n");
 	  for (i = 0; i < newinfo->samplesPerPixel; i++)
 	    for (row = 0; row < newinfo->height; ++row) 
 	      {
@@ -470,7 +470,7 @@ NSWriteTiff(TIFF* image, NSTiffInfo* info, char* data)
       case PHOTOMETRIC_RGB:
 	if (info->planarConfig == PLANARCONFIG_CONTIG) 
 	  {
-	    NSDebugLog(@"PHOTOMETRIC_RGB: CONTIG\n");
+	    NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: CONTIG\n");
 	    for (row = 0; row < info->height; ++row) 
 	      {
 		WRITE_SCANLINE(0)
@@ -479,7 +479,7 @@ NSWriteTiff(TIFF* image, NSTiffInfo* info, char* data)
 	  } 
 	else 
 	  {
-	    NSDebugLog(@"PHOTOMETRIC_RGB: NOT CONTIG\n");
+	    NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: NOT CONTIG\n");
 	    for (i = 0; i < info->samplesPerPixel; i++)
 	      {
 		for (row = 0; row < info->height; ++row) 

@@ -109,10 +109,17 @@ static NSScreen *mainScreen = nil;
   else
     device_desc = [[NSMutableDictionary dictionary] retain];
 
+  if (ctxt == nil)
+    {
+      NSLog(@"Internal error: No current context\n");
+      [self release];
+      return nil;
+    }
+
   if ([ctxt isDrawingToScreen] == NO)
     {
       NSLog(@"Internal error: trying to find screen with wrong context\n");
-      [self dealloc];
+      [self release];
       return nil;
     }
 

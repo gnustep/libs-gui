@@ -1,3 +1,15 @@
+1999-12-28  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/DPSOperators.h: New operators colorimage
+	and alphaimage.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* Source/NSGraphicsContex.m: Add stubs.
+
+	* Source/NSBitmapImageRep.m (-draw): Implement using NSDrawBitmap.
+	* Source/NSCachedImageRep.m: Conditional use of PScomposite functions
+	for drawing methods (set user default "ImageCompositing" to YES
+	for this to work).
+
 Tue Dec 28 15:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Initial hack of support for encoding/decoding images - untested.

@@ -353,7 +353,18 @@
 
 - (BOOL) draw
 {
-  return NO;
+  NSDrawBitmap(NSZeroRect,
+	       _pixelsWide,
+	       _pixelsHigh,
+	       bitsPerSample,
+	       numColors,
+	       bitsPerPixel,
+	       bytesPerRow,
+	       _isPlanar,
+	       hasAlpha,
+	       _colorSpace,
+	       imagePlanes);
+  return YES;
 }
 
 //

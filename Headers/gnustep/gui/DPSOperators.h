@@ -485,6 +485,14 @@ DPSimagemask(GSCTXT *ctxt)
 __attribute__((unused));
 
 static inline void
+DPScolorimage(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSalphaimage(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
 DPSkshow(GSCTXT *ctxt, const char *s)
 __attribute__((unused));
 
@@ -1698,6 +1706,20 @@ DPSimagemask(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSimagemask)
     (ctxt, @selector(DPSimagemask));
+}
+
+static inline void
+DPScolorimage(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPScolorimage)
+    (ctxt, @selector(DPScolorimage));
+}
+
+static inline void
+DPSalphaimage(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSalphaimage)
+    (ctxt, @selector(DPSalphaimage));
 }
 
 static inline void

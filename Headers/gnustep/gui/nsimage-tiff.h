@@ -48,6 +48,7 @@ typedef struct {
     u_short planarConfig;     /* meshed or separate */
     u_short photoInterp;      /* photometric interpretation of bitmap data, */
     u_short compression;
+    u_short extraSamples;     /* Alpha */
     int     quality;	      /* compression quality (for jpeg) 1 to 255 */
     int     numImages;	      /* number of images in tiff */
     int     error;
