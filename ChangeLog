@@ -1,3 +1,13 @@
+Fri Feb 22 21:03:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSApplication.h (_runLoopPool): Store the main run loop
+	autorelease pool in a ivar.
+	* Source/NSApplication.m ([-run]): Use the _runLoopPool rather
+	than a local pool.  Also, check for recursive invocation, and
+	enclose into an autorelease pool the last instructions.
+	([-terminate:]): Destroy the _runLoopPool; enclose destruction
+	of NSApp into yet another autorelease pool.
+	
 Fri Feb 22 18:22:48 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSApplication.m ([-terminate:]): Use an autorelease pool.
