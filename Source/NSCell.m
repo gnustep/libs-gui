@@ -127,7 +127,7 @@ static NSColor	*shadowCol;
   _cell.type = NSImageCellType;
   _cell_image = RETAIN (anImage);
   _cell.image_position = NSImageOnly;
-  _font = RETAIN ([fontClass userFontOfSize: 0]);
+  _font = RETAIN ([fontClass systemFontOfSize: 0]);
 
   // Implicitly set by allocation:
   //
@@ -156,7 +156,7 @@ static NSColor	*shadowCol;
 {
   _cell.type = NSTextCellType;
   _contents = RETAIN (aString);
-  _font = RETAIN ([fontClass userFontOfSize: 0]);
+  _font = RETAIN ([fontClass systemFontOfSize: 0]);
 
   // Implicitly set by allocation:
   //
@@ -537,7 +537,7 @@ static NSColor	*shadowCol;
 	  ASSIGN (_contents, @"title");
 	  _cell.contents_is_attributed_string = NO;
 	  /* Doc says we have to reset the font too. */
-	  ASSIGN (_font, [fontClass userFontOfSize: 0]);
+	  ASSIGN (_font, [fontClass systemFontOfSize: 0]);
 	  break;
 	}
       case NSImageCellType:
