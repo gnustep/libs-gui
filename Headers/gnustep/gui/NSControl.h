@@ -43,6 +43,7 @@
   // Attributes
   int _tag;
   id _cell; // id so compiler wont complain too much for subclasses
+  BOOL _ignoresMultiClick;
 }
 
 //
