@@ -31,6 +31,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSURL.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>
@@ -42,16 +49,8 @@
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSSavePanel.h>
-#include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSWorkspace.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSURL.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSPathUtilities.h>
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
@@ -1016,6 +1015,28 @@ selectCellWithString: (NSString*)title
     _delegateHasUserEnteredFilename = NO;
 
   [super setDelegate: aDelegate];
+}
+
+- (void) setCanSelectHiddenExtension: (BOOL) flag
+{
+  // FIXME
+}
+
+- (BOOL) isExtensionHidden
+{
+  // FIXME
+  return NO;
+}
+
+- (void) setExtensionHidden: (BOOL) flag
+{
+  // FIXME
+}
+
+- (BOOL) isExpanded
+{
+  // FIXME
+  return NO;
 }
 
 //

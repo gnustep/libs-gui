@@ -40,7 +40,6 @@
 
 @class NSString;
 @class NSArray;
-@class NSMutableArray;
 
 @interface NSOpenPanel : NSSavePanel <NSCoding>
 {
@@ -49,40 +48,46 @@
   BOOL _canChooseFiles;
 }
 // Accessing the NSOpenPanel shared instance
-+ (NSOpenPanel *)openPanel;
-
-// Filtering Files 
-- (BOOL)allowsMultipleSelection;
-- (BOOL)canChooseDirectories;
-- (BOOL)canChooseFiles;
-- (void)setAllowsMultipleSelection:(BOOL)flag;
-- (void)setCanChooseDirectories:(BOOL)flag;
-- (void)setCanChooseFiles:(BOOL)flag;
-
-- (NSArray *)filenames;
++ (NSOpenPanel *) openPanel;
 
 // Running an NSOpenPanel 
-- (int)runModalForTypes:(NSArray *)fileTypes;
-- (int)runModalForDirectory:(NSString *)path
-                       file:(NSString *)name
-                      types:(NSArray *)fileTypes;
+- (int) runModalForTypes: (NSArray *)fileTypes;
+- (int) runModalForDirectory: (NSString *)path
+                        file: (NSString *)name
+                       types: (NSArray *)fileTypes;
 
 #ifndef	STRICT_OPENSTEP
-- (int)runModalForDirectory:(NSString *)path
-		       file:(NSString *)name
-		      types:(NSArray *)fileTypes
-	   relativeToWindow:(NSWindow*)window;
-- (void)beginSheetForDirectory:(NSString *)path
-			  file:(NSString *)name
-			 types:(NSArray *)fileTypes
-		modalForWindow:(NSWindow *)docWindow
-		 modalDelegate:(id)delegate
-		didEndSelector:(SEL)didEndSelector
-		   contextInfo:(void *)contextInfo;
-
-- (NSArray *)URLs; 
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)name
+		       types: (NSArray *)fileTypes
+	    relativeToWindow: (NSWindow*)window;
+- (void) beginSheetForDirectory: (NSString *)path
+			   file: (NSString *)name
+			  types: (NSArray *)fileTypes
+		 modalForWindow: (NSWindow *)docWindow
+		  modalDelegate: (id)delegate
+		 didEndSelector: (SEL)didEndSelector
+		    contextInfo: (void *)contextInfo;
 #endif
 
+- (NSArray *) filenames;
+
+#ifndef	STRICT_OPENSTEP
+- (NSArray *) URLs; 
+#endif
+
+// Filtering Files 
+- (BOOL) canChooseDirectories;
+- (BOOL) canChooseFiles;
+- (void) setCanChooseDirectories: (BOOL)flag;
+- (void) setCanChooseFiles: (BOOL)flag;
+#ifndef	STRICT_OPENSTEP
+- (void) setResolvesAliases: (BOOL)flag; 
+- (BOOL) resolvesAliases; 
+#endif
+
+- (BOOL) allowsMultipleSelection;
+- (void) setAllowsMultipleSelection: (BOOL)flag;
 @end
 
 #endif // _GNUstep_H_NSOpenPanel

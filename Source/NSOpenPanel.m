@@ -46,6 +46,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSBrowser.h>
 #include <AppKit/NSBrowserCell.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSForm.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSOpenPanel.h>
 
@@ -535,6 +537,17 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   _OKButtonPressed = YES;
   [NSApp stopModal];
   [self close];
+}
+
+- (BOOL) resolvesAliases
+{
+  // FIXME
+  return YES;
+}
+
+- (void) setResolvesAliases: (BOOL) flag
+{
+  // FIXME
 }
 
 /*

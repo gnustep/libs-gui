@@ -33,32 +33,29 @@
 #ifndef _GNUstep_H_NSSavePanel
 #define _GNUstep_H_NSSavePanel
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSSet.h>
-
-#include <AppKit/NSBrowser.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSForm.h>
-#include <AppKit/NSFormCell.h>
 #include <AppKit/NSPanel.h>
-#include <AppKit/NSTextField.h>
 
 @class NSString;
 @class NSURL;
+@class NSBrowser;
+@class NSButton;
+@class NSForm;
+@class NSTextField;
+@class NSView;
 
 enum {
+  NSFileHandlingPanelCancelButton = NSCancelButton,
+  NSFileHandlingPanelOKButton = NSOKButton,
   NSFileHandlingPanelImageButton,
   NSFileHandlingPanelTitleField,
   NSFileHandlingPanelBrowser,
-  NSFileHandlingPanelCancelButton,
-  NSFileHandlingPanelOKButton,
   NSFileHandlingPanelForm,
   NSFileHandlingPanelHomeButton,
   NSFileHandlingPanelDiskButton,
   NSFileHandlingPanelDiskEjectButton
 };
 
-@interface NSSavePanel : NSPanel <NSCoding>
+@interface NSSavePanel : NSPanel
 {
   NSView *_accessoryView;
   NSView *_bottomView;
@@ -100,6 +97,15 @@ enum {
 - (void) setPrompt: (NSString *)prompt;
 - (NSString *) prompt;
 
+#ifndef	STRICT_OPENSTEP
+/*
+ * Hidding extensions
+ */
+- (void) setCanSelectHiddenExtension: (BOOL) flag;
+- (BOOL) isExtensionHidden;
+- (void) setExtensionHidden: (BOOL) flag;
+#endif
+
 /*
  * Setting Directory and File Type
  */
@@ -128,8 +134,6 @@ enum {
 		  modalDelegate: (id)delegate
 		 didEndSelector: (SEL)didEndSelector
 		    contextInfo: (void *)contextInfo;
-
-- (NSURL *) URL;
 #endif
 
 /*
@@ -137,6 +141,10 @@ enum {
  */
 - (NSString *) directory;
 - (NSString *) filename;
+#ifndef	STRICT_OPENSTEP
+- (NSURL *) URL;
+- (BOOL) isExpanded;
+#endif
 
 /*
  * Target and Action Methods
