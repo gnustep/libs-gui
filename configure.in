@@ -25,6 +25,18 @@
 
 AC_INIT(Source/NSApplication.m)
 
+if test -z "$GNUSTEP_SYSTEM_ROOT"; then
+  {
+   echo "ERROR: You must run the GNUstep initialization script before configuring the gui library!" 1>&2;
+  exit 1; 
+  }
+fi
+
+#--------------------------------------------------------------------
+# Use config.guess, config.sub and install.sh provided by gnustep-make
+#--------------------------------------------------------------------
+AC_CONFIG_AUX_DIR($GNUSTEP_SYSTEM_ROOT/Makefiles)
+
 AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 
 #--------------------------------------------------------------------
