@@ -60,7 +60,7 @@ typedef enum _NSBezelStyle {
 
 typedef enum _NSGradientType {
     NSGradientNone,
-    NSGradientConcanveWeak,
+    NSGradientConcaveWeak,
     NSGradientConcaveStrong,
     NSGradientConvexWeak,
     NSGradientConvexStrong
