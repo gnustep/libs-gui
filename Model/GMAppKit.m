@@ -779,15 +779,21 @@ void __dummy_GMAppKit_functionForLinking() {}
     }
   [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
   if ([self respondsToSelector: @selector(state)])
-    [archiver encodeInt:[self state] withName:@"state"];
+    {
+      [archiver encodeInt:[self state] withName:@"state"];
+    }
   [archiver encodeObject:[self target] withName:@"target"];
   [archiver encodeSelector:[self action] withName:@"action"];
   [archiver encodeInt:[self tag] withName:@"tag"];
   [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
   if ([self respondsToSelector: @selector(changesState)])
-    [archiver encodeBOOL:[self changesState] withName:@"changesState"];
+    {
+      [archiver encodeBOOL:[self changesState] withName:@"changesState"];
+    }
   if ([self respondsToSelector: @selector(submenu)])
-    [archiver encodeObject:[self submenu] withName:@"submenu"];
+    {
+      [archiver encodeObject:[self submenu] withName:@"submenu"];
+    }
   [archiver encodeConditionalObject:[self representedObject]
 	                   withName:@"representedObject"];
 }
@@ -803,6 +809,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
   [self setState:[unarchiver decodeIntWithName:@"state"]];
   [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
+  [self setTarget: [unarchiver decodeObjectWithName: @"target"]];
   [self setTag:[unarchiver decodeIntWithName:@"tag"]];
   [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
   [self setChangesState:[unarchiver decodeBOOLWithName:@"changesState"]];
@@ -826,11 +833,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   /* Safety assignment. */
   [self setMenu: nil];
-  /* Set submenu.  If submenu is nil, this will set target to nil too. */
-  [self setSubmenu: [unarchiver decodeObjectWithName: @"submenu"]];
-  /* Set target.  This does not touch submenu. */
-  [self setTarget: [unarchiver decodeObjectWithName: @"target"]];
 
+  /* Set submenu ... but not if it's nil, because this assignment
+   * always has side effects on action and target and we don't want to mess
+   * them up if we don't have a submenu!  */
+  {
+    id submenu = [unarchiver decodeObjectWithName: @"submenu"];
+    
+    if (submenu != nil)
+      {
+	[self setSubmenu: submenu];
+      }
+  }
   /* Now we fix the submenu from the target if needed: */
 #ifdef GNU_GUI_LIBRARY
   /*
@@ -838,14 +852,18 @@ void __dummy_GMAppKit_functionForLinking() {}
    * was created on OPENSTEP).
    */
   if ([NSStringFromSelector ([self action]) 
-      isEqualToString: @"submenuAction:"])
+			    isEqualToString: @"submenuAction:"])
     {
       if ([self submenu] == nil)
 	{
 	  if ([[self target] isKindOfClass: [NSMenu class]])
-	    [self setSubmenu: [self target]];
+	    {
+	      [self setSubmenu: [self target]];
+	    }
 	  else
-	    NSLog(@"Error decoding gmodel - submenu not an NSMenu");
+	    {
+	      NSLog(@"Error decoding gmodel - submenu not an NSMenu");
+	    }
 	}
     }
 #endif
