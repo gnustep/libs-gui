@@ -3,6 +3,8 @@ Wed Feb 17 11:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSView.m: Tidyup - visibleRect is empty if we have no window.
 	* Source/NSText.m: ([-redisplayForLineRange:]) fixed error drawing
 	into wrong view.
+	* Source/NSCell.m: When starting to edit cell text, set the frame of
+	the text object after adding to the view so it gets sized correctly.
 
 Wed Feb 17  9:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
