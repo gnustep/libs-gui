@@ -28,13 +28,17 @@
 #define _GNUstep_H_NSTabView
  
 #include <AppKit/NSView.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSCell.h>
 
 typedef enum {
   NSTopTabsBezelBorder, 
   NSBottomTabsBezelBorder, 
   NSNoTabsBezelBorder,
   NSNoTabsLineBorder,
-  NSNoTabsNoBorder
+  NSNoTabsNoBorder,
+  NSLeftTabsBezelBorder,
+  NSRightTabsBezelBorder
 } NSTabViewType;
 
 @class NSFont;
@@ -42,14 +46,14 @@ typedef enum {
 
 @interface NSTabView : NSView <NSCoding>
 {
-  NSMutableArray *tab_items;
-  NSFont *tab_font;
-  NSTabViewType tab_type;
-  NSTabViewItem *tab_selected;
-  BOOL tab_draws_background;
-  BOOL tab_truncated_label;
-  id tab_delegate;
-  int tab_selected_item;
+  NSMutableArray *_items;
+  NSFont *_font;
+  NSTabViewType _type;
+  NSTabViewItem *_selected;
+  BOOL _draws_background;
+  BOOL _truncated_label;
+  id _delegate;
+  int _selected_item;
 }
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem
@@ -89,6 +93,14 @@ typedef enum {
 - (NSRect)contentRect;
 
 - (NSTabViewItem *)tabViewItemAtPoint:(NSPoint)point;
+
+#ifndef STRICT_OPENSTEP
+- (NSControlSize)controlSize;
+- (NSControlTint)controlTint;
+- (void)setControlSize:(NSControlSize)controlSize;
+- (void)setControlTint:(NSControlTint)controlTint;
+#endif
+
 @end
 
 @interface NSObject(NSTabViewDelegate)
