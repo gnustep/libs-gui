@@ -93,6 +93,10 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) currentCursor;
 + (NSCursor*) IBeamCursor;
 
+#ifndef NO_GNUSTEP
++ (NSCursor*) greenArrowCursor;
+#endif
+
 @end
 
 /* Cursor types */

@@ -1,3 +1,10 @@
+2001-12-12  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCursor: New cache dictionary.
+	(-greenArrowCursor): New method.
+	(-initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:):
+	Implement.
+
 2001-12-09  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* Source/NSWindow.m (GSPerformVoidDragSelector): rewritten to not

@@ -27,7 +27,9 @@
 */ 
 
 #include <Foundation/NSArray.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSGraphicsContext.h>
@@ -39,8 +41,7 @@ static NSCursor *gnustep_gui_current_cursor;
 static BOOL gnustep_gui_hidden_until_move;
 static Class NSCursor_class;
 
-static NSCursor *arrowCursor = nil;
-static NSCursor *ibeamCursor = nil;
+static NSMutableDictionary *cursorDict = nil;
 
 @implementation NSCursor
 
@@ -58,6 +59,7 @@ static NSCursor *ibeamCursor = nil;
       NSCursor_class = self;
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
+      cursorDict = RETAIN([NSMutableDictionary dictionary]);
       [[self arrowCursor] push];
     }
 }
@@ -144,15 +146,19 @@ static NSCursor *ibeamCursor = nil;
  */
 + (NSCursor*) arrowCursor
 {
-  if (arrowCursor == nil)
+  NSString *name = @"GSArrowCursor";
+  NSCursor *cursor = [cursorDict objectForKey: name];
+  if (cursor == nil)
     {
       void *c;
     
-      arrowCursor = [[NSCursor_class alloc] initWithImage: nil];
+      cursor = [[NSCursor_class alloc] initWithImage: nil];
       DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
-      [arrowCursor _setCid: c];
+      [cursor _setCid: c];
+      [cursorDict setObject: cursor forKey: name];
+      RELEASE(cursor);
     }
-  return arrowCursor;
+  return cursor;
 }
 
 + (NSCursor*) currentCursor
@@ -162,15 +168,37 @@ static NSCursor *ibeamCursor = nil;
 
 + (NSCursor*) IBeamCursor
 {
-  if (ibeamCursor == nil)
+  NSString *name = @"GSIBeamCursor";
+  NSCursor *cursor = [cursorDict objectForKey: name];
+  if (cursor == nil)
     {
       void *c;
     
-      ibeamCursor = [[NSCursor_class alloc] initWithImage: nil];
+      cursor = [[NSCursor_class alloc] initWithImage: nil];
       DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
-      [ibeamCursor _setCid: c];
+      [cursor _setCid: c];
+      [cursorDict setObject: cursor forKey: name];
+      RELEASE(cursor);
     }
-  return ibeamCursor;
+  return cursor;
+}
+
++ (NSCursor*) greenArrowCursor
+{
+  NSString *name = @"GSGreenArrowCursor";
+  NSCursor *cursor = [cursorDict objectForKey: name];
+  if (cursor == nil)
+    {
+      void *c;
+    
+      cursor = [[NSCursor_class alloc] initWithImage: nil];
+      DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
+      DPSsetcursorcolor(GSCurrentContext (), 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, c);
+      [cursor _setCid: c];
+      [cursorDict setObject: cursor forKey: name];
+      RELEASE(cursor);
+    }
+  return cursor;
 }
 
 /*
@@ -202,8 +230,26 @@ foregroundColorHint:(NSColor *)fg
 backgroundColorHint:(NSColor *)bg
 	    hotSpot:(NSPoint)hotSpot
 {
-    // FIXME: fg and bg should be set
-  return [self initWithImage: newImage hotSpot: hotSpot];
+  NSCursor *cursor = [self initWithImage: newImage hotSpot: hotSpot];
+  if (fg || bg)
+    {
+      if (bg == nil)
+	bg = [NSColor whiteColor];
+      if (fg == nil)
+	fg = [NSColor blackColor];
+      bg = [bg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
+      fg = [fg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
+      NSLog(@"fg color is %@", fg);
+      DPSsetcursorcolor(GSCurrentContext (), 
+			[fg redComponent],
+			[fg greenComponent],
+			[fg blueComponent],
+			[bg redComponent],
+			[bg greenComponent],
+			[bg blueComponent],
+			_cid);
+    }
+  return cursor;
 }
 
 /*
