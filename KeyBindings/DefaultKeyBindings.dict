@@ -18,8 +18,8 @@
 
 /*  "Shift-UpArrow" = "moveUpAndModifySelection:"; */
 /*  "Shift-DownArrow" = "moveDownAndModifySelection:"; */
-/*  "Shift-LeftArrow" = "moveBackwardAndModifySelection:"; */
-/*  "Shift-RightArrow" = "moveForwardAndModifySelection:"; */
+  "Shift-LeftArrow" = "moveBackwardAndModifySelection:";
+  "Shift-RightArrow" = "moveForwardAndModifySelection:";
 
 /*  "Alternate-Shift-UpArrow" = ("moveUpAndModifySelection:",
     "moveWordBackwardAndModifySelection:"); */
