@@ -81,7 +81,7 @@ typedef enum {
 //
 + (NSBezierPath *)bezierPath;
 + (NSBezierPath *)bezierPathWithRect:(NSRect)aRect;
-+ (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)rect;
++ (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)aRect;
 
 //
 // Immediate mode drawing of common paths
@@ -186,7 +186,7 @@ typedef enum {
 // Appending common paths
 //
 - (void)appendBezierPath:(NSBezierPath *)aPath;
-- (void)appendBezierPathWithRect:(NSRect)rect;
+- (void)appendBezierPathWithRect:(NSRect)aRect;
 - (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count;
 - (void)appendBezierPathWithOvalInRect:(NSRect)aRect;
 - (void)appendBezierPathWithArcWithCenter:(NSPoint)center  

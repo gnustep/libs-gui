@@ -856,13 +856,13 @@ static float default_miter_limit = 10.0;
     }
 }
 
-- (void) appendBezierPathWithOvalInRect: (NSRect)rect
+- (void) appendBezierPathWithOvalInRect: (NSRect)aRect
 {
   NSPoint p, p1, p2;
-  double originx = rect.origin.x;
-  double originy = rect.origin.y;
-  double width = rect.size.width;
-  double height = rect.size.height;
+  double originx = aRect.origin.x;
+  double originy = aRect.origin.y;
+  double width = aRect.size.width;
+  double height = aRect.size.height;
   double hdiff = width / 2 * KAPPA;
   double vdiff = height / 2 * KAPPA;
   
