@@ -31,11 +31,16 @@
 
 #include <AppKit/NSTableView.h>
 
+@class NSMutableArray;
+@class NSString;
+
 @interface NSOutlineView : NSTableView
 {
+  NSMutableArray *_items;
+  NSMutableArray *_expandedItems;
   BOOL _resize;
   BOOL _followsCell;
-  BOOL _autosave;
+  BOOL _autosaveExpandedItems;
   float _indentLevel;
   NSTableColumn *_outlineTableColumn;
   BOOL _shouldCollapse;
@@ -67,7 +72,7 @@
 - (void)setOutlineTableColumn: (NSTableColumn *)outlineTableColumn;
 - (BOOL)shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited;
 
-@end /* interface of NSTableView */
+@end /* interface of NSOutlineView */
 
 /* 
  * Informal protocol NSOutlineViewDataSource 
@@ -78,19 +83,23 @@
                item: (id)item 
          childIndex: (int)index;
 
+// required method
 - (id)outlineView: (NSOutlineView *)outlineView 
             child: (int)index 
-           ofItem:(id)item;
+           ofItem: (id)item;
 
+// required method
 - (BOOL)outlineView: (NSOutlineView *)outlineView
    isItemExpandable: (id)item;
 
 - (id)outlineView: (NSOutlineView *)outlineView 
 itemForPersistentObject:(id)object;
 
+// required method
 - (int)outlineView: (NSOutlineView *)outlineView
 numberOfChildrenOfItem: (id)item;
 
+// required method
 - (id)outlineView: (NSOutlineView *)outlineView 
 objectValueForTableColumn:(NSTableColumn *)tableColumn 
            byItem:(id)item;
@@ -99,12 +108,14 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 persistentObjectForItem: (id)item;
 
 - (void)outlineView: (NSOutlineView *)outlineView 
-      setObjectView: (id)object
-     forTableColumn: (NSTableColumn *)tableColumn;
+     setObjectValue: (id)object
+     forTableColumn: (NSTableColumn *)tableColumn
+             byItem: (id)item;
 
 - (NSDragOperation)outlineView: (NSOutlineView*)outlineView 
                   validateDrop: (id <NSDraggingInfo>)info 
-                  proposedItem: (id)item proposedChildIndex:(int)index;
+                  proposedItem: (id)item 
+            proposedChildIndex: (int)index;
 
 - (BOOL)outlineView: (NSOutlineView *)outlineView 
          writeItems: (NSArray*)items 
@@ -125,29 +136,44 @@ APPKIT_EXPORT NSString *NSOutlineViewSelectionDidChangeNotification;
 APPKIT_EXPORT NSString *NSOutlineViewSelectionIsChangingNotification;
 APPKIT_EXPORT NSString *NSOutlineViewItemDidExpandNotification;
 APPKIT_EXPORT NSString *NSOutlineViewItemDidCollapseNotification;
+APPKIT_EXPORT NSString *NSOutlineViewItemWillExpandNotification;
+APPKIT_EXPORT NSString *NSOutlineViewItemWillCollapseNotification;
 
 /*
  * Methods Implemented by the Delegate
  */
 @interface NSObject (NSOutlineViewDelegate)
-
-- (BOOL)  outlineView: (NSOutlineView *)aOutlineView 
-shouldEditTableColumn: (NSTableColumn *)aTableColumn 
-	          row: (int)rowIndex;
-- (BOOL)  outlineView: (NSOutlineView *)aOutlineView 
-      shouldSelectRow: (int)rowIndex;
-- (BOOL)  outlineView: (NSOutlineView *)aOutlineView 
-shouldSelectTableColumn: (NSTableColumn *)aTableColumn;
-- (void)  outlineView: (NSOutlineView *)aOutlineView 
-      willDisplayCell: (id)aCell 
-       forTableColumn: (NSTableColumn *)aTableColumn
-	          row: (int)rowIndex;
+// notification methods
 - (void) outlineViewColumnDidMove: (NSNotification *)aNotification;
 - (void) outlineViewColumnDidResize: (NSNotification *)aNotification;
+- (void) outlineViewItemDidCollapse: (NSNotification *)aNotification;
+- (void) outlineViewItemDidExpand: (NSNotification *)aNotification;
+- (void) outlineViewItemWillCollapse: (NSNotification *)aNotification;
+- (void) outlineViewItemWillExpand: (NSNotification *)aNotification;
 - (void) outlineViewSelectionDidChange: (NSNotification *)aNotification;
 - (void) outlineViewSelectionIsChanging: (NSNotification *)aNotification;
-- (void) outlineViewItemDidExpand: (NSNotification *)aNotification;
-- (void) outlineViewItemDidCollapse: (NSNotification *)aNotification;
+
+// delegate methods
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+   shouldCollapseItem: (id)item;
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+shouldEditTableColumn: (NSTableColumn *)tableColumn
+	         item: (id)item;
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+     shouldExpandItem: (id)item;
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+     shouldSelectItem: (id)item;
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+shouldSelectTableColumn: (NSTableColumn *)tableColumn;
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+      willDisplayCell: (id)cell
+       forTableColumn: (NSTableColumn *)tableColumn
+                 item: (id)item;  
+- (BOOL)  outlineView: (NSOutlineView *)outlineView 
+willDisplayOutlineCell: (id)cell
+       forTableColumn: (NSTableColumn *)tableColumn
+                 item: (id)item;
+- (BOOL) selectionShouldChangeInOutlineView: (NSOutlineView *)outlineView;
 @end
 
 #endif /* _GNUstep_H_NSOutlineView */

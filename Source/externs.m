@@ -342,6 +342,16 @@ NSString *NSTableViewColumnDidMoveNotification = @"TableViewColumnDidMove";
 NSString *NSTableViewColumnDidResizeNotification = @"TableViewColumnDidResize";
 NSString *NSTableViewSelectionIsChangingNotification = @"TableViewSelectionIsChanging";
 
+// NSOutlineView notifications
+NSString *NSOutlineViewSelectionDidChangeNotification = @"OutlineViewSelectionDidChange";
+NSString *NSOutlineViewColumnDidMoveNotification = @"OutlineViewColumnDidMove";
+NSString *NSOutlineViewColumnDidResizeNotification = @"OutlineViewColumnDidResize";
+NSString *NSOutlineViewSelectionIsChangingNotification = @"OutlineViewSelectionIsChanging";
+NSString *NSOutlineViewItemDidExpandNotification = @"OutlineViewItemDidExpand";
+NSString *NSOutlineViewItemDidCollapseNotification = @"OutlineViewItemDidCollapse";
+NSString *NSOutlineViewItemWillExpandNotification = @"OutlineViewItemWillExpand";
+NSString *NSOutlineViewItemWillCollapseNotification = @"OutlineViewItemWillCollapse";
+
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
 NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
