@@ -371,11 +371,6 @@ static NSImage	*arrowImageH = nil;
 
   [controlView lockFocus];
 
-  if (_mcell_belongs_to_popupbutton)
-    {
-      cellFrame.origin.x--;
-    }
-
   if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
     {
       NSDrawGrayBezel(cellFrame, NSZeroRect);
@@ -576,16 +571,7 @@ static NSImage	*arrowImageH = nil;
 
   // Set cell's background color
   [_backgroundColor set];
-  if (_mcell_belongs_to_popupbutton)
-    {
-      cellFrame.origin.x--;
-      NSRectFill(cellFrame);
-      cellFrame.origin.x++;
-    }
-  else
-    {
-      NSRectFill(cellFrame);
-    }
+  NSRectFill(cellFrame);
 
   /*
    * Determine the image and the title that will be

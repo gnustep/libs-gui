@@ -64,6 +64,7 @@
   id _items_link;
   BOOL _keepAttachedMenus;
   int _oldHighlightedItemIndex;
+  int _leftBorderOffset;
 }
 
 + (float)menuBarHeight;

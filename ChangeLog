@@ -1,3 +1,36 @@
+2002-03-01  Michael Hanni <mhanni@yahoo.com>
+
+	First cut at improving NSPopUpButton/Cell.
+
+	* Source/NSMenuItemCell.m
+	([drawBorderAndBackgroundWithFrame:inView:]): Remove special
+	popupbutton case.
+	([drawInteriorWithFrame:inView:]): ditto.
+	* Headers/NSMenuView.h: added _leftBorderOffset int.
+	* Source/NSMenuView.m: added static function
+	_addLeftBorderOffsetToRect()
+	([initWithFrame:]): init left offset value to 1 (default for a
+	menu.)
+	([sizeToFit]): change left offset value to 0 if we are a
+	popup. Use this value to set the correct frame size. Before when
+	the menuview was sizeToFit'ed the menuWindow was resized by an
+	additional pixel when we were a popupbutton.
+	([innerRect]): use left offset value to return the correct rect.
+	([rectOfItemAtIndex:]): ditto.
+	([indexOfItemAtPoint:]): use _addLeftBorderOffsetToRect() to
+	correct the rect we use to calculate the event area for a
+	menuItemCell in a normal menu.
+	([setNeedsDisplayForItemAtIndex:]): ditto.
+	([drawRect:]): Modified to not draw a border line on the left side
+	if we are a popup.
+	* Source/NSPopUpButtonCell.m: added some comments for further
+	fixes.
+	([drawWithFrame:inView:]): removed all the code in favor of
+	having the NSMenuItemCell of the selected item draw the
+	popupbuttoncell.
+	([drawInteriorWithFrame:inView:]): removed everything but the
+	responder status code (this is still a FIXME).
+
 2002-03-01  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSBundleAdditions.m

@@ -485,67 +485,58 @@ static NSImage *_pbc_image[2];
  * What would be nice and natural is to make this drawing using the same code 
  * that is used to draw cells in the menu.
  * This looks like a mess to do in this framework.
+ *
+ * Well, here is an attempt to make this work.
+ */
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  NSMenuItemCell    *aCell;
+
+  // Save last view drawn to
+  if (_control_view != controlView)
+    _control_view = controlView;
+
+  // Transparent buttons never draw 
+  if (_buttoncell_is_transparent)
+    return;
+
+  // Do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame))
+    return;
+
+  // Do nothing if the window is deferred
+  if ([[controlView window] gState] == 0)
+    return;
+
+  /* Get the NSMenuItemCell of the selected item */
+  aCell = [[_menu menuRepresentation] menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
+
+  /* Turn off highlighting so the NSPopUpButton looks right */
+  [aCell setHighlighted: NO];
+  
+  [aCell drawWithFrame: cellFrame inView: controlView];
+
+  /* Draw our own interior so we pick up our dotted frame */
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  /* Rehighlight item for consistency */
+  [aCell setHighlighted: YES];
+}
+
+/* FIXME: This needs to be removed in favor of allowing the cell to draw 
+ * our NSDottedRect.
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame
 			inView: (NSView*)view
 {
-  NSSize   size;
-  NSPoint  position;
-  NSImage *anImage;
-  
-  // Save last view drawn to
-  if (_control_view != view)
-    _control_view = view;
+  // Transparent buttons never draw
+  if (_buttoncell_is_transparent)
+    return;
 
   [view lockFocus];
 
-  //  [super drawWithFrame: cellFrame inView: view];
-
   cellFrame = [self drawingRectForBounds: cellFrame];
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      cellFrame.origin.x += 3;
-      cellFrame.size.width -= 6;
-      cellFrame.origin.y += 1;
-      cellFrame.size.height -= 2;
-    }
-  // Skip 5 points from left side
-  //  cellFrame.origin.x += 5;
-  //  cellFrame.size.width -= 5;
 
-  cellFrame.origin.x += 2;
-  cellFrame.size.width -= 2;
-
-  [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
-
-  cellFrame.origin.x -= 4;
-  cellFrame.size.width += 4;
-  
-  anImage = _pbc_image[_pbcFlags.pullsDown];
-
-  /* NB: If we are drawing here, then the control can't be selected */
-  [anImage setBackgroundColor: [NSColor controlBackgroundColor]];
-
-  size = [anImage size];
-  position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
-  position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
-  if ([view isFlipped])
-    position.y += size.height;
-  [anImage  compositeToPoint: position operation: NSCompositeCopy];
-
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      cellFrame.origin.x -= 1;
-      cellFrame.size.width += 2;
-    }
-
-  cellFrame.origin.y -= 1;
-  cellFrame.size.height += 2;
-  cellFrame.size.width += 2;
   if (_cell.shows_first_responder
       && [[view window] firstResponder] == view)
     NSDottedFrameRect(cellFrame);
@@ -553,6 +544,10 @@ static NSImage *_pbc_image[2];
   [view unlockFocus]; 
 }
 
+/* FIXME: this method needs to be rewritten to be something like 
+ * NSMenuView's sizeToFit. That way if you call [NSPopUpButton sizeToFit]; 
+ * you will get the absolutely correct cellSize.
+ */
 - (NSSize) cellSize
 {
   NSSize s;

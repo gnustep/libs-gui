@@ -36,6 +36,22 @@
 
 @implementation NSMenuView
 
+static NSRect
+_addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
+{
+  if (isHorizontal == NO)
+    {
+      aRect.origin.x--;
+      aRect.size.width++;
+    }
+  else
+    {
+      aRect.origin.y--;
+      aRect.size.height++;
+    }
+  return aRect;
+}
+
 /*
  * Class methods.
  */
@@ -79,6 +95,12 @@
 
   _highlightedItemIndex = -1;
   _horizontalEdgePad = 4.;
+
+  /* Set the necessary offset for the menuView. That is, how many pixels 
+   * do we need for our left side border line. For regular menus this 
+   * equals 1, for popups it is 0. 
+   */
+ _leftBorderOffset = 1;
 
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
@@ -396,6 +418,17 @@
   float		neededStateImageWidth = 0.0;
   float		accumulatedOffset = 0.0;
 
+  /* Set the necessary offset for the menuView. That is, how many pixels 
+   * do we need for our left side border line. For regular menus this 
+   * equals 1, for popups it is 0. 
+   *
+   * Why here? I could not think of a better place. I figure that everyone 
+   * should sizeToFit their popup/menu before using it so we should get 
+   * this set properly fairly early.
+   */
+  if ([_menu _ownedByPopUp])
+    _leftBorderOffset = 0;
+
   // TODO: Optimize this loop.
   for (i = 0; i < howMany; i++)
     {
@@ -472,13 +505,13 @@
 
   if (_horizontal == NO)
     {
-      [self setFrameSize: NSMakeSize(_cellSize.width + 1, 
+      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
 				     (howMany * _cellSize.height))];
     }
   else
     {
       [self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
-				     _cellSize.height + 1)];
+				     _cellSize.height + _leftBorderOffset)];
     }
 
   _needsSizing = NO;
@@ -536,13 +569,13 @@
 {
   if (_horizontal == NO)
     {
-      return NSMakeRect(_bounds.origin.x + 1, _bounds.origin.y,
-			_bounds.size.width - 1, _bounds.size.height);
+      return NSMakeRect(_bounds.origin.x + _leftBorderOffset, _bounds.origin.y,
+			_bounds.size.width - _leftBorderOffset, _bounds.size.height);
     }
   else
     {
-      return NSMakeRect(_bounds.origin.x, _bounds.origin.y + 1,
-			_bounds.size.width, _bounds.size.height - 1);
+      return NSMakeRect(_bounds.origin.x, _bounds.origin.y +  _leftBorderOffset,
+			_bounds.size.width, _bounds.size.height - _leftBorderOffset);
     }
 }
 
@@ -554,19 +587,29 @@
     {
       [self sizeToFit];
     }
+
+  /* When we are a normal menu we fiddle with the origin so that the item 
+   * rect is shifted 1 pixel over so we do not draw on the heavy line at 
+   * origin.x = 0. However, for popups we don't want this modification of 
+   * our rect so our _leftBorderOffset = 0 (set in sizeToFit).
+   */
   if (_horizontal == NO)
     {
       theRect.origin.y = _bounds.size.height - (_cellSize.height * (index + 1));
-      theRect.origin.x = 1;
+      theRect.origin.x = _leftBorderOffset;
     }
   else
     {
       theRect.origin.x = _bounds.size.width - (_cellSize.width * (index + 1));
-      theRect.origin.y = 1;
+      theRect.origin.y = _leftBorderOffset;
     }
 
   theRect.size = _cellSize;
 
+  /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
+   * else (unless we are a popup). This rect will have to be modified for 
+   * event calculation, etc..
+   */
   return theRect;
 }
 
@@ -579,17 +622,13 @@
     {
       NSRect aRect = [self rectOfItemAtIndex: i];
 
-      // Add the border to the rectangle
-      if (_horizontal == NO)
-        {
-	  aRect.origin.x--;
-	  aRect.size.width++;
-	}
-      else
-        {
-	  aRect.origin.y--;
-	  aRect.size.height++;
-	}
+      /* We need to modify the rect to take into account the modifications 
+       * to origin made by [-rectOfItemAtIndex:] in order to return an 
+       * item clicked at the left hand margin. However, for a popup this 
+       * calculation is unnecessary since we have no extra margin.
+       */
+      if (![_menu _ownedByPopUp])
+        aRect = _addLeftBorderOffsetToRect(aRect, _horizontal);
 
       if (NSMouseInRect(point, aRect, NO))
 	return i;
@@ -600,18 +639,17 @@
 
 - (void) setNeedsDisplayForItemAtIndex: (int)index
 {
-  NSRect aRect = [self rectOfItemAtIndex: index];
+  NSRect aRect;
 
-  if (_horizontal == NO)
-    {
-      aRect.origin.x--;
-      aRect.size.width++;
-    }
-  else
-    {
-      aRect.origin.y--;
-      aRect.size.height++;
-    }
+  aRect = [self rectOfItemAtIndex: index];
+
+  /* We need to modify the rect to take into account the modifications 
+   * to origin made by [-rectOfItemAtIndex:] in order to return an 
+   * item clicked at the left hand margin. However, for a popup this 
+   * calculation is unnecessary since we have no extra margin.
+   */
+  if (![_menu _ownedByPopUp])
+    aRect = _addLeftBorderOffsetToRect(aRect, _horizontal);
 
   [self setNeedsDisplayInRect: aRect];
 }
@@ -733,24 +771,29 @@
   int    i;
   int    howMany = [_itemCells count];
 
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  /* For popupButtons we do not want this dark line. */
 
-  // Draw a dark gray line at the left of the menu item cells.
-  DPSgsave(ctxt);
-  DPSsetlinewidth(ctxt, 1);
-  DPSsetgray(ctxt, NSDarkGray);
-  if (_horizontal == NO)
+  if (![_menu _ownedByPopUp])
     {
-	DPSmoveto(ctxt, NSMinX(_bounds), NSMinY(_bounds));
-	DPSrlineto(ctxt, 0, _bounds.size.height);
+      NSGraphicsContext *ctxt = GSCurrentContext();
+
+      // Draw a dark gray line at the left of the menu item cells.
+      DPSgsave(ctxt);
+      DPSsetlinewidth(ctxt, 1);
+      DPSsetgray(ctxt, NSDarkGray);
+      if (_horizontal == NO)
+        {
+	  DPSmoveto(ctxt, NSMinX(_bounds), NSMinY(_bounds));
+	  DPSrlineto(ctxt, 0, _bounds.size.height);
+        }
+      else
+        {
+	  DPSmoveto(ctxt, NSMinX(_bounds), NSMaxY(_bounds));
+	  DPSrlineto(ctxt, _bounds.size.width, 0);
+        }
+      DPSstroke(ctxt);
+      DPSgrestore(ctxt);
     }
-  else
-    {
-	DPSmoveto(ctxt, NSMinX(_bounds), NSMaxY(_bounds));
-	DPSrlineto(ctxt, _bounds.size.width, 0);
-    }
-  DPSstroke(ctxt);
-  DPSgrestore(ctxt);
 
   // Draw the menu cells.
   for (i = 0; i < howMany; i++)
