@@ -1,4 +1,4 @@
-Thu Mar  2 02:33:09 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+Thu Mar  2 03:16:18 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Added basic support to create and run gmodels from macosx nibs:
 	* Model/GMAppKit.m ([NSApplication -encodeWithModelArchiver:]):
@@ -12,13 +12,11 @@ Thu Mar  2 02:33:09 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	"Windows".  Patched code to recognize "Window" as identifying the
 	windows submenu too.
 	* Model/GMAppKit.m ([NSImage +createObjectForModelUnarchiver:]):
-	When running under GNUstep and asked for apple system images,
-	return the corresponding GNUstep system images: namely, when asked
-	for the image named AppleMenuImage, return GNUstepMenuImage
-	instead; when asked for NSMenuCheckMark, return common_2DCheckMark
-	instead; when asked for NSMenuArrow, return common_3DArrowRigth.
 	When asked for anything which is not known, return
-	GNUstepMenuImage [and not the radio button image as we did before].
+	GNUstepMenuImage [and not the radio button image as we did
+	before].
+	* Images/nsmapping.strings: Added AppleMenuImage, NSMenuArrow,
+	NSMenuCheckMark.
 	* Images/GNUstepMenuImage.tiff: New file obtained by resizing
 	GNUstep.tiff.  Anybody with a better understanding of image
 	manipulation feel free to replace GNUstepMenuImage.tiff with a
