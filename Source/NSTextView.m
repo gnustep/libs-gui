@@ -2690,6 +2690,7 @@ afterString in order over charRange.
     }
   
   [self setSelectionGranularity: NSSelectByCharacter];
+  _layoutManager->_selectionAffinity = affinity;
   
   /* TODO: Remove the marking from marked text if the new selection is
      greater than the marked region. */
@@ -2710,7 +2711,7 @@ afterString in order over charRange.
 
 - (NSSelectionAffinity) selectionAffinity 
 { 
-  return NSSelectionAffinityDownstream;
+  return _layoutManager->_selectionAffinity;
 }
 
 - (void) setSelectionGranularity: (NSSelectionGranularity)granularity

@@ -79,6 +79,8 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
   i = r.location;
   f = [self effectiveFontForGlyphAtIndex: i
 	    range: &r];
+  /* TODO: this is rather inefficient and doesn't deal with non-shown
+  glyphs */
   for (; i < glyphIndex; i++)
     {
       if (i == r.location + r.length)
@@ -545,8 +547,50 @@ anything visible
 }
 
 
--(NSRect) insertionPointRectForCharacterIndex: (unsigned int)cindex
-			      inTextContainer: (NSTextContainer *)textContainer
+/*
+Insertion point positioning and movement.
+*/
+
+-(unsigned int) _glyphIndexForCharacterIndex: (unsigned int)cindex
+			     fractionThrough: (float *)fraction
+{
+  if (cindex == [[_textStorage string] length])
+    {
+      if (!cindex)
+	{
+	  *fraction = 0.0;
+	  return (unsigned int)-1;
+	}
+      *fraction = 1.0;
+      return [self numberOfGlyphs] - 1;
+    }
+  else
+    {
+      NSRange glyphRange, charRange;
+      unsigned int glyph_index;
+      float fraction_through;
+
+      glyphRange = [self glyphRangeForCharacterRange: NSMakeRange(cindex, 1)
+				actualCharacterRange: &charRange];
+
+      /* Deal with composite characters and ligatures. */
+      fraction_through = (cindex - charRange.location) / (float)charRange.length;
+      fraction_through *= glyphRange.length;
+
+      glyph_index = glyphRange.location + floor(fraction_through);
+      fraction_through -= floor(fraction_through);
+
+      *fraction = fraction_through;
+      return glyph_index;
+    }
+}
+
+/*
+Note: other methods rely a lot on the fact that the rectangle returned here
+has the same y origin and height as the line frag rect it is in.
+*/
+-(NSRect) _insertionPointRectForCharacterIndex: (unsigned int)cindex
+				 textContainer: (int *)textContainer
 {
   int i;
   textcontainer_t *tc;
@@ -558,45 +602,29 @@ anything visible
   float fraction_through;
 
 
-  if (cindex == [[_textStorage string] length])
-    { /* TODO: use extra line frag, etc. */
-      if (!cindex)
-	{
-	  return NSMakeRect(1,1,1,13); /* TODO! */
-	}
-      glyph_index = [self numberOfGlyphs] - 1;
-      fraction_through = 1.0;
-    }
-  else
+  glyph_index = [self _glyphIndexForCharacterIndex: cindex
+				   fractionThrough: &fraction_through];
+  if (glyph_index == (unsigned int)-1)
     {
-      NSRange glyphRange, charRange;
-
-      glyphRange = [self glyphRangeForCharacterRange: NSMakeRange(cindex, 1)
-		     actualCharacterRange: &charRange];
-
-      /* Magic to deal with composite characters and ligatures. */
-      fraction_through = (cindex - charRange.location) / (float)charRange.length;
-      fraction_through *= glyphRange.length;
-
-      glyph_index = glyphRange.location + floor(fraction_through);
-      fraction_through -= floor(fraction_through);
+      if (num_textcontainers > 0)
+	*textContainer = 0;
+      else
+	*textContainer = -1;
+      /* TODO: use extra rect, etc. */
+      return NSMakeRect(1,1,1,13);
     }
-
 
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
-    if (tc->textContainer == textContainer)
+    if (tc->pos + tc->length > glyph_index)
       break;
-  [self _doLayoutToGlyph: glyph_index - 1];
+  [self _doLayoutToGlyph: glyph_index];
   if (i == num_textcontainers)
     {
-      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      *textContainer = -1;
       return NSZeroRect;
     }
 
-  if (glyph_index < tc->pos || glyph_index >= tc->pos + tc->length)
-    {
-      return NSZeroRect;
-    }
+  *textContainer = i;
 
   for (lf = tc->linefrags, i = 0; i < tc->num_linefrags; i++, lf++)
     if (lf->pos + lf->length > glyph_index)
@@ -637,11 +665,229 @@ anything visible
   r.origin.x = x0 + (x1 - x0) * fraction_through;
   r.size.width = 1;
 
+  return r;
+}
+
+-(NSRect) insertionPointRectForCharacterIndex: (unsigned int)cindex
+			      inTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  NSRect r;
+
+  r = [self _insertionPointRectForCharacterIndex: cindex
+				   textContainer: &i];
+  if (i == -1 || textcontainers[i].textContainer != textContainer)
+    return NSZeroRect;
+
   r.origin.y++;
   r.size.height -= 2;
 
   return r;
 }
+
+
+-(unsigned int) characterIndexMoving: (GSInsertionPointMovementDirection)direction
+		  fromCharacterIndex: (unsigned int)from
+	      originalCharacterIndex: (unsigned int)original
+			    distance: (float)distance
+{
+  NSRect from_rect, new_rect;
+  int from_tc, new_tc;
+  int i;
+  unsigned int new;
+  unsigned int length = [_textStorage length];
+
+  /* This call will ensure that layout is built to 'from', and that layout
+  for the line 'from' is in is built. */
+  from_rect = [self _insertionPointRectForCharacterIndex: from
+					   textContainer: &from_tc];
+  if (from_tc == -1)
+    {
+      NSLog(@"%s: character index not in any text container",
+	__PRETTY_FUNCTION__);
+      return from;
+    }
+
+  if (direction == GSInsertionPointMoveLeft ||
+      direction == GSInsertionPointMoveRight)
+    {
+      float target;
+
+      if (distance == 0.0)
+	{
+	  new = from;
+	  if (direction == GSInsertionPointMoveLeft && new > 0)
+	    new--;
+	  if (direction == GSInsertionPointMoveRight && new < length)
+	    new++;
+
+	  [self _insertionPointRectForCharacterIndex: new
+				       textContainer: &i];
+
+	/* Don't leave the text container. */
+	if (i == from_tc)
+	  return new;
+	else
+	  return from;
+	}
+
+      /*
+      This is probably very inefficient, but it shouldn't be a bottleneck,
+      and it guarantees that cursor movement matches insertion point
+      positioning. It also lets us do this by character instead of by glyph.
+      */
+      new = from;
+      if (direction == GSInsertionPointMoveLeft)
+	{
+	  target = from_rect.origin.x - distance;
+	  while (new > 0)
+	    {
+	      new_rect = [self _insertionPointRectForCharacterIndex: new - 1
+						      textContainer: &new_tc];
+	      if (new_tc != from_tc)
+		break;
+	      if (new_rect.origin.y != from_rect.origin.y)
+		break;
+	      new--;
+	      if (NSMaxX(new_rect) <= target)
+		break;
+	    }
+	  return new;
+	}
+      else
+	{
+	  target = from_rect.origin.x + distance;
+	  while (new < length)
+	    {
+	      new_rect = [self _insertionPointRectForCharacterIndex: new + 1
+						      textContainer: &new_tc];
+	      if (new_tc != from_tc)
+		break;
+	      if (new_rect.origin.y != from_rect.origin.y)
+		break;
+	      new++;
+	      if (NSMinX(new_rect) >= target)
+		break;
+	    }
+	  return new;
+	}
+    }
+
+  if (direction == GSInsertionPointMoveUp ||
+      direction == GSInsertionPointMoveDown)
+    {
+      NSRect orig_rect;
+      int orig_tc;
+      float target;
+      textcontainer_t *tc;
+      linefrag_t *lf;
+      int i;
+
+      orig_rect = [self _insertionPointRectForCharacterIndex: original
+					       textContainer: &orig_tc];
+      if (orig_tc == from_tc)
+	target = orig_rect.origin.x;
+      else
+	target = from_rect.origin.x;
+
+      tc = &textcontainers[from_tc];
+      /* Find first line frag rect on the from line. */
+      for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
+	{
+	  if (lf->rect.origin.y == from_rect.origin.y)
+	    break;
+	}
+
+      /* If we don't have a line frag rect that matches the from position,
+      the from position is probably on the last line, in the extra rect,
+      and i == tc->num_linefrags. The movement direction specific code
+      handles this case, as long as tc->num_linefrags > 0. */
+      if (!tc->num_linefrags)
+	return from; /* Impossible? Should be, since from_tc!=-1. */
+
+      if (direction == GSInsertionPointMoveDown)
+	{
+	  [self _doLayoutToContainer: from_tc
+		point: NSMakePoint(target, distance + NSMaxY(from_rect))];
+	  /* Find the target line. Move at least (should be up to?)
+	  distance, and at least one line. */
+	  for (; i < tc->num_linefrags; i++, lf++)
+	    if (NSMaxY(lf->rect) >= distance + NSMaxY(from_rect) &&
+	        NSMinY(lf->rect) != NSMinY(from_rect))
+	      break;
+
+	  if (i == tc->num_linefrags)
+	    {
+	      /* We can't move as far as we want to. In fact, we might not
+	      have been able to move at all.
+	      TODO: figure out how to handle this
+	      */
+	      return from;
+	    }
+	}
+      else
+	{
+	  /* Find the target line. Move at least (should be up to?)
+	  distance, and at least one line. */
+	  for (; i >= 0; i--, lf--)
+	    if (NSMinY(lf->rect) <= NSMinY(from_rect) - distance &&
+	        NSMinY(lf->rect) != NSMinY(from_rect))
+	      break;
+	  /* Now we have the last line frag of the target line. Move
+	  backwards to the first one. */
+	  for (; i > 0; i--, lf--)
+	    if (NSMinY(lf->rect) != NSMinY(lf[-1].rect))
+	      break;
+
+	  if (i == -1)
+	    {
+	      /* We can't move as far as we want to. In fact, we might not
+	      have been able to move at all.
+	      TODO: figure out how to handle this
+	      */
+	      return from;
+	    }
+	}
+
+      /* Now we have the first line frag of the target line and the
+      target x position. */
+      new = [self characterRangeForGlyphRange: NSMakeRange(lf->pos, 1)
+			     actualGlyphRange: NULL].location;
+
+      /* The first character index might not actually be in this line
+      rect, so move forwards to the first character in the target line. */
+      while (new < length)
+	{
+	  new_rect = [self _insertionPointRectForCharacterIndex: new + 1
+						  textContainer: &new_tc];
+	  if (new_tc > from_tc)
+	    break;
+	  if (new_rect.origin.y >= lf->rect.origin.y)
+	    break;
+	  new++;
+	}
+
+      /* Now find the target character in the line. */
+      while (new < length)
+	{
+	  new_rect = [self _insertionPointRectForCharacterIndex: new + 1
+						  textContainer: &new_tc];
+	  if (new_tc != from_tc)
+	    break;
+	  if (new_rect.origin.y != lf->rect.origin.y)
+	    break;
+	  new++;
+	  if (NSMinX(new_rect) >= target)
+	    break;
+	}
+      return new;
+    }
+
+  NSLog(@"(%s): invalid direction %i (distance %g)",
+    __PRETTY_FUNCTION__, direction, distance);
+  return from;
+}
+
 
 
 @end
@@ -656,7 +902,7 @@ anything visible
 
 /*
 If a range passed to a drawing function isn't contained in the text
-container that containts its first glyph, the range is silently clamped.
+container that contains its first glyph, the range is silently clamped.
 My thought with this is that the requested glyphs might not fit in the
 text container (if it's the last text container, or there's only one).
 In that case, it isn't really the caller's fault, and drawing as much as

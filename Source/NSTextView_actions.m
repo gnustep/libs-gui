@@ -44,6 +44,7 @@
 #include <Foundation/NSValue.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSScrollView.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSTextView.h>
 
@@ -80,6 +81,9 @@ in the same way that the attributes of the text are changed.
 
 (TODO: Will need to look over methods that deal with attributes to make
 sure this holds.)
+
+
+TODO: can the selected range's location be NSNotFound? when?
 
 
 
@@ -152,7 +156,9 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
       && ([_delegate textShouldEndEditing: self] == NO))
     return;
 
-  /* TODO: insertion point */
+  /* TODO: insertion point.
+  doesn't the -resignFirstResponder take care of that?
+  */
 
   number = [NSNumber numberWithInt: textMovement];
   uiDictionary = [NSDictionary dictionaryWithObject: number
@@ -549,6 +555,7 @@ static NSNumber *float_plus_one(NSNumber *cur)
       return;
     }
 
+  /* TODO */
   //[self insertText: @"\t"];
 }
 
@@ -639,237 +646,265 @@ static NSNumber *float_plus_one(NSNumber *cur)
 }
 
 
+/*
+TODO: find out what affinity is supposed to mean
+
+My current assumption:
+
+Affinity deals with which direction we are selecting in, ie. which end of
+the selected range is the moving end, and which is the anchor.
+
+NSSelectionAffinityUpstream means that the minimum index of the selected
+range is moving (ie. _selected_range.location).
+
+NSSelectionAffinityDownstream means that the maximum index of the selected
+range is moving (ie. _selected_range.location+_selected_range.length).
+
+Thus, when moving and selecting, we use the affinity to find out which end
+of the selected range to move, and after moving, we compare the character
+index we moved to with the anchor and set the range and affinity.
+
+
+The affinity is important when making keyboard selection have sensible
+behavior. Example:
+
+If, in the string "abcd", the insertion point is between the "c" and the "d"
+(selected range is (3,0)), and the user hits shift-left twice, we select
+the "c" and "b" (1,2) and set the affinity to NSSelectionAffinityUpstream.
+If the user hits shift-right, only the "c" will be selected (2,1).
+
+If the insertion point is between the "a" and the "b" (1,0) and the user hits
+shift-right twice, we again select the "b" and "c" (1,2), but the affinity
+is NSSelectionAffinityDownstream. If the user hits shift-right, the "d" is
+added to the selection (1,3).
+
+*/
+
+-(unsigned int) _movementOrigin
+{
+  if (_layoutManager->_selectionAffinity == NSSelectionAffinityUpstream)
+    return _layoutManager->_selected_range.location;
+  else
+    return NSMaxRange(_layoutManager->_selected_range);
+}
+
+-(void) _moveTo: (unsigned int)cindex
+	 select: (BOOL)select
+{
+  if (select)
+    {
+      unsigned int anchor;
+      if (_layoutManager->_selectionAffinity == NSSelectionAffinityDownstream)
+	anchor = _layoutManager->_selected_range.location;
+      else
+	anchor = NSMaxRange(_layoutManager->_selected_range);
+
+      if (anchor < cindex)
+	{
+	  [self setSelectedRange: NSMakeRange(anchor, cindex - anchor)
+			affinity: NSSelectionAffinityDownstream
+		  stillSelecting: NO];
+	}
+      else
+ 	{
+	  [self setSelectedRange: NSMakeRange(cindex, anchor - cindex)
+			affinity: NSSelectionAffinityUpstream
+		  stillSelecting: NO];
+	}
+    }
+  else
+    {
+      [self setSelectedRange: NSMakeRange(cindex, 0)];
+    }
+}
+
+-(void) _move: (GSInsertionPointMovementDirection)direction
+     distance: (float)distance
+       select: (BOOL)select
+{
+  unsigned int cindex;
+
+  cindex = [self _movementOrigin];
+  cindex = [_layoutManager characterIndexMoving: direction
+	      fromCharacterIndex: cindex
+	      originalCharacterIndex: cindex /* TODO */
+	      distance: distance];
+  [self _moveTo: cindex
+	 select: select];
+}
+
+
+/*
+Insertion point movement actions.
+
+TODO: should implement:  (D marks done)
+
+D-(void) moveBackward: (id)sender;
+D-(void) moveBackwardAndModifySelection: (id)sender;
+
+D-(void) moveForward: (id)sender;
+D-(void) moveForwardAndModifySelection: (id)sender;
+
+D-(void) moveDown: (id)sender;
+D-(void) moveDownAndModifySelection: (id)sender;
+
+D-(void) moveUp: (id)sender;
+D-(void) moveUpAndModifySelection: (id)sender;
+
+D-(void) moveLeft: (id)sender;
+D-(void) moveRight: (id)sender;
+
+D-(void) moveWordBackward: (id)sender;
+D-(void) moveWordBackwardAndModifySelection: (id)sender;
+
+D-(void) moveWordForward: (id)sender;
+D-(void) moveWordForwardAndModifySelection: (id)sender;
+
+D-(void) moveToBeginningOfDocument: (id)sender;
+D-(void) moveToEndOfDocument: (id)sender;
+
+D-(void) moveToBeginningOfLine: (id)sender;
+D-(void) moveToEndOfLine: (id)sender;
+
+-(void) moveToBeginningOfParagraph: (id)sender;
+-(void) moveToEndOfParagraph: (id)sender;
+
+TODO: think hard about behavior for pageUp: and pageDown:
+D-(void) pageDown: (id)sender;
+D-(void) pageUp: (id)sender;
+
+
+TODO: some of these used to do nothing if self is a field editor. should
+check if there was a reason for that.
+
+*/
+
+
+
 -(void) moveUp: (id)sender
 {
-/*  float originalInsertionPoint;
-  float savedOriginalInsertionPoint;
-  float startingY;
-  unsigned newLocation;*/
-
-  if (_tf.is_field_editor) /* TODO: why? */
-    return;
-
-  /* Do nothing if we are at beginning of text */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-
-#if 0 /* TODO */
-  /* Read from memory the horizontal position we aim to move the cursor 
-     at on the next line */
-  savedOriginalInsertionPoint = _originalInsertPoint;
-  originalInsertionPoint = _originalInsertPoint;
-
-  /* Ask the layout manager to compute where to go */
-  startingY = NSMidY (_insertionPointRect);
-
-  /* consider textContainerInset */
-  startingY -= _textContainerInset.height;
-  originalInsertionPoint -= _textContainerInset.width;
-
-  newLocation = [_layoutManager 
-		  _charIndexForInsertionPointMovingFromY: startingY
-		  bestX: originalInsertionPoint
-		  up: YES 
-		  textContainer: _textContainer];
-
-  /* Move the insertion point */
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-
-  /* Restore the _originalInsertPoint (which was changed
-     by setSelectedRange:) because we don't want it to change between
-     moveUp:/moveDown: operations. */
-  _originalInsertPoint = savedOriginalInsertionPoint;
-#endif
+  [self _move: GSInsertionPointMoveUp
+	distance: 0.0
+	select: NO];
+}
+-(void) moveUpAndModifySelection: (id)sender
+{
+  [self _move: GSInsertionPointMoveUp
+	distance: 0.0
+	select: YES];
 }
 
 -(void) moveDown: (id)sender
 {
-/*  float originalInsertionPoint;
-  float savedOriginalInsertionPoint;
-  float startingY;
-  unsigned newLocation;*/
-
-  if (_tf.is_field_editor)
-    return;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == [_textStorage length])
-    {
-      return;
-    }
-
-#if 0 /* TODO */
-  /* Read from memory the horizontal position we aim to move the cursor 
-     at on the next line */
-  savedOriginalInsertionPoint = _originalInsertPoint;
-  originalInsertionPoint = _originalInsertPoint;
-
-  /* Ask the layout manager to compute where to go */
-  startingY = NSMidY (_insertionPointRect);
-
-  /* consider textContainerInset */
-  startingY -= _textContainerInset.height;
-  originalInsertionPoint -= _textContainerInset.width;
-
-  newLocation = [_layoutManager 
-		  _charIndexForInsertionPointMovingFromY: startingY
-		  bestX: originalInsertionPoint
-		  up: NO
-		  textContainer: _textContainer];
-
-  /* Move the insertion point */
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-
-  /* Restore the _originalInsertPoint (which was changed
-     by setSelectedRange:) because we don't want it to change between
-     moveUp:/moveDown: operations. */
-  _originalInsertPoint = savedOriginalInsertionPoint;
-#endif
+  [self _move: GSInsertionPointMoveDown
+	distance: 0.0
+	select: NO];
+}
+-(void) moveDownAndModifySelection: (id)sender
+{
+  [self _move: GSInsertionPointMoveDown
+	distance: 0.0
+	select: YES];
 }
 
 -(void) moveLeft: (id)sender
 {
-  unsigned newLocation;
-
-  /* Do nothing if we are at beginning of text with no selection */
-  if (_layoutManager->_selected_range.location == 0 && _layoutManager->_selected_range.length == 0)
-    return;
-
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      newLocation = 0;
-    }
-  else
-    {
-      newLocation = _layoutManager->_selected_range.location - 1;
-    }
-
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+  [self _move: GSInsertionPointMoveLeft
+	distance: 0.0
+	select: NO];
 }
 
 -(void) moveRight: (id)sender
 {
-  unsigned int length = [_textStorage length];
-  unsigned newLocation;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == length)
-    return;
-
-  newLocation = MIN (NSMaxRange (_layoutManager->_selected_range) + 1, length);
-
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+  [self _move: GSInsertionPointMoveRight
+	distance: 0.0
+	select: NO];
 }
 
+
+-(void) moveBackward: (id)sender
+{
+  unsigned int to = [self _movementOrigin];
+  if (to == 0)
+    return;
+  to--;
+  [self _moveTo: to
+	 select: NO];
+}
 -(void) moveBackwardAndModifySelection: (id)sender
 {
-  NSRange newRange;
-
-  /* Do nothing if we are at beginning of text.  */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-
-  /* Turn to select by character.  */
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  /* Extend the selection on the left.  */
-  newRange = NSMakeRange (_layoutManager->_selected_range.location - 1, 
-			  _layoutManager->_selected_range.length + 1);
-
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
+  unsigned int to = [self _movementOrigin];
+  if (to == 0)
+    return;
+  to--;
+  [self _moveTo: to
+	 select: YES];
 }
 
+-(void) moveForward: (id)sender
+{
+  unsigned int to = [self _movementOrigin];
+  if (to == [_textStorage length])
+    return;
+  to++;
+  [self _moveTo: to
+	 select: NO];
+}
 -(void) moveForwardAndModifySelection: (id)sender
 {
-  unsigned int length = [_textStorage length];
-  NSRange newRange;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == length)
+  unsigned int to = [self _movementOrigin];
+  if (to == [_textStorage length])
     return;
-
-  /* Turn to select by character.  */
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  /* Extend the selection on the right.  */
-  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
-			  _layoutManager->_selected_range.length + 1);
-
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
+  to++;
+  [self _moveTo: to
+	 select: YES];
 }
 
 -(void) moveWordBackward: (id)sender
 {
-  unsigned newLocation;
-  
+  unsigned int newLocation;
   newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
 			      forward: NO];
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+  [self _moveTo: newLocation
+	 select: NO];
+}
+-(void) moveWordBackwardAndModifySelection: (id)sender
+{
+  unsigned int newLocation;
+  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+			      forward: NO];
+  [self _moveTo: newLocation
+	 select: YES];
 }
 
 -(void) moveWordForward: (id)sender
 {
   unsigned newLocation;
-  
   newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
 			      forward: YES];
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+  [self _moveTo: newLocation
+	 select: NO];
 }
-
--(void) moveWordBackwardAndModifySelection: (id)sender
-{
-  unsigned newLocation;
-  NSRange newRange;
-
-  [self setSelectionGranularity: NSSelectByWord];
-  
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
-			      forward: NO];
-  
-  newRange = NSMakeRange (newLocation, 
-			  NSMaxRange (_layoutManager->_selected_range) - newLocation);
-  
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-  
-  [self setSelectedRange: newRange];
-}
-
 -(void) moveWordForwardAndModifySelection: (id)sender
 {
-  unsigned newMaxRange;
-  NSRange newRange;
-  
-  [self setSelectionGranularity: NSSelectByWord];
-
-  newMaxRange = [_textStorage nextWordFromIndex: NSMaxRange (_layoutManager->_selected_range)
-			      forward: YES];
-  
-  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
-			  newMaxRange - _layoutManager->_selected_range.location);
-  
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
+  unsigned newLocation;
+  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+			      forward: NO];
+  [self _moveTo: newLocation
+	 select: NO];
 }
 
 -(void) moveToBeginningOfDocument: (id)sender
 {
-  [self setSelectedRange: NSMakeRange (0, 0)];
+  [self _moveTo: 0
+	 select: NO];
 }
+-(void) moveToEndOfDocument: (id)sender
+{
+  [self _moveTo: [_textStorage length]
+	 select: NO];
+}
+
 
 -(void) moveToBeginningOfParagraph: (id)sender
 {
@@ -877,38 +912,6 @@ static NSNumber *float_plus_one(NSNumber *cur)
   
   aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
   [self setSelectedRange: NSMakeRange (aRange.location, 0)];
-}
-
--(void) moveToBeginningOfLine: (id)sender
-{
-  NSRange aRange;
-  NSRect ignored;
-  
-  /* We do nothing if we are at the beginning of the text.  */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-  
-  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-			      _layoutManager->_selected_range.location
-			    effectiveRange: &aRange];
-
-  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
-}
-
--(void) moveToEndOfDocument: (id)sender
-{
-  unsigned length = [_textStorage length];
-  
-  if (length > 0)
-    {
-      [self setSelectedRange: NSMakeRange (length, 0)];
-    }
-  else
-    {
-      [self setSelectedRange: NSMakeRange (0, 0)];
-    }
 }
 
 -(void) moveToEndOfParagraph: (id)sender
@@ -963,71 +966,22 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [self setSelectedRange: NSMakeRange (newLocation, 0) ];
 }
 
+
+/* TODO: this is only the beginning and end of lines if lines are horizontal
+and layout is left-to-right */
+-(void) moveToBeginningOfLine: (id)sender
+{
+  [self _move: GSInsertionPointMoveLeft
+	distance: 1e8
+	select: NO];
+}
 -(void) moveToEndOfLine: (id)sender
 {
-  NSRect ignored;
-  NSRange line, glyphs;
-  unsigned newLocation;
-  unsigned maxRange;
-  
-  /* We do nothing if we are at the end of the text.  */
-  if (_layoutManager->_selected_range.location == [_textStorage length])
-    {
-      return;
-    }
-
-  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-			      _layoutManager->_selected_range.location
-			    effectiveRange: &glyphs];
-  
-  line = [_layoutManager characterRangeForGlyphRange: glyphs
-			 actualGlyphRange: NULL];
-  
-  maxRange = NSMaxRange (line);
-
-  if (maxRange == 0)
-    {
-      /* Beginning of text is special only for technical reasons -
-	 since maxRange is an unsigned, we can't safely subtract 1
-	 from it if it is 0.  */
-      newLocation = maxRange;
-    }
-  else if (maxRange == [_textStorage length])
-    {
-      /* End of text is special - we want the insertion point to
-	 appear *after* the last character, which means as if before
-	 the next (virtual) character after the end of text ... unless
-	 the last character is a newline, and we are trying to go to
-	 the end of the line which is displayed as the
-	 one-before-the-last.  (Please note that we do not check for
-	 spaces - spaces are ok, we want to move after the last space)
-	 Please note (maxRange - 1) is a valid char since the maxRange
-	 == 0 case has already been eliminated.  */
-      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
-      if (u == '\n'  ||  u == '\r')
-	{
-	  newLocation = maxRange - 1;
-	}
-      else
-	{
-	  newLocation = maxRange;
-	}
-    }
-  else
-    {
-      /* Else, we want the insertion point to appear before the last
-	 character in the line range.  Normally the last character in
-	 the line range is a space or a newline.  */
-      newLocation = maxRange - 1;
-    }
-
-  if (newLocation < line.location)
-    {
-      newLocation = line.location;
-    }
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
+  [self _move: GSInsertionPointMoveRight
+	distance: 1e8
+	select: NO];
 }
+
 
 /**
  * Tries to move the selection/insertion point down one page of the
@@ -1037,23 +991,9 @@ static NSNumber *float_plus_one(NSNumber *cur)
  */
 -(void) pageDown: (id)sender
 {
-#if 0 /* TODO */
-  float    cachedInsertPointX;
   float    scrollDelta;
   float    oldOriginY;
   float    newOriginY;
-  unsigned glyphIDX;
-  unsigned charIDX;
-  NSPoint  iPoint;
- 
-  if (_tf.is_field_editor)
-    return;
-  
-  /* 
-   * Save the current horizontal position cache as we will implictly
-   * change it later.
-   */
-//  cachedInsertPointX = _originalInsertPoint;
 
   /*
    * Scroll; also determine how far to move the insertion point.
@@ -1070,34 +1010,12 @@ static NSNumber *float_plus_one(NSNumber *cur)
        * insertion point to the last line when the user clicks
        * 'PageDown' in that case ?
        */
+      return;
     }
 
-  /*
-   * Calculate new insertion point.
-   */
-  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
-  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
-  iPoint.y += scrollDelta;
-
-  /*
-   * Ask the layout manager to compute where to go.
-   */
-  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
-                            inTextContainer: _textContainer];
-  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
-
-  /*
-   * Move the insertion point (implicitly changing
-   * _originalInsertPoint).
-   */
-  [self setSelectedRange: NSMakeRange(charIDX, 0)];
-
-  /*
-   * Restore the _originalInsertPoint because we do not want it to
-   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.  
-   */
-  _originalInsertPoint = cachedInsertPointX;
-#endif
+  [self _move: GSInsertionPointMoveDown
+	distance: scrollDelta
+	select: NO];
 }
 
 /**
@@ -1108,23 +1026,9 @@ static NSNumber *float_plus_one(NSNumber *cur)
  */
 -(void) pageUp: (id)sender
 {
-#if 0 /* TODO */
-  float    cachedInsertPointX;
   float    scrollDelta;
   float    oldOriginY;
   float    newOriginY;
-  unsigned glyphIDX;
-  unsigned charIDX;
-  NSPoint  iPoint;
-
-  if (_tf.is_field_editor)
-    return;
-
-  /* 
-   * Save the current horizontal position cache as we will implictly
-   * change it later.
-   */
-  cachedInsertPointX = _originalInsertPoint;
 
   /*
    * Scroll; also determine how far to move the insertion point.
@@ -1141,35 +1045,15 @@ static NSNumber *float_plus_one(NSNumber *cur)
        * insertion point to the first line when the user clicks
        * 'PageUp' in that case ?
        */
+      return;
     }
 
-  /*
-   * Calculate new insertion point.
-   */
-  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
-  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
-  iPoint.y += scrollDelta;
 
-  /*
-   * Ask the layout manager to compute where to go.
-   */
-  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
-                             inTextContainer: _textContainer];
-  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
-
-  /*
-   * Move the insertion point (implicitly changing
-   * _originalInsertPoint). 
-   */
-  [self setSelectedRange: NSMakeRange(charIDX, 0)];
-  
-  /*
-   * Restore the _originalInsertPoint because we do not want it to
-   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.
-   */
-  _originalInsertPoint = cachedInsertPointX;
-#endif
+  [self _move: GSInsertionPointMoveUp
+	distance: -scrollDelta
+	select: NO];
 }
+
 
 
 -(void) scrollLineDown: (id)sender

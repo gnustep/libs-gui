@@ -32,6 +32,18 @@
 
 @class NSParagraphStyle;
 
+
+/*
+GNUstep extension.
+*/
+typedef enum {
+  GSInsertionPointMoveLeft,
+  GSInsertionPointMoveRight,
+  GSInsertionPointMoveDown,
+  GSInsertionPointMoveUp,
+} GSInsertionPointMovementDirection;
+
+
 @interface NSLayoutManager : GSLayoutManager
 {
   /* Public for use only in the associated NSTextViews.  Don't access
@@ -123,6 +135,36 @@ GNUstep extension.
 */
 -(NSRect) insertionPointRectForCharacterIndex: (unsigned int)cindex
 			      inTextContainer: (NSTextContainer *)textContainer;
+
+
+/*
+Insertion point movement primitive. 'from' is the character index moved from,
+and 'original' is the character index originally moved from in this sequence
+of moves (ie. if the user hits the down key several times, the first call
+would have original==from, and subsequent calls would use the same 'original'
+and the 'from' returned from the last call).
+
+The returned character index will always be different from 'from' unless
+'from' is the "furthest" character index in the text container in the
+specified direction.
+
+The distance is the target distance for the move (in the text container's
+coordinate system). The move won't be farther than this distance unless
+it's impossible to move a shorter distance. Distance 0.0 is treated
+specially: the move will be the shortest possible move, and movement will
+"make sense" even if the glyph/character mapping is complex at 'from'
+(eg. it will move through ligatures in a sensible way).
+
+Note that this method does not work across text containers. 'original' and
+'from' should be in the same container, and the returned index will also be
+in that container.
+
+GNUstep extension.
+*/
+-(unsigned int) characterIndexMoving: (GSInsertionPointMovementDirection)direction
+		  fromCharacterIndex: (unsigned int)from
+	      originalCharacterIndex: (unsigned int)original
+			    distance: (float)distance;
 
 @end
 
