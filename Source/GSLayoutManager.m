@@ -193,11 +193,9 @@ static int random_level(void)
 }
 
 
-/* NSLayoutManager uses this is, so it can't be static (and since it isn't,
-it needs a reasonably unique name). */
-glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
-	glyph_run_head_t *glyphs, unsigned int *glyph_pos,
-	unsigned int *char_pos)
+-(glyph_run_t *)run_for_glyph_index: (unsigned int)glyphIndex
+	: (unsigned int *)glyph_pos
+	: (unsigned int *)char_pos
 {
   int level;
   glyph_run_head_t *h;
@@ -206,7 +204,6 @@ glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
   if (glyphs->glyph_length <= glyphIndex)
     return NULL;
 
-#if 0
   if (cached_run)
     {
       if (glyphIndex >= cached_pos &&
@@ -219,7 +216,6 @@ glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
 	  return cached_run;
 	}
     }
-#endif
 
   pos = cpos = 0;
   level = SKIP_LIST_DEPTH;
@@ -254,11 +250,9 @@ glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
 	if (char_pos)
 	  *char_pos = cpos;
 
-#if 0
 	cached_run = (glyph_run_t *)h;
 	cached_pos = pos;
 	cached_cpos = cpos;
-#endif
 
 	return (glyph_run_t *)h;
     }
@@ -1468,6 +1462,7 @@ places where we switch.
 	}
       tc->linefrags = NULL;
       tc->num_linefrags = tc->num_soft = 0;
+      tc->size_linefrags = 0;
       tc->pos = tc->length = 0;
       tc->was_invalidated = YES;
     }
@@ -1707,6 +1702,12 @@ by calling this incorrectly.
 	glyph++;
       }
   }
+
+  layout_glyph = tc->pos + tc->length;
+  if (layout_glyph == glyphs->glyph_length)
+    layout_char = glyphs->char_length;
+  else
+    layout_char = [self characterIndexForGlyphAtIndex: layout_glyph];
 }
 
 - (void) setLineFragmentRect: (NSRect)fragmentRect 
@@ -1758,14 +1759,22 @@ by calling this incorrectly.
 
   if (!(tc->num_linefrags + tc->num_soft))
     {
-      tc->linefrags = malloc(sizeof(linefrag_t));
+      if (!tc->size_linefrags)
+	{
+	  tc->size_linefrags = 16;
+	  tc->linefrags = malloc(sizeof(linefrag_t) * tc->size_linefrags);
+	}
       tc->num_linefrags = 1;
       lf = tc->linefrags;
     }
   else if (!tc->num_soft)
     {
+      if (tc->size_linefrags <= tc->num_linefrags)
+	{
+	  tc->size_linefrags += tc->size_linefrags / 2;
+	  tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	}
       tc->num_linefrags++;
-      tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->num_linefrags);
       lf = &tc->linefrags[tc->num_linefrags - 1];
     }
   else
@@ -1793,7 +1802,11 @@ by calling this incorrectly.
 	  If we should keep all soft frags, we need to enlarge the array
 	  to fit the new line frag.
 	  */
-	  tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * (tc->num_linefrags + tc->num_soft + 1));
+	  if (tc->size_linefrags <= tc->num_linefrags + tc->num_soft)
+	    {
+	      tc->size_linefrags += tc->size_linefrags / 2;
+	      tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	    }
 	  memmove(&tc->linefrags[tc->num_linefrags + 1], &tc->linefrags[tc->num_linefrags], tc->num_soft * sizeof(linefrag_t));
 	}
       else if (i > tc->num_linefrags + 1)
@@ -1851,7 +1864,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	  lf->pos + lf->length >= glyphRange.location + glyphRange.length)
 	break;
     }
-  if (i == tc->num_linefrags)
+  if (i < 0)
     {
       [NSException raise: NSRangeException
 		  format: @"%s: glyph range not consistent with existing layout",
@@ -1888,12 +1901,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   lp->pos = glyphRange.location;
   lp->length = glyphRange.length;
   lp->p = location;
-
-  layout_glyph = lp->pos + lp->length;
-  if (layout_glyph == glyphs->glyph_length)
-    layout_char = glyphs->char_length;
-  else
-    layout_char = [self characterIndexForGlyphAtIndex: layout_glyph];
 }
 
 

@@ -192,6 +192,7 @@ typedef struct GSLayoutManager_textcontainer_s
   linefrag_t *linefrags;
   int num_linefrags;
   int num_soft;
+  int size_linefrags;
 } textcontainer_t;
 
 
@@ -214,6 +215,11 @@ typedef struct GSLayoutManager_textcontainer_s
 -(glyph_run_t *) _glyphForCharacter: (unsigned int)target
 	index: (unsigned int *)rindex
 	positions: (unsigned int *)rpos : (unsigned int *)rcpos;
+
+
+-(glyph_run_t *)run_for_glyph_index: (unsigned int)glyphIndex
+	: (unsigned int *)glyph_pos
+	: (unsigned int *)char_pos;
 @end
 
 
@@ -299,9 +305,8 @@ and i==-1. */
       } \
   }
 
-glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
-	glyph_run_head_t *glyphs, unsigned int *glyph_pos, unsigned int *char_pos);
-#define run_for_glyph_index GSLayoutManager_run_for_glyph_index
+
+#define run_for_glyph_index(a,b,c,d) [self run_for_glyph_index: a : c : d]
 
 #endif
 
