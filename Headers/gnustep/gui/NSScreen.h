@@ -38,7 +38,6 @@
 
 @class NSArray;
 @class NSDictionary;
-@class NSMutableDictionary;
 
 @interface NSScreen : NSObject
 {
@@ -46,8 +45,7 @@
   NSWindowDepth        _depth;
   NSRect               _frame;
   int                  _screenNumber;
-
-  void                *_reserved;
+  NSWindowDepth       *_supportedWindowDepths;
 }
 
 /*

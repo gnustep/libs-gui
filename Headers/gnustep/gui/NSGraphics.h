@@ -30,6 +30,7 @@
 
 @class NSString;
 @class NSColor;
+@class NSGraphicsContext;
 
 /*
  * Colorspace Names 
@@ -119,8 +120,6 @@ int NSBitsPerSampleFromDepth(NSWindowDepth depth);
 NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
 int NSNumberOfColorComponents(NSString *colorSpaceName);
 BOOL NSPlanarFromDepth(NSWindowDepth depth);
-NSWindowDepth GSWindowDepthForScreen(int screen);
-const NSWindowDepth *GSAvailableDepthsForScreen(int screen);
 
 /*
  * Read the Color at a Screen Position

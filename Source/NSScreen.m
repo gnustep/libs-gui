@@ -38,7 +38,18 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/DPSOperators.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/AppKitExceptions.h>
 
+/* 
+ * Forward references
+ */ 
+NSWindowDepth GSWindowDepthForScreen(NSGraphicsContext *ctxt, int screen);
+const NSWindowDepth *GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, 
+						int screen);
+
+/*
+ * Returns a list of the screens attached to the system.
+ */
 static int*
 _screenNumbers(int *count)
 {
@@ -106,12 +117,13 @@ _screenNumbers(int *count)
       RELEASE(self);
       return nil;
     }
-
+  
   // Fill in all of the i-vars with appropriate values.
   _screenNumber = screen;
-  DPScurrentwindowbounds(ctxt, screen, &x, &y, &w, &h);
+  DPScurrentwindowbounds(ctxt, _screenNumber, &x, &y, &w, &h);
   _frame = NSMakeRect(x, y, w, h);
-  _depth = GSWindowDepthForScreen(screen);
+  _depth = GSWindowDepthForScreen(ctxt, _screenNumber);
+  _supportedWindowDepths = NULL;
 
   return self;
 }
@@ -148,8 +160,8 @@ _screenNumbers(int *count)
   NSString		*colorSpaceName = nil;
 
   /*
-   * Testing of this method on OS4.2 indicates that the
-   * dictionary is re-created every time this method is called.
+   * This method generates a dictionary from the
+   * information we have gathered from the screen.
    */
 
   // Set the screen number in the current object.
@@ -186,14 +198,23 @@ _screenNumbers(int *count)
 // Mac OS X methods
 - (const NSWindowDepth*) supportedWindowDepths
 {
-  /*
-   * Skeletal implementation
-   * NSWindowDepth* retval = NSZoneMalloc([self zone], sizeof(NSWindowDepth)*2);
-   * retval[1] = _depth;
-   * retval[2] = 0;
-   * return retval;
-   */
-  return GSAvailableDepthsForScreen(_screenNumber);
+  // If the variable isn't initialized, get the info and
+  // store it for the future.
+  if (_supportedWindowDepths == NULL)
+    {
+      NSGraphicsContext	*ctxt = GSCurrentContext();
+      _supportedWindowDepths =
+	(NSWindowDepth *)GSAvailableDepthsForScreen(ctxt, _screenNumber);
+
+      // Check the results
+      if (_supportedWindowDepths == NULL)
+	{
+	  NSLog(@"Internal error: no depth list returned from window server.");
+	  return NULL;
+	}
+    }
+
+  return _supportedWindowDepths;
 }
 
 - (NSRect) visibleFrame
@@ -280,9 +301,14 @@ _screenNumbers(int *count)
   // Get the number of screens.
   windows = _screenNumbers(&count);
 
-  // If the list is empty quit...
+  // If the list is empty throw the appropriate exception and quit...
   if (windows == NULL)
-    return nil; // something is wrong. This shouldn't happen.
+    {
+      [NSException
+	raise:NSWindowServerCommunicationException
+	format:@"Unable to retrieve list of screens from window server."];
+      return nil; // something is wrong. This shouldn't happen.
+    }
 
   // Iterate over the list
   for (index = 0; index < count; index++)
@@ -297,6 +323,21 @@ _screenNumbers(int *count)
   
   return [NSArray arrayWithArray: screenArray];
 }
+
+// Release the memory for the depths array.
+- (void) dealloc
+{
+  // _supportedWindowDepths can be NULL since it may or may not
+  // be necessary to get this info.  The most common use of NSScreen
+  // is to get the depth and frame attributes.
+  if (_supportedWindowDepths != NULL)
+    {
+      NSZoneFree(NSDefaultMallocZone(), _supportedWindowDepths);
+    }
+
+  [super dealloc];
+}
+
 @end
 
 
