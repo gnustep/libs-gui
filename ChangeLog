@@ -1,6 +1,6 @@
 Mon Aug 18 09:38:27 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
-	Start porting to NeXT PDO under Solaris.
+	Start the port to NeXT PDO under Solaris.
 	* Headers/gnustep/gui/NSCStringText.h: Include Foundation/NSString.h.
 	* Headers/gnustep/gui/NSScreen.h: Declare NSArray.
 	* Headers/gnustep/gui/NSText.h: Include Foundation/NSRange.h.
