@@ -1429,7 +1429,7 @@ many times.
   // Draw content before backend window ordering
   if (display)
     [_contentView display];
-  else
+  else if (place != NSWindowOut)
     [_contentView displayIfNeeded];
 
   [srv orderwindow: place : otherWin : _windowNum];
