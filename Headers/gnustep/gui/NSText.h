@@ -44,7 +44,7 @@
 @class NSFont;
 
 typedef enum _NSTextAlignment {
-	NSLeftTextAlignment,
+	NSLeftTextAlignment = 0,
 	NSRightTextAlignment,
 	NSCenterTextAlignment,
 	NSJustifiedTextAlignment,
