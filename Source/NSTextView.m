@@ -125,10 +125,6 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 /**** Misc. helpers and stuff ****/
 
-/* From NSView.m */
-/* TODO? query the NSGraphicsContext instead? */
-extern NSView *viewIsPrinting;
-
 static const int currentVersion = 2;
 
 static BOOL noLayoutManagerException(void)
@@ -504,7 +500,7 @@ If a text view is added to an empty text network, it keeps its attributes.
   [self invalidateTextContainerOrigin];
 
   [self setPostsFrameChangedNotifications: YES];
-  [[NSNotificationCenter defaultCenter] addObserver: self
+  [notificationCenter addObserver: self
     selector: @selector(_updateState:)
     name: NSViewFrameDidChangeNotification
     object: self];
@@ -591,8 +587,6 @@ that makes decoding and encoding compatible with the old code.
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 }
 
-/* TODO: when decoding delegate, need to re-cache
-_tf.delegate_responds_to* */
 -(id) initWithCoder: (NSCoder *)aDecoder
 {
   int version = [aDecoder versionForClassName: 
@@ -683,7 +677,7 @@ _tf.delegate_responds_to* */
   [self invalidateTextContainerOrigin];
 
   [self setPostsFrameChangedNotifications: YES];
-  [[NSNotificationCenter defaultCenter] addObserver: self
+  [notificationCenter addObserver: self
     selector: @selector(_updateState:)
     name: NSViewFrameDidChangeNotification
     object: self];
@@ -716,19 +710,24 @@ _tf.delegate_responds_to* */
 	}
     }
 
-  [[NSNotificationCenter defaultCenter] removeObserver: self
+  [notificationCenter removeObserver: self
     name: NSViewFrameDidChangeNotification
     object: self];
   [[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(_updateState:)
     target: self
     argument: nil];
 
+  if (_delegate)
+    {
+      [notificationCenter removeObserver: _delegate
+	name: nil
+	object: _notifObject];
+    }
+
   DESTROY(_selectedTextAttributes);
   DESTROY(_markedTextAttributes);
   DESTROY(_insertionPointColor);
   DESTROY(_backgroundColor);
-
-  /* TODO: delegate notifications */
 
   [super dealloc];
 }
@@ -2914,7 +2913,8 @@ Figure out how the additional layout stuff is supposed to work.
 /*printf("insertion point %@\n",
 	NSStringFromRect(_insertionPointRect));*/
 
-  if ([self shouldDrawInsertionPoint])
+  if ([self shouldDrawInsertionPoint] &&
+      [NSGraphicsContext currentContextDrawingToScreen])
     {
       if (NSIntersectsRect(rect, _insertionPointRect))
 	{
