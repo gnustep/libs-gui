@@ -234,6 +234,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 				column: (int)column;
 - (BOOL) _editPreviousEditableCellBeforeRow: (int)row
 				     column: (int)column;
+- (void) _autosaveTableColumns;
+- (void) _autoloadTableColumns;
 @end
 
 @implementation NSTableView 
@@ -289,6 +291,13 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   RELEASE (_selectedRows);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
+  if (_autosaveTableColumns == YES)
+    {
+      [nc removeObserver: self 
+	  name: NSTableViewColumnDidResizeNotification
+	  object: self];
+    }
+  TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
@@ -482,6 +491,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   [nc postNotificationName: NSTableViewColumnDidMoveNotification
       object: self
       userInfo: dict];
+
+  [self _autosaveTableColumns];
 }
 
 - (NSArray *) tableColumns
@@ -2715,24 +2726,42 @@ byExtendingSelection: (BOOL)flag
 
 - (NSString *) autosaveName
 {
-  // TODO
-  return nil;
+  return _autosaveName;
 }
 
 - (BOOL) autosaveTableColumns
 {
-  // TODO
-  return NO;
+  return _autosaveTableColumns;
 }
 
 - (void) setAutosaveName: (NSString *)name
 {
-  // TODO
+  ASSIGN (_autosaveName, name);
+  [self _autoloadTableColumns];
 }
 
 - (void) setAutosaveTableColumns: (BOOL)flag
 {
-  // TODO
+  if (flag == _autosaveTableColumns)
+    {
+      return;
+    }
+
+  if (flag)
+    {
+      [self _autoloadTableColumns];
+      [nc addObserver: self 
+          selector: @selector(_autosaveTableColumns)
+	  name: NSTableViewColumnDidResizeNotification
+	  object: self];
+    }
+  else
+    {
+      [nc removeObserver: self 
+	  name: NSTableViewColumnDidResizeNotification
+	  object: self];    
+    }
+  _autosaveTableColumns = flag;
 }
 
 /* 
@@ -2951,4 +2980,74 @@ byExtendingSelection: (BOOL)flag
     }
   return NO;
 }
+- (void) _autosaveTableColumns
+{
+  if (_autosaveTableColumns && _autosaveName != nil) 
+    {
+      NSUserDefaults      *defaults;
+      NSString            *tableKey;
+      NSMutableDictionary *config;
+      NSTableColumn       *column;
+      id                  en;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"Table Columns %@", 
+			   _autosaveName];
+      config = [NSMutableDictionary new];
+      
+      en = [[self tableColumns] objectEnumerator];
+      while ((column = [en nextObject]) != nil)
+	{
+	  NSArray *array;
+	  NSNumber *width, *identNum;
+	  NSObject *ident;
+	  
+	  width = [NSNumber numberWithInt: [column width]];
+	  ident = [column identifier];
+	  identNum = [NSNumber numberWithInt: [self columnWithIdentifier: 
+						      ident]];
+	  array = [NSArray arrayWithObjects: width, identNum, nil];  
+	  [config setObject: array  forKey: ident];      
+	} 
+      [defaults setObject: config  forKey: tableKey];
+      [defaults synchronize];
+      RELEASE (config);
+    }
+}
+
+- (void) _autoloadTableColumns
+{
+  if (_autosaveTableColumns && _autosaveName != nil) 
+    { 
+      NSUserDefaults     *defaults;
+      NSDictionary       *config;
+      NSString           *tableKey;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"Table Columns %@", 
+			   _autosaveName];
+      config = [defaults objectForKey: tableKey];
+      if (config != nil) 
+	{
+	  NSEnumerator *en = [[config allKeys] objectEnumerator];
+	  NSString *colKey;
+	  NSArray *colDesc; 
+	  NSTableColumn *col;
+	  
+	  while ((colKey = [en nextObject]) != nil) 
+	    {
+	      col = [self tableColumnWithIdentifier: colKey];
+	      
+	      if (col != nil)
+		{
+		  colDesc = [config objectForKey: colKey];
+		  [col setWidth: [[colDesc objectAtIndex: 0] intValue]];
+		  [self moveColumn: [self columnWithIdentifier: colKey]
+			toColumn: [[colDesc objectAtIndex: 1] intValue]];
+		}
+	    }
+	}
+    }
+}
+
 @end /* implementation of NSTableView */
