@@ -74,6 +74,7 @@ static NSColor	*shadowCol;
   self = [super initTextCell: @""];
   [self setBezeled: YES];
   [self setAlignment: NSLeftTextAlignment];
+  [self setEditable: YES];
   _titleCell = [[NSCell alloc] initTextCell: aString];
   [_titleCell setBordered: NO];
   [_titleCell setBezeled: NO];
