@@ -29,21 +29,106 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSString.h>
 #include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSButton.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSClipView.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSColorList.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"
-#include "AppKit/NSEvent.h"
+#include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 // internal
 static const int current_version = 1;
+static NSColorList *SystemExtensionsColors;
+static NSColor *ClassicBackgroundColor;
+static NSColor *BackgroundColor;
+static NSColor *BorderColor;
 
 
+// Toolbar color extensions
+@interface NSColor (GNUstepPrivate)
++ (NSColor *) colorFromString: (NSString *)string;
+@end
+
+static void initSystemExtensionsColors(void)
+{
+  NSColor *toolbarBackgroundColor;
+  NSColor *toolbarBorderColor;
+  NSDictionary *colors;
+  
+  // Set up a dictionary containing the names of all the system extensions 
+  // colors as keys and with colors in string format as values.
+  toolbarBorderColor = [NSColor colorWithCalibratedRed: 0.5 
+                                                 green: 0.5 
+						  blue: 0.5 
+						 alpha: 1.0];
+  toolbarBackgroundColor = [NSColor clearColor]; // window background color by tranparency
+  /* toolbarBackgroundColor = [NSColor colorWithCalibratedRed: 0.8 
+                                                        green: 0.8 
+						         blue: 0.8 
+						        alpha: 1.0]; */
+  colors = [[NSDictionary alloc] 
+                   initWithObjectsAndKeys: toolbarBackgroundColor, 
+		                        @"toolbarBackgroundColor",
+		                               toolbarBorderColor,
+					    @"toolbarBorderColor",
+                                                             nil];
+							     
+  SystemExtensionsColors = [NSColorList colorListNamed: @"System extensions"];
+  if (SystemExtensionsColors == nil)
+    {
+      SystemExtensionsColors = [[NSColorList alloc] initWithName: @"System extensions"];
+    }
+
+    {
+      NSEnumerator *e;
+      NSString *colorKey;
+      NSColor *color;
+      BOOL changed = NO;
+
+      // Set up default system extensions colors
+
+      e = [colors keyEnumerator];
+  
+      while ((colorKey = (NSString *)[e nextObject])) 
+	{
+	  if ([SystemExtensionsColors colorWithKey: colorKey])
+	    continue;
+
+	  color = [colors objectForKey: colorKey];
+
+	  [SystemExtensionsColors setColor: color forKey: colorKey];
+
+	  changed = YES;
+	}
+
+      if (changed)
+	[SystemExtensionsColors writeToFile: nil];
+    }
+}
+
+@implementation NSColor (Extensions)
++ (NSColor *) toolbarBackgroundColor
+{
+  return [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
+}
+
++ (NSColor *) toolbarBorderColor
+{
+  return [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"]; 
+}
+@end
+
+/*
+ * Toolbar related code
+ */
 @interface GSToolbar (GNUstepPrivate)
 - (void) _build;
 - (void) _setToolbarView: (GSToolbarView *)toolbarView;
@@ -52,6 +137,7 @@ static const int current_version = 1;
 
 @interface NSToolbarItem (GNUstepPrivate)
 - (NSView *) _backView;
+- (NSMenuItem *) _defaultMenuFormRepresentation;
 - (BOOL) _isModified;
 - (BOOL) _isFlexibleSpace;
 - (void) _layout;
@@ -157,7 +243,10 @@ static const int current_version = 1;
           id menuItem;
       
       	  menuItem = [item menuFormRepresentation];
-          if (menuItem != nil)
+          if (menuItem == nil)
+	    menuItem = [item _defaultMenuFormRepresentation];
+	    
+	  if (menuItem != nil)
             [menu addItem: menuItem];
         }
     }
@@ -176,6 +265,16 @@ static const int current_version = 1;
 // Implementation GSToolbarView
 
 @implementation GSToolbarView
++ (void) initialize
+{
+  if (self != [GSToolbarView class])
+    return;
+    
+  initSystemExtensionsColors();
+  ClassicBackgroundColor = 
+    RETAIN([NSColor colorWithCalibratedRed: 0.8 green: 0.8 blue: 0.8 alpha: 1.0]);
+}
+
 - (id) initWithFrame: (NSRect)frame
 {
   return [self initWithFrame: frame 
@@ -190,7 +289,7 @@ static const int current_version = 1;
   if((self = [super initWithFrame: frame]) != nil)
     {
       float toolbarViewHeight;
-      
+
       _displayMode = displayMode;
       _sizeMode = sizeMode;
       
@@ -230,6 +329,11 @@ static const int current_version = 1;
       
       _borderMask = GSToolbarViewTopBorder | GSToolbarViewBottomBorder 
         | GSToolbarViewRightBorder | GSToolbarViewLeftBorder;
+	
+      BackgroundColor = [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
+      BorderColor = [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"];
+      RETAIN(BackgroundColor);
+      RETAIN(BorderColor);
       
       // ---
 
@@ -256,11 +360,14 @@ static const int current_version = 1;
   NSRect viewFrame = [self frame];
   
   // We draw the background
-  [[NSColor colorWithDeviceRed: 0.8 green: 0.8 blue: 0.8 alpha:1] set];
-  [rect fill];
+  if (![BackgroundColor isEqual: [NSColor clearColor]])
+    {
+      [BackgroundColor set];
+      [rect fill];
+    }
   
   // We draw the border
-  [[NSColor colorWithDeviceRed: 0.5 green: 0.5 blue: 0.5 alpha:1] set];
+  [BorderColor set];
   if (_borderMask & GSToolbarViewBottomBorder)
   {
     [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
@@ -290,7 +397,14 @@ static const int current_version = 1;
 
 - (BOOL) isOpaque
 {
-  return YES;
+  if ([BackgroundColor isEqual: [NSColor clearColor]])
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
 }
 
 - (void) windowDidResize: (NSNotification *)notification
@@ -324,6 +438,17 @@ static const int current_version = 1;
                             name: NSWindowDidResizeNotification object: nil];
   
   //[self viewDidMoveToSuperview];
+  
+  [nc postNotificationName: @"GSViewDidMoveToWindow" object: self];
+}
+
+- (void) viewWillMoveToWindow: (NSWindow *)newWindow
+{
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  
+  [super viewWillMoveToWindow: newWindow];
+  
+  [nc postNotificationName: @"GSViewWillMoveToWindow" object: self];
 }
 
 // More methods... Accessors
@@ -352,6 +477,11 @@ static const int current_version = 1;
                           category must be used."];
   
   [self _setToolbar: toolbar];
+}
+
+- (NSColor *) classicBackgroundColor
+{
+  return ClassicBackgroundColor;
 }
 
 // Private methods

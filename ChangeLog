@@ -1,3 +1,13 @@
+2004-05-18  Quentin Mathe  <qmathe@club-internet.fr>
+
+        * Source/GSToolbarView: Added color customization (default background
+	color is now no color), part of the toolbar validation mechanism
+	and other minor changes.
+	* Headers/GNUstepGUI/GSToolbarView.h: Same.
+	* Source/NSToolbarItem: Added part of the toolbar validation mechanism,
+	new menuFormRepresentation implementation to have the menu item titles
+	used as label with the text display mode and other minor changes.
+
 2004-05-14  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSDocumentController.m ([NSDocumentController -currentDirectory]): 

@@ -62,10 +62,11 @@
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
-- (void) _layout;
 - (NSView *) _backView;
-- (BOOL) _isModified;
+- (NSMenuItem *) _defaultMenuFormRepresentation;
 - (BOOL) _isFlexibleSpace;
+- (BOOL) _isModified;
+- (void) _layout;
 - (void) _setToolbar: (GSToolbar *)toolbar;
 @end
 
@@ -422,7 +423,7 @@
   return self;
 }
 
-- (NSMenuItem *) menuFormRepresentation 
+- (NSMenuItem *) _defaultMenuFormRepresentation 
 {
   return nil; // override the default implementation in order to do nothing
 }
@@ -448,7 +449,7 @@
   return self;
 }
 
-- (NSMenuItem *) menuFormRepresentation 
+- (NSMenuItem *) _defaultMenuFormRepresentation 
 {
   return nil;// override the default implementation in order to do nothing
 }
@@ -475,7 +476,7 @@
   return self;
 }
 
-- (NSMenuItem *) menuFormRepresentation 
+- (NSMenuItem *) _defaultMenuFormRepresentation 
 {
   return nil;// override the default implementation in order to do nothing
 }
@@ -584,7 +585,7 @@
 
 
 @implementation NSToolbarItem
-- (BOOL)allowsDuplicatesInToolbar
+- (BOOL) allowsDuplicatesInToolbar
 {
   return _allowsDuplicatesInToolbar;
 }
@@ -598,7 +599,7 @@
   return nil;
 }
 
-- (id)initWithItemIdentifier: (NSString *)itemIdentifier
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   GSToolbarButton *button;
   NSButtonCell *cell;
@@ -695,7 +696,7 @@
   return self;
 }
 
-- (BOOL)isEnabled
+- (BOOL) isEnabled
 {
   if(_flags._isEnabled)
     {
@@ -704,52 +705,46 @@
   return NO;
 }
 
-- (NSString *)itemIdentifier
+- (NSString *) itemIdentifier
 {
   return _itemIdentifier;
 }
 
-- (NSString *)label
+- (NSString *) label
 {
-  return _label;
+  NSMenuItem *menuItem = [self menuFormRepresentation];
+  
+  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly && menuItem != nil)
+    {
+      return [menuItem title];
+    }
+  else
+    {
+      return _label;
+    }
 }
 
-- (NSSize)maxSize
+- (NSSize) maxSize
 {
   return _maxSize;
 }
 
-- (NSMenuItem *)menuFormRepresentation
+- (NSMenuItem *) menuFormRepresentation
 {
-  NSMenuItem *menuItem;
-  
-  if (_menuFormRepresentation == nil)
-  {
-    menuItem = [[NSMenuItem alloc] initWithTitle: [self label]  
-                                          action: [self action] 
-                                   keyEquivalent: @""];
-    [menuItem setTarget: [self target]];
-    AUTORELEASE(menuItem);
-  }
-  else
-  {
-    menuItem = [_menuFormRepresentation copy];
-  }
-  
-  return menuItem;
+  return _menuFormRepresentation;
 }
 
-- (NSSize)minSize
+- (NSSize) minSize
 {
   return _minSize;
 }
 
-- (NSString *)paletteLabel
+- (NSString *) paletteLabel
 {
   return _paletteLabel;
 }
 
-- (void)setAction: (SEL)action
+- (void) setAction: (SEL)action
 {
   if(_flags._setAction)
     {
@@ -757,22 +752,22 @@
         [(GSToolbarButton *)_backView setToolbarItemAction: action];
 	if (action != NULL)
 	  {
-	    [(NSButton *)_backView setEnabled: YES];
+	    [self setEnabled: YES];
 	  }
 	else
 	  {
-	    [(NSButton *)_backView setEnabled: NO];
+	    [self setEnabled: NO];
 	  }
     }
 }
 
-- (void)setEnabled: (BOOL)enabled
+- (void) setEnabled: (BOOL)enabled
 {
   if(_flags._setEnabled)
     [(id)_backView setEnabled: enabled];
 }
 
-- (void)setImage: (NSImage *)image
+- (void) setImage: (NSImage *)image
 {
   if(_flags._setImage)
     {  
@@ -786,7 +781,7 @@
     }
 }
 
-- (void)setLabel: (NSString *)label
+- (void) setLabel: (NSString *)label
 {
   ASSIGN(_label, label);
   
@@ -798,33 +793,33 @@
     [[_toolbar _toolbarView] _reload];
 }
 
-- (void)setMaxSize: (NSSize)maxSize
+- (void) setMaxSize: (NSSize)maxSize
 {
   _maxSize = maxSize;
 }
 
-- (void)setMenuFormRepresentation: (NSMenuItem *)menuItem
+- (void) setMenuFormRepresentation: (NSMenuItem *)menuItem
 {
   ASSIGN(_menuFormRepresentation, menuItem);
 }
 
-- (void)setMinSize: (NSSize)minSize
+- (void) setMinSize: (NSSize)minSize
 {
   _minSize = minSize;
 }
 
-- (void)setPaletteLabel: (NSString *)paletteLabel
+- (void) setPaletteLabel: (NSString *)paletteLabel
 {
   ASSIGN(_paletteLabel, paletteLabel);
 }
 
-- (void)setTag: (int)tag
+- (void) setTag: (int)tag
 {
   if(_flags._tag)
     [_backView setTag: tag];
 }
 
-- (void)setTarget: (id)target
+- (void) setTarget: (id)target
 {
    if(_flags._target)
      {
@@ -833,12 +828,12 @@
      }
 }
 
-- (void)setToolTip: (NSString *)toolTip
+- (void) setToolTip: (NSString *)toolTip
 {
   ASSIGN(_toolTip, toolTip);
 }
 
-- (void)setView: (NSView *)view
+- (void) setView: (NSView *)view
 {
   ASSIGN(_view, view);
   
@@ -873,7 +868,7 @@
   _backView = [[GSToolbarBackView alloc] initWithToolbarItem: self];
 }
 
-- (int)tag
+- (int) tag
 {
   if(_flags._tag)
     return [_backView tag];
@@ -881,32 +876,58 @@
   return 0;
 }
 
-- (NSString *)toolTip
+- (NSString *) toolTip
 {
   return _toolTip;
 }
 
-- (GSToolbar *)toolbar
+- (GSToolbar *) toolbar
 {
   return _toolbar;
 }
 
-- (void)validate
+- (void) validate
 {
   // validate by default, we know that all of the
   // "standard" items are correct.
+  NSMenuItem *menuItem = [self menuFormRepresentation];
+  id target = [self target];
+  
+  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly && menuItem != nil)
+    {
+      if ([target respondsToSelector: @selector(validateMenuItem:)])
+        [self setEnabled: [target validateMenuItem: menuItem]];
+    }
+  else
+    {
+      if ([target respondsToSelector: @selector(validateToolbarItem:)])
+        [self setEnabled: [target validateToolbarItem: self]];
+    } 
 }
 
-- (NSView *)view
+- (NSView *) view
 {
   return _view;
 }
 
 // Private or package like visibility methods
 
-- (NSView *)_backView
+- (NSView *) _backView
 {
   return _backView;
+}
+
+- (NSMenuItem *) _defaultMenuFormRepresentation
+{
+  NSMenuItem *menuItem;
+  
+  menuItem = [[NSMenuItem alloc] initWithTitle: [self label]  
+                                        action: [self action] 
+                                 keyEquivalent: @""];
+  [menuItem setTarget: [self target]];
+  AUTORELEASE(menuItem);
+  
+  return menuItem;
 }
 
 - (void) _layout
@@ -914,12 +935,12 @@
   [(id)_backView layout];
 }
 
-- (BOOL)_isModified
+- (BOOL) _isModified
 {
   return _modified;
 }
 
-- (BOOL)_isFlexibleSpace
+- (BOOL) _isFlexibleSpace
 {
   return [self isKindOfClass: [GSToolbarFlexibleSpaceItem class]];
 }
@@ -930,7 +951,7 @@
 }
 
 // NSValidatedUserInterfaceItem protocol
-- (SEL)action
+- (SEL) action
 {
   if(_flags._action)
     {
@@ -940,7 +961,7 @@
   return 0;
 }
 
-- (id)target
+- (id) target
 {
   if(_flags._target)
     {
@@ -952,7 +973,7 @@
 }
 
 // NSCopying protocol
-- (id)copyWithZone: (NSZone *)zone 
+- (id) copyWithZone: (NSZone *)zone 
 {
   NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] initWithItemIdentifier: _itemIdentifier];
 
@@ -970,4 +991,5 @@
 
   return self;
 }
+
 @end

@@ -31,16 +31,16 @@
 #ifndef _GSToolbarView_h_INCLUDE
 #define _GSToolbarView_h_INCLUDE
 
-#include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSColor.h>
 
 #include "GNUstepGUI/GSToolbar.h"
 // Necessary for NSToolbarDisplayMode and NSToolbarSizeMode
 
 @class NSMutableArray;
-@class NSToolbarItem;
 @class NSClipView;
+@class NSToolbarItem;
 @class GSToolbarClippedItemsButton;
 
 enum {
@@ -101,6 +101,15 @@ static const int _ClippedItemsViewWidth = 28;
 - (void) setToolbar: (GSToolbar *)toolbar;
 - (unsigned int) borderMask;
 - (void) setBorderMask: (unsigned int)borderMask;
+
+@end
+
+// Toolbar related NSColor methods
+
+@interface NSColor (Extensions)
+
++ (NSColor *) toolbarBackgroundColor;
++ (NSColor *) toolbarBorderColor;
 
 @end
 
