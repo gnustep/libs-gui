@@ -64,7 +64,7 @@
 - (NSColor *) backgroundColor;
 - (void) setBackgroundColor: (NSColor *)aColor;
 - (NSColor *) dividerColor;
-- (void) seDividerColor: (NSColor *)aColor;
+- (void) setDividerColor: (NSColor *)aColor;
 
 @end
 
