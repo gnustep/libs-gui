@@ -139,7 +139,7 @@ all the other GNUstep libraries. For this, you should get the gstep-core
 package and follow the installation instructions for that.
 
 If you are compiling this library separately, you must have already
-installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
+installed the GNUstep Makefile Package and the GNUstep Base Library.
 
 @node Classes, Tools, Configuration, Top
 @chapter Special Features of GUI Classes.
@@ -1252,7 +1252,7 @@ argument was given.  The Info-gnustep.plist file could look like this:
 This section applies only to the X-Windows based backend. 
 
 @subsection Default Settings
-The OPENstep specification requires 3 main different keyboard 
+The OpenStep specification requires 3 main different keyboard 
 modifiers: @key{CONTROL}, @key{COMMAND} and @key{ALTERNATE}.  
 @c
 @itemize @bullet
