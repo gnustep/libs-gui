@@ -216,16 +216,25 @@ static NSFont *_leafFont;
   _cell.state = YES;
 }
 
+- (void) setType: (NSCellType)aType
+{
+  /* We do nothing here (we match the Mac OS X behavior) because with
+   * NSBrowserCell GNUstep implementation the cell may contain an image 
+   * and text at the same time. 
+   */
+}
+
 /*
  * Displaying
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   NSRect	title_rect = cellFrame;
-  NSImage	*image = nil;
+  NSImage	*branch_image = nil;
+  NSImage	*cell_image = nil;
   NSColor	*backColor;
   NSWindow      *cvWin = [controlView window];
-  BOOL          showsFirstResponder;
+
 
   if (!cvWin)
     return;
@@ -235,76 +244,68 @@ static NSFont *_leafFont;
       backColor = [self highlightColorInView: controlView];
       [backColor set];
       if (!_browsercell_is_leaf)
-	image = [isa highlightedBranchImage];
+	branch_image = [isa highlightedBranchImage];
+      cell_image = [self alternateImage];
     }
   else
     {
       backColor = [cvWin backgroundColor];
       [backColor set];
       if (!_browsercell_is_leaf)
-	image = [isa branchImage];
+	branch_image = [isa branchImage];
+      cell_image = [self image];
     }
   
   // Clear the background
   NSRectFill(cellFrame);	
 
-  showsFirstResponder = _cell.shows_first_responder;
-
   // Draw the branch image if there is one
-  if (image) 
+  if (branch_image) 
     {
-      NSRect image_rect;
+      NSSize size;
+      NSPoint position;
 
-      image_rect.origin = cellFrame.origin;
-      image_rect.size = [image size];
-      image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 4.0;
-      image_rect.origin.y
-	+= (cellFrame.size.height - image_rect.size.height) / 2.0;
+      size = [branch_image size];
+      position.x = MAX(NSMaxX(title_rect) - size.width - 4.0, 0.);
+      position.y = MAX(NSMidY(title_rect) - (size.height/2.), 0.);
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
       if ([controlView isFlipped])
-	image_rect.origin.y += image_rect.size.height;
-      [image compositeToPoint: image_rect.origin 
-	     operation: NSCompositeSourceOver];
+	position.y += size.height;
+      [branch_image compositeToPoint: position operation: NSCompositeSourceOver];
 
-      title_rect.size.width -= image_rect.size.width + 8;	
+      title_rect.size.width -= size.width + 8;
     }
 
   // Skip 2 points from the left border
   title_rect.origin.x += 2;
   title_rect.size.width -= 2;
   
-  // Draw the body of the cell
-  if ((_cell.type == NSImageCellType)
-      && (_cell.is_highlighted || _cell.state)
-      && _alternateImage)
+  // Draw the cell image if there is one
+  if (cell_image) 
     {
-      // Draw the alternateImage 
       NSSize size;
       NSPoint position;
       
-      size = [_alternateImage size];
-      position.x = MAX(NSMidX(title_rect) - (size.width/2.),0.);
+      size = [cell_image size];
+      position.x = NSMinX(title_rect);
       position.y = MAX(NSMidY(title_rect) - (size.height/2.),0.);
       if ([controlView isFlipped])
 	position.y += size.height;
-      [_alternateImage compositeToPoint: position 
-		       operation: NSCompositeSourceOver];
-    }
-  else
-    {
-      // Draw image, or text
-      _cell.shows_first_responder = NO;
+      [cell_image compositeToPoint: position operation: NSCompositeSourceOver];
 
-      [super drawInteriorWithFrame: title_rect inView: controlView];
-    }
+      title_rect.origin.x += size.width + 4;
+      title_rect.size.width -= size.width + 4;
+   }
 
-  if (showsFirstResponder == YES)
+  // Draw the body of the cell
+  [self _drawAttributedText: [self attributedStringValue]
+	inFrame: title_rect];
+
+  if (_cell.shows_first_responder == YES)
     NSDottedFrameRect(cellFrame);
-
-  _cell.shows_first_responder = showsFirstResponder;
 }
 
 - (BOOL) isOpaque
