@@ -335,8 +335,8 @@ static NSParagraphStyle	*defaultStyle = nil;
 	{
 	  NSTextTab	*tab = [_tabStops objectAtIndex: i];
 
-	  locations[count] = [tab location]; 
-	  types[count] = [tab tabStopType]; 
+	  locations[i] = [tab location]; 
+	  types[i] = [tab tabStopType]; 
 	}
       [aCoder encodeArrayOfObjCType: @encode(float)
 			      count: count
