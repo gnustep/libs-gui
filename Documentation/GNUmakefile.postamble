@@ -64,7 +64,7 @@ after-install::
 	    which gzip && rm -f $(GNUSTEP_DOCUMENTATION_MAN)/man1/$$file.gz \
 		&& gzip -9 $(GNUSTEP_DOCUMENTATION_MAN)/man1/$$file; \
 	  fi; \
-	done; \
+	done;
 
 # Things to do before uninstalling
 # before-uninstall::
