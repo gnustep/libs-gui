@@ -555,10 +555,12 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
 - (NSSize) _sizeOfRange: (NSRange)aRange
 {
-  if (!aRange.length || _textStorage == nil ||
-      NSMaxRange(aRange) > [_textStorage length])
-    return NSZeroSize;
-
+  if (aRange.length == 0  ||  _textStorage == nil 
+      ||  NSMaxRange(aRange) > [_textStorage length])
+    {
+      return NSZeroSize;
+    }
+  
   return [_textStorage sizeRange: aRange];
 }
 

@@ -196,8 +196,10 @@ static	Class	concrete;
   length = [self length];
   // Multiple adds at the end might give a too long result
   if (NSMaxRange(r) > length)
+    {
       r.length = length - r.location;
-
+    }
+  
   /* The following call will potentially fix attributes.  These changes 
      are done through NSTextStorage methods, which records the changes 
      by calling edited:range:changeInLength: - which modifies editedRange.
