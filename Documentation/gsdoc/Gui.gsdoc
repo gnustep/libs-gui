@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="AppKit">
+<gsdoc base="Gui">
   <head>
-    <title>AppKit</title>
+    <title>Gui</title>
     <author name="Richard Frith-Macdonald">
       <email address="rfm@gnu.org"/>
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
@@ -12,11 +12,12 @@
   </head>
   <body>
     <chapter>
-      <heading>AppKit</heading>
+      <heading>Gui</heading>
       <p>
 	Nicola Pero has begun work on writing an
 	<uref url="Introduction.html">introduction</uref>
-	to the basic concepts and use of the GNUstep GUI library (AppKit).
+	to the basic concepts and use of the GNUstep GUI library  - a free
+	software library compatible with the OpenStep Application Kit (tm).
       </p>
       <p>
 	We also have reference documentation for the classes, though this is
