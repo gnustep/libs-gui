@@ -3109,14 +3109,14 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   const SEL sel_a = @selector (numberOfRowsInTableView:);
   const SEL sel_b = @selector (tableView:objectValueForTableColumn:row:);
   const SEL sel_c = @selector(tableView:setObjectValue:forTableColumn:row:);
-  if ([anObject respondsToSelector: sel_a] == NO) 
+  if (anObject && [anObject respondsToSelector: sel_a] == NO) 
     {
       [NSException 
 	raise: NSInternalInconsistencyException 
 	format: @"Data Source doesn't respond to numberOfRowsInTableView:"];
     }
   
-  if ([anObject respondsToSelector: sel_b] == NO) 
+  if (anObject && [anObject respondsToSelector: sel_b] == NO) 
     {
       [NSException raise: NSInternalInconsistencyException 
 		   format: @"Data Source doesn't respond to "

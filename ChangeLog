@@ -1,3 +1,7 @@
+2002-11-12 20:40  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSTableView (-setDataSource:): Allow nil data source.
+
 2002-11-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSSimpleLayoutManager.m
