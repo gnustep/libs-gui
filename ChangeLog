@@ -1,3 +1,12 @@
+Mon Jun 25 10:35:32 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/GSVersion.h.in: New file.
+	* Headers/gnustep/gui/AppKit.h: Include GSVersion.h.
+	* configure.in (AC_OUTPUT): Added Headers/gnustep/gui/GSVersion.h.
+	* configure: Regenerated.
+	* Source/GNUmakefile (libgnustep-gui_HEADER_FILES): Added 
+	GSVersion.h
+	
 Mon Jun 25 09:59:43 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/AppKit.h: Do not include NSLayoutManager.h,
