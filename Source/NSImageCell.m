@@ -127,7 +127,7 @@
   
   [controlView lockFocus];
   // draw the border if needed
-  switch ([self imageFrameStyle])
+  switch (_frameStyle)
     {
       case NSImageFrameNone:
 	// nada
@@ -209,96 +209,98 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  NSImage	*image;
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
+  NSSize        imageSize;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
-  image = [self image];
-  if (!image)
+  if (!_cell_image)
     return;
 
   // leave room for the frame
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
-  switch ([self imageScaling])
+  switch (_imageScaling)
     {
       case NSScaleProportionally:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-	  [image setScalesWhenResized:YES];
-	  [image setSize: scaleProportionally(_original_image_size, cellFrame)];
+	  [_cell_image setScalesWhenResized:YES];
+	  [_cell_image setSize: scaleProportionally (_original_image_size, 
+						     cellFrame)];
 	  break;
 	}
       case NSScaleToFit:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleToFit");
-	  [image setScalesWhenResized:YES];
-	  [image setSize: cellFrame.size];
+	  [_cell_image setScalesWhenResized:YES];
+	  [_cell_image setSize: cellFrame.size];
 	  break;
 	}
       case NSScaleNone:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleNone");
-	  [image setScalesWhenResized:NO];
+	  [_cell_image setScalesWhenResized:NO];
 	  // don't let the image size overrun the space available
 	  if (_original_image_size.width > cellFrame.size.width
 	    || _original_image_size.height > cellFrame.size.height)
-	    [image setSize: cellFrame.size];
+	    [_cell_image setSize: cellFrame.size];
 	  else
-	    [image setSize: _original_image_size];
+	    [_cell_image setSize: _original_image_size];
 	  break;
 	}
     }
 
-  switch ([self imageAlignment])
+  imageSize = [_cell_image size];
+
+  switch (_imageAlignment)
     {
       case NSImageAlignLeft:
-	position.x = xLeftInRect([image size], cellFrame);
-	position.y = yCenterInRect([image size], cellFrame, is_flipped);
+	position.x = xLeftInRect(imageSize, cellFrame);
+	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignRight:
-	position.x = xRightInRect([image size], cellFrame);
-	position.y = yCenterInRect([image size], cellFrame, is_flipped);
+	position.x = xRightInRect(imageSize, cellFrame);
+	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignCenter:
-	position.x = xCenterInRect([image size], cellFrame);
-	position.y = yCenterInRect([image size], cellFrame, is_flipped);
+	position.x = xCenterInRect(imageSize, cellFrame);
+	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignTop:
-	position.x = xCenterInRect([image size], cellFrame);
-	position.y = yTopInRect([image size], cellFrame, is_flipped);
+	position.x = xCenterInRect(imageSize, cellFrame);
+	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignBottom:
-	position.x = xCenterInRect([image size], cellFrame);
-	position.y = yBottomInRect([image size], cellFrame, is_flipped);
+	position.x = xCenterInRect(imageSize, cellFrame);
+	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignTopLeft:
-	position.x = xLeftInRect([image size], cellFrame);
-	position.y = yTopInRect([image size], cellFrame, is_flipped);
+	position.x = xLeftInRect(imageSize, cellFrame);
+	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignTopRight:
-	position.x = xRightInRect([image size], cellFrame);
-	position.y = yTopInRect([image size], cellFrame, is_flipped);
+	position.x = xRightInRect(imageSize, cellFrame);
+	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignBottomLeft:
-	position.x = xLeftInRect([image size], cellFrame);
-	position.y = yBottomInRect([image size], cellFrame, is_flipped);
+	position.x = xLeftInRect(imageSize, cellFrame);
+	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
 	break;
       case NSImageAlignBottomRight:
-	position.x = xRightInRect([image size], cellFrame);
-	position.y = yBottomInRect([image size], cellFrame, is_flipped);
+	position.x = xRightInRect(imageSize, cellFrame);
+	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
 	break;
     }
 
   // account for flipped views
   if (is_flipped)
-    position.y += [image size].height;
+    position.y += imageSize.height;
 
   // draw!
-  [image compositeToPoint: position operation: NSCompositeCopy];
+  [_cell_image compositeToPoint: position operation: NSCompositeCopy];
   [controlView unlockFocus];
 }
 
@@ -310,16 +312,16 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   switch (_frameStyle)
     {
       case NSImageFrameNone:
-	borderSize = [NSCell sizeForBorderType: NSNoBorder];
+	borderSize = NSZeroSize;
 	break;
       case NSImageFramePhoto:
 	// FIXME
-	borderSize = [NSCell sizeForBorderType: NSNoBorder];
+	borderSize = _sizeForBorderType (NSNoBorder);
 	break;
       case NSImageFrameGrayBezel:
       case NSImageFrameGroove:
       case NSImageFrameButton:
-	borderSize = [NSCell sizeForBorderType: NSBezelBorder]; 
+	borderSize = _sizeForBorderType (NSBezelBorder); 
 	break;
     }
   
@@ -347,16 +349,16 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   switch (_frameStyle)
     {
     case NSImageFrameNone:
-      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      borderSize = NSZeroSize;
       break;
     case NSImageFramePhoto:
       // what does this one look like? TODO (in sync with the rest of the code)
-      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      borderSize = _sizeForBorderType (NSNoBorder);
       break;
     case NSImageFrameGrayBezel:
     case NSImageFrameGroove:
     case NSImageFrameButton:
-      borderSize = [NSCell sizeForBorderType: NSBezelBorder]; 
+      borderSize = _sizeForBorderType (NSBezelBorder); 
       break;
     }
 
