@@ -43,6 +43,17 @@
 
 //#define DEBUG
 
+#if 0
+@implementation NSObject (NibToGModel)
+- (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
+{
+  NSLog (@"%x awakeAfterUsingCoder: %@ [%@]", self, [self class], self);
+  return self;
+}
+
+@end
+#endif
+
 @implementation NSCustomObject (NibToGModel)
 - (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
 {
@@ -215,6 +226,30 @@
   NSLog (@"realObject = %@", realObject);
 #endif
   return realObject;
+}
+
+@end
+
+@implementation NSMenuTemplate (NibToGModel)
+- (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
+{
+#ifdef DEBUG
+  NSLog (@"%x awakeAfterUsingCoder NSMenuTemplate: className = %@, realObject = %@, "
+	 @"extension = %@", self, menuClassName, realObject, extension);
+#endif
+  /* This is just a hack till we figure out what's going on */
+  if ([menuClassName isEqual: @"NSPopUpList"])
+    [self retain];
+  return self;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [archiver encodeString:menuClassName withName:@"menuClassName"];
+  if (realObject)
+    [archiver encodeObject:realObject withName:@"realObject"];
+  if (extension)
+    [archiver encodeObject:extension withName:@"extension"];
 }
 
 @end

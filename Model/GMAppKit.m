@@ -789,14 +789,13 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSMenu (GMArchiverMethods) */
 
-#if 0
 @implementation NSPopUpButton (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeBOOL:[self pullsDown] withName:@"pullsDown"];
   
-#if 0
+#if 1
   /* OUCH! This code crashes the translator; probably we interfere somehow with
      the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
      popup buttons cannot be handled by the convertor! */
@@ -856,7 +855,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSPopUpButton (GMArchiverMethods) */
-#endif
 
 @implementation NSResponder (GMArchiverMethods)
 

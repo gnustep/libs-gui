@@ -85,6 +85,24 @@
     BOOL _wtFlags; /* Don't know the type of this ivar */
     NSRect screenRect;
 }
+
+@end
+
+@interface NSMenuTemplate : NSObject
+{
+    NSString *title;
+    NSPoint location;
+    id view;
+    NSString *menuClassName;
+    id supermenu;
+    id realObject;
+    id extension;
+    BOOL isWindowsMenu;
+    BOOL isRequestMenu;
+    BOOL isFontMenu;
+    char interfaceStyle;
+    char *cMenuClassName;
+}
 @end
 
 #endif /* _GNUstep_H_IBClasses */
