@@ -207,19 +207,21 @@ enum {							// resized when the view's superview is resized
 //
 // Displaying 
 //
-- (BOOL)canDraw;
-- (void)display;
-- (void)displayIfNeeded;
-- (void)displayIfNeededIgnoringOpacity;
-- (void)displayRect:(NSRect)aRect;
-- (void)displayRectIgnoringOpacity:(NSRect)aRect;
-- (void)drawRect:(NSRect)rect;
-- (NSRect)visibleRect;
-- (BOOL)isOpaque;
-- (BOOL)needsDisplay;
-- (void)setNeedsDisplay:(BOOL)flag;
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect;
-- (BOOL)shouldDrawColor;
+- (BOOL) canDraw;
+- (void) display;
+- (void) displayIfNeeded;
+- (void) displayIfNeededIgnoringOpacity;
+- (void) displayIfNeededInRect: (NSRect)aRect;
+- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect;
+- (void) displayRect: (NSRect)aRect;
+- (void) displayRectIgnoringOpacity: (NSRect)aRect;
+- (void) drawRect: (NSRect)rect;
+- (NSRect) visibleRect;
+- (BOOL) isOpaque;
+- (BOOL) needsDisplay;
+- (void) setNeedsDisplay: (BOOL)flag;
+- (void) setNeedsDisplayInRect: (NSRect)invalidRect;
+- (BOOL) shouldDrawColor;
 
 //
 // Scrolling 

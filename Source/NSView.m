@@ -1,4 +1,4 @@
-/* 
+/*
    NSView.m
 
    The view class which encapsulates all drawing functionality
@@ -18,7 +18,7 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -28,7 +28,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <math.h>
@@ -69,7 +69,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 }
 
 /*
- * return the view at the top of thread's focus stack 
+ * return the view at the top of thread's focus stack
  * or nil if none is focused
  */
 + (NSView *) focusView
@@ -150,11 +150,11 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 - (id)initWithFrame:(NSRect)frameRect
 {
 	[super init];										// super is NSResponder
-	
+
 	frame = frameRect;									// Set frame rectangle
 	bounds.origin = NSZeroPoint;						// Set bounds rectangle
 	bounds.size = frame.size;
-	
+
 	frameMatrix = [PSMatrix new];						// init PS matrix for
 	boundsMatrix = [PSMatrix new];						// frame and bounds
 	[frameMatrix setFrameOrigin:frame.origin];
@@ -162,7 +162,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 	sub_views = [NSMutableArray new];					// subviews
 	tracking_rects = [NSMutableArray new];				// tracking rectangles
 	cursor_rects = [NSMutableArray new];				// cursor rectangles
-														
+
 	super_view = nil;
 	window = nil;
 	is_rotated_from_base = NO;
@@ -172,7 +172,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 	post_frame_changes = NO;
 	autoresize_subviews = YES;
 	autoresizingMask = NSViewNotSizable;
-	
+
 	return self;
 }
 
@@ -183,7 +183,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 	[sub_views release];
 	[tracking_rects release];
 	[cursor_rects release];
-	
+
 	[super dealloc];
 }
 
@@ -194,10 +194,10 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
       NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
       return;
     }
-  
+
   [aView retain];
-  [aView removeFromSuperview];			
-  [aView viewWillMoveToWindow: window];			
+  [aView removeFromSuperview];
+  [aView viewWillMoveToWindow: window];
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
   [sub_views addObject: aView];
@@ -225,14 +225,14 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
   index = [sub_views indexOfObjectIdenticalTo: otherView];
   if (index == NSNotFound)
     {
-      if (place = NSWindowBelow)
+      if (place == NSWindowBelow)
 	index = 0;
       else
-	index = [sub_views length];
+	index = [sub_views count];
     }
   [aView retain];
-  [aView removeFromSuperview];			
-  [aView viewWillMoveToWindow: window];			
+  [aView removeFromSuperview];
+  [aView viewWillMoveToWindow: window];
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
   if (place == NSWindowBelow)
@@ -248,13 +248,13 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 {
 	if (self == aView)								// Are they the same view?
 		return self;
-  
-	if ([self isDescendantOf: aView])				// Is self a descendant of 
+
+	if ([self isDescendantOf: aView])				// Is self a descendant of
 		return aView;								// view?
 
-	if ([aView isDescendantOf: self])				// Is view a descendant of 
+	if ([aView isDescendantOf: self])				// Is view a descendant of
 		return self;								// self?
-									
+
 	if (![self superview])			// If neither are descendants of each other
 		return nil;					// and either does not have a superview
 	if (![aView superview])			// then they cannot have a common ancestor
@@ -268,10 +268,10 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 	if (aView == self) 								// Quick check
 		return YES;
 
-	if (!super_view) 								// No superview then this 
+	if (!super_view) 								// No superview then this
 		return NO;									// is end of the line
 
-	if (super_view == aView) 
+	if (super_view == aView)
 		return YES;
 
 	return [super_view isDescendantOf:aView];
@@ -304,7 +304,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 {
   NSMutableArray *views;
   NSWindow *win;
-  
+
   if (!super_view)	// if no superview then just return
     return;
 
@@ -332,8 +332,8 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
   if (!oldView)
     {
       [newView retain];
-      [newView removeFromSuperview];			
-      [newView viewWillMoveToWindow: window];			
+      [newView removeFromSuperview];
+      [newView viewWillMoveToWindow: window];
       [newView viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
       [sub_views addObject: newView];
@@ -350,7 +350,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
       [newView removeFromSuperview];
       index = [sub_views indexOfObjectIdenticalTo: oldView];
       [oldView removeFromSuperview];
-      [newView viewWillMoveToWindow: window];			
+      [newView viewWillMoveToWindow: window];
       [newView viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
       [sub_views addObject: newView];
@@ -360,7 +360,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
     }
 }
 
-- (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 
+- (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare
 						  context:(void *)context
 {
 	[sub_views sortUsingFunction:compare context:context];
@@ -376,7 +376,7 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 int i, count;
 
 	window = newWindow;
-  
+
 	count = [sub_views count];							// Pass new window down
 	for (i = 0; i < count; ++i)							// to subviews
 		[[sub_views objectAtIndex:i] viewWillMoveToWindow:newWindow];
@@ -389,7 +389,7 @@ int i, count;
 
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -400,11 +400,11 @@ NSSize old_size = frame.size;
 	frame = frameRect;
 	bounds.size = frame.size;
 	[frameMatrix setFrameOrigin:frame.origin];
-	
+
 	[self resizeSubviewsWithOldSize: old_size];			// Resize the subviews
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewFrameDidChangeNotification 
+						postNotificationName:NSViewFrameDidChangeNotification
 						object:self];
 }
 
@@ -415,7 +415,7 @@ NSSize old_size = frame.size;
 
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewFrameDidChangeNotification 
+						postNotificationName:NSViewFrameDidChangeNotification
 						object:self];
 }
 
@@ -424,11 +424,11 @@ NSSize old_size = frame.size;
 NSSize old_size = frame.size;
 
 	frame.size = bounds.size = newSize;
-  
+
 	[self resizeSubviewsWithOldSize: old_size];			// Resize the subviews
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewFrameDidChangeNotification 
+						postNotificationName:NSViewFrameDidChangeNotification
 						object:self];
 }
 
@@ -439,7 +439,7 @@ NSSize old_size = frame.size;
 
 	if (post_frame_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewFrameDidChangeNotification 
+						postNotificationName:NSViewFrameDidChangeNotification
 						object:self];
 }
 
@@ -447,7 +447,7 @@ NSSize old_size = frame.size;
 {
 	if (is_rotated_from_base)
 		return is_rotated_from_base;
-	else 
+	else
 		if (super_view)
 			return [super_view isRotatedFromBase];
 		else
@@ -458,7 +458,7 @@ NSSize old_size = frame.size;
 {
 	if (is_rotated_or_scaled_from_base)
 		return is_rotated_or_scaled_from_base;
-	else 
+	else
 		if (super_view)
 			return [super_view isRotatedOrScaledFromBase];
 		else
@@ -482,7 +482,7 @@ NSSize old_size = frame.size;
 
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -494,7 +494,7 @@ float sx, sy;
     [NSException raise: NSInvalidArgumentException
 		format: @"illegal bounds size supplied"];
 	bounds = aRect;
-	[boundsMatrix setFrameOrigin: NSMakePoint(-bounds.origin.x, 
+	[boundsMatrix setFrameOrigin: NSMakePoint(-bounds.origin.x,
 												-bounds.origin.y)];
 	sx = frame.size.width / bounds.size.width;
 	sy = frame.size.height / bounds.size.height;
@@ -505,19 +505,19 @@ float sx, sy;
 
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
 - (void)setBoundsOrigin:(NSPoint)newOrigin			// translate bounds origin
 {													// in opposite direction so
-	bounds.origin = newOrigin;						// that newOrigin becomes 
-													// the origin when viewed. 
+	bounds.origin = newOrigin;						// that newOrigin becomes
+													// the origin when viewed.
 	[boundsMatrix setFrameOrigin:NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -532,13 +532,13 @@ float sx, sy;
 	sx = frame.size.width / bounds.size.width;
 	sy = frame.size.height / bounds.size.height;
 	[boundsMatrix scaleTo:sx :sy];
-	
+
 	if (sx != 1 || sy != 1)
 		is_rotated_or_scaled_from_base = YES;
-	
+
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -549,7 +549,7 @@ float sx, sy;
 
 	if (post_bounds_changes)
 		[[NSNotificationCenter defaultCenter]
-						postNotificationName:NSViewBoundsDidChangeNotification 
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -558,8 +558,8 @@ float sx, sy;
 	[boundsMatrix translateToPoint:point];
 
 	if (post_bounds_changes)
-		[[NSNotificationCenter defaultCenter] 
-						postNotificationName:NSViewBoundsDidChangeNotification 
+		[[NSNotificationCenter defaultCenter]
+						postNotificationName:NSViewBoundsDidChangeNotification
 						object:self];
 }
 
@@ -603,13 +603,13 @@ float sx, sy;
   return matrix;
 }
 
-- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview 
+- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview
 			    toSuperview: (NSView*)_superview
 {
   NSMutableArray	*array = [NSMutableArray array];
   NSView		*view = subview;
 
-  while (view && view != _superview) 
+  while (view && view != _superview)
     {
       [array addObject:view];
       view = view->super_view;
@@ -626,7 +626,7 @@ float sx, sy;
   if (!aView)
     aView = [window contentView];
 
-  if ([self isDescendantOf: aView]) 
+  if ([self isDescendantOf: aView])
     {
       NSMutableArray	*path;
 
@@ -636,7 +636,7 @@ float sx, sy;
       [matrix inverse];
       new = [matrix pointInMatrixSpace:aPoint];
     }
-  else if ([aView isDescendantOf: self]) 
+  else if ([aView isDescendantOf: self])
     {
       NSMutableArray	*path;
 
@@ -701,7 +701,7 @@ float sx, sy;
 int i, count = [viewsPath count];
 PSMatrix* matrix = [[PSMatrix new] autorelease];
 
-	for (i = count - 1; i >= 0; i--) 
+	for (i = count - 1; i >= 0; i--)
 		{
 		NSView* view = [viewsPath objectAtIndex:i];
 
@@ -719,7 +719,7 @@ PSMatrix* matrix;
 	if (!aView)
 		aView = [window contentView];
 
-	if ([self isDescendantOf:aView]) 
+	if ([self isDescendantOf:aView])
 		{
 		NSArray* path = [self _pathBetweenSubview:self toSuperview:aView];
 
@@ -727,12 +727,12 @@ PSMatrix* matrix;
 		[matrix inverse];
 		new = [matrix sizeInMatrixSpace:aSize];
 		}
-	else 
-		if ([aView isDescendantOf:self]) 
+	else
+		if ([aView isDescendantOf:self])
 			{
 			NSArray* path = [self _pathBetweenSubview:aView toSuperview:self];
 
-			matrix = [self 
+			matrix = [self
 					  _concatenateBoundsMatricesInReverseOrderFromPath:path];
 			new = [matrix sizeInMatrixSpace:aSize];
 			}			// The views are not in the same hierarchy of views.
@@ -764,11 +764,11 @@ PSMatrix* matrix;
 }
 
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize		// resize subviews only
-{														// if we are supposed 
-id e, o;												// to and we have never 
+{														// if we are supposed
+id e, o;												// to and we have never
   														// been rotated
-	if (![self autoresizesSubviews] && !is_rotated_from_base)					 
-		return;											
+	if (![self autoresizesSubviews] && !is_rotated_from_base)
+		return;
 
 	e = [sub_views objectEnumerator];
 	o = [e nextObject];
@@ -779,7 +779,7 @@ id e, o;												// to and we have never
 		}
 }
 
-- (void)resizeWithOldSuperviewSize:(NSSize)oldSize		
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
 {
 float change, changePerOption;
 int options = 0;
@@ -787,28 +787,28 @@ NSSize old_size = frame.size;
 NSSize superViewFrameSize = [super_view frame].size;
 BOOL changedOrigin = NO;
 BOOL changedSize = NO;
-														// do nothing if view 
-	if(autoresizingMask == NSViewNotSizable)			// is not resizable
-		return;											
+														// do nothing if view
+	if (autoresizingMask == NSViewNotSizable)			// is not resizable
+		return;
 														// determine if and how
-	if(autoresizingMask & NSViewWidthSizable)			// the X axis can be
-		options++;										// resized 
-	if(autoresizingMask & NSViewMinXMargin)				
+	if (autoresizingMask & NSViewWidthSizable)			// the X axis can be
+		options++;										// resized
+	if (autoresizingMask & NSViewMinXMargin)
 		options++;
-	if(autoresizingMask & NSViewMaxXMargin)				
+	if (autoresizingMask & NSViewMaxXMargin)
 		options++;
 														// adjust the X axis if
-	if(options >= 1)									// any X options are
+	if (options >= 1)									// any X options are
 		{												// set in the mask
 		change = superViewFrameSize.width - oldSize.width;
-		changePerOption = floor(change/options);		
-	
-		if(autoresizingMask & NSViewWidthSizable)		
-			{		
+		changePerOption = floor(change/options);
+
+		if (autoresizingMask & NSViewWidthSizable)
+			{
 			float oldFrameWidth = frame.size.width;
 
 			frame.size.width += changePerOption;
-			if(is_rotated_or_scaled_from_base)
+			if (is_rotated_or_scaled_from_base)
 				{
 				bounds.size.width *= frame.size.width/oldFrameWidth;
 				bounds.size.width = floor(bounds.size.width);
@@ -817,33 +817,33 @@ BOOL changedSize = NO;
 				bounds.size.width += changePerOption;
 			changedSize = YES;
 			}
-		if(autoresizingMask & NSViewMinXMargin)
-			{				
+		if (autoresizingMask & NSViewMinXMargin)
+			{
 			frame.origin.x += changePerOption;
 			changedOrigin = YES;
 			}
 		}
-														// determine if and how 
+														// determine if and how
 	options = 0;										// the Y axis can be
-	if(autoresizingMask & NSViewHeightSizable)			// resized	
-		options++;										
-	if(autoresizingMask & NSViewMinYMargin)				
+	if (autoresizingMask & NSViewHeightSizable)			// resized
 		options++;
-	if(autoresizingMask & NSViewMaxYMargin)				
+	if (autoresizingMask & NSViewMinYMargin)
+		options++;
+	if (autoresizingMask & NSViewMaxYMargin)
 		options++;
 														// adjust the Y axis if
-	if(options >= 1)									// any Y options are  
+	if (options >= 1)									// any Y options are
 		{												// set in the mask
 		change = superViewFrameSize.height - oldSize.height;
-		changePerOption = floor(change/options);		
-	
-		if(autoresizingMask & NSViewHeightSizable)		
-			{											
+		changePerOption = floor(change/options);
+
+		if (autoresizingMask & NSViewHeightSizable)
+			{
 			float oldFrameHeight = frame.size.height;
 
 			frame.size.height += changePerOption;
-			if(is_rotated_or_scaled_from_base)			
-				{										
+			if (is_rotated_or_scaled_from_base)
+				{
 				bounds.size.height *= frame.size.height/oldFrameHeight;
 				bounds.size.height = floor(bounds.size.height);
 				}
@@ -851,8 +851,8 @@ BOOL changedSize = NO;
 				bounds.size.height += changePerOption;
 			changedSize = YES;
 			}
-		if(autoresizingMask & NSViewMinYMargin)
-			{				
+		if (autoresizingMask & NSViewMinYMargin)
+			{
 			frame.origin.y += changePerOption;
 			changedOrigin = YES;
 			}
@@ -860,16 +860,16 @@ BOOL changedSize = NO;
 
 	if (changedOrigin)
 		[frameMatrix setFrameOrigin: frame.origin];
-														
-	if (changedSize && is_rotated_or_scaled_from_base)	
+
+	if (changedSize && is_rotated_or_scaled_from_base)
 		{
 		float sx = frame.size.width / bounds.size.width;
 		float sy = frame.size.height / bounds.size.height;
 
 		[boundsMatrix scaleTo: sx : sy];
 		}
-														
-	if (changedSize || changedOrigin)					 
+
+	if (changedSize || changedOrigin)
 		[self resizeSubviewsWithOldSize: old_size];
 }
 
@@ -881,245 +881,318 @@ BOOL changedSize = NO;
 - (void)lockFocus						{ [self subclassResponsibility:_cmd]; }
 - (void)unlockFocus						{ [self subclassResponsibility:_cmd]; }
 
-- (BOOL)canDraw								
+- (BOOL)canDraw
 {														// not implemented per
-	if(window) 											// OS spec FIX ME
-		return YES; 
+	if (window) 											// OS spec FIX ME
+		return YES;
 	else
 		return NO;
 }
 
-- (void)display											// not per spec FIX ME
+- (void) display
 {
-	if(!window)											// do nothing if not in
-		return;											// a window's heirarchy
-														
-	[self displayRect:[self visibleRect]];				// display visible rect
-}														
+  if (!window)
+    return;
 
-- (void)displayIfNeeded									// if self is opaque
-{														// display if needed
-	if ([self isOpaque]) 								// else back up to a	
-		[self displayIfNeededIgnoringOpacity];			// view which is and
-	else												// begin drawing there
-		{
-		if(needs_display)
-			{	
-			if(invalidRect.size.width > 0 && invalidRect.size.height > 0)
-				{
-				NSView *firstOpaque = [self opaqueAncestor];
-				NSRect rect = invalidRect;				// convert rect into
-														// coordinates of the	
-														// first opaque view
-      			rect = [firstOpaque convertRect:rect fromView:self];
-				[firstOpaque displayIfNeededInRectIgnoringOpacity:rect];
-				}
-			needs_display = NO;								
-			}
-		}
+  [self displayRect: bounds];
 }
 
-- (void)displayIfNeededInRect:(NSRect)aRect
-{														
-}				
-
-- (void)displayIfNeededInRectIgnoringOpacity:(NSRect)aRect
-{														// display self and all
-int i = 0, count;										// of our sub views if
-														// any part of self has
-	for (count = [sub_views count]; i < count; ++i) 	// been marked to be in
-		{												// need of display with
-    	NSView* subview = [sub_views objectAtIndex:i];	// setNeedsDisplay or
-														// stNeedsDisplayInRect
-		if(subview->needs_display)						
-			{											
-    		NSRect rect = subview->invalidRect;
-			if(rect.size.width > 0 && rect.size.height > 0)
-	     		[subview displayRect:rect];				// display invalid rect
-			else
-      			[subview displayIfNeededIgnoringOpacity];				
-			}											// subview must contain
-		}												// a view in need of
-}														// display
-
-- (void)displayIfNeededIgnoringOpacity					  
-{														
-int i = 0, count;										// display self and all
-														// of our sub views if
-	if(!window)											// any part of self has
-		return;											// been marked to be in
-														// need of display with
-	if (needs_display) 									// setNeedsDisplay or
-		{												// stNeedsDisplayInRect
-		if(invalidRect.size.width > 0 && invalidRect.size.height > 0)
-			{											
-			[self lockFocus];							// self has an invalid
-			[self drawRect:invalidRect];				// rect that needs to
-			[self unlockFocus];							// be displayed
-
-			for (count = [sub_views count]; i < count; ++i) 	
-				{							// cycle thru subviews displaying		
-				NSRect intersection;		// any that intersect invalidRect
-				NSView* subview = [sub_views objectAtIndex:i];	
-				NSRect subviewFrame = subview->frame;
-											// If subview is rotated compute 
-											// it's bounding rect and use this 
-											// instead of the subview's frame. 
-				if ([subview->frameMatrix isRotated])
-					[subview->frameMatrix boundingRectFor:subviewFrame 
-										  result:&subviewFrame];
-
-													// Display the subview if
-													// it intersects "rect". 
-				intersection = NSIntersectionRect (invalidRect, subviewFrame);
-				if (intersection.origin.x || intersection.origin.y || 
-						intersection.size.width || intersection.size.height) 
-					{					// Convert the intersection rectangle
-										// to the subview's coordinates 
-					intersection = [subview convertRect:intersection 
-											fromView:self];
-					[subview displayRect:intersection];
-					}							// subview does not intersect 
-				else							// invalidRect but it may be
-					if(subview->needs_display)	// marked as needing display	
-						[subview displayIfNeededIgnoringOpacity];
-				}
-			invalidRect = NSZeroRect;					
-			}											// self does not need
-		else											// display but a sub
-			{											// view might 
-			for (count = [sub_views count]; i < count; ++i) 	
-				{												
-				NSView* subview = [sub_views objectAtIndex:i];	
-														// a subview contains a
-				if(subview->needs_display)				// view needing display		
-					[subview displayIfNeededIgnoringOpacity];				
-				}												
-			}
-
-		needs_display = NO;								
-		}
-}														
-														
-- (void)displayRect:(NSRect)rect						// not per spec FIX ME
+- (void) displayIfNeeded
 {
-int i, count;
+  if (needs_display)
+    {
+      if ([self isOpaque])
+	{
+	  [self displayIfNeededIgnoringOpacity];
+	}
+      else
+	{
+	  NSView	*firstOpaque = [self opaqueAncestor];
+	  NSRect	rect = bounds;
 
-	if (!boundsMatrix || !frameMatrix)
-		NSLog (@"warning: %@ %p does not have it's PS matrices configured!",
+	  rect = [firstOpaque convertRect: rect fromView: self];
+	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
+	}
+    }
+}
+
+- (void) displayIfNeededIgnoringOpacity
+{
+  if (needs_display)
+    {
+      [self displayIfNeededInRectIgnoringOpacity: bounds];
+    }
+}
+
+- (void) displayIfNeededInRect: (NSRect)aRect
+{
+  if (needs_display)
+    {
+      if ([self isOpaque])
+	{
+	  [self displayIfNeededInRectIgnoringOpacity: aRect];
+	}
+      else
+	{
+	  NSView	*firstOpaque = [self opaqueAncestor];
+	  NSRect	rect;
+
+	  rect = [firstOpaque convertRect: aRect fromView: self];
+	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
+	}
+    }
+}
+
+- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
+{
+  if (!window)
+    return;
+
+  if (needs_display)
+    {
+      unsigned	i, count;
+      BOOL	stillNeedsDisplay = NO;
+      NSRect	rect;
+
+      rect = NSIntersectionRect(aRect, invalidRect);
+      if (NSIsEmptyRect(rect) == NO)
+	{
+	  [self lockFocus];
+	  [self drawRect: rect];
+	  [self unlockFocus];
+
+	  for (i = 0, count = [sub_views count]; i < count; i++)
+	    {
+	      NSRect intersection;
+	      NSView *subview = [sub_views objectAtIndex: i];
+	      NSRect subviewFrame = subview->frame;
+
+	      if ([subview->frameMatrix isRotated])
+		{
+		  [subview->frameMatrix boundingRectFor: subviewFrame
+						 result: &subviewFrame];
+		}
+	      intersection = NSIntersectionRect(rect, subviewFrame);
+	      if (NSIsEmptyRect(intersection) == NO)
+		{
+		  intersection = [subview convertRect: intersection
+					     fromView: self];
+		  [subview displayRectIgnoringOpacity: intersection];
+		}
+	      else
+		{
+		  if (subview->needs_display)
+		    {
+		      [subview displayIfNeededIgnoringOpacity];
+		    }
+		}
+	      if (subview->needs_display)
+		{
+		  stillNeedsDisplay = YES;
+		}
+	    }
+
+	  /*
+	   *	If the rect we displayed contains the invalidRect
+	   *	for the view then we can clear the invalidRect,
+	   *	otherwise, we still need to be displayed.
+	   */
+	  rect = NSUnionRect(invalidRect, aRect);
+	  if (NSEqualRects(rect, aRect) == YES)
+	    {
+	      invalidRect = NSZeroRect;
+	    }
+	  else
+	    {
+	      stillNeedsDisplay = YES;
+	    }
+	}
+      else
+	{
+	  /*
+	   *	We don't have an invalidRect - so it must be one of our
+	   *	subviews that actually needs the display.
+	   */
+	  for (i = 0, count = [sub_views count]; i < count; i++)
+	    {
+	      NSView	*subview = [sub_views objectAtIndex: i];
+
+	      if (subview->needs_display)
+		{
+		  NSRect	subviewFrame = subview->frame;
+		  NSRect	intersection;
+
+		  if ([subview->frameMatrix isRotated])
+		    {
+		      [subview->frameMatrix boundingRectFor: subviewFrame
+						     result: &subviewFrame];
+		    }
+		  intersection = NSIntersectionRect(aRect, subviewFrame);
+		  if (NSIsEmptyRect(intersection) == NO)
+		    {
+		      intersection = [subview convertRect: intersection
+						 fromView: self];
+		      [subview displayRectIgnoringOpacity: intersection];
+		    }
+		  if (subview->needs_display)
+		    {
+		      stillNeedsDisplay = YES;
+		    }
+		}
+	    }
+	}
+      needs_display = stillNeedsDisplay;
+    }
+}
+
+- (void) displayRect: (NSRect)rect
+{
+  if ([self isOpaque])
+    {
+      [self displayRectIgnoringOpacity: rect];
+    }
+  else
+    {
+      NSView *firstOpaque = [self opaqueAncestor];
+
+      rect = [firstOpaque convertRect: rect fromView: self];
+      [firstOpaque displayRectIgnoringOpacity: rect];
+    }
+}
+
+- (void) displayRectIgnoringOpacity: (NSRect)aRect
+{
+  unsigned	i, count;
+  NSRect	rect;
+  BOOL		stillNeedsDisplay = NO;
+
+  if (!window)
+    return;
+
+  if (!boundsMatrix || !frameMatrix)
+    NSLog (@"warning: %@ %p does not have it's PS matrices configured!",
 	  			NSStringFromClass(isa), self);
 
-	needs_display = NO;
-	invalidRect = NSZeroRect;							// Reset invalid rect
+  [self lockFocus];
+  [self drawRect: aRect];
+  [self unlockFocus];
 
-	[self lockFocus];
-	[self drawRect:rect];
-	[self unlockFocus];									// display any subviews
-  														// that intersect rect
-	for (i = 0, count = [sub_views count]; i < count; ++i) 
-		{
-    	NSView* subview = [sub_views objectAtIndex:i];
-    	NSRect subviewFrame = subview->frame;
-    	NSRect intersection;			// If the subview is rotated compute 
-										// its bounding rectangle and use this 
-										// one instead of the subview's frame. 
-		if ([subview->frameMatrix isRotated])
-      		[subview->frameMatrix boundingRectFor:subviewFrame 
-								  result:&subviewFrame];
+  for (i = 0, count = [sub_views count]; i < count; ++i)
+    {
+      NSView	*subview = [sub_views objectAtIndex: i];
+      NSRect	subviewFrame = subview->frame;
+      NSRect	intersection;
 
-													// Display the subview if
-													// it intersects "rect". 
-    	intersection = NSIntersectionRect (rect, subviewFrame);
-		if (intersection.origin.x || intersection.origin.y || 
-				intersection.size.width || intersection.size.height) 
-			{							// Convert the intersection rectangle
-										// to the subview's coordinates 
-      		intersection = [subview convertRect:intersection fromView:self];
-      		[subview displayRect:intersection];
-    		}
-		}
+      if ([subview->frameMatrix isRotated])
+	[subview->frameMatrix boundingRectFor: subviewFrame
+				       result: &subviewFrame];
 
-	[window flushWindow];
+      intersection = NSIntersectionRect(aRect, subviewFrame);
+      if (NSIsEmptyRect(intersection) == NO)
+	{
+	  intersection = [subview convertRect: intersection fromView: self];
+	  [subview displayRectIgnoringOpacity: intersection];
+	}
+      if (subview->needs_display)
+	{
+	  stillNeedsDisplay = YES;
+	}
+    }
+
+  [window flushWindow];
+
+  /*
+   *	If the rect we displayed contains the invalidRect
+   *	for the view then we can empty invalidRect.
+   */
+  rect = NSUnionRect(invalidRect, aRect);
+  if (NSEqualRects(rect, aRect) == YES)
+    {
+      invalidRect = NSZeroRect;
+    }
+  else
+    {
+      stillNeedsDisplay = YES;
+    }
+  needs_display = stillNeedsDisplay;
 }
-
-- (void)displayRectIgnoringOpacity:(NSRect)aRect
-{}
 
 - (void)drawRect:(NSRect)rect
 {}
 
 - (NSRect)visibleRect
-{														// if no super view 
-	if (!super_view)									// bounds is visible
-		return bounds;
-	else 												// return intersection
-		{												// between bounds and
-		NSRect superviewsVisibleRect;					// super view's visible
-														// rect
-		superviewsVisibleRect = [self convertRect:[super_view visibleRect] 
-				  				  	  fromView:super_view];
-
-    	return NSIntersectionRect(superviewsVisibleRect, bounds);
-		}
-}
-
-- (void)setNeedsDisplay:(BOOL)flag
 {
-	needs_display = flag;
-	if (needs_display) 							
-		{
-		NSView *firstOpaque = [self opaqueAncestor];
-		NSView* currentView = super_view;	
-		NSRect rect;									// convert rect into
-														// coordinates of the	
-														// first opaque view
-      	rect = [firstOpaque convertRect:bounds fromView:self];
-		[firstOpaque setNeedsDisplayInRect:rect];
-						 
-		invalidRect = bounds;
-		[window setViewsNeedDisplay:YES];
+  if (!super_view)
+    return bounds;
+  else
+    {
+      NSRect superviewsVisibleRect;
 
-		while (currentView) 							// set needs display	 
-			{											// flag all the way up
-			currentView->needs_display = YES;			// the view heirarchy
-			currentView = currentView->super_view;			 
-			}
-		}
-	else
-		invalidRect = NSZeroRect;		
+      superviewsVisibleRect = [self convertRect: [super_view visibleRect]
+				       fromView: super_view];
+
+      return NSIntersectionRect(superviewsVisibleRect, bounds);
+    }
 }
 
-- (void)setNeedsDisplayInRect:(NSRect)rect				// not per spec FIX ME
-{														// assumes opaque view
-NSView* currentView = super_view;
-		
-	needs_display = YES;
-	invalidRect = NSUnionRect (invalidRect, rect);
-	[window setViewsNeedDisplay:YES];
-
-	while (currentView) 								// set needs display	 
-		{												// flag all the way up
-		currentView->needs_display = YES;				// the view heirarchy
-		currentView = currentView->super_view;			 
-		}
-
-//	fprintf (stderr,
-//	"setNeedsDisplayInRect: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-//				rect.origin.x, rect.origin.y, 
-//				rect.size.width, rect.size.height);
-}
-
-- (NSRect)_boundingRectFor:(NSRect)rect
+- (void) setNeedsDisplay: (BOOL)flag
 {
-NSRect new;
+  if (flag)
+    {
+      [self setNeedsDisplayInRect: bounds];
+    }
+  else
+    {
+      needs_display = NO;
+      invalidRect = NSZeroRect;
+    }
+}
 
-	[frameMatrix boundingRectFor:rect result:&new];
+- (void) setNeedsDisplayInRect: (NSRect)rect
+{
+  /*
+   *	Limit to bounds, combine with old invalidRect, and then check to see
+   *	if the result is the same as the old invalidRect - if it isn't then
+   *	set the new invalidRect.
+   */
+  rect = NSIntersectionRect(rect, bounds);
+  rect = NSUnionRect(invalidRect, rect);
+  if (NSEqualRects(rect, invalidRect) == NO)
+    {
+      NSView	*firstOpaque = [self opaqueAncestor];
+      NSView	*currentView = super_view;
 
-	return new;
+      needs_display = YES;
+      invalidRect = rect;
+      if (firstOpaque == self)
+	{
+	  [window setViewsNeedDisplay: YES];
+	}
+      else
+	{
+	  rect = [firstOpaque convertRect: invalidRect fromView: self];
+	  [firstOpaque setNeedsDisplayInRect: rect];
+	}
+
+      while (currentView)
+	{
+	  currentView->needs_display = YES;
+	  currentView = currentView->super_view;
+	}
+    }
+}
+
+- (NSRect) _boundingRectFor: (NSRect)rect
+{
+  NSRect new;
+
+  [frameMatrix boundingRectFor: rect result: &new];
+
+  return new;
 }
 
 //
-// Scrolling 
+// Scrolling
 //
 - (NSRect)adjustScroll:(NSRect)newVisible
 {
@@ -1152,7 +1225,7 @@ NSRect new;
 }
 
 //
-// Managing the Cursor 
+// Managing the Cursor
 //
 // We utilize the tracking rectangle class
 // to also maintain the cursor rects
@@ -1161,10 +1234,10 @@ NSRect new;
 {
 GSTrackingRect *m;
 
-	m = [[[GSTrackingRect alloc] initWithRect: aRect 
-								 tag: 0 
+	m = [[[GSTrackingRect alloc] initWithRect: aRect
+								 tag: 0
 								 owner: anObject
-								 userData: NULL 
+								 userData: NULL
 								 inside: YES] autorelease];
 	[cursor_rects addObject:m];
 }
@@ -1179,12 +1252,12 @@ GSTrackingRect *m;
 id e = [cursor_rects objectEnumerator];
 GSTrackingRect *o;
 NSCursor *c;
-  
-	o = [e nextObject];									// Base remove test 
+
+	o = [e nextObject];									// Base remove test
 	while (o) 											// upon cursor object
 		{
 		c = [o owner];
-		if (c == anObject) 
+		if (c == anObject)
 			{
 			[cursor_rects removeObject: o];
 			break;
@@ -1214,7 +1287,7 @@ int i, count;
 }
 
 //
-// Aiding Event Handling 
+// Aiding Event Handling
 //
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
 {
@@ -1226,22 +1299,22 @@ int i, count;
 NSPoint p;
 int i, count;
 NSView *v = nil, *w;
-													// If not within our frame 
+													// If not within our frame
 	if (![self mouse:aPoint inRect:frame])			// then immediately return
 		return nil;
 
 	p = [self convertPoint:aPoint fromView:super_view];
-  
+
 	count = [sub_views count];						// Check our sub_views
 	for (i = count - 1; i >= 0; i--)
 		{
 		w = [sub_views objectAtIndex:i];
 		v = [w hitTest:p];
-		if (v) 
+		if (v)
 			break;
 		}
-  
-	if (v)											// mouse is either in the 
+
+	if (v)											// mouse is either in the
 		return v;									// subview or within self
 	else
 		return self;
@@ -1257,7 +1330,7 @@ NSView *v = nil, *w;
 		return NO;
 	if (aPoint.y > (aRect.origin.y + aRect.size.height))
 		return NO;
-	
+
 	return YES;
 }
 
@@ -1308,9 +1381,9 @@ GSTrackingRect *m;
 		}
 	++t;
 
-	m = [[[GSTrackingRect alloc] initWithRect:aRect 
+	m = [[[GSTrackingRect alloc] initWithRect:aRect
 								 tag:t owner:anObject
-								 userData:data 
+								 userData:data
 								 inside:flag] autorelease];
 	[tracking_rects addObject:m];
 
@@ -1323,7 +1396,7 @@ GSTrackingRect *m;
 }
 
 //
-// Dragging 
+// Dragging
 //
 - (BOOL)dragFile:(NSString *)filename
 		fromRect:(NSRect)rect
@@ -1362,7 +1435,7 @@ GSTrackingRect *m;
 {}
 
 //
-// Pagination 
+// Pagination
 //
 - (void)adjustPageHeightNew:(float *)newBottom
 						top:(float)oldTop
@@ -1372,7 +1445,7 @@ GSTrackingRect *m;
 
 - (void)adjustPageWidthNew:(float *)newRight
 					  left:(float)oldLeft
-					  right:(float)oldRight	 
+					  right:(float)oldRight
 					  limit:(float)rightLimit
 {}
 
@@ -1402,7 +1475,7 @@ GSTrackingRect *m;
 }
 
 //
-// Writing Conforming PostScript 
+// Writing Conforming PostScript
 //
 - (void)beginPage:(int)ordinalNum
 			label:(NSString *)aString
@@ -1449,7 +1522,7 @@ GSTrackingRect *m;
   [aCoder encodeConditionalObject:window];
   [aCoder encodeObject: tracking_rects];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) 
+  [aCoder encodeValueOfObjCType:@encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &needs_display];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];
@@ -1470,7 +1543,7 @@ GSTrackingRect *m;
   window = [aDecoder decodeObject];
   tracking_rects = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) 
+  [aDecoder decodeValueOfObjCType:@encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &needs_display];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];

@@ -1,3 +1,10 @@
+Fri Feb 12 12:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSView.h: Added missing method declarations for
+	display methods.
+	* Source/NSView.m: Rewrote all the display methods to the current spec
+	(I hope).
+
 Thu Feb 11 14:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Coordinate fixes by Benhur to -
