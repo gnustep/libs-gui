@@ -1148,7 +1148,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       if (autolaunch == YES)
 	{
-	  args = [NSArray arrayWithObjects: @"-autolaunch", "YES", nil];
+	  args = [NSArray arrayWithObjects: @"-autolaunch", @"YES", nil];
 	}
       return [self _launchApplication: appName arguments: args];
     }

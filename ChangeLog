@@ -1,3 +1,8 @@
+2003-06-29 20:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWorkspace.m (-launchApplication:showIcon:autolaunch:):
+	Add a missing '@'.
+
 2003-06-29 17:37  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSStringDrawing.m (-drawAtPoint:, -drawAtRect:, -size):
