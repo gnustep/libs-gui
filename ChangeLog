@@ -1,8 +1,9 @@
 2003-07-04  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSPasteboard.m: Add conditionally compiled code to
-	set protocols for proxy objects.  Let's use it when we have
-	no compilers which break on this.
+	* Source/NSPasteboard.m: Add code to set protocols for proxy objects.
+	and dum my class implementations to let protocols work with old
+	compilers.
+	* Headers/AppKit/GSPasteboard.h: Add missing method of owner.
 
 2003-07-03 01:43  Alexander Malmberg <alexander@malmberg.org>
 

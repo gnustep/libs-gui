@@ -960,11 +960,9 @@ static  NSMapTable              *mimeMap = NULL;
       if (RETAIN((id)the_server) != nil)
 	{
 	  NSConnection	*conn = [(id)the_server connectionForProxy];
-#if 0	// When compilers work!
           Protocol      *p = @protocol(GSPasteboardSvr);
 
           [(id)the_server setProtocolForProxy: p];
-#endif
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
 	       selector: @selector(_lostServer:)
@@ -1115,14 +1113,12 @@ static  NSMapTable              *mimeMap = NULL;
 	{
 	  NSPasteboard	*ret;
 
-#if 0	// When compilers work
 	  if ([(id)anObj isProxy] == YES)
 	    {
 	      Protocol	*p = @protocol(GSPasteboardObj);
 
 	      [(id)anObj setProtocolForProxy: p];
 	    }
-#endif
 	  ret = [self _pasteboardWithTarget: anObj name: aName];
 	  NS_VALRETURN(ret);
 	}
@@ -2105,4 +2101,93 @@ NSGetFileTypes(NSArray *pboardTypes)
     }
   return nil;
 }
+
+/*
+ * The following dummy classes are here solely as a workaround for pre 3.3
+ * versions of gcc where protocols didn't work properly unless implemented
+ * in the source where the '@protocol()' directive is used.
+ */
+@interface NSPasteboardServerDummy : NSObject <GSPasteboardSvr>
+- (id<GSPasteboardObj>) pasteboardWithName: (in bycopy NSString*)name;
+@end
+@implementation NSPasteboardServerDummy
+- (id<GSPasteboardObj>) pasteboardWithName: (in bycopy NSString*)name
+{
+  return nil;
+}
+@end
+@interface NSPasteboardObjectDummy : NSObject <GSPasteboardObj>
+- (int) addTypes: (in bycopy NSArray*)types
+           owner: (id)owner
+      pasteboard: (NSPasteboard*)pb
+        oldCount: (int)count;
+- (NSString*) availableTypeFromArray: (in bycopy NSArray*)types
+                         changeCount: (int*)count;
+- (int) changeCount;
+- (NSData*) dataForType: (in bycopy NSString*)type
+               oldCount: (int)count
+          mustBeCurrent: (BOOL)flag;
+- (int) declareTypes: (in bycopy NSArray*)types
+               owner: (id)owner
+          pasteboard: (NSPasteboard*)pb;
+- (NSString*) name;
+- (void) releaseGlobally;
+- (BOOL) setData: (in bycopy NSData*)data
+         forType: (in bycopy NSString*)type
+          isFile: (BOOL)flag
+        oldCount: (int)count;
+- (void) setHistory: (unsigned)length;
+- (bycopy NSArray*) typesAndChangeCount: (int*)count;
+@end
+@implementation NSPasteboardObjectDummy
+- (int) addTypes: (in bycopy NSArray*)types
+           owner: (id)owner
+      pasteboard: (NSPasteboard*)pb
+        oldCount: (int)count
+{
+  return 0;
+}
+- (NSString*) availableTypeFromArray: (in bycopy NSArray*)types
+                         changeCount: (int*)count
+{
+  return nil;
+}
+- (int) changeCount
+{
+  return 0;
+}
+- (NSData*) dataForType: (in bycopy NSString*)type
+               oldCount: (int)count
+          mustBeCurrent: (BOOL)flag
+{
+  return nil;
+}
+- (int) declareTypes: (in bycopy NSArray*)types
+               owner: (id)owner
+          pasteboard: (NSPasteboard*)pb
+{
+  return 0;
+}
+- (NSString*) name
+{
+  return nil;
+}
+- (void) releaseGlobally
+{
+}
+- (BOOL) setData: (in bycopy NSData*)data
+         forType: (in bycopy NSString*)type
+          isFile: (BOOL)flag
+        oldCount: (int)count
+{
+  return NO;
+}
+- (void) setHistory: (unsigned)length
+{
+}
+- (bycopy NSArray*) typesAndChangeCount: (int*)count
+{
+  return nil;
+}
+@end
 

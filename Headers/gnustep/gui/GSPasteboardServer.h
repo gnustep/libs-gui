@@ -81,8 +81,12 @@
  *	provide additional data.
  */
 @protocol GSPasteboardCallback
-- (void)pasteboard: (NSPasteboard*)pb provideDataForType:(NSString*)type;
-- (void)pasteboard: (NSPasteboard*)pb provideDataForType:(NSString*)type andVersion:(int)v;
+- (void) pasteboard: (NSPasteboard*)pb
+ provideDataForType: (NSString*)type;
+- (void) pasteboard: (NSPasteboard*)pb
+ provideDataForType: (NSString*)type
+	 andVersion:(int)v;
+- (void) pasteboardChangedOwner: (NSPasteboard*)pb;
 @end
 
 #endif // _GNUstep_H_GSPasteboardServer
