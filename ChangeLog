@@ -1,3 +1,43 @@
+Fri Jan  7 18:09:15 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSBrowser.h: Fixed typo.
+	* Headers/AppKit/NSText.h: Tiny check in enum.
+	
+	* Source/NSCell.m ([-initImageCell:]), ([-initTextCell:]): Minor
+ 	optimization: do not initialize variables already initialized by
+ 	allocation.
+
+	* Headers/AppKit/NSCell.h: Changed _cell.is_enabled to
+ 	_cell.is_disabled, so that it does not need initialization.
+	* Source/NSActionCell.m ([-setEnabled:]): Updated for the changing.  
+	* Source/NSButtonCell.m ([-textColor]): idem.
+	* Source/NSCell.m: idem.
+	* Source/NSComboBoxCell.m ([-_didClick:]): idem.
+	* Source/NSMenuItemCell.m ([-drawTitleWithFrame:inView:]): idem.
+
+	* Source/NSBrowserCell.m ([-initTextCell:]), ([-initImageCell:]):
+ 	Further optimization: initialize everything directly without
+ 	invoking super's initialization; do not initialize variables
+ 	already initialized by allocation.
+	* Source/NSButtonCell.m ([-_init]): Tiny optm.
+	
+	* Headers/AppKit/NSControl.h: Added ivar _ignoresMultiClick.
+	* Source/NSControl.m ([-setIgnoresMultiClick:]),
+ 	([-ignoresMultiClick]): Implemented.  ([-mouseDown:]): Added
+ 	ignoresMultiClick support.
+	
+	* Source/NSCell.m ([-trackMouse:inRect:ofView:untilMouseUp:]): 
+	Bug fix: honour the argument of untilMouseUp:.
+	* Source/NSControl.m ([-mouseDown:]): Invoke the cell's
+ 	+prefersTrackingUntilMouseUp to decide if it's the case to track
+ 	mouse until up.
+	* Source/NSMatrix.m ([-_mouseDownNonListMode:]), ([-mouseDown:]):
+ 	Invoke cell mouse tracking with untilMouseUp: NO.
+	
+	* Source/NSMatrix.m ([-sendDoubleAction]): Fixed.
+  	([-sendAction]): Fixed.  ([-sendAction:to:]): Use _action,
+ 	_target.  ([-mouseDown:]): Rewritten double/multi-click support.
+
 Fri Jan  7 16:40:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Removed spurious code for setting menu window
