@@ -92,6 +92,9 @@ static unsigned currentDragOperation;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index;
 
 - (BOOL) _writeRows: (NSArray *) rows
        toPasteboard: (NSPasteboard *)pboard;
@@ -3246,11 +3249,9 @@ byExtendingSelection: (BOOL)flag
     }
   
   // But of course the delegate can mess it up if it wants
-  if (_del_responds)
-    {
-      [_delegate tableView: self   willDisplayCell: _editedCell 
-		 forTableColumn: tb   row: rowIndex];
-    }
+  [self _willDisplayCell: _editedCell
+	forTableColumn: tb
+	row: rowIndex];
 
   /* Please note the important point - calling stringValue normally
      causes the _editedCell to call the validateEditing method of its
@@ -3469,13 +3470,9 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  [cell setHighlighted: YES];
 	  [self setNeedsDisplayInRect: cellFrame];
 	  /* give delegate a chance to i.e set target */
-	  if (_del_responds)
-	    {
-	      [_delegate tableView: self
-			 willDisplayCell: cell 
-			 forTableColumn: tb
-			 row: _clickedRow];
-	    }
+	  [self _willDisplayCell: cell
+		forTableColumn: tb
+		row: _clickedRow];
 	  if ([cell trackMouse: lastEvent
 		    inRect: cellFrame
 		    ofView: self
@@ -4215,11 +4212,9 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  [cell setObjectValue: [_dataSource tableView: self
 					     objectValueForTableColumn: tb
 					     row: row]]; 
-	  if (_del_responds)
-	    {
-	      [_delegate tableView: self   willDisplayCell: cell 
-			 forTableColumn: tb   row: row];
-	    }
+	  [self _willDisplayCell: cell
+	        forTableColumn: tb
+	        row: row];
 	  candidate_width = [cell cellSize].width;
 
 	  if (_drawsGrid)
@@ -4435,11 +4430,9 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	{
 	  tb = [_tableColumns objectAtIndex: i];
 	  cell = [tb dataCellForRow: rowIndex];
-	  if (_del_responds)
-	    {
-	      [_delegate tableView: self   willDisplayCell: cell 
-			 forTableColumn: tb   row: rowIndex];
-	    }
+	  [self _willDisplayCell: cell
+		forTableColumn: tb
+		row: rowIndex];
 	  [cell setObjectValue: [_dataSource tableView: self
 					     objectValueForTableColumn: tb
 					     row: rowIndex]]; 
@@ -5864,6 +5857,19 @@ inline float computePeriod(NSPoint mouseLocationWin,
     }
 
   return YES;
+}
+
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index
+{
+  if (_del_responds)
+    {
+      [_delegate tableView: self   
+		 willDisplayCell: cell 
+		 forTableColumn: tb   
+		 row: index];
+    }    
 }
 
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb

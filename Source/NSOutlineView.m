@@ -85,6 +85,9 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (int)index;
 - (void) _setObjectValue: (id)value
@@ -1010,15 +1013,9 @@ static NSImage *unexpandable  = nil;
 
 	  tb = [_tableColumns objectAtIndex: i];
 	  cell = [tb dataCellForRow: rowIndex];
-	  
-	  if ([_delegate respondsToSelector: @selector(outlineView:willDisplayCell:forTableColumn:item:)])
-	    {
-	      [_delegate outlineView: self   
-			 willDisplayCell: cell 
-			 forTableColumn: tb   
-			 item: item];
-	    }
-
+	  [self _willDisplayCell: cell
+		forTableColumn: tb
+		row: rowIndex];
 	  [cell setObjectValue: [_dataSource outlineView: self
 					     objectValueForTableColumn: tb
 					     byItem: item]]; 
@@ -1205,10 +1202,11 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex
 {
-  id item = [self itemAtRow: rowIndex];
   if ([_delegate respondsToSelector: 
 			@selector(outlineView:shouldEditTableColumn:item:)])
     {
+      id item = [self itemAtRow: rowIndex];
+
       if ([_delegate outlineView: self shouldEditTableColumn: tableColumn
 		     item: item] == NO)
 	{
@@ -1219,15 +1217,31 @@ static NSImage *unexpandable  = nil;
   return YES;
 }
 
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index
+{
+  if (_del_responds)
+    {
+      id item = [self itemAtRow: index];
+  
+      [_delegate outlineView: self   
+		 willDisplayCell: cell 
+		 forTableColumn: tb   
+		 item: item];
+    }    
+}
+
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
 			      row: (int) index
 {
   id result = nil;
-  id item = [self itemAtRow: index];
 
   if([_dataSource respondsToSelector:
 		    @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
+      id item = [self itemAtRow: index];
+
       result = [_dataSource outlineView: self
 			    objectValueForTableColumn: tb
 			    byItem: item];
@@ -1240,10 +1254,11 @@ static NSImage *unexpandable  = nil;
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (int) index
 {
-  id item = [self itemAtRow: index];
   if([_dataSource respondsToSelector:
-		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
     {
+      id item = [self itemAtRow: index];
+
       [_dataSource outlineView: self
 		   setObjectValue: value
 		   forTableColumn: tb
@@ -1713,13 +1728,9 @@ static NSImage *unexpandable  = nil;
     }
   
   // But of course the delegate can mess it up if it wants
-  if (_del_responds)
-    {
-      [_delegate outlineView: self   
-		 willDisplayCell: _editedCell 
-		 forTableColumn: tb   
-		 item: [self itemAtRow: rowIndex]];
-    }
+  [self _willDisplayCell: _editedCell
+	forTableColumn: tb
+	row: rowIndex];
 
   /* Please note the important point - calling stringValue normally
      causes the _editedCell to call the validateEditing method of its
