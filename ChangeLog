@@ -1,3 +1,13 @@
+Sat Jan  9  6:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/NSApplication.m: ([-run]) reorganize so that the app can be
+	terminated before entry to the run loop (in finishLaunching) and to
+	make the event loop slightly more efficient.
+	* Source/GSServicesManager.m: ([-registerAsServiceProvider:]) added
+	checks to raise alert panel to let the application continue when it
+	conflicts with an already running application or when the DO system
+	is not working.
+
 Fri Jan  8 14:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Images/GNUmakefile: Added common_WMClose.tiff and

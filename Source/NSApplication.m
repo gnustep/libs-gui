@@ -272,38 +272,47 @@ NSString* mainModelFile;
 //
 - (void) run
 {
-NSEvent *e;
-NSAutoreleasePool* pool;
+  NSEvent *e;
+  Class	arpClass = [NSAutoreleasePool class];	 /* Cache the class */
+  NSAutoreleasePool* pool;
 
-    NSDebugLog(@"NSApplication -run\n");
+  NSDebugLog(@"NSApplication -run\n");
 
-    [self finishLaunching];
+  /*
+   *  Set this flag here in case the application is actually terminated
+   *  inside -finishLaunching.
+   */
+  app_should_quit = NO;
 
-    app_should_quit = NO;
-    app_is_running = YES;
+  [self finishLaunching];
 
-    do  {
-        pool = [NSAutoreleasePool new];
+  app_is_running = YES;
 
-        e = [self nextEventMatchingMask:NSAnyEventMask
+  while (app_should_quit == NO)
+    {
+      pool = [arpClass new];
+
+      e = [self nextEventMatchingMask:NSAnyEventMask
                   untilDate:[NSDate distantFuture]
                   inMode:NSDefaultRunLoopMode
                   dequeue:YES];
-        if (e)
-            [self sendEvent: e];
+      if (e)
+	[self sendEvent: e];
 
-        [listener updateServicesMenu];              // update (en/disable) the
-                                                    // services menu's items
-        [main_menu update];
+					// update (en/disable) the
+                                        // services menu's items
+      [listener updateServicesMenu];
+      [main_menu update];
 
-        if (windows_need_update)                            // send an update message
-            [self updateWindows];                   // to all visible windows
+			       		// send an update message
+			       		// to all visible windows
+      if (windows_need_update)
+	[self updateWindows];
 
-        [pool release];
-        }
-    while (!app_should_quit);
+      [pool release];
+    }
 
-    NSDebugLog(@"NSApplication end of run loop\n");
+  NSDebugLog(@"NSApplication end of run loop\n");
 }
 
 - (BOOL) isRunning
@@ -1621,7 +1630,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 //
 - (void) terminate: (id)sender
 {
-  if ([self applicationShouldTerminate:self])
+  if ([self applicationShouldTerminate: self])
     {                                       // app should end run loop
       app_should_quit = YES;
       [event_queue addObject: null_event];          // add dummy event to queue

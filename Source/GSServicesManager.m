@@ -132,6 +132,9 @@ NSRegisterServicesProvider(id provider, NSString *name)
 			   name: NSConnectionDidDieNotification
 			 object: listenerConnection];
 	}
+      else
+       [NSException raise: NSGenericException
+		   format: @"unable to register %@", name];
     }
   ASSIGN(servicesProvider, provider);
 }
@@ -738,15 +741,65 @@ static NSString         *disabledName = @".GNUstepDisabled";
  */
 - (void) registerAsServiceProvider
 {
-  NSString          *appName;
+  NSString      *appName;
+  BOOL          registered;
 
   appName = [[[NSProcessInfo processInfo] processName] lastPathComponent];
   NS_DURING
-    NSRegisterServicesProvider(self, appName);
+    {
+      NSRegisterServicesProvider(self, appName);
+      registered = YES;
+    }
   NS_HANDLER
-    NSLog(@"Warning: Could not access services due to exception: %@\n",
-          [localException reason]);
+    registered = NO;
   NS_ENDHANDLER
+
+  if (registered == NO)
+    {
+      int result = NSRunAlertPanel(appName,
+	@"Application may already be running with this name",
+	@"Continue", @"Abort", @"Rename");
+
+      if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
+        {
+          if (result == NSAlertOtherReturn)
+            appName = [NSString stringWithFormat: @"%@_%d",
+			 appName, (int)getpid()];
+          [[NSPortNameServer defaultPortNameServer] removePortForName: appName];
+
+          NS_DURING
+            {
+              NSRegisterServicesProvider(self, appName);
+              registered = YES;
+            }
+          NS_HANDLER
+            {
+              registered = NO;
+              NSLog(@"Warning: Could not register application due to "
+                    @"exception: %@\n", [localException reason]);
+            }
+          NS_ENDHANDLER
+
+	  /*
+	   *	Something is seriously wrong - we can't talk to the
+	   *	nameserver, so all interaction with the workspace manager
+	   *	and/or other applications will fail.
+	   *	Give the user a chance to keep on going anyway.
+	   */
+	  if (registered == NO)
+	    {
+	      result = NSRunAlertPanel(appName,
+		@"Unable to register application with ANY name",
+		@"Abort", @"Continue", nil);
+
+	      if (result == NSAlertDefaultReturn)
+		registered = YES;
+	    }
+        }
+
+      if (registered == NO)
+        [[NSApplication sharedApplication] terminate: self];
+    }
 }
 
 /*
