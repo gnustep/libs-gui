@@ -212,11 +212,11 @@ ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
-AC_CHECK_HEADERS(audiofile.h)
 audio_ok=no
 BUILD_GSND=
-AC_CHECK_LIB(audiofile, main, audio_ok=yes, audio_ok=no)
+AC_CHECK_LIB(audiofile, afGetVirtualFrameSize, audio_ok=yes, audio_ok=no)
 if test $audio_ok = yes; then
+  AC_CHECK_HEADERS(audiofile.h)
   ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
   BUILD_GSND=gsnd
 fi
