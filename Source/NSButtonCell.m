@@ -621,6 +621,7 @@
       cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
     }
 
+  /*
   // determine the background color
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
@@ -633,6 +634,7 @@
   // set cell's background color
   [backgroundColor set];
   NSRectFill(cellFrame);
+  */
 
   /*
    * Determine the image and the title that will be
