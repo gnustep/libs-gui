@@ -59,6 +59,7 @@
 
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/NSTextStorage.h>
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSArchiver.h>
