@@ -1,3 +1,9 @@
+Wed Dec 20 15:23:22 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSText.m ([-setDelegate:]): Simplified.
+	* Source/NSTextView.m ([-setDelegate:]),
+	([-_updateMultipleTextViews]): Set up NSText notifications too.
+
 Wed Dec 20 00:38:54 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSText.m ([-insertNewline:sender]): Do not call
