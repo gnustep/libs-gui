@@ -1047,6 +1047,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
   [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
   [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
+  [archiver encodeConditionalObject:[self initialFirstResponder] 
+	    withName:@"initialFirstResponder"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -1080,6 +1082,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
 
+  [self setInitialFirstResponder: 
+	  [unarchiver decodeObjectWithName:@"initialFirstResponder"]];
   [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
   [self setTitle:[unarchiver decodeStringWithName:@"title"]];
   [self setRepresentedFilename:
@@ -1130,6 +1134,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
     [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
     [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
+    [archiver encodeConditionalObject:[self initialFirstResponder] 
+	      withName:@"initialFirstResponder"];
 
     [archiver encodeBOOL:[self isFloatingPanel] withName:@"isFloatingPanel"];
     [archiver encodeBOOL:[self becomesKeyOnlyIfNeeded]
@@ -1166,7 +1172,9 @@ void __dummy_GMAppKit_functionForLinking() {}
 #ifdef GNU_GUI_LIBRARY
     window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
-    
+
+    [self setInitialFirstResponder: 
+	    [unarchiver decodeObjectWithName:@"initialFirstResponder"]];    
     [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
     [self setTitle:[unarchiver decodeStringWithName:@"title"]];
     [self setRepresentedFilename:
@@ -1220,6 +1228,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
     [archiver encodeUnsignedInt:[self styleMask] withName:@"styleMask"];
     [archiver encodeUnsignedInt:[self backingType] withName:@"backingType"];
+    [archiver encodeConditionalObject:[self initialFirstResponder] 
+	      withName:@"initialFirstResponder"];
 
     // NSPanel specific
     [archiver encodeBOOL:[self isFloatingPanel] withName:@"isFloatingPanel"];
@@ -1274,6 +1284,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
     
+    [self setInitialFirstResponder: 
+	    [unarchiver decodeObjectWithName:@"initialFirstResponder"]];
     [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
     [self setTitle:[unarchiver decodeStringWithName:@"title"]];
     [self setRepresentedFilename:
