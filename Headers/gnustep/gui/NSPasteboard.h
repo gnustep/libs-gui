@@ -143,6 +143,9 @@ provideDataForType:(NSString *)type
 @end
 
 @interface NSPasteboard (GNUstepExtensions)
++ (NSString *) mimeTypeForPasteboardType: (NSString *)type;
++ (NSString *) pasteboardTypeForMimeType: (NSString *)mimeType;
+
 - (void)setChangeCount: (int)changeCount;
 @end
 

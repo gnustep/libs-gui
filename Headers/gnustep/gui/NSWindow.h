@@ -96,6 +96,7 @@ extern NSSize NSTokenSize;
   id            original_responder;
   id            delegate;
   id            _fieldEditor;
+  id            _lastDragView;
   int           window_num;
   int           gstate;
   NSColor       *background_color;
@@ -110,6 +111,7 @@ extern NSSize NSTokenSize;
   NSRect        rectNeedingFlush;
   NSMutableArray *rectsBeingDrawn;
 
+  BOOL          accepts_drag;
   BOOL          is_one_shot;
   BOOL          needs_display;
   BOOL          needs_flush;

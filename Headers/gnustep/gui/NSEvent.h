@@ -313,7 +313,13 @@ unsigned int NSEventMaskFromType(NSEventType type);
 #ifndef	NO_GNUSTEP
 typedef enum {
   GSAppKitWindowMoved = 1,
-  GSAppKitWindowResized
+  GSAppKitWindowResized,
+  GSAppKitDraggingEnter,
+  GSAppKitDraggingUpdate,
+  GSAppKitDraggingStatus,
+  GSAppKitDraggingExit,
+  GSAppKitDraggingDrop,
+  GSAppKitDraggingFinished
 } GSAppKitSubtype;
 #endif
 

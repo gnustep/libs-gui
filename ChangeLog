@@ -1,3 +1,27 @@
+1999-07-29  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSEvent.h: Add AppKit dragging events.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Added some internal drag
+	methods.
+	* Source/NSGraphicsContext.m (-_dragInfo): New method.
+	(-_postExternalEvent:): Likewise.
+
+	* Headers/gnustep/gui/NSPasteboard.h: Added some internal mime type
+	conversions.
+	* Source/NSPasteboard.m (-_initMimeMappings): New method.
+	(-mimeTypeForPasteboardType:): Likewise.
+	(-pasteboardTypeForMimeType:): Likewise.
+
+	* Headers/gnustep/gui/NSWindow.h: Added some drag ivars.
+	* Source/NSView.m (-dragImage...): Get the shared dragView and
+	call it. 
+	* Source/NSWindow.m (-sendEvent:): For LeftMouseDown, send
+	mouseDown: to view if view is key (even if not first responder).
+	Handle AppKit dragging events.
+
+	* Source/NSObjectProtocols.m: New file (Implement informal draggin
+	protocols). 
+
 1999-07-27  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenu.m: merge in all backend code. All that remains in

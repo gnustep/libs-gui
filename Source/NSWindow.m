@@ -54,7 +54,10 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/NSDragging.h>
+#include <AppKit/NSPasteboard.h>
 
+BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @interface GSWindowView : NSView
 {
@@ -1405,7 +1408,7 @@ static NSRecursiveLock	*windowsLock;
 	if (first_responder != v)
 	  {
 	    [self makeFirstResponder: v];
-	    if ([v acceptsFirstMouse: theEvent] == YES)
+	    if (is_key || [v acceptsFirstMouse: theEvent] == YES)
 	      [v mouseDown: theEvent];
 	  }
 	else
@@ -1522,6 +1525,9 @@ static NSRecursiveLock	*windowsLock;
 
       case NSAppKitDefined:
 	{
+	  id                    dragInfo;
+	  int                   action;
+	  NSEvent               *e;
 	  GSAppKitSubtype	sub = [theEvent subtype];
 	  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
@@ -1554,8 +1560,91 @@ static NSRecursiveLock	*windowsLock;
 				  object: self];
 		break;
 
-	      default:
-		break;
+#define     GSPerformDragSelector(view, sel, info, action)		     \
+		if (view == content_view && delegate)			     \
+                  action = (int)[delegate performSelector: sel withObject:   \
+					    info];			     \
+		else							     \
+		  action = (int)[view performSelector: sel withObject: info]
+#define     GSPerformVoidDragSelector(view, sel, info)			\
+		if (view == content_view && delegate)			\
+                  [delegate performSelector: sel withObject: info];	\
+		else							\
+		  [view performSelector: sel withObject: info]
+
+	    case GSAppKitDraggingEnter:
+	    case GSAppKitDraggingUpdate:
+	      v = [content_view hitTest: [theEvent locationInWindow]];
+	      if (!v)
+		v = content_view;
+	      dragInfo = [GSCurrentContext() _dragInfo];
+	      if (_lastDragView && _lastDragView != v && accepts_drag)
+		GSPerformVoidDragSelector(_lastDragView, 
+				      @selector(draggingExited:), dragInfo);
+	      accepts_drag = GSViewAcceptsDrag(v, dragInfo);
+	      if (_lastDragView != v && accepts_drag)
+		GSPerformDragSelector(v, @selector(draggingEntered:), 
+				      dragInfo, action);
+	      else
+		GSPerformDragSelector(v, @selector(draggingUpdated:), 
+				      dragInfo, action);
+	      e = [NSEvent otherEventWithType: NSAppKitDefined
+			   location: [theEvent locationInWindow]
+			   modifierFlags: 0
+			   timestamp: 0
+			   windowNumber: [self windowNumber]
+			   context: GSCurrentContext()
+			   subtype: GSAppKitDraggingStatus
+			   data1: [theEvent data1]
+			   data2: action];
+	      [GSCurrentContext() _postExternalEvent: e];
+	      _lastDragView = v;
+	      break;
+
+	    case GSAppKitDraggingStatus:
+	      NSLog(@"Internal: dropped GSAppKitDraggingStatus event\n");
+	      break;
+
+	    case GSAppKitDraggingExit:
+	      if (_lastDragView && accepts_drag)
+		GSPerformDragSelector(_lastDragView, 
+				      @selector(draggingExited:), dragInfo,
+				      action);
+	      break;
+
+	    case GSAppKitDraggingDrop:
+	      if (_lastDragView && accepts_drag)
+		{
+		  GSPerformDragSelector(_lastDragView, 
+					@selector(prepareForDragOperation:), 
+					dragInfo, action);
+		  if (action)
+		    GSPerformDragSelector(_lastDragView, 
+					  @selector(performDragOperation:),  
+					  dragInfo, action);
+		  if (action)
+		    GSPerformVoidDragSelector(_lastDragView, 
+					  @selector(concludeDragOperation:),  
+					  dragInfo);
+		}
+	      e = [NSEvent otherEventWithType: NSAppKitDefined
+			   location: [theEvent locationInWindow]
+			   modifierFlags: 0
+			   timestamp: 0
+			   windowNumber: [self windowNumber]
+			   context: GSCurrentContext()
+			   subtype: GSAppKitDraggingFinished
+			   data1: [theEvent data1]
+			   data2: 0];
+	      [GSCurrentContext() _postExternalEvent: e];
+	      break;
+
+	    case GSAppKitDraggingFinished:
+	      NSLog(@"Internal: dropped GSAppKitDraggingFinished event\n");
+	      break;
+
+	    default:
+	      break;
 	    }
 	}
 	break;
@@ -2056,3 +2145,12 @@ static NSRecursiveLock	*windowsLock;
 }
 
 @end
+
+BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
+{
+  NSPasteboard *pb = [dragInfo draggingPasteBoard];
+  if ([pb availableTypeFromArray: GSGetDragTypes(v)])
+    return YES;
+  return NO;
+}
+

@@ -271,7 +271,7 @@ NSGraphicsContext	*GSCurrentContext()
     {
       id	o = [types objectAtIndex: i];
 
-      [old removeObject: o];
+      [old addObject: o];
     }
   if ([old count] == originalCount)
     return NO;
@@ -321,6 +321,17 @@ NSGraphicsContext	*GSCurrentContext()
 - (NSCountedSet*) _dragTypesForWindow: (int)winNum
 {
   return (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
+}
+
+- (id <NSDraggingInfo>)_dragInfo
+{
+  [self subclassResponsibility: _cmd];
+  return nil;
+}
+
+- (void) _postExternalEvent: (NSEvent *)event;
+{
+  [self subclassResponsibility: _cmd];
 }
 
 /*

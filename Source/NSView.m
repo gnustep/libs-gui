@@ -2037,7 +2037,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	pasteboard: (NSPasteboard*)pboard
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
-{}
+{
+ NSView *dragView = (NSView *)[GSCurrentContext() _dragInfo];
+ [dragView dragImage: anImage
+                  at: viewLocation
+              offset: initialOffset
+               event: event
+          pasteboard: pboard
+              source: sourceObject
+           slideBack: slideFlag];
+}
 
 - (void) registerForDraggedTypes: (NSArray*)types
 {

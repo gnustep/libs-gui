@@ -36,6 +36,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
+#include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSLock.h>
@@ -65,7 +66,7 @@
 static	NSLock			*dictionary_lock = nil;
 static	NSMutableDictionary	*pasteboards = nil;
 static	id<GSPasteboardSvr>	the_server = nil;
-
+static  NSMapTable              *mimeMap = NULL;
 
 //
 // Class methods
@@ -731,6 +732,60 @@ static	id<GSPasteboardSvr>	the_server = nil;
     }
   NS_ENDHANDLER
 }
+
++ (void) _initMimeMappings
+{
+  mimeMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                NSObjectMapValueCallBacks, 0);
+  NSMapInsert(mimeMap, (void *)NSStringPboardType, (void *)@"text/plain");
+  NSMapInsert(mimeMap, (void *)NSFileContentsPboardType, 
+	      (void *)@"text/plain");
+  NSMapInsert(mimeMap, (void *)NSFilenamesPboardType, 
+	      (void *)@"text/uri-list");
+  NSMapInsert(mimeMap, (void *)NSPostScriptPboardType, 
+	      (void *)@"application/postscript");
+  NSMapInsert(mimeMap, (void *)NSTabularTextPboardType, 
+	      (void *)@"text/tab-separated-values");
+  NSMapInsert(mimeMap, (void *)NSRTFPboardType, (void *)@"text/richtext");
+  NSMapInsert(mimeMap, (void *)NSTIFFPboardType, (void *)@"image/tiff");
+  NSMapInsert(mimeMap, (void *)NSGeneralPboardType, (void *)@"text/plain");
+}
+
+/* Return the mapping for pasteboard->mime, or return the original pasteboard
+   type if no mapping is found */
++ (NSString *) mimeTypeForPasteboardType: (NSString *)type
+{
+  NSString *mime;
+  if (mimeMap == NULL)
+    [self _initMimeMappings];
+  mime = NSMapGet(mimeMap, (void *)type);
+  if (mime == nil)
+    mime = type;
+  return mime;
+}
+
+/* Return the mapping for mime->pasteboard, or return the original pasteboard
+   type if no mapping is found. This method may not have a one-to-one 
+   mapping */
++ (NSString *) pasteboardTypeForMimeType: (NSString *)mimeType
+{
+  BOOL found;
+  NSString *type, *mime;
+  NSMapEnumerator enumerator;
+  
+  if (mimeMap == NULL)
+    [self _initMimeMappings];
+  enumerator = NSEnumerateMapTable(mimeMap);
+  while ((found = NSNextMapEnumeratorPair(&enumerator, 
+					  (void **)(&type), (void **)(&mime))))
+    if ([mimeType isEqual: mime])
+      break;
+
+  if (found == NO)
+    type = mimeType;
+  return type;
+}
+
 @end
 
 static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType: ";

@@ -35,6 +35,7 @@
 #include <Foundation/NSSet.h>
 
 #include <AppKit/GSMethodTable.h>
+#include <AppKit/NSDragging.h>
 
 @class NSDate;
 @class NSDictionary;
@@ -138,6 +139,8 @@ NSGraphicsContext	*GSCurrentContext();
 - (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum;
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum;
 - (NSCountedSet*) _dragTypesForWindow: (int)winNum;
+- (id <NSDraggingInfo>)_dragInfo;
+- (void) _postExternalEvent: (NSEvent *)event;
 
 /*
  *	Misc window management support.

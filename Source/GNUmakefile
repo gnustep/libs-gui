@@ -85,6 +85,7 @@ NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
 NSOpenPanel.m \
+NSObjectProtocols.m \
 NSPageLayout.m \
 NSPanel.m \
 NSParagraphStyle.m \
