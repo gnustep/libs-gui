@@ -1,3 +1,8 @@
+2003-08-05  Martin Brecher <martin@mb-itconsulting.com>
+
+	* Documentation/gopen.1: New file.
+	* Documentation/GNUmakefile: Install it.
+
 2003-08-10 23:27  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/Additions/GNUstepGUI/GSFontInfo.h: Add new methods in
