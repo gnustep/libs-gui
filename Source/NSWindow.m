@@ -87,12 +87,14 @@ static NSArray *modes = nil;
 @end
 
 /*
- * Catagory for internal methods (for use only within the
- * NSWindow class itsself)
+ * Category for internal methods (for use only within the NSWindow class itself
+ * or with other AppKit classes in the case of the _windowView method)
  */
 @interface	NSWindow (GNUstepPrivate)
 - (void) _handleWindowNeedsDisplay: (id)bogus;
 - (void) _lossOfKeyOrMainWindow;
+- (NSView *) _windowView; 
+// Method used to support validation in the toolbar implementation 
 @end
 
 @implementation	NSWindow (GNUstepPrivate)
@@ -218,6 +220,11 @@ has blocked and waited for events.
 	    }
 	}
     }
+}
+
+- (NSView *) _windowView
+{
+  return _wv;
 }
 @end
 
@@ -2709,11 +2716,11 @@ resetCursorRectsForView(NSView *theView)
 		      [r->owner mouseEntered: e];
 		    }
 		}
-
+		
 	      if ((last) && (!now))		// Mouse exited event
 		{
 		  if (r->flags.checked == NO)
-		    {
+		    {    
 		      if ([r->owner respondsToSelector:
 			@selector(mouseEntered:)])
 			r->flags.ownerRespondsToMouseEntered = YES;
@@ -3018,7 +3025,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	 * a tracking rectangle then we need to determine if we should send
 	 * a NSMouseEntered or NSMouseExited event.
 	 */
-	(*ctImp)(self, ctSel, _contentView, theEvent);
+	(*ctImp)(self, ctSel, _wv, theEvent);
 
 	if (_f.is_key)
 	  {
@@ -3162,7 +3169,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	       * We need to go through all of the views, and if there
 	       * is any with a tracking rectangle then we need to
 	       * determine if we should send a NSMouseExited event.  */
-	      (*ctImp)(self, ctSel, _contentView, theEvent);
+	      (*ctImp)(self, ctSel, _wv, theEvent);
 
 	      if (_f.is_key)
 		{
