@@ -173,6 +173,38 @@
   return self;
 }
 
+- (NSDictionary *) _copyTable: (NSDictionary *)dict
+{
+  NSMutableDictionary *ctx = nil;
+
+  if(dict != nil)
+    {
+      id obj = nil;
+
+      // copy the dictionary...
+      ctx = [NSMutableDictionary dictionaryWithDictionary: dict];
+
+      // remove and set the owner...
+      obj = [ctx objectForKey: @"NSNibOwner"];
+      if(obj != nil)
+	{
+	  [ctx removeObjectForKey: @"NSNibOwner"];
+	  [ctx setObject: obj forKey: @"NSOwner"];
+	}
+
+      // Remove and set the top level objects...
+      obj = [ctx objectForKey: @"NSNibTopLevelObjects"];
+      if(obj != nil)
+	{
+	  [ctx removeObjectForKey: @"NSNibTopLevelObjects"];
+	  [ctx setObject: obj forKey: @"NSTopLevelObjects"];
+	}
+    }
+
+  return ctx;
+}
+
+
 /**
  * This is a GNUstep specific method.  This method is used when the caller wants the
  * objects instantiated in the nib to be stored in the given <code>zone</code>.
@@ -191,18 +223,19 @@
 	if (unarchiver != nil)
 	  {
  	    id obj;
-
-	    NSDebugLog(@"Invoking unarchiver");
+	    
+	    _topLevelItems = [[NSMutableArray alloc] init];
 	    [unarchiver setObjectZone: zone];
 	    obj = [unarchiver decodeObject];
 	    if (obj != nil)
 	      {
 		if ([obj isKindOfClass: [GSNibContainer class]])
 		  {
-		    NSDebugLog(@"Calling awakeWithContext");
-		    [obj awakeWithContext: externalNameTable
+		    NSDictionary *nameTable = [self _copyTable: externalNameTable];
+		    [obj awakeWithContext: nameTable 
 			 topLevelItems: _topLevelItems];
 		    loaded = YES;
+		    RELEASE(nameTable);
 	 	  }
 		else
 		  {
@@ -210,6 +243,7 @@
 		  }
 	      }
 	    RELEASE(unarchiver);
+	    RELEASE(_topLevelItems);
 	  }
       }
   }
@@ -217,6 +251,7 @@
   {
     NSLog(@"Exception occured while loading model: %@",[localException reason]);
     TEST_RELEASE(unarchiver);
+    TEST_RELEASE(_topLevelItems);
   }
   NS_ENDHANDLER
   
@@ -281,7 +316,6 @@
 - (void) dealloc
 {
   RELEASE(_nibData);
-  RELEASE(_topLevelItems);
   [super dealloc];
 }
 
