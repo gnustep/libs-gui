@@ -1,13 +1,16 @@
 /* 
    NSPrintOperation.h
 
-   Controls operations generating EPS or PS print jobs.
+   Controls operations generating EPS, PDF or PS print jobs.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: November 2000
+   Updated to new specification
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -51,6 +54,16 @@ typedef enum _NSPrintingPageOrder {
 @interface NSPrintOperation : NSObject
 {
   // Attributes
+  NSPrintInfo *_printInfo;
+  NSView *_view;
+  NSRect _rect;
+  NSMutableData *_data;
+  NSString *_path;
+  NSGraphicsContext *_context;
+  NSPrintPanel *_printPanel;
+  NSView *_accessoryView;
+  NSPrintingPageOrder _pageOrder;
+  BOOL _showPanels;
 }
 
 //
@@ -67,9 +80,25 @@ typedef enum _NSPrintingPageOrder {
 				insideRect:(NSRect)rect
 				    toPath:(NSString *)path
 				printInfo:(NSPrintInfo *)aPrintInfo;
+
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView;
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
 				   printInfo:(NSPrintInfo *)aPrintInfo;
+
+#ifndef	STRICT_OPENSTEP
++ (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
+				insideRect:(NSRect)rect 
+				    toData:(NSMutableData *)data;
++ (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
+				insideRect:(NSRect)rect 
+				    toData:(NSMutableData *)data 
+				 printInfo:(NSPrintInfo*)aPrintInfo;
++ (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
+				insideRect:(NSRect)rect 
+				    toPath:(NSString *)path 
+				 printInfo:(NSPrintInfo*)aPrintInfo;
+#endif
+
 - (id)initEPSOperationWithView:(NSView *)aView
 		    insideRect:(NSRect)rect
 			toData:(NSMutableData *)data
@@ -88,6 +117,10 @@ typedef enum _NSPrintingPageOrder {
 //
 - (BOOL)isEPSOperation;
 
+#ifndef	STRICT_OPENSTEP
+- (BOOL)isCopyingOperation;
+#endif
+
 //
 // Controlling the User Interface
 //
@@ -95,6 +128,11 @@ typedef enum _NSPrintingPageOrder {
 - (BOOL)showPanels;
 - (void)setPrintPanel:(NSPrintPanel *)panel;
 - (void)setShowPanels:(BOOL)flag;
+
+#ifndef	STRICT_OPENSTEP
+- (NSView *)accessoryView;
+- (void)setAccessoryView:(NSView *)aView;
+#endif
 
 //
 // Managing the DPS Context
