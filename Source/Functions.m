@@ -36,6 +36,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/DPSOperators.h>
 
 char **NSArgv = NULL;

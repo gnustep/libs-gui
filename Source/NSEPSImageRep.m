@@ -26,6 +26,7 @@
    */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSEPSImageRep.h>
