@@ -1,27 +1,61 @@
 s/@configure_input@/ Generated from Makefile.in by configure.bat/
 s/@srcdir@/./
-s/@CC@/gcc -fgnu-runtime -O -DDEBUGLOG/
+s/@CC@/gcc -fgnu-runtime -O -DDEBUGLOG -D__MS_WIN32__/
 s/@CPPFLAGS@//
-s/@lib_installdir@/\/MB\/Libraries/
-s/@h_installdir@/\/MB\/Headers/
+s/@prefix@/$(MB_DEV)/
+s/@exec_prefix@/$(prefix)/
+s/libdir = $(exec_prefix)\/lib/libdir = $(exec_prefix)\\$(MB_LIB)/
+s/includedir = $(prefix)\/include/includedir = $(prefix)\\$(MB_H)/
 s/@gcc_lib@/libgcc.lib/
 s/@objc_lib@/libobjc.lib/
 s/@sys_libs@/libc.lib oldnames.lib user32.lib gdi32.lib wsock32.lib/
 s/@add_libs@/libobjects.lib/
-s/@exeext@/.exe/
-s/@oext@/.obj/
-s/@libext@/.lib/
+s/exeext =/exeext = .exe/
+s/oext = .o/oext = .obj/
+s/libext = .a/libext = .lib/
 s/@resext@/.res/
 s/@rcext@/.rc/
-s/INIT_FILE =/INIT_FILE = init_$(MAIN_FILE)/
-s/@ldflags@/-align:0x1000 -entry:WinMainCRTStartup -stack:1000000,1000000/
-s/@ld@/ld -subsystem:windows/
-s/@ldout@/-out:/
-s/@lib@/lib/
-s/@libflags@//
-s/@libout@/-out:/
-s/@ranlib@/touch/
+s/@LN_S@/cp -r/
+s/INIT_FILE =/INIT_FILE = gnustep_gui_init_runtime/
+s/@LDFLAGS@/-align:0x1000 -entry:WinMainCRTStartup -stack:1000000,1000000/
+s/LD = ld/LD = ld -subsystem:windows/
+s/LDOUT =/LDOUT = -out:/
+s/LIB = ar/LIB = lib/
+s/LIBFLAGS = rc/LIBFLAGS =/
+s/LIBOUT =/LIBOUT = -out:/
+s/@RANLIB@/touch/
+s/@INSTALL@/cp/
+s/@INSTALL_PROGRAM@/$(INSTALL)/
+s/@INSTALL_DATA@/$(INSTALL)/
 s/@rc@/rc \/l 0x409 \/i $(MB_INCLUDE)/
 s/OBJS = $(OBJS_WITHOUT_INIT)/OBJS = $(OBJS_WITHOUT_INIT) $(INIT_FILE_OBJ)/
+/install: installdirs/,/# end of install targets/c\
+install: installdirs install-lib install-headers\
+\
+installdirs:\
+	IF NOT EXIST $(libdir) mkdir $(libdir) \
+	IF NOT EXIST $(includedir)\\gnustep mkdir $(includedir)\\gnustep \
+	IF NOT EXIST $(includedir)\\gnustep\\dps mkdir $(includedir)\\gnustep\\dps \
+	IF NOT EXIST $(includedir)\\gnustep\\gui mkdir $(includedir)\\gnustep\\gui \
+\
+install-lib: $(MAIN_FILE)$(libext) \
+	$(INSTALL_PROGRAM) $(MAIN_FILE)$(libext) $(libdir) \
+\
+install-headers:\
+	for %i in ( $(GNUSTEP1_HEADERS) ) do \\\
+	 ( $(INSTALL_DATA) ../Headers/gnustep/%i \\\
+		$(includedir)/gnustep/%i ) \
+	for %i in ( $(GNUSTEP2_HEADERS) ) do \\\
+	 ( $(INSTALL_DATA) ../Headers/gnustep/%i \\\
+		$(includedir)/gnustep/%i ) \
+	for %i in ( $(GNUSTEP3_HEADERS) ) do \\\
+	 ( $(INSTALL_DATA) ../Headers/gnustep/%i \\\
+		$(includedir)/gnustep/%i ) \
+	for %i in ( $(GNUSTEP_DPS_HEADERS) ) do \\\
+	 ( $(INSTALL_DATA) ../Headers/gnustep/%i \\\
+		$(includedir)/gnustep/%i ) \
+	cp -r $(includedir)/gnustep/gui $(includedir)/AppKit \
+	cp -r $(includedir)/gnustep/dps $(includedir)/DPSClient \
+# end of install targets
 
 

@@ -64,7 +64,7 @@ LD = ld
 
 LDOUT =
 LIB = ar
-LIBOUT = 
+LIBOUT =
 LIBFLAGS = rc
 RANLIB = @RANLIB@
 RC = 
@@ -241,9 +241,9 @@ LIBS = $(GCC_LIB) $(OBJC_LIB) $(SYS_LIBS) $(ADD_LIBS)
 all: header_links src
 
 header_links:
-	-rm -f ../Headers/AppKit
+	-rm -rf ../Headers/AppKit
 	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
-	-rm -f ../Headers/DPSClient
+	-rm -rf ../Headers/DPSClient
 	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
 
 src: $(MAIN_FILE)$(libext)
@@ -274,11 +274,9 @@ installdirs:
 		$(LN_S) $(includedir)/gnustep/gui $(includedir)/AppKit ; fi
 	if [ -d $(includedir)/DPSClient ] ; then true ; else \
 		$(LN_S) $(includedir)/gnustep/dps $(includedir)/DPSClient ; fi
-# end of installdirs
 
 install-lib: $(MAIN_FILE)$(libext)
-	-rm -f $(libdir)/$(MAIN_FILE)$(libext)
-	mv $(MAIN_FILE)$(libext) $(libdir)
+	$(INSTALL_PROGRAM) $(MAIN_FILE)$(libext) $(libdir)
 
 install-headers:
 	for file in $(GNUSTEP1_HEADERS); do \
@@ -297,6 +295,14 @@ install-headers:
 		$(INSTALL_DATA) ../Headers/gnustep/$$file \
 			$(includedir)/gnustep/$$file ; \
 	done
+# end of install targets
+
+uninstall:
+	rm -rf $(includedir)/gnustep/dps
+	rm -rf $(includedir)/gnustep/gui
+	rm -rf $(includedir)/AppKit
+	rm -rf $(includedir)/DPSClient
+	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
 
 #
 # Cleaning
