@@ -743,7 +743,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer *)aTextContainer 
 {
   if ([_lineLayoutInformation count]
-      && NSMaxRange (redrawLineRange) < [_lineLayoutInformation count]
+      && NSMaxRange (redrawLineRange) <= [_lineLayoutInformation count]
       && redrawLineRange.length)
     {
       _GNULineLayoutInfo *firstInfo
