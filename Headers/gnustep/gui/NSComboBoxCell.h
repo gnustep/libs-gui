@@ -45,8 +45,7 @@
    int                  _selectedItem;
   
 @private;
-   NSRect		_popRect;
-   NSEvent		*_mUpEvent;
+   id		_popup;
 }
 
 - (BOOL)hasVerticalScroller;
