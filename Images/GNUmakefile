@@ -58,6 +58,13 @@ common_SwitchOn.tiff \
 common_SwitchOff.tiff \
 common_SliderHoriz.tiff \
 common_SliderVert.tiff \
+common_TabDownSelectedLeft.tiff \
+common_TabDownSelectedRight.tiff \
+common_TabDownSelectedToUnSelectedJunction.tiff \
+common_TabDownUnSelectedJunction.tiff \
+common_TabDownUnSelectedLeft.tiff \
+common_TabDownUnSelectedRight.tiff \
+common_TabDownUnSelectedToSelectedJunction.tiff \
 common_TabSelectedLeft.tiff \
 common_TabSelectedRight.tiff \
 common_TabSelectedToUnSelectedJunction.tiff \

@@ -31,6 +31,7 @@
 
 typedef enum {
   NSTopTabsBezelBorder, 
+  NSBottomTabsBezelBorder, 
   NSNoTabsBezelBorder,
   NSNoTabsLineBorder,
   NSNoTabsNoBorder

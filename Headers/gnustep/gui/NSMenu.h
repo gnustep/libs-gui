@@ -52,6 +52,9 @@
   BOOL menu_changed;
   BOOL menu_is_tornoff;
 
+  // Private.
+  BOOL menu_follow_transient;
+
   // Reserved for back-end use
   void *be_menu_reserved;
 }

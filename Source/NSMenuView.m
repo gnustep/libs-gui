@@ -153,6 +153,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
       if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
         [[anItem target] close];
+      else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
+        [[anItem target] closeTransient];
 
       [anItem setState: 0];
       menuv_highlightedItemIndex = -1;
@@ -167,6 +169,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
       if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
         [[anItem target] close];
+      else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
+        [[anItem target] closeTransient];
 
       [anItem setState: 0];
     }
@@ -185,6 +189,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
           if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
             [[anItem target] display];
+          else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
+            [[anItem target] displayTransient];
 	}
 
       // set ivar to new index
@@ -688,7 +694,8 @@ cell do the following */
 
 	      while (!finished)
 	        { // Recursive menu close & deselect.
-	          if ([aMenu supermenu] && ![aMenu isTornOff])
+//	          if ([aMenu supermenu] && ![aMenu isTornOff])
+	          if ([aMenu supermenu])
 		    {
 		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
 		      aMenu = [aMenu supermenu];
@@ -712,7 +719,7 @@ cell do the following */
 
   /* If the mouse is released and there is no highlighted cell */
 
-  else if (menuv_highlightedItemIndex == -1)
+  else if (menuv_highlightedItemIndex == -1 && menuv_popb)
     {
       NSLog(@"This is the popupbutton close if not selected test.\n");
 

@@ -1,3 +1,25 @@
+1999-07-27  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSTabView.m: added code to allow tabs on the bottom of a
+	tabview. Also made the space that the tabs themselves are draw in
+	from 20 pixels to 16 (which is the exact space needed.)
+	* Images/common_TabDownSelectedLeft.tiff
+	common_TabDownSelectedRight.tiff
+	common_TabDownSelectedToUnSelectedJunction.tiff
+	common_TabDownUnSelectedJunction.tiff
+	common_TabDownUnSelectedLeft.tiff
+	common_TabDownUnSelectedRight.tiff
+	common_TabDownUnSelectedToSelectedJunction.tiff:
+	place keeper images for bottom tabs. These really need to be
+	redrawn.
+	* Source/NSMenu.m: removed isTornOff: from frontend and it is in
+	the backend where it should be.
+	* Source/NSMenuView.m: added code that does quite a bit of the
+	transient menu code.
+
+	The event code needs to be finessed so that the transient menu is
+	not allowed to remain on screen unless the mouse button stays down.
+
 1999-07-26  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSTableView.m: added much more code to this

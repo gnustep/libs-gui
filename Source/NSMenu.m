@@ -354,10 +354,12 @@ static NSZone *menuZone = NULL;
   return menu_supermenu && [menu_supermenu attachedMenu] == self;
 }
 
+/*
 - (BOOL) isTornOff
 {
   return menu_is_tornoff;
 }
+*/
 
 - (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu
 {
