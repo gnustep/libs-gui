@@ -104,6 +104,10 @@ static inline MPoint MakePoint (int x, int y)
 }
 
 @interface NSMatrix (PrivateMethods)
+- (void) _renewRows: (int)row
+	    columns: (int)col
+	   rowSpace: (int)rowSpace
+	   colSpace: (int)colSpace;
 - (void) _setState: (int)state
 	 highlight: (BOOL)highlight
 	startIndex: (int)start
@@ -194,7 +198,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   myZone = [self zone];
   [self setPrototype: prototype];
-  [self renewRows: rows columns: cols];
+  [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
   mode = aMode;
   [self setFrame: frameRect];
 
@@ -248,7 +252,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) addColumn
 {
-  [self insertColumn: numCols];
+  [self insertColumn: numCols withCells: nil];
 }
 
 - (void) addColumnWithCells: (NSArray*)cellArray
@@ -258,7 +262,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) addRow
 {
-  [self insertRow: numRows];
+  [self insertRow: numRows withCells: nil];
 }
 
 - (void) addRowWithCells: (NSArray*)cellArray
@@ -268,7 +272,13 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) insertColumn: (int)column
 {
-  int i = numCols + 1;
+  [self insertColumn: column withCells: nil];
+}
+
+- (void) insertColumn: (int)column withCells: (NSArray*)cellArray
+{
+  int	count = [cellArray count];
+  int	i = numCols + 1;
 
   if (column < 0)
     {
@@ -286,13 +296,27 @@ static SEL getSel = @selector(objectAtIndex:);
       i = column + 1;
     }
 
-  /* Grow the matrix as necessary */
-  [self renewRows: numRows ? numRows : 1 columns: i];
+  /*
+   * Use _renewRows:columns:rowSpace:colSpace: to grow the matrix as necessary.
+   * MacOS-X docs say that if the matrix is empty, we make it have one column
+   * and enough rows for all the elements.
+   */
+  if (count > 0 && (numRows == 0 || numCols == 0))
+    {
+      [self _renewRows: count columns: 1 rowSpace: 0 colSpace: count];
+    }
+  else
+    {
+      [self _renewRows: numRows ? numRows : 1
+	       columns: i
+	      rowSpace: 0
+	      colSpace: count];
+    }
 
   /*
    * Rotate the new column to the insertion point if necessary.
    */
-  if (numCols > 1)
+  if (numCols != column)
     {
       for (i = 0; i < numRows; i++)
 	{
@@ -309,44 +333,17 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
-    [self selectCellAtRow: 0 column: 0];
-}
-
-- (void) insertColumn: (int)column withCells: (NSArray*)cellArray
-{
-  int	count = [cellArray count];
-  IMP	getImp;
-  int	i;
-
-  if (count == 0)
-    {
-      [self insertColumn: column];
-      return;
-    }
-
   /*
-   * Set ivar to tell renewRows:columns: how much space to leave for cells
-   * that will be added from the array.
+   * Now put the new cells from the array into the matrix.
    */
-  insertingColWithCells = count;
-  if (numRows == 0 || numCols == 0)
+  if (count > 0)
     {
-      /*
-       * MacOS-X docs say that if the matrix is empty, we make it have one
-       * column and enough rows for all the elements.
-       */
-      [self renewRows: count columns: 1];
-    }
-  else
-    {
-      [self insertColumn: column];
-    }
+      IMP	getImp = [cellArray methodForSelector: getSel];
 
-  getImp = [cellArray methodForSelector: getSel];
-  for (i = 0; i < numRows && i < count; i++)
-    {
-      cells[i][column] = RETAIN((*getImp)(cellArray, getSel, i));
+      for (i = 0; i < numRows && i < count; i++)
+	{
+	  ASSIGN(cells[i][column], (*getImp)(cellArray, getSel, i));
+	}
     }
 
   if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
@@ -355,6 +352,12 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) insertRow: (int)row
 {
+  [self insertRow: row withCells: nil];
+}
+
+- (void) insertRow: (int)row withCells: (NSArray*)cellArray
+{
+  int	count = [cellArray count];
   int	i = numRows + 1;
 
   if (row < 0)
@@ -375,13 +378,25 @@ static SEL getSel = @selector(objectAtIndex:);
 
   /*
    * Grow the matrix to have the new row.
+   * MacOS-X docs say that if the matrix is empty, we make it have one
+   * row and enough columns for all the elements.
    */
-  [self renewRows: i columns: numCols ? numCols : 1];
+  if (count > 0 && (numRows == 0 || numCols == 0))
+    {
+      [self _renewRows: 1 columns: count rowSpace: count colSpace: 0];
+    }
+  else
+    {
+      [self _renewRows: i
+	       columns: numCols ? numCols : 1
+	      rowSpace: count
+	      colSpace: 0];
+    }
 
   /*
    * Rotate the newly created row to the insertion point if necessary.
    */
-  if (numRows > 1)
+  if (numRows != row)
     {
       id	*oldr = cells[numRows - 1];
       BOOL	*olds = selectedCells[numRows - 1];
@@ -395,44 +410,17 @@ static SEL getSel = @selector(objectAtIndex:);
       selectedCells[row] = olds;
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
-    [self selectCellAtRow: 0 column: 0];
-}
-
-- (void) insertRow: (int)row withCells: (NSArray*)cellArray
-{
-  int	count = [cellArray count];
-  IMP	getImp;
-  int	i;
-
-  if (count == 0)
-    {
-      [self insertRow: row];
-      return;
-    }
-
   /*
-   * Set ivar to tell renewRows:columns: how much space to leave for cells
-   * that will be added from the array.
+   * Put cells from the array into the matrix.
    */
-  insertingRowWithCells = count;
-  if (numRows == 0 || numCols == 0)
+  if (count > 0)
     {
-      /*
-       * MacOS-X docs say that if the matrix is empty, we make it have one
-       * column and enough rows for all the elements.
-       */
-      [self renewRows: 1 columns: count];
-    }
-  else
-    {
-      [self insertRow: row];
-    }
+      IMP	getImp = [cellArray methodForSelector: getSel];
 
-  getImp = [cellArray methodForSelector: getSel];
-  for (i = 0; i < numCols && i < count; i++)
-    {
-      cells[row][i] = RETAIN((*getImp)(cellArray, getSel, i));
+      for (i = 0; i < numCols && i < count; i++)
+	{
+	  ASSIGN(cells[row][i], (*getImp)(cellArray, getSel, i));
+	}
     }
 
   if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
@@ -444,11 +432,6 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   NSCell	*aCell;
 
-  /*
-   * This is only ever called when we are creating a new cell - so we know
-   * we can simply assign a value into the matrix without releasing an old
-   * value.
-   */
   if (cellPrototype != nil)
     {
       aCell = (*cellNew)(cellPrototype, copySel, myZone);
@@ -461,6 +444,12 @@ static SEL getSel = @selector(objectAtIndex:);
 	  aCell = (*cellInit)(aCell, initSel);
 	}
     }
+  /*
+   * This is only ever called when we are creating a new cell - so we know
+   * we can simply assign a value into the matrix without releasing an old
+   * value.  If someone uses this method directly (which the documentation
+   * specifically says they shouldn't) they may produce a memory leak.
+   */
   cells[row][column] = aCell;
   return aCell;
 }
@@ -578,105 +567,7 @@ static SEL getSel = @selector(objectAtIndex:);
 - (void) renewRows: (int)r
 	   columns: (int)c
 {
-  int		i, j;
-  SEL		mkSel = @selector(makeCellAtRow:column:);
-  IMP		mkImp = [self methodForSelector: mkSel];
-
-  if (r < 0)
-    {
-#if	STRICT == 0
-      NSLog(@"renew negative row (%d) in matrix", r);
-#else
-      [NSException raise: NSRangeException
-		  format: @"renew negative row (%d) in matrix", r];
-#endif
-      r = 0;
-    }
-  if (c < 0)
-    {
-#if	STRICT == 0
-      NSLog(@"renew negative column (%d) in matrix", c);
-#else
-      [NSException raise: NSRangeException
-		  format: @"renew negative column (%d) in matrix", c];
-#endif
-      c = 0;
-    }
-
-  if (c > maxCols)
-    {
-      for (i = 0; i < maxRows; i++)
-	{
-	  int	end = c - 1;
-
-	  cells[i] = NSZoneRealloc(myZone, cells[i], c * sizeof(id));
-	  selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
-	    selectedCells[i], c * sizeof(BOOL));
-
-	  for (j = maxCols - 1; j < c; j++)
-	    {
-	      cells[i][j] = nil;
-	      selectedCells[i][j] = NO;
-	      if (j == end && insertingColWithCells > 0)
-		{
-		  insertingColWithCells--;
-		}
-	      else
-		{
-		  (*mkImp)(self, mkSel, i, j);
-		}
-	    }
-	}
-      maxCols = c;
-    }
-
-  if (r > maxRows)
-    {
-      int	end = r - 1;
-
-      cells = NSZoneRealloc(myZone, cells, r * sizeof(id*));
-      selectedCells = NSZoneRealloc(myZone, selectedCells, r * sizeof(BOOL*));
-
-      /* Allocate the new rows and fill them */
-      for (i = maxRows; i < r; i++)
-	{
-	  cells[i] = NSZoneMalloc(myZone, c * sizeof(id));
-	  selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
-	    c * sizeof(BOOL));
-
-	  if (i == end)
-	    {
-	      for (j = 0; j < c; j++)
-		{
-		  cells[i][j] = nil;
-		  selectedCells[i][j] = NO;
-		  if (insertingRowWithCells > 0)
-		    {
-		      insertingRowWithCells--;
-		    }
-		  else
-		    {
-		      (*mkImp)(self, mkSel, i, j);
-		    }
-		}
-	    }
-	  else
-	    {
-	      for (j = 0; j < c; j++)
-		{
-		  cells[i][j] = nil;
-		  selectedCells[i][j] = NO;
-		  (*mkImp)(self, mkSel, i, j);
-		}
-	    }
-	}
-      maxRows = r;
-    }
-  numRows = maxRows;
-  numCols = maxCols;
-  insertingColWithCells = 0;
-  insertingRowWithCells = 0;
-  [self deselectAllCells];
+  [self _renewRows: r columns: c rowSpace: 0 colSpace: 0];
 }
 
 - (void) setCellSize: (NSSize)size
@@ -2304,6 +2195,134 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 
 @implementation NSMatrix (PrivateMethods)
+
+/*
+ * Renew rows and columns, but when expanding the matrix, refrain from
+ * creating rowSpace  items in the last row and colSpace items in the
+ * last column.  When inserting the contents of an array into the matrix,
+ * this avoids creation of new cless which would immediately be replaced
+ * by those from the array.
+ * NB. new spaces in the matrix are pre-initialised with nil values so
+ * that replacing them doesn't cause attempts to release random memory.
+ */
+- (void) _renewRows: (int)row
+	    columns: (int)col
+	   rowSpace: (int)rowSpace
+	   colSpace: (int)colSpace
+{
+  int		i, j;
+  int		oldMaxC;
+  int		oldMaxR;
+  SEL		mkSel = @selector(makeCellAtRow:column:);
+  IMP		mkImp = [self methodForSelector: mkSel];
+
+NSLog(@"mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols, row, col);
+  if (row < 0)
+    {
+#if	STRICT == 0
+      NSLog(@"renew negative row (%d) in matrix", row);
+#else
+      [NSException raise: NSRangeException
+		  format: @"renew negative row (%d) in matrix", row];
+#endif
+      row = 0;
+    }
+  if (col < 0)
+    {
+#if	STRICT == 0
+      NSLog(@"renew negative column (%d) in matrix", col);
+#else
+      [NSException raise: NSRangeException
+		  format: @"renew negative column (%d) in matrix", col];
+#endif
+      col = 0;
+    }
+
+  /*
+   * Update matrix dimension before we actually change it - so that 
+   * makeCellAtRow:column: diesn't think we are trying to make a cell
+   * outside the array bounds.
+   * Our implementation doesn't care, but a subclass might use
+   * putCell:atRow:column: to implement it, and that checks bounds.
+   */
+  oldMaxC = maxCols;
+  maxCols = col;
+  numCols = col;
+  oldMaxR = maxRows;
+  maxRows = row;
+  numRows = row;
+
+  if (col > oldMaxC)
+    {
+      int	end = col - 1;
+
+      for (i = 0; i < oldMaxR; i++)
+	{
+	  cells[i] = NSZoneRealloc(myZone, cells[i], col * sizeof(id));
+	  selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
+	    selectedCells[i], col * sizeof(BOOL));
+
+	  for (j = oldMaxC - 1; j < col; j++)
+	    {
+	      cells[i][j] = nil;
+	      selectedCells[i][j] = NO;
+	      if (j == end && colSpace > 0)
+		{
+		  colSpace--;
+		}
+	      else
+		{
+		  (*mkImp)(self, mkSel, i, j);
+		}
+	    }
+	}
+    }
+
+  if (row > oldMaxR)
+    {
+      int	end = row - 1;
+
+      cells = NSZoneRealloc(myZone, cells, row * sizeof(id*));
+      selectedCells = NSZoneRealloc(myZone, selectedCells, row * sizeof(BOOL*));
+
+      /* Allocate the new rows and fill them */
+      for (i = oldMaxR; i < row; i++)
+	{
+	  cells[i] = NSZoneMalloc(myZone, col * sizeof(id));
+	  selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
+	    col * sizeof(BOOL));
+
+	  if (i == end)
+	    {
+	      for (j = 0; j < col; j++)
+		{
+		  cells[i][j] = nil;
+		  selectedCells[i][j] = NO;
+		  if (rowSpace > 0)
+		    {
+		      rowSpace--;
+		    }
+		  else
+		    {
+		      (*mkImp)(self, mkSel, i, j);
+		    }
+		}
+	    }
+	  else
+	    {
+	      for (j = 0; j < col; j++)
+		{
+		  cells[i][j] = nil;
+		  selectedCells[i][j] = NO;
+		  (*mkImp)(self, mkSel, i, j);
+		}
+	    }
+	}
+    }
+
+  [self deselectAllCells];
+NSLog(@"end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", maxRows, maxCols, numRows, numCols, row, col);
+}
 
 - (void) _setState: (int)state
 	 highlight: (BOOL)highlight
