@@ -1,3 +1,10 @@
+Thu Dec  2 11:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenuView.m: ([-trackWithEvent:]) Removed spurious code
+	that caused the bug of submenus being closed when you click on them!
+	Sumbenus should only be closed at the end of a drag operation or if
+	you click on their corresponding item in the parent menu.
+
 Thu Dec  2  8:23:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSImage.m: Use opacity values from image reps to cache more

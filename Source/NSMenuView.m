@@ -793,9 +793,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
       if (![menuv_menu isFollowTransient])
 	[self setHighlightedItemIndex: -1];
-
-      if (![[menuv_items_link objectAtIndex: index] hasSubmenu])
-	menuv_keepAttachedMenus = NO;
     }
 
   // Close menus if needed.
