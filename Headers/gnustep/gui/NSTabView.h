@@ -73,6 +73,7 @@ typedef enum {
 - (void)selectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)selectTabViewItemAtIndex:(int)index;
 - (void)takeSelectedTabViewItemFromSender:(id)sender;
+- (NSTabViewItem*) selectedTabViewItem;
 
 - (void)setFont:(NSFont *)font;
 - (NSFont *)font;
