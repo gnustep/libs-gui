@@ -1,3 +1,9 @@
+2004-09-16  Matt Rice <ratmice@yahoo.com>
+	* Source/NSTextFieldCell.m (+initialize): Bump class version.
+	(-initWithCoder:): When decoding the previous version of NSTextFieldCell
+	replace the old default _action_mask with the new default value. 
+	(Fixes #9609 for .gorm files)
+
 2004-08-02  Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Documentation/Gui/Gui.gsdoc: Update to reflect slight rearrangement

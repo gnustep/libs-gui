@@ -68,7 +68,7 @@ static NSColor	*txtCol;
 {
   if (self == [NSTextFieldCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       [[NSNotificationCenter defaultCenter] 
 	addObserver: self
 	selector: @selector(_systemColorsChanged:)
@@ -201,6 +201,22 @@ static NSColor	*txtCol;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+ 
+  if ([aDecoder versionForClassName:@"NSTextFieldCell"] < 2)
+    {
+      /* Replace the old default _action_mask with the new default one
+         if it's set. There isn't really a way to modify this value
+         on an NSTextFieldCell encoded in a .gorm file. The old default value
+	 causes problems with newer NSTableViews which uses this to discern 
+	 whether it should trackMouse:inRect:ofView:untilMouseUp: or not.
+	 This also disables the action from being sent on an uneditable and
+	 unselectable text fields.
+       */
+      if (_action_mask == NSLeftMouseUpMask)
+	{
+	  _action_mask = NSKeyUpMask | NSKeyDownMask;
+	}
+    }
 
   if ([aDecoder allowsKeyedCoding])
     {
