@@ -1,3 +1,10 @@
+Sun Jan 28 16:15:05 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSSplitView.h: Added delegate method 
+	splitView:constrainSplitPosition:ofSubviewAt:.
+	* Source/NSSplitView.m ([-mouseDown:]): Implemented asking
+	delegate for splitView:constrainSplitPosition:ofSubviewAt:.
+
 2001-01-28  Jonathan Gapen  <jagapen@home.com>
 
 	* Source/GSServicesManager.m: Standardized finding GNUstep paths
