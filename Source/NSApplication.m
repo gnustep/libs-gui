@@ -107,13 +107,24 @@ NSApplication	*NSApp = nil;
 {
   if (self == [NSApplication class])
     {
+      /*
+       * Dummy functions to fool linker into linking files that contain
+       * only catagories - static libraries seem to have problems here.
+       */
+      extern void	GSStringDrawingDummyFunction();
+
+      GSStringDrawingDummyFunction();
+
       NSDebugLog(@"Initialize NSApplication class\n");
-                                                    // Initial version
-      [self setVersion:1];
-                                                    // So the application knows
-      gnustep_gui_app_is_in_dealloc = NO;         // it's within dealloc and
-    }                                           // can prevent -release
-}                                                   // loops.
+      [self setVersion: 1];
+
+      /*
+       * So the application knows it's within dealloc and
+       * can prevent -release loops
+       */
+      gnustep_gui_app_is_in_dealloc = NO;
+    }
+}
 
 + (NSApplication *)sharedApplication
 {					// If the global application does

@@ -31,6 +31,14 @@
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKit.h>
 
+/*
+ * A function called by NSApplication to ensure that this file is linked
+ * when it should be.
+ */
+void
+GSStringDrawingDummyFunction()
+{
+}
 
 static NSCharacterSet	*whitespace;
 static NSCharacterSet	*newlines;

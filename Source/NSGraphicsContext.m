@@ -95,16 +95,23 @@ static NSString	*NSGraphicsContextThredKey = @"NSGraphicsContextThredKey";
   return ctxt;
 }
 
+/*
+ *	gstep-base has a faster mechanism to get the current thread.
+ */
+#ifndef GNUSTEP_BASE_LIBRARY
+#define	GSCurrentThreadDictionary()	[[NSThread currentThread] threadDictionary]
+#endif
+
 + (void) setCurrentContext: (NSGraphicsContext *)context
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   [dict setObject: context forKey: NSGraphicsContextThredKey];
 }
 
 + (NSGraphicsContext *) currentContext
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   return (NSGraphicsContext*) [dict objectForKey: NSGraphicsContextThredKey];
 }

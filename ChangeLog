@@ -1,3 +1,11 @@
+Mon Apr 19 14:54:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: Link in dummy function to ensure that
+	NSStringDrawing catagories are linked when using static libs.
+	* Source/NSStringDrawing.m: Add dummy function to force link.
+	* Source/NSEvent.m: Faster thread access.
+	* Source/NSGraphicsContext.m: ditto.
+
 Sun Apr 18  6:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Added all improvements from mgstep.

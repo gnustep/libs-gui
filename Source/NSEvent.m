@@ -43,6 +43,14 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSGraphicsContext.h>
 
+/*
+ *	gstep-base has a faster mechanism to get the current thread.
+ */
+#ifndef GNUSTEP_BASE_LIBRARY
+#define	GSCurrentThread()	[NSThread currentThread]
+#define	GSCurrentThreadDictionary()	[[NSThread currentThread] threadDictionary]
+#endif
+
 @implementation NSEvent
 
 // Class variables
@@ -192,14 +200,14 @@ static NSString	*timerKey = @"NSEventTimersKey";
 			    withPeriod: (NSTimeInterval)periodSeconds
 {
   NSTimer		*timer;
-  NSMutableDictionary	*dict = [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"startPeriodicEventsAfterDelay: withPeriod: ");
 
   if ([dict objectForKey: timerKey])
     [NSException raise: NSInternalInconsistencyException
 		format: @"Periodic events are already being generated for "
-		        @"this thread %x", [NSThread currentThread]];
+		        @"this thread %x", GSCurrentThread()];
 
   // If the delay time is 0 then register a timer immediately. Otherwise
   // register a timer with no repeat that when fired registers the real timer
@@ -243,7 +251,7 @@ static NSString	*timerKey = @"NSEventTimersKey";
 + (void) _registerRealTimer: (NSTimer*)timer
 {
   NSTimer* realTimer;
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"_registerRealTimer: ");
 
@@ -260,7 +268,7 @@ static NSString	*timerKey = @"NSEventTimersKey";
 + (void) stopPeriodicEvents
 {
   NSTimer* timer;
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"stopPeriodicEvents");
   timer = [dict objectForKey: timerKey];
