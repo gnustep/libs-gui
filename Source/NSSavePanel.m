@@ -31,7 +31,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include <AppKit/IMLoading.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>
