@@ -568,16 +568,19 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
-- (BOOL)writeFileWrapper:(NSFileWrapper *)wrapper
+- (BOOL) writeFileWrapper: (NSFileWrapper *)wrapper
 {
-  NSString *filename = [wrapper preferredFilename];
-  NSData *data;
-  NSString *type;
-  BOOL ok = NO;
+  NSString	*filename = [wrapper preferredFilename];
+  NSData	*data;
+  NSString	*type;
+  BOOL		ok = NO;
 
   if (filename == nil)
-    [NSException raise: NSInvalidArgumentException
-		 format: @"Cannot put file on pastboard with no preferred filename"];
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"Cannot put file on pastboard with "
+	@"no preferred filename"];
+    }
 
   data = [wrapper serializedRepresentation];
   type = NSCreateFileContentsPboardType([filename pathExtension]);
@@ -731,7 +734,8 @@ static  NSMapTable              *mimeMap = NULL;
   if (d == nil)
     return nil;
 
-  return AUTORELEASE([[NSFileWrapper alloc] initWithSerializedRepresentation: d]);
+  return
+    AUTORELEASE([[NSFileWrapper alloc] initWithSerializedRepresentation: d]);
 }
 
 - (NSString*) stringForType: (NSString*)dataType
@@ -791,53 +795,76 @@ static  NSMapTable              *mimeMap = NULL;
 + (void) _initMimeMappings
 {
   mimeMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-                NSObjectMapValueCallBacks, 0);
-  NSMapInsert(mimeMap, (void *)NSStringPboardType, (void *)@"text/plain");
+    NSObjectMapValueCallBacks, 0);
+
+  NSMapInsert(mimeMap, (void *)NSStringPboardType,
+    (void *)@"text/plain");
   NSMapInsert(mimeMap, (void *)NSFileContentsPboardType, 
-	      (void *)@"text/plain");
+    (void *)@"text/plain");
   NSMapInsert(mimeMap, (void *)NSFilenamesPboardType, 
-	      (void *)@"text/uri-list");
+    (void *)@"text/uri-list");
   NSMapInsert(mimeMap, (void *)NSPostScriptPboardType, 
-	      (void *)@"application/postscript");
+    (void *)@"application/postscript");
   NSMapInsert(mimeMap, (void *)NSTabularTextPboardType, 
-	      (void *)@"text/tab-separated-values");
-  NSMapInsert(mimeMap, (void *)NSRTFPboardType, (void *)@"text/richtext");
-  NSMapInsert(mimeMap, (void *)NSTIFFPboardType, (void *)@"image/tiff");
-  NSMapInsert(mimeMap, (void *)NSGeneralPboardType, (void *)@"text/plain");
+    (void *)@"text/tab-separated-values");
+  NSMapInsert(mimeMap, (void *)NSRTFPboardType,
+    (void *)@"text/richtext");
+  NSMapInsert(mimeMap, (void *)NSTIFFPboardType,
+    (void *)@"image/tiff");
+  NSMapInsert(mimeMap, (void *)NSGeneralPboardType,
+    (void *)@"text/plain");
 }
 
-/* Return the mapping for pasteboard->mime, or return the original pasteboard
-   type if no mapping is found */
+/*
+ * Return the mapping for pasteboard->mime, or return the original pasteboard
+ * type if no mapping is found
+ */
 + (NSString *) mimeTypeForPasteboardType: (NSString *)type
 {
-  NSString *mime;
+  NSString	*mime;
+
   if (mimeMap == NULL)
-    [self _initMimeMappings];
+    {
+      [self _initMimeMappings];
+    }
   mime = NSMapGet(mimeMap, (void *)type);
   if (mime == nil)
-    mime = type;
+    {
+      mime = type;
+    }
   return mime;
 }
 
-/* Return the mapping for mime->pasteboard, or return the original pasteboard
-   type if no mapping is found. This method may not have a one-to-one 
-   mapping */
+/*
+ * Return the mapping for mime->pasteboard, or return the original pasteboard
+ * type if no mapping is found. This method may not have a one-to-one 
+ * mapping
+ */
 + (NSString *) pasteboardTypeForMimeType: (NSString *)mimeType
 {
-  BOOL found;
-  NSString *type, *mime;
-  NSMapEnumerator enumerator;
+  BOOL			found;
+  NSString		*type;
+  NSString		*mime;
+  NSMapEnumerator	enumerator;
   
   if (mimeMap == NULL)
-    [self _initMimeMappings];
+    {
+      [self _initMimeMappings];
+    }
   enumerator = NSEnumerateMapTable(mimeMap);
   while ((found = NSNextMapEnumeratorPair(&enumerator, 
-					  (void **)(&type), (void **)(&mime))))
-    if ([mimeType isEqual: mime])
-      break;
+    (void **)(&type), (void **)(&mime))))
+    {
+      if ([mimeType isEqual: mime])
+	{
+	  break;
+	}
+    }
 
   if (found == NO)
-    type = mimeType;
+    {
+      type = mimeType;
+    }
   return type;
 }
 

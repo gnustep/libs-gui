@@ -629,12 +629,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    y -= rect.size.height;
 	  // FIXME This should be able to cut out part of the image
 	  PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-		      [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);
+	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);
 	}
       else	
         {
-	  NSRect rect =  NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+	  NSRect rect;
 
+	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 	  [self drawRepresentation: rep inRect: rect];
 	}
     }
@@ -682,12 +683,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    y -= rect.size.height;
 	  // FIXME This should be able to cut out part of the image
 	  PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-		     [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, aFloat);
+	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, aFloat);
 	}
       else
         {
-	  NSRect rect =  NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+	  NSRect rect;
 
+	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 	  [self drawRepresentation: rep inRect: rect];
 	}
     }
@@ -706,7 +708,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NS_ENDHANDLER
 }
 
-- (BOOL)drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
+- (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
   if (!_flags.scalable) 
     return [imageRep drawAtPoint: aRect.origin];

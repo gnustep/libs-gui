@@ -139,11 +139,10 @@
   return _window;
 }
 
-- (BOOL)draw
+- (BOOL) draw
 {
   PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-	      [_window gState], 0, 0, 
-	      NSCompositeSourceOver);
+    [_window gState], 0, 0, NSCompositeSourceOver);
   return YES;
 }
 
