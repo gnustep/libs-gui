@@ -1,3 +1,9 @@
+2004-08-06 14:13  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSPasteboard.m (-pasteboard:provideDataForType:): Print
+	a warning instead of crashing in NSMapFile handling.
+	(+_pasteboardWithTarget:name:): Update the local changeCount.
+
 2004-08-02  Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Clarify the role of

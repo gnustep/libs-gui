@@ -524,6 +524,7 @@
 #include "AppKit/NSFileWrapper.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSHost.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSConnection.h>
@@ -810,6 +811,11 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	  [sender setData: [NSData data] forType: type];
 	  return;	// Not the name of a file to filter.
 	}
+
+      /* TODO: d used to be used here before being initialized. Set it to
+      nil and warn instead of crashing for now. */
+      d = nil;
+      NSWarnMLog(@"NSMapFile handling is broken.");
 
       o = [NSDeserializer deserializePropertyListFromData: d
 					mutableContainers: NO];
@@ -2055,6 +2061,7 @@ static  NSMapTable              *mimeMap = NULL;
        * needed any more.
        */
     }
+  p->changeCount = [p->target changeCount];
   [dictionary_lock unlock];
   return p;
 }
