@@ -1295,6 +1295,7 @@ it should still be safe. might lose opportunities to merge runs, though.
       tc->linefrags = NULL;
       tc->num_linefrags = 0;
       tc->pos = tc->length = 0;
+      tc->was_invalidated = YES;
     }
   for (i = idx - 1, tc = textcontainers + idx - 1; i >= 0; i--, tc--)
     {
@@ -1368,6 +1369,18 @@ it should still be safe. might lose opportunities to merge runs, though.
   [self _doLayout];
 }
 
+
+-(void) _didInvalidateLayout
+{
+  int i;
+  textcontainer_t *tc;
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    {
+      tc->was_invalidated = NO;
+    }
+}
+
 @end
 
 
@@ -1380,6 +1393,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 {
   [self _invalidateLayoutFromContainer: 0];
 #if 0
+  /* TODO: need to bring this up to date and fix it */
   unsigned int from_glyph = glyphs->glyph_length;
   int i, j;
   textcontainer_t *tc;
@@ -1926,6 +1940,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
   textcontainers[i].textContainer = [aTextContainer retain];
 
   [aTextContainer setLayoutManager: self];
+
+  [self _didInvalidateLayout];
 }
 
 - (void) removeTextContainerAtIndex: (unsigned int)index
@@ -1949,6 +1965,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
       free(textcontainers);
       textcontainers = NULL;
     }
+
+  [self _didInvalidateLayout];
 }
 
 - (void) textContainerChangedGeometry: (NSTextContainer *)aContainer
@@ -1963,6 +1981,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       return;
     }
   [self _invalidateLayoutFromContainer: i];
+  [self _didInvalidateLayout];
 }
 
 
@@ -2069,6 +2088,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
     {
       [tc->textContainer setLayoutManager: self];
     }
+  [self _didInvalidateLayout];
 }
 
 /**
@@ -2125,6 +2145,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
     return;
   usesScreenFonts = flag;
   [self _invalidateEverything];
+  [self _didInvalidateLayout];
 }
 
 - (NSFont *) substituteFontForFont: (NSFont *)originalFont
@@ -2161,6 +2182,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 
   showsInvisibleCharacters = flag;
   [self _invalidateEverything];
+  [self _didInvalidateLayout];
 }
 - (BOOL) showsInvisibleCharacters
 {
@@ -2174,6 +2196,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
     return;
   showsControlCharacters = flag;
   [self _invalidateEverything];
+  [self _didInvalidateLayout];
 }
 - (BOOL) showsControlCharacters
 {
@@ -2209,6 +2232,8 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   [self invalidateLayoutForCharacterRange: r
 	isSoft: YES
 	actualCharacterRange: NULL];
+
+  [self _didInvalidateLayout];
 }
 
 

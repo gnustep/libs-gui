@@ -1450,9 +1450,6 @@ TODO: not really clear what these should do
      changeInLength: (int)lengthChange
    invalidatedRange: (NSRange)invalidatedRange
 {
-  unsigned int g;
-  int i;
-
   [super textStorage: aTextStorage
 	edited: mask
 	range: range
@@ -1490,10 +1487,19 @@ TODO: not really clear what these should do
 	    }
 	}
     }
+}
+
+
+-(void) _didInvalidateLayout
+{
+  unsigned int g;
+  int i;
 
   /* Invalidate display from the first glyph not laid out (which will
   generally be the first glyph to have been invalidated). */
   g = layout_glyph;
+
+  [super _didInvalidateLayout];
 
   for (i = 0; i < num_textcontainers; i++)
     {
@@ -1501,11 +1507,11 @@ TODO: not really clear what these should do
 	  g < textcontainers[i].pos + textcontainers[i].length)
         continue;
 
-      [[textcontainers[i].textContainer textView] sizeToFit]; /* TODO? */
+      [[textcontainers[i].textContainer textView] sizeToFit];
       [[textcontainers[i].textContainer textView] setNeedsDisplay: YES];
     }
-
 }
+
 
 @end
 

@@ -164,6 +164,19 @@ typedef struct GSLayoutManager_textcontainer_s
   BOOL started, complete;
   unsigned int pos, length;
 
+  /*
+  This should be set to YES whenever any layout information for this text
+  container has been invalidated. It is reset to NO in -_didInvalidateLayout.
+  All methods called externally that invalidate layout (directly or
+  indirectly) should call -_didInvalidateLayout at some safe point after
+  all invalidation is done.
+
+  In GSLayoutManager, -_didInvalidateLayout only resets the flags. However,
+  subclasses might need to actually do something. NSLayoutManager needs to
+  tell its NSTextView:s to resize.
+  */
+  BOOL was_invalidated;
+
   linefrag_t *linefrags;
   int num_linefrags;
 } textcontainer_t;
@@ -198,6 +211,8 @@ typedef struct GSLayoutManager_textcontainer_s
 -(void) _doLayout; /* TODO: this is just a hack until proper incremental layout is done */
 -(void) _doLayoutToGlyph: (unsigned int)glyphIndex;
 -(void) _doLayoutToContainer: (int)cindex;
+
+-(void) _didInvalidateLayout;
 @end
 
 
