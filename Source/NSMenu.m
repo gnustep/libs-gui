@@ -3,6 +3,8 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: Aug 2001
    Author: David Lazaro Saz <khelekir@encomix.es>
    Date: Oct 1999
    Author:  Michael Hanni <mhanni@sprintmail.com>
@@ -51,42 +53,36 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSScreen.h>
 
-@interface NSMenuWindow : NSPanel
-
-- (void)moveToPoint:(NSPoint)aPoint;
-
-@end
-
 /* A menu's title is an instance of this class */
 @interface NSMenuWindowTitleView : NSView
 {
-  int titleHeight;
   id  menu;
-  NSButton* button;
-  NSButtonCell* buttonCell;
+  NSButton *button;
 }
 
-- (void) _addCloseButton;
-- (void) _releaseCloseButton;
-- (void) windowBecomeTornOff;
+- (void) addCloseButton;
+- (void) releaseCloseButton;
+- (void) createButton;
 - (void) setMenu: (NSMenu*)menu;
 - (NSMenu*) menu;
 
 @end
 
-@interface NSMenuWindowTitleView (height)
-+ (float) titleHeight;
-@end
-
-@implementation NSMenuWindowTitleView (height)
-+ (float) titleHeight
+static inline 
+float title_height()
 {
-  NSFont *font = [NSFont boldSystemFontOfSize: 0.0];
+  static float height = 0.0;
 
-  /* Should make up 23 for the default font */
-  return ([font boundingRectForFont].size.height) + 8;
+  if (height == 0.0)
+    {
+      NSFont *font = [NSFont boldSystemFontOfSize: 0.0];
+
+      /* Should make up 23 for the default font */
+      height = ([font boundingRectForFont].size.height) + 8;
+    }
+
+  return height;
 }
-@end
 
 static NSZone	*menuZone = NULL;
 
@@ -94,9 +90,11 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 @interface	NSMenu (GNUstepPrivate)
 - (NSString*) _locationKey;
+- (NSPanel*) _createWindow;
 @end
 
 @implementation	NSMenu (GNUstepPrivate)
+
 - (NSString*) _locationKey
 {
   if (_is_beholdenToPopUpButton == YES)
@@ -123,6 +121,21 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
       return [[_superMenu _locationKey] stringByAppendingFormat: @"\033%@",
 	[self title]];
     }
+}
+
+- (NSPanel*) _createWindow
+{
+  // Create a non autorelease window for this menu
+  NSPanel *win = [[NSPanel alloc] 
+		     initWithContentRect: NSZeroRect
+		     styleMask: NSBorderlessWindowMask
+		     backing: NSBackingStoreBuffered
+		     defer: YES];
+  [win setLevel: NSSubmenuWindowLevel];
+  [win setWorksWhenModal: YES];
+  [win setBecomesKeyOnlyIfNeeded: YES];
+
+  return win;
 }
 
 @end
@@ -176,7 +189,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id) initWithTitle: (NSString*)aTitle
 {
-  float                 height = [NSMenuWindowTitleView titleHeight];
+  float                 height = title_height();
   NSRect                winRect   =  { {0 , 0}, {20, height} };
   NSView *contentView;
 
@@ -210,8 +223,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   // _oldAttachedMenu = nil;
 
   // Create the windows that will display the menu.
-  _aWindow = [[NSMenuWindow alloc] init];
-  _bWindow = [[NSMenuWindow alloc] init];
+  _aWindow = [self _createWindow];
+  _bWindow = [self _createWindow];
 
   _titleView = [[NSMenuWindowTitleView alloc] init];
   [_titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - height)];
@@ -765,8 +778,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   if ([item action])
     {
       [NSApp sendAction: [item action]
-					 to: [item target]
-					 from: item];
+	     to: [item target]
+	     from: item];
     }
   [nc postNotificationName: NSMenuDidSendActionNotification
                     object: self
@@ -851,7 +864,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   if (!_is_beholdenToPopUpButton)
     {
-      float height = [NSMenuWindowTitleView titleHeight];
+      float height = title_height();
 
       size.height += height;
       [_aWindow setContentSize: size];
@@ -954,6 +967,11 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   _is_tornoff = flag;
 
+  if (flag)
+    [_titleView addCloseButton];
+  else
+    [_titleView releaseCloseButton];
+
   supermenu = [self supermenu];
   if (supermenu != nil)
     {
@@ -981,7 +999,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 	  location = [menuLocations objectForKey: key];
 	  if (location && [location isKindOfClass: [NSString class]])
 	    {
-	      [_titleView windowBecomeTornOff];
 	      [self _setTornOff: YES];
 	      [self display];
 	    }
@@ -1035,7 +1052,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [_view setHighlightedItemIndex: -1];
   [self _setTornOff: NO];
   [self close];
-  [_titleView _releaseCloseButton];
 } 
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
@@ -1140,7 +1156,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [_titleView removeFromSuperviewWithoutNeedingDisplay];
 
   if (_is_tornoff)
-    [_titleView _releaseCloseButton];
+    [_titleView releaseCloseButton];
 
   contentView = [_bWindow contentView];
   [contentView addSubview: _view];
@@ -1183,7 +1199,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [contentView addSubview: _view];
 
   if (_is_tornoff)
-    [_titleView _addCloseButton];
+    [_titleView addCloseButton];
 
   [contentView addSubview: _titleView];
   [contentView setNeedsDisplay: YES];
@@ -1207,24 +1223,16 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) nestedSetFrameOrigin: (NSPoint) aPoint
 {
+  NSWindow *theWindow = _follow_transient ? _bWindow : _aWindow;
   NSRect frame;
 
   // Move ourself and get our width.
-  if (_follow_transient)
-    {
-      [(NSMenuWindow*)_bWindow moveToPoint: aPoint];
-      frame = [_bWindow frame];
-    }
-  else
-    {
-      [(NSMenuWindow*)_aWindow moveToPoint: aPoint];
-      frame = [_aWindow frame];
-    }
-
+  [theWindow setFrameOrigin: aPoint];
 
   // Do the same for attached menus.
   if (_attachedMenu)
     {
+      frame = [theWindow frame];
       // First locate the origin.
       aPoint.x += frame.size.width;
       aPoint.y += frame.size.height
@@ -1317,58 +1325,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 @end
 
-@implementation NSMenuWindow
-
-+ (void) initialize
-{
-  if (self == [NSMenuWindow class])
-    {
-      [self setVersion: 1];
-    }
-}
-
-- (void) _initDefaults
-{
-  [super _initDefaults];
-  _windowLevel = NSSubmenuWindowLevel;
-}
-
-- (id) init
-{
-  self = [self initWithContentRect: NSZeroRect
-			 styleMask: NSBorderlessWindowMask
-			   backing: NSBackingStoreBuffered
-			     defer: YES];
-  return self;
-}
-
-- (BOOL) canBecomeMainWindow
-{
-  return NO;
-}
-
-- (BOOL) canBecomeKeyWindow
-{
-  return NO;
-}
-
-- (BOOL) worksWhenModal
-{
-  return YES;
-}
-
-// This method is a hack to speed-up menu dragging.
-- (void) moveToPoint: (NSPoint)aPoint
-{
-  NSRect frameRect = _frame;
-
-  frameRect.origin = aPoint;
-  DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
-		 frameRect.size.width, frameRect.size.height, 
-		 [self windowNumber]);
-}
-
-@end
 
 @implementation NSMenuWindowTitleView
 
@@ -1439,7 +1395,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
    
   if (![menu isTornOff] && [menu supermenu])
     {
-      [self windowBecomeTornOff];
       [menu _setTornOff: YES];
     }
  
@@ -1497,46 +1452,40 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
     }
 }
 
-- (void) windowBecomeTornOff
+- (void) createButton
 {
-  if ([menu isTornOff])                               // do nothing if menu
-    return;                                         // is already torn off
-  else
-    {                                               // show close button
-      NSImage* closeImage = [NSImage imageNamed: @"common_Close"];
-      NSImage* closeHImage = [NSImage imageNamed: @"common_CloseH"];
-      NSSize imageSize = [closeImage size];
-      NSRect rect = { { _frame.size.width - imageSize.width - 4,
-                      (_frame.size.height - imageSize.height) / 2},
-                      { imageSize.height, imageSize.width } };
-      int mask = NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+  // create the menu's close button
+  NSImage* closeImage = [NSImage imageNamed: @"common_Close"];
+  NSImage* closeHImage = [NSImage imageNamed: @"common_CloseH"];
+  NSSize imageSize = [closeImage size];
+  NSRect rect = { { _frame.size.width - imageSize.width - 4,
+		    (_frame.size.height - imageSize.height) / 2},
+		  { imageSize.height, imageSize.width } };
 
-      button = [[NSButton alloc] initWithFrame: rect];
-      [button setButtonType: NSMomentaryLight];        // configure the menu's
-      [button setImagePosition: NSImageOnly];          // close button
-      [button setImage: closeImage];
-      [button setAlternateImage: closeHImage];
-      [button setBordered: NO];
-      [button setTarget: menu];
-      [button setAction: @selector(_performMenuClose:)];
-              [button setAutoresizingMask: NSViewMinXMargin];
-
-      [self addSubview: button];
-      [self setAutoresizingMask: mask];
-                       
-      [button display]; 
-      [self setNeedsDisplay: YES]; 
-    }
+  button = [[NSButton alloc] initWithFrame: rect];
+  [button setButtonType: NSMomentaryLight];
+  [button setImagePosition: NSImageOnly];
+  [button setImage: closeImage];
+  [button setAlternateImage: closeHImage];
+  [button setBordered: NO];
+  [button setTarget: menu];
+  [button setAction: @selector(_performMenuClose:)];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  
+  [self setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
 }
             
-- (void) _releaseCloseButton
+- (void) releaseCloseButton
 {
-  RETAIN(button);
   [button removeFromSuperview];
 }
   
-- (void) _addCloseButton
+- (void) addCloseButton
 {
+  if (button == nil)
+    [self createButton];
   [self addSubview: button];
+  [self setNeedsDisplay: YES];
 }
+
 @end /* NSMenuWindowTitleView */
