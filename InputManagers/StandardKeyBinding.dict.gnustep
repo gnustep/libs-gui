@@ -1,0 +1,83 @@
+/*
+    $GNUSTEP_SYSTEM_ROOT/Library/InputManagers/StandardKeyBinding.dict
+
+    Copyright (C) 2004 Free Software Foundation, Inc.
+
+    Author: Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+    Date:   April 2004
+
+    This file is part of the GNUstep GUI Library.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, write to the Free Software Foundation,
+    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+{
+    /* Basic Key-Bindings */
+    "Backspace"	    = "deleteBackward:";
+    "Tab"	    = "insertTab:";
+    "Enter"	    = "insertNewline:";
+
+    "UpArrow"	    = "moveUp:";
+    "DownArrow"	    = "moveDown:";
+    "LeftArrow"	    = "moveLeft:";
+    "RightArrow"    = "moveRight:";
+
+    "Control-UpArrow"	    = "pageUp:";
+    "Control-DownArrow"	    = "pageDown:";
+    "Control-LeftArrow"	    = "moveToBeginningOfLine:";
+    "Control-RightArrow"    = "moveToEndOfLine:";
+
+    "Alternate-LeftArrow"    = "moveWordBackward:";
+    "Alternate-RightArrow"   = "moveWordForward:";
+
+    "Shift-UpArrow"	= "moveUpAndModifySelection:";
+    "Shift-DownArrow"	= "moveDownAndModifySelection:";
+    "Shift-LeftArrow"   = "moveBackwardAndModifySelection:";
+    "Shift-RightArrow"  = "moveForwardAndModifySelection:";
+
+    "Alternate-Shift-LeftArrow"   = "moveWordBackwardAndModifySelection:";
+    "Alternate-Shift-RightArrow"  = "moveWordForwardAndModifySelection:";
+
+    "Delete"		= "deleteForward:";
+    "Home"		= "moveToBeginningOfParagraph:";
+    "Control-Home"	= "moveToBeginningOfDocument:";
+    /*"Shift-Home"	= "moveToBeginningOfParagraphAndModifySelection:"; */
+    "End"		= "moveToEndOfParagraph:";
+    "Control-End"	= "moveToEndOfDocument:";
+    /*"Shift-End"	= "moveToEndOfParagraphAndModifySelection:"; */
+    "PageUp"		= "pageUp:";
+    "PageDown"		= "pageDown:";
+
+    /* Emacs Key-Bindings */
+    "Control-a"	    = "moveToBeginningOfLine:";
+    "Control-b"	    = "moveLeft:";
+    "Control-d"	    = "deleteForward:";
+    "Control-e"	    = "moveToEndOfLine:";
+    "Control-f"	    = "moveRight:";
+    "Control-h"	    = "deleteBackward:";
+    /*"Control-l"   = "centerSelectionInVisibleArea:"; */
+    /*"Control-k"   = "deleteToEndOfLine:"; */
+    "Control-n"	    = "moveDown:";
+    "Control-p"	    = "moveUp:";
+    "Control-t"	    = "transpose:";
+    "Control-v"	    = "pageDown:";
+    "Escape"	    =	{
+			    "v" = "pageUp:";
+			    ">" = "moveToEndOfDocument:";
+			    "<" = "moveToBeginningOfDocument:";
+			};
+    /*"Control-y"   = "yank:"; */
+}

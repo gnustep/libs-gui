@@ -340,17 +340,19 @@ static GSTIMRecord controlCharacterTable[] = {
 + (BOOL)shouldNeedShiftKeyMaskForCharacter: (unichar)aChar
 {
   unsigned int i;
+  unsigned int shiftedKeysLen = [shiftedKeys length];
+  unsigned int normalKeysLen = [normalKeys length];
 
-  for (i = 0; i < NumberOf(shiftedKeys); i++)
+  for (i = 0; i < shiftedKeysLen; i++)
     {
       if (aChar == [shiftedKeys characterAtIndex: i])
 	{
 	  return YES;
 	}
     }
-  for (i = 0; i < NumberOf(normalKeys); i++)
+  for (i = 0; i < normalKeysLen; i++)
     {
-      if (aChar == [shiftedKeys characterAtIndex: i])
+      if (aChar == [normalKeys characterAtIndex: i])
 	{
 	  return NO;
 	}

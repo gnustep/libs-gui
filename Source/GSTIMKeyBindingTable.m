@@ -64,89 +64,150 @@
 }
 
 
+/* Private method. */
+- (NSString *)convertToMachineReadableForm: (NSString *)aStroke
+{
+  NSString *stroke = [NSString stringWithString: @""];
+
+  while (1)
+    {
+      if ([aStroke hasPrefix: @"Shift-"])
+	{
+	  stroke = [stroke stringByAppendingString: @"$"];
+	  aStroke = [aStroke substringFromIndex: [@"Shift-" length]];
+	}
+      else if ([aStroke hasPrefix: @"Alternate-"])
+	{
+	  stroke = [stroke stringByAppendingString: @"~"];
+	  aStroke = [aStroke substringFromIndex: [@"Alternate-" length]];
+	}
+      else if ([aStroke hasPrefix: @"Control-"])
+	{
+	  stroke = [stroke stringByAppendingString: @"^"];
+	  aStroke = [aStroke substringFromIndex: [@"Control-" length]];
+	}
+      else if ([aStroke hasPrefix: @"NumericPad-"])
+	{
+	  stroke = [stroke stringByAppendingString: @"#"];
+	  aStroke = [aStroke substringFromIndex: [@"NumericPad-" length]];
+	}
+      else if ([aStroke hasPrefix: @"Tab"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\011"];
+	  aStroke = [aStroke substringFromIndex: [@"Tab" length]];
+	}
+      else if ([aStroke hasPrefix: @"FormFeed"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\014"];
+	  aStroke = [aStroke substringFromIndex: [@"FormFeed" length]];
+	}
+      else if ([aStroke hasPrefix: @"Newline"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\012"];
+	  aStroke = [aStroke substringFromIndex: [@"Newline" length]];
+	}
+      else if ([aStroke hasPrefix: @"CarriageReturn"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\015"];
+	  aStroke = [aStroke substringFromIndex: [@"CarriageReturn" length]];
+	}
+      else if ([aStroke hasPrefix: @"Enter"])
+	{
+	  /* Convert it into a carriage return */
+	  stroke = [stroke stringByAppendingString: @"\015"];
+	  aStroke = [aStroke substringFromIndex: [@"Enter" length]];
+	}
+      else if ([aStroke hasPrefix: @"Backspace"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\010"];
+	  aStroke = [aStroke substringFromIndex: [@"Backspace" length]];
+	}
+      else if ([aStroke hasPrefix: @"BackTab"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\031"];
+	  aStroke = [aStroke substringFromIndex: [@"BackTab" length]];
+	}
+      else if ([aStroke hasPrefix: @"Delete"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\177"];
+	  aStroke = [aStroke substringFromIndex: [@"Delete" length]];
+	}
+      else if ([aStroke hasPrefix: @"Escape"])
+	{
+	  stroke = [stroke stringByAppendingString: @"\033"];
+	  aStroke = [aStroke substringFromIndex: [@"Escape" length]];
+	}
+      else
+	{
+	  break;
+	}
+    }
+  stroke = [stroke stringByAppendingString: aStroke];
+
+  return stroke;
+}
+
+
 - (GSTIMKeyStroke *)compileForKeyStroke: (NSString *)aStroke
 {
   GSTIMKeyStroke    *compiledKey = [GSTIMKeyStroke characterWithCharacter: 0
 								modifiers: 0];
-  NSMutableString   *key = nil;
+  NSMutableString   *stroke = nil;
   NSRange	    range;
 
-  if ([aStroke length] == 1)
-    {
-      if ([GSTIMKeyStroke shouldNeedShiftKeyMaskForCharacter:
-	                    [key characterAtIndex: 0]])
-	{
-	  [compiledKey setShiftKeyMask];
-	}
-      else
-	{
-	  [compiledKey clearShiftKeyMask];
-	}
-
-      if ([aStroke isEqualToString: @"\177"])
-	{
-	  /* N.B.: NSTextView regards Delete as a function key. */
-	  [compiledKey setFunctionKeyMask];
-	  [compiledKey setCharacter: NSDeleteFunctionKey];
-	}
-      else
-	{
-	  [compiledKey setCharacter: [aStroke characterAtIndex: 0]];
-	}
-
-      return compiledKey;
-    }
-
-  key = [aStroke mutableCopy];
+  stroke = [[self convertToMachineReadableForm: aStroke] mutableCopy];
   while (1)
     {
-      NSString *original = [key copy];
+      NSString *original = [stroke copy];
 
-      range = [key rangeOfString: @"~"];
+      range = [stroke rangeOfString: @"~"];
       if (range.location != NSNotFound)
 	{
 	  [compiledKey setAlternateKeyMask];
-	  [key deleteCharactersInRange: range];
+	  [stroke deleteCharactersInRange: range];
 	}
 
-      range = [key rangeOfString: @"^"];
+      range = [stroke rangeOfString: @"^"];
       if (range.location != NSNotFound)
 	{
 	  [compiledKey setControlKeyMask];
-	  [key deleteCharactersInRange: range];
+	  [stroke deleteCharactersInRange: range];
 	}
 
-      range = [key rangeOfString: @"$"];
+      range = [stroke rangeOfString: @"$"];
       if (range.location != NSNotFound)
 	{
 	  [compiledKey setShiftKeyMask];
-	  [key deleteCharactersInRange: range];
+	  [stroke deleteCharactersInRange: range];
 	}
 
-      range = [key rangeOfString: @"#"];
+      range = [stroke rangeOfString: @"#"];
       if (range.location != NSNotFound)
 	{
 	  [compiledKey setNumericPadKeyMask];
-	  [key deleteCharactersInRange: range];
+	  [stroke deleteCharactersInRange: range];
 	}
 
-      if ([key isEqualToString: original])
+      if ([stroke isEqualToString: original])
 	{
 	  [original release], original = nil;
 	  break;
 	}
       [original release], original = nil;
     }
-  if ([GSTIMKeyStroke isFunctionKeyName: key])
+  if ([GSTIMKeyStroke isFunctionKeyName: stroke])
     {
       [compiledKey setFunctionKeyMask];
       [compiledKey setCharacter:
-		     [GSTIMKeyStroke characterCodeFromKeyName: key]];
+		     [GSTIMKeyStroke characterCodeFromKeyName: stroke]];
     }
-  else if ([key length] == 1)
+  else if ([stroke length] == 1)
     {
-      if ([GSTIMKeyStroke shouldNeedShiftKeyMaskForCharacter:
-	                    [key characterAtIndex: 0]])
+      unichar c = [stroke characterAtIndex: 0];
+
+      [compiledKey setCharacter: c];
+
+      if ([GSTIMKeyStroke shouldNeedShiftKeyMaskForCharacter: c])
 	{
 	  [compiledKey setShiftKeyMask];
 	}
@@ -155,13 +216,18 @@
 	  [compiledKey clearShiftKeyMask];
 	}
 
-      [compiledKey setCharacter: [key characterAtIndex: 0]];
+      /* The character constant \177 (Delete) needs an exceptional treatment. */
+      if ([stroke isEqualToString: @"\177"])
+	{
+	  [compiledKey setFunctionKeyMask];
+	  [compiledKey setCharacter: NSDeleteFunctionKey];
+	}
     }
   else
     {
-      NSLog(@"%@: syntax error: %@", key);
+      NSLog(@"%@: syntax error: %@", aStroke);
     }
-  [key release], key = nil;
+  [stroke release], stroke = nil;
 
   return compiledKey;
 }

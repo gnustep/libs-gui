@@ -37,5 +37,12 @@ after-install:: $(GNUSTEP_LIBRARY)/InputManagers
 	$(INSTALL_DATA) StandardKeyBinding.dict \
 	                $(GNUSTEP_LIBRARY)/InputManagers/
 
+after-install:: $(GNUSTEP_LIBRARY)/InputManagers
+	$(INSTALL_DATA) StandardKeyBinding.dict.gnustep \
+	                $(GNUSTEP_LIBRARY)/InputManagers/
+
 after-uninstall::
 	rm -f $(GNUSTEP_LIBRARY)/InputManagers/StandardKeyBinding.dict
+
+after-uninstall::
+	rm -f $(GNUSTEP_LIBRARY)/InputManagers/StandardKeyBinding.dict.gnustep
