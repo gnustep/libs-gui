@@ -30,15 +30,15 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
+#include <AppKit/NSAttributedString.h>
+#include <AppKit/NSBezierPath.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSScrollView.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSAttributedString.h>
 
 DEFINE_RINT_IF_MISSING
 
@@ -54,15 +54,15 @@ DEFINE_RINT_IF_MISSING
 #define RULER_THICKNESS 16
 #define MARKER_THICKNESS 15
 
-#define DRAW_HASH_MARK(context, size)			\
+#define DRAW_HASH_MARK(path, size)			\
 		do {					\
 		  if (_orientation == NSHorizontalRuler)\
 		    {					\
-		      DPSrlineto(context, 0, size);	\
+		      [path relativeLineToPoint: NSMakePoint(0, size)];	\
 		    }					\
 		  else					\
 		    {					\
-		      DPSrlineto(context, size, 0);	\
+		      [path relativeLineToPoint: NSMakePoint(size, 0)];	\
 		    }					\
 		} while (0)
 
@@ -614,8 +614,6 @@ static NSMutableDictionary *units = nil;
 
 - (void) drawHashMarksAndLabelsInRect: (NSRect)aRect
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  NSFont *font;
   NSView *docView;
   float firstVisibleLocation;
   float visibleLength;
@@ -628,7 +626,13 @@ static NSMutableDictionary *units = nil;
   NSRect baseLineRect;
   float baselineLocation = [self baselineLocation];
   NSPoint zeroPoint;
-  BOOL flipped = [self isFlipped];
+  NSBezierPath *path;
+  NSFont *font = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
+  NSDictionary *attr = [[NSDictionary alloc] 
+			   initWithObjectsAndKeys: 
+			       font, NSFontAttributeName,
+			       [NSColor blackColor], NSForegroundColorAttributeName,
+			       nil];
 
   docView = [_scrollView documentView];
   
@@ -645,11 +649,6 @@ static NSMutableDictionary *units = nil;
     }
 
   [self _verifyCachedValues];
-
-  font = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
-  [font set];
-  [[NSColor blackColor] set];
-
   baseLineRect = [self convertRect: [docView bounds]  fromView: docView];
 
   if (_orientation == NSHorizontalRuler) 
@@ -670,6 +669,7 @@ static NSMutableDictionary *units = nil;
     }
 
   /* draw the base line */
+  [[NSColor blackColor] set];
   NSRectFill(baseLineRect);
 
   /* draw hash marks */
@@ -677,6 +677,7 @@ static NSMutableDictionary *units = nil;
                           / _markDistance);
   lastVisibleMark = floor((firstVisibleLocation + visibleLength - _zeroLocation) 
                           / _markDistance);
+  path = [NSBezierPath new];
   
   for (mark = firstVisibleMark; mark <= lastVisibleMark; mark++)
     {
@@ -685,32 +686,33 @@ static NSMutableDictionary *units = nil;
       markLocation = _zeroLocation + mark * _markDistance;
       if (_orientation == NSHorizontalRuler)
         {
-          DPSmoveto(ctxt, markLocation, baselineLocation);
+	  [path moveToPoint: NSMakePoint(markLocation, baselineLocation)];
         }
       else
         {
-          DPSmoveto(ctxt, baselineLocation, markLocation);
+	  [path moveToPoint: NSMakePoint(baselineLocation, markLocation)];
         }
 
       if ((mark % _marksToLabel) == 0) 
         {
-          DRAW_HASH_MARK(ctxt, LABEL_MARK_SIZE);
+          DRAW_HASH_MARK(path, LABEL_MARK_SIZE);
         }
       else if ((mark % _marksToBigMark) == 0) 
         {
-          DRAW_HASH_MARK(ctxt, BIG_MARK_SIZE);
+          DRAW_HASH_MARK(path, BIG_MARK_SIZE);
         }
       else if ((mark % _marksToMidMark) == 0)
         {
-          DRAW_HASH_MARK(ctxt, MID_MARK_SIZE);
+          DRAW_HASH_MARK(path, MID_MARK_SIZE);
         }
       else 
         {
-          DRAW_HASH_MARK(ctxt, MARK_SIZE);
+          DRAW_HASH_MARK(path, MARK_SIZE);
         }
     }
-  DPSstroke(ctxt);
-  
+  [path stroke];
+  RELEASE(path);
+
   /* draw labels */
   /* FIXME: shouldn't be using NSCell to draw labels? */
   firstVisibleLabel = floor((firstVisibleLocation - _zeroLocation)
@@ -720,37 +722,26 @@ static NSMutableDictionary *units = nil;
   
   for (label = firstVisibleLabel; label <= lastVisibleLabel; label++)
     {
-      float labelLocation;
-      float labelValue;
-      NSString *labelString;
+      float labelLocation = _zeroLocation + label * _marksToLabel * _markDistance;
+      float labelValue = (labelLocation - _zeroLocation) / _unitToRuler;
+      NSString *labelString = [NSString stringWithFormat: _labelFormat, labelValue];
+      NSSize size = [labelString sizeWithAttributes: attr];
       NSPoint labelPosition;
 
-      labelLocation = _zeroLocation + label * _marksToLabel * _markDistance;
-
-      labelValue = (labelLocation - _zeroLocation) / _unitToRuler;
-      labelString = [NSString stringWithFormat: _labelFormat, labelValue];
       if (_orientation == NSHorizontalRuler)
         {
-	  labelPosition.x = labelLocation + 2;
-	  labelPosition.y = baselineLocation + LABEL_MARK_SIZE;
+	  labelPosition.x = labelLocation + 1;
+	  labelPosition.y = baselineLocation + LABEL_MARK_SIZE + 4 - size.height;
         }
       else
         {
-          float labelWidth;
-          labelWidth = [font widthOfString: labelString];
-	  labelPosition.x = baselineLocation + LABEL_MARK_SIZE + 3 - labelWidth;
-	  if (flipped)
-	    {
-	      labelPosition.y = labelLocation + [font xHeight] + 4;
-	    }
-	  else
-	    {
-	      labelPosition.y = labelLocation + 2;
-            }
+	  labelPosition.x = baselineLocation + LABEL_MARK_SIZE + 4 - size.width;
+	  labelPosition.y = labelLocation + 1;
         }
-      DPSmoveto(ctxt, labelPosition.x, labelPosition.y);
-      DPSshow(ctxt, [labelString cString]);
+      [labelString drawAtPoint: labelPosition withAttributes: attr];
     }
+
+  RELEASE(attr);
 }
 
 - (void) drawMarkersInRect: (NSRect)aRect
