@@ -1268,12 +1268,12 @@ static NSRecursiveLock	*windowsLock;
     }
 
   // Try to process the event as a key equivalent 
-  // without Control having being pressed
+  // without Command having being pressed
   {
     NSEvent *new_event 
       =  [NSEvent keyEventWithType: [theEvent type] 
 		  location: NSZeroPoint 
-		  modifierFlags: ([theEvent modifierFlags] | NSControlKeyMask)
+		  modifierFlags: ([theEvent modifierFlags] | NSCommandKeyMask)
 		  timestamp: [theEvent timestamp] 
 		  windowNumber: [theEvent windowNumber]
 		  context: [theEvent context] 
