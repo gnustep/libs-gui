@@ -1,5 +1,8 @@
 2004-05-14  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSDocumentController.m ([NSDocumentController -currentDirectory]): 
+	Conform to the documentation. (Fixes #7900).
+
 	* Tools/gsnd/gsnd.m: Rename variables starting with _, indent lines 
 	properly (Fixes #7502).
 

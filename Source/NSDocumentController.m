@@ -611,13 +611,11 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   NSString *directory;
   BOOL isDir = NO;
 
-  if (document == nil)
-    document = [[self documents] lastObject];
-  directory = [[document fileName] stringByDeletingLastPathComponent];
-  if (directory == nil)
-    directory = [[NSUserDefaults standardUserDefaults] 
-		  objectForKey: NSDefaultOpenDirectory];
-  if (directory == nil
+  if (document)
+    directory = [[document fileName] stringByDeletingLastPathComponent];
+  else
+    directory = [[NSOpenPanel openPanel] directory];
+  if (directory == nil || [directory isEqual: @""]
       || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
       || isDir == NO)
     {
