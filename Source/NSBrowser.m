@@ -1280,7 +1280,13 @@
   unsigned	i;
 
   subStrings = [path componentsSeparatedByString: _pathSeparator];
-  [self setLastColumn: 0];
+                                // ensure that column zero
+  if (![self isLoaded]) {       // is loaded
+      [self loadColumnZero];
+  } 
+  else {                        // and is the last column
+      [self setLastColumn: 0];
+  }
   numberOfSubStrings = [subStrings count];
 
   if (numberOfSubStrings == 2)
@@ -1333,7 +1339,7 @@
       // if unable to find a cell whose title matches aStr return NO
       if (!selectedCell)
 	{
-	  NSLog(@"NSBrowser: unable to find cell in matrix\n");
+	  NSLog(@"NSBrowser: unable to find cell '%@' in column %d\n", aStr, i - 1);
 	  return NO;
 	}
       // if the cell is not a leaf add a column to the browser for it
