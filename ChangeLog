@@ -1,3 +1,16 @@
+Tue Sep 24 16:32:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	After discussions with David Ayers:
+	* Source/NSCell.m ([-editWithFrame:inView:editor:delegate:event:]):
+	Do not perform an immediate display of the textfield.
+	([-selectWithFrame:inView:editor:delegate:start:length:]): Idem.
+	* Source/NSTextField.m ([-becomeFirstResponder]): If the text
+	field accepts first responder status, select its text.
+	([-mouseDown:]): If not selectable, pass the mouse down to super.
+	If selectable, and _text_object is not nil, pass the mouse down to
+	the _text_object.  Else, try to get first responder status, and
+	to start editing.
+
 Tue Sep 24 03:29:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m: Cache the default notification center for
