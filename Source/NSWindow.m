@@ -395,27 +395,43 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setRepresentedFilename: (NSString*)aString
 {
-  id	old = represented_filename;
-  BOOL	changed = (_f.menu_exclude == NO && [aString isEqual: old] == NO);
-
   ASSIGN(represented_filename, aString);
-  if (changed)
-    {
-      [NSApp updateWindowsItem: self];
-    }
 }
 
 - (void) setTitle: (NSString*)aString
 {
-  ASSIGN(window_title, aString);
-  DPStitlewindow(GSCurrentContext(), [window_title cString], window_num);
-  [self setMiniwindowTitle: aString];
+  if ([window_title isEqual: aString] == NO)
+    {
+      ASSIGN(window_title, aString);
+      [self setMiniwindowTitle: aString];
+      DPStitlewindow(GSCurrentContext(), [aString cString], window_num);
+      if (_f.menu_exclude == NO)
+	{
+	  [NSApp changeWindowsItem: self
+			     title: aString
+			  filename: NO];
+	}
+    }
 }
 
 - (void) setTitleWithRepresentedFilename: (NSString*)aString
 {
   [self setRepresentedFilename: aString];
-  [self setTitle: aString];
+  aString = [NSString stringWithFormat:
+    @"%@  --  %@", [aString lastPathComponent],
+    [aString stringByDeletingLastPathComponent]];
+  if ([window_title isEqual: aString] == NO)
+    {
+      ASSIGN(window_title, aString);
+      [self setMiniwindowTitle: aString];
+      DPStitlewindow(GSCurrentContext(), [aString cString], window_num);
+      if (_f.menu_exclude == NO)
+	{
+	  [NSApp changeWindowsItem: self
+			     title: aString
+			  filename: YES];
+	}
+    }
 }
 
 - (unsigned int) styleMask
@@ -486,17 +502,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setMiniwindowTitle: (NSString*)title
 {
-  BOOL isDoc = NO;
-
   ASSIGN(miniaturized_title, title);
-  if (_f.is_miniaturized == NO)
-    title = window_title;
-  if ([title isEqual: represented_filename])
-    isDoc = YES;
-  if (_f.menu_exclude == NO)
-    [NSApp changeWindowsItem: self
-		       title: title
-		    filename: isDoc];
 }
 
 /*

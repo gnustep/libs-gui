@@ -1672,6 +1672,16 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     [NSException raise: NSInvalidArgumentException
 		format: @"Object of bad type passed as window"];
 
+  if (isFilename)
+    {
+      NSRange	r = [aString rangeOfString: @"  --  "];
+
+      if (r.length > 0)
+	{
+	  aString = [aString substringToIndex: r.location];
+	}
+    }
+
   /*
    * Can't permit an untitled window in the window menu.
    */
