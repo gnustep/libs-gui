@@ -1,3 +1,12 @@
+2002-03-30  Adam Fedor  <fedor@gnu.org>
+
+	* gui/Model/GMAppKit.m (-encodeWithModelArchiver:): Encode an
+	empty array rather than crash.
+	* gui/Model/GMArchiveObjects.m (-colorSpaceName): Implement for 
+	NSObject to to work around a bug in MacOSX 10.1.x
+	* gui/Model/GNUmakefile: Include libgmodel with building nib2gmodel.
+	* gui/Model/IBClasses.m: Fix debug for compiling on Darwin.
+
 2002-03-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableView.m ([NSTableView -encodeWithCoder:]): 
