@@ -6,6 +6,8 @@ Tues Sept 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	* Source added NSParagraphStyle.m. 
 	* Headers/Appkit added NSTextAttachment.h, NSTextContainer.h, 
 		NSTextStorage.h, NSLayoutManager.h and NSParagraphStyle.h files. 
+	* NSText.m and NSText.h. added numerous changes by Daniel Bðhringer
+	* NSTextView.m and NSTextView.h. added numerous changes by Daniel Bðhringer
 
 Sun Aug 30 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
