@@ -282,6 +282,12 @@ static NSMutableArray *screenArray = nil;
     }
 }
 
+/** Returns the screen number */
+- (int) screenNumber
+{
+  return _screenNumber;
+}
+
 // Release the memory for the depths array.
 - (void) dealloc
 {

@@ -620,8 +620,21 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the current mouse location */
+/** Returns the current mouse location on the default screen. If the
+    pointer is not on the default screen, an invalid point (-1,-1} is
+    returned. */
 - (NSPoint) mouselocation
+{
+  [self subclassResponsibility: _cmd];
+  return NSZeroPoint;
+}
+
+/** Returns the current mouse location on aScreen. If the pointer is
+    not on aScreen, this method acts like -mouselocation. If aScreen is -1,
+    then the location of the mouse on any screen is returned. The
+    win pointer returns the window number of the GNUstep window
+    that the mouse is in or 0 if it is not in a window. */
+- (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win
 {
   [self subclassResponsibility: _cmd];
   return NSZeroPoint;

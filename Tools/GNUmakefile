@@ -41,8 +41,6 @@ SERVICE_NAME = example GSspell
 # The source files to be compiled
 gopen_OBJC_FILES = gopen.m
 
-gpbs_OBJC_FILES = gpbs.m 
-
 make_services_OBJC_FILES = make_services.m 
 
 set_show_service_OBJC_FILES = set_show_service.m 

@@ -67,6 +67,9 @@
 - (const NSWindowDepth*) supportedWindowDepths;
 - (NSRect) visibleFrame;
 #endif
+#ifndef NO_GNUSTEP
+- (int) screenNumber;
+#endif
 
 @end
 #endif // _GNUstep_H_NSScreen

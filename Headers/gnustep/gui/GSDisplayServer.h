@@ -122,6 +122,7 @@ APPKIT_DECLARE NSString * GSScreenNumber;
 - (void) setinputfocus: (int) win;
 
 - (NSPoint) mouselocation;
+- (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win;
 - (BOOL) capturemouse: (int) win;
 - (void) releasemouse;
 - (void) hidecursor;

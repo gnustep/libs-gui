@@ -651,7 +651,7 @@ static NSNotificationCenter *nc = nil;
   NSGraphicsContext *context = GSCurrentContext();
   GSDisplayServer *srv = GSCurrentServer();
 
-  /* If we were deferred or one shot, out drag types may not have
+  /* If we were deferred or one shot, our drag types may not have
      been registered properly in the backend. Remove them then re-add
      them when we create the window */
   dragTypes = [srv dragTypesForWindow: self];
@@ -663,8 +663,7 @@ static NSNotificationCenter *nc = nil;
       [srv removeDragTypes: dragTypes fromWindow: self];
     }
 
-  screenNumber = [[[_screen deviceDescription] objectForKey: @"NSScreenNumber"]
-		   intValue];
+  screenNumber = [_screen screenNumber];
   _windowNum = [srv window: frame : _backingType : _styleMask : screenNumber];
   [srv setwindowlevel: [self level] : _windowNum];
 
@@ -2404,10 +2403,13 @@ resetCursorRectsForView(NSView *theView)
  * loop status */
 - (NSPoint) mouseLocationOutsideOfEventStream
 {
+  int screen;
   NSPoint	p;
 
-  p = [GSCurrentServer() mouselocation];
-  p = [self convertScreenToBase: p];
+  screen = [_screen screenNumber];
+  p = [GSServerForWindow(self) mouseLocationOnScreen: screen window: NULL];
+  if (p.x != -1)
+    p = [self convertScreenToBase: p];
   return p;
 }
 

@@ -1,3 +1,11 @@
+2002-04-23  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSDisplayServer.m (mouseLocationOnScreen:window:): New
+	* Source/NSScreen.m (screenNumber): New.
+	* Source/NSWindow.m (mouseLocationOutsideOfEventStream): Use them.
+
+	* Tools/gpbs.m: Remove.
+
 2002-04-22  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/GSDisplayServer.h: Add attribute strings.
