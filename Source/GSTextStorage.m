@@ -329,6 +329,17 @@ _attributesAtIndexEffectiveRange(
     index, aRange, [textChars length], infoArray, NULL);
 }
 
+/*
+ *	Primitive method! Sets attributes and values for a given range of
+ *	characters, replacing any previous attributes and values for that
+ *	range.
+ *
+ *	Sets the attributes for the characters in aRange to attributes.
+ *	These new attributes replace any attributes previously associated
+ *	with the characters in aRange. Raises an NSRangeException if any
+ *	part of aRange lies beyond the end of the receiver's characters.
+ *	See also: - addAtributes: range: , - removeAttributes: range:
+ */
 - (void) setAttributes: (NSDictionary*)attributes
 		 range: (NSRange)range
 {
@@ -398,23 +409,17 @@ _attributesAtIndexEffectiveRange(
     }
   
   /*
-   *	Primitive method! Sets attributes and values for a given range of
-   *	characters, replacing any previous attributes and values for that
-   *	range.
-   */
-
-  /*
-   *	Sets the attributes for the characters in aRange to attributes.
-   *	These new attributes replace any attributes previously associated
-   *	with the characters in aRange. Raises an NSRangeException if any
-   *	part of aRange lies beyond the end of the receiver's characters.
-   *	See also: - addAtributes: range: , - removeAttributes: range:
-   */
+   * Keep track of changes.
+   */ 
+  [self edited: NSTextStorageEditedAttributes
+         range: range
+changeinlength: 0];
 }
 
 - (void) replaceCharactersInRange: (NSRange)range
 		       withString: (NSString*)aString
 {
+  unsigned	aLength;
   unsigned	tmpLength, arrayIndex, arraySize, cnt, moveLocations;
   NSRange	effectiveRange;
   NSDictionary	*attrs;
@@ -424,6 +429,7 @@ _attributesAtIndexEffectiveRange(
 
   if (!aString)
     aString = @"";
+  aLength = [aString length];
   tmpLength = [textChars length];
   GS_RANGE_CHECK(range, tmpLength);
   arraySize = (*cntImp)(infoArray, cntSel);
@@ -432,7 +438,7 @@ _attributesAtIndexEffectiveRange(
       attrs = _attributesAtIndexEffectiveRange(
 	NSMaxRange(range), &effectiveRange, tmpLength, infoArray, &arrayIndex);
       
-      moveLocations = [aString length] - range.length;
+      moveLocations = aLength - range.length;
       afterRangeLoc = NSMaxRange(range) + moveLocations;
       
       if (effectiveRange.location > range.location)
@@ -480,6 +486,13 @@ _attributesAtIndexEffectiveRange(
       arrayIndex--;
     }
   [textChars replaceCharactersInRange: range withString: aString];
+
+  /*
+   * Keep track of changes.
+   */ 
+  [self edited: NSTextStorageEditedCharacters
+         range: range
+changeinlength: aLength - range.length];
 }
 
 - (void) dealloc
