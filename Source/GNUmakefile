@@ -50,6 +50,7 @@ NSApplication.m \
 NSAttributedString.m \
 NSBezierPath.m \
 NSBitmapImageRep.m \
+NSBitmapImageRep+GIF.m \
 NSBitmapImageRep+JPEG.m \
 NSBitmapImageRep+PNG.m \
 NSBitmapImageRep+PNM.m \
