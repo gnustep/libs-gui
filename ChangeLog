@@ -1,3 +1,10 @@
+Tue Oct 15 02:36:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (initialize_gnustep_backend): Get the
+	GSBackend class using NSClassFromString() rather than NSBundle's
+	-classNamed: to make it more robust on platforms - eg MS Windows -
+	which have unclear problems with dynamic loading.
+
 2002-10-14  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.8.2
