@@ -72,7 +72,7 @@
 #include <AppKit/DPSOperators.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSDataLinkPanel.h>
-#include <AppKit/NSHelpPanel.h>
+#include <AppKit/NSHelpManager.h>
 
 
 /*
@@ -1656,22 +1656,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (void) orderFrontHelpPanel: sender
 {
-  NSHelpPanel *helpPanel = [NSHelpPanel sharedHelpPanel];
-
-  if (helpPanel)
-    [helpPanel orderFront: nil];
-  else
-    NSBeep();
-}
-
-- (void)showHelp:(id)sender
-{
-  [self orderFrontHelpPanel: sender];
-}
-
-- (void)activateContextHelpMode:(id)sender
-{
-  // TODO
+  // This is implemented in NSHelpManager.m
+  [self showHelp: sender];
 }
 
 - (void) runPageLayout: sender
