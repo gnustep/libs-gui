@@ -112,6 +112,8 @@
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/NSMenuItemCell.h>
+#include <AppKit/NSMenuView.h>
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSPageLayout.h>
@@ -137,6 +139,8 @@
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/NSTabView.h>
+#include <AppKit/NSTabViewItem.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>

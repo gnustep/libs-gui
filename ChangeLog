@@ -1,3 +1,8 @@
+Wed Jul 14 19:18:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GNUmakefile: Install NSMenuItemCell.h and NSMenuView.h
+	* Headers/AppKit/AppKit.h: Add recent class headers.
+
 Wed Jul 14 16:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMatrix.m: Modifications to get rid of most internal
