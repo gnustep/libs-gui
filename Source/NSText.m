@@ -3054,7 +3054,12 @@ of characters (if any) to be replaced by the new data.
   // font pasting
   if ([type isEqualToString: NSFontPboardType])
     {
-      NSDictionary *dict = [pboard propertyListForType: NSFontPboardType];
+      // FIXME - This should use a serializer. To get that working a helper object 
+      // is needed that implements the NSObjCTypeSerializationCallBack protocol.
+      // We should add this later, currently the NSArchiver is used.
+      // Thanks to Richard, for pointing this out.
+      NSData *data = [pboard dataForType: NSFontPboardType];
+      NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData: data];
 
       if (dict != nil)
 	{
@@ -3068,7 +3073,9 @@ of characters (if any) to be replaced by the new data.
   // ruler pasting
   if ([type isEqualToString: NSRulerPboardType])
     {
-      NSDictionary *dict = [pboard propertyListForType: NSRulerPboardType];
+      // FIXME: see NSFontPboardType above
+      NSData *data = [pboard dataForType: NSRulerPboardType];
+      NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData: data];
 
       if (dict != nil)
 	{
@@ -3181,7 +3188,12 @@ other than copy/paste or dragging. */
 
 	  if (dict != nil)
 	    {
-	      [pboard setPropertyList: dict forType: NSFontPboardType];
+	      // FIXME - This should use a serializer. To get that working a helper object 
+	      // is needed that implements the NSObjCTypeSerializationCallBack protocol.
+	      // We should add this later, currently the NSArchiver is used.
+	      // Thanks to Richard, for pointing this out.
+	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+		      forType: NSFontPboardType];
 	      ret = YES;
 	    }
 	}
@@ -3192,7 +3204,9 @@ other than copy/paste or dragging. */
 
 	  if (dict != nil)
 	    {
-	      [pboard setPropertyList: dict forType: NSRulerPboardType];
+	      //FIXME: see NSFontPboardType above
+	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
+		      forType: NSRulerPboardType];
 	      ret = YES;
 	    }
 	}
@@ -3232,7 +3246,7 @@ other than copy/paste or dragging. */
   id val;
   NSEnumerator *enumerator = [attributes keyEnumerator];
 
-  if (aRange.location != NSNotFound)
+  if (aRange.location == NSNotFound)
     return;
   if (![self shouldChangeTextInRange: aRange
 	     replacementString: nil])
