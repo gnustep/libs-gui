@@ -33,6 +33,7 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSFileManager.h>
 #include <AppKit/NSAttributedString.h>
+#include <AppKit/NSDocumentController.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextAttachment.h>
 #include <AppKit/NSFont.h>
@@ -724,8 +725,7 @@ documentAttributes: (NSDictionary **)dict
 		  format: @"RangeError in method -unscriptRange:"];
     }
 
-  [self addAttribute: NSSuperscriptAttributeName
-	value: [NSNumber numberWithInt: 0]
+  [self removeAttribute: NSSuperscriptAttributeName
 	range: range];
 }
 
@@ -749,12 +749,10 @@ documentAttributes: (NSDictionary **)dict
 		   atIndex: loc
 		   effectiveRange: &effRange];
 
-      if (font != nil && [fm traitsOfFont: font] != traitMask)
+      if (font != nil)
 	{
-	  font = [fm fontWithFamily: [font familyName]
-		     traits: traitMask
-		     weight: [fm weightOfFont: font]
-		     size: [font pointSize]];
+	  font = [fm convertFont: font
+		     toHaveTrait: traitMask];
 
 	  if (font != nil)
 	    {
@@ -971,6 +969,85 @@ documentAttributes: (NSDictionary **)dict
 					     [fileWrapper filename]]];
       location = NSMaxRange (range);
     }
+}
+
+- (BOOL) readFromURL: (NSURL *)url
+	     options: (NSDictionary *)options
+  documentAttributes: (NSDictionary**)documentAttributes
+{
+  NSString *extension;
+  NSString *type;
+
+  if (![url isFileURL])
+    return NO;
+
+  extension = [[url path] pathExtension];
+  type = [[NSDocumentController sharedDocumentController] 
+	     typeFromFileExtension: extension];
+  if (type == nil)
+    return NO;
+  
+  if ([type isEqualToString: @"html"])
+    {
+      NSData *data = [url resourceDataUsingCache: YES];
+      NSURL *baseURL = [options objectForKey: @"BaseURL"];
+      NSAttributedString *attr;
+      
+      attr = [[NSAttributedString alloc] 
+		 initWithHTML: data
+		 baseURL: baseURL
+		 documentAttributes: documentAttributes];
+      [self setAttributedString: attr];
+      RELEASE(attr);
+
+      return YES;
+    }
+  else if ([type isEqualToString: @"rtfd"])
+    {
+      NSData *data = [url resourceDataUsingCache: YES];
+      NSAttributedString *attr;
+      
+      attr = [[NSAttributedString alloc] 
+		 initWithRTFD: data
+		 documentAttributes: documentAttributes];
+      [self setAttributedString: attr];
+      RELEASE(attr);
+
+      return YES;
+    }
+  else if ([type isEqualToString: @"rtf"])
+    {
+      NSData *data = [url resourceDataUsingCache: YES];
+      NSAttributedString *attr;
+      
+      attr = [[NSAttributedString alloc] 
+		 initWithRTF: data
+		 documentAttributes: documentAttributes];
+      [self setAttributedString: attr];
+      RELEASE(attr);
+
+      return YES;
+    }
+  else if ([type isEqualToString: @"text"])
+    {
+      NSData *data = [url resourceDataUsingCache: YES];
+      NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
+				      intValue];
+      NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
+      NSAttributedString *attr;
+
+     attr = [[NSAttributedString alloc] 
+		 initWithString: [NSString initWithData: data 
+					   encoding: encoding]
+		    attributes: defaultAttrs];
+      [self setAttributedString: attr];
+      RELEASE(attr);
+
+      return YES; 
+    }
+  // FIXME This should also support all converter bundles
+
+  return NO;
 }
 
 @end
