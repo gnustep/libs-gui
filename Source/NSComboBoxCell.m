@@ -33,6 +33,7 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSBox.h"
 #include "AppKit/NSBrowser.h"
 #include "AppKit/NSBrowserCell.h"
@@ -49,6 +50,7 @@
 #include "AppKit/NSTableColumn.h"
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSTextView.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;
@@ -707,7 +709,7 @@ numberOfRowsInColumn: (int)column
  An NSComboBoxCell is what we can call a completion/choices box cell, derived from
  NSTextFieldCell, it allows you to enter text like in a text field but also to click
  in the ellipsis button (indicating the fact other user inputs are possible) on
- the right of it to obtain a list of choices whose you can use as the text field
+ the right of it to obtain a list of choices, you can use them as the text field
  value by selecting a row in this list. You can also obtain direct completion
  when it  is enabled via <code>setCompletes:</code> to get a suggested text
  field value updated as you type. 
@@ -1301,25 +1303,28 @@ numberOfRowsInColumn: (int)column
   _completes = completes;
 }
 
+#define ComboBoxHeight 21 // FIX ME: All this stuff shouldn't be hardcoded
 // Inlined methods
-#define ButtonWidth 18
-#define BorderWidth 2
+#define ButtonWidth 17
+#define ButtonHeight 17
+#define BorderSize 2
 // the inset border for the top and the bottom of the button
 
-static inline NSRect textCellFrameFromRect(NSRect cellRect)
+static inline NSRect textCellFrameFromRect(NSRect cellRect) 
+// Not the drawed part, precises just the part which receives events
 {
   return NSMakeRect(NSMinX(cellRect),
 		    NSMinY(cellRect),
-		    NSWidth(cellRect) - ButtonWidth,
+		    NSWidth(cellRect) - ButtonWidth - BorderSize,
 		    NSHeight(cellRect));
 }
 
 static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 {
-  return NSMakeRect(NSMaxX(cellRect) - ButtonWidth,
-		    NSMinY(cellRect) + BorderWidth,
+  return NSMakeRect(NSMaxX(cellRect) - ButtonWidth - BorderSize,
+		    NSMaxY(cellRect) - ButtonHeight - BorderSize,
 		    ButtonWidth,
-		    NSHeight(cellRect) - (BorderWidth * 2.0));
+		    ButtonHeight);
 }
 
 // Overridden
@@ -1336,17 +1341,19 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
+  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);
+
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen]) 
-    {
-      [super drawWithFrame: textCellFrameFromRect(cellFrame)
+    {		           
+      [super drawWithFrame: rect
 	            inView: controlView];
-      [_buttonCell drawWithFrame: buttonCellFrameFromRect(cellFrame)
+      [_buttonCell drawWithFrame: buttonCellFrameFromRect(rect)
 		          inView: controlView];
     }
   else
     {
-      [super drawWithFrame: cellFrame inView: controlView];
+      [super drawWithFrame: rect inView: controlView];
     }
     
   _lastValidFrame = cellFrame; // Used by GSComboWindow to appear in the right position
@@ -1356,19 +1363,21 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	 withFrame: (NSRect)cellFrame
 	    inView: (NSView *)controlView
 {
+  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);  
+  
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen])
     {
       [super highlight: flag
-	     withFrame: textCellFrameFromRect(cellFrame)
+	     withFrame: textCellFrameFromRect(rect)
 	        inView: controlView];
       [_buttonCell highlight: flag
-		   withFrame: buttonCellFrameFromRect(cellFrame)
+		   withFrame: buttonCellFrameFromRect(rect)
 		      inView: controlView];
     }
   else
     {
-      [super highlight: flag withFrame: cellFrame inView: controlView];
+      [super highlight: flag withFrame: rect inView: controlView];
     }
 }
 

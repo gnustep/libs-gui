@@ -1,3 +1,10 @@
+2004-06-09  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/NSComboBoxCell.m: Improved look, added constrained height and
+	minor documentation change.
+	* Source/NSComboBox.m: Added constrained height and minor documentation
+	change.
+
 2004-06-08  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSCell.m: (-drawWithFrame:inView:)
@@ -11,15 +18,17 @@
         * Source/GSTitleView.m: (-drawRect:)
         * Source/NSBrowser.m: (-drawRect:, [GSBrowserTitleCell drawWithFrame:inView:])
 	Use GSDrawingFunction methods instead of NS functions. Also
-	changed colour of progress indicatore. Patch by Nicholas Roard
+	changed colour of progress indicatore. Patch by Nicolas Roard
 	<nicolas@roard.com>. 
 	
 2004-06-07  Quentin Mathe <qmathe@club-internet.fr>
-        * Source/NSComboBoxCell.m: Added complete documentation.
+        
+	* Source/NSComboBoxCell.m: Added complete documentation.
 	* Source/NSComboBox.m: Minor documentation corrections.
 
 2004-06-06  Quentin Mathe <qmathe@club-internet.fr>
-        * Source/NSComboBox.m: Added complete documentation.
+        
+	* Source/NSComboBox.m: Added complete documentation.
 
 2004-06-04  Fred Kiefer <FredKiefer@gmx.de>
 

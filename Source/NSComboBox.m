@@ -42,7 +42,7 @@ static NSNotificationCenter *nc;
  An NSComboBox is what we can call a completion/choices box, derived from
  NSTextField, it allows you to enter text like in a text field but also to click
  in the ellipsis button (indicating the fact other user inputs are possible) on
- the right of it to obtain a list of choices whose you can use as the text field
+ the right of it to obtain a list of choices, you can use them as the text field
  value by selecting a row in this list. You can also obtain direct completion
  when it  is enabled via <code>setCompletes:</code> to get a suggested text
  field value updated as you type. 
@@ -461,6 +461,14 @@ static NSNotificationCenter *nc;
   
   if (clicked)
     [super mouseDown: theEvent];
+}
+
+- (void) setFrame: (NSRect)frame
+{
+  NSRect rect = NSMakeRect(frame.origin.x, frame.origin.y, frame.size.width, 21);
+  // FIX ME: We shouldn't harcode the height value
+  
+  [super setFrame: rect];
 }
 
 @end
