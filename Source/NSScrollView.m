@@ -94,8 +94,8 @@ static float scrollerWidth;
       size.width -= scrollerWidth + 1;
     }
 
-  size.width -= 2*border.width;
-  size.height -= 2*border.height;
+  size.width -= 2 * border.width;
+  size.height -= 2 * border.height;
 
   return size;
 }
@@ -121,8 +121,8 @@ static float scrollerWidth;
       size.width += scrollerWidth + 1;
     }
 
-  size.width += 2*border.width;
-  size.height += 2*border.height;
+  size.width += 2 * border.width;
+  size.height += 2 * border.height;
 
   return size;
 }
@@ -168,7 +168,7 @@ static float scrollerWidth;
   return YES;
 }
 
-- (void) setContentView: (NSClipView*)aView
+- (void) setContentView: (NSClipView *)aView
 {
   if (aView == nil)
     [NSException raise: NSInvalidArgumentException
@@ -192,7 +192,7 @@ static float scrollerWidth;
   [self tile];
 }
 
-- (void) removeSubview: (NSView*)aView
+- (void) removeSubview: (NSView *)aView
 {
   if (aView == _contentView)
     {
@@ -397,7 +397,7 @@ static float scrollerWidth;
   [_contentView scrollToPoint: point];
 }
 
-- (void) reflectScrolledClipView: (NSClipView*)aClipView
+- (void) reflectScrolledClipView: (NSClipView *)aClipView
 {
   NSRect documentFrame = NSZeroRect;
   NSRect clipViewBounds = NSZeroRect;
@@ -485,7 +485,7 @@ static float scrollerWidth;
   
 }
 
-- (void) setHorizontalRulerView: (NSRulerView*)aRulerView
+- (void) setHorizontalRulerView: (NSRulerView *)aRulerView
 {
   ASSIGN(_horizRuler, aRulerView);
 }
@@ -510,7 +510,7 @@ static float scrollerWidth;
     [_horizRuler removeFromSuperview];
 }
 
-- (void) setVerticalRulerView: (NSRulerView*)ruler
+- (void) setVerticalRulerView: (NSRulerView *)ruler
 {
   ASSIGN(_vertRuler, ruler);
 }
@@ -795,7 +795,7 @@ static float scrollerWidth;
   _borderType = borderType;
 }
 
-- (void) setDocumentView: (NSView*)aView
+- (void) setDocumentView: (NSView *)aView
 {
   BOOL hadHeaderView = _hasHeaderView;
 
@@ -893,17 +893,17 @@ static float scrollerWidth;
   return [_contentView bounds].size;
 }
 
-- (NSClipView*) contentView
+- (NSClipView *) contentView
 {
   return _contentView;
 }
 
-- (NSRulerView*) horizontalRulerView
+- (NSRulerView *) horizontalRulerView
 {
   return _horizRuler;
 }
 
-- (NSRulerView*) verticalRulerView
+- (NSRulerView *) verticalRulerView
 {
   return _vertRuler;
 }
