@@ -1,3 +1,8 @@
+2002-06-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSToolbarItem.h
+	Corrected #include so that it compiles.
+
 2002-06-30  Gregory John Casamento <greg_casamento@yahoo.com>
 	
 	* Headers/gnustep/gui/NSWindow.h: Added declaration for 
