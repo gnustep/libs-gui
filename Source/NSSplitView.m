@@ -2,7 +2,7 @@
 
    <abstract>Allows multiple views to share a region in a window</abstract>
 
-   Copyright (C) 1996, 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
 
    Author: Robert Vasvari <vrobi@ddrummer.com>
    Date: Jul 1998
@@ -137,10 +137,12 @@ static NSNotificationCenter *nc = nil;
       r = [v frame];
       /* if the click is inside of a subview, return.  this should
 	 happen only if a subview has leaked a mouse down to next
-	 responder */
+	 responder
+	 */
       if (NSPointInRect(p, r))
 	{
-	  NSLog(@"NSSplitView got mouseDown in subview area");
+	  NSDebugLLog(@"NSSplitView",
+	    @"NSSplitView got mouseDown in subview area");
 	  return;
 	}
       if (_isVertical == NO)

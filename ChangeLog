@@ -1,3 +1,8 @@
+2004-01-07 02:51  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSplitView.m (-mouseDown:): Use an NSDebugLLog when we get
+	an event in a subview area instead of an NSLog.
+
 2004-01-04 02:32  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Documentation.
