@@ -572,7 +572,7 @@ static Class rulerViewClass = nil;
     {
       horizLinePosition = scrollerWidth + borderThickness;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
-      DPSmoveto(ctxt, horizLinePosition, borderThickness + 1);
+      DPSmoveto(ctxt, horizLinePosition, borderThickness);
       DPSrlineto(ctxt, 0, [self bounds].size.height - 2 * borderThickness - 1);
       DPSstroke(ctxt);
     }
