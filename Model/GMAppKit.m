@@ -249,7 +249,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
     [self setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
     [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
-    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
+    /* Temporary commented out so buttons keep on working - new code fixing this under testing */
+    //    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
     [self setType:[unarchiver decodeIntWithName:@"type"]];
     // }
 
