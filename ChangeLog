@@ -1,3 +1,8 @@
+Wed Jun  2  8:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/make_services.m: Updated to use the GNUSTEP_PATHPREFIX_LIST
+	environment variable if it is available.
+
 Wed Jun  2  4:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Added patches from jagapen@whitewater.chem.wisc.edu -

@@ -69,6 +69,7 @@ main(int argc, char** argv)
   NSString		*str;
   unsigned		index;
   BOOL			isDir;
+  BOOL			usedPrefixes = NO;
   NSMutableDictionary	*fullMap;
   NSDictionary		*oldMap;
 
@@ -145,6 +146,32 @@ main(int argc, char** argv)
     }
 
   roots = [NSMutableArray arrayWithCapacity: 3];
+
+  /*
+   *	Set up an array of root paths from the prefix list if possible.
+   *	If we managed to get any paths, we set a flag so we know not to
+   *	get and add default values later.
+   */
+  str = [env objectForKey: @"GNUSTEP_PATHPREFIX_LIST"];
+  if (str != nil && [str isEqualToString: @""] == NO)
+    {
+      NSArray	*a = [str componentsSeparatedByString: @":"];
+      unsigned	index;
+
+      for (index = 0; index < [a count]; index++)
+	{
+	  str = [a objectAtIndex: index];
+	  if ([str isEqualToString: @""] == NO)
+	    {
+	      if ([roots containsObject: str] == NO)
+		{
+		  [roots addObject: str];
+		  usedPrefixes = YES;
+		}
+	    }
+	}
+    }
+
   services = [NSMutableDictionary dictionaryWithCapacity: 200];
 
   /*
@@ -169,9 +196,10 @@ main(int argc, char** argv)
 	  exit(1);
 	}
     }
-  [roots addObject: usrRoot];
 
-  usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
+  str = usrRoot;	/* Record for adding into roots array */
+
+  usrRoot = [str stringByAppendingPathComponent: @"Services"];
   if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
     {
       if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
@@ -182,17 +210,32 @@ main(int argc, char** argv)
 	}
     }
 
-  str = [env objectForKey: @"GNUSTEP_LOCAL_ROOT"];
-  if (str != nil)
-    [roots addObject: str];
-  else
-    [roots addObject: @"/usr/GNUstep/Local"];
+  if (usedPrefixes == NO)
+    {
+      /*
+       * Ensure that the user root (or default user root) is in the path.
+       */
+      if ([roots containsObject: str] == NO)
+	[roots addObject: str];
 
-  str = [env objectForKey: @"GNUSTEP_SYSTEM_ROOT"];
-  if (str != nil)
-    [roots addObject: str];
-  else
-    [roots addObject: @"/usr/GNUstep"];
+      /*
+       * Ensure that the local root (or default local root) is in the path.
+       */
+      str = [env objectForKey: @"GNUSTEP_LOCAL_ROOT"];
+      if (str == nil)
+	str = @"/usr/GNUstep/Local";
+      if ([roots containsObject: str] == NO)
+	[roots addObject: str];
+
+      /*
+       * Ensure that the system root (or default system root) is in the path.
+       */
+      str = [env objectForKey: @"GNUSTEP_SYSTEM_ROOT"];
+      if (str == nil)
+	str = @"/usr/GNUstep";
+      if ([roots containsObject: str] == NO)
+	[roots addObject: str];
+    }
 
   /*
    *	Before doing the main scan, we examine the 'Services' directory to
