@@ -89,6 +89,9 @@ id _nsTextfieldCellClass = nil;
   [self setCell: c];
   [c release];
   [cell setState: 1];
+  [cell setBezeled: YES];
+  [cell setSelectable: YES];
+  [cell setEditable: YES];
   [cell setDrawsBackground: YES];
   text_cursor = [[NSCursor IBeamCursor] retain];
 
@@ -115,7 +118,7 @@ id _nsTextfieldCellClass = nil;
 {
   id c;
 
-  c = [super copyWithZone: zone];
+  c = [(id)super copyWithZone: zone];
   [c setTextCursor: [NSCursor IBeamCursor]];
 
   return c;

@@ -1,3 +1,10 @@
+Thu Apr  1 20:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSTextField.m: init with same default values as OPENSTEP
+	* Source/NSPanel.m: Tidied.
+	* Source/NSStringDrawing.m: First go at support for paragraph styles,
+	tabs, and kerning.
+
 Thu Apr  1 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Model/GMAppKit.m: Added patch supplied by Jonathan Gapen

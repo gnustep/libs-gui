@@ -71,13 +71,7 @@
 {
   [super initTextCell: aString];
 
-  [self setEnabled: YES];
-  [self setBordered: YES];
-  [self setBezeled: YES];
-  [self setScrollable: YES];
-  [self setEditable: YES];
   [self setAlignment: NSLeftTextAlignment];
-
   [self setBackgroundColor: [NSColor textBackgroundColor]];
   [self setTextColor: [NSColor textColor]];
   [self setFont: [NSFont systemFontOfSize: 0]];

@@ -384,7 +384,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 		NSViewWidthSizable | NSViewHeightSizable | NSViewMaxYMargin];
       [messageField setEditable: NO];
       [messageField setSelectable: NO];
-      [messageField setBordered: NO];
+      [messageField setBezeled: NO];
       [messageField setDrawsBackground: NO];
       [messageField setAlignment: NSCenterTextAlignment];
       [messageField setStringValue: @""];
@@ -398,7 +398,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
       [titleField setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
       [titleField setEditable: NO];
       [titleField setSelectable: NO];
-      [titleField setBordered: NO];
+      [titleField setBezeled: NO];
       [titleField setDrawsBackground: NO];
       [titleField setStringValue: @""];
       [titleField setFont: [NSFont systemFontOfSize: 18.0]];
@@ -684,6 +684,7 @@ NSRunAlertPanel(NSString *title,
       standardAlertPanel = panel;
     }
 
+  [panel center];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -705,6 +706,7 @@ NSRunCriticalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
+  [panel center];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -726,6 +728,7 @@ NSRunInformationalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
+  [panel center];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -788,6 +791,7 @@ NSRunLocalizedAlertPanel(NSString *table,
       standardAlertPanel = panel;
     }
 
+  [panel center];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;

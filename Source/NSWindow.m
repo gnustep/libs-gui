@@ -532,8 +532,9 @@
 - (void) center
 {
   NSSize screenSize = [[NSScreen mainScreen] frame].size;
-  NSPoint origin = frame.origin;                          // center the window
-                                                        // within it's screen
+  NSPoint origin = frame.origin;
+
+  // center the window within it's screen
   origin.x = (screenSize.width - frame.size.width) / 2;
   origin.y = (screenSize.height - frame.size.height) / 2;
   [self setFrameOrigin: origin];
