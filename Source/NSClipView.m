@@ -35,6 +35,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 
+@class NSTableView;
 
 /*
  * Return the biggest integral (in device space) rect contained in rect. 
@@ -96,6 +97,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
       
       [nc removeObserver: self  name: nil  object: _documentView];
+      if ([_documentView isKindOfClass: [NSTableView class]])
+	{
+	  [nc removeObserver: _documentView name:nil object:self];
+	}
+
       RELEASE(_documentView);
     }
   RELEASE(_cursor);
@@ -117,6 +123,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   if (_documentView)
     {
       [nc removeObserver: self  name: nil  object: _documentView];
+      /* if our documentView was a tableview, unregister its
+       * observers
+       */
+      if ([_documentView isKindOfClass: [NSTableView class]])
+	{
+	  [nc removeObserver: _documentView name: nil object: self];
+	}
       [_documentView removeFromSuperview];
     }
 
@@ -157,6 +170,21 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	     selector: @selector(viewBoundsChanged:)
 		 name: NSViewBoundsDidChangeNotification
 	       object: _documentView];
+
+      /*
+       *  if out document view is a tableview, let it know
+       *  when we resize
+       */
+      if ([_documentView isKindOfClass: [NSTableView class]])
+	{
+	  [nc removeObserver: _documentView name: nil object: self];
+	  [self setPostsFrameChangedNotifications: YES];
+	  [nc addObserver: _documentView
+	         selector: @selector(superviewFrameChanged:)
+	             name: NSViewFrameDidChangeNotification
+	           object: self];
+	}
+
     }
 
   /* TODO: Adjust the key view loop to include the new document view */
