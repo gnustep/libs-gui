@@ -44,6 +44,35 @@ static NSDictionary *nsmapping = nil;
 
 #define	GSNDNAME @"GNUstepGSSoundServer"
 
+@implementation NSBundle (NSSoundAdditions)
+
+- (NSString *)pathForSoundResource:(NSString *)name
+{
+  NSString *ext = [name pathExtension];
+  NSString *path = nil;
+
+  if ((ext == nil) || [ext isEqualToString:@""])
+    {
+      NSArray	*types = [NSSound soundUnfilteredFileTypes];
+      unsigned	c = [types count];
+      unsigned	i;
+
+      for (i = 0; path == nil && i < c; i++)
+	{
+	  ext = [types objectAtIndex: i];
+	  path = [self pathForResource: name ofType: ext];
+	}
+    }
+  else
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
+    }
+  return path;
+}
+
+@end 
+
 @protocol GSSoundSvr
 
 - (BOOL)playSound:(id)aSound;
