@@ -170,6 +170,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSArray	*array;
       NSString	*the_name = aName;
 
+      // FIXME: This should use [NSBundle pathForImageResource], but this will 
+      // only allow imageUnfilteredFileTypes.
       /* If there is no image with that name, search in the main bundle */
       main_bundle = [NSBundle mainBundle];
       ext = [aName pathExtension];
@@ -253,16 +255,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return image;
 }
 
-- (BOOL) isFlipped
-{
-  return _flags.flipDraw;
-}
-
-- (void) setFlipped: (BOOL)flag
-{
-  _flags.flipDraw = flag;
-}
-
 - (id) init
 {
   return [self initWithSize: NSMakeSize(0, 0)];
@@ -272,17 +264,24 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) initWithSize: (NSSize)aSize
 {
   [super init];
-  _reps = [[NSMutableArray alloc] initWithCapacity: 2];
+
+  //_flags.archiveByName = NO;
+  //_flags.scalable = NO;
+  //_flags.dataRetained = NO;
+  //_flags.flipDraw = NO;
   if (aSize.width && aSize.height) 
     {
       _size = aSize;
       _flags.sizeWasExplicitlySet = YES;
     }
+  //_flags.usesEPSOnResolutionMismatch = NO;
   _flags.colorMatchPreferred = YES;
   _flags.multipleResolutionMatching = YES;
-  //_flags.usesEPSOnResolutionMismatch = NO;
-  //_flags.flipDraw = NO;
-  _color = RETAIN(clearColor);
+  //_flags.cacheSeparately = NO;
+  //_flags.unboundedCacheDepth = NO;
+  //_flags.syncLoad = NO;
+  _reps = [[NSMutableArray alloc] initWithCapacity: 2];
+  ASSIGN(_color, clearColor);
   
   return self;
 }
@@ -290,9 +289,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) initByReferencingFile: (NSString *)fileName
 {
   self = [self init];
-  // FIXME: The documentation says to archive only the file name,
-  // this has to be stored somewhere!
-  _flags.dataRetained = YES;
+
   if (![self _useFromFile: fileName])
     {
       RELEASE(self);
@@ -305,7 +302,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) initWithContentsOfFile: (NSString *)fileName
 {
   self = [self init];
-  //_flags.dataRetained = YES;
+
+  _flags.dataRetained = YES;
   if (![self _loadFromFile: fileName])
     {
       RELEASE(self);
@@ -318,6 +316,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) initWithData: (NSData *)data;
 {
   self = [self init];
+
+  _flags.dataRetained = YES;
   if (![self _loadFromData: data])
     {
       RELEASE(self);
@@ -366,6 +366,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       return nil;
     }
   self = [self init];
+  _flags.dataRetained = YES;
   [self addRepresentations: array];
   return self;
 }
@@ -387,26 +388,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  return nil;
 	} 
     }
+  _flags.dataRetained = YES;
   
   return self;
-}
-
-- (void) setSize: (NSSize)aSize
-{
-  _size = aSize;
-  _flags.sizeWasExplicitlySet = YES;
-  // TODO: This invalidates any cached data
-}
-
-- (NSSize) size
-{
-  if (_size.width == 0) 
-    {
-      NSImageRep *rep = [self bestRepresentationForDevice: nil];
-
-      _size = [rep size];
-    }
-  return _size;
 }
 
 - (void) dealloc
@@ -430,13 +414,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NSEnumerator *enumerator = [reps objectEnumerator];
   NSImageRep *rep;
 
-  // FIXME: maybe we should retain if _flags.dataRetained = NO
   copy = (NSImage*)NSCopyObject (self, 0, zone);
 
   RETAIN(_name);
   RETAIN(_fileName);
   RETAIN(_color);
   copy->_lockedView = nil;
+  // FIXME: maybe we should retain if _flags.dataRetained = NO
   copy->_reps = [[NSMutableArray alloc] initWithCapacity: [_reps count]];
 
   //  Only copy non-cached reps.
@@ -456,6 +440,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   if (!string || [nameDict objectForKey: string])
     return NO;
 
+  if (_name && self == [nameDict objectForKey: _name])
+    [nameDict removeObjectForKey: _name];
+
   ASSIGN(_name, string);
 
   [nameDict setObject: self forKey: _name];
@@ -465,6 +452,34 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (NSString *) name
 {
   return _name;
+}
+
+- (void) setSize: (NSSize)aSize
+{
+  _size = aSize;
+  _flags.sizeWasExplicitlySet = YES;
+  // TODO: This invalidates any cached data
+}
+
+- (NSSize) size
+{
+  if (_size.width == 0) 
+    {
+      NSImageRep *rep = [self bestRepresentationForDevice: nil];
+
+      _size = [rep size];
+    }
+  return _size;
+}
+
+- (BOOL) isFlipped
+{
+  return _flags.flipDraw;
+}
+
+- (void) setFlipped: (BOOL)flag
+{
+  _flags.flipDraw = flag;
 }
 
 // Choosing Which Image Representation to Use 
@@ -659,6 +674,26 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NS_ENDHANDLER
 }
 
+- (void) compositeToPoint: (NSPoint)aPoint
+		operation: (NSCompositingOperation)op
+		 fraction: (float)delta
+{
+  NSRect rect;
+  NSSize size = [self size];
+
+  rect = NSMakeRect(0, 0, size.width, size.height);
+  [self compositeToPoint: aPoint fromRect: rect 
+	operation: op fraction: delta];
+}
+
+- (void) compositeToPoint: (NSPoint)aPoint
+		 fromRect: (NSRect)srcRect
+		operation: (NSCompositingOperation)op
+		 fraction: (float)delta
+{
+// FIXME We need another PS command for this
+}
+
 - (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat;
 {
   NSRect rect;
@@ -686,7 +721,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 	  if ([[ctxt focusView] isFlipped])
 	    y -= rect.size.height;
-	  // FIXME This should be able to cut out part of the image
+
+	  // Move the drawing rectangle to the origin of the image rep
+	  // and intersect the two rects.
+	  aRect.origin.x += rect.origin.x;
+	  aRect.origin.y += rect.origin.y;
+	  rect = NSIntersectionRect(aRect, rect);
 	  PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
 	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, aFloat);
 	}
@@ -715,9 +755,31 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
+  if (_color != nil && [_color alphaComponent] != 0.0)
+    {
+      [_color set];
+      NSRectFill(aRect);
+    }
+
   if (!_flags.scalable) 
     return [imageRep drawAtPoint: aRect.origin];
   return [imageRep drawInRect: aRect];
+}
+
+- (void) drawAtPoint: (NSPoint)point
+	    fromRect: (NSRect)srcRect
+	   operation: (NSCompositingOperation)op
+	    fraction: (float)delta
+{
+//FIXME We need another PS command for this
+}
+
+- (void) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta
+{
+//FIXME We need another PS command for this
 }
 
 - (void) addRepresentation: (NSImageRep *)imageRep
@@ -776,6 +838,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       NSWindow	*window;
 
+      if (imageRep == nil)
+	imageRep = [self bestRepresentationForDevice: nil];
+
       imageRep = [self _cacheForRep: imageRep];
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
@@ -808,7 +873,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
        * What's the best representation? 
        * FIXME: At the moment we take the last bitmap we find.
        * If we can't find a bitmap, we take whatever we can.
-       * Do no change this without changing the Backend stuff on image dragging!
+       * NSCursor will only handle returned NSBitmapImageReps!
        */
       if ([rep isKindOfClass: bitmapClass])
 	best = rep;
@@ -862,38 +927,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 // Producing TIFF Data for the Image 
 - (NSData *) TIFFRepresentation
 {
-  NSArray *reps = [self representations];
-  NSEnumerator *enumerator = [reps objectEnumerator];
-  NSImageRep *rep;
-
-  while ((rep = [enumerator nextObject]) != nil)
-    {
-      if ([rep isKindOfClass: bitmapClass])
-        {
-	  return [(NSBitmapImageRep*)rep TIFFRepresentation];
-	}
-    }
-
-  return nil;
+  return [bitmapClass TIFFRepresentation];
 }
 
 - (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
 	factor: (float)aFloat
 {
-  NSArray *reps = [self representations];
-  NSEnumerator *enumerator = [reps objectEnumerator];
-  NSImageRep *rep;
-
-  while ((rep = [enumerator nextObject]) != nil)
-    {
-      if ([rep isKindOfClass: bitmapClass])
-        {
-	  return [(NSBitmapImageRep*)rep TIFFRepresentationUsingCompression: comp
+  return [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]
+		      usingCompression: comp
 		      factor: aFloat];
-	}
-    }
-
-  return nil;
 }
 
 // NSCoding
@@ -940,6 +982,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       flag = _flags.unboundedCacheDepth;
       [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
+      // FIXME: The documentation says to archive only the file name,
+      // if not data retained!
       /*
        * Now encode an array of all the image reps (excluding cache)
        */
@@ -1149,7 +1193,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   array = [isa imageFileTypes];
   if ([array indexOfObject: ext] == NSNotFound)
     return NO;
-  _fileName = RETAIN(fileName);
+
+  ASSIGN(_fileName, fileName);
   _flags.syncLoad = YES;
   return YES;
 }
@@ -1160,11 +1205,14 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 // image (if there is one).
 - (NSImageRep *)_doImageCache
 {
-  NSImageRep *rep = [self _cacheForRep: nil];
+  NSImageRep *rep = [self bestRepresentationForDevice: nil];
 
   if (NSImageDoesCaching == YES)
     {
-      GSRepData *repd = repd_for_rep(_reps, rep);
+      GSRepData *repd;
+
+      rep =  [self _cacheForRep: rep];
+      repd = repd_for_rep(_reps, rep);
 
       NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
       /*
@@ -1174,13 +1222,13 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
        */
       if (repd->bg == nil) 
 	{
-	  NSRect drawRect = NSMakeRect(0, 0, _size.width, _size.height);
-
 	  [self lockFocusOnRepresentation: rep];
+	  [self drawRepresentation: repd->original 
+		inRect: NSMakeRect(0, 0, _size.width, _size.height)];
+	  [self unlockFocus];
+
 	  if (_color != nil && [_color alphaComponent] != 0.0)
 	    {
-	      [_color set];
-	      NSRectFill(drawRect);
 	      repd->bg = [_color copy];
 	    }
 	  else
@@ -1188,8 +1236,6 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	      repd->bg = [clearColor copy];
 	    }
 
-	  [self drawRepresentation: repd->original inRect: drawRect];
-	  [self unlockFocus];
 	  if ([repd->bg alphaComponent] == 1.0)
 	    {
 	      [rep setOpaque: YES];
@@ -1208,14 +1254,11 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
 - (NSImageRep*) _cacheForRep: (NSImageRep*)rep
 {
-  if (rep == nil)
-    rep = [self bestRepresentationForDevice: nil];
-
   /*
    * If this is not a cached image rep - create a cache to be used to
    * render the image rep into, and switch to the cached rep.
    */
-  if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass] == NO)
+  if ([rep isKindOfClass: cachedClass] == NO)
     {
       NSImageRep	*cacheRep = nil;
       unsigned		count = [_reps count];
