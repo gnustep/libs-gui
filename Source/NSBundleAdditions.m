@@ -177,12 +177,7 @@
   NSString	*ext = [name pathExtension];
   NSString	*path = nil;
 
-  if (ext != nil)
-    {
-      name = [name stringByDeletingPathExtension];
-      path = [self pathForResource: name ofType: ext];
-    }
-  else
+  if ((ext == nil) || [ext isEqualToString:@""])
     {
       NSArray	*types = [NSImage imageUnfilteredFileTypes];
       unsigned	c = [types count];
@@ -193,6 +188,11 @@
 	  ext = [types objectAtIndex: i];
 	  path = [self pathForResource: name ofType: ext];
 	}
+    }
+  else
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
     }
   return path;
 }

@@ -40,6 +40,7 @@
 @interface NSColorPicker : NSObject <NSColorPickingDefault>
 {
   // Attributes
+  id _colorPanel;
 }
 
 //

@@ -150,6 +150,8 @@
 - (BOOL) drawRepresentation: (NSImageRep*)imageRep
 		     inRect: (NSRect)aRect;
 - (void) recache;
+- (void) setFlipped: (BOOL)flag;
+- (BOOL) isFlipped;
 
 //
 // Assigning a Delegate 

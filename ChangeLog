@@ -1,3 +1,12 @@
+2000-03-25  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+	* Headers/gnustep/gui/NSColorPicker.h: Added ivar.
+	* Headers/gnustep/gui/NSImage.h: Added setFlipped/isFlipped methods.
+	* Source/NSBundleAdditions.m: Fixed bug in checking filename
+	extension. ([-pathForImageResource:])
+	* Source/NSColorPicker.m: Implement. ([-initWithPickerMask:colorPanel:]
+	[-colorPanel] [-insertNewButtonImage:in:] [-provideNewButtonImage:])
+	* Source/NSImage.m: Initialize _flags.flipDraw in [-initWithSize:]
+
 2000-03-24  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
 	* Source/NSFileWrapper.m: First implementation of NSFileWrapper
 	* Headers/gnustep/gui/NSFileWrapper.h: Added ivars and enum

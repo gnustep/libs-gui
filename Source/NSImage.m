@@ -288,6 +288,7 @@ static Class			cacheClass = 0;
     }
   _flags.colorMatchPreferred = YES;
   _flags.multipleResolutionMatching = YES;
+  _flags.flipDraw = NO;
   _color = RETAIN(clearColor);
   
   return self;
