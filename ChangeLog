@@ -1,3 +1,9 @@
+2004-03-23  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/NSWindow.m: NSToolbar related methods removed.
+	* Headers/AppKit/NSWindow.h: same (NSToolbar related ivars still 
+	present).
+
 2004-03-22 18:06  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m (-lockFocusInRect:): Don't convert the clipping

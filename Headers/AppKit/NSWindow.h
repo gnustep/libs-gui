@@ -55,7 +55,7 @@
 @class NSPasteboard;
 @class NSScreen;
 @class NSText;
-@class NSToolbar;
+@class NSToolbar; 
 @class NSView;
 @class NSWindowController;
 @class NSCachedImageRep;
@@ -138,9 +138,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSWindowController *_windowController;
   int		_counterpart;
   float         _alphaValue;
-
-  NSToolbar    *_toolbar;
-  id            _toolbarView;
+  
+  NSToolbar    *_toolbar; // Not used (see NSWindow+Toolbar now)
+  id            _toolbarView; // Not used (see NSWindow+Toolbar now)
   NSCachedImageRep *_cachedImage;
   NSPoint       _cachedImageOrigin;
 
@@ -177,6 +177,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   id _defaultButtonCell;
   void          *_reserved_1;
   void          *_reserved_2;
+  
 }
 
 /*
@@ -514,10 +515,6 @@ APPKIT_EXPORT NSSize NSTokenSize;
 
 #ifndef STRICT_OPENSTEP
 - (NSArray *) drawers;
-- (void) setToolbar: (NSToolbar*)toolbar;
-- (NSToolbar *) toolbar;
-- (void) toggleToolbarShown: (id)sender;
-- (void) runToolbarCustomizationPalette: (id)sender;
 - (id) initWithWindowRef: (void *)windowRef;
 - (void *)windowRef;
 - (void*) windowHandle;

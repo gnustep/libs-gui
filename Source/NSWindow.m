@@ -4067,29 +4067,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   return nil;
 }
 
-- (void) setToolbar: (NSToolbar*)toolbar
-{
-  // assign and setup the toolbar...
-  ASSIGN(_toolbar, toolbar);
-  _toolbarView = [GSToolbarView initWithToolbar: _toolbar];
-  
-}
-
-- (NSToolbar *) toolbar
-{
-  return _toolbar;
-}
-
-- (void) toggleToolbarShown: (id)sender
-{
-  [_toolbar setVisible: [_toolbar isVisible]];
-}
-
-- (void) runToolbarCustomizationPalette: (id)sender
-{
-  [_toolbar runCustomizationPalette: sender];
-}
-
 - (id) initWithWindowRef: (void *)windowRef
 {
   // TODO
