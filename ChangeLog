@@ -1,3 +1,14 @@
+Mon Mar 15 16:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: ([-runModalSession:]) fix for windowmaker
+	doing a windowshade - HACK - need a better solution.
+	* Source/NSClipView.m: ([-setBoundsOrigin:]) update window before
+	doing bit copy.
+	* Source/NSColor.m: Fix default scroller color.
+	* Source/NSScroller.m: Minor tidyup - use scroller slot color.
+	* Source/NSImageRep.m: Tidyup - remove workaround for missing NSString
+	functionality - no longer required.
+
 Mon Mar 15 10:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: ([-resizeWithOldSuperviewSize:]) Added fix so this

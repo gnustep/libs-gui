@@ -484,8 +484,13 @@ NSString* mainModelFile;
           /*
            *    Check to see if the window has gone away - if so, end session.
            */
+#if 0
           if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
             NSNotFound || [session->window isVisible] == NO)
+#else
+          if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
+            NSNotFound)
+#endif
             [self stopModal];
           if (windows_need_update)
             [self updateWindows];

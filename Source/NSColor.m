@@ -96,7 +96,7 @@ static NSMutableDictionary	*colorStrings = nil;
 	gray, @"gridColor",
 	white, @"highlightColor",
 	lightGray, @"knobColor",
-	lightGray, @"scrollBarColor",
+	gray, @"scrollBarColor",
 	white, @"selectedControlColor",
 	black, @"selectedControlTextColor",
 	white, @"selectedMenuItemColor",

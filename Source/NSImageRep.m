@@ -45,26 +45,6 @@
 
 static NSMutableArray*	imageReps = NULL;
 
-/* Get the extension from a name  */
-static NSString *
-extension(NSString *name)
-{
-/* Waiting for NSString to be complete */
-#if 0
-  return [name pathExtension];
-#else
-  const char* cname;
-  char *s;
-
-  cname = [name cString];
-  s = strrchr(cname, '.');
-  if (s > strrchr(cname, '/'))
-    return [NSString stringWithCString:s+1];
-  else
-    return nil;
-#endif
-} 
-
 @implementation NSImageRep
 
 + (void) initialize
@@ -96,11 +76,14 @@ extension(NSString *name)
   NSString* ext;
   NSMutableArray* array;
 
-  ext = extension(filename);
+  ext = [filename pathExtension];
   // FIXME: Should this be an exception? Should we even check this?
   if (!ext)
-    return nil;
-  array = [NSMutableArray arrayWithCapacity:1];
+    {
+      NSLog(@"extension missing from filename - '%@'", filename);
+      return nil;
+    }
+  array = [NSMutableArray arrayWithCapacity: 1];
 
   count = [imageReps count];
   for (i = 0; i < count; i++)
@@ -115,14 +98,10 @@ extension(NSString *name)
 #endif
 	  {
 	    NSData* data = [NSData dataWithContentsOfFile: filename];
-#if 1
 	    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-#endif
 	      [array addObjectsFromArray: [rep imageRepsWithData: data]];
-#if 1
 	    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
 	      [array addObject: [rep imageRepWithData: data]];
-#endif
 	  }
     }
   return (NSArray *)array;
@@ -143,7 +122,7 @@ extension(NSString *name)
   int i, count;
   NSMutableArray* array;
 
-  array = [NSMutableArray arrayWithCapacity:1];
+  array = [NSMutableArray arrayWithCapacity: 1];
 
   count = [imageReps count];
   for (i = 0; i < count; i++)
@@ -152,7 +131,7 @@ extension(NSString *name)
       Class rep = [imageReps objectAtIndex: i];
       if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
 	  && (ptype = 
-	      [pasteboard availableTypeFromArray:[rep imagePasteboardTypes]]))
+	      [pasteboard availableTypeFromArray: [rep imagePasteboardTypes]]))
 	{
 	  NSData* data = [pasteboard dataForType: ptype];
 	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
@@ -221,7 +200,7 @@ extension(NSString *name)
 // Specifying Information about the Representation 
 - (int) bitsPerSample
 {
-    return bitsPerSample;
+  return bitsPerSample;
 }
 
 - (NSString *) colorSpaceName
@@ -349,11 +328,9 @@ extension(NSString *name)
 + (void) registerImageRepClass: (Class)imageRepClass
 {
   [imageReps addObject: imageRepClass];
-  /*
   [[NSNotificationCenter defaultCenter] 
     postNotificationName: NSImageRepRegistryChangedNotification
-    object: self];
-    */
+		  object: self];
 } 
 
 + (NSArray *) registeredImageRepClasses
@@ -366,7 +343,7 @@ extension(NSString *name)
   [imageReps removeObject: imageRepClass];
   [[NSNotificationCenter defaultCenter] 
     postNotificationName: NSImageRepRegistryChangedNotification
-    object: self];
+		  object: self];
 }
 
 // NSCoding protocol

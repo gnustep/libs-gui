@@ -132,8 +132,10 @@
 	  NSPoint destPoint = intersection.origin;
 	  float dx = newBounds.origin.x - originalBounds.origin.x;
 	  float dy = newBounds.origin.y - originalBounds.origin.y;
+
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
+	  [window update];	// Make sure display is up to date.
 	  [self lockFocus];
 	  NSCopyBits(0, intersection, destPoint);
 	  [self unlockFocus];
