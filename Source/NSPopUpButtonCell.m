@@ -346,7 +346,7 @@ static NSImage *_pbc_image[2];
 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
-  if ((index > 0) && (index < [_menu numberOfItems]))
+  if ((index >= 0) && (index < [_menu numberOfItems]))
     {
       return [_menu itemAtIndex: index];
     }
@@ -418,7 +418,7 @@ static NSImage *_pbc_image[2];
 
   //[super setMenuItem: item];
   ASSIGN (_menuItem, item);
- 
+
   if ([_menuItem image] == nil)
     {
       [_menuItem setImage: image];
