@@ -65,6 +65,10 @@
   struct GSHorizontalTypesetter_glyph_cache_s *cache;
   unsigned int cache_base, cache_size, cache_length;
   BOOL at_end;
+
+
+  struct GSHorizontalTypesetter_line_frag_s *line_frags;
+  int line_frags_num, line_frags_size;
 }
 
 +(GSHorizontalTypesetter *) sharedInstance;

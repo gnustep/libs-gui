@@ -1,3 +1,10 @@
+2003-02-16 17:48  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSHorizontalTypesetter.h,
+	Source/GSHorizontalTypesetter.m: Store the line frags array as
+	an ivar instead of allocating and freeing it everytime
+	-layoutLineNewParagraph: is called.
+
 2003-02-16 15:51  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m: Bring back the old implementation of

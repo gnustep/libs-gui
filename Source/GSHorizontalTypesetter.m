@@ -65,6 +65,11 @@ cache fairly aggressively without having to worry about memory consumption.
       free(cache);
       cache = NULL;
     }
+  if (line_frags)
+    {
+      free(line_frags);
+      line_frags = NULL;
+    }
   DESTROY(lock);
   [super dealloc];
 }
@@ -270,7 +275,7 @@ including gi will have been cached.
 }
 
 
-typedef struct
+typedef struct GSHorizontalTypesetter_line_frag_s
 {
   NSRect rect;
   float last_used;
@@ -380,9 +385,6 @@ typedef struct
   */
 #define COMPUTE_BASELINE  baseline = line_height - descender
 
-  line_frag_t *line_frags = NULL;
-  int num_line_frags = 0;
-
 
   [self _cacheMoveTo: curGlyph];
   if (!cache_length)
@@ -457,26 +459,25 @@ restart:
   rects (eg. a text container with "hole"-columns every 100 points and
   width 1e8)
   */
-  num_line_frags = 0;
-  if (line_frags)
-    {
-      free(line_frags);
-      line_frags = NULL;
-    }
+  line_frags_num = 0;
   while (1)
     {
       rect = [curTextContainer lineFragmentRectForProposedRect: remain
 			     sweepDirection: NSLineSweepRight
-			     movementDirection: num_line_frags?NSLineDoesntMove:NSLineMoveDown
+			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
 			     remainingRect: &remain];
       if (NSEqualRects(rect,NSZeroRect))
 	break;
 
-      num_line_frags++;
-      line_frags = realloc(line_frags,sizeof(line_frag_t) * num_line_frags);
-      line_frags[num_line_frags - 1].rect = rect;
+      line_frags_num++;
+      if (line_frags_num > line_frags_size)
+	{
+	  line_frags_size += 2;
+	  line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
+	}
+      line_frags[line_frags_num - 1].rect = rect;
     }
-  if (!num_line_frags)
+  if (!line_frags_num)
     {
       if (curPoint.y == 0.0 &&
 	  line_height > [curTextContainer containerSize].height)
@@ -820,7 +821,7 @@ restart:
 
 	    lf++;
 	    lfi++;
-	    if (lfi == num_line_frags)
+	    if (lfi == line_frags_num)
 	      {
 		newParagraph = NO;
 		break;
@@ -847,26 +848,26 @@ restart:
     /* Basic layout is done. */
 
     /* Take care of the alignments. */
-    if (lfi != num_line_frags)
+    if (lfi != line_frags_num)
       {
 	lf->last_glyph = i;
 	lf->last_used = p.x;
 
 	/* TODO: incorrect if there is more than one line frag */
 	if ([curParagraphStyle alignment] == NSRightTextAlignment)
-	  [self rightAlignLine: line_frags : num_line_frags];
+	  [self rightAlignLine: line_frags : line_frags_num];
 	else if ([curParagraphStyle alignment] == NSCenterTextAlignment)
-	  [self centerAlignLine: line_frags : num_line_frags];
+	  [self centerAlignLine: line_frags : line_frags_num];
       }
     else
       {
 	if ([curParagraphStyle lineBreakMode] == NSLineBreakByWordWrapping &&
 	    [curParagraphStyle alignment] == NSJustifiedTextAlignment)
-	  [self fullJustifyLine: line_frags : num_line_frags];
+	  [self fullJustifyLine: line_frags : line_frags_num];
 	else if ([curParagraphStyle alignment] == NSRightTextAlignment)
-	  [self rightAlignLine: line_frags : num_line_frags];
+	  [self rightAlignLine: line_frags : line_frags_num];
 	else if ([curParagraphStyle alignment] == NSCenterTextAlignment)
-	  [self centerAlignLine: line_frags : num_line_frags];
+	  [self centerAlignLine: line_frags : line_frags_num];
 
 	lfi--;
       }
@@ -895,10 +896,16 @@ restart:
 			    usedRect: used_rect];
 	  p = g->pos;
 	  /* TODO: probably don't need to call unless the flags are YES */
-	  [curLayoutManager setDrawsOutsideLineFragment: g->outside_line_frag
-			    forGlyphAtIndex: cache_base + i];
-	  [curLayoutManager setNotShownAttribute: g->dont_show
-			    forGlyphAtIndex: cache_base + i];
+	  if (g->outside_line_frag)
+	    {
+	      [curLayoutManager setDrawsOutsideLineFragment: YES
+					    forGlyphAtIndex: cache_base + i];
+	    }
+	  if (g->dont_show)
+	    {
+	      [curLayoutManager setNotShownAttribute: YES
+				     forGlyphAtIndex: cache_base + i];
+	    }
 	  p.y += baseline;
 	  j = i;
 	  while (i < lf->last_glyph)
@@ -934,12 +941,6 @@ restart:
   }
 
   curPoint = NSMakePoint(0,NSMaxY(line_frags->rect));
-
-  if (line_frags)
-    {
-      free(line_frags);
-      line_frags = NULL;
-    }
 
   /* Check if we're at the end. */
   {
