@@ -230,7 +230,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _previousKeyView = nil;
 
   _rFlags.flipped_view = [self isFlipped];
-  _rFlags.opaque_view = [self isOpaque];
 
   return self;
 }
@@ -361,8 +360,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   while (next != nil)
     {
-      if (current->_rFlags.opaque_view)
-	break;
+      if ([current isOpaque] == YES)
+	{
+	  break;
+	}
       current = next;
       next = current->super_view;
     }
@@ -1348,7 +1349,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (_rFlags.needs_display)
     {
-      if (_rFlags.opaque_view)
+      if ([self isOpaque] == YES)
 	{
 	  [self displayIfNeededIgnoringOpacity];
 	}
@@ -1407,7 +1408,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (_rFlags.needs_display)
     {
-      if (_rFlags.opaque_view)
+      if ([self isOpaque] == YES)
 	{
 	  [self displayIfNeededInRectIgnoringOpacity: aRect];
 	}
@@ -1518,7 +1519,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayRect: (NSRect)rect
 {
-  if (_rFlags.opaque_view)
+  if ([self isOpaque] == YES)
     {
       [self displayRectIgnoringOpacity: rect];
     }
@@ -2425,7 +2426,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
    *	Keep a note of whether this is a flipped view or not.
    */
   _rFlags.flipped_view = [self isFlipped];
-  _rFlags.opaque_view = [self isOpaque];
 
   if ([sub_views count])
     _rFlags.has_subviews = 1;

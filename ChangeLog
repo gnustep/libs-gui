@@ -1,3 +1,9 @@
+Tue Nov 16 10:49:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Removed opaque-view optimisation in favour of
+	retaining MacOS-X compatibility.
+	* Source/GMAppKit.m: ditto.
+
 Tue Nov 16  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-run]) make sure user defaults are
