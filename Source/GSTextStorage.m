@@ -46,6 +46,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSZone.h>
 #include <AppKit/NSTextStorage.h>
+#include "GSTextStorage.h"
 
 #define		SANITY_CHECKS	0
 
@@ -120,13 +121,6 @@ unCacheAttributes(NSDictionary *attrs)
 }
 
 
-
-@interface GSTextStorage : NSTextStorage
-{
-  NSMutableString       *_textChars;
-  NSMutableArray        *_infoArray;
-}
-@end
 
 @interface	GSTextInfo : NSObject <GCFinalization>
 {
