@@ -934,8 +934,8 @@ container, returning the modified location. */
   [super setDelegate: anObject];
  
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector: @selector(textView##notif_name: )]) \
-    [nc addObserver: delegate \
+  if ([_delegate respondsToSelector: @selector(textView##notif_name: )]) \
+    [nc addObserver: _delegate \
            selector: @selector(textView##notif_name: ) \
                name: NSTextView##notif_name##Notification \
              object: self]

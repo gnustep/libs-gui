@@ -222,6 +222,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       //TODO: We go over every item in the panel and check if a 
       // value is selected. If so we send it on to the manager
       //  newFont = [fm convertFont: fontObject toHaveTrait: NSItalicFontMask];
+      NSLog(@"Multiple font conversion not implemented in NSFontPanel");
+      newFont = nil;
     }
   else 
     {

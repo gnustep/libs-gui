@@ -365,8 +365,14 @@ static Class		fontPanelClass = Nil;
 
   // We update our own selected font
   if (_selectedFont != nil)
-    [self setSelectedFont: [self convertFont: _selectedFont]
-      isMultiple: _multiple];
+    {
+      NSFont	*newFont = [self convertFont: _selectedFont];
+
+      if (newFont != nil)
+	{
+	  [self setSelectedFont: newFont isMultiple: _multiple];
+	}
+    }
 }
 
 - (void) removeFontTrait: (id)sender
@@ -377,8 +383,14 @@ static Class		fontPanelClass = Nil;
 
   // We update our own selected font
   if (_selectedFont != nil)
-    [self setSelectedFont: [self convertFont: _selectedFont]
-      isMultiple: _multiple];
+    {
+      NSFont	*newFont = [self convertFont: _selectedFont];
+
+      if (newFont != nil)
+	{
+	  [self setSelectedFont: newFont isMultiple: _multiple];
+	}
+    }
 }
 
 - (void) modifyFont: (id)sender
@@ -388,8 +400,14 @@ static Class		fontPanelClass = Nil;
 
   // We update our own selected font
   if (_selectedFont != nil)
-    [self setSelectedFont: [self convertFont: _selectedFont]
-      isMultiple: _multiple];
+    {
+      NSFont	*newFont = [self convertFont: _selectedFont];
+
+      if (newFont != nil)
+	{
+	  [self setSelectedFont: newFont isMultiple: _multiple];
+	}
+    }
 }
 
 - (void) modifyFontViaPanel: (id)sender
@@ -399,8 +417,14 @@ static Class		fontPanelClass = Nil;
 
   // We update our own selected font
   if (_selectedFont != nil)
-    [self setSelectedFont: [self convertFont: _selectedFont]
-      isMultiple: _multiple];
+    {
+      NSFont	*newFont = [self convertFont: _selectedFont];
+
+      if (newFont != nil)
+	{
+	  [self setSelectedFont: newFont isMultiple: _multiple];
+	}
+    }
 }
 
 /*
