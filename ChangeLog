@@ -1,3 +1,8 @@
+2003-02-01 13:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Fix
+	sign problem with descender.
+
 Sat Feb  1 05:34:09 2003   Benhur Stein <benhur@inf.ufsm.br>, 
 	                   Nicola Pero  <n.pero@mi.flashnet.it>
 

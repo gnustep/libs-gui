@@ -392,7 +392,7 @@ typedef struct
 
     line_height = [cache->font defaultLineHeightForFont];
     ascender = [cache->font ascender];
-    descender = [cache->font descender];
+    descender = -[cache->font descender];
 
 #define COMPUTE_BASELINE  baseline = ascender
 
@@ -491,7 +491,7 @@ restart:
     NSPoint p;
     
     NSFont *f = cache->font;
-    float f_ascender = [f ascender], f_descender = [f descender];
+    float f_ascender = [f ascender], f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
@@ -557,20 +557,18 @@ restart:
 	(TODO?) */
 	if (g->font != f)
 	  {
-	    float new_height, new_ascender, new_descender;
+	    float new_height;
 	    f = g->font;
 	    f_ascender = [f ascender];
-	    f_descender = [f descender];
+	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
 
 	    new_height = [f defaultLineHeightForFont];
-	    new_ascender = [f ascender];
-	    new_descender = [f descender];
 
-	    if (new_ascender > ascender)
-	      ascender = new_ascender;
-	    if (new_descender > descender)
-	      descender = new_descender;
+	    if (f_ascender > ascender)
+	      ascender = f_ascender;
+	    if (f_descender > descender)
+	      descender = f_descender;
 
 	    COMPUTE_BASELINE;
 
@@ -627,7 +625,8 @@ restart:
 	    }
 	  if (g->attributes.baseline_offset)
 	    {
-	      y -= g->attributes.baseline_offset;
+	      /* And baseline_offset is up-side-down again. TODO? */
+	      y += g->attributes.baseline_offset;
 	    }
 
 	  if (y != p.y)
