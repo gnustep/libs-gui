@@ -279,8 +279,8 @@ NSApplication	*NSApp = nil;
 - (void) _initDefaults
 {
   [super _initDefaults];
-  // Set the title of the window to the process name. Even as the
-  // window shows no title bar, the window manager may show it.
+  /* Set the title of the window to the process name. Even as the
+     window shows no title bar, the window manager may show it.  */
   [self setTitle: [[NSProcessInfo processInfo] processName]];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
@@ -741,7 +741,12 @@ static NSCell* tileCell = nil;
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
   TEST_RELEASE(_infoPanel);
+
+  /* FIXME - the following should be destroying the GSCurrentContext(),
+     but it doesn't!  */
   [_default_context destroyContext];
+  /* One retain I think is here:
+     [NSGraphicsContext setCurrentContext: nil]; */
 
   [super dealloc];
 }
@@ -880,12 +885,17 @@ static NSCell* tileCell = nil;
 - (void) run
 {
   NSEvent *e;
-  NSAutoreleasePool *pool;
   id distantFuture = [NSDate distantFuture];     /* Cache this, safe */
   
   NSDebugLog(@"NSApplication -run\n");
 
-  IF_NO_GC(pool = [arpClass new]);
+  if (_runLoopPool != nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"NSApp's run called recursively"];
+    }
+
+  IF_NO_GC(_runLoopPool = [arpClass new]);
   /*
    *  Set this flag here in case the application is actually terminated
    *  inside -finishLaunching.
@@ -896,11 +906,11 @@ static NSCell* tileCell = nil;
 
   [_listener updateServicesMenu];
   [_main_menu update];
-  RELEASE(pool);
+  DESTROY(_runLoopPool);
   
   while (_app_is_running)
     {
-      IF_NO_GC(pool = [arpClass new]);
+      IF_NO_GC(_runLoopPool = [arpClass new]);
 
       e = [self nextEventMatchingMask: NSAnyEventMask
 			    untilDate: distantFuture
@@ -927,11 +937,18 @@ static NSCell* tileCell = nil;
 	  [self updateWindows];
 	}
 
-      RELEASE (pool);
+      DESTROY (_runLoopPool);
     }
+
+  /* Every single non trivial line of code must be enclosed into an
+     autorelease pool.  Create an autorelease pool here to wrap
+     synchronize and the NSDebugLog.  */
+  IF_NO_GC(_runLoopPool = [arpClass new]);
 
   [[NSUserDefaults standardUserDefaults] synchronize];
   NSDebugLog(@"NSApplication end of run loop\n");
+
+  DESTROY (_runLoopPool);
 }
 
 - (BOOL) isRunning
@@ -2219,19 +2236,19 @@ delegate.
   BOOL	shouldTerminate = YES;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
-    shouldTerminate = [_delegate applicationShouldTerminate: sender];
+    {
+      shouldTerminate = [_delegate applicationShouldTerminate: sender];
+    }
   else
-    shouldTerminate = [[NSDocumentController sharedDocumentController] 
+    {
+      shouldTerminate = [[NSDocumentController sharedDocumentController] 
 			  reviewUnsavedDocumentsWithAlertTitle: 
-			  GSGuiLocalizedString (@"Quit", nil)
-			cancellable:YES];
+			    GSGuiLocalizedString (@"Quit", nil)
+			   cancellable:YES];
+    }
 
   if (shouldTerminate)
     {
-      /* Use an autorelease pool, otherwise temporary objects created
-	 here would never be released, and might retain NSApp, and the
-	 DESTROY (NSApp) below would not deallocate it.  */
-      CREATE_AUTORELEASE_POOL (terminatePool);
       NSDictionary *userInfo;
       NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 
@@ -2253,12 +2270,27 @@ delegate.
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
 		      object: workspace
 		    userInfo: userInfo];
-      DESTROY (terminatePool);
 
-      /* Free the memory of self.  */
-      DESTROY(NSApp);
+      /* Destroy the main run loop pool (this also destroys any nested
+	 pools which might have been created inside this one).  */
+      DESTROY (_runLoopPool);
 
-      /* And stop the program.  */
+      /* Now free the NSApplication object.  Enclose the operation
+	 into an autorelease pool, in case some -dealloc method needs
+	 to use any temporary object.  */
+      {
+	NSAutoreleasePool *pool;
+	
+	IF_NO_GC(pool = [arpClass new]);
+
+	/* FIXME - the following should destroy the GSCurrentContext(),
+	   but it doesn't.  */
+	DESTROY(NSApp);
+
+	DESTROY(pool);
+      }
+
+      /* And finally, stop the program.  */
       exit(0);
     }
 }
