@@ -40,6 +40,11 @@ AC_CONFIG_AUX_DIR($GNUSTEP_SYSTEM_ROOT/Makefiles)
 AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 
 #--------------------------------------------------------------------
+# Determine the host, build, and target systems
+#--------------------------------------------------------------------
+AC_CANONICAL_SYSTEM
+
+#--------------------------------------------------------------------
 # The following is so that headers and custom libraries
 # in the GNUstep root are used before the standard ones
 #--------------------------------------------------------------------
@@ -61,11 +66,6 @@ LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 #--------------------------------------------------------------------
 AC_PROG_CC
 AC_PROG_CPP
-
-#--------------------------------------------------------------------
-# Determine the host, build, and target systems
-#--------------------------------------------------------------------
-AC_CANONICAL_SYSTEM
 
 AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rint rintf)
