@@ -161,13 +161,13 @@ static const int currentVersion = 1; // GSNibItem version number...
       while ((key = [enumerator nextObject]) != nil)
 	{
 	  if ([context objectForKey: key] == nil || 
-	      [key isEqualToString: @"NSNibOwner"]) // we want to send the message to the owner
+	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
 	    {
 	      if([key isEqualToString: @"NSWindowsMenu"] == NO && // we don't want to send a message to these menus twice, 
 		 [key isEqualToString: @"NSServicesMenu"] == NO && // if they're custom classes.
 		 [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
 		 [key isEqualToString: @"NSDeferred"] == NO &&
-		 [key isEqualToString: @"NSNibTopLevelObjects"] == NO &&
+		 [key isEqualToString: @"NSTopLevelObjects"] == NO &&
 		 [key isEqualToString: @"GSCustomClassMap"] == NO)		
 		{
 		  id o = [nameTable objectForKey: key];
@@ -180,12 +180,12 @@ static const int currentVersion = 1; // GSNibItem version number...
 	}
       
       /* 
-       * See if the user has passed in the NSNibTopLevelObjects key.
+       * See if the user has passed in the NSTopLevelObjects key.
        * This is an implementation of an undocumented, but commonly used feature
        * of nib files to allow the release of the top level objects in the nib
        * file.
        */
-      obj = [context objectForKey: @"NSNibTopLevelObjects"];
+      obj = [context objectForKey: @"NSTopLevelObjects"];
       if([obj isKindOfClass: [NSMutableArray class]])
 	{
 	  topLevelObjects = obj;
@@ -208,7 +208,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 	      [key isEqualToString: @"NSServicesMenu"] == NO &&
 	      [key isEqualToString: @"NSVisible"] == NO && 
 	      [key isEqualToString: @"NSDeferred"] == NO &&
-	      [key isEqualToString: @"NSNibTopLevelObjects"] == NO &&
+	      [key isEqualToString: @"NSTopLevelObjects"] == NO &&
 	      [key isEqualToString: @"GSCustomClassMap"] == NO)
 	    {
 	      id o = [nameTable objectForKey: key];
@@ -220,7 +220,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 		{
 		  if(topLevelObjects == nil)
 		    {
-		      // It is expected, if the NSNibTopLevelObjects key is not passed in,
+		      // It is expected, if the NSTopLevelObjects key is not passed in,
 		      // that the user has opted to either allow these objects to leak or
 		      // to release them explicitly.
 		      RETAIN(o);

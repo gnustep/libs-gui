@@ -69,6 +69,8 @@
  * retained or not since there are a lot of other things stored in the nameTable
  * as well.  GJC
  */
+
+/*
 @interface _GSNibItemCollector : NSObject
 {
   NSMutableArray *items;
@@ -105,6 +107,7 @@
   return items;
 }
 @end
+*/
 
 @implementation NSNib
 
@@ -213,6 +216,7 @@
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable
 				   withZone: (NSZone *)zone
 {
+  /*
   BOOL		 loaded = NO;
   id             nibitems = nil;
   NSUnarchiver	*unarchiver = nil;
@@ -264,6 +268,8 @@
   }
 
   return loaded;
+  */
+  return NO;
 }
 
 /**
