@@ -232,14 +232,9 @@ static NSMapTable* windowmaps = NULL;
    */
   [context _removeDragTypes: nil fromWindow: [self windowNumber]];
 
-  /* Often, when an app is terminated, an NSWindow is autoreleased after the
-     context, so we forget about this if there is no more context */
-  if (context)
-    {
-      if (gstate)
-	DPSundefineuserobject(context, gstate);
-      DPStermwindow(context, window_num);
-    }
+  if (gstate)
+    DPSundefineuserobject(context, gstate);
+  DPStermwindow(context, window_num);
   NSMapRemove(windowmaps, (void*)window_num);
   [super dealloc];
 }

@@ -1,3 +1,7 @@
+1999-10-26  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-dealloc): Remove check for context.
+
 Wed Oct 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patches by ackyugo@geocities.co.jp fixing bug (horizontal 
