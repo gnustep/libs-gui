@@ -27,24 +27,31 @@
 #ifndef _GNUstep_H_NSProgressIndicator
 #define _GNUstep_H_NSProgressIndicator
 
-#import <AppKit/NSView.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSCell.h>
+
+#define NSProgressIndicatorPreferredThickness 14
+#define NSProgressIndicatorPreferredSmallThickness 10
+#define NSProgressIndicatorPreferredLargeThickness 18
+#define NSProgressIndicatorPreferredAquaThickness 12
 
 @interface NSProgressIndicator : NSView
 {
-   BOOL			isIndeterminate;
-   BOOL			isBezeled;
-   BOOL			usesThreadedAnimation;
-   NSTimeInterval	animationDelay;
-   double		doubleValue;
-   double		minValue;
-   double		maxValue;
-   BOOL			isVertical;
+  BOOL			_isIndeterminate;
+  BOOL			_isBezeled;
+  BOOL			_usesThreadedAnimation;
+  NSTimeInterval	_animationDelay;
+  double		_doubleValue;
+  double		_minValue;
+  double		_maxValue;
+  BOOL			_isVertical;
+@private
+  BOOL                  _isRunning;
+  int                   _count;  
+  NSTimer              *_timer;
+  NSThread             *_thread;
 }
-
-//
-// Creating an Instance
-//
-- (id)initWithFrame:(NSRect)frameRect;
 
 //
 // Animating the progress indicator
@@ -75,6 +82,14 @@
 - (void)setBezeled:(BOOL)flag;
 - (BOOL)isIndeterminate;
 - (void)setIndeterminate:(BOOL)flag;
+
+//
+// Standard control layout
+//
+- (NSControlSize)controlSize;
+- (void)setControlSize:(NSControlSize)size;
+- (NSControlTint)controlTint;
+- (void)setControlTint:(NSControlTint)tint;
 
 @end
 
