@@ -7,6 +7,38 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.1.1}
+
+@itemize @bullet
+
+@item
+Almost complete implementation of the PXKMenu and PXKMenuCell classes.
+
+@item
+Fill out implementation of NSFont and NSFontManager.
+
+@item
+Fill out implementation of NSColor including color spaces other than
+RGB.  Now maintains the common colors as global variables.
+
+@item
+Integration with the Display Ghostscript System.  This is mainly related
+to using the header files in the DPSclient library for defining the
+PostScript operator functions.
+
+@item
+Initial documentation set.
+
+@item
+Initial implementation of NSImage, NSImageRep, and NSImageRep subclass
+classes based upon work by Adam Fedor.
+
+@item
+Now requires the TIFF library for reading, writing, and manipulating
+tiff files and images.
+
+@end itemize
+
 @section Noteworthy changes in version @samp{0.1.0}
 
 @itemize @bullet

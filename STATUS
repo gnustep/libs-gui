@@ -79,10 +79,9 @@ notifications centers are non-existent.
      implemented.
 
 *NSClipView:: [2]*
-*NSColor:: [5]*
-     Doesn't know the difference between calibrated and device; only
-     supported colorspace is RGB.  Maybe usable with backend
-     implementation for basic colors like white, black, red, etc.
+*NSColor:: [8]*
+     Now implements all colorspaces; however, does not know the
+     difference between calibrated and device.
 
 *NSColorList:: [2]*
 *NSColorPanel:: [2]*
@@ -106,12 +105,13 @@ notifications centers are non-existent.
 *NSEvent:: [9]*
      All methods implemented except periodic events.
 
-*NSFont:: [4]*
-     Maintains no AFM or glyph information.  Usability depends greatly
-     upon backend implementation.
+*NSFont:: [6]*
+     Maintains no AFM or glyph information.  Has been filled out some
+     more so as to be quite usable with the Display Ghostscript System.
 
-*NSFontManager:: [4]*
-     Only primitive capability.
+*NSFontManager:: [6]*
+     Has been filled out some more so as to be usable with the Display
+     Ghostscript System, but still requires additional work.
 
 *NSFontPanel:: [2]*
      May be usable with backend implementation.
@@ -129,11 +129,13 @@ notifications centers are non-existent.
      Many methods are implemented but more thorough testing needs to be
      done.
 
-*NSMenu:: [4]*
-     Usability greatly depends upon backend implementation.
+*NSMenu:: [8]*
+     Almost complete implementation; actual ability to use depends upon
+     backend implementation.
 
-*NSMenuCell:: [4]*
-     Usability greatly depends upon backend implementation.
+*NSMenuCell:: [8]*
+     Almost complete implementation; actual ability to use depends upon
+     backend implementation.
 
 *NSOpenPanel:: [6]*
      Usability greatly depends upon backend implementation.
@@ -216,205 +218,5 @@ Protocols
 Functions
 =========
 
-   Very few if any of the functions are implemented; all the functions
-dealing with drawing will probably be implemented in the backend.  Most
-other functions deal with classes that lack sufficient implementation.
-
-Rectangle Drawing Functions
----------------------------
-
-*Optimize Drawing. [2]*
-      - Function: void NSEraseRect (NSRect ARECT )
-
-      - Function: void NSHighlightRect (NSRect ARECT )
-
-      - Function: void NSRectClip (NSRect ARECT )
-
-      - Function: void NSRectClipList (const NSRect * RECTS, int COUNT )
-
-      - Function: void NSRectFill (NSRect ARECT )
-
-      - Function: void NSRectFillList (const NSRect * RECTS, int COUNT )
-
-      - Function: void NSRectFillListWithGrays (const NSRect * RECTS,
-               const float * GRAYS, int COUNT )
-
-*Draw a Bordered Rectangle. [2]*
-      - Function: void NSDrawButton (NSRect ARECT, NSRect CLIPRECT )
-
-      - Function: void NSDrawGrayBezel (NSRect ARECT, NSRect CLIPRECT )
-
-      - Function: void NSDrawGroove (NSRect ARECT, NSRect CLIPRECT )
-
-      - Function: NSRect NSDrawTiledRects (NSRect BOUNDSRECT, NSRect
-               CLIPRECT, const NSRectEdge * SIDES, const float * GRAYS,
-               int COUNT )
-
-      - Function: void NSDrawWhiteBezel (NSRect ARECT, NSRect CLIPRECT )
-
-      - Function: void NSFrameRect (NSRect ARECT )
-
-      - Function: void NSFrameRectWithWidth (NSRect ARECT, float
-               FRAMEWIDTH )
-
-Color Functions
----------------
-
-*Get Information About Color Space and Window Depth. [2]*
-      - Function: void NSWindowDepth * NSAvailableWindowDepths ( void )
-
-      - Function: NSWindowDepth NSBestDepth (NSString * COLORSPACE, int
-               BITSPERSAMPLE, int BITSPERPIXEL, BOOL PLANAR, BOOL *
-               EXACTMATCH)
-
-      - Function: int NSBitsPerPixelFromDepth (NSWindowDepth DEPTH)
-
-      - Function: int NSBitsPerSampleFromDepth (NSWindowDepth DEPTH)
-
-      - Function: NSString * NSColorSpaceFromDepth (NSWindowDepth DEPTH)
-
-      - Function: int NSNumberOfColorComponents (NSString *
-               COLORSPACENAME)
-
-      - Function: BOOL NSPlanarFromDepth (NSWindowDepth DEPTH)
-
-*Read the Color at a Screen Position. [2]*
-      - Function: NSColor * NSReadPixel (NSPoint LOCATION)
-
-Text Functions
---------------
-
-*Filter Characters Entered into a Text Object. [2]*
-      - Function: unsigned short NSEditorFilter (unsigned short
-               THECHAR, int FLAGS, NSStringEncoding THEENCODING)
-
-      - Function: unsigned short NSFieldFilter (unsigned short THECHAR,
-               int FLAGS, NSStringEncoding THEENCODING)
-
-*Calculate or Draw a Line of Text (in Text Object). [2]*
-      - Function: int NSDrawALine (id SELF, NSLayInfo * LAYINFO)
-
-      - Function: int NSScanALine (id SELF, NSLayInfo * LAYINFO)
-
-*Calculate Font Ascender, Descender, and Line Height (in Text Object). [?]*
-      - Function: void NSTextFontInfo (id FID, float * ASCENDER, float
-               * DESCENDER, float * LINEHEIGHT)
-
-*Access Text Object's Word Tables. [2]*
-      - Function: NSData * NSDataWithWordTable (const unsigned char *
-               SMARTLEFT, const unsigned char * SMARTRIGHT, const
-               unsigned char * CHARCLASSES, const NSFSM * WRAPBREAKS,
-               int WRAPBREAKSCOUNT, const NSFSM * CLICKBREAKS, int
-               CLICKBREAKSCOUNT, BOOL CHARWRAP)
-
-      - Function: void NSReadWordTable (NSZone * ZONE, NSData * DATA,
-               unsigned char ** SMARTLEFT, unsigned char ** SMARTRIGHT,
-               unsigned char ** CHARCLASSES, NSFSM ** WRAPBREAKS, int *
-               WRAPBREAKSCOUNT, NSFSM ** CLICKBREAKS, int *
-               CLICKBREAKSCOUNT, BOOL * CHARWRAP)
-
-Array Allocation Functions for Use by the NSText Class
-------------------------------------------------------
-
-      - Function: NSTextChunk * NSChunkCopy (NSTextChunk * PC,
-               NSTextChunk * DPC)
-
-      - Function: NSTextChunk * NSChunkGrow (NSTextChunk * PC, int
-               NEWUSED)
-
-      - Function: NSTextChunk * NSChunkMalloc (int GROWBY, int INITUSED)
-
-      - Function: NSTextChunk * NSChunkRealloc (NSTextChunk * PC)
-
-      - Function: NSTextChunk * NSChunkZoneCopy (NSTextChunk * PC,
-               NSTextChunk * DPC, NSZone * ZONE)
-
-      - Function: NSTextChunk * NSChunkZoneGrow (NSTextChunk * PC, int
-               NEWUSED, NSZone * ZONE)
-
-      - Function: NSTextChunk * NSChunkZoneMalloc (int GROWBY, int
-               INITUSED, NSZone * ZONE)
-
-      - Function: NSTextChunk * NSChunkZoneRealloc (NSTextChunk * PC,
-               NSZone * ZONE)
-
-Imaging Functions
------------------
-
-*Copy an Image. [2]*
-      - Function: void NSCopyBitmapFromGState (int SRCGSTATE, NSRect
-               SRCRECT, NSRect DESTRECT)
-
-      - Function: void NSCopyBits (int SRCGSTATE, NSRect SRCRECT,
-               NSPoint DESTPOINT)
-
-*Render Bitmap Images. [2]*
-      - Function: void NSDrawBitmap (NSRect RECT, int PIXELSWIDE, int
-               PIXELSHIGH, int BITSPERSAMPLE, int SAMPLESPERPIXEL, int
-               BITSPERPIXEL, int BYTESPERROW, BOOL ISPLANAR, BOOL
-               HASALPHA, NSString * COLORSPACENAME, const unsigned char
-               * const DATA[5]);
-
-Attention Panel Functions
--------------------------
-
-*Create an Attention Panel without Running It Yet. [2]*
-      - Function: id NSGetAlertPanel (NSString * TITLE, NSString * MSG,
-               NSString * DEFAULTBUTTON, NSString * ALTERNATEBUTTON,
-               NSString * OTHERBUTTON, ...)
-
-*Create and Run an Attention Panel. [2]*
-      - Function: int NSRunAlertPanel (NSString * TITLE, NSString *
-               MSG, NSString * DEFAULTBUTTON, NSString *
-               ALTERNATEBUTTON, NSString * OTHERBUTTON, ...)
-
-      - Function: int NSRunLocalizedAlertPanel (NSString * TABLE,
-               NSString * TITLE, NSString * MSG, NSString *
-               DEFAULTBUTTON, NSString * ALTERNATEBUTTON, NSString *
-               OTHERBUTTON, ...)
-
-*Release an Attention Panel. [2]*
-      - Function: void NSReleaseAlertPanel (id PANEL)
-
-Services Menu Functions
------------------------
-
-*Determine Whether an Item is Included in Services Menus. [2]*
-      - Function: int NSSetShowsServicesMenuItem (NSString * ITEM, BOOL
-               SHOWSERVICE)
-
-      - Function: BOOL NSShowsServicesMenuItem (NSString * ITEM)
-
-*Programmatically Invoke a Service. [2]*
-      - Function: BOOL NSPerformService (NSString * ITEM, NSPasteboard
-               * PBOARD)
-
-*Force Services Menu to Update Based on New Services. [2]*
-      - Function: void NSUpdateDynamicServices (void)
-
-Miscellaneous Functions
------------------------
-
-*Play the System Beep. [2]*
-      - Function: void NSBeep (void)
-
-*Return File-related Pasteboard Types. [2]*
-      - Function: NSString * NSCreateFileContentsPboardType (NSString *
-               FILETYPE)
-
-      - Function: NSString * NSCreateFilenamePboardType (NSString *
-               FILENAME)
-
-      - Function: NSString * NSGetFileType (NSString * PBOARDTYPE)
-
-      - Function: NSArray * NSGetFileTypes (NSArray * PBOARDTYPES)
-
-*Draw a Distinctive Outline around Linked Data. [2]*
-      - Function: void NSFrameLinkRect (NSRect ARECT, BOOL
-               ISDESTINATION)
-
-      - Function: float NSLinkFrameThickness (void)
-
-*Convert an Event Mask Type to a Mask. [2]*
-      - Function: unsigned int NSEventMaskFromType (NSEventType TYPE)
+   All of the functions have been moved to the backend.
 

@@ -6,7 +6,7 @@ This file documents the installation of the GNUstep GUI Library,
 You may copy, distribute, and modify it freely as long as you preserve
 this copyright notice and permission notice.
 
-   This is version 0.1.0 of the GNUstep GUI library.
+   This is version 0.1.1 of the GNUstep GUI library.
 
 Installing `libgnustep-gui'
 ===========================
@@ -32,7 +32,18 @@ instructions below.
      Runtime patches to GCC which makes the runtime thread-safe, if
      your version of GCC lacks them.
 
-  3. Configure the package for your system.  In the directory that this
+  3. Install the `TIFF' library.  This library requires the header files
+     in the TIFF library to compile; the TIFF library is used for the
+     NSImage and associated classes for reading, writing, and
+     manipulating tiff files.
+
+  4. Install `DGS'.  Though this library does not directly use the
+     Display Ghostscript System; it does require the DPS client library
+     headers in order to compile.  You should have at least version
+     0.1.1; likewise, you could just install the DPS client library
+     itself in which use version 6.1.
+
+  5. Configure the package for your system.  In the directory that this
      file is in, type `./configure'.  If you're using `csh' on an old
      version of System V, you might need to type `sh configure' instead
      to prevent `csh' from trying to execute `configure' itself.
@@ -125,14 +136,14 @@ instructions below.
      to do them, and mail diffs or instructions to the address given in
      the `README' so we can include them in the next release.
 
-  4. Type `make' to compile the package.  If you want, you can override
+  6. Type `make' to compile the package.  If you want, you can override
      the `make' variables `CFLAGS' and `LDFLAGS' like this:
           make CFLAGS=-O2 LDFLAGS=-s
 
-  5. Type `make install' to install the library, data files, header
+  7. Type `make install' to install the library, data files, header
      files, and documentation.
 
-  6. You can remove the program binaries and object files from the
+  8. You can remove the program binaries and object files from the
      source directory by typing `make clean'.  To also remove the
      Makefile(s), and `config.status' (all the files that `configure'
      created), type `make distclean'.

@@ -1,7 +1,30 @@
 NEWS
 ****
 
-The currently released version of the library is `0.1.0'.
+The currently released version of the library is `0.1.1'.
+
+Noteworthy changes in version `0.1.1'
+=====================================
+
+   * Almost complete implementation of the PXKMenu and PXKMenuCell
+     classes.
+
+   * Fill out implementation of NSFont and NSFontManager.
+
+   * Fill out implementation of NSColor including color spaces other
+     than RGB.  Now maintains the common colors as global variables.
+
+   * Integration with the Display Ghostscript System.  This is mainly
+     related to using the header files in the DPSclient library for
+     defining the PostScript operator functions.
+
+   * Initial documentation set.
+
+   * Initial implementation of NSImage, NSImageRep, and NSImageRep
+     subclass classes based upon work by Adam Fedor.
+
+   * Now requires the TIFF library for reading, writing, and
+     manipulating tiff files and images.
 
 Noteworthy changes in version `0.1.0'
 =====================================

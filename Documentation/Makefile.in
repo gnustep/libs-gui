@@ -42,15 +42,15 @@ TEXI2HTML = texi2html
 include $(srcdir)/../Version
 
 ORIG_FILES = \
-version.texi.orig \
-gnustep-gui.texi.orig \
-announce.texi.orig \
-install.texi.orig \
-news.texi.orig \
-readme.texi.orig \
-status.texi.orig \
-todo.texi.orig \
-faq.texi.orig
+version.tmpl.texi \
+gnustep-gui.tmpl.texi \
+announce.tmpl.texi \
+install.tmpl.texi \
+news.tmpl.texi \
+readme.tmpl.texi \
+status.tmpl.texi \
+todo.tmpl.texi \
+faq.tmpl.texi
 
 TEXI_FILES = \
 version.texi \
@@ -66,10 +66,10 @@ faq.texi \
 TEXT_FILES = \
 TODO INSTALL NEWS README ANNOUNCE FAQ STATUS
 
-DVI_FILES = gnustep-gui.dvi objc-runtime.dvi
-PS_FILES = gnustep-gui.ps objc-runtime.ps
-HTML_FILES = gnustep-gui_toc.html objc-runtime_toc.html
-INFO_FILES = gnustep-gui.info objc-runtime.info
+DVI_FILES = gnustep-gui.dvi
+PS_FILES = gnustep-gui.ps
+HTML_FILES = gnustep-gui_toc.html
+INFO_FILES = gnustep-gui.info
 
 INFO_FLAGS = -I $(srcdir) -D NO-TEXI2HTML --no-header
 HTML_FLAGS = -split_chapter -expandinfo -I $(srcdir)
@@ -83,31 +83,37 @@ html: $(HTML_FILES)
 text: $(TEXT_FILES)
 ps: $(PS_FILES)
 
-version.texi.orig: $(srcdir)/../Version
-	rm -f version.texi.orig
+version.tmpl.texi: $(srcdir)/../Version
+	rm -f version.tmpl.texi
 	echo '@set GNUSTEP-GUI-VERSION' $(GNUSTEP_GUI_VERSION) \
-		> version.texi.orig
+		> version.tmpl.texi
 	echo '@set GNUSTEP-GUI-GCC-VERSION $(GNUSTEP_GUI_GCC_VERSION)' \
-		>> version.texi.orig
+		>> version.tmpl.texi
+	echo '@set GNUSTEP-GUI-LIBTIFF $(GNUSTEP_GUI_LIBTIFF)' \
+		>> version.tmpl.texi
+	echo '@set GNUSTEP-GUI-DGS $(GNUSTEP_GUI_DGS)' \
+		>> version.tmpl.texi
+	echo '@set GNUSTEP-GUI-DPSCLIENT $(GNUSTEP_GUI_DPSCLIENT)' \
+		>> version.tmpl.texi
 	if [ $(GNUSTEP_GUI_FTP_MACHINE) ]; then \
 	  echo '@set GNUSTEP-GUI-FTP-MACHINE $(GNUSTEP_GUI_FTP_MACHINE)' \
-		>> version.texi.orig; fi
+		>> version.tmpl.texi; fi
 	if [ $(GNUSTEP_GUI_FTP_DIRECTORY) ]; then \
 	  echo '@set GNUSTEP-GUI-FTP-DIRECTORY $(GNUSTEP_GUI_FTP_DIRECTORY)' \
-		>> version.texi.orig; fi
+		>> version.tmpl.texi; fi
 	if [ $(GNUSTEP_GUI_SNAP_FTP_MACHINE) ]; then \
 	  echo '@set GNUSTEP-GUI-SNAP-FTP-MACHINE \
 		$(GNUSTEP_GUI_SNAP_FTP_MACHINE)' \
-		>> version.texi.orig; fi
+		>> version.tmpl.texi; fi
 	if [ $(GNUSTEP_GUI_SNAP_FTP_DIRECTORY) ]; then \
 	  echo '@set GNUSTEP-GUI-SNAP-FTP-DIRECTORY \
 		$(GNUSTEP_GUI_SNAP_FTP_DIRECTORY)' \
-		>> version.texi.orig; fi
+		>> version.tmpl.texi; fi
 
 gnustep-gui.dvi: $(ORIG_FILES)
 	rm -f $(TEXI_FILES)
 	for i in $(ORIG_FILES); do \
-		cp $$i `basename $$i .orig` ; \
+		cp $$i `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(TEXI2DVI) $(srcdir)/gnustep-gui.texi
 
@@ -117,7 +123,7 @@ gnustep-gui.info: $(ORIG_FILES)
 	   sed -e 's,@email{\([^}]*\)},<\1>,g' \
 		$(srcdir)/$$i \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
-		> `basename $$i .orig` ; \
+		> `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(MAKEINFO) $(INFO_FLAGS) -o gnustep-gui.info $(srcdir)/gnustep-gui.texi
 
@@ -131,56 +137,56 @@ gnustep-gui_toc.html: $(ORIG_FILES)
 		$(srcdir)/$$i \
 		| sed -e 's,@url{\([^}]*\)},<A HREF="\1">\1</A>,g' \
 		| sed -e 's,^ *$$,@br{},g' \
-		> `basename $$i .orig` ; \
+		> `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(TEXI2HTML) $(HTML_FLAGS) gnustep-gui.texi
 
 # Rules for producing the text files
-README: version.texi.orig readme.texi.orig
+README: version.tmpl.texi readme.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/readme.texi.orig \
+		$(srcdir)/readme.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> readme.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o README $(srcdir)/readme.texi
 
-ANNOUNCE: version.texi.orig announce.texi.orig
+ANNOUNCE: version.tmpl.texi announce.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/announce.texi.orig \
+		$(srcdir)/announce.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> announce.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o ANNOUNCE $(srcdir)/announce.texi
 
-INSTALL: version.texi.orig install.texi.orig
+INSTALL: version.tmpl.texi install.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/install.texi.orig \
+		$(srcdir)/install.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> install.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o INSTALL $(srcdir)/install.texi
 
-NEWS: version.texi.orig news.texi.orig
+NEWS: version.tmpl.texi news.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/news.texi.orig \
+		$(srcdir)/news.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> news.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o NEWS $(srcdir)/news.texi
 
-FAQ: version.texi.orig faq.texi.orig
+FAQ: version.tmpl.texi faq.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/faq.texi.orig \
+		$(srcdir)/faq.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> faq.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o FAQ $(srcdir)/faq.texi
 
-STATUS: version.texi.orig status.texi.orig
+STATUS: version.tmpl.texi status.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/status.texi.orig \
+		$(srcdir)/status.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> status.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o STATUS $(srcdir)/status.texi
 
-TODO: version.texi.orig todo.texi.orig
+TODO: version.tmpl.texi todo.tmpl.texi
 	sed -e 's,@email{\([^}]*\)},<\1>,g' \
-		$(srcdir)/todo.texi.orig \
+		$(srcdir)/todo.tmpl.texi \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
 		> todo.texi ; \
 	$(MAKEINFO) $(TEXT_FLAGS) -o TODO $(srcdir)/todo.texi
@@ -188,34 +194,34 @@ TODO: version.texi.orig todo.texi.orig
 #
 # GNU Objective-C Runtime Library Manual
 #
-objc-runtime.dvi: version.texi.orig objc-runtime.texi.orig
+objc-runtime.dvi: version.tmpl.texi objc-runtime.tmpl.texi
 	rm -f $(TEXI_FILES)
-	for i in version.texi.orig objc-runtime.texi.orig; do \
-		cp $$i `basename $$i .orig` ; \
+	for i in version.tmpl.texi objc-runtime.tmpl.texi; do \
+		cp $$i `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(TEXI2DVI) $(srcdir)/objc-runtime.texi
 
-objc-runtime.info: version.texi.orig objc-runtime.texi.orig
+objc-runtime.info: version.tmpl.texi objc-runtime.tmpl.texi
 	rm -f $(TEXI_FILES)
-	for i in version.texi.orig objc-runtime.texi.orig; do \
+	for i in version.tmpl.texi objc-runtime.tmpl.texi; do \
 	   sed -e 's,@email{\([^}]*\)},<\1>,g' \
 		$(srcdir)/$$i \
 		| sed -e 's,@url{\([^}]*\)},@samp{\1},g' \
-		> `basename $$i .orig` ; \
+		> `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(MAKEINFO) $(INFO_FLAGS) -o objc-runtime.info $(srcdir)/objc-runtime.texi
 
 objc-runtime.ps: objc-runtime.dvi
 	dvips objc-runtime.dvi -o objc-runtime.ps
 
-objc-runtime_toc.html: version.texi.orig objc-runtime.texi.orig
+objc-runtime_toc.html: version.tmpl.texi objc-runtime.tmpl.texi
 	rm -f $(TEXI_FILES)
-	for i in version.texi.orig objc-runtime.texi.orig; do \
+	for i in version.tmpl.texi objc-runtime.tmpl.texi; do \
 	   sed -e 's,@email{\([^}]*\)},<A HREF="mailto:\1">\1</A>,g' \
 		$(srcdir)/$$i \
 		| sed -e 's,@url{\([^}]*\)},<A HREF="\1">\1</A>,g' \
 		| sed -e 's,^ *$$,@br{},g' \
-		> `basename $$i .orig` ; \
+		> `basename $$i .tmpl.texi`.texi ; \
 	done
 	$(TEXI2HTML) $(HTML_FLAGS) objc-runtime.texi
 
@@ -230,7 +236,7 @@ mostlyclean:
 	rm -f objc-runtime.texi
 
 clean: mostlyclean
-	rm -f version.texi.orig
+	rm -f version.tmpl.texi
 	rm -f $(TEXT_FILES)
 	rm -f *.html
 	rm -f *.info

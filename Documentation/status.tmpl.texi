@@ -87,10 +87,9 @@ methods not implemented.
 
 @item NSClipView:: [2]
 
-@item NSColor:: [5] 
-Doesn't know the difference between calibrated and
-device; only supported colorspace is RGB.  Maybe usable with backend
-implementation for basic colors like white, black, red, etc.
+@item NSColor:: [8]
+Now implements all colorspaces; however, does not know the difference
+between calibrated and device.
 
 @item NSColorList:: [2]
 
@@ -124,12 +123,13 @@ Ghostscript are empty.
 @item NSEvent:: [9]
 All methods implemented except periodic events.
 
-@item NSFont:: [4] 
-Maintains no AFM or glyph information.  Usability
-depends greatly upon backend implementation.
+@item NSFont:: [6]
+Maintains no AFM or glyph information.  Has been filled out some more
+so as to be quite usable with the Display Ghostscript System.
 
-@item NSFontManager:: [4]
-Only primitive capability.
+@item NSFontManager:: [6]
+Has been filled out some more so as to be usable with the Display
+Ghostscript System, but still requires additional work.
 
 @item NSFontPanel:: [2]
 May be usable with backend implementation.
@@ -149,11 +149,13 @@ All methods are implemented but it is unknown if the class works.
 @item NSMatrix:: [6]
 Many methods are implemented but more thorough testing needs to be done.
 
-@item NSMenu:: [4]
-Usability greatly depends upon backend implementation.
+@item NSMenu:: [8]
+Almost complete implementation; actual ability to use depends upon
+backend implementation.
 
-@item NSMenuCell:: [4]
-Usability greatly depends upon backend implementation.
+@item NSMenuCell:: [8]
+Almost complete implementation; actual ability to use depends upon
+backend implementation.
 
 @item NSOpenPanel:: [6]
 Usability greatly depends upon backend implementation.
@@ -256,248 +258,4 @@ Erich Boleyn has some initial ideas and design.
 
 @section Functions
 
-Very few if any of the functions are implemented; all the functions
-dealing with drawing will probably be implemented in the backend.
-Most other functions deal with classes that lack sufficient
-implementation.
-
-@subsection Rectangle Drawing Functions
-@table @strong
-
-@item Optimize Drawing. [2]
-
-@deftypefun void NSEraseRect (NSRect @var{aRect} )
-@end deftypefun
-
-@deftypefun void NSHighlightRect (NSRect @var{aRect} )
-@end deftypefun
-
-@deftypefun void NSRectClip (NSRect @var{aRect} )
-@end deftypefun
-
-@deftypefun void NSRectClipList (const NSRect * @var{rects}, int @var{count} )
-@end deftypefun
-
-@deftypefun void NSRectFill (NSRect @var{aRect} )
-@end deftypefun
-
-@deftypefun void NSRectFillList (const NSRect * @var{rects}, int @var{count} )
-@end deftypefun
-
-@deftypefun void NSRectFillListWithGrays (const NSRect * @var{rects}, const float * @var{grays}, int @var{count} )
-@end deftypefun
-
-@item Draw a Bordered Rectangle. [2]
-
-@deftypefun void NSDrawButton (NSRect @var{aRect}, NSRect @var{clipRect} )
-@end deftypefun
-
-@deftypefun void NSDrawGrayBezel (NSRect @var{aRect}, NSRect @var{clipRect} )
-@end deftypefun
-
-@deftypefun void NSDrawGroove (NSRect @var{aRect}, NSRect @var{clipRect} )
-@end deftypefun
-
-@deftypefun NSRect NSDrawTiledRects (NSRect @var{boundsRect}, NSRect @var{clipRect}, const NSRectEdge * @var{sides}, const float * @var{grays}, int @var{count} )
-@end deftypefun
-
-@deftypefun void NSDrawWhiteBezel (NSRect @var{aRect}, NSRect @var{clipRect} )
-@end deftypefun
-
-@deftypefun void NSFrameRect (NSRect @var{aRect} )
-@end deftypefun
-
-@deftypefun void NSFrameRectWithWidth (NSRect @var{aRect}, float @var{frameWidth} )
-@end deftypefun
-
-@end table
-@subsection Color Functions
-@table @strong
-
-@item Get Information About Color Space and Window Depth. [2]
-
-@deftypefun void {NSWindowDepth *} NSAvailableWindowDepths ( void )
-@end deftypefun
-
-@deftypefun NSWindowDepth NSBestDepth (NSString * @var{colorSpace}, int @var{bitsPerSample}, int @var{bitsPerPixel}, BOOL @var{planar}, BOOL * @var{exactMatch})
-@end deftypefun
-
-@deftypefun int NSBitsPerPixelFromDepth (NSWindowDepth @var{depth})
-@end deftypefun
-
-@deftypefun int NSBitsPerSampleFromDepth (NSWindowDepth @var{depth})
-@end deftypefun
-
-@deftypefun {NSString *} NSColorSpaceFromDepth (NSWindowDepth @var{depth})
-@end deftypefun
-
-@deftypefun int NSNumberOfColorComponents (NSString * @var{colorSpaceName})
-@end deftypefun
-
-@deftypefun BOOL NSPlanarFromDepth (NSWindowDepth @var{depth})
-@end deftypefun
-
-@item Read the Color at a Screen Position. [2]
-
-@deftypefun {NSColor *} NSReadPixel (NSPoint @var{location})
-@end deftypefun
-
-@end table
-@subsection Text Functions
-@table @strong
-
-@item Filter Characters Entered into a Text Object. [2]
-
-@deftypefun {unsigned short} NSEditorFilter (unsigned short @var{theChar}, int @var{flags}, NSStringEncoding @var{theEncoding})
-@end deftypefun
-
-@deftypefun {unsigned short} NSFieldFilter (unsigned short @var{theChar}, int @var{flags}, NSStringEncoding @var{theEncoding})
-@end deftypefun
-
-@item Calculate or Draw a Line of Text (in Text Object). [2]
-
-@deftypefun int NSDrawALine (id @var{self}, NSLayInfo * @var{layInfo})
-@end deftypefun
-
-@deftypefun int NSScanALine (id @var{self}, NSLayInfo * @var{layInfo})
-@end deftypefun
-
-@item Calculate Font Ascender, Descender, and Line Height (in Text Object). [?]
-
-@deftypefun void NSTextFontInfo (id @var{fid}, float * @var{ascender}, float * @var{descender}, float * @var{lineHeight})
-@end deftypefun
-
-@item Access Text Object's Word Tables. [2]
-
-@deftypefun {NSData *} NSDataWithWordTable (const unsigned char * @var{smartLeft}, const unsigned char * @var{smartRight}, const unsigned char * @var{charClasses}, const NSFSM * @var{wrapBreaks}, int @var{wrapBreaksCount}, const NSFSM * @var{clickBreaks}, int @var{clickBreaksCount}, BOOL @var{charWrap})
-@end deftypefun
-
-@deftypefun void NSReadWordTable (NSZone * @var{zone}, NSData * @var{data}, unsigned char ** @var{smartLeft}, unsigned char ** @var{smartRight}, unsigned char ** @var{charClasses}, NSFSM ** @var{wrapBreaks}, int * @var{wrapBreaksCount}, NSFSM ** @var{clickBreaks}, int * @var{clickBreaksCount}, BOOL * @var{charWrap})
-@end deftypefun
-
-@end table
-@subsection Array Allocation Functions for Use by the NSText Class
-@table @strong
-
-@deftypefun {NSTextChunk *} NSChunkCopy (NSTextChunk * @var{pc}, NSTextChunk * @var{dpc})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkGrow (NSTextChunk * @var{pc}, int @var{newUsed})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkMalloc (int @var{growBy}, int @var{initUsed})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkRealloc (NSTextChunk * @var{pc})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkZoneCopy (NSTextChunk * @var{pc}, NSTextChunk * @var{dpc}, NSZone * @var{zone})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkZoneGrow (NSTextChunk * @var{pc}, int @var{newUsed}, NSZone * @var{zone})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkZoneMalloc (int @var{growBy}, int @var{initUsed}, NSZone * @var{zone})
-@end deftypefun
-
-@deftypefun {NSTextChunk *} NSChunkZoneRealloc (NSTextChunk * @var{pc}, NSZone * @var{zone})
-@end deftypefun
-
-@end table
-@subsection Imaging Functions
-@table @strong
-
-@item Copy an Image. [2]
-
-@deftypefun void NSCopyBitmapFromGState (int @var{srcGstate}, NSRect @var{srcRect}, NSRect @var{destRect})
-@end deftypefun
-
-@deftypefun void NSCopyBits (int @var{srcGstate}, NSRect @var{srcRect}, NSPoint @var{destPoint})
-@end deftypefun
-
-@item Render Bitmap Images. [2]
-
-@deftypefun void NSDrawBitmap (NSRect @var{rect}, int @var{pixelsWide}, int @var{pixelsHigh}, int @var{bitsPerSample}, int @var{samplesPerPixel}, int @var{bitsPerPixel}, int @var{bytesPerRow}, BOOL @var{isPlanar}, BOOL @var{hasAlpha}, NSString * @var{colorSpaceName}, const unsigned char * const @var{data}[5]);
-@end deftypefun
-
-@end table
-@subsection Attention Panel Functions
-@table @strong
-
-@item Create an Attention Panel without Running It Yet. [2]
-
-@deftypefun id NSGetAlertPanel (NSString * @var{title}, NSString * @var{msg}, NSString * @var{defaultButton}, NSString * @var{alternateButton}, NSString * @var{otherButton}, @dots{})
-@end deftypefun
-
-@item Create and Run an Attention Panel. [2]
-
-@deftypefun int NSRunAlertPanel (NSString * @var{title}, NSString * @var{msg}, NSString * @var{defaultButton}, NSString * @var{alternateButton}, NSString * @var{otherButton}, @dots{})
-@end deftypefun
-
-@deftypefun int NSRunLocalizedAlertPanel (NSString * @var{table}, NSString * @var{title}, NSString * @var{msg}, NSString * @var{defaultButton}, NSString * @var{alternateButton}, NSString * @var{otherButton}, @dots{})
-@end deftypefun
-
-@item Release an Attention Panel. [2]
-
-@deftypefun void NSReleaseAlertPanel (id @var{panel})
-@end deftypefun
-
-@end table
-@subsection Services Menu Functions
-@table @strong
-
-@item Determine Whether an Item is Included in Services Menus. [2]
-
-@deftypefun int NSSetShowsServicesMenuItem (NSString * @var{item}, BOOL @var{showService})
-@end deftypefun
-
-@deftypefun BOOL NSShowsServicesMenuItem (NSString * @var{item})
-@end deftypefun
-
-@item Programmatically Invoke a Service. [2]
-
-@deftypefun BOOL NSPerformService (NSString * @var{item}, NSPasteboard * @var{pboard})
-@end deftypefun
-
-@item Force Services Menu to Update Based on New Services. [2]
-
-@deftypefun void NSUpdateDynamicServices (void)
-@end deftypefun
-
-@end table
-@subsection Miscellaneous Functions
-@table @strong
-
-@item Play the System Beep. [2]
-
-@deftypefun void NSBeep (void)
-@end deftypefun
-
-@item Return File-related Pasteboard Types. [2]
-
-@deftypefun {NSString *} NSCreateFileContentsPboardType (NSString * @var{fileType})
-@end deftypefun
-
-@deftypefun {NSString *} NSCreateFilenamePboardType (NSString * @var{filename})
-@end deftypefun
-
-@deftypefun {NSString *} NSGetFileType (NSString * @var{pboardType})
-@end deftypefun
-
-@deftypefun {NSArray *} NSGetFileTypes (NSArray * @var{pboardTypes})
-@end deftypefun
-
-@item Draw a Distinctive Outline around Linked Data. [2]
-
-@deftypefun void NSFrameLinkRect (NSRect @var{aRect}, BOOL @var{isDestination})
-@end deftypefun
-
-@deftypefun float NSLinkFrameThickness (void)
-@end deftypefun
-
-@item Convert an Event Mask Type to a Mask. [2]
-
-@deftypefun {unsigned int} NSEventMaskFromType (NSEventType @var{type})
-@end deftypefun
-
-@end table
+All of the functions have been moved to the backend.

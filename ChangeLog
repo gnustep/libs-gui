@@ -1,3 +1,20 @@
+Thu Oct  3 19:36:07 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Version (GNUSTEP_GUI_SUBMINOR_VERSION): Release version 0.1.1.
+
+	* Documentation/install.tmpl.texi: Update for new version.
+	* Documentation/news.tmpl.texi: Update for new version.
+	* Documentation/status.tmpl.texi: Update for new version.
+	* ANNOUNCE: Regenerate from documentation files.
+	* FAQ: Likewise.
+	* INSTALL: Likewise.
+	* NEWS: Likewise.
+	* README: Likewise.
+	* STATUS: Likewise.
+
+	* Documentation/*.texi.orig: Rename files to *.tmpl.texi.
+	* Documentation/Makefile.in: Changes for renamed files.
+
 Wed Oct  2 10:40:23 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Headers/gnustep/gui/NSWindow.h: Add additional instance variables
