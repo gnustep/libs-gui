@@ -1,3 +1,21 @@
+2001-07-17  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSTableView.m (-addTableColumn:): Remove redundant mallocs.
+	(-dealloc): Release backgroundColor. 
+	(-encodeWithCoder:): Implement.
+	(-initWithCoder:): Likewise.
+	* Source/NSTableColumn.m (-encodeWithCoder:): New method.
+	(-initWithCoder:): Likewise.
+
+2001-07-17  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+        * Source/NSPanel.m ([GSAlertPanel
+        -initWithContentRect:styleMask:backing;defer:screen]): remove
+        previous key view chain implementation.
+        * Source/NSPanel.m ([GSAlertPanel
+        -setTitle:message:def:alt:other]): new key view chain
+        initialization code.
+
 Mon Jul 16 11:19:28 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSView.m ([-adjustPageHeightNew:top:bottom:limit:]):

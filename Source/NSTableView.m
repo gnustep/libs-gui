@@ -278,6 +278,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 {
   TEST_RELEASE (_dataSource);
   RELEASE (_gridColor);
+  RELEASE (_backgroundColor);
   RELEASE (_tableColumns);
   RELEASE (_selectedColumns);
   RELEASE (_selectedRows);
@@ -325,9 +326,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     }
   else 
     {
-      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-      				     sizeof (float));
-      _columnOrigins = malloc (sizeof (float));
+      _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), sizeof (float));
     }      
   [self tile];
 }
@@ -2769,13 +2768,78 @@ byExtendingSelection: (BOOL)flag
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  // TODO
+
+  [aCoder encodeConditionalObject: _dataSource];
+  [aCoder encodeObject: _tableColumns];
+  [aCoder encodeObject: _gridColor];
+  [aCoder encodeObject: _backgroundColor];
+  [aCoder encodeObject: _headerView];
+  [aCoder encodeObject: _cornerView];
+  [aCoder encodeConditionalObject: _delegate];
+  [aCoder encodeConditionalObject: _target];
+
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+  [aCoder encodeSize: _intercellSpacing];
+
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  return [super initWithCoder: aDecoder];
-  // TODO
+  id aDelegate;
+
+  self = [super initWithCoder: aDecoder];
+
+  _dataSource      = RETAIN([aDecoder decodeObject]);
+  _tableColumns    = RETAIN([aDecoder decodeObject]);
+  _gridColor       = RETAIN([aDecoder decodeObject]);
+  _backgroundColor = RETAIN([aDecoder decodeObject]);
+  _headerView      = RETAIN([aDecoder decodeObject]);
+  _cornerView      = RETAIN([aDecoder decodeObject]);
+  aDelegate        = [aDecoder decodeObject];
+  _target          = [aDecoder decodeObject];
+
+  [self setDelegate: aDelegate];
+  [_headerView setTableView: self];
+  [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
+		                 withObject: self];
+
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+  _intercellSpacing = [aDecoder decodeSize];
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+
+  ASSIGN (_selectedColumns, [NSMutableArray array]);
+  ASSIGN (_selectedRows, [NSMutableArray array]);
+  if (_numberOfColumns)
+    _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				   sizeof(float) * _numberOfColumns);
+
+  _clickedRow = -1;
+  _clickedColumn = -1;
+  _selectingColumns = NO;
+  _selectedColumn = -1;
+  _selectedRow = -1;
+  _editedColumn = -1;
+  _editedRow = -1;
+  return self;
 }
 
 - (void) _userResizedTableColumn: (int)index

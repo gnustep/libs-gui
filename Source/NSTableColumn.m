@@ -35,8 +35,6 @@
 #include <AppKit/NSTableView.h>
 
 @implementation NSTableColumn
-{
-}
 
 /*
  *
@@ -241,4 +239,37 @@
 {
   return _dataCell;
 }
+
+/*
+ * Encoding/Decoding
+ */
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [aCoder encodeObject: _identifier];
+  [aCoder encodeObject: _headerCell];
+  [aCoder encodeObject: _dataCell];
+
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_min_width];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_max_width];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  self = [super init];
+  _identifier = RETAIN([aDecoder decodeObject]);
+  _headerCell = RETAIN([aDecoder decodeObject]);
+  _dataCell   = RETAIN([aDecoder decodeObject]);
+
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+  return self;
+}
+
 @end

@@ -33,7 +33,7 @@
 @class NSCell;
 @class NSTableView;
 
-@interface NSTableColumn : NSObject
+@interface NSTableColumn : NSObject <NSCoding>
 {
   id _identifier;
   NSTableView *_tableView;
