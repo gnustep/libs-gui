@@ -39,11 +39,7 @@
 NSBundle *GSGuiBundle ();
 
 /*
- * Localize a message of the gnustep-gui library.  When we have a tool
- * generating the Localizable.strings file, we'll have it read strings
- * from any function/macro name of the form GSXXXLocalizedString (,),
- * and that should cover all invocations of GSGuiLocalizedString().
- * What a pain to type this long name for all strings.
+ * Localize a message of the gnustep-gui library.  
  */
 static inline NSString *GSGuiLocalizedString (NSString *key, NSString *comment)
 {
@@ -58,6 +54,20 @@ static inline NSString *GSGuiLocalizedString (NSString *key, NSString *comment)
       return key;
     }
 }
+
+/*
+ * Redefine _() to be our own GSGuiLocalizedString().  This is so that
+ * make_strings will recognize it, and for easy typing.
+ */
+#ifdef _
+# undef _
+#endif
+#define _(X) GSGuiLocalizedString (X, @"")
+
+#ifdef NSLocalizedString
+# undef NSLocalizedString
+#endif
+#define NSLocalizedString(key,comment) GSGuiLocalizedString (key, comment)
 
 #endif /* _GNUstep_H_GSGuiPrivate */
 
