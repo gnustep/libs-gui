@@ -3000,6 +3000,14 @@ afterString in order over charRange. */
   return YES;
 }
 
+- (void) resignKeyWindow
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: NO];
+    }
+}
+
 - (void) drawRect: (NSRect)rect
 {
   /* TODO: Only do relayout if needed */
