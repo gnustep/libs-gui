@@ -68,6 +68,7 @@
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/GSDisplayServer.h>
+#include <AppKit/NSCachedImageRep.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -469,6 +470,7 @@ static NSNotificationCenter *nc = nil;
  */
 + (void) initialize
 {
+  NSLog (@"NSWindow initialize");
   if (self == [NSWindow class])
     {
       NSDebugLog(@"Initialize NSWindow class\n");
@@ -622,6 +624,7 @@ static NSNotificationCenter *nc = nil;
   TEST_RELEASE(_rectsBeingDrawn);
   TEST_RELEASE(_initialFirstResponder);
   TEST_RELEASE(_defaultButtonCell);
+  TEST_RELEASE(_cachedImage);
   RELEASE(_screen);
 
   /*
@@ -1735,6 +1738,7 @@ static NSNotificationCenter *nc = nil;
   [_wv display];
   [self enableFlushWindow];
   [self flushWindowIfNeeded];
+  [self discardCachedImage];
 }
 
 - (void) displayIfNeeded
@@ -1893,17 +1897,44 @@ static NSNotificationCenter *nc = nil;
 
 - (void) cacheImageInRect: (NSRect)aRect
 {
-  // FIXME: This Method is missing
+  NSView *cacheView;
+  NSRect cacheRect;
+  
+  aRect = NSIntegralRect (NSIntersectionRect(aRect, [_contentView frame]));
+  _cachedImageOrigin = aRect.origin;
+  DESTROY(_cachedImage);
+  
+  if (NSIsEmptyRect (aRect))
+    {
+      return;
+    }
+  
+  cacheRect.origin = NSZeroPoint;
+  cacheRect.size = aRect.size;
+  _cachedImage = [[NSCachedImageRep alloc] initWithWindow: nil 
+					   rect: cacheRect];
+  cacheView = [[_cachedImage window] contentView];
+  [cacheView lockFocus];
+  NSCopyBits (_gstate, aRect, NSZeroPoint);
+  [cacheView unlockFocus];
 }
 
 - (void) discardCachedImage
 {
-  // FIXME: This Method is missing
+  DESTROY(_cachedImage);
 }
 
 - (void) restoreCachedImage
 {
-  // FIXME: This Method is missing
+  if (_cachedImage == nil)
+    {
+      return;
+    }
+  [_contentView lockFocus];
+  NSCopyBits ([[_cachedImage window] gState], 
+	      [_cachedImage rect],
+	      _cachedImageOrigin);
+  [_contentView unlockFocus];
 }
 
 - (void) useOptimizedDrawing: (BOOL)flag
