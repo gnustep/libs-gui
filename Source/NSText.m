@@ -64,6 +64,8 @@
 
 static NSNotificationCenter *nc;
 
+static	Class	abstract;
+static	Class	concrete;
 
 @interface NSText(GNUstepPrivate)
 /*
@@ -72,8 +74,6 @@ static NSNotificationCenter *nc;
 - (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterIndex: (unsigned)index;
 - (NSRect) rectForCharacterRange: (NSRange)aRange;
-
-- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 
 /*
  * various GNU extensions
@@ -123,7 +123,18 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
       [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
 					 returnTypes: types];
+
+      abstract = self;
+      concrete = [NSTextView class];
     }
+}
+
++ (id) allocWithZone: (NSZone*)zone
+{
+  if (self == abstract)
+    return NSAllocateObject (concrete, 0, zone);
+  else
+    return NSAllocateObject (self, 0, zone);
 }
 
 //
@@ -140,41 +151,12 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSTextContainer *aTextContainer;
-
-  aTextContainer = [self buildUpTextNetwork: frameRect.size];
-
-  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
-
-  /* At this point the situation is as follows: 
-
-     textView (us)  --RETAINs--> textStorage
-     textStorage    --RETAINs--> layoutManager 
-     layoutManager  --RETAINs--> textContainer 
-     textContainter --RETAINs --> textView (us) */
-
-  /* The text system should be destroyed when the textView (us) is
-     released.  To get this result, we send a RELEASE message to us
-     breaking the RETAIN cycle. */
-  RELEASE (self);
-
-  return self;
+  [self subclassResponsibility: _cmd];
+  return nil;
 }
 
 - (void)dealloc
 {
-  if (_tf.owns_text_network == YES)
-    {
-      /* Prevent recursive dealloc */
-      if (_tf.is_in_dealloc == YES)
-	{
-	  return;
-	}
-      _tf.is_in_dealloc = YES;
-      /* This releases all the text objects (us included) in fall */
-      RELEASE (_textStorage);
-    }
-
   RELEASE(_background_color);
   RELEASE(_caret_color);
   RELEASE(_typingAttributes);
@@ -185,42 +167,36 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 /*
  * Getting and Setting Contents
  */
-- (void) replaceCharactersInRange: (NSRange)aRange
-			  withRTF: (NSData*)rtfData
+- (void) replaceCharactersInRange: (NSRange)aRange  withRTF: (NSData *)rtfData
 {
-  [self replaceRange: aRange
-	withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-				 initWithRTF: rtfData
-				 documentAttributes: NULL])];
+  NSAttributedString *attr;
+
+  attr = [[NSAttributedString alloc] initWithRTF: rtfData 
+				     documentAttributes: NULL];
+  AUTORELEASE (attr);
+  [self replaceRange: aRange  withAttributedString: attr];
 }
 
-- (void) replaceCharactersInRange: (NSRange)aRange
-			 withRTFD: (NSData*)rtfdData
+- (void) replaceCharactersInRange: (NSRange)aRange  
+			 withRTFD: (NSData *)rtfdData
 {
-  [self replaceRange: aRange
-	withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-				 initWithRTFD: rtfdData
-				 documentAttributes: NULL])];
+  NSAttributedString *attr;
+
+  attr = [[NSAttributedString alloc] initWithRTFD: rtfdData 
+				     documentAttributes: NULL];
+  AUTORELEASE (attr);
+  [self replaceRange: aRange  withAttributedString: attr];
 }
 
 - (void) replaceCharactersInRange: (NSRange)aRange
 		       withString: (NSString*)aString
 {
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	     replacementString: aString])
-    return;  
-  [_textStorage beginEditing];
-  [_textStorage replaceCharactersInRange: aRange withString: aString];
-  [_textStorage endEditing];
-  [self didChangeText];
+  [self subclassResponsibility: _cmd];
 }
 
 - (void) setString: (NSString*)aString
 {
-  [self replaceCharactersInRange: NSMakeRange(0, [_textStorage length])
+  [self replaceCharactersInRange: NSMakeRange (0, [[self string] length])
 	withString: aString];
 }
 
@@ -1415,7 +1391,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder: aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   BOOL flag;
   [super encodeWithCoder: aCoder];
@@ -1457,10 +1433,9 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 }
 
-- initWithCoder: aDecoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   BOOL flag;
-  NSTextContainer *aTextContainer; 
 
   [super initWithCoder: aDecoder];
 
@@ -1499,13 +1474,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   _caret_color  = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-
-  /* build up the rest of the text system, which doesn't get stored 
-     <doesn't even implement the Coding protocol>. */
-  aTextContainer = [self buildUpTextNetwork: _frame.size];
-  [aTextContainer setTextView: (NSTextView*)self];
-  /* See initWithFrame: for comments on this RELEASE */
-  RELEASE (self);
 
   return self;
 }
@@ -2346,41 +2314,6 @@ other than copy/paste or dragging. */
 
   return [_layoutManager boundingRectForGlyphRange: glyphRange 
 			 inTextContainer: [self textContainer]];
-}
-
-- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
-{
-  NSTextContainer *textContainer;
-  NSLayoutManager *layoutManager;
-  NSTextStorage *textStorage;
-
-  textStorage = [[NSTextStorage alloc] init];
-
-  layoutManager = [[NSLayoutManager alloc] init];
-  /*
-    [textStorage addLayoutManager: layoutManager];
-    RELEASE (layoutManager);
-  */
-
-  textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
-  [layoutManager addTextContainer: textContainer];
-  RELEASE (textContainer);
-
-  /* FIXME: The following two lines should go *before* */
-  [textStorage addLayoutManager: layoutManager];
-  RELEASE (layoutManager);
-
-  /* The situation at this point is as follows: 
-
-     textView (us) --RETAINs--> textStorage 
-     textStorage   --RETAINs--> layoutManager 
-     layoutManager --RETAINs--> textContainer */
-
-  /* We keep a flag to remember that we are directly responsible for 
-     managing the text objects. */
-  _tf.owns_text_network = YES;
-
-  return textContainer;
 }
 
 - (void) drawInsertionPointAtIndex: (unsigned) index
