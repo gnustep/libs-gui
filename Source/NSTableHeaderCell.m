@@ -105,8 +105,8 @@ static NSColor *clearCol = nil;
       // Initialize static colors if needed
       if (clearCol == nil)
 	{
-	  bgCol = RETAIN([NSColor selectedControlColor]);
-	  hbgCol = RETAIN([NSColor controlBackgroundColor]);
+	  bgCol = RETAIN([NSColor controlShadowColor]);
+	  hbgCol = RETAIN([NSColor controlHighlightColor]);
 	  clearCol = RETAIN([NSColor clearColor]);
 	}
       // Prepare to draw
@@ -117,9 +117,9 @@ static NSColor *clearCol = nil;
 	  NSColor *bg;
 	  
 	  if (_cell.is_highlighted)
-	    bg = bgCol;
-	  else
 	    bg = hbgCol;
+	  else
+	    bg = bgCol;
 	  [bg set];
 	  NSRectFill (cellFrame);
 	}
@@ -134,7 +134,7 @@ static NSColor *clearCol = nil;
 	  position.y = MAX (NSMidY (cellFrame) - (size.height/2.), 0.);
 	  if ([controlView isFlipped])
 	    position.y += size.height;
-	  [_cell_image compositeToPoint: position operation: NSCompositeCopy];
+	  [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
 	}
       // End the drawing
       break;
@@ -150,7 +150,7 @@ static NSColor *clearCol = nil;
   
   if (flag == YES)
     {
-      [self setBackgroundColor: [NSColor controlColor]];
+      [self setBackgroundColor: [NSColor controlHighlightColor]];
     }
   else
     {

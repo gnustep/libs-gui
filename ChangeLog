@@ -1,3 +1,10 @@
+2005-01-09  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSTableHeaderCell.m (-drawInteriorWithFrame:inView:): Use
+	the correct background/highlight colors and NSCompositeSourceOver for
+	image cells. 
+	(-setHighlighted): Use controlHighlightColor instead of controlColor.
+	
 2004-12-30  Quentin Mathe <qmathe@club-internet.fr>
 
         * Source/GSToolbarView.m: Modified to be more compliant with GNUstep 
