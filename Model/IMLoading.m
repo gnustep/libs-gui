@@ -62,23 +62,29 @@ BOOL _fileOwnerDecoded = NO;
   GMModel* decoded;
 
   if (![[path pathExtension] isEqualToString:@"gmodel"])
-    path = [path stringByAppendingPathExtension:@"gmodel"];
+    {
+      path = [path stringByAppendingPathExtension:@"gmodel"];
+    }
 
   /* First check to see if path is an absolute path; if so try to load the
      pointed file. */
   if ([path isAbsolutePath]) {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-      /* The file is an absolute path name but the model file doesn't exist. */
-      return NO;
-    }
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) 
+      {
+	/* The file is an absolute path name but the model file
+           doesn't exist. */
+	return NO;
+      }
   }
-  else {
-    /* The path is a relative path; search it in the current bundle. */
+  else 
+    {
+      /* The path is a relative path; search it in the current bundle. */
       NSString *abspath = [resourcePath stringByAppendingPathComponent:path];
-      if (![[NSFileManager defaultManager] fileExistsAtPath:abspath]) {
-          NSArray  *paths;
+      if (![[NSFileManager defaultManager] fileExistsAtPath:abspath]) 
+	{
+	  NSArray  *paths;
 	  NSString *root;
-
+	  
 	  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
                                                       NSSystemDomainMask, YES);
           if ((paths != nil) && ([paths count] > 0))
@@ -87,19 +93,25 @@ BOOL _fileOwnerDecoded = NO;
 	      root = [root stringByAppendingPathComponent:@"Model"];
 	      abspath = [root stringByAppendingPathComponent:path];
 	      if (![[NSFileManager defaultManager] fileExistsAtPath:abspath])
-	        return NO;
+		{
+		  return NO;
+		}
 	    }
 	  else
-	    return NO;
+	    {
+	      return NO;
+	    }
       }
       path = abspath;
-  }
-
+    }
+  
   NSLog (@"loading model file %@...", path);
   unarchiver = [GMUnarchiver unarchiverWithContentsOfFile:path];
-
+  
   if (!unarchiver)
-    return NO;
+    {
+      return NO;
+    }
 
   /* Set the _nibOwner to `owner' so that the first decoded custom object
      replaces itself with `owner'. Also set _fileOwnerDecoded so that the
@@ -109,7 +121,7 @@ BOOL _fileOwnerDecoded = NO;
 
   decoded = [unarchiver decodeObjectWithName:@"RootObject"];
   [decoded _makeConnections];
-
+  
   /* Restore the previous nib owner. We do this because loadIMFile:owner: can
      be invoked recursively. */
   _nibOwner = previousNibOwner;
