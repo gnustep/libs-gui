@@ -5,6 +5,11 @@
 	first.
 	([NSTableView -drawGridInClipRect:]): Idem.
 	Also remove some unused variables.
+	([NSTableView -mouseDown:]): Select the drag row if it's not currently
+	selected. Simplify some code (do all selecting in one place).
+	(-mouseDown2:): Remove commented out method.
+	([NSTableView -draggingUpdated:sender]): scrollRowToVisible if we
+	are dragging near edges of view.
 
 2002-11-02  Lyndon Tremblay  <humasect@shaw.ca>
 
