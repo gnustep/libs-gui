@@ -630,7 +630,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
   NSMutableString	*s = [_pathSeparator mutableCopy];
   unsigned		i;
-
+  NSString              *string;
+  
 #if defined NSBTRACE_pathToColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (NSString *)pathToColumn: %d\n", column);
 #endif
@@ -641,13 +642,27 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (column > _lastColumnLoaded)
     column = _lastColumnLoaded + 1;
 
-  for (i = 0;i < column; ++i)
+  for (i = 0; i < column; ++i)
     {
       id	c = [self selectedCellInColumn: i];
 
       if (i != 0)
-	[s appendString: _pathSeparator];
-      [s appendString: [c stringValue]];
+	{
+	  [s appendString: _pathSeparator];
+	}
+
+      string = [c stringValue];
+      
+      if (string == nil)
+	{
+	  /* This should happen only when c == nil, in which case it
+	     doesn't make sense to go with the path */
+	  break;
+	}
+      else
+	{
+	  [s appendString: string];	  
+	}
     }
   /*
    * We actually return a mutable string, but that's ok since a mutable
@@ -1772,9 +1787,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
   else
     _scrollerRect = NSZeroRect;
+
   if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
-    [_horizontalScroller setFrame: _scrollerRect];
+    {
+      [_horizontalScroller setFrame: _scrollerRect];
+    }
   
+
   // Columns
   if (_separatesColumns)
     _columnSize.width = (int)((_frame.size.width - ((num - 1) * NSBR_COLUMN_SEP))
