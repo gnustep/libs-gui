@@ -42,6 +42,10 @@
 
 #include	<signal.h>
 
+#ifndef	NSIG
+#define	NSIG	32
+#endif
+
 @interface ExampleServices : NSObject
 - (void) openURL: (NSPasteboard*)bp
 	userData: (NSString*)ud
@@ -156,11 +160,59 @@
 
 static int	debug = 0;
 static int	verbose = 0;
+static const char	*progName = "example";
 
-static int
+static void
 ihandler(int sig)
 {
-  abort();
+  static BOOL	beenHere = NO;
+  BOOL		action;
+  const char	*e;
+
+  /*
+   * Prevent recursion.
+   */
+  if (beenHere == YES)
+    {
+      abort();
+    }
+  beenHere = YES;
+
+  /*
+   * If asked to terminate, do so cleanly.
+   */
+  if (sig == SIGTERM)
+    {
+      exit(EXIT_FAILURE);
+    }
+
+#ifdef	DEBUG
+  action = YES;		// abort() by default.
+#else
+  action = NO;		// exit() by default.
+#endif
+  e = getenv("CRASH_ON_ABORT");
+  if (e != 0)
+    {
+      if (strcasecmp(e, "yes") == 0 || strcasecmp(e, "true") == 0)
+	action = YES;
+      else if (strcasecmp(e, "no") == 0 || strcasecmp(e, "false") == 0)
+	action = NO;
+      else if (isdigit(*e) && *e != '0')
+	action = YES;
+      else
+	action = NO;
+    }
+
+  if (action == YES)
+    {
+      abort();
+    }
+  else
+    {
+      fprintf(stderr, "%s killed by signal %d\n", progName, sig);
+      exit(sig);
+    }
 }
 
 static void
@@ -169,6 +221,7 @@ init(int argc, char** argv)
   const char  *options = "Hdv";
   int	  sym;
 
+  progName = argv[0];
   while ((sym = getopt(argc, argv, options)) != -1)
     {
       switch(sym)
@@ -178,7 +231,7 @@ init(int argc, char** argv)
 	    printf("GNU Services example server\n");
 	    printf("-H\tfor help\n");
 	    printf("-d\tavoid fork() to make debugging easy\n");
-	    exit(0);
+	    exit(EXIT_SUCCESS);
 
 	  case 'd':
 	    debug++;
@@ -191,11 +244,11 @@ init(int argc, char** argv)
 	  default:
 	    printf("%s - GNU Pasteboard server\n", argv[0]);
 	    printf("-H	for help\n");
-	    exit(0);
+	    exit(EXIT_SUCCESS);
 	}
     }
 
-  for (sym = 0; sym < 32; sym++)
+  for (sym = 0; sym < NSIG; sym++)
     {
       signal(sym, ihandler);
     }
@@ -217,7 +270,7 @@ init(int argc, char** argv)
 	{
 	  case -1:
 	    NSLog(@"gpbs - fork failed - bye.\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
 
 	  case 0:
 	    /*
@@ -235,7 +288,7 @@ init(int argc, char** argv)
 	      {
 		NSLog(@"Process backgrounded (running as daemon)\r\n");
 	      }
-	    exit(0);
+	    exit(EXIT_SUCCESS);
 	}
 #endif
     }
@@ -259,14 +312,14 @@ main(int argc, char** argv, char **env)
   if (server == nil)
     {
       NSLog(@"Unable to create server object.\n");
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
   NSRegisterServicesProvider(server, @"ExampleServices");
 
   [[NSRunLoop currentRunLoop] run];
 
-  exit(0);
+  exit(EXIT_SUCCESS);
 }
 
 
