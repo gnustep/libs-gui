@@ -28,6 +28,7 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/DPSOperators.h>
 
 // Cache the colors
 static NSColor *bgCol;
@@ -56,13 +57,78 @@ static NSColor *clearCol = nil;
 {
   if (NSIsEmptyRect (cellFrame) || ![controlView window])
     return;
-  
-  [controlView lockFocus];
-  NSDrawButton (cellFrame, NSZeroRect);
-  [controlView unlockFocus];
+
+  if (_cell.is_highlighted == YES)
+    {
+      NSLog(@"highlighting");
+      [controlView lockFocus];
+      NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			       NSMinXEdge, NSMaxYEdge};
+      NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+				 NSMinXEdge, NSMinYEdge};
+      float grays[] = {NSBlack, NSBlack, 
+		       NSWhite, NSWhite};
+      NSRect rect;
+      NSGraphicsContext *ctxt = GSCurrentContext();
+      
+      if (GSWViewIsFlipped(ctxt) == YES)
+	{
+	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
+				  down_sides, grays, 4);
+	}
+      else
+	{
+	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
+				  up_sides, grays, 4);
+	}
+      
+      DPSsetgray(ctxt, NSLightGray);
+      DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
+		  NSWidth(rect), NSHeight(rect));
+      [controlView unlockFocus];
+    }
+  else
+    {
+      [controlView lockFocus];
+      NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			       NSMinXEdge, NSMaxYEdge};
+      NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+				 NSMinXEdge, NSMinYEdge};
+      float grays[] = {NSBlack, NSBlack, 
+		       NSLightGray, NSLightGray};
+      NSRect rect;
+      NSGraphicsContext *ctxt = GSCurrentContext();
+      
+      if (GSWViewIsFlipped(ctxt) == YES)
+	{
+	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
+				  down_sides, grays, 4);
+	}
+      else
+	{
+	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
+				  up_sides, grays, 4);
+	}
+      
+      DPSsetgray(ctxt, NSDarkGray);
+      DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
+		  NSWidth(rect), NSHeight(rect));
+      [controlView unlockFocus];
+    }
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
+- (NSColor *)textColor
+{
+  if (_cell.is_highlighted)
+    {
+      return [NSColor controlTextColor];
+    }
+  else
+    {
+      return [NSColor windowFrameTextColor];
+    }
+}
 
 // Override drawInteriorWithFrame:inView: to be able 
 // to display images as NSCell does

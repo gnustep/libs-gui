@@ -37,11 +37,14 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/DPSOperators.h>
 
 @interface NSTableView (GNUstepPrivate)
 - (void) _userResizedTableColumn: (int)index
 			   width: (float)width;
 - (float *) _columnOrigins;
+- (void) _mouseDownInHeaderOfTableColumn: (NSTableColumn *)tc;
+- (void) _didClickTableColumn: (NSTableColumn *)tc;
 @end
 
 @implementation NSTableHeaderView
@@ -146,8 +149,10 @@
   int lastColumnToDraw;
   NSRect drawingRect;
   NSTableColumn *column;
+  NSTableColumn *highlightedTableColumn;
   float width;
   int i;
+  NSCell *cell;
 
   if (_tableView == nil)
     return;
@@ -163,18 +168,87 @@
     lastColumnToDraw = [_tableView numberOfColumns] - 1;
 
   drawingRect = [self headerRectOfColumn: firstColumnToDraw];
-  
+  drawingRect.origin.y++;
+  drawingRect.size.height--;
+
   columns = [_tableView tableColumns];
+  highlightedTableColumn = [_tableView highlightedTableColumn];
   
-  for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
+  for (i = firstColumnToDraw; i < lastColumnToDraw; i++)
     {
       column = [columns objectAtIndex: i];
       width = [column width];
       drawingRect.size.width = width;
-      [[column headerCell] drawWithFrame: drawingRect
+      cell = [column headerCell];
+      if ((column == highlightedTableColumn)
+	  || [_tableView isColumnSelected: i])
+	{
+	  [cell setHighlighted: YES];
+	  [cell setBackgroundColor: [NSColor controlColor]];
+	}
+      else
+	{
+	  [cell setHighlighted: NO];
+	  [cell setBackgroundColor: [NSColor controlShadowColor]];
+	}
+      [cell drawWithFrame: drawingRect
 			   inView: self];
       drawingRect.origin.x += width;
     }
+  if (lastColumnToDraw == [_tableView numberOfColumns] - 1)
+    {
+      column = [columns objectAtIndex: lastColumnToDraw];
+      width = [column width] - 1;
+      drawingRect.size.width = width;
+      cell = [column headerCell];
+      if ((column == highlightedTableColumn)
+	  || [_tableView isColumnSelected: lastColumnToDraw])
+	{
+	  [cell setHighlighted: YES];
+	  [cell setBackgroundColor: [NSColor controlColor]];
+	}
+      else
+	{
+	  [cell setHighlighted: NO];
+	  [cell setBackgroundColor: [NSColor controlShadowColor]];
+	}
+      [cell drawWithFrame: drawingRect
+			   inView: self];
+      drawingRect.origin.x += width;
+    }
+  else
+    {
+      column = [columns objectAtIndex: lastColumnToDraw];
+      width = [column width];
+      drawingRect.size.width = width;
+      cell = [column headerCell];
+      if ((column == highlightedTableColumn)
+	  || [_tableView isColumnSelected: lastColumnToDraw])
+	{
+	  [cell setHighlighted: YES];
+	  [cell setBackgroundColor: [NSColor controlColor]];
+	}
+      else
+	{
+	  [cell setHighlighted: NO];
+	  [cell setBackgroundColor: [NSColor controlShadowColor]];
+	}
+      [cell drawWithFrame: drawingRect
+			   inView: self];
+      drawingRect.origin.x += width;
+    }
+
+
+  {
+    NSGraphicsContext *ctxt = GSCurrentContext();
+    [self lockFocus];
+    DPSsetgray(ctxt, NSBlack);
+    DPSrectfill(ctxt,_bounds.origin.x, _bounds.origin.y,
+		_bounds.size.width, 1.);
+    DPSrectfill(ctxt, NSMaxX(_bounds)-1., NSMinY(_bounds),
+		1., _bounds.size.height);
+    [self unlockFocus];
+  }
 }
 
 - (void) mouseDown: (NSEvent*)event
@@ -182,55 +256,66 @@
   NSPoint location = [event locationInWindow];
   int clickCount;
   int columnIndex;
-  
+  NSTableColumn *currentColumn;
+
   clickCount = [event clickCount];
-  
+
+  /*  
   if (clickCount > 2)
     {
       return;
     }
-  
+  */  
+
   location = [self convertPoint: location fromView: nil];
   columnIndex = [self columnAtPoint: location];
+  
   if (columnIndex == -1)
     {
       return;  
     }
+  currentColumn = [[_tableView tableColumns]
+		    objectAtIndex: columnIndex];
+
 
   if (clickCount == 2)
     {
       [_tableView _sendDoubleActionForColumn: columnIndex];
-      return;
+      //      return;
     }
 
-  if (clickCount == 1 && [_tableView allowsColumnResizing])
+  //  if (clickCount == 1)
     {
-      /* Start resizing if the mouse is down on the bounds of a column. */
       NSRect rect = [self headerRectOfColumn: columnIndex];
-      
+
       /* Safety check */
       if (_resizedColumn != -1)
 	{
 	  NSLog (@"Bug: starting resizing of column while already resizing!");
 	  _resizedColumn = -1;
 	}
-
-      if (location.x >= NSMaxX (rect) - 1)
+      
+      if ([_tableView allowsColumnResizing])
 	{
-	  if (columnIndex != ([_tableView numberOfColumns]))
+	  /* Start resizing if the mouse is down on the bounds of a column. */
+	  
+	  if (location.x >= NSMaxX (rect) - 1)
 	    {
-	      _resizedColumn = columnIndex;
+	      if (columnIndex != ([_tableView numberOfColumns]))
+		{
+		  _resizedColumn = columnIndex;
+		}
+	      else
+		{
+		  NSLog(@"ohoh");
+		}
 	    }
-	  else
+	  else if (location.x <= NSMinX (rect) + 2) 
 	    {
-	      NSLog(@"ohoh");
-	    }
-	}
-      else if (location.x <= NSMinX (rect) + 2) 
-	{
-	  if (columnIndex > 0)
-	    {
-	      _resizedColumn = columnIndex - 1;
+	      if (columnIndex > 0)
+		{
+		  _resizedColumn = columnIndex - 1;
+		}
 	    }
 	}
 
@@ -420,6 +505,27 @@
 	  return;
 	}
 
+      /* We are not resizing
+	 Let's launch a mouseDownInHeaderOfTableColumn message
+      */
+      {
+	NSRect rect = [self headerRectOfColumn: columnIndex];
+	[_tableView _mouseDownInHeaderOfTableColumn: 
+		      [[_tableView tableColumns] 
+			objectAtIndex: columnIndex]];
+	rect.origin.y++;
+	rect.size.height--;
+	[[currentColumn headerCell]
+	  setBackgroundColor: [NSColor controlColor]];
+
+	[[currentColumn headerCell] 
+	  highlight: YES
+	  withFrame: rect
+	  inView: self];
+	[_window flushWindow];
+      }
+
+
       /* Dragging */
       /* Wait for mouse dragged events. 
 	 If mouse is dragged, move the column.
@@ -554,14 +660,15 @@
 			    {
 			      if (lit)
 				NSHighlightRect(oldRect);
-			      NSHighlightRect(highlightRect);
+			      //			      NSHighlightRect(highlightRect);
 			    }
 			  else if (!lit)
 			    {
-			      NSHighlightRect(highlightRect);
+			      //			      NSHighlightRect(highlightRect);
 			    }
-			  oldRect = highlightRect;
-			  lit = YES;
+			  //			  oldRect = highlightRect;
+			  oldRect = NSZeroRect;
+			  lit = NO; //lit = YES;
 			}
 		    }
 		  break;
@@ -614,7 +721,9 @@
 	      NSHighlightRect(highlightRect);
 	      lit = NO;
 	    }
-	
+
+
+
 	  [NSEvent stopPeriodicEvents];	
 	  [self unlockFocus];
 	  if (mouseDragged == NO)
@@ -624,33 +733,112 @@
 	    }
 	  else // mouseDragged == YES
 	    {
+	      {
+		NSRect rect = [self headerRectOfColumn: columnIndex];
+		[_tableView _mouseDownInHeaderOfTableColumn: 
+			      [[_tableView tableColumns] 
+				objectAtIndex: columnIndex]];
+		rect.origin.y++;
+		rect.size.height--;
+		[[currentColumn headerCell]
+		  setBackgroundColor: [NSColor controlShadowColor]];
+		
+		[[currentColumn headerCell] 
+		  highlight: NO
+		  withFrame: rect
+		  inView: self];
+		[_window flushWindow];
+	      }
 	      if (i > columnIndex)
 		i--;
-	      [_tableView moveColumn: columnIndex
-			  toColumn: i];
-	    
-	      // TODO: Move the dragged column
+	      if (i != columnIndex)
+		{
+		  [_tableView moveColumn: columnIndex
+			      toColumn: i];
+		}
 	    }
 	  free(_cO_minus1);
 	  return;
 	}
       else
 	{
-	  NSPoint pDown;
-	  NSPoint pUp;
-	  NSEvent *e;
+	  NSRect cellFrame = [self headerRectOfColumn: columnIndex];
+	  NSApplication *theApp = [NSApplication sharedApplication];
 	  unsigned int modifiers = [event modifierFlags];
-	  NSDate *distantFuture = [NSDate distantFuture];
-	  e = [NSApp nextEventMatchingMask: NSLeftMouseUpMask
-		     untilDate: distantFuture
-		     inMode: NSEventTrackingRunLoopMode
-		     dequeue: YES];
-	  pDown = [event locationInWindow];
-	  pUp = [e locationInWindow];
-	  if (pUp.x - pDown.x <= 2
-	      && pUp.y - pDown.y <= 2)
-	    [_tableView _selectColumn: columnIndex
-			modifiers: modifiers];
+	  NSPoint location = [event locationInWindow];
+	  NSPoint point = [self convertPoint: location fromView: nil];
+
+	  if (![self mouse: point inRect: cellFrame])
+	    {
+	      NSLog(@"not in frame, what's happening ?");
+	      return;
+	    }
+
+	  event = [theApp nextEventMatchingMask: NSLeftMouseUpMask
+			  untilDate: nil
+			  inMode: NSEventTrackingRunLoopMode
+			  dequeue: NO];
+	  
+
+	  location = [event locationInWindow];
+	  
+	  point = [self convertPoint: location fromView: nil];
+	  
+	  if (![self mouse: point inRect: cellFrame])
+	    {
+	      NSDebugLog(@"NSCell point not in cell frame\n");
+	      {
+		NSRect rect = [self headerRectOfColumn: columnIndex];
+		[_tableView _mouseDownInHeaderOfTableColumn: 
+			      [[_tableView tableColumns] 
+				objectAtIndex: columnIndex]];
+		rect.origin.y++;
+		rect.size.height--;
+		[[currentColumn headerCell]
+		  setBackgroundColor: [NSColor controlShadowColor]];
+		
+		[[currentColumn headerCell] 
+		  highlight: NO
+		  withFrame: rect
+		  inView: self];
+		[_window flushWindow];
+	      }
+
+	    }
+	  else
+	    {
+	      [_tableView _selectColumn: columnIndex
+			  modifiers: modifiers];
+	      [_tableView _didClickTableColumn:
+			   currentColumn];
+
+	      [self lockFocus];
+	      [self drawRect: [self headerRectOfColumn: columnIndex]];
+	      [self unlockFocus];
+	      [_window flushWindow];
+	      /*	      
+	      if ([_tableView highlightedTableColumn] != currentColumn)
+		{
+		  NSRect rect = [self headerRectOfColumn: columnIndex];
+		  
+		  // [_tableView _mouseDownInHeaderOfTableColumn: 
+		  // [[_tableView tableColumns] 
+		  // objectAtIndex: columnIndex]];
+
+		  rect.origin.y++;
+		  rect.size.height--;
+		  NSLog(@"highlight");
+		  [[currentColumn headerCell]
+		    setBackgroundColor: [NSColor controlShadowColor]];
+		  
+		  [[currentColumn headerCell] 
+		    highlight: NO
+		    withFrame: rect
+		    inView: self];
+		  [_window flushWindow];
+		}
+	      */
+	    }
 	}
     }
 }

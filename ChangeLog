@@ -1,3 +1,19 @@
+2002-02-13  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTableHeaderCell.m: New drawing code, support for
+	highlighted cells.
+	* Source/NSTableHeaderView.m: support for drawing highlighted
+	column, support for NSTableView mouseDownInHeaderOfTableColumn:
+	and didClickTableColumn: delegate messages.
+	* Source/NSTableView.m: rewrite of -mouseDown method.
+	rewrite of selection handling to fully support the specs
+	new tableView:didClickTableColumn: and 
+	tableView:mouseDownInHeaderOfTableColumn delegate messages
+	[NSTableView -setHighlightedTableColumn:]
+	[NSTableView -highlightedTableColumn]: methods implemented.
+	* Headers/gnustep/gui/NSTableView.h: 
+	new _highlightedTableColumn ivar.
+	
 2002-02-12  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSBundleAdditions.m: Fix dumb error in my last modification.

@@ -62,6 +62,7 @@ typedef enum _NSTableViewDropOperation {
   id                 _target;
   int                _clickedRow;
   int                _clickedColumn;
+  NSTableColumn     *_highlightedTableColumn;
   NSMutableArray    *_selectedColumns;
   NSMutableArray    *_selectedRows;
   int                _selectedColumn;
