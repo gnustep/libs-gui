@@ -358,6 +358,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
   self = [self init];
   [self addRepresentation: rep];
+  RELEASE(rep);
   return self;
 }
 
@@ -373,6 +374,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
   self = [self init];
   [self addRepresentation: rep];
+  RELEASE(rep);
   return self;
 }
 
