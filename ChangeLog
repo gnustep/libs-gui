@@ -1,3 +1,18 @@
+2001-09-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/gnustep/gui/NSWindow.h
+	Added three BOOL flags for subclasses.
+	* Header/gnustep/gui/NSPanel.h
+	Defined additional window masks. Removed all unneeded ivars and
+	replaced the others by the superclass additional flags.
+	* Source/NSPanel.m
+	Implemented coding for NSPanel. For GSAlertPanel reoranised the
+	initXXX code. Moved the GModel methods into a separate category,
+	removing [createObjectForModelUnarchiver:] as this was (incorrectly)
+	duplication code from the super class.
+	Implemented NSBeginAlertSheet(), NSBeginCriticalAlertSheet() and
+	NSBeginInformationalAlertSheet().
+	
 2001-09-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
