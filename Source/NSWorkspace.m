@@ -3,12 +3,14 @@
 
    Description...
 
-   Copyright (C) 1996-1999 Free Software Foundation, Inc.
+   Copyright (C) 1996-1999, 2001 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
    Implementation: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1998
+   Implementation: Fred Kiefer <fredKiefer@gmx.de>
+   Date: 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,11 +31,6 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <AppKit/NSWorkspace.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/GSServicesManager.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSLock.h>
@@ -46,9 +43,14 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSURL.h>
+#include <AppKit/NSWorkspace.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSPanel.h>
+#include <AppKit/GSServicesManager.h>
 
 #define stringify_it(X) #X
-#define	mkpath(X) stringify_it(X) "/Tools"
 
 #define PosixExecutePermission	(0111)
 
@@ -149,15 +151,10 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 @implementation	NSWorkspace
 
 static NSWorkspace		*sharedWorkspace = nil;
-static NSNotificationCenter	*workspaceCenter = nil;
-static NSMutableDictionary	*iconMap = nil;
-static BOOL 			userDefaultsChanged = NO;
 
-static NSString			*appListName = @"Services/.GNUstepAppList";
 static NSString			*appListPath = nil;
 static NSDictionary		*applications = nil;
 
-static NSString			*extPrefName = @"Services/.GNUstepExtPrefs";
 static NSString			*extPrefPath = nil;
 static NSDictionary		*extPreferences = nil;
 
@@ -187,16 +184,14 @@ static NSString			*_rootPath = @"/";
 
       beenHere = YES;
 
-      workspaceCenter = [_GSWorkspaceCenter new];
-      iconMap = [NSMutableDictionary new];
-
       home = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
                NSUserDomainMask, YES) objectAtIndex: 0];
 
       /*
        *	Load file extension preferences.
        */
-      extPrefPath = [home stringByAppendingPathComponent: extPrefName];
+      extPrefPath = [[home stringByAppendingPathComponent: @"Services"] 
+			stringByAppendingPathComponent: @".GNUstepExtPrefs"];
       RETAIN(extPrefPath);
       if ([mgr isReadableFileAtPath: extPrefPath] == YES)
 	{
@@ -212,7 +207,8 @@ static NSString			*_rootPath = @"/";
       /*
        *	Load cached application information.
        */
-      appListPath = [home stringByAppendingPathComponent: appListName];
+      appListPath = [[home stringByAppendingPathComponent: @"Services"] 
+			stringByAppendingPathComponent: @".GNUstepAppList"];
       RETAIN(appListPath);
       if ([mgr isReadableFileAtPath: appListPath] == YES)
 	{
@@ -247,16 +243,42 @@ static NSString			*_rootPath = @"/";
 	{
 	  sharedWorkspace =
 		(NSWorkspace*)NSAllocateObject(self, 0, NSDefaultMallocZone());
-
-	  [[NSNotificationCenter defaultCenter]
-	    addObserver: sharedWorkspace
-	       selector: @selector(noteUserDefaultsChanged)
-		   name: NSUserDefaultsDidChangeNotification
-		 object: nil];
+	  [sharedWorkspace init];
 	}
       [gnustep_global_lock unlock];
     }
   return sharedWorkspace;
+}
+
+/*
+ * Instance methods
+ */
+- (void) dealloc
+{
+  [NSException raise: NSInvalidArgumentException
+	      format: @"Attempt to call dealloc for shared worksapace"];
+}
+
+- (id) init
+{
+  if (sharedWorkspace != self)
+    {
+      RELEASE(self);
+      return RETAIN(sharedWorkspace);
+    }
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver: self
+      selector: @selector(noteUserDefaultsChanged)
+      name: NSUserDefaultsDidChangeNotification
+      object: nil];
+  
+  _workspaceCenter = [_GSWorkspaceCenter new];
+  _iconMap = [NSMutableDictionary new];
+  if (applications == nil)
+    [self findApplications];
+
+  return self;
 }
 
 static NSImage*
@@ -268,12 +290,10 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
     {
       if ([file isAbsolutePath] == NO)
 	{
-	  NSString	*path;
-	  NSString	*iconPath;
-	  NSBundle	*bundle;
+	  NSString *iconPath;
+	  NSBundle *bundle;
 
-	  path = [ws fullPathForApplication: appName];
-	  bundle = [NSBundle bundleWithPath: path];
+	  bundle = [ws bundleForApp: appName];
 	  iconPath = [bundle pathForImageResource: file];
 	  /*
 	   * If the icon is not in the Resources of the app, try looking
@@ -281,7 +301,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	   */
 	  if (iconPath == nil)
 	    {
-	      iconPath = [path stringByAppendingPathComponent: file];
+	      iconPath = [[bundle bundlePath] stringByAppendingPathComponent: file];
 	    }
 	  file = iconPath;
 	}
@@ -356,7 +376,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
    * extensions are case-insensitive - convert to lowercase.
    */
   ext = [ext lowercaseString];
-  if ((icon = [iconMap objectForKey: ext]) == nil)
+  if ((icon = [_iconMap objectForKey: ext]) == nil)
     {
       NSDictionary	*prefs;
       NSDictionary	*extInfo;
@@ -427,7 +447,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
        * Set the icon in the cache for next time.
        */
       if (icon != nil)
-	[iconMap setObject: icon forKey: ext];
+	[_iconMap setObject: icon forKey: ext];
     }
   return icon;
 }
@@ -551,41 +571,12 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
     }
 }
 
-
-/*
- * Instance methods
- */
-- (void) dealloc
-{
-  [NSException raise: NSInvalidArgumentException
-	      format: @"Attempt to call dealloc for shared worksapace"];
-}
-
-- (id) init
-{
-  [NSException raise: NSInvalidArgumentException
-	      format: @"Attempt to call init for shared worksapace"];
-  return nil;
-}
-
 /*
  * Opening Files
  */
 - (BOOL) openFile: (NSString *)fullPath
 {
-  NSString      *ext = [fullPath pathExtension];
-  NSString      *appName;
-
-  if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
-    {
-      NSRunAlertPanel(nil,
-	[NSString stringWithFormat: 
-	    @"No known applications for file extension '%@'", ext],
-	@"Continue", nil, nil);
-      return NO;
-    }
-
-  return [self openFile: fullPath withApplication: appName];
+  return [self openFile: fullPath withApplication: nil];
 }
 
 - (BOOL) openFile: (NSString *)fullPath
@@ -603,13 +594,55 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   return [self openFile: fullPath withApplication: appName andDeactivate: YES];
 }
 
+- (BOOL) _launchApplication: (NSString *)appName
+		  arguments: (NSArray *)args
+{
+  NSString	*path;
+  NSDictionary  *userinfo;
+
+  path = [self locateApplicationBinary: appName];
+  if (path == nil)
+    return NO;
+
+  // App being launched, send NSWorkspaceWillLaunchApplicationNotification
+  userinfo = [NSDictionary dictionaryWithObject:
+    [[appName lastPathComponent] stringByDeletingPathExtension]
+    forKey: @"NSApplicationName"];
+  [_workspaceCenter
+    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+    object: self
+    userInfo: userinfo];
+
+  if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
+    return NO;
+
+  // The NSWorkspaceDidLaunchApplicationNotification will be send by the
+  // started application itself.
+  return YES;
+}
+
 - (BOOL) openFile: (NSString *)fullPath
   withApplication: (NSString *)appName
     andDeactivate: (BOOL)flag
 {
-  NSString      *port = [appName stringByDeletingPathExtension];
+  NSString      *port;
   id            app = nil;
 
+  if (appName == nil)
+    {
+      NSString *ext = [fullPath pathExtension];
+  
+      if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
+        {
+	  NSRunAlertPanel(nil,
+		[NSString stringWithFormat: 
+			      @"No known applications for file extension '%@'", ext],
+			  @"Continue", nil, nil);
+	  return NO;
+	}
+    }
+
+  port = [appName stringByDeletingPathExtension];
   /*
    *	Try to contact a running application.
    */
@@ -626,40 +659,10 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 
   if (app == nil)
     {
-      NSString	*path;
-      NSArray	*args;
-      NSDictionary  *userinfo = nil;
-
-      path = [self locateApplicationBinary: appName];
-      if (path == nil)
-	{
-	  NSRunAlertPanel(nil,
-	    [NSString stringWithFormat: 
-	      @"Failed to locate '%@' to open file", port],
-	    @"Continue", nil, nil);
-	  return NO;
-	}
-
-     // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
-     userinfo = [NSDictionary dictionaryWithObject: port
-					    forKey: @"NSApplicationName"];
-
-     [workspaceCenter
-          postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-          object: self
-          userInfo: userinfo];
+      NSArray *args;
 
       args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
-      if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
-	{
-	  NSRunAlertPanel(nil,
-	    [NSString stringWithFormat: 
-	      @"Failed to launch '%@' to open file", port],
-	    @"Continue", nil, nil);
-	  return NO;
-	}
-
-      return YES;
+      return [self _launchApplication: appName arguments: args];
     }
   else
     {
@@ -687,9 +690,19 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
   return YES;
 }
 
-- (BOOL) openTempFile: (NSString *)appName
+- (BOOL) openTempFile: (NSString *)fullPath
 {
-  return NO;
+  // FIXME: Should make sure that the target app knows this is a temp file
+  // by using GSTempPath.
+  return [self openFile: fullPath];
+}
+
+- (BOOL)openURL:(NSURL *)url
+{
+  if ([url isFileURL])
+    return [self openFile: [url path]];
+  else
+    return NO;
 }
 
 /*
@@ -701,12 +714,14 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 		        files: (NSArray *)files
 			  tag: (int *)tag
 {
+  // FIXME
   return NO;
 }
 
 - (BOOL) selectFile: (NSString *)fullPath
 inFileViewerRootedAtPath: (NSString *)rootFullpath
 {
+  // FIXME
   return NO;
 }
 
@@ -716,9 +731,6 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (NSString *) fullPathForApplication: (NSString *)appName
 {
   NSString      *last = [appName lastPathComponent];
-
-  if (applications == nil)
-    [self findApplications];
 
   if ([appName isEqual: last])
     {
@@ -740,6 +752,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		      description: (NSString **)description
 			     type: (NSString **)fileSystemType
 {
+  // FIXME
   return NO;
 }
 
@@ -752,7 +765,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSString *fileType;
   NSString *extension = [fullPath pathExtension];
 
-  attributes = [fm fileAttributesAtPath:fullPath traverseLink:YES];
+  attributes = [fm fileAttributesAtPath: fullPath traverseLink: YES];
   if (attributes)
     {
       fileType = [attributes fileType];
@@ -815,16 +828,13 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (NSImage *) iconForFile: (NSString *)aPath
 {
   NSImage	*image = nil;
-  NSString	*iconPath = nil;
   NSString	*pathExtension = [[aPath pathExtension] lowercaseString];
-  NSFileManager	*mgr = [NSFileManager defaultManager];
-  NSDictionary	*attributes;
-  NSString	*fileType;
 
-  attributes = [mgr fileAttributesAtPath: aPath traverseLink: YES];
-  fileType = [attributes objectForKey: NSFileType];
-  if ([fileType isEqual: NSFileTypeDirectory] == YES)
+  if ([self isFilePackageAtPath: aPath])
     {
+      NSFileManager *mgr = [NSFileManager defaultManager];
+      NSString *iconPath = nil;
+      
       if ([pathExtension isEqualToString: @"app"]
 	|| [pathExtension isEqualToString: @"debug"]
 	|| [pathExtension isEqualToString: @"profile"])
@@ -926,10 +936,14 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 - (NSImage *) iconForFiles: (NSArray *)pathArray
 {
-  static NSImage	*multipleFiles = nil;
+  static NSImage *multipleFiles = nil;
+
+  if ([pathArray count] == 1)
+    return [self iconForFile: [pathArray objectAtIndex: 0]];
 
   if (multipleFiles == nil)
     {
+      // FIXME: Icon does not exist
       multipleFiles = [NSImage imageNamed: @"FileIcon_multi"];
     }
 
@@ -938,7 +952,22 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 - (NSImage *) iconForFileType: (NSString *)fileType
 {
-  return nil;
+  return [self _iconForExtension: fileType];
+}
+
+- (BOOL) isFilePackageAtPath: (NSString *)fullPath
+{
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  NSDictionary	*attributes;
+  NSString	*fileType;
+
+  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: YES];
+  fileType = [attributes objectForKey: NSFileType];
+  if ([fileType isEqual: NSFileTypeDirectory] == YES)
+    {
+      return YES;
+    }
+  return NO;
 }
 
 /*
@@ -946,11 +975,20 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (BOOL) fileSystemChanged
 {
-  return NO;
+  BOOL flag = _fileSystemChanged;
+
+  _fileSystemChanged = NO;
+  return flag;
 }
 
 - (void) noteFileSystemChanged
 {
+  _fileSystemChanged = YES;
+}
+
+- (void) noteFileSystemChanged: (NSString *)path
+{
+  _fileSystemChanged = YES;
 }
 
 /*
@@ -968,8 +1006,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    * Try to locate and run an executable copy of 'make_services'
    */
   if (path == nil)
-    path = [[NSString alloc] initWithFormat: @"%s/make_services",
-		mkpath(GNUSTEP_INSTALL_PREFIX)];
+    {
+      path = [[NSString alloc] initWithFormat: @"%s/Tools/make_services",
+			       stringify_it(GNUSTEP_INSTALL_PREFIX)];
+    }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
   if (task != nil)
@@ -999,7 +1039,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   /*
    *	Invalidate the cache of icons for file extensions.
    */
-  [iconMap removeAllObjects];
+  [_iconMap removeAllObjects];
 }
 
 /*
@@ -1007,6 +1047,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (void) hideOtherApplications
 {
+  // FIXME
 }
 
 - (BOOL) launchApplication: (NSString *)appName
@@ -1020,25 +1061,28 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
 {
-  NSString	*path;
-  NSDictionary  *userinfo;
+  NSString      *port;
+  id            app = nil;
 
-  path = [self locateApplicationBinary: appName];
+  port = [appName stringByDeletingPathExtension];
+  /*
+   *	Try to contact a running application.
+   */
+  NS_DURING
+    {
+      app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+                                                              host: @""];
+    }
+  NS_HANDLER
+    {
+      app = nil;		/* Fatal error in DO	*/
+    }
+  NS_ENDHANDLER
 
-  if (path == nil)
-    return NO;
-
-  // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
-  userinfo = [NSDictionary dictionaryWithObject:
-    [[appName lastPathComponent] stringByDeletingPathExtension]
-    forKey: @"NSApplicationName"];
-  [workspaceCenter
-    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-    object: self
-    userInfo: userinfo];
-
-  if ([NSTask launchedTaskWithLaunchPath: path arguments: nil] == nil)
-    return NO;
+  if (app == nil)
+    {
+	return [self _launchApplication: appName arguments: nil];
+    }
 
   return YES;
 }
@@ -1048,7 +1092,36 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (BOOL) unmountAndEjectDeviceAtPath: (NSString *)path
 {
-  return NO;
+  NSDictionary  *userinfo;
+  NSTask *task;
+  BOOL flag = NO;
+
+  userinfo = [NSDictionary dictionaryWithObject: path
+			   forKey: @"NSDevicePath"];
+  [_workspaceCenter
+    postNotificationName: NSWorkspaceWillUnmountNotification
+    object: self
+    userInfo: userinfo];
+
+  // FIXME This is system specific
+  task = [NSTask launchedTaskWithLaunchPath: @"eject"
+				  arguments: [NSArray arrayWithObject: path]];
+  if (task != nil)
+    {
+      [task waitUntilExit];
+      if ([task terminationStatus] != 0)
+	return NO;
+      else
+	flag = YES;
+    }
+  else
+    return NO;
+
+  [_workspaceCenter
+    postNotificationName: NSWorkspaceDidUnmountNotification
+    object: self
+    userInfo: userinfo];
+  return flag;
 }
 
 /*
@@ -1056,16 +1129,66 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (void) checkForRemovableMedia
 {
+  // FIXME
 }
 
 - (NSArray *) mountNewRemovableMedia
 {
+  // FIXME
   return nil;
 }
 
 - (NSArray *) mountedRemovableMedia
 {
-  return nil;
+  NSArray *volumes = [self mountedLocalVolumePaths];
+  NSMutableArray *names = [NSMutableArray arrayWithCapacity: [volumes count]];
+  int i;
+
+  for (i = 0; i < [volumes count]; i++)
+    {
+      BOOL removableFlag;
+      BOOL writableFlag;
+      BOOL unmountableFlag;
+      NSString *description;
+      NSString *fileSystemType;
+      NSString *name = [volumes objectAtIndex: i];
+
+      if ([self getFileSystemInfoForPath: name
+		isRemovable: &removableFlag
+		isWritable: &writableFlag
+		isUnmountable: &unmountableFlag
+		description: &description
+		type: &fileSystemType] && removableFlag)
+        {
+	  [names addObject: name];
+	}
+    }
+
+  return names;
+}
+
+- (NSArray *)mountedLocalVolumePaths
+{
+  // FIXME This is system specific
+  NSString *mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
+  NSArray *mounts = [mtab componentsSeparatedByString: @"\n"];
+  NSMutableArray *names = [NSMutableArray arrayWithCapacity: [mounts count]];
+  int i;
+
+  for (i = 0; i < [mounts count]; i++)
+    {
+      NSArray *parts = [[names objectAtIndex: i] componentsSeparatedByString: @" "];
+      NSString *type = [parts objectAtIndex: 2];
+      
+      if (![type isEqualToString: @"proc"] &&
+	  ![type isEqualToString: @"devpts"] &&
+	  ![type isEqualToString: @"shm"])
+        {
+	  [names addObject: [parts objectAtIndex: 1]];
+	}
+    }
+
+  return names;
 }
 
 /*
@@ -1073,7 +1196,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (NSNotificationCenter *) notificationCenter
 {
-  return workspaceCenter;
+  return _workspaceCenter;
 }
 
 /*
@@ -1081,14 +1204,14 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (void) noteUserDefaultsChanged
 {
-  userDefaultsChanged = YES;
+  _userDefaultsChanged = YES;
 }
 
 - (BOOL) userDefaultsChanged
 {
-  BOOL	hasChanged = userDefaultsChanged;
+  BOOL	hasChanged = _userDefaultsChanged;
 
-  userDefaultsChanged = NO;
+  _userDefaultsChanged = NO;
   return hasChanged;
 }
 
@@ -1099,6 +1222,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	       from: (NSPoint)fromPoint
 		 to: (NSPoint)toPoint
 {
+  // FIXME
 }
 
 /*
@@ -1106,6 +1230,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (int) extendPowerOffBy: (int)requested
 {
+  // FIXME
   return 0;
 }
 
@@ -1170,10 +1295,6 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    *    file extensions recognised by GNUstep applications.  Then find
    *    the dictionary of applications that can handle our file.
    */
-  if (applications == nil)
-    {
-      [self findApplications];
-    }
   map = [applications objectForKey: @"GSExtensionsMap"];
   return [map objectForKey: ext];
 }
@@ -1216,7 +1337,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (NSImage*) appIconForApp: (NSString *)appName
 {
-  NSBundle	*bundle = [self bundleForApp:appName];
+  NSBundle	*bundle = [self bundleForApp: appName];
   NSString	*iconPath;
 
   if (bundle == nil)
