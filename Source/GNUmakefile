@@ -46,6 +46,7 @@ NSActionCell.m \
 NSAffineTransform.m \
 NSApplication.m \
 NSAttributedString.m \
+NSBezierPath.m \
 NSBitmapImageRep.m \
 NSBox.m \
 NSBrowser.m \
@@ -176,6 +177,7 @@ AppKit/NSActionCell.h \
 AppKit/NSAffineTransform.h \
 AppKit/NSApplication.h \
 AppKit/NSAttributedString.h \
+AppKit/NSBezierPath.h \
 AppKit/NSBox.h \
 AppKit/NSBitmapImageRep.h \
 AppKit/NSBrowser.h \

@@ -1,3 +1,7 @@
+Tue Dec 22  01:25:00 1999  Enrico Sersale <enrico@imago.ro>
+
+	* Added Source/NSBezierPath.m and Headers/AppKit/NSBezierPath.h
+
 Mon Dec 20 16:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Fix removal of view from window such that we reset
