@@ -68,18 +68,16 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 {
   if (!gnustep_gui_open_panel)
   {
-    [GMUnarchiver decodeClassName:@"NSSavePanel"
-                              asClassName:@"NSOpenPanel"];
+    //    [GMUnarchiver decodeClassName:@"NSSavePanel"
+    //                          asClassName:@"NSOpenPanel"];
 
-    if( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
-    {
-      [NSException raise:NSGenericException
-                   format:@"Unable to load open panel model file"];
-    }
+    //if( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
+      [[NSOpenPanel alloc] _initWithoutGModel];
+    
     [gnustep_gui_open_panel setTitle:@"Open"];
 
-    [GMUnarchiver decodeClassName:@"NSSavePanel"
-                              asClassName:@"NSSavePanel"];
+    // [GMUnarchiver decodeClassName:@"NSSavePanel"
+    //                          asClassName:@"NSSavePanel"];
   }
 
   return gnustep_gui_open_panel;

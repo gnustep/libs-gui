@@ -219,7 +219,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   window = nil;
   is_rotated_from_base = NO;
   is_rotated_or_scaled_from_base = NO;
-  disable_autodisplay = NO;
   needs_display = YES;
   post_frame_changes = NO;
   autoresize_subviews = YES;
@@ -2282,7 +2281,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aCoder encodeValueOfObjCType: @encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &needs_display];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
@@ -2304,7 +2302,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &needs_display];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];

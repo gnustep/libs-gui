@@ -1,3 +1,9 @@
+Mon Sep 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSOpenPanel.m ([+openPanel]): use NSSavePanel's new 
+	_initWithoutGModel method if loading of gmodel fails.  
+	For now, use always the safer _initWithoutGModel.
+
 Thu Sep 23  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowserCell.m ([-drawInteriorWithFrame:inView:]): Clean
