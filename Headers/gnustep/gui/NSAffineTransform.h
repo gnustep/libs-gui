@@ -45,7 +45,6 @@ typedef	struct {
 {
 @public
   NSAffineTransformStruct	matrix;
-  float rotationAngle;
 }
 
 + (NSAffineTransform*) transform;
