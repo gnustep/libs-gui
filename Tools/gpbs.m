@@ -1148,7 +1148,7 @@ main(int argc, char** argv, char **env)
 
       if (host == nil)
         {
-          NSLog(@"gdnc - unknown NSHost argument  ... %@ - quiting.", hostname);
+          NSLog(@"gpbs - unknown NSHost argument  ... %@ - quiting.", hostname);
           exit(1);
         }
       a = [host names];
@@ -1183,4 +1183,3 @@ main(int argc, char** argv, char **env)
   RELEASE(pool);
   exit(0);
 }
-
