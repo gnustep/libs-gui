@@ -9,12 +9,12 @@ Mon Apr  6 16:38:40 1998  Scott Christley  <scottc@net-community.com>
 	* Documentation/status.tmpl.texi: Update.
 
 	* Add Adobe printer definition files.
-	* PrinterTypes/English.lproj/*.ppd: New file.s
-	* PrinterTypes/French.lproj/*.ppd: New file.s
-	* PrinterTypes/German.lproj/*.ppd: New file.s
-	* PrinterTypes/Italian.lproj/*.ppd: New file.s
-	* PrinterTypes/Spanish.lproj/*.ppd: New file.s
-	* PrinterTypes/Swedish.lproj/*.ppd: New file.s
+	* PrinterTypes/English.lproj/*.ppd: New files.
+	* PrinterTypes/French.lproj/*.ppd: New files.
+	* PrinterTypes/German.lproj/*.ppd: New files.
+	* PrinterTypes/Italian.lproj/*.ppd: New files.
+	* PrinterTypes/Spanish.lproj/*.ppd: New files.
+	* PrinterTypes/Swedish.lproj/*.ppd: New files.
 
 Mon Apr  6 16:38:40 1998  Simon Frankau <sgf22@hermes.cam.ac.uk>
 
