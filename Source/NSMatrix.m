@@ -713,11 +713,15 @@ static int mouseDownFlags = 0;
 
   for (i = 0; i < numRows; i++)
     {
-      NSMutableArray* row = [cells objectAtIndex: i];
+      NSMutableArray* rowArray = [cells objectAtIndex: i];
 
       for (j = 0; j < numCols; j++)
-	if ([row objectAtIndex: j] == aCell)
-	  return YES;
+	if ([rowArray objectAtIndex: j] == aCell)
+	  {
+	    *row = i;
+	    *column = j;
+	    return YES;
+	  }
     }
 
   return NO;

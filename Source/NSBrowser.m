@@ -38,6 +38,7 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/PSOperators.h>
@@ -1266,7 +1267,80 @@
 
 - (BOOL)setPath: (NSString *)path
 {
-  return NO;
+  NSArray	*subStrings = [path componentsSeparatedByString:_pathSeparator];
+  unsigned	numberOfSubStrings, i;
+  NSString	*aStr;
+
+  [self setLastColumn: 0];
+  numberOfSubStrings = [subStrings count];
+
+  if (numberOfSubStrings <= 2)
+    {
+      // select root path
+      if ([[subStrings objectAtIndex:1] length] == 0)
+	{
+	  [self scrollColumnsLeftBy: [_browserColumns count]];
+	  return YES;
+	}
+    }
+
+  // cycle thru str's array created from path
+  for (i = 1; i < numberOfSubStrings; i++)
+    {
+      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i-1];
+      NSMatrix		*matrix = [bc columnMatrix];
+      NSArray		*cells = [matrix cells];
+      unsigned		j, numOfRows = [cells count];
+      NSBrowserCell	*selectedCell = nil;
+
+      aStr = [subStrings objectAtIndex: i];
+      // find the cell in the browser matrix with the equal to aStr
+      for (j = 0; j < numOfRows; j++)
+	{
+	  NSArray	*cellRow = [cells objectAtIndex: j];
+	  unsigned	 numOfCols, k;
+
+	  numOfCols = [cellRow count];
+	  for (k = 0; k < numOfCols; k++)
+	    {
+	      NSString	*cellString;
+
+	      selectedCell = [cellRow objectAtIndex:k];
+	      cellString = [selectedCell stringValue];
+
+	      if ([cellString isEqualToString:aStr])
+		{
+		  int r, c;
+
+		  k = numOfCols;
+		  j = numOfRows;
+		  if ([matrix getRow:&r column:&c ofCell:selectedCell])
+		    [matrix selectCellAtRow:r column:c];
+		  else
+		    selectedCell = nil;
+		}
+	    }
+	}
+      // if unable to find a cell whose title matches aStr return NO
+      if (!selectedCell)
+	{
+	  NSLog(@"NSBrowser: unable to find cell in matrix\n");
+	  return NO;
+	}
+      // if the cell is not a leaf add a column to the browser for it
+      if (![selectedCell isLeaf])
+	{
+	  [self addColumn];
+	  [self _performLoadOfColumn: i];
+	  [self setLastColumn: i];
+	  [self _adjustMatrixOfColumn: i];
+	  [self scrollColumnsRightBy: 1];
+	}
+      else
+	break;
+    }
+
+  return YES;
 }
 
 - (void)setPathSeparator: (NSString *)aString
@@ -1498,7 +1572,6 @@
 	{
 	  id matrix;
 	  id sc = [bc columnScrollView];
-	  id oldm = [bc columnMatrix];
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 	  int i;
 
@@ -1535,7 +1608,6 @@
 	{
 	  id matrix;
 	  id sc = [bc columnScrollView];
-	  id oldm = [bc columnMatrix];
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 
 	  // create a new col matrix
