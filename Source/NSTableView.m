@@ -834,6 +834,22 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
   if (flag == NO)
     {
+      /* If the current selection is the one we want, just ends editing
+       * This is not just a speed up, it prevents us from sending
+       * a NSTableViewSelectionDidChangeNotification.
+       * This behaviour is required by the specifications */
+      if ([_selectedColumns count] == 1
+	  && [_selectedColumns containsObject: num] == YES)
+	{
+	  /* Stop editing if any */
+	  if (_textObject != nil)
+	    {
+	      [self validateEditing];
+	      [self abortEditing];
+	    }  
+	  return;
+	} 
+
       /* If _numberOfColumns == 1, we can skip trying to deselect the
 	 only column - because we have been called to select it. */
       if (_numberOfColumns > 1)
@@ -887,6 +903,22 @@ byExtendingSelection: (BOOL)flag
 
   if (flag == NO)
     {
+      /* If the current selection is the one we want, just ends editing
+       * This is not just a speed up, it prevents us from sending
+       * a NSTableViewSelectionDidChangeNotification.
+       * This behaviour is required by the specifications */
+      if ([_selectedRows count] == 1
+	  && [_selectedRows containsObject: num] == YES)
+	{
+	  /* Stop editing if any */
+	  if (_textObject != nil)
+	    {
+	      [self validateEditing];
+	      [self abortEditing];
+	    }
+	  return;
+	} 
+
       /* If _numberOfRows == 1, we can skip trying to deselect the
 	 only row - because we have been called to select it. */
       if (_numberOfRows > 1)
