@@ -80,5 +80,5 @@ before-all:: $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)/config.h
 #
 $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)/config.h: ../config.status
 	$(GNUSTEP_MAKEFILES)/mkinstalldirs \
-	   $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS) \
+	   $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)
 	-mv ../config.h $(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)
