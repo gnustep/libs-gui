@@ -40,8 +40,9 @@
   NSImage *_alternateImage;
   NSImage *_branchImage;
   NSImage *_highlightBranchImage;
-  BOOL _isLeaf;
-  BOOL _isLoaded;
+  // Think of the following ones as of two BOOL ivars
+#define _browsercell_is_leaf    _cell.subclass_bool_one
+#define _browsercell_is_loaded  _cell.subclass_bool_two
 }
 
 //
