@@ -74,7 +74,7 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
    */
   if (responder)
     {
-      style = (NSInterfaceStyle)((accessToResponder)responder)->interface_style;
+      style = (NSInterfaceStyle)((accessToResponder)responder)->_interface_style;
       if (style != NSNoInterfaceStyle)
 	{
 	  return style;

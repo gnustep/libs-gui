@@ -3196,12 +3196,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (NSInterfaceStyle) interfaceStyle
 {
-  return interface_style;
+  return [super interfaceStyle];
 }
 
 - (void) setInterfaceStyle: (NSInterfaceStyle)aStyle
 {
-  interface_style = aStyle;
+  [super setInterfaceStyle: aStyle];
 }
 
 - (void*) windowHandle

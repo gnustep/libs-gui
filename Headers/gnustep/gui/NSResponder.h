@@ -39,8 +39,9 @@
 
 @interface NSResponder : NSObject <NSCoding>
 {
-  NSInterfaceStyle	interface_style;
-  NSResponder		*next_responder;
+  NSInterfaceStyle	_interface_style;
+  NSResponder		*_next_responder;
+  NSMenu                *_menu;  
   /*
    * Flags for internal use by NSResponder and it's subclasses.
    */

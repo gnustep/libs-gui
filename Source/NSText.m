@@ -262,12 +262,12 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (NSRect) rectForCharacterIndex: (unsigned)index;
 - (void) _editedRange: (NSRange)aRange
 	    withDelta: (int)delta;
-- (int) rebuildLineLayoutInformation;
+- (void) _buildUpLayout;
 - (void) drawRect: (NSRect)rect
     withSelection: (NSRange)range;
 
 // GNU utility methods
-
+- (void) _illegalMovement: (int) notNumber;
 - (BOOL) performPasteOperation: (NSPasteboard*)pboard;
 
 /*
@@ -307,7 +307,6 @@ withAttributedString: (NSAttributedString*) aString;
 - (void) setAttributedString: (NSAttributedString*) aString;
 - (NSSize) _sizeOfRange: (NSRange) range;
 - (NSRect) _textBounds;
-- (NSDictionary*) defaultTypingAttributes;
 
 
 - (unsigned) characterIndexForPoint: (NSPoint)point;
@@ -339,9 +338,10 @@ withAttributedString: (NSAttributedString*) aString;
 	withAttributedString: (NSAttributedString*)aString
 {
   _textHolder = aTextHolder;
-  ASSIGN(_textStorage, aString);
+  [self setAttributedString: aString];
   return self;
 }
+
 - (void) setAttributedString: (NSAttributedString*)aString
 {
   ASSIGN(_textStorage, aString);
@@ -375,11 +375,6 @@ withAttributedString: (NSAttributedString*) aString;
     }
   else
     return NSZeroRect;
-}
-
-- (NSDictionary*) defaultTypingAttributes
-{
-  return [_textHolder defaultTypingAttributes];
 }
 
 - (int) lineLayoutIndexForCharacterIndex: (unsigned)anIndex
@@ -519,8 +514,7 @@ withAttributedString: (NSAttributedString*) aString;
 	{
 	  NSRect rect = [currentInfo lineRect];
 	  NSSize stringSize
-	    = [self _sizeOfRange:
-		      MakeRangeFromAbs (range.location, index)];
+	    = [self _sizeOfRange: MakeRangeFromAbs (range.location, index)];
 	  float x = rect.origin.x + stringSize.width;
 
 	  return NSMakeRect (x, rect.origin.y, NSMaxX (rect) - x,
@@ -1205,6 +1199,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
 }
 
+// Draws the lines in the given rectangle and hands back the drawn 
+// character range.
 - (NSRange) drawRectCharacters: (NSRect)rect
 {
   NSRange aRange = [self lineRangeForRect: rect];
@@ -1294,8 +1290,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self setTextColor: [NSColor textColor]];
   _default_font = RETAIN([NSFont userFontOfSize: 12]);
   // sets up the contents object
-  [self setString: @"Text"];
-  [self setSelectedRange: NSMakeRange (0, 0)];
+  [self setString: @""];
+  //[self setSelectedRange: NSMakeRange (0, 0)];
   return self;
 }
 
@@ -1344,7 +1340,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		   initWithString: aString
 		   attributes: [self defaultTypingAttributes]];
 
-  [self rebuildLineLayoutInformation];
+  [self _buildUpLayout];
   [self sizeToFit];
   [self setSelectedRangeNoDrawing: NSMakeRange (0, 0)];
   [self setNeedsDisplay: YES];
@@ -1442,7 +1438,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _tf.is_editable = flag;
   // If we are editable then we  are selectable
   if (flag)
-    _tf.is_selectable = YES;
+    {
+      _tf.is_selectable = YES;
+      // FIXME: We should show the insertion point
+    }
 }
 
 - (void) setFieldEditor: (BOOL)flag
@@ -1516,7 +1515,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (!_window)
     return;
 
-  if (_window && [[self class] focusView] != self)
+  if ([[self class] focusView] != self)
     {
       [self lockFocus];
       didLock = YES;
@@ -2207,112 +2206,71 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) keyDown: (NSEvent*)theEvent
 {
-  unsigned short keyCode;
-
   // If not editable then don't recognize the key down
   if (!_tf.is_editable)
     {
       [super keyDown: theEvent];
+    }
+  else
+    {
+      [self interpretKeyEvents: [NSArray arrayWithObject: theEvent]];
+    }
+}
+
+- (void) insertNewline: (id) sender
+{
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSReturnTextMovement];
       return;
     }
 
-  keyCode = [theEvent keyCode];
+  [self insertText: [[self class] newlineString]];
+}
 
-  // Some keys are extremely special if we are field editor
-  if ([self isFieldEditor])
+- (void) insertTab: (id) sender
+{
+  if (_tf.is_field_editor)
     {
-      int notNumber = NSIllegalTextMovement;
-
-      switch (keyCode)
-	{
-	case NSUpArrowFunctionKey:
-	  notNumber = NSUpTextMovement;
-	  break;
-	case NSDownArrowFunctionKey:
-	  notNumber = NSDownTextMovement;
-	  break;
-	case NSLeftArrowFunctionKey:
-	  //notNumber = NSLeftTextMovement;
-	  break;
-	case NSRightArrowFunctionKey:
-	  //notNumber = NSRightTextMovement;
-	  break;
-	case NSCarriageReturnKey:
-	  notNumber = NSReturnTextMovement;
-	  break;
-	case 0x09:
-	  if ([theEvent modifierFlags] & NSShiftKeyMask)
-	    notNumber = NSBacktabTextMovement;
-	  else
-	    notNumber = NSTabTextMovement;
-	  break;
-	}
-      if (notNumber != NSIllegalTextMovement)
-	{
-	  // This is similar to [self resignFirstResponder],
-	  // with the difference that in the notification we need
-	  // to put the NSTextMovement, which resignFirstResponder
-	  // does not.  Also, if we are ending editing, we are going
-	  // to be removed, so it's useless to update any drawing.
-	  NSNumber *number;
-	  NSDictionary *uiDictionary;
-
-	  if (([self isEditable])
-	      && ([_delegate respondsToSelector:
-			      @selector(textShouldEndEditing:)])
-	      && ([_delegate textShouldEndEditing: self] == NO))
-	    return;
-
-	  // Add any clean-up stuff here
-
-	  number = [NSNumber numberWithInt: notNumber];
-	  uiDictionary = [NSDictionary dictionaryWithObject: number
-				       forKey: @"NSTextMovement"];
-	  [[NSNotificationCenter defaultCenter]
-	    postNotificationName: NSTextDidEndEditingNotification
-	    object: self
-	    userInfo: uiDictionary];
-	  return;
-	}
+      [self _illegalMovement: NSTabTextMovement];
+      return;
     }
 
-  // Special Characters for generic NSText
-  switch (keyCode)
+  [self insertText: @"\t"];
+}
+
+- (void) insertBacktab: (id) sender
+{
+  if (_tf.is_field_editor)
     {
-      case NSUpArrowFunctionKey:
-	[self moveUp: self];
-	return;
-      case NSDownArrowFunctionKey:
-	[self moveDown: self];
-	return;
-      case NSLeftArrowFunctionKey:
-	[self moveLeft: self];
-	return;
-      case NSRightArrowFunctionKey:
-	[self moveRight: self];
-	return;
-      case NSDeleteFunctionKey:
-	if (_selected_range.location != [self textLength])
-	  {
-	    /* Not at the end of text -- delete following character */
-	    [self deleteRange:
-		    [self selectionRangeForProposedRange:
-			    NSMakeRange (_selected_range.location, 1)
-			  granularity: NSSelectByCharacter]
-		  backspace: NO];
-	    return;
-	  }
-	/* end of text: behave the same way as NSBackspaceKey */
-      case NSBackspaceKey:
-	[self deleteRange: _selected_range backspace: YES];
-	return;
-      case NSCarriageReturnKey:
-	[self insertText: [[self class] newlineString]];
-	return;
+      [self _illegalMovement: NSBacktabTextMovement];
+      return;
     }
 
-  // If the character(s) was not a special one, simply insert it.
-  [self insertText: [theEvent characters]];
+  //[self insertText: @"\t"];
+}
+
+- (void) deleteForward: (id) sender
+{
+  if (_selected_range.location != [self textLength])
+    {
+      /* Not at the end of text -- delete following character */
+      [self deleteRange:
+	      [self selectionRangeForProposedRange:
+		      NSMakeRange (_selected_range.location, 1)
+		    granularity: NSSelectByCharacter]
+	    backspace: NO];
+    }
+  else
+    {
+      /* end of text: behave the same way as NSBackspaceKey */
+      [self deleteBackward: sender];
+    }
+}
+
+- (void) deleteBackward: (id) sender
+{
+  [self deleteRange: _selected_range backspace: YES];
 }
 
 //<!> choose granularity according to keyboard modifier flags
@@ -2321,6 +2279,12 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   unsigned cursorIndex;
   NSPoint cursorPoint;
   NSRange oldRange = _selected_range;
+
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSUpTextMovement];
+      return;
+    }
 
   /* Do nothing if we are at beginning of text */
   if (_selected_range.location == 0)
@@ -2349,6 +2313,12 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   unsigned cursorIndex;
   NSRect cursorRect;
   NSRange oldRange = _selected_range;
+
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSDownTextMovement];
+      return;
+    }
 
   /* Do nothing if we are at end of text */
   if (_selected_range.location == [self textLength])
@@ -2575,6 +2545,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _default_font  = RETAIN([aDecoder decodeObject]);
   [aDecoder decodeValueOfObjCType: @encode(NSRange) at: &_selected_range];
 
+  // build upt the layout information that dont get stored
+  [self _buildUpLayout];
   return self;
 }
 
@@ -2735,7 +2707,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (!_window)
     return;
 
-  if (_window && [[self class] focusView] != self)
+  if ([[self class] focusView] != self)
     {
       [self lockFocus];
       didLock  = YES;
@@ -2847,6 +2819,35 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		         _text_color, NSForegroundColorAttributeName,
 		         nil];
 }
+
+- (void) _illegalMovement: (int) textMovement
+{
+  // This is similar to [self resignFirstResponder],
+  // with the difference that in the notification we need
+  // to put the NSTextMovement, which resignFirstResponder
+  // does not.  Also, if we are ending editing, we are going
+  // to be removed, so it's useless to update any drawing.
+  NSNumber *number;
+  NSDictionary *uiDictionary;
+  
+  if (([self isEditable])
+      && ([_delegate respondsToSelector:
+		       @selector(textShouldEndEditing:)])
+      && ([_delegate textShouldEndEditing: self] == NO))
+    return;
+  
+  // Add any clean-up stuff here
+  
+  number = [NSNumber numberWithInt: textMovement];
+  uiDictionary = [NSDictionary dictionaryWithObject: number
+			       forKey: @"NSTextMovement"];
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextDidEndEditingNotification
+    object: self
+    userInfo: uiDictionary];
+  return;
+}
+
 // begin: dragging of colors and files---------------
 - (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
 {
@@ -3056,7 +3057,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     object: self];
 }
 
-// FIXME: The following methods should be move to a seperate class
 - (unsigned) characterIndexForPoint: (NSPoint) point
 {
   return [_layoutManager characterIndexForPoint: point];
@@ -3067,7 +3067,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   return [_layoutManager rectForCharacterIndex: index];
 }
 
-- (int) rebuildLineLayoutInformation
+- (void) _buildUpLayout
 {
   if (_layoutManager == nil)
     _layoutManager = [[GSSimpleLayoutManager alloc]
@@ -3075,8 +3075,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		       withAttributedString: _textStorage];
   else
     [_layoutManager setAttributedString: _textStorage];
-
-  return [_layoutManager rebuildLineLayoutInformation];
 }
 
 - (void) _editedRange: (NSRange) aRange
@@ -3109,7 +3107,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
   // We have to redraw the part of the selection that is inside
   // the redrawn lines
-
   newRange = NSIntersectionRange(selectedCharacterRange, drawnRange);
   // Was there any overlapping with the selection?
   if ((selectedCharacterRange.length &&
@@ -3125,6 +3122,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSRect drawRect  = [self rectForCharacterIndex: index];
 
   drawRect.size.width = 1;
+  if (drawRect.size.height == 0)
+    drawRect.size.height = 12;
+
   if (flag && color == nil)
     color = [NSColor blackColor];
 

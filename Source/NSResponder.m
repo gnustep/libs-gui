@@ -58,12 +58,12 @@
  */
 - (id) nextResponder
 {
-  return next_responder;
+  return _next_responder;
 }
 
 - (void) setNextResponder: (NSResponder*)aResponder
 {
-  next_responder = aResponder;
+  _next_responder = aResponder;
 }
 
 /*
@@ -103,10 +103,10 @@
   else
     {
       /* If we cannot perform then try the next responder */
-      if (!next_responder)
+      if (!_next_responder)
 	return NO;
       else
-	return [next_responder tryToPerform: anAction with: anObject];
+	return [_next_responder tryToPerform: anAction with: anObject];
     }
 }
 
@@ -117,7 +117,68 @@
 
 - (void) interpretKeyEvents:(NSArray*)eventArray
 {
-  // FIXME: As NSInputManger is still missing this method does nothing
+  // FIXME: As NSInputManger is still missing this method is hard coded
+  unsigned short keyCode;
+  NSEvent *theEvent;
+  NSEnumerator *eventEnum = [eventArray objectEnumerator];
+
+  while((theEvent = [eventEnum nextObject]) != nil)
+    {
+      keyCode = [theEvent keyCode];
+      
+      switch (keyCode)
+	{
+	case NSUpArrowFunctionKey:
+	  [self doCommandBySelector: @selector(moveUp:)];
+	  break;
+	case NSDownArrowFunctionKey:
+	  [self doCommandBySelector: @selector(moveDown:)];
+	  break;
+	case NSLeftArrowFunctionKey:
+	  [self doCommandBySelector: @selector(moveLeft:)];
+	  break;
+	case NSRightArrowFunctionKey:
+	  [self doCommandBySelector: @selector(moveRight:)];
+	  break;
+	case NSDeleteFunctionKey:
+	  [self doCommandBySelector: @selector(deleteForward:)];
+	  break;
+	case NSHomeFunctionKey:
+	  [self doCommandBySelector: @selector(moveToBeginningOfDocument:)];
+	  break;
+	case NSBeginFunctionKey:
+	  [self doCommandBySelector: @selector(moveToBeginningOfLine:)];
+	  break;
+	case NSEndFunctionKey:
+	  [self doCommandBySelector: @selector(moveToEndOfLine:)];
+	  break;
+	case NSPageUpFunctionKey:
+	  [self doCommandBySelector: @selector(pageUp:)];
+	  break;
+	case NSPageDownFunctionKey:
+	  [self doCommandBySelector: @selector(pageDown:)];
+	  break;
+	case 0x0008:
+	  //BackspaceKey
+	  [self doCommandBySelector: @selector(deleteBackward:)];
+	  break;
+	case 0x0009:
+	  // TabKey
+	  if ([theEvent modifierFlags] & NSShiftKeyMask)
+	    [self doCommandBySelector: @selector(insertBacktab:)];
+	  else
+	    [self doCommandBySelector: @selector(insertTab:)];
+	  break;
+	case 0x000a:
+	case 0x000d:
+	  // Enter, Newline
+	  [self doCommandBySelector: @selector(insertNewline:)];
+	  break;
+	default:
+	  // If the character(s) was not a special one, simply insert it.
+	  [self insertText: [theEvent characters]];
+	}  
+    }
 }
 
 - (void) flushBufferedKeyEvents
@@ -135,8 +196,8 @@
  */
 - (void) flagsChanged: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder flagsChanged: theEvent];
+  if (_next_responder)
+    return [_next_responder flagsChanged: theEvent];
   else
     return [self noResponderFor: @selector(flagsChanged:)];
 }
@@ -146,71 +207,71 @@
   if(![[NSHelpManager sharedHelpManager]
 	showContextHelpForObject: self
 	locationHint: [theEvent locationInWindow]])
-    if (next_responder)
-      return [next_responder helpRequested: theEvent];
+    if (_next_responder)
+      return [_next_responder helpRequested: theEvent];
   [NSHelpManager setContextHelpModeActive: NO];
 }
 
 - (void) keyDown: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder keyDown: theEvent];
+  if (_next_responder)
+    return [_next_responder keyDown: theEvent];
   else
     return [self noResponderFor: @selector(keyDown:)];
 }
 
 - (void) keyUp: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder keyUp: theEvent];
+  if (_next_responder)
+    return [_next_responder keyUp: theEvent];
   else
     return [self noResponderFor: @selector(keyUp:)];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseDown: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseDown: theEvent];
   else
     return [self noResponderFor: @selector(mouseDown:)];
 }
 
 - (void) mouseDragged: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseDragged: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseDragged: theEvent];
   else
     return [self noResponderFor: @selector(mouseDragged:)];
 }
 
 - (void) mouseEntered: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseEntered: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseEntered: theEvent];
   else
     return [self noResponderFor: @selector(mouseEntered:)];
 }
 
 - (void) mouseExited: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseExited: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseExited: theEvent];
   else
     return [self noResponderFor: @selector(mouseExited:)];
 }
 
 - (void) mouseMoved: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseMoved: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseMoved: theEvent];
   else
     return [self noResponderFor: @selector(mouseMoved:)];
 }
 
 - (void) mouseUp: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder mouseUp: theEvent];
+  if (_next_responder)
+    return [_next_responder mouseUp: theEvent];
   else
     return [self noResponderFor: @selector(mouseUp:)];
 }
@@ -224,9 +285,9 @@
 
 - (void) rightMouseDown: (NSEvent*)theEvent
 {
-  if (next_responder != nil)
+  if (_next_responder != nil)
     {
-      return [next_responder rightMouseDown: theEvent];
+      return [_next_responder rightMouseDown: theEvent];
     }
   else
     {
@@ -242,16 +303,16 @@
 
 - (void) rightMouseDragged: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder rightMouseDragged: theEvent];
+  if (_next_responder)
+    return [_next_responder rightMouseDragged: theEvent];
   else
     return [self noResponderFor: @selector(rightMouseDragged:)];
 }
 
 - (void) rightMouseUp: (NSEvent*)theEvent
 {
-  if (next_responder)
-    return [next_responder rightMouseUp: theEvent];
+  if (_next_responder)
+    return [_next_responder rightMouseUp: theEvent];
   else
     return [self noResponderFor: @selector(rightMouseUp:)];
 }
@@ -262,8 +323,8 @@
 - (id) validRequestorForSendType: (NSString*)typeSent
 		      returnType: (NSString*)typeReturned
 {
-  if (next_responder)
-    return [next_responder validRequestorForSendType: typeSent
+  if (_next_responder)
+    return [_next_responder validRequestorForSendType: typeSent
 					  returnType: typeReturned];
   else
     return nil;
@@ -271,41 +332,46 @@
 
 /*
  * NSCoding protocol
- * NB. Don't encode responder chanin - it's transient information that should
- * be reconstructed from elsewhere in the encoded archive.
+ * NB. Don't encode responder chain - it's transient information that should
+ * be reconstructed from else where in the encoded archive.
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(NSInterfaceStyle)
-			     at: &interface_style];
+			     at: &_interface_style];
+  [aCoder encodeObject: _menu];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  id obj;
+
   [aDecoder decodeValueOfObjCType: @encode(NSInterfaceStyle)
-			       at: &interface_style];
+			       at: &_interface_style];
+  obj = [aDecoder decodeObject];
+  [self setMenu: obj];
+
   return self;
 }
 
 - (NSMenu*) menu
 {
-  // FIXME: We need a slot for the menu
-  return nil;
+  return _menu;
 }
 
 - (void) setMenu: (NSMenu*)aMenu
 {
-  // FIXME: We need a slot for the menu
+  ASSIGN(_menu, aMenu);
 }
 
 - (NSInterfaceStyle) interfaceStyle
 {
-  return interface_style;
+  return _interface_style;
 }
 
 - (void) setInterfaceStyle: (NSInterfaceStyle)aStyle
 {
-  interface_style = aStyle;
+  _interface_style = aStyle;
 }
 
 - (NSUndoManager*) undoManager
