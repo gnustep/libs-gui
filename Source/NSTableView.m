@@ -43,7 +43,71 @@
 #import <AppKit/PSOperators.h>
 #import <AppKit/NSCachedImageRep.h>
 
+#include <math.h>
 static NSNotificationCenter *nc = nil;
+
+static const int currentVersion = 2;
+
+
+/*
+ *  A specific struct and its associated quick sort function
+ *  This is used by the -sizeToFit method
+ */
+typedef struct {
+  float width;
+  BOOL isMax;
+} columnSorting;
+
+
+static
+void quick_sort_internal(columnSorting *data, int p, int r)
+{
+  if (p < r)
+    {
+      int q;
+      {
+	float x = data[p].width;
+	BOOL y = data[p].isMax;
+	int i = p - 1;
+	int j = r + 1;
+	columnSorting exchange;
+	while(1)
+	  {
+	    j--;
+	    for(; 
+		(data[j].width > x)
+		  || ((data[j].width == x) 
+		      && (data[j].isMax == YES)
+		      && (x == NO));
+		j--)
+	      ;
+
+	    i++;
+	    for(;
+		(data[i].width < x)
+		  || ((data[i].width == x) 
+		      && (data[i].isMax == NO)
+		      && (y == YES));
+		i++)
+	      ;
+	    if ( i < j )
+	      {
+		exchange = data[j];
+		data[j] = data[i];
+		data[i] = exchange;
+	      }
+	    else
+	      {
+		q = j;
+		break;
+	      }
+	  }
+      }
+      quick_sort_internal(data, p, q);
+      quick_sort_internal(data, q + 1, r);
+    }
+}
+
 
 /* The selection arrays are stored so that the selected columns/rows
    are always in ascending order.  The following function is used
@@ -244,7 +308,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 {
   if (self == [NSTableView class])
     {
-      [self setVersion: 1];
+      [self setVersion: currentVersion];
       nc = [NSNotificationCenter defaultCenter];
     }
 }
@@ -269,6 +333,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   _allowsColumnSelection = YES;
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
+  _autoresizesAllColumnsToFit = NO;
   _editedColumn = -1;
   _editedRow = -1;
   _selectedColumn = -1;
@@ -2035,13 +2100,12 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setAutoresizesAllColumnsToFit: (BOOL)flag
 {
-  // TODO
+  _autoresizesAllColumnsToFit = flag;
 }
 
 - (BOOL) autoresizesAllColumnsToFit
 {
-  //TODO
-  return NO;
+  return _autoresizesAllColumnsToFit;
 }
 
 - (void) sizeLastColumnToFit
@@ -2052,13 +2116,28 @@ byExtendingSelection: (BOOL)flag
       float last_column_width;
       NSTableColumn *lastColumn;
 
+      lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
+      if ([lastColumn isResizable] == NO)
+	return;
       excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
 				      fromView: _super_view]);
       excess_width -= NSMaxX (_bounds);
-      lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
       last_column_width = [lastColumn width];
       last_column_width += excess_width;
-      [lastColumn setWidth: last_column_width];
+      _tilingDisabled = YES;
+      if (last_column_width < [lastColumn minWidth])
+	{
+	  [lastColumn setWidth: [lastColumn minWidth]];
+	}
+      else if (last_column_width > [lastColumn maxWidth])
+	{
+	  [lastColumn setWidth: [lastColumn maxWidth]];
+	}
+      else
+	{
+	  [lastColumn setWidth: last_column_width];
+	}
+      _tilingDisabled = NO;
       [self tile];
     }
 }
@@ -2066,9 +2145,223 @@ byExtendingSelection: (BOOL)flag
 - (void) setFrame: (NSRect) aRect
 {
   [super setFrame: aRect];
-  [self sizeToFit];
 }
 
+- (void) sizeToFit
+{
+  NSTableColumn *tb;
+  int i, j;
+  float remainingWidth;
+  float availableWidth;
+  columnSorting *columnInfo;
+  float *currentWidth;
+  float *maxWidth;
+  float *minWidth;
+  BOOL *isResizable;
+  int numberOfCurrentColumns = 0;
+  float previousPoint;
+  float nextPoint;
+  float difference;
+  float toAddToCurrentColumns;
+
+
+  if ((_super_view == nil) || (_numberOfColumns == 0))
+    return;
+
+  columnInfo = NSZoneMalloc(NSDefaultMallocZone(),
+			    sizeof(columnSorting) * 2 
+			    * _numberOfColumns);
+  currentWidth = NSZoneMalloc(NSDefaultMallocZone(),
+			      sizeof(float) * _numberOfColumns);
+  maxWidth = NSZoneMalloc(NSDefaultMallocZone(),
+			  sizeof(float) * _numberOfColumns);
+  minWidth = NSZoneMalloc(NSDefaultMallocZone(),
+			  sizeof(float) * _numberOfColumns);
+  isResizable = NSZoneMalloc(NSDefaultMallocZone(),
+			     sizeof(BOOL) * _numberOfColumns);
+
+  availableWidth = NSMaxX([self convertRect: [_super_view bounds] 
+				fromView: _super_view]);
+  remainingWidth = availableWidth;
+
+  /*
+   *  We store the minWidth and the maxWidth of every column
+   *  because we'll use those values *a lot*
+   *  At the same time we set every column to its mininum width
+   */
+  for (i = 0; i < _numberOfColumns; i++)
+    {
+      tb = [_tableColumns objectAtIndex: i];
+      isResizable[i] = [tb isResizable];
+      if (isResizable[i] == YES)
+	{
+	  minWidth[i] = [tb minWidth];
+	  maxWidth[i] = [tb maxWidth];
+	  
+	  if (minWidth[i] < 0)
+	    minWidth[i] = 0;
+	  if (minWidth[i] > maxWidth[i])
+	    {
+	      minWidth[i] = [tb width];
+	      maxWidth[i] = minWidth[i];
+	    }
+	  columnInfo[i * 2].width = minWidth[i];
+	  columnInfo[i * 2].isMax = 0;
+	  currentWidth[i] = minWidth[i];
+	  remainingWidth -= minWidth[i];
+	  
+	  columnInfo[i * 2 + 1].width = maxWidth[i];
+	  columnInfo[i * 2 + 1].isMax = 1;
+	}
+      else
+	{
+	  minWidth[i] = [tb width];
+	  columnInfo[i * 2].width = minWidth[i];
+	  columnInfo[i * 2].isMax = 0;
+	  currentWidth[i] = minWidth[i];
+	  remainingWidth -= minWidth[i];
+	  
+	  maxWidth[i] = minWidth[i];
+	  columnInfo[i * 2 + 1].width = maxWidth[i];
+	  columnInfo[i * 2 + 1].isMax = 1;
+	}
+    } 
+
+  // sort the info we have
+  quick_sort_internal(columnInfo, 0, 2 * _numberOfColumns - 1);
+
+  previousPoint = columnInfo[0].width;
+  numberOfCurrentColumns = 1;
+  
+  if (remainingWidth >= 0.)
+    {
+      for (i = 1; i < 2 * _numberOfColumns; i++)
+	{
+	  nextPoint = columnInfo[i].width;
+	  
+	  if (numberOfCurrentColumns > 0 && 
+	      (nextPoint - previousPoint) > 0.)
+	    {
+	      int verification = 0;
+	      
+	      if ((nextPoint - previousPoint) * numberOfCurrentColumns
+		  <= remainingWidth)
+		{
+		  toAddToCurrentColumns = nextPoint - previousPoint;
+		  remainingWidth -= 
+		    (nextPoint - previousPoint) * numberOfCurrentColumns;
+
+		  for(j = 0; j < _numberOfColumns; j++)
+		    {
+		      if (minWidth[j] <= previousPoint
+			  && maxWidth[j] >= nextPoint)
+			{
+			  verification++;
+			  currentWidth[j] += toAddToCurrentColumns;
+			}
+		    }
+		  if (verification != numberOfCurrentColumns)
+		    {
+		      NSLog(@"[NSTableView sizeToFit]: unexpected error");
+		    }
+		}
+	      else
+		{
+		  int remainingInt = floorf(remainingWidth);
+		  int quotient = remainingInt / numberOfCurrentColumns;
+		  int remainder = remainingInt - quotient * numberOfCurrentColumns;
+		  int oldRemainder = remainder;
+
+		  for(j = _numberOfColumns - 1; j >= 0; j--)
+		    {
+		      if (minWidth[j] <= previousPoint
+			  && maxWidth[j] >= nextPoint)
+			{
+			  currentWidth[j] += quotient;
+			  if (remainder > 0 
+			      && maxWidth[j] >= currentWidth[j] + 1)
+			    {
+			      remainder--;
+			      currentWidth[j]++;
+			    }
+			}
+		    }
+		  while (oldRemainder > remainder && remainder > 0)
+		    {
+		      oldRemainder = remainder;
+		      for(j = 0; j < _numberOfColumns; j++)
+			{
+			  if (minWidth[j] <= previousPoint
+			      && maxWidth[j] >= nextPoint)
+			    {
+			      if (remainder > 0 
+				  && maxWidth[j] >= currentWidth[j] + 1)
+				{
+				  remainder--;
+				  currentWidth[j]++;
+				}
+			    }
+			  
+			}
+		    }
+		  if (remainder > 0)
+		    NSLog(@"There is still free space to fill.\
+ However it seems better to use integer width for the columns");
+		  else
+		    remainingWidth = 0.;
+		}
+	      
+	      
+	    }
+	  else if (numberOfCurrentColumns < 0)
+	    {
+	      NSLog(@"[NSTableView sizeToFit]: unexpected error");
+	    }
+	  
+	  if (columnInfo[i].isMax)
+	    numberOfCurrentColumns--;
+	  else
+	    numberOfCurrentColumns++;
+	  previousPoint = nextPoint;
+	  
+	  if (remainingWidth == 0.)
+	    {
+	      break;
+	    }
+	}
+    }
+
+  _tilingDisabled = YES;
+
+  remainingWidth = 0.;
+  for (i = 0; i < _numberOfColumns; i++)
+    {
+      if (isResizable[i] == YES)
+	{
+	  tb = [_tableColumns objectAtIndex: i];
+	  remainingWidth += currentWidth[i];
+	  [tb setWidth: currentWidth[i]];
+	}
+      else
+	{
+	  remainingWidth += minWidth[i];
+	}
+    }
+
+
+  difference = availableWidth - remainingWidth;
+
+
+  _tilingDisabled = NO;
+  NSZoneFree(NSDefaultMallocZone(), columnInfo);
+  NSZoneFree(NSDefaultMallocZone(), currentWidth);
+  NSZoneFree(NSDefaultMallocZone(), maxWidth);
+  NSZoneFree(NSDefaultMallocZone(), minWidth);
+
+
+  [self tile];
+}
+/*
 - (void) sizeToFit
 {
   NSCell *cell;
@@ -2081,8 +2374,8 @@ byExtendingSelection: (BOOL)flag
 
   _tilingDisabled = YES;
 
-  /* First Step */
-  /* Resize Each Column to its Minimum Width */
+  // First Step
+  // Resize Each Column to its Minimum Width
   table_width = _bounds.origin.x;
   enumerator = [_tableColumns objectEnumerator];
   while ((tb = [enumerator nextObject]) != nil)
@@ -2112,14 +2405,14 @@ byExtendingSelection: (BOOL)flag
 	}
       width += _intercellSpacing.width;
       [tb setWidth: width];
-      /* It is necessary to ask the column for the width, since it might have 
-	 been changed by the column to constrain it to a min or max width */
+      // It is necessary to ask the column for the width, since it might have 
+      // been changed by the column to constrain it to a min or max width
       table_width += [tb width];
     }
 
-  /* Second Step */
-  /* If superview (clipview) is bigger than that, divide remaining space 
-     between all columns */
+  // Second Step
+  // If superview (clipview) is bigger than that, divide remaining space 
+  // between all columns
   if ((_super_view != nil) && (_numberOfColumns > 0))
     {
       float excess_width;
@@ -2127,12 +2420,13 @@ byExtendingSelection: (BOOL)flag
       excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
 				      fromView: _super_view]);
       excess_width -= table_width;
-      /* Since we resized each column at its minimum width, 
-	 it's useless to try shrinking more: we can't */
+      // Since we resized each column at its minimum width, 
+      // it's useless to try shrinking more: we can't
       if (excess_width <= 0)
 	{
 	  _tilingDisabled = NO;
 	  [self tile];
+	  NSLog(@"exiting sizeToFit");
 	  return;
 	}
       excess_width = excess_width / _numberOfColumns;
@@ -2146,8 +2440,9 @@ byExtendingSelection: (BOOL)flag
 
   _tilingDisabled = NO;
   [self tile];
+  NSLog(@"exiting sizeToFit");
 }
-
+*/
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_dataSource numberOfRowsInTableView: self];
@@ -2526,11 +2821,16 @@ byExtendingSelection: (BOOL)flag
     {
       endingRow = _numberOfRows - 1;
     }
-
-  for (i = startingRow; i <= endingRow; i++)
-    {
-      [self drawRow: i  clipRect: aRect];
-    }
+  //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
+  {
+    SEL sel = @selector(drawRow:clipRect:);
+    IMP imp = [self methodForSelector: sel];
+    
+    for (i = startingRow; i <= endingRow; i++)
+      {
+	(*imp)(self, sel, i, aRect);
+      }
+  }
 }
 
 - (BOOL) isOpaque
@@ -2862,55 +3162,109 @@ byExtendingSelection: (BOOL)flag
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  int version = [aDecoder versionForClassName: 
+			    NSStringFromClass([self class])];
+
   id aDelegate;
 
-  self = [super initWithCoder: aDecoder];
+  if (version == currentVersion)
+    {
+      self = [super initWithCoder: aDecoder];
+      
+      _dataSource      = [aDecoder decodeObject];
+      _tableColumns    = RETAIN([aDecoder decodeObject]);
+      _gridColor       = RETAIN([aDecoder decodeObject]);
+      _backgroundColor = RETAIN([aDecoder decodeObject]);
+      _headerView      = RETAIN([aDecoder decodeObject]);
+      _cornerView      = RETAIN([aDecoder decodeObject]);
+      aDelegate        = [aDecoder decodeObject];
+      _target          = [aDecoder decodeObject];
+      
+      [self setDelegate: aDelegate];
+      [_headerView setTableView: self];
+      [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
+		     withObject: self];
+      
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      _intercellSpacing = [aDecoder decodeSize];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      
+      ASSIGN (_selectedColumns, [NSMutableArray array]);
+      ASSIGN (_selectedRows, [NSMutableArray array]);
+      if (_numberOfColumns)
+	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof(float) * _numberOfColumns);
+      
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _selectingColumns = NO;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _editedColumn = -1;
+      _editedRow = -1;
+    }
+  else if (version == 1)
+    {
+      self = [super initWithCoder: aDecoder];
+      
+      _dataSource      = [aDecoder decodeObject];
+      _tableColumns    = RETAIN([aDecoder decodeObject]);
+      _gridColor       = RETAIN([aDecoder decodeObject]);
+      _backgroundColor = RETAIN([aDecoder decodeObject]);
+      _headerView      = RETAIN([aDecoder decodeObject]);
+      _cornerView      = RETAIN([aDecoder decodeObject]);
+      aDelegate        = [aDecoder decodeObject];
+      _target          = [aDecoder decodeObject];
+      
+      [self setDelegate: aDelegate];
+      [_headerView setTableView: self];
+      [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
+		     withObject: self];
+      
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      _intercellSpacing = [aDecoder decodeSize];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      
+      ASSIGN (_selectedColumns, [NSMutableArray array]);
+      ASSIGN (_selectedRows, [NSMutableArray array]);
+      if (_numberOfColumns)
+	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof(float) * _numberOfColumns);
+      
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _selectingColumns = NO;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _editedColumn = -1;
+      _editedRow = -1;
+    }
 
-  _dataSource      = [aDecoder decodeObject];
-  _tableColumns    = RETAIN([aDecoder decodeObject]);
-  _gridColor       = RETAIN([aDecoder decodeObject]);
-  _backgroundColor = RETAIN([aDecoder decodeObject]);
-  _headerView      = RETAIN([aDecoder decodeObject]);
-  _cornerView      = RETAIN([aDecoder decodeObject]);
-  aDelegate        = [aDecoder decodeObject];
-  _target          = [aDecoder decodeObject];
-
-  [self setDelegate: aDelegate];
-  [_headerView setTableView: self];
-  [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
-		                 withObject: self];
-
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  _intercellSpacing = [aDecoder decodeSize];
-
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-
-  ASSIGN (_selectedColumns, [NSMutableArray array]);
-  ASSIGN (_selectedRows, [NSMutableArray array]);
-  if (_numberOfColumns)
-    _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-				   sizeof(float) * _numberOfColumns);
-
-  _clickedRow = -1;
-  _clickedColumn = -1;
-  _selectingColumns = NO;
-  _selectedColumn = -1;
-  _selectedRow = -1;
-  _editedColumn = -1;
-  _editedRow = -1;
   return self;
 }
 
@@ -2920,7 +3274,7 @@ byExtendingSelection: (BOOL)flag
   NSTableColumn *tb;
   if (aCell == nil)
     return;
-  
+  return;
   for (i = 0; i < _numberOfColumns; i++)
     {
       tb = [_tableColumns objectAtIndex: i];
@@ -2932,7 +3286,22 @@ byExtendingSelection: (BOOL)flag
 	{
 	  NSRect columnRect = [self rectOfColumn: i];
 	  NSRect rowRect;
-	  for (j = 0; j < _numberOfRows; j++)
+	  NSRect visibleRect = [self convertRect: [_super_view bounds]
+				     toView: self];
+	  NSPoint top = NSMakePoint(NSMinX(visibleRect),
+				    NSMinY(visibleRect));
+	  NSPoint bottom = NSMakePoint(NSMinX(visibleRect),
+				       NSMaxY(visibleRect));
+	  int firstVisibleRow = [self rowAtPoint: top];
+	  int lastVisibleRow = [self rowAtPoint: bottom];
+
+	  if (firstVisibleRow == -1)
+	    firstVisibleRow = 0;
+
+	  if (lastVisibleRow == -1)
+	    lastVisibleRow = _numberOfColumns - 1;
+
+	  for (j = firstVisibleRow; j < lastVisibleRow; j++)
 	    {
 	      if ([tb dataCellForRow: j] == aCell)
 		{
@@ -3083,6 +3452,56 @@ byExtendingSelection: (BOOL)flag
 		}
 	    }
 	}
+    }
+}
+
+- (void) superviewFrameChanged: (NSNotification*)aNotification
+{
+  if (_autoresizesAllColumnsToFit == YES)
+    {
+      [self sizeToFit];
+    }
+  else
+    {
+      float visible_width = [self convertRect: [_super_view bounds] 
+				  fromView: _super_view].size.width;
+      
+      float table_width = 
+	_columnOrigins[_numberOfColumns - 1] +
+	[[_tableColumns objectAtIndex: _numberOfColumns - 1] width];
+      
+      /*
+	NSLog(@"columnOrigins[0] %f", _columnOrigins[0]);
+	NSLog(@"superview.bounds %@", 
+	      NSStringFromRect([_super_view bounds]));
+	NSLog(@"superview.frame %@", 
+	      NSStringFromRect([_super_view frame]));
+	NSLog(@"table_width %f", table_width);
+	NSLog(@"width %f", visible_width);
+	NSLog(@"_superview_width %f", _superview_width);
+      */
+
+      if ( table_width - _superview_width <= 0.001
+	   && table_width - _superview_width >= -0.001 )
+	{
+	  // the last column had been sized to fit
+	  [self sizeLastColumnToFit];
+	}
+      else if ( table_width <= _superview_width
+		&& table_width >= visible_width )
+	{
+	  // the tableView was too small and is now too large
+	  [self sizeLastColumnToFit];
+	}
+      else if (table_width >= _superview_width
+	       && table_width <= visible_width )
+	{
+	  // the tableView was too large and is now too small
+	  if (_numberOfColumns > 0)
+	    [self scrollColumnToVisible: 0];
+	  [self sizeLastColumnToFit];
+	}
+      _superview_width = visible_width;
     }
 }
 
