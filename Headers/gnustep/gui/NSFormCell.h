@@ -45,11 +45,6 @@
 }
 
 //
-// Determining Graphic Attributes 
-//
-- (BOOL)isOpaque;
-
-//
 // Modifying the Title 
 //
 - (void)setTitle:(NSString*)aString;
@@ -62,17 +57,14 @@
 - (float)titleWidth;
 - (float)titleWidth:(NSSize)aSize;
 
+#ifndef	STRICT_OPENSTEP
 //
-// Displaying 
+// Attributed title
 //
-- (void)drawWithFrame:(NSRect)cellFrame
-  inView:(NSView*)controlView;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (NSAttributedString *)attributedTitle;
+- (void)setAttributedTitle:(NSAttributedString *)anAttributedString;
+- (void)setTitleWithMnemonic:(NSString *)titleWithAmpersand;
+#endif
 
 @end
 
