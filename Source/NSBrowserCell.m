@@ -32,7 +32,6 @@
 #include <gnustep/gui/config.h>
 
 #include <AppKit/NSBrowserCell.h>
-#include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
@@ -46,22 +45,12 @@
 static NSImage	*_branch_image;
 static NSImage	*_highlight_image;
 
-static Class	_cellClass;
 static Class	_colorClass;
 
-// Color is not used now, but the code is here
-// in case in the future we want to use it again
+// GNUstep user default to have NSBrowserCell in bold if non leaf
 static BOOL _gsFontifyCells = NO;
-//static NSColor *_nonLeafColor;
 static NSFont *_nonLeafFont;
-//static NSColor *_leafColor;
 static NSFont *_leafFont;
-
-/*****************************************************************************
- *
- * 		NSBrowserCell
- *
- *****************************************************************************/
 
 @implementation NSBrowserCell
 
@@ -78,7 +67,6 @@ static NSFont *_leafFont;
       /*
        * Cache classes to avoid overheads of poor compiler implementation.
        */
-      _cellClass = [NSCell class];
       _colorClass = [NSColor class];
 
       // A GNUstep experimental feature
@@ -86,11 +74,7 @@ static NSFont *_leafFont;
 	    boolForKey: @"GSBrowserCellFontify"])
 	{
 	  _gsFontifyCells = YES;
-	  _cellClass = [NSTextFieldCell class];
-	  //_nonLeafColor = RETAIN ([_colorClass colorWithCalibratedWhite: 0.222
-	  //				  alpha: 1.0]);
 	  _nonLeafFont = RETAIN ([NSFont boldSystemFontOfSize: 0]);
-	  //_leafColor = RETAIN ([_colorClass blackColor]);
 	  _leafFont = RETAIN ([NSFont systemFontOfSize: 0]);
 	}
     }
@@ -120,8 +104,6 @@ static NSFont *_leafFont;
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  _branchImage = RETAIN([isa branchImage]);
-  _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
   _cell.is_editable = NO;
   _cell.is_bordered = NO;
   _cell.text_align = NSLeftTextAlignment;
@@ -143,8 +125,6 @@ static NSFont *_leafFont;
 
 - (void) dealloc
 {
-  RELEASE(_branchImage);
-  RELEASE(_highlightBranchImage);
   TEST_RELEASE(_alternateImage);
 
   [super dealloc];
@@ -154,10 +134,8 @@ static NSFont *_leafFont;
 {
   NSBrowserCell	*c = [super copyWithZone: zone];
 
-  c->_branchImage = RETAIN(_branchImage);
   if (_alternateImage)
     c->_alternateImage = RETAIN(_alternateImage);
-  c->_highlightBranchImage = RETAIN(_highlightBranchImage);
   c->_browsercell_is_leaf = _browsercell_is_leaf;
   c->_browsercell_is_loaded = _browsercell_is_loaded;
 
@@ -253,14 +231,18 @@ static NSFont *_leafFont;
       backColor = [_colorClass selectedControlColor];
       [backColor set];
       if (!_browsercell_is_leaf)
-	image = _highlightBranchImage;
+	image = [isa highlightedBranchImage];
+      else if (_alternateImage)
+	image = _alternateImage;
     }
   else
     {
       backColor = [cvWin backgroundColor];
       [backColor set];
       if (!_browsercell_is_leaf)
-	image = _branchImage;
+	image = [isa branchImage];
+      else if (_alternateImage)
+	image = _alternateImage;
     }
   
   NSRectFill(cellFrame);	// Clear the background
@@ -306,6 +288,7 @@ static NSFont *_leafFont;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
   tmp = _browsercell_is_loaded;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  [aCoder encodeObject: _alternateImage];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -317,8 +300,7 @@ static NSFont *_leafFont;
   _browsercell_is_leaf = tmp;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
   _browsercell_is_loaded = tmp;
-  _branchImage = RETAIN([isa branchImage]);
-  _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_alternateImage];
 
   return self;
 }
