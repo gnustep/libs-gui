@@ -5,7 +5,7 @@ s/@CPPFLAGS@//
 s/@prefix@/$(MB_DEV)/
 s/@exec_prefix@/$(prefix)/
 s/libdir = $(exec_prefix)\/lib/libdir = $(exec_prefix)\\$(MB_LIB)/
-s/includedir = $(prefix)\/include/includedir = $(prefix)\\$(MB_H)/
+s/includedir = $(prefix)\/include/includedir = $(prefix)\\$(MB_H)\\$(MB_OS)/
 s/@gcc_lib@/libgcc.lib/
 s/@objc_lib@/libobjc.lib/
 s/@sys_libs@/libc.lib oldnames.lib user32.lib gdi32.lib wsock32.lib/
