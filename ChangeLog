@@ -1,3 +1,31 @@
+2002-11-02  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindowController.m (-setDocument:): Remove window's
+	setReleasedWhenClosed when doc is not nil.
+	(-setWindow:): Idem.
+	(Pointed out by Stefan Urbanek).
+
+2002-11-02  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSParagraphStyle.m (-compare:): Correct the comparision of
+	NSTextTabs.
+	* Source/NSScrollView.m (-tile:): Add a call to setNeedsDisplay.
+	* Source/NSRulerMarker.h: Correct a mispelling in a method name 
+        makerLocation to markerLocation.
+	* Source/NSTextView.m: Idem.
+        (-rulerView:didAddMarker:) Create a new NSTextTab corresponding
+        to the marker.
+        (-rulerView:handleMouseDown:) Ask rulerview to track a new
+        marker, instead of simply adding a new marker
+	* Source/NSRulerView.m: Remove some unused macros.
+        (-_verifyReservedThicknessForMarkers, _rulerRect, _markersRect,
+	-markerAtPoint:): New private.
+	(-trackMarker:withMouseEvent:): Implement.
+	(-mouseDown:) Track marker if click was on marker, or asks
+	client to handle if click was on ruler area.
+	* Source/NSRulerMarker.m: -trackMouse:adding:): Implement.
+	(Patches from Benhur Stein <benhur@inf.ufsm.br>).
+
 2002-11-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-finishLaunching): Instantiate an

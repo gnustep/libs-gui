@@ -2255,8 +2255,8 @@ replacing the selection.
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	       replacementString: (NSString*)replacementString
 {
-  if (_tf.is_editable == NO)
-    return NO;
+  //if (_tf.is_editable == NO)
+  //  return NO;
 
   /* We need to send the textShouldBeginEditing: /
      textDidBeginEditingNotification only once; and we need to send it
@@ -3472,7 +3472,7 @@ afterString in order over charRange. */
 {
   NSTextTab *old_tab = [marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
-					  location: [marker makerLocation]];
+					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
   unsigned	loc = range.location;
   NSParagraphStyle *style;
@@ -3598,7 +3598,9 @@ afterString in order over charRange. */
 - (void) rulerView: (NSRulerView *)ruler 
       didAddMarker: (NSRulerMarker *)marker
 {
-  NSTextTab *tab = [marker representedObject];
+  NSTextTab *old_tab = [marker representedObject];
+  NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
+					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
   unsigned	loc = range.location;
   NSParagraphStyle *style;
@@ -3627,7 +3629,7 @@ afterString in order over charRange. */
 	  copiedStyle = YES;
 	}
 
-      [value addTabStop: tab];
+      [value addTabStop: new_tab];
 
       [_textStorage addAttribute: NSParagraphStyleAttributeName
 		   value: value
@@ -3648,10 +3650,13 @@ afterString in order over charRange. */
 
   mstyle = [style mutableCopy];
 
-  [mstyle addTabStop: tab];
+  [mstyle addTabStop: new_tab];
   // FIXME: Should use setTypingAttributes
   [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
   RELEASE (mstyle); 
+
+  [marker setRepresentedObject: new_tab];
+  RELEASE(new_tab);
 }
 
 /**
@@ -3672,9 +3677,9 @@ afterString in order over charRange. */
 					  location: location];
 
   [marker setRepresentedObject: tab];
-  [ruler addMarker: marker];
+  [ruler trackMarker: marker withMouseEvent: event];
   RELEASE(marker);
-  AUTORELEASE(tab);
+  RELEASE(tab);
 }
 
 /**

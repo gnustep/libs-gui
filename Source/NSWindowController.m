@@ -147,11 +147,7 @@
   ASSIGN (_document, document);
   [self synchronizeWindowTitleWithDocumentName];
 
-  if (_document != nil)
-    {
-      [_window setReleasedWhenClosed: YES];
-    }
-  else
+  if (_document == nil)
     {
       /* If you want the window to be deallocated when closed, you
 	 need to observe the NSWindowWillCloseNotification (or
@@ -276,11 +272,7 @@
 - (void) setWindow: (NSWindow *)aWindow
 {
   ASSIGN (_window, aWindow);
-  if (_document != nil)
-    {
-      [_window setReleasedWhenClosed: YES];
-    }
-  else
+  if (_document == nil)
     {
       [_window setReleasedWhenClosed: NO];
     }

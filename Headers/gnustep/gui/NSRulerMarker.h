@@ -70,7 +70,7 @@
 - (BOOL)isRemovable; 
 
 - (void)setMarkerLocation:(float)location; 
-- (float)makerLocation; 
+- (float)markerLocation; 
 
 - (void)setRepresentedObject:(id <NSCopying>)anObject; 
 - (id <NSCopying>)representedObject;

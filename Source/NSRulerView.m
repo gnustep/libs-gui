@@ -36,7 +36,9 @@
 #include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSEvent.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/NSAttributedString.h>
 
 DEFINE_RINT_IF_MISSING
 
@@ -50,16 +52,19 @@ DEFINE_RINT_IF_MISSING
 
 #define BASE_LINE_LOCATION 0
 #define RULER_THICKNESS 16
+#define MARKER_THICKNESS 15
 
-#define ASSIGN_FIRST_VALUE(firstVal, tRect) (firstVal = (int)((tRect - _zeroLocation) / labelDistInRuler) * labelDistInRuler)
-
-#define ASSIGN_FIRST_MARKER(firstMarker, tRect) (firstMarker = ceil(((tRect - _zeroLocation) - firstVal) / (_unitToRuler * markDistInUnits)))
-
-#define ASSIGN_DIFERENCE(diference, tRect) (diference = (firstMarker * (markDistInUnits * _unitToRuler)) + firstVal + _zeroLocation - tRect)
-
-#define SET_MARK_COUNT(markCount, tRect, dif) (markCount = floor(1 + (tRect - dif) / (_unitToRuler * markDistInUnits)))
-
-#define DRAW_HASH_MARK(context, size)  {if (_orientation == NSHorizontalRuler) DPSrlineto(context, 0, size); else DPSrlineto(context, size, 0);}
+#define DRAW_HASH_MARK(context, size)			\
+		do {					\
+		  if (_orientation == NSHorizontalRuler)\
+		    {					\
+		      DPSrlineto(context, 0, size);	\
+		    }					\
+		  else					\
+		    {					\
+		      DPSrlineto(context, size, 0);	\
+		    }					\
+		} while (0)
 
 @interface GSRulerUnit : NSObject
 {
@@ -163,7 +168,7 @@ unitToPointsConversionFactor: (float)factor
 
 /*
  * Class variables
-*/
+ */
 static NSMutableDictionary *units = nil;
 
 /*
@@ -221,7 +226,14 @@ static NSMutableDictionary *units = nil;
       [self setRuleThickness: RULER_THICKNESS];
       [self setOriginOffset: 0.0];
       [self setReservedThicknessForAccessoryView: 0.0];
-      [self setReservedThicknessForMarkers: 0.0];
+      if (o == NSHorizontalRuler)
+        {
+          [self setReservedThicknessForMarkers: MARKER_THICKNESS];
+	}
+      else
+        {
+          [self setReservedThicknessForMarkers: 0.0];
+	}
       [self invalidateHashMarks];
     }
   return self;
@@ -310,6 +322,32 @@ static NSMutableDictionary *units = nil;
   return _originOffset;
 }
 
+- (void) _verifyReservedThicknessForMarkers
+{
+  NSEnumerator *en;
+  NSRulerMarker *marker;
+  float maxThickness = _reservedThicknessForMarkers;
+  
+  if (_markers == nil)
+    {
+      return;
+    }
+  en = [_markers objectEnumerator];
+  while ((marker = [en nextObject]) != nil)
+    {
+      float markerThickness;
+      markerThickness = [marker thicknessRequiredInRuler];
+      if (markerThickness > maxThickness)
+        {
+	  maxThickness = markerThickness;
+	}
+    }
+  if (maxThickness > _reservedThicknessForMarkers)
+    {
+      [self setReservedThicknessForMarkers: maxThickness];
+    }
+}
+
 - (void) setMarkers: (NSArray *)newMarkers
 {
   if (newMarkers != nil && _clientView == nil)
@@ -320,6 +358,7 @@ static NSMutableDictionary *units = nil;
   if (newMarkers != nil)
     {
       ASSIGN(_markers, [NSMutableArray arrayWithArray: newMarkers]);
+      [self _verifyReservedThicknessForMarkers];
     }
   else
     {
@@ -368,17 +407,101 @@ static NSMutableDictionary *units = nil;
 - (BOOL) trackMarker: (NSRulerMarker *)aMarker
       withMouseEvent: (NSEvent *)theEvent
 {
-  /* FIXME/TODO: not implemented */
-  return NO;
+  NSParameterAssert(aMarker != nil);
+  
+  return [aMarker trackMouse: theEvent adding: YES];
+}
+
+- (NSRect) _rulerRect
+{
+  NSRect rect = [self bounds]; 
+  if (_orientation == NSHorizontalRuler)
+    {
+      rect.size.height = _ruleThickness;
+      if ([self isFlipped])
+        {
+	  rect.origin.y = [self baselineLocation];
+	}
+      else
+        {
+	  rect.origin.y = [self baselineLocation] - _ruleThickness;
+	}
+    }
+  else
+    {
+      rect.size.width = _ruleThickness;
+      rect.origin.x = [self baselineLocation];
+    }
+  return rect;
+}
+
+- (NSRect) _markersRect
+{
+  NSRect rect = [self bounds]; 
+  if (_orientation == NSHorizontalRuler)
+    {
+      rect.size.height = _reservedThicknessForMarkers;
+      if ([self isFlipped])
+        {
+	  rect.origin.y = _reservedThicknessForAccessoryView;
+	}
+      else
+        {
+	  rect.origin.y = _ruleThickness;
+	}
+    }
+  else
+    {
+      rect.size.width = _reservedThicknessForMarkers;
+      rect.origin.x = _reservedThicknessForAccessoryView;
+    }
+  return rect;
+}
+
+- (NSRulerMarker *) _markerAtPoint: (NSPoint)point
+{
+  NSEnumerator *markerEnum;
+  NSRulerMarker *marker;
+  BOOL flipped = [self isFlipped];
+  
+  /* test markers in reverse order so that markers drawn on top
+     are tested before those underneath */
+  markerEnum = [_markers reverseObjectEnumerator];
+  while ( (marker = [markerEnum nextObject]) != nil)
+    {
+      if (NSMouseInRect (point, [marker imageRectInRuler], flipped))
+        {
+	  return marker;
+	}
+    }
+  return nil;
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  if (_clientView != nil  
-      && [_clientView respondsToSelector: 
-			@selector(rulerView:handleMouseDown:)]) 
+  NSPoint clickPoint;
+  BOOL flipped = [self isFlipped];
+  
+  clickPoint = [self convertPoint: [theEvent locationInWindow]
+                         fromView: nil];
+  if (NSMouseInRect (clickPoint, [self _rulerRect], flipped))
     {
-      [_clientView rulerView: self handleMouseDown: theEvent];
+      if (_clientView != nil  
+          && [_clientView respondsToSelector: 
+			    @selector(rulerView:handleMouseDown:)]) 
+        {
+          [_clientView rulerView: self handleMouseDown: theEvent];
+        }
+    }
+  else if (NSMouseInRect (clickPoint, [self _markersRect], flipped))
+    {
+      NSRulerMarker *clickedMarker;
+      
+      clickedMarker = [self _markerAtPoint: clickPoint];
+      if (clickedMarker != nil)
+        {
+	  [clickedMarker trackMouse: theEvent adding: NO];
+	}
     }
 }
 
@@ -419,25 +542,22 @@ static NSMutableDictionary *units = nil;
 {
   if (! _cacheIsValid)
     {
-      NSRect rect;
-      NSRect unitRect;
+      NSSize unitSize;
       float  cf; 
       int    convIndex;
 
-      /* calculate the position of the zero coordinate in the ruler
-       * and the size one unit in document view has in the ruler */
+      /* calculate the size one unit in document view has in the ruler */
       cf = [_unit conversionFactor];
-      rect = NSMakeRect(_originOffset, _originOffset, cf, cf);
-      unitRect = [self convertRect: rect  
+      unitSize = [self convertSize: NSMakeSize(cf, cf)  
 		       fromView: [_scrollView documentView]];
 
       if (_orientation == NSHorizontalRuler) 
         {
-          _unitToRuler = NSWidth(unitRect);
+          _unitToRuler = unitSize.width;
         }
       else 
         {
-          _unitToRuler = NSHeight(unitRect);
+          _unitToRuler = unitSize.height;
         }
 
       /* Calculate distance between marks.  */
@@ -461,7 +581,7 @@ static NSMutableDictionary *units = nil;
       /* calculate number of small marks in each bigger mark */
       _marksToMidMark = rint([self _stepForIndex: convIndex + 1]);
       _marksToBigMark = _marksToMidMark 
-                     * rint([self _stepForIndex: convIndex + 2]);
+                      * rint([self _stepForIndex: convIndex + 2]);
     
       /* Calculate distance between labels.
          It must not be less than MIN_LABEL_DISTANCE. */
@@ -502,9 +622,13 @@ static NSMutableDictionary *units = nil;
   int firstVisibleMark;
   int lastVisibleMark;
   int mark;
+  int firstVisibleLabel;
+  int lastVisibleLabel;
+  int label;
   NSRect baseLineRect;
   float baselineLocation = [self baselineLocation];
   NSPoint zeroPoint;
+  BOOL flipped = [self isFlipped];
 
   docView = [_scrollView documentView];
   
@@ -549,7 +673,7 @@ static NSMutableDictionary *units = nil;
   NSRectFill(baseLineRect);
 
   /* draw hash marks */
-  firstVisibleMark = ceil((firstVisibleLocation - _zeroLocation)
+  firstVisibleMark = floor((firstVisibleLocation - _zeroLocation)
                           / _markDistance);
   lastVisibleMark = floor((firstVisibleLocation + visibleLength - _zeroLocation) 
                           / _markDistance);
@@ -570,33 +694,7 @@ static NSMutableDictionary *units = nil;
 
       if ((mark % _marksToLabel) == 0) 
         {
-          float labelValue;
-          NSString *label;
-
           DRAW_HASH_MARK(ctxt, LABEL_MARK_SIZE);
-
-          /* draw label */
-          /* FIXME: shouldn't be using NSCell to draw labels? */
-          labelValue = (markLocation - _zeroLocation) / _unitToRuler;
-          if ([self isFlipped] == NO && labelValue != 0.0)
-	    {
-	      label = [NSString stringWithFormat: _labelFormat, -labelValue];
-	    }
-          else
-	    {
-	      label = [NSString stringWithFormat: _labelFormat, labelValue];
-	    }
-          if (_orientation == NSHorizontalRuler)
-            {
-              DPSrmoveto(ctxt, 2, 0);
-            }
-          else
-            {
-              float labelWidth;
-              labelWidth = [font widthOfString: label];
-              DPSrmoveto(ctxt, 3 - labelWidth, 9);
-            }
-          DPSshow(ctxt, [label cString]);
         }
       else if ((mark % _marksToBigMark) == 0) 
         {
@@ -612,6 +710,47 @@ static NSMutableDictionary *units = nil;
         }
     }
   DPSstroke(ctxt);
+  
+  /* draw labels */
+  /* FIXME: shouldn't be using NSCell to draw labels? */
+  firstVisibleLabel = floor((firstVisibleLocation - _zeroLocation)
+                          / (_marksToLabel * _markDistance));
+  lastVisibleLabel = floor((firstVisibleLocation + visibleLength - _zeroLocation) 
+                          / (_marksToLabel * _markDistance));
+  
+  for (label = firstVisibleLabel; label <= lastVisibleLabel; label++)
+    {
+      float labelLocation;
+      float labelValue;
+      NSString *labelString;
+      NSPoint labelPosition;
+
+      labelLocation = _zeroLocation + label * _marksToLabel * _markDistance;
+
+      labelValue = (labelLocation - _zeroLocation) / _unitToRuler;
+      labelString = [NSString stringWithFormat: _labelFormat, labelValue];
+      if (_orientation == NSHorizontalRuler)
+        {
+	  labelPosition.x = labelLocation + 2;
+	  labelPosition.y = baselineLocation + LABEL_MARK_SIZE;
+        }
+      else
+        {
+          float labelWidth;
+          labelWidth = [font widthOfString: labelString];
+	  labelPosition.x = baselineLocation + LABEL_MARK_SIZE + 3 - labelWidth;
+	  if (flipped)
+	    {
+	      labelPosition.y = labelLocation + [font xHeight] + 4;
+	    }
+	  else
+	    {
+	      labelPosition.y = labelLocation + 2;
+            }
+        }
+      DPSmoveto(ctxt, labelPosition.x, labelPosition.y);
+      DPSshow(ctxt, [labelString cString]);
+    }
 }
 
 - (void) drawMarkersInRect: (NSRect)aRect
@@ -665,7 +804,6 @@ static NSMutableDictionary *units = nil;
 
 - (void) setReservedThicknessForMarkers: (float)thickness
 {
-  /*  NSLog(@"requiredThicknessForMarkers: %f", thickness); */
   _reservedThicknessForMarkers = thickness;
   [_scrollView tile];
 }

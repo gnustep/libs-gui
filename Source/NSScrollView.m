@@ -914,6 +914,7 @@ static float scrollerWidth;
     }
 
   [_contentView setFrame: contentRect];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) drawRect: (NSRect)rect

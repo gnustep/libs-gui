@@ -55,9 +55,9 @@
   if (anObject == nil || ([anObject isKindOfClass: self->isa] == NO))
     return NSOrderedAscending;
   loc = ((NSTextTab*)anObject)->_location;
-  if (loc < _location)
+  if (_location < loc)
     return NSOrderedAscending;
-  else if (loc > _location)
+  else if (_location > loc)
     return NSOrderedDescending;
   else
     return NSOrderedSame;
