@@ -49,6 +49,7 @@ NSPageLayout *shared_instance;
 
 #define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
 
+/**
 <unit>
   <heading>NSPageLayout</heading>
   <p>
@@ -65,6 +66,7 @@ NSPageLayout *shared_instance;
   the user clicked on a Page Layout menu item.
   </p>
 </unit>
+*/
 @implementation NSPageLayout
 
 //
