@@ -395,6 +395,33 @@ fprintf(stderr, " TextField mouseDown --- ");
   // If not editable then don't recognize the key down
   if (![self isEditable]) return;
 
+
+#if 1
+{
+  NSRect cellFrame = bounds;
+
+  if ([cell isBordered])
+    {
+      cellFrame.origin.x += 1;
+      cellFrame.origin.y += 1;
+      cellFrame.size.width -= 2;
+      cellFrame.size.height -= 2;
+    }
+  else if ([cell isBezeled])
+    {
+      cellFrame.origin.x += 4;
+      cellFrame.origin.y += 2;
+      cellFrame.size.width -= 6;
+      cellFrame.size.height -= 4;
+    }
+
+  [cell editWithFrame: cellFrame
+	       inView: self
+	       editor: [window fieldEditor: YES forObject: cell]
+	     delegate: self
+		event: theEvent];
+}
+#else
   // Hide the cursor during typing
   [NSCursor hide];
 
@@ -404,6 +431,7 @@ fprintf(stderr, " TextField mouseDown --- ");
   [window flushWindow];
   [self unlockFocus];
 //  [self setNeedsDisplay: YES];
+#endif
 }
 
 - (void) keyUp: (NSEvent *)theEvent
