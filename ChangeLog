@@ -1,3 +1,13 @@
+Sat Mar  4 18:34:47 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Fixed major problem with creating gmodels from nibs on MACOSX.  
+	* Model/GMArchiver.m ([GMArchiver -encodeRect:withName:]): Force the
+	string identifying the rect to be in the OPENSTEP format.  MACOSX
+	NSStringFromRect is - incredible - not OPENSTEP compliant, so we
+	don't use NSStringFromRect at all and make it by hand.  
+	* Model/GMArchiver.m ([GMArchiver -encodeSize:withName:]): Idem.  
+	* Model/GMArchiver.m ([GMArchiver -encodePoint:withName:]): Idem.
+	
 Sat Mar 04 06:57:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Patch be Fred Kiefer - switch miniaturize and
