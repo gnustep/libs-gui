@@ -330,6 +330,23 @@ documentAttributes: (NSDictionary**)dict
   return self;
 }
 
+- (id) initWithRTF: (NSData*)data
+  documentAttributes: (NSDictionary**)dict
+{
+  NSString *rtfString = [[NSString alloc] 
+			    initWithData: data
+			    encoding: NSASCIIStringEncoding];
+  NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+
+  parseRTFintoAttributedString(rtfString, result, dict); 
+
+  self = [self initWithAttributedString: result];
+  RELEASE(rtfString);
+  RELEASE(result);
+
+  return self;
+}
+
 - (id) initWithHTML: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
@@ -358,7 +375,7 @@ documentAttributes: (NSDictionary**)dict
        documentAttributes: (NSDictionary*)dict
 {
   return [[self RTFDStringFromRange: range documentAttributes: dict]
-    dataUsingEncoding: NSNEXTSTEPStringEncoding];
+    dataUsingEncoding: NSASCIIStringEncoding];
 }
 
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
@@ -1116,16 +1133,29 @@ documentAttributes: (NSDictionary**)dict
 	{
 	  NSString	*braces;
 
-	  braces = [NSString stringWithFormat: @"{%@ %@%@}",
-	    headerString, substring, trailerString];
+	  if ([headerString length])
+	      braces = [NSString stringWithFormat: @"{%@ %@%@}",
+				 headerString, substring, trailerString];
+	  else
+	      braces = [NSString stringWithFormat: @"{%@%@}",
+				 substring, trailerString];
+
 	  [result appendString: braces];
 	}
       else
 	{
 	  NSString	*nobraces;
 
-	  nobraces = [NSString stringWithFormat: @"%@ %@%@",
-	    headerString, substring, trailerString];
+	  if ([headerString length])
+	      nobraces = [NSString stringWithFormat: @"%@ %@",
+				   headerString, substring];
+	  else 
+	      nobraces = substring;
+	  
+	  if ([trailerString length])
+	      nobraces = [NSString stringWithFormat: @"%@%@ ",
+				   nobraces, trailerString];
+
 	  [result appendString: nobraces];
 	}
     }
