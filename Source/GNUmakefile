@@ -325,7 +325,6 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
-NSValidatedUserInterfaceItem.h \
 PSOperators.h \
 nsimage-tiff.h
 
