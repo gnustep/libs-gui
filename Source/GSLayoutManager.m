@@ -391,7 +391,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
      target. */
   while (pos <= last)
     {
-      NSRange maxRange = NSMakeRange(pos, length - pos);
+      NSRange maxRange;
       NSRange curRange;
       NSDictionary *attributes;
 
@@ -401,9 +401,44 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 
       int i;
 
+      maxRange = NSMakeRange(pos, length - pos);
+      if (pos > 0)
+	{
+	  maxRange.location--;
+	  maxRange.length++;
+	}
+
       attributes = [_textStorage attributesAtIndex: pos
 			       longestEffectiveRange: &curRange
 			       inRange: maxRange];
+
+      /*
+      Optimize run structure by merging with the previous run under
+      some circumstances. See the comments in
+      -invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:
+      for more information.
+      */
+      if (curRange.location < pos && context[0]->char_length &&
+	  context[0]->char_length < 16)
+	{
+	  curRange.length -= pos - curRange.location;
+	  curRange.location = pos;
+	  new = (glyph_run_t *)context[0];
+	  if (new->head.complete)
+	    {
+	      free(new->glyphs);
+	      new->glyphs = NULL;
+	      new->head.glyph_length = 0;
+	      new->head.complete = 0;
+	    }
+	  new->head.char_length += curRange.length;
+	  for (i = 1; i < SKIP_LIST_DEPTH; i++)
+	    {
+	      run_fix_head(context[i]);
+	    }
+	  pos = NSMaxRange(curRange);
+	  continue;
+	}
 
       if (curRange.location < pos)
 	{
@@ -1160,7 +1195,6 @@ places where we switch.
 		free(next->glyphs);
 		next->glyphs = NULL;
 	      }
-	    /* TODO: this creates really large runs at times */
 	    next->head.char_length -= max - cpos;
 
 	    hn = &next->head;
@@ -1235,11 +1269,6 @@ places where we switch.
 
 	This happens a lot with repeated single-character insertions, aka.
 	typing in a text view.
-	*/
-	/*
-	TODO: This is not triggered if a character is added at the very end
-	of the text. Might be a good idea to merge runs in that case, too.
-	Maybe do it in -_generateRunsToCharacter:, instead.
 	*/
 	if (rng.location < ch && context[0]->char_length &&
 	    context[0]->char_length < 16)

@@ -1,3 +1,9 @@
+2003-02-26 00:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-_generateRunsToCharacter:): Optimize
+	the run structure by merging with an existing run instead of
+	creating a new run under some circumstances.
+
 2003-02-25 17:38  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
