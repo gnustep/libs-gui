@@ -113,7 +113,7 @@ static NSNotificationCenter *nc;
 		     backing: NSBackingStoreBuffered
 		     defer: YES];
   [win setLevel: NSSubmenuWindowLevel];
-  [win setWorksWhenModal: YES];
+  [win setWorksWhenModal: NO];
   [win setBecomesKeyOnlyIfNeeded: YES];
 
   return win;

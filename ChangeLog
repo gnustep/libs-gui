@@ -1,3 +1,15 @@
+2002-07-11  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSMenu.m (-_createWindow): Set to NOT work when in
+	modal loop.
+
+	* Images/common_RadioOff.tiff
+	* Images/common_RadioOn.tiff
+	* Images/common_outlineCollapsed.tiff
+	* Images/common_outlineExpanded.tiff
+	* Images/common_outlineUnexpandable.tiff: Transparency fixes
+	(From deek@d2dc.net).
+
 2002-07-11  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSButtonCell.m ([-isOpaque]): New behaviour
