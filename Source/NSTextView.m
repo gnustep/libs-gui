@@ -1560,8 +1560,6 @@ This method is for user changes; see NSTextView_actions.m.
       return;
     }
 
-/*printf("-insertText: range %i+%i  |%@|\n",insertRange.location,insertRange.length,insertString);
-printf("   text storage length %i\n",[self textLength]);*/
   isAttributed = [insertString isKindOfClass: [NSAttributedString class]];
 
   if (isAttributed)
@@ -1607,7 +1605,6 @@ printf("   text storage length %i\n",[self textLength]);*/
   [self didChangeText];
 
   /* TODO? move cursor <!> [self selectionRangeForProposedRange: ] */
-//printf("   text storage length now %i\n",[self textLength]);
   [self setSelectedRange:
 	  NSMakeRange(insertRange.location + [insertString length], 0)];
 }
@@ -2469,7 +2466,6 @@ afterString in order over charRange.
 
 - (void) setSelectedRange: (NSRange)charRange
 {
-//  printf("-setSelectedRange: %i+%i\n",charRange.location,charRange.length);
   [self setSelectedRange: charRange  affinity: [self selectionAffinity]
 	stillSelecting: NO];
 }
@@ -2549,7 +2545,7 @@ afterString in order over charRange.
     }
 }
 
-/* NB: Only NSSelectionAffinityDownstream works */
+
 - (void) setSelectedRange: (NSRange)charRange
 		 affinity: (NSSelectionAffinity)affinity
 	   stillSelecting: (BOOL)stillSelectingFlag
@@ -2561,8 +2557,21 @@ afterString in order over charRange.
      displayed selection could have been a temporary selection,
      different from the last official one: */
   NSRange oldDisplayedRange;
+  unsigned int length = [_textStorage length];
 
   oldDisplayedRange = _layoutManager->_selected_range;
+
+  if (NSMaxRange(charRange) > length)
+    {
+      if (charRange.location > length)
+	{
+	  charRange = NSMakeRange(length, 0);
+	}
+      else
+	{
+	  charRange.length = length - charRange.location;
+	}
+    }
 
   if (stillSelectingFlag == YES)
     {
@@ -2618,7 +2627,7 @@ afterString in order over charRange.
 	}
       else  /* no selection, only insertion point */
 	{
-	  if (_tf.is_rich_text && [_textStorage length])
+	  if (_tf.is_rich_text && length)
 	    {
 	      NSDictionary *dict;
 	    
