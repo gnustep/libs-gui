@@ -20,6 +20,7 @@ Wed Nov 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	* NSBox.m add abstract backend code from xraw (eliminate backend).
 	* NSBrowser.m add abstract backend code from xraw (eliminate backend).
 	* NSBrowserCell.m add abstract backend code from xraw (eliminate backend).
+	* NSWorkspace.m add NSProcessInfo include.
 
 Tue Nov 24 15:40:001998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

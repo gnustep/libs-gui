@@ -35,6 +35,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSProcessInfo.h>
 
 #define stringify_it(X) #X
 #define prog_path(X,Y) \
