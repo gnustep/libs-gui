@@ -1772,9 +1772,7 @@ this file describes this.
     invalidatedRange: (NSRange)invalidatedRange
 {
   NSRange r;
-  unsigned int original_last_glyph, new_last_glyph;
-  int glyph_delta;
-  BOOL had_layout;
+  unsigned int original_last_glyph;
 
 /*  printf("\n*** invalidating\n");
   [self _dumpLayout];*/
@@ -1787,7 +1785,6 @@ this file describes this.
   TODO: make sure last_glyph is set as expected
   */
   original_last_glyph = layout_glyph;
-  had_layout = layout_char > 0;
 
   if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
@@ -1796,37 +1793,17 @@ this file describes this.
 	changeInLength: lengthChange
 	actualCharacterRange: &r];
 
-  if (layout_char > r.location)
-    {
-      if (layout_char >= r.location + r.length)
-	layout_char += lengthChange;
-      else
-	{
-	  /*
-	  The last layout information we had is inside the range that
-	  is being invalidated.
+  /*
+  If we had layout information and we had layout information for the range
+  of characters that was modified, we need to invalidate layout information.
 
-	  In this case, there'll be no soft-invalidated layout information
-	  to save. However, we still have layout information that we need
-	  to discard.
-	  */
-	  layout_char = r.location;
-	}
-    }
-
-  if (!layout_char)
-    new_last_glyph = 0;
-  else if (layout_char == [_textStorage length])
-    new_last_glyph = [self numberOfGlyphs];
-  else
-    new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
-				  actualCharacterRange: NULL].location;
-
-  glyph_delta = new_last_glyph - original_last_glyph;
-/*  printf("original=%i, new=%i, delta %i\n",
-    original_last_glyph,new_last_glyph,glyph_delta);*/
-
-  if (had_layout && r.location <= layout_char)
+  TODO: This is broken. Even if we don't have layout for the modified
+  characters, we might have layout for the preceeding line, and we then need
+  to invalidate that line. Need to rework this a bit... I really really need
+  to know the glyph length change here. :/
+  (Alexander Malmberg 2004-03-22)
+  */
+  if (layout_char > 0 && layout_char >= r.location)
     {
       unsigned int glyph_index, last_glyph;
       textcontainer_t *tc;
@@ -1834,10 +1811,38 @@ this file describes this.
       int i, j, k;
       int new_num;
       NSRange char_range;
+      unsigned int new_last_glyph;
+      int glyph_delta;
 
       /*
-      Note that r.location might equal layout_char, in which case
-      r.location might not actually have any text container or line frag.
+      If we had layout beyond the modified characters, update layout_char.
+      Otherwise, just pretend that we have layout up to the end of the range
+      after the change. This will give glyph_delta and last_glyph incorrect
+      values, strictly speaking, but glyph_delta is only used if we have
+      layout beyond the modified range, and last_glyph is used in a way that
+      makes it safe to overestimate it (as we do here).
+
+      When I can get exact information about the modified glyphs (TODO above),
+      all this will become much cleaner...
+      */
+      if (layout_char >= r.location + r.length - lengthChange)
+	layout_char += lengthChange;
+      else
+	layout_char = r.location + r.length;
+
+      if (!layout_char)
+	new_last_glyph = 0;
+      else if (layout_char == [_textStorage length])
+	new_last_glyph = [self numberOfGlyphs];
+      else
+	new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
+				      actualCharacterRange: NULL].location;
+
+      glyph_delta = new_last_glyph - original_last_glyph;
+
+      /*
+      Note that r.location might not actually have any text container or
+      line frag.
       */
       if (!r.location)
 	{
