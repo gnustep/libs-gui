@@ -744,14 +744,20 @@ static BOOL supports_lzw_compression = NO;
   else
     info.planarConfig = PLANARCONFIG_CONTIG;
 
-  if (_colorSpace == NSDeviceRGBColorSpace)
+  if ([_colorSpace isEqual: NSDeviceRGBColorSpace]
+      || [_colorSpace isEqual: NSCalibratedRGBColorSpace])
     info.photoInterp = PHOTOMETRIC_RGB;
-  else if (_colorSpace == NSDeviceWhiteColorSpace)
+  else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+	   || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
     info.photoInterp = PHOTOMETRIC_MINISBLACK;
-  else if (_colorSpace == NSDeviceBlackColorSpace)
+  else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
+	   || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
     info.photoInterp = PHOTOMETRIC_MINISWHITE;
   else
-    info.photoInterp = PHOTOMETRIC_RGB;
+    {
+      NSWarnMLog(@"Unknown colorspace %@.", _colorSpace);
+      info.photoInterp = PHOTOMETRIC_RGB;
+    }
 
   info.extraSamples = (_hasAlpha) ? 1 : 0;
   info.compression = [self _localFromCompressionType: type];

@@ -1,3 +1,10 @@
+2005-01-18 16:39  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSBitmapImageRep.m
+	(-TIFFRepresentationUsingCompression:factor:): Don't use pointer
+	comparisons to compare strings. Handle both device and calibrated
+	colorspaces. Warn if the colorspace isn't recognized.
+
 2005-01-18 15:50  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSApplication.m (-runModalSession:): Don't order the window
