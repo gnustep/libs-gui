@@ -30,18 +30,37 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSPanel.h>
+#include <AppKit/NSMatrix.h>
+#include <AppKit/NSTextField.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSBox.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSScreen.h>
+#include <AppKit/IMLoading.h>
+#include <extensions/GMArchiver.h>
 
+#define	PANX	362.0
+#define	PANY	191.0
+
+@class	GNUAlertPanel;
+
+static GNUAlertPanel	*standardAlertPanel = nil;
+static GNUAlertPanel	*reusableAlertPanel = nil;
 
 @interface	GNUAlertPanel : NSPanel
 {
-  NSPanel	*panel;
   NSButton	*defButton;
   NSButton	*altButton;
   NSButton	*othButton;
+  NSButton	*icoButton;
+  NSTextField	*messageField;
+  NSTextField	*titleField;
   int		result;
-  int		state;
+  BOOL		active;
 }
+- (void) buttonAction: (id)sender;
 - (int) result;
+- (int) runModal;
 - (void) setTitle: (NSString*)title
 	  message: (NSString*)message
 	      def: (NSString*)defaultButton
@@ -50,14 +69,183 @@
 @end
 
 @implementation	GNUAlertPanel
-- (id) copyWithZone: (NSZone*)zone
+- (void) buttonAction: (id)sender
 {
-  [self notImplemented: _cmd];
-  return nil;
+  if (active == NO)
+    {
+      NSLog(@"alert panel buttonAction: when not in modal loop\n");
+      return;
+    }
+  else if (sender == defButton)
+    {
+      result = NSAlertDefaultReturn;
+    }
+  else if (sender == altButton)
+    {
+      result = NSAlertAlternateReturn;
+    }
+  else if (sender == othButton)
+    {
+      result = NSAlertOtherReturn;
+    }
+  else
+    {
+      NSLog(@"alert panel buttonAction: from unknown sender - x%x\n",
+		(unsigned)sender);
+    }
+  active = NO;
+  [self orderOut: self];
+  [[NSApplication sharedApplication] stopModal];
+}
+
+- (void) dealloc
+{
+  [defButton release];
+  [altButton release];
+  [othButton release];
+  [icoButton release];
+  [messageField release];
+  [titleField release];
+  [super dealloc];
+}
+
+- (void) encodeWithModelArchiver: (GMArchiver *)archiver
+{
+  if (standardAlertPanel)
+    [archiver encodeObject: standardAlertPanel withName: @"AlertPanel"];
+}
+
+- (id) initWithContentRect: (NSRect)r
+		 styleMask: (unsigned)m
+		   backing: (NSBackingStoreType)b
+		     defer: (BOOL)d
+		    screen: (NSScreen*)s
+{
+  self = [super initWithContentRect: r
+			  styleMask: m
+			    backing: b
+			      defer: d
+			     screen: s];
+  if (self)
+    {
+      NSView	*content;
+      unsigned	bs = 8.0;		/* Inter-button space	*/
+      unsigned	bh = 24.0;		/* Button height.	*/
+      unsigned	bw = 72.0;		/* Button width.	*/
+      NSRect	rect;
+      NSBox	*box;
+
+      [self setTitle: @" "];
+
+      content = [self contentView]; 
+
+      rect.size.height = 2.0;
+      rect.size.width = 362.0;
+      rect.origin.y = 95.0;
+      rect.origin.x = 0.0;
+      box = [[NSBox alloc] initWithFrame: rect];
+      [box setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      [box setTitlePosition: NSNoTitle];
+      [box setBorderType: NSGrooveBorder];
+      [content addSubview: box];
+      [box release];
+
+      rect.size.height = bh;
+      rect.size.width = bw;
+      rect.origin.y = bs;
+      rect.origin.x = 280.0;
+      defButton = [[NSButton alloc] initWithFrame: rect];
+      [defButton setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
+      [defButton setButtonType: NSMomentaryPushButton];
+      [defButton setTitle: @"Default"];
+      [defButton setTarget: self];
+      [defButton setAction: @selector(buttonAction:)];
+      [defButton setFont: [NSFont systemFontOfSize: 12.0]];
+      [defButton setKeyEquivalent: @"\r"];
+      [defButton setImagePosition: NSImageRight];
+      [defButton setImage: [NSImage imageNamed: @"common_ret"]];
+
+      rect.origin.x = 199.0;
+      altButton = [[NSButton alloc] initWithFrame: rect];
+      [altButton setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
+      [altButton setButtonType: NSMomentaryPushButton];
+      [altButton setTitle: @"Alternative"];
+      [altButton setTarget: self];
+      [altButton setAction: @selector(buttonAction:)];
+      [altButton setFont: [NSFont systemFontOfSize: 12.0]];
+
+      rect.origin.x = 120.0;
+      othButton = [[NSButton alloc] initWithFrame: rect];
+      [othButton setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
+      [othButton setButtonType: NSMomentaryPushButton];
+      [othButton setTitle: @"Other"];
+      [othButton setTarget: self];
+      [othButton setAction: @selector(buttonAction:)];
+      [othButton setFont: [NSFont systemFontOfSize: 12.0]];
+
+      rect.size.height = 48.0;
+      rect.size.width = 48.0;
+      rect.origin.y = 105.0;
+      rect.origin.x = 8.0;
+      icoButton = [[NSButton alloc] initWithFrame: rect];
+      [icoButton setAutoresizingMask: NSViewMaxXMargin | NSViewMinYMargin];
+      [icoButton setBordered: NO];
+      [icoButton setEnabled: NO];
+      [icoButton setImagePosition: NSImageOnly];
+      [icoButton setImage:
+	[[NSApplication sharedApplication] applicationIconImage]];
+
+      rect.size.height = 36.0;
+      rect.size.width = 344.0;
+      rect.origin.y = 46.0;
+      rect.origin.x = 8.0;
+      messageField = [[NSTextField alloc] initWithFrame: rect];
+      [messageField setAutoresizingMask:
+		NSViewWidthSizable | NSViewHeightSizable];
+      [messageField setEditable: NO];
+      [messageField setSelectable: NO];
+      [messageField setBordered: NO];
+      [messageField setDrawsBackground: NO];
+      [messageField setStringValue: @""];
+      [messageField setFont: [NSFont systemFontOfSize: 14.0]];
+
+      rect.size.height = 21.0;
+      rect.size.width = 289.0;
+      rect.origin.y = 121.0;
+      rect.origin.x = 64.0;
+      titleField = [[NSTextField alloc] initWithFrame: rect];
+      [titleField setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      [titleField setEditable: NO];
+      [titleField setSelectable: NO];
+      [titleField setBordered: NO];
+      [titleField setDrawsBackground: NO];
+      [titleField setStringValue: @""];
+      [titleField setFont: [NSFont systemFontOfSize: 18.0]];
+
+    }
+  return self;
+}
+
+- (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
+{
+  if (!standardAlertPanel)
+    standardAlertPanel = [unarchiver decodeObjectWithName: @"AlertPanel"];
+  [self release];
+  return standardAlertPanel;
 }
 
 - (int) result
 {
+  return result;
+}
+
+- (int) runModal
+{
+  NSApplication	*app;
+
+  app = [NSApplication sharedApplication];
+  active = YES;
+  [app runModalForWindow: self];
   return result;
 }
 
@@ -67,12 +255,94 @@
 	      alt: (NSString*)alternateButton
 	    other: (NSString*)otherButton
 {
-  [self notImplemented: _cmd];
+  NSView	*content = [self contentView];
+
+  if (defaultButton)
+    {
+      [defButton setTitle: defaultButton];
+      if ([defButton superview] == nil)
+	{
+	  [content addSubview: defButton];
+	}
+    }
+  else
+    {
+      if ([defButton superview] != nil)
+	{
+	  [defButton removeFromSuperview];
+	}
+    }
+
+  if (alternateButton)
+    {
+      [altButton setTitle: alternateButton];
+      if ([altButton superview] == nil)
+	{
+	  [content addSubview: altButton];
+	}
+    }
+  else
+    {
+      if ([altButton superview] != nil)
+	{
+	  [altButton removeFromSuperview];
+	}
+    }
+
+  if (otherButton)
+    {
+      [othButton setTitle: otherButton];
+      if ([othButton superview] == nil)
+	{
+	  [content addSubview: othButton];
+	}
+    }
+  else
+    {
+      if ([othButton superview] != nil)
+	{
+	  [othButton removeFromSuperview];
+	}
+    }
+
+  if (message)
+    {
+      [messageField setStringValue: message];
+      if ([messageField superview] == nil)
+	{
+	  [content addSubview: messageField];
+	}
+    }
+  else
+    {
+      if ([messageField superview] != nil)
+	{
+	  [messageField removeFromSuperview];
+	}
+    }
+
+  if (title)
+    {
+      [titleField setStringValue: title];
+      if ([titleField superview] == nil)
+	{
+	  [content addSubview: titleField];
+	}
+    }
+  else
+    {
+      if ([titleField superview] != nil)
+	{
+	  [titleField removeFromSuperview];
+	}
+    }
+
+  result = NSAlertErrorReturn;	/* If no button was pressed	*/
+  [content display];
+  
+//  [self notImplemented: _cmd];
 }
 @end
-
-static GNUAlertPanel	*standardAlertPanel = nil;
-static GNUAlertPanel	*reusableAlertPanel = nil;
 
 id
 NSGetAlertPanel(NSString *title,
@@ -93,9 +363,40 @@ NSGetAlertPanel(NSString *title,
     title = @"Alert";
 
   if (standardAlertPanel == nil)
-    panel = nil; /* Should load our standard panel from a gmodel */
+    {
+#if 0
+      if (![GMModel loadIMFile: @"AlertPanel" owner: [GNUAlertPanel alloc]])
+	{
+	  NSLog(@"cannot open alert panel model file\n");
+	  return nil;
+        }
+#else
+      NSRect	frame = [[NSScreen mainScreen] frame];
 
-  panel = [standardAlertPanel copy];
+      /*
+       *	Center the panel in the screen.
+       */
+      if (frame.size.width > PANX)
+	frame.origin.x += (frame.size.width - PANX)/2.0;
+      frame.size.width = PANX;
+
+      if (frame.size.height > PANY)
+	frame.origin.y += (frame.size.height - PANY)/2.0;
+      frame.size.height = PANY;
+
+      panel = [GNUAlertPanel alloc];
+      panel = [panel initWithContentRect: frame
+			       styleMask: 0
+				 backing: NSBackingStoreRetained
+				   defer: YES
+				  screen: nil];
+#endif
+    }
+  else
+    {
+      panel = standardAlertPanel;
+      standardAlertPanel = nil;
+    }
   [panel setTitle: title
 	  message: message
 	      def: defaultButton
@@ -159,7 +460,6 @@ NSRunAlertPanel(NSString *title,
 		NSString *otherButton, ...)
 {
   va_list	ap;
-  NSApplication	*app;
   GNUAlertPanel	*panel;
   NSString	*message;
   int		result;
@@ -189,9 +489,8 @@ NSRunAlertPanel(NSString *title,
 			alternateButton, otherButton, ap);
     }
 
-  app = [NSApplication sharedApplication];
-  [app runModalForWindow: panel];
-  result = [panel result];
+  result = [panel runModal];
+
   if (reusableAlertPanel == nil)
     reusableAlertPanel = panel;
   else

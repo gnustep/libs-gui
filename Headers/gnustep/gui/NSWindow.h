@@ -51,6 +51,7 @@
 @class NSPasteboard;
 @class NSView;
 @class NSText;
+@class NSScreen;
 
 enum {
   NSNormalWindowLevel   = 0,
@@ -154,7 +155,7 @@ extern NSSize NSTokenSize;
 	    styleMask:(unsigned int)aStyle
 	      backing:(NSBackingStoreType)bufferingType
 		defer:(BOOL)flag
-	       screen:aScreen;
+	       screen:(NSScreen*)aScreen;
 
 //
 // Accessing the content view

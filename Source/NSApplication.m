@@ -398,6 +398,7 @@ NSAutoreleasePool* pool;
     {
       NSAutoreleasePool	*pool = [NSAutoreleasePool new];
 
+      found = NO;
       count = [event_queue count];
       for (i = 0; i < count; i++)
 	{
