@@ -1,3 +1,8 @@
+Mon Nov 15 16:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSFontPanel.m: Removed a couple of bogus methods that were
+	preventing display of a font panel.
+
 Mon Nov 15 16:09:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/GSTrackingRect.h: Tidied to more compact layout.

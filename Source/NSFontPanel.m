@@ -269,17 +269,6 @@
 }
 
 //
-// Displaying the NSFontPanel 
-//
-- (void)orderWindow: (NSWindowOrderingMode)place	 
-	 relativeTo: (int)otherWindows
-{}
-
-- (void)display
-{
-}
-
-//
 // NSCoding protocol
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
