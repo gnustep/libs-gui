@@ -1,3 +1,9 @@
+2001-12-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	[dragOperationForDraggingInfo:type:] added NSDragOperationCopy to
+	the valid drag actions.
+	
 2001-12-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m
