@@ -335,7 +335,7 @@ int
 NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 {
   int     i;
-  int     row, col;
+  unsigned int row, col;
   int     maxval;
   int	  error = 0;
   uint8* outP;
@@ -447,7 +447,7 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
   tdata_t	buf = (tdata_t)data;
   uint16        sample_info[2];
   int		i;
-  int		row;
+  unsigned int 	row;
   int           error = 0;
 
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
@@ -536,7 +536,7 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 static int
 CheckAndCorrectColormap(NSTiffColormap* map)
 {
-  register int i;
+  register unsigned int i;
 
   for (i = 0; i < map->size; i++)
     if ((map->red[i] > 255)||(map->green[i] > 255)||(map->blue[i] > 255))

@@ -147,7 +147,7 @@
 
 - (void) selectNextTabViewItem: (id)sender
 {
-  if (_selected_item + 1 < [_items count])
+  if ((unsigned)(_selected_item + 1) < [_items count])
     [self selectTabViewItemAtIndex: _selected_item+1];
 }
 

@@ -3759,7 +3759,7 @@ byExtendingSelection: (BOOL)flag
   /* Ask the delegate if we can select all columns or rows */
   if (_selectingColumns == YES)
     {
-      if ([_selectedColumns count] == _numberOfColumns)
+      if ([_selectedColumns count] == (unsigned)_numberOfColumns)
 	{
 	  // Nothing to do !
 	  return;
@@ -3779,7 +3779,7 @@ byExtendingSelection: (BOOL)flag
     }
   else // selecting rows
     {
-      if ([_selectedRows count] == _numberOfRows)
+      if ([_selectedRows count] == (unsigned)_numberOfRows)
 	{
 	  // Nothing to do !
 	  return;

@@ -846,7 +846,7 @@
   NSSize oldFrameSize = [self frame].size;
   float originShift;
   float dimensionIncrement;
-  unsigned int i;
+  int i;
   // YES if the whole GSTable needs an update
   BOOL tableNeedUpdate = NO;
 

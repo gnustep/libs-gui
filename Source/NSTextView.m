@@ -2290,7 +2290,7 @@ This method is for user changes; see NSTextView_actions.m.
 - (void) changeFont: (id)sender
 {
   NSRange foundRange;
-  int maxSelRange;
+  unsigned int maxSelRange;
   NSRange aRange= [self rangeForUserCharacterAttributeChange];
   NSRange searchRange = aRange;
   NSFont *font;

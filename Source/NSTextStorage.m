@@ -166,7 +166,7 @@ static NSNotificationCenter *nc = nil;
     {
       if (delta < 0)
 	{
-	  NSAssert (old.length >= -delta, NSInvalidArgumentException);
+	  NSAssert (old.length >= (unsigned)-delta, NSInvalidArgumentException);
 	}
       _editedRange.length += delta; 
       _editedDelta += delta;
@@ -187,7 +187,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSRange	r;
   int original_delta;
-  int i;
+  unsigned int i;
   unsigned length;
 
   NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
@@ -235,7 +235,7 @@ static NSNotificationCenter *nc = nil;
 	}
       else
 	{
-	  if (original_delta - _editedDelta > r.length)
+	  if ((unsigned)(original_delta - _editedDelta) > r.length)
 	    {
 	      r.length = 0;
 	      if (r.location > [self length])
