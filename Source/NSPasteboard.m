@@ -389,7 +389,7 @@ static	id<PasteboardServer>	the_server = nil;
 {
   [target release];
   [name release];
-  [self dealloc];
+  [super dealloc];
 }
 
 - (void) releaseGlobally
