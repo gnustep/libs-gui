@@ -201,7 +201,6 @@ AppKit/TrackingRectangle.h \
 AppKit/PSMatrix.h \
 AppKit/nsimage-tiff.h \
 
-
 -include GNUmakefile.preamble
 
 -include GNUmakefile.local

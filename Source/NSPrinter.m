@@ -1033,7 +1033,7 @@ andOptionTranslation:(NSString *)optionTranslation
   [self loadPPD:PPDstring inclusionNum:0];
   // Search the PPD dictionary for symbolvalues, and substitute them.
   objEnum = [PPD objectEnumerator];
-  while (valArray = [objEnum nextObject])
+  while ((valArray = [objEnum nextObject]))
     {
       NSString *oldValue;
       NSString *newValue;

@@ -328,8 +328,12 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
   system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
 
   data = [NSData dataWithContentsOfFile: servicesPath];
-  newServices = [NSDeserializer deserializePropertyListFromData: data
+  if (data)
+    newServices = [NSDeserializer deserializePropertyListFromData: data
 					      mutableContainers: NO];
+  else
+    newServices = [NSDictionary dictionary];
+
   ASSIGN(allServices, newServices);
   dict = [newServices objectForKey: @"Applications"];
   ASSIGN(applications, dict);
