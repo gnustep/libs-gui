@@ -27,19 +27,6 @@
 
 #include <AppKit/GSTable.h>
 
-// This is meant to make drawing invisible views a little faster
-@interface GSTransparentView : NSView
-@end 
-@implementation GSTransparentView
--(void) lockFocusInRect: (NSRect)rect 
-{
-}
--(void) unlockFocusNeedsFlush: (BOOL)flush 
-{
-}
-@end 
-
-
 @interface GSTable (Private)
 -(void) _updateRowSize: (int)row;
 -(void) _updateColumnSize: (int)column;
@@ -89,7 +76,7 @@
   _maxYBorder = 0;
 
   _jails = NSZoneMalloc (NSDefaultMallocZone (), 
-			 sizeof (GSTransparentView *) * (rows * columns));
+			 sizeof (NSView *) * (rows * columns));
   _expandRow = NSZoneMalloc (NSDefaultMallocZone (), 
 			     sizeof (BOOL) * rows);
   _expandColumn = NSZoneMalloc (NSDefaultMallocZone (), 
@@ -447,11 +434,9 @@
   else // !_havePrisoner
     {
       if (prisonerNeedResize)
-	_jails[jailNumber] = [[GSTransparentView alloc] 
-			       initWithFrame: oldFrame];
+	_jails[jailNumber] = [[NSView alloc] initWithFrame: oldFrame];
       else // !prisonerNeedResize
-	_jails[jailNumber] = [[GSTransparentView alloc] 
-			       initWithFrame: theFrame];
+	_jails[jailNumber] = [[NSView alloc] initWithFrame: theFrame];
 
       [_jails[jailNumber] setAutoresizingMask: NSViewNotSizable];
       [_jails[jailNumber] setAutoresizesSubviews: YES];
@@ -629,7 +614,7 @@
 				 * (sizeof (BOOL)));
   _jails = NSZoneRealloc (NSDefaultMallocZone (), _jails, 
 			 (_numberOfRows * _numberOfColumns) 
-			  * sizeof (GSTransparentView *));
+			  * sizeof (NSView *));
 
   for (j = (_numberOfRows - 1) * _numberOfColumns; 
        j < (_numberOfRows * _numberOfColumns); j++)
@@ -671,7 +656,7 @@
 				 * (sizeof (BOOL)));
   _jails = NSZoneRealloc (NSDefaultMallocZone (), _jails, 
 			  (_numberOfRows * _numberOfColumns) 
-			  * sizeof (GSTransparentView *));
+			  * sizeof (NSView *));
   // Reorder the jails
   for (j = (_numberOfRows - 1); j >= 0; j--)
     {
@@ -845,7 +830,7 @@
 
   // 
   _jails = NSZoneMalloc (NSDefaultMallocZone (), 
-			sizeof (GSTransparentView *) 
+			sizeof (NSView *) 
 			 * (_numberOfRows * _numberOfColumns));
 
   _havePrisoner = NSZoneMalloc (NSDefaultMallocZone (), 

@@ -31,8 +31,6 @@
 
 #include <AppKit/NSView.h>
 
-@class GSTransparentView;
-
 @interface GSTable: NSView
 {
   int _numberOfRows;
@@ -47,7 +45,7 @@
   // Each prisoner is enclosed in a jail (which is a subview under 
   // our control). 
   // Each prisoner is allowed to resize only inside its jail.   
-  GSTransparentView **_jails;
+  NSView **_jails;
   // YES if the column/row should be expanded/reduced when the size 
   // of the GSTable is expanded/reduced (this BOOL is otherwhere 
   // called X/Y Resizing Enabled). 
