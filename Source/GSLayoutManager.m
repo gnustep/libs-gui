@@ -1935,6 +1935,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   typesetter = [[GSTypesetter sharedSystemTypesetter] retain];
 
+  usesScreenFonts = YES;
+
   return self;
 }
 
@@ -2107,7 +2109,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   NSRange r;
 
-  if (!(mask&NSTextStorageEditedCharacters))
+  if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
 
 /*	printf("edited: range=(%i+%i) invalidatedRange=(%i+%i) delta=%i\n",
