@@ -763,6 +763,17 @@ numberOfRowsInColumn: (int)column
   [super dealloc];
 }
 
+- (id) copyWithZone: (NSZone*)zone
+{
+  NSComboBoxCell *c = [super copyWithZone: zone];
+
+  c->_buttonCell = [_buttonCell copyWithZone: zone];
+  [c->_buttonCell setTarget: c];
+  c->_popUpList = [_popUpList copyWithZone: zone];
+
+  return c;
+}
+
 /**
  * Returns YES when the combo box cell displays a vertical scroller for its
  * list, returns NO otherwise. 

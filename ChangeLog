@@ -1,3 +1,7 @@
+2004-06-15  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSComboBoxCell.m: (-copyWithZone:) Added missing method.
+
 2004-06-11  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.3
