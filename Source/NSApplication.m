@@ -62,6 +62,8 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/NSMenuItemCell.h>
+#include <AppKit/NSMenuView.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/GSServicesManager.h>
@@ -72,6 +74,7 @@
 #include <AppKit/NSHelpManager.h>
 
 #include <AppKit/GSGuiPrivate.h>
+#include <AppKit/GSInfoPanel.h>
 
 /*
  * Base library exception handler
