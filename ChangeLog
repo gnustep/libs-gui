@@ -1,4 +1,4 @@
-Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Fri Aug 27  8:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Patch from Nicola Pero <n.pero@mi.flashnet.it>
 	* Source/NSBox.m: Fix setFrameFromContentFrame: for zero rect frame.
