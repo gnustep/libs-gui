@@ -1,3 +1,12 @@
+Sun Jan 28 01:37:53 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSClipView.m ([-setDocumentView:]): Bug fix: recompute
+	flipped flag and invalidate coordinates immediately after setting
+	the new document view.
+	* Source/NSBrowser.m ([-_adjustMatrixOfColumn:]): As a
+	consequence, removed hack introduced with last change: no longer
+	needed.
+
 Sat Jan 27 13:46:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([-_adjustMatrixOfColumn:]): Fixed position
