@@ -1,3 +1,38 @@
+2000-12-23  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSImage.h:
+	Prefixed all ivars with underscores, made fileName an ivar of NSImage and
+	added some missing methods.
+	* Headers/gnustep/gui/NSImageRep.h:
+	* Headers/gnustep/gui/NSCachedImageRep.h:
+	* Headers/gnustep/gui/NSBitmapImageRep.h:
+	* Headers/gnustep/gui/NSCustomImageRep.h:
+	Prefixed all ivars with underscores.
+	* Source/NSImage.m
+	Adopted to changes in header file. General cleanup.
+	Removed obsolete backend declarations.
+	Move ivar fileName from GSRepDate to NSImage, as it is used only
+	once. This simplifies [_useFromFile:] and [_loadImageFilenames].
+	Implemented [compositeToPoint:fromRect:operation:] and
+	[dissolveToPoint:fromRect:fraction:] by calling the corresponding
+	function. Now the operator given to this methods is really used!
+	* Source/NSImageRep.m
+	* Source/NSCustomImageRep.m
+	Adopted to changes in header file.
+	* Source/NSCachedImageRep.m
+	Adopted to changes in header file.
+	Removed methods [drawAtPoint:] and [drawInRect:] so that the super
+	implementation gets used. In method [initWithSize:depth:separate:alpha:]
+	store alpha and bitspersample.
+	* Source/NSBitmapImageRep.m
+	Adopted to changes in header file.
+	Moved code from [TIFFRepresentation] to
+	[TIFFRepresentationUsingCompression:factor:] and call this.
+	* Source/NSCell.m
+	In [drawInteriorWithFrame:inView:] use NSCompositeSourceOver as
+	the operator for imag composition not NSCompositeCopy. This
+	replacement may be necessary in other parts of the GUI as well!!!!
+	
 Sat Dec 23 15:43:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-setSelectedRange:affinity:
