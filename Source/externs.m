@@ -130,6 +130,10 @@ NSString *NSControlTextDidChangeNotification =
 // NSDataLink global strings
 NSString *NSDataLinkFileNameExtension = @"dlf";
 
+// NSForm private notification
+NSString *_NSFormCellDidChangeTitleWidthNotification 
+= @"_NSFormCellDidChangeTitleWidthNotification";
+
 // NSHelpManager notifications;
 NSString *NSContextHelpModeDidActivateNotification =
 @"NSContextHelpModeDidActivateNotification";
