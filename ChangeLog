@@ -1,7 +1,8 @@
 2003-03-30  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
-	* Source/NSMenu.m: Reformatted to comply to
-	coding standards
+	* Source/NSMenuView.m: Reformatted to comply to coding standards
+
+	* Source/NSMenu.m: Reformatted to comply to coding standards
 
 
 2003-03-28 21:08  Alexander Malmberg <alexander@malmberg.org>
