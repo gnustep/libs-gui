@@ -870,6 +870,21 @@ static  NSMapTable              *mimeMap = NULL;
 
 @end
 
+@implementation NSURL (NSPasteboard)
++ (NSURL *) URLFromPasteboard: (NSPasteboard *)pasteBoard
+{
+  return [self URLWithString: [pasteBoard stringForType: NSURLPboardType]];
+}
+
+- (void) writeToPasteboard: (NSPasteboard *)pasteBoard
+{
+  [pasteBoard setString: [self absoluteString]
+	      forType: NSURLPboardType];
+}
+
+@end
+
+
 static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
 
