@@ -1403,16 +1403,3 @@ BOOL result = YES;
 }															// backend
 
 @end /* NSApplication */
-
-
-/* Some utilities */
-NSString *NSOpenStepRootDirectory(void)
-{
-NSString* root = [[[NSProcessInfo processInfo] environment]
-                    objectForKey:@"GNUSTEP_SYSTEM_ROOT"];
-
-    if (!root)
-        root = @"/";
-
-    return root;
-}

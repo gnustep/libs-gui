@@ -1,3 +1,8 @@
+Wed Dec 16 09:22:06 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Source/NSApplication.m (NSOpenStepRootDirectory): Remove
+ 	duplicate function (also in base).
+
 Wed Dec 16 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSCell.m acceptsFirstResponder implement, editWithFrame: adjust further,
