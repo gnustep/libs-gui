@@ -1,9 +1,9 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
 
-   Much of the code here is derived from code which was originally in
-   NSText.m.
+   Much code of this class was originally derived from code which was
+   in NSText.m.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -18,7 +18,7 @@
    Date: March 2000, September 2000
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
-   Date: December 2000
+   Date: 2000, 2001, 2002
 
    This file is part of the GNUstep GUI Library.
 
@@ -2138,40 +2138,6 @@ afterString in order over charRange. */
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self characterIndexForPoint: startPoint];
   
-  if ([_textStorage containsAttachments])
-    {
-      NSTextAttachment *attachment;
-      
-      /* Check if the click was on an attachment cell.  */
-      attachment = [_textStorage attribute: NSAttachmentAttributeName
-				 atIndex: startIndex
-				 effectiveRange: NULL];
-
-      if (attachment != nil)
-        { 
-	  id <NSTextAttachmentCell> cell = [attachment attachmentCell];
-	  
-	  if (cell != nil)
-	    {
-	      /* FIXME: Where to get the cellFrame? */
-	      NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
-	      
-	      if ([cell wantsToTrackMouseForEvent: theEvent  
-			inRect: cellFrame
-			ofView: self
-			atCharacterIndex: startIndex]
-		  && [cell trackMouse: theEvent  
-			   inRect: cellFrame 
-			   ofView: self
-			   atCharacterIndex: startIndex
-			   untilMouseUp: NO])
-		{
-		  return;
-		}
-	    }
-	}
-    }
-
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
       /* Shift-click is for extending an existing selection using 
@@ -2206,7 +2172,96 @@ afterString in order over charRange. */
 	case 3: granularity = NSSelectByParagraph;
 	  break;
 	}
+
       proposedRange = NSMakeRange (startIndex, 0);
+
+      /* We manage clicks on attachments and links only on the first
+	 click, so that if you double-click on them, only the first
+	 click gets sent to them; the other clicks select by
+	 word/paragraph as usual.  */
+      if (granularity == NSSelectByCharacter)
+	{
+	  if ([_textStorage containsAttachments])
+	    {
+	      NSTextAttachment *attachment;
+	      
+	      /* Check if the click was on an attachment cell.  */
+	      attachment = [_textStorage attribute: NSAttachmentAttributeName
+					 atIndex: startIndex
+					 effectiveRange: NULL];
+	      
+	      if (attachment != nil)
+		{ 
+		  id <NSTextAttachmentCell> cell = [attachment attachmentCell];
+		  
+		  if (cell != nil)
+		    {
+		      /* FIXME: Where to get the cellFrame? */
+		      NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+
+		      /* FIXME: What about the insertion point ? */
+		      if ([cell wantsToTrackMouseForEvent: theEvent  
+				inRect: cellFrame
+				ofView: self
+				atCharacterIndex: startIndex]
+			  && [cell trackMouse: theEvent  
+				   inRect: cellFrame 
+				   ofView: self
+				   atCharacterIndex: startIndex
+				   untilMouseUp: NO])
+			{
+			  return;
+			}
+		    }
+		}
+	    }
+	  
+	  /* This is the code for handling click event on a link (a link
+	     is some chars with the NSLinkAttributeName set to something
+	     which is not-null, a NSURL object usually).  */
+	  {
+	    /* What exactly is this link object, it's up to the
+	       programmer who is using the NSTextView and who
+	       originally created the link object and saved it under
+	       the NSLinkAttributeName in the text.  Normally, a NSURL
+	       object is used.*/
+	    id link = [_textStorage attribute: NSLinkAttributeName
+				    atIndex: startIndex
+				    effectiveRange: NULL];
+	    if (link != nil  &&  _delegate != nil)
+	      {
+		SEL selector = @selector(textView:clickedOnLink:atIndex:);
+		
+		if ([_delegate respondsToSelector: selector])
+		  {
+		    /* Move the insertion point over the link.  */
+		    chosenRange = [self selectionRangeForProposedRange: 
+					  proposedRange
+					granularity: granularity];
+
+		    [self setSelectedRange: chosenRange  affinity: affinity  
+			  stillSelecting: NO];
+
+		    [self displayIfNeeded];
+
+		    /* Now 'activate' the link.  The _delegate returns
+		       YES if it handles the click, NO if it doesn't
+		       -- and if it doesn't, we need to pass the click
+		       to the next responder.  */
+		    if ([_delegate textView: self  clickedOnLink: link  
+				   atIndex: startIndex])
+		      {
+			return;
+		      }
+		    else
+		      {
+			[super mouseDown: theEvent];
+			return; 
+		      }
+		  }
+	      }
+	  }
+	}
     }
 
   chosenRange = [self selectionRangeForProposedRange: proposedRange
