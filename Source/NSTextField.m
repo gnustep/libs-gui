@@ -325,6 +325,11 @@ static Class textFieldCellClass;
   return [self isSelectable];
 }
 
+-(BOOL) needsPanelToBecomeKey
+{
+  return [self isEditable];
+}
+
 - (BOOL) abortEditing
 {
   if (_text_object)

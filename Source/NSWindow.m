@@ -2742,6 +2742,9 @@ resetCursorRectsForView(NSView *theView)
   switch (type)
     {
       case NSLeftMouseDown:
+/*
+Code shared with [NSPanel -sendEvent:], remember to update both places.
+*/
 	{
 	  BOOL	wasKey = _f.is_key;
 
@@ -2751,11 +2754,11 @@ resetCursorRectsForView(NSView *theView)
 	    }
 	  if (_f.has_closed == NO)
 	    {
+	      v = [_contentView hitTest: [theEvent locationInWindow]];
 	      if (_f.is_key == NO)
 		{
 		  [self makeKeyAndOrderFront: self];
 		}
-	      v = [_contentView hitTest: [theEvent locationInWindow]];
 	      if (_firstResponder != v)
 		{
 		  [self makeFirstResponder: v];

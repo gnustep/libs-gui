@@ -2430,6 +2430,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return t;
 }
 
+-(BOOL) needsPanelToBecomeKey
+{
+  return NO;
+}
+
 - (void) setNextKeyView: (NSView *)aView
 {
   if (!aView)
@@ -3518,5 +3523,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	}
     }
 }
+
 @end
 

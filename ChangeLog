@@ -1,3 +1,11 @@
+2002-09-22 01:23  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSView.h, Source/NSPanel.m, Source/NSText.m,
+	Source/NSTextField.m, Source/NSView.m, Source/NSWindow.m: Add
+	-needsPanelToBecomeKey method to NSView and override it to return
+	YES in NSText and NSTextField. Use it in NSPanel to handle
+	becomesKeyOnlyIfNeeded properly.
+
 2002-09-21 18:54  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m corrected preprocessor error messages.

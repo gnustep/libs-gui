@@ -52,6 +52,8 @@
 
 #include <AppKit/GMArchiver.h>
 
+#include <AppKit/NSHelpManager.h>
+
 #ifdef ALERT_TITLE
 static NSString	*defaultTitle = @"Alert";
 #else
@@ -94,8 +96,6 @@ static NSString	*defaultTitle = @" ";
 
 - (BOOL) canBecomeKeyWindow
 {
-  if (_becomesKeyOnlyIfNeeded)
-    return NO;
   return YES;
 }
 
@@ -189,6 +189,69 @@ static NSString	*defaultTitle = @" ";
   [self setWorksWhenModal: flag];
 
   return self;
+}
+
+
+- (void) sendEvent: (NSEvent*)theEvent
+{
+/*
+Code shared with [NSWindow -sendEvent:], remember to update both places.
+*/
+  NSView	*v;
+  NSEventType	type;
+
+  type = [theEvent type];
+  switch (type)
+    {
+      case NSLeftMouseDown:
+	{
+	  BOOL	wasKey = _f.is_key;
+
+	  if ([NSApp isActive] == NO && ((NSWindow *)self) != [NSApp iconWindow])
+	    {
+	      [NSApp activateIgnoringOtherApps: YES];
+	    }
+	  if (_f.has_closed == NO)
+	    {
+	      v = [_contentView hitTest: [theEvent locationInWindow]];
+	      if (_f.is_key == NO)
+		{
+		  if (!_becomesKeyOnlyIfNeeded || [v needsPanelToBecomeKey])
+		    [self makeKeyAndOrderFront: self];
+		}
+	      if (_firstResponder != v)
+		{
+		  [self makeFirstResponder: v];
+		}
+	      if (_lastDragView)
+		DESTROY(_lastDragView);
+	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+		{
+		  if ([NSHelpManager isContextHelpModeActive])
+		    {
+		      [v helpRequested: theEvent];
+		    }
+		  else
+		    {
+		      /* Technically this should be just _lastView,
+			 but I don't think it's a problem reusing this
+			 ivar */
+		      ASSIGN(_lastDragView, v);
+		      [v mouseDown: theEvent];
+		    }
+		}
+	      else
+		{
+		  [self mouseDown: theEvent];
+		}
+	    }
+	  _lastPoint = [theEvent locationInWindow];
+	  break;
+	}
+      default:
+	[super sendEvent: theEvent];
+	break;
+    }
 }
 
 @end /* NSPanel */

@@ -339,6 +339,7 @@ enum {
 /*
  * Aiding Event Handling
  */
+-(BOOL) needsPanelToBecomeKey;
 - (void) setNextKeyView: (NSView*)aView;
 - (NSView*) nextKeyView;
 - (NSView*) nextValidKeyView;

@@ -630,6 +630,11 @@ static	Class	concrete;
  * NSView
  */
 
+-(BOOL) needsPanelToBecomeKey
+{
+  return _tf.is_editable;
+}
+
 /* text lays out from top to bottom */
 - (BOOL) isFlipped
 {
