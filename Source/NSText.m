@@ -879,12 +879,32 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void)setHorizontallyResizable: (BOOL)flag
 {
+  // FIXME:  All the container resizing is here preliminary until we get 
+  // clipview resizing working without it
+  NSSize containerSize = [_textContainer containerSize];
+
+  if (flag)
+    containerSize.width = HUGE;
+  else
+    containerSize.width = _frame.size.width - 2.0 * [self textContainerInset].width;
+
+  [_textContainer setContainerSize: containerSize];
   [_textContainer setWidthTracksTextView: !flag];
   _tf.is_horizontally_resizable = flag;
 }
 
 - (void) setVerticallyResizable: (BOOL)flag
 {
+  // FIXME:  All the container resizing is here preliminary until we get 
+  // clipview resizing working without it
+  NSSize containerSize = [_textContainer containerSize];
+
+  if (flag)
+    containerSize.height = HUGE;
+  else
+    containerSize.height = _frame.size.height - 2.0 * [self textContainerInset].height;
+
+  [_textContainer setContainerSize: containerSize];
   [_textContainer setHeightTracksTextView: !flag];
   _tf.is_vertically_resizable = flag;
 }
