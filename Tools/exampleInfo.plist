@@ -8,6 +8,7 @@
       NSMenuItem = {
 	default = "Open URL";
 	English = "Open URL";
+	Italian = "Apri URL";
       };
       NSKeyEquivalent = {
 	default = O;
@@ -26,6 +27,7 @@
       NSMenuItem = {
 	default = "To lower";
 	English = "To lower";
+	Italian = "Rendi minuscolo";
       };
       NSKeyEquivalent = {
 	default = L;
@@ -44,6 +46,7 @@
       NSMenuItem = {
 	default = "To upper";
 	English = "To upper";
+	Italian = "Rendi maiuscolo";
       };
       NSKeyEquivalent = {
 	default = U;
