@@ -545,6 +545,34 @@ static Class textFieldCellClass;
 }
 
 //
+// Rich Text
+//
+- (void)setAllowsEditingTextAttributes:(BOOL)flag
+{
+  [_cell setAllowsEditingTextAttributes: flag];
+}
+
+- (BOOL)allowsEditingTextAttributes
+{
+  return [_cell allowsEditingTextAttributes];
+}
+
+- (void)setImportsGraphics:(BOOL)flag
+{
+  [_cell setImportsGraphics: flag];
+}
+
+- (BOOL)importsGraphics
+{
+  return [_cell importsGraphics];
+}
+
+- (void)setTitleWithMnemonic:(NSString *)aString
+{
+  [_cell setTitleWithMnemonic: aString];
+}
+
+//
 // NSCoding protocol
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
