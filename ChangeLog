@@ -1,3 +1,16 @@
+2002-12-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSComboBoxCell.h
+	Removed unused ivars and added one to store the popup while open.
+	* Source/NSComboBoxCell.m
+	Moved popup positioning to GSComboWindow, rewrote popup size code
+	to respect numberOfItems and to adopt the used matrix. New methods
+	for the cell to popup interaction. 
+	Corrected the encoding code of NSComboBoxCell. [objectValues] now
+	correctly warns in the data source case. New method
+	[stringValueAtIndex:]. Hack in [_didClick:] to get setting of
+	values working. 
+	
 2002-12-22  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbar.m: Added some of the code needed to add/remove
