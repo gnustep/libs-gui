@@ -658,15 +658,6 @@ static const int currentVersion = 1; // GSNibItem version number...
     }
   return obj;
 }
-
-/*
-- (NSFont *)font
-{
-  NSLog(@"Whose calling me...");
-  return nil;
-}
-*/
-
 @end
 
 // Template for any classes which derive from NSText
