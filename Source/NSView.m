@@ -2192,7 +2192,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [ctxt _addDragTypes: t toWindow: [window windowNumber]];
       if (o != nil)
 	{
-	  [ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
+	  [ctxt _removeDragTypes: o fromWindow: [window windowNumber]];
 	}
     }
   TEST_RELEASE(o);

@@ -29,6 +29,8 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/DPSOperators.h>
 
 // Class variables
 static NSMutableArray *gnustep_gui_cursor_stack;
@@ -54,11 +56,22 @@ static BOOL gnustep_gui_hidden_until_move;
     }
 }
 
+- (void *)_cid
+{
+  return cid;
+}
+
+- (void) _setCid: (void *)id
+{
+  cid = id;
+}
+
 //
 // Setting the Cursor
 //
 + (void)hide
 {
+  DPShidecursor(GSCurrentContext());
 }
 
 + (void)pop
@@ -74,7 +87,9 @@ static BOOL gnustep_gui_hidden_until_move;
   if ([gnustep_gui_cursor_stack count])
     gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
-  [self currentCursorHasChanged];
+  if ([gnustep_gui_current_cursor _cid])
+    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, 
+		      [gnustep_gui_current_cursor _cid]);
 }
 
 + (void)setHiddenUntilMouseMoves:(BOOL)flag
@@ -89,6 +104,7 @@ static BOOL gnustep_gui_hidden_until_move;
 
 + (void)unhide
 {
+  DPSshowcursor(GSCurrentContext());  
 }
 
 //
@@ -96,7 +112,11 @@ static BOOL gnustep_gui_hidden_until_move;
 //
 + (NSCursor *)arrowCursor
 {
-  return nil;
+  void *c;
+  NSCursor *cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+  DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
+  [cur _setCid: c];
+  return cur;
 }
 
 + (NSCursor *)currentCursor
@@ -106,7 +126,11 @@ static BOOL gnustep_gui_hidden_until_move;
 
 + (NSCursor *)IBeamCursor
 {
-  return nil;
+  void *c;
+  NSCursor *cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+  DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
+  [cur _setCid: c];
+  return cur;
 }
 
 //
@@ -193,13 +217,15 @@ static BOOL gnustep_gui_hidden_until_move;
 {
   [gnustep_gui_cursor_stack addObject: self];
   gnustep_gui_current_cursor = self;
-  [NSCursor currentCursorHasChanged];
+  if (cid)
+    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
 }
 
 - (void)set
 {
   gnustep_gui_current_cursor = self;
-  [NSCursor currentCursorHasChanged];
+  if (cid)
+    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
 }
 
 - (void)setOnMouseEntered:(BOOL)flag
@@ -223,15 +249,5 @@ static BOOL gnustep_gui_hidden_until_move;
 {
   return self;
 }
-
-@end
-
-//
-// Methods implemented by the backend
-//
-@implementation NSCursor (GNUstepBackend)
-
-+ (void)currentCursorHasChanged
-{}
 
 @end

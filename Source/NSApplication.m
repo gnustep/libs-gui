@@ -75,14 +75,149 @@ struct _NSModalSession {
   NSModalSession    previous;
 };
 
+@interface NSIconWindow : NSWindow
+@end
+
+@interface NSAppIconView : NSView
+- (void) setImage: (NSImage *)anImage;
+@end
+
 /*
  * Class variables
  */
 static BOOL gnustep_gui_app_is_in_dealloc;
+static NSIconWindow *app_icon_window;
 static NSEvent *null_event;
 static NSString *NSAbortModalException = @"NSAbortModalException";
 
 NSApplication	*NSApp = nil;
+
+@implementation	NSIconWindow
+
+- (BOOL) canBecomeMainWindow
+{
+  return NO;
+}
+
+- (BOOL) canBecomeKeyWindow
+{
+  return NO;
+}
+
+- (void) initDefaults
+{
+  [super initDefaults];
+  menu_exclude = YES;           // Don't show in windows menu.
+  window_level = NSDockWindowLevel;
+  is_released_when_closed = NO;
+}
+
+@end
+
+@implementation NSAppIconView
+
+// Class variables
+static NSCell* dragCell = nil;
+static NSCell* tileCell = nil;
+
++ (void) initialize
+{
+  NSImage	*defImage = [NSImage imageNamed: @"GNUstep"];
+  NSImage	*tileImage = [NSImage imageNamed: @"common_Tile"];
+
+  dragCell = [[NSCell alloc] initImageCell: defImage];
+  [dragCell setBordered: NO];
+  tileCell = [[NSCell alloc] initImageCell: tileImage];
+  [tileCell setBordered: NO];
+}
+
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
+{
+  return YES;
+}
+
+- (void) drawRect: (NSRect)rect
+{                                                
+  [tileCell drawWithFrame: rect inView: self];
+  [dragCell drawWithFrame: rect inView: self];
+}
+
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  if ([theEvent clickCount] >= 2)
+    {
+      NSWindow *kw = [NSApp keyWindow];
+
+      if (!kw)
+	kw = [self window];
+
+      [NSApp unhide: self];
+      if (kw)
+	{
+	  NSGraphicsContext *context = GSCurrentContext();
+          [kw orderFrontRegardless];
+	  [context flush];
+	  DPSsetinputfocus(context, [kw windowNumber]);
+	}
+    }
+  else
+    {
+      NSPoint	lastLocation;
+      NSPoint	location;
+      unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+				| NSPeriodicMask | NSRightMouseUpMask;
+      NSDate	*theDistantFuture = [NSDate distantFuture];
+      NSApplication *theApp = [NSApplication sharedApplication];
+      BOOL	done = NO;
+
+      lastLocation = [theEvent locationInWindow];
+      [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
+
+      while (!done)
+	{
+	  theEvent = [theApp nextEventMatchingMask: eventMask
+					 untilDate: theDistantFuture
+					    inMode: NSEventTrackingRunLoopMode
+					   dequeue: YES];
+	
+	  switch ([theEvent type])
+	    {
+	      case NSRightMouseUp:
+	      case NSLeftMouseUp:
+	      /* right mouse up or left mouse up means we're done */
+		done = YES;
+		break;
+	      case NSPeriodic:
+		location = [window mouseLocationOutsideOfEventStream];
+		if (NSEqualPoints(location, lastLocation) == NO)
+		  {
+		    NSPoint	origin = [window frame].origin;
+
+		    origin.x += (location.x - lastLocation.x);
+		    origin.y += (location.y - lastLocation.y);
+		    [window setFrameOrigin: origin];
+		  }
+		break;
+
+	      default:
+		break;
+	    }
+	}
+      [NSEvent stopPeriodicEvents];
+    }
+}                                                        
+
+- (void) setImage: (NSImage *)anImage
+{
+  [self lockFocus];
+  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+  [dragCell setImage: anImage];
+  [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+  [window flushWindow];
+  [self unlockFocus];
+}
+
+@end
 
 @implementation NSApplication
 
@@ -131,6 +266,30 @@ NSApplication	*NSApp = nil;
 /*
  * Instance methods
  */
+- _appIconInit
+{
+  NSAppIconView	*iv;
+  NSGraphicsContext	*context = GSCurrentContext();
+
+  if (app_icon == nil)
+    app_icon = [[NSImage imageNamed: @"GNUstep"] retain];
+
+  app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
+					    NSMakeRect(0,0,64,64)
+				styleMask: NSBorderlessWindowMask
+				  backing: NSBackingStoreRetained
+				    defer: NO
+				   screen: nil];
+
+  iv = [[NSAppIconView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
+  [app_icon_window setContentView: iv];
+  [iv setImage: app_icon];
+
+  [app_icon_window orderFrontRegardless];
+  DPSsetinputfocus(context, [app_icon_window windowNumber]);
+  return self;
+}
+
 - (id) init
 {
   if (NSApp != nil && NSApp != self)
@@ -149,6 +308,7 @@ NSApplication	*NSApp = nil;
 
   NSDebugLog(@"Begin of NSApplication -init\n");
 
+  [self _appIconInit];
   unhide_on_activation = YES;
   app_is_hidden = YES;
   app_is_active = NO;
@@ -279,9 +439,11 @@ NSApplication	*NSApp = nil;
 {
   if (app_is_active == NO)
     {
+      NSGraphicsContext *context = GSCurrentContext();
+      NSWindow *kw = [self keyWindow];
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-      /*
+     /*
        * Menus should observe this notification in order to make themselves
        * visible when the application is active.
        */
@@ -292,6 +454,15 @@ NSApplication	*NSApp = nil;
 
       if (unhide_on_activation)
 	[self unhide: nil];
+
+      if (kw == nil || [kw isVisible] == NO)
+	{
+	  kw = app_icon_window;
+	}
+      NSDebugLog(@"activateIgnoringOtherApps start.");
+      [context flush];
+      DPSsetinputfocus(context, [kw windowNumber]);
+      NSDebugLog(@"activateIgnoringOtherApps end.");
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self];
@@ -831,6 +1002,8 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   [app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
   ASSIGN(app_icon, anImage);
+  [[app_icon_window contentView] setImage: anImage];
+  [[app_icon_window contentView] setNeedsDisplay: YES];
 }
 
 - (NSImage*) applicationIconImage
@@ -1082,25 +1255,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (NSArray*) windows
 {
-  // Implemented by backend.
-  return nil;
+  return [NSWindow _windowList];
 }
 
 - (NSWindow *) windowWithWindowNumber: (int)windowNum
 {
-  NSArray *window_list = [self windows];
-  unsigned i, j;
-  NSWindow *w;
-
-  j = [window_list count];
-  for (i = 0; i < j; ++i)
-    {
-      w = [window_list objectAtIndex: i];
-      if ([w windowNumber] == windowNum)
-	return w;
-    }
-
-  return nil;
+  return [NSWindow _windowWithNumber: windowNum];
 }
 
 /*

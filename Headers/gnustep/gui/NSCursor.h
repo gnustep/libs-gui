@@ -42,8 +42,7 @@
   BOOL is_set_on_mouse_entered;
   BOOL is_set_on_mouse_exited;
 
-  // Reserved for back-end use
-  void *be_cursor_reserved;
+  void *cid;
 }
 
 //
@@ -92,13 +91,10 @@
 
 @end
 
-//
-// Methods implemented by the backend
-//
-@interface NSCursor (GNUstepBackend)
-
-+ (void)currentCursorHasChanged;
-
-@end
+/* Cursor types */
+typedef enum {
+  GSArrowCursor,
+  GSIBeamCursor
+} GSCursorTypes;
 
 #endif // _GNUstep_H_NSCursor

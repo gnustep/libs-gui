@@ -265,8 +265,7 @@
       if ([window isVisible])
       {
 	 [window display];
-#warning It does not seem that GNUstep has a NSDPSContext
-//	 [[NSDPSContext currentContext] flush];
+	 [GSCurrentContext() flush];
       }
 }
 

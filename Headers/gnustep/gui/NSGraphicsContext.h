@@ -408,6 +408,12 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win ;
 - (void) DPScapturemouse: (int) win ;
 - (void) DPSreleasemouse;
+- (void) DPSsetinputfocus: (int) win ;
+- (void) DPShidecursor;
+- (void) DPSshowcursor;
+- (void) DPSstandardcursor: (int) style : (void **) cid ;
+- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid ;
+- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid ;
 
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */

@@ -483,6 +483,18 @@ typedef struct {
         (NSGraphicsContext*, SEL, int);
   void (*DPSreleasemouse)
         (NSGraphicsContext*, SEL);
+  void (*DPSsetinputfocus_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPShidecursor)
+        (NSGraphicsContext*, SEL);
+  void (*DPSshowcursor)
+        (NSGraphicsContext*, SEL);
+  void (*DPSstandardcursor__)
+        (NSGraphicsContext*, SEL, int, void **);
+  void (*DPSimagecursor_______)
+        (NSGraphicsContext*, SEL, float, float, float, float, int, const char *, void **);
+  void (*DPSsetcursorcolor_______)
+        (NSGraphicsContext*, SEL, float, float, float, float, float, float, void *);
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

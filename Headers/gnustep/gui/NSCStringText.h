@@ -33,7 +33,7 @@
 #include <AppKit/NSFontManager.h>
 
 @class NSCell;
-@class NSPasteBoard;
+@class NSPasteboard;
 
 typedef short NSLineDesc;
 
@@ -470,7 +470,7 @@ typedef struct _NSCStringTextInternalState  {
 - (void)setLocation:(NSPoint)origin
              ofCell:(NSCell *)cell;
 + excludeFromServicesMenu:(BOOL)flag;
-- (BOOL)readSelectionFromPasteboard:(NSPasteBoard *)pboard;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
 - (id)validRequestorForSendType:(NSString *)sendType
                      returnType:(NSString *)returnType;
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard

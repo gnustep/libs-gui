@@ -32,8 +32,23 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSInterfaceStyle.h>
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/DPSOperators.h>
 
 
+static int *
+_screen_numbers(void)
+{
+  int count, *list;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  DPScountscreenlist(ctxt, 0, &count);
+  if (count == 0)
+    return NULL;
+  list = NSZoneMalloc(NSDefaultMallocZone(), (count+1)*sizeof(int));
+  DPSscreenlist(ctxt, 0, count, list);
+  return list;
+}
 
 @implementation NSScreen
 
@@ -82,6 +97,10 @@ static NSScreen *mainScreen = nil;
 //
 - initWithDeviceDescription: (NSDictionary *)dict
 {
+  int screen;
+  float x, y, w, h;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
   [super init];
   depth = 0;
   frame = NSZeroRect;
@@ -89,6 +108,33 @@ static NSScreen *mainScreen = nil;
     device_desc = [dict mutableCopy];
   else
     device_desc = [[NSMutableDictionary dictionary] retain];
+
+  if ([ctxt isDrawingToScreen] == NO)
+    {
+      NSLog(@"Internal error: trying to find screen with wrong context\n");
+      [self dealloc];
+      return nil;
+    }
+
+  if (!dict || [dict objectForKey: @"NSScreenKeyName"] == nil
+      || [[dict objectForKey: @"NSScreenKeyName"] isEqual: @"Main"])
+    {
+      /* Assume the main screen is the one we started with */
+      int *windows = _screen_numbers();
+      screen = 0;
+      if (windows)
+        screen = windows[0];
+      NSZoneFree(NSDefaultMallocZone(), windows);
+    }
+  else if ([dict objectForKey: @"NSScreenNumber"])
+    {
+      screen = [[dict objectForKey: @"NSScreenNumber"] intValue];
+    }
+  /* Special hack to get screen frame since window number of root window
+     is same as screen number */
+  DPScurrentwindowbounds(ctxt, screen, &x, &y, &w, &h);
+  frame = NSMakeRect(x, y, w, h);
+  DPScurrentwindowdepth(ctxt, screen, &depth);
   return self;
 }
 

@@ -1,3 +1,23 @@
+1999-10-29  Adam Fedor  <fedor@gnu.org>
+
+	* Remove backend application, cursor, and screen classes and use 
+	new window ops.
+	* Headers/gnustep/gui/DPSOperators.h: New window ops.
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* NSGraphicsContext.m: Likewise.
+
+	* Headers/gnustep/gui/NSCursor.h: Add enum for standard cursors.
+	* Source/NSCursor.m: Implement methods using new cursor ops.
+	* Source/NSApplication.m: Move icon window classes
+	from backend here and use new window ops.
+	* Source/NSScreen.m: Implement methods using new window ops.
+
+	* Source/NSView.m (-registerForDragTypes:): Fix typo? wrong list
+	being removed.
+
+	* Source/NSWindow.m (+_windowList): New method.
+
 Wed Oct 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Changings suggested by Andrew Lindesay:

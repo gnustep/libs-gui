@@ -888,6 +888,30 @@ static inline void
 DPSreleasemouse(GSCTXT *ctxt)
 __attribute__((unused));
 
+static inline void
+DPSsetinputfocus(GSCTXT *ctxt, int win)
+__attribute__((unused));
+
+static inline void
+DPShidecursor(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSshowcursor(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSstandardcursor(GSCTXT *ctxt, int style, void ** cid)
+__attribute__((unused));
+
+static inline void
+DPSimagecursor(GSCTXT *ctxt, float hotx, float hoty, float w, float h, int colors, const char * image, void ** cid)
+__attribute__((unused));
+
+static inline void
+DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg, float bb, void * cid)
+__attribute__((unused));
+
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -2364,6 +2388,48 @@ DPSreleasemouse(GSCTXT *ctxt)
 {
   (ctxt->methods->DPSreleasemouse)
     (ctxt, @selector(DPSreleasemouse));
+}
+
+static inline void
+DPSsetinputfocus(GSCTXT *ctxt, int win)
+{
+  (ctxt->methods->DPSsetinputfocus_)
+    (ctxt, @selector(DPSsetinputfocus:), win);
+}
+
+static inline void
+DPShidecursor(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPShidecursor)
+    (ctxt, @selector(DPShidecursor));
+}
+
+static inline void
+DPSshowcursor(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSshowcursor)
+    (ctxt, @selector(DPSshowcursor));
+}
+
+static inline void
+DPSstandardcursor(GSCTXT *ctxt, int style, void ** cid)
+{
+  (ctxt->methods->DPSstandardcursor__)
+    (ctxt, @selector(DPSstandardcursor::), style, cid);
+}
+
+static inline void
+DPSimagecursor(GSCTXT *ctxt, float hotx, float hoty, float w, float h, int colors, const char * image, void ** cid)
+{
+  (ctxt->methods->DPSimagecursor_______)
+    (ctxt, @selector(DPSimagecursor:::::::), hotx, hoty, w, h, colors, image, cid);
+}
+
+static inline void
+DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg, float bb, void * cid)
+{
+  (ctxt->methods->DPSsetcursorcolor_______)
+    (ctxt, @selector(DPSsetcursorcolor:::::::), fr, fg, fb, br, bg, bb, cid);
 }
 
 /* ----------------------------------------------------------------------- */

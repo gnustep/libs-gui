@@ -468,7 +468,8 @@ extern NSSize NSTokenSize;
  */
 @interface NSWindow (GNUstepPrivate)
 
-+ (NSWindow*) _windowWithNumber: (int)windowNumber;
++ (NSWindow *) _windowWithNumber: (int)windowNumber;
++ (NSArray *) _windowList;
 
 /*
  * Mouse capture/release

@@ -2423,9 +2423,14 @@ static NSMapTable* windowmaps = NULL;
  */
 @implementation NSWindow (GNUstepPrivate)
 
-+ (NSWindow*) _windowWithNumber: (int)windowNumber
++ (NSWindow *) _windowWithNumber: (int)windowNumber
 {
   return NSMapGet(windowmaps, (void *)windowNumber);
+}
+
++ (NSArray *) _windowList
+{
+  return NSAllMapTableValues(windowmaps);
 }
 
 /*

@@ -174,10 +174,10 @@ static NSDictionary* nsmapping = nil;
     {
       NSString* ext;
       NSString* path = nil;
-      NSBundle* main;
+      NSBundle* main_bundle;
       NSArray *array;
       NSString *the_name = aName;
-      main = [NSBundle mainBundle];
+      main_bundle = [NSBundle mainBundle];
       ext  = [aName pathExtension];
 
       /* Check if extension is one of the image types */
@@ -198,7 +198,7 @@ static NSDictionary* nsmapping = nil;
 
       /* First search locally */
       if (ext)
-	path = [main pathForResource: the_name ofType: ext];
+	path = [main_bundle pathForResource: the_name ofType: ext];
       else 
 	{
 	  id o, e;
@@ -207,7 +207,7 @@ static NSDictionary* nsmapping = nil;
 	  while ((o = [e nextObject]))
 	    {
 	      NSDebugLog(@"extension %s\n", [o cString]);
-	      path = [main pathForResource: the_name 
+	      path = [main_bundle pathForResource: the_name 
 		        ofType: o];
 	      if (path != nil && [path length] != 0)
 		break;

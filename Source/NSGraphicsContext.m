@@ -811,6 +811,18 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPScapturemouse:));
   methodTable.DPSreleasemouse = 
     GET_IMP(@selector(DPSreleasemouse));
+  methodTable.DPSsetinputfocus_ = 
+    GET_IMP(@selector(DPSsetinputfocus:));
+  methodTable.DPShidecursor = 
+    GET_IMP(@selector(DPShidecursor));
+  methodTable.DPSshowcursor = 
+    GET_IMP(@selector(DPSshowcursor));
+  methodTable.DPSstandardcursor__ = 
+    GET_IMP(@selector(DPSstandardcursor::));
+  methodTable.DPSimagecursor_______ = 
+    GET_IMP(@selector(DPSimagecursor:::::::));
+  methodTable.DPSsetcursorcolor_______ = 
+    GET_IMP(@selector(DPSsetcursorcolor:::::::));
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */
@@ -1922,6 +1934,36 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPSreleasemouse;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetinputfocus: (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPShidecursor;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSshowcursor;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSstandardcursor: (int) style : (void **) cid ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid ;
 {
   [self subclassResponsibility: _cmd];
 }
