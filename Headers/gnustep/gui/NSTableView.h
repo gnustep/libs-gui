@@ -62,6 +62,7 @@
   BOOL               _allowsEmptySelection;
   BOOL               _allowsColumnSelection;
   BOOL               _allowsColumnResizing;
+  BOOL               _allowsColumnReordering;
   BOOL               _selectingColumns;
   NSText            *_textObject;
   int                _editedRow;
@@ -190,6 +191,7 @@
 - (BOOL) autoresizesAllColumnsToFit;
 - (void) sizeLastColumnToFit;
 // - (void) sizeToFit; inherited from NSControl
+- (void) setFrame: (NSRect) frameRect;
 - (void) noteNumberOfRowsChanged;
 - (void) tile;
 
