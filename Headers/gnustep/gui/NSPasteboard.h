@@ -142,8 +142,6 @@ provideDataForType:(NSString *)type
 @end
 
 @interface NSPasteboard (GNUstepExtensions)
-- (id)askOwner:(id)obj toProvideDataForType:(NSString*)t;
-- (id)askOwner:(id)obj toProvideDataForType:(NSString*)t andVersion:(int)v;
 - (void)setChangeCount: (int)changeCount;
 @end
 
