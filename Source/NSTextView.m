@@ -2012,6 +2012,8 @@ replacing the selection.
       makers = [_layoutManager rulerMarkersForTextView: self
 			       paragraphStyle: paraStyle
 			       ruler: rv];
+      // FIXME This is not the correct place to call this.
+      [rv setClientView: self];
       [rv setMarkers: makers];
     }
 }
@@ -3231,7 +3233,6 @@ afterString in order over charRange. */
   NSPoint point = [aRulerView convertPoint: [theEvent locationInWindow] 
 			      fromView: nil];
   float location = point.x;
-  // FIXME This image does not exist.
   NSRulerMarker *marker = [[NSRulerMarker alloc] 
 			      initWithRulerView: aRulerView
 			      markerLocation: location
