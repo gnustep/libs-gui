@@ -25,5 +25,5 @@
  */
 {
     "^\\"	= "inputMethodToggle:";
-    "$\040"	= "inputMethodToggle:";
+    //"$\040"	= "inputMethodToggle:";
 }
