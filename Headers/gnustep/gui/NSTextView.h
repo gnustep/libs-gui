@@ -71,8 +71,8 @@ therefore be stored in the NSLayoutManager to avoid problems.
 
 @interface NSTextView : NSText <NSTextInput>
 {
-  /** These attributes are shared by all text views attached to a layout
-  manager. Any changes must be replicated in all those text views. **/
+  /* These attributes are shared by all text views attached to a layout
+  manager. Any changes must be replicated in all those text views. */
   id _delegate;
   struct GSTextViewFlagsType {
     unsigned is_field_editor:1;
@@ -90,7 +90,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
     would be very awkward if they weren't. */
     unsigned allows_undo:1;
     unsigned smart_insert_delete:1;
-  /** End of shared attributes. **/
+  /* End of shared attributes. */
 
 
     unsigned draws_background:1;
@@ -209,9 +209,14 @@ therefore be stored in the NSLayoutManager to avoid problems.
 }
 
 
-/* Returns the default typing attributes: black text, default paragraph
-style, default user font and size. */
-+(NSDictionary *) defaultTypingAttributes; /* GNUstep extension */
+/**
+Returns the default typing attributes: black text, default paragraph
+style (as returned by [NSParagraphStyle defaultParagraphStyle]), and default
+user font and size (as returned by [NSFont userFontOfSize: 0.0]).
+
+GNUstep extension.
+*/
++(NSDictionary *) defaultTypingAttributes;
 
 
 /**** Initializing ****/
@@ -227,7 +232,7 @@ should ensure that you only register once. */
 /* This variant will create the text network (NSTextStorage, NSLayoutManager,
 and a NSTextContainer). The network will be owned by the NSTextView;
 releasing it will release all parts of the network. */
--(id) initWithFrame:(NSRect)frameRect;
+-(id) initWithFrame: (NSRect)frameRect;
 
 
 /**** Text network management ****/
@@ -360,6 +365,19 @@ the text view is resizable. */
 -(void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary;
 -(NSDictionary *) markedTextAttributes;
 
+
+#ifdef GNUSTEP
+/*** Private, internal methods for (currently only) XIM support ***/
+
+/*
+The implementations for these are empty in NSTextView. Backends can override
+these in a category.
+*/
+
+-(void) _updateInputMethodState;
+-(void) _updateInputMethodWithInsertionPoint: (NSPoint)insertionPoint;
+
+#endif
 
 @end
 

@@ -2243,6 +2243,17 @@ Scroll so that the beginning of the range is visible.
 }
 
 
+/* Private, internal methods to help input method handling in some backends
+(XIM, currently). Backends may override these in categories with the real
+(backend-specific) handling. */
+
+-(void) _updateInputMethodState
+{
+}
+-(void) _updateInputMethodWithInsertionPoint: (NSPoint)insertionPoint
+{
+}
+
 @end
 
 
