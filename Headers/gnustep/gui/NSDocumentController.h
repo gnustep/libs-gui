@@ -30,6 +30,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSNibDeclarations.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray, NSMutableArray;
 @class NSURL;
@@ -74,6 +75,7 @@
 - (IBAction)clearRecentDocuments:(id)sender;
 
 /*" Recent Documents "*/
+- (void)noteNewRecentDocument:(NSDocument *)aDocument;
 - (void)noteNewRecentDocumentURL:(NSURL *)anURL;
 - (NSArray *)recentDocumentURLs;
 
@@ -86,7 +88,15 @@
 - (void)addDocument:(NSDocument *)document;
 - (void)removeDocument:(NSDocument *)document;
 - (BOOL)closeAllDocuments;
+- (void)closeAllDocumentsWithDelegate:(id)delegate 
+		  didCloseAllSelector:(SEL)didAllCloseSelector 
+			  contextInfo:(void *)contextInfo;
 - (BOOL)reviewUnsavedDocumentsWithAlertTitle:(NSString *)title cancellable:(BOOL)cancellable;
+- (void)reviewUnsavedDocumentsWithAlertTitle:(NSString *)title 
+				 cancellable:(BOOL)cancellable 
+				    delegate:(id)delegate
+			didReviewAllSelector:(SEL)didReviewAllSelector 
+				 contextInfo:(void *)contextInfo;
 - (NSArray *)documents;
 - (BOOL)hasEditedDocuments;
 - (id)currentDocument;
@@ -97,6 +107,7 @@
 
 /*" Menu validation "*/
 - (BOOL)validateMenuItem:(NSMenuItem *)anItem;
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 /*" Types and extensions "*/
 - (NSString *)displayNameForType:(NSString *)type;
