@@ -1098,7 +1098,7 @@ BOOL done = NO;
 
               if ([win isKindOfClass: [NSWindow class]])
                 {
-                  [win orderFront: self];
+                  [win orderBack: self];
                 }
             }
         }

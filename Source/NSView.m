@@ -34,6 +34,7 @@
 
 #include <gnustep/gui/config.h>
 #include <math.h>
+#include <float.h>
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
