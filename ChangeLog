@@ -1,3 +1,9 @@
+Thu Sep  7 02:56:25 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSApplication.m ([-_windowWillClose:notification]): Use
+	NSDebugLog instead of NSLog to log asking to delegate whether to
+	terminate app.
+
 Wed Sep  6 16:44:30 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSBrowser.m: Cache scrollerWidth in the whole class;
