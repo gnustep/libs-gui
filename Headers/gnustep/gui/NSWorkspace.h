@@ -35,13 +35,19 @@
 
 @class NSString;
 @class NSArray;
+@class NSMutableArray;
 @class NSNotificationCenter;
 @class NSImage;
 @class NSView;
+@class NSURL;
 
 @interface NSWorkspace : NSObject
 {
   // Attributes
+  NSMutableDictionary *_iconMap;
+  NSNotificationCenter *_workspaceCenter;
+  BOOL _fileSystemChanged;
+  BOOL _userDefaultsChanged;
 }
 
 //
@@ -63,6 +69,9 @@
   withApplication: (NSString *)appName
   andDeactivate: (BOOL)flag;
 - (BOOL)openTempFile: (NSString *)fullPath;
+#ifndef STRICT_OPENSTEP
+- (BOOL)openURL:(NSURL *)url;
+#endif
 
 //
 // Manipulating Files	
@@ -91,12 +100,18 @@
 - (NSImage *)iconForFile: (NSString *)fullPath;
 - (NSImage *)iconForFiles: (NSArray *)pathArray;
 - (NSImage *)iconForFileType: (NSString *)fileType;
+#ifndef STRICT_OPENSTEP
+- (BOOL)isFilePackageAtPath:(NSString *)fullPath;
+#endif
 
 //
 // Tracking Changes to the File System
 //
 - (BOOL)fileSystemChanged;
 - (void)noteFileSystemChanged;
+#ifndef STRICT_OPENSTEP
+- (void)noteFileSystemChanged:(NSString *)path;
+#endif
 
 //
 // Updating Registered Services and File Types
@@ -123,6 +138,9 @@
 - (void)checkForRemovableMedia;
 - (NSArray *)mountNewRemovableMedia;
 - (NSArray *)mountedRemovableMedia;
+#ifndef STRICT_OPENSTEP
+- (NSArray *)mountedLocalVolumePaths;
+#endif
 
 //
 // Notification Center
