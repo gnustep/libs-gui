@@ -277,41 +277,41 @@ static Class	colorClass;
   control_view = controlView;		// remember last view cell was drawn in
   [controlView lockFocus];
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
-  {
+    {
       backColor = [colorClass selectedControlColor];
       [backColor set];
       if (!_isLeaf)
-      {
+	{
           image = _highlightBranchImage;
-      }
+	}
       else
           image_rect = NSZeroRect;
-  }
+    }
   else
-  {
+    {
       backColor = [[controlView window] backgroundColor];
       [backColor set];
       if (!_isLeaf)
-      {
+	{
           image = _branchImage;
-      }
+	}
       else
           image_rect = NSZeroRect;
-  }
+    }
 
   image_rect.size = [image size];
 													  // Right justify
-  image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 1.0;
+  image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 4.0;
   image_rect.origin.y += (cellFrame.size.height - image_rect.size.height) / 2.0;
 //MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
 
   NSRectFill(cellFrame);	// Clear the background
 
-  title_rect.size.width -= image_rect.size.width + 4;	// draw the title cell
+  title_rect.size.width -= image_rect.size.width + 8;	// draw the title cell
   [_browserText drawWithFrame: title_rect inView: controlView];
 
   if (image)
-  {
+    {
       NSPoint position = image_rect.origin;
 
       [image setBackgroundColor: backColor];
