@@ -863,7 +863,7 @@ static BOOL _gs_display_reading_progress = NO;
     case NSLeftArrowFunctionKey:
     case NSRightArrowFunctionKey:
       [_form abortEditing];
-      [[_form cellAtIndex:0] setStringValue:nil];
+      [[_form cellAtIndex:0] setStringValue: @""];
       [_browser keyDown:theEvent];
       break;
     }

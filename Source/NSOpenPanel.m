@@ -125,7 +125,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       else
 	{
 	  [_form abortEditing];
-	  [[_form cellAtIndex: 0] setStringValue:nil];
+	  [[_form cellAtIndex: 0] setStringValue:@""];
 	  //	  [_form selectTextAtIndex:0];
 	  [_form setNeedsDisplay:YES];
 	  [_okButton setEnabled:YES];
