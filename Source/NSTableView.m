@@ -2267,7 +2267,7 @@ byExtendingSelection: (BOOL)flag
 		}
 	      else
 		{
-		  int remainingInt = floorf(remainingWidth);
+		  int remainingInt = floor(remainingWidth);
 		  int quotient = remainingInt / numberOfCurrentColumns;
 		  int remainder = remainingInt - quotient * numberOfCurrentColumns;
 		  int oldRemainder = remainder;
