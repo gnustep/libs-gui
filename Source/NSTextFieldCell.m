@@ -129,9 +129,13 @@
   text_color = aColor;
 }
 
-- (id) setUpFieldEditorAttributes: (id)textObject
+- (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  return nil;
+  textObject = [super setUpFieldEditorAttributes: textObject];
+  [textObject setDrawsBackground: draw_background];
+  [textObject setBackgroundColor: background_color];
+  [textObject setTextColor: text_color];
+  return textObject;
 }
 
 - (NSColor *) textColor
