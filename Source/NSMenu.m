@@ -728,7 +728,10 @@ static NSNotificationCenter *nc;
           if ([[item keyEquivalent] isEqualToString: 
 				      [theEvent charactersIgnoringModifiers]])
 	    {
-	      [_view performActionWithHighlightingForItemAtIndex: i];
+	      if ([item isEnabled])
+		{
+		  [_view performActionWithHighlightingForItemAtIndex: i];
+		}
 	      return YES;
 	    }
 	}
