@@ -38,6 +38,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/DPSOperators.h>
+#include <AppKit/NSGraphics.h>
 
 @interface NSTableView (GNUstepPrivate)
 - (void) _userResizedTableColumn: (int)index
