@@ -2095,7 +2095,7 @@ resetCursorRectsForView(NSView *theView)
   
   _f.is_miniaturized = YES;
   /* Make sure we're not defered */
-  if(_windowNum == 0)
+  if (_windowNum == 0)
     {
       [self _initBackendWindow: _frame];
     }
@@ -2187,17 +2187,25 @@ resetCursorRectsForView(NSView *theView)
   return NO;
 }
 
+/**
+ * Miniaturize the receiver ... as long as its style mask includes
+ * NSMiniaturizableWindowMask (and as long as the receiver is not an
+ * icon or mini window itsself). Calls -miniaturize to do this.<br />
+ * Beeps if the window can't be miniaturised.<br />
+ * Should ideally provide visual feedback (highlighting the miniaturize
+ * button as if it had been clicked) first ... but that's not yet implemented.
+ */
 - (void) performMiniaturize: (id)sender
 {
-  if (!(_styleMask & (NSIconWindowMask | NSMiniWindowMask)))
-    {
-      // FIXME: The button should be highlighted
-      [self miniaturize: sender];
-    }
-  else
+  if ((!(_styleMask & NSMiniaturizableWindowMask))
+    || (_styleMask & (NSIconWindowMask | NSMiniWindowMask)))
     {
       NSBeep();
+      return;
     }
+
+  // FIXME: The button should be highlighted
+  [self miniaturize: sender];
 }
 
 - (int) resizeFlags
