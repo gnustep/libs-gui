@@ -1,3 +1,11 @@
+2003-10-13  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Simplify graphics libs lookup
+	* config.make.in: Update.
+	
+	* Documentation/make_services.1: New file (from Martin Brecher)
+	* Documentation/GNUmakefile: Install it.
+
 2003-10-09  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/make_services.m: Add quiet option.

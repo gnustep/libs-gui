@@ -1,4 +1,4 @@
-/* Source/config.h.in.  Generated from configure.ac by autoheader.  */
+/* Headers/Additions/GNUstepGUI/config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if you have the <audiofile.h> header file. */
 #undef HAVE_AUDIOFILE_H
@@ -6,8 +6,26 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <jpeglib.h> header file. */
+#undef HAVE_JPEGLIB_H
+
+/* Define to 1 if you have the `audiofile' library (-laudiofile). */
+#undef HAVE_LIBAUDIOFILE
+
+/* Define to 1 if you have the `jpeg' library (-ljpeg). */
+#undef HAVE_LIBJPEG
+
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
+
+/* Define to 1 if you have the `png' library (-lpng). */
+#undef HAVE_LIBPNG
+
+/* Define to 1 if you have the `tiff' library (-ltiff). */
+#undef HAVE_LIBTIFF
+
+/* Define to 1 if you have the `z' library (-lz). */
+#undef HAVE_LIBZ
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H

@@ -81,9 +81,8 @@ AC_CHECK_LIB(m, main)
 AC_CHECK_FUNCS(rint rintf)
 
 #--------------------------------------------------------------------
-# Find for JPEG
+# Find JPEG
 #--------------------------------------------------------------------
-GRAPHIC_LIBS=
 GRAPHIC_CFLAGS=
 GRAPHIC_LFLAGS=
 
@@ -101,35 +100,19 @@ if test -n "$with_jpeg_include"; then
   with_jpeg_include="-I$with_jpeg_include"
 fi
 
-AC_DEFUN(AC_CHECK_JPEGLIB,
-[jpeg_check_lib_save_header=${CPPFLAGS}
-CPPFLAGS="$1 $2 ${CPPFLAGS}"
-
-AC_CHECK_LIB(jpeg, jpeg_destroy_decompress,
-      jpeg_ok=yes,
-      jpeg_ok=no)
-if test "$jpeg_ok" = yes; then
-  AC_MSG_CHECKING([for jpeglib.h])
-  AC_TRY_CPP([#include <stdio.h>
-              #undef PACKAGE
-	      #undef VERSION
-	      #undef HAVE_STDLIB_H
-              #include <jpeglib.h>],
- 	      jpeg_ok=yes,
-	      jpeg_ok=no)
-  AC_MSG_RESULT($jpeg_ok)
-
-  if test "$jpeg_ok" = yes; then
-    GRAPHIC_LFLAGS="$1 $GRAPHIC_LFLAGS"
-    GRAPHIC_CFLAGS="$2 $GRAPHIC_CFLAGS"
+CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
+LDFLAGS="$with_jpeg_library ${LDFLAGS}"
+AC_CHECK_HEADERS(jpeglib.h, have_jpeg=yes, have_jpeg=no)
+if test "$have_jpeg" = yes; then
+  AC_CHECK_LIB(jpeg, jpeg_destroy_decompress)
+  if test "$ac_cv_lib_jpeg_jpeg_destroy_decompress" = yes; then
+    GRAPHIC_LFLAGS="$with_jpeg_library $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="$with_jpeg_include $GRAPHIC_CFLAGS"
   fi
 fi
-CPPFLAGS="${jpeg_check_lib_save_header}"])
-
-AC_CHECK_JPEGLIB(${with_jpeg_library}, ${with_jpeg_include})
 
 #--------------------------------------------------------------------
-# Find for TIFF
+# Find TIFF
 #--------------------------------------------------------------------
 AC_ARG_WITH(tiff_library, 
            [  --with-tiff-library=DIR TIFF library file are in DIR], ,
@@ -145,54 +128,22 @@ if test -n "$with_tiff_include"; then
   with_tiff_include="-I$with_tiff_include"
 fi
 
-AC_DEFUN(AC_CHECK_TIFFLIB,
-[tiff_check_lib_save_header=${CPPFLAGS}
-tiff_check_lib_save_libs=${LIBS}
-CPPFLAGS="$1 ${JPEG_LIB} $2 ${JPEG_INCLUDE} ${CPPFLAGS}"
-AC_CHECK_LIB(z, main, HAVE_LIBZ=1, HAVE_LIBZ=0)
-
-AC_MSG_CHECKING(for -ltiff without -ljpeg nor -lz)
-LIBS="-ltiff -lm $LIBS"
-AC_TRY_LINK([char TIFFReadScanline();], [TIFFReadScanline()],
-    jpeg_notneeded=yes,
-    jpeg_notneeded=no)
-AC_MSG_RESULT($jpeg_notneeded)
-LIBS=${tiff_check_lib_save_libs}
-JPEG=
-if test "$jpeg_notneeded" = no; then
-  JPEG=-ljpeg
-fi
-
-if test $HAVE_LIBZ = 1; then
-  AC_MSG_CHECKING(for -ltiff without -lz)
-  LIBS="-ltiff $JPEG -lm $LIBS"
-  AC_TRY_LINK([char TIFFReadScanline();], [TIFFReadScanline()],
-      libz_notneeded=yes,
-      libz_notneeded=no)
-  AC_MSG_RESULT($libz_notneeded)
-  LIBS=${tiff_check_lib_save_libs}
-  if test "$libz_notneeded" = no; then
-    JPEG="$JPEG -lz"
-  fi
-fi
-
-AC_CHECK_LIB(tiff, TIFFReadScanline, tiff_ok=yes, tiff_ok=no, $JPEG -lm)
-if test "$tiff_ok" = yes; then
-  AC_CHECK_HEADER(tiffio.h, tiff_ok=yes, tiff_ok=no)
-  if test "$tiff_ok" = yes; then
-    GRAPHIC_LFLAGS="$1 $GRAPHIC_LFLAGS"
-    GRAPHIC_CFLAGS="$2 $GRAPHIC_CFLAGS"
-    GRAPHIC_LIBS="-ltiff $JPEG $GRAPHIC_LIBS"
+CPPFLAGS="$with_tiff_include ${CPPFLAGS}"
+LDFLAGS="$with_tiff_library ${LDFLAGS}"
+AC_CHECK_LIB(z, main)
+AC_CHECK_HEADER(tiffio.h, have_tiff=yes, have_tiff=no)
+if test "$have_tiff" = yes; then
+  AC_CHECK_LIB(tiff, TIFFReadScanline)
+  if test "$ac_cv_lib_tiff_TIFFReadScanline" = yes; then
+    GRAPHIC_LFLAGS="$with_tiff_library $GRAPHIC_LFLAGS"
+    GRAPHIC_CFLAGS="$with_tiff_include $GRAPHIC_CFLAGS"
   else
-    AC_MSG_WARN(Cannot find libtiff header tiffio)
-    echo "* The GUI library requres the TIFF library"
-    echo "* Use --with-tiff-include to specify the tiff header directory"
-    echo "* and --with-tiff-library to specify the tiff library directory"
-    echo "* if it is not in the usual place(s)"
-    AC_MSG_ERROR(gnustep-gui will not compile without tiff includes)
+    have_tiff=no
   fi
-else
-  AC_MSG_WARN(Cannot find libtiff)
+fi
+
+if test "$have_tiff" = no; then
+  AC_MSG_WARN(Cannot find libtiff header and/or library)
   echo "* The GUI library reqiures the TIFF library"
   echo "* Use --with-tiff-library to specify the tiff library"
   echo "* directory if it is not in the usual place(s)"
@@ -200,13 +151,14 @@ else
   echo "* library is needed by tiff",
   AC_MSG_ERROR(gnustep-gui will not compile without tiff)
 fi
-CPPFLAGS="${tiff_check_lib_save_header}"])
-
-AC_CHECK_TIFFLIB(${with_tiff_library}, ${with_tiff_include})
 
 ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
 ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
-ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
+
+#--------------------------------------------------------------------
+# Find additional image libs
+#--------------------------------------------------------------------
+AC_CHECK_LIB(png, main)
 
 #--------------------------------------------------------------------
 # NSSound
@@ -231,23 +183,17 @@ if test -n "$with_audiofile_include"; then
   with_audiofile_include="-I$with_audiofile_include"
 fi
 
-audiofile_check_lib_save_headers=$CPPFLAGS
-audiofile_check_lib_save_libs=$LIBS
 CPPFLAGS="${with_audiofile_include} $CPPFLAGS"
-LIBS="${with_audiofile_library} $LIBS"
-AC_CHECK_LIB(audiofile, afGetVirtualFrameSize, audio_ok=yes, audio_ok=no)
+LDFLAGS="${with_audiofile_library} $LDFLAGS"
+AC_CHECK_LIB(audiofile, afGetVirtualFrameSize)
 
-if test $audio_ok = yes -a $enable_gsnd = yes; then
+if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes -a $enable_gsnd = yes; then
   AC_CHECK_HEADERS(audiofile.h)
-  ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
   ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${with_audiofile_include}"
   ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${with_audiofile_library}"
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
-
-LIBS=${audiofile_check_lib_save_libs}
-CPPFLAGS=${audiofile_check_lib_save_headers}
 
 #--------------------------------------------------------------------
 # Record the version
@@ -264,7 +210,6 @@ AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
-AC_SUBST(ADDITIONAL_DEPENDS)
 
 #--------------------------------------------------------------------
 # Configure
