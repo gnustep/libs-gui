@@ -1,3 +1,12 @@
+Wed Mar 08 115:4500 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Removed a fixup that should no longer be needed now that the
+	coordinate stuff is fixed - NB you need to update your copy of
+	WindowMaker to the latest CVS code because that contains some
+	coordinate handling bug fixes that we need.
+	* Source/NSPopPupButton.m: Removed workaround for bad coordinates.
+	* Source/NSPopPupButtonCell.m: ditto.
+
 Wed Mar 08 13:15:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Final (I hope) coordinate handling fixes to

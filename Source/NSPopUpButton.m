@@ -317,18 +317,8 @@ Class _nspopupbuttonCellClass = 0;
   [_cell attachPopUpWithFrame: _bounds
 	inView: self];
 
-  {
-    // Hack, function in NSPopUpButtonCell
-    extern NSPoint
-      _convertBaseToScreen_with_fix (NSRect frame, NSWindow *window, 
-				     NSPoint point);
-    
-    p = [[mr window] 
-	  convertScreenToBase: 
-	    _convertBaseToScreen_with_fix ([self convertRect:_bounds
-						 toView: nil], _window, 
-					   [theEvent locationInWindow])];
-  }
+  p = [_window convertBaseToScreen: [theEvent locationInWindow]];
+  p = [[mr window] convertScreenToBase: p];
 
   // Process events; we start menu events processing by converting 
   // this event to the menu window, and sending it there. 
