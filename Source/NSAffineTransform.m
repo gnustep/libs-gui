@@ -357,15 +357,6 @@ static NSAffineTransformStruct identityTransform = {
 
 @implementation NSAffineTransform (GNUstep)
 
-+ matrixFrom: (const float[6])_matrix
-{
-  NSAffineTransform	*m = AUTORELEASE([self alloc]);
-
-  [m setMatrix: _matrix];
-
-  return m;
-}
-
 - (void) scaleTo: (float)sx : (float)sy
 {
   float angle = rotationAngle < 0 ? [self rotationAngle] : rotationAngle;
