@@ -1,3 +1,14 @@
+2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m
+	[_relocLayoutArray:offset:floatTrift:Change a NSLog() call to NSDebugLog().
+	* Source/NSLayoutManager.m
+	Implemented extra line fragment methods.
+	* Source/NSTextView.m
+	Implemented [moveToBeginningOfParagraph:] and [moveToEndOfParagraph:].
+	* KeyBindings/DefaultKeyBindings.dict
+	Uncommented HOME and END.
+	
 Wed Feb 27 19:58:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCStringText.m: Obsolete file removed.
