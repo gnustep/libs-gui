@@ -1,3 +1,8 @@
+Fri Jun 16 10:18:29 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-scrollColumnToVisible:]): Updated for
+	last changes in scrollview code.
+
 Thu Jun 15 20:29:13 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSView.m ([-scrollRectToVisible:]): Don't need to send
