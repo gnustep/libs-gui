@@ -427,6 +427,12 @@
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
+  // pushed in buttons contents are displaced to the bottom right 1px
+  if ([self isBordered] && [self isHighlighted]
+      && ([self highlightsBy] & NSPushInCellMask))
+    cellFrame = NSOffsetRect (cellFrame,
+			      1., [control_view isFlipped] ? 1. : -1.);
+
   // determine the background color
   if ([self state])
     {
@@ -649,12 +655,16 @@
     }
   
   // Add some spacing between text/image and border
-  s.width += 2 * xDist;
-  s.height += 2 * yDist;
+  // if there is text in the button
+  if (titleToDisplay) {
+    s.width += 2 * xDist;
+    s.height += 2 * yDist;
+  }
  
   // Get border size
   if ([self isBordered])
-    borderSize = [NSCell sizeForBorderType: NSBezelBorder];
+    // Buttons only have three paths for border (NeXT looks)
+    borderSize = NSMakeSize (1.5, 1.5);
   else
     borderSize = [NSCell sizeForBorderType: NSNoBorder];
   
@@ -664,17 +674,26 @@
   
   return s;
 }
+
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  NSSize borderSize;
-  
-  // Get border size
   if (cell_bordered)
-    borderSize = [NSCell sizeForBorderType: NSBezelBorder];
+    {
+      // Special case:  Buttons have only three different paths for border.
+      // One white path at the top left corner, one black path at the
+      // bottom right and another in dark gray at the inner bottom right.
+      float yDelta = [control_view isFlipped] ? 1. : 2.;
+      return NSMakeRect (theRect.origin.x + 1.,
+			 theRect.origin.y + yDelta,
+			 theRect.size.width - 3.,
+			 theRect.size.height - 3.);
+    }
   else
-    borderSize = [NSCell sizeForBorderType: NSNoBorder];
-
-  return NSInsetRect (theRect, borderSize.width, borderSize.height);
+    {
+      // Get border size
+      NSSize borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      return NSInsetRect (theRect, borderSize.width, borderSize.height);
+    }
 }
 
 - (id) copyWithZone: (NSZone*)zone

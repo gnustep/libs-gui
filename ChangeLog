@@ -1,4 +1,16 @@
-iMon Sep 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+1999-09-14  David Lazaro Saz  <khelekir@encomix.es>
+
+	* Source/NSButtonCell.m: NeXT look-alike changes
+	([-drawingRectForBounds:]): Made NSButton a special case.  The
+	drawing rect is calculated in a different way than the other
+	cell types.
+	([-cellSize]): Added changes that take the above into account and
+	removed extra inner border if only there's an image to draw and
+	no text.
+	([-drawInteriorWithFrame:inView:]): Added a nice translation
+	effect when pushing a button.
+
+Mon Sep 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSImageView.m ([-setImage:]): Added update of the cell. 
 	([-setImageAlignment:]): idem.	
