@@ -2623,6 +2623,10 @@ resetCursorRectsForView(NSView *theView)
   [self update];
 }
 
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  // Quietly discard an unused mouse down.
+}
 
 - (void) sendEvent: (NSEvent*)theEvent
 {
@@ -2666,6 +2670,10 @@ resetCursorRectsForView(NSView *theView)
 		    {
 		      [v mouseDown: theEvent];
 		    }
+		}
+	      else
+		{
+		  [self mouseDown: theEvent];
 		}
 	    }
 	  _lastPoint = [theEvent locationInWindow];

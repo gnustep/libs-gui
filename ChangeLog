@@ -1,3 +1,9 @@
+2002-02-06  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([-sendEvent:]) handle mouse down in window if
+	no view accepts it.  ([-mouseDown:]) implement to quietly ignore
+	event.
+
 Wed Feb  6 02:30:09 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.m
