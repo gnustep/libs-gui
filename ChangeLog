@@ -1,3 +1,15 @@
+Thu Mar  1 04:15:53 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBezierPath.m ([-appendBezierPathWithArcWithCenter:
+	radius:startAngle:endAngle:clockwise:]): Little simplification 
+	in the computation of F.
+
+Thu Mar  1 04:10:54 2001  Georg Fleischmann <georg@vhf.de>
+
+	* Source/NSBezierPath.m ([-appendBezierPathWithArcWithCenter:
+	radius:startAngle:endAngle:clockwise:]): several fixes to make it
+	work
+
 2001-02-22  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/news.texi: Update
