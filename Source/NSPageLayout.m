@@ -36,6 +36,7 @@
 #include <AppKit/NSBox.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSComboBox.h>
+#include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSForm.h>
 #include <AppKit/NSFormCell.h>
@@ -46,7 +47,10 @@ NSPageLayout *shared_instance;
 
 @interface NSPageLayout (Private)
 - (id) _initWithoutGModel;
-
+- (NSArray*) _units;
+- (float) factorForIndex: (int)sel;
+- (NSArray*) _paperSizes;
+- (NSArray*) _layouts;
 @end
 
 @implementation NSPageLayout
@@ -84,17 +88,16 @@ NSPageLayout *shared_instance;
 //
 - (id) init
 {
-    self = [self _initWithoutGModel];
-    [self _initDefaults];
-
-    return self;
+  self = [self _initWithoutGModel];
+  [self _initDefaults];
+  
+  return self;
 }
 
 - (void) _initDefaults
 {
   // use points as the default
   _old = 1.0;
-  _new = 1.0;  
   [super _initDefaults];
 }
 
@@ -108,16 +111,39 @@ NSPageLayout *shared_instance;
 
 - (int)runModalWithPrintInfo:(NSPrintInfo *)pInfo
 {
+  int result;
+  
   // store the print Info
   _printInfo = pInfo;
 
   // read the values of the print info
   [self readPrintInfo];
 
-  [NSApp runModalForWindow: self];
+  result = [NSApp runModalForWindow: self];
   [self orderOut: self];
 
-  return _result;
+  return result;
+}
+
+- (void)beginSheetWithPrintInfo:(NSPrintInfo *)printInfo
+		 modalForWindow:(NSWindow *)docWindow
+		       delegate:(id)delegate
+		 didEndSelector:(SEL)didEndSelector
+		    contextInfo:(void *)contextInfo
+{
+  // store the print Info
+  _printInfo = printInfo;
+
+  // read the values of the print info
+  [self readPrintInfo];
+
+  [NSApp beginSheet: self
+	 modalForWindow: docWindow
+	 modalDelegate: delegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
+
+  [self orderOut: self];
 }
 
 //
@@ -138,10 +164,22 @@ NSPageLayout *shared_instance;
 - (void)convertOldFactor:(float *)old
 	       newFactor:(float *)new
 {
+  NSPopUpButton *pop;
+  int sel;
+
   if (old)
     *old = _old;
-  if (new)
-    *new = _new;
+
+  pop = [[self contentView] viewWithTag: NSPLUnitsButton];
+  if (pop != nil)
+    {
+      sel = [pop indexOfSelectedItem];
+      
+      if (new)
+	*new = [self factorForIndex: sel];
+    }
+  else if (new)
+    *new = _old;
 }
 
 - (void)pickedButton:(id)sender
@@ -168,24 +206,27 @@ NSPageLayout *shared_instance;
       // store the values in the print info
       [self writePrintInfo];
 
-      _result = NSOKButton;
+      [NSApp stopModalWithCode: NSOKButton];
     }
   if ([sender tag] == NSPLCancelButton)
     {
-      _result = NSOKButton;
+      [NSApp stopModalWithCode: NSCancelButton];
     }
-
-  [NSApp stopModal];
 }
 
 - (void)pickedOrientation:(id)sender
 {
-    NSLog(@"pickedOrientation %@", sender);
+  NSLog(@"pickedOrientation %@", sender);
 }
 
 - (void)pickedPaperSize:(id)sender
 {
-    NSLog(@"pickedPaperSize %@", sender);
+  NSLog(@"pickedPaperSize %@", sender);
+}
+
+- (void)pickedLayout:(id)sender
+{
+  NSLog(@"pickedLayout %@", sender);
 }
 
 - (void)pickedUnits:(id)sender
@@ -194,8 +235,8 @@ NSPageLayout *shared_instance;
   float new, old;
   
   // At this point the units have been selected but not set.
-  [self convertOldFactor:&old newFactor:&new];
-   
+  [self convertOldFactor: &old newFactor: &new];
+
   field = [[self contentView] viewWithTag: NSPLWidthForm];
   if (field != nil)
     {
@@ -211,7 +252,7 @@ NSPageLayout *shared_instance;
     }
 
   // Set the selected units.
-  _old = _new;
+  _old = new;
 }
 
 //
@@ -224,7 +265,29 @@ NSPageLayout *shared_instance;
 
 - (void)readPrintInfo
 {
-    
+  NSTextField *field;
+  NSSize size = [_printInfo paperSize];
+  float new, old;
+  
+  // Both values should be the same
+  [self convertOldFactor: &old newFactor: &new];
+
+  field = [[self contentView] viewWithTag: NSPLWidthForm];
+  if (field != nil)
+    {
+      // Update field based on the conversion factors.
+      [field setFloatValue:(size.width/old)];
+    }
+
+  field = [[self contentView] viewWithTag: NSPLHeightForm];
+  if (field != nil)
+    {
+      // Update field based on the conversion factors.
+      [field setFloatValue:(size.height/old)];
+    }
+
+  //[_printInfo paperName];
+  //[_printInfo orientation];  
 }
 
 - (void)writePrintInfo
@@ -264,7 +327,6 @@ NSPageLayout *shared_instance;
     {
       NSImageView *imageView;
       NSImage *paper;
-      NSComboBox *combo;
       NSBox *box;
       NSForm *f;
       NSFormCell *fc;
@@ -272,33 +334,58 @@ NSPageLayout *shared_instance;
       NSButtonCell *oc;
       NSButton *okButton;
       NSButton *cancelButton;
-      NSRect pi = {{60,170}, {100,100}};
-      NSRect wf = {{5,120}, {75,30}};
-      NSRect hf = {{90,120}, {75,30}};
-      NSRect pb = {{190,240}, {95,30}};
+      NSRect uv = {{0,50}, {300,250}};
+      NSRect lv = {{0,0}, {300,50}};  
+      NSRect ulv = {{0,0}, {190,250}};
+      NSRect urv = {{190,0}, {110,250}};
+      NSRect pi = {{60,120}, {100,100}};
+      NSRect wf = {{5,70}, {75,30}};
+      NSRect hf = {{90,70}, {75,30}};
+      NSRect pb = {{0,190}, {95,30}};
       NSRect pc = {{5,5}, {85,20}};
-      NSRect lb = {{190,180}, {95,30}};
+      NSRect lb = {{0,130}, {95,30}};
       NSRect lc = {{5,5}, {85,20}};
-      NSRect ub = {{190,120}, {95,30}};
+      NSRect ub = {{0,70}, {95,30}};
       NSRect uc = {{5,5}, {85,20}};
-      NSRect sb = {{190,60}, {95,35}};
-      NSRect mo = {{60,60}, {90,40}};
+      NSRect sb = {{0,10}, {95,35}};
+      NSRect tf = {{5,5}, {75,20}};
+      NSRect mo = {{60,10}, {90,40}};
       NSRect rb = {{126,8}, {72,24}};
       NSRect db = {{217,8}, {72,24}};
       NSView *content;
+      NSView *upper;
+      NSView *lower;
+      NSView *left;
+      NSView *right;
+      NSPopUpButton *pop;
+      NSTextField *text;
 
       [self setTitle: @"Page Layout"];
 
       content = [self contentView];
+      // Spilt up in upper and lower
+      upper = [[NSView alloc] initWithFrame: uv];
+      [content addSubview: upper];
+      RELEASE(upper);
+      lower = [[NSView alloc] initWithFrame: lv];
+      [content addSubview: lower];
+      RELEASE(lower);
+      // Solit upper in left and right
+      left = [[NSView alloc] initWithFrame: ulv];
+      [upper addSubview: left];
+      RELEASE(left);
+      right = [[NSView alloc] initWithFrame: urv];
+      [upper addSubview: right];
+      RELEASE(right);
 
-      // image of the paper size
+      // FIXME: image of the paper size
       paper = nil;
       imageView = [[NSImageView alloc] initWithFrame: pi]; 
       [imageView setImage: paper];
       [imageView setImageScaling: NSScaleNone];
       [imageView setEditable: NO];
       [imageView setTag: NSPLImageButton];
-      [content addSubview: imageView];
+      [left addSubview: imageView];
       RELEASE(imageView);
 
       // Width
@@ -314,7 +401,7 @@ NSPageLayout *shared_instance;
       [f sizeToFit];
       [f setEntryWidth: 80.0];
       [f setTag: NSPLWidthForm];
-      [content addSubview: f];
+      [left addSubview: f];
       RELEASE(f);
 
       // Height
@@ -330,7 +417,7 @@ NSPageLayout *shared_instance;
       [f sizeToFit];
       [f setEntryWidth: 80.0];
       [f setTag: NSPLHeightForm];
-      [content addSubview: f];
+      [left addSubview: f];
       RELEASE(f);
 
       // Paper Size
@@ -340,29 +427,17 @@ NSPageLayout *shared_instance;
       [box setBorderType: NSGrooveBorder];
       [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
 
-      combo = [[NSComboBox alloc] initWithFrame: pc];
-      [combo setEditable: NO];
-      [combo setSelectable: NO];
-      [combo setBordered: NO];
-      [combo setBezeled: YES];
-      [combo setDrawsBackground: NO];
-      [combo setAlignment: NSLeftTextAlignment];
-      [combo addItemWithObjectValue: @"A2"];
-      [combo addItemWithObjectValue: @"A3"];
-      [combo addItemWithObjectValue: @"A4"];
-      [combo addItemWithObjectValue: @"A5"];
-      [combo addItemWithObjectValue: @"A6"];
-      [combo setNumberOfVisibleItems: 5];
-      [combo selectItemAtIndex: 0];
-      [combo setObjectValue:[combo objectValueOfSelectedItem]];
-      [combo setAction: @selector(pickedPaperSize:)];
-      [combo setTarget: self];
-      [combo setTag: NSPLPaperNameButton];
-      [box addSubview: combo];
-      RELEASE(combo);
+      pop = [[NSPopUpButton alloc] initWithFrame: pc pullsDown: NO];
+      [pop setAction: @selector(pickedPaperSize:)];
+      [pop setTarget: self];
+      [pop addItemsWithTitles: [self _paperSizes]];
+      [pop selectItemAtIndex: 0];
+      [pop setTag: NSPLPaperNameButton];
+      [box addSubview: pop];
+      RELEASE(pop);
       [box sizeToFit];
 
-      [content addSubview: box];
+      [right addSubview: box];
       RELEASE(box);
 
       // Layout
@@ -372,22 +447,17 @@ NSPageLayout *shared_instance;
       [box setBorderType: NSGrooveBorder];
       [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
 
-      combo = [[NSComboBox alloc] initWithFrame: lc];
-      [combo setEditable: NO];
-      [combo setSelectable: NO];
-      [combo setBordered: NO];
-      [combo setBezeled: YES];
-      [combo setDrawsBackground: NO];
-      [combo setAlignment: NSLeftTextAlignment];
-      [combo addItemWithObjectValue: @"1 Up"];
-      [combo setNumberOfVisibleItems: 5];
-      [combo selectItemAtIndex: 0];
-      [combo setObjectValue:[combo objectValueOfSelectedItem]];
-      [box addSubview: combo];
-      RELEASE(combo);
+      pop = [[NSPopUpButton alloc] initWithFrame: lc pullsDown: NO];
+      [pop setAction: @selector(pickedLayout:)];
+      [pop setTarget: self];
+      [pop addItemsWithTitles: [self _layouts]];
+      [pop selectItemAtIndex: 0];
+      //[pop setTag: NSPLPaperNameButton];
+      [box addSubview: pop];
+      RELEASE(pop);
       [box sizeToFit];
 
-      [content addSubview: box];
+      [right addSubview: box];
       RELEASE(box);
 
       // Units
@@ -397,39 +467,34 @@ NSPageLayout *shared_instance;
       [box setBorderType: NSGrooveBorder];
       [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
 
-      combo = [[NSComboBox alloc] initWithFrame: uc];
-      [combo setEditable: NO];
-      [combo setSelectable: NO];
-      [combo setBordered: NO];
-      [combo setBezeled: YES];
-      [combo setDrawsBackground: NO];
-      [combo setAlignment: NSLeftTextAlignment];
-      [combo addItemWithObjectValue: @"Points"];
-      [combo addItemWithObjectValue: @"Millimeter"];
-      [combo addItemWithObjectValue: @"Centimeter"];
-      [combo addItemWithObjectValue: @"Inches"];
-      [combo setNumberOfVisibleItems: 5];
-      [combo selectItemAtIndex: 2];
-      [combo setObjectValue:[combo objectValueOfSelectedItem]];
-      [combo setAction: @selector(pickedUnits:)];
-      [combo setTarget: self];
-      [combo setTag: NSPLUnitsButton];
-      [box addSubview: combo];
-      RELEASE(combo);
+      pop = [[NSPopUpButton alloc] initWithFrame: uc pullsDown: NO];
+      [pop setAction: @selector(pickedUnits:)];
+      [pop setTarget: self];
+      [pop addItemsWithTitles: [self _units]];
+      [pop selectItemAtIndex: 0];
+      [pop setTag: NSPLUnitsButton];
+      [box addSubview: pop];
+      RELEASE(pop);
+
       [box sizeToFit];
 
-      [content addSubview: box];
+      [right addSubview: box];
       RELEASE(box);
 
-      // Sacle
+      // Scale
       box = [[NSBox alloc] initWithFrame: sb];
       [box setTitle: @"Scale"];
       [box setTitlePosition: NSAtTop];
       [box setBorderType: NSGrooveBorder];
       [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
 
+      text = [[NSTextField alloc] initWithFrame: tf];
+      [box addSubview: text];
+      RELEASE(text);
 
-      [content addSubview: box];
+      [box sizeToFit];
+
+      [right addSubview: box];
       RELEASE(box);
 
       // orientation
@@ -457,7 +522,7 @@ NSPageLayout *shared_instance;
       [o setTag: NSPLOrientationMatrix];
       [o setAction: @selector(pickedOrientation:)];
       [o setTarget: self];
-      [content addSubview: o];
+      [left addSubview: o];
       RELEASE(o);
 
       // cancle button
@@ -466,7 +531,7 @@ NSPageLayout *shared_instance;
       [cancelButton setAction: @selector(pickedButton:)];
       [cancelButton setTarget: self];
       [cancelButton setTag: NSPLCancelButton];
-      [content addSubview: cancelButton];
+      [lower addSubview: cancelButton];
       RELEASE(cancelButton);
 
       // OK button
@@ -475,7 +540,7 @@ NSPageLayout *shared_instance;
       [okButton setAction: @selector(pickedButton:)];
       [okButton setTarget: self];
       [okButton setTag: NSPLOKButton];
-      [content addSubview: okButton];
+      [lower addSubview: okButton];
       // make it the default button
       [self setDefaultButtonCell: [okButton cell]];
       RELEASE(okButton);
@@ -484,5 +549,33 @@ NSPageLayout *shared_instance;
   return self;
 }
 
-@end
+- (NSArray*) _units
+{
+  return [NSArray arrayWithObjects: @"Points", @"Millimeter", 
+		  @"Centimeter", @"Inches", nil]; 
+}
 
+- (float) factorForIndex: (int)sel
+{
+  switch (sel)
+    {
+      default:
+      case 0: return 1.0;
+      case 1: return 25.4/72;
+      case 2: return 2.54/72;
+      case 3: return 1.0/72;	    
+    }    
+}
+
+- (NSArray*) _paperSizes
+{
+  return [NSArray arrayWithObjects: @"A2", @"A3", @"A4", 
+		  @"A5", @"A6", nil]; 
+}
+
+- (NSArray*) _layouts
+{
+  return [NSArray arrayWithObjects: @"1 Up", nil]; 
+}
+
+@end
