@@ -1,3 +1,7 @@
+2001-11-20  Laurent Julliard <laurent@julliard-online.org>
+
+	* Source/NSComboBoxCell.m (-setNumberOfVisibleItems): max number of items tested on wrong variable. Corrected
+
 2001-11-19  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.h: Add usedFonts ivar.
