@@ -1,3 +1,13 @@
+2004-02-10 21:48  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSFont.h: Add cachedScreenFont ivar.
+	* Source/NSFont.m: Add GSFontMapKey class and use it to find fonts
+	in globalFontMap. Replace newNameWithMatrix function with keyForFont.
+	Update callers.
+      	(-initWithName:matrix:fix:screenFont:role:): Initialize
+	cachedScreenFont.
+	(-screenFont): Use cachedScreenFont.
+
 2004-02-09 03:10  Alexander Malmberg <alexander@malmberg.org>
 
 	* configure.ac: Check for X. Add --enable-ungif/--disable-ungif and

@@ -49,28 +49,80 @@
 	 screenFont: (BOOL)screenFont
 	       role: (int)role;
 + (NSFont*) _fontWithName: (NSString*)aFontName
-		    size: (float)fontSize
-		    role: (int)role;
+		     size: (float)fontSize
+		     role: (int)role;
 @end
 
 static int currentVersion = 3;
 
-/*
- * Just to ensure that we use a standard name in the cache.
- */
-static NSString*
-newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
-		  BOOL screenFont, int role)
-{
-  NSString	*nameWithMatrix;
 
-  nameWithMatrix = [[NSString alloc] initWithFormat:
-    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %c %i", name,
-    matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
-    (fix == NO) ? 'N' : 'Y',
-    screenFont ? 'S' : 'P',
-    role];
-  return nameWithMatrix;
+/*
+Instances of GSFontMapKey are used to find cached font instances in
+globalFontMap.
+*/
+@interface GSFontMapKey : NSObject
+{
+@public
+  NSString *name;
+  BOOL screenFont;
+  int role;
+  int fix;
+  int matrix[6];
+
+  unsigned int hash;
+}
+@end
+@implementation GSFontMapKey
+-(unsigned int) hash
+{
+  return hash;
+}
+-(BOOL) isEqual: (id)other
+{
+  GSFontMapKey *o;
+  if (![other isKindOfClass: isa])
+    return NO;
+  o = other;
+  if (hash != o->hash || screenFont != o->screenFont || role != o->role
+      || fix != o->fix)
+    return NO;
+  if (![name isEqualToString: o->name])
+    return NO;
+  if (matrix[0] != o->matrix[0]
+      || matrix[1] != o->matrix[1]
+      || matrix[2] != o->matrix[2]
+      || matrix[3] != o->matrix[3]
+      || matrix[4] != o->matrix[4]
+      || matrix[5] != o->matrix[5])
+    return NO;
+  return YES;
+}
+-(void) dealloc
+{
+  DESTROY(name);
+  [super dealloc];
+}
+@end
+
+static GSFontMapKey *
+keyForFont(NSString *name, const float *matrix, BOOL fix,
+	   BOOL screenFont, int role)
+{
+  GSFontMapKey *d;
+  d=[GSFontMapKey alloc];
+  d->name = [name copy];
+  d->screenFont = screenFont;
+  d->role = role;
+  d->fix = fix;
+  d->matrix[0] = matrix[0] * 1000;
+  d->matrix[1] = matrix[1] * 1000;
+  d->matrix[2] = matrix[2] * 1000;
+  d->matrix[3] = matrix[3] * 1000;
+  d->matrix[4] = matrix[4] * 1000;
+  d->matrix[5] = matrix[5] * 1000;
+  d->hash = [d->name hash] + screenFont + role * 4 + fix * 2
+	    + d->matrix[0] + d->matrix[1] + d->matrix[2] + d->matrix[3];
+  return d;
 }
 
 /**
@@ -632,16 +684,16 @@ static void setNSFont(NSString *key, NSFont *font)
 	 screenFont: (BOOL)screen
 	       role: (int)aRole
 {
-  NSString	*nameWithMatrix;
+  GSFontMapKey	*key;
   NSFont	*font;
 
   /* Should never be called on an initialised font! */
   NSAssert(fontName == nil, NSInternalInconsistencyException);
 
   /* Check whether the font is cached */
-  nameWithMatrix = newNameWithMatrix(name, fontMatrix, explicitlySet,
-				     screen, aRole);
-  font = (id)NSMapGet(globalFontMap, (void*)nameWithMatrix);
+  key = keyForFont(name, fontMatrix, explicitlySet,
+		   screen, aRole);
+  font = (id)NSMapGet(globalFontMap, (void *)key);
   if (font == nil)
     {
       if (self == placeHolder)
@@ -661,16 +713,18 @@ static void setNSFont(NSString *key, NSFont *font)
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
 						 matrix: fontMatrix
 					     screenFont: screen]);
+      if (!screenFont)
+	cachedScreenFont = placeHolder;
       if (fontInfo == nil)
 	{
 	  DESTROY(fontName);
-	  DESTROY(nameWithMatrix);
+	  DESTROY(key);
 	  RELEASE(self);
 	  return nil;
 	}
       
       /* Cache the font for later use */
-      NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)self);
+      NSMapInsert(globalFontMap, (void *)key, (void *)self);
     }
   else
     {
@@ -680,7 +734,7 @@ static void setNSFont(NSString *key, NSFont *font)
 	}
       self = RETAIN(font);
     }
-  RELEASE(nameWithMatrix);
+  RELEASE(key);
 
   return self;
 }
@@ -689,16 +743,18 @@ static void setNSFont(NSString *key, NSFont *font)
 {
   if (fontName != nil)
     {
-      NSString	*nameWithMatrix;
+      GSFontMapKey *key;
 
-      nameWithMatrix = newNameWithMatrix(fontName, matrix,
-					 matrixExplicitlySet, screenFont,
-					 role);
-      NSMapRemove(globalFontMap, (void*)nameWithMatrix);
-      RELEASE(nameWithMatrix);
+      key = keyForFont(fontName, matrix,
+		       matrixExplicitlySet, screenFont,
+		       role);
+      NSMapRemove(globalFontMap, (void *)key);
+      RELEASE(key);
       RELEASE(fontName);
     }
   TEST_RELEASE(fontInfo);
+  if (cachedScreenFont != placeHolder)
+    DESTROY(cachedScreenFont);
   [super dealloc];
 }
 
@@ -707,8 +763,12 @@ static void setNSFont(NSString *key, NSFont *font)
   NSString	*nameWithMatrix;
   NSString	*description;
 
-  nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet,
-				     screenFont, role);
+  nameWithMatrix = [[NSString alloc] initWithFormat:
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %c %i", fontName,
+    matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
+    (matrixExplicitlySet == NO) ? 'N' : 'Y',
+    screenFont ? 'S' : 'P',
+    role];
   description = [[super description] stringByAppendingFormat: @" %@",
     nameWithMatrix];
   RELEASE(nameWithMatrix);
@@ -737,7 +797,7 @@ static void setNSFont(NSString *key, NSFont *font)
   int i, sum;
   sum = 0;
   for (i = 0; i < 6; i++)
-    sum += matrix[i]* ((i+1)* 17);
+    sum += matrix[i] * ((i+1) * 17);
   return ([fontName hash] + sum);
 }
 
@@ -811,21 +871,28 @@ static BOOL flip_hack;
 {
   if (!screenFont)
     return self;
-  return [placeHolder initWithName: fontName
+  return AUTORELEASE([placeHolder initWithName: fontName
 			    matrix: matrix
 			       fix: matrixExplicitlySet
 			screenFont: NO
-			      role: role];
+			      role: role]);
 }
 - (NSFont*) screenFont
 {
   if (screenFont)
     return self;
-  return [placeHolder initWithName: fontName
+  /*
+  If we haven't already created the real screen font instance, do so now.
+  Note that if the font has no corresponding screen font, cachedScreenFont
+  will be set to nil.
+  */
+  if (cachedScreenFont == placeHolder)
+    cachedScreenFont = [placeHolder initWithName: fontName
 			    matrix: matrix
 			       fix: matrixExplicitlySet
 			screenFont: YES
 			      role: role];
+  return AUTORELEASE(RETAIN(cachedScreenFont));
 }
 
 - (float) ascender		{ return [fontInfo ascender]; }

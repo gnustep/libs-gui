@@ -77,6 +77,13 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
   stored here.
   */
   int role;
+
+  /*
+  For printer fonts, this is a cache of the corresponding screen font.
+  It is initialized to placeHolder, and is created for real on demand in
+  -screenFont (and retained). For screen fonts, it's nil.
+  */
+  NSFont *cachedScreenFont;
 }
 
 //
