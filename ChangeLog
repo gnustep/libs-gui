@@ -1,3 +1,9 @@
+Tue Sep 12 22:53:22 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]):
+	Updated, fixed code for the recent changes in NSMenu, NSMenuItem.
+	([NSMenu -initWithModelUnarchiver:]): Idem.
+	
 2000-09-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSText.m ([NSText -moveLeft:sender]): deselect text that
