@@ -1,4 +1,11 @@
-2000-10-0(  Fred Kiefer  <FredKiefer@gmx.de>
+2000-10-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Source/GSTextStorage.m: ([-setAttributes:range:])
+        Fixed obscure bug - use ASSIGNCOPY rather than ASSIGN to prevent
+        mutable dictionaries being placed in attributed string.
+
+=======
+2000-10-09  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSTextStorage.m: 
 	_setup() corrected a problem from the last change

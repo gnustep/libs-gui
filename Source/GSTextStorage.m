@@ -143,6 +143,12 @@ static void	(*remImp)() = 0;
 #define	OBJECTAT(I)	((*oatImp)(infoArray, oatSel, (I)))
 #define	REMOVEAT(I)	((*remImp)(infoArray, remSel, (I)))
 
+static inline NSDictionary *attrDict(GSTextInfo* info)
+{
+  return info->attrs;
+}
+
+
 static void _setup()
 {
   if (infCls == 0)
@@ -228,7 +234,7 @@ _attributesAtIndexEffectiveRange(
 	      aRange->location = found->loc;
 	      aRange->length = tmpLength - found->loc;
 	    }
-	  return found->attrs;
+	  return attrDict(found);
 	}
       [NSException raise: NSRangeException
 		  format: @"index is out of range in function "
@@ -271,7 +277,7 @@ _attributesAtIndexEffectiveRange(
 		{
 		  *foundIndex = cnt;
 		}
-	      return found->attrs;
+	      return attrDict(found);
 	    }
 	  else
 	    {
@@ -399,17 +405,23 @@ _attributesAtIndexEffectiveRange(
 - (void) setAttributes: (NSDictionary*)attributes
 		 range: (NSRange)range
 {
-  unsigned	tmpLength, arrayIndex, arraySize, location;
+  unsigned	tmpLength, arrayIndex, arraySize;
   NSRange	effectiveRange;
   unsigned	afterRangeLoc, beginRangeLoc;
   NSDictionary	*attrs;
   NSZone	*z = [self zone];
   GSTextInfo	*info;
 
+  {
+    NSString	*s = [self description];
+
+    if ([s length] > 300)
+      s = [s substringToIndex: 300];
+    NSLog(@"start -- %@", s);
+  }
   if (range.length == 0)
     {
       NSWarnMLog(@"Attempt to set attribute for zero-length range", 0);
-      return;
     }
   if (attributes == nil)
     {
@@ -468,14 +480,10 @@ SANITY();
     }
 
   info = OBJECTAT(arrayIndex);
-  location = info->loc;
-  if (location >= beginRangeLoc)
+  if (info->loc >= beginRangeLoc)
     {
-      if (location > beginRangeLoc)
-	{
-	  info->loc = beginRangeLoc;
-	}
-      ASSIGN(info->attrs, attributes);
+      info->loc = beginRangeLoc;
+      ASSIGNCOPY(info->attrs, attributes);
     }
   else
     {
@@ -485,10 +493,18 @@ SANITY();
       RELEASE(info);
     }
   
+SANITY();
   [self edited: NSTextStorageEditedAttributes
 	 range: range
 changeInLength: 0];
-SANITY();
+
+  {
+    NSString	*s = [self description];
+
+    if ([s length] > 300)
+      s = [s substringToIndex: 300];
+    NSLog(@"attrs -- %@", s);
+  }
 }
 
 - (void) replaceCharactersInRange: (NSRange)range
@@ -516,11 +532,7 @@ SANITY();
        * simply appends the new string and attributes are inherited.
        */
       [textChars appendString: aString];
-SANITY();
-      [self edited: NSTextStorageEditedCharacters
-	    range: range
-	    changeInLength: [aString length] - range.length];
-      return;
+      goto finish;
     }
 
   arraySize = (*cntImp)(infoArray, cntSel);
@@ -531,11 +543,7 @@ SANITY();
        * then the replacement characters will get them too.
        */
       [textChars replaceCharactersInRange: range withString: aString];
-SANITY();
-      [self edited: NSTextStorageEditedCharacters
-	    range: range
-	    changeInLength: [aString length] - range.length];
-      return;
+      goto finish;
     }
 
   /*
@@ -615,12 +623,20 @@ SANITY();
       arrayIndex++;
     }
   [textChars replaceCharactersInRange: range withString: aString];
-SANITY();
 
+finish:
+SANITY();
   [self edited: NSTextStorageEditedCharacters
          range: range
 changeInLength: [aString length] - range.length];
-SANITY();
+
+  {
+    NSString	*s = [self description];
+
+    if ([s length] > 300)
+      s = [s substringToIndex: 300];
+    NSLog(@"chars -- %@", s);
+  }
 }
 
 - (void) dealloc
