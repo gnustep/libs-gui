@@ -191,6 +191,97 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 @end
 
+
+/**
+ * <p>The NSWorkspace class gathers together a large number of capabilities
+ * needed for workspace management.
+ * </p>
+ * <p>The make_services tool examines all applications (anything with a
+ * .app, .debug, or .profile suffix) in the system, local, and user Apps
+ * directories, and caches information about the services each app
+ * provides (extracted from the Info-gnustep.plist file in each application).
+ * </p>
+ * <p>In addition to the cache of services information, it builds a cache of
+ * information about all known applications (including information about file
+ * types they handle).
+ * </p>
+ * <p>NSWorkspace reads the cache and uses it to determine which application
+ * to use to open a document and which icon to use to represent that document.
+ * </p>
+ * <p>The NSWorkspace API has been extended to provide methods for
+ * finding/setting the preferred icon/application for a particular file
+ * type. NSWorkspace will use the 'best' icon/application available.
+ * </p>
+ * <p>To determine the executable to launch, if there was an
+ * Info-gnustep.plist/Info.plist in the app wrapper and it had an
+ * NSExecutable field - it uses that name. Otherwise, it tries to use
+ * the name of the app - eg. foo.app/foo <br />
+ * The executable is launched by NSTask, which handles the addition
+ * of machine/os/library path components as necessary.
+ * </p>
+ * <p>To determine the icon for a file, it uses the value from the
+ * cache of icons for the file extension, or use an 'unknown' icon.
+ * </p>
+ * <p>To determine the icon for a folder, if the folder has a '.app',
+ * '.debug' or '.profile' extension - the Info-gnustep.plist file
+ * is examined for an 'NSIcon' value and NSWorkspace tries to use that.
+ * If there is no value specified - it tries foo.app/foo.tiff' or
+ * 'foo.app/.dir.tiff'
+ * </p>
+ * <p>If the folder was not an application wrapper, it just tries
+ * the .dir.tiff file.
+ * </p>
+ * <p>If no icon was available, it uses a default folder icon or a
+ * special icon for the root directory.
+ * </p>
+ * <p>The information about what file types an app can handle needs to be in
+ * the MacOS-X format in the Info-gnustep.plist/Info.plist for the app -
+ * see http://developer.apple.com/techpubs/macosxserver/System/Documentation/Developer/YellowBox/ReleaseNotes/InfoPlist.html.
+ * </p>
+ * <p>In the NSTypes fields, NSWorkspace uses NSIcon (the icon to use
+ * for the type) NSUnixExtensions (a list of file extensions
+ * corresponding to the type) and NSRole (what the app can do with
+ * documents of this type). In the AppList cache, make_services
+ * generates a dictionary, keyed by file extension, whose values are
+ * the dictionaries containing the NSTypes dictionaries of each
+ * of the apps that handle the extension.  The NSWorkspace class
+ * makes use of this cache at runtime.
+ * </p>
+ * <p>If the Info-gnustep.plist of an application says that it
+ * can open files with a particular extension, then when NSWorkspace
+ * is asked to open such a file it will attempt to send an
+ * -application:openFile: message to the application (which must be
+ * handled by the applications delegate).  If the application is not
+ * running, NSWorkspace will instead attempt to launch the application
+ * passing the filename to open after a '-GSOpenFile' flag
+ * int the command line arguments.
+ * </p>
+ * <p>This command line argument mechanism provides a way for non-gnustep
+ * applications to be used to open files simply by provideing a wrapper
+ * for them containing the appropriate Info-gnustep.plist.<br />
+ * For instance - you could set up xv.app to contain a shellscript 'xv'
+ * that would start the real xv binary passing it a file to open if the
+ * '-GSOpenFile' argument was given. The Info-gnustep.plist file could look
+ * like this:
+ * </p>
+ * <example>
+ * 
+ * {
+ *   NSExecutable = "xv";
+ *   NSIcon = "xv.tiff";
+ *   NSTypes = (
+ *     {
+ *       NSIcon = "tiff.tiff";
+ *       NSUnixExtensions = ( tiff, tif );
+ *     },
+ *     {
+ *       NSIcon = "xbm.tiff";
+ *       NSUnixExtensions = ( xbm );
+ *     }
+ *   );
+ * }
+ * </example>
+ */
 @implementation	NSWorkspace
 
 static NSWorkspace		*sharedWorkspace = nil;
