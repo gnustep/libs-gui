@@ -135,6 +135,8 @@ return customView->realObject;
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeString:className withName:@"className"];
+  [archiver encodeRect:[self frame] withName:@"frame"];
+
   if (realObject)
     [archiver encodeObject:realObject withName:@"realObject"];
   if (extension)

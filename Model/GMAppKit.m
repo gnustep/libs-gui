@@ -114,8 +114,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   [super encodeWithModelArchiver:archiver];
 
-  [archiver encodeSize:[self contentViewMargins]
-	      withName:@"contentViewMargins"];
+  [archiver encodeSize:[self contentViewMargins] withName:@"contentViewMargins"];
   [archiver encodeInt:[self borderType] withName:@"borderType"];
   [archiver encodeInt:[self titlePosition] withName:@"titlePosition"];
   [archiver encodeString:[self title] withName:@"title"];
@@ -172,7 +171,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   self = [super initWithModelUnarchiver:unarchiver];
 
-  theCell = [self cell];
   [self setState:[unarchiver decodeIntWithName:@"state"]];
 
   delay = [unarchiver decodeFloatWithName:@"delay"];
@@ -187,6 +185,9 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
   [self setTransparent:[unarchiver decodeBOOLWithName:@"isTransparent"]];
   [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
+
+  theCell = [self cell];
+
   [theCell setHighlightsBy:[unarchiver decodeIntWithName:@"highlightsBy"]];
   [theCell setShowsStateBy:[unarchiver decodeIntWithName:@"showsStateBy"]];
 
@@ -778,6 +779,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeBOOL:[self pullsDown] withName:@"pullsDown"];
+  
 #if 0
   /* OUCH! This code crashes the translator; probably we interfere somehow with
      the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
@@ -785,7 +787,23 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeArray:[self itemArray] withName:@"itemArray"];
   [archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
   [super encodeWithModelArchiver:archiver];
+#else // need frame for workarounds to know where to place the popup
+  [archiver encodeRect:[self frame] withName:@"frame"];
 #endif
+}
+
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  NSRect rect = [unarchiver decodeRectWithName:@"frame"];
+  NSPopUpButton *popup = \
+    [[[NSPopUpButton allocWithZone:[unarchiver objectZone]]
+                    initWithFrame:rect
+                        pullsDown:[unarchiver decodeBOOLWithName:@"pullsDown"]]
+    autorelease];
+  if (!popup)
+    NSLog (@"cannot create the requested view!");
+
+  return popup;
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -872,7 +890,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   self = [super initWithModelUnarchiver:unarchiver];
 
-  theCell = [self cell];
   [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
   [self setErrorAction:[unarchiver decodeSelectorWithName:@"errorAction"]];
   [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
@@ -886,6 +903,9 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setNextText:[unarchiver decodeObjectWithName:@"nextText"]];
   [self setPreviousText:[unarchiver decodeObjectWithName:@"previousText"]];
   [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
+
+  theCell = [self cell];
+
   [theCell setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
   [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
   [theCell setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
@@ -968,7 +988,12 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [archiver encodeRect:[[self contentView]frame] withName:@"contentFrame"];
+  NSPoint wnOrigin = [self frame].origin;
+  NSRect ctFrame = [[self contentView] frame];
+
+  ctFrame.origin = wnOrigin;
+
+  [archiver encodeRect:ctFrame withName:@"contentFrame"];
   [archiver encodeSize:[self maxSize] withName:@"maxSize"];
   [archiver encodeSize:[self minSize] withName:@"minSize"];
   [archiver encodeString:[self frameAutosaveName]
@@ -994,12 +1019,12 @@ void __dummy_GMAppKit_functionForLinking() {}
   unsigned backingType = [unarchiver decodeUnsignedIntWithName:@"backingType"];
   unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
   NSRect ctRect = [unarchiver decodeRectWithName:@"contentFrame"];
+
   NSWindow* win = [[[NSWindow allocWithZone:[unarchiver objectZone]]
 			initWithContentRect:ctRect
 			styleMask:styleMask backing:backingType defer:YES]
 			autorelease];
-
-//  printf("content: %g, %g -- frame %g, %g\n", ctRect.size.width, ctRect.size.height, [win frame].size.width, [win frame].size.height);
+  //  printf("content: %g, %g -- frame %g, %g\n", ctRect.size.width, ctRect.size.height, [win frame].size.width, [win frame].size.height);
 
   return win;
 }
@@ -1044,7 +1069,12 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-    [archiver encodeRect:[self frame] withName:@"frame"];
+    NSPoint wnOrigin = [self frame].origin;
+    NSRect ctFrame = [[self contentView] frame];
+
+    ctFrame.origin = wnOrigin;
+
+    [archiver encodeRect:ctFrame withName:@"contentFrame"];
     [archiver encodeSize:[self maxSize] withName:@"maxSize"];
     [archiver encodeSize:[self minSize] withName:@"minSize"];
     [archiver encodeString:[self frameAutosaveName]
@@ -1075,9 +1105,9 @@ void __dummy_GMAppKit_functionForLinking() {}
     unsigned backingType = [unarchiver decodeUnsignedIntWithName:
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
-    NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
+    NSRect ctRect = [unarchiver decodeRectWithName:@"contentFrame"];
     NSPanel* panel = [[[NSPanel allocWithZone:[unarchiver objectZone]]
-		     initWithContentRect:aRect
+		     initWithContentRect:ctRect
 		     styleMask:styleMask backing:backingType defer:YES]
 		    autorelease];
 
@@ -1380,6 +1410,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   return self;
 }
+
 @end
 
 @implementation NSTextFieldCell (GMArchiverMethods)
