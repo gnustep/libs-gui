@@ -72,12 +72,13 @@ typedef	struct {
 + (NSAffineTransform*) matrixFrom: (const float[6])matrix;
 - (void) translateToPoint: (NSPoint)point;
 - (void) rotateByAngle: (float)angle;
-- (void) scaleBy: (float)sx : (float)sy;
 - (void) scaleTo: (float)sx : (float)sy;
 - (void) makeIdentityMatrix;
 - (float) rotationAngle;
 - (void) setFrameOrigin: (NSPoint)point;
 - (void) setFrameRotation: (float)angle;
+
+/* Old Apple name for -invert  */
 - (void) inverse;
 
 - (BOOL) isRotated;
