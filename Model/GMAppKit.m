@@ -587,9 +587,9 @@ void __dummy_GMAppKit_functionForLinking() {}
     [archiver encodeFloat:[self brightnessComponent] withName:@"brightness"];
   }
   else if ([colorSpaceName isEqual:@"NSNamedColorSpace"]) {
-    [unarchiver encodeString:[self catalogNameComponent]
+    [archiver encodeString:[self catalogNameComponent]
 		withName:@"catalogName"];
-    [unarchiver encodeString:[self colorNameComponent] withName:@"colorName"];
+    [archiver encodeString:[self colorNameComponent] withName:@"colorName"];
   }
 }
 
@@ -640,8 +640,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     return [self colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
   }
   else if ([colorSpaceName isEqual:@"NSNamedColorSpace"]) {
-    NSString *catalog = [unarchiver decodeObjecWithName: @"catalogName"];
-    NSString *colornm = [unarchiver decodeObjecWithName: @"colorName"];
+    NSString *catalog = [unarchiver decodeStringWithName: @"catalogName"];
+    NSString *colornm = [unarchiver decodeStringWithName: @"colorName"];
     return [self colorWithCatalogName: catalog colorName: colornm];
   }
   return nil;
