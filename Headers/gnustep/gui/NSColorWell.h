@@ -37,9 +37,10 @@
 
 {
   // Attributes
-  NSColor *the_color;
-  BOOL is_active;
-  BOOL is_bordered;
+  NSColor *_the_color;
+  BOOL _is_active;
+  BOOL _is_bordered;
+  NSRect _wellRect;
 }
 
 //
