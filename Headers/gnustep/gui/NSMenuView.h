@@ -115,8 +115,4 @@
 - (BOOL)trackWithEvent:(NSEvent *)event;
 @end
 
-@interface NSMenuView (GNUstepExtension)
-- (void) _setCellSize: (NSSize)aSize;
-@end
-
 #endif
