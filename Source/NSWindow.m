@@ -1489,8 +1489,13 @@ static NSMapTable* windowmaps = NULL;
   _rFlags.needs_display = NO;
   // FIXME: Is the first responder processing needed here?
   if ((!_firstResponder) || (_firstResponder == self))
-    if (_initialFirstResponder)
-      [self makeFirstResponder: _initialFirstResponder];
+    {
+      if (_initialFirstResponder)
+	{
+	  [self makeFirstResponder: _initialFirstResponder];
+	}
+    }
+  
   /*
    * inform first responder of it's status so it can set the focus to itself
    */
@@ -1668,12 +1673,16 @@ static NSMapTable* windowmaps = NULL;
 - (BOOL) canStoreColor
 {
   if (_depthLimit > 1)
-    return YES;
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
-- (NSScreen*) deepestScreen
+- (NSScreen *) deepestScreen
 {
   // FIXME: We must check the screens the window is on
   return [NSScreen deepestScreen];
@@ -1689,7 +1698,7 @@ static NSMapTable* windowmaps = NULL;
   return _f.dynamic_depth_limit;
 }
 
-- (NSScreen*) screen
+- (NSScreen *) screen
 {
   // FIXME: Works only if there is only one screen
   return [NSScreen mainScreen];
@@ -1698,7 +1707,9 @@ static NSMapTable* windowmaps = NULL;
 - (void) setDepthLimit: (NSWindowDepth)limit
 {
   if (limit == 0)
-    limit = [[self class] defaultDepthLimit];
+    {
+      limit = [isa defaultDepthLimit];
+    }
 
   _depthLimit = limit;
 }
@@ -3142,7 +3153,7 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
-- (NSString*) stringWithSavedFrame
+- (NSString *) stringWithSavedFrame
 {
   NSRect	fRect;
   NSRect	sRect;
@@ -3166,7 +3177,7 @@ resetCursorRectsForView(NSView *theView)
 /*
  * Printing and postscript
  */
-- (NSData*) dataWithEPSInsideRect: (NSRect)rect
+- (NSData *) dataWithEPSInsideRect: (NSRect)rect
 {
   return [_contentView dataWithEPSInsideRect: 
 			   [_contentView convertRect: rect fromView: nil]];
@@ -3208,12 +3219,12 @@ resetCursorRectsForView(NSView *theView)
  * Default botton
  */
 
-- (NSButtonCell*) defaultButtonCell
+- (NSButtonCell *) defaultButtonCell
 {
   return _defaultButtonCell;
 }
 
-- (void) setDefaultButtonCell: (NSButtonCell*)aButtonCell
+- (void) setDefaultButtonCell: (NSButtonCell *)aButtonCell
 {
   ASSIGN(_defaultButtonCell, aButtonCell);
   _f.default_button_cell_key_disabled = NO;
@@ -3414,10 +3425,10 @@ resetCursorRectsForView(NSView *theView)
   [super setInterfaceStyle: aStyle];
 }
 
-- (void*) windowHandle
+- (void *) windowHandle
 {
   // FIXME: Should only be defined on MS Windows
-  return (void*) 0;
+  return (void *) 0;
 }
 
 @end
