@@ -47,7 +47,7 @@
 #define TX matrix.tX
 #define TY matrix.tY
 
-/* A Postscript matrix look like this:
+/* A Postscript matrix looks like this:
 
   /  a  b  0 \
   |  c  d  0 |
@@ -88,9 +88,9 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Appends one transform matrix to another.  It does this by performing a
+ * Appends one transform matrix to another.  This is done by performing a
  * matrix multiplication of the receiver with aTransform.   The resulting
- * matrix then replaces the receiver.
+ * matrix then replaces the receiver's matrix.
  */
 - (void) appendTransform: (NSAffineTransform*)aTransform
 {
@@ -125,7 +125,8 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Initialize the transformation matrix.
+ * Initialize the transformation matrix instance to the identity matrix.
+ * The identity matrix transforms a point to itself.
  */ 
 - (id) init
 {
@@ -134,7 +135,8 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Initialize the receiever's instance with the instance represented by aTransform. 
+ * Initialize the receiever's instance with the instance represented 
+ * by aTransform. 
  */
 - (id) initWithTransform: (NSAffineTransform*)aTransform
 {
@@ -143,7 +145,8 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Calculates the inverse of the receiver's matrix and replaces the receiever's matrix with it.
+ * Calculates the inverse of the receiver's matrix and replaces the 
+ * receiever's matrix with it.
  */
 - (void) invert
 {
@@ -192,7 +195,8 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Rotates the transformation matrix of the receiver counter-clockwise 
+ * Applies the rotation specified by angle in degrees.   Points trasnformed
+ * with the transformation matrix of the receiver are rotated counter-clockwise 
  * by the number of degrees specified by angle.
  */
 - (void) rotateByDegrees: (float)angle
@@ -210,7 +214,8 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Rotates the transformation matrix of the receiver counter-clockwise 
+ * Applies the rotation specified by angle in radians.   Points trasnformed
+ * with the transformation matrix of the receiver are rotated counter-clockwise 
  * by the number of radians specified by angle.
  */
 - (void) rotateByRadians: (float)angleRad
@@ -237,14 +242,19 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Scales the X axis of the receiver's transformation matrix by scaleX and
- * the Y axis of the transformation matrix by scaleY.
+ * Scales the X axis of the receiver's transformation matrix 
+ * by scaleX and the Y axis of the transformation matrix by scaleY.
  */
 - (void) scaleXBy: (float)scaleX yBy: (float)scaleY
 {
   A *= scaleX; B *= scaleX;
   C *= scaleY; D *= scaleY;
 }
+
+/**
+ * Get the currently active graphics context's transformation 
+ * matrix and set it into the receiver.
+ */
 
 - (void) set
 {
@@ -262,6 +272,13 @@ static NSAffineTransformStruct identityTransform = {
   matrix = val;
 }
 
+/**
+ * <p>
+ * Applies the receiver's transformation matrix to each point in 
+ * the bezier path, then returns the result.  The original bezier 
+ * path is not modified.
+ * </p>
+ */
 - (NSBezierPath*) transformBezierPath: (NSBezierPath*)aPath
 {
   NSBezierPath *path = [aPath copy];
@@ -304,7 +321,8 @@ static NSAffineTransformStruct identityTransform = {
 
 /**
  * <p>
- * Returns the structure which represents the matrix of the reciever. 
+ * Returns the <code>NSAffineTransformStruct</code> structure 
+ * which represents the matrix of the reciever. 
  * The struct is of the form:</p>
  * <p>{m11, m12, m21, m22, tX, tY}</p>
  */
@@ -314,7 +332,9 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Scales the receiver's matrix based on the factors tranX and tranY.
+ * Applies the translation specified by tranX and tranY to the receiver's matrix.
+ * Points transformed by the reciever's matrix after this operation will 
+ * be shifted in position based on the specified translation.
  */
 - (void) translateXBy: (float)tranX  yBy: (float)tranY
 {

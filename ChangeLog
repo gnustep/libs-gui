@@ -1,3 +1,7 @@
+2004-01-06 21:58  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/NSAffineTransform.m: More documentation.
+	
 2004-01-07 02:51  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSSplitView.m (-mouseDown:): Use an NSDebugLLog when we get
@@ -15,7 +19,7 @@
 2004-01-03  Ludovic Marcotte <ludovic@Sophos.ca>
 
         * Source/NSOutlineView.m: Started to fix the DnD code.
-          Modified -mouseDown: to not select the row when clicking
+	  Modified -mouseDown: to not select the row when clicking
           only on the expand/collapse image. Rewrote
           -noteNumberOfRowsChanged to correctly restore the list
           of selected rows after an expand/collapse operation.
