@@ -27,6 +27,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSFontPanel.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSApplication.h>
@@ -36,6 +37,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSButton.h>
+#include <AppKit/NSBox.h>
 
 @implementation NSFontPanel
 
@@ -78,7 +80,7 @@
   NSRect pa = {{7,0}, {286,50}};
   NSRect l = {{7,162}, {110,20}};
   NSRect ss = {{7,0}, {110,160}};
-  NSRect b = {{60,5}, {75,25}};
+  NSRect b = {{58,5}, {75,25}};
   NSView *v;
   NSView *topArea;
   NSView *bottomArea;
@@ -93,8 +95,10 @@
   NSButton *setButton;
   NSButton *revertButton;
   NSButton *previewButton;
+  NSBox *slash;
 
-  unsigned int  style = NSTitledWindowMask;
+  unsigned int style = NSTitledWindowMask | NSClosableWindowMask
+                     | NSMiniaturizableWindowMask | NSResizableWindowMask;
 
   self = [super initWithContentRect:pf 
 		styleMask:style
@@ -124,6 +128,7 @@
   [label setAlignment: NSCenterTextAlignment];
   [label setFont:[NSFont boldSystemFontOfSize:12]];
   [label setStringValue:@"Family"];
+  [label setEditable:NO];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
   [label setBackgroundColor:[NSColor darkGrayColor]];
@@ -138,6 +143,7 @@
 
   label = [[NSTextField alloc] initWithFrame:l];
   [label setFont:[NSFont boldSystemFontOfSize:12]];
+  [label setEditable:NO];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground:YES];
   [label setTextColor:[NSColor whiteColor]];
@@ -159,6 +165,7 @@
   [label setFont:[NSFont boldSystemFontOfSize:12]];
   [label setAlignment: NSCenterTextAlignment];
   [label setDrawsBackground:YES];
+  [label setEditable:NO];
   [label setTextColor:[NSColor whiteColor]];
   [label setBackgroundColor:[NSColor darkGrayColor]];
   [label setStringValue:@"Size"];
@@ -186,18 +193,24 @@
   [bottomSplit addSubview:sizeScroll];
 
   bottomArea = [[NSView alloc] initWithFrame:NSMakeRect(0,0,300,100)];
+ 
+  slash = [[NSBox alloc] initWithFrame:NSMakeRect(0,40,300,2)];
+  [slash setBorderType:NSLineBorder];
+  [bottomArea addSubview:slash];
+  [slash release];
 
   revertButton = [[NSButton alloc] initWithFrame:b];
   [revertButton setStringValue:@"Revert"];
   [bottomArea addSubview:revertButton];
 
-  b.origin.x = 140;
+  b.origin.x = 138;
 
   previewButton = [[NSButton alloc] initWithFrame:b];
   [previewButton setStringValue:@"Preview"];
+  [previewButton setButtonType:NSOnOffButton];
   [bottomArea addSubview:previewButton];
 
-  b.origin.x = 220;
+  b.origin.x = 218;
 
   setButton = [[NSButton alloc] initWithFrame:b];
   [setButton setStringValue:@"Set"];
