@@ -143,12 +143,12 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 {
   if (aLayoutManager != _layoutManager)
     {
-      id	textStorage = [_layoutManager textStorage];
-      NSArray	*textContainers = [_layoutManager textContainers]; 
-      unsigned	i, count = [textContainers count];
-      id oldLayoutManager = _layoutManager;
+      NSTextStorage *textStorage = [_layoutManager textStorage];
+      NSArray *textContainers = [_layoutManager textContainers];
+      unsigned int i, count = [textContainers count];
+      GSLayoutManager *oldLayoutManager = _layoutManager;
 
-      RETAIN (oldLayoutManager);
+      RETAIN(oldLayoutManager);
       [textStorage removeLayoutManager: _layoutManager];
       [textStorage addLayoutManager: aLayoutManager];
 
@@ -156,15 +156,20 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 	{
 	  NSTextContainer *container;
 
-	  container = RETAIN ([textContainers objectAtIndex: i]);
-	  [_layoutManager removeTextContainerAtIndex: i];
+	  container = RETAIN([textContainers objectAtIndex: i]);
+	  [oldLayoutManager removeTextContainerAtIndex: i];
+	  /* One of these calls will result in our _layoutManager being
+	  changed. */
 	  [aLayoutManager addTextContainer: container];
+
 	  /* The textview is caching the layout manager; refresh the
 	   * cache with this do-nothing call.  */
+	  /* TODO: probably unnecessary; the call in -setLayoutManager:
+	  should be enough */
 	  [[container textView] setTextContainer: container];
-	  RELEASE (container);
+	  RELEASE(container);
 	}
-      RELEASE (oldLayoutManager);
+      RELEASE(oldLayoutManager);
     }
 }
 
