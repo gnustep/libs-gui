@@ -39,7 +39,11 @@
 @class	NSMutableSet;
 @class	NSString;
 @class	NSTimer;
-@protocol NSMenuItem;
+
+/* Forward declaring the NSMenuItem protocol here would be nicer, but older
+   versions of gcc can't handle that.  Thus, we include the header
+   instead. */
+#include "AppKit/NSMenuItem.h"
 
 @interface      GSServicesManager : NSObject
 {

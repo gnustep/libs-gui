@@ -1,3 +1,9 @@
+2005-02-26 18:04  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h: Include the
+	NSMenuItem.h header instead of forward declaring the NSMenuItem
+	protocol.
+
 2005-02-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSColor.h (-alternateSelectedControlColor,
