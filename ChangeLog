@@ -1,3 +1,9 @@
+2000-05-24 Georg Fleischmann <georg@vhf.de>
+
+	* gui/Model/GMAppKit.m
+	([NSScrollView(GMArchiverMethods) -initWithModelUnarchiver:]):
+	select selected cells in matrix too
+
 2000-05-20  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSTextView.h:

@@ -436,8 +436,13 @@ void __dummy_GMAppKit_functionForLinking() {}
     nc = [unarchiver decodeIntWithName:@"numberOfColumns"];
     cell_array = [unarchiver decodeObjectWithName:@"cells"];
     [self renewRows:nr columns:nc];
-    for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++) {
-        [self putCell:[cell_array objectAtIndex:i] atRow:i/nc column:i%nc];
+    for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++)
+    {
+        id	cell = [cell_array objectAtIndex:i];
+
+        [self putCell:cell atRow:i/nc column:i%nc];
+        if ([cell state])
+            [self selectCellAtRow:i/nc column:i%nc];
     }
 
     decodedDelegate = [unarchiver decodeObjectWithName:@"delegate"];
