@@ -1627,6 +1627,11 @@ static SEL getSel;
 - (void) sizeToFit
 {
   NSSize newSize = NSZeroSize;
+
+  /*
+   * FIXME : Maybe this code be enabled in debug mode ?
+   * it would detect if all the cells have the same size
+   *   or not
   NSSize tmpSize;
   int i, j;
 
@@ -1641,6 +1646,12 @@ static SEL getSel;
 	    newSize.height = tmpSize.height;
 	}
     }
+  */
+
+  
+  if (_numRows > 0 && _numCols > 0)
+    newSize = [_cells[0][0] cellSize];
+  
   [self setCellSize: newSize];
 }
 
