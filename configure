@@ -1,0 +1,4 @@
+#! /bin/sh
+
+echo "Nothing to configure. Just type \`make' with the appropriate flags."
+
