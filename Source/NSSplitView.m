@@ -1,5 +1,5 @@
 /*
-   NSSplitView.h
+   NSSplitView.m
 
    Allows multiple views to share a region in a window
 
@@ -45,6 +45,19 @@
 //
 // Instance methods
 //
+- (id) initWithFrame: (NSRect)frameRect
+{
+  if ((self = [super initWithFrame: frameRect]) != nil)
+    {
+      _dividerWidth = [self dividerThickness];
+      _draggedBarWidth = 8; // default bigger than dividerThickness
+      _isVertical = NO;
+      ASSIGN (_dividerColor, [NSColor controlShadowColor]);
+      ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]);
+      ASSIGN (_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
+    }
+  return self;
+}
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
@@ -60,9 +73,8 @@
   id		v = nil, prev = nil;
   float		minCoord, maxCoord;
   NSArray	*subs = [self subviews];
-  int		offset = 0,i,count = [subs count];
-  float		divVertical, divHorizontal, div = [self dividerThickness];
-  NSColor	*divColor = [self dividerColor];
+  int		offset = 0, i, count = [subs count];
+  float		divVertical, divHorizontal;
   NSDate	*farAway = [NSDate distantFuture];
   unsigned	int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 			      | NSLeftMouseDraggedMask | NSMouseMovedMask
@@ -89,7 +101,7 @@
 	  NSLog(@"NSSplitView got mouseDown that should have gone to subview");
 	  goto RETURN_LABEL;
 	}
-      if ([self isVertical] == NO)
+      if (_isVertical == NO)
         {
 	  if (NSMaxY(r) < p.y)
 	    {				// can happen only when i>0.
@@ -137,9 +149,9 @@
 	  prev = v;
         }
     }
-  if ([self isVertical] == NO)
+  if (_isVertical == NO)
     {
-      divVertical = div;
+      divVertical = _dividerWidth;
       divHorizontal = NSWidth(frame);
       /* set the default limits on the dragging */
       minCoord = NSMinY(bigRect) + divVertical;
@@ -147,7 +159,7 @@
     }
   else
     {
-      divHorizontal = div;
+      divHorizontal = _dividerWidth;
       divVertical = NSHeight(frame);
       /* set the default limits on the dragging */
       minCoord = NSMinX(bigRect) + divHorizontal;
@@ -156,16 +168,16 @@
 
 
   /* find out what the dragging limit is */
-  if (delegate && [delegate respondsToSelector:
+  if (_delegate && [_delegate respondsToSelector:
       @selector(splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:)])
     {
-      if ([self isVertical] == NO)
+      if (_isVertical == NO)
         {
 	  float delMinY= minCoord, delMaxY= maxCoord;
-	  [delegate splitView: self
-		    constrainMinCoordinate: &delMinY
-		    maxCoordinate: &delMaxY
-		    ofSubviewAt: offset];
+	  [_delegate splitView: self
+		     constrainMinCoordinate: &delMinY
+		     maxCoordinate: &delMaxY
+		     ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
 	  if (delMinY > minCoord)
 	    minCoord = delMinY;
@@ -175,10 +187,10 @@
       else
         {
 	  float delMinX= minCoord, delMaxX= maxCoord;
-	  [delegate splitView: self
-		    constrainMinCoordinate: &delMinX
-		    maxCoordinate: &delMaxX
-		    ofSubviewAt: offset];
+	  [_delegate splitView: self
+		     constrainMinCoordinate: &delMinX
+		     maxCoordinate: &delMaxX
+		     ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
 	  if (delMinX > minCoord)
 	    minCoord = delMinX;
@@ -194,7 +206,7 @@
   [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.1];
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
-  [divColor set];
+  [_dividerColor set];
   r.size.width = divHorizontal;
   r.size.height = divVertical;
   e = [app nextEventMatchingMask: eventMask
@@ -207,7 +219,7 @@
     {
       if ([e type] != NSPeriodic)
 	p = [self convertPoint: [e locationInWindow] fromView: nil];
-      if ([self isVertical] == NO)
+      if (_isVertical == NO)
 	{
 	  if (p.y < minCoord)
 	    p.y = minCoord;
@@ -228,14 +240,14 @@
       NSDebugLog(@"drawing divider at x: %d, y: %d, w: %d, h: %d\n",
 			      (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),
 			      (int)NSHeight(r));
-      [dividerColor set];
+      [_dividerColor set];
       NSHighlightRect(r);
       oldRect = r;
       e = [app nextEventMatchingMask: eventMask
 			   untilDate: farAway
 			      inMode: NSEventTrackingRunLoopMode
 			     dequeue: YES];
-      [dividerColor set];
+      [_dividerColor set];
       NSHighlightRect(oldRect);
     }
 
@@ -244,7 +256,7 @@
 
   /* resize the subviews accordingly */
   r = [prev frame];
-  if ([self isVertical] == NO)
+  if (_isVertical == NO)
     {
       r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
       if (NSHeight(r) < 1.)
@@ -261,7 +273,7 @@
 	     (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
 
   r1 = [v frame];
-  if ([self isVertical] == NO)
+  if (_isVertical == NO)
     {
       r1.origin.y = p.y + (divVertical/2.);
       if (NSMinY(r1) < 0.)
@@ -296,15 +308,15 @@ RETURN_LABEL:
 - (void) adjustSubviews
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-  NSRect		fr = [self frame];
 
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
 		    object: self];
 
-  if (delegate && [delegate respondsToSelector:
-	@selector(splitView:resizeSubviewsWithOldSize:)])
+  if (_delegate && [_delegate 
+		     respondsToSelector:
+		       @selector(splitView:resizeSubviewsWithOldSize:)])
     {
-      [delegate splitView: self resizeSubviewsWithOldSize: fr.size];
+      [_delegate splitView: self resizeSubviewsWithOldSize: frame.size];
     }
   else
     {	/* split the area up evenly */
@@ -312,7 +324,6 @@ RETURN_LABEL:
       unsigned	count = [subs count];
       NSView	*views[count];
       NSRect	frames[count];
-      float	thickness = [self dividerThickness];
       NSSize	newSize;
       NSPoint	newPoint;
       unsigned	i;
@@ -323,9 +334,9 @@ RETURN_LABEL:
       float	running;
 
       [subs getObjects: views];
-      if ([self isVertical] == NO)
+      if (_isVertical == NO)
 	{
-	  newTotal = NSHeight(bounds) - thickness*(count - 1);
+	  newTotal = NSHeight(bounds) - _dividerWidth*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -347,14 +358,14 @@ RETURN_LABEL:
 	      newSize = NSMakeSize(NSWidth(bounds), newHeight);
 	      running -= newHeight;
 	      newPoint = NSMakePoint(0.0, running);
-	      running -= thickness;
+	      running -= _dividerWidth;
 	      [views[i] setFrameSize: newSize];
 	      [views[i] setFrameOrigin: newPoint];
 	    }
 	}
       else
 	{
-	  newTotal = NSWidth(bounds) - thickness*(count - 1);
+	  newTotal = NSWidth(bounds) - _dividerWidth*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -374,7 +385,7 @@ RETURN_LABEL:
 		newWidth = ceil(newWidth);
 	      newSize = NSMakeSize(newWidth, NSHeight(bounds));
 	      newPoint = NSMakePoint(running, 0.0);
-	      running += newWidth + thickness;
+	      running += newWidth + _dividerWidth;
 	      [views[i] setFrameSize: newSize];
 	      [views[i] setFrameOrigin: newPoint];
 	    }
@@ -398,26 +409,26 @@ RETURN_LABEL:
   [self adjustSubviews];
 }
 
-- (float) dividerThickness //defaults to 8
+- (float) dividerThickness 
 {
-  return dividerWidth;
+  // You need to override this method in subclasses to change the
+  // dividerThickness (or, without need for subclassing, invoke
+  // setDimpleImage:resetDividerThickness:YES below)
+  return 6;
 }
 
-- (void) setDividerThickNess: (float)newWidth
-{
-  dividerWidth = ceil(newWidth);
-}
-
+// FIXME: Perhaps the following two should be removed and _dividerWidth 
+// should be used also for dragging?
 - (float) draggedBarWidth //defaults to 8
 {
-  return draggedBarWidth;
+  return _draggedBarWidth;
 }
 
 - (void) setDraggedBarWidth: (float)newWidth
 {
-  draggedBarWidth = newWidth;
+  _draggedBarWidth = newWidth;
 }
-
+//
 static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   NSPoint p;
@@ -432,9 +443,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   NSSize dimpleSize;
 
   /* focus is already on self */
-  if (!dimpleImage)
+  if (!_dimpleImage)
     return;
-  dimpleSize = [dimpleImage size];
+  dimpleSize = [_dimpleImage size];
 
   dimpleOrigin = centerSizeInRect(dimpleSize, aRect);
   /*
@@ -443,31 +454,35 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
    */
   if (_rFlags.flipped_view)
     dimpleOrigin.y -= dimpleSize.height;
-  [dimpleImage compositeToPoint: dimpleOrigin operation: NSCompositeSourceOver];
+  [_dimpleImage compositeToPoint: dimpleOrigin 
+		operation: NSCompositeSourceOver];
 }
 
 /* Vertical splitview has a vertical split bar */
 - (void) setVertical: (BOOL)flag
 {
-  isVertical = flag;
+  _isVertical = flag;
 }
 
 - (BOOL) isVertical
 {
-  return isVertical;
+  return _isVertical;
 }
 
 - (void) setDimpleImage: (NSImage *)anImage resetDividerThickness: (BOOL)flag
 {
-  ASSIGN(dimpleImage, anImage);
+  ASSIGN(_dimpleImage, anImage);
 
   if (flag)
     {
-      NSSize s = NSMakeSize(8., 8.);
+      NSSize s = NSMakeSize(6., 6.);
 
-      if (dimpleImage)
-	s = [dimpleImage size];
-      [self setDividerThickNess: isVertical ? s.width : s.height];
+      if (_dimpleImage)
+	s = [_dimpleImage size];
+      if (_isVertical)
+	_dividerWidth = s.width;
+      else
+	_dividerWidth = s.height;
     }
 }
 
@@ -480,7 +495,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   if ([self isOpaque])
     {
-      [[self backgroundColor] set];
+      [_backgroundColor set];
       NSRectFill(r);
     }
 
@@ -490,15 +505,15 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       {
 	v = [subs objectAtIndex: i];
 	divRect = [v frame];
-	if ([self isVertical] == NO)
+	if (_isVertical == NO)
 	  {
-	    divRect.size.height = [self dividerThickness];
+	    divRect.size.height = _dividerWidth;
 	    divRect.origin.y -= divRect.size.height;
 	  }
 	else
 	  {
 	    divRect.origin.x = NSMaxX(divRect);
-	    divRect.size.width = [self dividerThickness];
+	    divRect.size.width = _dividerWidth;
 	  }
 	[self drawDividerInRect: divRect];
       }
@@ -507,7 +522,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (NSImage*) dimpleImage
 {
-  return dimpleImage;
+  return _dimpleImage;
 }
 
 /* Overridden Methods */
@@ -521,21 +536,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return YES;
 }
 
-- (id) initWithFrame: (NSRect)frameRect
-{
-  if ((self = [super initWithFrame: frameRect]) != nil)
-    {
-      dividerWidth = 8;
-      draggedBarWidth = 8;
-      isVertical = NO;
-      [self setDividerColor: [NSColor controlShadowColor]];
-      [self setBackgroundColor: [NSColor controlBackgroundColor]];
-      [self setDimpleImage:
-      [NSImage imageNamed: @"common_Dimple.tiff"] resetDividerThickness: YES];
-    }
-  return self;
-}
-
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
   [super resizeWithOldSuperviewSize: oldSize];
@@ -545,20 +545,20 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void) setDelegate: (id)anObject
 {
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
-  if (delegate)
-    [nc removeObserver: delegate name: nil object: self];
-  delegate = anObject;
+  if (_delegate)
+    [nc removeObserver: _delegate name: nil object: self];
+  _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector: @selector(splitView##notif_name:)]) \
-    [nc addObserver: delegate \
+  if ([_delegate respondsToSelector: @selector(splitView##notif_name:)]) \
+    [nc addObserver: _delegate \
 	   selector: @selector(splitView##notif_name: ) \
 	       name: NSSplitView##notif_name##Notification \
 	     object: self]
@@ -569,22 +569,22 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (NSColor*) dividerColor
 {
-  return dividerColor;
+  return _dividerColor;
 }
 
 - (void) setDividerColor: (NSColor*) aColor
 {
-  ASSIGN(dividerColor, aColor);
+  ASSIGN(_dividerColor, aColor);
 }
 
 - (NSColor*) backgroundColor
 {
-  return backgroundColor;
+  return _backgroundColor;
 }
 
 - (void) setBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN(backgroundColor, aColor);
+  ASSIGN(_backgroundColor, aColor);
 }
 
 //
@@ -597,22 +597,22 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   /*
    *	Encode objects we don't own.
    */
-  [aCoder encodeConditionalObject: delegate];
-  [aCoder encodeConditionalObject: splitCursor];
+  [aCoder encodeConditionalObject: _delegate];
+  [aCoder encodeConditionalObject: _splitCursor]; // ?
 
   /*
    *	Encode the objects we do own.
    */
-  [aCoder encodeObject: dimpleImage];
-  [aCoder encodeObject: backgroundColor];
-  [aCoder encodeObject: dividerColor];
+  // FIXME When encoding/decoding of images is supported.
+  //  [aCoder encodeObject: _dimpleImage];
+  [aCoder encodeObject: _backgroundColor];
+  [aCoder encodeObject: _dividerColor];
 
   /*
    *	Encode the rest of the ivar data.
    */
-  [aCoder encodeValueOfObjCType: @encode(int) at: &dividerWidth];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isVertical];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -622,31 +622,39 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   /*
    *	Decode objects that we don't retain.
    */
-  delegate = [aDecoder decodeObject];
-  splitCursor = [aDecoder decodeObject];
+  [self setDelegate: [aDecoder decodeObject]];
+  _splitCursor = [aDecoder decodeObject]; // ?
 
   /*
    *	Decode objects that we do retain.
    */
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &dimpleImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &backgroundColor];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &dividerColor];
+
+  // FIXME When encoding/decoding of images is supported.
+  //[aDecoder decodeValueOfObjCType: @encode(id) at: &_dimpleImage];
+  ASSIGN (_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]);
+
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
   /*
    *	Decode non-object data.
    */
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &dividerWidth];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &draggedBarWidth];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isVertical];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
+
+  /*
+   *
+   */
+  _dividerWidth = [self dividerThickness];
 
   return self;
 }
 
 - (void) dealloc
 {
-  [backgroundColor release];
-  [dividerColor release];
-  [dimpleImage release];
+  [_backgroundColor release];
+  [_dividerColor release];
+  [_dimpleImage release];
   [super dealloc];
 }
 
