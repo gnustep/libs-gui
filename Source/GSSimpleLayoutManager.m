@@ -266,22 +266,24 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   return MAX(0, min - 1);
 }
 
-- (NSRect)lineFragmentRectForGlyphAtIndex:(unsigned)index 
-			   effectiveRange:(NSRange*)lineFragmentRange
+- (NSRect)lineFragmentRectForGlyphAtIndex: (unsigned)index 
+			   effectiveRange: (NSRange *)lineFragmentRange
 {
   _GNULineLayoutInfo *currentInfo;
-
+  
   if (![_textStorage length] || ![_lineLayoutInformation count])
     {
       return NSMakeRect(0, 0, 0, 12);
     }
-    
+  
   currentInfo = [_lineLayoutInformation 
-		    objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					     index]];
+		  objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
+					 index]];
 
   if (lineFragmentRange)
+    {
       *lineFragmentRange = currentInfo->glyphRange;
+    }
 
   return currentInfo->lineFragmentRect;
 }
