@@ -503,9 +503,9 @@ static const unsigned short yyrline[] =
      193,   194,   194,   195,   203,   210,   217,   224,   231,   238,
      245,   252,   259,   266,   273,   280,   287,   288,   289,   290,
      291,   298,   299,   300,   301,   308,   315,   322,   329,   336,
-     343,   350,   351,   352,   353,   354,   355,   362,   365,   366,
-     367,   368,   374,   378,   379,   380,   381,   382,   386,   388,
-     389,   390,   391,   392,   393,   401,   404,   405,   409,   414
+     343,   350,   351,   352,   353,   354,   355,   363,   366,   367,
+     368,   369,   375,   379,   380,   381,   382,   383,   387,   389,
+     390,   391,   392,   393,   394,   402,   405,   406,   410,   415
 };
 #endif
 
@@ -1073,7 +1073,7 @@ yydestruct (yytype, yyvalue)
 /* Prevent warning if -Wstrict-prototypes.  */
 #ifdef __GNUC__
 # ifdef YYPARSE_PARAM
-int yyparse (void *YYPARSE_PARAM);
+int yyparse (void *, void *lctxt);
 # else
 int yyparse (void);
 # endif
@@ -1396,7 +1396,7 @@ yyreduce:
 
   case 9:
 #line 175 "rtfGrammer.y"
-    { yyval.number = 1; }
+    { yyval.number = 1; free((void*)yyvsp[0].cmd.name); }
     break;
 
   case 14:
@@ -1766,57 +1766,58 @@ yyreduce:
 
   case 66:
 #line 355 "rtfGrammer.y"
-    { GSRTFgenericRTFcommand(CTXT, yyvsp[0].cmd); }
+    { GSRTFgenericRTFcommand(CTXT, yyvsp[0].cmd); 
+		                                  free((void*)yyvsp[0].cmd.name); }
     break;
 
   case 71:
-#line 369 "rtfGrammer.y"
+#line 370 "rtfGrammer.y"
     { free((void *)yyvsp[-1].text);}
     break;
 
   case 72:
-#line 374 "rtfGrammer.y"
+#line 375 "rtfGrammer.y"
     { GSRTFregisterFont(CTXT, yyvsp[0].text, yyvsp[-2].number, yyvsp[-3].cmd.parameter);
                                                           free((void *)yyvsp[0].text); }
     break;
 
   case 78:
-#line 387 "rtfGrammer.y"
+#line 388 "rtfGrammer.y"
     { yyval.number = RTFfamilyNil - RTFfamilyNil; }
     break;
 
   case 79:
-#line 388 "rtfGrammer.y"
+#line 389 "rtfGrammer.y"
     { yyval.number = RTFfamilyRoman - RTFfamilyNil; }
     break;
 
   case 80:
-#line 389 "rtfGrammer.y"
+#line 390 "rtfGrammer.y"
     { yyval.number = RTFfamilySwiss - RTFfamilyNil; }
     break;
 
   case 81:
-#line 390 "rtfGrammer.y"
+#line 391 "rtfGrammer.y"
     { yyval.number = RTFfamilyModern - RTFfamilyNil; }
     break;
 
   case 82:
-#line 391 "rtfGrammer.y"
+#line 392 "rtfGrammer.y"
     { yyval.number = RTFfamilyScript - RTFfamilyNil; }
     break;
 
   case 83:
-#line 392 "rtfGrammer.y"
+#line 393 "rtfGrammer.y"
     { yyval.number = RTFfamilyDecor - RTFfamilyNil; }
     break;
 
   case 84:
-#line 393 "rtfGrammer.y"
+#line 394 "rtfGrammer.y"
     { yyval.number = RTFfamilyTech - RTFfamilyNil; }
     break;
 
   case 88:
-#line 410 "rtfGrammer.y"
+#line 411 "rtfGrammer.y"
     { 
 		       GSRTFaddColor(CTXT, yyvsp[-3].cmd.parameter, yyvsp[-2].cmd.parameter, yyvsp[-1].cmd.parameter);
 		       free((void *)yyvsp[0].text);
@@ -1824,7 +1825,7 @@ yyreduce:
     break;
 
   case 89:
-#line 415 "rtfGrammer.y"
+#line 416 "rtfGrammer.y"
     { 
 		       GSRTFaddDefaultColor(CTXT);
 		       free((void *)yyvsp[0].text);
@@ -1835,7 +1836,7 @@ yyreduce:
     }
 
 /* Line 1016 of /usr/share/bison/yacc.c.  */
-#line 1839 "rtfGrammer.tab.c"
+#line 1840 "rtfGrammer.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2054,7 +2055,7 @@ yyreturn:
 }
 
 
-#line 427 "rtfGrammer.y"
+#line 428 "rtfGrammer.y"
 
 
 /*	some C code here	*/
