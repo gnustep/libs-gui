@@ -36,8 +36,7 @@ component like the GNUstep 'Back' Backend.
 
 @ifset GNUSTEP-GUI-FTP-MACHINE
 The gstep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
-file has been placed on @samp{@value{GNUSTEP-GUI-FTP-MACHINE}} in
-@samp{@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
+file has been placed at @url{ftp://@value{GNUSTEP-GUI-FTP-MACHINE}/@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
 @end ifset
 
 Read the INSTALL file or the GNUstep-HOWTO for installation instructions.

@@ -1,3 +1,8 @@
+2005-04-01  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/AppKit/NSDataLinkManager.h, Source/NSDataLinkManager.m:
+	Re-add the changes from 2005-03-05.
+
 2005-04-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDragView.m: when dragging, use the mouse offset to adjust
