@@ -112,6 +112,8 @@ typedef enum _NSWindowOrderingMode
 @end
 
 #ifndef	NO_GNUSTEP
+NSGraphicsContext	*GSCurrentContext();
+
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
 + (NSGraphicsContext*) defaultContextWithInfo: (NSDictionary *)info;

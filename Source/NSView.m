@@ -94,7 +94,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
  */
 + (NSView*) focusView
 {
-  return [[NSGraphicsContext currentContext] focusView];
+  return [GSCurrentContext() focusView];
 }
 
 //
@@ -1067,13 +1067,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) lockFocus
 {
-  [[NSGraphicsContext currentContext] lockFocusView: self 
-				      inRect: [self visibleRect]];
+  [GSCurrentContext() lockFocusView: self 
+			     inRect: [self visibleRect]];
 }
 
 - (void) unlockFocus
 {
-  [[NSGraphicsContext currentContext] unlockFocusView: self needsFlush: YES ];
+  [GSCurrentContext() unlockFocusView: self needsFlush: YES ];
 }
 
 - (BOOL) canDraw

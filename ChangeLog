@@ -1,3 +1,15 @@
+Mon May 10  9:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSGraphicsContext.h: Added GSCurrentContext() for
+	optimised access to current context for thread.
+	* Source/NSView.m: Minor optimisation of graphics context access.
+	* Source/NSApplication.m: ditto
+	* Source/NSScrollView.m: ditto
+	* Source/NSSplitView.m: ditto
+	* Source/NSStringDrawing.m: ditto
+	* Source/NSGraphicsContext.m: Added GSCurrentContext() to return the
+	current graphics context for the thread.
+
 Sun May  9  9:13:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Further optimisations, plus bugfix to ensure that

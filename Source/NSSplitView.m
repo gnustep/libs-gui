@@ -210,7 +210,6 @@
 			      (int)NSHeight(r));
       [dividerColor set];
       NSHighlightRect(r);
-//      [[NSDrawContext currentContext] flush];
       oldRect = r;
       e = [app nextEventMatchingMask: eventMask
 			   untilDate: farAway

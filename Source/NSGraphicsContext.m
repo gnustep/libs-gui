@@ -55,7 +55,29 @@ static NSMutableDictionary *classMethodTable;
 /* Lock for use when creating contexts */
 static NSRecursiveLock  *contextLock = nil;
 
-static NSString	*NSGraphicsContextThredKey = @"NSGraphicsContextThredKey";
+#ifndef GNUSTEP_BASE_LIBRARY
+static NSString	*NSGraphicsContextThreadKey = @"NSGraphicsContextThreadKey";
+#endif
+
+/*
+ *	Function for rapid access to current graphics context.
+ */
+NSGraphicsContext	*GSCurrentContext()
+{
+#ifdef GNUSTEP_BASE_LIBRARY
+/*
+ *	gstep-base has a faster mechanism to get the current thread.
+ */
+  NSThread *th = GSCurrentThread();
+
+  return (NSGraphicsContext*) th->_gcontext;
+#else
+  NSMutableDictionary *dict [[NSThread currentThread] threadDictionary];
+
+  return (NSGraphicsContext*) [dict objectForKey: NSGraphicsContextThreadKey];
+#endif
+}
+
 
 @interface NSGraphicsContext (Private)
 + (gsMethodTable *) _initializeMethodTable;
@@ -103,29 +125,31 @@ struct NSWindow_struct
   return ctxt;
 }
 
++ (void) setCurrentContext: (NSGraphicsContext *)context
+{
+#ifdef GNUSTEP_BASE_LIBRARY
 /*
  *	gstep-base has a faster mechanism to get the current thread.
  */
-#ifndef GNUSTEP_BASE_LIBRARY
-#define	GSCurrentThreadDictionary()	[[NSThread currentThread] threadDictionary]
+  NSThread *th = GSCurrentThread();
+
+  th->_gcontext = context;
+#else
+  NSMutableDictionary *dict [[NSThread currentThread] threadDictionary];
+
+  [dict setObject: context forKey: NSGraphicsContextThreadKey];
 #endif
-
-+ (void) setCurrentContext: (NSGraphicsContext *)context
-{
-  NSMutableDictionary *dict = GSCurrentThreadDictionary();
-
-  [dict setObject: context forKey: NSGraphicsContextThredKey];
 }
 
 + (NSGraphicsContext *) currentContext
 {
-  NSMutableDictionary *dict = GSCurrentThreadDictionary();
-
-  return (NSGraphicsContext*) [dict objectForKey: NSGraphicsContextThredKey];
+  return GSCurrentContext();
 }
 
 - (void) dealloc
 {
+  if (GSCurrentContext() == self)
+    [NSGraphicsContext setCurrentContext: nil];
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);

@@ -1660,9 +1660,9 @@ NSApplication	*NSApp = nil;
   return nil;
 }
 
-- (NSGraphicsContext *) context                      // return the current draw
-{                                                   // context (drawing dest)
-  return [NSGraphicsContext currentContext];
+- (NSGraphicsContext *) context
+{
+  return GSCurrentContext();
 }
 
 - (void) reportException: (NSException *)anException

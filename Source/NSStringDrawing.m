@@ -1140,7 +1140,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 
 - (void) drawAtPoint: (NSPoint)point
 {
-  NSGraphicsContext	*ctxt = [NSGraphicsContext currentContext];
+  NSGraphicsContext	*ctxt = GSCurrentContext();
   BOOL			isFlipped = [[ctxt focusView] isFlipped];
   NSString		*allText = [self string];
   unsigned		length = [allText length];

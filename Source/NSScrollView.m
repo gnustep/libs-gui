@@ -506,7 +506,7 @@ static Class rulerViewClass = nil;
 
 - (void) drawRect: (NSRect)rect
 {
-  NSGraphicsContext	*ctxt = [NSGraphicsContext currentContext];
+  NSGraphicsContext	*ctxt = GSCurrentContext();
   float scrollerWidth = [NSScroller scrollerWidth];
   float horizLinePosition, horizLineLength = [self bounds].size.width;
   float borderThickness = 0;
