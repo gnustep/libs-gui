@@ -154,7 +154,7 @@ NSString *NSViewFocusChangedNotification;
   disable_autodisplay = NO;
   needs_display = YES;
   post_frame_changes = NO;
-  autoresize_subviews = NO;
+  autoresize_subviews = YES;
 
   return self;
 }
@@ -365,8 +365,13 @@ NSString *NSViewFocusChangedNotification;
 
 - (void)setFrame:(NSRect)frameRect
 {
+  NSSize old_size = bounds.size;
+
   frame = frameRect;
   bounds.size = frame.size;
+
+  // Resize subviews
+  [self resizeSubviewsWithOldSize: old_size];
 }
 
 - (void)setFrameOrigin:(NSPoint)newOrigin
@@ -379,8 +384,13 @@ NSString *NSViewFocusChangedNotification;
 
 - (void)setFrameSize:(NSSize)newSize
 {
+  NSSize old_size = bounds.size;
+
   frame.size = newSize;
   bounds.size = newSize;
+
+  // Resize subviews
+  [self resizeSubviewsWithOldSize: old_size];
 }
 
 //
@@ -524,7 +534,27 @@ NSString *NSViewFocusChangedNotification;
 // Resizing Subviews 
 //
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize
-{}
+{
+  id e, o;
+
+  // Are we suppose to resize our subviews?
+  if (![self autoresizesSubviews])
+    return;
+
+  e = [sub_views objectEnumerator];
+  o = [e nextObject];
+  while (o)
+    {
+      NSRect b = [o bounds];
+      NSSize old_size = b.size;
+
+      // Resize the subview
+      // Then tell it to resize its subviews
+      [o resizeWithOldSuperviewSize: oldSize];
+      [o resizeSubviewsWithOldSize: old_size];
+      o = [e nextObject];
+    }
+}
 
 - (void)setAutoresizesSubviews:(BOOL)flag
 {

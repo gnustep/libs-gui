@@ -103,6 +103,14 @@ id MB_NSBUTTON_CLASS;
 }
 
 //
+// Identifying the Selected Cell 
+//
+- (id)selectedCell
+{
+  return cell;
+}
+
+//
 // Setting the State 
 //
 - (void)setState:(int)value
@@ -256,6 +264,10 @@ id MB_NSBUTTON_CLASS;
         | NSMouseMovedMask;
 
     NSDebugLog(@"NSButton mouseDown\n");
+
+    // If we are not enabled then ignore the mouse
+    if (![self isEnabled])
+      return;
 
     // capture mouse
     [[self window] captureMouse: self];

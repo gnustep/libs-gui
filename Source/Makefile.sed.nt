@@ -20,7 +20,7 @@ s/INIT_FILE =/INIT_FILE = gnustep_gui_init_runtime/
 s/@LDFLAGS@/-align:0x1000 -entry:WinMainCRTStartup -stack:1000000,1000000/
 s/LD = ld/LD = ld -subsystem:windows/
 s/LDOUT =/LDOUT = -out:/
-s/LIB = ar/LIB = lib/
+s/LIB = ar/LIB = lib -debugtype:coff/
 s/LIBFLAGS = rc/LIBFLAGS =/
 s/LIBOUT =/LIBOUT = -out:/
 s/@RANLIB@/touch/

@@ -1,3 +1,15 @@
+Wed Jun 19 14:25:46 1996  Scott Christley <scottc@net-community.com>
+
+	* Source/NSView.m (resizeSubviewsWithOldSize:): Implement method.
+	(setFrame:): Notify subviews that size has changed.
+	(initWithFrame:): Automatically resize subviews.
+	* Source/Makefile.sed.nt: Have the library automatically contain
+	COFF debugging information.
+	* Source/NSButton.m (mouseDown:): Ignore the mouse if the button
+	is not enabled.
+	* Source/NSFont.m (MB_USER_FIXED_FONT, MB_USER_FONT): Rename
+	global variables to correspond with coding standards.
+
 Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Headers/gnustep/gui/NSApplication.h (-context): New method.

@@ -1270,6 +1270,8 @@ pasteboard:(NSPasteboard *)pboard
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
 
   // Register ourselves with the Application object
+  // +++ we shouldn't do this because coding may not be done?
+  //     better to do it in the awakeFromCoder method
   theApp = [NSApplication sharedApplication];
   [theApp addWindowsItem:self title:nil filename:NO];
   NSLog(@"NSWindow: finish decoding\n");
