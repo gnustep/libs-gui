@@ -121,7 +121,7 @@ enum {
 		  with:(NSView *)newView;
 - (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare
 			  context:(void *)context;
-- (NSMutableArray *)subviews;
+- (NSArray *)subviews;
 - (NSView *)superview;
 - (NSWindow *)window;
 - (void)viewWillMoveToSuperview:(NSView *)newSuper;
@@ -246,7 +246,6 @@ enum {
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject;
 - (void)resetCursorRects;
-- (NSArray *)cursorRectangles;
 
 //
 // Assigning a Tag
@@ -268,7 +267,6 @@ enum {
 			       owner:(id)anObject
 			    userData:(void *)data
 			       assumeInside:(BOOL)flag;
-- (NSArray *)trackingRectangles;
 
 //
 // Dragging

@@ -86,6 +86,8 @@
 	       object: _documentView];
     }
 
+  _rFlags.flipped_view = [self isFlipped];
+
   /* TODO: invoke superview's reflectScrolledClipView: ? */
   [[self superview] reflectScrolledClipView: self];
 }
@@ -366,7 +368,7 @@
 
 - (BOOL) isFlipped
 {
-  return (_documentView != nil) ? [_documentView isFlipped] : NO;
+  return (_documentView != nil) ? _documentView->_rFlags.flipped_view : NO;
 }
 
 - (BOOL) acceptsFirstResponder

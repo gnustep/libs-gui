@@ -137,6 +137,11 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   autoresizingMask = NSViewNotSizable;
   coordinates_valid = NO;
 
+  /*
+   *	Keep a note of whether this is a flipped view or not.
+   */
+  _rFlags.flipped_view = [self isFlipped];
+
   return self;
 }
 
@@ -167,6 +172,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
   [sub_views addObject: aView];
+  _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
   [aView release];
@@ -205,6 +211,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     [sub_views insertObject: aView atIndex: index];
   else
     [sub_views insertObject: aView atIndex: index+1];
+  _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
   [aView release];
@@ -258,8 +265,6 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
-  NSMutableArray	*views;
-
   /*
    * We MUST make sure that coordinates are invalidated even if we have
    * no superview - cos they may have been rebuilt since we lost the
@@ -275,15 +280,15 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
-  views = [super_view subviews];
-  [views removeObjectIdenticalTo: self];
+  [super_view->sub_views removeObjectIdenticalTo: self];
+  if ([super_view->sub_views count] == 0)
+    super_view->_rFlags.has_subviews = 0;
   super_view = nil;
   [self viewWillMoveToWindow: nil];
 }
 
 - (void) removeFromSuperview
 {
-  NSMutableArray	*views;
   NSWindow		*win;
 
   /*
@@ -301,13 +306,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
-  views = [super_view subviews];
   [super_view setNeedsDisplayInRect: frame];
+
+  [super_view->sub_views removeObjectIdenticalTo: self];
+  if ([super_view->sub_views count] == 0)
+    super_view->_rFlags.has_subviews = 0;
   win = window;
   window = nil;
   super_view = nil;
-
-  [views removeObjectIdenticalTo: self];
 }
 
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
@@ -333,6 +339,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       [newView viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
       [sub_views addObject: newView];
+      _rFlags.has_subviews = 1;
       [newView resetCursorRects];
       [newView setNeedsDisplay: YES];
       [newView release];
@@ -366,6 +373,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  [newView viewWillMoveToSuperview: self];
 	  [newView setNextResponder: self];
 	  [sub_views addObject: newView];
+	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
 	  [newView release];
@@ -782,7 +790,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   r.origin = [matrix pointInMatrixSpace: r.origin];
   r.size = [matrix sizeInMatrixSpace: r.size];
 
-  if ([aView isFlipped] != [self isFlipped])
+  if (aView->_rFlags.flipped_view  != _rFlags.flipped_view)
     r.origin.y -= r.size.height;
 
   return r;
@@ -810,7 +818,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   r.origin = [matrix pointInMatrixSpace: r.origin];
   r.size = [matrix sizeInMatrixSpace: r.size];
 
-  if ([aView isFlipped] != [self isFlipped])
+  if (aView->_rFlags.flipped_view  != _rFlags.flipped_view)
     r.origin.y -= r.size.height;
 
   return r;
@@ -968,7 +976,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	}
       if (autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
-	  if ([super_view isFlipped] == YES)
+	  if (super_view && super_view->_rFlags.flipped_view == YES)
 	    {
 	      if (autoresizingMask & NSViewMaxYMargin)
 		{
@@ -1408,12 +1416,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	       inside: YES];
   [cursor_rects addObject: m];
   [m release];
+  _rFlags.has_currects = 1;
 }
 
 - (void) discardCursorRects
 {
   [cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
   [cursor_rects removeAllObjects];
+  _rFlags.has_currects = 0;
 }
 
 - (void) removeCursorRect: (NSRect)aRect cursor: (NSCursor*)anObject
@@ -1430,6 +1440,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	{
 	  [o invalidate];
 	  [cursor_rects removeObject: o];
+	  if ([cursor_rects count] == 0)
+	    _rFlags.has_currects = 0;
 	  break;
 	}
       else
@@ -1604,7 +1616,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       if ([m tag] == tag)
 	{
 	  [tracking_rects removeObjectAtIndex: i];
-
+	  if ([tracking_rects count] == 0)
+	    _rFlags.has_trkrects = 0;
 	  return;
 	}
     }
@@ -1640,13 +1653,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 				   userData: data
 				     inside: flag] autorelease];
   [tracking_rects addObject: m];
-
+  _rFlags.has_trkrects = 1;
   return t;
-}
-
-- (NSArray*) trackingRectangles
-{
-  return tracking_rects;
 }
 
 //
@@ -1850,6 +1858,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
 
+  /*
+   *	Keep a note of whether this is a flipped view or not.
+   */
+  _rFlags.flipped_view = [self isFlipped];
+
+  if ([sub_views count])
+    _rFlags.has_subviews = 1;
+
   return self;
 }
 
@@ -1881,9 +1897,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return autoresizingMask;
 }
 
-- (NSMutableArray*) subviews
+- (NSArray*) subviews
 {
-  return sub_views;
+  /*
+   * Return a mutable copy 'cos we know that a mutable copy of an array or
+   * a mutable array does a shallow copy - which is what we want to give
+   * away - we don't want people to mess with our actual subviews array.
+   */
+  return [[sub_views mutableCopyWithZone: NSDefaultMallocZone()] autorelease];
 }
 
 - (NSView*) superview
@@ -1909,11 +1930,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (int) tag
 {
   return -1;
-}
-
-- (NSArray*) cursorRectangles
-{
-  return cursor_rects;
 }
 
 - (BOOL) isFlipped
@@ -2043,14 +2059,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       else
 	{
 	  NSRect	superviewsVisibleRect;
-	  BOOL		wasFlipped = [super_view isFlipped];
+	  BOOL		wasFlipped = super_view->_rFlags.flipped_view;
 	  float		vals[6];
 	  NSAffineTransform	*pMatrix = [super_view _matrixToWindow];
 
 	  [pMatrix getMatrix: vals];
 	  [matrixToWindow setMatrix: vals];
 	  (*appImp)(matrixToWindow, appSel, frameMatrix);
-	  if ([self isFlipped] != wasFlipped)
+	  if (_rFlags.flipped_view != wasFlipped)
 	    {
 	      /*
 	       * The flipping process must result in a coordinate system that

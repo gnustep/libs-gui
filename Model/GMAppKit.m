@@ -978,6 +978,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setAutoresizingMask:
 	[unarchiver decodeUnsignedIntWithName:@"autoresizingMask"]];
 
+  _rFlags.flipped_view = [self isFlipped];
+  if ([sub_views count])
+    _rFlags.has_subviews = 1;
+
   return self;
 }
 

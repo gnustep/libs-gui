@@ -195,7 +195,7 @@ static Class cellClass;
 										      // Compute the float value
       floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
 	/ (slotRect.size.height - knobRect.size.height);
-      if ([self isFlipped])
+      if (_rFlags.flipped_view)
 	floatValue = 1 - floatValue;
     }
   else

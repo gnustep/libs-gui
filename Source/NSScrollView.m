@@ -255,7 +255,7 @@ static Class rulerViewClass = nil;
       if (!_vertScroller)
 	{
 	  [self setVerticalScroller: [[NSScroller new] autorelease]];
-	  if (_contentView && ![_contentView isFlipped])
+	  if (_contentView && !_contentView->_rFlags.flipped_view)
 	    [_vertScroller setFloatValue: 1];
 	}
       [self addSubview: _vertScroller];
@@ -309,14 +309,14 @@ static Class rulerViewClass = nil;
 	}
       else
 	{
-	  if (![_contentView isFlipped])
+	  if (!_contentView->_rFlags.flipped_view)
 	    {
 	      // If view is flipped
 	      // reverse the scroll direction
 	      amount = -amount;
 	    }
 	  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
-			   amount, [_contentView isFlipped]);
+			   amount, _contentView->_rFlags.flipped_view);
 	  point.y = clipViewBounds.origin.y + amount;
 	}
     }
@@ -330,7 +330,7 @@ static Class rulerViewClass = nil;
 	}
       else
 	{
-	  if (![_contentView isFlipped])
+	  if (!_contentView->_rFlags.flipped_view)
 	    floatValue = 1 - floatValue;
 	  point.y = floatValue * (documentRect.size.height
 		     			- clipViewBounds.size.height);
@@ -370,7 +370,7 @@ static Class rulerViewClass = nil;
 	    / documentFrame.size.height;
 	  floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
 	    / (documentFrame.size.height - clipViewBounds.size.height);
-	  if (![_contentView isFlipped])
+	  if (!_contentView->_rFlags.flipped_view)
 	    floatValue = 1 - floatValue;
 	  [_vertScroller setFloatValue: floatValue
 			knobProportion: knobProportion];
@@ -484,7 +484,7 @@ static Class rulerViewClass = nil;
       horizScrollerRect.size.width = contentRect.size.width;
       horizScrollerRect.size.height = scrollerWidth;
 
-      if ([self isFlipped])
+      if (_rFlags.flipped_view)
 	{
 	  horizScrollerRect.origin.y += contentRect.size.height + 1;
 	}
@@ -555,7 +555,7 @@ static Class rulerViewClass = nil;
     {
       float	ypos = scrollerWidth + borderThickness + 1;
 
-      if ([self isFlipped])
+      if (_rFlags.flipped_view)
 	ypos = [self bounds].size.height - ypos;
       DPSmoveto(ctxt, horizLinePosition, ypos);
       DPSrlineto(ctxt, horizLineLength - 1, 0);
@@ -588,7 +588,7 @@ static Class rulerViewClass = nil;
 - (void) setDocumentView: (NSView*)aView
 {
   [_contentView setDocumentView: aView];
-  if (_contentView && ![_contentView isFlipped])
+  if (_contentView && !_contentView->_rFlags.flipped_view)
     [_vertScroller setFloatValue: 1];
   [self tile];
 }

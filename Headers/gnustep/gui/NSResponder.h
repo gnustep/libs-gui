@@ -39,6 +39,23 @@
 {
   NSInterfaceStyle	interface_style;
   NSResponder		*next_responder;
+  /*
+   * Flags for internal use by NSResponder and it's subclasses.
+   */
+@public
+  struct _rFlagsType {
+    /*
+     * 'flipped_view' is set in NSViews designated initialiser (and other
+     * methods that create views) to be the value returned by [-isFlipped]
+     * This caching assumes that the value returned by [-isFlipped] will
+     * not change during the views lifetime - if it does, the view must
+     * be sure to change the flag accordingly.
+     */
+    unsigned	flipped_view:1;
+    unsigned	has_subviews:1;
+    unsigned	has_currects:1;
+    unsigned	has_trkrects:1;
+  } _rFlags;
 }
 
 /*

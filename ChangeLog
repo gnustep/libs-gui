@@ -1,3 +1,30 @@
+Fri May  7 21:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Large and complex changes made in order to speed up operation of the
+	gui.  Roughly double the speed of an app - but stability will
+	probably suffer for a while.
+        * Headers/AppKit/NSResponder.h: Added flags structure for use by
+	NSView (and others) for optimisation.
+        * Headers/AppKit/NSView.h: Made ([-subviews]) return an array.
+	Removed ([-cursorRectangles]) and ([-trackingRectangles])
+	* Model/GMAppKit.m: Added code to ensure that 'flipped_view' and
+	'has_subviews' flags are setup correctly on unarchiving.
+	* Source/NSView.m: Removed ([-cursorRectangles]) and
+	([-trackingRectangles]).  Added 'flipped_view' flag throughout, to
+	avoid necessity of sending ([-isFlipped]) message except at
+	initialisation.  Added 'has_currect' flag to say if the view has any
+	cursor rectangles.  Added 'has_trkrect' flag to say if the view has
+	any tracking rectangles.  Added 'has_subviews' flag to say if the
+	view has any subviews.  Make use of the new flags.
+	* Source/NSClipView.m: Added code to update 'flipped_view' flag when
+	the codument view is changed.
+	* Source/NSClipView.m: Added code to update 'flipped_view' flag when
+	the document view is changed.
+	* Source/NSScrollView.m: Make use of the 'flipped_view' flag.
+	* Source/NSSplitView.m: Make use of the 'flipped_view' flag.
+	* Source/NSWindow.m: For tracking rectangles and cursor rectangles,
+	make use of the new flags maintained by NSView.
+
 Fri May  7 12:16:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/GSTrackingRect.h: Add a couple of ivars and make

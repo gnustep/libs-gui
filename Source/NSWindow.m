@@ -48,6 +48,7 @@
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSScreen.h>
+#include <AppKit/NSView.h>
 #include <AppKit/NSCursor.h>
 
 
@@ -87,6 +88,12 @@
 //*****************************************************************************
 
 @implementation NSWindow
+
+typedef struct NSView_struct
+{
+  @defs(NSView)
+} *NSViewPtr;
+
 
 /*
  * Class variables
@@ -812,16 +819,24 @@ static IMP	ctImp;
 
 - (void) discardCursorRectsForView: (NSView *)theView
 {
-  NSArray *s;
-  id e;
-  NSView *v;
+  if (((NSViewPtr)theView)->_rFlags.has_currects)
+    [theView discardCursorRects];
 
-  [theView discardCursorRects];
+  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+    {
+      NSArray	*s = ((NSViewPtr)theView)->sub_views;
+      unsigned	count = [s count];
 
-  s = [theView subviews];
-  e = [s objectEnumerator];
-  while ((v = [e nextObject]))
-    [self discardCursorRectsForView: v];
+      if (count)
+	{
+	  NSView	*subs[count];
+	  unsigned	i;
+
+	  [s getObjects: subs];
+	  for (i = 0; i < count; i++)
+	    [self discardCursorRectsForView: subs[i]];
+	}
+    }
 }
 
 - (void) discardCursorRects
@@ -841,16 +856,24 @@ static IMP	ctImp;
 
 - (void) resetCursorRectsForView: (NSView *)theView
 {
-  NSArray *s;
-  id e;
-  NSView *v;
+  if (((NSViewPtr)theView)->_rFlags.has_currects)
+    [theView resetCursorRects];
 
-  [theView resetCursorRects];                 // Reset cursor rects for view
+  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+    {
+      NSArray	*s = ((NSViewPtr)theView)->sub_views;
+      unsigned	count = [s count];
 
-  s = [theView subviews];                     // Reset cursor rects for the
-  e = [s objectEnumerator];                   // view's subviews
-  while ((v = [e nextObject]))
-    [self resetCursorRectsForView: v];
+      if (count)
+	{
+	  NSView	*subs[count];
+	  unsigned	i;
+
+	  [s getObjects: subs];
+	  for (i = 0; i < count; i++)
+	    [self resetCursorRectsForView: subs[i]];
+	}
+    }
 }
 
 - (void) resetCursorRects
@@ -1072,69 +1095,70 @@ static IMP	ctImp;
 - (void) _checkTrackingRectangles: (NSView *)theView
 			 forEvent: (NSEvent *)theEvent
 {
-  NSArray	*tr = [theView trackingRectangles];
-  NSArray	*sb = [theView subviews];
-  unsigned	count;
-
-  /*
-   * Loop through the tracking rectangles
-   */
-  count = [tr count];
-  if (count > 0)
+  if (((NSViewPtr)theView)->_rFlags.has_trkrects)
     {
-      GSTrackingRect	*rects[count];
-      NSPoint		loc = [theEvent locationInWindow];
-      BOOL		flipped = [theView isFlipped];
-      unsigned		i;
+      NSArray	*tr = ((NSViewPtr)theView)->tracking_rects;
+      unsigned	count = [tr count];
 
-      [tr getObjects: rects];
-
-      for (i = 0; i < count; ++i)
+      /*
+       * Loop through the tracking rectangles
+       */
+      if (count > 0)
 	{
-	  BOOL		last;
-	  BOOL		now;
-	  GSTrackingRect *r = rects[i];
+	  GSTrackingRect	*rects[count];
+	  NSPoint		loc = [theEvent locationInWindow];
+	  BOOL		flipped = ((NSViewPtr)theView)->_rFlags.flipped_view;
+	  unsigned		i;
 
-	  /* Check mouse at last point */
-	  last = NSMouseInRect(last_point, r->rectangle, flipped);
-	  /* Check mouse at current point */
-	  now = NSMouseInRect(loc, r->rectangle, flipped);
+	  [tr getObjects: rects];
 
-	  if ((!last) && (now))                           // Mouse entered event
+	  for (i = 0; i < count; ++i)
 	    {
-	      if (r->ownerRespondsToMouseEntered)
-		{
-		  NSEvent	*e;
+	      BOOL		last;
+	      BOOL		now;
+	      GSTrackingRect	*r = rects[i];
 
-		  e = [NSEvent enterExitEventWithType: NSMouseEntered
-					     location: loc
-					modifierFlags: [theEvent modifierFlags]
-					    timestamp: 0
-					 windowNumber: [theEvent windowNumber]
-					      context: NULL
-					  eventNumber: 0
-				       trackingNumber: r->tag
-					     userData: r->user_data];
-		  [r->owner mouseEntered: e];
+	      /* Check mouse at last point */
+	      last = NSMouseInRect(last_point, r->rectangle, flipped);
+	      /* Check mouse at current point */
+	      now = NSMouseInRect(loc, r->rectangle, flipped);
+
+	      if ((!last) && (now))		// Mouse entered event
+		{
+		  if (r->ownerRespondsToMouseEntered)
+		    {
+		      NSEvent	*e;
+
+		      e = [NSEvent enterExitEventWithType: NSMouseEntered
+			location: loc
+			modifierFlags: [theEvent modifierFlags]
+			timestamp: 0
+			windowNumber: [theEvent windowNumber]
+			context: NULL
+			eventNumber: 0
+			trackingNumber: r->tag
+			userData: r->user_data];
+		      [r->owner mouseEntered: e];
+		    }
 		}
-	    }
 
-	  if ((last) && (!now))                           // Mouse exited event
-	    {
-	      if (r->ownerRespondsToMouseExited)
+	      if ((last) && (!now))		// Mouse exited event
 		{
-		  NSEvent	*e;
+		  if (r->ownerRespondsToMouseExited)
+		    {
+		      NSEvent	*e;
 
-		  e = [NSEvent enterExitEventWithType: NSMouseExited
-					     location: loc
-					modifierFlags: [theEvent modifierFlags]
-					    timestamp: 0
-					 windowNumber: [theEvent windowNumber]
-					      context: NULL
-					  eventNumber: 0
-				       trackingNumber: r->tag
-					     userData: r->user_data];
-		  [r->owner mouseExited: e];
+		      e = [NSEvent enterExitEventWithType: NSMouseExited
+			location: loc
+			modifierFlags: [theEvent modifierFlags]
+			timestamp: 0
+			windowNumber: [theEvent windowNumber]
+			context: NULL
+			eventNumber: 0
+			trackingNumber: r->tag
+			userData: r->user_data];
+		      [r->owner mouseExited: e];
+		    }
 		}
 	    }
 	}
@@ -1143,89 +1167,95 @@ static IMP	ctImp;
   /*
    * Check tracking rectangles for the subviews
    */
-  count = [sb count];
-  if (count > 0)
+  if (((NSViewPtr)theView)->_rFlags.has_subviews)
     {
-      NSView	*subs[count];
-      unsigned	i;
+      NSArray	*sb = ((NSViewPtr)theView)->sub_views;
+      unsigned	count = [sb count];
 
-      [sb getObjects: subs];
-      for (i = 0; i < count; ++i)
-	(*ctImp)(self, ctSel, subs[i], theEvent);
+      if (count > 0)
+	{
+	  NSView	*subs[count];
+	  unsigned	i;
+
+	  [sb getObjects: subs];
+	  for (i = 0; i < count; ++i)
+	    (*ctImp)(self, ctSel, subs[i], theEvent);
+	}
     }
 }
 
 - (void) _checkCursorRectangles: (NSView *)theView forEvent: (NSEvent *)theEvent
 {
-  NSArray		*tr = [theView cursorRectangles];
-  NSArray		*sb = [theView subviews];
-  unsigned		count;
-
-  // Loop through cursor rectangles
-  count = [tr count];
-  if (count > 0)
+  if (((NSViewPtr)theView)->_rFlags.has_currects)
     {
-      GSTrackingRect	*rects[count];
-      NSPoint		loc = [theEvent locationInWindow];
-      NSPoint		lastConv;
-      NSPoint		locConv;
-      BOOL		flipped = [theView isFlipped];
-      unsigned		i;
+      NSArray	*tr = ((NSViewPtr)theView)->cursor_rects;
+      unsigned	count = [tr count];
 
-      /*
-       * Convert points from window to view coordinates.
-       */
-      lastConv = [theView convertPoint: last_point fromView: nil];
-      locConv = [theView convertPoint: loc fromView: nil];
-
-      [tr getObjects: rects];
-
-      for (i = 0; i < count; ++i)
+      // Loop through cursor rectangles
+      if (count > 0)
 	{
-	  GSTrackingRect	*r = rects[i];
-	  BOOL			last;
-	  BOOL			now;
-
-	  if ([r isValid] == NO)
-	    continue;
+	  GSTrackingRect	*rects[count];
+	  NSPoint		loc = [theEvent locationInWindow];
+	  NSPoint		lastConv;
+	  NSPoint		locConv;
+	  BOOL		flipped = ((NSViewPtr)theView)->_rFlags.flipped_view;
+	  unsigned		i;
 
 	  /*
-	   * Check for presence of point in rectangle.
+	   * Convert points from window to view coordinates.
 	   */
-	  last = NSMouseInRect(lastConv, r->rectangle, flipped);
-	  now = NSMouseInRect(locConv, r->rectangle, flipped);
+	  lastConv = [theView convertPoint: last_point fromView: nil];
+	  locConv = [theView convertPoint: loc fromView: nil];
 
-	  // Mouse entered
-	  if ((!last) && (now))
+	  [tr getObjects: rects];
+
+	  for (i = 0; i < count; ++i)
 	    {
-	      NSEvent	*e;
+	      GSTrackingRect	*r = rects[i];
+	      BOOL			last;
+	      BOOL			now;
 
-	      e = [NSEvent enterExitEventWithType: NSCursorUpdate
-			     location: loc
-			     modifierFlags: [theEvent modifierFlags]
-			     timestamp: 0
-			     windowNumber: [theEvent windowNumber]
-			     context: [theEvent context]
-			     eventNumber: 0
-			     trackingNumber: (int)YES
-			     userData: (void *)r];
-	      [self postEvent: e atStart: YES];
-	    }
-	  // Mouse exited
-	  if ((last) && (!now))
-	    {
-	      NSEvent	*e;
+	      if ([r isValid] == NO)
+		continue;
 
-	      e = [NSEvent enterExitEventWithType: NSCursorUpdate
-			     location: loc
-			     modifierFlags: [theEvent modifierFlags]
-			     timestamp: 0
-			     windowNumber: [theEvent windowNumber]
-			     context: [theEvent context]
-			     eventNumber: 0
-			     trackingNumber: (int)NO
-			     userData: (void *)r];
-	      [self postEvent: e atStart: YES];
+	      /*
+	       * Check for presence of point in rectangle.
+	       */
+	      last = NSMouseInRect(lastConv, r->rectangle, flipped);
+	      now = NSMouseInRect(locConv, r->rectangle, flipped);
+
+	      // Mouse entered
+	      if ((!last) && (now))
+		{
+		  NSEvent	*e;
+
+		  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+		    location: loc
+		    modifierFlags: [theEvent modifierFlags]
+		    timestamp: 0
+		    windowNumber: [theEvent windowNumber]
+		    context: [theEvent context]
+		    eventNumber: 0
+		    trackingNumber: (int)YES
+		    userData: (void *)r];
+		  [self postEvent: e atStart: YES];
+		}
+	      // Mouse exited
+	      if ((last) && (!now))
+		{
+		  NSEvent	*e;
+
+		  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+		    location: loc
+		    modifierFlags: [theEvent modifierFlags]
+		    timestamp: 0
+		    windowNumber: [theEvent windowNumber]
+		    context: [theEvent context]
+		    eventNumber: 0
+		    trackingNumber: (int)NO
+		    userData: (void *)r];
+		  [self postEvent: e atStart: YES];
+		}
 	    }
 	}
     }
@@ -1233,15 +1263,20 @@ static IMP	ctImp;
   /*
    * Check cursor rectangles for the subviews
    */
-  count = [sb count];
-  if (count > 0)
+  if (((NSViewPtr)theView)->_rFlags.has_subviews)
     {
-      NSView	*subs[count];
-      unsigned	i;
+      NSArray	*sb = ((NSViewPtr)theView)->sub_views;
+      unsigned	count = [sb count];
 
-      [sb getObjects: subs];
-      for (i = 0; i < count; ++i)
-	(*ccImp)(self, ccSel, subs[i], theEvent);
+      if (count > 0)
+	{
+	  NSView	*subs[count];
+	  unsigned	i;
+
+	  [sb getObjects: subs];
+	  for (i = 0; i < count; ++i)
+	    (*ccImp)(self, ccSel, subs[i], theEvent);
+	}
     }
 }
 
