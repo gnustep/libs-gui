@@ -25,6 +25,8 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = PlainInputServer
+$(APP_NAME)_INSTALL_DIR = $(GNUSTEP_LIBRARY)/InputManagers
+
 PlainInputServer_OBJC_FILES = main.m PlainInputServer.m ServerController.m
 PlainInputServer_RESOURCE_FILES = Info PlainInputServer.dict
 
