@@ -1,3 +1,9 @@
+2003-04-14  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSApplication.m:
+	(setImageForWindowsItem:): Do not add "X" image if window has 
+	no close button.
+	
 2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
 
 	* Source/NSProgressIndicator.m: revert last change.
