@@ -1,3 +1,18 @@
+2000-06-26  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextAttachment.h
+	* Source/NSTextAttachment.m 
+	* Source/NSAttributedString.m 
+	Added a basic implementation for NSTextAttachment and
+	NSTextAttachmentCell and use it in NSAttributedString.
+	* Source/GNUmakefile
+	Include new file NSTextAttachment.m
+	* Source/NSText.m 
+	Changed the font and ruler pasting and removed some other FIXMEs
+	* Headers/AppKit/NSPasteboard.h
+	* Source/NSPasteboard.m 
+	Added two missing methods for file wrapper
+	
 2000-06-25  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/Parser/attributedStringConsumer.m
