@@ -320,8 +320,7 @@
     return;
 
   PSgsave ();
-
-//fprintf(stderr,"XRButtonCell drawWithFrame \n");
+  NSRectClip (cellFrame);
 
   // Save last view drawn to
   [self setControlView: controlView];
@@ -360,7 +359,6 @@
         }
     }
 
-//  NSRectClip (cellFrame);
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 
   PSgrestore ();
