@@ -30,6 +30,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSTask.h>
