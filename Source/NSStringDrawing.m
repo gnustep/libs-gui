@@ -216,7 +216,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
       // glyph is an unicode char value
       // if the font has non-standard encoding we need to remap it.
       unichar u[run->glyphCount];
-      char *r;
+      char *r = NULL;
       unsigned l = run->glyphCount;
       unsigned s = 0;
 
@@ -224,7 +224,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
         u[i] = run->glyphs[i].glyph;
 
       if (GSFromUnicode((unsigned char**)&r, &s, u, l, enc,
-			     NSDefaultMallocZone(), GSUniTerminate) == NO)
+			     NSDefaultMallocZone(), GSUniTerminate | GSUniTemporary) == NO)
         {
           [NSException raise: NSCharacterConversionException
                       format: @"Can't convert to/from Unicode string."];
@@ -249,7 +249,6 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	      (enc != NSUnicodeStringEncoding))
 	    {
 	      unsigned int  size = 1;
-	      unsigned char c = 0;
 	      unsigned char *dst = buf;
 
 	      GSFromUnicode(&dst, &size, &(run->glyphs[i].glyph), 1, enc, 0, 0);
