@@ -148,13 +148,21 @@ installed the GNUstep Makefile Pacakge and the GNUstep Base Library.
 
 @menu
 * NSBrowserCell::               
+* NSSavePanel::               
 * GSHbox::                      
 * GSTable::                     
 * GSVbox::                      
 @end menu
 
-@node NSBrowserCell, GSHbox, Classes, Classes
+@node NSBrowserCell, NSSavePanel, Classes, Classes
 @section NSBrowserCell
+
+@menu
+* GSBrowserCellFontify::
+@end menu
+
+@node GSBrowserCellFontify,  , NSBrowserCell, NSBrowserCell
+@subsection GSBrowserCellFontify
 
 GNUstep NSBrowserCell has an experimental feature (disabled by default), 
 which you may turn on by setting the @code{GSBrowserCellFontify} 
@@ -177,7 +185,30 @@ which are drawn in (non bold) system font).
 For example, when the feature is on, in a SavePanel (or OpenPanel), directory 
 entries are drawn in bold, while simple files are drawn in non bold. 
 
-@node GSHbox, GSTable, NSBrowserCell, Classes
+@node NSSavePanel, GSHbox, NSBrowserCell, Classes
+@section NSSavePanel
+
+@menu
+* GSSavePanelShowProgress::
+@end menu
+
+@node GSSavePanelShowProgress,  , NSSavePanel, NSSavePanel
+@subsection GSSavePanelShowProgress
+
+GNUstep NSSavePanel has an experimental feature (disabled by default),
+which you may turn on by setting the @code{GSSavePanelShowProgress} user
+default to @code{YES} (see the previous section on how to do it).
+
+When the feature is on, the save panel and its subclasses (such as the
+open panel) displays "Reading Directory ***.." (progressively adding
+dots) in the window titlebar while reading very big directories (more
+than 100 entries).  This is meant to make things friendlier for slow
+computers (to me, it definitely does).  If your computer is fast, you'd
+better leave the feature disabled.
+
+The feature is experimental in all senses: it could be unstable.
+
+@node GSHbox, GSTable, NSSavePanel, Classes
 @section GSHbox Reference
 
 @menu
