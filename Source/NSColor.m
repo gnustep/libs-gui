@@ -1216,7 +1216,6 @@ static NSMutableDictionary	*colorStrings = nil;
     {
       NSDictionary	*dict;
       NSString		*space;
-      NSString		*str;
       float		alpha;
 
       dict = [str propertyList];
