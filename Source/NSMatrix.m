@@ -901,7 +901,7 @@ fprintf(stderr, " NSMatrix: selectText --- ");
 - (id)selectTextAtRow:(int)row column:(int)column
 {
 // TODO
-  NSCell* aCell = [self cellAtRow:row column:column];
+//  NSCell* aCell = [self cellAtRow:row column:column];
 
 fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
@@ -1164,7 +1164,7 @@ static MPoint anchor = {0, 0};
 		[NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
 	ASSIGN(lastEvent, theEvent);
 
-	[[self window] captureMouse: self];						// grab the mouse
+	[window captureMouse: self];							// grab the mouse
 	[self lockFocus];					// selection involves two steps, first
 										// a loop that continues until the left
 	while (!done) 						// mouse goes up; then a series of 
@@ -1324,7 +1324,7 @@ static MPoint anchor = {0, 0};
 		lastLocation = [self convertPoint:lastLocation fromView:nil];
   		}
 						
-	[[self window] releaseMouse: self];				// Release the mouse
+	[window releaseMouse: self];					// Release the mouse
 
   	switch (mode) 									// Finish the selection
 		{								 			// process

@@ -1,3 +1,16 @@
+Tue Sep  8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSMenu.m->NSMenuMatrix in insertItemWithTitle: removed call to 
+		_resizeMenuForCellSize for performance reasons.  _resizeMenuForCellSize 
+		is called later on a sizeToFit.
+	* NSMenu.m->NSMenuMatrix in removeItem: removed call to 
+		_resizeMenuForCellSize for performance reasons.  _resizeMenuForCellSize 
+		is called later on a sizeToFit.
+	* NSMenu.m->NSMenu in insertItemWithTitle: replaced call to _menuChanged
+		with menuHasChanged=YES for performance reasons.  
+	* NSMenu.m->NSMenu in removeItem: replaced call to _menuChanged with
+		menuHasChanged=YES for performance reasons.  
+
 Tue Sep  8 16:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSScroller.m: Minor efficiency hacks (inspired by xraw) plus

@@ -141,9 +141,9 @@ static NSFont* menuFont = nil;
 }
 
 - (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-				action:(SEL)aSelector
-			 keyEquivalent:(NSString*)charCode
-			       atIndex:(unsigned int)index
+								action:(SEL)aSelector
+			 					keyEquivalent:(NSString*)charCode
+			       				atIndex:(unsigned int)index
 {
   id menuCell = [[[NSMenu cellClass] new] autorelease];
 
@@ -154,7 +154,6 @@ static NSFont* menuFont = nil;
   [menuCell setKeyEquivalent:charCode];
 
   [cells insertObject:menuCell atIndex:index];
-  [self _resizeMenuForCellSize];
 
   return menuCell;
 }
@@ -167,7 +166,6 @@ static NSFont* menuFont = nil;
     return;
 
   [cells removeObjectAtIndex:row];
-  [self _resizeMenuForCellSize];
 }
 
 - (NSArray*)itemArray			{ return cells; }
@@ -343,25 +341,25 @@ static Class menuCellClass = nil;
 }
 
 - (id <NSMenuItem>)addItemWithTitle:(NSString*)aString
-			     action:(SEL)aSelector
-		      keyEquivalent:(NSString*)charCode
+			    			 action:(SEL)aSelector
+		      				 keyEquivalent:(NSString*)charCode
 {
   return [self insertItemWithTitle:aString
-			    action:aSelector
-		     keyEquivalent:charCode
-			   atIndex:[[menuCells itemArray] count]];
+			    			action:aSelector
+		     				keyEquivalent:charCode
+			   				atIndex:[[menuCells itemArray] count]];
 }
 
 - (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-				action:(SEL)aSelector
-			 keyEquivalent:(NSString*)charCode
-			       atIndex:(unsigned int)index
+								action:(SEL)aSelector
+			 					keyEquivalent:(NSString*)charCode
+			       				atIndex:(unsigned int)index
 {
   id menuCell = [menuCells insertItemWithTitle:aString
-					action:aSelector
-				 keyEquivalent:charCode
-				       atIndex:index];
-  [self _menuChanged];
+										action:aSelector
+				 						keyEquivalent:charCode
+				       					atIndex:index];
+  menuHasChanged = YES;									// menu needs update
 
   return menuCell;
 }
@@ -369,7 +367,7 @@ static Class menuCellClass = nil;
 - (void)removeItem:(id <NSMenuItem>)anItem
 {
   [menuCells removeItem:anItem];
-  [self _menuChanged];
+  menuHasChanged = YES;									// menu needs update
 }
 
 - (NSArray*)itemArray
@@ -592,7 +590,8 @@ static Class menuCellClass = nil;
   /* Reenable displaying of menus */
   [self setMenuChangedMessagesEnabled:YES];
 
-  [self sizeToFit];
+  if(menuHasChanged)										// resize if menu 
+    [self sizeToFit];										// has been changed
 }
 
 - (void)performActionForItem:(id <NSMenuItem>)cell

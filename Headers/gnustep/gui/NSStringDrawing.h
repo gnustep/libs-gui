@@ -36,25 +36,28 @@
 
 						// global NSString attribute names used in ascessing  
 						// the respective property in a text attributes 
-						// dictionary.  if the key is not in the dictionary the 	
-						// default value is assumed  											
-extern NSString *NSFontAttributeName;    	// NSFont, defaults to Helvetica 12
-        				// NSParagraphStyle, default is defaultParagraphStyle
-extern NSString *NSParagraphStyleAttributeName;	 
-											// NSColor, default is blackColor 
-extern NSString *NSForegroundColorAttributeName; 
-											// int, default 0 = no	underline
-extern NSString *NSUnderlineStyleAttributeName;   	 	 
-extern NSString *NSSuperscriptAttributeName;      			// int, default 0 
-								// NSColor, default nil = no background color
-extern NSString *NSBackgroundColorAttributeName;		
-extern NSString *NSAttachmentAttributeName;    // NSTextAttachment, default nil     	 
-						// int, default 1, 0 = no ligatures, 2 = all ligatures
-extern NSString *NSLigatureAttributeName;			 
-extern NSString *NSBaselineOffsetAttributeName;  // float, default 0 in points; 
-											// float, offset from baseline, 
-extern NSString *NSKernAttributeName;		// amount to modify default
-											// kerning, if 0 kerning is off 
+						// dictionary.  if the key is not in the dictionary 	
+						// the default value is assumed  											
+extern NSString *NSFontAttributeName;    			// NSFont, Helvetica 12
+extern NSString *NSParagraphStyleAttributeName;	 	// defaultParagraphStyle
+extern NSString *NSForegroundColorAttributeName; 	// NSColor, blackColor
+extern NSString *NSUnderlineStyleAttributeName;   	// NSNumber int, 0 no line 	 
+extern NSString *NSSuperscriptAttributeName;      	// NSNumber int, 0		 
+extern NSString *NSBackgroundColorAttributeName;	// NSColor, nil	
+extern NSString *NSAttachmentAttributeName;         // NSTextAttachment, nil	 
+extern NSString *NSLigatureAttributeName;			// NSNumber int, 1 
+extern NSString *NSBaselineOffsetAttributeName;  	// NSNumber float, 0 points 
+extern NSString *NSKernAttributeName;				// NSNumber float, 0
+//
+//	Extended definitions:
+//
+//		NSParagraphStyleAttributeName		NSParagraphStyle, default is 
+//											defaultParagraphStyle
+//
+//		NSKernAttributeName					NSNumber float, offset from 
+//		 									baseline, amount tomodify default 
+//											kerning, if 0 kerning is off		 	 
+
 enum 									
 {											// Currently supported values for
     NSSingleUnderlineStyle = 1				// NSUnderlineStyleAttributeName

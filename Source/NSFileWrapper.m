@@ -37,26 +37,24 @@
 //
 // Initialization 
 //
-										// Init instance of directory type
-- (id)initDirectoryWithFileWrappers:(NSDictionary *)docs	 
-{
+- (id)initDirectoryWithFileWrappers:(NSDictionary *)docs	// Init instance of
+{															// directory type
 	return nil;
 }
-										// Init instance of regular file type
-- (id)initRegularFileWithContents:(NSData *)data		 
-{
+														    
+- (id)initRegularFileWithContents:(NSData *)data		  // Init instance of
+{														  // regular file type
 	return nil;
 }
-										// Init instance of symbolic link type
-- (id)initSymbolicLinkWithDestination:(NSString *)path
-{
+														   
+- (id)initSymbolicLinkWithDestination:(NSString *)path	  // Init instance of
+{														  // symbolic link type
 	return nil;
 }
 										// Init an instance from the file,
 										// directory, or symbolic link at path. 
-										// This can create a tree of instances 
-- (id)initWithPath:(NSString *)path		// with a directory instance at the top
-{
+- (id)initWithPath:(NSString *)path		// This can create a tree of instances
+{										// with a directory instance at the top
 	return nil;
 }
 										// Init an instance from data in std
