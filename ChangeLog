@@ -1,3 +1,9 @@
+2003-02-25 17:38  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-textStorage:edited:range:changeInLength:invalidatedRange:): Fix
+	handling of trailing text containers when soft-invalidating.
+
 2003-02-24  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.8.4

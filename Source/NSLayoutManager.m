@@ -2013,6 +2013,10 @@ this file describes this.
 	    break;
 	  i = 0;
 	  lf = tc->linefrags;
+	  tc->num_soft += tc->num_linefrags;
+	  tc->num_linefrags = 0;
+	  tc->was_invalidated = YES;
+	  tc->complete = NO;
 	}
 
 no_soft_invalidation:
