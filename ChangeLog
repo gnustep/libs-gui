@@ -1,3 +1,17 @@
+2003-03-18  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m 
+	([NSMenuTitleView titleSize]): Added.
+	([NSMenuTitleView drawRect:]): Switch to using titleSize:. Declaration 
+	of attr variable moved to class declaration.
+	([NSMenuTitleView init]): Added to initialize attr variable.
+	(sizeToFit): Count missed state image offset. Do not add padding when 
+	there's no key equivalent. Handle situations when tile view wider than 
+	menu items, when there's no menu items and so on. (Side efect: menu of 
+	application in Gorm resizes correctly while changing title, adding
+	shorcut etc.). Using [NSMenuTitleView titleSize] now for correct 
+	determination	of menu title's text width.
+
 2003-03-17  Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m 
