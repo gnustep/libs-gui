@@ -1,3 +1,39 @@
+2003-06-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSInputManager.h
+	Changed ivar _abortFlags to unsigned. Changed all modifier
+	parameters to unsigned.
+	* Source/NSInputManager.m (initWithName:host:):
+	Removed compiler warning about signed/unsigned comparision. 
+	Adopted to changes in header.
+	* Headers/gnustep/gui/GSLayoutManager.h
+	Changed ivars layout_glyph and layout_char to unsigned.
+	* Headers/gnustep/gui/GSLayoutManager_internal.h
+	Changed elements glyph_length and char_length of structure
+	glyph_run_head_t to unsigned.
+	* Source/NSLayoutManager.m
+	(rectArrayForGlyphRange:...rectCount:,
+	glyphRangeForBoundingRect:inTextContainer:,
+	_insertionPointRectForCharacterIndex:textContainer:): 
+	Removed compiler warning about signed/unsigned comparision. 
+	* Source/NSMatrix.m (selectAll:)
+	Removed compiler warning about signed/unsigned comparision. 
+	* Source/NSPageLayout.m (initWithContentRect:...screen:, readPrintInfo)
+	Removed compiler warning about signed/unsigned comparision. 
+	* Headers/gnustep/gui/NSPopUpButtonCell.h
+	Changed ivar _selectedItem to type (id <NSMenuItem>).
+	* Source/NSPopUpButtonCell.m (insertItemWithTitle:atIndex:,
+	selectItemAtIndex:, selectItemWithTitle:, setTitle:)
+	Corrected type of local variable.
+	* Source/NSPrintInfo.m
+	In [+initPrintInfoDefaults] initialize variable printer with nil.
+	* Source/NSPrintOperation.m (_print)
+	Removed compiler warning about signed/unsigned comparision. 
+	* Source/NSPrintPanel.m
+	Added missing include for GSGuiPrivate.h.
+	(initWithContentRect:...screen:, updateFromPrintInfo) 
+	Removed compiler warning about signed/unsigned comparision. 
+
 2003-06-21  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSOutlineView.m ([NSOutlineView -drawRow:clipRect:]): 
