@@ -48,6 +48,8 @@
 //
 + (NSHelpPanel *)sharedHelpPanel
 {
+  NSRunAlertPanel (NULL, @"Help Panel not implemented yet",
+		   @"OK", NULL, NULL);
   return nil;
 }
 

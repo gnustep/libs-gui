@@ -48,6 +48,8 @@
 //
 + (NSDataLinkPanel *)sharedDataLinkPanel
 {
+  NSRunAlertPanel (NULL, @"Data Link Panel not implemented yet",
+		   @"OK", NULL, NULL);
   return nil;
 }
 
