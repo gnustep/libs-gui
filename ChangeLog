@@ -1,5 +1,11 @@
 2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Panel/English.proj/GSPageLayout.gorm/objects.gorm
+	* Panel/English.proj/GSPrintPanel.gorm/objects.gorm
+	Made all buttons non-continuous.
+	
+2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSTableView.h
 	Added new ivar _action.
 	* Source/NSTableView.m
