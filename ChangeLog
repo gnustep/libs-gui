@@ -1,3 +1,13 @@
+2002-02-03  Fred Kiefer <FredKiefer@gmx.de>, Richard <rfm@gnu.org>
+
+	* Source/NSView.m: ([removeSubview:]) call ([setNeedsDisplay:NO]) in
+	the subview so that, if subsequently added to another view, and marked
+	for display, the area needing display will be updated to parent views
+	correctly.
+	* Source/NSWindow.m: ([orderWindow:relativeTo:]) fix to restart
+	automatic update events correctly when a window which was ordered
+	out is ordered back in again.
+
 2002-02-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m

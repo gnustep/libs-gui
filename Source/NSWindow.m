@@ -1313,7 +1313,7 @@ static NSNotificationCenter *nc = nil;
 
   if (place != NSWindowOut)
     {
-      if (_rFlags.needs_display == NO)
+      if (_rFlags.needs_display == YES)
 	{
 	  /*
 	   * Once we are ordered back in, we will want to update the window
