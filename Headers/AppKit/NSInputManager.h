@@ -32,6 +32,7 @@
 
 @class NSString;
 @class NSArray;
+@class NSMutableArray;
 @class NSAttributedString;
 @class NSDictionary;
 @class NSEvent;
@@ -63,6 +64,7 @@
   GSTIMInputServerInfo	*serverInfo;
   GSTIMKeyBindingTable	*keyBindingTable;
   id			serverProxy;
+  NSMutableArray	*pendingCharacters;
 }
 
 + (NSInputManager *)currentInputManager;

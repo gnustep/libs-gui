@@ -255,20 +255,11 @@
       if ([obj isKindOfClass: [NSString class]])
 	{
 	  selVal = (unsigned long)NSSelectorFromString(obj);
-	  if (selVal)
+	  selHolder = [NSNumber numberWithUnsignedLong: selVal];
+	  if (selHolder)
 	    {
-	      selHolder = [NSNumber numberWithUnsignedLong: selVal];
-	      if (selHolder)
-		{
-		  [draft setObject: [NSArray arrayWithObject: selHolder]
-			    forKey: compiledKey];
-		}
-	    }
-	  else
-	    {
-	      NSDebugMLLog(@"NSInputManager",
-			   @"Unknown selector %@ for %@",
-			   obj, compiledKey);
+	      [draft setObject: [NSArray arrayWithObject: selHolder]
+			forKey: compiledKey];
 	    }
 	}
       else if ([obj isKindOfClass: [NSArray class]])
@@ -285,19 +276,10 @@
 		}
 
 	      selVal = (unsigned long)NSSelectorFromString(selStr);
-	      if (selVal)
+	      selHolder = [NSNumber numberWithUnsignedLong: selVal];
+	      if (selHolder)
 		{
-		  selHolder = [NSNumber numberWithUnsignedLong: selVal];
-		  if (selHolder)
-		    {
-		      [selArray addObject: selHolder];
-		    }
-		}
-	      else
-		{
-		  NSDebugMLLog(@"NSInputManager",
-			       @"Unknown selector %@ for %@",
-			       selStr, compiledKey);
+		  [selArray addObject: selHolder];
 		}
 	    }
 	  if ([selArray count] > 0)

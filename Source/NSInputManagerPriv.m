@@ -94,9 +94,19 @@
       for (i = 0; i < [selArray count]; i++)
 	{
 	  sel = (SEL)[[selArray objectAtIndex: i] unsignedLongValue];
-	  [selStrArray addObject: NSStringFromSelector(sel)];
+	  if (sel)
+	    {
+	      [selStrArray addObject: NSStringFromSelector(sel)];
+	    }
 	}
-      NSDebugMLLog(@"NSInputManager", @"--> %@", selStrArray);
+      if ([selStrArray count] > 0)
+	{
+	  NSDebugMLLog(@"NSInputManager", @"--> %@", selStrArray);
+	}
+      else
+	{
+	  NSDebugMLLog(@"NSInputManager", @"--> non-NSResponder selector");
+	}
     }
   else
     {
@@ -107,28 +117,50 @@
     {
     case GSTIMNotFound:
       [self insertText: chars];
+      [pendingCharacters removeAllObjects];
       break;
 
     case GSTIMFound:
+      [pendingCharacters addObject: chars];
       if (selArray && [selArray count] > 0)
 	{
+	  int numSelectors;
+
+	  /* Check if the key binding tables returned an array of non-nil
+	     selectors. */
+	  numSelectors = 0;
 	  for (i = 0; i < [selArray count]; i++)
 	    {
 	      sel = (SEL)[[selArray objectAtIndex: i] unsignedLongValue];
-	      [self doCommandBySelector: sel];
+	      if (sel)
+		{
+		  ++numSelectors;
+		}
+	    }
+	  /* If all the elements of the array are non-nil, invoke the
+	     selectors; otherwise, send the corresponding key strokes
+	     to the server in the form of raw characters. */
+	  if (numSelectors == [selArray count])
+	    {
+	      for (i = 0; i < [selArray count]; i++)
+		{
+		  sel = (SEL)[[selArray objectAtIndex: i] unsignedLongValue];
+		  [self doCommandBySelector: sel];
+		}
+	    }
+	  else
+	    {
+	      for (i = 0; i < [pendingCharacters count]; i++)
+		{
+		  [self insertText: [pendingCharacters objectAtIndex: i]];
+		}
 	    }
 	}
-      else
-	{
-	  /* This implies that the key binding is the one specified by the
-	     current server.  Pass the raw character to it and let it
-	     handle the character. */
-	  [self insertText: chars];
-	}
+      [pendingCharacters removeAllObjects];
       break;
 
     case GSTIMPending:
-      /* Do nothing, waiting for a next event. */
+      [pendingCharacters addObject: chars];
       break;
     }
 }

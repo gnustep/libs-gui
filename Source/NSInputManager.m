@@ -68,6 +68,9 @@
 - (void)setKeyBindingTable: (GSTIMKeyBindingTable *)table;
 - (GSTIMKeyBindingTable *)keyBindingTable;
 
+- (void)setPendingCharacters: (NSMutableArray *)array;
+- (NSMutableArray *)pendingCharacters;
+
 - (id)clientView;
 
 - (NSString *)standardKeyBindingAbsolutePath;
@@ -214,6 +217,8 @@ static NSMutableArray *_inputServerList = nil;
 	}
     }
 
+  [self setPendingCharacters: [[NSMutableArray alloc] init]];
+
   [self becomeObserverOfClient];
   [NSInputManager addToInputServerList: self];
 
@@ -302,6 +307,7 @@ static NSMutableArray *_inputServerList = nil;
 
   [NSInputManager removeFromInputServerList: self]; 
 
+  [self setPendingCharacters: nil];
   [self setServerProxy: nil];
   [self setKeyBindingTable: nil];
   [self setServerInfo: nil];
@@ -592,6 +598,20 @@ static NSMutableArray *_inputServerList = nil;
 - (GSTIMKeyBindingTable *)keyBindingTable
 {
   return keyBindingTable;
+}
+
+
+- (void)setPendingCharacters: (NSMutableArray *)array
+{
+  [array retain];
+  [pendingCharacters release];
+  pendingCharacters = array;
+}
+
+
+- (NSMutableArray *)pendingCharacters
+{
+  return pendingCharacters;
 }
 
 

@@ -1,3 +1,18 @@
+2004-04-18  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Corrected the handling of pending characters.
+
+	* Headers/AppKit/NSInputManagers.h: Added the new ivar
+	  pendingCharacters.
+	* Source/NSInputManager.m (-initWithName::, -dealloc): Added creation
+	  and release of the ivar pendingCharacters.
+	  (-setPendingCharacters, -pendingCharacters): Accessors to the ivar
+	  pendingCharacters.
+	* Source/GSTIMKeyBindingTable.m (-compileBindings:): Let the parameter
+	  draft contain an element whose SEL value is 0.
+	* Source/NSInputManagerPriv.m (-interpretSingleKeyEvent:): Corrected
+	  the handling of pending characters.
+
 2004-04-16  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Added a mechanism by which any input server is launched from
