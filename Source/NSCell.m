@@ -1773,8 +1773,6 @@ static NSColor	*shadowCol;
     {
       [textObject mouseDown: theEvent];
     }
-
-  [textObject display];
 }
 
 - (void) endEditing: (NSText*)textObject
@@ -1820,7 +1818,6 @@ static NSColor	*shadowCol;
 		    [self titleRectForBounds: aRect].size.height)];
     [[textObject textContainer] setWidthTracksTextView: NO];
     [[textObject textContainer] setWidthTracksTextView: NO];
-
   }
 
   if (_formatter != nil)
@@ -1854,7 +1851,6 @@ static NSColor	*shadowCol;
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
-  [textObject display];
 }
 
 - (BOOL) sendsActionOnEndEditing 
