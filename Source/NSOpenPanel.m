@@ -57,11 +57,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 @interface NSSavePanel (_PrivateMethods)
 - (void) _resetDefaults;
 - (void) _selectCellName: (NSString *)title;
-@end
-//
-
-@interface NSOpenPanel (_PrivateMethods)
-- (void) _resetDefaults;
+- (void) _selectTextInColumn: (int)column;
+- (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
 - (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
 @end
 
@@ -200,6 +197,30 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
 }
 
+- (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
+{
+  if (path == nil)
+    {
+      if (_directory)
+	path = _directory; 
+      else
+	path = [[NSFileManager defaultManager] currentDirectoryPath];
+    }  
+
+  if (filename == nil)
+    filename = @"";
+  else if([filename isEqual: @""] == NO)
+    [_okButton setEnabled: YES];
+
+  if (_canChooseDirectories == NO)
+    {
+      if([_browser allowsMultipleSelection] == YES)
+	[_browser setAllowsBranchSelection:NO];
+    }
+  
+  [super _setupForDirectory: path file: filename];
+}
+
 @end
 
 @implementation NSOpenPanel
@@ -330,6 +351,20 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
 }
 
+- (NSArray *) URLs
+{
+  NSMutableArray *ret = [NSMutableArray new];
+  NSEnumerator *enumerator = [[self filenames] objectEnumerator];
+  NSString *filename;
+
+  while ((filename = [enumerator nextObject]) != nil)
+    {
+	[ret addObject: [NSURL fileURLWithPath: filename]];
+    } 
+
+  return AUTORELEASE(ret);
+}
+
 /*
  * Running the NSOpenPanel
  */
@@ -346,25 +381,38 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 {
   ASSIGN (_fileTypes, fileTypes);
 
-  if (path == nil)
-    {
-      if (_directory)
-	path = _directory; 
-      else
-	path= [[NSFileManager defaultManager] currentDirectoryPath];
-    }  
-
-  if (name == nil)
-    name = @"";
-
-  if (_canChooseDirectories == NO)
-    {
-      if([_browser allowsMultipleSelection] == YES)
-	[_browser setAllowsBranchSelection:NO];
-    }
-  
   return [self runModalForDirectory: path 
 	       file: name];  
+}
+
+- (int)runModalForDirectory:(NSString *)path
+		       file:(NSString *)name
+		      types:(NSArray *)fileTypes
+	   relativeToWindow:(NSWindow*)window
+{
+  ASSIGN (_fileTypes, fileTypes);
+
+  return [self runModalForDirectory: path 
+	       file: name
+	       relativeToWindow: window];
+}
+
+- (void)beginSheetForDirectory:(NSString *)path
+			  file:(NSString *)name
+			 types:(NSArray *)fileTypes
+		modalForWindow:(NSWindow *)docWindow
+		 modalDelegate:(id)delegate
+		didEndSelector:(SEL)didEndSelector
+		   contextInfo:(void *)contextInfo
+{
+  ASSIGN (_fileTypes, fileTypes);
+
+  [self beginSheetForDirectory: path
+	file: name
+	modalForWindow: docWindow
+	modalDelegate: delegate
+	didEndSelector: didEndSelector
+	contextInfo: contextInfo];
 }
 
 - (void) ok: (id)sender
