@@ -1060,7 +1060,7 @@ static NSColor	*shadowCol;
  * Compares the reciever to another to another NSCell.
  * The argument must be an NSCell sublclass and have
  * the NSCellType NSTextCellType.  Returns the result
- * of the comparison of each cell's stringVaule.
+ * of the comparison of each cell's stringValue.
  */
 - (NSComparisonResult) compare: (id)otherCell
 {
