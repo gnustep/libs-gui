@@ -39,6 +39,9 @@ static NSCursor *gnustep_gui_current_cursor;
 static BOOL gnustep_gui_hidden_until_move;
 static Class NSCursor_class;
 
+static NSCursor *arrowCursor = nil;
+static NSCursor *ibeamCursor = nil;
+
 @implementation NSCursor
 
 /*
@@ -141,15 +144,15 @@ static Class NSCursor_class;
  */
 + (NSCursor*) arrowCursor
 {
-  NSCursor *cur;
-  void *c;
+  if (arrowCursor == nil)
+    {
+      void *c;
     
-  cur = AUTORELEASE([[NSCursor_class alloc] initWithImage: nil]);
-    
-  DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
-  [cur _setCid: c];
-
-  return cur;
+      arrowCursor = [[NSCursor_class alloc] initWithImage: nil];
+      DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
+      [arrowCursor _setCid: c];
+    }
+  return arrowCursor;
 }
 
 + (NSCursor*) currentCursor
@@ -159,15 +162,15 @@ static Class NSCursor_class;
 
 + (NSCursor*) IBeamCursor
 {
-  NSCursor *cur;
-  void *c;
+  if (ibeamCursor == nil)
+    {
+      void *c;
     
-  cur = AUTORELEASE([[NSCursor_class alloc] initWithImage: nil]);
-
-  DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
-  [cur _setCid: c];
-
-  return cur;
+      ibeamCursor = [[NSCursor_class alloc] initWithImage: nil];
+      DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
+      [ibeamCursor _setCid: c];
+    }
+  return ibeamCursor;
 }
 
 /*
@@ -199,6 +202,7 @@ foregroundColorHint:(NSColor *)fg
 backgroundColorHint:(NSColor *)bg
 	    hotSpot:(NSPoint)hotSpot
 {
+    // FIXME: fg and bg should be set
   return [self initWithImage: newImage hotSpot: hotSpot];
 }
 

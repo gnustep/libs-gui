@@ -92,6 +92,9 @@ common_Root_SGI.tiff \
 common_Root_Sparc.tiff \
 common_Root_Sparc2.tiff \
 common_Root_Apple.tiff \
+common_noCursor.tiff \
+common_copyCursor.tiff \
+common_linkCursor.tiff \
 GNUstep.tiff \
 GNUstepMenuImage.tiff \
 nsmapping.strings \

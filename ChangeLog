@@ -1,3 +1,20 @@
+2001-12-02  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]): Check
+	if target is a menu.
+
+	* Source/NSCursor.m: Make class variables for arrow and ibeam
+	cursor. 
+
+2001-11-30  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSCursor.m (backgroundColorHint:): added FIXME comment
+
+	* Images/GNUmakefile (IMAGE_FILES): added DnD cursors
+
+	* Headers/gnustep/gui/NSBitmapImageRep.h (NSImageRep): removed
+	unused instance variable
+
 2001-12-03  Laurent Julliard  <laurent@moldus.org>
 
 	* Source/NSTableHeaderView.m (-initWithCoder:, decodeWithCoder:): 

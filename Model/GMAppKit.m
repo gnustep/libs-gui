@@ -849,7 +849,10 @@ void __dummy_GMAppKit_functionForLinking() {}
     {
       if ([self submenu] == nil)
 	{
-	  [self setSubmenu: [self target]];
+	  if ([[self target] isKindOfClass: [NSMenu class]])
+	    [self setSubmenu: [self target]];
+	  else
+	    NSLog(@"Error decoding gmodel - submenu not an NSMenu");
 	}
     }
 #endif

@@ -70,11 +70,6 @@ typedef enum _NSBitmapImageFileType {
   BOOL			_isPlanar;
   unsigned char		**_imagePlanes;
   NSMutableData		*_imageData;
-
-  // Reserved for back-end use
-  // FIXME: This is used only for the method xPixmapMask in the shared X code. 
-  // If we change the dragging code, we can remove this method and the ivar!
-  void			*_back_end_reserved;
 }
 
 //
