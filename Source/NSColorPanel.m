@@ -41,9 +41,11 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/IMLoading.h>
 
+#define MAX_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;
 static NSColorPanel *_gs_gui_color_panel = nil;
 static int _gs_gui_color_picker_mask = NSColorPanelAllModesMask;
+// FIXME: This should be NSWheelModeColorPanel 
 static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 @interface GSAppKitPanelController : NSObject
@@ -110,10 +112,10 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   if (bundle && (pickerClass = [bundle principalClass]))
     {
       picker = [[pickerClass alloc] initWithPickerMask:_gs_gui_color_picker_mask
-                                            colorPanel:_gs_gui_color_panel];
+                                            colorPanel: self];
       if (picker && [picker conformsToProtocol:@protocol(NSColorPickingCustom)])
         {
-          [picker provideNewView: YES];
+          [(id<NSColorPickingCustom>)picker provideNewView: YES];
           [_pickers addObject: picker];
         }
       else
@@ -129,7 +131,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (void) _setupPickers
 {
-  NSColorPicker *picker;
+  id<NSColorPickingDefault, NSColorPickingCustom> picker;
   NSButtonCell *cell;
   NSMutableArray *cells = [NSMutableArray new];
   int i, count;
@@ -157,14 +159,20 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [_pickerBox setFrame: NSUnionRect([_pickerBox frame],
                                         [_pickerMatrix frame])];
       [_pickerBox setNeedsDisplay: YES];
+      // Display the only picker
+      if (count == 1)
+        [self _showNewPicker: _pickerMatrix];
     }
 }
 
 - (void) _showNewPicker: (id)sender
 {
   _currentPicker = [_pickers objectAtIndex: [sender selectedColumn]];
+  [_currentPicker setColor: [_colorWell color]];
   [_pickerBox setContentView: [_currentPicker provideNewView: NO]];
 }
+
+
 @end
 
 @implementation NSColorPanel
@@ -200,13 +208,12 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
               [_gs_gui_color_panel _fixupMatrix];
               [_gs_gui_color_panel _loadPickers];
               [_gs_gui_color_panel _setupPickers];
+	      [_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
             }
         }
       [_gs_gui_color_panel_lock unlock];
     }
 
-  //[_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
-  [_gs_gui_color_panel setMode: NSColorListModeColorPanel];
   return _gs_gui_color_panel;
 }
 
@@ -317,12 +324,12 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
 }
 
-// This code is very simple-minded.  Instead of removing the alpha slider,
-// why not just cover it up?
-
 - (void)setShowsAlpha:(BOOL)flag
 {
-  if (flag && ![self showsAlpha])
+  if (flag == [self showsAlpha])
+    return;
+
+  if (flag)
     {
       NSRect newFrame = [_pickerBox frame];
       float offset = [_alphaSlider frame].size.height + 4;
@@ -333,6 +340,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
   else
     {
+      // This code is very simple-minded.  Instead of removing the alpha slider,
+      // why not just cover it up?
       [_pickerBox setFrame: NSUnionRect([_pickerBox frame],
                                         [_alphaSlider frame])];
     }
@@ -345,7 +354,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (void)setTarget:(id)anObject
 {
-  ASSIGN(_target, anObject);
+  _target = anObject;
 }
 
 - (BOOL)showsAlpha
@@ -391,7 +400,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (float)alpha
 {
   if ([self showsAlpha])
-    return [_alphaSlider floatValue];
+    return [_alphaSlider floatValue] / MAX_VALUE;
   else
     return 1.0;
 }
@@ -404,6 +413,10 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (void)setColor:(NSColor *)aColor
 {
   [_colorWell setColor: aColor];
+  [_currentPicker setColor: aColor];
+  if ([self showsAlpha])
+      [_alphaSlider setFloatValue: [aColor alphaComponent] * MAX_VALUE];
+
   [[NSNotificationCenter defaultCenter]
       postNotificationName: NSColorPanelColorChangedNotification
                     object: (id)self];
