@@ -101,7 +101,7 @@
         backgroundColor = "Object    8"; 
         backingType = 2; 
         becomesKeyOnlyIfNeeded = NO; 
-        contentFrame = "{x=428.000000; y=164.000000; width=186.000000; height=304.000000}"; 
+        contentFrame = "{x=311.000000; y=220.000000; width=186.000000; height=304.000000}"; 
         contentView = "Object   12"; 
         frameAutosaveName = nil; 
         hidesOnDeactivate = YES; 
@@ -654,7 +654,16 @@
             "Object   73", 
             "Object   75", 
             "Object   77", 
-            "Object   78"
+            "Object   78", 
+            "Object   80", 
+            "Object   82", 
+            "Object   83", 
+            "Object   84", 
+            "Object   85", 
+            "Object   86", 
+            "Object   87", 
+            "Object   88", 
+            "Object   89"
         ); 
         isa = NSMutableArray; 
     }; 
@@ -804,6 +813,61 @@
         source = "Object   11"; 
     }; 
     "Object   79" = {isa = NSString; string = initialFirstResponder; }; 
+    "Object   80" = {
+        destination = "Object   17"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   14"; 
+    }; 
+    "Object   81" = {isa = NSString; string = nextKeyView; }; 
+    "Object   82" = {
+        destination = "Object   22"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   17"; 
+    }; 
+    "Object   83" = {
+        destination = "Object   19"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   22"; 
+    }; 
+    "Object   84" = {
+        destination = "Object   28"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   30"; 
+    }; 
+    "Object   85" = {
+        destination = "Object   21"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   28"; 
+    }; 
+    "Object   86" = {
+        destination = "Object   34"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   21"; 
+    }; 
+    "Object   87" = {
+        destination = "Object   14"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   34"; 
+    }; 
+    "Object   88" = {
+        destination = "Object   30"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   32"; 
+    }; 
+    "Object   89" = {
+        destination = "Object   32"; 
+        isa = IMOutletConnector; 
+        label = "Object   81"; 
+        source = "Object   24"; 
+    }; 
     RootObject = {Connections = "Object   38"; Objects = "Object    1"; isa = GMModel; }; 
     TopLevelObjects = (RootObject); 
     Version = 1; 

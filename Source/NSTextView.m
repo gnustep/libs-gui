@@ -813,11 +813,15 @@ static NSNotificationCenter *nc;
 - (void) checkSpelling: (id)sender
 {
   NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
-
   NSRange errorRange;
+  int count = 0;
 
-  errorRange = [sp checkSpellingOfString: [_textStorage string]
-		   startingAt: NSMaxRange (_selected_range)];
+  errorRange = [sp checkSpellingOfString: [self string]
+		              startingAt: NSMaxRange (_selected_range)
+		                language: [sp language]
+		                    wrap: YES
+		  inSpellDocumentWithTag: [self spellCheckerDocumentTag]
+		               wordCount: &count];
   
   if (errorRange.length)
     {

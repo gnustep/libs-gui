@@ -2474,77 +2474,79 @@ static double rint(double a)
       IMP lcarc = [self methodForSelector: lcarcSel];
       
       selectedColumn = [self selectedColumn];
-      bc = [_browserColumns objectAtIndex: 
-			      selectedColumn];
-      matrix = [bc columnMatrix];
-      n = [matrix numberOfRows];
-      s = [matrix selectedRow];
-      
-      if (!_charBuffer)
+      if(selectedColumn != -1)
 	{
-	  _charBuffer = [characters substringToIndex: 1];
-	  RETAIN(_charBuffer);
-	}
-      else
-	{
-	  if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
-	      && (_alphaNumericalLastColumn == selectedColumn))
+	  bc = [_browserColumns objectAtIndex: 
+				  selectedColumn];
+	  matrix = [bc columnMatrix];
+	  n = [matrix numberOfRows];
+	  s = [matrix selectedRow];
+	  
+	  if (!_charBuffer)
 	    {
-	      NSString *transition;
-	      transition = [_charBuffer 
-			     stringByAppendingString:
-			       [characters substringToIndex: 1]];
-	      RELEASE(_charBuffer);
-	      _charBuffer = transition;
+	      _charBuffer = [characters substringToIndex: 1];
 	      RETAIN(_charBuffer);
 	    }
 	  else
 	    {
-	      RELEASE(_charBuffer);
-	      _charBuffer = [characters substringToIndex: 1];
-	      RETAIN(_charBuffer);
+	      if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
+		  && (_alphaNumericalLastColumn == selectedColumn))
+		{
+		  NSString *transition;
+		  transition = [_charBuffer 
+				 stringByAppendingString:
+				   [characters substringToIndex: 1]];
+		  RELEASE(_charBuffer);
+		  _charBuffer = transition;
+		  RETAIN(_charBuffer);
+		}
+	      else
+		{
+		  RELEASE(_charBuffer);
+		  _charBuffer = [characters substringToIndex: 1];
+		  RETAIN(_charBuffer);
+		}
 	    }
-	}
-
-      _alphaNumericalLastColumn = selectedColumn;
-      _lastKeyPressed = [theEvent timestamp];
-      
-      sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-	     stringValue];
-
-      if (([sv length] > 0)
-	  && ([sv hasPrefix: _charBuffer]))
-	return;
-
-      for (i = s+1; i < n; i++)
-	{
-	  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+	  
+	  _alphaNumericalLastColumn = selectedColumn;
+	  _lastKeyPressed = [theEvent timestamp];
+	  
+	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
 		 stringValue];
+
 	  if (([sv length] > 0)
 	      && ([sv hasPrefix: _charBuffer]))
+	    return;
+	  
+	  for (i = s+1; i < n; i++)
 	    {
-	      [self selectRow: i
-		    inColumn: selectedColumn];	
-	      [matrix scrollCellToVisibleAtRow: i column: 0];
-	      [matrix performClick: self];
-	      return;
+	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+		     stringValue];
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		{
+		  [self selectRow: i
+			inColumn: selectedColumn];	
+		  [matrix scrollCellToVisibleAtRow: i column: 0];
+		  [matrix performClick: self];
+		  return;
+		}
+	    }
+	  for (i = 0; i < s; i++)
+	    {
+	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+		     stringValue];
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		{
+		  [self selectRow: i
+			inColumn: selectedColumn];
+		  [matrix scrollCellToVisibleAtRow: i column: 0];
+		  [matrix performClick: self];
+		  return;
+		}
 	    }
 	}
-      for (i = 0; i < s; i++)
-	{
-	  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		 stringValue];
-	  if (([sv length] > 0)
-	      && ([sv hasPrefix: _charBuffer]))
-	    {
-	      [self selectRow: i
-		    inColumn: selectedColumn];
-	      [matrix scrollCellToVisibleAtRow: i column: 0];
-	      [matrix performClick: self];
-	      return;
-	    }
-	}
-      
       _lastKeyPressed = 0.;
     }
 

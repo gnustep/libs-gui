@@ -333,9 +333,7 @@ static int __documentTag = 0;
 {
   int wordCount = 0;
   NSRange r = NSMakeRange(0,0);
-  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
-  
-  _currentTag = [responder spellCheckerDocumentTag];
+
   r = [self checkSpellingOfString: stringToCheck
   	               startingAt: startingOffset
 	                 language: _language
@@ -505,7 +503,7 @@ inSpellDocumentWithTag:(int)tag
 - _findNext: (id)sender
 {
   BOOL processed = NO;
-  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
+  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
 
   processed = [responder tryToPerform: @selector(checkSpelling:)
 			 with: _spellPanel];
@@ -565,7 +563,7 @@ inSpellDocumentWithTag:(int)tag
 - _ignore: (id)sender
 {
   BOOL processed = NO;
-  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
+  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
 
   processed = [responder tryToPerform: @selector(ignoreSpelling:)
 			 with: _wordField];
@@ -589,7 +587,7 @@ inSpellDocumentWithTag:(int)tag
 - _correct: (id)sender
 {
   BOOL processed = NO;
-  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
+  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
 
   processed = [responder tryToPerform: @selector(changeSpelling:)
 			         with: _wordField];
@@ -648,6 +646,17 @@ inSpellDocumentWithTag:(int)tag
 	  [[NSApp _listener] _languagesForPopUpButton]];
   [_accessoryView setDelegate: self];
   [_accessoryView setDoubleAction: @selector(_correct:)];
+
+  [_findNextButton setKeyEquivalent: @"n"];
+  [_ignoreButton setKeyEquivalent: @"i"];
+  [_learnButton setKeyEquivalent: @"l"];
+  [_forgetButton setKeyEquivalent: @"f"];
+  [_guessButton setKeyEquivalent: @"g"];
+  [_correctButton setKeyEquivalent: @"c"];
+  [_correctButton setImagePosition: NSImageRight];
+  [_correctButton setImage: [NSImage imageNamed: @"common_ret"]];
+  [_correctButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  [_spellPanel makeFirstResponder: _correctButton];
 }
 @end
 

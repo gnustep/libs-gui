@@ -1,3 +1,28 @@
+2001-08-03  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/SpellPanel.gmodel
+	Made changes to nextKeyView so that the user can tab between
+	the buttons
+        
+	* Source/NSBrowser.m [NSBrowser keyDown:] added check after call to 
+        [NSBrowser selectedColumn] so that the rest of the method is skipped
+	if the value is -1 (no column selected).   This was producing a
+	segmentation fault.
+
+	* Source/NSTextView.m
+	[NSTextView checkSpelling:]  to call [NSSpellChecker
+	checkSpellingOfString: startingAt:language:wrap:
+	inSpellDocumentWithTag:wordCount:]
+	so that the spell document tag can easily be passed in.
+        
+	* Source/NSSpellChecker.m
+	modified calls [NSSpellChecker _findNext:], [NSSpellChecker _ignore:] 
+	& [NSSpellChecker _correct] to get the first responder from the 
+	mainWindow instead of getting the text view directly. 
+	This is consistent with behavior observed under OPENSTEP4.2 
+	and allows the document being checked to be anywhere on the 
+	responder chain.
+
 2001-08-02  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSApplication.h: Remove duplicate
