@@ -65,7 +65,7 @@
   _min_width = 0;
   _max_width = 100000;
   _is_resizable = YES;
-  _is_editable = NO;
+  _is_editable = YES;
   _tableView = nil;
 
   _headerCell = [NSTableHeaderCell new];
