@@ -1,3 +1,10 @@
+Mon Jul 16 11:19:28 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSView.m ([-adjustPageHeightNew:top:bottom:limit:]):
+	Restructured code to work around internal bug in 2.91.66 GCC
+	compiler.
+	([-adjustPageWidthNew:left:right:limit:]): Idem.
+	
 2001-07-11  Adam Fedor  <fedor@gnu.org>
 
 	* configure.in: Add PROG_CC check
