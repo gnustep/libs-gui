@@ -35,6 +35,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSDragView.h"
 
 #include "GSSlideView.h"
 
@@ -385,8 +386,7 @@ GSCurrentServer(void)
     protocol. */
 - (id <NSDraggingInfo>) dragInfo
 {
-  [self subclassResponsibility: _cmd];
-  return nil;
+  return [GSDragView sharedDragView];
 }
 
 - (BOOL) slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to
@@ -397,6 +397,14 @@ GSCurrentServer(void)
 - (void) restrictWindow: (int)win toImage: (NSImage*)image
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (int) findWindowAt: (NSPoint)screenLocation 
+           windowRef: (int*)windowRef 
+           excluding: (int)win
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
 }
 
 /* Screen information */

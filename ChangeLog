@@ -1,3 +1,14 @@
+2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Added new method
+	(-findWindowAt:windowRef:excluding:).
+	* Source/GSDisplayServer.m: Implemented (-dragInfo) with
+	GSDragView.
+	* Source/GNUmakefile: Added GSDragView.h. 
+	* Source/GSDragView.m: Implemented
+	(-_windowAcceptingDnDunder:windowRef:) with new GSDisplayServer
+	method.	
+	
 2004-06-17  Fred Kiefer <FredKiefer@gmx.de>
 
        * Source/NSComboBoxCell.m: buttonCellFrameFromRect(),

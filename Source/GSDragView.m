@@ -957,8 +957,14 @@ static	GSDragView *sharedDragView = nil;
 - (NSWindow*) _windowAcceptingDnDunder: (NSPoint)mouseLocation
 			     windowRef: (int*)mouseWindowRef
 {
+  int win;
+
   *mouseWindowRef = 0;
-  return nil;
+  win = [GSServerForWindow(_window) findWindowAt: mouseLocation
+			  windowRef: mouseWindowRef
+			  excluding: [_window windowNumber]];
+
+  return GSWindowWithNumber(win);
 }
 
 @end

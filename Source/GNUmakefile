@@ -354,6 +354,7 @@ GSHorizontalTypesetter.h \
 GSToolbar.h \
 GSToolbarView.h \
 GSNibCompatibility.h \
+GSDragView.h \
 GSTitleView.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
