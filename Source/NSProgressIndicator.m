@@ -24,127 +24,200 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#import <AppKit/NSProgressIndicator.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSWindow.h>
-// #import <AppKit/NSDPSContext.h>
-
-@interface NSProgressIndicator(PrivateMethods)
-- (void)_update;
-@end
+#include <AppKit/NSProgressIndicator.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSWindow.h>
 
 @implementation NSProgressIndicator
 
+NSColor *fillColour = nil;
+#define maxCount 1
+NSImage *images[maxCount];
+
++ (void) initialize
+{
+  if (self == [NSProgressIndicator class])
+    {
+      [self setVersion: 1];
+      // FIXME: Should come from defaults and should be reset when defaults change
+      fillColour = [NSColor blueColor];
+      // FIXME: Load the images and set maxCount
+    }
+}
+ 
 - (id)initWithFrame:(NSRect)frameRect
 {
-   self = [super initWithFrame:frameRect];
-   isIndeterminate = NO;	// This should be changed to YES, to conform
-   isBezeled = YES;
-   isVertical = NO;
-   usesThreadedAnimation = NO;
-   animationDelay = 5.0 / 60.0;	// 1 fifth a a second
-   doubleValue = 0.0;
-   minValue = 0.0;
-   maxValue = 100.0;
-   return self;
+  self = [super initWithFrame: frameRect];
+  _isIndeterminate = YES;
+  _isBezeled = YES;
+  _isVertical = NO;
+  _usesThreadedAnimation = NO;
+  _animationDelay = 5.0 / 60.0;	// 1 twelfth a a second
+  _doubleValue = 0.0;
+  _minValue = 0.0;
+  _maxValue = 100.0;
+  return self;
 }
 
 - (void)dealloc
 {
-   // Nothing to dealloc at this stage
-   [super dealloc];
+  TEST_RELEASE(_timer);
+  [super dealloc];
 }
 
 - (void)animate:(id)sender
 {
-   // Not implemented
+  if (!_isIndeterminate)
+    return;
+
+  _count++;
+  if (_count == maxCount)
+    _count = 0;
+
+  [self setNeedsDisplay:YES];
 }
 
-- (NSTimeInterval)animationDelay { return animationDelay; }
+- (NSTimeInterval)animationDelay { return _animationDelay; }
 - (void)setAnimimationDelay:(NSTimeInterval)delay
 {
-   animationDelay = delay;
+  _animationDelay = delay;
 }
 
 - (void)startAnimation:(id)sender
 {
-   // Not implemented
+  if (!_isIndeterminate)
+    return;
+
+  if (!_usesThreadedAnimation)
+    {
+      ASSIGN(_timer, [NSTimer scheduledTimerWithTimeInterval: _animationDelay 
+			      target: self 
+			      selector: @selector(animate:)
+			      userInfo: nil
+			      repeats: YES]);
+    }
+  else
+    {
+      // Not implemented
+    }
+
+  _isRunning = YES;
 }
 
 - (void)stopAnimation:(id)sender
 {
-   // Not implemented
+  if (!_isIndeterminate || !_isRunning)
+    return;
+
+  if (!_usesThreadedAnimation)
+    {
+      [_timer invalidate];
+      DESTROY(_timer);
+    }
+  else
+    {
+      // Not implemented
+    }
+
+  _isRunning = NO;
 }
 
 - (BOOL)usesThreadedAnimation
 {
-   return usesThreadedAnimation;
+  return _usesThreadedAnimation;
 }
 
 - (void)setUsesThreadedAnimation:(BOOL)flag
 {
-   usesThreadedAnimation = flag;
-   // This method should be expanded to enable threading
+  if (_usesThreadedAnimation != flag)
+    {
+      BOOL wasRunning = _isRunning;
+
+      if (wasRunning)
+	[self stopAnimation: self];
+
+      _usesThreadedAnimation = flag;
+
+      if (wasRunning)
+	[self startAnimation: self];
+    }
 }
 
 - (void)incrementBy:(double)delta
 {
-   doubleValue += delta;
-   [self setNeedsDisplay:YES];
-   [self _update];
+  _doubleValue += delta;
+  [self setNeedsDisplay:YES];
 }
 
-- (double)doubleValue { return doubleValue; }
+- (double)doubleValue { return _doubleValue; }
 - (void)setDoubleValue:(double)aValue
 {
-   if (doubleValue != aValue)
-   {
-      doubleValue = aValue;
+  if (_doubleValue != aValue)
+    {
+      _doubleValue = aValue;
       [self setNeedsDisplay:YES];
-      [self _update];
-   }
+    }
 }
 
-- (double)minValue { return minValue; }
+- (double)minValue { return _minValue; }
 - (void)setMinValue:(double)newMinimum
 {
-   if (minValue != newMinimum)
-   {
-      minValue = newMinimum;
+  if (_minValue != newMinimum)
+    {
+      _minValue = newMinimum;
       [self setNeedsDisplay:YES];
-      [self _update];
-   }
+    }
 }
 
-- (double)maxValue { return maxValue; }
+- (double)maxValue { return _maxValue; }
 - (void)setMaxValue:(double)newMaximum
 {
-   if (maxValue != newMaximum)
-   {
-      maxValue = newMaximum;
+  if (_maxValue != newMaximum)
+    {
+      _maxValue = newMaximum;
       [self setNeedsDisplay:YES];
-      [self _update];
-   }
+    }
 }
 
-- (BOOL)isBezeled { return isBezeled; }
+- (BOOL)isBezeled { return _isBezeled; }
 - (void)setBezeled:(BOOL)flag
 {
-   if (isBezeled != flag)
-   {
-      isBezeled = flag;
+  if (_isBezeled != flag)
+    {
+      _isBezeled = flag;
       [self setNeedsDisplay:YES];
-      [self _update];
-   }
+    }
 }
 
-- (BOOL)isIndeterminate { return isIndeterminate; }
+- (BOOL)isIndeterminate { return _isIndeterminate; }
 - (void)setIndeterminate:(BOOL)flag
 {
-   isIndeterminate = flag;
-   isIndeterminate = NO;	// Just for now
+  _isIndeterminate = flag;
    // Maybe we need more functionality here when we implement indeterminate
+  if (flag == NO && _isRunning)
+    [self stopAnimation: self];
+}
+
+- (NSControlSize)controlSize
+{
+  // FIXME
+  return NSRegularControlSize;
+}
+
+- (void)setControlSize:(NSControlSize)size
+{
+  // FIXME 
+}
+
+- (NSControlTint)controlTint
+{
+  // FIXME
+  return NSDefaultControlTint;
+}
+
+- (void)setControlTint:(NSControlTint)tint
+{
+  // FIXME 
 }
 
 - (void)drawRect:(NSRect)rect
@@ -152,42 +225,44 @@
    NSRect	r;
 
    // Draw the Bezel
-   if (isBezeled)
-      NSDrawGrayBezel(_bounds,rect);
+   if (_isBezeled)
+     {
+       NSSize borderSize = _sizeForBorderType (NSBezelBorder);
 
-   // Calc the inside rect to be drawn
-   if (isBezeled)
-   {
-      r = NSMakeRect(NSMinX(_bounds) + 2.0,
-		     NSMinY(_bounds) + 2.0,
-		     NSWidth(_bounds) - 4.0,
-		     NSHeight(_bounds) - 4.0);
-   }
+       NSDrawGrayBezel(_bounds, rect);
+       // Calc the inside rect to be drawn
+       r = NSInsetRect(_bounds, borderSize.width, borderSize.height);
+     }
    else
-      r = _bounds;
+     r = _bounds;
 
-   if (isIndeterminate)		// Draw indeterminate
-   {
-      // Do nothing at this stage
-   }
+   if (_isIndeterminate)		// Draw indeterminate
+     {
+       // FIXME: Do nothing at this stage
+     }
    else				// Draw determinate 
-   {
-      if (doubleValue > minValue)
-      {
-	 if (isVertical)
-	    r.size.height =
-	       NSHeight(r) * (doubleValue / (maxValue - minValue));
-	 else
-	    r.size.width =
-	       NSWidth(r) * (doubleValue / (maxValue - minValue));
-	 r = NSIntersectionRect(r,rect);
-	 if (!NSIsEmptyRect(r))
-	 {
-	    [[NSColor blueColor] set];
-	    NSRectFill(r);
+     {
+       if (_doubleValue > _minValue)
+         {
+	   double val;
+	   
+	   if (_doubleValue > _maxValue)
+	     val = _maxValue - _minValue;
+	   else 
+	     val = _doubleValue - _minValue;
+
+	   if (_isVertical)
+	     r.size.height = NSHeight(r) * (val / (_maxValue - _minValue));
+	   else
+	     r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
+	   r = NSIntersectionRect(r,rect);
+	   if (!NSIsEmptyRect(r))
+	     {
+	       [fillColour set];
+	       NSRectFill(r);
+	     }
 	 }
-      }
-   }
+     }
 }
 
 // It does not seem that Gnustep has a copyWithZone: on NSView, it is private
@@ -199,14 +274,14 @@
    NSProgressIndicator	*newInd;
 
    newInd = [super copyWithZone:zone];
-   [newInd setIndeterminate:isIndeterminate];
-   [newInd setBezeled:isBezeled];
-   [newInd setUsesThreadedAnimation:usesThreadedAnimation];
-   [newInd setAnimimationDelay:animationDelay];
-   [newInd setDoubleValue:doubleValue];
-   [newInd setMinValue:minValue];
-   [newInd setMaxValue:maxValue];
-   [newInd setVertical:isVertical];
+   [newInd setIndeterminate:_isIndeterminate];
+   [newInd setBezeled:_isBezeled];
+   [newInd setUsesThreadedAnimation:_usesThreadedAnimation];
+   [newInd setAnimimationDelay:_animationDelay];
+   [newInd setDoubleValue:_doubleValue];
+   [newInd setMinValue:_minValue];
+   [newInd setMaxValue:_maxValue];
+   [newInd setVertical:_isVertical];
    return newInd;
 }
 */
@@ -215,28 +290,28 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
    [super encodeWithCoder:aCoder];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&isIndeterminate];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&isBezeled];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&usesThreadedAnimation];
-   [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at:&animationDelay];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&doubleValue];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&minValue];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&maxValue];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&isVertical];
+   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
+   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
+   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
+   [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at:&_animationDelay];
+   [aCoder encodeValueOfObjCType: @encode(double) at:&_doubleValue];
+   [aCoder encodeValueOfObjCType: @encode(double) at:&_minValue];
+   [aCoder encodeValueOfObjCType: @encode(double) at:&_maxValue];
+   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
    self = [super initWithCoder:aDecoder];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&isIndeterminate];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&isBezeled];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&usesThreadedAnimation];
+   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
+   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
+   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
    [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
-	     at:&animationDelay];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&doubleValue];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&minValue];
-   [aDecoder decodeValueOfObjCType: @encode(double) at:&maxValue];
-   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&isVertical];
+	     at:&_animationDelay];
+   [aDecoder decodeValueOfObjCType: @encode(double) at:&_doubleValue];
+   [aDecoder decodeValueOfObjCType: @encode(double) at:&_minValue];
+   [aDecoder decodeValueOfObjCType: @encode(double) at:&_maxValue];
+   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
    return self;
 }
 
@@ -244,29 +319,14 @@
 
 @implementation NSProgressIndicator (GNUstepExtensions)
 
-- (BOOL)isVertical { return isVertical; }
+- (BOOL)isVertical { return _isVertical; }
 - (void)setVertical:(BOOL)flag
 {
-   if (isVertical != flag)
-   {
-      isVertical = flag;
+  if (_isVertical != flag)
+    {
+      _isVertical = flag;
       [self setNeedsDisplay:YES];
-      [self _update];
-   }
-}
-
-@end
-
-@implementation NSProgressIndicator(PrivateMethods)
-
-- (void)_update
-{
-   if (_window != nil)
-      if ([_window isVisible])
-      {
-	 [_window display];
-	 [GSCurrentContext() flush];
-      }
+    }
 }
 
 @end
