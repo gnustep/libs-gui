@@ -1,3 +1,12 @@
+Thu Oct 10 19:56:29 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-scrollPageUp:]): Implemented.
+	([-scrollPageDown:]): Implemented.  ([-pageUp:]):
+	Implemented. ([-pageDown:]): Implemented.  
+	* Source/NSTextView.m ([-pageDown:]): Implemented.
+	([-pageUp:]): Implemented.
+	(Patch by David Ayers <d.ayers@inode.at>).
+	
 Thu Oct 10 19:16:40 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSFontManager.m ([NSFontManager -fontMenu:]): Use 't'

@@ -3078,18 +3078,142 @@ afterString in order over charRange. */
   [self setSelectedRange: NSMakeRange (newLocation, 0) ];
 }
 
+/**
+ * Tries to move the selection/insertion point down one page of the
+ * visible rect in the receiver while trying to maintain the
+ * horizontal position of the last vertical movement.
+ * If the receiver is a field editor, this method returns immediatly. 
+ */
 - (void) pageDown: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"pageDown:", "NSTextView");
+  float    cachedInsertPointX;
+  float    scrollDelta;
+  float    oldOriginY;
+  float    newOriginY;
+  unsigned glyphIDX;
+  unsigned charIDX;
+  NSPoint  iPoint;
+ 
+  if (_tf.is_field_editor)
+    return;
+  
+  /* 
+   * Save the current horizontal position cache as we will implictly
+   * change it later.
+   */
+  cachedInsertPointX = _originalInsertPoint;
+
+  /*
+   * Scroll; also determine how far to move the insertion point.
+   */
+  oldOriginY = NSMinY([self visibleRect]);
+  [[self enclosingScrollView] pageDown: sender];
+  newOriginY = NSMinY([self visibleRect]);
+  scrollDelta = newOriginY - oldOriginY;
+
+  if (scrollDelta == 0)
+    {
+      /* TODO/FIXME: If no scroll was done, it means we are in the
+       * last page of the document already - should we move the
+       * insertion point to the last line when the user clicks
+       * 'PageDown' in that case ?
+       */
+    }
+
+  /*
+   * Calculate new insertion point.
+   */
+  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
+  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
+  iPoint.y += scrollDelta;
+
+  /*
+   * Ask the layout manager to compute where to go.
+   */
+  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
+                            inTextContainer: _textContainer];
+  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
+
+  /*
+   * Move the insertion point (implicitly changing
+   * _originalInsertPoint).
+   */
+  [self setSelectedRange: NSMakeRange(charIDX, 0)];
+
+  /*
+   * Restore the _originalInsertPoint because we do not want it to
+   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.  
+   */
+  _originalInsertPoint = cachedInsertPointX;
 }
 
+/**
+ * Tries to move the selection/insertion point up one page of the
+ * visible rect in the receiver while trying to maintain the
+ * horizontal position of the last vertical movement.
+ * If the receiver is a field editor, this method returns immediatly. 
+ */
 - (void) pageUp: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"pageUp:", "NSTextView");
+  float    cachedInsertPointX;
+  float    scrollDelta;
+  float    oldOriginY;
+  float    newOriginY;
+  unsigned glyphIDX;
+  unsigned charIDX;
+  NSPoint  iPoint;
+
+  if (_tf.is_field_editor)
+    return;
+
+  /* 
+   * Save the current horizontal position cache as we will implictly
+   * change it later.
+   */
+  cachedInsertPointX = _originalInsertPoint;
+
+  /*
+   * Scroll; also determine how far to move the insertion point.
+   */
+  oldOriginY = NSMinY([self visibleRect]);
+  [[self enclosingScrollView] pageUp: sender];
+  newOriginY = NSMinY([self visibleRect]);
+  scrollDelta = newOriginY - oldOriginY;
+
+  if (scrollDelta == 0)
+    {
+      /* TODO/FIXME: If no scroll was done, it means we are in the
+       * first page of the document already - should we move the
+       * insertion point to the first line when the user clicks
+       * 'PageUp' in that case ?
+       */
+    }
+
+  /*
+   * Calculate new insertion point.
+   */
+  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
+  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
+  iPoint.y += scrollDelta;
+
+  /*
+   * Ask the layout manager to compute where to go.
+   */
+  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
+                             inTextContainer: _textContainer];
+  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
+
+  /*
+   * Move the insertion point (implicitly changing
+   * _originalInsertPoint). 
+   */
+  [self setSelectedRange: NSMakeRange(charIDX, 0)];
+  
+  /*
+   * Restore the _originalInsertPoint because we do not want it to
+   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.
+   */
+  _originalInsertPoint = cachedInsertPointX;
 }
 
 - (void) scrollLineDown: (id)sender

@@ -344,7 +344,102 @@ static float scrollerWidth;
 	  [_vertRuler setNeedsDisplay: YES];
 	}
     }
+}
 
+/**
+ * Scrolls the receiver by simply invoking scrollPageUp:
+ */
+- (void) pageUp: (id)sender
+{
+  [self scrollPageUp: sender];
+}
+
+/*
+ * This code is based on _doScroll: and still may need some tuning. 
+ */
+- (void) scrollPageUp: (id)sender
+{
+  NSRect  clipViewBounds;
+  NSPoint point;
+  float   amount;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+    }
+  point = clipViewBounds.origin;
+  /*
+   * Take verticalPageScroll into accout, but try to make sure
+   * that amount is never negative (ie do not scroll backwards.)
+   *
+   * FIXME: It seems _doScroll and scrollWheel: should also take
+   * care not to do negative scrolling.
+   */
+  amount = clipViewBounds.size.height - _vPageScroll;
+  amount = (amount < 0) ? 0 : amount;
+
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      amount = -amount;
+    }
+  point.y = clipViewBounds.origin.y - amount;
+  [_contentView scrollToPoint: point];
+  if (_rulersVisible == YES && _hasVertRuler == YES)
+    {
+      [_vertRuler setNeedsDisplay: YES];
+    }
+}
+
+/**
+ * Scrolls the receiver by simply invoking scrollPageUp:
+ */
+- (void) pageDown: (id)sender
+{
+  [self scrollPageDown: sender];
+}
+
+/*
+ * This code is based on _doScroll:. and still may need some tuning.
+ */
+- (void) scrollPageDown: (id)sender
+{
+  NSRect  clipViewBounds;
+  NSPoint point;
+  float   amount;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+    }
+  point = clipViewBounds.origin;
+  /*
+   * Take verticalPageScroll into accout, but try to make sure
+   * that amount is never negativ (ie do not scroll backwards.)
+   *
+   * FIXME: It seems _doScroll and scrollWheel: should also take
+   * care not to do negative scrolling.
+   */
+  amount = clipViewBounds.size.height - _vPageScroll;
+  amount = (amount < 0) ? 0 : amount;
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      amount = -amount;
+    }
+  point.y = clipViewBounds.origin.y + amount;
+  [_contentView scrollToPoint: point];
+
+  if (_rulersVisible == YES && _hasVertRuler == YES)
+  {
+    [_vertRuler setNeedsDisplay: YES];
+  }
 }
 
 - (void) _doScroll: (NSScroller*)scroller
