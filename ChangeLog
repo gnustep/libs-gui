@@ -1,3 +1,8 @@
+2004-03-08 19:04  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSComboBoxCell.m (-runModalPopUp): Don't make the popup
+	the key window.
+
 2004-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSView.h:

@@ -283,7 +283,7 @@ static NSNotificationCenter *nc;
 	     dequeue: YES];
     }
 
-  [self makeKeyAndOrderFront: nil];
+  [self orderFront: nil];
 
   NS_DURING
     [self runLoop];
