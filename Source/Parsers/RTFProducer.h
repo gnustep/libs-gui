@@ -25,9 +25,16 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
-#include <Foundation/Foundation.h>
 
-@interface RTFProducer: NSObject
+#include <AppKit/GSTextConverter.h>
+
+@class NSAttributedString;
+@class NSMutableDictionary;
+@class NSColor;
+@class NSFont;
+@class NSMutableParagraphStyle;
+
+@interface RTFDProducer: NSObject <GSTextProducer>
 {
 @public
   NSAttributedString *text;
@@ -43,10 +50,8 @@
 */
 }
 
-+ (NSData*) produceRTF: (NSAttributedString*) aText
-    documentAttributes: (NSDictionary*)dict;
-+ (NSFileWrapper*) produceRTFD: (NSAttributedString*) aText
-	    documentAttributes: (NSDictionary*)dict;
+@end
 
-
+@interface RTFProducer: RTFDProducer
+// Subclass with no special interface
 @end
