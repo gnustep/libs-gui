@@ -41,35 +41,23 @@
 # Things to do after compiling
 # after-all::
 
-$(PPD_INSTALL_DIR):
-	$(MKDIRS) $(PPD_INSTALL_DIR)
-
 # Things to do before installing
-before-install:: $(PPD_INSTALL_DIR)
+# before-install::
 
 # Things to do after installing
 after-install::
-	for dirs in $(RESOURCE_DIRS); do          \
-	  if [ ! -d $(PPD_INSTALL_DIR)/$$dirs ]; then  \
-	    $(MKDIRS) $(PPD_INSTALL_DIR)/$$dirs ;     \
-	  fi;                                     \
-	  $(INSTALL_DATA) $$dirs/*ppd $(PPD_INSTALL_DIR)/$$dirs/ ; \
-	done;                                     \
 	for file in $(RESOURCE_FILES); do         \
 	  $(INSTALL_DATA) $$file $(RES_INSTALL_DIR) ; \
 	done
 
 # Things to do before uninstalling
-# before-uninstall::
-
-# Things to do after uninstalling
-after-uninstall::
-	for file in $(RESOURCE_DIRS); do \
-	  rm -rf $(PPD_INSTALL_DIR)/$$file ; \
-	done
+before-uninstall::
 	for file in $(RESOURCE_FILES); do         \
 	  rm -f $(RES_INSTALL_DIR)/$$file ; \
 	done
+
+# Things to do after uninstalling
+# after-uninstall::
 
 # Things to do before cleaning
 # before-clean::

@@ -29,18 +29,8 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 
 RES_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript
-PPD_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript/PPD
 
-RESOURCE_DIRS = \
-English.lproj	\
-French.lproj	\
-German.lproj	\
-Italian.lproj	\
-Spanish.lproj	\
-Swedish.lproj
-
-
-RESOURCE_FILES = Printers GSProlog.ps
+RESOURCE_FILES = GSProlog.ps
 
 -include GNUmakefile.preamble
 

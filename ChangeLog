@@ -1,3 +1,8 @@
+2004-07-28  Adam Fedor  <fedor@gnu.org>
+
+	* PrinterTypes/: Remove PPD files
+	* PrinterTypes/GNUmakefile: Don't install them.
+
 2004-07-28 19:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSWindowDecorationView.h, Source/GSWindowDecorationView.m
