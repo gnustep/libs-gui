@@ -42,6 +42,7 @@
 #include "AppKit/AppKitExceptions.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSView.h"
 #include "AppKit/DPSOperators.h"
@@ -1297,10 +1298,49 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/** Append the bezier path to the current path */
+/** Set the bezier path as the current path */
 - (void) GSSendBezierPath: (NSBezierPath *)path
 {
-  [self subclassResponsibility: _cmd];
+  NSBezierPathElement type;
+  NSPoint pts[3];
+  int i, count;
+  float pattern[10];
+  float phase;
+
+  DPSnewpath(self);
+  DPSsetlinewidth(self, [path lineWidth]);
+  DPSsetlinejoin(self, [path lineJoinStyle]);
+  DPSsetlinecap(self, [path lineCapStyle]);
+  DPSsetmiterlimit(self, [path miterLimit]);
+  DPSsetflat(self, [path flatness]);
+
+  [path getLineDash: pattern count: &count phase: &phase];
+  // Always sent the dash pattern. When NULL this will reset to a solid line.
+  DPSsetdash(self, pattern, count, phase);
+
+  count = [path elementCount];
+  for(i = 0; i < count; i++) 
+    {
+      type = [path elementAtIndex: i associatedPoints: pts];
+      switch(type) 
+        {
+	  case NSMoveToBezierPathElement:
+	      DPSmoveto(self, pts[0].x, pts[0].y);
+	      break;
+	  case NSLineToBezierPathElement:
+	      DPSlineto(self, pts[0].x, pts[0].y);
+	      break;
+	  case NSCurveToBezierPathElement:
+	      DPScurveto(self, pts[0].x, pts[0].y, 
+			 pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+	      break;
+	  case NSClosePathBezierPathElement:
+	      DPSclosepath(self);
+	      break;
+	  default:
+	      break;
+	}
+    }
 }
 
 /** Append the array of rects to the current clip path (DPS, Quartz). */
