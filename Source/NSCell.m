@@ -701,11 +701,9 @@ BOOL mouseWentUp;
 {
 NSCell* c = [[isa allocWithZone: zone] init];
 
-	if(contents)
-		c->contents = [[contents copy] retain];
-	if(cell_image)
-		c->cell_image = [cell_image retain];
-	c->cell_font = [cell_font retain];
+	c->contents = [contents copy];
+	ASSIGN(c->cell_image, cell_image);
+	ASSIGN(c->cell_font, cell_font);
 	c->cell_state = cell_state;
 	c->cell_highlighted = cell_highlighted;
 	c->cell_enabled = cell_enabled;
