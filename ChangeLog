@@ -1,3 +1,14 @@
+2000-05-20  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSText.h:
+	* Source/NSAttributedString.m:
+	* Source/NSText.m:
+	* Source/NSTextView.m:
+	Improved the handling of character and paragraph attributes on NSText
+	and added basic implementations for these methods on NSTextView.
+	Some ivars on NSText have been replaced by values in 
+	[ typingAttributes].
+
 2000-05-17  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
 	* Model/GMAppKit.m:  NSButton methods removed; all NSButton
