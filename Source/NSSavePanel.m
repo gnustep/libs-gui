@@ -92,16 +92,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
 
-@interface PanelView : NSView
-{
-  NSSavePanel	*owner;
-}
-- (id) initWithFrame: (NSRect)r owner: (NSSavePanel*)p;
-- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender;
-- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender;
-@end
-
-@implementation	PanelView
+@implementation NSSavePanel (_PrivateMethods)
 
 - (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
 {
@@ -115,17 +106,6 @@ static BOOL _gs_display_reading_progress = NO;
   return NSDragOperationAll;
 }
     
-- (id) initWithFrame: (NSRect)r owner: (NSSavePanel*)p
-{
-  if ((self = [super initWithFrame: r]) != nil)
-    {
-      owner = p;
-      [self registerForDraggedTypes: [NSArray arrayWithObjects:
-	    NSFilenamesPboardType, nil]];
-    }
-  return self;
-}
-
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
   NSArray	*types;
@@ -138,7 +118,7 @@ static BOOL _gs_display_reading_progress = NO;
       NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
       NSString	*file = [names lastObject];
 
-      [owner setDirectory: file];
+      [self setDirectory: file];
       return YES;
     }
   return NO;
@@ -148,9 +128,7 @@ static BOOL _gs_display_reading_progress = NO;
 {
   return YES;
 }
-@end
-  
-@implementation NSSavePanel (_PrivateMethods)
+
 -(id) _initWithoutGModel
 {
   NSBox *bar;
@@ -158,7 +136,6 @@ static BOOL _gs_display_reading_progress = NO;
   NSImage *image;
   NSRect r;
   id lastKeyView;
-  id panelView;
 
   // Track window resizing so we can change number of browser columns.
   [[NSNotificationCenter defaultCenter] addObserver: self
@@ -177,13 +154,10 @@ static BOOL _gs_display_reading_progress = NO;
   [self setMinSize: [self frame].size];
 
   r = NSMakeRect (0, 0, 308, 317);
-  panelView = [[PanelView alloc] initWithFrame: r owner: self];
-  [self setContentView: panelView];
-  RELEASE(panelView);
   [[self contentView] setBounds: r];
   
   r = NSMakeRect (0, 64, 308, 245);
-  _topView = [[PanelView alloc] initWithFrame: r owner: self]; 
+  _topView = [[NSView alloc] initWithFrame: r]; 
   [_topView setBounds:  r];
   [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_topView setAutoresizesSubviews: YES];
@@ -191,7 +165,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_topView release];
   
   r = NSMakeRect (0, 0, 308, 64);
-  _bottomView = [[PanelView alloc] initWithFrame: r owner: self];
+  _bottomView = [[NSView alloc] initWithFrame: r];
   [_bottomView setBounds:  r];
   [_bottomView setAutoresizingMask: NSViewWidthSizable|NSViewMaxYMargin];
   [_bottomView setAutoresizesSubviews: YES];
@@ -351,6 +325,9 @@ static BOOL _gs_display_reading_progress = NO;
   [self setContentSize: NSMakeSize (384, 426)];
   [self setInitialFirstResponder: _form];
   [super setTitle: @""];
+
+  [self registerForDraggedTypes: [NSArray arrayWithObjects:
+	NSFilenamesPboardType, nil]];
 
   return self;
 }

@@ -3131,15 +3131,19 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 #define     GSPerformDragSelector(view, sel, info, action) \
 	      if ([view window] == self) \
 		{ \
-		  id target; \
+		  id target = view; \
 		  \
-		  if (view == _contentView && _delegate != nil) \
+		  if (target == _wv) \
 		    { \
-		      target = _delegate; \
-		    } \
-		  else \
-		    { \
-		      target= view; \
+		      if (_delegate != nil \
+			&& [_delegate respondsToSelector: sel] == YES) \
+			{ \
+			  target = _delegate; \
+			} \
+		      else \
+			{ \
+			  target = self; \
+			} \
 		    } \
 		  \
 		  if ([target respondsToSelector: sel]) \
@@ -3152,15 +3156,19 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 #define     GSPerformVoidDragSelector(view, sel, info) \
 	      if ([view window] == self) \
                 {  \
-		  id target;  \
+		  id target = view; \
 		  \
-		  if (view == _contentView && _delegate) \
+		  if (target == _wv) \
 		    { \
-		      target = _delegate; \
-		    } \
-		  else \
-		    { \
-		      target= view; \
+		      if (_delegate != nil \
+			&& [_delegate respondsToSelector: sel] == YES) \
+			{ \
+			  target = _delegate; \
+			} \
+		      else \
+			{ \
+			  target = self; \
+			} \
 		    } \
 		  \
 		  if ([target respondsToSelector: sel]) \
@@ -3175,9 +3183,14 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	      BOOL	isEntry;
 
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
+	      // FIXME ... check whether drag shoulkd propogate up hierarchy
+	      while (v != nil && ((NSViewPtr)v)->_rFlags.has_draginfo == 0)
+		{
+		  v = [v superview];
+		}
 	      if (v == nil)
 		{
-		  v = _contentView;
+		  v = _wv;
 		}
 	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      if (_lastDragView == v)
@@ -3195,7 +3208,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		    }
 		  ASSIGN(_lastDragView, v);
 		  _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
-		    action = NSDragOperationNone;
+		  action = NSDragOperationNone;
 		}
               if (_f.accepts_drag)
                 {

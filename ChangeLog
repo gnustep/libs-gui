@@ -1,5 +1,13 @@
 2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSSavePanel.m: Change to have entire window accept DnD.
+	* Source/NSWindow.m: Fix to get whole window DnD working, also
+	to enable propogation of drag events up the view hierarchy to the
+	first drag-aware view ... not sure that this is correct but it
+	seems sensible.
+
+2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSOpenPanel.m: Allow users to type in an absolute path name.
 	Support DnD of filename into panel.
 	* Source/NSSavePanel.m: ditto.  Also, if the name of a non-existent
