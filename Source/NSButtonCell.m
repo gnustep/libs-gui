@@ -48,9 +48,6 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 
-#include "GSUtil.h"
-
-
 @implementation NSButtonCell
 
 /*
@@ -494,8 +491,11 @@
 
   if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
     {
-      titleSize
-	= GSUtil_sizeOfMultilineStringWithFont(titleToDisplay, _cell_font);
+      NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					   _cell_font, 
+					 NSFontAttributeName,
+					 nil];
+      titleSize = [titleToDisplay sizeWithAttributes: dict];
     }
 
   if (flippedView == YES)
@@ -697,8 +697,12 @@
   
   if (titleToDisplay != nil)
     {
-      titleSize
-	= GSUtil_sizeOfMultilineStringWithFont(titleToDisplay, _cell_font);
+      NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					   _cell_font, 
+					 NSFontAttributeName,
+					 nil];
+      titleSize = [titleToDisplay sizeWithAttributes: dict];
+
     }
   else
     {
