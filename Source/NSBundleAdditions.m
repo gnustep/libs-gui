@@ -368,6 +368,22 @@
 
 
 
+@interface NSApplication (GSNibContainer)
+- (void)_deactivateVisibleWindow: (NSWindow *)win;
+@end
+
+@implementation NSApplication (GSNibContainer)
+/* Since awakeWithContext often gets called before the the app becomes
+   active, [win -orderFront:] requests get ignored, so we add the window
+   to the inactive list, so it gets sent an -orderFront when the app
+   becomes active. */
+- (void)_deactivateVisibleWindow: (NSWindow *)win
+{
+  if (_inactive)
+    [_inactive addObject: win];
+}
+@end
+
 /*
  *	The GSNibContainer class manages the internals of a nib file.
  */
@@ -440,7 +456,11 @@
 
 	  while (pos-- > 0)
 	    {
-	      [[visible objectAtIndex: pos] orderFront: self];
+	      NSWindow *win = [visible objectAtIndex: pos];
+	      if ([NSApp isActive])
+		[win orderFront: self];
+	      else
+		[NSApp _deactivateVisibleWindow: win];
 	    }
 	}
 

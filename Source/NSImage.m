@@ -203,7 +203,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  e = [array objectEnumerator];
 	  while ((o = [e nextObject]))
 	    {
-	      NSDebugLog(@"extension %s\n", [o cString]);
 	      path = [main_bundle pathForResource: the_name 
 		        ofType: o];
 	      if (path != nil && [path length] != 0)

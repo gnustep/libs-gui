@@ -151,6 +151,7 @@ initialize_gnustep_backend(void)
       first = 0;
 #ifdef BACKEND_BUNDLE
       {      
+	Class backend;
 	NSBundle *theBundle;
 	NSEnumerator *benum;
 	NSString *path, *bundleName;
@@ -179,7 +180,9 @@ initialize_gnustep_backend(void)
 
 	theBundle = [NSBundle bundleWithPath: path];
 	NSCAssert(theBundle != nil, @"Can't init backend bundle");
-	[[theBundle classNamed: @"GSBackend"] initializeBackend];
+	backend = [theBundle classNamed: @"GSBackend"];
+	NSCAssert(backend, @"Can't load backend bundle");
+	[backend initializeBackend];
       }
 #else
       [GSBackend initializeBackend];
