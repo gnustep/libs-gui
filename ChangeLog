@@ -1,3 +1,10 @@
+Sun Jun 10 21:54:10 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m ([-_unloadFromColumn:]): Remove the column
+	from the superview when we destroy it.
+	([-resizeSubviewsWithOldSize:]): Do not invoke super's
+	implementation.
+
 Sun Jun 10 20:29:08 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCell.m ([-cellAttribute:]), ([-setCellAttribute:to:]):
@@ -99,7 +106,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Added drawing code for text attachments (Still untested, as there
 	is a problem with unicode characters in NSAttributedString)
 	* Source/NSTextView.m
-	Implemented some basic handling for mouse down on attachment cell.	
+	Implemented some basic handling for mouse down on attachment cell.
 
 2001-06-02  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
