@@ -1,3 +1,11 @@
+Tue Feb  5 10:26:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-moveBackwardAndModifySelection:]): New
+	method.
+	([-moveForwardAndModifySelection:]): New method.
+	* KeyBindings/DefaultKeyBindings.dict: Uncommented binding of the
+	new methods to Shift-LeftArrow and Shift-RightArrow.
+	
 Sun Feb  3 11:53:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-transpose:]): New method.  Bound to
