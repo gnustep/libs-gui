@@ -187,19 +187,37 @@ initialize_gnustep_backend(void)
 		break;
 	      }
 	  }
+
+	/* FIXME/TODO - update localized error messages.  */
+
+	/* Backend found ? */
 	NSCAssert1(path != nil, 
-		  GSGuiLocalizedString (@"Unable to load backend %@",
-					nil), bundleName);
+		  GSGuiLocalizedString (@"Unable to find backend %@", nil), 
+		   bundleName);
 	NSDebugLog(@"Loading Backend from %@", path);
 	NSDebugFLLog(@"BackendBundle", @"Loading Backend from %@", path);
 
+	/* Create a bundle object.  (Should normally succeed).  */
 	theBundle = [NSBundle bundleWithPath: path];
 	NSCAssert1(theBundle != nil, 
-		  GSGuiLocalizedString (@"Can't init backend bundle %@", nil),
-		  path);
+		  GSGuiLocalizedString 
+		   (@"Can't create NSBundle object for backend at path %@", 
+		    nil),
+		   path);
+
+	/* Now load the object file from the bundle.  */
+	NSCAssert1 ([theBundle load],
+		    GSGuiLocalizedString 
+		    (@"Can't load object file from backend at path %@", nil),
+		    path);
+
+	/* Now extract the GSBackend class from the loaded bundle.  */
 	backend = [theBundle classNamed: @"GSBackend"];
-	NSCAssert(backend, 
-		  GSGuiLocalizedString (@"Can't load backend class", nil));
+	NSCAssert1(backend != Nil, 
+		   GSGuiLocalizedString 
+		   (@"Backend at path %@ doesn't contain the GSBackend class",
+		    nil),
+		   path);
 	[backend initializeBackend];
       }
 #else
