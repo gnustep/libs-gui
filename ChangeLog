@@ -1,59 +1,60 @@
+Wed Oct 11 10:51:56 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-run]), ([-runModalSession:]): Reverted
+	last changes in autorelease pool code.  In particular, switched
+	back to creating and releasing an autorelease pool at each loop
+	for modal sessions.
+
 2000-10-09  Richard Frith-Macdonald <rfm@gnu.org>
 
-        * Source/GSTextStorage.m: ([-setAttributes:range:])
-        Fixed obscure bug - use ASSIGNCOPY rather than ASSIGN to prevent
-        mutable dictionaries being placed in attributed string.
+	* Source/GSTextStorage.m: ([-setAttributes:range:]): Fixed obscure
+	bug - use ASSIGNCOPY rather than ASSIGN to prevent mutable
+	dictionaries being placed in attributed string.
 
-=======
 2000-10-09  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Source/GSTextStorage.m: 
-	_setup() corrected a problem from the last change
-	Removed obsolete super calls in GSTextInfo coding methods.
-	* Source/NSAttributedString.m: 
-	Small correction in [fixParagraphStyleAttributeInRange]
+	* Source/GSTextStorage.m: (_setup()): corrected a problem from the
+	last change Removed obsolete super calls in GSTextInfo coding
+	methods.
+	* Source/NSAttributedString.m: Small correction in
+	[fixParagraphStyleAttributeInRange]
 	
 2000-10-08 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSTextStorage.m: Removed some depen dencies on private
+	* Source/GSTextStorage.m: Removed some dependencies on private
 	classes of base library.
 
 2000-10-02  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Source/NSWindow.m: 
-	[_initBackendWindow] always redisplay _wv
-	[setFrame:display:] set the frame of _wv directly if deferred.
-	This changes make the save panel usable again.
-	* Source/NSStringDrawing.m: 
-	Convert glyphs to font encoding in drawRun().
-	Removed unused code. 
+	* Source/NSWindow.m: ([_initBackendWindow]): always redisplay _wv
+	([setFrame:display:]): set the frame of _wv directly if deferred.
+	These changes make the save panel usable again.
+	* Source/NSStringDrawing.m: Convert glyphs to font encoding in
+	drawRun().  Removed unused code.
 	
 2000-10-01  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Header/gnustep/gui/NSText.h:
-	Moved ivar _textContainer from NSTextView to here.
-	* Header/gnustep/gui/NSTextView.h:
-	Removed ivar _textContainer. Added some delegate messages.
-	Two new NSTextView like methods for text container handling.	
-	* Source/NSText.m: 
-	Moved the text container handling from NSTextView to here and
-	corrected it.
-	* Source/NSTextView.m: 
-	Use text container implementation from super class.
-	* Source/NSLayoutManager.m:
-	Implemented [firstTextView].
-	* Source/GSSimpleLayoutManager.h: 
-	Removed additional method [setFirstTextView]
-	* Source/GSSimpleLayoutManager.m: 
-	Switched to use the text container for size information.
-	Implemented [textContainerChangedGeometry].
-	* Source/NSTextContainer.m: 
-	In [setTextView] let the text view send frame changed notifications.
-	Check text view in [_textViewFrameChanged:].
-	Don't add observer if text view is nil in
-	[setHeightTracksTextView:] and [setWidthTracksTextView:]
-	* Source/NSView.m: 
-	In [display] check if the _visibleRect is still valid.
+	* Header/gnustep/gui/NSText.h: Moved ivar _textContainer from
+	NSTextView to here.
+	* Header/gnustep/gui/NSTextView.h: Removed ivar
+	_textContainer. Added some delegate messages.  Two new NSTextView
+	like methods for text container handling.
+	* Source/NSText.m: Moved the text container handling from
+	NSTextView to here and corrected it.
+	* Source/NSTextView.m: Use text container implementation from
+	super class.
+	* Source/NSLayoutManager.m: Implemented [firstTextView].
+	* Source/GSSimpleLayoutManager.h: Removed additional method
+	[setFirstTextView]
+	* Source/GSSimpleLayoutManager.m: Switched to use the text
+	container for size information.  Implemented
+	[textContainerChangedGeometry].
+	* Source/NSTextContainer.m: In [setTextView] let the text view
+	send frame changed notifications.  Check text view in
+	[_textViewFrameChanged:].  Don't add observer if text view is nil
+	in [setHeightTracksTextView:] and [setWidthTracksTextView:]
+	* Source/NSView.m: In [display] check if the _visibleRect is still
+	valid.
 	
 2000-09-28  Adam Fedor  <fedor@gnu.org>
 
@@ -87,7 +88,6 @@
 	colormap tables, they are owned by libtiff.
 
 2000-09-26  Lyndon Tremblay  <humasect@home.com>
-
 
 	* Source/NSMenu.m ([NSMenu -itemWithTitle:]): Use -isEqualToString:
 	instead of -isEqual:
