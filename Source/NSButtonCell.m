@@ -49,6 +49,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSSound.h"
 #include "AppKit/NSWindow.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSButtonCell
 
@@ -619,11 +620,11 @@
       // FIXME Should check the bezel and gradient style
       if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
         {
-          NSDrawGrayBezel(cellFrame, NSZeroRect);
+	  [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
         }
       else
         {
-          NSDrawButton(cellFrame, NSZeroRect);
+	  [GSDrawFunctions drawButton: cellFrame : NSZeroRect];
         }
     }
 

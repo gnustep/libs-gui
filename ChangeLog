@@ -1,5 +1,18 @@
 2004-02-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h: Add two more methods.
+	* Source/GSDrawFunctions.m: Evaluate colour names only ones per
+	method. Corrected count in drawFramePhoto: and drawButton:. Added
+	drawGrayBezel: and drawWhiteBezel:.
+	* Source/NSButtonCell.m: (-drawWithFrame:inView:) use
+	GSDrawFunctions to draw border.
+	* Source/NSTabView.m
+	* Source/NSTabViewItem.m
+	* Source/NSBundleAdditions.m (NSNibConnector)
+	Added keyed decoding. 
+
+2004-02-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/Function.m
 	Corrected NSDrawWhiteBezel(), NSDrawDarkBezel() and
 	NSDrawLightBezel() to be almost identical to their Cocoa counterparts.

@@ -220,13 +220,26 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_ident];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_label];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_view];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_color];
-  [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&_state];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_first_responder];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_tabview];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      id identifier = [aDecoder decodeObjectForKey: @"NSIdentifier"];
+
+      self = [self initWithIdentifier: identifier];
+      [self setLabel: [aDecoder decodeObjectForKey: @"NSLabel"]];
+      [self setView: [aDecoder decodeObjectForKey: @"NSView"]];
+      [self setColor: [aDecoder decodeObjectForKey: @"NSColor"]];
+      [self _setTabView: [aDecoder decodeObjectForKey: @"NSTabView"]];
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_ident];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_label];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_view];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_color];
+      [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&_state];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_first_responder];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_tabview];
+    }
 
   return self;
 }

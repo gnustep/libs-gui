@@ -36,6 +36,8 @@
 + (void) drawButton: (NSRect)border : (NSRect)clip;
 + (void) drawDarkBezel: (NSRect)border : (NSRect)clip;
 + (void) drawLightBezel: (NSRect) border : (NSRect)clip;
++ (void) drawGrayBezel: (NSRect)border : (NSRect)clip;
++ (void) drawWhiteBezel: (NSRect) border : (NSRect)clip;
 + (void) drawGroove: (NSRect)border : (NSRect)clip;
 + (void) drawFramePhoto: (NSRect)border : (NSRect)clip;
 

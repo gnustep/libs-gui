@@ -728,17 +728,56 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_items];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
-  [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
-  _delegate = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
-  _selected = [_items objectAtIndex: _selected_item];
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      if ([aDecoder containsValueForKey: @"NSAllowTruncatedLabels"])
+        {
+	  [self setAllowsTruncatedLabels: [aDecoder decodeBoolForKey: 
+							@"NSAllowTruncatedLabels"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
+        {
+	  [self setDrawsBackground: [aDecoder decodeBoolForKey: 
+						  @"NSDrawsBackground"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSFont"])
+        {
+	  [self setFont: [aDecoder decodeObjectForKey: @"NSFont"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTabViewItems"])
+        {
+	  NSArray *items = [aDecoder decodeObjectForKey: @"NSTabViewItems"];
+	  NSEnumerator *enumerator = [items objectEnumerator];
+	  NSTabViewItem *item;
+	  
+	  while ((item = [enumerator nextObject]) != nil)
+	    {
+	      [self addTabViewItem: item];
+	    }
+	}
+      if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
+        {
+	  [self selectTabViewItem: [aDecoder decodeObjectForKey: 
+						 @"NSSelectedTabViewItem"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTvFlags"])
+        {
+	    //int flags = [aDecoder decodeObjectForKey: @"NSTvFlags"]];
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_items];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
+      [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
+      _delegate = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
+      _selected = [_items objectAtIndex: _selected_item];
+    }
   return self;
 }
 @end

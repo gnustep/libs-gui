@@ -78,11 +78,20 @@
 {
 }
 
-- (id) initWithCoder: (NSCoder*)aCoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_src];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_dst];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_tag];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
+      ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
+      ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_src];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_dst];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_tag];
+    }
   return self;
 }
 

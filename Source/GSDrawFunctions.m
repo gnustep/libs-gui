@@ -57,21 +57,22 @@
 			   NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};
   NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-			     NSMinXEdge, NSMinYEdge, 
-			     NSMaxXEdge, NSMaxYEdge};
-  NSColor *colors[] = {[NSColor controlDarkShadowColor],
-		       [NSColor controlDarkShadowColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor]};
+			   NSMinXEdge, NSMinYEdge, 
+			   NSMaxXEdge, NSMaxYEdge};
+  // These names are role names not the actual colours
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {black, black, white, white,
+		       dark, dark};
+
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
     }
 }
 
@@ -82,20 +83,19 @@
 			   NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
   NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
 			   NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
-  NSColor *colors[] = {[NSColor controlLightHighlightColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlDarkShadowColor],
-		       [NSColor controlDarkShadowColor],
-		       [NSColor controlColor],
-		       [NSColor controlColor]};
+  // These names are role names not the actual colours
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *light = [NSColor controlColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {white, white, dark, dark, 
+		       black, black, light, light};
   
   if ([[NSView focusView] isFlipped] == YES)
     {
       NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
   
-      [[NSColor controlShadowColor] set];
+      [dark set];
       PSrectfill(NSMinX(border) + 1., NSMinY(border) - 2., 1., 1.);
       PSrectfill(NSMaxX(border) - 2., NSMaxY(border) + 1., 1., 1.);
     }
@@ -103,7 +103,7 @@
     {
       NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
   
-      [[NSColor controlShadowColor] set];
+      [dark set];
       PSrectfill(NSMinX(border) + 1., NSMinY(border) + 1., 1., 1.);
       PSrectfill(NSMaxX(border) - 2., NSMaxY(border) - 2., 1., 1.);
     }
@@ -116,14 +116,12 @@
   			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
   NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge, 
 			   NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
-  NSColor *colors[] = {[NSColor controlLightHighlightColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlColor],
-		       [NSColor controlColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor]};
+  // These names are role names not the actual colours
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *light = [NSColor controlColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {white, white, dark, dark,
+		       light, light, dark, dark};
 
   if ([[NSView focusView] isFlipped] == YES)
     {
@@ -135,6 +133,61 @@
     }
 }
 
+/** Draw a white bezel border */
++ (void) drawWhiteBezel: (NSRect) border : (NSRect)clip
+{
+  NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
+  			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
+  NSRectEdge dn_sides[] = {NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge, 
+  			     NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge};
+  // These names are role names not the actual colours
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *light = [NSColor controlColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {dark, white, white, dark,
+		       dark, light, light, dark};
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+    }
+  else
+    {
+      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+    }
+}
+
+/** Draw a grey bezel border */
++ (void) drawGrayBezel: (NSRect) border : (NSRect)clip
+{
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
+			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
+			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
+  // These names are role names not the actual colours
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *light = [NSColor controlColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {white, white, dark, dark,
+		       light, light, black, black};
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      [dark set];
+      PSrectfill(NSMinX(border) + 1., NSMaxY(border) - 2., 1., 1.);
+      PSrectfill(NSMaxX(border) - 2., NSMinY(border) + 1., 1., 1.);
+    }
+  else
+    {
+      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      [dark set];
+      PSrectfill(NSMinX(border) + 1., NSMinY(border) + 1., 1., 1.);
+      PSrectfill(NSMaxX(border) - 2., NSMaxY(border) - 2., 1., 1.);
+    }
+}
+
 /** Draw a groove border */
 + (void) drawGroove: (NSRect)border : (NSRect)clip
 {
@@ -143,14 +196,11 @@
 			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
   NSRectEdge dn_sides[] = {NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge,
 			   NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge};
-  NSColor *colors[] = {[NSColor controlShadowColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlLightHighlightColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlLightHighlightColor]};
+  // These names are role names not the actual colours
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {dark, white, white, dark,
+		       white, dark, dark, white};
 
   if ([[NSView focusView] isFlipped] == YES)
     {
@@ -171,20 +221,19 @@
   NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
 			   NSMinXEdge, NSMinYEdge, 
 			   NSMaxXEdge, NSMaxYEdge};
-  NSColor *colors[] = {[NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlShadowColor],
-		       [NSColor controlDarkShadowColor],
-		       [NSColor controlDarkShadowColor]};
+  // These names are role names not the actual colours
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *colors[] = {dark, dark, dark, dark, 
+		       black,black};
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
     }
 }
 
