@@ -1,3 +1,10 @@
+1999-08-22  Gerrit van Dyk <gerritvd@decimax.com>
+
+	* Headers/NSProgressIndicator.h
+		  AppKit.h: Added ProgressIndicator
+	* Source/NSProgressIndicator.m: Added ProgressIndicator. Only
+	determinate Indicators works at this stage.
+
 1999-08-21  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSCell.m: lots of fixes to editWithFrame, and fieldEditor

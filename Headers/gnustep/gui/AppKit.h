@@ -55,7 +55,7 @@
 @class NSText,NSCStringText;
 // Controls
 @class NSControl, NSButton, NSTextField, NSScroller, NSBox, NSForm, NSMatrix;
-@class NSPopUpButton, NSSlider, NSBrowser, NSForm;
+@class NSPopUpButton, NSProgressIndicator, NSSlider, NSBrowser, NSForm;
 // Cells
 @class NSCell, NSActionCell, NSButtonCell, NSTextFieldCell, NSFormCell;
 @class NSSliderCell, NSMenuCell, NSBrowserCell, NSFormCell;
@@ -127,6 +127,7 @@
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
 #include <AppKit/NSPrintPanel.h>
+#include <AppKit/NSProgressIndicator.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSScreen.h>

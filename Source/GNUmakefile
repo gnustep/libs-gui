@@ -95,6 +95,7 @@ NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
 NSPrintPanel.m \
+NSProgressIndicator.m \
 NSResponder.m \
 NSSavePanel.m \
 NSScreen.m \
@@ -199,6 +200,7 @@ AppKit/NSPrintInfo.h \
 AppKit/NSPrintOperation.h \
 AppKit/NSPrintPanel.h \
 AppKit/NSPrinter.h \
+AppKit/NSProgressIndicator.h \
 AppKit/NSResponder.h \
 AppKit/NSRulerMarker.h \
 AppKit/NSRulerView.h \
