@@ -551,7 +551,7 @@ static	id<PasteboardServer>	the_server = nil;
   {
     d = [target dataForType: dataType
 		   oldCount: changeCount
-	      mustBeCurrent: useHistory];
+	      mustBeCurrent: (useHistory == NO) ? YES : NO];
   }
   NS_HANDLER
   {
@@ -597,12 +597,29 @@ static	id<PasteboardServer>	the_server = nil;
 provideDataForType:(NSString *)type
 {}
 
+- (void)pasteboard:(NSPasteboard *)sender
+provideDataForType:(NSString *)type
+	andVersion:(int)version
+{}
+
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender
 {}
 
 @end
 
 @implementation NSPasteboard (GNUstepExtensions)
+
+- (id)askOwner:(id)anObject toProvideDataForType:(NSString*)type
+{
+  [anObject pasteboard:self provideDataForType:type];
+  return self;
+}
+
+- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type andVersion:(int)v
+{
+  [obj pasteboard:self provideDataForType:type andVersion:v];
+  return self;
+}
 
 /*
  *	Once the '[-setChangeCount:]' message has been sent to an NSPasteboard
