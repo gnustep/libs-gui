@@ -2262,7 +2262,7 @@ delegate.
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
-      shouldTerminate = [_delegate applicationShouldTerminate: sender];
+      shouldTerminate = [_delegate applicationShouldTerminate: self];
     }
   else
     {
