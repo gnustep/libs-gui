@@ -1,8 +1,19 @@
+2003-04-11  Michael Hanni  <michael@deviant-behavior.com>
+
+	* Source/NSApplication.m:
+	(updateWindowsItem:): call to sizeToFit removed. NSMenuItemCell
+	manipulation removed which the cell makes internally anyways.
+	 
 2003-04-11  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSPopUpButton.m:
 	(mouseDown): Set menu view's highlightedItemIndex to 
 	lastSelectedItem if result index is -1. Comments added.
+	
+	* Source/NSApplication.m:
+	(setImageForWindowsItem:): implemented.
+	(changeWindowsItem:title:filename:): call setImageForWindowsItem:
+	added. TODO: removed from comment.
 	
 2003-04-10  Serg Stoyan <stoyan@hologr.com>
 
