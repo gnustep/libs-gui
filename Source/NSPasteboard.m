@@ -4,7 +4,7 @@
    Description...	Implementation of class for communicating with the
 			pasteboard server.
 
-   Copyright (C) 1997 Free Software Foundation, Inc.
+   Copyright (C) 1997,1999 Free Software Foundation, Inc.
 
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1997
@@ -31,7 +31,6 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
-#include "../Tools/PasteboardServer.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
@@ -49,12 +48,14 @@
 #include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
+#include <gnustep/gui/GSPasteboardServer.h>
+
 #define stringify_it(X) #X
 #define	prog_path(X) stringify_it(X) "/Tools/gpbs"
 
 @interface NSPasteboard (Private)
-+ (id<PasteboardServer>) _pbs;
-+ (NSPasteboard*) _pasteboardWithTarget: (id<PasteboardObject>)aTarget
++ (id<GSPasteboardSvr>) _pbs;
++ (NSPasteboard*) _pasteboardWithTarget: (id<GSPasteboardObj>)aTarget
 				   name: (NSString*)aName;
 - (id) _target;
 @end
@@ -63,7 +64,7 @@
 
 static	NSLock			*dictionary_lock = nil;
 static	NSMutableDictionary	*pasteboards = nil;
-static	id<PasteboardServer>	the_server = nil;
+static	id<GSPasteboardSvr>	the_server = nil;
 
 
 //
@@ -92,7 +93,7 @@ static	id<PasteboardServer>	the_server = nil;
   return self;
 }
 
-+ (id<PasteboardServer>) _pbs
++ (id<GSPasteboardSvr>) _pbs
 {
   if (the_server == nil)
     {
@@ -103,7 +104,7 @@ static	id<PasteboardServer>	the_server = nil;
 	{
 	  host = [[NSProcessInfo processInfo] hostName];
 	}
-      the_server = (id<PasteboardServer>)[NSConnection
+      the_server = (id<GSPasteboardSvr>)[NSConnection
 		rootProxyForConnectionWithRegisteredName: PBSNAME
 						    host: host];
       if ([(id)the_server retain])
@@ -150,7 +151,7 @@ static	id<PasteboardServer>	the_server = nil;
 //
 // Creating and Releasing an NSPasteboard Object
 //
-+ (NSPasteboard*) _pasteboardWithTarget: (id<PasteboardObject>)aTarget
++ (NSPasteboard*) _pasteboardWithTarget: (id<GSPasteboardObj>)aTarget
 				   name: (NSString*)aName
 {
   NSPasteboard*	p = nil;
@@ -206,7 +207,7 @@ static	id<PasteboardServer>	the_server = nil;
 {
   NS_DURING
   {
-    id<PasteboardObject>	anObj;
+    id<GSPasteboardObj>	anObj;
 
     anObj = [[self _pbs] pasteboardWithName: aName];
     if (anObj) {
@@ -230,7 +231,7 @@ static	id<PasteboardServer>	the_server = nil;
 {
   NS_DURING
   {
-    id<PasteboardObject>	anObj;
+    id<GSPasteboardObj>	anObj;
 
     anObj = [[self _pbs] pasteboardWithUniqueName];
     if (anObj) {
@@ -263,7 +264,7 @@ static	id<PasteboardServer>	the_server = nil;
 {
   NS_DURING
   {
-    id<PasteboardObject>	anObj;
+    id<GSPasteboardObj>	anObj;
 
     anObj = [[self _pbs] pasteboardByFilteringData: data
 					    ofType: type
@@ -297,7 +298,7 @@ static	id<PasteboardServer>	the_server = nil;
 
   NS_DURING
   {
-    id<PasteboardObject>	anObj;
+    id<GSPasteboardObj>	anObj;
 
     anObj = [[self _pbs] pasteboardByFilteringData: data
 					     ofType: type
@@ -328,7 +329,7 @@ static	id<PasteboardServer>	the_server = nil;
 {
   NS_DURING
   {
-    id<PasteboardObject>	anObj;
+    id<GSPasteboardObj>	anObj;
 
     anObj = [pboard _target];
     if (anObj) {
