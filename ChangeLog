@@ -1,3 +1,11 @@
+2002-09-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowser.m: Convert comments for gsdoc.
+	(-selectRow:inColumn:): Call delegate -browser:selectRow:inColumn:.
+	(-setPath:): Call delegate -browser:selectCellWithString:inColumn:.
+	(-doClick:): Do not call the above methods.
+	(-initWithCoder:): Set _isLoaded to NO.
+
 2002-09-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m

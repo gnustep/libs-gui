@@ -62,9 +62,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
 
-//#define NSBTRACE_all
-
-
 //
 // Internal class for maintaining information about columns
 //
@@ -239,39 +236,19 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 //
 // NSBrowser implementation
 //
-
 @implementation NSBrowser
 
-
-
-// #############################################################################
-//
-//  PUBLIC METHODS (MacOSXServer Documentation 1998)
-//
-// #############################################################################
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Setting component classes
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the NSBrowserCell class (regardless of whether a 
-// setCellClass: message has been sent to a particular instance)
-//
+/** Returns the NSBrowserCell class (regardless of whether a 
+    setCellClass: message has been sent to a particular instance). This
+    method is not meant to be used by applications.
+*/
 
 + (Class)cellClass
 {
   return [NSBrowserCell class];
 }
 
-// -------------------
-// Sets the class of NSCell used in the columns of the NSBrowser.
-// 
-
+/** Sets the class of NSCell used in the columns of the NSBrowser. */
 - (void)setCellClass: (Class)classId
 {
   _browserCellClass = classId;
@@ -280,54 +257,37 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self setCellPrototype: AUTORELEASE([[_browserCellClass alloc] init])];
 }
 
-// -------------------
-// Returns the NSBrowser's prototype NSCell.
-// 
-
+/** Returns the NSBrowser's prototype NSCell instance.*/
 - (id)cellPrototype
 {
   return _browserCellPrototype;
 }
 
-// -------------------
-// Sets the NSCell instance copied to display items in the columns of NSBrowser.
-//
-
+/** Sets the NSCell instance copied to display items in the columns of
+    NSBrowser. */
 - (void)setCellPrototype: (NSCell *)aCell
 {
   ASSIGN(_browserCellPrototype, aCell);
 }
 
-// -------------------
-// Returns the class of NSMatrix used in the NSBrowser's columns.
-//
-
+/** Returns the class of NSMatrix used in the NSBrowser's columns. */
 - (Class)matrixClass
 {
   return _browserMatrixClass;
 }
 
-// -------------------
-// Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
-// NSBrowser's columns.
-//
-
+/** Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
+    NSBrowser's columns. */
 - (void)setMatrixClass: (Class)classId
 {
   _browserMatrixClass = classId;
 }
 
+/*
+ * Getting matrices, cells, and rows
+ */
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Getting matrices, cells, and rows
-////////////////////////////////////////////////////////////////////////////////
-
-
-// -------------------
-// Returns the last (rightmost and lowest) selected NSCell.
-//
-
+/** Returns the last (rightmost and lowest) selected NSCell. */
 - (id)selectedCell
 {
   int i;
@@ -347,10 +307,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [matrix selectedCell];
 }
 
-// -------------------
-// Returns the last (lowest) NSCell that's selected in column.
-//
-
+/** Returns the last (lowest) NSCell that's selected in column. */
 - (id)selectedCellInColumn: (int)column
 {
   id matrix;
@@ -363,10 +320,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [matrix selectedCell];
 }
 
-// -------------------
-// Returns all cells selected in the rightmost column.
-//
-
+/** Returns all cells selected in the rightmost column. */
 - (NSArray *)selectedCells
 {
   int i;
@@ -386,10 +340,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [matrix selectedCells];
 }
 
-// -------------------
-// Selects all NSCells in the last column of the NSBrowser.
-//
-
+/** Selects all NSCells in the last column of the NSBrowser. */
 - (void)selectAll: (id)sender
 {
   id matrix;
@@ -402,11 +353,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [matrix selectAll: sender];
 }
 
-// -------------------
-// Returns the row index of the selected cell in the column specified by
-// index column.
-//
-
+/** Returns the row index of the selected cell in the column specified by
+   index column. */
 - (int) selectedRowInColumn: (int)column
 {
   id matrix;
@@ -419,10 +367,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [matrix selectedRow];
 }
 
-// -------------------
-// Selects the cell at index row in the column identified by index column.
-//
-
+/** Selects the cell at index row in the column identified by index column. */
 - (void)selectRow:(int)row inColumn:(int)column 
 {
   id matrix;
@@ -436,27 +381,37 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   if ((cell = [matrix cellAtRow: row column: 0]))
     {
+      BOOL didSelect;
       if (column < _lastColumnLoaded)
 	{
 	  [self setLastColumn: column];
 	}
+      if (_allowsMultipleSelection == NO)
+	[matrix deselectAllCells];
 
-      [matrix deselectAllCells];
-      [matrix selectCellAtRow: row column: 0];
+      didSelect = YES;
+      if ([_browserDelegate respondsToSelector:
+			      @selector(browser:selectRow:inColumn:)])
+	{
+	  didSelect = [_browserDelegate browser: self
+				      selectRow: row
+				       inColumn: column];
+	}
+      else
+	{
+	  [matrix selectCellAtRow: row column: 0];
+	}
 
-      if (![cell isLeaf])
+      if (didSelect && [cell isLeaf] == NO)
 	{
 	  [self addColumn];
 	}
     }
 }
 
-// -------------------
-// Loads if necessary and returns the NSCell at row in column.
-//
-// if you change this code, you may want to look at the
-// _loadColumn method in which the following code is integrated
-// (for speed)
+/** Loads if necessary and returns the NSCell at row in column. */
+/*  if you change this code, you may want to look at the _loadColumn
+ method in which the following code is integrated (for speed) */
 - (id)loadedCellAtRow: (int)row
 	       column: (int)column
 {
@@ -517,10 +472,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return aCell;
 }
 
-// -------------------
-// Returns the matrix located in the column identified by index column.
-//
-
+/** Returns the matrix located in the column identified by index column. */
 - (NSMatrix *)matrixInColumn: (int)column
 {
   NSBrowserColumn *bc;
@@ -541,28 +493,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [bc columnMatrix];
 }
 
-//#undef NSBTRACE_all
+/*
+ * Getting and setting paths
+ */
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Getting and setting paths
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the browser's current path.
-//
-
+/** Returns the browser's current path. */
 - (NSString *)path
 {
   return [self pathToColumn: _lastColumnLoaded + 1];
 }
 
-// -------------------
-// Parses path and selects corresponding items in the NSBrowser columns.
-//
-
+/** Parses path and selects corresponding items in the NSBrowser columns. */
 - (BOOL) setPath: (NSString *)path
 {
   NSArray	*subStrings;
@@ -632,8 +573,21 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	      
 	      if ([cellString isEqualToString: aStr])
 		{
-		  [matrix selectCellAtRow: j column: 0];
-		  found = YES;
+		  if ([_browserDelegate respondsToSelector:
+			 @selector(browser:selectCellWithString:inColumn:)])
+		    {
+		      if ([_browserDelegate browser: self
+			       selectCellWithString: [selectedCell stringValue]
+					   inColumn: column+i])
+			{
+			  found = YES;
+			}
+		    }
+		  else
+		    {
+		      [matrix selectCellAtRow: j column: 0];
+		      found = YES;
+		    }
 		  break;
 		}
 	    }
@@ -658,11 +612,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return found;
 }
 
-// -------------------
-// Returns a string representing the path from the first column up to,
-// but not including, the column at index column.
-//
-
+/** Returns a string representing the path from the first column up to,
+ but not including, the column at index column. */
 - (NSString *)pathToColumn: (int)column
 {
   NSMutableString	*s = [_pathSeparator mutableCopy];
@@ -710,31 +661,22 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return AUTORELEASE (s);
 }
 
-// -------------------
-// Returns the path separator. The default is "/".
-//
-
+/** Returns the path separator. The default is "/". */
 - (NSString *)pathSeparator
 {
   return _pathSeparator;
 }
 
-// -------------------
-// Sets the path separator to newString.
-//
-
+/** Sets the path separator to newString. */
 - (void)setPathSeparator: (NSString *)aString
 {
   ASSIGN(_pathSeparator, aString);
 }
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Manipulating columns
-////////////////////////////////////////////////////////////////////////////////
-
-
+/*
+ * Manipulating columns 
+ */
 - (NSBrowserColumn *)_createColumn
 {
   NSBrowserColumn *bc;
@@ -758,10 +700,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return bc;
 }
 
-// -------------------
-// Adds a column to the right of the last column.
-//
-
+/** Adds a column to the right of the last column. */
 - (void)addColumn
 {
   int i;
@@ -816,19 +755,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return YES;
 }
 
-// -------------------
-// Updates the NSBrowser to display all loaded columns.
-//
-
+/** Updates the NSBrowser to display all loaded columns. */
 - (void) displayAllColumns
 {
   [self tile];
 }
 
-// -------------------
-// Updates the NSBrowser to display the column with the given index.
-//
-
+/** Updates the NSBrowser to display the column with the given index. */
 - (void) displayColumn: (int)column
 {
   id bc, sc;
@@ -860,10 +793,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [sc setNeedsDisplay: YES];
 }
 
-// -------------------
-// Returns the column number in which matrix is located.
-//
-
+/** Returns the column number in which matrix is located. */
 - (int)columnOfMatrix: (NSMatrix *)matrix
 {
   int i, count;
@@ -883,10 +813,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return -1;
 }
 
-// -------------------
-// Returns the index of the last column with a selected item.
-//
-
+/** Returns the index of the last column with a selected item. */
 - (int)selectedColumn
 {
   int i;
@@ -905,19 +832,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return -1;
 }
 
-// -------------------
-// Returns the index of the last column loaded.
-//
-
+/** Returns the index of the last column loaded. */
 - (int)lastColumn
 {
   return _lastColumnLoaded;
 }
 
-// -------------------
-// Sets the last column to column.
-//
-
+/** Sets the last column to column. */
 - (void)setLastColumn: (int)column
 {
   if (column < -1)
@@ -930,19 +851,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self _setColumnTitlesNeedDisplay];
 }
 
-// -------------------
-// Returns the index of the first visible column.
-//
-
+/** Returns the index of the first visible column. */
 - (int)firstVisibleColumn
 {
   return _firstVisibleColumn;
 }
 
-// -------------------
-// Returns the number of columns visible.
-//
-
+/** Returns the number of columns visible. */
 - (int)numberOfVisibleColumns
 {
   int num;
@@ -952,19 +867,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return (num > 0 ? num : 1);
 }
 
-// -------------------
-// Returns the index of the last visible column.
-//
-
+/** Returns the index of the last visible column. */
 - (int)lastVisibleColumn
 {
   return _lastVisibleColumn;
 }
 
-// -------------------
-// Invokes delegate method browser:isColumnValid: for visible columns.
-//
-
+/** Invokes delegate method browser:isColumnValid: for visible columns. */
 - (void)validateVisibleColumns
 {
   int i;
@@ -989,26 +898,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Loading columns
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Loading columns
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns whether column zero is loaded.
-//
-
+/** Returns whether column zero is loaded. */
 - (BOOL)isLoaded
 {
   return _isLoaded;
 }
 
-// -------------------
-// Loads column zero; unloads previously loaded columns.
-//
-
+/** Loads column zero; unloads previously loaded columns. */
 - (void)loadColumnZero
 {
   // set last column loaded
@@ -1021,10 +921,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self _setColumnTitlesNeedDisplay];
 }
 
-// -------------------
-// Reloads column if it is loaded; sets it as the last column.
-//
-
+/** Reloads column if it is loaded; sets it as the last column. */
 - (void)reloadColumn: (int)column
 {
   NSArray *selectedCells;
@@ -1082,109 +979,74 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Setting selection characteristics
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Setting selection characteristics
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns whether the user can select branch items when multiple selection
-// is enabled.
-//
-
+/** Returns whether the user can select branch items when multiple selection
+    is enabled. */
 - (BOOL)allowsBranchSelection
 {
   return _allowsBranchSelection;
 }
 
-// -------------------
-// Sets whether the user can select branch items when multiple selection
-// is enabled.
-//
-
+/** Sets whether the user can select branch items when multiple selection
+    is enabled. */
 - (void)setAllowsBranchSelection: (BOOL)flag
 {
   _allowsBranchSelection = flag;
 }
 
-// -------------------
-// Returns whether there can be nothing selected.
-//
-
+/** Returns whether there can be nothing selected. */
 - (BOOL)allowsEmptySelection
 {
   return _allowsEmptySelection;
 }
 
-// -------------------
-// Sets whether there can be nothing selected.
-//
-
+/** Sets whether there can be nothing selected. */
 - (void)setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }
 
-// -------------------
-// Returns whether the user can select multiple items.
-//
-
+/** Returns whether the user can select multiple items. */
 - (BOOL)allowsMultipleSelection
 {
   return _allowsMultipleSelection;
 }
 
-// -------------------
-// Sets whether the user can select multiple items.
-//
-
+/** Sets whether the user can select multiple items. */
 - (void)setAllowsMultipleSelection: (BOOL)flag
 {
   _allowsMultipleSelection = flag;
 }
 
 
+/*
+ * Setting column characteristics
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Setting column characteristics
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns YES if NSMatrix objects aren't freed when their columns are unloaded.
-//
-
+/** Returns YES if NSMatrix objects aren't freed when their columns
+    are unloaded. */
 - (BOOL)reusesColumns
 {
   return _reusesColumns;
 }
 
-// -------------------
-// If flag is YES, prevents NSMatrix objects from being freed when their
-// columns are unloaded, so they can be reused.
-//
-
+/** If flag is YES, prevents NSMatrix objects from being freed when
+    their columns are unloaded, so they can be reused. */
 - (void)setReusesColumns: (BOOL)flag
 {
   _reusesColumns = flag;
 }
 
-// -------------------
-// Returns the maximum number of visible columns.
-//
-
+/** Returns the maximum number of visible columns. */
 - (int)maxVisibleColumns
 {
   return _maxVisibleColumns;
 }
 
-// -------------------
-// Sets the maximum number of columns displayed.
-//
-
+/** Sets the maximum number of columns displayed. */
 - (void)setMaxVisibleColumns: (int)columnCount
 {
   if ((columnCount < 1) || (_maxVisibleColumns == columnCount))
@@ -1196,19 +1058,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self tile];
 }
 
-// -------------------
-// Returns the minimum column width in pixels.
-//
-
+/** Returns the minimum column width in pixels. */
 - (int)minColumnWidth
 {
   return _minColumnWidth;
 }
 
-// -------------------
-// Sets the minimum column width in pixels.
-//
-
+/** Sets the minimum column width in pixels. */
 - (void)setMinColumnWidth: (int)columnWidth
 {
   float sw;
@@ -1227,19 +1083,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self tile];
 }
 
-// -------------------
-// Returns whether columns are separated by bezeled borders.
-//
-
+/** Returns whether columns are separated by bezeled borders. */
 - (BOOL)separatesColumns
 {
   return _separatesColumns;
 }
 
-// -------------------
-// Sets whether to separate columns with bezeled borders.
-//
-
+/** Sets whether to separate columns with bezeled borders. */
 - (void)setSeparatesColumns: (BOOL)flag
 {
   if (_separatesColumns != flag)
@@ -1249,38 +1099,26 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
-// -------------------
-// Returns YES if the title of a column is set to the string value of
-// the selected NSCell in the previous column.
-//
-
+/** Returns YES if the title of a column is set to the string value of 
+    the selected NSCell in the previous column.*/
 - (BOOL)takesTitleFromPreviousColumn
 {
   return _takesTitleFromPreviousColumn;
 }
 
-// -------------------
-// Sets whether the title of a column is set to the string value of the
-// selected NSCell in the previous column.
-//
-
+/** Sets whether the title of a column is set to the string value of the
+    selected NSCell in the previous column. */
 - (void)setTakesTitleFromPreviousColumn: (BOOL)flag
 {
   _takesTitleFromPreviousColumn = flag;
 }
 
 
+/*
+ * Manipulating column titles
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Manipulating column titles
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the title displayed for the column at index column.
-//
-
+/** Returns the title displayed for the column at index column. */
 - (NSString *) titleOfColumn: (int)column
 {
   id bc;
@@ -1290,10 +1128,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return [bc columnTitle];
 }
 
-// -------------------
-// Sets the title of the column at index column to aString.
-//
-
+/** Sets the title of the column at index column to aString. */
 - (void) setTitle: (NSString *)aString
 	 ofColumn: (int)column
 {
@@ -1310,19 +1145,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self setNeedsDisplayInRect: [self titleFrameOfColumn: column]];
 }
 
-// -------------------
-// Returns whether columns display titles.
-//
-
+/** Returns whether columns display titles. */
 - (BOOL)isTitled
 {
   return _isTitled;
 }
 
-// -------------------
-// Sets whether columns display titles.
-//
-
+/** Sets whether columns display titles. */
 - (void)setTitled: (BOOL)flag
 {
   if (_isTitled != flag)
@@ -1333,11 +1162,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
-// -------------------
-// Draws the title for the column at index column within the rectangle
-// defined by aRect.
-//
-
+/** Draws the title for the column at index column within the rectangle
+    defined by aRect. */
 - (void)drawTitle: (NSString *)title
 	   inRect: (NSRect)aRect
 	 ofColumn: (int)column
@@ -1349,20 +1175,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [_titleCell drawWithFrame: aRect inView: self];
 }
 
-// -------------------
-// Returns the height of column titles. 
-//
-
+/** Returns the height of column titles.  */
 - (float)titleHeight
 {
   // Nextish look requires 21 here
   return 21;
 }
 
-// -------------------
-// Returns the bounds of the title frame for the column at index column.
-//
-
+/** Returns the bounds of the title frame for the column at index column. */
 - (NSRect)titleFrameOfColumn: (int)column
 {
   // Not titled then no frame
@@ -1404,17 +1224,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Scrolling an NSBrowser
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Scrolling an NSBrowser
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Scrolls to make the column at index column visible.
-//
-
+/** Scrolls to make the column at index column visible. */
 - (void)scrollColumnToVisible: (int)column
 {
   int i;
@@ -1435,10 +1249,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     [self scrollColumnsRightBy: (-i)];
 }
 
-// -------------------
-// Scrolls columns left by shiftAmount columns.
-//
-
+/** Scrolls columns left by shiftAmount columns. */
 - (void)scrollColumnsLeftBy: (int)shiftAmount
 {
   // Cannot shift past the zero column
@@ -1470,10 +1281,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     [_browserDelegate browserDidScroll: self];  
 }
 
-// -------------------
-// Scrolls columns right by shiftAmount columns.
-//
-
+/** Scrolls columns right by shiftAmount columns. */
 - (void)scrollColumnsRightBy: (int)shiftAmount
 {
   // Cannot shift past the last loaded column
@@ -1505,10 +1313,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     [_browserDelegate browserDidScroll: self];
 }
 
-// -------------------
-// Updates the horizontal scroller to reflect column positions.
-//
-
+/** Updates the horizontal scroller to reflect column positions. */
 - (void) updateScroller
 {
   int num;
@@ -1538,10 +1343,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [_horizontalScroller setNeedsDisplay: YES];
 }
 
-// -------------------
-// Scrolls columns left or right based on an NSScroller.
-//
-
+/** Scrolls columns left or right based on an NSScroller. */
 - (void)scrollViaScroller: (NSScroller *)sender
 {
   NSScrollerPart hit;
@@ -1586,26 +1388,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Showing a horizontal scroller
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Showing a horizontal scroller
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns whether an NSScroller is used to scroll horizontally.
-//
-
+/** Returns whether an NSScroller is used to scroll horizontally. */
 - (BOOL)hasHorizontalScroller
 {
   return _hasHorizontalScroller;
 }
 
-// -------------------
-// Sets whether an NSScroller is used to scroll horizontally.
-//
-
+/** Sets whether an NSScroller is used to scroll horizontally. */
 - (void)setHasHorizontalScroller: (BOOL)flag
 {
   if (_hasHorizontalScroller != flag)
@@ -1621,64 +1414,43 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Setting the behavior of arrow keys
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Setting the behavior of arrow keys
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns YES if the arrow keys are enabled.
-//
-
+/** Returns YES if the arrow keys are enabled. */
 - (BOOL)acceptsArrowKeys
 {
   return _acceptsArrowKeys;
 }
 
-// -------------------
-// Enables or disables the arrow keys as used for navigating within
-// and between browsers.
-//
-
+/** Enables or disables the arrow keys as used for navigating within
+    and between browsers. */
 - (void) setAcceptsArrowKeys: (BOOL)flag
 {
   _acceptsArrowKeys = flag;
 }
 
-// -------------------
-// Returns NO if pressing an arrow key only scrolls the browser, YES if
-// it also sends the action message specified by setAction:.
-//
-
+/** Returns NO if pressing an arrow key only scrolls the browser, YES if
+    it also sends the action message specified by setAction:. */
 - (BOOL) sendsActionOnArrowKeys
 {
   return _sendsActionOnArrowKeys;
 }
 
-// -------------------
-// Sets whether pressing an arrow key will cause the action message
-// to be sent (in addition to causing scrolling).
-//
-
+/** Sets whether pressing an arrow key will cause the action message
+ to be sent (in addition to causing scrolling). */
 - (void) setSendsActionOnArrowKeys: (BOOL)flag
 {
   _sendsActionOnArrowKeys = flag;
 }
 
 
+/*
+ * Getting column frames
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Getting column frames
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the rectangle containing the column at index column.
-//
-
+/** Returns the rectangle containing the column at index column. */
 - (NSRect) frameOfColumn: (int)column
 {
   NSRect r = NSZeroRect;
@@ -1721,11 +1493,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return r;
 }
 
-// -------------------
-// Returns the rectangle containing the column at index column,
+/** Returns the rectangle containing the column at index column, */
 // not including borders.
-//
-
 - (NSRect) frameOfInsideOfColumn: (int)column
 {
   // xxx what does this one do?
@@ -1733,19 +1502,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Arranging browser components
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Arranging browser components
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Adjusts the various subviews of NSBrowser-scrollers, columns, titles,
-// and so on-without redrawing. Your code shouldn't send this message.
-// It's invoked any time the appearance of the NSBrowser changes.
-//
-
+/** Adjusts the various subviews of NSBrowser-scrollers, columns,
+ titles, and so on-without redrawing. Your code shouldn't send this
+ message.  It's invoked any time the appearance of the NSBrowser
+ changes. */
 - (void) tile
 {
   NSSize bs = _sizeForBorderType (NSBezelBorder);
@@ -1860,30 +1624,21 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Setting the delegate
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Setting the delegate
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the NSBrowser's delegate.
-//
-
+/** Returns the NSBrowser's delegate. */
 - (id) delegate
 {
   return _browserDelegate;
 }
 
-// -------------------
-// Sets the NSBrowser's delegate to anObject.
-// Raises NSBrowserIllegalDelegateException if the delegate specified
-// by anObject doesn't respond to browser:willDisplayCell:atRow:column:
-// (if passive) and either of the methods browser:numberOfRowsInColumn:
-// or browser:createRowsForColumn:inMatrix:.
-//
-
+/** Sets the NSBrowser's delegate to anObject.  Raises
+ NSBrowserIllegalDelegateException if the delegate specified by
+ anObject doesn't respond to browser:willDisplayCell:atRow:column: (if
+ passive) and either of the methods browser:numberOfRowsInColumn: or
+ browser:createRowsForColumn:inMatrix:. */
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
@@ -1931,60 +1686,41 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
+/*
+ * Target and action
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Target and action
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Returns the NSBrowser's double-click action method.
-//
-
+/** Returns the NSBrowser's double-click action method. */
 - (SEL) doubleAction
 {
   return _doubleAction;
 }
 
-// -------------------
-// Sets the NSBrowser's double-click action to aSelector.
-//
-
+/** Sets the NSBrowser's double-click action to aSelector. */
 - (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
 }
 
-// -------------------
-// Sends the action message to the target. Returns YES upon success,
-// NO if no target for the message could be found. 
-//
-
+/** Sends the action message to the target. Returns YES upon success, 
+    NO if no target for the message could be found. */
 - (BOOL) sendAction
 {
   return [self sendAction: [self action]  to: [self target]];
 }
 
 
+/*
+ * Event handling
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// Event handling
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Responds to (single) mouse clicks in a column of the NSBrowser.
-//
-
+/** Responds to (single) mouse clicks in a column of the NSBrowser. */
 - (void) doClick: (id)sender
 {
   NSArray        *a;
   NSMutableArray *selectedCells;
   NSEnumerator   *enumerator;
   NSBrowserCell  *cell;
-  BOOL            shouldSelect = YES, sel1, sel2;
   int             row, column, aCount, selectedCellsCount;
 
   if ([sender class] != _browserMatrixClass)
@@ -2014,39 +1750,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   if ([selectedCells count] == 0)
     [selectedCells addObject: [sender selectedCell]];
-
-  sel1 = [_browserDelegate respondsToSelector:
-			     @selector(browser:selectRow:inColumn:)];
-  sel2 = [_browserDelegate respondsToSelector: 
-			     @selector(browser:selectCellWithString:inColumn:)];
-
-  enumerator = [a objectEnumerator];
-  while ((cell = [enumerator nextObject]))
-    {
-      if ([selectedCells containsObject: cell] == YES)
-	{
-	  // Ask delegate if selection is ok
-	  if (sel1)
-	    {
-	      [sender getRow: &row column: NULL ofCell: cell];
-
-	      shouldSelect = [_browserDelegate browser: self
-					       selectRow: row
-					       inColumn: column];
-	    }
-	  // Try the other method
-	  else if (sel2)
-	    {
-	      shouldSelect = [_browserDelegate browser: self
-					       selectCellWithString:
-						 [cell stringValue]
-					       inColumn: column];
-	    }
-
-	  if (shouldSelect == NO)
-	    [selectedCells removeObject: cell];
-	}
-    }
 
   selectedCellsCount = [selectedCells count];
 
@@ -2124,10 +1827,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   RELEASE(selectedCells);
 }
 
-// -------------------
-// Responds to double-clicks in a column of the NSBrowser.
-//
-
+/** Responds to double-clicks in a column of the NSBrowser. */
 - (void)doDoubleClick: (id)sender
 {
   // We have already handled the single click
@@ -2136,48 +1836,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self sendAction: _doubleAction to: [self target]];
 }
 
+/*
+ * Override superclass methods
+ */
 
-
-// #############################################################################
-//
-//  OVERRIDING METHODS
-//
-// #############################################################################
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Class methods
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Initialize
-//
-
-+ (void)initialize
-{
-  if (self == [NSBrowser class])
-    {
-      // Initial version
-      [self setVersion: 1];
-      scrollerWidth = [NSScroller scrollerWidth];
-    }
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Instance methods
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Setups browser with frame 'rect'.
-//
-
+/** Setups browser with frame 'rect'. */
 - (id)initWithFrame: (NSRect)rect
 {
   NSSize bs;
@@ -2239,10 +1902,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return self;
 }
 
-// -------------------
-// Frees components.
-//
-
 - (void)dealloc
 {
   RELEASE(_browserCellPrototype);
@@ -2257,43 +1916,29 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Target-actions
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * Target-actions
+ */
 
-
-
-// -------------------
-// Set target to 'target'
-//
-
+/** Set target to 'target' */
 - (void) setTarget: (id)target
 {
   _target = target;
 }
 
-// -------------------
-// Return current target.
-//
-
+/** Return current target. */
 - (id) target
 {
   return _target;
 }
 
-// -------------------
-// Set action to 's'.
-//
-
+/** Set action to 's'. */
 - (void) setAction: (SEL)s
 {
   _action = s;
 }
 
-// -------------------
-// Return current action.
-//
-
+/** Return current action. */
 - (SEL) action
 {
   return _action;
@@ -2301,15 +1946,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Events handling
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// Draws browser.
-//
+/*
+ * Events handling 
+ */
 
 - (void)drawRect: (NSRect)rect
 {
@@ -2360,21 +1999,15 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
-// -------------------
-// Informs the receivers's subviews that the receiver's bounds rectangle size
-// has changed from oldFrameSize.
-//
-
+/* Informs the receivers's subviews that the receiver's bounds
+ rectangle size has changed from oldFrameSize. */
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize
 {
   [self tile];
 }
 
 
-// -------------------
-// Override NSControl handler (prevents highlighting).
-//
-
+/* Override NSControl handler (prevents highlighting). */
 - (void)mouseDown: (NSEvent *)theEvent
 {
 }
@@ -2584,16 +2217,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [super keyDown: theEvent];
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// NSCoding protocol
-////////////////////////////////////////////////////////////////////////////////
-
-/* -------------------------------------------------------
- * We do encode most of the instance variables except the Browser columns
+/*
+ * NSCoding protocol
+ *
+ * We do not encode most of the instance variables except the Browser columns
  * because they are internal objects (though not transportable). So we just
- * encode enoguh information ro rebuild identical columns on the decoder
+ * encode enoguh information to rebuild identical columns on the decoder
  * side. Same for the Horizontal Scroller
- * -------------------------------------------------------*/
+ */
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
@@ -2643,10 +2274,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   }
 
 }
-
-// -------------------
-// ...
-//
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
@@ -2702,7 +2329,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
   
-  //_browserColumns = [[NSMutableArray alloc] init];
   _titleCell = [GSBrowserTitleCell new];
 
   // Do the minimal thing to initiate the browser...
@@ -2717,110 +2343,52 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
 
-  /*
-  if (_browserDelegate != nil)
-    {
-      int i;
-      
-      [self loadColumnZero];
-      for (i=1;i<colCount; i++) 
-        {
-          [self addColumn];
-        }
-      [self scrollColumnsRightBy: _firstVisibleColumn];
-    }
-  */
-  // Make sure it displays ok even if there isn't any column
+  // Display even if there isn't any column
+  _isLoaded = NO;
   [self tile];
-  
   return self;
 }
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Div.
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-// -------------------
-// ...
-//
+/*
+ * Div.
+ */
 
 - (BOOL) isOpaque
 {
   return YES; // See drawRect.
 }
 
-/* ???????????????????
-//
-// Displaying the Control and Cell
-//
-- (void)drawCell: (NSCell *)aCell
-{
-}
-
-- (void)drawCellInside: (NSCell *)aCell
-{
-}
-
-- (void)selectCell: (NSCell *)aCell
-{
-}
-
-- (void)updateCell: (NSCell *)aCell
-{
-}
-
-- (void)updateCellInside: (NSCell *)aCell
-{
-}
-*/
-
 @end
 
 @implementation NSBrowser (GNUstepExtensions)
-////////////////////////////////////////////////////////////////////////////////
-// Setting the behavior of arrow keys
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * Setting the behavior of arrow keys
+ */
 
-
-
-// -------------------
-// Returns YES if the alphanumerical keys are enabled.
-//
-
+/** Returns YES if the alphanumerical keys are enabled. */
 - (BOOL)acceptsAlphaNumericalKeys
 {
   return _acceptsAlphaNumericalKeys;
 }
 
-// -------------------
-// Enables or disables the arrow keys as used for navigating within
-// and between browsers.
-//
-
+/** Enables or disables the arrow keys as used for navigating within
+    and between browsers. */
 - (void) setAcceptsAlphaNumericalKeys: (BOOL)flag
 {
   _acceptsAlphaNumericalKeys = flag;
 }
 
-// -------------------
-// Returns NO if pressing an arrow key only scrolls the browser, YES if
-// it also sends the action message specified by setAction:.
-//
-
+/** Returns NO if pressing an arrow key only scrolls the browser, YES if 
+    it also sends the action message specified by setAction:. */
 - (BOOL) sendsActionOnAlphaNumericalKeys
 {
   return _sendsActionOnAlphaNumericalKeys;
 }
 
-// -------------------
-// Sets whether pressing an arrow key will cause the action message
-// to be sent (in addition to causing scrolling).
-//
-
+/** Sets whether pressing an arrow key will cause the action message 
+    to be sent (in addition to causing scrolling). */
 - (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag
 {
   _sendsActionOnAlphaNumericalKeys = flag;
@@ -2829,20 +2397,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 @end
 
 
-// #############################################################################
-//
-//  PRIVATE METHODS
-//
-// #############################################################################
-
-
-
+/*
+ *
+ *  PRIVATE METHODS
+ *
+ */
 @implementation NSBrowser (Private)
-
-
-// -------------------
-// 
-//
 
 - (void)_adjustMatrixOfColumn: (int)column
 {
@@ -2870,9 +2430,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
-// -------------------
-// 
-//
 #if 0
 - (void)_adjustScrollerFrameOfColumn: (int)column force: (BOOL)flag
 {
@@ -2896,9 +2453,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 #endif
-// -------------------
-// 
-//
 
 - (void)_remapColumnSubviews: (BOOL)fromFirst
 {
@@ -2976,10 +2530,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
-// -------------------
-// Loads column 'column' (asking the delegate).
-//
-
+/* Loads column 'column' (asking the delegate). */
 - (void)_performLoadOfColumn: (int)column
 {
   id bc, sc, matrix;
@@ -3121,10 +2672,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [bc setIsLoaded: YES];
 }
 
-// -------------------
-// Unloads all columns from and including 'column'.
-//
-
+/* Unloads all columns from and including 'column'. */
 - (void)_unloadFromColumn: (int)column
 {
   int i, count, num;
@@ -3172,10 +2720,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self updateScroller];
 }
 
-// -------------------
-// Marks all visible columns as needing to be redrawn.
-//
-
+/* Marks all visible columns as needing to be redrawn. */
 - (void)_setColumnSubviewsNeedDisplay
 {
   int i;
@@ -3188,10 +2733,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 
-// -------------------
-// Marks all titles as needing to be redrawn.
-//
-
+/* Marks all titles as needing to be redrawn. */
 - (NSString *)_getTitleOfColumn: (int)column
 {
   // If not visible then nothing to display
@@ -3265,10 +2807,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   return @"";
 }
 
-// -------------------
-// Marks all titles as needing to be redrawn.
-//
-
+/* Marks all titles as needing to be redrawn. */
 - (void)_setColumnTitlesNeedDisplay
 {
   if (_isTitled)
