@@ -33,6 +33,8 @@
 #import <AppKit/NSFontManager.h>
 #import <AppKit/NSText.h>
 
+@class NSTextAttachment;
+
 // global NSString attribute names used in accessing  
 // the respective property in a text attributes 
 // dictionary.  if the key is not in the dictionary 	
@@ -57,6 +59,9 @@ enum
 };
 
 @interface NSAttributedString (AppKit)
++ (NSAttributedString*) attributedStringWithAttachment: 
+                 (NSTextAttachment*)attachment;
+
 - (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range;
@@ -89,6 +94,7 @@ enum
 - (void) unscriptRange: (NSRange)range;
 - (void) applyFontTraits: (NSFontTraitMask)traitMask range: (NSRange)range;
 - (void) setAlignment: (NSTextAlignment)alignment range: (NSRange)range;
+- (void) updateAttachmentsFromPath:(NSString *)path;
 
 - (void) fixAttributesInRange: (NSRange)range;
 - (void) fixFontAttributeInRange: (NSRange)range;
