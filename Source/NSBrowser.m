@@ -1285,7 +1285,7 @@
 
   if (numberOfSubStrings == 2)
     {
-      /* select root path *.
+      /* select root path */
       if ([[subStrings objectAtIndex: 1] length] == 0)
 	{
 	  [self scrollColumnsLeftBy: [_browserColumns count]];

@@ -38,50 +38,46 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
 
-//
-// Class variables
-//
-static id _NSCONTROL_CELL_CLASS = nil;
-
-
+/*
+ * Class variables
+ */
+static Class cellClass;
 
 @implementation NSControl
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSControl class])
     {
       NSDebugLog(@"Initialize NSControl class\n");
       [self setVersion: 1];
+      cellClass = [NSCell class];
     }
 }
 
-//
-// Setting the Control's Cell
-//
+/*
+ * Setting the Control's Cell
+ */
 + (Class) cellClass
 {
-  return _NSCONTROL_CELL_CLASS;
+  return cellClass;
 }
 
 + (void) setCellClass: (Class)factoryId
 {
-  _NSCONTROL_CELL_CLASS = factoryId;
+  cellClass = factoryId ? factoryId : [NSCell class];
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) initWithFrame: (NSRect)frameRect
 {
   [super initWithFrame: frameRect];
-  if (_NSCONTROL_CELL_CLASS)
-    [self setCell: [[_NSCONTROL_CELL_CLASS new] autorelease]];
-  else
-    [self setCell: [[NSCell new] autorelease]];
+  [self setCell: AUTORELEASE([cellClass new])];
   tag = 0;
 
   return self;
@@ -89,26 +85,26 @@ static id _NSCONTROL_CELL_CLASS = nil;
 
 - (void) dealloc
 {
-  [cell release];
+  RELEASE(cell);
   [super dealloc];
 }
 
-//
-// Creating copies
-//
+/*
+ * Creating copies
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
   id		c = NSCopyObject(self, 0, zone);
   NSCell	*o = [cell copy];
 
   [c setCell: o];
-  [o release];
+  RELEASE(o);
   return c;
 }
 
-//
-// Setting the Control's Cell
-//
+/*
+ * Setting the Control's Cell
+ */
 - (id) cell
 {
   return cell;
@@ -123,14 +119,12 @@ static id _NSCONTROL_CELL_CLASS = nil;
   [cell setControlView: nil];
   [aCell setControlView: self];
 
-  [aCell retain];
-  [cell release];
-  cell = aCell;
+  ASSIGN(ell, aCell);
 }
 
-//
-// Enabling and Disabling the Control
-//
+/*
+ * Enabling and Disabling the Control
+ */
 - (BOOL) isEnabled
 {
   return [[self selectedCell] isEnabled];
@@ -141,9 +135,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   [[self selectedCell] setEnabled: flag];
 }
 
-//
-// Identifying the Selected Cell
-//
+/*
+ * Identifying the Selected Cell
+ */
 - (id) selectedCell
 {
   if ([cell state])
@@ -157,9 +151,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   return [[self selectedCell] tag];
 }
 
-//
-// Setting the Control's Value
-//
+/*
+ * Setting the Control's Value
+ */
 - (double) doubleValue
 {
   return [[self selectedCell] doubleValue];
@@ -209,9 +203,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   return [[self selectedCell] stringValue];
 }
 
-//
-// Interacting with Other Controls
-//
+/*
+ * Interacting with Other Controls
+ */
 - (void) takeDoubleValueFrom: (id)sender
 {
   [[self selectedCell] takeDoubleValueFrom: sender];
@@ -236,9 +230,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   [self setNeedsDisplay: YES];
 }
 
-//
-// Formatting Text
-//
+/*
+ * Formatting Text
+ */
 - (NSTextAlignment) alignment
 {
   if (cell)
@@ -276,9 +270,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
 }
 
-//
-// Managing the Field Editor
-//
+/*
+ * Managing the Field Editor
+ */
 - (BOOL) abortEditing
 {
   return NO;
@@ -293,9 +287,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
 }					// FIX ME
 
-//
-// Resizing the Control
-//
+/*
+ * Resizing the Control
+ */
 - (void) calcSize
 {
 }					// FIX ME
@@ -304,9 +298,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
 }
 
-//
-// Displaying the Control and Cell
-//
+/*
+ * Displaying the Control and Cell
+ */
 - (void) drawRect: (NSRect)aRect
 {
   [self drawCell: cell];
@@ -344,9 +338,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   [self setNeedsDisplay: YES];
 }
 
-//
-// Target and Action
-//
+/*
+ * Target and Action
+ */
 - (SEL) action
 {
   return [cell action];
@@ -392,9 +386,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   return [cell target];
 }
 
-//
-// Assigning a Tag
-//
+/*
+ * Assigning a Tag
+ */
 - (void) setTag: (int)anInt
 {
   tag = anInt;
@@ -405,9 +399,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
   return tag;
 }
 
-//
-// Tracking the Mouse
-//
+/*
+ * Tracking the Mouse
+ */
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSApplication *theApp = [NSApplication sharedApplication];
@@ -493,9 +487,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
 }
 
-//
-// Methods Implemented by the Delegate
-//
+/*
+ * Methods Implemented by the Delegate
+ */
 - (BOOL) control: (NSControl *)control
 		textShouldBeginEditing: (NSText *)fieldEditor
 {
@@ -520,9 +514,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];

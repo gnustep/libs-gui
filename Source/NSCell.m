@@ -51,13 +51,18 @@
 
 @implementation NSCell
 
+static Class	imageClass;
+
 //
 // Class methods
 //
 + (void) initialize
 {
   if (self == [NSCell class])
-    [self setVersion:1];
+    {
+      [self setVersion: 1];
+      imageClass = [NSImage class];
+    }
 }
 
 + (BOOL) prefersTrackingUntilMouseUp
@@ -102,7 +107,7 @@
 
   [self _init];
 
-  NSAssert(anImage == nil || [anImage isKindOfClass: [NSImage class]],
+  NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
 	NSInvalidArgumentException);
 
   cell_type = NSImageCellType;
@@ -231,7 +236,7 @@
 
 - (void) setImage: (NSImage*)anImage
 {
-  NSAssert(anImage == nil || [anImage isKindOfClass: [NSImage class]],
+  NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
 	NSInvalidArgumentException);
 
   ASSIGN(cell_image, anImage);
@@ -674,7 +679,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSDebugLog (@"NSCell drawWithFrame: inView:");
+  NSDebugLog (@"NSCell drawWithFrame: inView: ");
 
   // Save last view drawn to
   [self setControlView: controlView];
@@ -817,8 +822,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) getPeriodicDelay: (float *)delay interval: (float *)interval
 {
-  *delay = 0.05;
-  *interval = 0.05;
+  *delay = 0.1;
+  *interval = 0.1;
 }
 
 - (BOOL) startTrackingAt: (NSPoint)startPoint inView: (NSView *)controlView
@@ -842,18 +847,19 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 	     ofView: (NSView *)controlView
        untilMouseUp: (BOOL)flag
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-			    NSMouseMovedMask | NSLeftMouseDraggedMask |
-			    NSRightMouseDraggedMask;
-  NSPoint location = [theEvent locationInWindow];
-  NSPoint point = [controlView convertPoint: location fromView: nil];
-  float delay, interval;
-  id target = [self target];
-  SEL action = [self action];
-  NSPoint last_point;
-  BOOL done;
-  BOOL mouseWentUp;
+  NSApplication	*theApp = [NSApplication sharedApplication];
+  unsigned	event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
+			    | NSMouseMovedMask | NSLeftMouseDraggedMask
+			    | NSRightMouseDraggedMask;
+  NSPoint	location = [theEvent locationInWindow];
+  NSPoint	point = [controlView convertPoint: location fromView: nil];
+  float		delay;
+  float		interval;
+  id		target = [self target];
+  SEL		action = [self action];
+  NSPoint	last_point = point;
+  BOOL		done;
+  BOOL		mouseWentUp;
 
   NSDebugLog(@"NSCell start tracking\n");
   NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n",
@@ -867,14 +873,14 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   if (![controlView mouse: point inRect: cellFrame])
     return NO;	// point is not in cell
 
-  if ([theEvent type] == NSLeftMouseDown &&
-			(action_mask & NSLeftMouseDownMask))
-    [(NSControl*)controlView sendAction: action to:target];
+  if ((action_mask & NSLeftMouseDownMask)
+    && [theEvent type] == NSLeftMouseDown)
+    [(NSControl*)controlView sendAction: action to: target];
 
   if (cell_continuous)
     {
-      [self getPeriodicDelay: &delay interval:&interval];
-      [NSEvent startPeriodicEventsAfterDelay: delay withPeriod:interval];
+      [self getPeriodicDelay: &delay interval: &interval];
+      [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
       event_mask |= NSPeriodicMask;
     }
 
@@ -883,25 +889,44 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   done = NO;
   while (!done)
     {
-      NSEventType eventType;
-      BOOL pointIsInCell;
+      NSEventType	eventType;
+      BOOL		pointIsInCell;
+      unsigned		periodCount = 0;
 
-      last_point = point;
       theEvent = [theApp nextEventMatchingMask: event_mask
 				     untilDate: nil
 				        inMode: NSEventTrackingRunLoopMode
 				       dequeue: YES];
       eventType = [theEvent type];
 
-      if (eventType != NSPeriodic)
+      if (eventType != NSPeriodic || periodCount == 4)
 	{
-	  location = [theEvent locationInWindow];
+	  last_point = point;
+	  if (eventType == NSPeriodic)
+	    {
+	      NSWindow	*w = [controlView window];
+
+	      /*
+	       * Too many periodic events in succession - 
+	       * update the mouse location and reset the counter.
+	       */
+	      location = [w mouseLocationOutsideOfEventStream];
+	      periodCount = 0;
+	    }
+	  else
+	    {
+	      location = [theEvent locationInWindow];
+	    }
 	  point = [controlView convertPoint: location fromView: nil];
 	  NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
 	  NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
 	}
       else
-	NSDebugLog (@"got a periodic event");
+	{
+	  periodCount++;
+	  NSDebugLog (@"got a periodic event");
+	}
+
       if (![controlView mouse: point inRect: cellFrame])
 	{
 	  NSDebugLog(@"NSCell point not in cell frame\n");
@@ -914,7 +939,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 	    }
 	}
       else
-	pointIsInCell = YES;
+	{
+	  pointIsInCell = YES;
+	}
 
       if (!done && ![self continueTracking: last_point 	// should continue
 					at: point 	// tracking?
@@ -929,9 +956,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 	  NSDebugLog(@"NSCell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
-          [self setState:![self state]];
+          [self setState: ![self state]];
 	  if ((action_mask & NSLeftMouseUpMask))
-	    [(NSControl*)controlView sendAction: action to:target];
+	    [(NSControl*)controlView sendAction: action to: target];
 	}
       else
 	{
@@ -939,7 +966,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 			  && (action_mask & NSLeftMouseDraggedMask))
 			  || ((eventType == NSPeriodic)
 			  && (action_mask & NSPeriodicMask))))
-	    [(NSControl*)controlView sendAction: action to:target];
+	    [(NSControl*)controlView sendAction: action to: target];
 	}
     }
   // Tell ourselves to stop tracking
@@ -957,9 +984,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       return YES;
     }
 
-#if 1
   [controlView setNeedsDisplayInRect: cellFrame];
-#endif
 
   NSDebugLog(@"NSCell mouse did not go up in cell\n");
   return NO;				// Otherwise return NO
@@ -1089,7 +1114,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 //
 @implementation NSCell (GNUstepBackend)
 
-+ (NSSize)sizeForBorderType: (NSBorderType)aType
++ (NSSize) sizeForBorderType: (NSBorderType)aType
 {
   // Returns the size of a border
   switch (aType)
