@@ -677,6 +677,12 @@ static NSImage	*arrowImageH = nil;
 
   ASSIGN (_menuItem, [aDecoder decodeObject]);
 
+  if ([aDecoder versionForClassName: @"NSMenuItemCell"] < 2)
+    {
+      /* In version 1, we used to encode the _menuView here.  */
+      [aDecoder decodeObject];
+    }
+
   _needs_sizing = YES;
 
   return self;
