@@ -122,27 +122,32 @@
   return _layoutManager;
 }
 
-- (void) replaceLayoutManager: (NSLayoutManager*)newLayoutManager
+- (void) replaceLayoutManager: (NSLayoutManager *)newLayoutManager
 {
   if (newLayoutManager != _layoutManager)
     {
       id	textStorage = [_layoutManager textStorage];
       NSArray	*textContainers = [_layoutManager textContainers]; 
       unsigned	i, count = [textContainers count];
+      id oldLayoutManager = _layoutManager;
 
+      RETAIN (oldLayoutManager);
       [textStorage removeLayoutManager: _layoutManager];
       [textStorage addLayoutManager: newLayoutManager];
-      [_layoutManager setTextStorage: nil];
 
       for (i = 0; i < count; i++)
 	{
-	  NSTextContainer	*container;
+	  NSTextContainer *container;
 
 	  container = RETAIN ([textContainers objectAtIndex: i]);
 	  [_layoutManager removeTextContainerAtIndex: i];
 	  [newLayoutManager addTextContainer: container];
+	  /* The textview is caching the layout manager; refresh the
+	   * cache with this do-nothing call.  */
+	  [[container textView] setTextContainer: container];
 	  RELEASE (container);
 	}
+      RELEASE (oldLayoutManager);
     }
 }
 
