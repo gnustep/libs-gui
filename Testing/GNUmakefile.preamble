@@ -30,7 +30,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers -I$(GNUSTEP_SYSTEM_ROOT)/Headers
 ADDITIONAL_LIB_DIRS +=
 
 # Additional libraries when linking tools
-ADDITIONAL_TOOL_LIBS += -lgnustep-gui -ltiff -lFoundationExt
+ADDITIONAL_TOOL_LIBS += -lgnustep-gui -ltiff
 
 # Additional libraries when linking applications
 ADDITIONAL_GUI_LIBS +=
