@@ -188,7 +188,32 @@
 #endif
 
 /* Notifications */
+
+/**
+ * This notification is sent by applications when they launch,
+ * the notification userInfo dictionary contains the following -
+ * <deflist>
+ * <term>NSApplicationName</term>
+ * <desc>The name of the launched application.
+ * A string.
+ * </desc>
+ * <term>NSApplicationPath</term>
+ * <desc>The full path to the launched application.
+ * A string.
+ * </desc>
+ * <term>NSApplicationProcessIdentifier</term>
+ * <desc>The process identifier (pid) of the launched application.
+ * </desc>
+ * <term>NSApplicationProcessSerialNumberHigh</term>
+ * <desc>MacOS-X specific ... not present in GNUstep.
+ * </desc>
+ * <term>NSApplicationProcessSerialNumberLow</term>
+ * <desc>MacOS-X specific ... not present in GNUstep.
+ * </desc>
+ * </deflist>
+ */
 APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;
+
 APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;
 APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification;
 APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification;
