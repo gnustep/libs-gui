@@ -1,3 +1,10 @@
+Fri Apr 26 12:45:07 2002  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: Added a patch by 
+	Alex Malmberg <alexander@malmberg.org> to correct behavior of 
+	the NSOutlineView when the outline column is not in the
+	leftmost position.
+	
 Wed Apr 24 10:54:47 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]): Do not

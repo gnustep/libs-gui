@@ -119,7 +119,7 @@ static NSImage *unexpandable  = nil;
   [super initWithFrame: frame];
 
   // Initial values
-  _indentationMarkerFollowsCell = NO;
+  _indentationMarkerFollowsCell = YES;
   _autoResizesOutlineColumn = NO;
   _autosaveExpandedItems = NO;
   _indentationPerLevel = 0.0;
@@ -867,7 +867,9 @@ static NSImage *unexpandable  = nil;
 	{
 	  position = _indentationPerLevel * level;
 	}
-      
+
+      position += _columnOrigins[_clickedColumn];
+
       if(location.x >= position && location.x <= position + [image size].width)
 	{
 	  if(![self isItemExpanded: [self itemAtRow: _clickedRow]])
