@@ -1,3 +1,10 @@
+2001-02-19  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m
+	[_initBackendWindow:] corrected the registration of drag types,
+	when a window gets realized. We have to use a copy here, as the
+	original will get changed.
+	
 2001-02-18  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSColorWell.m: Tidied a little, and made changes to conform
