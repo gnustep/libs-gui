@@ -1386,35 +1386,38 @@
 
 - (void)_adjustMatrixOfColumn: (int)column
 {
-NSBrowserColumn *bc;
-NSScrollView *sc;
-id matrix;
-NSSize cs, ms;
-NSRect mr;
+  NSBrowserColumn	*bc;
+  NSScrollView		*sc;
+  id			matrix;
+  NSSize		cs, ms;
+  NSRect		mr;
 
-	if (column >= (int)[_browserColumns count])
-		return;
+  if (column >= (int)[_browserColumns count])
+    return;
 
-	bc = [_browserColumns objectAtIndex: column];
-	sc = [bc columnScrollView];
-	matrix = [bc columnMatrix];
-  										// Adjust matrix to fit in scrollview
-	if (sc && matrix && [bc isLoaded])	// do it only if column has been loaded
-		{
-		cs = [sc contentSize];
-		ms = [matrix cellSize];
-		ms.width = cs.width;
-		[matrix setCellSize: ms];
-		mr = [matrix frame];
+  bc = [_browserColumns objectAtIndex: column];
+  sc = [bc columnScrollView];
+  matrix = [bc columnMatrix];
 
-		if (mr.size.height < cs.height)					// matrix smaller than
-			{											// scrollview's content
-			mr.origin.y = cs.height;					// view requires origin
-			[matrix setFrame: mr];						// adjustment for it to
-			}											// appear at top
+  // Adjust matrix to fit in scrollview if column has been loaded
+  if (sc && matrix && [bc isLoaded])
+    {
+      cs = [sc contentSize];
+      ms = [matrix cellSize];
+      ms.width = cs.width;
+      [matrix setCellSize: ms];
+      mr = [matrix frame];
 
-		[sc setDocumentView: matrix];
-		}
+      // matrix smaller than scrollview's content
+      if (mr.size.height < cs.height)
+	{
+	  // view requires origin adjustment for it to appear at top
+	  mr.origin.y = cs.height;
+	  [matrix setFrame: mr];
+	}
+
+      [sc setDocumentView: matrix];
+    }
 }
 
 - (void)_adjustScrollerFrameOfColumn: (int)column force: (BOOL)flag
@@ -1499,7 +1502,8 @@ NSRect mr;
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 	  int i;
 
-	  matrix = [[[_browserMatrixClass alloc]		// create a new col matrix
+	  // create a new col matrix
+	  matrix = [[[_browserMatrixClass alloc]
 					initWithFrame: matrixRect
 					mode: NSListModeMatrix
 					prototype: _browserCellPrototype
@@ -1513,7 +1517,8 @@ NSRect mr;
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
-	  [bc setColumnMatrix: matrix];		// set new col matrix and release old
+	  // set new col matrix and release old
+	  [bc setColumnMatrix: matrix];
 	  [sc setDocumentView: matrix];
 
 	  // Now loop through the cells and load each one
@@ -1533,7 +1538,8 @@ NSRect mr;
 	  id oldm = [bc columnMatrix];
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 
-	  matrix = [[[_browserMatrixClass alloc]		// create a new col matrix
+	  // create a new col matrix
+	  matrix = [[[_browserMatrixClass alloc]
 					initWithFrame: matrixRect
 					mode: NSListModeMatrix
 					prototype: _browserCellPrototype
@@ -1547,16 +1553,19 @@ NSRect mr;
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
-	  [bc setColumnMatrix: matrix];		// set new col matrix and release old
+	  // set new col matrix and release old
+	  [bc setColumnMatrix: matrix];
 	  [sc setDocumentView: matrix];
 
 	  // Tell the delegate to create the rows
-	  [_browserDelegate browser: self createRowsForColumn: column
-			    inMatrix: matrix];
+	  [_browserDelegate browser: self
+		createRowsForColumn: column
+			   inMatrix: matrix];
 	}
     }
 
   [bc setIsLoaded: YES];
+  [self setNeedsDisplayInRect: [self frameOfColumn: column]];
 }
 
 - (void)_unloadFromColumn: (int)column

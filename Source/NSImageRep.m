@@ -1,30 +1,30 @@
-/* 
+/*
    NSImageRep.m
 
    Abstract representation of an image.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
-   
+
    Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
-   
+
    This file is part of the GNUstep Application Kit Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <string.h>
@@ -130,7 +130,7 @@ static NSMutableArray*	imageReps = NULL;
       NSString* ptype;
       Class rep = [imageReps objectAtIndex: i];
       if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
-	  && (ptype = 
+	  && (ptype =
 	      [pasteboard availableTypeFromArray: [rep imagePasteboardTypes]]))
 	{
 	  NSData* data = [pasteboard dataForType: ptype];
@@ -143,13 +143,30 @@ static NSMutableArray*	imageReps = NULL;
   return (NSArray *)array;
 }
 
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSImageRep	*copy;
+
+  copy = (NSImageRep*)NSCopyObject(self, 0, zone);
+
+  copy->size = size;
+  copy->hasAlpha = hasAlpha;
+  copy->isOpaque = isOpaque;
+  copy->bitsPerSample = bitsPerSample;
+  copy->_pixelsWide = _pixelsWide;
+  copy->_pixelsHigh = _pixelsHigh;
+  copy->_colorSpace = RETAIN(_colorSpace);
+
+  return copy;
+}
+
 - (void) dealloc
 {
   [_colorSpace release];
   [super dealloc];
 }
 
-// Checking Data Types 
+// Checking Data Types
 + (BOOL) canInitWithData: (NSData *)data
 {
   /* Subclass responsibility */
@@ -186,7 +203,7 @@ static NSMutableArray*	imageReps = NULL;
   return nil;
 }
 
-// Setting the Size of the Image 
+// Setting the Size of the Image
 - (void) setSize: (NSSize)aSize
 {
   size = aSize;
@@ -197,7 +214,7 @@ static NSMutableArray*	imageReps = NULL;
   return size;
 }
 
-// Specifying Information about the Representation 
+// Specifying Information about the Representation
 - (int) bitsPerSample
 {
   return bitsPerSample;
@@ -259,7 +276,7 @@ static NSMutableArray*	imageReps = NULL;
   _pixelsHigh = anInt;
 }
 
-// Drawing the Image 
+// Drawing the Image
 - (BOOL) draw
 {
   [self subclassResponsibility: _cmd];
@@ -276,7 +293,7 @@ static NSMutableArray*	imageReps = NULL;
   return NO;
 }
 
-// Managing NSImageRep Subclasses 
+// Managing NSImageRep Subclasses
 + (Class) imageRepClassForData: (NSData *)data
 {
   int i, count;
@@ -328,10 +345,10 @@ static NSMutableArray*	imageReps = NULL;
 + (void) registerImageRepClass: (Class)imageRepClass
 {
   [imageReps addObject: imageRepClass];
-  [[NSNotificationCenter defaultCenter] 
+  [[NSNotificationCenter defaultCenter]
     postNotificationName: NSImageRepRegistryChangedNotification
 		  object: self];
-} 
+}
 
 + (NSArray *) registeredImageRepClasses
 {
@@ -341,7 +358,7 @@ static NSMutableArray*	imageReps = NULL;
 + (void) unregisterImageRepClass: (Class)imageRepClass
 {
   [imageReps removeObject: imageRepClass];
-  [[NSNotificationCenter defaultCenter] 
+  [[NSNotificationCenter defaultCenter]
     postNotificationName: NSImageRepRegistryChangedNotification
 		  object: self];
 }

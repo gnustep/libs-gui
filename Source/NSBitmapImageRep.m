@@ -222,6 +222,22 @@
   [super dealloc];
 }
 
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSBitmapImageRep	*copy;
+
+  copy = (NSBitmapImageRep*)[super copyWithZone: zone];
+
+  copy->bytesPerRow = bytesPerRow;
+  copy->numColors = numColors;
+  copy->bitsPerPixel = bitsPerPixel;
+  copy->compression = compression;
+  copy->_isPlanar = _isPlanar;
+  copy->imagePlanes = 0;
+  copy->imageData = [imageData copy];
+
+  return copy;
+}
 + (BOOL) canInitWithData: (NSData *)data
 {
   TIFF *image = NULL;

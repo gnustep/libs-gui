@@ -268,10 +268,9 @@ static NSImage *highlight_image;
   control_view = controlView;	// remember last view cell was drawn in
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
     {
-      NSColor	*white = [NSColor whiteColor];
+      NSColor	*backColor = [NSColor selectedControlColor];
 
-      [white set];
-//		[_browserText setBackgroundColor: white];
+      [backColor set];
       if (!_isLeaf)
 	{
 	  image = _highlightBranchImage;
@@ -288,7 +287,6 @@ static NSImage *highlight_image;
       NSColor *backColor = [[controlView window] backgroundColor];
 
       [backColor set];
-//   	[_browserText setBackgroundColor: backColor];
       if (!_isLeaf)
 	{
 	  image = _branchImage;

@@ -442,7 +442,7 @@
 		delegate: (id)anObject
 		   start: (int)selStart
 		  length: (int)selLength
-{														// preliminary FIX ME
+{
   if (!controlView || !textObject || !cell_font ||
 			(cell_type != NSTextCellType))
     return;
@@ -450,10 +450,13 @@
   [[controlView window] makeFirstResponder: textObject];
 
   [textObject setFrame: aRect];
+  [textObject setAlignment: text_align];
   [textObject setText: [self stringValue]];
   [textObject setDelegate: anObject];
   [controlView addSubview: textObject];
+  [controlView lockFocus];
   NSEraseRect(aRect);
+  [controlView unlockFocus];
   [textObject display];
 }
 
