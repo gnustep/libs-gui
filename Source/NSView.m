@@ -884,7 +884,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAffineTransform	*matrix;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aPoint;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -907,7 +907,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAffineTransform	*matrix;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aPoint;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -930,7 +930,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSRect	r;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aRect;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -958,7 +958,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSRect	r;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aRect;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -986,7 +986,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAffineTransform	*matrix;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aSize;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -1009,7 +1009,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAffineTransform	*matrix;
 
   if (!aView)
-    aView = [window contentView];
+    aView = [[window contentView] superview];
   if (aView == self || aView == nil)
     return aSize;
   NSAssert(window == [aView window], NSInvalidArgumentException);
@@ -1948,7 +1948,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSView *v = nil, *w;
 
   /* If not within our frame then it can't be a hit */
-  if (![self mouse: aPoint inRect: frame])
+  if (![super_view mouse: aPoint inRect: frame])
     return nil;
 
   p = [self convertPoint: aPoint fromView: super_view];
