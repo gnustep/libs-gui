@@ -86,8 +86,10 @@ typedef	struct {
 
 /* Returns anotherMatrix * self */
 - (void) concatenateWith: (NSAffineTransform*)anotherMatrix;
+- (void) concatenateWithMatrix: (const float[6])anotherMatrix;
 
 - (NSPoint) pointInMatrixSpace: (NSPoint)point;
+- (NSPoint) deltaPointInMatrixSpace: (NSPoint)point;
 - (NSSize) sizeInMatrixSpace: (NSSize)size;
 - (NSRect) rectInMatrixSpace: (NSRect)rect;
 

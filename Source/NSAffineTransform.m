@@ -438,6 +438,24 @@ static NSAffineTransformStruct identityTransform = {
   [self appendTransform: other];
 }
 
+- (void) concatenateWithMatrix: (const float[6])concat
+{
+  float newA, newB, newC, newD, newTX, newTY;
+
+  newA = concat[0] * A + concat[1] * C;
+  newB = concat[0] * B + concat[1] * D;
+  newC = concat[2] * A + concat[3] * C;
+  newD = concat[2] * B + concat[3] * D;
+  newTX = concat[4] * A + concat[5] * C + TX;
+  newTY = concat[4] * B + concat[5] * D + TY;
+
+  A = newA; B = newB;
+  C = newC; D = newD;
+  TX = newTX; TY = newTY;
+
+  rotationAngle = -1;
+}
+
 - (void)inverse
 {
   [self invert];
@@ -511,6 +529,16 @@ static NSAffineTransformStruct identityTransform = {
 
   new.x = A * point.x + C * point.y + TX;
   new.y = B * point.x + D * point.y + TY;
+
+  return new;
+}
+
+- (NSPoint) deltaPointInMatrixSpace: (NSPoint)point
+{
+  NSPoint new;
+
+  new.x = A * point.x + C * point.y;
+  new.y = B * point.x + D * point.y;
 
   return new;
 }
