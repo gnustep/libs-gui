@@ -1,5 +1,13 @@
 2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
+	* Source/NSTableView.m
+	* Source/NSTableHeaderView.m
+	* Headers/gnustep/gui/NSTableHeaderView.h
+	New implementation of column resizing.
+	Implementation of column reordering.
+
+2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
+
 	* Source/NSSavePanel.m ([-runModalForDirectory:file:])
 	* Source/NSOpenPanel.m ([-runModalForDirectory:file:types:])
 	Moved functionality from NSOpenPanel to NSSavePanel: the "ok" 
