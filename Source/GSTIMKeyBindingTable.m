@@ -30,6 +30,7 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSDebug.h>
 #include "AppKit/NSEvent.h"
 #include "GSTIMKeyStroke.h"
 #include "GSTIMKeyBindingTable.h"
@@ -211,10 +212,6 @@
 	{
 	  [compiledKey setShiftKeyMask];
 	}
-      else
-	{
-	  [compiledKey clearShiftKeyMask];
-	}
 
       /* The character constant \177 (Delete) needs an exceptional treatment. */
       if ([stroke isEqualToString: @"\177"])
@@ -240,6 +237,8 @@
   id		    stroke = nil;
   id		    obj = nil;
   GSTIMKeyStroke    *compiledKey = nil;
+  unsigned long	    selVal;
+  NSNumber	    *selHolder;
 
   while ((stroke = [keyEnum nextObject]) != nil)
     {
@@ -255,12 +254,21 @@
 
       if ([obj isKindOfClass: [NSString class]])
 	{
-	  NSNumber *sel = [NSNumber numberWithUnsignedLong:
-			    (unsigned long)NSSelectorFromString(obj)];
-	  if (sel)
+	  selVal = (unsigned long)NSSelectorFromString(obj);
+	  if (selVal)
 	    {
-	      [draft setObject: [NSArray arrayWithObject: sel]
-			forKey: compiledKey];
+	      selHolder = [NSNumber numberWithUnsignedLong: selVal];
+	      if (selHolder)
+		{
+		  [draft setObject: [NSArray arrayWithObject: selHolder]
+			    forKey: compiledKey];
+		}
+	    }
+	  else
+	    {
+	      NSDebugMLLog(@"NSInputManager",
+			   @"Unknown selector %@ for %@",
+			   obj, compiledKey);
 	    }
 	}
       else if ([obj isKindOfClass: [NSArray class]])
@@ -268,7 +276,6 @@
 	  NSEnumerator	    *selStrEnum = [obj objectEnumerator];
 	  NSMutableArray    *selArray = [NSMutableArray array];
 	  id		    selStr;
-	  NSNumber	    *sel;
 
 	  while ((selStr = [selStrEnum nextObject]) != nil)
 	    {
@@ -277,11 +284,20 @@
 		  continue;
 		}
 
-	      sel = [NSNumber numberWithUnsignedLong:
-		      (unsigned long)NSSelectorFromString(selStr)];
-	      if (sel)
+	      selVal = (unsigned long)NSSelectorFromString(selStr);
+	      if (selVal)
 		{
-		  [selArray addObject: sel];
+		  selHolder = [NSNumber numberWithUnsignedLong: selVal];
+		  if (selHolder)
+		    {
+		      [selArray addObject: selHolder];
+		    }
+		}
+	      else
+		{
+		  NSDebugMLLog(@"NSInputManager",
+			       @"Unknown selector %@ for %@",
+			       selStr, compiledKey);
 		}
 	    }
 	  if ([selArray count] > 0)

@@ -1,3 +1,12 @@
+2004-04-10  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* InputManagers/PlainInputServer/PlainInputServer.dict: The key
+	  binding "$\040" restored.
+	* Source/GSTIMKeyBindingTable.m (-compileForKeyStroke:): Delete
+	  the else statement at line 406.
+	* Source/GSTIMKeyBindingTable.m (-compileBindings::): Don't register
+	  any selector if NSSelectorFromString() returns 0.
+
 2004-04-09  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* InputManagers/PlainInputServer/PlainInputServer.dict: The key
