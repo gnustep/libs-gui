@@ -3146,6 +3146,16 @@ _isCellEditable (id delegate, NSArray *tableColumns,
  * Target-action 
  */
 
+- (void) setAction: (SEL)aSelector
+{
+  _action = aSelector;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
 - (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
