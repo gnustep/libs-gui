@@ -1294,7 +1294,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_allocate_gstate && _gstate)
     PSundefineuserobject(_gstate);
   _gstate = 0;
-  _allocate_gstate = 0;
 }
 
 - (int) gState
@@ -2769,6 +2768,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		}
 	    }
 	}
+      [self releaseGState];
     }
 }
 

@@ -1,3 +1,9 @@
+2001-04-15  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (_invalidateCoordinates): release the gstate.
+	(-releaseGState): Don't reset _allocate_gstate flag.
+	(modified patch from Georg Fleischmann <georg@vhf.de>).
+
 2001-04-14  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m ([NSImage -compositeToPoint:fromRect:operation:]): 
