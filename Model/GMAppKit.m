@@ -847,7 +847,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   int i, count;
   NSMutableArray* decodedItems
-      = [unarchiver decodeObjectWithName:@"itemArray"];
+      = [unarchiver decodeArrayWithName:@"itemArray"];
 
   self = [super initWithModelUnarchiver:unarchiver];
 

@@ -1,3 +1,11 @@
+1999-10-09    <fedor@gnu.org>
+
+	* Model/GMAppKit.m ([NSPopUpButton -initWithModelUnarchiver:]): 
+	decode itemArray as an array.
+
+	* Source/GNUmakefile: Move installed headers to gnustep/AppKit
+	* Model/GNUmakefile: Likewise.
+
 1999-10-08    <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSPopUpButton -encodeWithModelArchiver:]):

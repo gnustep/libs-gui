@@ -142,7 +142,7 @@ libgnustep-gui_OBJC_FILES += NSPasteboard.m
 endif
 
 libgnustep-gui_HEADER_FILES_DIR = ../Headers
-libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
+libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep
 
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
