@@ -64,7 +64,8 @@ after-uninstall::
 # before-clean::
 
 # Things to do after cleaning
-# after-clean::
+after-clean::
+	$(MAKE) -C ../Source -f DocMakefile clean
 
 # Things to do before distcleaning
 # before-distclean::
