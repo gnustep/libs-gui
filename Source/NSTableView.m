@@ -78,7 +78,7 @@ void quick_sort_internal(columnSorting *data, int p, int r)
 		(data[j].width > x)
 		  || ((data[j].width == x) 
 		      && (data[j].isMax == YES)
-		      && (x == NO));
+		      && (y == NO));
 		j--)
 	      ;
 
@@ -603,9 +603,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) setDataSource: (id)anObject
 {
   /* Used only for readability */
-  SEL sel_a = @selector (numberOfRowsInTableView:);
-  SEL sel_b = @selector (tableView:objectValueForTableColumn:row:);
-  
+  const SEL sel_a = @selector (numberOfRowsInTableView:);
+  const SEL sel_b = @selector (tableView:objectValueForTableColumn:row:);
+  const SEL sel_c = @selector(tableView:setObjectValue:forTableColumn:row:);
   if ([anObject respondsToSelector: sel_a] == NO) 
     {
       [NSException 
@@ -620,6 +620,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 		   @"tableView:objectValueForTableColumn:row:"];
     }
   
+  
+  _dataSource_editable = [anObject respondsToSelector: sel_c];
+
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
   [self tile];
@@ -937,7 +940,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     {
       [self validateEditing];
       [self abortEditing];
-    }  
+    }
 
   /* Now select the column and post notification only if needed */ 
   if ([_selectedColumns containsObject: num] == NO)
@@ -1382,13 +1385,13 @@ byExtendingSelection: (BOOL)flag
 	{
 	  [_editedCell setObjectValue: newObjectValue];
 	  
-	  if (_del_editable)
+	  if (_dataSource_editable)
 	    {
 	      NSTableColumn *tb;
 	      
 	      tb = [_tableColumns objectAtIndex: _editedColumn];
 	      
-	      [_delegate tableView: self  setObjectValue: newObjectValue
+	      [_dataSource tableView: self  setObjectValue: newObjectValue
 			 forTableColumn: tb  row: _editedRow];
 	    }
 	}
@@ -1406,7 +1409,7 @@ byExtendingSelection: (BOOL)flag
 
   // We refuse to edit cells if the delegate can not accept results 
   // of editing.
-  if (_del_editable == NO)
+  if (_dataSource_editable == NO)
     {
       return;
     }
@@ -3104,7 +3107,7 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setDelegate: (id)anObject
 {
-  SEL sel;
+  const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
@@ -3122,10 +3125,7 @@ byExtendingSelection: (BOOL)flag
   SET_DELEGATE_NOTIFICATION(SelectionIsChanging);
   
   /* Cache */
-  sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-  _del_responds = [_delegate respondsToSelector: sel];     
-  sel = @selector(tableView:setObjectValue:forTableColumn:row:);
-  _del_editable = [_delegate respondsToSelector: sel];
+  _del_responds = [_delegate respondsToSelector: sel];
 }
 
 - (id) delegate
