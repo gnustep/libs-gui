@@ -4,7 +4,7 @@
    Copyright (C) 2000 Free Software Foundation, Inc.
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
-   Date: March 2000, June 2000
+   Date: March 2000, June 2000, August 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -25,6 +25,7 @@
 */ 
 
 #import <AppKit/NSTableView.h>
+#import <AppKit/NSApplication.h>
 #import <AppKit/NSCell.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSColor.h>
@@ -37,6 +38,149 @@
 #import <AppKit/NSTextFieldCell.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/PSOperators.h>
+
+static NSNotificationCenter *nc = nil;
+
+/* The selection arrays are stored so that the selected columns/rows
+   are always in ascending order.  The following function is used
+   whenever a new column/row is added to the array, to keep the
+   columns/rows in the correct order. */
+static 
+void _insertNumberInSelectionArray (NSMutableArray *array, 
+				    NSNumber *num)
+{
+  int i, count;
+
+  count = [array count];
+
+  for (i = 0; i < count; i++)
+    {
+      NSNumber *number;
+      
+      number = [array objectAtIndex: i];
+      if ([number compare: num] == NSOrderedDescending)
+	break;
+    }
+  [array insertObject: num  atIndex: i];
+}
+
+/* 
+ * Now some auxiliary functions used to manage real-time user selections. 
+ *
+ */
+
+static void
+_selectRowsInRange (NSTableView *tv, id delegate, 
+		    int startRow, int endRow, int clickedRow)
+{
+  int i;
+  int tmp;
+  int shift = 1;
+
+  /* Switch rows if in the wrong order */
+  if (startRow > endRow)
+    {
+      tmp = startRow;
+      startRow = endRow;
+      endRow = tmp;
+      shift = 0;
+    }
+
+  for (i = startRow + shift; i < endRow + shift; i++)
+    {
+      if (i != clickedRow)
+	{
+	  if (delegate != nil)
+	    {
+	      if ([delegate tableView: tv   shouldSelectRow: i] == NO)
+		continue;
+	    }
+
+	  [tv selectRow: i  byExtendingSelection: YES];
+	  [tv setNeedsDisplayInRect: [tv rectOfRow: i]];
+	}
+    }
+}
+
+static void
+_deselectRowsInRange (NSTableView *tv, int startRow, int endRow, 
+		      int clickedRow)
+{
+  int i;
+  int tmp;
+  int shift = 1;
+
+  if (startRow > endRow)
+    {
+      tmp = startRow;
+      startRow = endRow;
+      endRow = tmp;
+      shift = 0;
+    }
+
+  for (i = startRow + shift; i < endRow + shift; i++)
+    {
+      if (i != clickedRow)
+	{
+	  [tv deselectRow: i];
+	  [tv setNeedsDisplayInRect: [tv rectOfRow: i]];
+	}
+    }
+}
+
+/*
+ * The following function can work on columns or rows; 
+ * passing the correct select/deselect function switches between one 
+ * and the other.  Currently used only for rows, anyway.
+ */
+
+static void
+_selectionChange (NSTableView *tv, id delegate, int numberOfRows, 
+		  int clickedRow, 
+		  int oldSelectedRow, int newSelectedRow, 
+		  void (*deselectFunction)(NSTableView *, int, int, int), 
+		  void (*selectFunction)(NSTableView *, id, int, int, int))
+{
+  int newDistance;
+  int oldDistance;
+
+  if (oldSelectedRow == newSelectedRow)
+    return;
+
+  /* Change coordinates - distance from the center of selection */
+  oldDistance = oldSelectedRow - clickedRow;
+  newDistance = newSelectedRow - clickedRow;
+
+  /* If they have different signs, then we decompose it into 
+     two problems with the same sign */
+  if ((oldDistance * newDistance) < 0)
+    {
+      _selectionChange (tv, delegate, numberOfRows, clickedRow, 
+			oldSelectedRow, clickedRow, deselectFunction, 
+			selectFunction);
+      _selectionChange (tv, delegate, numberOfRows, clickedRow, clickedRow, 
+			newSelectedRow, deselectFunction, selectFunction);
+      return;
+    }
+
+  /* Otherwise, take the modulus of the distances */
+  if (oldDistance < 0)
+    oldDistance = -oldDistance;
+
+  if (newDistance < 0)
+    newDistance = -newDistance;
+
+  /* If the new selection is more wide, we need to select */
+  if (newDistance > oldDistance)
+    {
+      selectFunction (tv, delegate, oldSelectedRow, newSelectedRow, 
+		      clickedRow);
+    }
+  else /* Otherwise to deselect */
+    {
+      deselectFunction (tv, newSelectedRow, oldSelectedRow, clickedRow);
+    }
+}
 
 @interface GSTableCornerView : NSView
 {}
@@ -59,12 +203,19 @@
 
 @end
 
+@interface NSTableView (TableViewInternalPrivate)
+- (void) _setSelectingColumns: (BOOL)flag;
+@end
+
 @implementation NSTableView 
 
 + (void) initialize
 {
   if (self == [NSTableView class])
-    [self setVersion: 1];
+    {
+      [self setVersion: 1];
+      nc = [NSNotificationCenter defaultCenter];
+    }
 }
 
 /*
@@ -80,6 +231,11 @@
   ASSIGN (_gridColor, [NSColor gridColor]); 
   ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
   ASSIGN (_tableColumns, [NSMutableArray array]);
+  ASSIGN (_selectedColumns, [NSMutableArray array]);
+  ASSIGN (_selectedRows, [NSMutableArray array]);
+  _allowsEmptySelection = YES;
+  _allowsMultipleSelection = NO;
+  _allowsColumnSelection = YES;
   _headerView = [NSTableHeaderView new];
   [_headerView setFrameSize: NSMakeSize (frameRect.size.width, 22.0)];
   [_headerView setTableView: self];
@@ -93,6 +249,8 @@
   TEST_RELEASE (_dataSource);
   RELEASE (_gridColor);
   RELEASE (_tableColumns);
+  RELEASE (_selectedColumns);
+  RELEASE (_selectedRows);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
   if (_numberOfColumns > 0)
@@ -166,12 +324,14 @@
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }      
+  /* TODO: Rearrange selection */
   [self tile];
 }
 
 - (void) moveColumn: (int)columnIndex toColumn: (int)newIndex
 {
   // TODO
+  /* TODO: Rearrange selection */
   return;
 }
 
@@ -296,6 +456,106 @@
   [self sendAction: _doubleAction  to: _target]; 
 }
 
+/*
+ * And this when it gets a simple click which turns out to be for 
+ * selecting/deselecting a column.
+ */
+
+- (void) _selectColumn: (int)columnIndex
+	     modifiers: (unsigned int)modifiers
+{
+  SEL selector;
+
+  if (_allowsColumnSelection == NO)
+    return;
+
+  if ([self isColumnSelected: columnIndex] == YES)
+    {
+      if (([_selectedColumns count] == 1) && (_allowsEmptySelection == NO))
+	return;
+      
+      selector = @selector (selectionShouldChangeInTableView:);
+      if ([_delegate respondsToSelector: selector] == YES) 
+	{
+	  if ([_delegate selectionShouldChangeInTableView: self] == NO)
+	    {
+	      return;
+	    }
+	}
+
+      if (_selectingColumns == NO)
+	{
+	  [self _setSelectingColumns: YES];
+	}
+
+      [self deselectColumn: columnIndex];
+      [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
+      return;
+    }
+  else // column is not selected 
+    {
+      BOOL newSelection;
+      
+      if (modifiers & (NSShiftKeyMask | NSAlternateKeyMask))
+	newSelection = NO;
+      else
+	newSelection = YES;
+      
+      if (([_selectedColumns count] > 0) && (_allowsMultipleSelection == NO)
+	  && (newSelection == NO))
+	{
+	  return;
+	}
+      
+      selector = @selector (selectionShouldChangeInTableView:);
+      if ([_delegate respondsToSelector: selector] == YES) 
+	{
+	  if ([_delegate selectionShouldChangeInTableView: self] == NO)
+	    {
+	      return;
+	    }
+	}
+
+      selector = @selector (tableView:shouldSelectTableColumn:);
+      if ([_delegate respondsToSelector: selector] == YES) 
+	{
+	  NSTableColumn *tc = [_tableColumns objectAtIndex: columnIndex];
+	  if ([_delegate tableView: self  shouldSelectTableColumn: tc] == NO)
+	    {
+	      return;
+	    }
+	}
+
+      if (_selectingColumns == NO)
+	{
+	  [self _setSelectingColumns: YES];
+	}
+
+      if (newSelection == YES)
+	{
+	  /* No shift or alternate key pressed: clear the old selection */
+	  
+	  /* Compute rect to redraw to clear the old selection */
+	  int column, i, count = [_selectedColumns count];
+	  
+	  for (i = 0; i < count; i++)
+	    {
+	      column = [[_selectedColumns objectAtIndex: i] intValue];
+	      [self setNeedsDisplayInRect: [self rectOfColumn: column]];
+	    }
+	  
+	  /* Draw the new selection */
+	  [self selectColumn: columnIndex  byExtendingSelection: NO];
+	  [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
+	}
+      else /* Simply add to the old selection */
+	{
+	  [self selectColumn: columnIndex  byExtendingSelection: YES];
+	  [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
+	}
+    }
+}
+
 
 /*
  *Configuration 
@@ -325,35 +585,32 @@
 
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
-  // TODO
+  _allowsMultipleSelection = flag;
 }
 
 - (BOOL) allowsMultipleSelection
 {
-  // TODO
-  return NO;
+  return _allowsMultipleSelection;
 }
 
 - (void) setAllowsEmptySelection: (BOOL)flag
 {
-  // TODO
+  _allowsEmptySelection = flag;
 }
 
 - (BOOL) allowsEmptySelection
 {
-  // TODO
-  return YES;
+  return _allowsEmptySelection;
 }
 
 - (void) setAllowsColumnSelection: (BOOL)flag
 {
-  // TODO
+  _allowsColumnSelection = flag;
 }
 
 - (BOOL) allowsColumnSelection
 {
-  // TODO
-  return NO;
+  return _allowsColumnSelection;
 }
 
 /* 
@@ -395,90 +652,379 @@
 /*
  * Selecting Columns and Rows
  */
-- (void) selectColumn: (int) columnIndex 
- byExtendingSelection: (BOOL) flag
+- (void) selectColumn: (int)columnIndex 
+ byExtendingSelection: (BOOL)flag
 {
-  // TODO
-  return;
+  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
+  
+  if (columnIndex < 0 || columnIndex > _numberOfColumns)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Column index out of table in selectColumn"];
+    }
+
+  _selectingColumns = YES;
+
+  if (flag == NO)
+    {
+      if (_numberOfColumns == 1)
+	{
+	  /* Extreme case - we are asked to deselect then select the
+             same column. */
+	  return;
+	}
+
+      [_selectedColumns removeAllObjects];
+      _selectedColumn = -1;
+    }
+  else // flag == YES
+    {
+      if (_allowsMultipleSelection == NO)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Can not extend selection in table view when multiple selection is disabled"];  
+	}
+    }
+
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }  
+
+  /* Now select the column and post notification only if needed */ 
+  if ([_selectedColumns containsObject: num] == NO)
+    {
+      _insertNumberInSelectionArray (_selectedColumns, num);
+      _selectedColumn = columnIndex;
+      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+	  object: self];
+    }
+  else /* Otherwise simply change the last selected column */
+    {
+      _selectedColumn = columnIndex;
+    }
 }
 
-- (void) selectRow: (int) rowIndex 
-byExtendingSelection: (BOOL) flag
+- (void) selectRow: (int)rowIndex
+byExtendingSelection: (BOOL)flag
 {
-  // TODO
-  return;
+  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
+
+  if (rowIndex < 0 || rowIndex > _numberOfRows)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Row index out of table in selectRow"];
+    }
+
+  _selectingColumns = NO;
+
+  if (flag == NO)
+    {
+      if (_numberOfRows == 1)
+	{
+	  /* Extreme case - we are asked to deselect then select the
+             same row. */
+	  return;
+	}
+
+      [_selectedRows removeAllObjects];
+      _selectedRow = -1;
+    }
+  else // flag == YES
+    {
+      if (_allowsMultipleSelection == NO)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Can not extend selection in table view when multiple selection is disabled"];  
+	}
+    }
+
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }  
+
+  /* Now select the row and post notification only if needed */ 
+  if ([_selectedRows containsObject: num] == NO)
+    {
+      _insertNumberInSelectionArray (_selectedRows, num);
+      _selectedRow = rowIndex;
+      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+	  object: self];
+    }
+  else /* Otherwise simply change the last selected row */
+    {
+      _selectedRow = rowIndex;
+    }
 }
 
-- (void) deselectColumn: (int) columnIndex
+- (void) deselectColumn: (int)columnIndex
 {
-  // TODO
-  return;
+  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
+
+  if ([_selectedColumns containsObject: num] == NO)
+    {
+      return;
+    }
+
+  /* Now by internal consistency we assume columnIndex is in fact a
+     valid column index, since it was the index of a selected column */
+
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+  
+  _selectingColumns = YES;
+
+  [_selectedColumns removeObject: num];
+
+  if (_selectedColumn == columnIndex)
+    {
+      int i, count = [_selectedColumns count]; 
+      int nearestColumn = -1;
+      int nearestColumnDistance = _numberOfColumns;
+      int column, distance;
+      for (i = 0; i < count; i++)
+	{
+	  column = [[_selectedColumns objectAtIndex: i] intValue];
+
+	  distance = column - columnIndex;
+	  if (distance < 0)
+	    {
+	      distance = -distance;
+	    }
+
+	  if (distance < nearestColumnDistance)
+	    {
+	      nearestColumn = column;
+	    }
+	}
+      _selectedColumn = nearestColumn;
+    }
+
+  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+      object: self];
 }
 
-- (void) deselectRow: (int) rowIndex
+- (void) deselectRow: (int)rowIndex
 {
-  // TODO
-  return;
+  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
+
+  if ([_selectedRows containsObject: num] == NO)
+    {
+      return;
+    }
+
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+
+  _selectingColumns = NO;
+
+  [_selectedRows removeObject: num];
+
+  if (_selectedRow == rowIndex)
+    {
+      int i, count = [_selectedRows count]; 
+      int nearestRow = -1;
+      int nearestRowDistance = _numberOfRows;
+      int row, distance;
+      for (i = 0; i < count; i++)
+	{
+	  row = [[_selectedRows objectAtIndex: i] intValue];
+
+	  distance = row - rowIndex;
+	  if (distance < 0)
+	    {
+	      distance = -distance;
+	    }
+
+	  if (distance < nearestRowDistance)
+	    {
+	      nearestRow = row;
+	    }
+	}
+      _selectedRow = nearestRow;
+    }
+
+  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+      object: self];
 }
 
 - (int) numberOfSelectedColumns
 {
-  // TODO
-  return 0;
+  return [_selectedColumns count];
 }
 
 - (int) numberOfSelectedRows
 {
-  // TODO
-  return 0;
+  return [_selectedRows count];
 }
 
 - (int) selectedColumn
 {
-  // TODO 
-  return -1;
+  return _selectedColumn;
 }
 
 - (int) selectedRow
 {
-  // TODO 
-  return -1;
+  return _selectedRow;
 }
 
-- (BOOL) isColumnSelected: (int) columnIndex
+- (BOOL) isColumnSelected: (int)columnIndex
 {
-  // TODO
-  return NO;
+  NSNumber *num  = [NSNumber numberWithInt: columnIndex];
+  return [_selectedColumns containsObject: num];
 }
 
-- (BOOL) isRowSelected: (int) rowIndex
+- (BOOL) isRowSelected: (int)rowIndex
 {
-  // TODO
-  return NO;
+  NSNumber *num  = [NSNumber numberWithInt: rowIndex];
+  return [_selectedRows containsObject: num];
 }
 
 - (NSEnumerator *) selectedColumnEnumerator
 {
-  // TODO
-  return nil;
+  return [_selectedColumns objectEnumerator];
 }
 
 - (NSEnumerator *) selectedRowEnumerator
 {
-  // TODO
-  return nil;
+  return [_selectedRows objectEnumerator];
 }
 
 - (void) selectAll: (id) sender
 {
-  // TODO 
-  return;
+  SEL selector; 
+
+  if (_allowsMultipleSelection == NO)
+    return;
+
+  /* Ask the delegate if we can select all columns or rows */
+  if (_selectingColumns == YES)
+    {
+      if ([_selectedColumns count] == _numberOfColumns)
+	{
+	  // Nothing to do !
+	  return;
+	}
+
+      selector = @selector (tableView:shouldSelectTableColumn:);
+      
+      if ([_delegate respondsToSelector: selector] == YES) 
+	{
+	  NSEnumerator *enumerator = [_tableColumns objectEnumerator];
+	  NSTableColumn *tb;
+	  while ((tb = [enumerator nextObject]) != nil)
+	    {
+	      if ([_delegate tableView: self  
+			     shouldSelectTableColumn: tb] == NO)
+		{
+		  return;
+		}
+	    }
+	}
+    }
+  else // selecting rows
+    {
+      if ([_selectedRows count] == _numberOfRows)
+	{
+	  // Nothing to do !
+	  return;
+	}
+
+      selector = @selector (tableView:shouldSelectRow:);
+      
+      if ([_delegate respondsToSelector: selector] == YES) 
+	{
+	  int row; 
+      
+	  for (row = 0; row < _numberOfRows; row++)
+	    {
+	      if ([_delegate tableView: self  shouldSelectRow: row] == NO)
+		  return;
+	    }
+	}
+    }
+
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }  
+
+  /* Do the real selection */
+  if (_selectingColumns == YES)
+    {
+      int column;
+
+      [_selectedColumns removeAllObjects];
+      for (column = 0; column < _numberOfColumns; column++)
+	{
+	  NSNumber *num  = [NSNumber numberWithInt: column];
+	  [_selectedColumns addObject: num];
+	}
+    }
+  else // selecting rows
+    {
+      int row;
+
+      [_selectedRows removeAllObjects];
+      for (row = 0; row < _numberOfRows; row++)
+	{
+	  NSNumber *num  = [NSNumber numberWithInt: row];
+	  [_selectedRows addObject: num];
+	}
+    }
+  
+  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+      object: self];
 }
+
+
 
 - (void) deselectAll: (id) sender
 {
-  // TODO
-  return;
+  SEL selector; 
+
+  if (_allowsEmptySelection == NO)
+    return;
+
+  selector = @selector (selectionShouldChangeInTableView:);
+  if ([_delegate respondsToSelector: selector] == YES) 
+    {
+      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+	{
+	  return;
+	}
+    }
+
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+	  
+  if (([_selectedColumns count] > 0) || ([_selectedRows count] > 0))
+    {
+      [_selectedColumns removeAllObjects];
+      [_selectedRows removeAllObjects];
+      [nc postNotificationName: NSTableViewSelectionDidChangeNotification
+	  object: self];
+    }
+
+  _selectedColumn = -1;
+  _selectedRow = -1;
+  _selectingColumns = NO;
 }
 
 /* 
@@ -658,6 +1204,41 @@ byExtendingSelection: (BOOL) flag
   return _editedColumn;
 }
 
+- (void) _setSelectingColumns: (BOOL)flag
+{
+  if (flag == _selectingColumns)
+    return;
+  
+  if (flag == NO)
+    {
+      /* Compute rect to redraw to clear the old column selection */
+      int column, i, count = [_selectedColumns count];
+      
+      for (i = 0; i < count; i++)
+	{
+	  column = [[_selectedColumns objectAtIndex: i] intValue];
+	  [self setNeedsDisplayInRect: [self rectOfColumn: column]];
+	}	  
+      [_selectedColumns removeAllObjects];
+      _selectedColumn = -1;  
+      _selectingColumns = NO;
+    }
+  else
+    {
+      /* Compute rect to redraw to clear the old row selection */
+      int row, i, count = [_selectedRows count];
+      
+      for (i = 0; i < count; i++)
+	{
+	  row = [[_selectedRows objectAtIndex: i] intValue];
+	  [self setNeedsDisplayInRect: [self rectOfRow: row]];
+	}	  
+      [_selectedRows removeAllObjects];
+      _selectedRow = -1;  
+      _selectingColumns = YES;
+    }
+}
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint location = [theEvent locationInWindow];
@@ -686,10 +1267,322 @@ byExtendingSelection: (BOOL) flag
   // Selection
   if (clickCount == 1)
     {
-      // TODO: Selection
-      return;
-    }
+      SEL selector;
 
+      if ([self isRowSelected: _clickedRow] == YES)
+	{
+	  if (([_selectedRows count] == 1) && (_allowsEmptySelection == NO))
+	    return;
+
+	  selector = @selector (selectionShouldChangeInTableView:);
+	  if ([_delegate respondsToSelector: selector] == YES) 
+	    {
+	      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+		{
+		  return;
+		}
+	    }
+
+	  if (_selectingColumns == YES)
+	    {
+	      [self _setSelectingColumns: NO];
+	    }
+	 
+	  [self deselectRow: _clickedRow];
+	  [self setNeedsDisplayInRect: [self rectOfRow: _clickedRow]];
+	  return;
+	}
+      else // row is not selected 
+	{
+	  unsigned int modifiers;
+	  BOOL newSelection;
+
+	  modifiers = [theEvent modifierFlags];
+
+	  if (modifiers & (NSShiftKeyMask | NSAlternateKeyMask))
+	    newSelection = NO;
+	  else
+	    newSelection = YES;
+
+	  if (([_selectedRows count] > 0) && (_allowsMultipleSelection == NO)
+	      && (newSelection == NO))
+	    {
+	      return;
+	    }
+
+	  selector = @selector (selectionShouldChangeInTableView:);
+	  if ([_delegate respondsToSelector: selector] == YES) 
+	    {
+	      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+		{
+		  return;
+		}
+	    }
+	  
+	  selector = @selector (tableView:shouldSelectRow:);
+	  if ([_delegate respondsToSelector: selector] == YES) 
+	    {
+	      if ([_delegate tableView: self 
+			     shouldSelectRow: _clickedRow] == NO)
+		{
+		  return;
+		}
+	    }
+
+	  if (_selectingColumns == YES)
+	    {
+	      [self _setSelectingColumns: NO];
+	    }
+
+	  if (newSelection == YES)
+	    {
+	      /* No shift or alternate key pressed: clear the old selection */
+	      
+	      /* Compute rect to redraw to clear the old selection */
+	      int row, i, count = [_selectedRows count];
+	      
+	      for (i = 0; i < count; i++)
+		{
+		  row = [[_selectedRows objectAtIndex: i] intValue];
+		  [self setNeedsDisplayInRect: [self rectOfRow: row]];
+		}
+
+	      /* Draw the new selection */
+	      [self selectRow: _clickedRow  byExtendingSelection: NO];
+	      [self setNeedsDisplayInRect: [self rectOfRow: _clickedRow]];
+	    }
+	  else /* Simply add to the old selection */
+	    {
+	      [self selectRow: _clickedRow  byExtendingSelection: YES];
+	      [self setNeedsDisplayInRect: [self rectOfRow: _clickedRow]];
+	    }
+
+	  if (_allowsMultipleSelection == NO)
+	    {
+	      return;
+	    }
+	  
+	  /* else, we track the mouse to allow extending selection to
+	     areas by dragging the mouse */
+	  
+	  /* Draw immediately because we are going to enter an event
+	     loop to track the mouse */
+	  [_window flushWindow];
+	  
+	  /* We track the cursor and highlight according to the cursor
+	     position.  When the cursor gets out (up or down) of the
+	     table, we start periodic events and scroll periodically
+	     the table enlarging or reducing selection. */
+	  {
+	    BOOL startedPeriodicEvents = NO;
+	    unsigned int eventMask = (NSLeftMouseUpMask 
+				      | NSLeftMouseDraggedMask 
+				      | NSPeriodicMask);
+	    NSEvent *lastEvent;
+	    BOOL done = NO;
+	    NSPoint mouseLocationWin;
+	    NSDate *distantFuture = [NSDate distantFuture];
+	    int lastSelectedRow = _clickedRow;
+	    NSRect visibleRect = [self convertRect: [self visibleRect]
+				       toView: nil];
+	    float minYVisible = NSMinY (visibleRect);
+	    float maxYVisible = NSMaxY (visibleRect);
+	    BOOL delegateTakesPart;
+	    BOOL mouseUp = NO;
+	    /* We have three zones of speed. 
+	       0   -  50 pixels: period 0.2  <zone 1>
+	       50  - 100 pixels: period 0.1  <zone 2>
+	       100 - 150 pixels: period 0.01 <zone 3> */
+	    float oldPeriod = 0;
+	    inline float computePeriod ()
+	      {
+		float distance = 0;
+		
+		if (mouseLocationWin.y < minYVisible) 
+		  {
+		    distance = minYVisible - mouseLocationWin.y; 
+		  }
+		else if (mouseLocationWin.y > maxYVisible)
+		  {
+		    distance = mouseLocationWin.y - maxYVisible;
+		  }
+		
+		if (distance < 50)
+		  return 0.2;
+		else if (distance < 100)
+		  return 0.1;
+		else 
+		  return 0.01;
+	      }
+
+	    selector = @selector (tableView:shouldSelectRow:);
+	    delegateTakesPart = [_delegate respondsToSelector: selector];
+	    
+	    while (done != YES)
+	      {
+		lastEvent = [NSApp nextEventMatchingMask: eventMask 
+				   untilDate: distantFuture
+				   inMode: NSEventTrackingRunLoopMode 
+				   dequeue: YES]; 
+
+		switch ([lastEvent type])
+		  {
+		  case NSLeftMouseUp:
+		    done = YES;
+		    break;
+		  case NSLeftMouseDragged:
+		    mouseLocationWin = [lastEvent locationInWindow]; 
+		    if ((mouseLocationWin.y > minYVisible) 
+			&& (mouseLocationWin.y < maxYVisible))
+		      {
+			NSPoint mouseLocationView;
+			int rowAtPoint;
+			
+			if (startedPeriodicEvents == YES)
+			  {
+			    [NSEvent stopPeriodicEvents];
+			    startedPeriodicEvents = NO;
+			  }
+			mouseLocationView = [self convertPoint: 
+						    mouseLocationWin 
+						  fromView: nil];
+			mouseLocationView.x = _bounds.origin.x;
+			rowAtPoint = [self rowAtPoint: mouseLocationView];
+			
+			if (delegateTakesPart == YES)
+			  {
+			    _selectionChange (self, _delegate, 
+					      _numberOfRows, _clickedRow, 
+					      lastSelectedRow, rowAtPoint, 
+					      _deselectRowsInRange, 
+					      _selectRowsInRange);
+			  }
+			else
+			  {
+			    _selectionChange (self, nil,
+					      _numberOfRows, _clickedRow, 
+					      lastSelectedRow, rowAtPoint, 
+					      _deselectRowsInRange, 
+					      _selectRowsInRange);
+			  }
+			lastSelectedRow = rowAtPoint;
+			[_window flushWindow];
+			[nc postNotificationName: 
+			      NSTableViewSelectionIsChangingNotification
+			    object: self];
+		      }
+		    else /* Mouse dragged out of the table */
+		      {
+			if (startedPeriodicEvents == YES)
+			  {
+			    /* Check - if the mouse did not change zone, 
+			       we do nothing */
+			    if (computePeriod () == oldPeriod)
+			      break;
+
+			    [NSEvent stopPeriodicEvents];
+			  }
+			/* Start periodic events */
+			oldPeriod = computePeriod ();
+			
+			[NSEvent startPeriodicEventsAfterDelay: 0
+				 withPeriod: oldPeriod];
+			startedPeriodicEvents = YES;
+			if (mouseLocationWin.y <= minYVisible) 
+			  mouseUp = NO;
+			else
+			  mouseUp = YES;
+		      }
+		    break;
+		  case NSPeriodic:
+		    if (mouseUp == NO) // mouse below the table
+		      {
+			if (lastSelectedRow < _clickedRow)
+			  {
+			    [self deselectRow: lastSelectedRow];
+			    [self setNeedsDisplayInRect: 
+				    [self rectOfRow: lastSelectedRow]];
+			    [self scrollRowToVisible: lastSelectedRow];
+			    [_window flushWindow];
+			    lastSelectedRow++;
+			  }
+			else
+			  {
+			    if ((lastSelectedRow + 1) < _numberOfRows)
+			      {
+				lastSelectedRow++;
+				if ((delegateTakesPart == YES) &&
+				    ([_delegate 
+				       tableView: self 
+				       shouldSelectRow: lastSelectedRow] 
+				     == NO))
+				  {
+				    break;
+				  }
+				[self selectRow: lastSelectedRow 
+				      byExtendingSelection: YES];
+				[self setNeedsDisplayInRect: 
+					[self rectOfRow: lastSelectedRow]];
+				[self scrollRowToVisible: lastSelectedRow];
+				[_window flushWindow];
+			      }
+			  }
+		      }
+		    else /* mouse above the table */
+		      {
+			if (lastSelectedRow <= _clickedRow)
+			  {
+			    if ((lastSelectedRow - 1) >= 0)
+			      {
+				lastSelectedRow--;
+				if ((delegateTakesPart == YES) &&
+				    ([_delegate 
+				       tableView: self 
+				       shouldSelectRow: lastSelectedRow] 
+				     == NO))
+				  {
+				    break;
+				  }
+				[self selectRow: lastSelectedRow 
+				      byExtendingSelection: YES];
+				[self setNeedsDisplayInRect: 
+					[self rectOfRow: lastSelectedRow]];
+				[self scrollRowToVisible: lastSelectedRow];
+				[_window flushWindow];
+			      }
+			  }
+			else
+			  {
+			    [self deselectRow: lastSelectedRow];
+			    [self setNeedsDisplayInRect: 
+				    [self rectOfRow: lastSelectedRow]];
+			    [self scrollRowToVisible: lastSelectedRow];
+			    [_window flushWindow];
+			    lastSelectedRow--;
+			  }
+		      }
+		    [nc postNotificationName: 
+			  NSTableViewSelectionIsChangingNotification
+			object: self];
+		    break;
+		  default:
+		    break;
+		  }
+
+	      }
+	    
+	    if (startedPeriodicEvents == YES)
+	      [NSEvent stopPeriodicEvents];
+
+	    [nc postNotificationName: 
+		  NSTableViewSelectionDidChangeNotification
+		object: self];
+	    
+	    return;
+	  }
+	}
+    }
+  
   // Double-click events
   if ([_delegate respondsToSelector: 
 		   @selector(tableView:shouldEditTableColumn:row:)])
@@ -1204,8 +2097,77 @@ byExtendingSelection: (BOOL) flag
 
 - (void) highlightSelectionInClipRect: (NSRect)clipRect
 {
-  // TODO
-  return;
+  if (_selectingColumns == NO)
+    {
+      int selectedRowsCount;
+      int row;
+      int startingRow, endingRow;
+      
+      selectedRowsCount = [_selectedRows count];
+      
+      if (selectedRowsCount == 0)
+	return;
+      
+      /* highlight selected rows */
+      startingRow = [self rowAtPoint: NSMakePoint (0, NSMinY (clipRect))];
+      endingRow   = [self rowAtPoint: NSMakePoint (0, NSMaxY (clipRect))];
+      
+      if (startingRow == -1)
+	startingRow = 0;
+      if (endingRow == -1)
+	endingRow = _numberOfRows - 1;
+      
+      for (row = 0; row < selectedRowsCount; row++)
+	{
+	  int rowNumber; 
+	  
+	  rowNumber = [[_selectedRows objectAtIndex: row] intValue];
+	  
+	  if (rowNumber > endingRow)
+	    break;
+	  
+	  if (rowNumber >= startingRow)
+	    {
+	      NSHighlightRect ([self rectOfRow: rowNumber]);
+	    }
+	}
+    }
+  else // Selecting columns
+    {
+      int selectedColumnsCount;
+      int column;
+      int startingColumn, endingColumn;
+      
+      selectedColumnsCount = [_selectedColumns count];
+      
+      if (selectedColumnsCount == 0)
+	return;
+      
+      /* highlight selected columns */
+      startingColumn = [self columnAtPoint: NSMakePoint (NSMinX (clipRect), 
+							 0)];
+      endingColumn = [self columnAtPoint: NSMakePoint (NSMaxX (clipRect), 0)];
+
+      if (startingColumn == -1)
+	startingColumn = 0;
+      if (endingColumn == -1)
+	endingColumn = _numberOfColumns - 1;
+      
+      for (column = 0; column < selectedColumnsCount; column++)
+	{
+	  int columnNumber; 
+	  
+	  columnNumber = [[_selectedColumns objectAtIndex: column] intValue];
+	  
+	  if (columnNumber > endingColumn)
+	    break;
+	  
+	  if (columnNumber >= startingColumn)
+	    {
+	      NSHighlightRect ([self rectOfColumn: columnNumber]);
+	    }
+	}     
+    }
 }
 
 - (void) drawRect: (NSRect)aRect
@@ -1221,6 +2183,9 @@ byExtendingSelection: (BOOL) flag
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
     return;
   
+  /* Draw selection */
+  [self highlightSelectionInClipRect: aRect];
+
   /* Draw grid */
   if (_drawsGrid)
     {
@@ -1241,6 +2206,11 @@ byExtendingSelection: (BOOL) flag
     {
       [self drawRow: i  clipRect: aRect];
     }
+}
+
+- (BOOL) isOpaque
+{
+  return YES;
 }
 
 /* 
@@ -1332,7 +2302,6 @@ byExtendingSelection: (BOOL) flag
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
 
   d = [[NSMutableDictionary alloc] initWithDictionary: 
@@ -1345,9 +2314,7 @@ byExtendingSelection: (BOOL) flag
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
-
 
   // MacOS-X asks us to inform the cell if possible.
   if ((_editedCell != nil) && [_editedCell respondsToSelector: 
@@ -1357,7 +2324,6 @@ byExtendingSelection: (BOOL) flag
   d = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
-
   [nc postNotificationName: NSControlTextDidChangeNotification
       object: self
       userInfo: d];
@@ -1365,7 +2331,6 @@ byExtendingSelection: (BOOL) flag
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
   id textMovement;
 
@@ -1477,7 +2442,6 @@ byExtendingSelection: (BOOL) flag
 
 - (void) setDelegate: (id)anObject
 {
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
   SEL sel;
 
   if (_delegate)
