@@ -8,7 +8,7 @@
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
    Author:  Fred Kiefer <fredkiefer@gmx.de>
-   Date: 2000
+   Date: November 2000
    
    This file is part of the GNUstep GUI Library.
 

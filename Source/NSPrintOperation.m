@@ -55,6 +55,8 @@
 	     toData:(NSMutableData *)data
 	  printInfo:(NSPrintInfo *)aPrintInfo;
 
+- (void) _print;
+
 @end
 
 // Subclass for the regular printing
@@ -380,10 +382,9 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
       NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
 
       [NSGraphicsContext setCurrentContext: _context];
-      // This is the actual printing
       NS_DURING
 	{
-	  [_view displayRect: _rect];
+	  [self _print];
 	}
       NS_HANDLER
 	{
@@ -396,6 +397,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
   result = [self deliverResult];
   [self cleanUpOperation];
+
   return result;
 }
 
@@ -449,6 +451,12 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
   [NSPrintOperation setCurrentOperation: self];
   return self;
+}
+
+- (void) _print
+{
+  // This is the actual printing
+  [_view displayRect: _rect];
 }
 
 @end
