@@ -1379,31 +1379,40 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 NSDictionary *
 _serviceFromAnyLocalizedTitle(NSString *title)
 {
-  NSDictionary *allServices;
-  NSEnumerator *e1;
-  NSDictionary *service;
+  NSDictionary	*allServices;
+  NSEnumerator	*e1;
+  NSDictionary	*service;
 
   allServices = [manager menuServices];
-  if(allServices == nil)
-    return nil;
-
-  if([allServices objectForKey: title] != nil)
-    return [allServices objectForKey: title];
-  
-  e1 = [allServices objectEnumerator];
-  while((service = [e1 nextObject]))
+  if (allServices == nil)
     {
-      NSDictionary *menuItems;
-      NSString *itemName;
-      NSEnumerator *e2;
+      return nil;
+    }
+
+  if ([allServices objectForKey: title] != nil)
+    {
+      return [allServices objectForKey: title];
+     } 
+  e1 = [allServices objectEnumerator];
+  while ((service = [e1 nextObject]) != nil)
+    {
+      NSDictionary	*menuItems;
+      NSString		*itemName;
+      NSEnumerator	*e2;
 
       menuItems = [service objectForKey: @"NSMenuItem"];
-      if(menuItems == nil)
-	continue;
+      if (menuItems == nil)
+	{
+	  continue;
+	}
       e2 = [menuItems objectEnumerator];
-      while((itemName = [e2 nextObject]))
-	if([itemName isEqualToString: title])
-	  return service;
+      while ((itemName = [e2 nextObject]) != nil)
+	{
+	  if ([itemName isEqualToString: title] == YES)
+	    {
+	      return service;
+	    }
+	}
     }
 
   return nil;

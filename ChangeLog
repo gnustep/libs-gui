@@ -1,3 +1,8 @@
+2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Tidy last patch to match use of
+	whitespace etc in GNUstep code.
+
 2003-10-26 15:18  Alexander Malmberg <alexander@malmberg.org>
 		  Matt Rice <ratmice@yahoo.com>
 
@@ -33,7 +38,7 @@
 
 2003-10-24  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSWorkspace.m: Change a few uses of '/' in stgrings to
+	* Source/NSWorkspace.m: Change a few uses of '/' in strings to
 	use stringByAppendingPatchComponent:
 	* Tools/gopen.m: Fix to pass the full path of the file to the
 	app being used to open it, so relative paths in the arguments
