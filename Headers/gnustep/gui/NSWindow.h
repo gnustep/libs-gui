@@ -314,7 +314,6 @@ extern NSSize NSTokenSize;
 - (void)discardEventsMatchingMask:(unsigned int)mask
 		      beforeEvent:(NSEvent *)lastEvent;
 - (NSResponder *)firstResponder;
-- (void)keyDown:(NSEvent *)theEvent;
 - (BOOL)makeFirstResponder:(NSResponder *)aResponder;
 - (NSPoint)mouseLocationOutsideOfEventStream;
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask;
