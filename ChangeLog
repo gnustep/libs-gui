@@ -1,3 +1,21 @@
+Mon Nov 15 16:09:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/GSTrackingRect.h: Tidied to more compact layout.
+	* Headers/gnustep/gui/NSCursor.h: Closer to MacOS-X spec.
+	* Headers/gnustep/gui/NSResponder.h: New flag for cursor rect validity
+	* Headers/gnustep/gui/NSTextField.h: Removed unused ivar.
+	* Source/GSTrackingRect.m: Alter for more compact ivars.
+	* Source/NSCell.m: Implement method for cursor tracking.
+	* Source/NSControl.m: Implement default -resetCursorRects.
+	* Source/NSCursor.m: Tidied up and added undocumented behavior to make
+	cursor handling on entry/exit work nicely - push new cursor onto stack
+	on entry to rectangle, pop it off again on exit.
+	* Source/NSTextField.m: Remove cursor handling stuff - it's done in
+	NSCell and NSControl.
+	* Source/NSView.m: Many little changes for correct cursor rectangle
+	handling.
+	* Source/NSWindow.m: Changes for cursor rectangle handling.
+
 Mon Nov 15  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSFormCell.h: Prefixed ivars with underscore; 
