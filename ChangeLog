@@ -1,3 +1,7 @@
+2001-04-16  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-miniaturize:): Set visible flag to NO.
+
 2001-04-16  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSButtonCell.m ([NSButtonCell -drawInteriorWithFrame:

@@ -1918,6 +1918,7 @@ resetCursorRectsForView(NSView *theView)
     }
   [self _lossOfKeyOrMainWindow];
   DPSminiwindow(GSCurrentContext(), _windowNum);
+  _f.visible = NO;
   
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
 		    object: self];
