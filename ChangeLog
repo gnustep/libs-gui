@@ -1,3 +1,20 @@
+1999-07-25  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSTextStorage.m: removed excess calls to
+	edited:range:changeInLength. Also changed on line 191 from > to
+	>=. Not sure the complete implications, but alas it now works
+	correctly.
+
+	Try gstextnetwork.app, you'll see a lot of debug information.
+	After that has cleared click twice in the textView and press a
+	key. You will see the textStorage buffer. You should see the word
+	'eek' close to the top, that would be from a replaceCharacters in
+	range edit, and you should also notice that some 500 characters
+	are missing from the middle, that would be from the
+	deleteCharactersInRange edit. It seems that the text network is
+	working slightly on the flip side, now all we need is some
+	drawing code to help make sense of all this. ;-)
+
 Sun Jul 25 11:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/GSTextStorage.m: Modified ([-setAttributes:range:]) and

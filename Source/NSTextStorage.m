@@ -91,27 +91,6 @@ static	Class	concrete;
 changeInLength: [attributedString length] - aRange.length];
 }
 
-- (void) replaceCharactersInRange: (NSRange)aRange
-                       withString: (NSString*)aString
-{
-  [super replaceCharactersInRange: aRange
-		       withString: aString];
-
-  [self edited: NSTextStorageEditedCharacters
-	 range: aRange
-changeInLength: [aString length] - aRange.length];
-}
-
-- (void) setAttributes: (NSDictionary*)attributes
-                 range: (NSRange)aRange
-{
-  [super setAttributes: attributes
-		 range: aRange];
-  [self edited: NSTextStorageEditedAttributes
-	 range: aRange
-changeInLength: 0];
-}
-
 /*
  *	Managing NSLayoutManagers
  */
@@ -156,6 +135,9 @@ changeInLength: 0];
  */
 - (void) edited: (unsigned)mask range: (NSRange)old changeInLength: (int)delta
 {
+
+  NSLog(@"edited:range:changeInLength: called");
+
   /*
    * Add in any new flags for this edit.
    */
@@ -184,7 +166,8 @@ changeInLength: 0];
     {
       if (delta < 0)
 	{
-	  NSAssert(old.length > -delta, NSInvalidArgumentException);
+	  // FIXME: this was > not >=, is that going to be a problem?
+	  NSAssert(old.length >= -delta, NSInvalidArgumentException);
 	}
       editedDelta += delta;
     }
@@ -236,7 +219,7 @@ changeInLength: 0];
     }
 
   /*
-   * Why are we resetting the values?
+   * edited values reset to be used again in the next pass.
    */
 
   editedRange = NSMakeRange(0, 0);

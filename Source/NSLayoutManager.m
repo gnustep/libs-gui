@@ -242,6 +242,10 @@ storage occured.");
 
 - (NSRange)glyphRangeForTextContainer: (NSTextContainer *)aTextContainer
 {
+  NSSize tcSize = [aTextContainer containerSize];
+
+  
+
   return NSMakeRange(0, 0);
 }
 

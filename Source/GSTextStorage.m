@@ -407,13 +407,13 @@ _attributesAtIndexEffectiveRange(
       INSOBJECT(info, arrayIndex);
       RELEASE(info);
     }
-  
-  /*
-   * Keep track of changes.
-   */ 
+
+  /* post changes */
+
   [self edited: NSTextStorageEditedAttributes
          range: range
-changeinlength: 0];
+changeInLength: 0];
+
 }
 
 - (void) replaceCharactersInRange: (NSRange)range
@@ -487,12 +487,12 @@ changeinlength: 0];
     }
   [textChars replaceCharactersInRange: range withString: aString];
 
-  /*
-   * Keep track of changes.
-   */ 
+  /* notify of changes */
+
   [self edited: NSTextStorageEditedCharacters
          range: range
-changeinlength: aLength - range.length];
+changeInLength: [aString length] - range.length];
+
 }
 
 - (void) dealloc
