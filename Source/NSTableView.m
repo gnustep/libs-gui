@@ -2729,7 +2729,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 {
   {
     NSTableColumn *tb;
-    
     tb = [tableColumns objectAtIndex: column];
     if ([tableView _shouldEditTableColumn: tb 
 		   row: row] == NO)
@@ -6588,6 +6587,7 @@ byExtendingSelection: (BOOL)flag
 			       column: (int)column
 {
   int i, j;
+  
   if (row > -1)
     {
       // First look for cells in the same row
@@ -6605,7 +6605,7 @@ byExtendingSelection: (BOOL)flag
     {
       for (j = 0; j < _numberOfColumns; j++)
 	{
-	  if (_isCellEditable (_delegate, _tableColumns, self, row, i) == YES)
+	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)
 	    {
 	      [self editColumn: j  row: i  withEvent: nil  select: YES];
 	      return YES;

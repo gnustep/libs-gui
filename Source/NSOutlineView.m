@@ -1125,7 +1125,6 @@ static NSImage *unexpandable  = nil;
 			    row: (int) rowIndex
 {
   id item = [self itemAtRow: rowIndex];
-
   if ([_delegate respondsToSelector: 
 			@selector(outlineView:shouldEditTableColumn:item:)])
     {
@@ -1582,6 +1581,7 @@ static NSImage *unexpandable  = nil;
   // of editing.
   if (_dataSource_editable == NO)
     {
+      NSLog(@"Data source not editable...");
       return;
     }
   
@@ -1677,29 +1677,34 @@ static NSImage *unexpandable  = nil;
       image = unexpandable;
     }
   // move the drawing rect over like in the drawRow routine...
-  level = [self levelForItem: item];
-  indentationFactor = _indentationPerLevel * level;
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
-  drawingRect.origin.x += indentationFactor + 5 + [image size].width;
-  drawingRect.size.width -= indentationFactor + 5 + [image size].width;
 
-  // create the image cell..
-  imageCell = [[NSCell alloc] initImageCell: image];
-  if(_indentationMarkerFollowsCell)
+  if(tb == [self outlineTableColumn])
     {
-      imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-      imageRect.origin.y = drawingRect.origin.y;
+      level = [self levelForItem: item];
+      indentationFactor = _indentationPerLevel * level;
+      drawingRect.origin.x += indentationFactor + 5 + [image size].width;
+      drawingRect.size.width -= indentationFactor + 5 + [image size].width;
+
+      // create the image cell..
+      imageCell = [[NSCell alloc] initImageCell: image];
+      if(_indentationMarkerFollowsCell)
+	{
+	  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+	  imageRect.origin.y = drawingRect.origin.y;
+	}
+      else
+	{
+	  imageRect.origin.x = drawingRect.origin.x;
+	  imageRect.origin.y = drawingRect.origin.y;
+	}
+      
+      // draw...
+      imageRect.size.width = [image size].width;
+      imageRect.size.height = [image size].height;
+      [imageCell drawWithFrame: imageRect inView: self];
     }
-  else
-    {
-      imageRect.origin.x = drawingRect.origin.x;
-      imageRect.origin.y = drawingRect.origin.y;
-    }
-  
-  // draw...
-  imageRect.size.width = [image size].width;
-  imageRect.size.height = [image size].height;
-  [imageCell drawWithFrame: imageRect inView: self];
+
   if (flag)
     {
       [_editedCell selectWithFrame: drawingRect

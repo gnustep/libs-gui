@@ -1,3 +1,15 @@
+2002-07-14 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: 
+	[-NSTableView _editNextEditableCellAfterRow:column:] corrected
+	a problem with the loop which seeks the next editable cell.  It
+	was using incorrect values in the call to isCellEditable in the
+	second for which was causing an exception to be thrown.
+	* Source/NSOutlineView.m: ([-editColumn:row:withEvent:select:])
+	corrected a problem in this method which was causing the cell
+	to be drawn incorrectly when editing a column other than the
+	outline column.
+
 Fri Jul 12 12:55:17 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patch from Benhur Stein <benhur-gnustep@inf.ufsm.br>:
