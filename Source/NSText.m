@@ -190,7 +190,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [_textStorage replaceCharactersInRange: aRange withString: aString];
   [_textStorage endEditing];
   [self didChangeText];
-  [self sizeToFit];
 }
 
 - (void) setString: (NSString*)aString
@@ -592,7 +591,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 		    range: aRange];
       [_textStorage endEditing];
       [self didChangeText];
-      [self sizeToFit];
     }
 }
 
@@ -719,7 +717,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
       [_textStorage subscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
-      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -750,7 +747,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
       [_textStorage superscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
-      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -778,7 +774,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
       [_textStorage unscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
-      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -1514,8 +1509,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 		  withString: [attrString string]];
   [_textStorage endEditing];
   [self didChangeText];
-  // ScrollView interaction
-  [self sizeToFit];
 }
 
 - (unsigned) textLength
@@ -2179,7 +2172,6 @@ other than copy/paste or dragging. */
     }
   [_textStorage endEditing];
   [self didChangeText];
-  [self sizeToFit];
 }
 
 - (void) _illegalMovement: (int) textMovement
@@ -2267,8 +2259,6 @@ other than copy/paste or dragging. */
   [_textStorage deleteCharactersInRange: deleteRange];
   [_textStorage endEditing];
   [self didChangeText];
-  // ScrollView interaction
-  [self sizeToFit];
 
   // move cursor <!> [self selectionRangeForProposedRange: ]
   [self setSelectedRange: NSMakeRange (deleteRange.location, 0)];
