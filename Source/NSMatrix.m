@@ -2395,6 +2395,8 @@ static SEL getSel = @selector(objectAtIndex:);
   // TODO
   // Selecting (not-editable, not-selectable cells) with the keyboard
   NSLog (@"NSMatrix -keyDown:");
+
+  [super keyDown: theEvent];
 }
 
 - (BOOL) acceptsFirstResponder
