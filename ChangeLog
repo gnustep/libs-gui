@@ -1,3 +1,9 @@
+2004-01-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSTextStorage.m (_setAttributesFrom): Initialize
+	range in the aRange.length==0 case. (Found by Andrew Ruder using
+	valgrind.) This mirrors the patch to base/GSAttributedString.m.
+
 2004-01-12 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/GSTitleView.m:
