@@ -33,15 +33,8 @@
 
 @class NSString;
 @class NSDictionary;
-
 @class NSPasteboard;
-
-// What component should we take values from
-// Bitmask - more than one component set may be valid.
-#define GNUSTEP_GUI_RGB_ACTIVE 1
-#define GNUSTEP_GUI_CMYK_ACTIVE 2
-#define GNUSTEP_GUI_HSB_ACTIVE 4
-#define GNUSTEP_GUI_WHITE_ACTIVE 8
+@class NSImage;
 
 enum {
   NSGrayModeColorPanel,
@@ -64,19 +57,24 @@ enum {
   NSColorPanelAllModesMask  
 };
 
+typedef enum _NSControlTint {
+    NSDefaultControlTint,
+    NSClearControlTint
+} NSControlTint;
+
 @interface NSColor : NSObject <NSCoding, NSCopying>
 {
   // Attributes
-  NSString *colorspace_name;
-  NSString *catalog_name;
-  NSString *color_name;
+  NSString *_colorspace_name;
+  NSString *_catalog_name;
+  NSString *_color_name;
 
   struct _GNU_RGB_component
   {
     float red;
     float green;
     float blue;
-  } RGB_component;
+  } _RGB_component;
 
   struct _GNU_CMYK_component
   {
@@ -84,26 +82,21 @@ enum {
     float magenta;
     float yellow;
     float black;
-  } CMYK_component;
+  } _CMYK_component;
 
   struct _GNU_HSB_component
   {
     float hue;
     float saturation;
     float brightness;
-  } HSB_component;
+  } _HSB_component;
 
-  float white_component;
+  float _white_component;
 
-  int active_component;
-  float alpha_component;
+  float _alpha_component;
 
-  BOOL is_clear;
-
-  // Reserved for back-end use
-  void *be_color_reserved;
-
-  int valid_components;
+  int _active_component;
+  int _valid_components;
 }
 
 //
@@ -228,21 +221,15 @@ enum {
 - (void)drawSwatchInRect:(NSRect)rect;
 - (void)set;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
 #ifndef	STRICT_OPENSTEP
 //
 // Changing the color
 //
-- (NSColor*) blendedColorWithFraction: (float)fraction
-			      ofColor: (NSColor*)aColor;
-- (NSColor*) colorWithAlphaComponent: (float)alpha;
 - (NSColor*) highlightWithLevel: (float)level;
 - (NSColor*) shadowWithLevel: (float)level;
+
++ (NSColor*) colorWithPatternImage:(NSImage*)image;
++ (NSColor*) colorForControlTint:(NSControlTint)controlTint;
 
 //
 // System colors stuff.
@@ -256,26 +243,31 @@ enum {
 + (NSColor*) controlTextColor;
 + (NSColor*) disabledControlTextColor;
 + (NSColor*) gridColor;
++ (NSColor*) headerColor;
++ (NSColor*) headerTextColor;
 + (NSColor*) highlightColor;
++ (NSColor*) keyboardFocusIndicatorColor;
 + (NSColor*) knobColor;
 + (NSColor*) scrollBarColor;
 + (NSColor*) selectedControlColor;
 + (NSColor*) selectedControlTextColor;
++ (NSColor*) selectedKnobColor;
 + (NSColor*) selectedMenuItemColor;
 + (NSColor*) selectedMenuItemTextColor;
 + (NSColor*) selectedTextBackgroundColor;
 + (NSColor*) selectedTextColor;
-+ (NSColor*) selectedKnobColor;
 + (NSColor*) shadowColor;
 + (NSColor*) textBackgroundColor;
 + (NSColor*) textColor;
++ (NSColor*) windowBackgroundColor;
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
 
-extern NSString	*NSSystemColorsDidChangeNotification;
 #endif
 
 @end
+
+extern NSString	*NSSystemColorsDidChangeNotification;
 
 #ifndef	STRICT_MACOS_X
 @interface NSCoder (NSCoderAdditions)
