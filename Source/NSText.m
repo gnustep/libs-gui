@@ -56,8 +56,7 @@
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSTextContainer.h>
-
-#include "GSSimpleLayoutManager.h"
+#include <AppKit/NSLayoutManager.h>
 
 
 #define HUGE 1e99
@@ -94,7 +93,8 @@ static NSNotificationCenter *nc;
 @end
 
 // not the same as NSMakeRange!
-static NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
+static inline
+NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 {
   if (a1 < a2)
     return NSMakeRange(a1, a2 - a1);
@@ -113,7 +113,8 @@ static NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
     {
       NSArray  *types;
 
-      [self setVersion: 1];                     // Initial version
+      // Initial version
+      [self setVersion: 1];
 
       nc = [NSNotificationCenter defaultCenter];
 
@@ -2309,8 +2310,7 @@ other than copy/paste or dragging. */
 - (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 {
   NSTextContainer *aTextContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
-  //NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-  NSLayoutManager *layoutManager = [[GSSimpleLayoutManager alloc] init];
+  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
   NSTextStorage *textStorage = [[NSTextStorage alloc] init];
 
   [aTextContainer setWidthTracksTextView: YES];
