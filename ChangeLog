@@ -1,3 +1,9 @@
+2003-06-15 14:57  Alexander Malmberg <alexander@malmberg.org>
+
+	* configure.ac: Don't add GNUSTEP_HDIR/GNUSTEP_LDIR to
+	ADDITIONAL_INCLUDE_DIRS/ADDITIONAL_LIB_DIRS.
+	configure: Regenerate.
+
 2003-06-15 02:35  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSNibTemplates.h, Source/NSBundleAdditions.m:

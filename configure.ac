@@ -42,6 +42,18 @@ AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 AC_CANONICAL_TARGET([])
 
 #--------------------------------------------------------------------
+# Add target OS directories as necessary
+#--------------------------------------------------------------------
+ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
+ADDITIONAL_LIB_DIRS="$LDFLAGS"
+case "$target_os" in
+  freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
+              LDFLAGS="$LDFLAGS -L/usr/local/lib";;
+  netbsd*)    CPPFLAGS="$CPPFLAGS -I/usr/pkg/include"
+              LDFLAGS="$LDFLAGS -L/usr/pkg/lib";;
+esac
+
+#--------------------------------------------------------------------
 # The following is so that headers and custom libraries
 # in the GNUstep root are used before the standard ones
 #--------------------------------------------------------------------
@@ -57,18 +69,6 @@ else
 fi
 CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
-
-#--------------------------------------------------------------------
-# Add target OS directories as necessary
-#--------------------------------------------------------------------
-ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
-ADDITIONAL_LIB_DIRS="$LDFLAGS"
-case "$target_os" in
-  freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-              LDFLAGS="$LDFLAGS -L/usr/local/lib";;
-  netbsd*)    CPPFLAGS="$CPPFLAGS -I/usr/pkg/include"
-              LDFLAGS="$LDFLAGS -L/usr/pkg/lib";;
-esac
 
 #--------------------------------------------------------------------
 # Find the compiler
