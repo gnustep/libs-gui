@@ -2766,7 +2766,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       [[NSFontManager sharedFontManager] 
 	  setSelectedFont: currentFont
-	  isMultiple: NSEqualRanges(longestRange, _selected_range)];
+	  isMultiple: !NSEqualRanges(longestRange, _selected_range)];
     }
 }
 
