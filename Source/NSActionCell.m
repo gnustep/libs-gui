@@ -58,6 +58,7 @@ static Class controlClass;
   _target = nil;
   _action = NULL;
   _tag = 0;
+  _control_view = nil;
   return self;
 }
 
@@ -67,6 +68,7 @@ static Class controlClass;
   _target = nil;
   _action = NULL;
   _tag = 0;
+  _control_view = nil;
   return self;
 }
 
@@ -76,6 +78,7 @@ static Class controlClass;
   _target = nil;
   _action = NULL;
   _tag = 0;
+  _control_view = nil;
   return self;
 }
 
@@ -84,7 +87,7 @@ static Class controlClass;
  */
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  _text_align = mode;
+  _cell.text_align = mode;
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
@@ -225,8 +228,24 @@ static Class controlClass;
   c->_tag = _tag;
   c->_target = _target;
   c->_action = _action;
+  c->_control_view = _control_view;
 
   return c;
+}
+
+-(NSView *)controlView
+{
+  return _control_view;
+}
+
+
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  if (_control_view != controlView)
+    _control_view = controlView;
+
+  [super drawWithFrame: cellFrame 
+	 inView: controlView];
 }
 
 /*
@@ -238,6 +257,7 @@ static Class controlClass;
   [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
   [aCoder encodeConditionalObject: _target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+  [aCoder encodeConditionalObject: _control_view];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -246,6 +266,7 @@ static Class controlClass;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
   _target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+  _control_view = [aDecoder decodeObject];
   return self;
 }
 
