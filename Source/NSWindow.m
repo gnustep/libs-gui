@@ -672,38 +672,12 @@ static NSRecursiveLock	*windowsLock;
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
-  if (maximum_size.width > 0 && frameRect.size.width > maximum_size.width)
-    {
-      frameRect.size.width = maximum_size.width;
-    }
-  if (maximum_size.height > 0 && frameRect.size.height > maximum_size.height)
-    {
-      frameRect.size.height = maximum_size.height;
-    }
-  if (frameRect.size.width < minimum_size.width)
-    {
-      frameRect.size.width = minimum_size.width;
-    }
-  if (frameRect.size.height < minimum_size.height)
-    {
-      frameRect.size.height = minimum_size.height;
-    }
+  if (frameRect.size.width < 1)
+    frameRect.size.width = 1;
 
-  if (NSEqualSizes(frameRect.size, frame.size) == NO)
-    {
-      if ([delegate respondsToSelector: @selector(windowWillResize:toSize:)])
-	{
-	  frameRect.size = [delegate windowWillResize: self
-					       toSize: frameRect.size];
-	}
-    }
+  if (frameRect.size.height < 1)
+    frameRect.size.height = 1;
 
-  if (NSEqualPoints(frame.origin, frameRect.origin) == NO)
-    [nc postNotificationName: NSWindowWillMoveNotification object: self];
-
-  /*
-   * Now we can tell the graphics context to do the actual resizing.
-   */
   [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
 
   if (flag)
@@ -722,7 +696,8 @@ static NSRecursiveLock	*windowsLock;
 {
   NSRect	r = frame;
 
-  r.origin.y = aPoint.y + frame.size.height;
+  r.origin = aPoint;
+  r.origin.y -= frame.size.height;
   [self setFrame: r display: YES];
 }
 
@@ -737,6 +712,13 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) setMaxSize: (NSSize)aSize
 {
+  /*
+   * Documented maximum size for macOS-X - do we need this restriction?
+   */
+  if (aSize.width > 10000)
+    aSize.width = 10000;
+  if (aSize.height > 10000)
+    aSize.height = 10000;
   maximum_size = aSize;
 }
 
@@ -778,7 +760,7 @@ static NSRecursiveLock	*windowsLock;
  */
 - (void) disableFlushWindow
 {
-  disable_flush_window = YES;
+  disable_flush_window++;
 }
 
 - (void) display
@@ -823,7 +805,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) flushWindowIfNeeded
 {
-  if (!disable_flush_window && needs_flush)
+  if (disable_flush_window == 0 && needs_flush)
     {
       needs_flush = NO;
       [self flushWindow];
@@ -837,7 +819,10 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) enableFlushWindow
 {
-  disable_flush_window = NO;
+  if (disable_flush_window > 0)
+    {
+      disable_flush_window--;
+    }
 }
 
 - (BOOL) isAutodisplay
@@ -847,7 +832,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (BOOL) isFlushWindowDisabled
 {
-  return disable_flush_window;
+  return disable_flush_window == 0 ? NO : YES;
 }
 
 - (void) setAutodisplay: (BOOL)flag
@@ -855,10 +840,34 @@ static NSRecursiveLock	*windowsLock;
   is_autodisplay = flag;
 }
 
+- (void) _handleWindowNeedsDisplay: (id)bogus
+{
+    [self displayIfNeeded];
+}
+
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
   needs_display = flag;
-  [NSApp setWindowsNeedUpdate: YES];
+  if (flag)
+    {
+      [NSApp setWindowsNeedUpdate: YES];
+      [[NSRunLoop currentRunLoop]
+             performSelector: @selector(_handleWindowNeedsDisplay:)
+                      target: self
+                    argument: nil
+                       order: 600000 /*NSDisplayWindowRunLoopOrdering in OS*/
+                       modes: [NSArray arrayWithObjects:
+                                       NSDefaultRunLoopMode,
+                                       NSModalPanelRunLoopMode,
+                                       NSEventTrackingRunLoopMode, nil]];
+    }
+  else
+    {
+      [[NSRunLoop currentRunLoop]
+             cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+                            target: self
+                          argument: nil];
+    }
 }
 
 - (BOOL) viewsNeedDisplay
@@ -1606,6 +1615,7 @@ static NSRecursiveLock	*windowsLock;
 	      break;
 
 	    case GSAppKitDraggingExit:
+	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && accepts_drag)
 		GSPerformDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo,
@@ -1615,6 +1625,7 @@ static NSRecursiveLock	*windowsLock;
 	    case GSAppKitDraggingDrop:
 	      if (_lastDragView && accepts_drag)
 		{
+	          dragInfo = [GSCurrentContext() _dragInfo];
 		  GSPerformDragSelector(_lastDragView, 
 					@selector(prepareForDragOperation:), 
 					dragInfo, action);
@@ -1785,9 +1796,25 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) setFrameFromString: (NSString *)string
 {
-  NSRect	rect = NSRectFromString(string);
+  NSRect	frameRect = NSRectFromString(string);
 
-  [self setFrame: rect display: YES];
+  if (maximum_size.width > 0 && frameRect.size.width > maximum_size.width)
+    {
+      frameRect.size.width = maximum_size.width;
+    }
+  if (maximum_size.height > 0 && frameRect.size.height > maximum_size.height)
+    {
+      frameRect.size.height = maximum_size.height;
+    }
+  if (frameRect.size.width < minimum_size.width)
+    {
+      frameRect.size.width = minimum_size.width;
+    }
+  if (frameRect.size.height < minimum_size.height)
+    {
+      frameRect.size.height = minimum_size.height;
+    }
+  [self setFrame: frameRect display: YES];
 }
 
 - (BOOL) setFrameUsingName: (NSString *)name
@@ -2002,6 +2029,7 @@ static NSRecursiveLock	*windowsLock;
   [aCoder encodeObject: miniaturized_image];
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
   [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
+  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
@@ -2009,7 +2037,6 @@ static NSRecursiveLock	*windowsLock;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
@@ -2044,6 +2071,7 @@ static NSRecursiveLock	*windowsLock;
   [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
 	at: &backing_type];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
@@ -2051,7 +2079,6 @@ static NSRecursiveLock	*windowsLock;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
@@ -2130,7 +2157,7 @@ static NSRecursiveLock	*windowsLock;
   is_edited = NO;
   is_released_when_closed = YES;
   is_miniaturized = NO;
-  disable_flush_window = NO;
+  disable_flush_window = 0;
   menu_exclude = NO;
   hides_on_deactivate = NO;
   accepts_mouse_moved = NO;
@@ -2148,7 +2175,7 @@ static NSRecursiveLock	*windowsLock;
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
 {
-  NSPasteboard *pb = [dragInfo draggingPasteBoard];
+  NSPasteboard *pb = [dragInfo draggingPasteboard];
   if ([pb availableTypeFromArray: GSGetDragTypes(v)])
     return YES;
   return NO;

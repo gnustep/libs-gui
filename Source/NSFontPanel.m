@@ -51,7 +51,7 @@
       NSDebugLog(@"Initialize NSFontPanel class\n");
 
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
@@ -62,7 +62,7 @@
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
 
-  return [fm fontPanel:YES];
+  return [fm fontPanel: YES];
 }
 
 //
@@ -100,82 +100,82 @@
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
                      | NSMiniaturizableWindowMask | NSResizableWindowMask;
 
-  self = [super initWithContentRect:pf 
-		styleMask:style
-		backing:NSBackingStoreRetained
-		defer:NO
-		screen:nil];
-  [self setTitle:@"Font Panel"];
+  self = [super initWithContentRect: pf 
+		styleMask: style
+		backing: NSBackingStoreRetained
+		defer: NO
+		screen: nil];
+  [self setTitle: @"Font Panel"];
 
   v = [self contentView];
 
-  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,250)];
+  topArea = [[NSView alloc] initWithFrame: NSMakeRect(0,50,300,250)];
 
-  splitView = [[NSSplitView alloc] initWithFrame:NSMakeRect(0,0,300,240)];  
-  [splitView setVertical:NO]; 
-  [topArea addSubview:splitView];
+  splitView = [[NSSplitView alloc] initWithFrame: NSMakeRect(0,0,300,240)];  
+  [splitView setVertical: NO]; 
+  [topArea addSubview: splitView];
 
-  topSplit = [[NSView alloc] initWithFrame:ts];
+  topSplit = [[NSView alloc] initWithFrame: ts];
 
-  previewArea = [[NSTextField alloc] initWithFrame:pa];
-  [previewArea setBackgroundColor:[NSColor whiteColor]];
-  [previewArea setDrawsBackground:YES];
-  [topSplit addSubview:previewArea];
+  previewArea = [[NSTextField alloc] initWithFrame: pa];
+  [previewArea setBackgroundColor: [NSColor textBackgroundColor]];
+  [previewArea setDrawsBackground: YES];
+  [topSplit addSubview: previewArea];
 
-  bottomSplit = [[NSView alloc] initWithFrame:bs];
+  bottomSplit = [[NSView alloc] initWithFrame: bs];
 
   l.size.width = 110;
 
-  label = [[NSTextField alloc] initWithFrame:l];
+  label = [[NSTextField alloc] initWithFrame: l];
   [label setAlignment: NSCenterTextAlignment];
-  [label setFont:[NSFont boldSystemFontOfSize:12]];
-  [label setStringValue:@"Family"];
-  [label setEditable:NO];
-  [label setDrawsBackground:YES];
-  [label setTextColor:[NSColor whiteColor]];
-  [label setBackgroundColor:[NSColor colorWithCalibratedWhite:NSDarkGray alpha: 1.0]];
-  [bottomSplit addSubview:label];
+  [label setFont: [NSFont boldSystemFontOfSize: 12]];
+  [label setStringValue: @"Family"];
+  [label setEditable: NO];
+  [label setDrawsBackground: YES];
+  [label setTextColor: [NSColor windowFrameTextColor]];
+  [label setBackgroundColor: [NSColor controlShadowColor]];
+  [bottomSplit addSubview: label];
   [label release];
 
   ss.size.width = 110;
 
-  familyScroll = [[NSScrollView alloc] initWithFrame:ss];
-  [familyScroll setHasVerticalScroller:YES];
-  [bottomSplit addSubview:familyScroll];
+  familyScroll = [[NSScrollView alloc] initWithFrame: ss];
+  [familyScroll setHasVerticalScroller: YES];
+  [bottomSplit addSubview: familyScroll];
 
   l.size.width = 109;
   l.origin.x = 120;
 
-  label = [[NSTextField alloc] initWithFrame:l];
-  [label setFont:[NSFont boldSystemFontOfSize:12]];
-  [label setEditable:NO];
+  label = [[NSTextField alloc] initWithFrame: l];
+  [label setFont: [NSFont boldSystemFontOfSize: 12]];
+  [label setEditable: NO];
   [label setAlignment: NSCenterTextAlignment];
-  [label setDrawsBackground:YES];
-  [label setTextColor:[NSColor whiteColor]];
-  [label setBackgroundColor:[NSColor darkGrayColor]];
-  [label setStringValue:@"Typeface"];
-  [bottomSplit addSubview:label];
+  [label setDrawsBackground: YES];
+  [label setTextColor: [NSColor windowFrameTextColor]];
+  [label setBackgroundColor: [NSColor controlShadowColor]];
+  [label setStringValue: @"Typeface"];
+  [bottomSplit addSubview: label];
   [label release];
 
   ss.size.width = 109;
   ss.origin.x = 120;
 
-  typeScroll = [[NSScrollView alloc] initWithFrame:ss];
-  [typeScroll setHasVerticalScroller:YES];
-  [bottomSplit addSubview:typeScroll];
+  typeScroll = [[NSScrollView alloc] initWithFrame: ss];
+  [typeScroll setHasVerticalScroller: YES];
+  [bottomSplit addSubview: typeScroll];
 
   l.origin.x = 231;
   l.size.width = 58;
 
-  label = [[NSTextField alloc] initWithFrame:l];
-  [label setFont:[NSFont boldSystemFontOfSize:12]];
+  label = [[NSTextField alloc] initWithFrame: l];
+  [label setFont: [NSFont boldSystemFontOfSize: 12]];
   [label setAlignment: NSCenterTextAlignment];
-  [label setDrawsBackground:YES];
-  [label setEditable:NO];
-  [label setTextColor:[NSColor whiteColor]];
-  [label setBackgroundColor:[NSColor darkGrayColor]];
-  [label setStringValue:@"Size"];
-  [bottomSplit addSubview:label];
+  [label setDrawsBackground: YES];
+  [label setEditable: NO];
+  [label setTextColor: [NSColor windowFrameTextColor]];
+  [label setBackgroundColor: [NSColor controlShadowColor]];
+  [label setStringValue: @"Size"];
+  [bottomSplit addSubview: label];
   [label release];
 
   // last label, this is the size input. We don't release this one.
@@ -183,54 +183,54 @@
   l.origin.x = 231;
   l.origin.y = 140;
 
-  label = [[NSTextField alloc] initWithFrame:l];
-  [label setDrawsBackground:YES];
-  [label setBackgroundColor:[NSColor whiteColor]];
-  [bottomSplit addSubview:label];
+  label = [[NSTextField alloc] initWithFrame: l];
+  [label setDrawsBackground: YES];
+  [label setBackgroundColor: [NSColor windowFrameTextColor]];
+  [bottomSplit addSubview: label];
 
   ss.origin.x = 231;
   ss.size.height = 138;
   ss.size.width = 58;
 
-  sizeScroll = [[NSScrollView alloc] initWithFrame:ss];
-  [sizeScroll setHasVerticalScroller:YES];
-  [bottomSplit addSubview:sizeScroll];
+  sizeScroll = [[NSScrollView alloc] initWithFrame: ss];
+  [sizeScroll setHasVerticalScroller: YES];
+  [bottomSplit addSubview: sizeScroll];
 
-  bottomArea = [[NSView alloc] initWithFrame:NSMakeRect(0,0,300,50)];
+  bottomArea = [[NSView alloc] initWithFrame: NSMakeRect(0,0,300,50)];
  
-  slash = [[NSBox alloc] initWithFrame:NSMakeRect(0,40,300,2)];
-  [slash setBorderType:NSGrooveBorder];
-  [slash setTitlePosition:NSNoTitle];
-  [bottomArea addSubview:slash];
+  slash = [[NSBox alloc] initWithFrame: NSMakeRect(0,40,300,2)];
+  [slash setBorderType: NSGrooveBorder];
+  [slash setTitlePosition: NSNoTitle];
+  [bottomArea addSubview: slash];
   [slash release];
 
-  revertButton = [[NSButton alloc] initWithFrame:b];
-  [revertButton setStringValue:@"Revert"];
-  [bottomArea addSubview:revertButton];
+  revertButton = [[NSButton alloc] initWithFrame: b];
+  [revertButton setStringValue: @"Revert"];
+  [bottomArea addSubview: revertButton];
 
   b.origin.x = 137;
 
-  previewButton = [[NSButton alloc] initWithFrame:b];
-  [previewButton setStringValue:@"Preview"];
-  [previewButton setButtonType:NSOnOffButton];
-  [bottomArea addSubview:previewButton];
+  previewButton = [[NSButton alloc] initWithFrame: b];
+  [previewButton setStringValue: @"Preview"];
+  [previewButton setButtonType: NSOnOffButton];
+  [bottomArea addSubview: previewButton];
 
   b.origin.x = 217;
 
-  setButton = [[NSButton alloc] initWithFrame:b];
-  [setButton setStringValue:@"Set"];
-  [bottomArea addSubview:setButton];
+  setButton = [[NSButton alloc] initWithFrame: b];
+  [setButton setStringValue: @"Set"];
+  [bottomArea addSubview: setButton];
 
-  [splitView addSubview:bottomSplit];
-  [splitView addSubview:topSplit];
+  [splitView addSubview: bottomSplit];
+  [splitView addSubview: topSplit];
 
-  [v addSubview:topArea];
-  [v addSubview:bottomArea];
+  [v addSubview: topArea];
+  [v addSubview: bottomArea];
 
   return self;
 }
 
-- (NSFont *)panelConvertFont:(NSFont *)fontObject
+- (NSFont *)panelConvertFont: (NSFont *)fontObject
 {
   return panel_font;
 }
@@ -238,10 +238,10 @@
 //
 // Setting the Font 
 //
-- (void)setPanelFont:(NSFont *)fontObject
-	  isMultiple:(BOOL)flag
+- (void)setPanelFont: (NSFont *)fontObject
+	  isMultiple: (BOOL)flag
 {
-  panel_font = fontObject;
+  ASSIGN(panel_font, fontObject);
 }
 
 //
@@ -257,10 +257,10 @@
   return NO;
 }
 
-- (void)setAccessoryView:(NSView *)aView
+- (void)setAccessoryView: (NSView *)aView
 {}
 
-- (void)setEnabled:(BOOL)flag
+- (void)setEnabled: (BOOL)flag
 {}
 
 - (BOOL)worksWhenModal
@@ -271,8 +271,8 @@
 //
 // Displaying the NSFontPanel 
 //
-- (void)orderWindow:(NSWindowOrderingMode)place	 
-	 relativeTo:(int)otherWindows
+- (void)orderWindow: (NSWindowOrderingMode)place	 
+	 relativeTo: (int)otherWindows
 {}
 
 - (void)display
@@ -293,7 +293,7 @@
 {
   [super initWithCoder: aDecoder];
 
-  panel_font = [aDecoder decodeObject];
+  panel_font = RETAIN([aDecoder decodeObject]);
 
   return self;
 }

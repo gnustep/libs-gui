@@ -23,8 +23,9 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   License along with this library;
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
 #include <gnustep/gui/config.h>
@@ -38,6 +39,7 @@
 #include <Foundation/NSInvocation.h>
 #include <Foundation/NSObjCRuntime.h>
 #include <Foundation/NSString.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSNibLoading.h>
 
@@ -45,7 +47,27 @@
 
 - (NSString *)pathForImageResource:(NSString *)name
 {
-  return nil;
+  NSString	*ext = [name pathExtension];
+  NSString	*path = nil;
+
+  if (ext != nil)
+    {
+      name = [name stringByDeletingPathExtension];
+      path = [self pathForResource: name ofType: ext];
+    }
+  else
+    {
+      NSArray	*types = [NSImage imageUnfilteredFileTypes];
+      unsigned	c = [types count];
+      unsigned	i;
+
+      for (i = 0; path == nil && i < c; i++)
+	{
+	  ext = [types objectAtIndex: i];
+	  path = [self pathForResource: name ofType: ext];
+	}
+    }
+  return path;
 }
 
 + (BOOL) loadNibFile: (NSString *)fileName

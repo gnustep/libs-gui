@@ -36,7 +36,14 @@ typedef	enum {
   NSNoInterfaceStyle = 0,
   NSNextStepInterfaceStyle = 1,
   NSMacintoshInterfaceStyle = 2,
-  NSWindows95InterfaceStyle = 3
+  NSWindows95InterfaceStyle = 3,
+
+/*
+ * GNUstep specific. Blame: Michael Hanni.
+ */ 
+
+  GSWindowMakerInterfaceStyle = 4
+
 } NSInterfaceStyle;
 
 extern	NSString	*NSInterfaceStyleDefault;

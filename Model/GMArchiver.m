@@ -231,6 +231,8 @@
     id label;
     id upperObjectRepresentation;
 
+    anObject = [anObject replacementObjectForModelArchiver: self];
+
     label = NSMapGet(objects, anObject);
 
     if (findingConditionals && !label) {
@@ -268,7 +270,6 @@
 	 encoded. */
       upperObjectRepresentation = lastObjectRepresentation;
 
-      anObject = [anObject replacementObjectForModelArchiver: self];
       archiveClass = [anObject classForModelArchiver];
 
       if (!findingConditionals) {

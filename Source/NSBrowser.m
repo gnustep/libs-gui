@@ -188,10 +188,10 @@
   return [NSBrowserCell class];
 }
 
-//
-// Instance methods
-//
-- initWithFrame: (NSRect)rect
+/*
+ * Instance methods
+ */
+- (id) initWithFrame: (NSRect)rect
 {
   NSSize bs;
   NSRect scroller_rect;
@@ -219,7 +219,7 @@
   scroller_rect.size.height = [NSScroller scrollerWidth];
   _horizontalScroller = [[NSScroller alloc] initWithFrame: scroller_rect];
   [_horizontalScroller setTarget: self];
-  [_horizontalScroller setAction: @selector(scrollViaScroller: )];
+  [_horizontalScroller setAction: @selector(scrollViaScroller:)];
   [self addSubview: _horizontalScroller];
   _acceptsArrowKeys = YES;
   _sendsActionOnArrowKeys = YES;
@@ -229,8 +229,8 @@
   _browserColumns = [[NSMutableArray alloc] init];
   _titleCell = [NSTextFieldCell new];
   [_titleCell setEditable: NO];
-  [_titleCell setTextColor: [NSColor whiteColor]];
-  [_titleCell setBackgroundColor: [NSColor darkGrayColor]];
+  [_titleCell setTextColor: [NSColor windowFrameTextColor]];
+  [_titleCell setBackgroundColor: [NSColor controlShadowColor]];
   //[_titleCell setBordered: YES];
   //[_titleCell setBezeled: YES];
   [_titleCell setAlignment: NSCenterTextAlignment];
@@ -295,20 +295,20 @@
   BOOL both = NO;
 
   if (![anObject respondsToSelector: 
-		  @selector(browser: willDisplayCell: atRow: column: )])
+		  @selector(browser:willDisplayCell:atRow:column:)])
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s\n",
 		 "browser: willDisplayCell: atRow: column: "];
 
   if ([anObject respondsToSelector: 
-		  @selector(browser: numberOfRowsInColumn: )])
+		  @selector(browser:numberOfRowsInColumn:)])
     {
       _passiveDelegate = YES;
       flag = YES;
     }
 
   if ([anObject respondsToSelector: 
-		  @selector(browser: createRowsForColumn: inMatrix: )])
+		  @selector(browser:createRowsForColumn:inMatrix:)])
     {
       _passiveDelegate = NO;
 
@@ -611,7 +611,7 @@
 
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector: 
-			  @selector(browser: titleOfColumn: )])
+			  @selector(browser:titleOfColumn:)])
     [self setTitle: [_browserDelegate browser: self
 				      titleOfColumn: column]
 	  ofColumn: column];
@@ -786,7 +786,7 @@
 
   // xxx Should we trigger an exception?
   if (![_browserDelegate respondsToSelector: 
-			   @selector(browser: isColumnValid: )])
+			   @selector(browser:isColumnValid:)])
     return;
 
   // Loop through the visible columns
@@ -893,7 +893,7 @@
     return;
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll: )])
+  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll:)])
     [_browserDelegate browserWillScroll: self];
 
   // Shift
@@ -907,7 +907,7 @@
   [self updateScroller];
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll: )])
+  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll:)])
     [_browserDelegate browserDidScroll: self];
 }
 
@@ -922,7 +922,7 @@
     return;
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll: )])
+  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll:)])
     [_browserDelegate browserWillScroll: self];
 
   // Shift
@@ -936,7 +936,7 @@
   [self updateScroller];
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll: )])
+  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll:)])
     [_browserDelegate browserDidScroll: self];
 }
 
@@ -1039,7 +1039,7 @@
 
   // Ask delegate if selection is ok
   if ([_browserDelegate respondsToSelector: 
-				@selector(browser: selectRow: inColumn: )])
+				@selector(browser:selectRow:inColumn:)])
     {
       int row = [sender selectedRow];
       shouldSelect = [_browserDelegate browser: self selectRow: row
@@ -1049,7 +1049,7 @@
     {
       // Try the other method
       if ([_browserDelegate respondsToSelector: 
-			    @selector(browser: selectCellWithString: inColumn: )])
+			    @selector(browser:selectCellWithString:inColumn:)])
 	{
 	  id c = [sender selectedCell];
 	  shouldSelect = [_browserDelegate browser: self
@@ -1595,8 +1595,8 @@
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
 	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick: )];
-	  [matrix setDoubleAction: @selector(doDoubleClick: )];
+	  [matrix setAction: @selector(doClick:)];
+	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];
@@ -1630,8 +1630,8 @@
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
 	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick: )];
-	  [matrix setDoubleAction: @selector(doDoubleClick: )];
+	  [matrix setAction: @selector(doClick:)];
+	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];

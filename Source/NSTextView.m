@@ -162,8 +162,8 @@
 {
   [self lockFocus];
 
-  NSLog(@"drawInsertionPointInRect: (%f, %f)", aRect.size.width,
-aRect.size.height);
+  NSDebugLLog(@"NSText", 
+    @"drawInsertionPointInRect: (%f, %f)", aRect.size.width, aRect.size.height);
 
   aRect.size.width = 1;
 
@@ -284,7 +284,7 @@ aRect.size.height);
 
 - (void)setSelectedRange:(NSRange)charRange
 {
-  NSLog(@"setSelectedRange");
+  NSDebugLLog(@"NSText", @"setSelectedRange");
 /*
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NSTextViewDidChangeSelectionNotification
@@ -306,7 +306,7 @@ aRect.size.height);
 		affinity:(NSSelectionAffinity)affinity
 	  stillSelecting:(BOOL)flag
 {
-  NSLog(@"setSelectedRange stillSelecting.");
+  NSDebugLLog(@"NSText", @"setSelectedRange stillSelecting.");
 
   tv_selectedRange = charRange;
   [self setSelectionGranularity:NSSelectByCharacter];
@@ -913,7 +913,7 @@ container, returning the modified location. */
 
 - (void)insertText:(NSString *)aString
 {
-  NSLog(@"%@", aString);
+  NSDebugLLog(@"NSText", @"%@", aString);
 
   if (![aString isKindOfClass:[NSAttributedString class]])
     aString = [[[NSAttributedString alloc] initWithString:aString
@@ -930,7 +930,7 @@ container, returning the modified location. */
 
 - (void)drawRect:(NSRect)aRect
 {
-  [textStorage drawRange:[self selectedRange] atPoint:aRect.origin.x];
+  [textStorage drawRange: [self selectedRange] atPoint: aRect.origin];
 }
 
 /*

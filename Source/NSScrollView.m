@@ -24,7 +24,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
 #include <gnustep/gui/config.h>
@@ -32,6 +32,7 @@
 
 #include <Foundation/NSException.h>
 #include <AppKit/NSScroller.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSRulerView.h>
@@ -543,6 +544,7 @@ static Class rulerViewClass = nil;
 
       case NSLineBorder:
 	borderThickness = 1;
+	[[NSColor controlDarkShadowColor] set];
 	NSFrameRect(rect);
 	break;
 

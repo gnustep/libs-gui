@@ -289,6 +289,7 @@
       borderThickness = 2;
       break;
     case NSNoTabsLineBorder:
+      [[NSColor controlDarkShadowColor] set];
       NSFrameRect(rect);
       borderThickness = 1;
       break;

@@ -149,11 +149,16 @@
 @end
 
 #ifndef	NO_GNUSTEP
+
+@class NSBundle;
+
 @interface	NSWorkspace (GNUstep)
 - (NSString*) getBestAppInRole: (NSString*)role
 		  forExtension: (NSString*)ext;
 - (NSString*) getBestIconForExtension: (NSString*)ext;
 - (NSDictionary*) infoForExtension: (NSString*)ext;
+- (NSBundle *) bundleForApp:(NSString *)appName;
+- (NSImage *) appIconForApp:(NSString *)appName;
 - (NSString*) locateApplicationBinary: (NSString*)appName;
 - (void) setBestApp: (NSString*)appName
 	     inRole: (NSString*)role

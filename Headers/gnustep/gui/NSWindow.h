@@ -110,6 +110,7 @@ extern NSSize NSTokenSize;
   int           window_level;
   NSRect        rectNeedingFlush;
   NSMutableArray *rectsBeingDrawn;
+  unsigned	disable_flush_window;
 
   BOOL          accepts_drag;
   BOOL          is_one_shot;
@@ -130,7 +131,6 @@ extern NSSize NSTokenSize;
   BOOL          is_edited;
   BOOL          is_released_when_closed;
   BOOL          is_miniaturized;
-  BOOL          disable_flush_window;
   BOOL          menu_exclude;
   BOOL          hides_on_deactivate;
   BOOL          accepts_mouse_moved;

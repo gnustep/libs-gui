@@ -249,12 +249,12 @@ static BOOL usesUserKeyEquivalents = YES;
 {
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
+- (void) drawWithFrame: (NSRect)cellFrame
+	        inView: (NSView *)controlView
 {
-  NSGraphicsContext     *ctxt = GSCurrentContext();
-  NSRect floodRect = cellFrame;
-  NSString *keyQ = nil;
+  NSGraphicsContext	*ctxt = GSCurrentContext();
+  NSRect		floodRect = cellFrame;
+  NSString		*keyQ = nil;
 
   NSDrawButton(cellFrame, cellFrame);
 
@@ -263,18 +263,31 @@ static BOOL usesUserKeyEquivalents = YES;
   floodRect.size.height -= 3;
   floodRect.size.width -= 2;
 
-  if (cell_highlighted) {
-    [[NSColor whiteColor] set];
-    NSRectFill(floodRect);
-  } else {
-    [[NSColor lightGrayColor] set];
-    NSRectFill(floodRect);
-  }
+  if (cell_highlighted)
+    {
+      [[NSColor selectedMenuItemColor] set];
+    }
+  else
+    {
+      [[NSColor controlColor] set];
+    }
+  NSRectFill(floodRect);
 
   if ([self isEnabled])
-    [[NSColor blackColor] set];
+    {
+      if (cell_highlighted)
+	{
+	  [[NSColor selectedMenuItemTextColor] set];
+	}
+      else
+	{
+	  [[NSColor controlTextColor] set];
+	}
+    }
   else
-    [[NSColor grayColor] set];
+    {
+      [[NSColor disabledControlTextColor] set];
+    }
 
   [[NSFont systemFontOfSize:12] set];
   DPSmoveto(ctxt, cellFrame.origin.x + 5, cellFrame.origin.y + 6);

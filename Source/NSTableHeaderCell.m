@@ -2,11 +2,11 @@
 #include <AppKit/NSColor.h>
 
 @implementation NSTableHeaderCell
-- (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView *)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame
+		        inView: (NSView *)controlView
 {
-    [[NSColor darkGrayColor] set];
-    NSRectFill(cellFrame);
-    [super drawInteriorWithFrame: cellFrame inView: controlView];
+  [[NSColor controlShadowColor] set];
+  NSRectFill(cellFrame);
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 @end

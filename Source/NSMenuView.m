@@ -148,6 +148,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
     }
   } else if (index >= 0) {
     if ( menuv_highlightedItemIndex != -1 ) {
+
       anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
 
       [anItem highlight: NO
@@ -306,10 +307,11 @@ static float GSMenuBarHeight = 25.0; // a guess.
   if (![menuv_menu _isBeholdenToPopUpButton])
     cellSize.width = 7 + neededWidth + 7 + 7 + 5;
 
-  if ([window contentView] == self)
-    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
-  else
-    [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
+//  if ([window contentView] == self)
+//    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
+//  else
+//  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
+  [self setFrameSize: NSMakeSize(cellSize.width,howHigh)];
 }
 
 - (void)sizeToFitForPopUpButton
@@ -372,7 +374,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (NSRect)innerRect
 {
-  return [self bounds];
+  return bounds;
 
   // this could change if we drew menuitemcells as
   // plain rects with no bezel like in macOSX. Talk to Michael Hanni if
@@ -387,9 +389,9 @@ static float GSMenuBarHeight = 25.0; // a guess.
     [self sizeToFit];
 
   if (index == 0)
-    theRect.origin.y = [self frame].size.height - cellSize.height;
+    theRect.origin.y = frame.size.height - cellSize.height;
   else
-    theRect.origin.y = [self frame].size.height - (cellSize.height * (index + 1));
+    theRect.origin.y = frame.size.height - (cellSize.height * (index + 1));
   theRect.origin.x = 0;
   theRect.size = cellSize;
 
@@ -405,7 +407,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
   NSRect aRect = [self rectOfItemAtIndex: 0];
 
   // this will need some finnessing but should be close.
-  return ([self frame].size.height - point.y) / aRect.size.height;
+  return (frame.size.height - point.y) / aRect.size.height;
 }
 
 - (void)setNeedsDisplayForItemAtIndex: (int)index
@@ -444,7 +446,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (void)drawRect: (NSRect)rect
 {
   int i;
-  NSRect aRect = [self frame];
+  NSRect aRect = frame;
   int howMany = [menuv_items_link count];
 
   // This code currently doesn't take intercell spacing into account. I'll
@@ -472,7 +474,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (BOOL)trackWithEvent: (NSEvent *)event
 {
   NSPoint       lastLocation = [event locationInWindow];
-  float         height = [self frame].size.height;
+  float         height = frame.size.height;
   int index;
   int lastIndex = 0;
   unsigned      eventMask =   NSLeftMouseUpMask | NSLeftMouseDownMask
@@ -493,12 +495,42 @@ static float GSMenuBarHeight = 25.0; // a guess.
   // Get our mouse location, regardless of where it may be it the event
   // stream.
 
-  lastLocation = [[self window] mouseLocationOutsideOfEventStream];
+  lastLocation = [window mouseLocationOutsideOfEventStream];
 
   index = (height - lastLocation.y) / cellSize.height;
                                          
   if (index >= 0 && index < theCount)
     {
+      if (menuv_highlightedItemIndex > -1)
+        {
+	  BOOL finished = NO;
+	  NSMenu *aMenu = menuv_menu;
+
+	  while (!finished)
+	    { // "forward"cursive menu find.
+	      if ([aMenu attachedMenu])
+		{
+		  aMenu = [aMenu attachedMenu];
+		}
+	      else
+		finished = YES;
+	    }
+
+	  finished = NO;
+
+	  while (!finished)
+	    { // Recursive menu close & deselect.
+	      if ([aMenu supermenu] && aMenu != menuv_menu)
+		{
+		  [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		  aMenu = [aMenu supermenu];
+		} 
+	      else
+		finished = YES;
+
+	      [window flushWindow];
+	    }
+	}
       [self setHighlightedItemIndex: index];
       lastIndex = index;
     }
@@ -520,21 +552,21 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	    break;
 	  case NSRightMouseDragged: 
 	  case NSLeftMouseDragged: 
-	    lastLocation = [[self window] mouseLocationOutsideOfEventStream];
+	    lastLocation = [window mouseLocationOutsideOfEventStream];
 	    lastLocation = [self convertPoint: lastLocation fromView: nil];
 
 #if 0
-	    NSLog (@"location = (%f, %f, %f)", lastLocation.x, [[self window]
-	      frame].origin.x, [[self window] frame].size.width);  
-	    NSLog (@"location = %f (%f, %f)", lastLocation.y, [[self window]
-	      frame].origin.y, [[self window] frame].size.height);  
+	    NSLog (@"location = (%f, %f, %f)", lastLocation.x, [window
+	      frame].origin.x, [window frame].size.width);  
+	    NSLog (@"location = %f (%f, %f)", lastLocation.y, [window
+	      frame].origin.y, [window frame].size.height);  
 #endif
 
 	    /* If the location of the mouse is inside the window on the
 	       x-axis. */
 
 	    if (lastLocation.x > 0
-	      && lastLocation.x < [[self window] frame].size.width)
+	      && lastLocation.x < [window frame].size.width)
 	      {
 
 		/* Get the index from some simple math. */
@@ -569,7 +601,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		   the current view. This should check to see if the
 		   current item, if any, has an open submenu. */
 
-	        if (lastLocation.y > [[self window] frame].size.height
+	        if (lastLocation.y > [window frame].size.height
 	           || lastLocation.y < 0)
 	          {
 		    weWereOut = YES;
@@ -582,7 +614,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	       the current window we need to see if we should display a
 	       submenu. */
 
-	    else if (lastLocation.x > [[self window] frame].size.width)
+	    else if (lastLocation.x > [window frame].size.width)
 	      {
 		NSRect aRect = [self rectOfItemAtIndex: lastIndex];
 		if (lastLocation.y > aRect.origin.y
@@ -595,10 +627,18 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		  }
 		else
 		  {
-		    [self setHighlightedItemIndex: -1];
-		    lastIndex = index;
-		    weWereOut = YES;
-		    [window flushWindow];
+		    if (![[menuv_items_link objectAtIndex: lastIndex] hasSubmenu])
+		      {
+		        [self setHighlightedItemIndex: -1];
+		        lastIndex = index;
+		        weWereOut = YES;
+		        [window flushWindow];
+		      }
+		    else
+		      {
+		        weLeftMenu = YES;
+		        done = YES;
+		      }
 		  }
 	      }
 
@@ -623,8 +663,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	    else
 	      {
       // FIXME, Michael. This might be needed... or not?
-      NSLog(@"This is the final else... its evil\n");
 /* FIXME this code is just plain nasty.
+      NSLog(@"This is the final else... its evil\n");
 		if (lastIndex >= 0 && lastIndex < theCount)
 		  {
 		    [self setHighlightedItemIndex: -1];
@@ -759,7 +799,7 @@ cell do the following */
 
   else if (weRightMenu)
     {
-      NSPoint cP = [[self window] convertBaseToScreen: lastLocation];
+      NSPoint cP = [window convertBaseToScreen: lastLocation];
 
       [self setHighlightedItemIndex: -1];
 
@@ -770,7 +810,7 @@ cell do the following */
 		    location: cP
 		    modifierFlags: [event modifierFlags]
 		    timestamp: [event timestamp]
-		    windowNumber: [[self window] windowNumber]
+		    windowNumber: [window windowNumber]
 		    context: [event context] 
 		    eventNumber: [event eventNumber]
 		    clickCount: [event clickCount]
@@ -793,7 +833,7 @@ cell do the following */
 
   else if (weLeftMenu)
     { /* The weLeftMenu case */
-      NSPoint cP = [[self window] convertBaseToScreen: lastLocation];
+      NSPoint cP = [window convertBaseToScreen: lastLocation];
 
       selectedCell = [menuv_items_link objectAtIndex: lastIndex];
       if ([selectedCell hasSubmenu])
@@ -803,7 +843,7 @@ cell do the following */
 		    location: cP
 		    modifierFlags: [event modifierFlags]
 		    timestamp: [event timestamp]
-		    windowNumber: [[self window] windowNumber]
+		    windowNumber: [window windowNumber]
 		    context: [event context] 
 		    eventNumber: [event eventNumber]
 		    clickCount: [event clickCount]

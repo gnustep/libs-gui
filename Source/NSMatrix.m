@@ -360,9 +360,9 @@ static int mouseDownFlags = 0;
 
   cellSize = NSMakeSize(DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
   intercell = NSMakeSize(1, 1);
-  [self setBackgroundColor: [NSColor lightGrayColor]];
+  [self setBackgroundColor: [NSColor controlBackgroundColor]];
   [self setDrawsBackground: YES];
-  [self setCellBackgroundColor: [NSColor lightGrayColor]];
+  [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
   [self setSelectionByRect: YES];
   [self setAutosizesCells: YES];
   if (mode == NSRadioModeMatrix && numRows && numCols)

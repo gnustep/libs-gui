@@ -130,18 +130,22 @@
 
   fRect = tabRect;
 
-  if (item_state == NSSelectedTab) {
-    fRect.origin.y -= 1;
-    fRect.size.height += 1;
-    [[NSColor lightGrayColor] set];
-    NSRectFill(fRect);
-  } else if (item_state == NSBackgroundTab) {
-    [[NSColor lightGrayColor] set];
-    NSRectFill(fRect);
-  } else {
-    [[NSColor lightGrayColor] set];
-    NSRectFill(fRect);
-  }
+  if (item_state == NSSelectedTab)
+    {
+      fRect.origin.y -= 1;
+      fRect.size.height += 1;
+      [[NSColor controlBackgroundColor] set];
+      NSRectFill(fRect);
+    }
+  else if (item_state == NSBackgroundTab)
+    {
+      [[NSColor controlBackgroundColor] set];
+      NSRectFill(fRect);
+    }
+  else
+    {
+      [[NSColor controlBackgroundColor] set];
+    }
 
   lRect = tabRect;
   lRect.origin.y += 3;

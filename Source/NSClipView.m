@@ -22,7 +22,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
 #include <gnustep/gui/config.h>
@@ -36,11 +36,11 @@
 
 @implementation NSClipView
 
-- init
+- (id) init
 {
   [super init];
   [self setAutoresizesSubviews: YES];
-  [self setBackgroundColor: [NSColor lightGrayColor]];
+  [self setBackgroundColor: [NSColor controlColor]];
   _copiesOnScroll = YES;
   return self;
 }
@@ -137,7 +137,6 @@
 
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
-	  [window update];	// Make sure display is up to date.
 	  [self lockFocus];
 	  NSCopyBits(0, intersection, destPoint);
 	  [self unlockFocus];

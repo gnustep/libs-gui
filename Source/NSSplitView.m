@@ -482,7 +482,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   if ([self isOpaque])
     {
       [[self backgroundColor] set];
-	  NSRectFill(r);
+      NSRectFill(r);
     }
 
   /* draw the dimples */
@@ -529,8 +529,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       dividerWidth = 8;
       draggedBarWidth = 8;
       isVertical = NO;
-      [self setDividerColor: [NSColor darkGrayColor]];
-      [self setBackgroundColor: [NSColor lightGrayColor]];
+      [self setDividerColor: [NSColor controlShadowColor]];
+      [self setBackgroundColor: [NSColor controlBackgroundColor]];
       [self setDimpleImage:
       [NSImage imageNamed: @"common_Dimple.tiff"] resetDividerThickness: YES];
     }

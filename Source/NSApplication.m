@@ -209,18 +209,29 @@ NSApplication	*NSApp = nil;
 
   /*
    *	Now check to see if we were launched with arguments asking to
-   *	open a file.
+   *	open a file.  We permit some variations on the default name.
    */
-  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil)
+  filePath = [defs stringForKey: @"-GSFilePath"];
+  if (filePath == nil)
+    filePath = [defs stringForKey: @"--GSFilePath"];
+  if (filePath == nil)
+    filePath = [defs stringForKey: @"GSFilePath"];
+  if (filePath != nil)
     {
       if ([delegate respondsToSelector: @selector(application:openFile:)])
 	{
 	  [delegate application: self openFile: filePath];
 	}
     }
-  else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
+  else
     {
-      if ([delegate respondsToSelector: @selector(application:openTempFile:)])
+      filePath = [defs stringForKey: @"-GSTempPath"];
+      if (filePath == nil)
+	filePath = [defs stringForKey: @"--GSTempPath"];
+      if (filePath == nil)
+	filePath = [defs stringForKey: @"GSTempPath"];
+      if (filePath != nil
+        && [delegate respondsToSelector: @selector(application:openTempFile:)])
 	{
 	  [delegate application: self openTempFile: filePath];
 	}
@@ -1092,12 +1103,20 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
-  unsigned i, j;
-  NSMenuItem *mc;
-  NSArray *mi;
+  unsigned	i, j;
+  NSMenuItem	*mc;
+  NSArray	*mi;
+
+  if (main_menu != nil && main_menu != aMenu)
+    {
+      [main_menu close];
+    }
 
   ASSIGN(main_menu, aMenu);
 
+  [main_menu setTitle:
+    [[[NSProcessInfo processInfo] processName] lastPathComponent]];
+  [main_menu sizeToFit];
   /*
    * Find a menucell with the title Windows this is the default windows menu
    */
@@ -1112,6 +1131,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	  windows_menu = mc;
 	  break;
 	}
+    }
+
+  if ([self isActive])
+    {
+      [main_menu update];
+      [main_menu display];
     }
 }
 
@@ -1523,7 +1548,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   
   /* If there's only one window left, and that's the one being closed, 
      then we ask the delegate if the app is to be terminated. */
-  if (realcount <= 1)
+  if ((realcount <= 1) && [[notification object] isMainWindow])
     {
       NSLog(@"asking delegate whether to terminate app...");
       if ([delegate respondsToSelector: @selector(applicationShouldTerminateAfterLastWindowClosed:)])
