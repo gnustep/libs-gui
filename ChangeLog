@@ -1,6 +1,8 @@
 2003-07-04  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSPasteboard.m: Set protocols for proxy objects.
+	* Source/NSPasteboard.m: Add conditionally compiled code to
+	set protocols for proxy objects.  Let's use it when we have
+	no compilers which break on this.
 
 2003-07-03 01:43  Alexander Malmberg <alexander@malmberg.org>
 
