@@ -1,3 +1,34 @@
+Sat Jan 13 22:16:45 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m ([-glyphIndexForPoint:
+	inTextContainer:fractionOfDistanceThroughGlyph:]): Check that
+	fraction pointer is non NULL before using it.
+	* Source/GSSimpleLayoutManager.m
+	([-_charIndexForInsertionPointMovingFromY:bestX:up:
+	textContainer:]): New method implemented.
+	* Headers/gnustep/gui/NSLayoutManager.h: Added it.
+	* Source/NSLayoutManger.m: Added it with void implementation.
+
+	* Headers/gnustep/gui/NSTextView.h: New insertion point ivar which
+	stores the insertion point rectangle.  Ivar for stable cursor
+	up/down changed to a float.
+	* Source/NSTextView.m: Use everywhere the new ivar for the
+	insertion point rect rather than computing it each time; use
+	everywhere [_textStorage length] rather than [self textLength].
+	* Source/NSTextView.m ([-alignment]): Simplified for non rich
+	text.
+	* Source/NSTextView.m
+	([-updateInsertionPointStateAndRestartTimer:]): Implemented.
+	([-setSelectedRange:affinity:stillSelecting:]): Invoke
+	[-updateInsertionPointStateAndRestartTimer:].
+	([-insertText:insertString]), ([-deleteBackward:]),
+	([-deleteForward:]), ([-moveLeft:]), ([-moveRight:]): Removed code
+	to remember position of cursor; now it is done automatically by
+	[-updateInsertionPointStateAndRestartTimer:].
+	([-moveDown:]), ([-moveUp:]): Fixed - rewritten to use the new
+	private NSLayoutManager code.  ([-rectForCharacterIndex:]),
+	([-rectForInsertionPointAtIndex:]): Removed.
+	
 2001-01-13  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: Fixed bug initialising from an
