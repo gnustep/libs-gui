@@ -31,8 +31,6 @@
 
 #include <AppKit/NSResponder.h>
 
-#define USE_RUN_LOOP 0
-
 @class NSArray;
 @class NSMutableArray;
 @class NSString;
