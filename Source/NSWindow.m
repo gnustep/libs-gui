@@ -922,7 +922,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (void)performClose:sender									
 {
-	if([self styleMask] & NSClosableWindowMask)
+	if(!([self styleMask] & NSClosableWindowMask))
 		{											// self must have a close
 		NSBeep();									// button in order to be
 		return;										// closed
