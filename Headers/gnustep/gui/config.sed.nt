@@ -1,2 +1,4 @@
 s/@configure_input@/ Generated from config.in by configure.bat/
 s/@config_include@//
+s/@HAVE_TIFF@/1/
+s/@HAVE_DPSCLIENT@/1/

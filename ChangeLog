@@ -1,3 +1,9 @@
+Mon Oct 07 16:09:57 1996  Scott Christley <scottc@net-community.com>
+
+	* Headers/gnustep/gui/config.sed.nt: Set appropriate definitions.
+	* Source/NSBitmapImageRep.m: Correct definition.
+	* Source/tiff.m: Renamed from tiff.c.
+
 Thu Oct  3 19:36:07 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Version (GNUSTEP_GUI_SUBMINOR_VERSION): Release version 0.1.1.
