@@ -33,6 +33,7 @@
 
 @class NSMutableDictionary;
 @class NSArray;
+@class NSBezierPath;
 
 @interface GSFontEnumerator : NSObject
 {
@@ -131,6 +132,11 @@
 
 - (NSFontTraitMask) traits;
 - (int) weight;
+
+
+-(void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
+			     count: (int)count
+		      toBezierPath: (NSBezierPath *)path;
 
 @end
 

@@ -539,4 +539,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return weight;
 }
 
+
+-(void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
+			     count: (int)count
+		      toBezierPath: (NSBezierPath *)path
+{
+  [self subclassResponsibility: _cmd];
+}
+
 @end

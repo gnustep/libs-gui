@@ -1,3 +1,10 @@
+2003-06-11 15:34  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSFontInfo.h, Source/GSFontInfo.m: Add
+	-appendBezierPathWithGlyphs:count:toBezierPath: method.
+
+	* Source/NSBezierPath.m: Use it to implement the glyph methods.
+
 2003-06-09  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/gnustep/gui/NSDataLinkPanel.h: Added ivar declarations

@@ -27,11 +27,14 @@
    59 Temple Place - Suite 330, Boston, MA 02111 - 1307, USA.
 */
 
-#include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSBezierPath.h>
+
+#include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/GSFontInfo.h>
+
 #include <math.h>
 
 #ifndef PI
@@ -1119,19 +1122,20 @@ static float default_miter_limit = 10.0;
 
 - (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font
 {
-  [self appendBezierPathWithGlyphs: &glyph count: 1 inFont: font];
+  [[font fontInfo] appendBezierPathWithGlyphs: &glyph
+    count: 1
+    toBezierPath: self];
 }
 
 - (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
 			     count:(int)count
 			    inFont:(NSFont *)font
 {
-  char buffer[4 * count + 1];
-
-  NSConvertGlyphsToPackedGlyphs(glyphs, count, [font glyphPacking], buffer);
-  [self appendBezierPathWithPackedGlyphs: buffer];
+  [[font fontInfo] appendBezierPathWithGlyphs: glyphs
+    count: count
+    toBezierPath: self];
 }
-				 
+
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
 {
   // TODO
