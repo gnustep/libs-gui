@@ -95,14 +95,14 @@ static BOOL _gs_display_reading_progress = NO;
   
   _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 64, 308, 245)];
   [_topView setBounds:  NSMakeRect (0, 64, 308, 245)];
-  [_topView setAutoresizingMask: 18];
+  [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_topView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _topView];
   [_topView release];
   
   _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 308, 64)];
   [_bottomView setBounds:  NSMakeRect (0, 0, 308, 64)];
-  [_bottomView setAutoresizingMask: 2];
+  [_bottomView setAutoresizingMask: NSViewWidthSizable];
   [_bottomView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _bottomView];
   [_bottomView release];
@@ -112,7 +112,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
   [_browser setAllowsMultipleSelection: NO];
-  [_browser setAutoresizingMask: 18];
+  [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_browser setTag: NSFileHandlingPanelBrowser];
   [_topView addSubview: _browser];
   [_browser release];
@@ -139,7 +139,7 @@ static BOOL _gs_display_reading_progress = NO;
     [button setTarget: self];
     [button setAction: @selector(_setHomeDirectory)];
     // [_form setNextKeyView: button];
-    [button setAutoresizingMask: 1];
+    [button setAutoresizingMask: NSViewMinXMargin];
     [button setTag: NSFileHandlingPanelHomeButton];
     [_bottomView addSubview: button];
     [button release];
@@ -151,7 +151,7 @@ static BOOL _gs_display_reading_progress = NO;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_mountMedia)];
-    [button setAutoresizingMask: 1];
+    [button setAutoresizingMask: NSViewMinXMargin];
     [button setTag: NSFileHandlingPanelDiskButton];
     [_bottomView addSubview: button];
     [button release];
@@ -163,7 +163,7 @@ static BOOL _gs_display_reading_progress = NO;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_unmountMedia)];
-    [button setAutoresizingMask: 1];
+    [button setAutoresizingMask: NSViewMinXMargin];
     [button setTag: NSFileHandlingPanelDiskEjectButton];
     [_bottomView addSubview: button];
     [button release];
@@ -175,7 +175,7 @@ static BOOL _gs_display_reading_progress = NO;
     [button setImagePosition: NSNoImage]; 
     [button setTarget: self];
     [button setAction: @selector(cancel:)];
-    [button setAutoresizingMask: 1];
+    [button setAutoresizingMask: NSViewMinXMargin];
     [button setTag: NSFileHandlingPanelCancelButton];
     [_bottomView addSubview: button];
     [button release];
@@ -189,7 +189,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
   //    [_okButton setNextKeyView: _form];
-  [_okButton setAutoresizingMask: 1];
+  [_okButton setAutoresizingMask: NSViewMinXMargin];
   [_okButton setTag: NSFileHandlingPanelOKButton];
   [_bottomView addSubview: _okButton];
   [_okButton release];
@@ -202,7 +202,7 @@ static BOOL _gs_display_reading_progress = NO;
     [imageView setImageFrameStyle: NSImageFrameNone];
     [imageView setImage:
       [[NSApplication sharedApplication] applicationIconImage]];
-    [imageView setAutoresizingMask: 8];
+    [imageView setAutoresizingMask: NSViewMinYMargin];
     [imageView setTag: NSFileHandlingPanelImageButton];
     [_topView addSubview: imageView];
     [imageView release];
@@ -215,7 +215,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_titleField setBezeled: NO];
   [_titleField setBordered: NO];
   [_titleField setFont: [NSFont messageFontOfSize: 18]];
-  [_titleField setAutoresizingMask: 8];
+  [_titleField setAutoresizingMask: NSViewMinYMargin];
   [_titleField setTag: NSFileHandlingPanelTitleField];
   [_topView addSubview: _titleField];
   [_titleField release];
@@ -224,7 +224,7 @@ static BOOL _gs_display_reading_progress = NO;
     bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 252, 308, 2)];
     [bar setBorderType: NSGrooveBorder];
     [bar setTitlePosition: NSNoTitle];
-    [bar setAutoresizingMask: 10];
+    [bar setAutoresizingMask: NSViewWidthSizable|NSViewMinYMargin];
     [_topView addSubview: bar];
     [bar release];
   }
@@ -362,8 +362,8 @@ static BOOL _gs_display_reading_progress = NO;
       [_topView setAutoresizingMask: NSViewWidthSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
       [self setContentSize: contentSize];
-      [_topView setAutoresizingMask: 18];
-      [_bottomView setAutoresizingMask: 2];
+      [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+      [_bottomView setAutoresizingMask: NSViewWidthSizable];
       topFrame = [_topView frame];
       topFrame.origin.y -= (accessoryViewSize.height + (_SAVE_PANEL_Y_PAD * 2));
       [_topView setFrameOrigin: topFrame.origin];
@@ -402,8 +402,8 @@ static BOOL _gs_display_reading_progress = NO;
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
       [self setContentSize: contentSize];
       // Restore the original autoresizing masks
-      [_topView setAutoresizingMask: 18];
-      [_bottomView setAutoresizingMask: 2];
+      [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+      [_bottomView setAutoresizingMask: NSViewWidthSizable];
 
       // Set new min size
       [self setMinSize: contentMinSize];
@@ -755,8 +755,7 @@ createRowsForColumn: (int)column
 	  if (addedRows >0)
 	    [matrix addRow];
 
-	  cell = [matrix cellAtRow: addedRows 
-			 column: 0];
+	  cell = [matrix cellAtRow: addedRows column: 0];
 	  [cell setStringValue: file];
 	  
 	  if (isDir)
