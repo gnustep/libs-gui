@@ -1,3 +1,26 @@
+2002-11-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m
+	in [initImageCell:] and [initTextCell:] set the default menu.
+	In all [XXXValue] methods try to get the value from the objectValue
+	first and use [stringValue] instead of accessing the contents directly.
+	Removed AUTORELEASE calls from [attributedStringValue] and similar
+	places. 
+	In [cellSize] use [attributedStringValue] to get the string to size.
+	In [drawInteriorWithFrame:inView:] use [attributedStringValue] to
+	get the string to draw. This make the method [_drawText:inFrame:]
+	obsolete for this class, but subclasses still use it.
+	New method [_setupTextWithFrame:inView:editor:] with the common
+	text view setup from [editWithFrame:inView:editor:delegate:event:]
+	and [selectWithFrame:inView:editor:delegate:start:length:].
+	Calls to [setFont:] and [setAlignment:] switch the cell to NSTextCellType.
+	* Source/NSButtonCell.m
+	Removed all direct usage of ivar _contents. Implemented
+	[attributedAlternateTitle] and use this in [cellSize] and 
+	[drawInteriorWithFrame:inView:].
+	* Headers/gnustep/gui/NSDragging.h:
+	Added some new MacOSX values to NSDragOperation and some new methods.
+	
 2002-11-06  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSTableView.m ([NSTableView -drawRow:clipRect:]):Swapped
