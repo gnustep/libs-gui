@@ -84,8 +84,8 @@
       if (wtypes != nil)
         {
 	  types = [wtypes mutableCopy];
-	  [(NSMutableArray *)types addObject: @"tiff"];
-	  [(NSMutableArray *)types addObject: @"tif"];
+	  [(NSMutableArray *)types insertObject: @"tiff" atIndex: 0];
+	  [(NSMutableArray *)types insertObject: @"tif" atIndex: 1];
 	}
       else
 	{
