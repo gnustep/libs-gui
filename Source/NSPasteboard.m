@@ -529,6 +529,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
+#include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
@@ -1963,7 +1964,6 @@ static  NSMapTable              *mimeMap = NULL;
 	{
 	  static BOOL		recursion = NO;
 	  static NSString	*cmd = nil;
-	  static NSArray	*args = nil;
 
 	  if (cmd == nil && recursion ==NO)
 	    {
@@ -1985,23 +1985,61 @@ static  NSMapTable              *mimeMap = NULL;
 	    }
 	  else
 	    {
+	      NSDistributedNotificationCenter *nc;
+	      NSMutableArray *startIndicator;
+	      NSArray *args = nil;
+	      NSDate *timeoutDate;
+
 	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
-@"so I'm attempting to to start one - which will take a few seconds.\n"
+@"so I'm attempting to start one - which might take a few seconds.\n"
 @"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n"
 @"It is recommended that you start the pasteboard server (gpbs) when\n"
 @"your windowing system is started up.\n", description,
 [cmd stringByDeletingLastPathComponent]);
+
 	      if ([host length] > 0)
 		{
 		  args = [[NSArray alloc] initWithObjects:
-		    @"-NSHost", host, nil];
+		    @"-NSHost", host,
+		    @"-GSStartupNotification",@"GSStartup-GPBS", nil];
 		}
+	      else
+		{
+		  args = [[NSArray alloc] initWithObjects:
+		    @"-GSStartupNotification",@"GSStartup-GPBS", nil];
+		}
+
+	      /*
+	      Trick: To avoid having to use global variables or new methods
+	      to track whether the notification has been received or not, we
+	      use a mutable array as an indicator. When the notification is
+	      received, the array is emptied, so we just check the count.
+	      */
+	      startIndicator = [[NSMutableArray alloc] initWithObjects:
+		AUTORELEASE([[NSObject alloc] init]), nil];
+
+	      nc = [NSDistributedNotificationCenter defaultCenter];
+	      [nc addObserver: startIndicator
+		     selector: @selector(removeAllObjects)
+			 name: @"GSStartup-GPBS"
+		       object: nil];
+
 	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
-	      [NSTimer scheduledTimerWithTimeInterval: 5.0
-					   invocation: nil
-					      repeats: NO];
-	      [[NSRunLoop currentRunLoop] runUntilDate: 
-		[NSDate dateWithTimeIntervalSinceNow: 5.0]];
+	      RELEASE(args);
+
+	      timeoutDate = [NSDate dateWithTimeIntervalSinceNow: 5.0];
+
+	      while ([startIndicator count]
+		     && [timeoutDate timeIntervalSinceNow] > 0.0)
+		{
+		  [[NSRunLoop currentRunLoop]
+		       runMode: NSDefaultRunLoopMode
+		    beforeDate: timeoutDate];
+		}
+
+	      [nc removeObserver: startIndicator];
+	      DESTROY(startIndicator);
+
 	      recursion = YES;
 	      [self _pbs];
 	      recursion = NO;

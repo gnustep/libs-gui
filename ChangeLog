@@ -1,3 +1,9 @@
+2004-11-09 18:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSPasteboard.m (+_pbs): Give gpbs a --GSStartupNotification
+	argument. Listen for the notification and connect immediately if it
+	arrives. Clarify the user message.
+
 2004-11-08  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/NSButtonCell.m (-setImage:): Added overriden NSCell method in 
