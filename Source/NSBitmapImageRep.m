@@ -95,8 +95,8 @@
 		colorSpaceName: space
 		bytesPerRow: 0
 		bitsPerPixel: 0];
-  compression = info->compression;
-  comp_factor = 255 * (1 - ((float)info->quality)/100.0);
+  _compression = info->compression;
+  _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
 
   if (NSTiffRead(image, info, [self bitmapData]))
     {
@@ -235,35 +235,35 @@
 
   _pixelsWide = width;
   _pixelsHigh = height;
-  size.width  = width;
-  size.height = height;
-  bitsPerSample = bps;
-  numColors     = spp;
-  hasAlpha   = alpha;  
+  _size.width  = width;
+  _size.height = height;
+  _bitsPerSample = bps;
+  _numColors     = spp;
+  _hasAlpha   = alpha;  
   _isPlanar   = isPlanar;
   _colorSpace = RETAIN(colorSpaceName);
   if (!pixelBits)
     pixelBits = bps * ((_isPlanar) ? 1 : spp);
-  bitsPerPixel            = pixelBits;
+  _bitsPerPixel            = pixelBits;
   if (!rowBytes) 
-    rowBytes = ceil((float)width * bitsPerPixel / 8);
-  bytesPerRow            = rowBytes;
+    rowBytes = ceil((float)width * _bitsPerPixel / 8);
+  _bytesPerRow            = rowBytes;
 
   if (planes) 
     {
       int i;
-      OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
+      OBJC_MALLOC(_imagePlanes, unsigned char*, MAX_PLANES);
       for (i = 0; i < MAX_PLANES; i++)
- 	imagePlanes[i] = NULL;
-      for (i = 0; i < ((_isPlanar) ? numColors : 1); i++)
- 	imagePlanes[i] = planes[i];
+ 	_imagePlanes[i] = NULL;
+      for (i = 0; i < ((_isPlanar) ? _numColors : 1); i++)
+ 	_imagePlanes[i] = planes[i];
     }
   if (alpha)
     {
       unsigned char	*bData = (unsigned char*)[self bitmapData];
       BOOL		allOpaque = YES;
-      unsigned		offset = numColors - 1;
-      unsigned		limit = size.height * size.width;
+      unsigned		offset = _numColors - 1;
+      unsigned		limit = _size.height * _size.width;
       unsigned		i;
 
       for (i = 0; i < limit; i++)
@@ -289,8 +289,8 @@
 
 - (void) dealloc
 {
-  OBJC_FREE(imagePlanes);
-  RELEASE(imageData);
+  OBJC_FREE(_imagePlanes);
+  RELEASE(_imageData);
   [super dealloc];
 }
 
@@ -300,14 +300,8 @@
 
   copy = (NSBitmapImageRep*)[super copyWithZone: zone];
 
-  copy->bytesPerRow = bytesPerRow;
-  copy->numColors = numColors;
-  copy->bitsPerPixel = bitsPerPixel;
-  copy->compression = compression;
-  copy->comp_factor = comp_factor;
-  copy->_isPlanar = _isPlanar;
-  copy->imagePlanes = 0;
-  copy->imageData = [imageData copy];
+  copy->_imagePlanes = 0;
+  copy->_imageData = [_imageData copy];
 
   return copy;
 }
@@ -365,12 +359,12 @@
 //
 - (int) bitsPerPixel
 {
-  return bitsPerPixel;
+  return _bitsPerPixel;
 }
 
 - (int) samplesPerPixel
 {
-  return numColors;
+  return _numColors;
 }
 
 - (BOOL) isPlanar
@@ -380,17 +374,17 @@
 
 - (int) numberOfPlanes
 {
-  return (_isPlanar) ? numColors : 1;
+  return (_isPlanar) ? _numColors : 1;
 }
 
 - (int) bytesPerPlane
 {
-  return bytesPerRow*_pixelsHigh;
+  return _bytesPerRow*_pixelsHigh;
 }
 
 - (int) bytesPerRow
 {
-  return bytesPerRow;
+  return _bytesPerRow;
 }
 
 //
@@ -407,51 +401,52 @@
 {
   int i;
 
-  if (!imagePlanes || !imagePlanes[0])
+  if (!_imagePlanes || !_imagePlanes[0])
     {
       long length;
       unsigned char* bits;
       
-      length = (long)numColors * bytesPerRow * _pixelsHigh 
+      length = (long)_numColors * _bytesPerRow * _pixelsHigh 
  	* sizeof(unsigned char);
-      imageData = RETAIN([NSMutableData dataWithLength: length]);
-      if (!imagePlanes)
- 	OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
-      bits = [imageData mutableBytes];
-      imagePlanes[0] = bits;
+      _imageData = RETAIN([NSMutableData dataWithLength: length]);
+      if (!_imagePlanes)
+ 	OBJC_MALLOC(_imagePlanes, unsigned char*, MAX_PLANES);
+      bits = [_imageData mutableBytes];
+      _imagePlanes[0] = bits;
       if (_isPlanar) 
 	{
-	  for (i=1; i < numColors; i++) 
-	    imagePlanes[i] = bits + i*bytesPerRow * _pixelsHigh;
-	  for (i= numColors; i < MAX_PLANES; i++) 
-	    imagePlanes[i] = NULL;
+	  for (i=1; i < _numColors; i++) 
+	    _imagePlanes[i] = bits + i*_bytesPerRow * _pixelsHigh;
+	  for (i= _numColors; i < MAX_PLANES; i++) 
+	    _imagePlanes[i] = NULL;
 	}
       else
 	{
 	  for (i= 1; i < MAX_PLANES; i++) 
-	    imagePlanes[i] = NULL;
+	    _imagePlanes[i] = NULL;
 	}
       
     }
   if (data)
-    for (i=0; i < numColors; i++)
-      data[i] = imagePlanes[i];
+    for (i=0; i < _numColors; i++)
+      data[i] = _imagePlanes[i];
 }
 
 - (BOOL) draw
 {
-  NSRect irect = NSMakeRect(0, 0, size.width, size.height);
+  NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
+
   NSDrawBitmap(irect,
 	       _pixelsWide,
 	       _pixelsHigh,
-	       bitsPerSample,
-	       numColors,
-	       bitsPerPixel,
-	       bytesPerRow,
+	       _bitsPerSample,
+	       _numColors,
+	       _bitsPerPixel,
+	       _bytesPerRow,
 	       _isPlanar,
-	       hasAlpha,
+	       _hasAlpha,
 	       _colorSpace,
-	       imagePlanes);
+	       _imagePlanes);
   return YES;
 }
 
@@ -474,6 +469,13 @@
 
 - (NSData*) TIFFRepresentation
 {
+  return [self TIFFRepresentationUsingCompression: _compression
+	       factor: _comp_factor];
+}
+
+- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
+					factor: (float)factor
+{
   NSTiffInfo	info;
   TIFF		*image;
   char		*bytes = 0;
@@ -483,8 +485,8 @@
   info.subfileType = 255;
   info.width = _pixelsWide;
   info.height = _pixelsHigh;
-  info.bitsPerSample = bitsPerSample;
-  info.samplesPerPixel = numColors;
+  info.bitsPerSample = _bitsPerSample;
+  info.samplesPerPixel = _numColors;
 
   if (_isPlanar)
     info.planarConfig = PLANARCONFIG_SEPARATE;
@@ -500,8 +502,8 @@
   else
     info.photoInterp = PHOTOMETRIC_RGB;
 
-  info.compression = compression;
-  info.quality = (1 - ((float)comp_factor)/255.0) * 100;
+  info.compression = type;
+  info.quality = (1 - ((float)factor)/255.0) * 100;
   info.numImages = 1;
   info.error = 0;
 
@@ -516,19 +518,6 @@
     }
   NSTiffClose(image);
   return [NSData dataWithBytesNoCopy: bytes length: length];
-}
-
-- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
-					factor: (float)factor
-{
-  NSData		*data;
-  NSTIFFCompression	oldType = compression;
-  float			oldFact = comp_factor;
-
-  [self setCompression: type factor: factor];
-  data = [self TIFFRepresentation];
-  [self setCompression: oldType factor: oldFact];
-  return data;
 }
 
 //
@@ -572,7 +561,7 @@
     {
       case NSTIFFCompressionCCITTFAX3:
       case NSTIFFCompressionCCITTFAX4:
-	if (numColors == 1 && bitsPerSample == 1)
+	if (_numColors == 1 && _bitsPerSample == 1)
 	  return YES;
 	else
 	  return NO;
@@ -593,15 +582,15 @@
 - (void) getCompression: (NSTIFFCompression*)type
 		 factor: (float*)factor
 {
-  *type = compression;
-  *factor = comp_factor;
+  *type = _compression;
+  *factor = _comp_factor;
 }
 
 - (void) setCompression: (NSTIFFCompression)type
 		 factor: (float)factor
 {
-  compression = type;
-  comp_factor = factor;
+  _compression = type;
+  _comp_factor = factor;
 }
 
 //
