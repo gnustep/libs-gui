@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSPasteboard" prev="NSParagraphStyle.html" next="NSPopUpButton.html" up="AppKit.html">
+  <head>
+    <title>NSPasteboard</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSPasteboard</heading>
+      <class name="NSPasteboard" super="NSObject">
+        <declared>AppKit/NSPasteboard.h</declared>
+        <conform>NSObject</conform>
+        <desc>
+        </desc>
+        <method type="NSPasteboard*" factory="yes"><sel>generalPasteboard</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPasteboard*" factory="yes"><sel>pasteboardByFilteringData:</sel><arg type="NSData*">data</arg><sel>ofType:</sel><arg type="NSString*">type</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPasteboard*" factory="yes"><sel>pasteboardByFilteringFile:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPasteboard*" factory="yes"><sel>pasteboardByFilteringTypesInPasteboard:</sel><arg type="NSPasteboard*">pasteboard</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPasteboard*" factory="yes"><sel>pasteboardWithName:</sel><arg type="NSString*">name</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPasteboard*" factory="yes"><sel>pasteboardWithUniqueName</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>typesFilterableTo:</sel><arg type="NSString*">type</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>addTypes:</sel><arg type="NSArray*">newTypes</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>availableTypeFromArray:</sel><arg type="NSArray*">types</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>changeCount</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSData*"><sel>dataForType:</sel><arg type="NSString*">dataType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>declareTypes:</sel><arg type="NSArray*">newTypes</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>name</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>propertyListForType:</sel><arg type="NSString*">dataType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>readFileContentsType:</sel><arg type="NSString*">type</arg><sel>toFile:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSFileWrapper*"><sel>readFileWrapper;</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>releaseGlobally</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>setData:</sel><arg type="NSData*">data</arg><sel>forType:</sel><arg type="NSString*">dataType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>setPropertyList:</sel><arg type="id">propertyList</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>setString:</sel><arg type="NSString*">string</arg><sel>forType:</sel><arg type="NSString*">dataType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>stringForType:</sel><arg type="NSString*">dataType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*"><sel>types</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>writeFileContents:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>writeFileWrapper:</sel><arg type="NSFileWrapper*">wrapper;</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>pasteboardChangedOwner:</sel><arg type="NSPasteboard*">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>pasteboard:</sel><arg type="NSPasteboard*">sender</arg><sel>provideDataForType:</sel><arg type="NSString*">type</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

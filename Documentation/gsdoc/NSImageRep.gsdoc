@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSImageRep" prev="NSImageCell.html" next="NSImageView.html" up="AppKit.html">
+  <head>
+    <title>NSImageRep</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSImageRep</heading>
+      <class name="NSImageRep" super="NSObject">
+        <declared>AppKit/NSImageRep.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="BOOL" factory="yes"><sel>canInitWithData:</sel><arg type="NSData*">data</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL" factory="yes"><sel>canInitWithPasteboard:</sel><arg type="NSPasteboard*">pasteboard</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imageFileTypes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imagePasteboardTypes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="Class" factory="yes"><sel>imageRepClassForData:</sel><arg type="NSData*">data</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="Class" factory="yes"><sel>imageRepClassForFileType:</sel><arg type="NSString*">type</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="Class" factory="yes"><sel>imageRepClassForPasteboardType:</sel><arg type="NSString*">type</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id" factory="yes"><sel>imageRepWithContentsOfFile:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id" factory="yes"><sel>imageRepWithPasteboard:</sel><arg type="NSPasteboard*">pasteboard</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imageRepsWithContentsOfFile:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imageRepsWithPasteboard:</sel><arg type="NSPasteboard*">pasteboard</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imageUnfilteredFileTypes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>imageUnfilteredPasteboardTypes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void" factory="yes"><sel>registerImageRepClass:</sel><arg type="Class">imageRepClass</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*" factory="yes"><sel>registeredImageRepClasses</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void" factory="yes"><sel>unregisterImageRepClass:</sel><arg type="Class">imageRepClass</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>bitsPerSample</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>colorSpaceName</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>draw</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>drawAtPoint:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>drawInRect:</sel><arg type="NSRect">rect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>hasAlpha</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isOpaque</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>pixelsHigh</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>pixelsWide</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAlpha:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBitsPerSample:</sel><arg type="int">anInt</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setColorSpaceName:</sel><arg type="NSString*">string</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setOpaque:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setPixelsHigh:</sel><arg type="int">anInt</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setPixelsWide:</sel><arg type="int">anInt</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setSize:</sel><arg type="NSSize">aSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>size</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

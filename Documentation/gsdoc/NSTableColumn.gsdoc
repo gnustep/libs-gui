@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSTableColumn" prev="NSTabViewItem.html" next="NSTableHeaderCell.html" up="AppKit.html">
+  <head>
+    <title>NSTableColumn</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSTableColumn</heading>
+      <class name="NSTableColumn" super="NSObject">
+        <declared>AppKit/NSTableColumn.h</declared>
+        <conform>NSObject</conform>
+        <desc>
+        </desc>
+        <method type="id"><sel>dataCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>headerCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithIdentifier:</sel><arg>anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>identifier</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isEditable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isResizable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>maxWidth</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>minWidth</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDataCell:</sel><arg type="NSCell*">aCell</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEditable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setHeaderCell:</sel><arg type="NSCell*">aCell</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setIdentifier:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMaxWidth:</sel><arg type="float">maxWidth</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMinWidth:</sel><arg type="float">minWidth</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setResizable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTableView:</sel><arg type="NSTableView*">aTableView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setWidth:</sel><arg type="float">newWidth</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>sizeToFit</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTableView*"><sel>tableView</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>width</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

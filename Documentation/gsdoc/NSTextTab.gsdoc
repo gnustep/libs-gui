@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSTextTab" prev="NSTextStorage.html" next="NSTextView.html" up="AppKit.html">
+  <head>
+    <title>NSTextTab</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSTextTab</heading>
+      <class name="NSTextTab" super="NSObject">
+        <declared>AppKit/NSParagraphStyle.h</declared>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
+        <method type="id"><sel>initWithType:</sel><arg type="NSTextTabType">type</arg><sel>location:</sel><arg type="float">location</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>location</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTextTabType"><sel>tabStopType</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

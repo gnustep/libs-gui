@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSSplitView" prev="NSSpellServer.html" next="NSStringAdditions.html" up="AppKit.html">
+  <head>
+    <title>NSSplitView</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSSplitView</heading>
+      <class name="NSSplitView" super="NSView">
+        <declared>AppKit/NSSplitView.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="void"><sel>adjustSubviews</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>delegate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>dividerThickness</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawDividerInRect:</sel><arg type="NSRect">aRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isVertical</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setVertical:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

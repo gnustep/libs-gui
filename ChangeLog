@@ -1,3 +1,8 @@
+Mon Feb 28 15:37:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Documentation/gsdoc: Added skeleton documentation for the
+	OpenStep/MacOS-X appkit classes in the gsdoc subdirectory.
+
 Mon Feb 28 06:42:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Font fixes - mostly from Fred Keifer.

@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSForm" prev="NSFontPanel.html" next="NSFormCell.html" up="AppKit.html">
+  <head>
+    <title>NSForm</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSForm</heading>
+      <class name="NSForm" super="NSMatrix">
+        <declared>AppKit/NSForm.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSFormCell*"><sel>addEntry:</sel><arg type="NSString*">title</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>cellAtIndex:</sel><arg type="int">entryIndex</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawCellAtIndex:</sel><arg type="int">entryIndex</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>indexOfCellWithTag:</sel><arg type="int">tag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>indexOfSelectedItem</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSFormCell*"><sel>insertEntry:</sel><arg type="NSString*">title</arg><sel>atIndex:</sel><arg type="int">entryIndex</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeEntryAtIndex:</sel><arg type="int">entryIndex</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectTextAtIndex:</sel><arg type="int">entryIndex</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBezeled:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBordered:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEntryWidth:</sel><arg type="float">width</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setInterlineSpacing:</sel><arg type="float">spacing</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTextAlignment:</sel><arg type="int">alignment</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTextFont:</sel><arg type="NSFont*">font</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleFont:</sel><arg type="NSFont*">font</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

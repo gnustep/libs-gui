@@ -1,0 +1,664 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSWindow" prev="NSView.html" next="NSWindowController.html" up="AppKit.html">
+  <head>
+    <title>NSWindow</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSWindow</heading>
+      <class name="NSWindow" super="NSResponder">
+        <declared>AppKit/NSWindow.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSRect" factory="yes"><sel>contentRectForFrameRect:</sel><arg type="NSRect">frameRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindowDepth" factory="yes"><sel>defaultDepthLimit</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect" factory="yes"><sel>frameRectForContentRect:</sel><arg type="NSRect">contentRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void" factory="yes"><sel>menuChanged:</sel><arg type="NSMenu*">aMenu</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="float" factory="yes"><sel>minFrameWidthWithTitle:</sel><arg type="NSString*">aTitle</arg><sel>styleMask:</sel><arg type="unsignedint">aStyle</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void" factory="yes"><sel>removeFrameUsingName:</sel><arg type="NSString*">name</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>acceptsMouseMovedEvents</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>areCursorRectsEnabled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>aspectRatio</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSColor*"><sel>backgroundColor</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSBackingStoreType"><sel>backingType</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>becomeKeyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>becomeMainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>cacheImageInRect:</sel><arg type="NSRect">aRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>canBecomeKeyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>canBecomeMainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>canStoreColor</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPoint"><sel>cascadeTopLeftFromPoint:</sel><arg type="NSPoint">topLeftPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>center</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>close</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>constrainFrameRect:</sel><arg type="NSRect">frameRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>contentView</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPoint"><sel>convertBaseToScreen:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPoint"><sel>convertScreenToBase:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSEvent*"><sel>currentEvent</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSData*"><sel>dataWithEPSInsideRect:</sel><arg type="NSRect">aRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSScreen*"><sel>deepestScreen</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSButtonCell*"><sel>defaultButtonCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>delegate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>deminiaturize:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindowDepth"><sel>depthLimit</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSDictionary*"><sel>deviceDescription</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>disableCursorRects</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>disableFlushWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>disableKeyEquivalentForDefaultButtonCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>discardCachedImage</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>discardCursorRects</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>discardEventsMatchingMask:</sel><arg type="unsignedint">mask</arg><sel>beforeEvent:</sel><arg type="NSEvent*">lastEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>display</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>displayIfNeeded</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>dragImage:</sel><arg type="NSImage*">anImage</arg><sel>at:(NSPoint)aPoint offset:</sel><arg type="NSSize">initialOffset</arg><sel>event:(NSEvent *)theEvent pasteboard:</sel><arg type="NSPasteboard*">pboard</arg><sel>source:(id)sourceObject slideBack:</sel><arg type="BOOL">slideBack</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>enableCursorRects</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>enableFlushWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>enableKeyEquivalentForDefaultButtonCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>endEditingFor:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>fax:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSText*"><sel>fieldEditor:</sel><arg type="BOOL">createFlag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSResponder*"><sel>firstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>flushWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>flushWindowIfNeeded</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>frame</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>frameAutosaveName</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>gState</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>hasDynamicDepthLimit</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>hidesOnDeactivate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSView*"><sel>initialFirstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithContentRect:</sel><arg type="NSRect">contentRect</arg><sel>styleMask:(unsigned int)styleMask backing:</sel><arg type="NSBackingStoreType">backingType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithContentRect:</sel><arg type="NSRect">contentRect</arg><sel>styleMask:(unsigned int)styleMask backing:</sel><arg type="NSBackingStoreType">bufferingType</arg><sel>defer:(BOOL)flag screen:</sel><arg type="NSScreen*">aScreen</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSInterfaceStyle"><sel>interfaceStyle</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>invalidateCursorRectsForView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isAutodisplay</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isDocumentEdited</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isExcludedFromWindowsMenu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isFlushWindowDisabled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isKeyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isMainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isMiniaturized</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isOneShot</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isReleasedWhenClosed</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isVisible</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isZoomed;</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>keyDown:</sel><arg type="NSEvent*">theEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSelectionDirection"><sel>keyViewSelectionDirection</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>level</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>makeFirstResponder:</sel><arg type="NSResponder*">aResponder</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>makeKeyAndOrderFront:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>makeKeyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>makeMainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>maxSize</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>miniaturize:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSImage*"><sel>miniwindowImage</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>miniwindowTitle</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>minSize</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSPoint"><sel>mouseLocationOutsideOfEventStream</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSEvent*"><sel>nextEventMatchingMask:</sel><arg type="unsignedint">mask</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSEvent*"><sel>nextEventMatchingMask:</sel><arg type="unsignedint">mask</arg><sel>untilDate:</sel><arg type="NSDate*">expirationDate</arg><sel>inMode:(NSString *)mode dequeue:</sel><arg type="BOOL">dequeue</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderBack:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderFront:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderFrontRegardless</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderOut:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderWindow:</sel><arg type="NSWindowOrderingMode">place</arg><sel>relativeTo:</sel><arg type="int">otherWindowNumber</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>performClose:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>performMiniaturize:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>performZoom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>postEvent:</sel><arg type="NSEvent*">anEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>print:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>registerForDraggedTypes:</sel><arg type="NSArray*">pboardTypes</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>representedFilename</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>resetCursorRects</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>resignKeyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>resignMainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>resizeFlags</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>resizeIncrements</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>restoreCachedImage</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>saveFrameUsingName:</sel><arg type="NSString*">name</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSScreen*"><sel>screen</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectKeyViewFollowingView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectKeyViewPrecedingView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectNextKeyView:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectPreviousKeyView:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>sendEvent:</sel><arg type="NSEvent*">theEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAcceptsMouseMovedEvents:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAspectRatio:</sel><arg type="NSSize">ratio</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAutodisplay:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBackingType:</sel><arg type="NSBackingStoreType">backingType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setContentSize:</sel><arg type="NSSize">aSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setContentView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDefaultButtonCell:</sel><arg type="NSButtonCell*">aButtonCell</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDepthLimit:</sel><arg type="NSWindowDepth">limit</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDocumentEdited:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDynamicDepthLimit:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setExcludedFromWindowsMenu:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFrame:</sel><arg type="NSRect">frameRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>setFrameAutosaveName:</sel><arg type="NSString*">name</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFrameFromString:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFrameOrigin:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFrameTopLeftPoint:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>setFrameUsingName:</sel><arg type="NSString*">name</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setHidesOnDeactivate:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setInitialFirstResponder:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setInterfaceStyle:</sel><arg type="NSInterfaceStyle">interfaceStyle</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setLevel:</sel><arg type="int">newLevel</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMaxSize:</sel><arg type="NSSize">aSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMiniwindowImage:</sel><arg type="NSImage*">anImage</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMiniwindowTitle:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMinSize:</sel><arg type="NSSize">aSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setOneShot:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setReleasedWhenClosed:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setRepresentedFilename:</sel><arg type="NSString*">path</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setResizeIncrements:</sel><arg type="NSSize">increments</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitle:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleWithRepresentedFilename:</sel><arg type="NSString*">path</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setViewsNeedDisplay:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setWindowController:</sel><arg type="NSWindowController*">windowController</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>stringWithSavedFrame</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="unsignedint"><sel>styleMask</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>title</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>tryToPerform:</sel><arg type="SEL">anAction</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>unregisterDraggedTypes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>update</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>useOptimizedDrawing:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>validRequestorForSendType:</sel><arg type="NSString*">sendType</arg><sel>returnType:</sel><arg type="NSString*">returnType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>viewsNeedDisplay</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>windowController</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void*"><sel>windowHandle</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>windowNumber</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>worksWhenModal</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>zoom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

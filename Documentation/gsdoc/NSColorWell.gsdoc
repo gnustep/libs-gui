@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSColorWell" prev="NSColorPicker.html" next="NSComboBox.html" up="AppKit.html">
+  <head>
+    <title>NSColorWell</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSColorWell</heading>
+      <class name="NSColorWell" super="NSControl">
+        <declared>AppKit/NSColorWell.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="void"><sel>activate:</sel><arg type="BOOL">exclusive</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSColor*"><sel>color</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>deactivate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawWellInside:</sel><arg type="NSRect">insideRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isActive</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBordered</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBordered:</sel><arg type="BOOL">bordered</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setColor:</sel><arg type="NSColor*">color</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeColorFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,0 +1,472 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSCell" prev="NSCachedImageRep.html" next="NSClipView.html" up="AppKit.html">
+  <head>
+    <title>NSCell</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSCell</heading>
+      <class name="NSCell" super="NSObject">
+        <declared>AppKit/NSCell.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSMenu*" factory="yes"><sel>defaultMenu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL" factory="yes"><sel>prefersTrackingUntilMouseUp</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>acceptsFirstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="SEL"><sel>action</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTextAlignment"><sel>alignment</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>allowsEditingTextAttributes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>allowsMixedState</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSAttributedString*"><sel>attributedStringValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>calcDrawInfo:</sel><arg type="NSRect">aRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>cellAttribute:</sel><arg type="NSCellAttribute">aParameter</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>cellSize</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>cellSizeForBounds:</sel><arg type="NSRect">aRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSComparisonResult"><sel>compare:</sel><arg type="id">otherCell</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>continueTracking:</sel><arg type="NSPoint">lastPoint</arg><sel>at:(NSPoint)currentPoint  inView:</sel><arg type="NSView*">controlView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSView*"><sel>controlView</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>doubleValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawInteriorWithFrame:</sel><arg type="NSRect">cellFrame</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawWithFrame:</sel><arg type="NSRect">cellFrame</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>drawingRectForBounds:</sel><arg type="NSRect">theRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>editWithFrame:</sel><arg type="NSRect">aRect</arg><sel>inView:</sel><arg type="NSView*">controlView</arg><sel>editor:(NSText *)textObj  delegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>endEditing:</sel><arg type="NSText*">textObj</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>entryType</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>floatValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSFont*"><sel>font</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>formatter</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>getPeriodicDelay:</sel><arg type="float*">delay</arg><sel>interval:</sel><arg type="float*">interval</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>hasValidObjectValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>highlight:</sel><arg type="BOOL">flag</arg><sel>withFrame:</sel><arg type="NSRect">cellFrame</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSImage*"><sel>image</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>imageRectForBounds:</sel><arg type="NSRect">theRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>importsGraphics</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initImageCell:</sel><arg type="NSImage*">anImage</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initTextCell:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>intValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBezeled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBordered</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isContinuous</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isEditable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isEnabled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isEntryAcceptable:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isHighlighted</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isOpaque</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isScrollable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isSelectable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>keyEquivalent</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSMenu*"><sel>menu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSMenu*"><sel>menuForEvent:</sel><arg type="NSEvent*">anEvent</arg><sel>inRect:(NSRect)cellFrame ofView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>mnemonic</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="unsignedint"><sel>mnemonicLocation</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>mouseDownFlags</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>nextState</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>objectValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>performClick:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>refusesFirstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>representedObject</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>resetCursorRect:</sel><arg type="NSRect">cellFrame</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>sendActionOn:</sel><arg type="int">mask</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>sendsActionOnEndEditing</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAction:</sel><arg type="SEL">aSelector</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">mode</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAllowsEditingTextAttributes:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAllowsMixedState:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAttributedStringValue:</sel><arg type="NSAttributedString*">attribStr</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBezeled:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBordered:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setCellAttribute:</sel><arg type="NSCellAttribute">aParameter</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setContinuous:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDoubleValue:</sel><arg type="double">aDouble</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEditable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEnabled:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEntryType:</sel><arg type="int">aType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFloatingPointFormat:</sel><arg type="BOOL">autoRange</arg><sel>left:(unsigned)leftDigits  right:</sel><arg type="unsigned">rightDigits</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFloatValue:</sel><arg type="float">aFloat</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFont:</sel><arg type="NSFont*">fontObj</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFormatter:</sel><arg type="NSFormatter*">newFormatter</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setImage:</sel><arg type="NSImage*">image</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setImportsGraphics:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setIntValue:</sel><arg type="int">anInt</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMenu:</sel><arg type="NSMenu*">aMenu</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMnemonicLocation:</sel><arg type="unsignedint">location</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setNextState</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setObjectValue:</sel><arg type="id">object</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setRefusesFirstResponder:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setRepresentedObject:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setScrollable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setSelectable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setSendsActionOnEndEditing:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setShowsFirstResponder:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setState:</sel><arg type="int">value</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setStringValue:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTag:</sel><arg type="int">anInt</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTarget:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleWithMnemonic:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setType:</sel><arg type="NSCellType">aType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSText*"><sel>setUpFieldEditorAttributes:</sel><arg type="NSText*">textObj</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setWraps:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>showsFirstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>startTrackingAt:</sel><arg type="NSPoint">startPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>state</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>stopTracking:</sel><arg type="NSPoint">lastPoint</arg><sel>at:(NSPoint)stopPoint  inView:</sel><arg type="NSView*">controlView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>stringValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>tag</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeDoubleValueFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeFloatValueFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeIntValueFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeObjectValueFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>takeStringValueFrom:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>target</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>titleRectForBounds:</sel><arg type="NSRect">theRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>trackMouse:</sel><arg type="NSEvent*">theEvent</arg><sel>inRect:(NSRect)cellFrame  ofView:</sel><arg type="NSView*">controlView</arg><sel>untilMouseUp:</sel><arg type="BOOL">untilMouseUp</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSCellType"><sel>type</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>wraps</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

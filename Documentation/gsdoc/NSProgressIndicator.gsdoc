@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSProgressIndicator" prev="NSPrinter.html" next="NSResponder.html" up="AppKit.html">
+  <head>
+    <title>NSProgressIndicator</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSProgressIndicator</heading>
+      <class name="NSProgressIndicator" super="NSView">
+        <declared>AppKit/NSProgressIndicator.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="void"><sel>animate:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTimeInterval"><sel>animationDelay</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>doubleValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>incrementBy:</sel><arg type="double">delta</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBezeled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isIndeterminate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>maxValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>minValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAnimationDelay:</sel><arg type="NSTimeInterval">delay</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBezeled:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDoubleValue:</sel><arg type="double">doubleValue</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setIndeterminate:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMaxValue:</sel><arg type="double">newMaximum</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMinValue:</sel><arg type="double">newMinimum</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setUsesThreadedAnimation:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>stopAnimation:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>usesThreadedAnimation</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

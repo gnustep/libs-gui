@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSCustomImageRep" prev="NSCursor.html" next="NSDPSContext.html" up="AppKit.html">
+  <head>
+    <title>NSCustomImageRep</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSCustomImageRep</heading>
+      <class name="NSCustomImageRep" super="NSImageRep">
+        <declared>AppKit/NSCustomImageRep.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="id"><sel>delegate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="SEL"><sel>drawSelector</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithDrawSelector:</sel><arg type="SEL">aMethod</arg><sel>delegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSSlider" prev="NSSecureTextFieldCell.html" next="NSSliderCell.html" up="AppKit.html">
+  <head>
+    <title>NSSlider</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSSlider</heading>
+      <class name="NSSlider" super="NSControl">
+        <declared>AppKit/NSSlider.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="BOOL"><sel>acceptsFirstMouse:</sel><arg type="NSEvent*">mouseDownEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>allowsTickMarkValuesOnly</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>altIncrementValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>closestTickMarkValueToValue:</sel><arg type="double">aValue</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSImage*"><sel>image</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>indexOfTickMarkAtPoint:</sel><arg type="NSPoint">point</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>isVertical</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>knobThickness</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>maxValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>minValue</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>numberOfTickMarks</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>rectOfTickMarkAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAllowsTickMarkValuesOnly:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAltIncrementValue:</sel><arg type="double">increment</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setImage:</sel><arg type="NSImage*">barImage</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setKnobThickness:</sel><arg type="float">thickness</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMaxValue:</sel><arg type="double">maxValue</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMinValue:</sel><arg type="double">minValue</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setNumberOfTickMarks:</sel><arg type="int">numberOfTickMarks</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTickMarkPosition:</sel><arg type="NSTickMarkPosition">position</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitle:</sel><arg type="NSString*">barTitle</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleCell:</sel><arg type="NSCell*">titleCell</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleColor:</sel><arg type="NSColor*">color</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleFont:</sel><arg type="NSFont*">font</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTickMarkPosition"><sel>tickMarkPosition</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="double"><sel>tickMarkValueAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>title</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>titleCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSColor*"><sel>titleColor</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSFont*"><sel>titleFont</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

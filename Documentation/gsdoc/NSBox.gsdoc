@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSBox" prev="NSBitmapImageRep.html" next="NSBrowser.html" up="AppKit.html">
+  <head>
+    <title>NSBox</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSBox</heading>
+      <class name="NSBox" super="NSView">
+        <declared>AppKit/NSBox.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSRect"><sel>borderRect</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSBorderType"><sel>borderType</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>contentView</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>contentViewMargins</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBorderType:</sel><arg type="NSBorderType">aType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setContentView:</sel><arg type="NSView*">aView</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setContentViewMargins:</sel><arg type="NSSize">offsetSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFrameFromContentFrame:</sel><arg type="NSRect">contentFrame</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitle:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleFont:</sel><arg type="NSFont*">aFont</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitlePosition:</sel><arg type="NSTitlePosition">aPosition</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleWithMnemonic:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>sizeToFit</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSString*"><sel>title</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>titleCell</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSFont*"><sel>titleFont</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSTitlePosition"><sel>titlePosition</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>titleRect</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

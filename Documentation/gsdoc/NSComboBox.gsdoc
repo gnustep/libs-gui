@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSComboBox" prev="NSColorWell.html" next="NSComboBoxCell.html" up="AppKit.html">
+  <head>
+    <title>NSComboBox</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSComboBox</heading>
+      <class name="NSComboBox" super="NSTextField">
+        <declared>AppKit/NSComboBox.h</declared>
+        <conform>NSObject</conform>
+        <desc>
+        </desc>
+        <method type="void"><sel>addItemsWithObjectValues:</sel><arg type="id">objects</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>addItemWithObjectValue:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>completes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>dataSource</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>deselectItemAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>encodeWithCoder:</sel><arg type="NSCoder*">encoder</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>hasVerticalScroller</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>indexOfItemWithObjectValue:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>indexOfSelectedItem</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithCoder:</sel><arg type="NSCoder*">decoder</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>insertItemWithObjectValue:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSSize"><sel>intercellSpacing</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>itemHeight</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>itemObjectValueAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>noteNumberOfItemsChanged</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>numberOfItems</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>numberOfVisibleItems</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>objectValueOfSelectedItem</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*"><sel>objectValues</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>reloadData</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeAllItems</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeItemAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeItemWithObjectValue:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>scrollItemAtIndexToTop:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>scrollItemAtIndexToVisible:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectItemAtIndex:</sel><arg type="int">index</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectItemWithObjectValue:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setCompletes:</sel><arg type="BOOL">completes</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDataSource:</sel><arg type="id">aSource</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setHasVerticalScroller:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setIntercellSpacing:</sel><arg type="NSSize">aSize</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setItemHeight:</sel><arg type="float">itemHeight</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setNumberOfVisibleItems:</sel><arg type="int">visibleItems</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setUsesDataSource:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>usesDataSource</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSTextStorage" prev="NSTextFieldCell.html" next="NSTextTab.html" up="AppKit.html">
+  <head>
+    <title>NSTextStorage</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSTextStorage</heading>
+      <class name="NSTextStorage" super="NSMutableAttributedString">
+        <declared>AppKit/NSTextStorage.h</declared>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
+        <method type="void"><sel>addLayoutManager:</sel><arg type="NSLayoutManager*">aLayoutManager</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>changeInLength</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>delegate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>edited:</sel><arg type="unsigned">mask</arg><sel>range:</sel><arg type="NSRange">oldRange</arg><sel>changeInLength:</sel><arg type="int">lengthChange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="unsignedint"><sel>editedMask</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRange"><sel>editedRange</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>endEditing</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*"><sel>layoutManagers</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>processEditing</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeLayoutManager:</sel><arg type="NSLayoutManager*">aLayoutManager</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>textStorageDidProcessEditing:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>textStorageWillProcessEditing:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

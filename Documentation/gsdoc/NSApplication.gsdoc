@@ -1,0 +1,376 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSApplication" prev="NSAffineTransform.html" next="NSAttributedStrngAdds.html" up="AppKit.html">
+  <head>
+    <title>NSApplication</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSApplication</heading>
+      <class name="NSApplication" super="NSResponder">
+        <declared>AppKit/NSApplication.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="void" factory="yes"><sel>setApplicationHandle:</sel><arg type="void*">hInstance</arg><sel>previousHandle:</sel><arg type="void*">prevInstance</arg><sel>commandLine:(NSString *)cmdLine  show:</sel><arg type="int">cmdShow</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void" factory="yes"><sel>useRunningCopyOfApplication</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>abortModal</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>activateContextHelpMode:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>activateIgnoringOtherApps:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>addWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:(NSString *)  filename:</sel><arg type="BOOL">isFilename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void*"><sel>applicationHandle</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSImage*"><sel>applicationIconImage</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>arrangeInFront:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSModalSession"><sel>beginModalSessionForWindow:</sel><arg type="NSWindow*">aWindow</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>changeWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:(NSString *)aString filename:</sel><arg type="BOOL">isFilename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSDPSContext*"><sel>context</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSEvent*"><sel>currentEvent</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>deactivate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>discardEventsMatchingMask:</sel><arg type="unsignedint">mask</arg><sel>beforeEvent:</sel><arg type="NSEvent*">lastEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>endModalSession:</sel><arg type="NSModalSession">session</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>finishLaunching</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>hide:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isActive</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isHidden</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isRunning</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>keyWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSMenu*"><sel>mainMenu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>mainWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>makeWindowsPerform:</sel><arg type="SEL">aSelector</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>miniaturizeAll:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>modalWindow</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSEvent*"><sel>nextEventMatchingMask:</sel><arg type="unsignedint">mask</arg><sel>untilDate:</sel><arg type="NSDate*">expiration</arg><sel>inMode:(NSString *)mode  dequeue:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderFrontColorPanel:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderFrontStandardAboutPanel:</sel><arg type="id">sender;</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>orderFrontStandardAboutPanelWithOptions:</sel><arg type="NSDictionary*">optionsDictionary;</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>postEvent:</sel><arg type="NSEvent*">anEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>preventWindowOrdering</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>registerServicesMenuSendTypes:</sel><arg type="NSArray*">sendTypes</arg><sel>returnTypes:</sel><arg type="NSArray*">returnTypes</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>removeWindowsItem:</sel><arg type="NSWindow*">aWindow</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>reportException:</sel><arg type="NSException*">anException</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>run</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>runModalForWindow:</sel><arg type="NSWindow*">aWindow</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="int"><sel>runModalSession:</sel><arg type="NSModalSession">session</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>runPageLayout:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>sendAction:</sel><arg type="SEL">anAction</arg><sel>to:(id)aTarget from:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>sendEvent:</sel><arg type="NSEvent*">anEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSMenu*"><sel>servicesMenu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>servicesProvider</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setApplicationIconImage:</sel><arg type="NSImage*">anImage</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setMainMenu:</sel><arg type="NSMenu*">aMenu</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setServicesMenu:</sel><arg type="NSMenu*">aMenu</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setServicesProvider:</sel><arg type="id">aProvider</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setWindowsMenu:</sel><arg type="NSMenu*">aMenu</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setWindowsNeedUpdate:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>showHelp:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>stop:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>stopModal</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>stopModalWithCode:</sel><arg type="int">returnCode</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>targetForAction:</sel><arg type="SEL">aSelector</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>terminate:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>tryToPerform:</sel><arg type="SEL">aSelector</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>unhide:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>unhideWithoutActivation</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>updateWindows</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>updateWindowsItem:</sel><arg type="NSWindow*">aWindow</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>validRequestorForSendType:</sel><arg type="NSString*">sendType</arg><sel>returnType:</sel><arg type="NSString*">returnType</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSArray*"><sel>windows</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSMenu*"><sel>windowsMenu</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>windowWithWindowHandle:</sel><arg type="void*">hWnd</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSWindow*"><sel>windowWithWindowNumber:</sel><arg type="int">windowNum</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>application:</sel><arg type="NSApplication*">theApplication</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>application:</sel><arg type="NSApplication*">sender</arg><sel>openFileWithoutUI:</sel><arg type="NSString*">filename</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>application:</sel><arg type="NSApplication*">theApplication</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>application:</sel><arg type="NSApplication*">theApplication</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidBecomeActive:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidFinishLaunching:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidHide:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidResignActive:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidUnhide:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationDidUpdate:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>applicationOpenUntitledFile:</sel><arg type="NSApplication*">theApplication</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>applicationShouldOpenUntitledFile:</sel><arg type="NSApplication*">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>applicationShouldTerminate:</sel><arg type="NSApplication*">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>applicationShouldTerminateAfterLastWindowClosed:</sel><arg type="NSApplication*">theApplication</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillBecomeActive:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillFinishLaunching:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillHide:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillTerminate:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillResignActive:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillUnhide:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>applicationWillUpdate:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

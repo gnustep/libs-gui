@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSTextField" prev="NSTextContainer.html" next="NSTextFieldCell.html" up="AppKit.html">
+  <head>
+    <title>NSTextField</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSTextField</heading>
+      <class name="NSTextField" super="NSControl">
+        <declared>AppKit/NSTextField.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="BOOL"><sel>acceptsFirstResponder</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>allowsEditingTextAttributes</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSColor*"><sel>backgroundColor</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>delegate</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>drawsBackground</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="SEL"><sel>errorAction</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>importsGraphics</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBezeled</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isBordered</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isEditable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>isSelectable</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>nextText</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>previousText</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>selectText:</sel><arg type="id">sender</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAllowsEditingTextAttributes:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBezeled:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setBordered:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEditable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setErrorAction:</sel><arg type="SEL">aSelector</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setImportsGraphics:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setPreviousText:</sel><arg type="id">anObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setSelectable:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTextColor:</sel><arg type="NSColor*">aColor</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setTitleWithMnemonic:</sel><arg type="NSString*">aString</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSColor*"><sel>textColor</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>textDidBeginEditing:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>textDidChange:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>textDidEndEditing:</sel><arg type="NSNotification*">aNotification</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>textShouldBeginEditing:</sel><arg type="NSText*">textObject</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="BOOL"><sel>textShouldEndEditing:</sel><arg type="NSText*">textObject</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

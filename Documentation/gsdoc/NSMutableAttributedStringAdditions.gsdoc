@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSMutableAttributedStringAdditions" prev="NSMenuView.html" next="NSMutableParaStyle.html" up="AppKit.html">
+  <head>
+    <title>NSMutableAttributedStringAdditions</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSMutableAttributedStringAdditions</heading>
+      <class name="NSMutableAttributedStringAdditions" super="NSAttributedString">
+        <declared>AppKit/NSAttributedString.h</declared>
+        <desc>
+        </desc>
+        <method type="void"><sel>applyFontTraits:</sel><arg type="NSFontTraitMask">mask</arg><sel>range:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>fixAttachmentAttributeInRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>fixAttributesInRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>fixFontAttributeInRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>fixParagraphStyleAttributeInRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>subscriptRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>superscriptRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>unscriptRange:</sel><arg type="NSRange">aRange</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>updateAttachmentsFromPath:</sel><arg type="NSString*">path</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

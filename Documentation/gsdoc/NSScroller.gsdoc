@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSScroller" prev="NSScrollView.html" next="NSSecureTextField.html" up="AppKit.html">
+  <head>
+    <title>NSScroller</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSScroller</heading>
+      <class name="NSScroller" super="NSControl">
+        <declared>AppKit/NSScroller.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="float" factory="yes"><sel>scrollerWidth</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSScrollArrowPosition"><sel>arrowsPosition</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>checkSpaceForParts</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawArrow:</sel><arg type="NSScrollerArrow">arrow</arg><sel>highlight:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawKnob</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>drawParts</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>highlight:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSScrollerPart"><sel>hitPart</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="float"><sel>knobProportion</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="NSRect"><sel>rectForPart:</sel><arg type="NSScrollerPart">aPart</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setArrowsPosition:</sel><arg type="NSScrollArrowPosition">location</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setFloatValue:</sel><arg type="float">aFloat</arg><sel>knobProportion:</sel><arg type="float">knobProp</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSScrollerPart"><sel>testPart:</sel><arg type="NSPoint">aPoint</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>trackKnob:</sel><arg type="NSEvent*">theEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>trackScrollButtons:</sel><arg type="NSEvent*">theEvent</arg>
+        <desc>
+        </desc>
+</method>
+        <method type="NSUsableScrollerParts"><sel>usableParts</sel>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

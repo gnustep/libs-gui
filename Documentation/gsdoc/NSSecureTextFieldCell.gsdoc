@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<gsdoc base="NSSecureTextFieldCell" prev="NSSecureTextField.html" next="NSSlider.html" up="AppKit.html">
+  <head>
+    <title>NSSecureTextFieldCell</title>
+    <author name="Richard Frith-Macdonald">
+      <email address="rfm@gnu.org"/>
+      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    </author>
+    <version>0.1</version>
+    <date>28 February, 2000</date>
+  </head>
+  <body>
+    <chapter>
+      <heading>NSSecureTextFieldCell</heading>
+      <class name="NSSecureTextFieldCell" super="NSTextFieldCell">
+        <declared>AppKit/NSSecureTextField.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="BOOL"><sel>echosBullets</sel>
+        <desc>
+        </desc>
+</method>
+        <method type="void"><sel>setEchosBullets:</sel><arg type="BOOL">flag</arg>
+        <desc>
+        </desc>
+</method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>
