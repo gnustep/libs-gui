@@ -191,6 +191,8 @@ static Class cellClass;
 
 - (void) setStringValue: (NSString *)aString
 {
+  [self abortEditing];
+  
   [[self selectedCell] setStringValue: aString];
   [self setNeedsDisplay: YES];
 }
@@ -282,7 +284,7 @@ static Class cellClass;
 
 - (void) validateEditing
 {
-}					// FIX ME
+}			
 
 /*
  * Resizing the Control
@@ -484,33 +486,6 @@ static Class cellClass;
 }
 
 - (void) setIgnoresMultiClick: (BOOL)flag
-{
-}
-
-/*
- * Methods Implemented by the Delegate
- */
-- (BOOL) control: (NSControl *)control
-		textShouldBeginEditing: (NSText *)fieldEditor
-{
-  return NO;
-}
-
-- (BOOL) control: (NSControl *)control
-		textShouldEndEditing: (NSText *)fieldEditor
-{
-  return NO;
-}
-
-- (void) controlTextDidBeginEditing: (NSNotification *)aNotification
-{
-}
-
-- (void) controlTextDidEndEditing: (NSNotification *)aNotification
-{
-}
-
-- (void) controlTextDidChange: (NSNotification *)aNotification
 {
 }
 
