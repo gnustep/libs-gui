@@ -2055,6 +2055,10 @@ no_soft_invalidation:
 		}
 	    }
 	  tc->num_soft = 0;
+	  if (tc->pos + tc->length == r.location)
+	    {
+	      tc->complete = NO;
+	    }
 	}
     }
 
