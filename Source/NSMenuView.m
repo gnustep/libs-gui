@@ -116,6 +116,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 - (void) dealloc
 {
+  // We must remove the menu view from the menu list of observers.
+  if ( _menu )
+    {
+      [[NSNotificationCenter defaultCenter] removeObserver: self  name: nil  object: _menu];
+    }
+
   RELEASE(_font);
 
   /* Clean the pointer to us stored into the _itemCells.  */
