@@ -2,7 +2,7 @@
 #  Copyright (C) 2004 Free Software Foundation, Inc.
 #
 #  Author: Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
-#  Date:   March, 2004
+#  Date:   March 2004
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -24,7 +24,8 @@
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS = PlainInputServer
+SUBPROJECTS = \
+    PlainInputServer
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/rules.make
