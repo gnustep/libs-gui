@@ -349,28 +349,22 @@ NSString *NSWorkspaceWillUnmountNotification =
 /*
  *	NSStringDrawing NSString additions
  */
-NSString *NSFontAttributeName
-  = @"NSFontAttributeName";
-NSString *NSParagraphStyleAttributeName
-  = @"NSParagraphStyleAttributeName";
-NSString *NSForegroundColorAttributeName
-  = @"NSForegroundColorAttributeName";
-NSString *NSUnderlineStyleAttributeName
-  = @"NSUnderlineStyleAttributeName";
-NSString *NSSuperscriptAttributeName
-  = @"NSSuperscriptAttributeName";
-NSString *NSBackgroundColorAttributeName
-  = @"NSBackgroundColorAttributeName";
-NSString *NSAttachmentAttributeName
-  = @"NSAttachmentAttributeName";
-NSString *NSLigatureAttributeName
-  = @"NSLigatureAttributeName";
-NSString *NSBaselineOffsetAttributeName
-  = @"NSBaselineOffsetAttributeName";
-NSString *NSKernAttributeName
-  = @"NSKernAttributeName";
-NSString *NSLinkAttributeName
- = @"NSLinkAttributeName";
+NSString *NSFontAttributeName  = @"NSFontAttributeName";
+NSString *NSParagraphStyleAttributeName = @"NSParagraphStyleAttributeName";
+NSString *NSForegroundColorAttributeName = @"NSForegroundColorAttributeName";
+NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
+NSString *NSSuperscriptAttributeName = @"NSSuperscriptAttributeName";
+NSString *NSBackgroundColorAttributeName = @"NSBackgroundColorAttributeName";
+NSString *NSAttachmentAttributeName = @"NSAttachmentAttributeName";
+NSString *NSLigatureAttributeName = @"NSLigatureAttributeName";
+NSString *NSBaselineOffsetAttributeName = @"NSBaselineOffsetAttributeName";
+NSString *NSKernAttributeName = @"NSKernAttributeName";
+NSString *NSLinkAttributeName = @"NSLinkAttributeName";
+
+/*
+ * NSTextView userInfo for notifications 
+ */
+NSString *NSOldSelectedCharacterRange = @"NSOldSelectedCharacterRange";
 
 /* NSFont matrix */
 const float NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};
