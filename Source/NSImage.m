@@ -161,8 +161,8 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
       main = [NSBundle mainBundle];
       ext  = extension(aName);
 
-      NSLog(@"search locally\n");
-      NSLog(@"extension is %s\n", [ext cString]);
+      NSDebugLog(@"search locally\n");
+      NSDebugLog(@"extension is %s\n", [ext cString]);
       /* First search locally */
       if (ext)
 	path = [main pathForResource: aName ofType: ext];
@@ -173,11 +173,11 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
 	  array = [self imageFileTypes];
 	  if (!array)
-	    NSLog(@"array is nil\n");
+	    NSDebugLog(@"array is nil\n");
 	  e = [array objectEnumerator];
 	  while ((o = [e nextObject]))
 	    {
-	      NSLog(@"extension %s\n", [o cString]);
+	      NSDebugLog(@"extension %s\n", [o cString]);
 	      path = [main pathForResource:aName 
 		        ofType: o];
 	      if ([path length] != 0)
@@ -201,11 +201,11 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
 	      array = [self imageFileTypes];
 	      if (!array)
-		NSLog(@"array is nil\n");
+		NSDebugLog(@"array is nil\n");
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
-		  NSLog(@"extension %s, array = %@\n", [o cString], dirsArray);
+		  NSDebugLog(@"extension %s, array = %@\n", [o cString], dirsArray);
 		  path = [NSBundle pathForResource: aName
 				   ofType: o
 				   inDirectories:dirsArray];

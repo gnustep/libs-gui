@@ -35,7 +35,6 @@
 @class NSEvent;
 
 @interface NSCursor : NSObject <NSCoding>
-
 {
   // Attributes
   NSImage *cursor_image;

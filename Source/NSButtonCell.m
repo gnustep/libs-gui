@@ -76,7 +76,7 @@
 - initTextCell:(NSString *)aString
 {
   [super initTextCell:aString];
-  altContents = @"Button";
+  altContents = nil;
   [self setButtonType:NSMomentaryPushButton];
   [self setEnabled:YES];
   [self setTransparent:NO];
@@ -264,9 +264,20 @@
       [self setShowsStateBy:NSContentsCellMask];
       break;
     case NSSwitchButton:
+      [self setHighlightsBy:NSContentsCellMask];
+      [self setShowsStateBy:NSContentsCellMask];
+      [self setImage:[NSImage imageNamed:@"common_SwitchOff"]];
+      [self setAlternateImage:[NSImage imageNamed:@"common_SwitchOn"]];
+      [self setImagePosition:NSImageLeft];
+      [self setAlignment:NSLeftTextAlignment];
+      break;
     case NSRadioButton:
       [self setHighlightsBy:NSContentsCellMask];
       [self setShowsStateBy:NSContentsCellMask];
+      [self setImage:[NSImage imageNamed:@"common_RadioOff"]];
+      [self setAlternateImage:[NSImage imageNamed:@"common_RadioOn"]];
+      [self setImagePosition:NSImageLeft];
+      [self setAlignment:NSLeftTextAlignment];
       break;
   }
 

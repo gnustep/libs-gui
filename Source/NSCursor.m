@@ -26,11 +26,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSArray.h>
 #include <AppKit/NSCursor.h>
-#include <gnustep/base/Stack.h>
 
 // Class variables
-static Stack *gnustep_gui_cursor_stack;
+static NSMutableArray *gnustep_gui_cursor_stack;
 static NSCursor *gnustep_gui_current_cursor;
 static BOOL gnustep_gui_hidden_until_move;
 
@@ -47,7 +47,7 @@ static BOOL gnustep_gui_hidden_until_move;
       [self setVersion:1];
 
       // Initialize class variables
-      gnustep_gui_cursor_stack = [[Stack alloc] initWithCapacity: 2];
+      gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
       gnustep_gui_current_cursor = [NSCursor arrowCursor];
     }
@@ -63,13 +63,15 @@ static BOOL gnustep_gui_hidden_until_move;
 + (void)pop
 {
   // The object we pop is the current cursor
-  if (![gnustep_gui_cursor_stack isEmpty])
-    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack popObject];
+  if ([gnustep_gui_cursor_stack count]) {
+    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
+    [gnustep_gui_cursor_stack removeLastObject];
+  }
 
   // If the stack isn't empty then get the new current cursor
   // Otherwise the cursor will stay the same
-  if (![gnustep_gui_cursor_stack isEmpty])
-    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack topObject];
+  if ([gnustep_gui_cursor_stack count])
+    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
   [self currentCursorHasChanged];
 }
@@ -188,7 +190,7 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (void)push
 {
-  [gnustep_gui_cursor_stack pushObject: self];
+  [gnustep_gui_cursor_stack addObject: self];
   gnustep_gui_current_cursor = self;
   [NSCursor currentCursorHasChanged];
 }
@@ -214,13 +216,10 @@ static BOOL gnustep_gui_hidden_until_move;
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   return self;
 }
 

@@ -55,9 +55,10 @@
  */
 
 //#include <gnustep/base/preface.h>
-#include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
+#include <gnustep/gui/config.h>
+#include <gnustep/gui/LogFile.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -80,7 +81,7 @@ static tsize_t
 TiffHandleRead(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  printf("TiffHandleRead\n");
+  NSDebugLog (@"TiffHandleRead\n");
   if (chand->position >= chand->size)
     return 0;
   if (chand->position + count > chand->size)
@@ -93,7 +94,7 @@ static tsize_t
 TiffHandleWrite(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  printf("TiffHandleWrite\n");
+  NSDebugLog (@"TiffHandleWrite\n");
   if (chand->mode == "r")
     return 0;
   if (chand->position + count > chand->size)
@@ -113,7 +114,7 @@ static toff_t
 TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
 {
   chandle_t* chand = (chandle_t *)handle;
-  printf("TiffHandleSeek\n");
+  NSDebugLog (@"TiffHandleSeek\n");
   switch(mode) 
     {
     case SEEK_SET: chand->position = offset; break;
@@ -132,7 +133,7 @@ TiffHandleClose(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
 
-  printf("TiffHandleClose\n");
+  NSDebugLog (@"TiffHandleClose\n");
   /* Presumably, we don't need the handle anymore */
   OBJC_FREE(chand);
   return 0;
@@ -142,7 +143,7 @@ static toff_t
 TiffHandleSize(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
-  printf("TiffHandleSize\n");
+  NSDebugLog (@"TiffHandleSize\n");
   return chand->size;
 }
 
@@ -151,7 +152,7 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 {
   chandle_t* chand = (chandle_t *)handle;
   
-  printf("TiffHandleMap\n");
+  NSDebugLog (@"TiffHandleMap\n");
   *data = chand->data;
   *size = chand->size;
     
@@ -161,7 +162,7 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 static void
 TiffHandleUnmap(thandle_t handle, tdata_t data, toff_t size)
 {
-  printf("TiffHandleUnmap\n");
+  NSDebugLog (@"TiffHandleUnmap\n");
   /* Nothing to unmap. */
 }
 
@@ -171,7 +172,7 @@ NSTiffOpenData(char* data, long size, const char* mode,
 			    realloc_data_callback* realloc_data)
 {
   chandle_t* handle;
-  printf("NSTiffOpenData\n");
+  NSDebugLog (@"NSTiffOpenData\n");
   OBJC_MALLOC(handle, chandle_t, 1);
   handle->data = data;
   handle->position = 0;

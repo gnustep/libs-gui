@@ -124,7 +124,7 @@
   cell_font = [[NSFont userFontOfSize:12] retain];
   contents = aString;
   cell_type = NSTextCellType;
-  text_align = NSLeftTextAlignment;
+  text_align = NSCenterTextAlignment;
   cell_image = nil;
   image_position = NSNoImage;
   cell_state = NO;
