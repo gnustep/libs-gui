@@ -760,8 +760,16 @@ _Sane(NSLayoutManager *lm)
 
   [_textContainers removeObjectAtIndex: index];
   _textContainersCount--;
-  _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
-				       textView];  
+  if (_textContainersCount > 0)
+    {
+      _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
+					   textView];  
+    }
+  else
+    {
+      _firstTextView = nil;
+    }
+
   for (i = 0; i < _textContainersCount; i++)
     {
       NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
@@ -1968,7 +1976,7 @@ _Sane(self);
                                    effectiveRange: (NSRange*)effectiveRange
 {
   /* TODO */
-  return [_textContainers objectAtIndex: 0];
+  return nil;
 }
 
 //
@@ -2448,10 +2456,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
 - (NSTextView*) firstTextView 
 {
-  return [[_textContainers objectAtIndex: 0] textView];
-  /* WARNING: Uncommenting the following makes initialization 
-     with the other text objects more difficult. */
-  //  return _firstTextView;
+  return _firstTextView;
 }
 
 // This method is special in that it won't cause layout if the
@@ -2459,7 +2464,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 // that this method could be done through other API.
 - (NSTextView*) textViewForBeginningOfSelection
 {
-  return NULL;
+  return nil;
 }
 
 //
