@@ -35,7 +35,7 @@
 
 #define	USE_GLYPHS	0
 
-#define	glyphChunks	((GSIArray)_glyphChunks)
+
 
 /*
  * Glyph attributes known to the layout manager.
@@ -286,12 +286,17 @@ GSDestroyChunks(GSIArray *where)
     }
 }
 
-static void
+static GSGlyphChunk*
 GSCreateChunks(GSIArray *where)
 {
+  GSGlyphChunk	*chunk;
+
   GSDestroyChunks(where);
   *where = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
   GSIArrayInitWithZoneAndCapacity(*where, NSDefaultMallocZone(), 8);
+  chunk = GSCreateGlyphChunk(0);
+  GSIArrayInsertItem(*where, (GSIArrayItem)(void*)chunk, 0);
+  return chunk;
 }
 
 static inline unsigned
@@ -312,19 +317,9 @@ GSChunkForCharIndex(GSIArray chunks, unsigned charIndex)
     charIndexSort); 
   /*
    * pos is the index of the next chunk *after* the one we want.
-   * if it is zero, we have an empty list - so we create the first chunk.
    */
-  if (pos == 0)
-    {
-      GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
-
-      GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
-      return 0;
-    }
-  else
-    {
-      pos--;
-    }
+  NSCAssert(pos > 0, @"No glyph chunks present"); 
+  pos--;
   return pos;
 }
 
@@ -339,130 +334,175 @@ GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
     glyphIndexSort); 
   /*
    * pos is the index of the next chunk *after* the one we want.
-   * if it is zero, we have an empty list - so we create the first chunk.
    */
-  if (pos == 0)
-    {
-      GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
-
-      GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
-    }
-  else
-    {
-      pos--;
-    }
+  NSCAssert(pos > 0, @"No glyph chunks present"); 
+  pos--;
   return pos;
 }
 
+
+
+/*
+ * Medium level functions for accessing and manipulating glyphs.
+ */
+
 typedef struct {
-  GSIArray	chunks;
-  GSGlyphChunk	*chunk;
-  unsigned	index;
-  unsigned	offset;
-} GlyphStepper;
+  @defs(NSLayoutManager)
+} *lmDefs;
 
-static inline BOOL
-_InitByChar(GlyphStepper *s, GSIArray chunks, unsigned charIndex)
+#define	glyphChunks	((GSIArray)_glyphData)
+
+#define	_chunks		((GSIArray)(((lmDefs)lm)->_glyphData))
+#define	_chunk		((GSGlyphChunk*)(((lmDefs)lm)->_currentGlyphs))
+#define	_index		((lmDefs)lm)->_chunkIndex
+#define	_offset		((lmDefs)lm)->_glyphIndex
+#define	_gaps		((GSIArray)(((lmDefs)lm)->_glyphGaps))
+
+
+static void		_Adjust(NSLayoutManager *lm, unsigned from, int by);
+static GSGlyphAttrs	_Attrs(NSLayoutManager *lm);
+static BOOL		_Back(NSLayoutManager *lm);
+static unsigned		_CharIndex(NSLayoutManager *lm);
+static NSGlyph		_Glyph(NSLayoutManager *lm);
+static unsigned		_GlyphIndex(NSLayoutManager *lm);
+static BOOL		_JumpToChar(NSLayoutManager *lm, unsigned charIndex);
+static BOOL		_JumpToGlyph(NSLayoutManager *lm, unsigned glyphIndex);
+static void		_SetAttrs(NSLayoutManager *lm, GSGlyphAttrs a);
+static void		_SetGlyph(NSLayoutManager *lm, NSGlyph g);
+static BOOL		_Step(NSLayoutManager *lm);
+
+
+static inline GSGlyphAttrs
+_Attrs(NSLayoutManager *lm)
 {
-  GSGlyphAttrs	tmp;
+  return GSIArrayItemAtIndex(&_chunk->attrs, _offset).ext;
+}
 
-  s->chunks = chunks;
-  s->index = GSChunkForCharIndex(s->chunks, charIndex);
-  s->chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(s->chunks, s->index).ptr;
-  tmp.offset = charIndex - s->chunk->charIndex;
-  s->offset = GSIArrayInsertionPosition(&s->chunk->attrs,
-    (GSIArrayItem)tmp, offsetSort); 
-  if (s->offset == 0)
+static inline void
+_SetAttrs(NSLayoutManager *lm, GSGlyphAttrs a)
+{
+  GSIArraySetItemAtIndex(&_chunk->attrs, (GSIArrayItem)a, _offset);
+}
+
+static void
+_Adjust(NSLayoutManager *lm, unsigned from, int lengthChange)
+{
+  if (from < [((lmDefs)lm)->_textStorage length])
     {
-      [NSException raise: NSInternalInconsistencyException
-		  format: @"error in character locations for glyphs"];
+      _JumpToGlyph(lm, from);
+      /*
+       * Adjust character offsets for all glyphs in this chunk.
+       */
+      if (_offset > 0)
+	{
+	  while (_offset < GSIArrayCount(&_chunk->glyphs))
+	    {
+	      GSGlyphAttrs	attrs = _Attrs(lm);
+
+	      attrs.offset += lengthChange;
+	      _SetAttrs(lm, attrs);
+	    }
+	}
+      /*
+       * Now adjust character offsets for remaining chunks.
+       */
+      while (++_index < GSIArrayCount(_chunks))
+	{
+	  _chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, _index).ptr;
+	  _chunk->charIndex += lengthChange;
+	}
     }
-  s->offset--;
-  /*
-   * Locate the *first* glyph for this character index.
-   */
-  while (s->offset > 0 &&
-    (GSIArrayItemAtIndex(&s->chunk->attrs, s->offset-1).ext).offset
-      >= tmp.offset)
-    {
-      s->offset--;
-    }
-  if ((GSIArrayItemAtIndex(&s->chunk->attrs, s->offset-1).ext).offset
-    > tmp.offset)
-    {
-      return NO;
-    }
-  return YES;
 }
 
 static inline BOOL
-_InitByGlyph(GlyphStepper *s, GSIArray chunks, unsigned glyphIndex)
+_Back(NSLayoutManager *lm)
 {
-  s->chunks = chunks;
-  s->index = GSChunkForGlyphIndex(s->chunks, glyphIndex);
-  s->chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(s->chunks, s->index).ptr;
-  s->offset = glyphIndex - s->chunk->glyphIndex;
-  if (s->offset < GSIArrayCount(&s->chunk->glyphs))
+  if (_offset > 0)
     {
+      _offset--;
+      return YES;
+    }
+  else if (_index > 0)
+    {
+      _index--;
+      _chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, _index).ptr;
+      _offset = GSIArrayCount(&_chunk->glyphs) - 1;
       return YES;
     }
   else
     {
-      s->offset = GSIArrayCount(&s->chunk->glyphs) - 1;
       return NO;
     }
 }
 
 static inline unsigned
-_CharIndex(GlyphStepper *s)
+_CharIndex(NSLayoutManager *lm)
 {
-  return s->chunk->charIndex
-    + (GSIArrayItemAtIndex(&s->chunk->attrs, s->offset).ext).offset;
-}
-
-static inline unsigned
-_GlyphIndex(GlyphStepper *s)
-{
-  return s->chunk->glyphIndex + s->offset;
-}
-
-static inline GSGlyphAttrs
-_Attrs(GlyphStepper *s)
-{
-  return GSIArrayItemAtIndex(&s->chunk->attrs, s->offset).ext;
-}
-
-static inline void
-_SetAttrs(GlyphStepper *s, GSGlyphAttrs a)
-{
-  GSIArraySetItemAtIndex(&s->chunk->attrs, (GSIArrayItem)a, s->offset);
+  return _chunk->charIndex
+    + (GSIArrayItemAtIndex(&_chunk->attrs, _offset).ext).offset;
 }
 
 static inline NSGlyph
-_Glyph(GlyphStepper *s)
+_Glyph(NSLayoutManager *lm)
 {
-  return (NSGlyph)GSIArrayItemAtIndex(&s->chunk->glyphs, s->offset).ulng;
+  return (NSGlyph)GSIArrayItemAtIndex(&_chunk->glyphs, _offset).ulng;
 }
 
-static inline void
-_SetGlyph(GlyphStepper *s, NSGlyph g)
+static inline unsigned
+_GlyphIndex(NSLayoutManager *lm)
 {
-  GSIArraySetItemAtIndex(&s->chunk->glyphs, (GSIArrayItem)g, s->offset);
+  return _chunk->glyphIndex + _offset;
 }
 
-static inline BOOL
-_Back(GlyphStepper *s)
+static BOOL
+_JumpToChar(NSLayoutManager *lm, unsigned charIndex)
 {
-  if (s->offset > 0)
+  GSGlyphAttrs	tmp;
+  GSGlyphChunk	*c;
+  unsigned	i;
+  unsigned	o;
+
+  i = GSChunkForCharIndex(_chunks, charIndex);
+  c = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, i).ptr;
+  tmp.offset = charIndex - c->charIndex;
+  o = GSIArrayInsertionPosition(&c->attrs, (GSIArrayItem)tmp, offsetSort); 
+  if (o == 0)
     {
-      s->offset--;
-      return YES;
+      return NO;	// Insertion position not found.
     }
-  else if (s->index > 0)
+  o--;
+  /*
+   * Locate the *first* glyph for this character index.
+   */
+  while (o>0 && (GSIArrayItemAtIndex(&c->attrs, o-1).ext).offset >= tmp.offset)
     {
-      s->index--;
-      s->chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(s->chunks, s->index).ptr;
-      s->offset = GSIArrayCount(&s->chunk->glyphs) - 1;
+      o--;
+    }
+  if ((GSIArrayItemAtIndex(&c->attrs, o).ext).offset > tmp.offset)
+    {
+      return NO;
+    }
+  _chunk = c;
+  _index = i;
+  _offset = o;
+  return YES;
+}
+
+static BOOL
+_JumpToGlyph(NSLayoutManager *lm, unsigned glyphIndex)
+{
+  GSGlyphChunk	*c;
+  unsigned	i;
+  unsigned	o;
+
+  i = GSChunkForGlyphIndex(_chunks, glyphIndex);
+  c = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, i).ptr;
+  o = glyphIndex - c->glyphIndex;
+  if (o < GSIArrayCount(&c->glyphs))
+    {
+      _chunk = c;
+      _index = i;
+      _offset = o;
       return YES;
     }
   else
@@ -471,22 +511,27 @@ _Back(GlyphStepper *s)
     }
 }
 
-static inline BOOL
-_Step(GlyphStepper *s)
+static inline void
+_SetGlyph(NSLayoutManager *lm, NSGlyph g)
 {
-  if (s->offset < GSIArrayCount(&s->chunk->glyphs) - 1)
+  GSIArraySetItemAtIndex(&_chunk->glyphs, (GSIArrayItem)g, _offset);
+}
+
+static inline BOOL
+_Step(NSLayoutManager *lm)
+{
+  if (_offset < GSIArrayCount(&_chunk->glyphs) - 1)
     {
-      s->offset++;
+      _offset++;
       return YES;
     }
   else
     {
-      if (s->index < GSIArrayCount(s->chunks) - 1)
+      if (_index < GSIArrayCount(_chunks) - 1)
 	{
-	  s->index++;
-	  s->chunk
-	    = (GSGlyphChunk*)GSIArrayItemAtIndex(s->chunks, s->index).ptr;
-	  s->offset = 0;
+	  _index++;
+	  _chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, _index).ptr;
+	  _offset = 0;
 	  return YES;
 	}
       else
@@ -495,6 +540,8 @@ _Step(GlyphStepper *s)
 	}
     }
 }
+
+
 
 @interface GSRunStorage : NSObject
 {
@@ -686,23 +733,43 @@ _Step(GlyphStepper *s)
  */
 - (id) init
 {
-  [super init];
+  if ([super init] != nil)
+    {
+      GSIArray	a;
 
-  _backgroundLayout = YES;
-  _delegate = nil;
-  _textContainers = [[NSMutableArray alloc] initWithCapacity: 2];
+      _backgroundLayout = YES;
+      _delegate = nil;
+      _textContainers = [[NSMutableArray alloc] initWithCapacity: 2];
 
-  _containerRuns = [GSRunStorage new];
-  _fragmentRuns = [GSRunStorage new];
-  _locationRuns = [GSRunStorage new];
+      _containerRuns = [GSRunStorage new];
+      _fragmentRuns = [GSRunStorage new];
+      _locationRuns = [GSRunStorage new];
 
-  GSCreateChunks((GSIArray*)&_glyphChunks);
+      /*
+       * Initialise glyph storage and ivars to contain 'current' glyph
+       * location information.
+       */
+      _currentGlyphs = GSCreateChunks((GSIArray*)&_glyphData);
+      _chunkIndex = 0;
+      _glyphIndex = 0;
+
+      /*
+       * Initialise storage of holes in the glyph stream.
+       */
+      a = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+      GSIArrayInitWithZoneAndCapacity(a, NSDefaultMallocZone(), 8);
+      _glyphGaps = a;
+    }
+
   return self;
 }
 
 - (void) dealloc
 {
-  GSDestroyChunks((GSIArray*)&_glyphChunks);
+  GSDestroyChunks((GSIArray*)&_glyphData);
+
+  GSIArrayEmpty((GSIArray)_glyphGaps);
+  NSZoneFree(NSDefaultMallocZone(), _glyphGaps);
 
   RELEASE (_textContainers);
   RELEASE (_containerRuns);
@@ -870,33 +937,7 @@ _Step(GlyphStepper *s)
   /*
    * Now adjust character locations for glyphs if necessary.
    */
-  if (NSMaxRange(cRange) < [_textStorage length])
-    {
-      GlyphStepper	s;
-
-      _InitByGlyph(&s, glyphChunks, NSMaxRange(gRange));
-      /*
-       * Adjust character offsets for all glyphs in this chunk.
-       */
-      if (s.offset > 0)
-	{
-	  while (s.offset < GSIArrayCount(&s.chunk->glyphs))
-	    {
-	      GSGlyphAttrs	attrs = _Attrs(&s);
-
-	      attrs.offset += lengthChange;
-	      _SetAttrs(&s, attrs);
-	    }
-	}
-      /*
-       * Now adjust character offsets for remaining chunks.
-       */
-      while (++s.index < GSIArrayCount(glyphChunks))
-	{
-	  s.chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(s.chunks, s.index).ptr;
-	  s.chunk->charIndex += lengthChange;
-	}
-    }
+  _Adjust(self, NSMaxRange(cRange), lengthChange);
 
 // FIXME - should invalidate the character range ... but what does that mean?
 }
@@ -1344,16 +1385,14 @@ invalidatedRange.length);
 	    isValidIndex: (BOOL*)flag
 {
 #if USE_GLYPHS
-  GlyphStepper	s;
-
   /*
    * If the chunk located doesn't contain the index we want,
    * we must need to generate more glyphs from the text.
    */
-  if (_InitByGlyph(&s, glyphChunks, index) == NO)
+  if (_JumpToGlyph(self, index) == NO)
     {
-      GSGlyphChunk	*chunk = s.chunk;
-      unsigned		pos = s.index;
+      GSGlyphChunk	*chunk = (GSGlyphChunk*)_currentGlyphs;
+      unsigned		pos = _chunkIndex;
       unsigned		numChars;
       unsigned		numGlyphs;
       NSString		*string;
@@ -1383,10 +1422,10 @@ invalidatedRange.length);
 	    }
 	}
     }
-  if (_InitByGlyph(&s, glyphChunks, index) == YES)
+  if (_JumpToGlyph(self, index) == YES)
     {
       *flag = YES;
-      return _Glyph(&s);
+      return _Glyph(self);
     }
   else
     {
@@ -1404,14 +1443,12 @@ invalidatedRange.length);
 - (void) replaceGlyphAtIndex: (unsigned)index
 		   withGlyph: (NSGlyph)newGlyph
 {
-  GlyphStepper	s;
-
-  if (_InitByGlyph(&s, glyphChunks, index) == NO)
+  if (_JumpToGlyph(self, index) == NO)
     {
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  _SetGlyph(&s, newGlyph);
+  _SetGlyph(self, newGlyph);
 }
 
 // This causes glyph generation similarly to asking for a single
@@ -1432,25 +1469,23 @@ invalidatedRange.length);
 
   if (toFetch > 0)
     {
-      GlyphStepper	s;
-
       /*
        * Force generation of glyphs to fill range.
        */
       [self glyphAtIndex: NSMaxRange(glyphRange)-1];
 
-      _InitByGlyph(&s, glyphChunks, glyphRange.location);
+      _JumpToGlyph(self, glyphRange.location);
 
       /*
        * Now return glyphs, excluding those 'not shown'
        */
       while (toFetch-- > 0)
 	{
-	  if (_Attrs(&s).isNotShown == 0)
+	  if (_Attrs(self).isNotShown == 0)
 	    {
-	      glyphArray[packed++] = _Glyph(&s);
+	      glyphArray[packed++] = _Glyph(self);
 	    }
-	  _Step(&s);	// Move to next glyph.
+	  _Step(self);	// Move to next glyph.
 	}
     }
   glyphArray[packed] = 0;
@@ -1575,22 +1610,21 @@ invalidatedRange.length);
 - (void) setCharacterIndex: (unsigned)charIndex
 	   forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GlyphStepper	s;
   GSGlyphAttrs	attrs;
   int		diff;
 
-  if (_InitByGlyph(&s, glyphChunks, glyphIndex) == NO)
+  if (_JumpToGlyph(self, glyphIndex) == NO)
     {
       [self glyphAtIndex: glyphIndex];
-      _InitByGlyph(&s, glyphChunks, glyphIndex);
+      _JumpToGlyph(self, glyphIndex);
     }
-  diff = charIndex - _CharIndex(&s);
+  diff = charIndex - _CharIndex(self);
   if (diff == 0)
     {
       return;		// Already set - nothing to do.
     }
 
-  if (_Back(&s) == NO)
+  if (_Back(self) == NO)
     {
       if (charIndex != 0)
 	{
@@ -1599,42 +1633,42 @@ invalidatedRange.length);
 	}
       return;
     }
-  if (_CharIndex(&s) > charIndex)
+  if (_CharIndex(self) > charIndex)
     {
       [NSException raise: NSRangeException
 		  format: @"set index lower than preceeding glyph"];
     }
-  _Step(&s);
-  if (_Step(&s) == YES && charIndex > _CharIndex(&s))
+  _Step(self);
+  if (_Step(self) == YES && charIndex > _CharIndex(self))
     {
       [NSException raise: NSRangeException
 		  format: @"set index higher than following glyph"];
     }
   
-  _Back(&s);
+  _Back(self);
   /*
    * If this is the start of a chunk, we adjust the character position
    * for the chunk as a whole, then fix each glyph in turn.  Otherwise
    * we simply adjust the glyph concerned.
    */
-  if (s.offset == 0)
+  if (_glyphIndex == 0)
     {
-      GSGlyphChunk	*chunk = s.chunk;
+      GSGlyphChunk	*chunk = (GSGlyphChunk*)_currentGlyphs;
 
-      diff = charIndex - _CharIndex(&s);
-      s.chunk->charIndex += diff;
-      while (_Step(&s) == YES && s.chunk == chunk)
+      diff = charIndex - _CharIndex(self);
+      chunk->charIndex += diff;
+      while (_Step(self) == YES && (GSGlyphChunk*)_currentGlyphs == chunk)
 	{
-	  attrs = _Attrs(&s);
+	  attrs = _Attrs(self);
 	  attrs.offset += diff;
-	  _SetAttrs(&s, attrs);
+	  _SetAttrs(self, attrs);
 	}
     }
   else
     {
-      attrs = _Attrs(&s);
+      attrs = _Attrs(self);
       attrs.offset += diff;
-      _SetAttrs(&s, attrs);
+      _SetAttrs(self, attrs);
     }
 }
 
@@ -1644,14 +1678,12 @@ invalidatedRange.length);
 - (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex
 {
 #if	USE_GLYPHS
-  GlyphStepper	s;
-
-  if (_InitByGlyph(&s, glyphChunks, glyphIndex) == NO)
+  if (_JumpToGlyph(self, glyphIndex) == NO)
     {
       [self glyphAtIndex: glyphIndex];
-      _InitByGlyph(&s, glyphChunks, glyphIndex);
+      _JumpToGlyph(self, glyphIndex);
     }
-  return _CharIndex(&s);  
+  return _CharIndex(self);  
 #else
   return glyphIndex;
 #endif
@@ -1670,7 +1702,6 @@ invalidatedRange.length);
 		       actualGlyphRange: (NSRange*)actualGlyphRange
 {
 #if	USE_GLYPHS
-  GlyphStepper	s;
   unsigned	pos;
   NSRange	cRange;
   NSRange	gRange = glyphRange;
@@ -1681,9 +1712,9 @@ invalidatedRange.length);
    * Locate the first glyph and step backwards to the earliest glyph with
    * the same character index.
    */
-  _InitByGlyph(&s, glyphChunks, glyphRange.location);
-  cRange.location = _CharIndex(&s);
-  while (_Back(&s) == YES && _CharIndex(&s) == cRange.location)
+  _JumpToGlyph(self, glyphRange.location);
+  cRange.location = _CharIndex(self);
+  while (_Back(self) == YES && _CharIndex(self) == cRange.location)
     {
       gRange.location--;
       gRange.length++;
@@ -1706,16 +1737,16 @@ invalidatedRange.length);
       /*
        * Locate the glyph immediately beyond the range.
        */
-      if (_InitByGlyph(&s, glyphChunks, NSMaxRange(glyphRange)) == NO)
+      if (_JumpToGlyph(self, NSMaxRange(glyphRange)) == NO)
 	{
 	  pos = _endCharIndex - 1;
-	  gRange.length = _GlyphIndex(&s) - gRange.location;
+	  gRange.length = _GlyphIndex(self) - gRange.location;
 	}
       else
 	{
-	  pos = _CharIndex(&s);
-	  gRange.length = _GlyphIndex(&s) - gRange.location;
-	  while (_Back(&s) == YES && _CharIndex(&s) == pos)
+	  pos = _CharIndex(self);
+	  gRange.length = _GlyphIndex(self) - gRange.location;
+	  while (_Back(self) == YES && _CharIndex(self) == pos)
 	    {
 	      gRange.length--;
 	    }
@@ -1748,7 +1779,6 @@ invalidatedRange.length);
 		   actualCharacterRange: (NSRange*)actualCharRange
 {
 #if	USE_GLYPHS
-  GlyphStepper	s;
   unsigned	pos;
   NSRange	cRange = charRange;
   NSRange	gRange;
@@ -1759,13 +1789,13 @@ invalidatedRange.length);
   /*
    * Locate the first glyph corresponding to the start character.
    */
-  _InitByChar(&s, glyphChunks, charRange.location);
-  gRange.location = _GlyphIndex(&s);
+  _JumpToChar(self, charRange.location);
+  gRange.location = _GlyphIndex(self);
 
   /*
    * Adjust start character if necessary.
    */
-  pos = _CharIndex(&s);
+  pos = _CharIndex(self);
   if (pos < cRange.location)
     {
       cRange.length += (cRange.location - pos);
@@ -1792,10 +1822,10 @@ invalidatedRange.length);
        * Locate the glyph immediately beyond the range,
        * and calculate the length of the range from that.
        */
-      _InitByChar(&s, glyphChunks, NSMaxRange(charRange));
-      pos = _GlyphIndex(&s);
+      _JumpToChar(self, NSMaxRange(charRange));
+      pos = _GlyphIndex(self);
       gRange.length = pos - gRange.location;
-      pos = _CharIndex(&s);
+      pos = _CharIndex(self);
       cRange.length = pos - cRange.location;
     }
   if (actualCharRange != 0)
@@ -1837,15 +1867,14 @@ invalidatedRange.length);
 		   value: (int)anInt
 	 forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GlyphStepper	s;
   GSGlyphAttrs	attrs;
 
-  if (_InitByGlyph(&s, glyphChunks, glyphIndex) == NO)
+  if (_JumpToGlyph(self, glyphIndex) == NO)
     {
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  attrs = _Attrs(&s);
+  attrs = _Attrs(self);
   if (attribute == GSGlyphDrawsOutsideLineFragment)
     {
       if (anInt == 0)
@@ -1876,7 +1905,7 @@ invalidatedRange.length);
     {
       attrs.inscription = anInt;
     }
-  _SetAttrs(&s, attrs);
+  _SetAttrs(self, attrs);
 }
 
 // This returns the value for the given glyph attribute at the glyph
@@ -1887,15 +1916,14 @@ invalidatedRange.length);
 - (int) intAttribute: (int)attribute
      forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GlyphStepper	s;
   GSGlyphAttrs	attrs;
 
-  if (_InitByGlyph(&s, glyphChunks, glyphIndex) == NO)
+  if (_JumpToGlyph(self, glyphIndex) == NO)
     {
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  attrs = _Attrs(&s);
+  attrs = _Attrs(self);
 
   if (attribute == GSGlyphDrawsOutsideLineFragment)
     {

@@ -108,7 +108,11 @@ typedef enum {
   float			_hyphenationFactor;
   NSTypesetter		*_typesetter;
 
-  void			*_glyphChunks;	// Private glyph storage.
+  void			*_glyphData;	// Private glyph storage.
+  void			*_currentGlyphs;	
+  void			*_glyphGaps;	// Gaps in character mapping.
+  unsigned		_chunkIndex;
+  unsigned		_glyphIndex;
   unsigned		_endCharIndex;	// After last char with generated glyph.
   
   NSGlyphGenerator		*_glyphGenerator;
@@ -137,7 +141,7 @@ typedef enum {
   unsigned			 _cachedRectArrayCapacity;
   
   // Cache for glyph strings (used when drawing) (Cost: 8 bytes + malloced glyph buffer size)
-  char			*_glyphBuffer;
+  char				*_glyphBuffer;
   unsigned 			 _glyphBufferSize;
   
   // Cache for faster glyph location lookup (Cost: 20 bytes)
