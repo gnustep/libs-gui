@@ -554,6 +554,8 @@ static NSTextFieldCell *titleCell;
        */
       if (column == 0)
         {
+	  int i;
+
 	  for (i = 0; i <= _lastColumnLoaded && numberOfSubStrings > 0; i++)
 	    {
 	      NSString	*c = [[self selectedCellInColumn: i] stringValue];
@@ -656,8 +658,8 @@ static NSTextFieldCell *titleCell;
 - (NSString *) pathToColumn: (int)column
 {
   NSMutableString	*s = [_pathSeparator mutableCopy];
-  unsigned		i;
   NSString              *string;
+  int i;
   
   /*
    * Cannot go past the number of loaded columns
@@ -744,7 +746,7 @@ static NSTextFieldCell *titleCell;
 {
   int i;
 
-  if (_lastColumnLoaded + 1 >= [_browserColumns count])
+  if ((unsigned)(_lastColumnLoaded + 1) >= [_browserColumns count])
     {
       i = [_browserColumns indexOfObject: [self _createColumn]];
     }
