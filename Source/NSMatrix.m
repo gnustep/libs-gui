@@ -781,6 +781,9 @@ static int mouseDownFlags = 0;
   NSArray	*row;
   NSCell	*aCell;
 
+  if (!allowsEmptySelection && mode == NSRadioModeMatrix)
+    return;
+
   for (i = 0; i < numRows; i++)
     {
       row = nil;
@@ -800,9 +803,6 @@ static int mouseDownFlags = 0;
 	    }
 	}
     }
-
-  if (!allowsEmptySelection && mode == NSRadioModeMatrix)
-    [self selectCellAtRow: 0 column: 0];
 }
 
 - (void) deselectSelectedCell
@@ -852,15 +852,21 @@ static int mouseDownFlags = 0;
     {
       ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
       [selectedCell setState: 0];
+      
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: selectedRow 
+					 column: selectedColumn]];
     }
 
-  selectedCell = aCell;
-  selectedRow = row;
-  selectedColumn = column;
-  ((tMatrix)selectedCells)->matrix[row][column] = YES;
-  [selectedCell setState: 1];
-
-  [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
+  if ((row >= 0) && (column >= 0))
+    {
+      selectedCell = aCell;
+      selectedRow = row;
+      selectedColumn = column;
+      ((tMatrix)selectedCells)->matrix[row][column] = YES;
+      [selectedCell setState: 1];
+      
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
+    }
 }
 
 - (BOOL) selectCellWithTag: (int)anInt
@@ -1179,6 +1185,28 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   newSize.width = nc * (cellSize.width + intercell.width) - intercell.width;
   newSize.height = nr * (cellSize.height + intercell.height) - intercell.height;
   [self setFrameSize: newSize];
+}
+
+- (void) sizeToFit
+{
+  NSSize newSize = NSZeroSize;
+  NSSize tmpSize;
+  NSMutableArray *row;
+  int i,j;
+
+  for (i = 0; i < numRows; i++)
+    {
+      row = [cells objectAtIndex: i];
+      for (j = 0; j < numCols; j++)
+	{
+	  tmpSize = [[row objectAtIndex: j] cellSize];	  
+	  if (tmpSize.width > newSize.width)
+	    newSize.width = tmpSize.width;
+	  if (tmpSize.height > newSize.height)
+	    newSize.height = tmpSize.height;
+	}
+    }
+  [self setCellSize: newSize];
 }
 
 - (void) scrollCellToVisibleAtRow: (int)row
@@ -1997,6 +2025,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   return YES;
 }
 
+// TODO: implement resize according to autosizesCells 
 
 //
 //	Methods that may not be needed FIX ME

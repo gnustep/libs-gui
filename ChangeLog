@@ -1,3 +1,13 @@
+1999-09-06  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix: Added missing method ([-sizeToFit]).
+	([-deselectAllCells]): do nothing, as in MacOS-X, if mode is
+	NSRadioModeMatrix and empty selection is not allowed.
+	([-selectCellAtRow:column:]): mark both the cells, newly selected
+	and deselected one, as needing redraw, not only the newly selected
+	cell.  If row or column is negative, just deselect the currently
+	selected cell, as in MacOS-X.
+
 Mon Sep  6  6:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: added enable/disable flush fix from dawn.
