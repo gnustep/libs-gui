@@ -612,6 +612,8 @@ setControl(NSView* content, id control, NSString *title)
   
   defButton = [self _makeButtonWithRect: rect];
   [defButton setKeyEquivalent: @"\r"];
+  [defButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask 
+                              | NSContentsCellMask];
   [defButton setImagePosition: NSImageRight];
   [defButton setImage: [NSImage imageNamed: @"common_ret"]];
   [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
