@@ -1,3 +1,13 @@
+2000-06-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSComboBox.m
+	Added [setDelegate:] method.
+	* Headers/gnustep/gui/NSComboBoxCell.h
+	* Source/NSComboBoxCell.m
+	* Source/GSComboSupport.h
+	* Source/GSComboSupport.m
+	Reformated, simplified and corrected many methods.
+	
 Sat Jun  9 05:51:48 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCell.m ([-cellAttribute:]), ([-setCellAttribute:to:]):
