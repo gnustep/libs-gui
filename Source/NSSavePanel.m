@@ -280,7 +280,8 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (void) _resetDefaults
 {
-  ASSIGN (_directory, [_fm currentDirectoryPath]);
+  if (_directory == nil)
+    ASSIGN (_directory, [_fm currentDirectoryPath]);
   [self setPrompt: @"Name:"];
   [self setTitle: @"Save"];
   [self setRequiredFileType: @""];
