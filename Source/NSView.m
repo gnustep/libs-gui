@@ -1446,6 +1446,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_rFlags.needs_display)
     {
+      BOOL	subviewNeedsDisplay = NO;
+      NSRect	neededRect;
       NSRect	redrawRect;
 
       if (coordinates_valid == NO)
@@ -1453,6 +1455,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       aRect = NSIntersectionRect(aRect, visibleRect);
       redrawRect = NSIntersectionRect(aRect, invalidRect);
+      neededRect = NSIntersectionRect(visibleRect, invalidRect);
 
       if (NSIsEmptyRect(redrawRect) == NO)
 	{
@@ -1513,6 +1516,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 					      fromView: self];
 			}
 		      [subview displayIfNeededInRectIgnoringOpacity: isect];
+		      if (subview->_rFlags.needs_display)
+			{
+			  subviewNeedsDisplay = YES;
+			}
 		    }
 		}
 	    }
@@ -1520,14 +1527,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       /*
        * If the rect we displayed contains the invalidRect or visibleRect
-       * then we can empty invalidRect.	 All subviews will have been
+       * then we can empty invalidRect.	 If all subviews have been
        * fully displayed, so this view no longer needs to be displayed.
        */
-      if (NSEqualRects(aRect, NSUnionRect(invalidRect, aRect)) == YES
-	|| NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
+      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
 	{
 	  invalidRect = NSZeroRect;
-	  _rFlags.needs_display = NO;
+	  _rFlags.needs_display = subviewNeedsDisplay;
 	}
       [window flushWindow];
     }
@@ -1550,6 +1556,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
 {
+  BOOL		subviewNeedsDisplay = NO;
+  NSRect	neededRect;
+
   if (!window)
     return;
 
@@ -1557,6 +1566,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     [self _rebuildCoordinates];
 
   aRect = NSIntersectionRect(aRect, visibleRect);
+  neededRect = NSIntersectionRect(invalidRect, visibleRect);
 
   if (NSIsEmptyRect(aRect) == NO)
     {
@@ -1616,6 +1626,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 					  fromView: self];
 		    }
 		  [subview displayIfNeededInRectIgnoringOpacity: isect];
+		  if (subview->_rFlags.needs_display)
+		    {
+		      subviewNeedsDisplay = YES;
+		    }
 		}
 	    }
 	}
@@ -1623,14 +1637,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   /*
    * If the rect we displayed contains the invalidRect or visibleRect
-   * then we can empty invalidRect.  All subviews will have been
+   * then we can empty invalidRect.  If all subviews have been
    * fully displayed, so this view no longer needs to be displayed.
    */
-  if (NSEqualRects(aRect, NSUnionRect(invalidRect, aRect)) == YES
-    || NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
+  if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
     {
       invalidRect = NSZeroRect;
-      _rFlags.needs_display = NO;
+      _rFlags.needs_display = subviewNeedsDisplay;
     }
   [window flushWindow];
 }

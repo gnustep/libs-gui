@@ -1,3 +1,11 @@
+Thu Dec  2 17:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-displayRectIgnoringOpacity:]) and
+	([-displayIfNeededInRectIgnoringOpacity:]) - very tricksy fix so that
+	views are still marked as needing display if any of their subviews
+	need displaying (though the invalid rectangle may be zeroed if all
+	the stuff at this level has been drawn).
+
 Thu Dec  2 11:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenuView.m: ([-trackWithEvent:]) Removed spurious code
