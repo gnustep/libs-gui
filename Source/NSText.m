@@ -1304,6 +1304,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 // begin: NSText------------------------------------------------------------
 
+static NSNotificationCenter *nc;
+
 @implementation NSText
 
 //
@@ -1316,6 +1318,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       NSArray  *types;
 
       [self setVersion: 1];                     // Initial version
+
+      nc = [NSNotificationCenter defaultCenter];
 
       [self setSelectionWordGranularitySet:
 	      [NSCharacterSet whitespaceCharacterSet]];
@@ -1609,12 +1613,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self updateFontPanel];
 
 #if 0
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextViewDidChangeSelectionNotification
-    object: self
-    userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-		  NSStringFromRange (_selected_range),
-		NSOldSelectedCharacterRange, nil]];
+  [nc postNotificationName: NSTextViewDidChangeSelectionNotification
+      object: self
+      userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+				NSStringFromRange (_selected_range),
+			      NSOldSelectedCharacterRange, nil]];
 #endif
 
   // display
@@ -2207,8 +2210,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) setDelegate: (id) anObject
 {
-  NSNotificationCenter *nc  = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   ASSIGN(_delegate, anObject);
@@ -2496,9 +2497,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       //<!> stop timed entry
     }
 
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidEndEditingNotification
-    object: self];
+  [nc postNotificationName: NSTextDidEndEditingNotification  object: self];
   return YES;
 }
 
@@ -2521,9 +2520,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   //   [self unlockFocus];
   //   //<!> restart timed entry
   //  }
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidBeginEditingNotification
-    object: self];
+  [nc postNotificationName: NSTextDidBeginEditingNotification  object: self];
   return YES;
 }
 
@@ -2777,8 +2774,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) didChangeText
 {
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName: NSTextDidChangeNotification object: self];
+  [nc postNotificationName: NSTextDidChangeNotification  object: self];
 }
 
 // central text inserting method (takes care
@@ -3372,10 +3368,8 @@ other than copy/paste or dragging. */
   number = [NSNumber numberWithInt: textMovement];
   uiDictionary = [NSDictionary dictionaryWithObject: number
 			       forKey: @"NSTextMovement"];
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidEndEditingNotification
-    object: self
-    userInfo: uiDictionary];
+  [nc postNotificationName: NSTextDidEndEditingNotification
+      object: self  userInfo: uiDictionary];
   return;
 }
 
