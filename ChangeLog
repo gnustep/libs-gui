@@ -1,3 +1,18 @@
+Mon Feb 11 14:39:03 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Updated for change in semantics of -string method of
+	NSMutableAttributedString.
+	* Source/NSButtonCell.m ([-setAttributedAlternateTitle:]): 
+	Copy the string before using it.
+	* Source/NSCell.m ([-stringValue]): Copy the string before
+	returning it.  ([-mnemonic]): Copy the string before using it.
+	* Source/NSMatrix.m ([-validateEditing]): Copy the text before
+	using it.
+	* Source/NSTableView.m ([-validateEditing]): Copy the text before
+	using it.
+	* Source/NSTextField.m ([-validateEditing]): Copy the text before
+	using it.
+
 Mon Feb 11 14:30:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSLayoutManager.m ([-textContainerChangedTextView:]):
@@ -11,10 +26,10 @@ Mon Feb 11 14:30:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	([loadNibFile:externalNameTable:withZone:]) fix so that, if given a
 	name with a .nib extension, try correctly to use a .gorm or .gmodel.
 
- 002-02-10  Michael Hanni <mhanni@sprintmail.com>
+2002-02-10  Michael Hanni <mhanni@sprintmail.com>
 
-        * Source/NSMenuView.m ([-drawRect:]): make this more efficent,    
-        only redraw cells that we clip.
+	* Source/NSMenuView.m ([-drawRect:]): make this more efficent,
+	only redraw cells that we clip.
 
 Mon Feb 11 00:35:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
