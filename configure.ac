@@ -59,6 +59,16 @@ CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
 #--------------------------------------------------------------------
+# Add target OS directories as necessary
+#--------------------------------------------------------------------
+case "$target_os" in
+  freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/pkg/include"
+              LDFLAGS="$LDFLAGS -L/usr/pkg/lib";;
+  netbsd*)    CPPFLAGS="$CPPFLAGS -I/usr/pkg/include"
+              LDFLAGS="$LDFLAGS -L/usr/pkg/lib";;
+esac
+
+#--------------------------------------------------------------------
 # Find the compiler
 #--------------------------------------------------------------------
 AC_PROG_CC
@@ -80,13 +90,6 @@ AC_ARG_WITH(jpeg_library,
 AC_ARG_WITH(jpeg_include,  
 	[  --with-jpeg-include=DIR JPEG include files are in DIR], ,
         with_jpeg_include=)
-
-if test "$with_jpeg_library" = ""; then
-  case "$target_os" in
-    freebsd*)	with_jpeg_include="/usr/local/include"
-		with_jpeg_library="/usr/local/lib";;
-  esac
-fi
 
 if test -n "$with_jpeg_library"; then
   with_jpeg_library="-L$with_jpeg_library"
@@ -131,13 +134,6 @@ AC_ARG_WITH(tiff_library,
 AC_ARG_WITH(tiff_include,  
 	[  --with-tiff-include=DIR TIFF include files are in DIR], ,
         with_tiff_include=)
-
-if test "$with_tiff_library" = ""; then
-  case "$target_os" in
-    freebsd*)	with_tiff_include="/usr/local/include"
-		with_tiff_library="/usr/local/lib";;
-  esac
-fi
 
 if test -n "$with_tiff_library"; then
   with_tiff_library="-L$with_tiff_library"
