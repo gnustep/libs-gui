@@ -52,6 +52,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeObject:[self keyWindow] withName:@"keyWindow"];
   [archiver encodeObject:[self mainWindow] withName:@"mainWindow"];
   [archiver encodeObject:[self mainMenu] withName:@"mainMenu"];
+  [archiver encodeObject:[self delegate] withName:@"delegate"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -60,19 +61,24 @@ void __dummy_GMAppKit_functionForLinking() {}
   NSWindow* keyWindow;
   NSWindow* mainWindow;
   NSMenu* mainMenu;
+  id anObject;
 
 #if GNU_GUI_LIBRARY
   mainMenu = [unarchiver decodeObjectWithName:@"mainMenu"];
-  [self setMainMenu:mainMenu];
+  if (mainMenu)
+    [self setMainMenu:mainMenu];
 #endif
 
   windows = [unarchiver decodeObjectWithName:@"windows"];
   keyWindow = [unarchiver decodeObjectWithName:@"keyWindow"];
   mainWindow = [unarchiver decodeObjectWithName:@"mainWindow"];
+  anObject = [unarchiver decodeObjectWithName:@"delegate"];
+  [self setDelegate:anObject];
 
 #if NeXT_GUI_LIBRARY
   mainMenu = [unarchiver decodeObjectWithName:@"mainMenu"];
-  [self setMainMenu:mainMenu];
+  if (mainMenu)
+    [self setMainMenu:mainMenu];
 #endif
 
   [keyWindow makeKeyWindow];
