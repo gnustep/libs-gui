@@ -204,7 +204,7 @@ main(int argc, char** argv, char **env_c)
 
   str = usrRoot;	/* Record for adding into roots array */
 
-  usrRoot = [str stringByAppendingPathComponent: @"Services"];
+  usrRoot = [str stringByAppendingPathComponent: @"Library/Services"];
   if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
     {
       if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)

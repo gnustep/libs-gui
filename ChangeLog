@@ -1,5 +1,12 @@
 2003-04-27  Adam Fedor  <fedor@gnu.org>
 
+	* Source/GSServicesManager.m (+newWithApplication:) Change
+	Services to Library/Services.
+	* Source/NSWorkspace.m (+initilize): Idem.
+	* Tools/make_services.m (main): Idem.
+
+2003-04-27  Adam Fedor  <fedor@gnu.org>
+
 	* Updates for filesystem change.
 	* GNUmakefile (GNUSTEP_MAKEFILES): Remove
 	* ColorPickers/GNUmakefile, Documentation/GNUmakefile,

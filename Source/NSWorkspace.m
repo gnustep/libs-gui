@@ -327,7 +327,7 @@ static NSString			*_rootPath = @"/";
 							  NSUserDomainMask, 
 							  YES) 
 							 objectAtIndex: 0]
-		      stringByAppendingPathComponent: @"Services"];
+		      stringByAppendingPathComponent: @"Library/Services"];
 	  
 	  /*
 	   *	Load file extension preferences.
