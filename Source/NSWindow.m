@@ -677,7 +677,6 @@ static NSMapTable* windowmaps = NULL;
   _styleMask = aStyle;
   
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
-  _frame = [self constrainFrameRect: _frame toScreen: [self screen]];
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
     _frame.size.height - contentRect.size.height + 1);
   _maximumSize = NSMakeSize (10e4, 10e4);
@@ -1142,8 +1141,9 @@ static NSMapTable* windowmaps = NULL;
     }
   else
     {
+      _frame = [self constrainFrameRect:_frame toScreen:[self screen]];
       // create deferred window
-      if(_windowNum == 0)
+      if (_windowNum == 0)
 	{
 	  [self _initBackendWindow: _frame];
 	  display = YES;
@@ -1339,8 +1339,6 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
-  frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
-  
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
     {
       frameRect.size.width = _maximumSize.width;

@@ -1,3 +1,10 @@
+2001-07-30  Georg Fleischmann
+
+	* gui/Source/NSWindow.m
+	[NSWindow orderWindow:relativeTo:]: constrain added
+	[NSWindow initWithContentRect:styleMask:backing:defer:screen:] and
+	[NSWindow setFrame:]: constrain removed
+
 2000-07-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSUserInterfaceValidation.h
