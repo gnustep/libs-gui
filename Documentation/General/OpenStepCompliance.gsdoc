@@ -9,7 +9,7 @@
     <chapter>
       <heading>Classes</heading>
       <p>
-      This file documents the complance of all the classes in the
+      This file documents the compliance of all the classes in the
       GNUstep Gui library. Note that the following is just a best guess
       as to the compliance of the classes. Each class was checked to make
       sure it implemented all the documented OpenStep methods and functions.
