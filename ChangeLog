@@ -1,3 +1,12 @@
+2000-06-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextAttachment.m 
+	Added copyWithZone: to NSTextAttachment to let it work as a
+	attribute in a NSAttributedString. This may be just a temporary
+	work around.
+	* Source/NSStringDrawing.m 
+	Corrected drawing code for text attachments.
+	
 Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSPopUpButtonCell.m ([-stringValue]): Added - this method
