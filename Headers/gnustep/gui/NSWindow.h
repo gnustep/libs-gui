@@ -58,6 +58,7 @@
 @class NSToolbar;
 @class NSView;
 @class NSWindowController;
+@class NSCachedImageRep;
 
 /*
  * Window levels are taken from MacOS-X
@@ -140,6 +141,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
   float         _alphaValue;
 
   NSToolbar    *_toolbar;
+
+  NSCachedImageRep *_cachedImage;
+  NSPoint       _cachedImageOrigin;
 
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
