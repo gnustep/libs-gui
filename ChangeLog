@@ -1,3 +1,9 @@
+Thu Jun  3  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWorkspace.m: Updated app launching code to supply info
+	to open files if necessary.
+	Fixed bug in getting name of icons for file.
+
 Wed Jun  2 22:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSButtonCell.m: ([sendAction:to:]) should work with nil target.

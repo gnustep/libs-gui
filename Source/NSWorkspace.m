@@ -184,7 +184,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	  NSString	*path;
 
 	  path = [ws fullPathForApplication: appName];
-	  file = [path stringByAppendingString: file];
+	  file = [path stringByAppendingPathComponent: file];
 	}
       if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
 	{
