@@ -1272,7 +1272,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
    * case that we choose an action in a transient window which
    * has already dissappeared.  
    */
-  if (indexOfActionToExecute == _highlightedItemIndex)
+  if (_highlightedItemIndex >= 0)
     {
       [self setHighlightedItemIndex: -1];
     }
