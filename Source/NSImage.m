@@ -514,6 +514,7 @@ static Class			cacheClass = 0;
       if (repd->bg != nil)
 	{
 	  DESTROY(repd->bg);
+	  [repd->rep setOpaque: YES];
 	}
     }
 }
@@ -603,7 +604,7 @@ static Class			cacheClass = 0;
 
 	  [self lockFocusOnRepresentation: rep];
 	  bounds = [_lockedView bounds];
-	  if (_color != nil && [_color isEqual: clearColor] == NO)
+	  if (_color != nil && [_color alphaComponent] != 0.0)
 	    {
 	      [_color set];
 	      NSEraseRect(bounds);
@@ -612,6 +613,14 @@ static Class			cacheClass = 0;
 	    inRect: NSMakeRect(0, 0, _size.width, _size.height)];
 	  [self unlockFocus];
 	  repd->bg = _color ? [_color copy] : [clearColor copy];
+	  if ([repd->bg alphaComponent] == 1.0)
+	    {
+	      [rep setOpaque: YES];
+	    }
+	  else
+	    {
+	      [rep setOpaque: [repd->original isOpaque]];
+	    }
 	}
     }
   
@@ -917,33 +926,40 @@ static Class			cacheClass = 0;
 
 	  if (validCache != nil)
 	    {
-	      if (NSImageForceCaching == NO)
+	      if (NSImageForceCaching == NO && [rep isOpaque] == NO)
 		{
 		  /*
-		   * If the image rep has transparencey and we are drawing
+		   * If the image rep is not opaque and we are drawing
 		   * without an opaque background then the cache can't
 		   * really be valid 'cos we might be drawing transparency
 		   * on top of anything.  So we invalidate the cache by
 		   * removing the background color information.
 		   */
-		  if ([rep hasAlpha] && [validCache->bg alphaComponent] != 1.0)
+		  if ([validCache->bg alphaComponent] != 1.0)
 		    {
 		      DESTROY(validCache->bg);
+		      [validCache->rep setOpaque: YES];
 		    }
 		}
 	      cacheRep = validCache->rep;
 	    }
 	  else if (partialCache != nil)
 	    {
-	      if (NSImageForceCaching == NO)
+	      if (NSImageForceCaching == NO && [rep isOpaque] == NO)
 		{
 		  if (invalidCache != nil)
 		    {
+		      /*
+		       * If there is an unused cache - use it rather than
+		       * re-using this one, since we might get a request
+		       * to draw with this color again.
+		       */
 		      partialCache = invalidCache;
 		    }
 		  else
 		    {
-		      DESTROY(validCache->bg);
+		      DESTROY(partialCache->bg);
+		      [partialCache->rep setOpaque: YES];
 		    }
 		}
 	      cacheRep = partialCache->rep;

@@ -1,3 +1,8 @@
+Thu Dec  2  6:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSImage.m: Use opacity values from image reps to cache more
+	intelligently, and set the opacity of caches correctly.
+
 Thu Dec  2 01:28:34 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSTableHeaderView.h: Added copyright.
