@@ -55,6 +55,7 @@ DEFINE_RINT_IF_MISSING
 
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
+static NSTextFieldCell *titleCell;
 
 #define NSBR_COLUMN_SEP 6
 #define NSBR_VOFFSET 2
@@ -67,6 +68,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 //
 @interface NSBrowserColumn : NSObject <NSCoding>
 {
+@public
   BOOL _isLoaded;
   id _columnScrollView;
   id _columnMatrix;
@@ -74,19 +76,16 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   NSString *_columnTitle;
 }
 
-- (void)setIsLoaded: (BOOL)flag;
-- (BOOL)isLoaded;
-- (void)setColumnScrollView: (id)aView;
-- columnScrollView;
-- (void)setColumnMatrix: (id)aMatrix;
-- columnMatrix;
-- (void)setNumberOfRows: (int)num;
-- (int)numberOfRows;
-- (void)setColumnTitle: (NSString *)aString;
-- (NSString *)columnTitle;
-
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- (id) initWithCoder: (NSCoder *)aDecoder;
+- (void) setIsLoaded: (BOOL)flag;
+- (BOOL) isLoaded;
+- (void) setColumnScrollView: (id)aView;
+- (id) columnScrollView;
+- (void) setColumnMatrix: (id)aMatrix;
+- (id) columnMatrix;
+- (void) setNumberOfRows: (int)num;
+- (int) numberOfRows;
+- (void) setColumnTitle: (NSString *)aString;
+- (NSString *) columnTitle;
 @end
 
 @implementation NSBrowserColumn
@@ -123,17 +122,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   ASSIGN(_columnScrollView, aView);
 }
 
-- columnScrollView
+- (id) columnScrollView
 {
   return _columnScrollView;
 }
 
-- (void)setColumnMatrix: (id)aMatrix
+- (void) setColumnMatrix: (id)aMatrix
 {
   ASSIGN(_columnMatrix, aMatrix);
 }
 
-- columnMatrix
+- (id) columnMatrix
 {
   return _columnMatrix;
 }
@@ -143,12 +142,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _numberOfRows = num;
 }
 
-- (int)numberOfRows
+- (int) numberOfRows
 {
   return _numberOfRows;
 }
 
-- (void)setColumnTitle: (NSString *)aString
+- (void) setColumnTitle: (NSString *)aString
 {
   if (!aString)
     aString = @"";
@@ -156,12 +155,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   ASSIGN(_columnTitle, aString);
 }
 
-- (NSString *)columnTitle
+- (NSString *) columnTitle
 {
   return _columnTitle;
 }
 
-- (void)encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isLoaded];
   [aCoder encodeObject: _columnScrollView];
@@ -169,6 +168,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [aCoder encodeValueOfObjCType: @encode(int) at:&_numberOfRows];
   [aCoder encodeObject: _columnTitle];
 }
+
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
@@ -206,6 +206,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   return self;
 }
+
 - (void) drawWithFrame: (NSRect)cellFrame  inView: (NSView*)controlView
 {
   if (NSIsEmptyRect (cellFrame) || ![controlView window])
@@ -216,7 +217,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [controlView lockFocus];
   NSDrawGrayBezel (cellFrame, NSZeroRect);
   [controlView unlockFocus];
-  [super drawInteriorWithFrame: cellFrame  inView: controlView];
+  [self drawInteriorWithFrame: cellFrame  inView: controlView];
 }
 @end
 
@@ -243,42 +244,44 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     method is not meant to be used by applications.
 */
 
-+ (Class)cellClass
++ (Class) cellClass
 {
   return [NSBrowserCell class];
 }
 
 /** Sets the class of NSCell used in the columns of the NSBrowser. */
-- (void)setCellClass: (Class)classId
+- (void) setCellClass: (Class)classId
 {
-  _browserCellClass = classId;
+  NSCell *aCell;
 
+  aCell = [[classId alloc] init];
   // set the prototype for the new class
-  [self setCellPrototype: AUTORELEASE([[_browserCellClass alloc] init])];
+  [self setCellPrototype: aCell];
+  RELEASE(aCell);
 }
 
 /** Returns the NSBrowser's prototype NSCell instance.*/
-- (id)cellPrototype
+- (id) cellPrototype
 {
   return _browserCellPrototype;
 }
 
 /** Sets the NSCell instance copied to display items in the columns of
     NSBrowser. */
-- (void)setCellPrototype: (NSCell *)aCell
+- (void) setCellPrototype: (NSCell *)aCell
 {
   ASSIGN(_browserCellPrototype, aCell);
 }
 
 /** Returns the class of NSMatrix used in the NSBrowser's columns. */
-- (Class)matrixClass
+- (Class) matrixClass
 {
   return _browserMatrixClass;
 }
 
 /** Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
     NSBrowser's columns. */
-- (void)setMatrixClass: (Class)classId
+- (void) setMatrixClass: (Class)classId
 {
   _browserMatrixClass = classId;
 }
@@ -288,7 +291,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
  */
 
 /** Returns the last (rightmost and lowest) selected NSCell. */
-- (id)selectedCell
+- (id) selectedCell
 {
   int i;
   id matrix;
@@ -308,7 +311,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the last (lowest) NSCell that's selected in column. */
-- (id)selectedCellInColumn: (int)column
+- (id) selectedCellInColumn: (int)column
 {
   id matrix;
 
@@ -321,7 +324,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns all cells selected in the rightmost column. */
-- (NSArray *)selectedCells
+- (NSArray *) selectedCells
 {
   int i;
   id matrix;
@@ -341,11 +344,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Selects all NSCells in the last column of the NSBrowser. */
-- (void)selectAll: (id)sender
+- (void) selectAll: (id)sender
 {
   id matrix;
 
-  if (!(matrix = [self matrixInColumn: _lastVisibleColumn]))
+  if (!(matrix = [self matrixInColumn: _lastColumnLoaded]))
     {
       return;
     }
@@ -368,7 +371,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Selects the cell at index row in the column identified by index column. */
-- (void)selectRow:(int)row inColumn:(int)column 
+- (void) selectRow: (int)row inColumn: (int)column 
 {
   id matrix;
   id cell;
@@ -382,6 +385,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if ((cell = [matrix cellAtRow: row column: 0]))
     {
       BOOL didSelect;
+
       if (column < _lastColumnLoaded)
 	{
 	  [self setLastColumn: column];
@@ -412,10 +416,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 /** Loads if necessary and returns the NSCell at row in column. */
 /*  if you change this code, you may want to look at the _loadColumn
  method in which the following code is integrated (for speed) */
-- (id)loadedCellAtRow: (int)row
+- (id) loadedCellAtRow: (int)row
 	       column: (int)column
 {
-  NSBrowserColumn *bc;
   NSArray *columnCells;
   id matrix;
   int count = [_browserColumns count];
@@ -427,9 +430,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       return nil;
     }
 
-  bc = [_browserColumns objectAtIndex: column];
-
-  if (!(matrix = [bc columnMatrix]))
+  if (!(matrix = [self matrixInColumn: column]))
     {
       return nil;
     }
@@ -473,7 +474,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the matrix located in the column identified by index column. */
-- (NSMatrix *)matrixInColumn: (int)column
+- (NSMatrix *) matrixInColumn: (int)column
 {
   NSBrowserColumn *bc;
 
@@ -485,12 +486,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   bc = [_browserColumns objectAtIndex: column];
   
-  if (![bc isLoaded])
+  if ((bc == nil) || !(bc->_isLoaded))
     {
       return nil;
     }
 
-  return [bc columnMatrix];
+  return bc->_columnMatrix;
 }
 
 /*
@@ -498,7 +499,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
  */
 
 /** Returns the browser's current path. */
-- (NSString *)path
+- (NSString *) path
 {
   return [self pathToColumn: _lastColumnLoaded + 1];
 }
@@ -614,13 +615,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 /** Returns a string representing the path from the first column up to,
  but not including, the column at index column. */
-- (NSString *)pathToColumn: (int)column
+- (NSString *) pathToColumn: (int)column
 {
   NSMutableString	*s = [_pathSeparator mutableCopy];
   unsigned		i;
   NSString              *string;
   
-
   /*
    * Cannot go past the number of loaded columns
    */
@@ -631,7 +631,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   for (i = 0; i < column; ++i)
     {
-      id	c = [self selectedCellInColumn: i];
+      id c = [self selectedCellInColumn: i];
 
       if (i != 0)
 	{
@@ -662,13 +662,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the path separator. The default is "/". */
-- (NSString *)pathSeparator
+- (NSString *) pathSeparator
 {
   return _pathSeparator;
 }
 
 /** Sets the path separator to newString. */
-- (void)setPathSeparator: (NSString *)aString
+- (void) setPathSeparator: (NSString *)aString
 {
   ASSIGN(_pathSeparator, aString);
 }
@@ -677,7 +677,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 /*
  * Manipulating columns 
  */
-- (NSBrowserColumn *)_createColumn
+- (NSBrowserColumn *) _createColumn
 {
   NSBrowserColumn *bc;
   NSScrollView *sc;
@@ -701,7 +701,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Adds a column to the right of the last column. */
-- (void)addColumn
+- (void) addColumn
 {
   int i;
 
@@ -721,7 +721,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   [self _performLoadOfColumn: i];
   [self setLastColumn: i];
-  [self _adjustMatrixOfColumn: i];
 
   _isLoaded = YES;
 
@@ -794,18 +793,15 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the column number in which matrix is located. */
-- (int)columnOfMatrix: (NSMatrix *)matrix
+- (int) columnOfMatrix: (NSMatrix *)matrix
 {
   int i, count;
-  id bc;
 
   // Loop through columns and compare matrixes
   count = [_browserColumns count];
   for (i = 0; i < count; ++i)
     {
-      if (!(bc = [_browserColumns objectAtIndex: i]))
-      	continue;
-      if (matrix == [bc columnMatrix])
+      if (matrix == [self matrixInColumn: i])
       	return i;
     }
 
@@ -814,16 +810,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the index of the last column with a selected item. */
-- (int)selectedColumn
+- (int) selectedColumn
 {
   int i;
-  id bc, matrix;
+  id matrix;
 
   for (i = _lastColumnLoaded; i >= 0; i--)
     {
-      if (!(bc = [_browserColumns objectAtIndex: i]))
-      	continue;
-      if (![bc isLoaded] || !(matrix = [bc columnMatrix]))
+      if (!(matrix = [self matrixInColumn: i]))
       	continue;
       if ([matrix selectedCell])
       	return i;
@@ -833,13 +827,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the index of the last column loaded. */
-- (int)lastColumn
+- (int) lastColumn
 {
   return _lastColumnLoaded;
 }
 
 /** Sets the last column to column. */
-- (void)setLastColumn: (int)column
+- (void) setLastColumn: (int)column
 {
   if (column < -1)
     {
@@ -852,13 +846,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the index of the first visible column. */
-- (int)firstVisibleColumn
+- (int) firstVisibleColumn
 {
   return _firstVisibleColumn;
 }
 
 /** Returns the number of columns visible. */
-- (int)numberOfVisibleColumns
+- (int) numberOfVisibleColumns
 {
   int num;
 
@@ -868,13 +862,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the index of the last visible column. */
-- (int)lastVisibleColumn
+- (int) lastVisibleColumn
 {
   return _lastVisibleColumn;
 }
 
 /** Invokes delegate method browser:isColumnValid: for visible columns. */
-- (void)validateVisibleColumns
+- (void) validateVisibleColumns
 {
   int i;
 
@@ -903,13 +897,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
  */
 
 /** Returns whether column zero is loaded. */
-- (BOOL)isLoaded
+- (BOOL) isLoaded
 {
   return _isLoaded;
 }
 
 /** Loads column zero; unloads previously loaded columns. */
-- (void)loadColumnZero
+- (void) loadColumnZero
 {
   // set last column loaded
   [self setLastColumn: -1];
@@ -922,7 +916,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Reloads column if it is loaded; sets it as the last column. */
-- (void)reloadColumn: (int)column
+- (void) reloadColumn: (int)column
 {
   NSArray *selectedCells;
   NSMatrix *matrix;
@@ -951,10 +945,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	}
     }
   
-
   // Perform the data load
   [self _performLoadOfColumn: column];
-  [self _adjustMatrixOfColumn: column];
 
   // Restore the selected cells
   if (count > 0)
@@ -985,38 +977,38 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 /** Returns whether the user can select branch items when multiple selection
     is enabled. */
-- (BOOL)allowsBranchSelection
+- (BOOL) allowsBranchSelection
 {
   return _allowsBranchSelection;
 }
 
 /** Sets whether the user can select branch items when multiple selection
     is enabled. */
-- (void)setAllowsBranchSelection: (BOOL)flag
+- (void) setAllowsBranchSelection: (BOOL)flag
 {
   _allowsBranchSelection = flag;
 }
 
 /** Returns whether there can be nothing selected. */
-- (BOOL)allowsEmptySelection
+- (BOOL) allowsEmptySelection
 {
   return _allowsEmptySelection;
 }
 
 /** Sets whether there can be nothing selected. */
-- (void)setAllowsEmptySelection: (BOOL)flag
+- (void) setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }
 
 /** Returns whether the user can select multiple items. */
-- (BOOL)allowsMultipleSelection
+- (BOOL) allowsMultipleSelection
 {
   return _allowsMultipleSelection;
 }
 
 /** Sets whether the user can select multiple items. */
-- (void)setAllowsMultipleSelection: (BOOL)flag
+- (void) setAllowsMultipleSelection: (BOOL)flag
 {
   _allowsMultipleSelection = flag;
 }
@@ -1028,26 +1020,26 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 /** Returns YES if NSMatrix objects aren't freed when their columns
     are unloaded. */
-- (BOOL)reusesColumns
+- (BOOL) reusesColumns
 {
   return _reusesColumns;
 }
 
 /** If flag is YES, prevents NSMatrix objects from being freed when
     their columns are unloaded, so they can be reused. */
-- (void)setReusesColumns: (BOOL)flag
+- (void) setReusesColumns: (BOOL)flag
 {
   _reusesColumns = flag;
 }
 
 /** Returns the maximum number of visible columns. */
-- (int)maxVisibleColumns
+- (int) maxVisibleColumns
 {
   return _maxVisibleColumns;
 }
 
 /** Sets the maximum number of columns displayed. */
-- (void)setMaxVisibleColumns: (int)columnCount
+- (void) setMaxVisibleColumns: (int)columnCount
 {
   if ((columnCount < 1) || (_maxVisibleColumns == columnCount))
     return;
@@ -1059,13 +1051,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns the minimum column width in pixels. */
-- (int)minColumnWidth
+- (int) minColumnWidth
 {
   return _minColumnWidth;
 }
 
 /** Sets the minimum column width in pixels. */
-- (void)setMinColumnWidth: (int)columnWidth
+- (void) setMinColumnWidth: (int)columnWidth
 {
   float sw;
 
@@ -1084,13 +1076,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns whether columns are separated by bezeled borders. */
-- (BOOL)separatesColumns
+- (BOOL) separatesColumns
 {
   return _separatesColumns;
 }
 
 /** Sets whether to separate columns with bezeled borders. */
-- (void)setSeparatesColumns: (BOOL)flag
+- (void) setSeparatesColumns: (BOOL)flag
 {
   if (_separatesColumns != flag)
     {
@@ -1101,16 +1093,20 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 /** Returns YES if the title of a column is set to the string value of 
     the selected NSCell in the previous column.*/
-- (BOOL)takesTitleFromPreviousColumn
+- (BOOL) takesTitleFromPreviousColumn
 {
   return _takesTitleFromPreviousColumn;
 }
 
 /** Sets whether the title of a column is set to the string value of the
     selected NSCell in the previous column. */
-- (void)setTakesTitleFromPreviousColumn: (BOOL)flag
+- (void) setTakesTitleFromPreviousColumn: (BOOL)flag
 {
-  _takesTitleFromPreviousColumn = flag;
+  if (_takesTitleFromPreviousColumn != flag)
+    {
+      _takesTitleFromPreviousColumn = flag;
+      [self setNeedsDisplay: YES];
+    }
 }
 
 
@@ -1146,13 +1142,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 }
 
 /** Returns whether columns display titles. */
-- (BOOL)isTitled
+- (BOOL) isTitled
 {
   return _isTitled;
 }
 
 /** Sets whether columns display titles. */
-- (void)setTitled: (BOOL)flag
+- (void) setTitled: (BOOL)flag
 {
   if (_isTitled != flag)
     {
@@ -1162,28 +1158,36 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 }
 
+- (void) drawTitleOfColumn: (int)column 
+		    inRect: (NSRect)aRect
+{
+  [self drawTitle: [self titleOfColumn: column] 
+	inRect: aRect 
+	ofColumn: column];
+}
+
 /** Draws the title for the column at index column within the rectangle
     defined by aRect. */
-- (void)drawTitle: (NSString *)title
-	   inRect: (NSRect)aRect
-	 ofColumn: (int)column
+- (void) drawTitle: (NSString *)title
+	    inRect: (NSRect)aRect
+	  ofColumn: (int)column
 {
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
 
-  [_titleCell setStringValue: title];
-  [_titleCell drawWithFrame: aRect inView: self];
+  [titleCell setStringValue: title];
+  [titleCell drawWithFrame: aRect inView: self];
 }
 
 /** Returns the height of column titles.  */
-- (float)titleHeight
+- (float) titleHeight
 {
   // Nextish look requires 21 here
   return 21;
 }
 
 /** Returns the bounds of the title frame for the column at index column. */
-- (NSRect)titleFrameOfColumn: (int)column
+- (NSRect) titleFrameOfColumn: (int)column
 {
   // Not titled then no frame
   if (!_isTitled)
@@ -1229,7 +1233,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
  */
 
 /** Scrolls to make the column at index column visible. */
-- (void)scrollColumnToVisible: (int)column
+- (void) scrollColumnToVisible: (int)column
 {
   int i;
 
@@ -1843,6 +1847,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       // Initial version
       [self setVersion: 1];
       scrollerWidth = [NSScroller scrollerWidth];
+      titleCell = [GSBrowserTitleCell new];
     }
 }
 
@@ -1859,8 +1864,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   self = [super initWithFrame: rect];
 
   // Class setting
-  _browserCellClass = [NSBrowser cellClass];
-  _browserCellPrototype = [[_browserCellClass alloc] init];
+  _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
   _browserMatrixClass = [NSMatrix class];
   
   // Default values
@@ -1901,7 +1905,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Columns
   _browserColumns = [[NSMutableArray alloc] init];
-  _titleCell = [GSBrowserTitleCell new];
 
   // Create a single column
   _lastColumnLoaded = -1;
@@ -1918,7 +1921,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   RELEASE(_pathSeparator);
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
-  RELEASE(_titleCell);
   TEST_RELEASE(_charBuffer);
 
   [super dealloc];
@@ -2139,7 +2141,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (_acceptsAlphaNumericalKeys && (character < 0xF700)
        && ([characters length] > 0))
     {
-      NSBrowserColumn *bc;
       NSMatrix *matrix;
       NSString *sv;
       int i, n, s;
@@ -2150,9 +2151,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       selectedColumn = [self selectedColumn];
       if(selectedColumn != -1)
 	{
-	  bc = [_browserColumns objectAtIndex: 
-				  selectedColumn];
-	  matrix = [bc columnMatrix];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  n = [matrix numberOfRows];
 	  s = [matrix selectedRow];
 	  
@@ -2240,7 +2239,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: NSStringFromClass (_browserCellClass)];
+  // Here to keep compatibility with old version
+  [aCoder encodeObject: nil];
   [aCoder encodeObject:_browserCellPrototype];
   [aCoder encodeObject: NSStringFromClass (_browserMatrixClass)];
 
@@ -2288,8 +2288,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   int colCount;
+  id dummy;
+
   [super initWithCoder: aDecoder];
-  _browserCellClass     = NSClassFromString ((NSString *)[aDecoder decodeObject]);
+  // Here to keep compatibility with old version
+  dummy = [aDecoder decodeObject];
   _browserCellPrototype = RETAIN([aDecoder decodeObject]);
   _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
 
@@ -2339,7 +2342,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
   
-  _titleCell = [GSBrowserTitleCell new];
 
   // Do the minimal thing to initiate the browser...
   /*
@@ -2680,6 +2682,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   
   [sc setNeedsDisplay: YES];
   [bc setIsLoaded: YES];
+  [self _adjustMatrixOfColumn: column];
 }
 
 /* Unloads all columns from and including 'column'. */
