@@ -1,3 +1,15 @@
+Tue Dec 12 19:18:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-copyWithZone:]): Do not deep-copy ivars, 
+	only retain them if not nil.
+	* Source/NSCell.m ([-copyWithZone:]): Do not deep-copy ivars.
+	* Source/NSTextFieldCell.m ([-copyWithZone:]): Do not deep-copy 
+	ivars.
+	* Source/NSFormCell.m ([-initTextCell:]): Left align text.
+	* Source/NSTextField.m ([-selectText:]): Bug fix for the recent
+	change in [NSActionCell -stringValue].
+	* Source/NSMatrix.m ([-selectTextAtRow:column:]): Idem.
+	
 2000-12-07  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSCell.h: 
