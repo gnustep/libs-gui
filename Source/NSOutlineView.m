@@ -1081,6 +1081,11 @@ static int _levelForItem(NSOutlineView *outline,
   return NSDragOperationCopy;
 }
 
+- (void) draggingExited: (id <NSDraggingInfo>) sender
+{
+  [self setNeedsDisplayInRect: oldDraggingRect];
+  [self displayIfNeeded];
+}
 
 - (unsigned int) draggingUpdated: (id <NSDraggingInfo>) sender
 {
