@@ -78,7 +78,7 @@ after-clean::
 
 # Things to do after distcleaning
 after-distclean::
-	rm -f config.status config.log config.cache TAGS config.mak gui.make
+	rm -f config.status config.log config.cache TAGS config.make gui.make
 
 gui.make: gui.make.in
 	./configure
