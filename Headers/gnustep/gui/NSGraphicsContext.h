@@ -30,6 +30,7 @@
 #define _NSGraphicsContext_h_INCLUDE
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
 
 #include <AppKit/GSMethodTable.h>
 
@@ -121,6 +122,10 @@ typedef enum _NSWindowOrderingMode
 - (NSView*) focusView;
 - (void) lockFocusView: (NSView*)aView;
 - (void) unlockFocusView: (NSView*)aView;
+
+/* Convert a rect in window coordinates to device space (Backend method) */
+- (NSRect) windowRectInDeviceSpace: (NSRect)windowRect;
+
 @end
 #endif
 

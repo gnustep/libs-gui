@@ -35,6 +35,9 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSView.h"
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
@@ -57,6 +60,11 @@ static NSString	*NSGraphicsContextThredKey = @"NSGraphicsContextThredKey";
 @interface NSGraphicsContext (Private)
 + (gsMethodTable *) _initializeMethodTable;
 @end
+
+struct NSWindow_struct 
+{
+  @defs(NSWindow)
+};
 
 @implementation NSGraphicsContext 
 
@@ -197,14 +205,28 @@ static NSString	*NSGraphicsContextThredKey = @"NSGraphicsContextThredKey";
 
 - (void) lockFocusView: (NSView*)aView
 {
+  NSRect rect;
+  struct NSWindow_struct *window;
   [focus_stack addObject: aView];
+  window = (struct NSWindow_struct *)[aView window];
+  /* Add aView's visible Rect to its Window's area to be flushed */
+  rect = [[aView _matrixToWindow] rectInMatrixSpace: [aView visibleRect]];
+  window->rectBeingDrawn = NSUnionRect(window->rectBeingDrawn, rect);
+
 }
 
 - (void) unlockFocusView: (NSView*)aView
 {
+  NSRect rect;
+  struct NSWindow_struct *window;
   NSView	*v = [focus_stack lastObject];
 
   NSAssert(v == aView, NSInvalidArgumentException);
+  /* Set Window's flush rect so our view is properly flushed */
+  window = (struct NSWindow_struct *)[aView window];
+  rect = [self windowRectInDeviceSpace: window->rectBeingDrawn];
+  window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush, rect);
+  window->rectBeingDrawn = NSZeroRect;
   [focus_stack removeLastObject];
 }
 

@@ -94,7 +94,7 @@ extern NSSize NSTokenSize;
   NSBackingStoreType backing_type;
   unsigned int style_mask;
   int window_level;
-  NSMutableArray* _flushRectangles;
+  NSRect rectBeingDrawn;
   NSRect rectNeedingFlush;
 
   BOOL is_one_shot;

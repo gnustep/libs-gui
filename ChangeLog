@@ -1,3 +1,13 @@
+1999-05-01  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	(-windowRectInDeviceSpace:): New method.
+	* Headers/gnustep/gui/NSWindow.h: Removed old flush ivar, added
+	new one.
+	* Source/NSGraphicsContext.m (-lockFocusView:): Set focus window's
+	rectBeingDrawn ivar for flushing performance.
+	(-unlockFOcusView:): Set rectNeedsFlush from rectBeingDrawn.
+
 Thu Apr 29 13:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSControl.m: ([-drawRect:]) implemented to call ([-drawCell:])
