@@ -204,7 +204,7 @@ NSTiffOpenDataRead(const char* data, long size)
   handle->outposition = 0;
   handle->size = size;
   handle->mode = "r";
-  return TIFFClientOpen("TiffData", "r",
+  return TIFFClientOpen("GSTiffReadData", "r",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
 			TiffHandleSeek, TiffHandleClose,
@@ -223,7 +223,7 @@ NSTiffOpenDataWrite(char **data, long *size)
   handle->outposition = size;
   handle->size = *size;
   handle->mode = "w";
-  return TIFFClientOpen("TiffData", "w",
+  return TIFFClientOpen("GSTiffWriteData", "w",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
 			TiffHandleSeek, TiffHandleClose,
@@ -275,7 +275,8 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   TIFFGetField(image, TIFFTAG_IMAGEWIDTH, &info->width);
   TIFFGetField(image, TIFFTAG_IMAGELENGTH, &info->height);
   TIFFGetField(image, TIFFTAG_COMPRESSION, &info->compression);
-  TIFFGetField(image, TIFFTAG_JPEGQUALITY, &info->quality);
+  if (info->compression == COMPRESSION_JPEG)
+    TIFFGetField(image, TIFFTAG_JPEGQUALITY, &info->quality);
   TIFFGetField(image, TIFFTAG_SUBFILETYPE, &info->subfileType);
   TIFFGetField(image, TIFFTAG_EXTRASAMPLES, &info->extraSamples, &sample_info);
   info->extraSamples = (info->extraSamples == 1 
@@ -451,7 +452,7 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
   TIFFSetField(image, TIFFTAG_COMPRESSION, info->compression);
-  if (info->compression = COMPRESSION_JPEG)
+  if (info->compression == COMPRESSION_JPEG)
     TIFFSetField(image, TIFFTAG_JPEGQUALITY, info->quality);
   TIFFSetField(image, TIFFTAG_SUBFILETYPE, info->subfileType);
   TIFFSetField(image, TIFFTAG_BITSPERSAMPLE, info->bitsPerSample);

@@ -621,7 +621,7 @@
   NSData	*data = [self TIFFRepresentation];
 
   [super encodeWithCoder: aCoder];
-  [data encodeWithCoder: aCoder];
+  [aCoder encodeObject: data];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

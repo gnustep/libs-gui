@@ -1,3 +1,8 @@
+2001-08-31  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBitmapImageRep.m (-encodeWithCoder:): Encode data correctly.
+	* Source/tiff.m (NSTiffWrite): Fix type, use ==.
+
 Fri Aug 31 12:06:24 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/GSSimpleLayoutManager.m ([_GNULineLayoutInfo
