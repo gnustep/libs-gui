@@ -323,8 +323,10 @@ static NSLock *_gnustep_color_list_lock = nil;
   if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
     {
       // FIXME the standard path for saving color lists?
-      path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-            NSUserDomainMask, YES) stringByAppendingPathComponent: @"Colors"]; 
+      path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						   NSUserDomainMask, YES) 
+						  objectAtIndex: 0] 
+		 stringByAppendingPathComponent: @"Colors"]; 
       isDir = YES;
     }
 
@@ -353,8 +355,9 @@ static NSLock *_gnustep_color_list_lock = nil;
   else 
     {
       tmpPath = [path stringByDeletingLastPathComponent];
-      if ([NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-            NSAllDomainsMask, YES) containsObject: tmpPath])
+      if (![NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						NSAllDomainsMask, YES) 
+					       containsObject: tmpPath])
 	path_is_standard = NO;
     }
 
