@@ -32,6 +32,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
 
+#include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/GSFontInfo.h>
@@ -47,11 +48,6 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
 @implementation NSFont
 
 /* Class variables*/
-
-/* Register all the fonts used by the current print operation to be able to
-   dump the %%DocumentFonts comment required by the Adobe Document Structuring
-   Convention (see the red book).*/
-static NSMutableSet* fontsUsed = nil;
 
 /* Fonts that are preferred by the application */
 NSArray *_preferredFonts;
@@ -103,10 +99,6 @@ setNSFont(NSString* key, NSFont* font)
   if (self == [NSFont class])
     {
       NSFontClass = self;
-      if (fontsUsed == nil)
-	{
-	  fontsUsed = [NSMutableSet new];
-	}
       if (defaults == nil)
 	{
 	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
@@ -374,7 +366,6 @@ setNSFont(NSString* key, NSFont* font)
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
 {
   fontName = [name copy];
-  [fontsUsed addObject: fontName];
   memcpy(matrix, fontMatrix, sizeof(matrix));
   fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
 					     matrix: fontMatrix]);
@@ -401,7 +392,9 @@ setNSFont(NSString* key, NSFont* font)
 
 + (void) useFont: (NSString*)name
 {
-  [fontsUsed addObject: name];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  [ctxt useFont: name];
 }
 
 //
@@ -449,14 +442,6 @@ setNSFont(NSString* key, NSFont* font)
 }
 
 //
-// Private method for NSFontManager
-//
-- (GSFontInfo*) fontInfo
-{
-  return fontInfo;
-}
-
-//
 // NSCopying Protocol
 //
 - (id) copyWithZone: (NSZone*)zone
@@ -478,7 +463,10 @@ setNSFont(NSString* key, NSFont* font)
 //
 - (void) set
 {
-  [fontInfo set];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  [ctxt setFont: self];
+  [ctxt useFont: fontName];
 }
 
 //
@@ -650,6 +638,18 @@ setNSFont(NSString* key, NSFont* font)
 }
 
 @end /* NSFont */
+
+@implementation NSFont (GNUstep)
+//
+// Private method for NSFontManager and backend
+//
+- (GSFontInfo*) fontInfo
+{
+  return fontInfo;
+}
+
+@end
+
 
 int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
 				  int count, 
