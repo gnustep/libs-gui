@@ -1728,7 +1728,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
        */
       [self lockFocusInRect: aRect];
       [self drawRect: aRect];
-      [self unlockFocusNeedsFlush: YES];
     }
 
   if (_rFlags.has_subviews == YES)
@@ -1786,6 +1785,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 		}
 	    }
 	}
+    }
+
+  if (NSIsEmptyRect(aRect) == NO)
+    {
+      [self unlockFocusNeedsFlush: YES];
     }
 
   /*

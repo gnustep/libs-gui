@@ -1,3 +1,20 @@
+2001-10-06  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSPrintPanel.h: Define ivars.
+	* Panels/GNUmakefile: add GSPrintPanel.gorm
+	* Source/NSPrintPanel.m: Implement.
+
+	* Source/NSPopUpButtonCell.m (initWithCoder:): Make menu owned
+	by popup.
+
+	* Source/NSPrintOperation.m
+	(-initWithView:insideRect:toData:printInfo:):  set showPanel to YES.
+	
+	* Source/NSView.m (displayRectIgnoringOpacity:): Move unlockFocus 
+	after drawing subviews (fix from georg@vhf.de).
+
+	* Source/libgnustep-gui.def: Remove NSMenuWindow.
+
 2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSCell.h

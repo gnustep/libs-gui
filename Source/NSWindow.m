@@ -996,6 +996,7 @@ static NSNotificationCenter *nc = nil;
       DPSsetinputfocus(GSCurrentContext(), _windowNum);
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
+      NSDebugLLog(@"NSWindow", @"%@ is now key window", [self title]);
     }
 }
 
@@ -1009,6 +1010,7 @@ static NSNotificationCenter *nc = nil;
 	  DPSsetinputstate(GSCurrentContext(), _windowNum, GSTitleBarMain);
 	}
       [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
+      NSDebugLLog(@"NSWindow", @"%@ is now main window", [self title]);
     }
 }
 

@@ -1,10 +1,10 @@
 #
 #  Makefile for GNUstep GUI Panels
 #
-#  Copyright (C) 1997 Free Software Foundation, Inc.
+#  Copyright (C) 2001 Free Software Foundation, Inc.
 #
-#  Author: Lyndon Tremblay <tremblay2@home.com>
-#  Date: November 1998
+#  Author: Adam Fedor <fedor@gnu.org>
+#  Date: November 2001
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -34,6 +34,10 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
+
+LANGUAGES = English
+
+LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm
 
 PANELS = ColorPanel.gmodel SavePanel.gmodel SpellPanel.gmodel
 

@@ -34,7 +34,7 @@
 @class NSView;
 
 enum {
-  NSPPSaveButton,
+  NSPPSaveButton = 4,
   NSPPPreviewButton,
   NSFaxButton,
   NSPPTitleField,
@@ -57,7 +57,24 @@ enum {
 
 @interface NSPrintPanel : NSPanel <NSCoding>
 {
-  // Attributes
+  id _cancelButton;
+  id _copiesField;
+  id _faxButton;
+  id _fromRangeForm;
+  id _pageMatrix;
+  id _paperButton;
+  id _previewButton;
+  id _printButton;
+  id _printForm;
+  id _resButton;
+  id _saveButton;
+  id _toRangeForm;
+  id _panelWindow;
+
+  id _accessoryView;
+  id _savePath;
+  int _picked;
+  NSRange _pages;
 }
 
 //

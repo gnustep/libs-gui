@@ -453,7 +453,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   _rect = rect;
   ASSIGN(_data, data);
   _pageOrder = NSUnknownPageOrder;
-  _showPanels = NO;
+  _showPanels = YES;
   [self setPrintInfo: aPrintInfo];
 
   ASSIGN(_path, @"/tmp/NSTempPrintFile");

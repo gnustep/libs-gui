@@ -1,0 +1,84 @@
+{
+    NSApplication = {
+	Outlets = (
+	    delegate
+	);
+	Super = NSResponder;
+    };
+    NSButton = {
+	Super = NSControl;
+    };
+    NSControl = {
+	Actions = (
+	    "takeDoubleValueFrom:",
+	    "takeFloatValueFrom:",
+	    "takeIntValueFrom:",
+	    "takeObjectValueFrom:",
+	    "takeStringValueFrom:"
+	);
+	Outlets = (
+	    target
+	);
+	Super = NSView;
+    };
+    NSMenu = {
+	Super = NSObject;
+    };
+    NSMenuItem = {
+	Outlets = (
+	    target
+	);
+	Super = NSObject;
+    };
+    NSPanel = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSWindow;
+    };
+    NSPrintPanel = {
+	Actions = (
+	    "_pickedButton:",
+	    "_pickedPage:",
+	    "_pickedPrintOp:"
+	);
+	Outlets = (
+	    _cancelButton,
+	    _copiesField,
+	    _faxButton,
+	    _fromRangeForm,
+	    _pageMatrix,
+	    _panelWindow,
+	    _paperButton,
+	    _previewButton,
+	    _printButton,
+	    _printForm,
+	    _resButton,
+	    _saveButton,
+	    _toRangeForm
+	);
+	Super = NSPanel;
+    };
+    NSResponder = {
+	Super = NSObject;
+    };
+    NSSlider = {
+	Super = NSControl;
+    };
+    NSTextField = {
+	Outlets = (
+	    delegate
+	);
+	Super = NSControl;
+    };
+    NSView = {
+	Super = NSResponder;
+    };
+    NSWindow = {
+	Outlets = (
+	    delegate
+	);
+	Super = NSResponder;
+    };
+}

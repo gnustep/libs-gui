@@ -632,6 +632,7 @@ static NSImage *_pbc_image[2];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.arrowPosition = flag;
 
+  [_menu _setOwnedByPopUp: YES];
   return self;
 }
 
