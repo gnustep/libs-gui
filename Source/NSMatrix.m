@@ -1638,34 +1638,50 @@ static SEL getSel;
   newSize.height = nr * (_cellSize.height + _intercell.height) - _intercell.height;
   [self setFrameSize: newSize];
 }
-
+  
 - (void) sizeToFit
 {
+  /*
+   * A simple explanation of the logic behind this method.
+   *
+   * Example of when you would like to use this method:
+   * you have a matrix containing radio buttons.  Say that you have the 
+   * following radio buttons - 
+   *
+   * * First option
+   * * Second option
+   * * Third option
+   * * No thanks, no option for me
+   *
+   * this method should size the matrix so that it can comfortably
+   * show all the cells it contains.  To do it, we must consider that
+   * all the cells should be given the same size, yet some cells need
+   * more space than the others to show their contents, so we need to
+   * choose the cell size as to be enough to display every cell.  We
+   * loop on all cells, call cellSize on each (which returns the
+   * *minimum* comfortable size to display that cell), and choose a
+   * final cellSize which is enough big to be bigger than all these
+   * cellSizes.  We resize the matrix to have that cellSize, and
+   * that's it.  */
   NSSize newSize = NSZeroSize;
 
-  /*
-   * FIXME : Maybe this code be enabled in debug mode ?
-   * it would detect if all the cells have the same size
-   *   or not
-  NSSize tmpSize;
   int i, j;
 
   for (i = 0; i < _numRows; i++)
     {
       for (j = 0; j < _numCols; j++)
 	{
-	  tmpSize = [_cells[i][j] cellSize];
-	  if (tmpSize.width > newSize.width)
-	    newSize.width = tmpSize.width;
-	  if (tmpSize.height > newSize.height)
-	    newSize.height = tmpSize.height;
+	  NSSize tempSize = [_cells[i][j] cellSize];
+	  if (tempSize.width > newSize.width)
+	    {
+	      newSize.width = tempSize.width;
+	    }
+	  if (tempSize.height > newSize.height)
+	    {
+	      newSize.height = tempSize.height;
+	    }
 	}
     }
-  */
-
-  
-  if (_numRows > 0 && _numCols > 0)
-    newSize = [_cells[0][0] cellSize];
   
   [self setCellSize: newSize];
 }
