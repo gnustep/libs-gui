@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <AppKit/NSLayoutManager.h>
+#import <AppKit/GSLayoutManager.h>
 #import <AppKit/NSTextContainer.h>
 #import <AppKit/NSTextStorage.h>
 #import <AppKit/NSTextView.h>
@@ -113,14 +113,14 @@
   [super dealloc];
 }
 
-- (void) setLayoutManager: (NSLayoutManager*)aLayoutManager
+- (void) setLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   /* The layout manager owns us - so he retains us and we don't retain 
      him. */
   _layoutManager = aLayoutManager;
 }
 
-- (NSLayoutManager*) layoutManager
+- (GSLayoutManager*) layoutManager
 {
   return _layoutManager;
 }
@@ -129,7 +129,7 @@
  * Replaces the layout manager while maintaining the text object
  * framework intact.
  */
-- (void) replaceLayoutManager: (NSLayoutManager*)aLayoutManager
+- (void) replaceLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   if (aLayoutManager != _layoutManager)
     {

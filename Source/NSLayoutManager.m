@@ -26,6 +26,12 @@
 
 /*
 TODO: document exact requirements on typesetting for this class
+
+Roughly:
+
+Line frag rects arranged in lines in which all line frag rects have same
+y-origin and height. Lines don't overlap. Line frag rects go left->right,
+as do points in the line frag rects.
 */
 
 #include "AppKit/NSLayoutManager.h"
@@ -34,6 +40,7 @@ TODO: document exact requirements on typesetting for this class
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/DPSOperators.h>
+#include <AppKit/NSColor.h>
 
 
 

@@ -32,9 +32,9 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSGeometry.h>
 
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSTextContainer.h>
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSParagraphStyle.h"
+#include "AppKit/NSTextContainer.h"
 
 
 

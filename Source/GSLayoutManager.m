@@ -26,10 +26,9 @@
 
 #include "AppKit/GSLayoutManager_internal.h"
 
-#include <AppKit/NSTextStorage.h>
-#include <AppKit/NSTextContainer.h>
-
 #include "AppKit/GSTypesetter.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextContainer.h"
 
 
 /* TODO: is using random() here ok? */

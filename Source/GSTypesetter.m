@@ -32,8 +32,6 @@
 #include <Foundation/NSDictionary.h>
 #include <AppKit/NSAttributedString.h>
 
-#include <AppKit/NSTextContainer.h>
-
 
 @implementation GSTypesetter
 
