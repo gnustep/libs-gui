@@ -1,3 +1,12 @@
+Fri Apr 23 16:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Changes based on report by Marc.Champesme@lipn.univ-paris13.fr
+	* Source/NSOpenPanel.m: Tidied a little.
+	* Source/NSSavePanel.m: ditto
+	* Headers/AppKit/NSPanel.m: Added NS_ALERTDEFAULT etc.
+	* Headers/AppKit/NSSavePanel.m: Bracket MacOS-X method with
+	#ifndef STRICT_OPENSTEP
+
 1999-04-22  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Model/test.m: fixed NSGraphic's'Context type-o.

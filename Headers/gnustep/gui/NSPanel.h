@@ -45,6 +45,13 @@ enum {
   NSAlertErrorReturn  = -2
 };	 
 
+#ifndef	STRICT_OPENSTEP
+#define	NS_ALERTDEFAULT		NSAlertDefaultReturn
+#define	NS_ALERTALTERNATE	NSAlertAlternateReturn
+#define	NS_ALERTOTHER		NSAlertOtherReturn
+#define	NS_ALERTERROR		NSAlertErrorReturn
+#endif
+
 @interface NSPanel : NSWindow <NSCoding>
 {
   // Attributes

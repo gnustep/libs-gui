@@ -10,15 +10,15 @@
    Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
    Source by Daniel Bðhringer integrated into Scott Christley's preliminary
-   implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
-  
+   implementation by Felipe A. Rodriguez <far@ix.netcom.com>
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -28,7 +28,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <string.h>
@@ -36,121 +36,148 @@
 #include <Foundation/NSArray.h>
 #include <AppKit/NSOpenPanel.h>
 
-// toDo:	- canChooseFiles unimplemented
-//			- allowsMultipleSelection untested
-//			- setCanChooseDirectories untested
+/*
+ * toDo:    - canChooseFiles unimplemented
+ *          - allowsMultipleSelection untested
+ *          - setCanChooseDirectories untested
+ */
 
 static NSOpenPanel *gnustep_gui_open_panel = nil;
 
 @implementation NSOpenPanel
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
-	if (self == [NSOpenPanel class])
-		[self setVersion:1];								// Initial version
+  if (self == [NSOpenPanel class])
+    {
+      [self setVersion: 1];
+    }
 }
 
-//
-// Accessing the NSOpenPanel 
-//
-+ (NSOpenPanel *)openPanel
+/*
+ * Accessing the NSOpenPanel
+ */
++ (NSOpenPanel *) openPanel
 {
-	if (!gnustep_gui_open_panel)
-    	{
+  if (!gnustep_gui_open_panel)
+    {
 //      PanelLoader *pl = [PanelLoader panelLoader];
 //      gnustep_gui_open_panel = [pl loadPanel: @"NSOpenPanel"];
-      	gnustep_gui_open_panel = [[NSOpenPanel alloc] init];
-    	}
+      gnustep_gui_open_panel = [[NSOpenPanel alloc] init];
+    }
 
-	return gnustep_gui_open_panel;
+  return gnustep_gui_open_panel;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 
-//
-// Initialization
-//
-- init
-{	
-	self = [super init];
-	[self setTitle:@"Open"];
-	[self setCanChooseFiles:YES];
-	multiple_select = NO;
+/*
+ * Initialization
+ */
+- (id) init
+{
+  self = [super init];
+  [self setTitle: @"Open"];
+  [self setCanChooseFiles: YES];
+  multiple_select = NO;
 
-  	return self;
+  return self;
 }
 
-//
-// Filtering Files 
-//
-- (void)setAllowsMultipleSelection:(BOOL)flag
-{	
-	allowsMultipleSelection=flag;
-	[browser setAllowsMultipleSelection:flag];
+/*
+ * Filtering Files
+ */
+- (void) setAllowsMultipleSelection: (BOOL)flag
+{
+  allowsMultipleSelection=flag;
+  [browser setAllowsMultipleSelection: flag];
 }
 
--(BOOL) allowsMultipleSelection 			{ return allowsMultipleSelection; }
--(void) setCanChooseDirectories:(BOOL)flag	{ canChooseDirectories = flag; }
--(BOOL) canChooseDirectories				{ return canChooseDirectories; }
--(void) setCanChooseFiles:(BOOL)flag		{ canChooseFiles = flag; }
--(BOOL) canChooseFiles						{ return canChooseFiles; }
--(NSString*) filename 						{ return [browser path]; }
-
-//
-// Querying the Chosen Files 
-//
-- (NSArray *)filenames
-{	
-	if(!allowsMultipleSelection) 
-		return [NSArray arrayWithObject:[self filename]];
-	else
-		{	
-		NSArray			*cells=[browser selectedCells];
-		NSEnumerator	*cellEnum;
-		id				currCell;
-		NSMutableArray 	*ret = [NSMutableArray array];
-		NSString		*dir=[self directory];
-
-		for(cellEnum=[cells objectEnumerator];currCell=[cellEnum nextObject];)
-			{	
-			[ret addObject:[NSString 
-						stringWithFormat:@"%@/%@",dir,[currCell stringValue]]];
-			} 
-
-		return ret;
-		}
+- (BOOL) allowsMultipleSelection
+{
+  return allowsMultipleSelection;
 }
 
-//
-// Running the NSOpenPanel 
-//
-- (int)runModalForTypes:(NSArray *)fileTypes
-{	
-	return [self runModalForDirectory:[self directory] 
-				 file: nil 
-				 types: fileTypes];
+- (void) setCanChooseDirectories: (BOOL)flag
+{
+  canChooseDirectories = flag;
 }
 
-- (int)runModalForDirectory:(NSString *)path 
-						file:(NSString *)name
-						types:(NSArray *)fileTypes
-{	
-	if(requiredTypes) 
-		[requiredTypes autorelease];
-	requiredTypes = [fileTypes retain];
-
-	return [self runModalForDirectory:path file:name];
+- (BOOL) canChooseDirectories
+{
+  return canChooseDirectories;
 }
 
-//
-// Target and Action Methods 
-//
-- (void)ok_ORIGINAL_NOT_USED:(id)sender			// excess? fix me FAR
+- (void) setCanChooseFiles: (BOOL)flag
+{
+  canChooseFiles = flag;
+}
+
+- (BOOL) canChooseFiles
+{
+  return canChooseFiles;
+}
+
+- (NSString*) filename
+{
+  return [browser path];
+}
+
+/*
+ * Querying the Chosen Files
+ */
+- (NSArray *) filenames
+{
+  if (!allowsMultipleSelection)
+    return [NSArray arrayWithObject: [self filename]];
+  else
+    {
+      NSArray         *cells=[browser selectedCells];
+      NSEnumerator    *cellEnum;
+      id              currCell;
+      NSMutableArray  *ret = [NSMutableArray array];
+      NSString        *dir=[self directory];
+
+      for(cellEnum=[cells objectEnumerator];currCell=[cellEnum nextObject];)
+	{
+	  [ret addObject: [NSString
+		      stringWithFormat: @"%@/%@",dir,[currCell stringValue]]];
+	}
+
+      return ret;
+    }
+}
+
+/*
+ * Running the NSOpenPanel
+ */
+- (int) runModalForTypes: (NSArray *)fileTypes
+{
+  return [self runModalForDirectory: [self directory]
+			       file: nil
+			      types: fileTypes];
+}
+
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)name
+			types: (NSArray *)fileTypes
+{
+  if (requiredTypes)
+    [requiredTypes autorelease];
+  requiredTypes = [fileTypes retain];
+
+  return [self runModalForDirectory: path file: name];
+}
+
+/*
+ * Target and Action Methods
+ */
+- (void) ok_ORIGINAL_NOT_USED: (id)sender         // excess? fix me FAR
 {
   char *sp, files[4096], *p;
   NSMutableString *m;
@@ -163,42 +190,42 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
   if (sp == NULL)
     {
       // No space then only one file selected
-      [the_filenames addObject:file_name];
+      [the_filenames addObject: file_name];
       sp = strrchr(files, '\\');
       sp++;
       *sp = '\0';
-      directory = [NSString stringWithCString:files];
+      directory = [NSString stringWithCString: files];
     }
   else
     {
       // Multiple files selected
       *sp = '\0';
-      directory = [NSString stringWithCString:files];
+      directory = [NSString stringWithCString: files];
       p = sp + 1;
       sp = strchr(p, ' ');
       while (sp != NULL)
-	{
-	  *sp = '\0';
-	  m = [NSMutableString stringWithCString:files];
-	  [m appendString:@"\\"];
-	  [m appendString:[NSString stringWithCString:p]];
-	  [the_filenames addObject:m];
-	  p = sp + 1;
-	  sp = strchr(p, ' ');
-	}
-      if (strchr(p, '\0'))
-	{
-	  m = [NSMutableString stringWithCString:files];
-	  [m appendString:@"\\"];
-	  [m appendString:[NSString stringWithCString:p]];
-	  [the_filenames addObject:m];
-	}
+    {
+      *sp = '\0';
+      m = [NSMutableString stringWithCString: files];
+      [m appendString: @"\\"];
+      [m appendString: [NSString stringWithCString: p]];
+      [the_filenames addObject: m];
+      p = sp + 1;
+      sp = strchr(p, ' ');
     }
+      if (strchr(p, '\0'))
+    {
+      m = [NSMutableString stringWithCString: files];
+      [m appendString: @"\\"];
+      [m appendString: [NSString stringWithCString: p]];
+      [the_filenames addObject: m];
+    }
+  }
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
