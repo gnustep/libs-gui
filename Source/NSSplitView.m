@@ -898,33 +898,35 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+ 
+  if ([aDecoder allowsKeyedCoding])
+    {
+      if ([aDecoder containsValueForKey: @"NSIsVertical"])
+        {
+	  [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
+	}
+    }
+  else
+    {
+      // Decode objects that we don't retain.
+      [self setDelegate: [aDecoder decodeObject]];
 
-  /*
-   *	Decode objects that we don't retain.
-   */
-  [self setDelegate: [aDecoder decodeObject]];
+      // Decode objects that we do retain.
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_dimpleImage];
+      if (_dimpleImage == nil)
+	ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]);
 
-  /*
-   *	Decode objects that we do retain.
-   */
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_dimpleImage];
-  if (_dimpleImage == nil)
-    ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]);
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
+      // Decode non-object data.
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
 
-  /*
-   *	Decode non-object data.
-   */
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
+      _dividerWidth = [self dividerThickness];
+      _never_displayed_before = YES;
+    }
 
-  /*
-   *
-   */
-  _dividerWidth = [self dividerThickness];
-  _never_displayed_before = YES;
   return self;
 }
 

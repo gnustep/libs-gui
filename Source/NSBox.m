@@ -29,6 +29,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSString.h>
 
 #include "AppKit/NSBox.h"
@@ -407,33 +408,68 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
-  _offsets = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode(NSBorderType)
-			       at: &_border_type];
-  [aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
-			       at: &_title_position];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSView *contentView = [aDecoder decodeObjectForKey: @"NSContentView"];
+      NSCell *titleCell = [aDecoder decodeObjectForKey: @"NSTitleCell"];
 
-  // The content view is our only sub_view
-  if ([_sub_views count] == 0)
-    {
-  
-      NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
-      // No content view
-      _content_view = nil;
-      [self calcSizesAllowingNegative: NO];
-    }
-  else 
-    {
-      if ([_sub_views count] != 1)
-	{
-	  NSLog (@"Warning: Encoded NSBox with more than one content view!");
+      [self setContentView: contentView];
+      ASSIGN(_cell, titleCell);
+      if ([aDecoder containsValueForKey: @"NSBoxType"])
+        {
+	  //int boxType = [aDecoder decodeIntForKey: @"NSBoxType"];
 	}
-      _content_view = [_sub_views objectAtIndex: 0];
-      // The following also computes _title_rect and _border_rect.
-      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+      if ([aDecoder containsValueForKey: @"NSBorderType"])
+        {
+	  NSBorderType borderType = [aDecoder decodeIntForKey: @"NSBorderType"];
+
+	  [self setBorderType: borderType];
+	}
+      if ([aDecoder containsValueForKey: @"NSTitlePosition"])
+        {
+	  NSTitlePosition titlePosition = [aDecoder decodeIntForKey: 
+							@"NSTitlePosition"];
+
+	  [self setTitlePosition: titlePosition];
+	}
+      if ([aDecoder containsValueForKey: @"NSTransparent"])
+        {
+	  //Bool transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
+	}
+      if ([aDecoder containsValueForKey: @"NSOffsets"])
+        {
+	  [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
+	}
+    }
+  else
+    {
+	[aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
+	_offsets = [aDecoder decodeSize];
+	[aDecoder decodeValueOfObjCType: @encode(NSBorderType)
+		                     at: &_border_type];
+	[aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
+		                     at: &_title_position];
+
+	// The content view is our only sub_view
+	if ([_sub_views count] == 0)
+	  {
+	    NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
+	    // No content view
+	    _content_view = nil;
+	    [self calcSizesAllowingNegative: NO];
+	  }
+	else 
+	  {
+	    if ([_sub_views count] != 1)
+	      {
+		NSLog (@"Warning: Encoded NSBox with more than one content view!");
+	      }
+	    _content_view = [_sub_views objectAtIndex: 0];
+	    // The following also computes _title_rect and _border_rect.
+	    [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+	  }
     }
   return self;
 }

@@ -276,10 +276,23 @@ static Class imageCellClass;
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  if ([aDecoder versionForClassName: @"NSImageView"] >= 2)
+
+  if ([aDecoder allowsKeyedCoding])
     {
-      _target = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      //NSArray *dragType = [aDecoder decodeObjectForKey: @"NSDragTypes"];
+
+      if ([aDecoder containsValueForKey: @"NSEditable"])
+        {
+	  [self setEditable: [aDecoder decodeBoolForKey: @"NSEditable"]];
+	}
+    }
+  else
+    {
+      if ([aDecoder versionForClassName: @"NSImageView"] >= 2)
+	{
+	  _target = [aDecoder decodeObject];
+	  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+	}
     }
   return self;
 }

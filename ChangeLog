@@ -1,3 +1,14 @@
+2004-02-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFont.m
+	Try to get at least some font on keyed decoding.
+	* Source/NSTextFieldCell.m
+	* Source/NSImageCell.m
+	* Source/NSImageView.m
+	* Source/NSBox.m
+	* Source/NSSplitView.m
+	Added keyed decoding. 
+
 2004-02-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextFieldCell.m (-setBackgroundColor:,

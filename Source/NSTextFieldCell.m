@@ -198,14 +198,23 @@ static NSColor	*txtCol;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL tmp;
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  _textfieldcell_draws_background = tmp;
-  _textfieldcell_is_opaque = [self _isOpaque];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+      [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+    }
+  else
+    {
+      BOOL tmp;
+
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      _textfieldcell_draws_background = tmp;
+      _textfieldcell_is_opaque = [self _isOpaque];
+    }
 
   return self;
 }

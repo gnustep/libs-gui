@@ -986,11 +986,28 @@ static BOOL flip_hack;
       RELEASE(self);
       if ([aDecoder containsValueForKey: @"NSfFlags"])
         {
-	  //int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
+	  int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
 	  // FIXME
+	  if (flags == 16)
+	    {
+	      return [NSFont controlContentFontOfSize: size];
+	    }
+	  else if (flags == 20)
+	    {
+	      return [NSFont labelFontOfSize: size];
+	    }
+	  else if (flags == 22)
+	    {
+	      return [NSFont titleBarFontOfSize: size];
+	    }
 	}
 
       self = [NSFont fontWithName: name size: size];
+      if (self == nil)
+        {
+	  self = [NSFont systemFontOfSize: size];
+	}
+
       return self;
     }
   else
