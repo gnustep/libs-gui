@@ -1,3 +1,9 @@
+Wed Dec 9 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSView.m resizeWithOldSuperviewSize: revert to previous code and add bug
+	fixes from new.  Fixes bugs in new code when MaxX or Y is specified but not 
+	Min.  Avoids fractional values and fewer lines of code.
+
 Wed Dec  9  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSView.m: Complete rewrite of auto-resize code - now works!
