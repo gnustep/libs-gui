@@ -1,3 +1,8 @@
+Thu Jan 17 18:16:08 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-_blink:]): Fixed declaration - should take
+	a single NSTimer * argument.
+
 Thu Jan 17 00:03:46 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSlider.m ([-mouseDown:]): Do nothing if the slider is
