@@ -1,3 +1,20 @@
+2003-10-26 15:18  Alexander Malmberg <alexander@malmberg.org>
+		  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSFontManager.m (-availableFonts, -availableFontFamilies,
+	availableMembersOfFontFamily:): Don't check delegate; always return
+	all fonts.
+	(-_includeFont:): Move...
+
+	* Source/NSFontPanel.m (_includeFont:delegate:): Here.
+	(-_familySelectionChanged:, reloadDefaultFontFamilies): Use that
+	method to check with the delegate which fonts should be included in
+	the font panel.
+	(-_doPreview, -_fontForSelection:): Check that the face list isn't
+	empty before accessing it.
+	(-_getOriginalSize): Move to the Private category to match the
+	@interface.
+
 2003-10-25 16:52  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: initWithFrame is not supposed to be called

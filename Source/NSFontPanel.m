@@ -93,6 +93,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 - (void) _getOriginalSize;
 - (id)_initWithoutGModel;
+
+- (BOOL) _includeFont: (NSString *)fontName  delegate: (id)delegate;
 @end
 
 @implementation NSFontPanel
@@ -173,9 +175,36 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 - (void) reloadDefaultFontFamilies
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
+  id fmDelegate = [fm delegate];
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
+  NSArray *fontFamilies = [fm availableFontFamilies];
+  unsigned int i,j;
 
-  ASSIGN(_familyList, [fm availableFontFamilies]);
+  DESTROY(_familyList);
+
+  /*
+  Build an array of all families that have a font that will be included.
+  */
+  _familyList = [[NSMutableArray alloc]
+		  initWithCapacity: [fontFamilies count]];
+
+  for (i = 0; i < [fontFamilies count]; i++)
+    {
+      NSArray *familyMembers;
+      familyMembers = [fm availableMembersOfFontFamily:
+			[fontFamilies objectAtIndex: i]];
+
+      for (j = 0; j < [familyMembers count]; j++)
+	{
+	  if ([self _includeFont: [[familyMembers objectAtIndex: j] objectAtIndex: 0]
+			delegate: fmDelegate])
+	    {
+	      [_familyList addObject: [fontFamilies objectAtIndex: i]];
+	      break;
+	    }
+	}
+    }
+
   // Reload the display. 
   [familyBrowser loadColumnZero];
   // Reselect the current font. (Hopefully still there)
@@ -324,14 +353,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [[self contentView] addSubview: aView];
 }
 */
-
-- (void) _getOriginalSize
-{
-  /* Used in setMinSize: */
-  _originalMinSize = [self minSize];
-  /* Used in setContentSize: */
-  _originalSize = [[self contentView] frame].size;
-}
 
 - (void) setAccessoryView: (NSView*)aView
 {
@@ -487,7 +508,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @end
 
-@implementation NSFontPanel (Privat)
+@implementation NSFontPanel (Private)
 
 - (id) _initWithoutGModel
 {
@@ -779,7 +800,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	{
 	  familyName = [_familyList objectAtIndex: _family];
 	}
-      if (_face == -1)
+      if (_face == -1 || ![_faceList count])
 	{
 	  faceName = @"NoFace";
 	}
@@ -816,7 +837,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 {
   float		size;
   NSString	*fontName;
-  NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+  NSTextField	*sizeField = [[self contentView] viewWithTag: NSFPSizeField];
+  unsigned	i = [_faceList count];
 
   size = [sizeField floatValue];
   if (size == 0.0)
@@ -832,7 +854,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
   if (_face < 0)
     {
-      unsigned	i = [_faceList count];
 
       if (i == 0)
 	{
@@ -843,7 +864,15 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
   else
     {
-      fontName = [[_faceList objectAtIndex: _face] objectAtIndex: 0];
+      /*
+      i really should be >= 0 here, except for the very obscure case where
+      the delegate has refused all fonts (so that our family and face lists
+      are completely empty).
+      */
+      if (i)
+	fontName = [[_faceList objectAtIndex: _face] objectAtIndex: 0];
+      else
+	return nil;
     }
   
   // FIXME: We should check if the font is correct
@@ -888,6 +917,31 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [self _doPreview];
 }
 
+/*
+Ask the NSFontManager:s delegate if a font should be included. For speed,
+the delegate is an argument; a repeat-caller can then cache it.
+*/
+- (BOOL) _includeFont: (NSString*)fontName  delegate: (id)fmDelegate
+{
+  if (fmDelegate != nil
+    && [fmDelegate respondsToSelector: @selector(fontManager:willIncludeFont:)])
+    {
+      return [fmDelegate fontManager: [NSFontManager sharedFontManager]
+		     willIncludeFont: fontName];
+    }
+  else
+    return YES;
+}
+
+
+- (void) _getOriginalSize
+{
+  /* Used in setMinSize: */
+  _originalMinSize = [self minSize];
+  /* Used in setContentSize: */
+  _originalSize = [[self contentView] frame].size;
+}
+
 @end
 
 
@@ -921,13 +975,31 @@ static int score_difference(int weight1, int traits1,
 - (void) _familySelectionChanged: (id)sender
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
+  id fmDelegate = [fm delegate];
+
   NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
   int row = [familyBrowser selectedRowInColumn: 0];
-  unsigned int i;
 
-  ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
-			  [_familyList objectAtIndex: row]]);
+  unsigned int i;
+  NSArray *entireFaceList;
+
+
+  entireFaceList = [fm availableMembersOfFontFamily:
+  			[_familyList objectAtIndex:row]];
+
+  DESTROY(_faceList);
+  _faceList = [[NSMutableArray alloc] initWithCapacity: [entireFaceList count]];
+
+  for (i = 0; i < [entireFaceList count]; i++)
+    {
+      id aFace = [entireFaceList objectAtIndex:i];
+      if ([self _includeFont: [aFace objectAtIndex:0]  delegate: fmDelegate])
+	{
+	  [_faceList addObject: aFace];
+	}
+    }
+
   _family = row;
 
   // Select a face with the same properties

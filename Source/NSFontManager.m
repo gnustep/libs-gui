@@ -49,9 +49,6 @@ static NSFontPanel	*fontPanel = nil;
 static Class		fontManagerClass = Nil;
 static Class		fontPanelClass = Nil;
 
-@interface NSFontManager (GNUstepPrivate)
-- (BOOL) _includeFont: (NSString*)fontName;
-@end
 
 @implementation NSFontManager
 
@@ -125,22 +122,7 @@ static Class		fontPanelClass = Nil;
  */
 - (NSArray*) availableFonts
 {
-  unsigned int i;
-  NSArray *fontsList = [_fontEnumerator availableFonts];
-  NSMutableArray *fontNames = [NSMutableArray 
-				  arrayWithCapacity: [fontsList count]];
-
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      NSString *name = [fontsList objectAtIndex: i];
-      
-      if ([self _includeFont: name])
-	{
-	  [fontNames addObject: name];
-	}
-    }
-
-  return fontNames;
+  return [_fontEnumerator availableFonts];
 }
 
 - (NSArray*) availableFontFamilies
@@ -167,12 +149,7 @@ static Class		fontPanelClass = Nil;
 	  traits = [[fontDef objectAtIndex: 3] unsignedIntValue];
 	  // Check if the font has exactly the given mask
 	  if (traits == fontTraitMask)
-	    {
-	      NSString *name = [fontDef objectAtIndex: 0];
-	
-	      if ([self _includeFont: name])
-		[fontNames addObject: name];
-	    }
+	    [fontNames addObject: [fontDef objectAtIndex: 0]];
 	}
     }
 
@@ -181,23 +158,7 @@ static Class		fontPanelClass = Nil;
 
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
-  unsigned int i;
-  NSArray *fontsList = [_fontEnumerator availableMembersOfFontFamily: family];
-  NSMutableArray *fonts = [NSMutableArray 
-			      arrayWithCapacity: [fontsList count]];
-
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      NSArray *fontDef = [fontsList objectAtIndex: i];
-      NSString *name = [fontDef objectAtIndex: 0];
-      
-      if ([self _includeFont: name])
-	{
-	  [fonts addObject: fontDef];
-	}
-    }
-
-  return fonts;
+  return [_fontEnumerator availableMembersOfFontFamily: family];
 }
 
 - (NSString*) localizedNameForFamily: (NSString*)family 
@@ -997,18 +958,3 @@ static Class		fontPanelClass = Nil;
 
 @end
 
-@implementation NSFontManager (GNUstepPrivate)
-
-/*
- * Ask delegate if to include a font
- */
-- (BOOL) _includeFont: (NSString*)fontName
-{
-  if ((_delegate != nil)
-    && [_delegate respondsToSelector: @selector(fontManager: willIncludeFont:)])
-    return [_delegate fontManager: self willIncludeFont: fontName];
-  else
-    return YES;
-}
-
-@end
