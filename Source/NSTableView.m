@@ -4,7 +4,7 @@
    Copyright (C) 2000 Free Software Foundation, Inc.
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
-   Date: March 2000, June 2000, August 2000
+   Date: March 2000, June 2000, August 2000, September 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -261,6 +261,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
   _allowsColumnSelection = YES;
+  _allowsColumnResizing = YES;
   _editedColumn = -1;
   _editedRow = -1;
   _selectedColumn = -1;
@@ -603,13 +604,12 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
 - (void) setAllowsColumnResizing: (BOOL)flag
 {
-  // TODO
+  _allowsColumnResizing = flag;
 }
 
 - (BOOL) allowsColumnResizing
 {
-  // TODO
-  return NO;
+  return _allowsColumnResizing;
 }
 
 - (void) setAllowsMultipleSelection: (BOOL)flag
@@ -2574,6 +2574,17 @@ byExtendingSelection: (BOOL)flag
 {
   return [super initWithCoder: aDecoder];
   // TODO
+}
+
+- (void) _userResizedTableColumn: (int)index
+		       leftWidth: (float)lwidth
+		      rightWidth: (float)rwidth
+{
+  _tilingDisabled = YES;
+  [[_tableColumns objectAtIndex: index] setWidth: lwidth];
+  [[_tableColumns objectAtIndex: index + 1] setWidth: rwidth];
+  _tilingDisabled = NO;
+  [self tile];
 }
 
 // Return YES on success; NO if no selectable cell found.
