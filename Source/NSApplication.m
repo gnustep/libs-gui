@@ -141,6 +141,7 @@ NSApplication	*NSApp = nil;
 
   NSDebugLog(@"Begin of NSApplication -init\n");
 
+  app_is_active = YES;
   listener = [GSServicesManager newWithApplication: self];
 
   main_menu = nil;
@@ -872,7 +873,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 	      if (win != key && [win isKindOfClass: [NSWindow class]])
 		{
-		  [win orderFront: self];
+		  [win orderFrontRegardless];
 		}
 	    }
 	}
