@@ -111,25 +111,6 @@
   NS_ENDHANDLER
 }
 
-// handle the notification...
-- (void) _handleNotification: (NSNotification *)notification
-{
-  id obj = [notification object];
-  [_topLevelItems addObject: obj];  
-}
-
-// subscribe to the notification...
-- (void) _addObserver
-{
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  
-  // add myself as an observer and initialize the items array.
-  [nc addObserver: self
-      selector: @selector(_handleNotification:)
-      name: @"__GSInternalNibItemAddedNotification"
-      object: nil];
-}
-
 - (NSDictionary *) _copyTable: (NSDictionary *)dict
 {
   NSMutableDictionary *ctx = nil;
@@ -174,7 +155,6 @@
     {
       // load the nib data into memory...
       _nibData = [NSData dataWithContentsOfURL: nibFileURL];
-      [self _addObserver];
     }
   return self;
 }
@@ -202,7 +182,6 @@
 
       // load the nib data into memory...
       [self _readNibData: fileName];
-      [self _addObserver];
     }
   return self;
 }
@@ -226,7 +205,6 @@
 	  {
  	    id obj;
 	    
-	    _topLevelItems = [[NSMutableArray alloc] init];
 	    [unarchiver setObjectZone: zone];
 	    obj = [unarchiver decodeObject];
 	    if (obj != nil)
@@ -234,8 +212,7 @@
 		if ([obj isKindOfClass: [GSNibContainer class]])
 		  {
 		    NSDictionary *nameTable = [self _copyTable: externalNameTable];
-		    [obj awakeWithContext: nameTable 
-			 topLevelItems: _topLevelItems];
+		    [obj awakeWithContext: nameTable];
 		    loaded = YES;
 		    RELEASE(nameTable);
 	 	  }
@@ -245,7 +222,6 @@
 		  }
 	      }
 	    RELEASE(unarchiver);
-	    RELEASE(_topLevelItems);
 	  }
       }
   }
@@ -253,7 +229,6 @@
   {
     NSLog(@"Exception occured while loading model: %@",[localException reason]);
     TEST_RELEASE(unarchiver);
-    TEST_RELEASE(_topLevelItems);
   }
   NS_ENDHANDLER
   

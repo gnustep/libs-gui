@@ -185,66 +185,6 @@
 }
 @end
 
-/*
- * This private class is used to collect the nib items while the 
- * .gorm file is being unarchived.  This is done to allow only
- * the top level items to be retained in a clean way.  The reason it's
- * being done this way is because old .gorm files don't have any
- * array within the nameTable which indicates the objects which are
- * considered top level, so there is no clean and generic way to determine
- * this.   Basically the top level items are any instances of or instances
- * of subclasses of NSMenu, NSWindow, or any controller class.
- * It's the last one that's hairy.  Controller classes are
- * represented in .gorm files by the GSNibItem class, but once they transform
- * into the actual class instance it's not easy to tell if it should be 
- * retained or not since there are a lot of other things stored in the nameTable
- * as well.  GJC
- */
-@interface _GSNibItemCollector : NSObject
-{
-  NSMutableArray *items;
-}
-- (void) handleNotification: (NSNotification *)notification;
-- (NSMutableArray *)items;
-@end
-
-@implementation _GSNibItemCollector
-- (void) handleNotification: (NSNotification *)notification;
-{
-  id obj = [notification object];
-  [items addObject: obj];
-}
-
-- init
-{
-  if((self = [super init]) != nil)
-    {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-      // add myself as an observer and initialize the items array.
-      [nc addObserver: self
-	  selector: @selector(handleNotification:)
-	  name: @"__GSInternalNibItemAddedNotification"
-	  object: nil];
-      items = [[NSMutableArray alloc] init];
-    }
-  return self;
-}
-
-- (void) dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
-  RELEASE(items);
-  [super dealloc];
-}
-
-- (NSMutableArray *)items
-{
-  return items;
-}
-@end
-
-
 @implementation NSBundle (NSBundleAdditions)
 
 static 
@@ -286,7 +226,6 @@ Class gmodel_class(void)
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
   NSString      *ext = [fileName pathExtension];
-  id             nibitems = nil;
 
   if ([ext isEqual: @"nib"])
     {
@@ -346,19 +285,15 @@ Class gmodel_class(void)
 		{
 		  id obj;
 		  
-		  nibitems = [[_GSNibItemCollector alloc] init];
 		  NSDebugLog(@"Invoking unarchiver");
 		  [unarchiver setObjectZone: zone];
 		  obj = [unarchiver decodeObject];
 		  if (obj != nil)
 		    {
-		      NSArray *items = [nibitems items];
 		      if ([obj isKindOfClass: [GSNibContainer class]])
 			{
 			  NSDebugLog(@"Calling awakeWithContext");
-			    
-			  [obj awakeWithContext: context
-			       topLevelItems: items];
+			  [obj awakeWithContext: context];
 			  loaded = YES;
 			}
 		      else
@@ -366,7 +301,7 @@ Class gmodel_class(void)
 			  NSLog(@"Nib '%@' without container object!", fileName);
 			}
 		    }
-		  RELEASE(nibitems);
+		  // RELEASE(nibitems);
 		  RELEASE(unarchiver);
 		}
 	    }
@@ -375,7 +310,7 @@ Class gmodel_class(void)
   NS_HANDLER
     {
       NSLog(@"Exception occured while loading model: %@",[localException reason]);
-      TEST_RELEASE(nibitems);
+      // TEST_RELEASE(nibitems);
       TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER

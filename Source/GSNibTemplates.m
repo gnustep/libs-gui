@@ -42,6 +42,7 @@
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSArchiver.h>
+#include <Foundation/NSSet.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSTextView.h>
@@ -71,6 +72,68 @@ static const int currentVersion = 1; // GSNibItem version number...
 @end
 
 /*
+ * This private class is used to collect the nib items while the 
+ * .gorm file is being unarchived.  This is done to allow only
+ * the top level items to be retained in a clean way.  The reason it's
+ * being done this way is because old .gorm files don't have any
+ * array within the nameTable which indicates the objects which are
+ * considered top level, so there is no clean and generic way to determine
+ * this.   Basically the top level items are any instances of or instances
+ * of subclasses of NSMenu, NSWindow, or any controller class.
+ * It's the last one that's hairy.  Controller classes are
+ * represented in .gorm files by the GSNibItem class, but once they transform
+ * into the actual class instance it's not easy to tell if it should be 
+ * retained or not since there are a lot of other things stored in the nameTable
+ * as well.  GJC
+ */
+
+static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedNotification";
+
+@interface GSNibItemCollector : NSObject
+{
+  NSMutableArray *items;
+}
+- (void) handleNotification: (NSNotification *)notification;
+- (NSMutableArray *)items;
+@end
+
+@implementation GSNibItemCollector
+- (void) handleNotification: (NSNotification *)notification;
+{
+  id obj = [notification object];
+  [items addObject: obj];
+}
+
+- init
+{
+  if((self = [super init]) != nil)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+      // add myself as an observer and initialize the items array.
+      [nc addObserver: self
+	  selector: @selector(handleNotification:)
+	  name: GSInternalNibItemAddedNotification 
+	  object: nil];
+      items = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  RELEASE(items);
+  [super dealloc];
+}
+
+- (NSMutableArray *)items
+{
+  return items;
+}
+@end
+
+/*
  *	The GSNibContainer class manages the internals of a nib file.
  */
 @implementation GSNibContainer
@@ -84,19 +147,18 @@ static const int currentVersion = 1; // GSNibItem version number...
 }
 
 - (void) awakeWithContext: (NSDictionary *)context
-	    topLevelItems: (NSArray *)items
 {
-  if (_isAwake == NO)
+  if (isAwake == NO)
     {
       NSEnumerator	*enumerator;
       NSNibConnector	*connection;
       NSString		*key;
       NSArray		*visible;
       NSMenu		*menu;
-      NSMutableArray    *topLevelObjects; 
+      NSMutableArray    *topObjects; 
       id                 obj;
 
-      _isAwake = YES;
+      isAwake = YES;
       /*
        *	Add local entries into name table.
        */
@@ -153,6 +215,24 @@ static const int currentVersion = 1; // GSNibItem version number...
 	  [NSApp setWindowsMenu: menu];
 	}
 
+
+      /* 
+       * See if the user has passed in the NSTopLevelObjects key.
+       * This is an implementation of an undocumented, but commonly used feature
+       * of nib files to allow the release of the top level objects in the nib
+       * file.
+       */
+      obj = [context objectForKey: @"NSTopLevelObjects"];
+      if([obj isKindOfClass: [NSMutableArray class]])
+	{
+	  topObjects = obj;
+	}
+      else
+	{
+	  topObjects = nil; 
+	}
+
+
       /*
        * Now tell all the objects that they have been loaded from
        * a nib.
@@ -168,76 +248,49 @@ static const int currentVersion = 1; // GSNibItem version number...
 		 [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
 		 [key isEqualToString: @"NSDeferred"] == NO &&
 		 [key isEqualToString: @"NSTopLevelObjects"] == NO &&
-		 [key isEqualToString: @"GSCustomClassMap"] == NO)		
+		 [key isEqualToString: @"GSCustomClassMap"] == NO)
 		{
 		  id o = [nameTable objectForKey: key];
+
+		  // send the awake message, if it responds...
 		  if ([o respondsToSelector: @selector(awakeFromNib)])
 		    {
 		      [o awakeFromNib];
+		    }
+
+		  /*
+		   * Retain all "top level" items so that, when the container is released, they will remain.
+		   * The GSNibItems instantiated in the gorm need to be retained,
+		   * since we are deallocating the container.  We don't want to retain the owner.
+		   */
+		  if([key isEqualToString: @"NSOwner"] == NO)
+		    {
+		      if([topLevelObjects containsObject: o]) // anything already designated a top level item..
+			{
+			  if(topObjects == nil)
+			    {
+			      // It is expected, if the NSTopLevelObjects key is not passed in,
+			      // that the user has opted to either allow these objects to leak or
+			      // to release them explicitly.
+			      RETAIN(o);
+			    }
+			  else
+			    {
+			      // We don't want to do the extra retain if the items are added to the
+			      // array, since the array will do the retain for us.   When the array
+			      // is released, the top level objects should be released as well.
+			      [topObjects addObject: o];
+			    }
+			}
 		    }
 		}
 	    }
 	}
       
-      /* 
-       * See if the user has passed in the NSTopLevelObjects key.
-       * This is an implementation of an undocumented, but commonly used feature
-       * of nib files to allow the release of the top level objects in the nib
-       * file.
-       */
-      obj = [context objectForKey: @"NSTopLevelObjects"];
-      if([obj isKindOfClass: [NSMutableArray class]])
-	{
-	  topLevelObjects = obj;
-	}
-      else
-	{
-	  topLevelObjects = nil; 
-	}
-
-      /*
-       * Retain all "top level" items so that, when the container is released, they will remain.
-       * The GSNibItems instantiated in the gorm need to be retained,
-       * since we are deallocating the container.
-       */
-      enumerator = [nameTable keyEnumerator];
-      while ((key = [enumerator nextObject]) != nil)
-	{
-	  if ([context objectForKey: key] == nil &&
-	      [key isEqualToString: @"NSWindowsMenu"] == NO && // exclude special sections.
-	      [key isEqualToString: @"NSServicesMenu"] == NO &&
-	      [key isEqualToString: @"NSVisible"] == NO && 
-	      [key isEqualToString: @"NSDeferred"] == NO &&
-	      [key isEqualToString: @"NSTopLevelObjects"] == NO &&
-	      [key isEqualToString: @"GSCustomClassMap"] == NO)
-	    {
-	      id o = [nameTable objectForKey: key];
-	      // RETAIN all top-level items...
-	      if (([o isKindOfClass: [NSMenu class]] == YES &&
-		   [key isEqualToString: @"NSMenu"] == YES) || // the main menu...
-		  ([o isKindOfClass: [NSWindow class]] == YES) || // any windows...
-		  ([items containsObject: o] == YES)) 
-		{
-		  if(topLevelObjects == nil)
-		    {
-		      // It is expected, if the NSTopLevelObjects key is not passed in,
-		      // that the user has opted to either allow these objects to leak or
-		      // to release them explicitly.
-		      RETAIN(o);
-		    }
-		  else
-		    {
-		      // We don't want to do the extra retain if the items are added to the
-		      // array, since the array will do the retain for us.   When the array
-		      // is released, the top level objects should be released as well.
-		      [topLevelObjects addObject: o];
-		    }
-		}
-	    }
-	}
-
       /*
        * See if there are objects that should be made visible.
+       * This is the last thing we should do since changes might be made
+       * in the awakeFromNib methods which are called on all of the objects.
        */
       visible = [nameTable objectForKey: @"NSVisible"];
       if (visible != nil
@@ -274,6 +327,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 {
   RELEASE(nameTable);
   RELEASE(connections);
+  RELEASE(topLevelObjects);
   [super dealloc];
 }
 
@@ -281,6 +335,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 {
   [aCoder encodeObject: nameTable];
   [aCoder encodeObject: connections];
+  [aCoder encodeObject: topLevelObjects];
 }
 
 - (id) init
@@ -289,6 +344,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       nameTable = [[NSMutableDictionary alloc] initWithCapacity: 8];
       connections = [[NSMutableArray alloc] initWithCapacity: 8];
+      topLevelObjects = [[NSMutableSet alloc] initWithCapacity: 8];
     }
   return self;
 }
@@ -296,11 +352,45 @@ static const int currentVersion = 1; // GSNibItem version number...
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   int version = [aCoder versionForClassName: @"GSNibContainer"]; 
-  
+
+  // save the version to the ivar, we need it later.
   if(version == GNUSTEP_NIB_VERSION)
     {
       [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
       [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &topLevelObjects];
+    }
+  else if(version == 0)
+    {
+      GSNibItemCollector *nibitems = [[GSNibItemCollector alloc] init];
+      NSEnumerator *en;
+      NSString *key;
+      
+      // initialize the set of top level objects...
+      topLevelObjects = [[NSMutableSet alloc] initWithCapacity: 8];
+
+      // unarchive...
+      [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
+      [topLevelObjects addObjectsFromArray: [nibitems items]]; // get the top level items here...
+      RELEASE(nibitems);
+
+      // iterate through the objects returned
+      en = [nameTable keyEnumerator];
+      while((key = [en nextObject]) != nil)
+	{
+	  id o = [nameTable objectForKey: key];
+	  if(([o isKindOfClass: [NSMenu class]] && [key isEqual: @"NSMenu"]) ||
+	     [o isKindOfClass: [NSWindow class]])
+	    {
+	      [topLevelObjects addObject: o]; // if it's a top level object, add it.
+	    }
+	}
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to read GSNibContainer version #%d.  GSNibContainer version for the installed gui lib is %d.", version, GNUSTEP_NIB_VERSION];
     }
 
   return self;
@@ -309,6 +399,11 @@ static const int currentVersion = 1; // GSNibItem version number...
 - (NSMutableDictionary*) nameTable
 {
   return nameTable;
+}
+
+- (NSMutableSet*) topLevelObjects
+{
+  return topLevelObjects;
 }
 @end
 
@@ -357,7 +452,7 @@ static const int currentVersion = 1; // GSNibItem version number...
       if (cls == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", theClass];
+		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
       
       obj = [cls allocWithZone: [self zone]];
@@ -386,7 +481,7 @@ static const int currentVersion = 1; // GSNibItem version number...
       if (cls == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", theClass];
+		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
       
       obj = [cls allocWithZone: [self zone]];
@@ -405,14 +500,16 @@ static const int currentVersion = 1; // GSNibItem version number...
     }
 
   // If this is a nib item and not a custom view, then we need to add it to
-  // the set of things to be retained.
-  if(obj != nil)
+  // the set of things to be retained.  Also, the initial version of the nib container
+  // needed this code, but subsequent versions don't, so don't send the notification,
+  // if the version isn't zero.
+  if(obj != nil && [aCoder versionForClassName: NSStringFromClass([GSNibContainer class])] == 0)
     {
       if([self isKindOfClass: [GSNibItem class]] == YES &&
 	 [self isKindOfClass: [GSCustomView class]] == NO)
 	{
 	  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	  [nc postNotificationName: @"__GSInternalNibItemAddedNotification"
+	  [nc postNotificationName: GSInternalNibItemAddedNotification
 	      object: obj];
 	}
     }
@@ -485,7 +582,7 @@ static const int currentVersion = 1; // GSNibItem version number...
       if(_superClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", superClassName];
+		       format: @"Unable to find class '%@', it is not linked into the application.", superClassName];
 	}
     }
   return self;
@@ -538,7 +635,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 	      if(aClass == 0)
 		{
 		  [NSException raise: NSInternalInconsistencyException
-			       format: @"Unable to find class '%@'", _className];
+			       format: @"Unable to find class '%@', it is not linked into the application.", _className];
 		}
 	  
 	      // Initialize the object...  dont call decode, since this wont 
@@ -606,7 +703,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), NO, NO) != NULL)
+	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL)
 	  {
 	    // if we are not in interface builder, call 
 	    // designated initializer per spec...
@@ -648,7 +745,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame];
 	    obj =  [obj initWithFrame: theFrame];
@@ -677,7 +774,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame]; 
 	    obj = [obj initWithFrame: theFrame];
@@ -706,7 +803,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame];
 	    id textContainer = [obj textContainer];
@@ -737,7 +834,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(initWithTitle:), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL)
 	  {
 	    NSString *theTitle = [obj title]; 
 	    obj = [obj initWithTitle: theTitle];
@@ -768,7 +865,7 @@ static const int currentVersion = 1; // GSNibItem version number...
       /* 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame]; 
 	    obj = [obj initWithFrame: theFrame];
@@ -797,7 +894,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetMethod([obj class],@selector(init), NO, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(init), YES, NO) != NULL)
 	  {
 	    obj = [self init];
 	  }

@@ -35,7 +35,7 @@
 #include <AppKit/NSControl.h>
 
 // versions of the nib container and the templates.
-#define GNUSTEP_NIB_VERSION 0
+#define GNUSTEP_NIB_VERSION 1
 #define GSSWAPPER_VERSION   0
 #define GSWINDOWT_VERSION   0
 #define GSVIEWT_VERSION     0
@@ -48,6 +48,7 @@
 @class	NSString;
 @class	NSDictionary;
 @class	NSMutableDictionary;
+@class  NSMutableSet;
 
 /*
  * This is the class that holds objects within a nib.
@@ -56,11 +57,13 @@
 {
   NSMutableDictionary	*nameTable;
   NSMutableArray	*connections;
-  BOOL			_isAwake;
+  NSMutableSet          *topLevelObjects;
+  BOOL			isAwake;
 }
-- (void) awakeWithContext: (NSDictionary *)context topLevelItems: (NSArray *)items;
+- (void) awakeWithContext: (NSDictionary *)context;
 - (NSMutableDictionary*) nameTable;
 - (NSMutableArray*) connections;
+- (NSMutableSet*) topLevelObjects;
 @end
 
 /*

@@ -1,3 +1,25 @@
+2004-06-28  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Updated the 
+	GNUSTEP_NIB_VERSION.  This constant defines the number used for
+	the GSNibContainer objects' version.   Also added a new topLevelObjects
+	ivar to the GSNibContainer class and the method to retrieve it.
+	* Source/GSNibTemplates.m: Move the private class GSNibItemCollector
+	from NSBundleAdditions.m to GSNibTemplates.m.  This helped clean up
+	code and also facilitated the changes necessary for the new .gorm version.
+	Also changed the signature of awakeWithContext: so it only takes the context
+	dictionary as an argument and no longer requires the items to be passed in.
+	Changed the awakeWithContext method to efficiently retain the objects.
+	In initWithCoder: and encodeWithCoder: added new section for updated
+	version.  Added some logic to collect the top level items at that time
+	so that version 0 and version 1 .gorm files load in a precisely equivalent
+	manner.   Also, updated a change made by Alex Malmberg which was causing
+	the designated initializers to not be called.
+	* Source/NSBundleAdditions.m: Moved class to GSNibTemplates as described
+	above.  Cleaned up implementation of +loadNibNamed:context:.
+	* Source/NSNib.m: Removed some of the code which was there to collect top level
+	items.  Also cleaned up some of the code with the new implementation.
+
 2004-06-28  Serg Stoyan <stoyan255@ukr.net>
 
         * Headers/AppKit/NSScroller.h: Added _pendingKnobProportion ivar.
