@@ -2858,40 +2858,45 @@ resetCursorRectsForView(NSView *theView)
 
 
 #define     GSPerformDragSelector(view, sel, info, action) \
-                do {  \
-                    id target;  \
-		if (view == _contentView && _delegate) \
-                  { \
-                    target = _delegate; \
-                  } \
-                else \
-                  { \
-                    target= view; \
-                  } \
-                \
-                if ([target respondsToSelector: sel]) \
-                  { \
-                    action = (int)[target performSelector: sel withObject: info];   \
-                  } \
-                } while (0)
+	      if ([view window] == self) \
+		{ \
+		  id target; \
+		  \
+		  if (view == _contentView && _delegate != nil) \
+		    { \
+		      target = _delegate; \
+		    } \
+		  else \
+		    { \
+		      target= view; \
+		    } \
+		  \
+		  if ([target respondsToSelector: sel]) \
+		    { \
+		      action = (int)[target performSelector: sel \
+						 withObject: info];   \
+		    } \
+                }
 
 #define     GSPerformVoidDragSelector(view, sel, info) \
-                do {  \
-                    id target;  \
-		if (view == _contentView && _delegate) \
-                  { \
-                    target = _delegate; \
-                  } \
-                else \
-                  { \
-                    target= view; \
-                  } \
-                \
-                if ([target respondsToSelector: sel]) \
-                  { \
-                    [target performSelector: sel withObject: info];   \
-                  } \
-                } while (0)
+	      if ([view window] == self) \
+                {  \
+		  id target;  \
+		  \
+		  if (view == _contentView && _delegate) \
+		    { \
+		      target = _delegate; \
+		    } \
+		  else \
+		    { \
+		      target= view; \
+		    } \
+		  \
+		  if ([target respondsToSelector: sel]) \
+		    { \
+		      [target performSelector: sel withObject: info];   \
+		    } \
+                }
 
 	    case GSAppKitDraggingEnter:
 	    case GSAppKitDraggingUpdate:
@@ -2919,6 +2924,7 @@ resetCursorRectsForView(NSView *theView)
 		    }
 		  ASSIGN(_lastDragView, v);
 		  _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
+		    action = NSDragOperationNone;
 		}
               if (_f.accepts_drag)
                 {

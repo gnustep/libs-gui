@@ -1,5 +1,11 @@
 2002-01-20  Richard Frith-Macdonald  <rfm@gnu.org>
 
+	* Source/NSWindow.m: ([-sendEvent:]) check to see that an old drag
+	view is still in the current window before sending a dragging message
+	to it ... if it has been removed, don't send the message.
+
+2002-01-20  Richard Frith-Macdonald  <rfm@gnu.org>
+
 	* Source/NSWindow.m: ([-sendEvent:]) use ASSIGN() and DESTROY() to
 	update _lastDragView so we don't run into problems if something
 	deallocates it.  Added some debug logging.  Fixed bug in logic of
