@@ -1,3 +1,35 @@
+2000-12-07  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSCell.h: 
+	Added missing ivars and rearranged them all.
+	* Headers/gnustep/gui/NSPopupButtonCell.h: 
+	Remove now unneeded ivar _menu.
+	* Headers/gnustep/gui/NSImageCell.h: 
+	Moved typedefinitions to here from NSImageView.h
+	* Headers/gnustep/gui/NSImageView.h: 
+	Removed type definitions.
+	* Source/NSCell.m
+	Implemented a load of missing methods and adopted all subclasses to
+	this changes. (Including copying and coding) This breaks archived cells!
+	* Source/NSActionCell.m
+	* Source/NSBrowser.m
+	* Source/NSBrowserCell.m
+	* Source/NSButtonCell.m
+	* Source/NSComboBoxCell.m
+	* Source/NSFormCell.m
+	* Source/NSImageCell.m
+	* Source/NSMenuItemCell.m
+	* Source/NSPopupButtonCell.m
+	* Source/NSTableHeaderCell.m
+	* Source/NSTextFieldCell.m
+	Adopted to changes in NSCell.
+	* Source/NSFont.m
+	Made all predefined fonts redefinable and removed #ifdef.
+	* Source/NSHelpManager.m
+	[contextHelpForKey:] replaced nil by NULL to avoid compiler warning.
+	* Source/NSParagraphStyle.m
+	Removed super calls from coding methods to avoid compiler warning.
+	
 Wed Dec  6 19:37:33 2000  Georg Fleischmann <georg@vhf.de>
 	
 	* Source/NSTabView.m ([NSTabView -drawRect:]): using aRect
