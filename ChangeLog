@@ -1,3 +1,11 @@
+Sat Dec 23 15:43:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-setSelectedRange:affinity:
+	stillSelecting:]): Rewritten setting typing attributes for
+	insertion point.  ([-updateFontPanel]): Rewritten case of
+	insertion point.  ([-alignment]), ([-insertText:insertString]):
+	Access typing attributes to avoid copying the dictionary.
+
 2000-12-23  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAttributedString.m: ([-doubleClickAtIndex:]),
