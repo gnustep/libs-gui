@@ -177,12 +177,16 @@
 
   if (canSelect)
     {
-      if (_selected)
+      NSView *selectedView;
+
+      if (_selected != nil)
         {
           [_selected _setTabState: NSBackgroundTab];
-          if ([_selected view])
-	    [[_selected view] removeFromSuperview];
-        }
+
+	  /* NB: If [_selected view] is nil this does nothing, which
+             is fine.  */
+	  [[_selected view] removeFromSuperview];
+	}
 
       _selected = tabViewItem;
 
@@ -195,14 +199,18 @@
       _selected_item = [_items indexOfObject: _selected];
       [_selected _setTabState: NSSelectedTab];
 
-      if ([_selected view])
+      selectedView = [_selected view];
+
+      if (selectedView != nil)
 	{
-	  [self addSubview: [_selected view]];
+	  [self addSubview: selectedView];
+	  [selectedView setFrame: [self contentRect]];
 	  [_window makeFirstResponder: [_selected initialFirstResponder]];
 	}
-
+      
+      /* FIXME - only mark the contentRect as needing redisplay! */
       [self setNeedsDisplay: YES];
-
+      
       if ([_delegate respondsToSelector: 
 	@selector(tabView: didSelectTabViewItem:)])
 	{
