@@ -1,10 +1,18 @@
+Tue Nov 23 14:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: Rewrite focus handling, preliminary attempt
+	to cope with window close etc.
+	* Source/NSWindow.m: Some focus fixes etc.
+	* Source/NSMenuView.m: ([-sizeTofit]) hacked out reference to
+	_isBeholdenToPopUpButton to get this to compile again.
+
 1999-11-22  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSPopUpButton.m: rewrite.
 	* Source/NSPopUpButtonCell.m: ditto.
 	* Source/?.m: a few other misc fixes. will document.
 
-Mon Nov 22 17:05:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Mon Nov 22 17:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: Start listening for window notifications
 	whenm the app becomes active, and check to see which windows are key

@@ -104,6 +104,11 @@ NSApplication	*NSApp = nil;
   return NO;
 }
 
+- (BOOL) worksWhenModal
+{
+  return YES;
+}
+
 - (void) initDefaults
 {
   [super initDefaults];
@@ -146,19 +151,7 @@ static NSCell* tileCell = nil;
 {
   if ([theEvent clickCount] >= 2)
     {
-      NSWindow *kw = [NSApp keyWindow];
-
-      if (!kw)
-	kw = [self window];
-
       [NSApp unhide: self];
-      if ([NSApp keyWindow] == nil && kw != nil)
-	{
-	  NSGraphicsContext	*context = GSCurrentContext();
-
-          [kw orderFrontRegardless];
-	  DPSsetinputfocus(context, [kw windowNumber]);
-	}
     }
   else
     {
@@ -349,29 +342,155 @@ static NSCell* tileCell = nil;
 
 - (void) _windowWillClose: (NSNotification*) notification
 {
-  int count, wincount, realcount;
-  id win =  [self windows];
-  wincount = [win count];
-  realcount = 0;
-  for(count = 0; count < wincount; count++)
+  NSWindow		*win = [notification object];
+  NSArray		*windows_list = [self windows];
+  unsigned		count = [windows_list count];
+  unsigned		i;
+  NSMutableArray	*list = [NSMutableArray arrayWithCapacity: count];
+  BOOL			wasKey = [win isKeyWindow];
+  BOOL			wasMain = [win isMainWindow];
+
+  for (i = 0; i < count; i++)
     {
-      if([[win objectAtIndex: count] canBecomeMainWindow])
+      NSWindow	*tmp = [windows_list objectAtIndex: i];
+
+      if ([tmp canBecomeMainWindow] == YES && [tmp isVisible] == YES)
 	{
-	  realcount ++;
+	  [list addObject: tmp];
 	}
     }
+  [list removeObjectIdenticalTo: win];
+  count = [list count];
   
   /* If there's only one window left, and that's the one being closed, 
      then we ask the delegate if the app is to be terminated. */
-  if ((realcount <= 1) && [[notification object] isMainWindow])
+  if (wasMain && count == 0)
     {
       NSLog(@"asking delegate whether to terminate app...");
-      if ([delegate respondsToSelector: @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+      if ([delegate respondsToSelector:
+	@selector(applicationShouldTerminateAfterLastWindowClosed:)])
 	{
-	  if([delegate applicationShouldTerminateAfterLastWindowClosed: self])
+	  if ([delegate applicationShouldTerminateAfterLastWindowClosed: self])
 	    {
 	      [self terminate: self];
 	    }
+	}
+    }
+
+  if (wasMain == YES)
+    {
+      [win resignMainWindow];
+    }
+  if (wasKey == YES)
+    {
+      [win resignKeyWindow];
+    }
+
+  if (app_should_quit == NO)
+    {
+      /*
+       * If we are not quitting, we may need to find a new key/main window.
+       */
+      if (wasKey == YES && [self keyWindow] == nil)
+	{
+	  win = [self mainWindow];
+	  if (win != nil && [win canBecomeKeyWindow] == YES)
+	    {
+	      /*
+	       * We have a main window that can become key, so do it.
+	       */
+	      [win makeKeyAndOrderFront: self];
+	    }
+	  else if (win != nil)
+	    {
+	      /*
+	       * We have a main window that can't become key, so we just
+	       * find a new window to make into our key window.
+	       */
+	      for (i = 0; i < count; i++)
+		{
+		  win = [list objectAtIndex: i];
+
+		  if ([win canBecomeKeyWindow] == YES)
+		    {
+		      [win makeKeyAndOrderFront: self];
+		    }
+		}
+	    }
+	  else
+	    {
+	      /*
+	       * Find a window that can be made key and main - and do it.
+	       */
+	      for (i = 0; i < count; i++)
+		{
+		  win = [list objectAtIndex: i];
+		  if ([win canBecomeKeyWindow] && [win canBecomeMainWindow])
+		    {
+		      break;
+		    }
+		}
+	      if (i < count)
+		{
+		  [win makeMainWindow];
+		  [win makeKeyAndOrderFront: self];
+		}
+	      else
+		{
+		  /*
+		   * No window we can use, so just find any candidate to
+		   * be main window and another to be key window.
+		   */
+		  for (i = 0; i < count; i++)
+		    {
+		      win = [list objectAtIndex: i];
+		      if ([win canBecomeMainWindow] == YES)
+			{
+			  [win makeMainWindow];
+			  break;
+			}
+		    }
+		  for (i = 0; i < count; i++)
+		    {
+		      win = [list objectAtIndex: i];
+		      if ([win canBecomeKeyWindow] == YES)
+			{
+			  [win makeKeyAndOrderFront: self];
+			  break;
+			}
+		    }
+		}
+	    }
+	}
+      else if ([self mainWindow] == nil)
+	{
+	  win = [self keyWindow];
+	  if ([win canBecomeMainWindow] == YES)
+	    {
+	      [win makeMainWindow];
+	    }
+	  else
+	    {
+	      for (i = 0; i < count; i++)
+		{
+		  win = [list objectAtIndex: i];
+		  if ([win canBecomeMainWindow] == YES)
+		    {
+		      [win makeMainWindow];
+		      break;
+		    }
+		}
+	    }
+	}
+      /*
+       * If the app has no key window - we must make sure the icon window
+       * has keyboard focus, even though it doesn't actually use kb events.
+       */
+      if ([self keyWindow] == nil)
+	{
+	  NSGraphicsContext	*context = GSCurrentContext();
+
+	  DPSsetinputfocus(context, [app_icon_window windowNumber]);
 	}
     }
 }
@@ -503,8 +622,10 @@ static NSCell* tileCell = nil;
     {
       [_main_window resignMainWindow];
       [_main_window becomeMainWindow];
+      [_main_window orderFrontRegardless];
       [_key_window resignKeyWindow];
       [_key_window becomeKeyWindow];
+      [_key_window orderFrontRegardless];
     }
 
   /* Register self as observer to window events. */
@@ -596,8 +717,7 @@ static NSCell* tileCell = nil;
 {
   if (app_is_active == NO)
     {
-      NSGraphicsContext		*context = GSCurrentContext();
-      NSWindow			*kw = [self keyWindow];
+      NSWindow			*kw;
       NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
       unsigned			count = [_inactive count];
       unsigned			i;
@@ -616,6 +736,10 @@ static NSCell* tileCell = nil;
 	{
 	  [[_inactive objectAtIndex: i] orderFrontRegardless];
 	}
+      if ([self keyWindow] == nil && [_inactive containsObject: _hidden_key])
+	{
+	  [_hidden_key makeKeyWindow];
+	}
       [_inactive removeAllObjects];
 
       [main_menu update];
@@ -626,13 +750,14 @@ static NSCell* tileCell = nil;
 	  [self unhide: nil];
 	}
 
-      if (kw == nil || [kw isVisible] == NO)
+      kw = [self keyWindow];
+      if (kw != nil)
 	{
-	  kw = app_icon_window;
-	  [kw orderFrontRegardless];
-	}
+	  [kw resignKeyWindow];
+	  [kw orderFront: self];
+	  [kw makeKeyWindow];
+       }
 
-      DPSsetinputfocus(context, [kw windowNumber]);
       NSDebugLog(@"activateIgnoringOtherApps end.");
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
@@ -652,7 +777,10 @@ static NSCell* tileCell = nil;
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
 
-      [[self context] flush];
+      if ([self keyWindow] != nil)
+	{
+	  _hidden_key = [self keyWindow];
+	}
       for (i = 0; i < count; i++)
 	{
 	  NSWindow	*win = [windows_list objectAtIndex: i];
@@ -1241,7 +1369,10 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
 
-      _hidden_key = [self keyWindow];
+      if ([self keyWindow] != nil)
+	{
+	  _hidden_key = [self keyWindow];
+	}
       for (i = 0; i < count; i++)
 	{
 	  NSWindow	*win = [windows_list objectAtIndex: i];
@@ -1312,8 +1443,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	{
 	  [[_hidden objectAtIndex: i] orderFrontRegardless];
 	}
-      [_hidden removeAllObjects];
-      if ([[self windows] containsObject: _hidden_key])
+      if ([self keyWindow] == nil && [_hidden containsObject: _hidden_key])
 	{
 	  NSGraphicsContext	*context = GSCurrentContext();
 
@@ -1321,6 +1451,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	  DPSsetinputfocus(context, [_hidden_key windowNumber]);
 	  _hidden_key = nil;
 	}
+      [_hidden removeAllObjects];
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];

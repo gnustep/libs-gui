@@ -472,8 +472,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   accumulatedOffset += neededKeyEquivalentWidth + menuv_horizontalEdgePad;
 
   // Calculate frame size.
+#if 0
   if (![menuv_menu _isBeholdenToPopUpButton])
     cellSize.width = accumulatedOffset + 3; // Add the border width
+#endif
 
   [self setFrameSize: NSMakeSize(cellSize.width + 1, howHigh)];
 
