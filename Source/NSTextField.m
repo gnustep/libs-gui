@@ -551,9 +551,9 @@ static Class textFieldCellClass;
     return YES;
 }
 
-- (BOOL) textShouldEndEditing: (NSText *)aTextObject
+- (BOOL) textShouldEndEditing: (NSText*)textObject
 {
-  if ([_cell isEntryAcceptable: [aTextObject text]] == NO)
+  if ([_cell isEntryAcceptable: [textObject text]] == NO)
     {
       [self sendAction: _error_action to: [self target]];
       return NO;
@@ -562,16 +562,14 @@ static Class textFieldCellClass;
   if ([_delegate respondsToSelector: 
 		   @selector(control:textShouldEndEditing:)])
     {
-      if ([_delegate control: self 
-		     textShouldEndEditing: aTextObject] == NO)
+      if ([_delegate control: self textShouldEndEditing: textObject] == NO)
 	{
 	  NSBeep ();
 	  return NO;
 	}
     }
 
-  if ([_delegate respondsToSelector: 
-		   @selector(control:isValidObject:)] == YES)
+  if ([_delegate respondsToSelector: @selector(control:isValidObject:)] == YES)
     {
       NSFormatter *formatter;
       id newObjectValue;
@@ -579,12 +577,13 @@ static Class textFieldCellClass;
       formatter = [_cell formatter];
       
       if ([formatter getObjectValue: &newObjectValue 
-		     forString: [_text_object text] 
-		     errorDescription: NULL] == YES)
+			  forString: [_text_object text] 
+		   errorDescription: NULL] == YES)
 	{
-	  if ([_delegate control: self
-			 isValidObject: newObjectValue] == NO)
-	    return NO;
+	  if ([_delegate control: self isValidObject: newObjectValue] == NO)
+	    {
+	      return NO;
+	    }
 	}
     }
 

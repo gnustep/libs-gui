@@ -262,14 +262,18 @@ static NSNotificationCenter *nc = nil;
   return _editedDelta;
 }
 
-/*
- *	Set/get the delegate
+/**
+ * Set the delegate (adds it as an observer for text storage notifications)
+ * and removes any old value (removes it as an observer).<br />
+ * The delegate is <em>not</em> retained.
  */
-- (void) setDelegate: (id)anObject
+- (void) setDelegate: (id)delegate
 {
-  if (_delegate)
-    [nc removeObserver: _delegate  name: nil  object: self];
-  _delegate = anObject;
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+    }
+  _delegate = delegate;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(textStorage##notif_name:)]) \
@@ -281,6 +285,9 @@ static NSNotificationCenter *nc = nil;
   SET_DELEGATE_NOTIFICATION(WillProcessEditing);
 }
 
+/**
+ * Returns the value most recently set usiong the -setDelegate: method.
+ */
 - (id) delegate
 {
   return _delegate;
