@@ -37,6 +37,7 @@
 @interface NSResponder : NSObject <NSCoding>
 {
   // Attributes
+  int interface_style;
   id next_responder;
 }
 
