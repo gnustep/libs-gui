@@ -1,3 +1,8 @@
+2004-01-18  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSDrawFunctions.m: New class.
+	* Source/NSBox.m ([NSBox -drawRect:]): Use it.
+
 2004-01-17 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSBrowser.m:

@@ -35,6 +35,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 #include <math.h>
 
@@ -368,11 +369,11 @@
       [[NSColor controlDarkShadowColor] set];
       NSFrameRect(_border_rect);
       break;
-    case NSBezelBorder: 
-      NSDrawGrayBezel(_border_rect, rect);
+    case NSBezelBorder:
+      [GSDrawFunctions drawDarkBezel: _border_rect : rect];
       break;
     case NSGrooveBorder: 
-      NSDrawGroove(_border_rect, rect);
+      [GSDrawFunctions drawGroove: _border_rect : rect];
       break;
     }
 
