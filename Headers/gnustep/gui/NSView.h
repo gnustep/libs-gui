@@ -99,6 +99,9 @@ enum {
   BOOL allocate_gstate;
   BOOL renew_gstate;
 
+  NSView *_nextKeyView;
+  NSView *_previousKeyView;
+
   // Reserved for back-end use
   void *be_view_reserved;
 }
@@ -269,6 +272,12 @@ enum {
 			       owner:(id)anObject
 			    userData:(void *)data
 			       assumeInside:(BOOL)flag;
+- (void)setNextKeyView:(NSView *)aView;
+- (NSView *)nextKeyView;
+- (NSView *)nextValidKeyView;
+- (void)setPreviousKeyView:(NSView *)aView;
+- (NSView *)previousKeyView;
+- (NSView *)previousValidKeyView;
 
 //
 // Dragging

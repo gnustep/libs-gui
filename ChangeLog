@@ -1,3 +1,37 @@
+Fri Oct  8  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+        Implementation of key view loop.
+	* Headers/AppKit/NSView.h: New instance variables _nextKeyView and
+ 	_previousKeyView.  Added prototypes for the new methods implemented
+	in NSView.m.
+	* Model/GMAppKit.m ([NSView -encodeWithModelArchiver:]),
+	([NSView -initWithModelUnarchiver:]): Updated for new ivars
+ 	_nextKeyView, _previousKeyView.
+	* Source/NSView.m ([-dealloc]): Remove references to the view in
+ 	_nextKeyView and _previousKeyView.
+	* Source/NSView.m ([-initWithCoder:]), ([-encodeWithCoder:]),
+	([-initWithFrame:]): Updated for new ivars _nextKeyView,
+	_previousKeyView.
+	* Source/NSView.m ([-setNextKeyView:]): implemented method.
+	([-nextValidKeyView]): implemented method.  ([-nextValidKeyView]):
+	implemented method.  ([-setPreviousKeyView:]): implemented method.
+	([-previousValidKeyView]): implemented method.
+	([-previousValidKeyView]): implemented method.
+	* Source/NSView.m ([NSView -keyDown:]): implemented method
+	to process TAB/SHIFT+TAB. ([NSView -keyUp:]): idem.
+	* Source/NSWindow.m: ([-selectPreviousKeyView:]): implemented method.
+	([-selectKeyViewFollowingView:]): implemented method.
+	([-selectNextKeyView:]): implemented method.
+	([-selectKeyViewPrecedingView:]): implemented method.
+
+	Fix, mainly useful for custom control subclasses:
+	* Model/GMAppKit.m ([NSControl -initWithModelUnarchiver:]): If the
+ 	encoded cell is nil, create a new one (of the class associated
+ 	with the type of NSControl being decoded).  This is needed for
+ 	NSControl custom subclasses encoded through IMCustomView.
+	([NSMatrix -initWithModelUnarchiver:]): Do not set delegate if
+	nil.
+
 Tue Oct  5  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/IMConnectors.m ([IMOutletConnector -establishConnection]):

@@ -378,6 +378,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     int nr, nc;
     NSArray *cell_array;
     int i;
+    id decodedDelegate;
     
     self = [super initWithModelUnarchiver:unarchiver];
 
@@ -405,9 +406,11 @@ void __dummy_GMAppKit_functionForLinking() {}
     for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++) {
         [self putCell:[cell_array objectAtIndex:i] atRow:i/nc column:i%nc];
     }
-    
-    [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
-    
+
+    decodedDelegate = [unarchiver decodeObjectWithName:@"delegate"];
+    if (decodedDelegate)
+      [self setDelegate:decodedDelegate];
+
 
     [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
     [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
@@ -617,6 +620,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
+    id decodedCell;
+  
     self = [super initWithModelUnarchiver:unarchiver];
 
     // if (model_version == 1) {
@@ -630,7 +635,15 @@ void __dummy_GMAppKit_functionForLinking() {}
     //[self setIgnoresMultiClick:
     //            [unarchiver decodeBOOLWithName:@"ignoresMultiClick"]];
     // } else {
-    [self setCell:[unarchiver decodeObjectWithName:@"cell"]];
+    {
+      // So that custom NSControls, which do not encode the cell, 
+      // can still work.
+      decodedCell = [unarchiver decodeObjectWithName:@"cell"];
+      if (decodedCell)
+	[self setCell: decodedCell];
+      else
+	[self setCell: AUTORELEASE([[[self class] cellClass] new])];
+    }
     [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
     [self setTag:[unarchiver decodeIntWithName:@"tag"]];
     [self setIgnoresMultiClick:
@@ -968,6 +981,9 @@ void __dummy_GMAppKit_functionForLinking() {}
 	    withName:@"autoresizesSubviews"];
   [archiver encodeUnsignedInt:[self autoresizingMask]
 	    withName:@"autoresizingMask"];
+  [archiver encodeConditionalObject:[self nextKeyView] withName:@"nextKeyView"];
+  [archiver encodeConditionalObject:[self previousKeyView] 
+	    withName:@"previousKeyView"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -1005,6 +1021,10 @@ void __dummy_GMAppKit_functionForLinking() {}
 	[unarchiver decodeBOOLWithName:@"autoresizesSubviews"]];
   [self setAutoresizingMask:
 	[unarchiver decodeUnsignedIntWithName:@"autoresizingMask"]];
+  [self setNextKeyView: [unarchiver decodeObjectWithName:@"nextKeyView"]];
+  [self setPreviousKeyView: 
+	  [unarchiver decodeObjectWithName:@"previousKeyView"]];
+
 
 #ifdef GNU_GUI_LIBRARY
   _rFlags.flipped_view = [self isFlipped];

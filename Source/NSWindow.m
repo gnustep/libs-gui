@@ -1761,6 +1761,64 @@ static NSRecursiveLock	*windowsLock;
   return NO;
 }
 
+- (void) selectKeyViewFollowingView: (NSView *)aView
+{
+  NSView *theView = nil;
+  
+  if ([aView isKindOfClass: viewClass])
+    theView = [aView nextValidKeyView];
+  if (theView)
+    [self makeFirstResponder: theView];
+}
+
+- (void) selectKeyViewPrecedingView: (NSView *)aView
+{
+  NSView *theView = nil;
+
+  if ([aView isKindOfClass: viewClass])
+    theView = [aView previousValidKeyView];
+  if (theView)
+    [self makeFirstResponder: theView];
+}
+
+- (void) selectNextKeyView: (id)sender
+{
+  NSView *theView = nil;
+  
+  if ([first_responder isKindOfClass: viewClass])    
+    theView = [first_responder nextValidKeyView];
+  
+  if (!theView)
+    {
+      if ([_initial_first_responder acceptsFirstResponder])
+	theView = _initial_first_responder;
+      else 
+	theView = [_initial_first_responder nextValidKeyView];
+    }
+
+  if (theView)
+    [self makeFirstResponder: theView];
+}
+
+- (void) selectPreviousKeyView: (id)sender
+{
+  NSView *theView = nil;
+  
+  if ([first_responder isKindOfClass: viewClass])    
+    theView = [first_responder previousValidKeyView];
+  
+  if (!theView)
+    {
+      if ([_initial_first_responder acceptsFirstResponder])
+	theView = _initial_first_responder;
+      else 
+	theView = [_initial_first_responder previousValidKeyView];
+    }
+
+  if (theView)
+    [self makeFirstResponder: theView];
+}
+
 /*
  * Dragging
  */

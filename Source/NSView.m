@@ -66,6 +66,7 @@ struct NSWindow_struct
  *  Class variables
  */
 static Class	rectClass;
+static Class	viewClass;
 
 static NSAffineTransform	*flip = nil;
 
@@ -164,6 +165,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
 
+      viewClass = [NSView class];
       rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
       [self setVersion: 1];
@@ -224,6 +226,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   autoresize_subviews = YES;
   autoresizingMask = NSViewNotSizable;
   coordinates_valid = NO;
+  _nextKeyView = nil;
+  _previousKeyView = nil;
 
   _rFlags.flipped_view = [self isFlipped];
   _rFlags.opaque_view = [self isOpaque];
@@ -233,6 +237,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) dealloc
 {
+  if (_nextKeyView)
+    [_nextKeyView setPreviousKeyView: nil];
+  
+  if (_previousKeyView)
+     [_previousKeyView setNextKeyView: nil];
+     
   RELEASE(matrixToWindow);
   RELEASE(matrixFromWindow);
   RELEASE(frameMatrix);
@@ -2049,6 +2059,105 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return t;
 }
 
+- (void) setNextKeyView: (NSView *)aView
+{
+  if (!aView)
+    {
+      _nextKeyView = nil;
+      return;
+    }
+  
+  if ([aView isKindOfClass: viewClass])
+    {
+      // As an exception, we do not retain aView, to avoid retain loops 
+      // (the simplest being a view retaining and being retained 
+      // by another view), which prevents objects from being ever 
+      // deallocated.  To understand how we manage without retaining 
+      // _nextKeyView, see [NSView -dealloc].
+      _nextKeyView = aView;
+      if ([aView previousKeyView] != self)
+	[aView setPreviousKeyView: self];
+    }
+}
+- (NSView *) nextKeyView
+{
+  return _nextKeyView;
+}
+- (NSView *) nextValidKeyView
+{
+  NSView *theView;
+
+  theView = _nextKeyView;
+  while (1)
+    {
+      if ([theView acceptsFirstResponder] || (theView == nil))
+	return theView;
+      
+      theView = [theView nextKeyView];
+    }
+}
+- (void) setPreviousKeyView: (NSView *)aView
+{
+  if (!aView)
+    {
+      _previousKeyView = nil;
+      return;
+    }
+  
+  if ([aView isKindOfClass: viewClass])
+    {
+      _previousKeyView = aView;
+      if ([aView nextKeyView] != self)
+	[aView setNextKeyView: self];
+    }
+}
+- (NSView *) previousKeyView
+{
+  return _previousKeyView;
+}
+- (NSView *) previousValidKeyView
+{ 
+  NSView *theView;
+
+  theView = _previousKeyView;
+  while (1)
+    {
+      if ([theView acceptsFirstResponder] || (theView == nil))
+	return theView;
+      
+      theView = [theView previousKeyView];
+    }
+}
+
+- (void) keyDown: (NSEvent *)theEvent
+{ 
+  unsigned int key_code = [theEvent keyCode];
+  
+  // If this is a TAB or TAB+SHIFT event, we handle it
+  if (key_code == 0x09) 
+    {
+      if ([theEvent modifierFlags] & NSShiftKeyMask)
+	[window selectKeyViewPrecedingView: self];
+      else
+	[window selectKeyViewFollowingView: self];
+      return;
+    }    
+  
+  // Otherwise, let the event go on in the responder chain
+  [super keyDown: theEvent];
+}
+
+- (void) keyUp: (NSEvent *)theEvent
+{
+  unsigned int key_code = [theEvent keyCode];
+
+  // We handle (ignoring them) TAB/SHIFT+TAB events
+  if (key_code == 0x09) 
+    return;
+  else // All other events go on in the chain
+    [super keyUp: theEvent];
+}
+
 /*
  * Dragging
  */
@@ -2284,6 +2393,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
+  [aCoder encodeConditionalObject: _nextKeyView];
+  [aCoder encodeConditionalObject: _previousKeyView];
   NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
 }
 
@@ -2305,6 +2416,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_nextKeyView];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_previousKeyView];
   NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
 
   frameMatrix = [NSAffineTransform new];
