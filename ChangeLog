@@ -1,3 +1,11 @@
+2003-10-24  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Change a few uses of '/' in stgrings to
+	use stringByAppendingPatchComponent:
+	* Tools/gopen.m: Fix to pass the full path of the file to the
+	app being used to open it, so relative paths in the arguments
+	work properly.
+
 2003-10-21  Bjorn Giesler <bjoern@giesler.de>
 
 	* Source/GSServicesManager.m: Fix NSPerformService() to work for

@@ -35,6 +35,17 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
 
+static NSString*
+absolutePath(NSFileManager *fm, NSString *path)
+{
+  path = [path stringByStandardizingPath];
+  if ([path isAbsolutePath] == NO)
+    {
+      path = [[fm currentDirectoryPath] stringByAppendingPathComponent: path];
+    }
+  return path;
+}
+
 int
 main(int argc, char** argv, char **env_c)
 {
@@ -79,12 +90,14 @@ main(int argc, char** argv, char **env_c)
   
   if (filetoopen)
     {
+      filetoopen = absolutePath(fm, filetoopen);
       [workspace openFile: filetoopen
-		 withApplication: application];
+	  withApplication: application];
     }
 
   if (filetoprint)
     {
+      filetoprint = absolutePath(fm, filetoprint);
       puts("Not implemented");
     }
 
@@ -95,11 +108,11 @@ main(int argc, char** argv, char **env_c)
 
   if (argc == 1)
     {
-      NSFileHandle *fh = [NSFileHandle fileHandleWithStandardInput];
-      NSData *data = [fh readDataToEndOfFile];
-      NSString *tempFile = [NSTemporaryDirectory()
+      NSFileHandle	*fh = [NSFileHandle fileHandleWithStandardInput];
+      NSData		*data = [fh readDataToEndOfFile];
+      NSString		*tempFile = [NSTemporaryDirectory()
 	stringByAppendingPathComponent: @"openfiletmp"];
-      NSNumber *processId = [NSNumber numberWithInt:
+      NSNumber		*processId = [NSNumber numberWithInt:
 	[[NSProcessInfo processInfo] processIdentifier]];
 
       tempFile = [tempFile stringByAppendingString: [processId stringValue]];
@@ -140,6 +153,10 @@ main(int argc, char** argv, char **env_c)
 	      BOOL isDir = NO, exists = NO;
 
 	      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
+	      if (exists == YES)
+		{
+		  arg = absolutePath(fm, arg);
+		}
 	      if (exists && !isDir && [fm isExecutableFileAtPath: arg])
 		{
 		  [workspace openFile: arg withApplication: terminal];
@@ -147,9 +164,9 @@ main(int argc, char** argv, char **env_c)
 	      else // no argument specified
 		{
 		  // First check to see if it's an application
-		  if ([ext isEqualToString: @"app"] ||
-		      [ext isEqualToString: @"debug"] ||
-		      [ext isEqualToString: @"profile"])
+		  if ([ext isEqualToString: @"app"]
+		    || [ext isEqualToString: @"debug"]
+		    || [ext isEqualToString: @"profile"])
 		    {
 		      NSString *appName = 
 			[[arg lastPathComponent] stringByDeletingPathExtension];
@@ -172,7 +189,7 @@ main(int argc, char** argv, char **env_c)
 		  else 
 		    {
 		      if (![workspace openFile: arg
-				      withApplication: application])
+			       withApplication: application])
 			{
 			  // no recognized extension, 
 			  // run application indicated by environment var.	

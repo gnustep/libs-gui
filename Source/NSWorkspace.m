@@ -1105,7 +1105,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * <p>Launches the specified application (unless it is alreeady running).<br />
+ * <p>Launches the specified application (unless it is already running).<br />
  * If the autolaunch flag is yes, sets the autolaunch user default for the
  * newly launched application, so that applications which understand the
  * concept of being autolaunched at system startup time can modify their
@@ -1528,7 +1528,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
       else
 	{
-	  path = [path stringByAppendingFormat: @"/%@", file];
+	  path = [path stringByAppendingPathComponent: file];
 	}
     }
 
@@ -1644,7 +1644,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	   */
 	  if (iconPath == nil)
 	    {
-	      iconPath = [[bundle bundlePath] stringByAppendingPathComponent: file];
+	      iconPath = [[bundle bundlePath]
+		stringByAppendingPathComponent: file];
 	    }
 	  file = iconPath;
 	}
@@ -1712,7 +1713,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   absolute = [[NSURL fileURLWithPath: [file stringByStandardizingPath]] 
 		 absoluteString];
-  // This compensates for a bug we have in NSURL, that is there to have 
+  // This compensates for a feature we have in NSURL, that is there to have 
   // MacOSX compatibility.
   if ([absolute hasPrefix:  @"file://localhost/"])
     {
