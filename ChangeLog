@@ -1,3 +1,30 @@
+Wed Oct 31 01:23:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Implemented blinking insertion point (Work done with Ludovic
+	Marcotte <ludovic@sophos.ca>).
+	* Headers/gnustep/gui/NSTextView.h (_drawInsertionPoint): New
+	ivar.  
+	(_insertionPointTimer): New ivar.
+	* Source/NSTextView.m ([-initWithFrame:textContainer:]): Set
+	selected range to 0, 0.  
+	([-initWithCoder:]): Set selected range to 0, 0.  
+	([-_blink]): New method.
+	([-dealloc]): Invalidate then destroy the insertion point blinking
+	timer.
+	([-shouldDrawInsertionPoint]): Don't draw the insertion point if
+	we are not first responder.
+	([-setEditable:]): Start/stop insertion point blinking.
+	([-setSelectedRange:affinity:stillSelecting:]): Stop the insertion
+	point blinking if the selected range is not of zero length.
+	([-updateInsertionPointStateAndRestartTimer:]): Start/stop
+	blinking as appropriate.
+	([-becomeFirstResponder]): Start blinking if appropriate.
+	([-resignFirstResponder]): Stop blinking if appropriate.
+	([-drawRect:]): Only draw the insertion point if we are in the
+	`on' phase of blinking.
+	([-becomeKeyWindow]), ([-resignKeyWindow]): Removed.
+	([-_illegalMovement:]): Stop blinking if appropriate.
+	
 2001-10-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Headers/gnustep/gui/NSTableView.h:
