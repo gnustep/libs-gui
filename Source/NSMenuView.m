@@ -343,9 +343,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
 		intValue];
+  NSMenuItemCell *aCell = [_itemCells objectAtIndex: index];
 
+  // Enabling of the item may have changed
+  [aCell setEnabled: [[aCell menuItem] isEnabled]];
   // Mark the cell associated with the item as needing resizing.
-  [[_itemCells objectAtIndex: index] setNeedsSizing: YES];
+  [aCell setNeedsSizing: YES];
   [self setNeedsDisplayForItemAtIndex: index];
 
   // Mark the menu view as needing to be resized.
