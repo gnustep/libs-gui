@@ -219,8 +219,8 @@
 - (NSRange)smartDeleteRangeForProposedRange:(NSRange)proposedCharRange;
 - (void)smartInsertForString:(NSString *)aString
               replacingRange:(NSRange)charRange
-                beforeString:(NSString *)beforeString
-                 afterString:(NSString *)afterString;
+                beforeString:(NSString **)beforeString
+                 afterString:(NSString **)afterString;
 @end
 
 // Note that all delegation messages come from the first textView
