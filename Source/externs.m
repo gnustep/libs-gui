@@ -268,6 +268,12 @@ NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
 // NSPopUpButton notification
 NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
 
+// NSTable notifications
+NSString *NSTableViewSelectionDidChangeNotification = @"TableViewSelectionDidChange";
+NSString *NSTableViewColumnDidMoveNotification = @"TableViewColumnDidMove";
+NSString *NSTableViewColumnDidResizeNotification = @"TableViewColumnDidResize";
+NSString *NSTableViewSelectionIsChangingNotification = @"TableViewSelectionIsChanging";
+
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
 NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
