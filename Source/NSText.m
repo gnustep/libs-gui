@@ -1738,22 +1738,6 @@ NSLog(NSStringFromRange(redrawLineRange));
     object: (id)self];
 }
 
-- (BOOL) textShouldBeginEditing: (NSText *)textObject
-{	
-  if ([delegate respondsToSelector: @selector(textShouldBeginEditing: )])
-    return [delegate textShouldBeginEditing: self];
-  else 
-    return YES;
-}
-
-- (BOOL) textShouldEndEditing: (NSText *)textObject
-{	
-  if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
-    return [delegate textShouldEndEditing: self];
-  else 
-    return YES;
-}
-
 - (BOOL) textShouldEndEditing: (NSText *)textObject
 {	
   if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
