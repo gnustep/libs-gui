@@ -1,3 +1,8 @@
+2001-07-23  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
+
+	* Source/NSFontPanel.m (_initWithoutGModel): call setMinColumnWidth on 
+	familyBrowser and on faceBrowser (they were not displayed)
+
 2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
 	* Source/NSBrowser.h: Add instance variables to support alphanumerical
