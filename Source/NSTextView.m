@@ -3477,20 +3477,20 @@ other than copy/paste or dragging. */
     {
       if ([type isEqualToString: NSStringPboardType])
         {
-	  ret = ret || [pboard setString: [[self string] substringWithRange: _selected_range] 
-			       forType: NSStringPboardType];
+	  ret = [pboard setString: [[self string] substringWithRange: _selected_range] 
+			forType: NSStringPboardType] || ret;
 	}
 
       if ([type isEqualToString: NSRTFPboardType])
         {
-	  ret = ret || [pboard setData: [self RTFFromRange: _selected_range]
-			       forType: NSRTFPboardType];
+	  ret = [pboard setData: [self RTFFromRange: _selected_range]
+			forType: NSRTFPboardType] || ret;
 	}
 
       if ([type isEqualToString: NSRTFDPboardType])
         {
-	  ret = ret || [pboard setData: [self RTFDFromRange: _selected_range]
-			       forType: NSRTFDPboardType];
+	  ret = [pboard setData: [self RTFDFromRange: _selected_range]
+			forType: NSRTFDPboardType] || ret;
 	}
 
       if ([type isEqualToString: NSColorPboardType])
