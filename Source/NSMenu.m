@@ -28,6 +28,7 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
@@ -49,11 +50,11 @@
 
 
 @interface NSMenu (PrivateMethods2)
-- (void)_menuChanged;
+- (void) _menuChanged;
 @end
 
 @interface NSMenuMatrix (PrivateMethods2)
-- (void)_resizeMenuForCellSize;
+- (void) _resizeMenuForCellSize;
 @end
 
 //*****************************************************************************
@@ -67,21 +68,21 @@
 // Class variables
 static NSFont* menuFont = nil;
 
-- initWithFrame:(NSRect)rect
+- (id) initWithFrame: (NSRect)rect
 {
-  [super initWithFrame:rect];
+  [super initWithFrame: rect];
   cells = [NSMutableArray new];
 
   /* Don't initialize menuFont in +initialize since we don't know if the
      DGS process knows anything about the fonts yet. */
   if (!menuFont)
-    menuFont = [[NSFont systemFontOfSize:0] retain];
+    menuFont = [[NSFont systemFontOfSize: 0] retain];
 
   cellSize = NSMakeSize (1, [menuFont pointSize] - [menuFont descender] + 6);
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   NSDebugLog (@"NSMenuMatrix of menu '%@' dealloc", [menu title]);
 
@@ -89,32 +90,34 @@ static NSFont* menuFont = nil;
   [super dealloc];
 }
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-  NSMenuMatrix* copy = [[isa alloc] initWithFrame:[self frame]];
+  NSMenuMatrix* copy = [[isa allocWithZone: zone] initWithFrame: [self frame]];
   int i, count;
 
   NSDebugLog (@"copy menu matrix of menu with title '%@'", [menu title]);
-  for (i = 0, count = [cells count]; i < count; i++) {
-    id aCell = [cells objectAtIndex:i];
-    id cellCopy = [[aCell copyWithZone:zone] autorelease];
+  for (i = 0, count = [cells count]; i < count; i++)
+    {
+      id aCell = [cells objectAtIndex: i];
+      id cellCopy = [[aCell copyWithZone: zone] autorelease];
 
-    [copy->cells addObject:cellCopy];
-  }
+      [copy->cells addObject: cellCopy];
+    }
 
   copy->cellSize = cellSize;
   copy->menu = menu;
-  if (selectedCell) {
-    int index = [cells indexOfObject:selectedCell];
+  if (selectedCell)
+    {
+      int index = [cells indexOfObject: selectedCell];
 
-    copy->selectedCell = [[cells objectAtIndex:index] retain];
-  }
+      copy->selectedCell = [[cells objectAtIndex: index] retain];
+    }
   copy->selectedCellRect = selectedCellRect;
 
   return copy;
 }
 
-- (void)_resizeMenuForCellSize
+- (void) _resizeMenuForCellSize
 {
   int i, count;
   float titleWidth;
@@ -122,91 +125,99 @@ static NSFont* menuFont = nil;
   /* Compute the new width of the menu cells matrix */
   cellSize.width = 0;
   count = [cells count];
-  for (i = 0; i < count; i++) {
-    titleWidth = [menuFont widthOfString:
-				[[cells objectAtIndex:i] stringValue]];
-    cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
-  }
-  cellSize.width = MAX([menuFont widthOfString:[menu title]]
+  for (i = 0; i < count; i++)
+    {
+      titleWidth = [menuFont widthOfString: 
+				  [[cells objectAtIndex: i] stringValue]];
+      cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
+    }
+  cellSize.width = MAX([menuFont widthOfString: [menu title]]
 			  + ADDITIONAL_WIDTH,
 			cellSize.width);
 
   /* Resize the frame to hold all the menu cells */
-  [super setFrameSize:NSMakeSize (cellSize.width,
-      (cellSize.height + INTERCELL_SPACE) * [cells count] - INTERCELL_SPACE)];
+  [super setFrameSize: NSMakeSize (cellSize.width,
+      count ? (cellSize.height + INTERCELL_SPACE)*count - INTERCELL_SPACE : 0)];
 }
 
-- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-								action:(SEL)aSelector
-			 					keyEquivalent:(NSString*)charCode
-			       				atIndex:(unsigned int)index
+- (id <NSMenuItem>)insertItemWithTitle: (NSString*)aString
+				action: (SEL)aSelector
+			 keyEquivalent: (NSString*)charCode
+			       atIndex: (unsigned int)index
 {
   id menuCell = [[[NSMenu cellClass] new] autorelease];
 
-  [menuCell setFont:menuFont];			// set font first in order to avoid
-										// recalc of some cached params in xraw
-  [menuCell setTitle:aString];
-  [menuCell setAction:aSelector];
-  [menuCell setKeyEquivalent:charCode];
+  [menuCell setFont: menuFont];
+  [menuCell setTitle: aString];
+  [menuCell setAction: aSelector];
+  [menuCell setKeyEquivalent: charCode];
 
-  [cells insertObject:menuCell atIndex:index];
+  [cells insertObject: menuCell atIndex: index];
 
   return menuCell;
 }
 
-- (void)removeItem:(id <NSMenuItem>)anItem
+- (void) removeItem: (id <NSMenuItem>)anItem
 {
-  int row = [cells indexOfObject:anItem];
+  int row = [cells indexOfObject: anItem];
 
   if (row == -1)
     return;
 
-  [cells removeObjectAtIndex:row];
+  [cells removeObjectAtIndex: row];
 }
 
-- (NSArray*)itemArray			{ return cells; }
-
-- (id <NSMenuItem>)itemWithTitle:(NSString*)aString
+- (NSArray*) itemArray
 {
-  int i, count = [cells count];
+  return cells;
+}
+
+- (id <NSMenuItem>) itemWithTitle: (NSString*)aString
+{
+  unsigned i, count = [cells count];
   id menuCell;
 
-  for (i = 0; i < count; i++) {
-    menuCell = [cells objectAtIndex:i];
-    if ([[menuCell title] isEqual:aString])
-      return menuCell;
-  }
+  for (i = 0; i < count; i++)
+    {
+      menuCell = [cells objectAtIndex: i];
+      if ([[menuCell title] isEqual: aString])
+	return menuCell;
+    }
   return nil;
 }
 
-- (id <NSMenuItem>)itemWithTag:(int)aTag
+- (id <NSMenuItem>) itemWithTag: (int)aTag
 {
-  int i, count = [cells count];
+  unsigned i, count = [cells count];
   id menuCell;
 
-  for (i = 0; i < count; i++) {
-    menuCell = [cells objectAtIndex:i];
-    if ([menuCell tag] == aTag)
-      return menuCell;
-  }
+  for (i = 0; i < count; i++)
+    {
+      menuCell = [cells objectAtIndex: i];
+      if ([menuCell tag] == aTag)
+	return menuCell;
+    }
   return nil;
 }
 
-- (NSRect)cellFrameAtRow:(int)index
+- (NSRect) cellFrameAtRow: (int)index
 {
+  unsigned count = [cells count];
   NSRect rect;
 
+  NSAssert(index >= 0 && index < count+1, @"invalid row coordinate");
+
   rect.origin.x = 0;
-  rect.origin.y = ([cells count] - index - 1)
+  rect.origin.y = (count - index - 1)
 		  * (cellSize.height + INTERCELL_SPACE);
   rect.size = cellSize;
 
   return rect;
 }
 
-- (void)drawRect:(NSRect)rect
+- (void)drawRect: (NSRect)rect
 {
-  int i, count = [cells count];
+  unsigned i, count = [cells count];
   int max, howMany;
   NSRect intRect = {{0, 0}, {0, 0}};
 
@@ -218,19 +229,39 @@ static NSFont* menuFont = nil;
 
   intRect.origin.y = (count - max) * (cellSize.height + INTERCELL_SPACE);
   intRect.size = cellSize;
-  for (i = max - 1; howMany > 0; i--, howMany--) {
-    id aCell = [cells objectAtIndex:i];
+  for (i = max - 1; howMany > 0; i--, howMany--)
+    {
+      id aCell = [cells objectAtIndex: i];
 
-    [aCell drawWithFrame:intRect inView:self];
-    intRect.origin.y += cellSize.height + INTERCELL_SPACE;
-  }
+      [aCell drawWithFrame: intRect inView: self];
+      intRect.origin.y += cellSize.height + INTERCELL_SPACE;
+    }
 }
 
-- (NSSize)cellSize					{ return cellSize; }
-- (void)setMenu:(NSMenu*)anObject	{ menu = anObject; }
-- (void)setSelectedCell:(id)aCell	{ selectedCell = aCell; }
-- (id)selectedCell					{ return selectedCell; }
-- (NSRect)selectedCellRect			{ return selectedCellRect; }
+- (NSSize) cellSize
+{
+  return cellSize;
+}
+
+- (void) setMenu: (NSMenu*)anObject
+{
+  menu = anObject;
+}
+
+- (void) setSelectedCell: (id)aCell
+{
+  selectedCell = aCell;
+}
+
+- (id) selectedCell
+{
+  return selectedCell;
+}
+
+- (NSRect) selectedCellRect
+{
+  return selectedCellRect;
+}
 
 @end /* NSMenuMatrix */
 
@@ -247,51 +278,51 @@ static NSFont* menuFont = nil;
 static NSZone *menuZone = NULL;
 static Class menuCellClass = nil;
 
-+ (void)initialize
++ (void) initialize
 {
   menuCellClass = [NSMenuItem class];
 }
 
-+ (void)setMenuZone:(NSZone*)zone
++ (void) setMenuZone: (NSZone*)zone
 {
   menuZone = zone;
 }
 
-+ (NSZone*)menuZone
++ (NSZone*) menuZone
 {
   return menuZone;
 }
 
-+ (void)setCellClass:(Class)aClass
++ (void) setCellClass: (Class)aClass
 {
   menuCellClass = aClass;
 }
 
-+ (Class)cellClass
++ (Class) cellClass
 {
   return menuCellClass;
 }
 
-- init
+- (id) init
 {
-  return [self initWithTitle:
+  return [self initWithTitle: 
 		[[[NSProcessInfo processInfo] processName] lastPathComponent]];
 }
 
-- (id)initWithTitle:(NSString*)aTitle
+- (id) initWithTitle: (NSString*)aTitle
 {
   // SUBCLASS to initialize other "instance variables"
   NSRect rect = {{0, 0}, {80, 20}};
 
   ASSIGN(title, aTitle);
-  menuCells = [[NSMenuMatrix alloc] initWithFrame:rect];
-  [menuCells setMenu:self];
+  menuCells = [[NSMenuMatrix alloc] initWithFrame: rect];
+  [menuCells setMenu: self];
   menuChangedMessagesEnabled = YES;
   autoenablesItems = YES;
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   NSDebugLog (@"NSMenu '%@' dealloc", title);
 
@@ -300,7 +331,7 @@ static Class menuCellClass = nil;
   [super dealloc];
 }
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
   NSMenu	*copy = NSAllocateObject (isa, 0, zone);
   unsigned	i, count;
@@ -316,7 +347,7 @@ static Class menuCellClass = nil;
   /* Change the supermenu object of the new cells to the new menu */
   cells = [copy->menuCells itemArray];
   for (i = 0, count = [cells count]; i < count; i++) {
-    id cell = [cells objectAtIndex:i];
+    id cell = [cells objectAtIndex: i];
 
     if ([cell hasSubmenu]) {
       NSMenu* submenu = [cell target];
@@ -325,7 +356,7 @@ static Class menuCellClass = nil;
     }
   }
 
-  [copy->menuCells setFrame:[menuCells frame]];
+  [copy->menuCells setFrame: [menuCells frame]];
 
   copy->supermenu = supermenu;
   copy->attachedMenu = nil;
@@ -336,109 +367,106 @@ static Class menuCellClass = nil;
   return copy;
 }
 
-- (id <NSMenuItem>)addItemWithTitle:(NSString*)aString
-			    			 action:(SEL)aSelector
-		      				 keyEquivalent:(NSString*)charCode
+- (id <NSMenuItem>) addItemWithTitle: (NSString*)aString
+			      action: (SEL)aSelector
+		       keyEquivalent: (NSString*)charCode
 {
-  return [self insertItemWithTitle:aString
-			    			action:aSelector
-		     				keyEquivalent:charCode
-			   				atIndex:[[menuCells itemArray] count]];
+  return [self insertItemWithTitle: aString
+			    action: aSelector
+		     keyEquivalent: charCode
+			   atIndex: [[menuCells itemArray] count]];
 }
 
-- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-								action:(SEL)aSelector
-			 					keyEquivalent:(NSString*)charCode
-			       				atIndex:(unsigned int)index
+- (id <NSMenuItem>) insertItemWithTitle: (NSString*)aString
+				 action: (SEL)aSelector
+			  keyEquivalent: (NSString*)charCode
+				atIndex: (unsigned int)index
 {
-  id menuCell = [menuCells insertItemWithTitle:aString
-										action:aSelector
-				 						keyEquivalent:charCode
-				       					atIndex:index];
-  menuHasChanged = YES;									// menu needs update
+  id menuCell = [menuCells insertItemWithTitle: aString
+					action: aSelector
+				 keyEquivalent: charCode
+				atIndex: index];
+  menuHasChanged = YES;
 
   return menuCell;
 }
 
-- (void)removeItem:(id <NSMenuItem>)anItem
+- (void) removeItem: (id <NSMenuItem>)anItem
 {
-  [menuCells removeItem:anItem];
-  menuHasChanged = YES;									// menu needs update
+  [menuCells removeItem: anItem];
+  menuHasChanged = YES;
 }
 
-- (NSArray*)itemArray
+- (NSArray*) itemArray
 {
   return [menuCells itemArray];
 }
 
-- (id <NSMenuItem>)itemWithTag:(int)aTag
+- (id <NSMenuItem>) itemWithTag: (int)aTag
 {
-  return [menuCells itemWithTag:aTag];
+  return [menuCells itemWithTag: aTag];
 }
 
-- (id <NSMenuItem>)itemWithTitle:(NSString*)aString
+- (id <NSMenuItem>) itemWithTitle: (NSString*)aString
 {
-  return [menuCells itemWithTitle:aString];
+  return [menuCells itemWithTitle: aString];
 }
 
-- (void)setSubmenu:(NSMenu*)aMenu forItem:(id <NSMenuItem>)anItem
+- (void) setSubmenu: (NSMenu*)aMenu forItem: (id <NSMenuItem>)anItem
 {
-  NSString* itemTitle = [anItem title];
+  NSString	*itemTitle = [anItem title];
 
-  [anItem setTarget:aMenu];
-  [anItem setAction:@selector(submenuAction:)];
+  [anItem setTarget: aMenu];
+  [anItem setAction: @selector(submenuAction:)];
   if (aMenu)
     aMenu->supermenu = self;
 
-  [itemTitle retain];
-//  [aMenu->title release];
-  aMenu->title = itemTitle;
-
+  ASSIGN(aMenu->title, itemTitle);
   [self _menuChanged];
 }
 
-- (void)submenuAction:(id)sender
+- (void) submenuAction: (id)sender
 {
 }
 
-- (NSMenu*)attachedMenu
+- (NSMenu*) attachedMenu
 {
   return attachedMenu;
 }
 
-- (BOOL)isAttached
+- (BOOL) isAttached
 {
   return supermenu && [supermenu attachedMenu] == self;
 }
 
-- (BOOL)isTornOff
+- (BOOL) isTornOff
 {
   // SUBCLASS
   return NO;
 }
 
-- (NSPoint)locationForSubmenu:(NSMenu*)aSubmenu
+- (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu
 {
   // SUBCLASS
   return NSZeroPoint;
 }
 
-- (NSMenu*)supermenu
+- (NSMenu*) supermenu
 {
   return supermenu;
 }
 
-- (void)setAutoenablesItems:(BOOL)flag
+- (void) setAutoenablesItems: (BOOL)flag
 {
   autoenablesItems = flag;
 }
 
-- (BOOL)autoenablesItems
+- (BOOL) autoenablesItems
 {
   return autoenablesItems;
 }
 
-- (void)update
+- (void) update
 {
   // SUBCLASS to redisplay the menu if necessary
 
@@ -453,7 +481,7 @@ static Class menuCellClass = nil;
   count = [cells count];
 
   /* Temporary disable automatic displaying of menu */
-  [self setMenuChangedMessagesEnabled:NO];
+  [self setMenuChangedMessagesEnabled: NO];
 
   for (i = 0; i < count; i++)
     {
@@ -513,10 +541,10 @@ static Class menuCellClass = nil;
     [self sizeToFit];
 
   /* Reenable displaying of menus */
-  [self setMenuChangedMessagesEnabled:YES];
+  [self setMenuChangedMessagesEnabled: YES];
 }
 
-- (void) performActionForItem: (id <NSMenuItem>)cell
+- (void)  performActionForItem: (id <NSMenuItem>)cell
 {
   NSNotificationCenter *nc;
   NSDictionary *d;
@@ -537,7 +565,7 @@ static Class menuCellClass = nil;
 				  userInfo: d];
 }
 
-- (BOOL)performKeyEquivalent:(NSEvent*)theEvent
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   id cells = [menuCells itemArray];
   int i, count = [cells count];
@@ -547,18 +575,18 @@ static Class menuCellClass = nil;
     return NO;
 
   for (i = 0; i < count; i++) {
-    id<NSMenuItem> cell = [cells objectAtIndex:i];
+    id<NSMenuItem> cell = [cells objectAtIndex: i];
 
     if ([cell hasSubmenu]) {
-      if ([[cell target] performKeyEquivalent:theEvent])
+      if ([[cell target] performKeyEquivalent: theEvent])
 	/* The event has been handled by a cell in submenu */
 	return YES;
     }
     else {
-      if ([[cell keyEquivalent] isEqual:[theEvent charactersIgnoringModifiers]]
+      if ([[cell keyEquivalent] isEqual: [theEvent charactersIgnoringModifiers]]
 	  && [cell keyEquivalentModifierMask] == [theEvent modifierFlags]) {
 	[menuCells lockFocus];
-	[(id)cell performClick:self];
+	[(id)cell performClick: self];
 	[menuCells unlockFocus];
 	return YES;
       }
@@ -568,51 +596,51 @@ static Class menuCellClass = nil;
   return NO;
 }
 
-- (void)setMenuChangedMessagesEnabled:(BOOL)flag
+- (void) setMenuChangedMessagesEnabled: (BOOL)flag
 {
   menuChangedMessagesEnabled = flag;
 }
 
-- (BOOL)menuChangedMessagesEnabled
+- (BOOL) menuChangedMessagesEnabled
 {
   return menuChangedMessagesEnabled;
 }
 
-- (void)sizeToFit
+- (void) sizeToFit
 {
   // SUBCLASS
   [menuCells _resizeMenuForCellSize];
-  [menuCells setNeedsDisplay:YES];
+  [menuCells setNeedsDisplay: YES];
   menuHasChanged = NO;
 }
 
-- (void)setTitle:(NSString*)aTitle
+- (void) setTitle: (NSString*)aTitle
 {
   ASSIGN(title, aTitle);
   [self sizeToFit];
 }
 
-- (NSString*)title
+- (NSString*) title
 {
   return title;
 }
 
-- (NSMenuMatrix*)menuCells
+- (NSMenuMatrix*) menuCells
 {
   return menuCells;
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (id)  initWithCoder: (NSCoder*)aDecoder
 {
   return self;
 }
 
-- (void) encodeWithCoder: (NSCoder*)aCoder
+- (void)  encodeWithCoder: (NSCoder*)aCoder
 {
 }
 
 // non OS spec methods
-- (void)_rightMouseDisplay
+- (void) _rightMouseDisplay
 {
 }
 
@@ -621,7 +649,7 @@ static Class menuCellClass = nil;
 
 @implementation NSMenu (PrivateMethods2)
 
-- (void)_menuChanged
+- (void) _menuChanged
 {
   menuHasChanged = YES;
   if (menuChangedMessagesEnabled)
