@@ -1,3 +1,10 @@
+2003-12-06 14:03  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-readSelectionFromPasteboard:type:,
+	NSTIFFPboardType): Send -setFileWrapper: to the attachment after
+	setting the wrapper's icon to force an update of the attachment's
+	image. Reported by Fabien Vallon.
+
 2003-12-03 02:54  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GNUmakefile.postamble (after-clean): Add a missing ':'.

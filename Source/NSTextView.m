@@ -3576,6 +3576,9 @@ right.)
 	      NSAttributedString *as = [NSAttributedString attributedStringWithAttachment: attachment];
 
 	      [wrapper setIcon: image];
+	      /* We changed the wrapper's icon. Reset the attachment to force
+	      an update of the attachment's cell's image. */
+	      [attachment setFileWrapper: wrapper];
 	      if ([self shouldChangeTextInRange: changeRange
 			      replacementString: [as string]])
 		{
