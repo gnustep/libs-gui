@@ -33,14 +33,14 @@
 
 #include <AppKit/NSText.h>
 #include <AppKit/NSInputManager.h>
+#include <AppKit/NSDragging.h>
+#include <AppKit/NSTextAttachment.h>
 
 @class NSTimer;
 @class NSTextContainer;
 @class NSTextStorage;
 @class NSLayoutManager;
 @class NSRulerView,NSRulerMarker;
-@protocol NSDraggingInfo;
-@protocol NSTextAttachmentCell;
 
 
 typedef enum _NSSelectionGranularity {

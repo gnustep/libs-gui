@@ -1,3 +1,8 @@
+2003-01-26 20:41  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextView.h: Don't use protocol forward
+	declarations.
+
 2003-01-26 20:35  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m: Make sure the typing attributes are always
