@@ -47,6 +47,7 @@
    //_buttonCell = nil;
    _popUpList = [[NSMutableArray alloc] init];
    //_usesDataSource = NO;
+   //_completes = NO;
    _visibleItems = 10;
    _intercellSpacing = NSZeroSize;
    _itemHeight = 14;
@@ -294,6 +295,23 @@
    if (_usesDataSource)
       return [self _dataSourceObjectValues];
    return _popUpList;
+}
+
+// Text completion
+- (NSString *)completedString:(NSString *)substring
+{
+  // FIXME
+  return substring;
+}
+
+- (void)setCompletes:(BOOL)completes
+{
+  _completes = completes;
+}
+
+- (BOOL)completes
+{
+  return _completes;
 }
 
 - (void)performPopUsingSelector:(SEL)aSelector

@@ -77,6 +77,12 @@
 - (int)indexOfItemWithObjectValue:(id)object;
 - (NSArray *)objectValues;
 
+#ifndef	STRICT_OPENSTEP
+/* text completion */
+- (void)setCompletes:(BOOL)completes;
+- (BOOL)completes;
+#endif
+
 @end
 
 @interface NSObject (NSComboBoxDataSource)
@@ -84,6 +90,11 @@
 - (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(int)index;
 - (unsigned int)comboBox:(NSComboBox *)aComboBox
 indexOfItemWithStringValue:(NSString *)string;
+#ifndef	STRICT_OPENSTEP
+/* text completion */
+- (NSString *)comboBox:(NSComboBox *)aComboBox 
+       completedString:(NSString *)aString;
+#endif
 @end
 
 @interface NSObject (NSComboBoxNotifications)

@@ -40,6 +40,7 @@
    NSMutableArray	*_popUpList;
    BOOL			_usesDataSource;
    BOOL			_hasVerticalScroller;
+   BOOL                 _completes;
    int			_visibleItems;
    NSSize		_intercellSpacing;
    float		_itemHeight;
@@ -95,6 +96,12 @@
 - (int)indexOfItemWithObjectValue:(id)object;
 - (NSArray *)objectValues;
 
+#ifndef	STRICT_OPENSTEP
+/* text completion */
+- (NSString *)completedString:(NSString *)substring;
+- (void)setCompletes:(BOOL)completes;
+- (BOOL)completes;
+#endif
 @end
 
 @interface NSObject (NSComboBoxCellDataSource)
@@ -103,6 +110,11 @@
 objectValueForItemAtIndex:(int)index;
 - (unsigned int)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
   indexOfItemWithStringValue:(NSString *)string;
+#ifndef	STRICT_OPENSTEP
+/* text completion */
+- (NSString *)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
+	   completedString:(NSString *)uncompletedString;
+#endif
 @end
 
 #endif /* _GNUstep_H_NSComboBoxCell */
