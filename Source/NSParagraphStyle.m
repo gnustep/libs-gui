@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <Foundation/Foundation.h>
+#include <Foundation/NSException.h>
 #include <AppKit/NSParagraphStyle.h>
 
 @implementation NSTextTab

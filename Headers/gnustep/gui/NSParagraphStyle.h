@@ -28,8 +28,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include "NSText.h"
+#include <AppKit/NSText.h>
 
 typedef enum _NSTextTabType {
   NSLeftTabStopType = 0,

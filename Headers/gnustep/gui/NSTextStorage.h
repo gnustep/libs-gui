@@ -31,7 +31,6 @@
 #ifndef _GNUstep_H_NSTextStorage
 #define _GNUstep_H_NSTextStorage
 
-#include <Foundation/Foundation.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKitDefines.h>
 

@@ -1,3 +1,9 @@
+2003-01-26 18:54  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSParagraphStyle.h,
+	Headers/gnustep/gui/NSTextStorage.h, Source/NSParagraphStyle.m,
+	Source/NSTextAttachment.m: Clean up the includes.
+
 2003-01-26 18:46  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSGraphics.h,
