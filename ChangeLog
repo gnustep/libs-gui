@@ -1,3 +1,24 @@
+Sat Jun 22 15:19:31 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSAffineTransform.h (rotationAngle):
+	Instance variable removed.  Optimize for case of unrotated views.
+	* Source/NSAffineTransform.m ([+transform]): Do not set rotationAngle.
+	([+new]): Do not set rotationAngle.
+	([-appendTransform:]): Do not recompute rotationAngle.
+	([-init]): Do not set rotationAngle.
+	([-initWithTransform:]): Do not set rotationAngle.
+	([-prependTransform:]): Do not compute rotationAngle.
+	([-rotateByDegrees:]): Do not compute rotationAngle.
+	([-makeIdentityMatrix]): Do not set rotationAngle.
+	([-rotateByRadians:]): Do not compute the angle in degrees; do not
+	compute rotationAngle.
+	([-setTransformStruct:]): Do not set rotationAngle.
+	([-scaleTo::]): Optimize out the case of rotated transforms.
+	([-setFrameRotation:]): Always call -rotationAngle.
+	([-rotationAngle]): Always compute rotationAngle.
+	([-concatenateWithMatrix:]): Do not set rotationAngle.
+	([-boundingRectFor:result:]): Always compute rotationAngle.
+
 Sat Jun 22 15:06:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSAffineTransform.m ([-isRotated]): Rewritten - efficient
