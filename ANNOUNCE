@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.7.7 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.7.8 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,34 +28,17 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.7.7'
+Noteworthy changes in version `0.7.8'
 =====================================
 
-   The graphics/window interface was completely revamped. Window
-functions were split into a separate class, GSDisplayServer, and many
-PS and DPS functions were removed that were never implemented. However,
-new functionality was added to make things faster and eventually
-implement Quartz compatibility.
+   * Wheel color picker, standard color picker (bundles) added.
 
-   In addition, the old backends, xgps and xdps were depreciated in
-favor of a new backend, simply named back, which can be configured for a
-variety of window server and graphics implementations, and also allow
-for improved code sharing.
-
-   In addition there is now a window server backend for Windows
-computers, although it is in a very alpha state.
-
-   Other improvements:
-   * Mutliple screens are now handled properly (untested)
-
-   * Better autolayout with GSTable and subclasses.
-
-   * NSOutlineView much improved.
+   * System colors now use named colors. Easier configuration
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.7.7.tar.gz distribution file has been placed on
+   The gstep-gui-0.7.8.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.

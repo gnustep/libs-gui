@@ -9,6 +9,17 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.7.8}
+
+@itemize @bullet
+@item Wheel color picker, standard color picker (bundles) added.
+@item System colors now use named colors. Easier configuration
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.7.7}
 
 The graphics/window interface was completely revamped. Window functions
@@ -30,10 +41,6 @@ Other improvements:
 @item Better autolayout with GSTable and subclasses.
 @item NSOutlineView much improved.
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.7.6}
 
