@@ -1,16 +1,15 @@
 /* 
    NSSpellServer.m
 
-   Description...
+   Class to allow a spell checker to be available to other apps.
 
-   This class provides a 
+   Copyright (C) 2001, 1996 Free Software Foundation, Inc.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Author by: Gregory Casamento <greg_casamento@yahoo.com>
+   Date: 2001
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Rewritten by: Gregory Casamento <borgheron@yahoo.com>
-   Date: 2000
 
    This file is part of the GNUstep GUI Library.
 
@@ -47,8 +46,8 @@
 static NSString *GNU_UserDictionariesDir = @"Dictionaries";
 
 // Function to create name for spell server....
-NSString *GSSpellServerName(NSString *vendor,
-			     NSString *language)
+NSString*
+GSSpellServerName(NSString *vendor, NSString *language)
 {
   NSString *serverName = nil;
   
@@ -102,11 +101,9 @@ NSString *GSSpellServerName(NSString *vendor,
   connection = [[NSConnection alloc] init];
   if(connection)
     {
-      NSLog(@"Connection created.");
       RETAIN(connection);
       [connection setRootObject: self];
       result = [connection registerName: serverName];
-      if(result) NSLog(@"Registered: %@",serverName);
     }
 
   return result;
@@ -148,8 +145,7 @@ NSString *GSSpellServerName(NSString *vendor,
       NSFileManager *mgr = [NSFileManager defaultManager];
       
       // Build the path and try to get the dictionary
-      dirPath = [user_gsroot stringByAppendingPathComponent: 
-			       GNU_UserDictionariesDir];
+      dirPath = [user_gsroot stringByAppendingPathComponent: GNU_UserDictionariesDir];
       path =  [dirPath stringByAppendingPathComponent: currentLanguage];
       
       if (![mgr fileExistsAtPath: path ])
@@ -187,8 +183,8 @@ NSString *GSSpellServerName(NSString *vendor,
 	    }
 	}
     }
-  
-  NSLog(@"Path = %@", path);
+
+  NSLog(@"Dictionary path = %@", path);  
   
   return path;
 }
@@ -285,8 +281,8 @@ NSString *GSSpellServerName(NSString *vendor,
   if(userDict)
     {
       result = [self _isWord: word
-		     inDictionary: userDict
-		     caseSensitive: flag];
+	        inDictionary: userDict
+	       caseSensitive: flag];
     }
 
   return result;
@@ -321,17 +317,16 @@ NSString *GSSpellServerName(NSString *vendor,
 {
   NSMutableSet *set = [self _openUserDictionary: language];
   [set addObject: word];
-  NSLog(@"learnWord....");
 
   NS_DURING
     {
       [_delegate spellServer: self
-		 didLearnWord: word
-		 inLanguage: language];
+		didLearnWord: word
+		  inLanguage: language];
     }
   NS_HANDLER
     {
-      NSLog(@"Spell server delegate throw exception: %@",
+      NSLog(@"Call to delegate cause the following exception: %@",
 	    [localException reason]);
     }
   NS_ENDHANDLER
@@ -344,18 +339,17 @@ NSString *GSSpellServerName(NSString *vendor,
       inDictionary: (NSString *)language
 {
   NSMutableSet *set = [self _openUserDictionary: language];
-  NSLog(@"forgetWord....");
   [set removeObject: word];
 
   NS_DURING
     {
       [_delegate spellServer: self
-		 didForgetWord: word
-		 inLanguage: language];
+	       didForgetWord: word
+		  inLanguage: language];
     }
   NS_HANDLER
     {
-      NSLog(@"Spell server delegate throw exception: %@",
+      NSLog(@"Call to delegate caused following exception: %@",
 	    [localException reason]);
     }
   NS_ENDHANDLER
@@ -371,9 +365,6 @@ NSString *GSSpellServerName(NSString *vendor,
 			     countOnly: (BOOL)countOnly
 {
   NSRange r = NSMakeRange(0,0);
-  NSLog(@"In _findMispelledWorkInString:....");
-
-  NSLog(@"%@", _delegate);
 
   if(dictionaries != nil)
     {
@@ -388,10 +379,10 @@ NSString *GSSpellServerName(NSString *vendor,
   NS_DURING
     {
       r = [_delegate spellServer: self
-		     findMisspelledWordInString: stringToCheck
-		     language: language
-		     wordCount: wordCount
-		     countOnly: countOnly];
+      findMisspelledWordInString: stringToCheck
+		        language: language
+		       wordCount: wordCount
+		       countOnly: countOnly];
     }
   NS_HANDLER
     {
@@ -408,13 +399,12 @@ NSString *GSSpellServerName(NSString *vendor,
 {
   NSArray *words = nil;
 
-  NSLog(@"Entered suggestGuesses....");
   // Forward to delegate
   NS_DURING
     {
       words = [_delegate spellServer: self
-			 suggestGuessesForWord: word
-			 inLanguage: language];
+	       suggestGuessesForWord: word
+			  inLanguage: language];
     }
   NS_HANDLER
     {

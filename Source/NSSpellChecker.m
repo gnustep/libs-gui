@@ -1,12 +1,13 @@
 /* 
    NSSpellChecker.m
 
-   Description...
+   Class to provide the graphical interface to the spell checking
+   service.
 
-   Copyright (C) 1996, 2000 Free Software Foundation, Inc.
+   Copyright (C) 2001, 1996 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>
-   Date: 2000
+   Date: 2001
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -51,24 +52,26 @@
 #include <AppKit/NSScrollView.h>
 
 // prototype for function to create name for server
-NSString *GSSpellServerName(NSString *checkerDictionary,
-			     NSString *language);
+NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 
 // These are methods which we only want the NSSpellChecker to call.
 // The protocol is defined here so that the outside world does not
 // have access to these internal methods.
 @protocol NSSpellServerPrivateProtocol
-- (NSRange)_findMisspelledWordInString: (NSString *)stringToCheck
-			      language: (NSString *)language
-		   learnedDictionaries: (NSArray *)dictionaries
-			     wordCount: (int *)wordCount
-			     countOnly: (BOOL)countOnly;
--(BOOL)_learnWord: (NSString *)word
-     inDictionary: (NSString *)language;
--(BOOL)_forgetWord: (NSString *)word
-      inDictionary: (NSString *)language;
-- (NSArray *)_suggestGuessesForWord: (NSString *)word
-			 inLanguage: (NSString *)language;
+- (NSRange) _findMisspelledWordInString: (NSString *)stringToCheck
+			       language: (NSString *)language
+		    learnedDictionaries: (NSArray *)dictionaries
+			      wordCount: (int *)wordCount
+			      countOnly: (BOOL)countOnly;
+
+- (BOOL) _learnWord: (NSString *)word
+       inDictionary: (NSString *)language;
+
+- (BOOL) _forgetWord: (NSString *)word
+        inDictionary: (NSString *)language;
+
+- (NSArray *) _suggestGuessesForWord: (NSString *)word
+			  inLanguage: (NSString *)language;
 @end
 
 // Methods needed to get the GSServicesManager
@@ -102,7 +105,6 @@ NSString *GSSpellServerName(NSString *checkerDictionary,
   NSString *port = GSSpellServerName(vendor, language);
   double seconds = 30.0;
 
-  NSLog(@"Spell Checker Dictionary: %@", spellCheckers);
   NSLog(@"Language: %@", language);
   NSLog(@"Service to start: %@", spellServicePath);
   NSLog(@"Port: %@",port);
@@ -119,8 +121,8 @@ NSString *GSSpellServerName(NSString *checkerDictionary,
   else
     {
       NSLog(@"Set proxy");
-      [(NSDistantObject *)proxy 
-			  setProtocolForProxy: @protocol(NSSpellServerPrivateProtocol)];
+      [(NSDistantObject *)proxy setProtocolForProxy: 
+			    @protocol(NSSpellServerPrivateProtocol)];
     }
 			  
   return proxy;
@@ -185,25 +187,6 @@ static int __documentTag = 0;
 //
 // Internal methods for use by the spellChecker GUI
 //
-- (void)_populateDictionaryPulldown: (NSArray *)dictionaries;
-{
-  [_dictionaryPulldown removeAllItems];
-  [_dictionaryPulldown addItemsWithTitles: dictionaries];
-  [_dictionaryPulldown selectItemWithTitle: _language];
-}
-
-- (void)_populateAccessoryView: (NSArray *)words
-{
-  NSLog(@"Populate accessory view.......... %@", words);
-}
-
-- (void)_handleServerDeath: (NSNotification *)notification
-{
-  NSLog(@"Spell server died");
-  RELEASE(_serverProxy);
-  _serverProxy = nil;
-}
-
 // Support function to start the spell server
 - (id)_startServerForLanguage: (NSString *)language
 {
@@ -241,6 +224,28 @@ static int __documentTag = 0;
 	}
     }
   return _serverProxy;
+}
+
+- (void)_populateDictionaryPulldown: (NSArray *)dictionaries;
+{
+  [_dictionaryPulldown removeAllItems];
+  [_dictionaryPulldown addItemsWithTitles: dictionaries];
+  [_dictionaryPulldown selectItemWithTitle: _language];
+}
+
+- (void)_populateAccessoryView
+{
+  // Make sure that the spell server is up &
+  // refresh the columns in the browser
+  [self _serverProxy]; 
+  [_accessoryView reloadColumn: 0];
+}
+
+- (void)_handleServerDeath: (NSNotification *)notification
+{
+  NSLog(@"Spell server died");
+  RELEASE(_serverProxy);
+  _serverProxy = nil;
 }
 
 //
@@ -311,10 +316,10 @@ static int __documentTag = 0;
   int count = 0;
   NSRange r = NSMakeRange(0,0);
   r = [[self _serverProxy] _findMisspelledWordInString: aString
-			   language: _language
-			   learnedDictionaries: nil
-			   wordCount: &count
-			   countOnly: YES];
+			                      language: _language
+			           learnedDictionaries: nil
+			                     wordCount: &count
+			                     countOnly: YES];
   
   return count;
 }
@@ -326,11 +331,11 @@ static int __documentTag = 0;
   NSRange r = NSMakeRange(0,0);
   
   r = [self checkSpellingOfString: stringToCheck
-	    startingAt: startingOffset
-	    language: _language
-	    wrap: NO
-	    inSpellDocumentWithTag: 0
-	    wordCount: &wordCount];
+  	               startingAt: startingOffset
+	                 language: _language
+	                     wrap: NO
+	   inSpellDocumentWithTag: 0
+	                wordCount: &wordCount];
 
   return r;
 }
@@ -367,10 +372,10 @@ static int __documentTag = 0;
       // Get the substring and check it.
       NSString *substringToCheck = [stringToCheck substringFromIndex: startingOffset];
       r = [[self _serverProxy] _findMisspelledWordInString: substringToCheck
-			       language: _language
-			       learnedDictionaries: dictForTag
-			       wordCount: wordCount
-			       countOnly: NO];
+			                          language: _language
+			               learnedDictionaries: dictForTag
+			                         wordCount: wordCount
+			                         countOnly: NO];
       
       if(r.length != 0)
 	{
@@ -385,16 +390,16 @@ static int __documentTag = 0;
 	      NSString *firstHalfOfString = [stringToCheck 
 					      substringToIndex: startingOffset];
 	      r = [[self _serverProxy] _findMisspelledWordInString: firstHalfOfString
-				       language: _language
-				       learnedDictionaries: dictForTag
-				       wordCount: wordCount
-				       countOnly: NO];
+				                          language: _language
+				               learnedDictionaries: dictForTag
+				                         wordCount: wordCount
+				                         countOnly: NO];
 	    }
 	}
 
       misspelledWord = [stringToCheck substringFromRange: r];
-      suggestedWords = [[self _serverProxy] _suggestGuessesForWord: misspelledWord
-					    inLanguage: _language];
+      //suggestedWords = [[self _serverProxy] _suggestGuessesForWord: misspelledWord
+      //			                inLanguage: _language];
     }
   NS_HANDLER
     {
@@ -403,7 +408,7 @@ static int __documentTag = 0;
   NS_ENDHANDLER
     
   [self updateSpellingPanelWithMisspelledWord: misspelledWord];
-  [self _populateAccessoryView: suggestedWords];
+  [self _populateAccessoryView];
 
   return r;
 }
@@ -492,6 +497,8 @@ inSpellDocumentWithTag:(int)tag
 
 - (void)updateSpellingPanelWithMisspelledWord:(NSString *)word
 {
+  [_ignoreButton setEnabled: YES];
+  [_guessButton setEnabled: NO];
   [self setWordFieldStringValue: word];
 }
 
@@ -553,30 +560,8 @@ inSpellDocumentWithTag:(int)tag
 
 - _guess: (id)sender
 {
-  NSString *word = [_wordField stringValue];
-  NSArray *guesses = nil;
-
-  NS_DURING
-    {
-      guesses = [[self _serverProxy] _suggestGuessesForWord: word
-				     inLanguage: _language];
-      if(guesses == nil)
-	{
-	  NSLog(@"Nil array returned from server");
-	}
-      else
-	{
-	  // Fill in the view...
-	  [self _populateAccessoryView: guesses];
-	}
-    }
-  NS_HANDLER
-    {
-      NSLog(@"%@",[localException reason]);
-      guesses = nil;
-    }
-  NS_ENDHANDLER
-
+  // Fill in the view...
+  [self _populateAccessoryView];
   return self;
 }
 
@@ -601,7 +586,7 @@ inSpellDocumentWithTag:(int)tag
   id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
 
   processed = [responder tryToPerform: @selector(changeSpelling:)
-			 with: _wordField];
+			         with: _wordField];
   if(!processed)
     {
       NSLog(@"Call to changeSpelling failed.  No responder found");
@@ -638,31 +623,82 @@ inSpellDocumentWithTag:(int)tag
   return self;
 }
 
--(void) awakeFromNib
+- _highlightGuess: (id)sender
+{
+  NSString *selectedGuess = nil;
+
+  selectedGuess = [[_accessoryView selectedCell] stringValue];
+  [_ignoreButton setEnabled: NO];
+  [_guessButton setEnabled: YES];
+  [_wordField setStringValue: selectedGuess];
+
+  return self;
+}
+
+- (void) awakeFromNib
 {
   [self _populateDictionaryPulldown: 
 	  [[NSApp _listener] _languagesForPopUpButton]];
   [_accessoryView setDelegate: self];
+  [_accessoryView setDoubleAction: @selector(_correct:)];
 }
 @end
 
-@implementation NSSpellChecker(NSBrowserDelegate)
-- (BOOL) browser: (NSBrowser*)sender 
-       selectRow: (int)row
-	inColumn: (int)column
+@interface NSSpellChecker(SpellBrowserDelegate)
+- (BOOL) browser: (NSBrowser*)sender selectRow: (int)row inColumn: (int)column;
+
+- (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
+	inMatrix: (NSMatrix *)matrix;
+
+- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column;
+
+- (void) browser: (NSBrowser *)sender 
+ willDisplayCell: (id)cell 
+	   atRow: (int)row 
+	  column: (int)column;
+
+- (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column;
+@end
+
+@implementation NSSpellChecker(SpellBrowserDelegate)
+- (BOOL) browser: (NSBrowser*)sender selectRow: (int)row inColumn: (int)column
 {
   return YES;
 }
 
-- (void)    browser: (NSBrowser *)sender 
-createRowsForColumn: (int)column
-	   inMatrix: (NSMatrix *)matrix
+- (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
+	inMatrix: (NSMatrix *)matrix
 {
-  NSLog(@"Create rows");
+  NSArray   *guesses = nil;
+  NSEnumerator    *e = nil;
+  NSString     *word = nil;
+  NSBrowserCell *cell= nil;
+  int i = 0;
+
+  // Make the call to the server to get the guesses.
+  NS_DURING
+    {
+      guesses = [_serverProxy _suggestGuessesForWord: [_wordField stringValue]
+			                  inLanguage: _language];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"%@",[localException reason]);
+    }
+  NS_ENDHANDLER
+
+  e = [guesses objectEnumerator];  
+  while((word = [e nextObject]) != nil)
+    {
+      [matrix insertRow: i withCells: nil];
+      cell = [matrix cellAtRow: i column: 0];
+      [cell setLeaf: YES];
+      i++;
+      [cell setStringValue: word];
+    }
 }
 
-- (NSString*) browser: (NSBrowser*)sender  
-	titleOfColumn: (int)column
+- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column
 {
   return @"Guess";
 }
@@ -675,12 +711,9 @@ createRowsForColumn: (int)column
   NSLog(@"reached 1....");
 }
 
-/*
-- (BOOL) browser: (NSBrowser *)sender 
-   isColumnValid: (int)column
+- (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column
 {
   NSLog(@"reached 3....");
   return NO;
 }
-*/
 @end

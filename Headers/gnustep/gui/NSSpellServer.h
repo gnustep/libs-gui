@@ -5,8 +5,8 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Gregory John Casamento <borgheron@yahoo.com>
-   Date: 2000
+   Author:  Gregory John Casamento <greg_casamento@yahoo.com>
+   Date: 2001
 
    Author of previous version: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -25,7 +25,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
+    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
