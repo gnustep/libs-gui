@@ -86,28 +86,44 @@ AC_CHECK_FUNCS(rint rintf)
 GRAPHIC_CFLAGS=
 GRAPHIC_LFLAGS=
 
-AC_ARG_WITH(jpeg_library, 
-           [  --with-jpeg-library=DIR JPEG library file are in DIR], ,
-           with_jpeg_library=)
-AC_ARG_WITH(jpeg_include,  
-	[  --with-jpeg-include=DIR JPEG include files are in DIR], ,
-        with_jpeg_include=)
+AC_ARG_ENABLE(jpeg,
+  [  --disable-jpeg          Disable JPEG support],,
+  enable_jpeg=yes)
 
-if test -n "$with_jpeg_library"; then
-  with_jpeg_library="-L$with_jpeg_library"
-fi
-if test -n "$with_jpeg_include"; then
-  with_jpeg_include="-I$with_jpeg_include"
-fi
+if test $enable_jpeg = yes; then
+  AC_ARG_WITH(jpeg_library,
+             [  --with-jpeg-library=DIR JPEG library file are in DIR], ,
+             with_jpeg_library=)
+  AC_ARG_WITH(jpeg_include,
+          [  --with-jpeg-include=DIR JPEG include files are in DIR], ,
+          with_jpeg_include=)
 
-CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
-LDFLAGS="$with_jpeg_library ${LDFLAGS}"
-AC_CHECK_HEADERS(jpeglib.h, have_jpeg=yes, have_jpeg=no)
-if test "$have_jpeg" = yes; then
-  AC_CHECK_LIB(jpeg, jpeg_destroy_decompress)
+  if test -n "$with_jpeg_library"; then
+    with_jpeg_library="-L$with_jpeg_library"
+  fi
+  if test -n "$with_jpeg_include"; then
+    with_jpeg_include="-I$with_jpeg_include"
+  fi
+
+  CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
+  LDFLAGS="$with_jpeg_library ${LDFLAGS}"
+  AC_CHECK_HEADERS(jpeglib.h, have_jpeg=yes, have_jpeg=no)
+  if test "$have_jpeg" = yes; then
+    AC_CHECK_LIB(jpeg, jpeg_destroy_decompress)
+  else
+    ac_cv_lib_jpeg_jpeg_destroy_decompress = no
+  fi
+
   if test "$ac_cv_lib_jpeg_jpeg_destroy_decompress" = yes; then
     GRAPHIC_LFLAGS="$with_jpeg_library $GRAPHIC_LFLAGS"
     GRAPHIC_CFLAGS="$with_jpeg_include $GRAPHIC_CFLAGS"
+  else
+    echo "GNUstep requires libjpeg to support JPEG images, but this library"
+    echo "can't be found. If you really want to compile GNUstep without"
+    echo "JPEG support, pass the --disable-jpeg option to ./configure."
+    echo "Note that this isn't recommended. For more information, see:"
+    echo "http://gnustep.made-it.com/BuildGuide/index.html#JPEG"
+    AC_MSG_ERROR([libjpeg not found.])
   fi
 fi
 
@@ -158,7 +174,22 @@ ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 #--------------------------------------------------------------------
 # Find additional image libs
 #--------------------------------------------------------------------
-AC_CHECK_LIB(png, main)
+AC_ARG_ENABLE(png,
+  [  --disable-png           Disable PNG support],,
+  enable_png=yes)
+
+if test $enable_png = yes; then
+  AC_CHECK_LIB(png, png_sig_cmp)
+
+  if test "$ac_cv_lib_png_png_sig_cmp" = no; then
+    echo "GNUstep requires libpng to support PNG images, but this library"
+    echo "can't be found. If you really want to compile GNUstep without"
+    echo "PNG support, pass the --disable-png option to ./configure."
+    echo "Note that this isn't recommended. For more information, see:"
+    echo "http://gnustep.made-it.com/BuildGuide/index.html#PNG"
+    AC_MSG_ERROR([libpng not found.])
+  fi
+fi
 
 #--------------------------------------------------------------------
 # NSSound

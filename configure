@@ -844,6 +844,8 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-jpeg          Disable JPEG support
+  --disable-png           Disable PNG support
   --disable-gsnd          Disable gsnd server
 
 Optional Packages:
@@ -2684,6 +2686,15 @@ done
 GRAPHIC_CFLAGS=
 GRAPHIC_LFLAGS=
 
+# Check whether --enable-jpeg or --disable-jpeg was given.
+if test "${enable_jpeg+set}" = set; then
+  enableval="$enable_jpeg"
+
+else
+  enable_jpeg=yes
+fi;
+
+if test $enable_jpeg = yes; then
 
 # Check whether --with-jpeg_library or --without-jpeg_library was given.
 if test "${with_jpeg_library+set}" = set; then
@@ -2701,15 +2712,15 @@ else
   with_jpeg_include=
 fi;
 
-if test -n "$with_jpeg_library"; then
-  with_jpeg_library="-L$with_jpeg_library"
-fi
-if test -n "$with_jpeg_include"; then
-  with_jpeg_include="-I$with_jpeg_include"
-fi
+  if test -n "$with_jpeg_library"; then
+    with_jpeg_library="-L$with_jpeg_library"
+  fi
+  if test -n "$with_jpeg_include"; then
+    with_jpeg_include="-I$with_jpeg_include"
+  fi
 
-CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
-LDFLAGS="$with_jpeg_library ${LDFLAGS}"
+  CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
+  LDFLAGS="$with_jpeg_library ${LDFLAGS}"
 
 echo "$as_me:$LINENO: checking for egrep" >&5
 echo $ECHO_N "checking for egrep... $ECHO_C" >&6
@@ -3093,7 +3104,7 @@ fi
 
 done
 
-if test "$have_jpeg" = yes; then
+  if test "$have_jpeg" = yes; then
 
 echo "$as_me:$LINENO: checking for jpeg_destroy_decompress in -ljpeg" >&5
 echo $ECHO_N "checking for jpeg_destroy_decompress in -ljpeg... $ECHO_C" >&6
@@ -3158,9 +3169,22 @@ _ACEOF
 
 fi
 
+  else
+    ac_cv_lib_jpeg_jpeg_destroy_decompress = no
+  fi
+
   if test "$ac_cv_lib_jpeg_jpeg_destroy_decompress" = yes; then
     GRAPHIC_LFLAGS="$with_jpeg_library $GRAPHIC_LFLAGS"
     GRAPHIC_CFLAGS="$with_jpeg_include $GRAPHIC_CFLAGS"
+  else
+    echo "GNUstep requires libjpeg to support JPEG images, but this library"
+    echo "can't be found. If you really want to compile GNUstep without"
+    echo "JPEG support, pass the --disable-jpeg option to ./configure."
+    echo "Note that this isn't recommended. For more information, see:"
+    echo "http://gnustep.made-it.com/BuildGuide/index.html#JPEG"
+    { { echo "$as_me:$LINENO: error: libjpeg not found." >&5
+echo "$as_me: error: libjpeg not found." >&2;}
+   { (exit 1); exit 1; }; }
   fi
 fi
 
@@ -3479,10 +3503,19 @@ ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 #--------------------------------------------------------------------
 # Find additional image libs
 #--------------------------------------------------------------------
+# Check whether --enable-png or --disable-png was given.
+if test "${enable_png+set}" = set; then
+  enableval="$enable_png"
 
-echo "$as_me:$LINENO: checking for main in -lpng" >&5
-echo $ECHO_N "checking for main in -lpng... $ECHO_C" >&6
-if test "${ac_cv_lib_png_main+set}" = set; then
+else
+  enable_png=yes
+fi;
+
+if test $enable_png = yes; then
+
+echo "$as_me:$LINENO: checking for png_sig_cmp in -lpng" >&5
+echo $ECHO_N "checking for png_sig_cmp in -lpng... $ECHO_C" >&6
+if test "${ac_cv_lib_png_png_sig_cmp+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -3495,11 +3528,17 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char png_sig_cmp ();
 int
 main ()
 {
-main ();
+png_sig_cmp ();
   ;
   return 0;
 }
@@ -3516,19 +3555,19 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_png_main=yes
+  ac_cv_lib_png_png_sig_cmp=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_png_main=no
+ac_cv_lib_png_png_sig_cmp=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_png_main" >&5
-echo "${ECHO_T}$ac_cv_lib_png_main" >&6
-if test $ac_cv_lib_png_main = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_png_png_sig_cmp" >&5
+echo "${ECHO_T}$ac_cv_lib_png_png_sig_cmp" >&6
+if test $ac_cv_lib_png_png_sig_cmp = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBPNG 1
 _ACEOF
@@ -3537,6 +3576,18 @@ _ACEOF
 
 fi
 
+
+  if test "$ac_cv_lib_png_png_sig_cmp" = no; then
+    echo "GNUstep requires libpng to support PNG images, but this library"
+    echo "can't be found. If you really want to compile GNUstep without"
+    echo "PNG support, pass the --disable-png option to ./configure."
+    echo "Note that this isn't recommended. For more information, see:"
+    echo "http://gnustep.made-it.com/BuildGuide/index.html#PNG"
+    { { echo "$as_me:$LINENO: error: libpng not found." >&5
+echo "$as_me: error: libpng not found." >&2;}
+   { (exit 1); exit 1; }; }
+  fi
+fi
 
 #--------------------------------------------------------------------
 # NSSound
