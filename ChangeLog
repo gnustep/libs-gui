@@ -1,3 +1,16 @@
+2003-02-13 01:01  Alexander Malmberg <alexander@malmberg.org>
+
+	* TextConverters/RTF/rtfGrammer.y (rtfCharset): Treat unknown
+	character sets as ANSI.
+	TextConverters/RTF/rtfGrammer.tab.c,
+	TextConverters/RTF/rtfGrammer.tab.h: Regenerate.
+
+	* TextConverters/RTF/RTFConsumer.m: Fix handling of the indentation
+	control words: \fi, \li, and \ri.
+	(GSRTFmangleText): Set the paragraph style attribute to a copy of
+	the working NSMutableParagraphStyle so later changes won't affect
+	the attributes of this text.
+
 2003-02-13 00:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:):

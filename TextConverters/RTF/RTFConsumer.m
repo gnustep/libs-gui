@@ -68,6 +68,8 @@ readNSString (StringContext *ctxt)
   BOOL italic;
   BOOL underline;
   int script;
+
+  float real_fi, real_li;
 }
 
 - (NSFont*) currentFont;
@@ -189,6 +191,7 @@ readNSString (StringContext *ctxt)
 - (void) resetParagraphStyle
 {
   ASSIGN(paragraph, [NSMutableParagraphStyle defaultParagraphStyle]);
+  real_fi = real_li = 0.0;
 
   tabChanged = NO;
   changed = YES;
@@ -583,7 +586,7 @@ void GSRTFmangleText (void *ctxt, const char *text)
 	  attributes = [NSMutableDictionary 
 			 dictionaryWithObjectsAndKeys:
 			   [CTXT currentFont], NSFontAttributeName,
-			 PARAGRAPH, NSParagraphStyleAttributeName,
+			 [[PARAGRAPH copy] autorelease], NSParagraphStyleAttributeName,
 			 nil];
 	  if (UNDERLINE)
 	    {
@@ -749,7 +752,10 @@ void GSRTFfirstLineIndent (void *ctxt, int indent)
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
 
-  // FIXME: This should changed the left indent of the paragraph, if < 0
+  CTXT->real_fi = findent;
+
+  findent = CTXT->real_li + CTXT->real_fi;
+
   // for attributed strings only positiv indent is allowed
   if ((findent >= 0.0) && ([para firstLineHeadIndent] != findent))
     {
@@ -763,10 +769,19 @@ void GSRTFleftIndent (void *ctxt, int indent)
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
 
+  CTXT->real_li = findent;
+
   // for attributed strings only positiv indent is allowed
   if ((findent >= 0.0) && ([para headIndent] != findent))
     {
       [para setHeadIndent: findent];
+      CHANGED = YES;
+    }
+
+  findent = CTXT->real_li + CTXT->real_fi;
+  if ((findent >= 0.0) && ([para firstLineHeadIndent] != findent))
+    {
+      [para setFirstLineHeadIndent: findent];
       CHANGED = YES;
     }
 }
@@ -779,7 +794,7 @@ void GSRTFrightIndent (void *ctxt, int indent)
   // for attributed strings only positiv indent is allowed
   if ((findent >= 0.0) && ([para tailIndent] != findent))
     {
-      [para setTailIndent: findent];
+      [para setTailIndent: -findent];
       CHANGED = YES;
     }
 }

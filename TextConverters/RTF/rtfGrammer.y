@@ -170,6 +170,8 @@ rtfCharset: RTFansi { $$ = 1; }
 		|	RTFmac { $$ = 2; }
 		|	RTFpc  { $$ = 3; }
 		|	RTFpca { $$ = 4; }
+			/* If it's an unknown character set, assume ansi. */
+		|	RTFOtherStatement { $$ = 1; }
 		;
 
 rtfIngredients:	/*	empty	*/
