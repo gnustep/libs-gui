@@ -83,14 +83,34 @@ static	Class	concrete;
 - (void) replaceCharactersInRange: (NSRange)aRange
 	     withAttributedString: (NSAttributedString *)attributedString  
 {
-  [super replaceCharactersInRange:aRange
-       withAttributedString:attributedString];
+  [super replaceCharactersInRange: aRange
+	     withAttributedString: attributedString];
 
-  [self edited:NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
-	 range:aRange
-changeInLength:aRange.length];
+  [self edited: NSTextStorageEditedCharacters | NSTextStorageEditedAttributes
+	 range: aRange
+changeInLength: [attributedString length] - aRange.length];
 }
 
+- (void) replaceCharactersInRange: (NSRange)aRange
+                       withString: (NSString*)aString
+{
+  [super replaceCharactersInRange: aRange
+		       withString: aString];
+
+  [self edited: NSTextStorageEditedCharacters
+	 range: aRange
+changeInLength: [aString length] - aRange.length];
+}
+
+- (void) setAttributes: (NSDictionary*)attributes
+                 range: (NSRange)aRange
+{
+  [super setAttributes: attributes
+		 range: aRange];
+  [self edited: NSTextStorageEditedAttributes
+	 range: aRange
+changeInLength: 0];
+}
 
 /*
  *	Managing NSLayoutManagers
