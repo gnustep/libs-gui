@@ -53,6 +53,7 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSPanel.h>
 
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSTextStorage.h>

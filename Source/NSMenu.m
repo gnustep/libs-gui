@@ -48,6 +48,7 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenuView.h>
+#include <AppKit/NSPanel.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSScreen.h>

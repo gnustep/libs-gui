@@ -27,6 +27,7 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSCustomImageRep.h>
+#include <Foundation/NSCoder.h>
 
 @implementation NSCustomImageRep
 

@@ -33,6 +33,7 @@
 #include <AppKit/NSTableHeaderView.h>
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableView.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSColor.h>
