@@ -608,7 +608,7 @@ static Class NSBezierPath_concrete_class = nil;
 		      break;
 		    }   
 		}
-	      // FIXME: What do do if we don't find a move element?
+	      // FIXME: What to do if we don't find a move element?
 	      break;
 	  default:
 	      break;
@@ -1310,8 +1310,6 @@ typedef struct _PathElement
   BOOL flat;
 }
 
-- (void)calculateDraftPolygon: (int*)pc withPoints: (NSPoint*)draftPolygon;
-
 @end
 
 @implementation GSBezierPath
@@ -1477,75 +1475,27 @@ typedef struct _PathElement
 
 - (BOOL)containsPoint:(NSPoint)point
 {
-  NSPoint *pts;
-  int xs[PMAX], ys[PMAX];
-  double x;
-  int i, i1;
+  NSPoint draftPolygon[PMAX];
+  int pcount = 0;
+  // Coordinates of the current point
+  double cx, cy;
+  // Coordinates of the last point
+  double lx, ly;
+  int i;
   int Rcross = 0;
   int Lcross = 0;	
-  NSPoint draftPolygon[PMAX];
-  int pcount;
-  
-  if (!NSPointInRect(point, [self bounds]))
-    return NO;
-
-  [self calculateDraftPolygon: &pcount withPoints: draftPolygon];
-  pts = draftPolygon;
-  for(i = 0; i < pcount; i++) 
-    {
-      xs[i] = (int)pts[i].x - point.x;
-      ys[i] = (int)pts[i].y - point.y;
-    }
-  
-  for(i = 0; i < pcount; i++) 
-    {
-      if(xs[i] == 0 && ys[i] == 0) 
-	// on a vertex
-	return NO;
-					
-      i1 = (i + pcount - 1) % pcount;
-      if((ys[i] > 0) != (ys[i1] > 0)) 
-        {
-	    x = (xs[i] * (double)ys[i1] - xs[i1] * (double)ys[i])
-		/ (double)(ys[i1] - ys[i]);
-	    if(x > 0) 
-	      Rcross++;
-	}
-      if((ys[i] < 0 ) != (ys[i1] < 0)) 
-        { 
-	  x = (xs[i] * ys[i1] - xs[i1] * ys[i])
-	      / (double)(ys[i1] - ys[i]);
-	  if(x < 0) 
-	    Lcross++;		
-	}
-    }
-
-  if((Rcross % 2) != (Lcross % 2))
-    // On the border
-    return NO;
-  if((Rcross % 2) == 1)
-    return YES;
-  else	
-    return NO;
-}
-
-//
-// Private Methods 
-// 
-// FIXME: This does not handle multiple segments!
-- (void)calculateDraftPolygon: (int*)pc withPoints: (NSPoint*)draftPolygon
-{
   NSBezierPathElement bpt;
   NSPoint p, pts[3];
   double x, y, t, k = 0.25;
-  int i;
-  int pcount;
   int count = [self elementCount];
 
   if(!count)
-    return;
+    return NO;
 		
-  pcount = 0;
+  if (!NSPointInRect(point, [self bounds]))
+    return NO;
+
+  // FIXME: This does not handle multiple segments!
   for(i = 0; i < count; i++) 
     {
       bpt = [self elementAtIndex: i associatedPoints: pts];
@@ -1584,8 +1534,43 @@ typedef struct _PathElement
 	      pcount++;
 	    }
 	}
+
+      // Simple overflow check
+      if (pcount == PMAX)
+	return NO;
     }  
-  *pc = pcount;
+
+  lx = draftPolygon[pcount - 1].x - point.x;
+  ly = draftPolygon[pcount - 1].y - point.y;
+  for(i = 0; i < pcount; i++) 
+    {
+      cx = draftPolygon[i].x - point.x;
+      cy = draftPolygon[i].y - point.y;
+      if(cx == 0 && cy == 0) 
+	// on a vertex
+	return NO;
+					
+      if((cy > 0)  && !(ly > 0)) 
+        {
+	  if (((cx * ly - lx * cy) / (ly - cy)) > 0)
+	    Rcross++;
+	}
+      if((cy < 0 ) && !(ly < 0)) 
+        { 
+	  if (((cx * ly - lx * cy) / (ly - cy)) < 0);
+	    Lcross++;		
+	}
+      lx = cx;
+      ly = cy;
+    }
+
+  if((Rcross % 2) != (Lcross % 2))
+    // On the border
+    return NO;
+  if((Rcross % 2) == 1)
+    return YES;
+  else	
+    return NO;
 }
 
 @end // GSBezierPath
