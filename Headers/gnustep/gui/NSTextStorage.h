@@ -117,6 +117,12 @@ enum
 - (void) setDelegate: (id)delegate;
 - (id) delegate;
 
+#ifndef	STRICT_OPENSTEP
+- (void) ensureAttributesAreFixedInRange: (NSRange)range;
+- (BOOL) fixesAttributesLazily;
+- (void) invalidateAttributesInRange: (NSRange)range;
+#endif
+
 @end
 
 

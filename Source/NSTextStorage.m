@@ -207,7 +207,7 @@ static	Class	concrete;
      As a consequence, if any attribute has been fixed, r !=
      editedRange after this call.  This is why we saved r in the first
      place. */
-  [self fixAttributesInRange: r];
+  [self invalidateAttributesInRange: r];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];
@@ -282,15 +282,19 @@ static	Class	concrete;
   return _delegate;
 }
 
+- (void) ensureAttributesAreFixedInRange: (NSRange)range
+{
+  // Do nothing as the default is not lazy fixing, so all is done already
+}
+
+- (BOOL) fixesAttributesLazily
+{
+  return NO;
+}
+
+- (void) invalidateAttributesInRange: (NSRange)range
+{
+  [self fixAttributesInRange: range];
+}
+
 @end
-
-
-/*
- *	Notifications
- */
-
-NSString *NSTextStorageWillProcessEditingNotification =
-  @"NSTextStorageWillProcessEditingNotification";
-NSString *NSTextStorageDidProcessEditingNotification =
-  @"NSTextStorageDidProcessEditingNotification";
-
