@@ -71,6 +71,7 @@
       _documentIndex = untitledCount++;
       _windowControllers = [[NSMutableArray alloc] init];
       fileTypes = [[self class] readableTypes];
+      _docFlags.hasUndoManager = YES;
 
       /* Set our default type */
       if ([fileTypes count])
@@ -817,7 +818,7 @@
 
 - (NSUndoManager *)undoManager
 {
-  if (_undoManager == nil && [self hasUndoManager] == NO)
+  if (_undoManager == nil && [self hasUndoManager])
     {
       [self setUndoManager: AUTORELEASE([[NSUndoManager alloc] init])];
     }
