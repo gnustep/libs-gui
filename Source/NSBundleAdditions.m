@@ -49,7 +49,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSNibLoading.h>
-
+#include <AppKit/IMLoading.h>
 
 @implementation	NSNibConnector
 
@@ -203,6 +203,17 @@
 {
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
+  id            owner = [context objectForKey: @"NSOwner"];
+  NSString      *ext = [fileName pathExtension];
+  
+
+  // If the file to be read is a gmodel, use the GMModel method to
+  // read it in and skip the dearchiving below.
+  if([ext isEqualToString: @"gmodel"])
+    {
+      return [GMModel loadIMFile: fileName
+		      owner: owner];
+    } 
 
   NS_DURING
     {
@@ -315,16 +326,18 @@
     {
       NSString	*path;
 
-      rootPath = [rootPath stringByAppendingPathComponent: fileName]; 
-      if ([ext isEqualToString: @""] == NO)
+      rootPath = [rootPath stringByAppendingPathComponent: fileName];
+      // If the file does not have an extension, then we need to
+      // figure out what type of model file to load.
+      if ([ext isEqualToString: @""] == YES)
 	{
-	  path = [rootPath stringByAppendingPathExtension: ext];
+	  path = [rootPath stringByAppendingPathExtension: @"gorm"];
 	  if ([mgr isReadableFileAtPath: path] == NO)
 	    {
-	      path = [rootPath stringByAppendingPathExtension: @".gorm"];
+	      path = [rootPath stringByAppendingPathExtension: @"nib"];
 	      if ([mgr isReadableFileAtPath: path] == NO)
 		{
-		  path = [rootPath stringByAppendingPathExtension: @".nib"];
+		  path = [rootPath stringByAppendingPathExtension: @"gmodel"];
 		  if ([mgr isReadableFileAtPath: path] == NO)
 		    {
 		      continue;
@@ -335,7 +348,18 @@
 		     externalNameTable: context
 			      withZone: (NSZone*)zone];
 	}
+      else
+	{
+	  path = [rootPath stringByAppendingPathExtension: ext];
+	  if([mgr isReadableFileAtPath: path])
+	    {
+	       return [NSBundle loadNibFile: path
+		     externalNameTable: context
+			      withZone: (NSZone*)zone];
+	    }
+	}
     }
+
   return NO;
 }
 @end
@@ -451,7 +475,6 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: nameTable];
   [aCoder encodeObject: connections];
 }
@@ -468,7 +491,6 @@
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  self = [super initWithCoder: aCoder];
   [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
   [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
   return self;
@@ -491,7 +513,6 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: theClass];
   [aCoder encodeRect: theFrame];
 }

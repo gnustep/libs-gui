@@ -142,17 +142,15 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-	[super encodeWithCoder: aCoder];
-	[aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
-	[aCoder encodeValueOfObjCType: @encode(NSPoint *) at: &p];
+  [aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+  [aCoder encodeValueOfObjCType: @encode(NSPoint *) at: &p];
 }
 
 - (id)initWithCoder:(NSCoder *)aCoder
 {
-	self = [super initWithCoder: aCoder];
-   [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
-   [aCoder decodeValueOfObjCType: @encode(NSPoint *) at: &p];
-	return self;
+  [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
+  [aCoder decodeValueOfObjCType: @encode(NSPoint *) at: &p];
+  return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone

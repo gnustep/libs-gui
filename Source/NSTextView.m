@@ -1069,6 +1069,10 @@ container, returning the modified location. */
 
 - (void) drawRect: (NSRect)aRect
 {
+  // currently use super implementation, which is working, 
+  // although the code here is correcter
+  [super drawRect: aRect];
+/*
   NSRange	glyphRange;
   NSLayoutManager *layoutManager = [self layoutManager];
 
@@ -1083,6 +1087,7 @@ container, returning the modified location. */
       [layoutManager drawGlyphsForGlyphRange: glyphRange
 				     atPoint: [self frame].origin];
     }
+*/
 }
 
 @end

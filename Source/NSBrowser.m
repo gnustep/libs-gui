@@ -1978,7 +1978,7 @@
 
   a = [sender selectedCells];
 
-  if (([a count] > 0) && (_browserCellClass == [NSBrowserCell class]))
+  if ([a count] > 0)
     {
       // Single selection
       if ([a count] == 1)

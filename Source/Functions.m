@@ -55,10 +55,6 @@ NSApplicationMain(int argc, const char **argv)
 			     environment: environ];
 #endif
 
-#ifndef NX_CURRENT_COMPILER_RELEASE
-  initialize_gnustep_backend();
-#endif
-
   infoDict = [[NSBundle mainBundle] infoDictionary];
   className = [infoDict objectForKey: @"NSPrincipalClass"];
   appClass = NSClassFromString(className);

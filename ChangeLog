@@ -1,3 +1,137 @@
+2000-08-06  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.6.6 released.
+
+Sun Aug  6 18:43:13 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSBrowser.m ([NSBrowser -doClick:]): Removed safety check
+	which was preventing subclasses of NSBrowserCell to work properly 
+	with a browser.
+
+Sat Aug  5 02:03:24 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTextFieldCell.m ([NSTextFieldCell -initTextCell:]):
+	Reverted last change - do not draw background by default.
+
+2000-08-04  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWorkspace.m ([_GSWorkspaceCenter -postNotification:]):
+	Add user default "GSLogWorkspaceTimeout" to log rather than raise
+	an exception during remote notification.
+
+2000-08-03  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-setFrameFromString:): Don't set display flag
+	if window not visible.
+
+	* Source/NSBezierPath.m (-initWithCoder): Don't call super.
+	(encodeWithCoder:): Likewise. 
+	
+2000-08-02  Adam Fedor  <fedor@gnu.org>
+
+	* Version: Update version number
+	* Documentation/announce.tmpl.texi: Update
+	* Documentation/readme.tmpl.texi: Likewise.
+	* Documentation/news.tmpl.texi: Likewise.
+	* Documentation/todo.tmpl.texi: Likewise.
+	* ANNOUNCE, BUGS, NEWS, README: Regenerate
+
+2000-08-2  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSText.m
+	Changed the handling of the selection. The selection now only gets
+	drawn inside of drawRect: otherwise it is just flaged as needing a
+	redraw. 
+
+2000-08-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m ([NSMiniWindow -mouseDown:]): Use NSWindow's
+	-deminiaturize.
+
+2000-07-31  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSBundleAdditions.m
+	Removed super calls in coding for GSNibContainer and GSNibItem 
+	to remove compiler warnings
+	* Source/NSTextFieldCell.m
+	[initTextCell:] switch drawsBackground on.
+	* Source/NSText.m
+	[initWithFrame:] switch drawsBackground on.
+	
+2000-07-31 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColor.m: ([-description]) corrected to remove quotes from
+	string listing color components.  problem reported by Benhur Stein
+
+2000-07-31  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	Use [drawRect:] from super.
+	* Source/NSText.m
+	Added method [undrawSelectionAsRange:], this only shows the cursor
+	if [shouldDrawInsertionPoint] is YES. In [mouseDown:] only make
+	first responder if editable. Also increase the proposed range to
+	include the last character into the selection.
+	
+2000-07-30  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBundleAdditions.m
+	(+loadNibFile:externalNameTable:withZone:): Read as gmodel if it has
+	proper extension.
+	(-loadNibFile:externalNameTable:withZone:): Fix a few bugs in 
+	determining proper extension. (patch from Gregory Casamento 
+	<borgheron@yahoo.com>).
+
+Sun Jul 30 01:33:15 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSText.m ([NSText -moveRight:]): ([NSText -moveLeft:]),
+	([NSText -moveUp:]), ([NSText -moveDown:]): Tidied; removed call
+	to selectionRangeForProposedRange:granularity:.
+	([NSText -selectionRangeForProposedRange:granularity:]): Tidied,
+	fixed some bugs showing upon selecting text by words and deleting
+	text.
+
+2000-07-01  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSFileWrapper.m
+	[initWithPath:] always store full pathname in filename. This may
+	be wrong but now it is consistent in this file.
+	[writeToFile:atomically:updateFilenames:] set attributes for
+	normal files.
+	* Source/NSAttributedString.m 
+	[fixAttributesInRange:] added fix of attachments
+	
+Thu Jul 20 16:00:14 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-init]): Enclosed all initialization
+	into an autorelease pool as per specifications; moved
+	initialize_gnustep_backend () here so it is enclosed in the
+	autorelease pool too.
+
+2000-07-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (+sharedApplication): Initialize
+	backend here instead of NSApplicationMain().
+
+	* Source/NSGraphicContext.m (+waitAllContexts): New method.
+
+	* Documentation/news.tmpl.texi: Update.
+	* Documentation/todo.tmpl.texi: Update.
+
+2000-07-16  Adam Fedor  <fedor@gnu.org>
+
+	* GNUmakefile: Make PrinterTypes subdir.
+	* PrinterTypes/GNUmakefile: New file to install ppd files.
+	* PrinterTypes/GNUmakefile.postamble: Likewise.
+
+	* Source/NSPrinter.m (getFile): Use NSBundle methods.
+	(+printerTypes): Simplify with use of NSBundle methods.
+
+2000-07-14  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-run): Do appIconInit
+	here so NSApp can be set-up without showing icon.
+
 2000-07-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GNUmakefile: Install GSFontInfo.h

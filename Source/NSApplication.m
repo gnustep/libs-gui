@@ -510,34 +510,46 @@ static NSCell* tileCell = nil;
       RELEASE(self);
       return [NSApplication sharedApplication];
     }
+  
+  // Initialization must be enclosed in an autorelease pool
+  {
+    CREATE_AUTORELEASE_POOL (_app_init_pool);
 
-  self = [super init];
-  NSApp = self;
-  if (NSApp == nil)
-    {
-      NSLog(@"Cannot allocate the application instance!\n");
-      return nil;
-    }
+    /* Initialize the backend here. This is equivalent to connecting to
+       our window server, so if someone wants to query information that might
+       require the backend, they just need to instantiate a sharedApplication
+    */
+    initialize_gnustep_backend();
 
-  NSDebugLog(@"Begin of NSApplication -init\n");
-
-  _hidden = [NSMutableArray new];
-  _inactive = [NSMutableArray new];
-  [self _appIconInit];
-  unhide_on_activation = YES;
-  app_is_hidden = YES;
-  app_is_active = NO;
-  listener = [GSServicesManager newWithApplication: self];
-
-  main_menu = nil;
-  windows_need_update = YES;
-
-  current_event = [NSEvent new];		// no current event
-  null_event = [NSEvent new];			// create dummy event
-
-  /* We are the end of responder chain	*/
-  [self setNextResponder: nil];
-
+    self = [super init];
+    NSApp = self;
+    if (NSApp == nil)
+      {
+	NSLog(@"Cannot allocate the application instance!\n");
+	RELEASE (_app_init_pool);
+	return nil;
+      }
+    
+    NSDebugLog(@"Begin of NSApplication -init\n");
+    
+    _hidden = [NSMutableArray new];
+    _inactive = [NSMutableArray new];
+    unhide_on_activation = YES;
+    app_is_hidden = YES;
+    app_is_active = NO;
+    listener = [GSServicesManager newWithApplication: self];
+    
+    main_menu = nil;
+    windows_need_update = YES;
+    
+    current_event = [NSEvent new];		// no current event
+    null_event = [NSEvent new];			// create dummy event
+    
+    /* We are the end of responder chain	*/
+    [self setNextResponder: nil];
+    
+    RELEASE (_app_init_pool);
+  }
   return self;
 }
 
@@ -853,6 +865,7 @@ static NSCell* tileCell = nil;
    */
   app_should_quit = NO;
 
+  [self _appIconInit];
   [self finishLaunching];
 
   app_is_running = YES;

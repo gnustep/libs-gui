@@ -224,6 +224,10 @@ NSGraphicsContext	*GSCurrentContext()
 {
 }
 
++ (void) waitAllContexts
+{
+}
+
 - (NSView*) focusView
 {
   return [focus_stack lastObject];

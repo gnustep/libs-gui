@@ -9,6 +9,36 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.6.6}
+
+@itemize @bullet
+@item Window hints for motif and generic window managers.
+@item Major improvements to the text handling classes (NSText, NSTextView, etc)
+@item Pasting of fonts and rulers.
+@item Much better RTF handling
+@item DnD for NSColorWell
+@item Much improved NSSplitView
+@item New classes - NSColorPanel, NSTableView
+@item NSScreen rewritten with full support for all methods and functions.
+@item Can use image reading routines from WindowMaker if available to read
+a variety of image formats besides TIFF.
+@item Many fixes to get the AppKit to work better with WindowMaker.
+@item Much better gmodel support (particularly with nibs translated from
+NeXT or OPENSTEP 4.2).
+@item Muh improved font classes and font support.
+@end itemize
+
+In addition both the xgps and xdps backends have seen some large efficiency
+improvements. Much better font support. The xdps backend itself has seen
+speed improvements by at least a factor of 4. Note however, that the xdps
+backend is still considered experimental and you may have to deal with
+many problems in order to get it working. We recommend sticking with the
+xgps backend (the default) for now.
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.6.5}
 
 Many of the basic GUI classes have been vastly improved or rewritten, thanks
@@ -123,10 +153,6 @@ tracking the mouse.
 Several cleanups and as usual, many bug fixes. 
 
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.3.0}
 

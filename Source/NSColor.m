@@ -660,7 +660,7 @@ static NSMutableDictionary	*colorStrings = nil;
    */
   if ([colorspace_name isEqualToString: NSCalibratedRGBColorSpace] &&
 	alpha_component == 1.0)
-    return [NSString stringWithFormat: @"\"%f %f %f\"",
+    return [NSString stringWithFormat: @"%f %f %f",
 	RGB_component.red, RGB_component.green, RGB_component.blue];
  
   /*
@@ -1294,16 +1294,18 @@ static NSMutableDictionary	*colorStrings = nil;
 				  colorName: col];
 	}
     }
-  else if (str)
+  else if (str != nil)
     {
       const char	*ptr = [str cString];
-      float	r, g, b;
+      float		r, g, b;
 
-      sscanf(ptr, "%f %f %f", &r, &g, &b);
-      return [self colorWithCalibratedRed: r
-				    green: g
-				     blue: b
-				    alpha: 1.0];
+      if (sscanf(ptr, "%f %f %f", &r, &g, &b) == 3)
+	{
+	  return [self colorWithCalibratedRed: r
+					green: g
+					 blue: b
+					alpha: 1.0];
+	}
     }
   return nil;
 }

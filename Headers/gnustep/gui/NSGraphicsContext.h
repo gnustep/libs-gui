@@ -125,6 +125,7 @@ typedef enum _GSWindowInputState
 - (void) restoreGraphicsState;
 - (void) saveGraphicsState;
 - (void) wait;
++ (void) waitAllContexts;
 @end
 
 #ifndef	NO_GNUSTEP

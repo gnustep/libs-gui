@@ -106,6 +106,7 @@
 
   NSDebugLLog(@"NSFileWrapper", @"initWithPath: %@", path);
 
+  // Store the full path in filename, the specification is unclear in this point
   [self setFilename: path];
   [self setPreferredFilename: [path lastPathComponent]];
   [self setFileAttributes: [fm fileAttributesAtPath: path traverseLink: NO]];
@@ -178,17 +179,10 @@
      updateFilenames: (BOOL)updateFilenamesFlag
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL pathExists = [fm fileExistsAtPath: path];
+  BOOL success = NO;
 
   NSDebugLLog(@"NSFileWrapper",
               @"writeToFile: %@ atomically: updateFilenames: ", path);
-
-  // don't overwrite existing paths
-  if (pathExists && atomicFlag)
-    return NO;
-
-  if (updateFilenamesFlag == YES)
-    [self setFilename: [path lastPathComponent]];
 
   switch (_wrapperType)
     {
@@ -207,18 +201,26 @@
                                                  atomically: atomicFlag
                                          updateFilenames: updateFilenamesFlag];
             }
-          return YES;
+          success = YES;
+	  break;
         }
       case GSFileWrapperRegularFileType: 
         {
-          return [_wrapperData writeToFile: path atomically: atomicFlag];
+	  if ([_wrapperData writeToFile: path atomically: atomicFlag])
+	    success = [fm changeFileAttributes: _fileAttributes
+			  atPath: path];
+	  break;
         }
       case GSFileWrapperSymbolicLinkType: 
         {
-          return [fm createSymbolicLinkAtPath: path pathContent: _wrapperData];
+          success = [fm createSymbolicLinkAtPath: path pathContent: _wrapperData];
+	  break;
         }
     }
-  return NO;
+  if (success && updateFilenamesFlag)
+    [self setFilename: path];
+
+  return success;
 }
 
 - (NSData*) serializedRepresentation
