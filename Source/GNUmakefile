@@ -150,12 +150,28 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep
 
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
+AppKit/AppKitExceptions.h \
+AppKit/DPSOperators.h \
+AppKit/GMAppKit.h \
+AppKit/GMArchiver.h \
+AppKit/GSMethodTable.h \
+AppKit/GSPasteboardServer.h \
+AppKit/GSServicesManager.h \
+AppKit/GSTrackingRect.h \
+AppKit/GSWraps.h \
+AppKit/GSHelpManagerPanel.h \
+AppKit/GSTable.h \
+AppKit/GSHbox.h \
+AppKit/GSVbox.h \
+AppKit/IMConnectors.h \
+AppKit/IMCustomObject.h \
+AppKit/IMLoading.h \
 AppKit/NSActionCell.h \
 AppKit/NSAffineTransform.h \
 AppKit/NSApplication.h \
 AppKit/NSAttributedString.h \
-AppKit/NSBitmapImageRep.h \
 AppKit/NSBox.h \
+AppKit/NSBitmapImageRep.h \
 AppKit/NSBrowser.h \
 AppKit/NSBrowserCell.h \
 AppKit/NSButton.h \
@@ -169,6 +185,7 @@ AppKit/NSColorList.h \
 AppKit/NSColorPanel.h \
 AppKit/NSColorPicker.h \
 AppKit/NSColorPicking.h \
+AppKit/NSColorPrivate.h \
 AppKit/NSColorWell.h \
 AppKit/NSComboBox.h \
 AppKit/NSComboBoxCell.h \
@@ -205,8 +222,8 @@ AppKit/NSMenu.h \
 AppKit/NSMenuItem.h \
 AppKit/NSMenuItemCell.h \
 AppKit/NSMenuView.h \
-AppKit/NSNibLoading.h \
 AppKit/NSNibDeclarations.h \
+AppKit/NSNibLoading.h \
 AppKit/NSOpenPanel.h \
 AppKit/NSPageLayout.h \
 AppKit/NSPanel.h \
@@ -230,6 +247,7 @@ AppKit/NSSecureTextField.h \
 AppKit/NSSelection.h \
 AppKit/NSSlider.h \
 AppKit/NSSliderCell.h \
+AppKit/NSText.h \
 AppKit/NSSpellChecker.h \
 AppKit/NSSpellProtocol.h \
 AppKit/NSSpellServer.h \
@@ -238,10 +256,9 @@ AppKit/NSStringDrawing.h \
 AppKit/NSTabView.h \
 AppKit/NSTabViewItem.h \
 AppKit/NSTableColumn.h \
+AppKit/NSTableHeaderCell.h \
 AppKit/NSTableHeaderView.h \
-AppKit/NSTableHeaderCell.h  \
 AppKit/NSTableView.h \
-AppKit/NSText.h \
 AppKit/NSTextAttachment.h \
 AppKit/NSTextContainer.h \
 AppKit/NSTextField.h \
@@ -252,19 +269,8 @@ AppKit/NSView.h \
 AppKit/NSWindow.h \
 AppKit/NSWindowController.h \
 AppKit/NSWorkspace.h \
-AppKit/GSTrackingRect.h \
-AppKit/nsimage-tiff.h \
-AppKit/GSMethodTable.h \
-AppKit/DPSOperators.h \
 AppKit/PSOperators.h \
-AppKit/GSHelpManagerPanel.h \
-AppKit/GSPasteboardServer.h \
-AppKit/GSServicesManager.h \
-AppKit/GSWraps.h \
-AppKit/AppKitExceptions.h \
-AppKit/GSTable.h \
-AppKit/GSHbox.h \
-AppKit/GSVbox.h
+AppKit/nsimage-tiff.h
 
 -include GNUmakefile.preamble
 

@@ -236,7 +236,7 @@ static  NSMapTable              *mimeMap = NULL;
   NS_HANDLER
     {
       [NSException raise: NSPasteboardCommunicationException
-		  format: @"%%", [localException reason]];
+		  format: @"%@", [localException reason]];
     }
   NS_ENDHANDLER
 
