@@ -1,3 +1,8 @@
+Tue Aug 21 18:28:39 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-moveColumn:toColumn:]): Use the cached
+	notification center.
+
 2001-08-21  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSAttributedString.m (converter_bundles): New function
