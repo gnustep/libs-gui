@@ -1,3 +1,15 @@
+Fri Oct 11 01:15:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSFont.m (getNSFont): If fontWithName:size: returns nil,
+	try various approximations to get a font.
+
+Fri Oct 11 01:02:24 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by Georg Fleischmann <georg@vhf.de>:
+	* Source/NSFont.m ([NSFont -initWithName:matrix:fix:]): Release
+	self and return nil if the font info is nil.  This makes
+	[NSFontManager -convertFont:...] work.
+	
 Thu Oct 10 19:56:29 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([-scrollPageUp:]): Implemented.

@@ -143,11 +143,14 @@ static NSUserDefaults	*defaults = nil;
 NSFont*
 getNSFont(NSString* key, NSString* defaultFontName, float fontSize)
 {
-  NSString* fontName;
-
+  NSString *fontName;
+  NSFont *font;
+  
   fontName = [defaults objectForKey: key];
   if (fontName == nil)
-    fontName = defaultFontName;
+    {
+      fontName = defaultFontName;
+    }
 
   if (fontSize == 0)
     {
@@ -155,7 +158,40 @@ getNSFont(NSString* key, NSString* defaultFontName, float fontSize)
 	[NSString stringWithFormat: @"%@Size", key]];
     }
 
-  return [NSFontClass fontWithName: fontName size: fontSize];
+  font = [NSFontClass fontWithName: fontName size: fontSize];
+
+  /* That font couldn't be found (?).  */
+  if (font == nil)
+    {
+      /* Try the same size, but the defaultFontName.  */
+      font = [NSFontClass fontWithName: defaultFontName  size: fontSize];
+      
+      if (font == nil)
+	{
+	  /* Try the default font name and size.  */
+	  fontSize = [defaults floatForKey:
+				 [NSString stringWithFormat: @"%@Size", key]];
+	  
+	  font = [NSFontClass fontWithName: defaultFontName  size: fontSize];
+
+	  /* It seems we can't get any font here!  Try some well known
+	   * fonts as a last resort.  */
+	  if (font == nil)
+	    {
+	      font = [NSFontClass fontWithName: @"Helvetica"  size: 12.];
+	    }
+	  if (font == nil)
+	    {
+	      font = [NSFontClass fontWithName: @"Courier"  size: 12.];
+	    }
+	  if (font == nil)
+	    {
+	      font = [NSFontClass fontWithName: @"Fixed"  size: 12.];
+	    }
+	}
+    }
+
+  return font;
 }
 
 void
@@ -602,6 +638,12 @@ setNSFont(NSString* key, NSFont* font)
       matrixExplicitlySet = explicitlySet;
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
 						 matrix: fontMatrix]);
+      if (fontInfo == nil)
+	{
+	  RELEASE (self);
+	  return nil;
+	}
+      
       /* Cache the font for later use */
       NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)self);
     }
