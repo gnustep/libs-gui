@@ -138,6 +138,7 @@
 
 #ifndef STRICT_OPENSTEP
 #include <AppKit/NSDrawer.h>
+#include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSOutlineView.h>
 #include <AppKit/NSTextContainer.h>
