@@ -1,3 +1,8 @@
+Wed Mar  5 17:43:34 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Headers/gnustep/gui/nsimage-tiff.h: Include gnustep-gui config.
+	* Source/tiff.m: Include header file.
+
 Tue Mar  4 18:05:24 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 
 	* Source/NSFont.m (-minimumAdvancement): New method.
