@@ -1,3 +1,18 @@
+2004-09-21 18:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSFontInfo.m (-defaultLineHeightForFont): Adjust line
+	height calculation.
+	* Source/NSButtonCell.m (-drawInteriorWithFrame:inView:): Always
+	initialize imageRect and titleRect. Adjust the calculations to match
+	the new line height.
+	(-cellSize): Always initialize imageRect and titleRect.
+	* Headers/AppKit/NSCell.h (-_drawImage:inFrame:isFlipped:): Remove.
+	* Source/NSCell.m (-_drawImage:inFrame:isFlipped:): Remove. Move code
+	back ...
+	(-drawInteriorWithFrame:inView:): ... here.
+	* Source/NSToolbarItem.m (+initialize): Remove.
+	(+cellClass): Add.
+
 2004-09-18 15:15  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSServicesManager.m (_serviceFromAnyLocalizedTitle): Rename

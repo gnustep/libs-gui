@@ -353,12 +353,12 @@
 /*
  * Setting the Images
  */
-- (NSImage*) alternateImage						
+- (NSImage*) alternateImage
 {
   return _altImage;
 }
 
-- (NSCellImagePosition) imagePosition			
+- (NSCellImagePosition) imagePosition
 {
   return _cell.image_position;
 }
@@ -434,7 +434,7 @@
   return _buttoncell_is_transparent;
 }
 
-- (void) setTransparent: (BOOL)flag	
+- (void) setTransparent: (BOOL)flag
 {
   _buttoncell_is_transparent = flag;
 }
@@ -907,9 +907,11 @@
   */
   switch (ipos)
     {
+      default:
       case NSNoImage: 
 	imageToDisplay = nil;
 	titleRect = cellFrame;
+	imageRect = NSZeroRect;
 	if (titleSize.width + 6 <= titleRect.size.width)
 	  {
 	    titleRect.origin.x += 3;
@@ -920,6 +922,7 @@
       case NSImageOnly: 
 	titleToDisplay = nil;
 	imageRect = cellFrame;
+	titleRect = NSZeroRect;
 	break;
 
       case NSImageLeft: 
@@ -949,7 +952,8 @@
 	    imageRect.origin.x -= 3;
 	  }
 	titleRect.origin = cellFrame.origin;
-	titleRect.size.width = imageRect.origin.x - titleRect.origin.x - GSCellTextImageXDist;
+	titleRect.size.width = imageRect.origin.x - titleRect.origin.x
+			       - GSCellTextImageXDist;
 	titleRect.size.height = cellFrame.size.height;
 	if (titleSize.width + 3 <= titleRect.size.width)
 	  {
@@ -964,19 +968,22 @@
 	 * above the text. 
 	 * The drawing code below will then center the image in imageRect.
 	 */
-	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = cellFrame.origin.y + GSCellTextImageYDist;
+	titleRect.origin = cellFrame.origin;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
+	if (_cell.is_bordered || _cell.is_bezeled) 
+	  {
+	    titleRect.origin.y += 3;
+	  }
 
 	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = NSMaxY(titleRect);
+	imageRect.origin.y = NSMaxY(titleRect) + GSCellTextImageYDist;
 	imageRect.size.width = cellFrame.size.width;
 	imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.origin.y -= 1;
+	    imageRect.size.height -= 3;
 	  }
 	if (titleSize.width + 6 <= titleRect.size.width)
 	  {
@@ -995,6 +1002,10 @@
 	titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
+	if (_cell.is_bordered || _cell.is_bezeled)
+	  {
+	    titleRect.origin.y -= 3;
+	  }
 
 	imageRect.origin.x = cellFrame.origin.x;
 	imageRect.origin.y = cellFrame.origin.y;
@@ -1003,7 +1014,8 @@
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.origin.y += 1;
+	    imageRect.origin.y += 3;
+	    imageRect.size.height -= 3;
 	  }
 	if (titleSize.width + 6 <= titleRect.size.width)
 	  {
@@ -1028,7 +1040,7 @@
     {
       [self drawGradientWithFrame: cellFrame inView: controlView];
     }
-    
+
   // Draw image
   if (imageToDisplay != nil)
     {
@@ -1105,6 +1117,7 @@
   
   switch (_cell.image_position)
     {
+      default:
       case NSNoImage: 
 	s = titleSize;
 	break;

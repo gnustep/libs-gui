@@ -145,10 +145,9 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // ---
 
 @implementation GSToolbarButton
-+ (void) initialize
++ (Class) cellClass
 {
-  if (self == [GSToolbarButton class])
-    [GSToolbarButton setCellClass: [GSToolbarButtonCell class]];
+  return [GSToolbarButtonCell class];
 }  
 
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem
