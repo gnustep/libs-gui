@@ -1,3 +1,11 @@
+2001-01-28  Jonathan Gapen  <jagapen@home.com>
+
+	* Source/GSServicesManager.m: Standardized finding GNUstep paths
+	by using NSSearchPathForDirectoriesInDomains()
+	* Source/NSColorList.m: Ditto.
+	* Source/NSPrinter.m: Ditto.
+	* Source/NSWorkspace.m: Ditto.
+
 Sun Jan 28 01:37:53 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-setDocumentView:]): Bug fix: recompute

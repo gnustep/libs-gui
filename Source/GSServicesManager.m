@@ -334,7 +334,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
  */
 + (GSServicesManager*) newWithApplication: (NSApplication*)app
 {
-  NSDictionary	*env;
   NSString	*str;
   NSString	*path;
 
@@ -347,11 +346,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   manager = [GSServicesManager alloc];
 
-  env = [[NSProcessInfo processInfo] environment];
-  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
-  if (str == nil)
-    str = [NSString stringWithFormat: @"%@/GNUstep",
-	    NSHomeDirectory()];
+  str = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+          NSUserDomainMask, YES) objectAtIndex: 0];
   str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
   manager->servicesPath = [path retain];

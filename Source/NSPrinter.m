@@ -46,12 +46,12 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSScanner.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSMapTable.h>
-#include <Foundation/NSProcessInfo.h>
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSGraphics.h>
 
@@ -348,11 +348,12 @@ andOptionTranslation:(NSString *)optionTranslation
 
 + (NSArray *)printerTypes
 {
+  NSEnumerator *pathEnum;
   NSBundle *lbdle;
-  NSArray *lpaths;
+  NSString *lpath;
+  NSArray *ppdpaths;
   NSMutableArray *printers;
   NSString *path;
-  NSDictionary *env;
   NSAutoreleasePool *subpool; // There's a lot of temp strings used...
   int i, max;
 
@@ -362,36 +363,24 @@ andOptionTranslation:(NSString *)optionTranslation
   printers = [[NSMutableArray array] retain];
   subpool = [[NSAutoreleasePool alloc] init];
 
-  env = [[NSProcessInfo processInfo] environment];
-  lbdle = [NSBundle bundleWithPath: [env objectForKey: @"GNUSTEP_USER_ROOT"]];
-  lpaths = [lbdle pathsForResourcesOfType:@"ppd"
-			      inDirectory:NSPrinter_PATH];
-  max = [lpaths count];
-  for(i=0 ; i<max ; i++)
+  pathEnum = [NSSearchPathForDirectoriesInDomains(GSLibrariesDirectory,
+               NSAllDomainsMask, YES) objectEnumerator];
+  while ((lpath = [pathEnum nextObject]))
     {
-      path = [[lpaths objectAtIndex:i] lastPathComponent];
-      [printers addObject:[path substringToIndex:[path length]-4]];
-    }
+      lbdle = [NSBundle bundleWithPath: lpath];
+      ppdpaths = [lbdle pathsForResourcesOfType:@"ppd"
+                                  inDirectory:NSPrinter_PATH];
 
-  lbdle = [NSBundle bundleWithPath: [env objectForKey: @"GNUSTEP_LOCAL_ROOT"]];
-  lpaths = [lbdle pathsForResourcesOfType:@"ppd"
-			      inDirectory:NSPrinter_PATH];
-  max = [lpaths count];
-  for(i=0 ; i<max ; i++)
-    {
-      path = [[lpaths objectAtIndex:i] lastPathComponent];
-      [printers addObject:[path substringToIndex:[path length]-4]];
-    }
-
-  lpaths = [[NSBundle gnustepBundle] pathsForResourcesOfType:@"ppd"
-			      inDirectory:NSPrinter_PATH];
-  max = [lpaths count];
-  for(i=0 ; i<max ; i++)
-    {
-      path = [[lpaths objectAtIndex:i] lastPathComponent];
-      [printers addObject:[path substringToIndex:[path length]-4]];
+      // FIXME - should get name from contents of PPD, not filename
+      max = [ppdpaths count];
+      for (i = 0; i < max; i++)
+        {
+          path = [[ppdpaths objectAtIndex:i] lastPathComponent];
+          [printers addObject:[path substringToIndex:[path length]-4]];
+        }
     }
   [subpool release];
+
   printerTypesAvailable = printers;
   return printers;
 }

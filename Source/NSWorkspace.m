@@ -41,7 +41,6 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSException.h>
-#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
 #include <Foundation/NSDistributedNotificationCenter.h>
@@ -172,7 +171,6 @@ static NSString			*_rootPath = @"/";
     {
       static BOOL	beenHere;
       NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSDictionary	*env;
       NSString		*home;
       NSData		*data;
       NSDictionary	*dict;
@@ -191,16 +189,8 @@ static NSString			*_rootPath = @"/";
       workspaceCenter = [_GSWorkspaceCenter new];
       iconMap = [NSMutableDictionary new];
 
-      /*
-       *	The home directory for per-user information is given by
-       *	the GNUSTEP_USER_ROOT environment variable, or is assumed
-       *	to be the 'GNUstep' subdirectory of the users home directory.
-       */
-      env = [[NSProcessInfo processInfo] environment];
-      if (!env || !(home = [env objectForKey: @"GNUSTEP_USER_ROOT"]))
-	{
-	  home = [NSHomeDirectory() stringByAppendingPathComponent: @"GNUstep"];
-	}
+      home = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+               NSUserDomainMask, YES) objectAtIndex: 0];
 
       /*
        *	Load file extension preferences.

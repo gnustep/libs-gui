@@ -82,10 +82,11 @@ static NSLock *_gnustep_color_list_lock = nil;
   
   // Load color lists found in standard paths into the array
   // FIXME: Check exactly where in the directory tree we should scan.
-  e = [GSStandardPathPrefixes() objectEnumerator];
+  e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+          NSAllDomainsMask, YES) objectEnumerator];
   while ((dir = (NSString *)[e nextObject])) 
     {
-      dir = [dir stringByAppendingPathComponent: @"Library/Colors"];
+      dir = [dir stringByAppendingPathComponent: @"Colors"];
       de = [fm enumeratorAtPath: dir];
       while ((file = [de nextObject])) 
 	{
@@ -322,8 +323,8 @@ static NSLock *_gnustep_color_list_lock = nil;
   if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
     {
       // FIXME the standard path for saving color lists?
-      path = [NSHomeDirectory () stringByAppendingPathComponent: 
-				@"GNUstep/Library/Colors"]; 
+      path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+            NSUserDomainMask, YES) stringByAppendingPathComponent: @"Colors"]; 
       isDir = YES;
     }
 
@@ -352,14 +353,9 @@ static NSLock *_gnustep_color_list_lock = nil;
   else 
     {
       tmpPath = [path stringByDeletingLastPathComponent];
-      if ([[tmpPath lastPathComponent] isEqualToString: @"Library"] == NO)
+      if ([NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+            NSAllDomainsMask, YES) containsObject: tmpPath])
 	path_is_standard = NO;
-      else 
-	{
-	  tmpPath = [tmpPath stringByDeletingLastPathComponent];
-	  if ([GSStandardPathPrefixes() containsObject: tmpPath] == NO)
-	    path_is_standard = NO;
-	}
     }
 
   // If path is standard and it does not exist, try to create it.
