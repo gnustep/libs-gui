@@ -33,6 +33,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSLayoutManager;
 
