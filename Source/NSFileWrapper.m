@@ -38,6 +38,7 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSArchiver.h>
 
 
 @implementation NSFileWrapper
@@ -141,49 +142,19 @@
   return self;
 }
 
-// Init an instance from data in std
-// serial format.  Serial format is the
-// same as that used by NSText's 
-// RTFDFromRange: method.  This can 
-// create a tree of instances with a 
-// directory instance at the top
-
-// FIXME - implement
+// Init an instance from data in std serial format.  Serial format is the
+// same as that used by NSText's RTFDFromRange: method.  This can 
+// create a tree of instances with a directory instance at the top
 - (id) initWithSerializedRepresentation: (NSData*)data
 {
-  NSDictionary *dict = [NSDeserializer deserializePropertyListFromData: data
-				       mutableContainers: NO];
-  NSNumber *type = [dict objectForKey: @"Type"];
+  // FIXME - This should use a serializer. To get that working a helper object 
+  // is needed that implements the NSObjCTypeSerializationCallBack protocol.
+  // We should add this later, currently the NSArchiver is used.
+  // Thanks to Richard, for pointing this out.
+  NSFileWrapper *wrapper = [NSUnarchiver unarchiveObjectWithData: data]; 
 
-  switch ([type intValue])
-    {
-      case GSFileWrapperDirectoryType: 
-        {
-	  NSMutableDictionary *dict2 = [dict objectForKey: @"Contents"];
-          NSEnumerator *enumerator = [dict2 keyEnumerator];
-          NSString *key;
-
-          while ((key = (NSString*)[enumerator nextObject]))
-            {
-	      [dict2 setObject: AUTORELEASE([[NSFileWrapper alloc] 
-				    initWithSerializedRepresentation: 
-					[dict2 objectForKey: key]]) forKey: key];
-            }
-	  [self initDirectoryWithFileWrappers: dict2];
-        }
-      case GSFileWrapperRegularFileType:
-        {
-	  [self initRegularFileWithContents: [dict objectForKey: @"Contents"]];
-        }
- 
-      case GSFileWrapperSymbolicLinkType: 
-        {
-	  [self initSymbolicLinkWithDestination: [dict objectForKey: @"Contents"]];
-        }
-    }
-  [self setFileAttributes: [dict objectForKey: @"Attributes"]];
-
-  return self;
+  RELEASE(self);
+  return wrapper;
 }
 
 - (void) dealloc
@@ -250,36 +221,13 @@
   return NO;
 }
 
-// FIXME - implement
 - (NSData*) serializedRepresentation
 {
-  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-
-  [dict setObject: [NSNumber numberWithInt: _wrapperType] forKey: @"Type"];
-  [dict setObject: [self fileAttributes] forKey: @"Attributes"];
-  
-  switch (_wrapperType)
-    {
-      case GSFileWrapperDirectoryType: 
-        {
-	  NSMutableDictionary *dict2 = [NSMutableDictionary dictionary];
-          NSEnumerator *enumerator = [_wrapperData keyEnumerator];
-          NSString *key;
-
-          while ((key = (NSString*)[enumerator nextObject]))
-            {
-	      [dict2 setObject: [[_wrapperData objectForKey: key] 
-				    serializedRepresentation] forKey: key];
-            }
-	    [dict setObject: dict2 forKey: @"Contents"];
-        }
-      case GSFileWrapperRegularFileType: 
-      case GSFileWrapperSymbolicLinkType: 
-        {
-	    [dict setObject: _wrapperData forKey: @"Contents"];
-        }
-    }
-  return [NSSerializer serializePropertyList: dict];
+  // FIXME - This should use a serializer. To get that working a helper object 
+  // is needed that implements the NSObjCTypeSerializationCallBack protocol.
+  // We should add this later, currently the NSArchiver is used.
+  // Thanks to Richard, for pointing this out.
+  return [NSArchiver archivedDataWithRootObject: self]; 
 }
 
 - (void) setFilename: (NSString*)filename
@@ -360,7 +308,6 @@
     return _iconImage;
 }
 
-// FIXME - for directory wrappers
 - (BOOL) needsToBeUpdatedFromPath: (NSString*)path
 {
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -379,16 +326,64 @@
           return NO;
         break;
       case GSFileWrapperDirectoryType: 
+	// Has the dictory itself changed?
+        if (![[self fileAttributes]
+                isEqualToDictionary: [fm fileAttributesAtPath: path
+                                                 traverseLink: NO]])
+          return YES;
+
+// FIXME - for directory wrappers, we have to check if all the files are still there, 
+// if they have the same attributes and if any new files have been added. 
+// And this recursive for all included file wrappers
+
+	return NO;
         break;
     }
 
   return YES;
 }
 
-// FIXME - implement
 - (BOOL) updateFromPath: (NSString*)path
 {
-  return NO;
+  NSFileManager *fm = [NSFileManager defaultManager];
+
+  switch (_wrapperType)
+    {
+      case GSFileWrapperRegularFileType: 
+        if ([[self fileAttributes]
+                isEqualToDictionary: [fm fileAttributesAtPath: path
+					 traverseLink: NO]])
+          return NO;
+	[self initWithPath: path];
+        break;
+      case GSFileWrapperSymbolicLinkType: 
+        if ([[self fileAttributes]
+                isEqualToDictionary: [fm fileAttributesAtPath: path
+					 traverseLink: NO]] &&
+	    [_wrapperData isEqualToString: 
+			      [fm pathContentOfSymbolicLinkAtPath: path]])
+          return NO;
+	[self initWithPath: path];
+        break;
+      case GSFileWrapperDirectoryType: 
+	// Has the dictory itself changed?
+        if (![[self fileAttributes]
+                isEqualToDictionary: [fm fileAttributesAtPath: path
+                                                 traverseLink: NO]])
+	{
+	  // FIXME: This is not effizent
+	  [self initWithPath: path];
+          return YES;
+	}
+// FIXME - for directory wrappers, we have to check if all the files are still there, 
+// if they have the same attributes and if any new files have been added. 
+// And this recursive for all included file wrappers
+
+	return NO;
+        break;
+    }
+
+  return YES;
 }
 
 //
@@ -401,7 +396,6 @@
 	            format: @"Can't invoke %@ on a file wrapper that" \
                             @" does not wrap a directory!", _cmd];
 
-// FIXME - handle duplicate names
 - (NSString*) addFileWrapper: (NSFileWrapper*)doc			
 {
   NSString *key;
@@ -416,6 +410,10 @@
       return nil;
     }
 
+  if ([_wrapperData objectForKey: key] != nil)
+    {
+      // FIXME - handle duplicate names
+    }
   [_wrapperData setObject: doc forKey: key];
 
   return key;
@@ -460,7 +458,8 @@
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
 
-  wrapper = AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
+  wrapper = AUTORELEASE([[NSFileWrapper alloc] 
+			    initRegularFileWithContents: data]);
   if (wrapper != nil)
     {
       [wrapper setPreferredFilename: filename];
@@ -476,7 +475,8 @@
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
 
-  wrapper = AUTORELEASE([[NSFileWrapper alloc] initSymbolicLinkWithDestination: path]);
+  wrapper = AUTORELEASE([[NSFileWrapper alloc] 
+			    initSymbolicLinkWithDestination: path]);
   if (wrapper != nil)
     {
       [wrapper setPreferredFilename: filename];
@@ -488,7 +488,8 @@
 
 //								
 // Regular file type methods 				  
-//									 											
+//								
+
 - (NSData*) regularFileContents
 {
   if (_wrapperType == GSFileWrapperRegularFileType)
@@ -502,7 +503,8 @@
 
 //								
 // Symbolic link type methods 				  
-//									 											
+//
+
 - (NSString*) symbolicLinkDestination
 {
   if (_wrapperType == GSFileWrapperSymbolicLinkType)
@@ -518,18 +520,24 @@
 // Archiving 				  
 //
 
-// The MacOS X docs do not say that NSFileWrapper conforms to the
-// NSCoding protocol.  Should it nonetheless?
-
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
+  [aCoder encodeValueOfObjCType: @encode(GSFileWrapperType) at: &_wrapperType];
+  // Dont store the file name
+  [aCoder encodeObject: _preferredFilename];
+  [aCoder encodeObject: _fileAttributes];
+  [aCoder encodeObject: _wrapperData];
+  [aCoder encodeObject: _iconImage];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
-
+  [aDecoder decodeValueOfObjCType: @encode(GSFileWrapperType) at: &_wrapperType];
+  // Dont restore the file name
+  _preferredFilename = [aDecoder decodeObject];
+  _fileAttributes = [aDecoder decodeObject];
+  _wrapperData = [aDecoder decodeObject];
+  _iconImage = [aDecoder decodeObject];
   return self;
 }
 
