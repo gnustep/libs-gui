@@ -36,6 +36,7 @@
 #include <AppKit/NSBrowserCell.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSForm.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
@@ -118,9 +119,6 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
 	 backing: 2 defer: YES];
   [self setMinSize: NSMakeSize (308, 317)];
-  // The horizontal resize increment has to be divided between 
-  // the two columns of the browser.  Avoid non integer values
-  [self setResizeIncrements: NSMakeSize (2, 1)];
   [[self contentView] setBounds: NSMakeRect (0, 0, 308, 317)];
   
   _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 64, 308, 245)];
@@ -147,41 +145,14 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   [_topView addSubview: _browser];
   [_browser release];
 
-  // NB: We must use NSForm, because in the tag list 
-  // there is the tag NSFileHandlingPanelForm
-
-  //  { 
-  //  NSForm *_formControl;
-  //  
-  //  _formControl = [NSForm new];
-  //  [_formControl addEntry: @"Name:"];
-  //  [_formControl setFrame: NSMakeRect (5, 38, 264, 22)];
-  //  [_formControl setEntryWidth: 264];
-  // [_formControl setTag: NSFileHandlingPanelForm];
-  //  [_bottomView addSubview: _formControl];
-  //  _form = [_formControl cellAtIndex: 0];
-  //}
-  _prompt = [[NSTextField alloc] initWithFrame: NSMakeRect (8, 45, 36, 11)];
-  [_prompt setSelectable: NO];
-  [_prompt setEditable: NO];
-  [_prompt setEnabled: NO];
-  [_prompt setBordered: NO];
-  [_prompt setBezeled: NO];
-  [_prompt setDrawsBackground: NO];
-  [_prompt setAutoresizingMask: 0];
-  [_bottomView addSubview: _prompt];
-  [_prompt release];
-
-  _form = [[NSTextField alloc] initWithFrame: NSMakeRect (48, 39, 251, 21)];
-  [_form setDelegate: self];
-  [_form setEditable: YES];
-  [_form setBordered: NO];
-  [_form setBezeled: YES];
-  [_form setDrawsBackground: YES];
-  [_form setContinuous: NO];
-  [_form setAutoresizingMask: 2];
-  // I think the following is not correct, we should have a NSForm instead.
+  _form = [NSForm new];
+  [_form addEntry: @"Name:"];
+  [_form setFrame: NSMakeRect (8, 39, 291, 21)];
+  [_form setEntryWidth: 291];
+  [_form setAutosizesCells: YES];
   [_form setTag: NSFileHandlingPanelForm];
+  [_form setAutoresizingMask: NSViewWidthSizable];
+  [_form setDelegate: self];
   [_bottomView addSubview: _form];
   [_form release];
 
@@ -473,14 +444,13 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (void) setPrompt: (NSString *)prompt
 {
-  // [_form setTitle: prompt];
-  [_prompt setStringValue: prompt];
+  [[_form cellAtIndex: 0] setTitle: prompt];
+  [_form setNeedsDisplay: YES];
 }
 
 - (NSString *) prompt
 {
-  // return [_form title];
-  return [_prompt stringValue];
+  return [[_form cellAtIndex: 0] title];
 }
 
 - (NSView *) accessoryView
@@ -542,7 +512,8 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
   [self setDirectory: path];
   // TODO: Should set it in the browser, if it's there! 
-  [_form setStringValue: filename];
+  [[_form cellAtIndex: 0] setStringValue: filename];
+  [_form setNeedsDisplay: YES];
 
   return [NSApp runModalForWindow: self];
 }
@@ -751,7 +722,9 @@ selectCellWithString: (NSString *)title
   if ([[sender selectedCell] isLeaf])
     {
       ASSIGN (_fullFileName, [sender path]);
-      [_form setStringValue: title];
+      [[_form cellAtIndex: 0] setStringValue: title];
+      // [_form setNeedsDisplay: YES];
+      [_form display];
     }
   return YES;
 }
@@ -765,22 +738,19 @@ selectCellWithString: (NSString *)title
 @end
 
 //
-// NSTextField delegate methods
+// NSForm delegate methods
 //
-@interface NSSavePanel (TextFieldDelegate)
+@interface NSSavePanel (FormDelegate)
 - (void) controlTextDidEndEditing: (NSNotification *)aNotification;
 @end
-@implementation NSSavePanel (TextFieldDelegate)
+@implementation NSSavePanel (FormDelegate)
 - (void) controlTextDidEndEditing: (NSNotification *)aNotification
 {
-  if ([aNotification object] == _form)
-    {
-      NSString *s;
-      
-      s = [self directory];
-      s = [s stringByAppendingPathComponent: [_form stringValue]];
-      ASSIGN (_fullFileName, s);
-    }
+  NSString *s;
+
+  s = [self directory];
+  s = [s stringByAppendingPathComponent: [[_form cellAtIndex: 0] stringValue]];
+  ASSIGN (_fullFileName, s);
 }
 @end /* NSSavePanel */
 
