@@ -43,7 +43,10 @@ typedef enum _NSButtonType {
   NSRadioButton,
   NSMomentaryChangeButton,
   NSOnOffButton,
-  NSMomentaryLight
+  // These come from MacOSX
+  NSMomentaryLight,
+  NSMomentaryLightButton = NSMomentaryLight,
+  NSMomentaryPushInButton = NSMomentaryPushButton
 } NSButtonType;
 
 typedef enum _NSBezelStyle {
@@ -51,11 +54,15 @@ typedef enum _NSBezelStyle {
   NSRegularSquareBezelStyle,
   NSThickSquareBezelStyle,
   NSThickerSquareBezelStyle,
+  // The next five no longer show up in the MacOSX documentation
   NSNeXTBezelStyle,
   NSPushButtonBezelStyle,
   NSSmallIconButtonBezelStyle,
   NSMediumIconButtonBezelStyle,
-  NSLargeIconButtonBezelStyle
+  NSLargeIconButtonBezelStyle,
+  // But those two do
+  NSShadowlessSquareBezelStyle,
+  NSCircularBezelStyle
 } NSBezelStyle;
 
 typedef enum _NSGradientType {
