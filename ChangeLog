@@ -1,3 +1,8 @@
+Wed Dec 19 17:55:25 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTextView.m ([NSTextView -moveToEndOfLine:]): Fixed typo
+	in my last commit.
+
 Tue Dec 18 22:13:31 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-moveToEndOfLine:]): Fixed problems with
