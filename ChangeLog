@@ -1,3 +1,18 @@
+2001-12-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWorkspace.m
+	[findApplications] use hardcoded @GNUSTEP_INSTALL_PREFIX only for
+	non-GNUstep foundation library.
+	* Source/NSPasteboard.m
+	[_pbs] use hardcoded @GNUSTEP_INSTALL_PREFIX only for
+	non-GNUstep foundation library.
+	* Source/NSImage.m
+	[initialize] and [imageNamed:] use hardcoded
+	@GNUSTEP_INSTALL_LIBDIR only for non-GNUstep foundation library.
+	* Source/NSPrintInfo.m
+	[initPrintInfoDefaults] use hardcoded @GNUSTEP_INSTALL_LIBDIR only
+	for non-GNUstep foundation library. 
+	
 Sun Dec  2 08:54:36 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSAttributedString.m ([NSMutableAttributedString
