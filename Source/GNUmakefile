@@ -125,7 +125,7 @@ AppKit/AppKit.h \
 AppKit/GPSDrawContext.h \
 AppKit/GPSDrawContextOps.h \
 AppKit/GPSDefinitions.h \
-AppKit/GPSOperations.h \
+AppKit/GPSOperators.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \
 AppKit/NSAttributedString.h \
