@@ -61,8 +61,10 @@
   NSNotificationCenter	*nc;
 
   if (_documentView == aView)
-    return;
-
+    {
+      return;
+    }
+  
   nc = [NSNotificationCenter defaultCenter];
   if (_documentView)
     {
@@ -72,14 +74,15 @@
 
   ASSIGN (_documentView, aView);
 
+  /* Call this before doing anything else ! */
+  _rFlags.flipped_view = [self isFlipped];
+  [self _invalidateCoordinates];
+
   if (_documentView)
     {
       NSRect	df;
 
       [self addSubview: _documentView];
-
-      /* Call this before setting bounds origin ! */
-      _rFlags.flipped_view = [self isFlipped];
 
       df = [_documentView frame];
       [self setBoundsOrigin: df.origin];
@@ -107,8 +110,6 @@
 		 name: NSViewBoundsDidChangeNotification
 	       object: _documentView];
     }
-
-  _rFlags.flipped_view = [self isFlipped];
 
   /* TODO: Adjust the key view loop to include the new document view */
 
@@ -181,7 +182,10 @@
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
 	  [self lockFocus];
+	  
+	  /* FIXME! copy only an integral rect in device space */
 	  NSCopyBits (0, intersection, destPoint);
+
 	  [self unlockFocus];
 
 	  /* Change coordinate system to the new one */
