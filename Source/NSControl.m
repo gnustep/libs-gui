@@ -505,10 +505,14 @@ static Class actionCellClass;
     }
 
   if ([_cell isContinuous])
-    oldActionMask = [_cell sendActionOn: 0];
+    {
+      oldActionMask = [_cell sendActionOn: NSPeriodicMask];
+    }
   else
-    oldActionMask = [_cell sendActionOn: NSPeriodicMask];
-
+    {
+      oldActionMask = [_cell sendActionOn: 0];
+    }
+  
   [_window _captureMouse: self];
 
   e = theEvent;
