@@ -4032,7 +4032,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   [_toolbar runCustomizationPalette: sender];
 }
 
-- (NSWindow *) initWithWindowRef: (void *)windowRef
+- (id) initWithWindowRef: (void *)windowRef
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",

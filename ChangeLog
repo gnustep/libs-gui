@@ -1,3 +1,8 @@
+2003-09-04 18:43  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSWindow.h, Source/NSWindow.m: Change the return
+	type of	-initWithWindowRef: to id.
+
 2003-09-02  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/gsnd.m (main): Don't mess with file descriptors on MinGW.

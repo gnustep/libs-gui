@@ -518,7 +518,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (NSToolbar *) toolbar;
 - (void) toggleToolbarShown: (id)sender;
 - (void) runToolbarCustomizationPalette: (id)sender;
-- (NSWindow *) initWithWindowRef: (void *)windowRef;
+- (id) initWithWindowRef: (void *)windowRef;
 - (void *)windowRef;
 - (void*) windowHandle;
 #endif
