@@ -3,10 +3,13 @@
 
    Standard panel to query users for info on a print job
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,2004 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -55,7 +58,10 @@ enum {
   NSPPOptionsButton	= 33,
   NSPPPaperFeedButton	= 34,
   NSPPLayoutButton	= 35,
-  NSPPResolutionButton	= 36,
+  //The following are not actually in the OpenStep spec.
+  //However, It is prudent to keep them here, I am just
+  //making you aware of this fact.
+  NSPPResolutionButton	= 36,  
   NSPPOptionOKButton	= 40
 };
 
@@ -66,7 +72,7 @@ enum {
   id _accessoryView;
   id _savePath;
   int _picked;
-  NSRange _pages;
+  NSRange _pages; //this may also be removed
 }
 
 //
@@ -104,6 +110,19 @@ enum {
 //
 - (void)updateFromPrintInfo;
 - (void)finalWritePrintInfo;
+
+@end
+
+//
+// Methods used by printing backend bundles that subclass NSPrintPanel
+//
+@interface NSPrintPanel (Private)
+
+/* Private method used by NSPrintOperation */
+- (void) _setStatusStringValue: (NSString *)string;
+
+/*Private method for saving a print job as a file*/
+- (BOOL) _getSavePath;
 
 @end
 

@@ -191,7 +191,12 @@ GSTitleView.m \
 GSToolbar.m \
 GSToolbarView.m \
 GSStandardWindowDecorationView.m \
-GSWindowDecorationView.m
+GSWindowDecorationView.m \
+GSPrinting.m \
+GSPrintOperation.m \
+GSEPSPrintOperation.m \
+GSPDFPrintOperation.m
+
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -363,7 +368,11 @@ GSToolbar.h \
 GSToolbarView.h \
 GSNibCompatibility.h \
 GSDragView.h \
-GSTitleView.h
+GSTitleView.h \
+GSPrinting.h \
+GSPrintOperation.h \
+GSEPSPrintOperation.h \
+GSPDFPrintOperation.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

@@ -2,7 +2,7 @@
 
    <abstract>Controls generation of EPS, PDF or PS print jobs.</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,2001,2004 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -11,6 +11,9 @@
    Updated to new specification
    Author: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
 
    This file is part of the GNUstep GUI Library.
 
@@ -66,7 +69,7 @@ typedef enum _NSPrintingPageOrder {
   NSView *_accessoryView;
   NSPrintingPageOrder _pageOrder;
   BOOL _showPanels;
-  BOOL _pathSet;
+  //BOOL _pathSet;  removed, just test _path for nil
   int  _currentPage;
 }
 
@@ -177,5 +180,23 @@ typedef enum _NSPrintingPageOrder {
 - (NSView *)view;
 
 @end
+
+
+//
+// Private method used by the NSPrintOperation subclasses 
+// such as GSEPSPrintOperation, GSPDFPrintOperation.  This
+// also includes GSPrintOperation, which is used in the printing
+// backend system.  Printing bundles subclass GSPrintOperation
+// and use that to interface with the native printing system.
+//
+@interface NSPrintOperation (Private)
+
+- (id) initWithView:(NSView *)aView
+      	 insideRect:(NSRect)rect
+	           toData:(NSMutableData *)data
+	        printInfo:(NSPrintInfo *)aPrintInfo;
+
+@end
+
 
 #endif // _GNUstep_H_NSPrintOperation

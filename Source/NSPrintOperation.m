@@ -1,15 +1,18 @@
 /* 
    NSPrintOperation.m
 
-   Controls operations generating EPS, PDF or PS print jobs.
+   Controls operations generating print jobs.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,2004 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: November 2000
    Started implementation.
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
 
    This file is part of the GNUstep GUI Library.
 
@@ -52,6 +55,9 @@
 #include "AppKit/NSPrintOperation.h"
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/PSOperators.h"
+#include "GNUstepGUI/GSEPSPrintOperation.h"
+#include "GNUstepGUI/GSPDFPrintOperation.h"
+#include "GNUstepGUI/GSPrintOperation.h"
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 #define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]
@@ -75,20 +81,27 @@ typedef struct _page_info_t {
   int    pageDirection;      /* NSPrintPageDirection */
 } page_info_t;
 
-@interface NSPrintOperation (Private)
 
-- (id) initWithView:(NSView *)aView
-	 insideRect:(NSRect)rect
-	     toData:(NSMutableData *)data
-	  printInfo:(NSPrintInfo *)aPrintInfo;
-
+@interface NSPrintOperation (TrulyPrivate)
+- (BOOL) _runOperation;
+- (void) _setupPrintInfo;
+- (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
+		                  success:(BOOL)success  
+		              contextInfo:(void *)contextInfo;
+- (void) _printPaginateWithInfo: (page_info_t *)info 
+                     knowsRange: (BOOL)knowsRange;
+- (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
+		              xpage: (int *)xptr
+		              ypage: (int *)yptr;
+- (NSRect) _adjustPagesFirst: (int)first 
+			                  last: (int)last 
+			                  info: (page_info_t *)info;
 - (void) _print;
-
 @end
 
-@interface NSPrintPanel (Private)
-- (void) _setStatusStringValue: (NSString *)string;
-@end
+
+
+
 
 
 @interface NSView (NSPrintOperation)
@@ -102,40 +115,7 @@ typedef struct _page_info_t {
 - (void) _cleanupPrinting;
 @end
 
-// Subclass for the regular printing
-@interface GSPrintOperation: NSPrintOperation
-{
-}
 
-@end
-
-// subclass for EPS output
-@interface GSEPSPrintOperation: NSPrintOperation
-{
-}
-
-- (id) initEPSOperationWithView:(NSView *)aView	
-		     insideRect:(NSRect)rect
-			 toPath:(NSString *)path
-		      printInfo:(NSPrintInfo *)aPrintInfo;
-
-@end
-
-// subclass for PDF output
-@interface GSPDFPrintOperation: NSPrintOperation
-{
-}
-
-- (id) initPDFOperationWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			 toData:(NSMutableData *)data 
-		      printInfo:(NSPrintInfo*)aPrintInfo;
-- (id) initPDFOperationWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			 toPath:(NSString *)path 
-		      printInfo:(NSPrintInfo*)aPrintInfo;
-
-@end
 
 static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
@@ -186,7 +166,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toData:(NSMutableData *)data
 				 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  return AUTORELEASE([[GSEPSPrintOperation alloc] initEPSOperationWithView: aView
+  return AUTORELEASE([[GSEPSPrintOperation alloc] initWithView: aView
 						  insideRect: rect
 						  toData: data
 						  printInfo: aPrintInfo]);
@@ -197,7 +177,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toPath:(NSString *)path
 				 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  return AUTORELEASE([[GSEPSPrintOperation alloc] initEPSOperationWithView: aView	
+  return AUTORELEASE([[GSEPSPrintOperation alloc] initWithView: aView	
 						  insideRect: rect
 						  toPath: path
 						  printInfo: aPrintInfo]);
@@ -232,7 +212,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
   return AUTORELEASE([[GSPDFPrintOperation alloc] 
-			 initPDFOperationWithView: aView 
+			 initWithView: aView 
 			 insideRect: rect 
 			 toData: data 
 			 printInfo: aPrintInfo]);
@@ -244,7 +224,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
   return AUTORELEASE([[GSPDFPrintOperation alloc] 
-			 initPDFOperationWithView: aView 
+			 initWithView: aView 
 			 insideRect: rect 
 			 toPath: path 
 			 printInfo: aPrintInfo]);
@@ -293,7 +273,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 {
   RELEASE(self);
   
-  return [[GSEPSPrintOperation alloc] initEPSOperationWithView: aView	
+  return [[GSEPSPrintOperation alloc] initWithView: aView	
 				      insideRect: rect
 				      toData: data
 				      printInfo: aPrintInfo];
@@ -466,64 +446,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   return NO;
 }
 
-/* Private method to run the printing operation. Needs to create an
-   autoreleaes pool to make sure the print context is destroyed before
-   returning (which closes the print file.) */
-- (BOOL) _runOperation
-{
-  BOOL result;
-  CREATE_AUTORELEASE_POOL(pool);
-  NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
-
-  [self createContext];
-  if (_context == nil)
-    return NO;
-
-  result = NO;
-  if (_pageOrder == NSUnknownPageOrder)
-    {
-      if ([[[_printInfo dictionary] objectForKey: NSPrintReversePageOrder] 
-	    boolValue] == YES)
-	_pageOrder = NSDescendingPageOrder;
-      else
-	_pageOrder = NSAscendingPageOrder;
-    }
-
-  [NSGraphicsContext setCurrentContext: _context];
-  NS_DURING
-    {
-      [self _print];
-      result = YES;
-      [NSGraphicsContext setCurrentContext: oldContext];
-    }
-  NS_HANDLER
-    {
-      [_view _cleanupPrinting];
-      [NSGraphicsContext setCurrentContext: oldContext];
-      NSRunAlertPanel(@"Error", @"Printing error: %@", 
-		      @"OK", NULL, NULL, localException);
-    }
-  NS_ENDHANDLER
-  [self destroyContext];
-  RELEASE(pool);
-  return result;
-}
-
-- (void) _setupPrintInfo
-{
-  BOOL knowsPageRange;
-  NSRange viewPageRange;
-  NSMutableDictionary *dict = [_printInfo dictionary];
-
-  knowsPageRange = [_view knowsPageRange: &viewPageRange]; 
-  if (knowsPageRange == YES)
-    {
-      int first = viewPageRange.location;
-      int last = NSMaxRange(viewPageRange) - 1;
-      [dict setObject: NSNUMBER(first) forKey: NSPrintFirstPage];
-      [dict setObject: NSNUMBER(last) forKey: NSPrintLastPage];
-    }
-}
 
 /** Call this message to run the print operation on a view. This includes
     (optionally) displaying a print panel and working with the NSView to
@@ -560,31 +482,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   return result;
 }
 
-- (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-		      success:(BOOL)success  
-		  contextInfo:(void *)contextInfo
-{
-  id delegate;
-  SEL *didRunSelector;
-  NSMutableDictionary *dict;
-  void (*didRun)(id, SEL, BOOL, id);
 
-  if (success == YES)
-    {
-      NSPrintPanel *panel = [self printPanel];
-      [panel finalWritePrintInfo];
-      success = NO;
-      if ([self _runOperation])
-	success = [self deliverResult];
-    }
-  [self cleanUpOperation];
-  dict = [_printInfo dictionary];
-  didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
-  delegate = [dict objectForKey: @"GSModalRunDelegate"];
-  didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
-						    *didRunSelector];
-  didRun (delegate, *didRunSelector, success, contextInfo);
-}
 
 /** Run a print operation modally with respect to a window.
  */
@@ -659,8 +557,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	  printInfo:(NSPrintInfo *)aPrintInfo
 {
   if ([NSPrintOperation currentOperation] != nil)
-    [NSException raise: NSPrintOperationExistsException
-		 format: @"There is already a printoperation for this thread"];
+    {
+      [NSException raise: NSPrintOperationExistsException
+		   format: @"There is already a printoperation for this thread"];
+    }
 
   ASSIGN(_view, aView);
   _rect = rect;
@@ -668,18 +568,105 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   _pageOrder = NSUnknownPageOrder;
   _showPanels = NO;
   [self setPrintInfo: aPrintInfo];
-
-  _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
-  _path = [_path stringByAppendingString: 
-		   [[NSProcessInfo processInfo] globallyUniqueString]];
-  _path = [_path stringByAppendingPathExtension: @"ps"];
-  RETAIN(_path);
-  _pathSet = NO;
+  _path = nil;
   _currentPage = 0;
 
   [NSPrintOperation setCurrentOperation: self];
   return self;
 }
+@end
+
+@implementation NSPrintOperation (TrulyPrivate)
+
+
+/* Private method to run the printing operation. Needs to create an
+   autoreleaes pool to make sure the print context is destroyed before
+   returning (which closes the print file.) */
+- (BOOL) _runOperation
+{
+  BOOL result;
+  CREATE_AUTORELEASE_POOL(pool);
+  NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
+
+  [self createContext];
+  if (_context == nil)
+    return NO;
+
+  result = NO;
+  if (_pageOrder == NSUnknownPageOrder)
+    {
+      if ([[[_printInfo dictionary] objectForKey: NSPrintReversePageOrder] 
+	    boolValue] == YES)
+	_pageOrder = NSDescendingPageOrder;
+      else
+	_pageOrder = NSAscendingPageOrder;
+    }
+
+  [NSGraphicsContext setCurrentContext: _context];
+  NS_DURING
+    {
+      [self _print];
+      result = YES;
+      [NSGraphicsContext setCurrentContext: oldContext];
+    }
+  NS_HANDLER
+    {
+      [_view _cleanupPrinting];
+      [NSGraphicsContext setCurrentContext: oldContext];
+      NSRunAlertPanel(@"Error", @"Printing error: %@", 
+		      @"OK", NULL, NULL, localException);
+    }
+  NS_ENDHANDLER
+  [self destroyContext];
+  RELEASE(pool);
+  return result;
+}
+
+- (void) _setupPrintInfo
+{
+  BOOL knowsPageRange;
+  NSRange viewPageRange;
+  NSMutableDictionary *dict = [_printInfo dictionary];
+
+  knowsPageRange = [_view knowsPageRange: &viewPageRange]; 
+  if (knowsPageRange == YES)
+    {
+      int first = viewPageRange.location;
+      int last = NSMaxRange(viewPageRange) - 1;
+      [dict setObject: NSNUMBER(first) forKey: NSPrintFirstPage];
+      [dict setObject: NSNUMBER(last) forKey: NSPrintLastPage];
+    }
+}
+
+- (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
+		      success:(BOOL)success  
+		  contextInfo:(void *)contextInfo
+{
+  id delegate;
+  SEL *didRunSelector;
+  NSMutableDictionary *dict;
+  void (*didRun)(id, SEL, BOOL, id);
+
+  if (success == YES)
+    {
+      NSPrintPanel *panel = [self printPanel];
+      [panel finalWritePrintInfo];
+      success = NO;
+      if ([self _runOperation])
+	success = [self deliverResult];
+    }
+  [self cleanUpOperation];
+  dict = [_printInfo dictionary];
+  didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
+  delegate = [dict objectForKey: @"GSModalRunDelegate"];
+  didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
+						    *didRunSelector];
+  didRun (delegate, *didRunSelector, success, contextInfo);
+}
+
+
+
+
 
 static NSSize
 scaleSize(NSSize size, double scale)
@@ -1113,266 +1100,3 @@ scaleRect(NSRect rect, double scale)
 }
 @end
 
-
-@implementation GSPrintOperation
-
-- (id)initWithView:(NSView *)aView
-	 printInfo:(NSPrintInfo *)aPrintInfo
-{
-  NSMutableData *data = [NSMutableData data];
-    
-  self = [self initWithView: aView
-	       insideRect: [aView bounds]
-	       toData: data
-	       printInfo: aPrintInfo];
-  _showPanels = YES;
-
-  return self;
-}
-
-- (NSGraphicsContext*)createContext
-{
-  NSMutableDictionary *info;
-  if (_context)
-    return _context;
-
-  info = [_printInfo dictionary];
-  if (_pathSet == NO)
-    {
-      NSString *output = [info objectForKey: NSPrintSavePath];
-      if (output)
-	{
-	  ASSIGN(_path, output);
-	  _pathSet = YES;
-	}
-    }
-
-  [info setObject: _path forKey: @"NSOutputFile"];
-  [info setObject: NSGraphicsContextPSFormat
-	   forKey: NSGraphicsContextRepresentationFormatAttributeName];
-  _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
-
-  return _context;
-}
-
-- (BOOL) _deliverSpooledResult
-{
-  int copies;
-  NSDictionary *dict;
-  NSTask *task;
-  NSString *name, *status;
-  NSMutableArray *args;
-  name = [[_printInfo printer] name];
-  status = [NSString stringWithFormat: @"Spooling to printer %@.", name];
-  [_printPanel _setStatusStringValue: status];
-
-  dict = [_printInfo dictionary];
-  args = [NSMutableArray array];
-  copies = [[dict objectForKey: NSPrintCopies] intValue];
-  if (copies > 1)
-    [args addObject: [NSString stringWithFormat: @"-#%0d", copies]];
-  if ([name isEqual: @"Unknown"] == NO)
-    {
-      [args addObject: @"-P"];
-      [args addObject: name];
-    }
-  [args addObject: _path];
-
-  task = [NSTask new];
-  [task setLaunchPath: @"lpr"];
-  [task setArguments: args];
-  [task launch];
-  [task waitUntilExit];
-  AUTORELEASE(task);
-  return YES;
-}
-
-- (BOOL) deliverResult
-{
-  BOOL success;
-  NSString *job;
-  
-  success = YES;
-  job = [_printInfo jobDisposition];
-  if ([job isEqual: NSPrintPreviewJob])
-    {
-      /* Check to see if there is a GNUstep app that can preview PS files.
-	 It's not likely at this point, so also check for a standards
-	 previewer, like gv.
-      */
-      NSTask *task;
-      NSString *preview;
-      NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-      [_printPanel _setStatusStringValue: @"Opening in previewer..."];
-      preview = [ws getBestAppInRole: @"Viewer" forExtension: @"ps"];
-      if (preview)
-	{
-	  [ws openFile: _path withApplication: preview];
-	}
-      else
-	{
-	  NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
-	  preview = [def objectForKey: @"NSPreviewApp"];
-	  if (preview == nil || [preview length] == 0)
-	    preview = @"gv";
-	  task = [NSTask new];
-	  [task setLaunchPath: preview];
-	  [task setArguments: [NSArray arrayWithObject: _path]];
-	  [task launch];
-	  AUTORELEASE(task);
-	}
-    }
-  else if ([job isEqual: NSPrintSpoolJob])
-    {
-      success = [self _deliverSpooledResult];
-    }
-  else if ([job isEqual: NSPrintFaxJob])
-    {
-    }
-
-  /* We can't remove the temp file because the previewer might still be
-     using it, perhaps the printer is also?
-  if (!_pathSet)
-    [[NSFileManager defaultManager] removeFileAtPath: _path
-				    handler: nil];
-  */
-  return success;
-}
-
-@end
-
-@implementation GSEPSPrintOperation
-
-- (id)initEPSOperationWithView:(NSView *)aView
-		    insideRect:(NSRect)rect
-			toData:(NSMutableData *)data
-		     printInfo:(NSPrintInfo *)aPrintInfo
-{
-  self = [self initWithView: aView
-	       insideRect: rect
-	       toData: data
-	       printInfo: aPrintInfo];
-  _pathSet = YES; /* Use the default temp path */
-  return self;
-}
-
-- (id) initEPSOperationWithView:(NSView *)aView	
-		     insideRect:(NSRect)rect
-			 toPath:(NSString *)path
-		      printInfo:(NSPrintInfo *)aPrintInfo
-{
-  NSMutableData *data = [NSMutableData data];
-  
-  self = [self initEPSOperationWithView: aView	
-	       insideRect: rect
-	       toData: data
-	       printInfo: aPrintInfo];
-
-  ASSIGN(_path, path);
-  _pathSet = YES;
-
-  return self;
-}
-
-- (void) _print
-{
-  /* Save this for the view to look at. Seems like there should
-     be a better way to pass it to beginDocument */
-  [[_printInfo dictionary] setObject: [NSValue valueWithRect: _rect]
-			      forKey: @"NSPrintSheetBounds"];
-  [_view beginDocument];
-  [_view beginPageInRect: _rect atPlacement: NSMakePoint(0,0)];
-  [_view displayRectIgnoringOpacity: _rect];
-  [_view endDocument];
-}
-
-- (BOOL)isEPSOperation
-{
-  return YES;
-}
-
-- (BOOL)deliverResult
-{
-  if (_data != nil && _path != nil)
-    {
-      NSString	*eps;
-
-      eps = [NSString stringWithContentsOfFile: _path];
-      [_data setData: [eps dataUsingEncoding:NSASCIIStringEncoding]];
-    }
-
-  return YES;
-}
-
-- (NSGraphicsContext*)createContext
-{
-  NSMutableDictionary *info;
-
-  if (_context)
-    return _context;
-
-  info = [_printInfo dictionary];
-
-  [info setObject: _path forKey: @"NSOutputFile"];
-  [info setObject: NSGraphicsContextPSFormat
-	   forKey: NSGraphicsContextRepresentationFormatAttributeName];
-  _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
-  return _context;
-}
-
-@end
-
-@implementation GSPDFPrintOperation
-
-- (id) initPDFOperationWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			 toData:(NSMutableData *)data 
-		      printInfo:(NSPrintInfo*)aPrintInfo
-{
-  self = [self initWithView: aView
-	       insideRect: rect
-	       toData: data
-	       printInfo: aPrintInfo];
-  _pathSet = YES; /* Use the default temp path */
-  return self;
-}
-
-- (id) initPDFOperationWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			 toPath:(NSString *)path 
-		      printInfo:(NSPrintInfo*)aPrintInfo
-{
-  NSMutableData *data = [NSMutableData data];
-
-  self = [self initPDFOperationWithView: aView	
-	       insideRect: rect
-	       toData: data
-	       printInfo: aPrintInfo];
-
-  ASSIGN(_path, path);
-  _pathSet = YES;
-
-  return self;
-}
-
-- (NSGraphicsContext*)createContext
-{
-  // FIXME
-  return nil;
-}
-
-- (void) _print
-{
-  [_view displayRectIgnoringOpacity: _rect];
-}
-
-- (BOOL)deliverResult
-{
-  if (_data != nil && _path != nil && [_data length])
-    return [_data writeToFile: _path atomically: NO];
-  // FIXME Until we can create PDF we shoud convert the file with GhostScript
-  
-  return YES;
-}
-
-@end

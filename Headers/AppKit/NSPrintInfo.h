@@ -2,12 +2,15 @@
 
    <abstract>Stores information used in printing.</abstract>
 
-   Copyright (C) 1996,1997 Free Software Foundation, Inc.
+   Copyright (C) 1996,1997,2004 Free Software Foundation, Inc.
 
    Author: Simon Frankau <sgf@frankau.demon.co.uk>
    Date: July 1997
    Author: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -123,6 +126,17 @@ typedef enum _NSPrintingPaginationMode {
 - (NSMutableDictionary *)dictionary;
 
 @end
+
+
+//
+// Used by printing backend bundles
+//
+@interface NSPrintInfo (Private)
+
++(NSPrinter*) _resolvePrinterName: (NSString*) printerName;
+
+@end
+
 
 //
 // Printing Information Dictionary Keys 

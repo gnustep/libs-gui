@@ -2,10 +2,13 @@
 
    <abstract>Standard panel for querying user about page layout.</abstract>
 
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001,2004 Free Software Foundation, Inc.
 
    Written By: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -43,6 +46,7 @@
 #include "AppKit/NSPageLayout.h"
 #include "AppKit/NSPrinter.h"
 #include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSPrinting.h"
 
 static NSPageLayout *shared_instance;
 
@@ -82,6 +86,22 @@ static NSPageLayout *shared_instance;
 //
 // Class methods
 //
+/** Load the appropriate bundle for the PageLayout 
+    (eg: GSLPRPageLayout, GSCUPSPageLayout).
+*/
++ (id) allocWithZone: (NSZone*) zone
+{
+  Class principalClass;
+
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if( principalClass == nil )
+    return nil;
+	
+  return [[principalClass pageLayoutClass] allocWithZone: zone];
+}
+
+
 /** Creates and returns a shared instance of the NSPageLayout panel.
  */
 + (NSPageLayout *)pageLayout
@@ -403,7 +423,7 @@ static NSPageLayout *shared_instance;
 - (void)pickedButton:(id)sender
 {
   NSLog(@"[NSPageLayout -pickedButton:] method depreciated");
-  [self pickedButton: sender];
+  //[self pickedButton: sender];
 }
 
 /** This method has been depreciated. It doesn't do anything useful.

@@ -3,10 +3,13 @@
 
    Stores information used in printing
 
-   Copyright (C) 1996,1997 Free Software Foundation, Inc.
+   Copyright (C) 1996,1997,2004 Free Software Foundation, Inc.
 
    Author:  Simon Frankau <sgf@frankau.demon.co.uk>
    Date: July 1997
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -35,8 +38,8 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSPrinter.h"
-
 #include "AppKit/NSPrintInfo.h"
+#include "GNUstepGUI/GSPrinting.h"
 
 #define NSNUMBER(val) [NSNumber numberWithInt: val]
 #define DICTSET(dict, obj, key) \
@@ -45,12 +48,8 @@
 // FIXME: retain/release of dictionary with retain/release of printInfo?
 
 // Class variables:
-static NSPrintInfo *sharedPrintInfoObject = nil;
-static NSMutableDictionary *printInfoDefaults = nil;
+static NSPrintInfo *sharedPrintInfo = nil;
 
-@interface NSPrintInfo (private)
-+ initPrintInfoDefaults;
-@end
 
 /**
   <unit>
@@ -76,24 +75,36 @@ static NSMutableDictionary *printInfoDefaults = nil;
     }
 }
 
+/** Load the appropriate bundle for the PrintInfo
+    (eg: GSLPRPrintInfo, GSCUPSPrintInfo).
+*/
++ (id) allocWithZone: (NSZone*) zone
+{
+  Class principalClass;
+
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if( principalClass == nil )
+    return nil;
+	
+  return [[principalClass printInfoClass] allocWithZone: zone];
+}
+
 //
 // Managing the Shared NSPrintInfo Object 
 //
 + (void)setSharedPrintInfo:(NSPrintInfo *)printInfo
 {
-  sharedPrintInfoObject = printInfo;
+  ASSIGN(sharedPrintInfo, printInfo);
 }
 
 + (NSPrintInfo *)sharedPrintInfo
 {
-  if (!sharedPrintInfoObject)
-    {
-      if (!printInfoDefaults)
-	[NSPrintInfo initPrintInfoDefaults];
-      sharedPrintInfoObject = [[self alloc]
-				initWithDictionary:printInfoDefaults]; 
-    }
-  return sharedPrintInfoObject;
+  if (!sharedPrintInfo)
+   {    
+     sharedPrintInfo = [[NSPrintInfo alloc] initWithDictionary: nil]; 
+   }
+  return sharedPrintInfo;
 }
 
 //
@@ -109,16 +120,26 @@ static NSMutableDictionary *printInfoDefaults = nil;
 //
 + (NSPrinter *)defaultPrinter
 {
-  if (!printInfoDefaults)
-    [NSPrintInfo initPrintInfoDefaults];
-  return [printInfoDefaults objectForKey:NSPrintPrinter];
+  Class principalClass;
+
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if( principalClass == nil )
+    return nil;
+	
+  return [[principalClass printInfoClass] defaultPrinter];
 }
 
 + (void)setDefaultPrinter:(NSPrinter *)printer
 {
-  if (!printInfoDefaults)
-    [NSPrintInfo initPrintInfoDefaults];
-  [printInfoDefaults setObject:printer forKey:NSPrintPrinter];
+  Class principalClass;
+
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if( principalClass == nil )
+    return;
+	
+  [[principalClass printInfoClass] setDefaultPrinter: printer];
 }
 
 //
@@ -130,7 +151,40 @@ static NSMutableDictionary *printInfoDefaults = nil;
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
   [super init];
-  _info = [[NSMutableDictionary alloc] initWithDictionary:aDict];
+  
+  _info = [[NSMutableDictionary alloc] init];
+      
+  //put in the defaults
+  [self setVerticalPagination: NSAutoPagination];
+   
+  [self setHorizontalPagination: NSClipPagination];
+  
+  [self setJobDisposition: NSPrintSpoolJob];
+      
+  [self setHorizontallyCentered: YES];
+      
+  [self setVerticallyCentered: YES];
+  
+  [self setOrientation: NSPortraitOrientation];
+  
+  if( aDict != nil )
+    {
+      [_info addEntriesFromDictionary: aDict];
+  
+      if([[_info objectForKey: NSPrintPrinter] isKindOfClass: [NSString class]])
+        {
+          NSString *printerName;
+          NSPrinter *printer;
+      
+          printerName = [_info objectForKey: NSPrintPrinter];
+          printer = [NSPrinter printerWithName: printerName];
+          
+          if( printer )
+              [self setPrinter: printer];
+          else
+              [_info removeObjectForKey: NSPrintPrinter];
+        }
+    }
   return self;
 }
 
@@ -330,20 +384,7 @@ static NSMutableDictionary *printInfoDefaults = nil;
 
 - (void)setUpPrintOperationDefaultValues
 {
-  NSEnumerator *keys, *objects;
-  NSString *key;
-  id object;
-
-  if (!printInfoDefaults)
-    [NSPrintInfo initPrintInfoDefaults];
-  keys = [printInfoDefaults keyEnumerator];
-  objects = [printInfoDefaults objectEnumerator];
-  while ((key = [keys nextObject]))
-    {
-      object = [objects nextObject];
-      if (![_info objectForKey:key])
-	[_info setObject:object forKey:key];
-    }
+  [self subclassResponsibility: _cmd];
 }
 
 //
@@ -359,73 +400,34 @@ static NSMutableDictionary *printInfoDefaults = nil;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  //There is a NSPrinter in the dict, will that work as a Property list?
+  NSMutableDictionary *dict;
+  
+  dict = AUTORELEASE([_info mutableCopy]);
+  
+  [dict setObject: [[self printer] name]
+           forKey: NSPrintPrinter];
+           
   [aCoder encodePropertyList: _info];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  NSString *printerName;
+  NSPrinter *printer;
+ 
   _info = RETAIN([aDecoder decodePropertyList]);
-  return self;
-}
-
-//
-// Private method to initialise printing defaults dictionary
-//
-+ initPrintInfoDefaults
-{
-  NSUserDefaults *def;
-  NSString *defPrinter, *str;
-  NSPrinter *printer = nil;
-
-  def = [NSUserDefaults standardUserDefaults];
-  printInfoDefaults = [def objectForKey: @"DefaultPrinter"];
-  if (printInfoDefaults)
-    printInfoDefaults = [printInfoDefaults mutableCopy];
-  defPrinter = [printInfoDefaults objectForKey:NSPrintPrinter];
-  if (defPrinter)
-    printer = [NSPrinter printerWithName: defPrinter];
-  if (printer == nil)
-    defPrinter = nil;
-  if (printInfoDefaults == nil)
-    {
-      NSDebugLog(@"NSPrinter", @"Could not find printing defaults table");
-      printInfoDefaults = RETAIN([NSMutableDictionary dictionary]);
-    }
-  if (defPrinter == nil)
-    {
-      defPrinter = [[NSPrinter printerNames] objectAtIndex: 0];
-      DICTSET(printInfoDefaults, defPrinter, NSPrintPrinter);
-    }
-
-  /* Replace the printer name with a real NSPrinter object */
-  printer = [NSPrinter printerWithName: defPrinter];
-  DICTSET(printInfoDefaults, [NSPrinter printerWithName: defPrinter], NSPrintPrinter);
-
-  /* Set up other defaults from the printer object */
-  str = [printer stringForKey:@"DefaultPageSize" inTable: @"PPD"];
-  /* FIXME: Need to check for AutoSelect and probably a million other things... */
-  if (str == nil)
-    str = @"A4";
-  DICTSET(printInfoDefaults, str, NSPrintPaperName);
-  DICTSET(printInfoDefaults, 
-	  [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: str]],
-	  NSPrintPaperSize);
-
-  /* Set default margins. FIXME: Probably should check ImageableArea */
-  DICTSET(printInfoDefaults, NSNUMBER(36), NSPrintRightMargin);
-  DICTSET(printInfoDefaults, NSNUMBER(36), NSPrintLeftMargin);
-  DICTSET(printInfoDefaults, NSNUMBER(72), NSPrintTopMargin);
-  DICTSET(printInfoDefaults, NSNUMBER(72), NSPrintBottomMargin);
-  DICTSET(printInfoDefaults, NSNUMBER(NSPortraitOrientation), 
-	  NSPrintOrientation);
-  //DICTSET(printInfoDefaults, NSNUMBER(NSClipPagination), 
-  //	  NSPrintHorizontalPagination);
-  DICTSET(printInfoDefaults, NSNUMBER(NSAutoPagination), 
-	  NSPrintVerticalPagination);
-  DICTSET(printInfoDefaults, NSNUMBER(1), NSPrintHorizontallyCentered);
-  DICTSET(printInfoDefaults, NSNUMBER(1), NSPrintVerticallyCentered);
-
+  
+  printerName = [_info objectForKey: NSPrintPrinter];
+  printer = [NSPrinter printerWithName: printerName];
+  
+  if( printer )
+    [self setPrinter: printer];
+  else
+    [_info removeObjectForKey: NSPrintPrinter]; 
+  
   return self;
 }
 
 @end
+

@@ -1,3 +1,57 @@
+2004-07-09  Chad Hardin <cehardin@mac.com>
+	* Source/GNUmakefile:
+	* Headers/AppKit/NSPageLayout.h:
+	* Source/NSPageLayout.m:
+	* Headers/AppKit/NSPrintInfo.h:
+	* Source/NSPrintInfo.m:
+	* Headers/AppKit/NSPrintOperation.h:
+	* Source/NSPrintOperation.m:
+	* Headers/AppKit/NSPrintPanel.h:
+	* Source/NSPrintPanel.m:
+	* Headers/AppKit/NSPrinter.h:
+	* Source/NSPrinter.m:
+	Modifications for the backend printing bundle system.
+	* Headers/Additions/GNUstepGUI/GSEPSPrintOperation.h: added.
+	* Source/GSEPSPrintOperation.m: added.
+	* Headers/Additions/GNUstepGUI/GSPDFPrintOperation.h: added.
+	* Source/GSPDFPrintOperation.m: added.
+	* Headers/Additions/GNUstepGUI/GSPrintOperation.h: added.
+	* Source/GSPrintOperation.m: added.
+	* Headers/Additions/GNUstepGUI/GSPrinting.h: added.
+	* Source/GSPrinting.m: added.
+	Split off the various PrintOperation classes.  This makes is clear that
+	the printing backend bundles subclass GSPrintOperation, not NSPrintOperation.
+	Also, GSPDFPrintOperation will probably become large when implemented, this
+	clarifies the class structure and prevent NSPrintOperation.m from become 
+	overly large and confusing.  The GSPrinting class is helper for loading the 
+	proper printer backend bundle.
+	* GNUMakefile: includes the Printing directory.
+	* Printing: Added the printing bundles home directory.
+	* Printing/GNUmakefile: added.
+	* Printing/GSLPR: Added the first printing bundle.
+	* Printing/GSLPR/GNUmakefile: added.
+	* Printing/GSLPR/GNUmakefile.postamble: added.
+	* Printing/GSLPR/GNUmakefile.preamble: added.
+	* Printing/GSLPR/GSLPRPageLayout.h: added.
+	* Printing/GSLPR/GSLPRPageLayout.m: added.
+	* Printing/GSLPR/GSLPRPrincipalClass.h: added.
+	* Printing/GSLPR/GSLPRPrincipalClass.m: added.
+	* Printing/GSLPR/GSLPRPrintInfo.h: added.
+	* Printing/GSLPR/GSLPRPrintInfo.m: added.
+	* Printing/GSLPR/GSLPRPrintOperation.h: added.
+	* Printing/GSLPR/GSLPRPrintOperation.m: added.
+	* Printing/GSLPR/GSLPRPrintPanel.h: added.
+	* Printing/GSLPR/GSLPRPrintPanel.m: added.
+	* Printing/GSLPR/GSLPRPrintPrinter.h: added.
+	* Printing/GSLPR/GSLPRPrintPrinter.m: added.
+	Here it is, the first backend printing bundle, version one.  The are very 
+	little code changes from the original source, bugs that may have been 
+	present there would have been carried over here.  However, this is just the 
+	first round.  This bundle uses GNUstep's original PageLayout and PrintPanel
+	GORM panels, it does not have its own.  Hence, it is very simple.  The plan
+  is for the future GSCUPS bundle to also use GNUstep's GORM panels, not for 
+  each bundle to have their own panels.
+	
 2004-07-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPanel.m:

@@ -2,10 +2,13 @@
 
    <abstract>Standard panel for querying user about printing.</abstract>
 
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001,2004 Free Software Foundation, Inc.
 
    Written By: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -42,6 +45,7 @@
 #include "AppKit/NSSavePanel.h"
 #include "AppKit/NSView.h"
 #include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSPrinting.h"
 
 static NSPrintPanel *shared_instance;
 
@@ -71,6 +75,22 @@ static NSPrintPanel *shared_instance;
 //
 // Class Methods
 //
+/** Load the appropriate bundle for the PrintPanel
+    and alloc the class from that in our place
+    (eg: GSLPRPrintPanel, GSCUPSPrintPanel).
+*/
++ (id) allocWithZone: (NSZone*) zone
+{
+  Class principalClass;
+
+  principalClass = [[GSPrinting printingBundle] principalClass];
+
+  if( principalClass == nil )
+    return nil;
+	
+  return [[principalClass printPanelClass] allocWithZone: zone];
+}
+
 /** Creates and returns a shared instance of the NSPrintPanel panel.
  */
 + (NSPrintPanel *)printPanel

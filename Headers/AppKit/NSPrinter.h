@@ -3,10 +3,13 @@
 
    Class representing a printer's or printer model's capabilities.
 
-   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997,2004 Free Software Foundation, Inc.
 
    Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
    Date: June 1997
+   Modified for Printing Backend Support
+   Author: Chad Hardin <cehardin@mac.com>
+   Date: June 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -47,7 +50,24 @@ typedef enum _NSPrinterTableStatus {
 {
   NSString *_printerHost, *_printerName, *_printerNote, *_printerType;
   int _cacheAcceptsBinary, _cacheOutputOrder;
-  BOOL _isRealPrinter;
+  
+  //The way openstep handled NSPrinter was odd, it had a concept of "real" 
+  //printers and
+  //not real printers.  Printers that were not real were simply parsed PPDs, 
+  //whether the printer was actually available or not was irrevelatn.  This is
+  //is where the all the -types and +types methods come from.  Apple's
+  //adoption of CUPS forced them to change this behavior, now, their types 
+  //methods only search for the types of printers that are actually avaiable, 
+  //it has nothing to do with the PPDs that happen to be avaiable on the file
+  //system.  I think this is also the behavior we should adopt.  Not simply 
+  //because it is what Apple does but because it facilitates a generic printing
+  //backend system, especially one that will likely be using CUPS itself.
+  //This is why the following ivar is removed and the behavior of this class
+  //and the GSLPR Bundle has been changed.  Doing this has also allowed me
+  //to put a lot of generic code in ths class that would have otherwise had
+  //to have been handles by each bundle.  See +printerWithType: in NSPrinter.m
+  //BOOL _isRealPrinter;
+  
   NSMutableDictionary *_PPD;
   NSMutableDictionary *_PPDOptionTranslation;
   NSMutableDictionary *_PPDArgumentTranslation;
@@ -111,5 +131,30 @@ typedef enum _NSPrinterTableStatus {
 - initWithCoder: (NSCoder *)aDecoder;
 
 @end
+
+
+//
+// Private methods that will be usefull for the
+// printing backend bundles that subclass NSPrinter
+//
+@interface NSPrinter (Private)
+//
+// Initialisation method used by backend bundles
+//
+-(id) initWithName:(NSString *)name
+          withType:(NSString *)type
+          withHost:(NSString *)host
+          withNote:(NSString *)note;
+
+-(id)       addValue:(NSString *)value
+ andValueTranslation:(NSString *)valueTranslation
+andOptionTranslation:(NSString *)optionTranslation
+              forKey:(NSString *)key;
+
+
+-(id) addString: (NSString*) string
+         forKey: (NSString*) key
+        inTable: (NSMutableDictionary*) table;
+@end 
 
 #endif // _GNUstep_H_NSPrinter
