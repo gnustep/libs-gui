@@ -1,3 +1,8 @@
+Sun Feb 18 13:35:55 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSClipView.m ([-setBoundsOrigin:]): Make rect to copy
+	integral before copying.
+
 Sat Feb 17 19:07:33 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-acceptsFirstResponder]): Call the
