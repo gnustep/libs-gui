@@ -448,6 +448,12 @@ static NSInputManager *currentInputManager = nil;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE (_rootBindingTable);
+  [super dealloc];
+}
+
 - (void) handleKeyboardEvents: (NSArray *)eventArray
 		       client: (id)client
 {
