@@ -231,8 +231,9 @@
   [_titleCell setEditable: NO];
   [_titleCell setTextColor: [NSColor windowFrameTextColor]];
   [_titleCell setBackgroundColor: [NSColor controlShadowColor]];
+  [_titleCell setDrawsBackground: YES];
   //[_titleCell setBordered: YES];
-  //[_titleCell setBezeled: YES];
+  [_titleCell setBezeled: YES];
   [_titleCell setAlignment: NSCenterTextAlignment];
 
   // Calculate geometry
