@@ -1,11 +1,39 @@
+/*
+   NSDocumentController.m
 
+   The document controller class
 
-#import <AppKit/NSDocumentController.h>
-#import <AppKit/NSOpenPanel.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSMenuItem.h>
-#import <AppKit/NSWorkspace.h>
-#import <AppKit/NSDocumentFrameworkPrivate.h>
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   Author: Carl Lindberg <Carl.Lindberg@hbo.com>
+   Date: 1999
+   Modifications: Fred Kiefer <FredKiefer@gmx.de>
+   Date: June 2000
+
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+#include <AppKit/NSDocumentController.h>
+#include <AppKit/NSOpenPanel.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSMenuItem.h>
+#include <AppKit/NSWorkspace.h>
+#include <AppKit/NSDocumentFrameworkPrivate.h>
 
 
 static NSString *NSTypesKey             = @"NSTypes";
@@ -64,8 +92,10 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
 {
   NSDictionary *customDict = [[NSBundle mainBundle] infoDictionary];
 	
-  _types = [[customDict objectForKey:NSTypesKey] retain];
+  ASSIGN(_types, [customDict objectForKey:NSTypesKey]);
   _documents = [[NSMutableArray alloc] init];
+  // FIXME: Should fill this list form some stored values
+  _recentDocuments = [[NSMutableArray alloc] init];
   [self setShouldCreateUI:YES];
 
   [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -80,8 +110,9 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
 - (void)dealloc
 {
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-  [_documents release];
-  [_types release];
+  RELEASE(_documents);
+  RELEASE(_recentDocuments);
+  RELEASE(_types);
   [super dealloc];
 }
 
@@ -98,19 +129,19 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
 - (id)makeUntitledDocumentOfType:(NSString *)type
 {
   Class documentClass = [self documentClassForType:type];
-  return [[[documentClass alloc] init] autorelease];
+  return AUTORELEASE([[documentClass alloc] init]);
 }
 
 - (id)makeDocumentWithContentsOfFile:(NSString *)fileName ofType:(NSString *)type
 {
   Class documentClass = [self documentClassForType:type];
-  return [[[documentClass alloc] initWithContentsOfFile:fileName ofType:type] autorelease];
+  return AUTORELEASE([[documentClass alloc] initWithContentsOfFile:fileName ofType:type]);
 }
 
 - (id)makeDocumentWithContentsOfURL:(NSURL *)url ofType:(NSString *)type
 {
   Class documentClass = [self documentClassForType:type];
-  return [[[documentClass alloc] initWithContentsOfURL:url ofType:type] autorelease];
+  return AUTORELEASE([[documentClass alloc] initWithContentsOfURL:url ofType:type]);
 }
 
 - _defaultType
@@ -121,13 +152,12 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
   return [[_types objectAtIndex:0] objectForKey:NSNameKey];
 }
 
-/* These next two should really have been public. */
-- (void)_addDocument:(NSDocument *)document
+- (void)addDocument:(NSDocument *)document
 {
   [_documents addObject:document];
 }
 
-- (void)_removeDocument:(NSDocument *)document
+- (void)removeDocument:(NSDocument *)document
 {
   [_documents removeObject:document];
 }
@@ -139,7 +169,7 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
   if (document == nil) 
     return nil;
 
-  [self _addDocument:document];
+  [self addDocument:document];
   if ([self shouldCreateUI])
     {
       [document makeWindowControllers];
@@ -159,7 +189,7 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
       NSString *type = [self typeFromFileExtension:[fileName pathExtension]];
       
       if ((document = [self makeDocumentWithContentsOfFile:fileName ofType:type]))
-	[self _addDocument:document];
+	[self addDocument:document];
 
       if ([self shouldCreateUI])
 	[document makeWindowControllers];
@@ -178,6 +208,9 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
   // Should we only do this if [url isFileURL] is YES?
   NSDocument *document = [self documentForFileName:[url path]];
   
+  // remember this document as opened
+  [self noteNewRecentDocumentURL: url];
+
   if (document == nil)
     {
       NSString *type = [self typeFromFileExtension:[[url path] pathExtension]];
@@ -187,7 +220,7 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
       if (document == nil)
 	return nil;
       
-      [self _addDocument:document];
+      [self addDocument:document];
 
       if ([self shouldCreateUI])
         {
@@ -299,7 +332,7 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
     {
       if (![document canCloseDocument]) return NO;
       [document close];
-      [self _removeDocument:document];
+      [self removeDocument:document];
     }
   
   return YES;
@@ -488,6 +521,32 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
   NSString *className = [TYPE_INFO(type) objectForKey:NSDocumentClassKey];
 	
   return className? NSClassFromString(className) : Nil;
+}
+
+- (IBAction)clearRecentDocuments:(id)sender
+{
+  [_recentDocuments removeAllObjects];
+}
+
+// The number of remembered recent documents
+#define MAX_DOCS 5
+
+- (void)noteNewRecentDocumentURL:(NSURL *)anURL
+{
+  unsigned index = [_recentDocuments indexOfObject: anURL];
+
+  if (index != NSNotFound)
+    // Always keep the current object at the end of the list
+    [_recentDocuments removeObjectAtIndex: index];
+  else if ([_recentDocuments count] > MAX_DOCS)
+    [_recentDocuments removeObjectAtIndex: 0];
+
+  [_recentDocuments addObject: anURL];
+}
+
+- (NSArray *)recentDocumentURLs
+{
+    return _recentDocuments;
 }
 
 static NSString *NSEditorRole = @"Editor";
