@@ -4,6 +4,8 @@ Tue Oct 27 15:20:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	complient and less inefficient.
 	* Source/NSEvent.m: Fixed per-thread code to be OpenStep complient
 	and less inefficient.
+	* Source/NSView.m: Fixed per-thread code to be OpenStep complient
+	and less inefficient.
 
 Mon Oct 26 13:20:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -48,8 +48,7 @@
 @implementation NSView
 
 /* Class variables */
-static NSMutableDictionary *gnustep_gui_nsview_thread_dict = nil;
-static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
+static NSString	*nsview_thread_key = @"NSViewThreadKey";
 
 + (void)initialize
 {
@@ -59,12 +58,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
       // Initial version
       [self setVersion:1];
-
-      // Allocate dictionary for maintaining
-      // mapping of threads to focused views
-      gnustep_gui_nsview_thread_dict = [NSMutableDictionary new];
-      // Create lock for serializing access to dictionary
-      gnustep_gui_nsview_lock = [[NSRecursiveLock alloc] init];
     }
 }
 
@@ -73,53 +66,39 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 //
 + (void)pushFocusView:(NSView *)focusView
 {
-  NSThread *current_thread = [NSThread currentThread];
-
-  // Obtain lock so we can edit the dictionary
-  [gnustep_gui_nsview_lock lock];
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
   // If no context then remove from dictionary
   if (!focusView)
     {
-      [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
+      [dict removeObjectForKey: nsview_thread_key];
     }
   else
     {
-      [gnustep_gui_nsview_thread_dict setObject: focusView 
-				      forKey: current_thread];
+      [dict setObject: focusView forKey: nsview_thread_key];
     }
 
-  [gnustep_gui_nsview_lock unlock];
 }
 
 + (NSView *)popFocusView
 {
-  NSThread *current_thread = [NSThread currentThread];
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
   id v;
 
-  // Obtain lock so we can edit the dictionary
-  [gnustep_gui_nsview_lock lock];
-
   // Remove from dictionary
-  v = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
-  [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
+  v = [dict objectForKey: nsview_thread_key];
+  [dict removeObjectForKey: nsview_thread_key];
 
-  [gnustep_gui_nsview_lock unlock];
   return v;
 }
 
 + (NSView *)focusView
 {
-  NSThread *current_thread = [NSThread currentThread];
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
   NSView *current_view = nil;
 
-  // Get focused view for current thread
-  [gnustep_gui_nsview_lock lock];
-
   // current_view is nil if no focused view
-  current_view = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
-
-  [gnustep_gui_nsview_lock unlock];
+  current_view = [dict objectForKey: nsview_thread_key];
 
   return current_view;
 }
