@@ -2,6 +2,8 @@
 
 	* Headers/gnustep/gui/*.h/*.h.in: Remove headers moved in header
 	reorganization on 2003-07-31.
+	* Headers/Additions/GNUstepGUI/GSVersion.h: Remove generated
+	file that should have been ignored by entry in .cvsignore.
 	
 2003-08-05  Martin Brecher <martin@mb-itconsulting.com>
 
@@ -23,7 +25,7 @@
 	* Documentation/GNUmakefile.postamble: Invoke Source/DocMakefile to
 	clean reference documentation.
 
-2003-08-02  Ludovic Marcotte <ludovic@Sophos.ca
+2003-08-02  Ludovic Marcotte <ludovic@Sophos.ca>
 
 	* Modified NSPopUpButtonCell: -insertItemWithTitle: atIndex:
 	  so that we get our item count after removing a potential
