@@ -928,13 +928,22 @@ static PSMatrix	*flip = nil;
     return NO;
 }
 
-- (void) display
+- (void)display											
 {
-  if (!window)
-    return;
-
-  [self displayRect: bounds];
-}
+	if(!window)											// do nothing if not in
+		return;											// a window's heirarchy
+														
+	if ([self isOpaque]) 								// if self is opaque	
+		[self displayRect:bounds];						// display visible rect
+	else												// else back up to a
+		{
+		NSView *firstOpaque = [self opaqueAncestor];	// convert rect into
+		NSRect rect = bounds;							// coordinates of the
+														// first opaque view
+      	rect = [firstOpaque convertRect:rect fromView:self];
+		[firstOpaque displayRect:rect];
+		}
+}														
 
 - (void) displayIfNeeded
 {

@@ -384,8 +384,28 @@ id nextResponder;
 
 - (BOOL)textShouldEndEditing:(NSText *)aTextObject		// NSText(field editor) 
 {														// delegate method
-	[cell endEditing:aTextObject];
-fprintf(stderr, " TextField textShouldEndEditing --- ");
+	if([cell isEntryAcceptable: [aTextObject text]])
+		{
+//		if([delegate respondsTo:control:textShouldEndEditing:])		// FIX ME
+//			{
+//			if(![delegate control:textShouldEndEditing:])
+//				{
+//				NSBeep();
+//				return NO;
+//				}
+//			else
+//				return YES;
+//			}
+		[cell endEditing:aTextObject];			
+		}
+	else
+		{												// entry is not valid
+		NSBeep();
+		return NO;
+		}
+
+	[self display];
+	[window flushWindow];
 
 	return YES;
 }

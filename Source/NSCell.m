@@ -339,16 +339,12 @@ NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
   [controlView unlockFocus];
 }
 
-/*
- * editing is complete, remove the text obj acting as the field
- * editor from window's view heirarchy, set our contents from it
- */
-- (void)endEditing:(NSText *)textObject
-{
-  [textObject setDelegate:nil];
-  [textObject removeFromSuperview];
-  [self setStringValue: [textObject text]];
-}
+- (void)endEditing:(NSText *)textObject					// editing is complete,
+{														// remove the text obj
+	[textObject setDelegate:nil];						// acting as the field
+	[textObject removeFromSuperview];					// editor from window'
+	[self setStringValue: [textObject text]];			// view heirarchy, set
+}														// our contents from it 
 
 - (void)selectWithFrame:(NSRect)aRect
 				 inView:(NSView *)controlView

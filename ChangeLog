@@ -1,3 +1,14 @@
+Thu Feb 18 1999  Felipe A. Rodriguez  <farz@mindspring.com>
+
+	* NSView.m display: fix for display bug in buttons example 
+	* NSCell.m endEditing: fix for display bug in buttons example 
+	* NSTextField.m textShouldEndEditing: The changes to these three classes
+    fix a display bug visible in the buttons example when the top text field is 
+    selected for editing and then asked to resign when the user clicks on say 
+    the bottom text field.  This causes a rect encompassing both views to be 
+    invalidated and displayed.  Beyond being inefficient this also causes a 
+    display glitch given the current drawing methodology.
+
 Wed Feb 17 11:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Tidyup - visibleRect is empty if we have no window.
