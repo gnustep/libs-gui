@@ -1,3 +1,11 @@
+2003-09-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m
+	In [itemChanged:] set if the cell is enabled like the item.
+	* Source/NSMenuItemCell.m
+	[setMenuItem:] enable/disable cell. [drawTitleWithFrame:inView:]no
+	longer enable/disable cell.
+	
 2003-09-04 18:43  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSWindow.h, Source/NSWindow.m: Change the return
