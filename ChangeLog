@@ -1,3 +1,26 @@
+2000-12-16  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSApplication.h:
+	Prefixed all ivars with underscores, removed unneeded ivars and
+	added some missing methods.
+	* Source/NSApplication.m 
+	Adopted to changes in header file. [initialize] Cache the
+	notification center and the NSAutoreleasePool class for the whole
+	file. [finishLaunching] set the image before starting the icon
+	view. Recognize file to open with flag @"NSOpen" beside @"GSFilePath".
+	[dealloc] now also destoys the graphic context. [stop:] now stops
+	the run loop, which may be restarted (but this will still reload
+	the NIB file!). [setApplicationIconImage:] check if the
+	_app_icon_window is there before setting its
+	image. [orderFrontDataLinkPanel:] and [orderFrontHelpPanel:] moved
+	the error message into the corresponding files. [terminate:] now
+	directly stops the program with exit(0). Also did some general
+	cleanup of code.
+	* Source/NSDataLinkPanel.m 
+	* Source/NSHelpPanel.m
+	Moved the "not implemented yet" Panel to the shared instance
+	method of those two classes. 
+
 Sat Dec 16 16:36:03 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSCell.h: Modified ivars to reduce memory
