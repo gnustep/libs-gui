@@ -109,6 +109,18 @@ NSApplication	*NSApp = nil;
   return YES;
 }
 
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+{
+  if (place == NSWindowOut)
+    {
+      NSLog(@"Argh - icon window ordered out");
+    }
+  else
+    {
+      [super orderWindow: place relativeTo: otherWin];
+    }
+}
+
 - (void) initDefaults
 {
   [super initDefaults];

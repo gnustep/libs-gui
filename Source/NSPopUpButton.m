@@ -38,21 +38,20 @@
 #include <AppKit/NSMenuView.h>
 #include <AppKit/NSFont.h>
 
-//
-// class variables
-//
+/*
+ * class variables
+ */
 Class _nspopupbuttonCellClass = 0;
 
-//
-// NSPopUpButton implementation
-//
+/*
+ * NSPopUpButton implementation
+ */
 
 @implementation NSPopUpButton
 
-///////////////////////////////////////////////////////////////
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSPopUpButton class])
@@ -73,9 +72,9 @@ Class _nspopupbuttonCellClass = 0;
   _nspopupbuttonCellClass = classId;
 }
 
-//
-// Initializing an NSPopUpButton 
-//
+/*
+ * Initializing an NSPopUpButton 
+ */
 - (id) init
 {
   return [self initWithFrame: NSZeroRect pullsDown: NO];
@@ -95,12 +94,12 @@ Class _nspopupbuttonCellClass = 0;
   return self;
 }
 
-- (void) setMenu: (NSMenu *)menu
+- (void) setMenu: (NSMenu*)menu
 {
   [_cell setMenu: menu];
 }
 
-- (NSMenu *) menu
+- (NSMenu*) menu
 {
   return [_cell menu];
 }
@@ -132,20 +131,29 @@ Class _nspopupbuttonCellClass = 0;
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void) addItemsWithTitles: (NSArray *)itemTitles
+- (void) addItemsWithTitles: (NSArray*)itemTitles
 {
   [_cell addItemsWithTitles: itemTitles];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void) insertItemWithTitle: (NSString *)title
+- (void) insertItemWithTitle: (NSString*)title
 		     atIndex: (int)index
 {
   [_cell insertItemWithTitle: title 
-	atIndex: index];
+		     atIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
+}
+
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
+{
+  NSMenu	*m = [self menu];
+
+  if (m != nil)
+    return [m performKeyEquivalent: theEvent];
+  return NO;
 }
 
 - (void) removeAllItems
@@ -155,7 +163,7 @@ Class _nspopupbuttonCellClass = 0;
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void) removeItemWithTitle: (NSString *)title
+- (void) removeItemWithTitle: (NSString*)title
 {
   [_cell removeItemWithTitle: title];
 
@@ -174,7 +182,7 @@ Class _nspopupbuttonCellClass = 0;
   return [_cell selectedItem];
 }
 
-- (NSString *) titleOfSelectedItem
+- (NSString*) titleOfSelectedItem
 {
   return [_cell titleOfSelectedItem];
 }
@@ -194,7 +202,7 @@ Class _nspopupbuttonCellClass = 0;
   [_cell selectItemAtIndex: index];
 }
 
-- (void) selectItemWithTitle: (NSString *)title
+- (void) selectItemWithTitle: (NSString*)title
 {
   [_cell selectItemWithTitle: title];
 }
@@ -204,7 +212,7 @@ Class _nspopupbuttonCellClass = 0;
   return [_cell numberOfItems];
 }
 
-- (NSArray *) itemArray 
+- (NSArray*) itemArray 
 {
   return [_cell itemArray];
 }
@@ -214,17 +222,17 @@ Class _nspopupbuttonCellClass = 0;
   return [_cell itemAtIndex: index];
 }
 
-- (NSString *) itemTitleAtIndex: (int)index
+- (NSString*) itemTitleAtIndex: (int)index
 {
   return [_cell itemTitleAtIndex: index];
 }
 
-- (NSArray *) itemTitles
+- (NSArray*) itemTitles
 {
   return [_cell itemTitles];
 }
 
-- (id <NSMenuItem>) itemWithTitle: (NSString *)title
+- (id <NSMenuItem>) itemWithTitle: (NSString*)title
 {
   return [_cell itemWithTitle: title];
 }
@@ -244,7 +252,7 @@ Class _nspopupbuttonCellClass = 0;
   return [_cell indexOfItemWithTag: tag];
 }
 
-- (int) indexOfItemWithTitle: (NSString *)title
+- (int) indexOfItemWithTitle: (NSString*)title
 {
   return [_cell indexOfItemWithTitle: title];
 }
@@ -270,7 +278,7 @@ Class _nspopupbuttonCellClass = 0;
   return [_cell preferredEdge];
 }
 
-- (void) setTitle: (NSString *)aString
+- (void) setTitle: (NSString*)aString
 {
   [_cell setTitle: aString];
 }
@@ -289,7 +297,7 @@ Class _nspopupbuttonCellClass = 0;
   [[popb_menu menuRepresentation] sizeToFit];
 } 
 
-- (void) mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 { 
   NSMenuView *mr = [[_cell menu] menuRepresentation];
   NSEvent    *e;
@@ -332,9 +340,9 @@ Class _nspopupbuttonCellClass = 0;
   
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
