@@ -318,10 +318,10 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
                      | NSMiniaturizableWindowMask | NSResizableWindowMask;
 
   self = [super initWithContentRect: pf 
-		styleMask: style
-		backing: NSBackingStoreRetained
-		defer: NO
-		screen: nil];
+			  styleMask: style
+			    backing: NSBackingStoreRetained
+			      defer: NO
+			     screen: nil];
   [self setTitle: @"Font Panel"];
 
   v = [self contentView];
@@ -346,7 +346,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   //[_previewArea setUsesFontPanel: NO];
   [_previewArea setAlignment: NSCenterTextAlignment];
   [_previewArea setStringValue: @"Font preview"];
-  [_previewArea setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];  
+  [_previewArea setAutoresizingMask: (NSViewWidthSizable|NSViewHeightSizable)];  
   [topSplit addSubview: _previewArea];
 
   bottomSplit = [[NSView alloc] initWithFrame: bs];
@@ -362,8 +362,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_familyBrowser setTitled: YES];
   [_familyBrowser setTakesTitleFromPreviousColumn: NO];
   [_familyBrowser setTarget: self];
-  [_familyBrowser setDoubleAction: @selector(familySelected: )];
-  [_familyBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_familyBrowser setDoubleAction: @selector(familySelected:)];
+  [_familyBrowser setAutoresizingMask: (NSViewWidthSizable|NSViewHeightSizable)];
   [bottomSplit addSubview: _familyBrowser];
 
   // selection of type face
@@ -377,8 +377,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_faceBrowser setTitled: YES];
   [_faceBrowser setTakesTitleFromPreviousColumn: NO];
   [_faceBrowser setTarget: self];
-  [_faceBrowser setDoubleAction: @selector(faceSelected: )];
-  [_faceBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_faceBrowser setDoubleAction: @selector(faceSelected:)];
+  [_faceBrowser setAutoresizingMask: (NSViewWidthSizable|NSViewHeightSizable)];
   [bottomSplit addSubview: _faceBrowser];
 
   // label for selection of size
@@ -401,7 +401,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   //[_sizeField setAllowsEditingTextAttributes: NO];
   [_sizeField setAlignment: NSCenterTextAlignment];
   [_sizeField setBackgroundColor: [NSColor windowFrameTextColor]];
-  [_sizeField setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
+  [_sizeField setAutoresizingMask: (NSViewWidthSizable|NSViewMinYMargin)];
   [bottomSplit addSubview: _sizeField];
 
   _sizeBrowser = [[NSBrowser alloc] initWithFrame: s3];
@@ -413,8 +413,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_sizeBrowser setTitled: NO];
   [_sizeBrowser setTakesTitleFromPreviousColumn: NO];
   [_sizeBrowser setTarget: self];
-  [_sizeBrowser setDoubleAction: @selector(sizeSelected: )];
-  [_sizeBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_sizeBrowser setDoubleAction: @selector(sizeSelected:)];
+  [_sizeBrowser setAutoresizingMask: (NSViewWidthSizable|NSViewHeightSizable)];
   [bottomSplit addSubview: _sizeBrowser];
 
   [splitView addSubview: topSplit];
@@ -438,7 +438,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // cancle button
   revertButton = [[NSButton alloc] initWithFrame: rb];
   [revertButton setStringValue: @"Revert"];
-  [revertButton setAction: @selector(cancel: )];
+  [revertButton setAction: @selector(cancel:)];
   [revertButton setTarget: self];
   [bottomArea addSubview: revertButton];
   RELEASE(revertButton);
@@ -447,7 +447,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   previewButton = [[NSButton alloc] initWithFrame: pb];
   [previewButton setStringValue: @"Preview"];
   [previewButton setButtonType: NSOnOffButton];
-  [previewButton setAction: @selector(_togglePreview: )];
+  [previewButton setAction: @selector(_togglePreview:)];
   [previewButton setTarget: self];
   [bottomArea addSubview: previewButton];
   RELEASE(previewButton);
@@ -455,7 +455,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // button to set the font
   _setButton = [[NSButton alloc] initWithFrame: db];
   [_setButton setStringValue: @"Set"];
-  [_setButton setAction: @selector(ok: )];
+  [_setButton setAction: @selector(ok:)];
   [_setButton setTarget: self];
   [bottomArea addSubview: _setButton];
   // make it the default button
@@ -477,10 +477,41 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 - (void) _togglePreview: (id)sender
 {
-  _preview = [sender state];
+  _preview = (sender == nil) ? YES : [sender state];
   if (_preview)
     {
-
+      NSFont	*font = [self _fontForSelection: _panelFont];
+      float	size = [_sizeField floatValue];
+      NSString	*faceName;
+      NSString	*familyName;
+      
+      if (size == 0 && font != nil)
+	{
+	  size = [font pointSize];
+	}
+      if (_family == -1)
+	{
+	  familyName = @"NoFamily";
+	}
+      else
+	{
+	  familyName = [_familyList objectAtIndex: _family];
+	}
+      if (_face == -1)
+	{
+	  faceName = @"NoFace";
+	}
+      else
+	{
+	  faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
+	}
+      // build up a font and use it in the preview area
+      if (font != nil)
+	{
+	  [_previewArea setFont: font];
+	}
+      [_previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
+	familyName, faceName, (int)size]];
     }    
 }
 
@@ -490,23 +521,22 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSFontManager *fm = [NSFontManager sharedFontManager];
 
   [fm modifyFontViaPanel: self];
-  [self close];  
 }
 
 - (void) cancel: (id)sender
 {
-  // The cancel button has been pushed
-  // we should reset the items in the panel 
-  // and close the window
+  /*
+   * The cancel button has been pushed
+   * we should reset the items in the panel 
+   */
   [self setPanelFont: _panelFont
 	  isMultiple: _multiple];
-  [self close];
 }
 
 - (NSFont*) _fontForSelection: (NSFont*)fontObject
 {
-  float size;
-  NSString *fontName;
+  float		size;
+  NSString	*fontName;
 
   size = [_sizeField floatValue];
   if (size == 0.0)
@@ -520,9 +550,15 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	  size = [fontObject pointSize];
 	}
     }
-  if (_face == -1)
+  if (_face < 0)
     {
-      // FIXME: This uses the first face of the font family
+      unsigned	i = [_faceList count];
+
+      if (i == 0)
+	{
+	  return nil;	/* Nothing available	*/
+	}
+      // FIXME - just uses first face
       fontName = [[_faceList objectAtIndex: 0] objectAtIndex: 0];
     }
   else
@@ -555,7 +591,9 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       _face = -1;
     }
   else if (sender == _faceBrowser)
-    _face = row;
+    {
+      _face = row;
+    }
   else if (sender == _sizeBrowser)
     {
       float size = sizes[row];
@@ -564,28 +602,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   if (_preview)
     {
-      NSFont	*font = [self _fontForSelection: _panelFont];
-      float	size = [_sizeField floatValue];
-      NSString	*faceName;
-      NSString	*familyName;
-      
-      if (size == 0)
-	size = [font pointSize];
-
-      if (_family == -1)
-	familyName = @"";
-      else
-	familyName = [_familyList objectAtIndex: _family];
-
-      if (_face == -1)
-	faceName = @"";
-      else
-	faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
-
-      // build up a font and use it in the preview area
-      [_previewArea setFont: font];
-      [_previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
-	familyName, faceName, (int)size]];
+      [self _togglePreview: nil];
     }
 
   return YES;

@@ -1,3 +1,7 @@
+Wed Mar 08 20:56:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSFontPanel.m: A few bug fixes and tidyups.
+
 Wed Mar 08 17:09:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: ([-setLevel:]) implemented.
