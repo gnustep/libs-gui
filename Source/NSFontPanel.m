@@ -801,7 +801,6 @@ static int score_difference(int weight1, int traits1,
   NSBrowser *familyBrowser = [[self contentView] viewWithTag: NSFPFamilyBrowser];
   int row = [familyBrowser selectedRowInColumn: 0];
   int i;
-  NSFont *new;
 
   ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
 			  [_familyList objectAtIndex: row]]);
