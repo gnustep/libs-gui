@@ -33,6 +33,22 @@
 #ifndef _GNUstep_H_NSText
 #define _GNUstep_H_NSText
 
+/*
+ * The NSText class is now an abstract class.  When you allocate an
+ * instance of NSText, an instance of NSTextView is always allocated
+ * instead.
+ *
+ * But you can still subclass NSText to implement your own text
+ * editing class not derived from NSTextView.  NSText declares general
+ * methods that a text editing object should have; it has ivars to
+ * track the various options (editable, selectable, background color
+ * etc) and implementations for methods setting and getting these
+ * generic options and for quite some helper methods which are simple
+ * wrappers around the real basic editing methods.  The real editing
+ * methods are not implemented in NSText, which is why it is abstract.
+ * To make a working subclass, you need to implement these methods.
+ * */
+
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
 #include <Foundation/NSRange.h>
