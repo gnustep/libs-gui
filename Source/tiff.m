@@ -465,8 +465,7 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
     sample_info[0] = EXTRASAMPLE_ASSOCALPHA;
   else
     sample_info[0] = EXTRASAMPLE_UNASSALPHA;
-  if (info->extraSamples)
-    TIFFSetField(image, TIFFTAG_EXTRASAMPLES, 1, sample_info);
+  TIFFSetField(image, TIFFTAG_EXTRASAMPLES, info->extraSamples, sample_info);
 
   switch (info->photoInterp) 
     {

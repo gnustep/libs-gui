@@ -1,3 +1,7 @@
+2001-09-03  Adam Fedor  <fedor@gnu.org>
+
+	* Source/tiff.m (NSTiffWrite): Set EXTRASAMPLES even if 0.
+
 2001-09-02  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-lockFocusInRect:) Properly mark the save object.
