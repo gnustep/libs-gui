@@ -9,6 +9,8 @@
    Date: March 1997
    A completely rewritten version of the original source by Pascal Forget and
    Scott Christley.
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -1154,13 +1156,12 @@ static MPoint anchor = {0, 0};
 	ASSIGN(lastEvent, theEvent);
 
 	[[self window] captureMouse: self];						// grab the mouse
-	[self lockFocus];
-					// selection consists of two stages, the first stage loops
-					// until the mouse goes up while the second stage completes
-	while (!done) 	// the process by sending actions and displaying the cell
-		{			// as it should appear after the selection process										
-		BOOL shouldProceedEvent = NO;
-
+	[self lockFocus];					// selection involves two steps, first
+										// a loop that continues until the left
+	while (!done) 						// mouse goes up; then a series of 
+		{								// steps which send actions and display
+		BOOL shouldProceedEvent = NO;	// the cell as it should appear after
+										// the selection process is complete
     	insideBounds = [self _getRow:&row 
 							 column:&column
 							 forPoint:lastLocation

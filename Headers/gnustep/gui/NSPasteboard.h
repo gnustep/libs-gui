@@ -48,6 +48,7 @@ extern NSString *NSRulerPboardType;
 extern NSString *NSPostScriptPboardType;
 extern NSString *NSTabularTextPboardType;
 extern NSString *NSRTFPboardType;
+extern NSString *NSRTFDPboardType;
 extern NSString *NSTIFFPboardType;
 extern NSString *NSDataLinkPboardType;
 extern NSString *NSGeneralPboardType;

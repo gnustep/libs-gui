@@ -26,11 +26,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <gnustep/gui/config.h>
 #import <Foundation/Foundation.h>
 #import <Foundation/NSRunLoop.h>
 #import <AppKit/AppKit.h>
 #include <string.h>
 #include <math.h>
+
 
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
@@ -421,7 +423,8 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
   if([self isOpaque])
     {
       [[self backgroundColor] set];
-      [self _fillRect: [self bounds]];
+	  NSRectFill(r);
+//      [self _fillRect: [self bounds]];
     }
 
   /* draw the dimples */

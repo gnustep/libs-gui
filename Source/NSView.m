@@ -7,10 +7,11 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-
    Heavily changed and extended by Ovidiu Predescu <ovidiu@net-community.com>.
    Date: 1997
-   
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -161,6 +162,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   needs_display = YES;
   post_frame_changes = NO;
   autoresize_subviews = YES;
+  autoresizingMask = NSViewNotSizable;
 
   return self;
 }
@@ -710,7 +712,28 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 }
 
 - (void)resizeWithOldSuperviewSize:(NSSize)oldSize
-{}
+{										// preliminary implementation FIX ME
+	if(autoresizingMask == NSViewNotSizable)		// view is not resizable
+		return;
+	if(autoresizingMask & NSViewWidthSizable)		// width resizable?
+		{
+  		frame.size.width = [super_view frame].size.width;
+		}	
+	else									// width is not resizable, so check 
+		{									// if left margin can be stretched
+		if(autoresizingMask & NSViewMinXMargin)
+  			frame.origin.x += [super_view frame].size.width - oldSize.width;
+		}
+	if(autoresizingMask & NSViewHeightSizable)		// height resizable?
+		{
+  		frame.size.height = [super_view frame].size.height;
+		}
+	else									// height is not resizable so check 
+		{									// if right margin can be stretched
+		if(autoresizingMask & NSViewMinYMargin)
+  			frame.origin.y += [super_view frame].size.height - oldSize.height;
+		}
+}
 
 - (void)allocateGState
 {}

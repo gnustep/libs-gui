@@ -9,6 +9,8 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
   
    This file is part of the GNUstep GUI Library.
 
@@ -34,6 +36,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
 #include <Foundation/NSRange.h>
+#include <AppKit/NSAttributedString.h>
 
 @class NSString;
 @class NSData;
@@ -50,39 +53,77 @@ typedef enum _NSTextAlignment {
 } NSTextAlignment;
 
 enum {
-  NSIllegalTextMovement  = 0,
+  NSIllegalTextMovement	= 0,
   NSReturnTextMovement  = 0x10,
-  NSTabTextMovement   = 0x11,
-  NSBacktabTextMovement  = 0x12,
-  NSLeftTextMovement   = 0x13,
+  NSTabTextMovement		= 0x11,
+  NSBacktabTextMovement	= 0x12,
+  NSLeftTextMovement	= 0x13,
   NSRightTextMovement   = 0x14,
-  NSUpTextMovement   = 0x15,
-  NSDownTextMovement   = 0x16
+  NSUpTextMovement		= 0x15,
+  NSDownTextMovement	= 0x16
 };	 	
 
+// these definitions should migrate to NSTextView when implemented
+
+typedef enum _NSSelectionGranularity
+{	NSSelectByCharacter = 0,
+    NSSelectByWord = 1,
+    NSSelectByParagraph = 2,
+} NSSelectionGranularity;
+
+#if GNUSTEP
+typedef enum _NSSelectionAffinity
+{	NSSelectionAffinityUpstream = 0,
+    NSSelectionAffinityDownstream = 1,
+} NSSelectionAffinity;
+#endif
+
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
-{
-  // Attributes
-  id delegate;
-  NSString *text_contents;
-  unsigned int alignment;
-  BOOL is_editable;
-  BOOL is_rich_text;
-  BOOL is_selectable;
-  BOOL imports_graphics;
-  BOOL uses_font_panel;
-  BOOL is_horizontally_resizable;
-  BOOL is_vertically_resizable;
-  BOOL is_ruler_visible;
-  BOOL is_field_editor;
-  BOOL draws_background;
-  NSColor *background_color;
-  NSColor *text_color;
-  NSFont *default_font;
-  NSRange selected_range;
-  // Reserved for back-end use
-  void *be_text_reserved;
+{											
+	id delegate;
+	NSString *text_contents;
+	unsigned int alignment;
+	BOOL is_editable;
+	BOOL is_rich_text;
+	BOOL is_selectable;
+	BOOL imports_graphics;
+	BOOL uses_font_panel;
+	BOOL is_horizontally_resizable;
+	BOOL is_vertically_resizable;
+	BOOL is_ruler_visible;
+	BOOL is_field_editor;
+	BOOL draws_background;
+	NSColor *background_color;
+	NSColor *text_color;
+	NSFont *default_font;
+	NSRange selected_range;
+	
+	void *be_text_reserved;						// Reserved for back-end use
+
+	NSSize	minSize, maxSize;
+
+	NSDictionary *typingAttributes;
+
+	// content
+	NSMutableString *plainContent;
+	NSMutableAttributedString *rtfContent;
+
+	// internal stuff
+								// contains private _GNULineLayoutInfo objects
+	NSMutableArray *lineLayoutInformation;
+	int spellCheckerDocumentTag;
+	NSCharacterSet *selectionWordGranularitySet; 
+	NSCharacterSet *selectionParagraphGranularitySet;
+	NSCharacterSet *inWordSet, *outsideWordSet;		// linewrapping by word
 }
+
+//
+// GNU utility methods
+//
+						// return value is guaranteed to be a 
+						// NSAttributedString even if data is only NSString
++ (NSAttributedString*) attributedStringForData:(NSString*) aData;
++ (NSData*) dataForAttributedString:(NSAttributedString*) aString;
 
 //
 // Getting and Setting Contents 
@@ -97,6 +138,10 @@ enum {
 - (void)setText:(NSString *)string
 	  range:(NSRange)range;
 - (NSString *)text;
+- (NSString *)string;
+- (void)setString:(NSString *)string;					// old fashioned
+
+- (unsigned) textLength;								// GNU extension
 
 //
 // Managing Global Characteristics
@@ -121,11 +166,9 @@ enum {
 - (void)changeFont:(id)sender;
 - (NSFont *)font;
 - (void)setBackgroundColor:(NSColor *)color;
-- (void)setColor:(NSColor *)color
-	 ofRange:(NSRange)range;
+- (void)setColor:(NSColor *)color ofRange:(NSRange)range;
 - (void)setFont:(NSFont *)obj;
-- (void)setFont:(NSFont *)font
-	ofRange:(NSRange)range;
+- (void)setFont:(NSFont *)font ofRange:(NSRange)range;
 - (void)setTextColor:(NSColor *)color;
 - (void)setUsesFontPanel:(BOOL)flag;
 - (NSColor *)textColor;
@@ -191,8 +234,7 @@ enum {
 // Reading and Writing RTFD Files
 //
 - (BOOL)readRTFDFromFile:(NSString *)path;
-- (BOOL)writeRTFDToFile:(NSString *)path
-	     atomically:(BOOL)flag;
+- (BOOL)writeRTFDToFile:(NSString *)path atomically:(BOOL)flag;
 
 //
 // Managing the Field Editor

@@ -7,9 +7,10 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-
    Heavily changed and extended by Ovidiu Predescu <ovidiu@net-community.com>.
    Date: 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -49,21 +50,22 @@
 
 typedef int NSTrackingRectTag;
 
-typedef enum _NSBorderType {
-  NSNoBorder,
-  NSLineBorder,
-  NSBezelBorder,
-  NSGrooveBorder 
+typedef enum _NSBorderType {					// constants representing the
+	NSNoBorder,									// four types of borders that
+	NSLineBorder,								// can appear around an NSView
+	NSBezelBorder,
+	NSGrooveBorder 
 } NSBorderType;
-
-enum {
-  NSViewNotSizable,
-  NSViewMinXMargin,
-  NSViewWidthSizable,
-  NSViewMaxXMargin,
-  NSViewMinYMargin,
-  NSViewHeightSizable,
-  NSViewMaxYMargin 
+								// autoresize constants which NSView uses in
+								// determining the parts of a view which are
+enum {							// resized when the view's superview is resized
+	NSViewNotSizable		= 0,	// view does not resize with its superview 
+	NSViewMinXMargin		= 1,	// left margin between views can stretch
+	NSViewWidthSizable		= 2,	// view's width can stretch
+	NSViewMaxXMargin		= 4,	// right margin between views can stretch
+	NSViewMinYMargin		= 8,	// top margin between views can stretch
+	NSViewHeightSizable		= 16,	// view's height can stretch
+	NSViewMaxYMargin		= 32 	// bottom margin between views can stretch
 };
 
 @interface NSView : NSResponder <NSCoding>

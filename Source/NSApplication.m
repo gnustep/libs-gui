@@ -256,6 +256,8 @@ static id NSApp;
 
 - (int)runModalForWindow:(NSWindow *)theWindow
 {
+  [theWindow display];
+  [theWindow makeKeyAndOrderFront: self];
   return 0;
 }
 

@@ -75,6 +75,7 @@
 
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSAttributedString.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>
@@ -134,6 +135,7 @@
 #include <AppKit/NSSpellProtocol.h>
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
+#include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>

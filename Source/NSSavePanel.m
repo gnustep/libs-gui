@@ -7,7 +7,11 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-  
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+   Source by Daniel Bðhringer integrated into Scott Christley's preliminary
+   implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
+ 
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -29,14 +33,27 @@
 #include <gnustep/gui/config.h>
 #include <string.h>
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
+
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSSavePanel.h>
+#include <AppKit/NSOpenPanel.h>
+#include <AppKit/NSBrowserCell.h>
+
+// toDo:	
+// - interactive directory creation in SavePanel
+// - accessory view support
+// - parse ".hidden" files; array of suffixes of directories treated as single 
+//   files
+
+
 
 //
 // Class variables
 //
-static NSSavePanel *MB_THE_SAVE_PANEL = nil;
+static NSSavePanel *gnustep_gui_save_panel = nil;
 
 @implementation NSSavePanel
 
@@ -46,20 +63,22 @@ static NSSavePanel *MB_THE_SAVE_PANEL = nil;
 + (void)initialize
 {
   if (self == [NSSavePanel class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+      [self setVersion:1];									// Initial version
 }
 
 //
 // Creating an NSSavePanel 
 //
 + (NSSavePanel *)savePanel
-{
-  if (!MB_THE_SAVE_PANEL)
-    MB_THE_SAVE_PANEL = [[NSSavePanel alloc] init];
-  return MB_THE_SAVE_PANEL;
+{	
+	if(!gnustep_gui_save_panel)	
+    	{
+//      PanelLoader *pl = [PanelLoader panelLoader];
+//      gnustep_gui_save_panel = (NSSavePanel *)[pl loadPanel: @"NSSavePanel"];
+		gnustep_gui_save_panel = [[NSSavePanel alloc] init];
+		}
+
+	return gnustep_gui_save_panel;
 }
 
 //
@@ -70,21 +89,21 @@ static NSSavePanel *MB_THE_SAVE_PANEL = nil;
 //
 - (void)setDefaults
 {
-  directory = @"\\";
-  file_name = @"";
-  accessory_view = nil;
-  panel_title = @"Save File";
-  panel_prompt = @"";
-  required_type = nil;
-  file_package = YES;
+	directory = @"\\";
+	file_name = @"";
+	_accessoryView = nil;
+	panel_title = @"Save File";
+	panel_prompt = @"";
+	required_type = nil;
+	treatsFilePackagesAsDirectories = YES;
 }
 
 - init
 {
-  [super init];
-
-  [self setDefaults];
-  return self;
+	[super init];
+	
+	[self setDefaults];
+	return self;
 }
 
 //
@@ -92,143 +111,188 @@ static NSSavePanel *MB_THE_SAVE_PANEL = nil;
 //
 - (void)setAccessoryView:(NSView *)aView
 {
-  accessory_view = aView;
+	_accessoryView = aView;
 }
 
 - (NSView *)accessoryView
 {
-  return accessory_view;
+	return _accessoryView;
+}
+
+-(void) validateVisibleColumns
+{
 }
 
 - (void)setTitle:(NSString *)title
-{
-  panel_title = title;
+{	
+	[titleField setStringValue:title];
 }
 
 - (NSString *)title
-{
-  return panel_title;
+{	
+	return [titleField stringValue];
 }
 
 - (void)setPrompt:(NSString *)prompt
-{
-  panel_prompt = prompt;
+{	// does currently not work since i went with NSTextField instead of NSForm
+	[[form cell] setTitle:prompt];
 }
 
 - (NSString *)prompt
-{
-  return panel_prompt;
+{	
+	return [[form cell] title];
 }
 
 //
 // Setting Directory and File Type 
 //
 - (NSString *)requiredFileType
-{
-  return required_type;
+{	
+	if(!requiredTypes || ![requiredTypes count])
+		return nil;
+	
+	return [requiredTypes objectAtIndex:0];
 }
 
 - (void)setDirectory:(NSString *)path
-{
-  directory = path;
+{	
+NSString *standardizedPath=[path stringByStandardizingPath];
+	
+	if(standardizedPath)
+		{	
+		[browser setPath:standardizedPath];
+		if(lastValidPath)
+			[lastValidPath autorelease];
+		lastValidPath=[path retain];
+		}
 }
-
 - (void)setRequiredFileType:(NSString *)type
-{
-  required_type = type;
+{	
+	if(requiredTypes) 
+		[requiredTypes autorelease];
+	requiredTypes=[[NSArray arrayWithObject:type] retain];
 }
 
 - (void)setTreatsFilePackagesAsDirectories:(BOOL)flag
-{
-  file_package = flag;
+{	
+	treatsFilePackagesAsDirectories=flag;
 }
 
 - (BOOL)treatsFilePackagesAsDirectories
-{
-  return file_package;
+{	
+	return treatsFilePackagesAsDirectories;
 }
 
 //
 // Running the NSSavePanel 
 //
-- (int)runModalForDirectory:(NSString *)path
-		       file:(NSString *)filename
-{
-  if (path)
-    directory = path;
-		
-  if (filename)
-    file_name = filename;
+- (int)runModalForDirectory:(NSString *)path file:(NSString *)name
+{	
+int	ret;
 
-  return [self runModal];
+	[browser loadColumnZero];
+	[self setDirectory:path];
+	[browser setPath:[NSString stringWithFormat:@"%@/%@",
+						[self directory], name]];
+	[form setStringValue:name];
+	[self selectText:self];							// or should it be browser?
+	if([self class] == [NSOpenPanel class]) 
+		[okButton setEnabled:
+					([browser selectedCell] && [self canChooseDirectories]) ||  
+					[[browser selectedCell] isLeaf]];
+	[self makeKeyAndOrderFront:self];
+	ret = [[NSApplication sharedApplication] runModalForWindow:self];
+													// replace warning
+	if([self class] == [NSSavePanel class] && 
+			[[browser selectedCell] isLeaf] && ret == NSOKButton)
+		{	
+		if(NSRunAlertPanel(@"Save",@"The file %@ in %@ exists. Replace it?", 
+							@"Replace",@"Cancel",nil,[form stringValue], 
+							[self directory]) == NSAlertAlternateReturn)
+			return NSCancelButton;
+		}
+
+	return ret;
 }
 
 - (int)runModal
-{
-  return 0;
+{	
+	return [self runModalForDirectory:[self directory] file:@""];
 }
 
 //
 // Reading Save Information 
 //
 - (NSString *)directory
-{
-  return directory;
+{	
+NSString *path;
+	
+	if([[browser selectedCell] isLeaf])		// remove file component of path
+		path=[[browser path] stringByDeletingLastPathComponent];	
+	else
+		path=[browser path];
+
+	if(![path length]) 
+		return lastValidPath;
+	else 
+		return path;
 }
 
 - (NSString *)filename
-{
-  return file_name;
+{	
+NSString *ret = [NSString stringWithFormat:@"%@/%@",[self directory],
+													[form stringValue]];
+									// if path does not exist ask the user to 
+									// create each missing directory
+	if([[self requiredFileType] length] && ![ret hasSuffix:[NSString 
+				stringWithFormat:@".%@",[self requiredFileType]]])
+		ret = [NSString stringWithFormat:@"%@.%@",ret,[self requiredFileType]];
+
+	return [ret stringByExpandingTildeInPath];
 }
 
 //
 // Target and Action Methods 
 //
 - (void)ok:(id)sender
-{
-  char *sp, files[4096];
+{						// iterate through selection if a multiple selection
+	if(![self panel:self isValidFilename:[self filename]]) 
+		return;
 
-  strcpy(files, [file_name cString]);
-  sp = strrchr(files, '\\');
-  if (sp != NULL)
-    {
-      sp++;
-      *sp = '\0';
-      directory = [NSString stringWithCString:files];
-    }
+	[[NSApplication sharedApplication] stopModalWithCode:NSOKButton];
+	[self orderOut:self];
 }
 
 - (void)cancel:(id)sender
-{
+{	
+	[[NSApplication sharedApplication] stopModalWithCode:NSCancelButton];
+	[self orderOut:self];
 }
 
 //
 // Responding to User Input 
 //
 - (void)selectText:(id)sender
-{}
-
-//
-// Setting the Delegate 
-//
-- (void)setDelegate:(id)anObject
-{
-  delegate = anObject;
+{	
+	[form selectText:sender];
 }
 
 //
 // Methods Implemented by the Delegate 
 //
 - (NSComparisonResult)panel:(id)sender
-	    compareFilename:(NSString *)filename1
-with:(NSString *)filename2
-	    caseSensitive:(BOOL)caseSensitive
+	    	compareFilename:(NSString *)filename1
+			with:(NSString *)filename2
+	    	caseSensitive:(BOOL)caseSensitive
 {
-  if ([delegate respondsToSelector:
-		  @selector(panel:compareFilename:with:caseSensitive:)])
-    return [delegate panel:sender compareFilename:filename1
-		     with:filename2 caseSensitive:caseSensitive];
-  return NSOrderedSame;
+	if ([delegate respondsToSelector:
+		  		@selector(panel:compareFilename:with:caseSensitive:)])
+    	return [delegate panel:sender 
+						compareFilename:filename1
+		     			with:filename2 
+						caseSensitive:caseSensitive];
+
+	return NSOrderedSame;
 }
 
 - (BOOL)panel:(id)sender
@@ -239,12 +303,13 @@ shouldShowFilename:(NSString *)filename
   return NO;
 }
 
-- (BOOL)panel:(id)sender
-isValidFilename:(NSString*)filename
-{
-  if ([delegate respondsToSelector:@selector(panel:isValidFilename:)])
-    return [delegate panel:sender isValidFilename:filename];
-  return NO;
+- (BOOL)panel:(id)sender isValidFilename:(NSString*)filename
+{	
+	if([self delegate] && [[self delegate] 
+						 respondsToSelector:@selector(panel:isValidFilename:)])
+		return [[self delegate] panel:sender isValidFilename:filename];
+
+	return YES;
 }
 
 //
@@ -252,7 +317,7 @@ isValidFilename:(NSString*)filename
 //
 - (void)encodeWithCoder:aCoder
 {
-  [aCoder encodeObject: accessory_view];
+  [aCoder encodeObject: _accessoryView];
   [aCoder encodeObject: panel_title];
   [aCoder encodeObject: panel_prompt];
   [aCoder encodeObject: directory];
@@ -268,7 +333,7 @@ isValidFilename:(NSString*)filename
 
 - initWithCoder:aDecoder
 {
-  accessory_view = [aDecoder decodeObject];
+  _accessoryView = [aDecoder decodeObject];
   panel_title = [aDecoder decodeObject];
   panel_prompt = [aDecoder decodeObject];
   directory = [aDecoder decodeObject];

@@ -60,26 +60,32 @@
 //
 - (BOOL)becomesKeyOnlyIfNeeded
 {
-  return NO;
+  return _becomesKeyOnlyIfNeeded;
 }
 
 - (BOOL)isFloatingPanel
 {
-  return NO;
+  return _isFloatingPanel;
 }
 
 - (void)setBecomesKeyOnlyIfNeeded:(BOOL)flag
-{}
+{
+  _becomesKeyOnlyIfNeeded = flag;
+}
 
 - (void)setFloatingPanel:(BOOL)flag
-{}
+{
+  _isFloatingPanel = flag;
+}
 
 - (void)setWorksWhenModal:(BOOL)flag
-{}
+{
+  _worksWhenModal = flag;
+}
 
 - (BOOL)worksWhenModal
 {
-  return NO;
+  return _worksWhenModal;
 }
 
 //

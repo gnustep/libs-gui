@@ -48,6 +48,16 @@ enum {
 @interface NSPanel : NSWindow <NSCoding>
 {
   // Attributes
+  BOOL _becomesKeyOnlyIfNeeded;
+  BOOL _isFloatingPanel;
+  BOOL _worksWhenModal;
+  id file_name;
+  id directory;
+  id panel_title;
+  id accessory_view;
+  id required_type;
+  id panel_prompt;
+  id file_package;
 }
 
 //

@@ -7,6 +7,10 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+   Source by Daniel Bðhringer integrated into Scott Christley's preliminary
+   implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
    
    This file is part of the GNUstep GUI Library.
 
@@ -42,6 +46,10 @@
   BOOL multiple_select;
   BOOL choose_dir;
   BOOL choose_file;
+									// integrated from Daniel's source FAR
+	BOOL canChooseDirectories;
+  	BOOL canChooseFiles;
+  	BOOL allowsMultipleSelection;
 }
 
 //
@@ -62,6 +70,9 @@
 //
 // Querying the Chosen Files 
 //
+				// Returns an array containing the absolute paths (as NSString 
+				// objects) of the selected files and directories.  If multiple 
+				// selections aren't allowed, the array contains a single name.
 - (NSArray *)filenames;
 
 //
@@ -69,8 +80,8 @@
 //
 - (int)runModalForTypes:(NSArray *)fileTypes;
 - (int)runModalForDirectory:(NSString *)path
-		       file:(NSString *)filename
-		      types:(NSArray *)fileTypes;
+                       file:(NSString *)name
+                       types:(NSArray *)fileTypes;
 
 //
 // NSCoding protocol

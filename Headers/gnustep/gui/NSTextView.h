@@ -3,8 +3,10 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author: Ovidiu Predescu <ovidiu@net-community.com>
-   Date: January 1998
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+   Source by Daniel Bðhringer integrated into GNUstep
+   by Felipe A. Rodriguez <far@ix.netcom.com> 
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,6 +31,17 @@
 #include <AppKit/NSText.h>
 
 @interface NSTextView : NSText
+{
+}
+
+- (void)insertText:(NSString *)insertString;
+
+- (NSArray *)acceptableDragTypes;
+- (void)updateDragTypeRegistration;
+
+- (NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange 
+			granularity:(NSSelectionGranularity)granularity;
+
 @end
 
 #endif /* _GNUstep_H_NSTextView */

@@ -173,6 +173,7 @@ NSString *NSRulerPboardType = @"NSRulerPboardType";
 NSString *NSPostScriptPboardType = @"NSPostScriptPboardType";
 NSString *NSTabularTextPboardType = @"NSTabularTextPboardType";
 NSString *NSRTFPboardType = @"NSRTFPboardType";
+NSString *NSRTFDPboardType = @"NSRTFDPboardType";
 NSString *NSTIFFPboardType = @"NSTIFFPboardType";
 NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
 NSString *NSGeneralPboardType = @"NSGeneralPboardType";

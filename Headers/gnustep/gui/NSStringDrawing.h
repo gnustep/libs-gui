@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSStringDrawing
 
 #include <Foundation/NSString.h>
+#include <AppKit/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
 #include <gnustep/base/preface.h>
 
@@ -65,12 +66,10 @@ enum
 
 @end
 
-#ifdef OS_4_2
 @interface NSAttributedString(NSStringDrawing)
 
 - (NSSize)size;
 
 @end
-#endif /* OS_4_2 */
 
 #endif /* _GNUstep_H_NSStringDrawing */
