@@ -1364,7 +1364,8 @@ static NSImage *unexpandable  = nil;
   int levelBefore;
   int levelAfter;
   int level;
-
+  NSDragOperation dragOperation = [sender draggingSourceOperationMask];
+ 
   p = [self convertPoint: p fromView: nil];
   verticalQuarterPosition = 
     (p.y - _bounds.origin.y) / _rowHeight * 4.;
@@ -1465,14 +1466,10 @@ static NSImage *unexpandable  = nil;
       if ([_dataSource respondsToSelector: 
 			 @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
 	{
-	  //NSLog(@"currentDropLevel %d, currentDropRow %d",
-	  //currentDropLevel, currentDropRow);
-	  [_dataSource outlineView: self
-		       validateDrop: sender
-		       proposedItem: item
-		       proposedChildIndex: childIndex];
-	  //NSLog(@"currentDropLevel %d, currentDropRow %d", 
-	  //currentDropLevel, currentDropRow);
+	   dragOperation = [_dataSource outlineView: self
+					validateDrop: sender
+					proposedItem: item
+					proposedChildIndex: childIndex];
 	}
       
       if ((currentDropRow != oldDropRow) || (currentDropLevel != oldDropLevel))
@@ -1561,7 +1558,7 @@ static NSImage *unexpandable  = nil;
     }
 
 
-  return NSDragOperationCopy;
+  return dragOperation;
 }
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
