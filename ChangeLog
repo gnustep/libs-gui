@@ -1,3 +1,11 @@
+2003-02-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPrintOperation.m (-_print): Remove locale change (now
+	handled correctly in backend stream context.
+
+	* Source/NSScrollView.m (-initWithFrame:): Change default border
+	to none.
+
 2003-02-19 15:06  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,

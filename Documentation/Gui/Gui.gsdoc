@@ -60,6 +60,7 @@
         <item><uref url="NSCustomImageRep.html">NSCustomImageRep</uref></item>
         <item><uref url="NSDocument.html">NSDocument</uref></item>
         <item><uref url="NSDocumentController.html">NSDocumentController</uref></item>
+        <item><uref url="NSDrawer.html">NSDrawer</uref></item>
         <item><uref url="NSEPSImageRep.html">NSEPSImageRep</uref></item>
         <item><uref url="NSEvent.html">NSEvent</uref></item>
         <item><uref url="NSFileWrapper.html">NSFileWrapper</uref></item>
@@ -85,6 +86,7 @@
         <item><uref url="NSMutableAttributedStringAdditions.html">NSMutableAttributedStringAdditions</uref></item>
         <item><uref url="NSMutableParagraphStyle.html">NSMutableParagraphStyle</uref></item>
         <item><uref url="NSOpenPanel.html">NSOpenPanel</uref></item>
+        <item><uref url="NSOutlineView.html">NSOutlineView</uref></item>
         <item><uref url="NSPICTImageRep.html">NSPICTImageRep</uref></item>
         <item><uref url="NSPageLayout.html">NSPageLayout</uref></item>
         <item><uref url="NSPanel.html">NSPanel</uref></item>
@@ -111,6 +113,9 @@
         <item><uref url="NSSpellChecker.html">NSSpellChecker</uref></item>
         <item><uref url="NSSpellServer.html">NSSpellServer</uref></item>
         <item><uref url="NSSplitView.html">NSSplitView</uref></item>
+        <item><uref url="NSSound.html">NSSound</uref></item>
+        <item><uref url="NSStepper.html">NSStepper</uref></item>
+        <item><uref url="NSStepperCell.html">NSStepperCell</uref></item>
         <item><uref url="NSStringAdditions.html">NSStringAdditions</uref></item>
         <item><uref url="NSTabView.html">NSTabView</uref></item>
         <item><uref url="NSTabViewItem.html">NSTabViewItem</uref></item>
@@ -127,6 +132,8 @@
         <item><uref url="NSTextStorage.html">NSTextStorage</uref></item>
         <item><uref url="NSTextTab.html">NSTextTab</uref></item>
         <item><uref url="NSTextView.html">NSTextView</uref></item>
+        <item><uref url="NSToolbar.html">NSToolbar</uref></item>
+        <item><uref url="NSToolbarItem.html">NSToolbarItem</uref></item>
         <item><uref url="NSView.html">NSView</uref></item>
         <item><uref url="NSWindow.html">NSWindow</uref></item>
         <item><uref url="NSWindowController.html">NSWindowController</uref></item>

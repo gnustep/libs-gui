@@ -53,9 +53,6 @@
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/PSOperators.h>
 
-#include <gnustep/base/GSLocale.h>
-#include <locale.h>
-
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 #define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]
 
@@ -880,7 +877,6 @@ scaleRect(NSRect rect, double scale)
   int i, dir;
   BOOL knowsPageRange, allPages;
   NSRange viewPageRange;
-  NSString *clocale;
   NSMutableDictionary *dict;
   page_info_t info;
   
@@ -940,12 +936,6 @@ scaleRect(NSRect rect, double scale)
 			           last: _currentPage-1 
 		                   info: &info];
     }
-
-  /* Reset the current locale to a generic C locale so numbers
-     get printed correctly for PostScriptl
-     Save the current locale for later. */
-  clocale = GSSetLocale(LC_NUMERIC, nil);
-  GSSetLocale(LC_NUMERIC, @"C");
 
   /* Print the header information */
   [_view beginDocument];
@@ -1013,7 +1003,6 @@ scaleRect(NSRect rect, double scale)
       [_view _endSheet];
     }
   [_view endDocument];
-  GSSetLocale(LC_NUMERIC, clocale);
 
   /* Setup/reset for next time */
   [dict setObject: NSNUMBER(info.last) forKey: NSPrintLastPage];
@@ -1286,13 +1275,6 @@ scaleRect(NSRect rect, double scale)
 
 - (void) _print
 {
-  NSString *clocale;
-  /* Reset the current locale to a generic C locale so numbers
-     get printed correctly for PostScript (maybe we should only
-     set the numeric locale?). Save the current locale for later. */
-  clocale = GSSetLocale(LC_NUMERIC, nil);
-  GSSetLocale(LC_NUMERIC, @"C");
-  
   /* Save this for the view to look at. Seems like there should
      be a better way to pass it to beginDocument */
   [[_printInfo dictionary] setObject: [NSValue valueWithRect: _rect]
@@ -1301,8 +1283,6 @@ scaleRect(NSRect rect, double scale)
   [_view beginPageInRect: _rect atPlacement: NSMakePoint(0,0)];
   [_view displayRectIgnoringOpacity: _rect];
   [_view endDocument];
-
-  GSSetLocale(LC_NUMERIC, clocale);
 }
 
 - (BOOL)isEPSOperation
@@ -1382,16 +1362,7 @@ scaleRect(NSRect rect, double scale)
 
 - (void) _print
 {
-  NSString *clocale;
-  /* Reset the current locale to a generic C locale so numbers
-     get printed correctly for PostScript (maybe we should only
-     set the numeric locale?). Save the current locale for later. */
-  clocale = GSSetLocale(LC_NUMERIC, nil);
-  GSSetLocale(LC_NUMERIC, @"C");
-
   [_view displayRectIgnoringOpacity: _rect];
-
-  GSSetLocale(LC_NUMERIC, clocale);
 }
 
 - (BOOL)deliverResult

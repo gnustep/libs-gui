@@ -141,7 +141,7 @@ static float scrollerWidth;
   _hPageScroll = 10;
   _vLineScroll = 10;
   _vPageScroll = 10;
-  _borderType = NSBezelBorder;
+  _borderType = NSNoBorder;
   _scrollsDynamically = YES;
   [self tile];
 
