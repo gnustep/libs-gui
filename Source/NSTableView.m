@@ -6715,7 +6715,49 @@ byExtendingSelection: (BOOL)flag
 {
   if (_autoresizesAllColumnsToFit == YES)
     {
-      [self sizeToFit];
+      float visible_width = [self convertRect: [_super_view bounds] 
+				  fromView: _super_view].size.width;
+      float table_width = 0;
+
+      if(_numberOfColumns > 0)
+        {
+          table_width = 
+            _columnOrigins[_numberOfColumns - 1] +
+            [[_tableColumns objectAtIndex: _numberOfColumns - 1] width];
+        }
+      
+      /*
+	NSLog(@"columnOrigins[0] %f", _columnOrigins[0]);
+	NSLog(@"superview.bounds %@", 
+	      NSStringFromRect([_super_view bounds]));
+	NSLog(@"superview.frame %@", 
+	      NSStringFromRect([_super_view frame]));
+	NSLog(@"table_width %f", table_width);
+	NSLog(@"width %f", visible_width);
+	NSLog(@"_superview_width %f", _superview_width);
+      */
+
+      if ( table_width - _superview_width <= 0.001
+	   && table_width - _superview_width >= -0.001 )
+	{
+	  // the last column had been sized to fit
+	  [self sizeToFit];
+	}
+      else if ( table_width <= _superview_width
+		&& table_width >= visible_width )
+	{
+	  // the tableView was too small and is now too large
+	  [self sizeToFit];
+	}
+      else if (table_width >= _superview_width
+	       && table_width <= visible_width )
+	{
+	  // the tableView was too large and is now too small
+	  if (_numberOfColumns > 0)
+	    [self scrollColumnToVisible: 0];
+	  [self sizeToFit];
+	}
+      _superview_width = visible_width;
     }
   else
     {
