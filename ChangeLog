@@ -1,3 +1,8 @@
+2003-04-02 15:26  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m: Tweak glyph caching parameters
+	to increase performance.
+
 2003-04-01  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* Source/NSMenuView.m (NSMenuWindowTitleView): reformatted one line to 

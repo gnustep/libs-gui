@@ -83,6 +83,10 @@ static GSHorizontalTypesetter *shared;
 }
 
 
+#define CACHE_INITIAL 192
+#define CACHE_STEP 192
+
+
 typedef struct GSHorizontalTypesetter_glyph_cache_s
 {
   /* These fields are filled in by the caching: */
@@ -470,7 +474,7 @@ Return values 0, 1, 2 are mostly the same as from
 
   [self _cacheMoveTo: curGlyph];
   if (!cache_length)
-    [self _cacheGlyphs: 16];
+    [self _cacheGlyphs: CACHE_INITIAL];
   if (!cache_length && at_end)
     {
       /*
@@ -663,7 +667,7 @@ restart:
 	        newParagraph = NO;
 	        break;
 	      }
-	    [self _cacheGlyphs: cache_length + 16];
+	    [self _cacheGlyphs: cache_length + CACHE_STEP];
 	    if (i >= cache_length)
 	      {
 	        newParagraph = NO;
