@@ -1,3 +1,9 @@
+Wed Mar 31 17:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView: ([-viewWithTag:]) complete rewrite to find nearest
+	matching view at any depth as it should.
+	([-replaceSubview:with:]) minor rewrite and tidy up.
+
 Tue Mar 30 14:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: Position image correctly in flipped views.

@@ -312,7 +312,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
 {
-  if (!newView)
+  if (newView == oldView)
     return;
 
   /*
@@ -320,8 +320,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
    * since classes like NSBox override these methods but expect to be able to
    * call [super replaceSubview: with: ] safely.
    */
-  if (!oldView)
+  if (oldView == nil)
     {
+      /*
+       * Strictly speaking, the docs say that if 'oldView' is not a subview
+       * of the receiver then we do nothing - but here we add newView anyway.
+       * So a replacement with no oldView is an addition.
+       */
       [newView retain];
       [newView removeFromSuperview];
       [newView viewWillMoveToWindow: window];
@@ -332,22 +337,39 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       [newView setNeedsDisplay: YES];
       [newView release];
     }
-  else if (oldView != newView
-    && [sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
+  else if ([sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
     {
-      unsigned index;
+      if (newView == nil)
+	{
+	  /*
+	   * If there is no new view to add - we just remove the old one.
+	   * So a replacement with no newView is a removal.
+	   */
+	  [oldView removeFromSuperview];
+	}
+      else
+	{
+	  unsigned index;
 
-      [newView retain];
-      [newView removeFromSuperview];
-      index = [sub_views indexOfObjectIdenticalTo: oldView];
-      [oldView removeFromSuperview];
-      [newView viewWillMoveToWindow: window];
-      [newView viewWillMoveToSuperview: self];
-      [newView setNextResponder: self];
-      [sub_views addObject: newView];
-      [newView resetCursorRects];
-      [newView setNeedsDisplay: YES];
-      [newView release];
+	  /*
+	   * Ok - the standard case - we remove the newView from wherever it
+	   * was (which may have been in this view), locate the position of
+           * the oldView (which may have changed due to the removal of the
+	   * newView), remove the oldView, and insert the newView in it's
+	   * place.
+	   */
+	  [newView retain];
+	  [newView removeFromSuperview];
+	  index = [sub_views indexOfObjectIdenticalTo: oldView];
+	  [oldView removeFromSuperview];
+	  [newView viewWillMoveToWindow: window];
+	  [newView viewWillMoveToSuperview: self];
+	  [newView setNextResponder: self];
+	  [sub_views addObject: newView];
+	  [newView resetCursorRects];
+	  [newView setNeedsDisplay: YES];
+	  [newView release];
+	}
     }
 }
 
@@ -1417,27 +1439,96 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (void) resetCursorRects
 {}
 
-- (id) viewWithTag: (int)aTag
+static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
-  unsigned i, count;
+  unsigned	i, count;
+  NSArray	*sub = [view subviews];
 
-  count = [sub_views count];
+  count = [sub count];
   if (count > 0)
     {
-      NSView*	array[count];
+      NSView	*array[count];
 
-      [sub_views getObjects: array];
+      [sub getObjects: array];
 
-      for (i = 0; i < count; ++i)
+      for (i = 0; i < count; i++)
 	{
-	  NSView *view = array[i];
+	  if ([array[i] tag] == aTag)
+	    return array[i];
+	}
+      *level++;
+      for (i = 0; i < count; i++)
+	{
+	  NSView	*v;
 
-	  if ([view tag] == aTag)
-	    return view;
+	  v = findByTag(array[i], aTag, level);
+	  if (v != nil)
+	    return v;
+	}
+      *level--;
+    }
+  return nil;
+}
+
+- (id) viewWithTag: (int)aTag
+{
+  NSView	*view = nil;
+
+  /*
+   * If we have the specified tag - return self.
+   */
+  if ([self tag] == aTag)
+    {
+      view = self;
+    }
+  else
+    {
+      unsigned	count = [sub_views count];
+
+      if (count > 0)
+	{
+	  NSView	*array[count];
+	  unsigned	i;
+
+	  [sub_views getObjects: array];
+
+	  /*
+	   * Quick check to see if any of our direct descendents has the tag.
+	   */
+	  for (i = 0; i < count; i++)
+	    {
+	      view = array[i];
+
+	      if ([view tag] == aTag)
+		break;
+	    }
+
+	  if (view == nil)
+	    {
+	      unsigned	level = 0xffffffff;
+
+	      /*
+	       * Ok - do it the long way - search the while tree for each of
+	       * our descendents and see which has the closest view matching
+	       * the tag.
+	       */
+	      for (i = 0; i < count; i++)
+		{
+		  unsigned	l = 0;
+		  NSView	*v;
+
+		  v = findByTag(array[i], aTag, &l);
+	    
+		  if (v != nil && l < level)
+		    {
+		      view = v;
+		      level = l;
+		    }
+		}
+	    }
 	}
     }
-
-  return nil;
+  return view;
 }
 
 //
