@@ -105,21 +105,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   return [NSApplication sharedApplication];
 }
 
-- (Class)classForModelArchiver
-{
-//  return [NSApplication class];
-  return isa;
-}
-
 @end /* NSApplication (GMArchiverMethods) */
 
 
 @implementation NSBox (GMArchiverMethods)
-+ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
-{
-  NSLog (@"creating NSBox");
-  return [self alloc];
-}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
@@ -143,12 +132,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
 
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSBox class];
-  return isa;
 }
 
 @end /* NSBox (GMArchiverMethods) */
@@ -206,12 +189,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   return self;
 }
 
-- (Class)classForModelArchiver
-{
-//  return [NSButton class];
-  return isa;
-}
-
 @end /* NSButton (GMArchiverMethods) */
 
 
@@ -230,12 +207,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   [self setFont:font];
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSCell class];
-  return isa;
 }
 
 @end /* NSCell (GMArchiverMethods) */
@@ -389,12 +360,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   return self;
 }
 
-- (Class)classForModelArchiver
-{
-//  return [NSControl class];
-  return isa;
-}
-
 @end /* NSControl (GMArchiverMethods) */
 
 
@@ -408,12 +373,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   return [super initWithModelUnarchiver:unarchiver];
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSCStringText class];
-  return isa;
 }
 
 @end /* NSCStringText (GMArchiverMethods) */
@@ -436,12 +395,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSFont class];
-  return isa;
 }
 
 @end /* NSFont (GMArchiverMethods) */
@@ -468,12 +421,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   [self setSize:[unarchiver decodeSizeWithName:@"size"]];
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSImage class];
-  return isa;
 }
 
 @end /* NSImage (GMArchiverMethods) */
@@ -514,12 +461,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 #endif
 
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSMenuItem class];
-  return isa;
 }
 
 @end /* NSMenuItem (GMArchiverMethods) */
@@ -572,12 +513,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   return self;
 }
 
-- (Class)classForModelArchiver
-{
-//  return [NSMenu class];
-  return isa;
-}
-
 @end /* NSMenu (GMArchiverMethods) */
 
 
@@ -585,19 +520,37 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-//  [super encodeWithModelArchiver:archiver];
+  [super encodeWithModelArchiver:archiver];
+  [archiver encodeBOOL:[self pullsDown] withName:@"pullsDown"];
+  [archiver encodeArray:[self itemArray] withName:@"itemArray"];
+  [archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-//  return [super initWithModelUnarchiver:unarchiver];
-  return self;
-}
+  int i, count;
+  NSMutableArray* decodedItems
+      = [unarchiver decodeObjectWithName:@"itemArray"];
 
-- (Class)classForModelArchiver
-{
-//  return [NSPopUpButton class];
-  return isa;
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  for (i = 0, count = [decodedItems count]; i < count; i++) {
+    id item = [decodedItems objectAtIndex:i];
+    id myItem;
+
+    [self addItemWithTitle:[item title]];
+    myItem = [self itemAtIndex:i];
+    [myItem setTarget:[item target]];
+    [myItem setAction:[item action]];
+    [myItem setEnabled:[item isEnabled]];
+    [myItem setTag:[item tag]];
+    [myItem setKeyEquivalent:[item keyEquivalent]];
+  }
+
+  [self selectItemWithTitle:[unarchiver decodeStringWithName:@"selectedItem"]];
+  [self synchronizeTitleAndSelectedItem];
+
+  return self;
 }
 
 @end /* NSPopUpButton (GMArchiverMethods) */
@@ -617,12 +570,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   [self setNextResponder:[unarchiver decodeObjectWithName:@"nextResponder"]];
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSResponder class];
-  return isa;
 }
 
 @end /* NSResponder (GMArchiverMethods) */
@@ -683,12 +630,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   return self;
 }
 
-- (Class)classForModelArchiver
-{
-//  return [NSTextField class];
-  return isa;
-}
-
 @end /* NSTextField (GMArchiverMethods) */
 
 
@@ -718,7 +659,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   NSView* view = [[[self allocWithZone:[unarchiver objectZone]]
 				initWithFrame:rect]
 				autorelease];
-  NSLog (@"created view %@", view);
   return view;
 }
 
@@ -748,12 +688,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 	[unarchiver decodeUnsignedIntWithName:@"autoresizingMask"]];
 
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSView class];
-  return isa;
 }
 
 @end /* NSView (GMArchiverMethods) */
@@ -830,12 +764,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 #endif
 
   return self;
-}
-
-- (Class)classForModelArchiver
-{
-//  return [NSWindow class];
-  return isa;
 }
 
 @end /* NSWindow (GMArchiverMethods) */
