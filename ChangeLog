@@ -1,3 +1,7 @@
+Wed Feb 27 18:54:43 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSTextStorage.h: Documented.
+
 2002-02-27  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSSplitView.m ([NSSplitView -mouseDown:]): 
