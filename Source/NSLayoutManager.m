@@ -2139,5 +2139,37 @@ no_soft_invalidation:
 }
 
 
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  self = [self init];
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+      int i;
+      id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
+      int flags;
+      NSArray *array = [aDecoder decodeObjectForKey: @"NSTextContainers"];
+      NSTextStorage *storage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+      
+      if ([aDecoder containsValueForKey: @"NSLMFlags"])
+        {
+	  flags = [aDecoder decodeIntForKey: @"NSLMFlags"];
+	  // FIXME
+	}
+      [self setDelegate: delegate];
+      [storage addLayoutManager: self];
+      for (i = 0; i < [array count]; i++)
+        { 
+	  [self addTextContainer: [array objectAtIndex: i]];
+	}
+
+      return self;
+    }
+  else
+    {
+      return self;
+    }
+}
+
 @end
 

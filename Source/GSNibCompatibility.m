@@ -95,12 +95,49 @@
   return self;
 }
 
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  return [super initWithCoder: aCoder];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      NSRect screenRect = [aDecoder decodeRectForKey: @"NSScreenRect"];
+      NSRect windowRect = [aDecoder decodeRectForKey: @"NSWindowRect"];
+      NSString *viewClass = [aDecoder decodeObjectForKey: @"NSViewClass"];
+      NSString *windowClass = [aDecoder decodeObjectForKey: @"NSWindowClass"];
+      NSString *title = [aDecoder decodeObjectForKey: @"NSWindowTitle"];
+      NSView *view = [aDecoder decodeObjectForKey: @"NSWindowView"];
+      int flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
+      int style = [aDecoder decodeIntForKey: @"NSWindowStyleMask"];
+      int backing = [aDecoder decodeIntForKey: @"NSWindowBacking"];
+      
+      ASSIGN(_className, windowClass);
+      self = [self initWithContentRect: windowRect
+			     styleMask: style
+			       backing: backing
+				 defer: NO
+				screen: nil];
+      [self setContentView: view];
+
+      if ([aDecoder containsValueForKey: @"NSMinSize"])
+        {
+	  NSSize minSize = [aDecoder decodeSizeForKey: @"NSMinSize"];
+	  [self setMinSize: minSize];
+	}
+      if ([aDecoder containsValueForKey: @"NSMaxSize"])
+        {
+	  NSSize maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
+	  [self setMaxSize: maxSize];
+	}
+      [self setTitle: title];
+
+      return self;
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
+      return [super initWithCoder: aDecoder];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder

@@ -3623,7 +3623,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   if ([aDecoder allowsKeyedCoding])
     {
       NSRect frame = NSZeroRect;
-      id next = [aDecoder decodeObjectForKey: @"NSNextResponder"];
+      //id next = [aDecoder decodeObjectForKey: @"NSNextResponder"];
       //NSView *superView = [aDecoder decodeObjectForKey: @"NSSuperview"];
       NSView *nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       NSArray *subViews = [aDecoder decodeObjectForKey: @"NSSubviews"];
@@ -3633,10 +3633,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  frame = [aDecoder decodeRectForKey: @"NSFrame"];
 	}
       self = [self initWithFrame: frame];
-      if (next != nil)
-        {
-	  [self setNextResponder: next];
-	}
+
       if (subViews != nil)
         {
 	  NSEnumerator *enumerator = [subViews objectEnumerator];

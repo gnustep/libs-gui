@@ -1,3 +1,14 @@
+2004-02-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSLayoutManager.m: 
+	* Source/NSTextContainer.m:
+	* Source/NSTextStorage.m:
+	* Source/GSNibCompatibility.m: (NSWindowTemplate 
+	More keyed dearchiving.
+	* Source/NSView.m: (-initWithCoder:)
+	Don't keyed decode next responder, as this gets set by superview
+	anyway. 
+
 2004-02-14 23:05  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSNib.[hm]: Corrected previous issue with NSNib.  

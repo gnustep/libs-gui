@@ -429,5 +429,33 @@ framework intact.
   return NSPointInRect(aPoint, _containerRect);
 }
 
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  if ([aDecoder allowsKeyedCoding])
+    {
+      //NSLayoutManager *manager = [aDecoder decodeObjectForKey: @"NSLayoutManager"];
+      NSTextView *view = [aDecoder decodeObjectForKey: @"NSTextView"];
+      NSSize size = NSZeroSize;
+  
+      if ([aDecoder containsValueForKey: @"NSWidth"])
+        {
+	  size.width = [aDecoder decodeFloatForKey: @"NSWidth"];
+	}
+      self = [self initWithContainerSize: size];
+      if ([aDecoder containsValueForKey: @"NSTCFlags"])
+        {
+	  // FIXME
+	  //int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
+	}
+      // No need to set manager as the decoding of the layout manager does it
+      [self setTextView: view];
+      return self;
+    }
+  else
+    {
+      return self;
+    }
+}
+
 @end /* NSTextContainer */
 
