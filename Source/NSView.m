@@ -1385,7 +1385,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  DPSgsave(ctxt);
 	}
     }
-  GSWViewIsFlipped(ctxt, _rFlags.flipped_view);
+  GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
 
 - (void) unlockFocusNeedsFlush: (BOOL)flush
