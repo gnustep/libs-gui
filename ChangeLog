@@ -1,3 +1,16 @@
+Wed Dec 16 15:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * NSResponder.m: bugfix - now beeps when it can't handle a key down.
+        * NSPanel.m: Panels are not released when closed.
+        * NSWindow.m: Removed ([-keyDown:]) - functionality moved to point
+        where keyDown events are sent to first responder.  Fixed code for
+        setting window titles to work with windows menu.  Reinstated hack    
+        to shut down app when window closed and no main menu exists.
+	* NSMenu.m: Removed redundant action dispatch code - use NSApplication
+	Send notifications.
+	* NSApplication.m: Implemented and rewrote loads of methods -
+	windows menu now supported.
+
 Wed Dec 16 09:22:06 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/NSApplication.m (NSOpenStepRootDirectory): Remove

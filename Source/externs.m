@@ -254,6 +254,10 @@ NSString *NSViewFrameDidChangeNotification
 NSString *NSViewBoundsDidChangeNotification
     = @"NSViewBoundsDidChangeNotification";
 
+// NSMenu notifications
+NSString* const NSMenuDidSendActionNotification = @"MenuDidSendAction";
+NSString* const NSMenuWillSendActionNotification = @"MenuWillSendAction";
+
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
 NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";

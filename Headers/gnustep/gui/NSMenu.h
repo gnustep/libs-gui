@@ -157,4 +157,7 @@
 
 @end
 
+extern NSString* const NSMenuDidSendActionNotification;
+extern NSString* const NSMenuWillSendActionNotification;
+
 #endif // _GNUstep_H_NSMenu

@@ -73,7 +73,7 @@
 //
 // Instance methods
 //
-- init
+- (id) init
 {
   int style = NSTitledWindowMask | NSClosableWindowMask;
 
@@ -81,6 +81,21 @@
 			 styleMask: style
 			   backing: NSBackingStoreBuffered
 			     defer: NO];
+}
+
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
+		    screen: (NSScreen*)aScreen
+{
+  self = [super initWithContentRect: contentRect
+			  styleMask: aStyle
+			    backing: bufferingType
+			      defer: flag
+			     screen: aScreen];
+  [self setReleasedWhenClosed: NO];
+  return self;
 }
 
 //

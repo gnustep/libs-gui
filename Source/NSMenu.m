@@ -30,6 +30,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSNotification.h>
 
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSApplication.h>
@@ -606,89 +607,25 @@ static Class menuCellClass = nil;
     [menuCells display];
 }
 
-- (void)performActionForItem:(id <NSMenuItem>)cell
+- (void) performActionForItem: (id <NSMenuItem>)cell
 {
-  SEL action;
-  id target;
-  NSWindow* keyWindow;
-  NSWindow* mainWindow;
-  id responder;
-  id delegate;
-  id theApp = [NSApplication sharedApplication];
+  NSNotificationCenter *nc;
+  NSDictionary *d;
 
   if (![cell isEnabled])
     return;
 
-  action = [cell action];
-
-  /* Search the target */
-  if ((target = [cell target]) && [target respondsToSelector:action]) {
-    [target performSelector:action withObject:cell];
-    return;
-  }
-
-  /* Search the key window's responder chain */
-  keyWindow = [theApp keyWindow];
-  responder = [keyWindow firstResponder];
-  while (responder) {
-    if ([responder respondsToSelector:action]) {
-      [responder performSelector:action withObject:cell];
-      return;
-    }
-    responder = [responder nextResponder];
-  }
-
-  /* Search the key window */
-  if ([keyWindow respondsToSelector:action]) {
-    [keyWindow performSelector:action withObject:cell];
-    return;
-  }
-
-  /* Search the key window's delegate */
-  delegate = [keyWindow delegate];
-  if ([delegate respondsToSelector:action]) {
-    [delegate performSelector:action withObject:cell];
-    return;
-  }
-
-  mainWindow = [theApp mainWindow];
-  if (mainWindow != keyWindow) {
-    /* Search the main window's responder chain */
-    responder = [mainWindow firstResponder];
-    while (responder) {
-      if ([responder respondsToSelector:action]) {
-	[responder performSelector:action withObject:cell];
-	return;
-      }
-      responder = [responder nextResponder];
-    }
-
-    /* Search the main window */
-    if ([mainWindow respondsToSelector:action]) {
-      [mainWindow performSelector:action withObject:cell];
-      return;
-    }
-
-    /* Search the main window's delegate */
-    delegate = [mainWindow delegate];
-    if ([delegate respondsToSelector:action]) {
-      [delegate performSelector:action withObject:cell];
-      return;
-    }
-  }
-
-  /* Search the NSApplication object */
-  if ([theApp respondsToSelector:action]) {
-    [theApp performSelector:action withObject:cell];
-    return;
-  }
-
-  /* Search the NSApplication object's delegate */
-  delegate = [theApp delegate];
-  if ([delegate respondsToSelector:action]) {
-    [delegate performSelector:action withObject:cell];
-    return;
-  }
+  nc = [NSNotificationCenter defaultCenter];
+  d = [NSDictionary dictionaryWithObject: cell forKey: @"MenuItem"];
+  [nc postNotificationName: NSMenuWillSendActionNotification
+				    object: self
+				  userInfo: d];
+  [[NSApplication sharedApplication] sendAction: [cell action]
+										     to: [cell target]
+										   from: cell];
+  [nc postNotificationName: NSMenuDidSendActionNotification
+				    object: self
+				  userInfo: d];
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent

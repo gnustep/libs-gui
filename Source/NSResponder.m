@@ -30,6 +30,7 @@
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSGraphics.h>
+#include <objc/objc.h>
 
 @implementation NSResponder
 
@@ -193,10 +194,8 @@
 - (void)noResponderFor:(SEL)eventSelector
 {
   // Only beep for key down events
-  if (eventSelector != @selector(keyDown:))
-    return;
-
-  NSBeep();
+  if (sel_eq(eventSelector, @selector(keyDown:)))
+    NSBeep();
 }
 
 - (void)rightMouseDown:(NSEvent *)theEvent
