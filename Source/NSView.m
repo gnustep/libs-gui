@@ -133,38 +133,61 @@ NSView *current_view = nil;
 	[super dealloc];
 }
 
-- (void)addSubview:(NSView *)aView
-{													// make sure we are not 
-	if ([self isDescendantOf:aView])				// making self a subview of 
-		{											// self
-		NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
-		return;
-		}
+- (void) addSubview: (NSView*)aView
+{
+  if ([self isDescendantOf: aView])
+    {
+      NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
+      return;
+    }
   
-	[aView viewWillMoveToWindow:window];			
-	[aView setSuperview:self];						
-	[aView setNextResponder:self];
-	[sub_views addObject:(id)aView];				// Add to our subview list
+  [aView retain];
+  [aView removeFromSuperview];			
+  [aView viewWillMoveToWindow: window];			
+  [aView viewWillMoveToSuperview: self];
+  [aView setNextResponder: self];
+  [sub_views addObject: aView];
+  [aView resetCursorRects];
+  [aView setNeedsDisplay: YES];
+  [aView release];
 }
 
-- (void)addSubview:(NSView *)aView					// may not be per OS spec
-		positioned:(NSWindowOrderingMode)place		// FIX ME
-		relativeTo:(NSView *)otherView
-{													// make sure we aren't 
-													// making self a subview of 
-	if ([self isDescendantOf:aView])				// self thereby creating a
-		{											// loop in the heirarchy
-		NSLog(@"addSubview:positioned:relativeTo: will create a cycle "
-				@"in the views tree!\n");
-		return;
-		}
-													
-	[sub_views addObject:(id)aView];				// Add to our subview list
-	[aView setSuperview:self];
-													// Make ourselves the next 
-	[aView setNextResponder:self];					// responder of the view
+- (void) addSubview: (NSView*)aView
+	 positioned: (NSWindowOrderingMode)place
+	 relativeTo: (NSView*)otherView
+{
+  unsigned	index;
 
-	[aView viewWillMoveToWindow:window];			// Tell the view what 
+  if ([self isDescendantOf:aView])
+    {
+      NSLog(@"addSubview:positioned:relativeTo: will create a cycle "
+		    @"in the views tree!\n");
+      return;
+    }
+
+  if (aView == otherView)
+    return;
+
+  index = [sub_views indexOfObjectIdenticalTo: otherView];
+  if (index == NSNotFound)
+    {
+      if (place = NSWindowBelow)
+	index = 0;
+      else
+	index = [sub_views length];
+    }
+  [aView retain];
+  [aView removeFromSuperview];			
+  [aView viewWillMoveToWindow: window];			
+  [aView viewWillMoveToSuperview: self];
+  [aView setNextResponder: self];
+  if (place == NSWindowBelow)
+    [sub_views insertObject: aView atIndex: index];
+  else
+    [sub_views insertObject: aView atIndex: index+1];
+  [aView resetCursorRects];
+  [aView setNeedsDisplay: YES];
+  [aView release];
 }													// window it has moved to
 
 - (NSView *)ancestorSharedWithView:(NSView *)aView
@@ -208,53 +231,90 @@ NSView *current_view = nil;
 		return [super_view opaqueAncestor];
 }
 
-- (void)removeFromSuperview
+- (void) removeFromSuperviewWithoutNeedinfDisplay
 {
-NSMutableArray *views;
-  
-	if (!super_view) 									// if no superview then
-		return;											// just return
+  NSMutableArray *views;
 
-	if([window firstResponder] == self)
-		[window makeFirstResponder:window];
-	
-	[self viewWillMoveToWindow:nil];
+  if (!super_view)      // if no superview then just return
+    return;
 
-	views = [super_view subviews];
-	[views removeObjectIdenticalTo:self];
-	super_view = nil;
+  if ([window firstResponder] == self)
+    [window makeFirstResponder: window];
+  views = [super_view subviews];
+  window = nil;
+  super_view = nil;
+  [views removeObjectIdenticalTo: self];
 }
 
-- (void)replaceSubview:(NSView *)oldView with:(NSView *)newView
+- (void) removeFromSuperview
 {
-	if (!newView)
-		return;
+  NSMutableArray *views;
+  NSWindow *win;
+  
+  if (!super_view)	// if no superview then just return
+    return;
 
-	if (!oldView)
-		[self addSubview:newView];
-	else 
-		{
-		int index = [sub_views indexOfObjectIdenticalTo:oldView];
+  if ([window firstResponder] == self)
+    [window makeFirstResponder: window];
+  views = [super_view subviews];
+  [super_view setNeedsDisplayInRect: frame];
+  win = window;
+  window = nil;
+  super_view = nil;
 
-		if (index != NSNotFound) 
-			{
-			[oldView viewWillMoveToWindow:nil];
-			[oldView setSuperview:nil];
-			[newView setNextResponder:nil];
+  [views removeObjectIdenticalTo: self];
+}
 
-			[sub_views replaceObjectAtIndex:index withObject:newView];
-	
-			[newView viewWillMoveToWindow:window];
-			[newView setSuperview:self];
-			[newView setNextResponder:self];
-    		}
-  		}
+- (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
+{
+  if (!newView)
+    return;
+
+  /*
+   * NB. we implement the replacement in full rather than calling addSubview:
+   * since classes like NSBox override these methods but expect to be able to
+   * call [super replaceSubview:with:] safely.
+   */
+  if (!oldView)
+    {
+      [newView retain];
+      [newView removeFromSuperview];			
+      [newView viewWillMoveToWindow: window];			
+      [newView viewWillMoveToSuperview: self];
+      [newView setNextResponder: self];
+      [sub_views addObject: newView];
+      [newView resetCursorRects];
+      [newView setNeedsDisplay: YES];
+      [newView release];
+    }
+  else if (oldView != newView
+    && [sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
+    {
+      unsigned index;
+
+      [newView retain];
+      [newView removeFromSuperview];
+      index = [sub_views indexOfObjectIdenticalTo: oldView];
+      [oldView removeFromSuperview];
+      [newView viewWillMoveToWindow: window];			
+      [newView viewWillMoveToSuperview: self];
+      [newView setNextResponder: self];
+      [sub_views addObject: newView];
+      [newView resetCursorRects];
+      [newView setNeedsDisplay: YES];
+      [newView release];
+    }
 }
 
 - (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 
 						  context:(void *)context
 {
 	[sub_views sortUsingFunction:compare context:context];
+}
+
+- (void) viewWillMoveToSuperview: (NSView*)newSuper
+{
+  super_view = newSuper;
 }
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
@@ -1350,7 +1410,6 @@ GSTrackingRect *m;
 - (unsigned int)autoresizingMask				{ return autoresizingMask; }
 - (NSMutableArray *)subviews					{ return sub_views; }
 - (NSView *)superview							{ return super_view; }
-- (void)setSuperview:(NSView *)superview		{ super_view = superview; }
 - (BOOL)shouldDrawColor							{ return YES; }
 - (BOOL)isOpaque								{ return NO; }
 - (BOOL)needsDisplay							{ return needs_display; }
