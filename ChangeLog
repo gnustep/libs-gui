@@ -1,3 +1,22 @@
+2002-06-30  Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Headers/gnustep/gui/NSWindow.h: Added declaration for 
+	NSToolbar in NSWindow.
+	* Headers/gnustep/gui/AppKit.h: Added #include lines for
+	new header files in the AppKit.h file.
+	* Source/NSWindow.m: Added code foe setToolbar method.
+	* Source/GNUmakefile: Added NSToolbar and NSToolbarItem
+	classes and headers to the makefile.
+	* Source/NSOutlineView.m: Added dealloc for NSOutlineView to
+	prevent memory leaks.
+	* Source/NSSecureTextField.m: Removed some extraneous comments
+	which were left from before I implemented the class.
+	* Source/externs.m: Added notification constants for NSToolbar.
+	* Source/NSToolbar.m: Added skeleton for implementation.
+	* Source/NSToolbarItem.m: Added skeleton for implementation.
+	* Headers/gnustep/gui/NSToolbar.h: Added.
+	* Headers/gnustep/gui/NSToolbarItem.h: Added.
+	
 2002-06-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([-flushWindow]) don't flush context for

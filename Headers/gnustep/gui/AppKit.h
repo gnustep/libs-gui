@@ -143,6 +143,8 @@
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSUserInterfaceValidation.h>
 #include <AppKit/NSWindowController.h>
+#include <AppKit/NSToolbar.h>
+#include <AppKit/NSToolbarItem.h>
 #endif
 
 #include <AppKit/PSOperators.h>

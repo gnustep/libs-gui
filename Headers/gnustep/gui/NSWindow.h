@@ -139,6 +139,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
   int		_counterpart;
   float         _alphaValue;
 
+  NSToolbar    *_toolbar;
+
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
     unsigned	is_one_shot:1;

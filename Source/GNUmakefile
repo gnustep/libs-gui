@@ -143,6 +143,8 @@ NSTextField.m \
 NSTextFieldCell.m \
 NSTextStorage.m \
 NSTextView.m \
+NSToolbar.m \
+NSToolbarItem.m \
 NSView.m \
 NSWindow.m \
 NSWindowController.m \
@@ -285,6 +287,8 @@ NSTextField.h \
 NSTextFieldCell.h \
 NSTextStorage.h \
 NSTextView.h \
+NSToolbar.h \
+NSToolbarItem.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
@@ -321,6 +325,7 @@ NSNibDeclarations.h \
 NSNibLoading.h \
 NSSpellProtocol.h \
 NSUserInterfaceValidation.h \
+NSValidatedUserInterfaceItem.h \
 PSOperators.h \
 nsimage-tiff.h
 

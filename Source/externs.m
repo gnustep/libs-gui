@@ -421,6 +421,19 @@ NSString *NSBaselineOffsetAttributeName = @"NSBaselineOffsetAttributeName";
 NSString *NSKernAttributeName = @"NSKernAttributeName";
 NSString *NSLinkAttributeName = @"NSLinkAttributeName";
 
+// NSToolbar notifications
+NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";
+NSString *NSToolbarWillAddItemNotification = @"NSToolbarWillAddItemNotification";
+
+// NSToolbarItem constants
+NSString *NSToolbarSeperatorItemIdentifier = @"NSToolbarSeperatorItemIdentifier";
+NSString *NSToolbarSpaceItemIdentifier = @"NSToolbarSpaceItemIdentifier";
+NSString *NSToolbarFlexibleSpaveItemIdentifier = @"NSToolbarFlexibleSpaveItemIdentifier";
+NSString *NSToolbarShowColorsItemIdentifier = @"NSToolbarShowColorsItemIdentifier";
+NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItemIdentifier";
+NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItemIdentifier";
+NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItemIdentifier";
+
 /*
  * NSTextView userInfo for notifications 
  */

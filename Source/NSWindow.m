@@ -3814,17 +3814,14 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setToolbar: (NSToolbar*)toolbar
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"drawers", "NSWindow");
+  ASSIGN(_toolbar, toolbar);
+  [_wv addSubview: [toolbar _toolbarView]];
+  [self setViewsNeedDisplay: YES];
 }
 
 - (NSToolbar *) toolbar
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"drawers", "NSWindow");
-  return nil;
+  return _toolbar;
 }
 
 - (void) toggleToolbarShown: (id)sender
@@ -3836,7 +3833,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) runToolbarCustomizationPalette: (id)sender
 {
-  // TODO
+  // TODO 
   NSLog(@"Method %s is not implemented for class %s",
 	"runToolbarCustomizationPalette:", "NSWindow");
 }

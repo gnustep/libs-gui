@@ -25,13 +25,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-//
-// NOTE:
-//
-// All selecting methods have been overriden to do nothing, I don't know if this
-// will hinder overall behavior of the specs, as I have never used the real thing.
-//
-
 #include <gnustep/gui/config.h>
 #include <AppKit/NSSecureTextField.h>
 #include <AppKit/NSImage.h>

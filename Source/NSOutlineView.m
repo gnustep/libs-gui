@@ -141,6 +141,29 @@ static NSImage *unexpandable  = nil;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_items);
+  RELEASE(_expandedItems);
+  NSFreeMapTable(_itemDict);
+  NSFreeMapTable(_levelOfItems);
+
+  if(_autosaveExpandedItems)
+    {
+      // notify when an item expands...
+      [nc removeObserver: self
+	  name: NSOutlineViewItemDidExpandNotification
+	  object: self];
+      
+      // notify when an item collapses...
+      [nc removeObserver: self
+	  name: NSOutlineViewItemDidCollapseNotification
+	  object: self];
+    }
+
+  [super dealloc];
+}
+
 - (BOOL)autoResizesOutlineColumn
 {
   return _autoResizesOutlineColumn;
