@@ -849,6 +849,7 @@ static Class			cacheClass = 0;
       /*
        *	What's the best representation? FIXME
        *	At the moment we take the last bitmap we find.
+       *	If we can't find a bitmap, we take whatever we can!
        */
       [_reps getObjects: reps];
       for (i = 0; i < count; i++)
@@ -856,6 +857,10 @@ static Class			cacheClass = 0;
 	  GSRepData	*repd = reps[i];
     
 	  if ([repd->rep isKindOfClass: [NSBitmapImageRep class]])
+	    {
+	      rep = repd->rep;
+	    }
+	  else if (rep == nil)
 	    {
 	      rep = repd->rep;
 	    }
@@ -867,7 +872,7 @@ static Class			cacheClass = 0;
 - (NSImageRep*) cacheForRep: (NSImageRep*)rep
 		   onDevice: (NSDictionary*)deviceDescription
 {
-  if (NSImageDoesCaching == YES)
+  if (NSImageDoesCaching == YES && [rep isKindOfClass: cacheClass] == NO)
     {
       NSImageRep	*cacheRep = nil;
       unsigned		count = [_reps count];
