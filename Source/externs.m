@@ -248,6 +248,15 @@ NSString *NSSplitViewDidResizeSubviewsNotification =
 NSString *NSSplitViewWillResizeSubviewsNotification =
 @"NSSplitViewWillResizeSubviewsNotification";
 
+// NSTableView notifications
+NSString *NSTableViewColumnDidMove = @"NSTableViewColumnDidMoveNotification";
+NSString *NSTableViewColumnDidResize 
+= @"NSTableViewColumnDidResizeNotification";
+NSString *NSTableViewSelectionDidChange 
+= @"NSTableViewSelectionDidChangeNotification";
+NSString *NSTableViewSelectionIsChanging 
+= @"NSTableViewSelectionIsChangingNotification";
+
 // NSText notifications
 NSString *NSTextDidBeginEditingNotification =
 @"NSTextDidBeginEditingNotification";
