@@ -1,3 +1,26 @@
+1999-07-30  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSMenu.m: rewrote sections to handle new popupbutton
+	code. New initialiser - initWithPopUpButton:. New ivar
+	menu_isBeholdenToPopUpButton.
+	* Source/NSMenuView.m: ditto. removed code that dealt with
+	popupbutton.
+	* Source/NSPopUpButton.m: complete rewrite. now this class should
+	be almost completly MacOSX compliant. For kicks try
+	popupbuttons.app in core/Testing to see.
+	* Source/NSPopUpButtonCell.m: modifications to make NSPopUpButton
+	work. Also implemented representedObject as I think it should be.
+	* Source/NSTableColumn.m: fixes to make some things work a little
+	better.
+	* Source/NSTableView.m: fixes to make things behave. Still doesn't
+	compile in, but it is getting there. Modifications will have to
+	be made to NSScrollView before we can use this class.
+	* Source/NSTabView.m: fixed (- contentRect) for the no tabs case.
+	* Headers/NSMenu.h: mods for changes.
+	* Headers/NSPopUpButton.h: ditto.
+	* Headers/NSPopUpButtonCell.h: ditto, also changed to inherit from
+	NSMenuItemCell.
+
 1999-07-29  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSEvent.h: Add AppKit dragging events.

@@ -46,6 +46,16 @@
   return [super init];   
 }
 
+- (id)representedObject
+{
+  if (cell_image)
+    {
+      return cell_image;
+    }
+
+  return contents;
+}
+
 - (void)drawWithFrame:(NSRect)cellFrame
                inView:(NSView*)view  
 {
@@ -69,6 +79,12 @@
     NSRectFill(arect);
   }
 
+  if (cell_image)
+    {
+      [self _drawImage:cell_image inFrame:cellFrame];
+      return;
+    }
+
   [cell_font set];
 
   point.y = rect.origin.y + (rect.size.height/2) - 4;
@@ -89,9 +105,9 @@
 
   if ([view isKindOfClass:[NSMenuView class]])
     {
-      NSPopUpButton *popb = [(NSMenuView *)view popupButton];
+      NSPopUpButton *popb = [[(NSMenuView *)view menu] popupButton];
 
-      if ([popb titleOfSelectedItem] == contents)
+      if ([[[popb selectedItem] representedObject] isEqual: contents])
         {
           if ([popb pullsDown] == NO)
             [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
@@ -101,7 +117,8 @@
     }
   else if ([view isKindOfClass:[NSPopUpButton class]])
     {
-      if ([(NSPopUpButton *)view titleOfSelectedItem] == contents)
+      if ([[[(NSPopUpButton *)view selectedItem] representedObject]
+	isEqual: contents])
         {
           if ([(NSPopUpButton *)view pullsDown] == NO)
             [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];

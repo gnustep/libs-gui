@@ -97,6 +97,8 @@
   NSSize cell_size = [tbcol_cell cellSize];
   BOOL changed = NO;
 
+// fix to use headerRectOfColumn:(int)columnIndex?
+
   if (tbcol_width != cell_size.width)
     {
       tbcol_width = cell_size.width;

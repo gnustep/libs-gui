@@ -46,20 +46,14 @@
 
 @interface NSPopUpButton : NSButton <NSCoding>
 {
-  // Attributes
-  NSMutableArray *list_items;
-  NSMenuView *popb_view;
-  NSRect list_rect;
-  int selected_item;
+  NSMenu *popb_menu;
+  BOOL popb_pullsDown;
+  BOOL popb_autoenableItems;
+  int popb_selectedItem;
+
   id pub_target;
   SEL pub_action;
   BOOL is_up;
-  BOOL pulls_down;
-
-  NSMenuWindow *popb_win;
-
-  // Reserved for back-end use
-  void *be_pub_reserved;
 }
 
 //
@@ -68,69 +62,45 @@
 - (id)initWithFrame:(NSRect)frameRect
 	  pullsDown:(BOOL)flag;
 
-//
-// Target and Action 
-//
-- (SEL)action;
-- (void)setAction:(SEL)aSelector;
-- (id)target;
-- (void)setTarget:(id)anObject;
-
-//
-// Adding Items 
-//
+- (void)setPullsDown:(BOOL)flag;
+- (BOOL)pullsDown;
+- (void)setAutoenablesItems:(BOOL)flag;
+- (BOOL)autoenablesItems;
 - (void)addItemWithTitle:(NSString *)title;
 - (void)addItemsWithTitles:(NSArray *)itemTitles;
-- (void)insertItemWithTitle:(NSString *)title
-		    atIndex:(unsigned int)index;
-
-//
-// Removing Items 
-//
+- (void)insertItemWithTitle:(NSString *)title   
+                    atIndex:(int)index;
 - (void)removeAllItems;
 - (void)removeItemWithTitle:(NSString *)title;
 - (void)removeItemAtIndex:(int)index;
-
-//
-// Querying the NSPopUpButton about Its Items 
-//
-- (int)indexOfItemWithTitle:(NSString *)title;
+- (id <NSMenuItem>)selectedItem;
+- (NSString *)titleOfSelectedItem;
 - (int)indexOfSelectedItem;
+- (void)selectItem:(id <NSMenuItem>)anObject;
+- (void)selectItemAtIndex:(int)index;
+- (void)selectItemWithTitle:(NSString *)title;
 - (int)numberOfItems;
-- (id <NSMenuItem>)itemAtIndex:(int)index;
 - (NSArray *)itemArray;
+- (id <NSMenuItem>)itemAtIndex:(int)index;
 - (NSString *)itemTitleAtIndex:(int)index;
 - (NSArray *)itemTitles;
 - (id <NSMenuItem>)itemWithTitle:(NSString *)title;
 - (id <NSMenuItem>)lastItem;
-- (id <NSMenuItem>)selectedItem;
-- (NSString*)titleOfSelectedItem;
-
-//
-// Manipulating the NSPopUpButton
-//
-- (NSFont *)font;
-- (BOOL)pullsDown;
-- (void)selectItemAtIndex:(int)index;
-- (void)selectItemWithTitle:(NSString *)title;
-- (void)setFont:(NSFont *)fontObject;
-- (void)setPullsDown:(BOOL)flag;
-- (void)setTitle:(NSString *)aString;
-- (NSString *)stringValue;
+- (int)indexOfItem:(id <NSMenuItem>)anObject;
+- (int)indexOfItemWithTag:(int)tag;
+- (int)indexOfItemWithTitle:(NSString *)title;
+- (int)indexOfItemWithRepresentedObject:(id)anObject;
+- (int)indexOfItemWithTarget:(id)target
+                   andAction:(SEL)actionSelector;
+- (void)setPreferredEdge:(NSRectEdge)edge;
+- (NSRectEdge)preferredEdge;
+- (int)setTitle:(NSString *)aString;
 - (void)synchronizeTitleAndSelectedItem;
+- (void)_popup:(NSNotification*)notification;
+- (void)mouseDown:(NSEvent *)theEvent;
 
-//
-// Displaying the NSPopUpButton's Items 
-//
-- (BOOL)autoenablesItems;
-- (void)setAutoenablesItems:(BOOL)flag;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
+- (id) initWithCoder: (NSCoder*)aDecoder;
+- (void) encodeWithCoder: (NSCoder*)aCoder;
 @end
 
 extern NSString *NSPopUpButtonWillPopUpNotification;

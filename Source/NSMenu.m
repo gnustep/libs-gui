@@ -48,6 +48,8 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuView.h>
 #include <AppKit/NSMenuItemCell.h>
+#include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSPopUpButtonCell.h>
 
 static NSZone *menuZone = NULL;
 
@@ -72,6 +74,57 @@ static NSZone *menuZone = NULL;
 - (id) init
 {
   return [self initWithTitle: @"Menu"];
+}
+
+- (id) initWithPopUpButton: (NSPopUpButton *)popb
+{
+  NSRect aRect;
+  NSRect winRect = {{0, 0}, {20, 17}};
+
+  [super init];
+
+  // Create an array to store out cells.
+  menu_items = [NSMutableArray new];
+
+  // Create a NSMenuView to draw our cells.
+  aRect = [popb frame];
+
+  menu_view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)
+				       cellSize: aRect.size];
+
+  // Set ourself as the menu for this view.
+  [menu_view setMenu: self];
+
+  // We have no supermenu.
+  menu_supermenu = nil;
+  menu_is_tornoff = NO;
+  menu_is_visible = NO;
+  menu_follow_transient = NO;
+  menu_is_beholdenToPopUpButton = YES;
+  ASSIGN(menu_popb, popb);
+//  menu_popb = popb;
+
+  menu_changed = YES;
+  /* According to the spec, menus do autoenable by default */
+  menu_autoenable = YES;
+
+  aWindow = [[NSMenuWindow alloc] initWithContentRect:winRect
+                                styleMask: NSBorderlessWindowMask
+                                backing: NSBackingStoreRetained
+                                defer: NO];
+  [[aWindow contentView] addSubview:menu_view];
+
+  return self;
+}
+
+- (id) popupButton
+{
+  return menu_popb;
+}
+
+- (BOOL) _isBeholdenToPopUpButton
+{
+  return menu_is_beholdenToPopUpButton;
 }
 
 - (id) initWithTitle: (NSString *)aTitle
@@ -99,6 +152,7 @@ static NSZone *menuZone = NULL;
   menu_is_tornoff = NO;
   menu_is_visible = NO;
   menu_follow_transient = NO;
+  menu_is_beholdenToPopUpButton = NO;
 
   menu_changed = YES;
   /* According to the spec, menus do autoenable by default */
@@ -158,7 +212,8 @@ static NSZone *menuZone = NULL;
 
   if ([(id)newItem conformsToProtocol: @protocol(NSMenuItem)])
     {
-      if ([(id)newItem isKindOfClass: [NSMenuItemCell class]])
+      if ([(id)newItem isKindOfClass: [NSMenuItemCell class]]
+	  || [(id)newItem isKindOfClass: [NSPopUpButtonCell class]])
         {
 	  nc = [NSNotificationCenter defaultCenter];
   	  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
@@ -194,7 +249,15 @@ static NSZone *menuZone = NULL;
 			  keyEquivalent: (NSString *)charCode 
 			        atIndex: (unsigned int)index
 {
-  id anItem = [NSMenuItemCell new];
+  id anItem;
+
+  if (menu_is_beholdenToPopUpButton)
+    {
+      anItem = [NSPopUpButtonCell new];
+      [anItem setTarget: menu_popb];
+    }
+  else
+    anItem = [NSMenuItemCell new];
 
   [anItem setTitle: aString];
   [anItem setAction: aSelector];
@@ -238,7 +301,8 @@ static NSZone *menuZone = NULL;
   if (!anItem)
     return;
 
-  if ([(NSMenuItemCell *)anItem isKindOfClass: [NSMenuItemCell class]])
+  if ([(NSMenuItemCell *)anItem isKindOfClass: [NSMenuItemCell class]]
+	  || [(id)anItem isKindOfClass: [NSPopUpButtonCell class]])
     {
       nc = [NSNotificationCenter defaultCenter];
       d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
@@ -318,7 +382,8 @@ static NSZone *menuZone = NULL;
 
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  if (![(NSMenuItemCell *)anObject isKindOfClass: [NSMenuItemCell class]])
+  if (![(NSMenuItemCell *)anObject isKindOfClass: [NSMenuItemCell class]]
+	  || [(id)anObject isKindOfClass: [NSPopUpButtonCell class]])
     {
       NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
       return -1;
@@ -354,6 +419,16 @@ static NSZone *menuZone = NULL;
 
 - (int) indexOfItemWithRepresentedObject: (id)anObject
 {
+  int i;
+
+  for (i=0;i<[menu_items count];i++)
+    {
+      if ([[[menu_items objectAtIndex:i] representedObject]
+	isEqual:anObject])
+	{
+	  return i;
+	}
+    }
   return -1;
 }
 
@@ -619,14 +694,26 @@ static NSZone *menuZone = NULL;
   [menu_view sizeToFit];
   
   mFrame = [menu_view frame];
-  [titleView setFrameOrigin: NSMakePoint(0, mFrame.size.height)];
-  [titleView setFrameSize: NSMakeSize (mFrame.size.width,21)];
-  
+
   size.width = mFrame.size.width;
-  size.height = mFrame.size.height+21;
-  
-  [aWindow setFrame: NSMakeRect(300,300,size.width,size.height) display: NO];
-  [bWindow setFrame: NSMakeRect(300,300,size.width,size.height) display: NO];
+  size.height = mFrame.size.height;
+
+  if (!menu_is_beholdenToPopUpButton)
+    {
+      [titleView setFrameOrigin: NSMakePoint(0, mFrame.size.height)];
+      [titleView setFrameSize: NSMakeSize (mFrame.size.width,21)];
+      size.height = mFrame.size.height+21;
+      [bWindow setFrame: NSMakeRect(300,300,size.width,size.height)
+	display: NO];
+      [aWindow setFrame: NSMakeRect(300,300,size.width,size.height)
+	display: YES];
+    }
+  else
+    {
+      [aWindow setContentSize: size];
+    }
+
+// FIXME, popup sets itself up.
   
   [menu_view setNeedsDisplay:YES];
   menu_changed = NO;
@@ -698,7 +785,7 @@ static NSZone *menuZone = NULL;
     }
   
   menu_is_visible = YES;
-  [aWindow orderFront:self];
+  [aWindow orderFront:nil];
 }
 
 - (void) displayTransient

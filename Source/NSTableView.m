@@ -1,3 +1,5 @@
+#include <AppKit/NSTableView.h>
+
 @implementation NSTableView
 - (id)initWithFrame:(NSRect)frameRect
 {
@@ -13,10 +15,14 @@
 
 - (void)setDataSource:(id)anObject
 {
-
-// This method raises an NSInternalInconistencyException if anObject
-// doesn't respond to either
-// numberOfRowsInTableView: or tableView:objectValueForTableColumn:row:.
+  if (![anObject respondsToSelector: @selector (numberOfRowsInTableView:)]
+      || ![anObject respondsToSelector: @selector
+	(tableView:objectValueForTableColumn:row:)])
+    {
+      [NSException raise: NSInternalInconsistencyException
+        format: @"Assigned data source does not respond to needed
+	methods."];
+    }
 
   ASSIGN(tb_datasource, anObject);
 
@@ -419,7 +425,8 @@ object with the NSTableView as the text delegate. */
 
 //FIXME! 100 is a place keeper.
 
-  return NSMakeRect(0,(rowIndex - 1) * tabColRows, 100, tbv_rowHeight);
+  return NSMakeRect(0,(rowIndex - 1) * tabColRows, [self frame].width,
+		    tbv_rowHeight);
 }
 
 - (NSRange)columnsInRect:(NSRect)aRect
@@ -554,8 +561,23 @@ object with the NSTableView as the text delegate. */
 
   for (i=0;i<colsToDraw.length;i++)
     {
-//      tableView:willDisplayCell:forTableColumn:row: 
-      // now draw the cell.
+      NSCell *aCell = [[tbv_columns objectAtIndex:i] dataCell];
+      NSRect *colRect = [self rectOfColumn:i];
+
+      colRect.size.height = tbv_rowHeight;
+      colRect.origin.y = rowIndex * tbv_rowHeight;
+
+      if (i != 0)
+        colRect.origin.y += tbv_interCellSpacing.height;
+
+      [delegate tableView:self willDisplayCell:aCell forTableColumn:i
+	row:rowIndex];
+
+      [aCell setStringValue:[tbv_dataSource tableView: self
+			    objectValueForTableColumn: i
+						  row: rowIndex]];
+
+      [aCell drawWithFrame: colRect];
     }
 }
 
@@ -579,5 +601,61 @@ object with the NSTableView as the text delegate. */
   [[self superview] scrollToPoint:NSZeroPoint];
 }
 
-// more, but not yet.
+- (BOOL)textShouldBeginEditing:(NSText *)textObject
+{
+  if ([delegate respondsToSelector: @selector
+	(control:textShouldBeginEditing:)])
+    {
+      return [delegate control: self textShouldBeginEditing: textObject];
+    }
+  return YES;
+}
+
+- (void)textDidBeginEditing:(NSNotification *)aNotification
+{
+/*
+[[NSNotificationCenter defaultCenter]
+postNotificationName:NSControlTextDidBeginEditingNotification
+object:self
+*/
+}
+
+- (void)textDidChange:(NSNotification *)aNotification
+{
+NSControlTextDidChangeNotification
+}
+
+- (BOOL)textShouldEndEditing:(NSText *)textObject
+{
+  if ([delegate respondsToSelector: @selector (control:textShouldEndEditing:)])
+    {
+      return [delegate control: self control:textShouldEndEditing:
+	textObject];
+    }
+
+  if (is new cell valid)
+    return YES;
+
+  return NO;
+}
+
+- (void)textDidEndEditing:(NSNotification *)aNotification
+{
+
+/* Updates the data source based on the newly-edited value and selects
+another cell for editing if possible according to the character that ended
+editing (Return, Tab, Backtab). aNotification is the NSNotification posted
+by the field editor; see the NSText class specifications for more
+information on this text delegate method. */
+
+}
+
+- (void)drawRect:(NSRect)rect 
+{
+  for (i=0; i<[self numberOfRows]; i++)
+    {
+      // FIXME this isn't really the clipRect now is it.
+      [self drawRow: i clipRect: [self rectOfRow: i]];
+    }
+}
 @end

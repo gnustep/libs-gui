@@ -87,19 +87,6 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return menuv_menu;
 }
 
-// Or random items.
-
-- (void) setPopUpButton: (NSPopUpButton *)popb;
-{
-  ASSIGN(menuv_popb, popb);
-  menuv_items_link = [menuv_popb itemArray];
-}
-
-- (NSPopUpButton *)popupButton
-{
-  return menuv_popb;
-}
-
 - (void)setHorizontal: (BOOL)flag
 {
   menuv_horizontal = flag;
@@ -316,7 +303,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
       neededWidth = aWidth;
   }
 
-  cellSize.width = 7 + neededWidth + 7 + 7 + 5;
+  if (![menuv_menu _isBeholdenToPopUpButton])
+    cellSize.width = 7 + neededWidth + 7 + 7 + 5;
 
   if ([window contentView] == self)
     [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
@@ -671,16 +659,10 @@ cell do the following */
 
 	  [self setHighlightedItemIndex: -1];
 
-	  if (menuv_menu)
-	    [menuv_menu performActionForItem: 
-	      [menuv_items_link objectAtIndex: lastIndex]];
+	  [menuv_menu performActionForItem: 
+	    [menuv_items_link objectAtIndex: lastIndex]];
 
-	  if (menuv_popb)
-	    [menuv_popb performSelector:[selectedCell action] withObject:selectedCell];
-
-	  /* If we are a menu */
-
-	  if (menuv_menu)
+          if (![menuv_menu _isBeholdenToPopUpButton])
 	    {
 	      while (!finished)
 	        { // "forward"cursive menu find.
@@ -707,14 +689,10 @@ cell do the following */
 	          [window flushWindow];
 	        }
 	    }
-
-	  /* If we are a popup */
-
-	  if (menuv_popb)
+	  else
 	    {
-	      [menuv_popb close];
+	      [menuv_menu close];
 	    }
-
         }
       else
 	{

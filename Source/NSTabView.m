@@ -238,8 +238,7 @@
   NSRect cRect = [self frame];
 
   cRect.origin.x = 0;
-//  cRect.size.height += 1;
-//  cRect.size.width += 1;
+  cRect.origin.y = 0;
 
   if (tab_type == NSTopTabsBezelBorder)
     {

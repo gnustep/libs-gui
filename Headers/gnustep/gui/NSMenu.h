@@ -60,7 +60,10 @@
   BOOL menu_changed;
   BOOL menu_is_tornoff;
 
+  id menu_popb;
+
   // Private.
+  BOOL menu_is_beholdenToPopUpButton;
   BOOL menu_follow_transient;
   BOOL menu_is_visible;
 
