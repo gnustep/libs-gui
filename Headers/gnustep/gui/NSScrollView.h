@@ -129,6 +129,9 @@
 - (void) setHorizontalPageScroll: (float)aFloat;
 - (void) setVerticalLineScroll: (float)aFloat;
 - (void) setVerticalPageScroll: (float)aFloat;
+/* Setting the background drawing */
+- (void)setDrawsBackground:(BOOL)flag;
+- (BOOL)drawsBackground;
 #endif
 
 /* Updating display after scrolling */

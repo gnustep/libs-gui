@@ -39,6 +39,7 @@
   NSView* _documentView;
   NSCursor* _cursor;
   NSColor* _backgroundColor;
+  BOOL _drawsBackground;
   BOOL _copiesOnScroll;
 }
 
@@ -67,6 +68,12 @@
 - (void)setBackgroundColor:(NSColor*)aColor;
 - (NSColor*)backgroundColor;
 
+#ifndef	STRICT_OPENSTEP
+/* Setting the background drawing */
+- (void)setDrawsBackground:(BOOL)flag;
+- (BOOL)drawsBackground;
+#endif
+
 /* Overridden NSView methods */
 - (BOOL)acceptsFirstResponder;
 - (BOOL)isFlipped;
@@ -83,13 +90,6 @@
 - (void)viewFrameChanged:(NSNotification*)aNotification;
 
 @end
-
-
-@interface NSClipView (SuperviewMethods)
-- (void)reflectScrolledClipView:(NSClipView*)aClipView;
-- (void)scrollClipView:(NSClipView*)aClipView toPoint:(NSPoint)newOrigin;
-@end
-
 
 @interface NSClipView (BackendMethods)
 - (void)_translateToPoint:(NSPoint)point oldPoint:(NSPoint)oldPoint;
