@@ -681,6 +681,8 @@ many times.
   TEST_RELEASE(_defaultButtonCell);
   TEST_RELEASE(_cachedImage);
   TEST_RELEASE(_toolbar);
+  DESTROY(_lastView);
+  DESTROY(_lastDragView);
   RELEASE(_screen);
 
   /*
