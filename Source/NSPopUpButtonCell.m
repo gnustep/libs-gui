@@ -74,8 +74,6 @@
   _menu = [[NSMenu alloc] initWithTitle: @""];
   [_menu _setOwnedByPopUp: YES];
 
-  _selectedIndex = 0;
-
   return self;
 }
 
@@ -185,7 +183,7 @@
   if (index < 0)
     index = 0;
   if (index > [_menu numberOfItems])
-    index = [_menu numberOfitems];
+    index = [_menu numberOfItems];
 
   [anItem setTitle: title];
   [anItem setTarget: self];
@@ -271,30 +269,25 @@
 // Dealing with selection
 - (void) selectItem: (id <NSMenuItem>)item
 {
-  id selectedItem = [_menu itemAtIndex: _selectedIndex];
-
   if (!item)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
-        [selectedItem setState: NSOffState];
+        [_selectedItem setState: NSOffState];
 
-      _selectedIndex = -1;
+      _selectedItem = nil;
     }
   else
     {
       if (_pbcFlags.altersStateOfSelectedItem)
         {
-          [selectedItem setState: NSOffState];
+          [_selectedItem setState: NSOffState];
 	}
-      _selectedIndex = [self indexOfItem: item];
-      selectedItem = [_menu itemAtIndex: _selectedIndex];
+      _selectedItem = item;
       if (_pbcFlags.altersStateOfSelectedItem)
         {
-          [selectedItem setState: NSOnState];
+          [_selectedItem setState: NSOnState];
         }
     }
-
-  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) selectItemAtIndex: (int)index
@@ -340,12 +333,12 @@
 
 - (id <NSMenuItem>) selectedItem
 {
-  return [self itemAtIndex: _selectedIndex];
+  return _selectedItem;
 }
 
 - (int) indexOfSelectedItem
 {
-  return _selectedIndex;
+  return [_menu indexOfItem: _selectedItem];
 }
 
 - (void) synchronizeTitleAndSelectedItem
@@ -355,14 +348,12 @@
 
   if ([_menu numberOfItems] == 0)
     {
-      _selectedIndex = -1;
+      _selectedItem = nil;
     }
   else if (_pbcFlags.pullsDown)
     {
-      _selectedIndex = 0;
-//      [self selectItem: [self itemAtIndex: 0]];
+      [self selectItem: [self itemAtIndex: 0]];
     }
-/*
   else
     {
       int	index = [[_menu menuRepresentation] highlightedItemIndex];
@@ -371,7 +362,6 @@
 	index = 0;
       [self selectItemAtIndex: index];
     }
-*/
 }
 
 // Title conveniences
@@ -397,8 +387,8 @@
 
 - (NSString *) titleOfSelectedItem
 {
-  if (_selectedIndex >= 0)
-    return [[self itemAtIndex: _selectedIndex] title];
+  if (_selectedItem != nil)
+    return [_selectedItem title];
   else
     return @"";
 }
@@ -427,9 +417,9 @@ NSLog(@"cF %@", NSStringFromRect(cellFrame));
 
   [_aCenter postNotification: _aNotif];
 
-  scratchRect = [[controlView superview] convertRect: scratchRect toView: nil];
-  scratchRect.origin
-    = [[controlView window] convertBaseToScreen: cellFrame.origin];
+  scratchRect.origin = NSMakePoint(0,0);
+  scratchRect = [controlView convertRect: scratchRect toView: nil];
+  scratchRect.origin = [[controlView window] convertBaseToScreen: scratchRect.origin];
 
   [[_menu menuRepresentation] _setCellSize: cellFrame.size];
   [_menu sizeToFit];
@@ -448,13 +438,13 @@ NSLog(@"cF %@", NSStringFromRect(cellFrame));
     {
       winf.origin.y += ([self indexOfSelectedItem] * scratchRect.size.height);
     }
-
+winf.origin.y -= 22;	/* HACK */
 NSLog(@"winf %@", NSStringFromRect(winf));
 
   NSLog(@"here comes the popup.");
                          
   [[_menu window] setFrame: winf display: YES];
-  [[_menu window] orderFront: nil];
+  [[_menu window] orderFrontRegardless];
 }
 
 - (void) dismissPopUp
@@ -523,12 +513,10 @@ NSLog(@"winf %@", NSStringFromRect(winf));
   size = [aImage size];
   position.x = cellFrame.origin.x + cellFrame.size.width - size.width - 4;
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
-
   /*
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
-
   if ([control_view isFlipped])
     position.y += size.height;
   [aImage  compositeToPoint: position operation: NSCompositeCopy];

@@ -1,3 +1,8 @@
+Fri Dec  3 14:53:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPopUpButtonCell.m: arbitrary hacks to get window positioning
+	correct - NSWindow still needs some fixing.
+
 Fri Dec  3 14:41:00 1999  Michael Hanni <mhanni@sprintmail.com>
 
 	* Source/NSPopUpButtonCell.m: more fixes, issues remain.
