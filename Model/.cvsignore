@@ -6,4 +6,4 @@ GNUmakefile.local
 .gdbinit
 *.nib~
 *.iconheader
-
+*.bundle
