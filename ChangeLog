@@ -1,3 +1,8 @@
+2004-07-22 00:59  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSStandardWindowDecorationView.m (-setDocumentEdited:,
+	-setTitle:): Pass the calls along to super.
+
 2004-07-21 19:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFontPanel.m (-_trySelectSize:updateSizeField:): Add

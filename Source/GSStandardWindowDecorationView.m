@@ -347,6 +347,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 {
   if (isTitled)
     [self setNeedsDisplayInRect: titleBarRect];
+  [super setTitle: newTitle];
 }
 
 -(void) setInputState: (int)state
@@ -371,6 +372,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
       [closeButton setAlternateImage:
 	[NSImage imageNamed: @"common_CloseH"]];
     }
+  [super setDocumentEdited: flag];
 }
 
 
