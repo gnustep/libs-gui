@@ -55,6 +55,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSMapTable.h>
 
 #include <AppKit/NSPrinter.h>
 
