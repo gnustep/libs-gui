@@ -15,6 +15,15 @@
   return self;
 }
 
+- (void) dealloc
+{
+  TEST_RELEASE(item_ident);
+  RELEASE(item_label);
+  RELEASE(item_view);
+  RELEASE(item_color);
+  [super dealloc];
+}
+
 // Set identifier.
 
 - (void)setIdentifier:(id)identifier
@@ -61,7 +70,7 @@
 - (void)setView:(NSView *)view
 {
   if (item_view)
-    RELEASE(item_view);
+    TEST_RELEASE(item_view);
 
   ASSIGN(item_view, view);
 }

@@ -44,11 +44,19 @@
 
   // setup variables  
 
-  tab_items = [NSMutableArray new];
-  tab_font = RETAIN([NSFont systemFontOfSize: 0]);
+  ASSIGN (tab_items, [NSMutableArray array]);
+  ASSIGN (tab_font, [NSFont systemFontOfSize: 0]);
   tab_selected = nil;
 
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(tab_items);
+  TEST_RELEASE(tab_selected);
+  RELEASE(tab_font);
+  [super dealloc];
 }
 
 // tab management.
@@ -84,6 +92,11 @@
   
   if (i == NSNotFound)
     return;
+
+  if ([tabViewItem isEqual: tab_selected])
+    {
+      tab_selected = nil;
+    }
 
   [tab_items removeObjectAtIndex: i];
 
@@ -688,12 +701,4 @@
 
   return self;
 }
-
-- (void) dealloc
-{
-  RELEASE(tab_items);
-  RELEASE(tab_font);
-  [super dealloc];
-}
-
 @end

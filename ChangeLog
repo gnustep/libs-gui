@@ -1,3 +1,11 @@
+2000-10-21  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSTabView.m: ([-dealloc:]) updated.
+			      ([-removeTabViewItem:]) updated to not crash
+			      when a tabViewItem which had been the
+			      selected tab is dealloc'ed.
+	* Source/NSTabViewItem.m: ([-dealloc:]) implemented.
+
 2000-10-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSClipView.m: ([-viewFrameChanged:]) fix test for when to
