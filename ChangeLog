@@ -1,3 +1,8 @@
+Mon Mar 15 16:19:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSTextFieldCell.m: Don't draw background by default - be
+	consistent with OPENSTEP.
+
 Mon Mar 15 16:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-runModalSession:]) fix for windowmaker

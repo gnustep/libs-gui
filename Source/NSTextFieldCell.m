@@ -82,7 +82,7 @@
   [self setBackgroundColor: [NSColor textBackgroundColor]];
   [self setTextColor: [NSColor textColor]];
   [self setFont: [NSFont systemFontOfSize:0]];
-  draw_background = YES;
+  draw_background = NO;
   return self;
 }
 
