@@ -1,3 +1,14 @@
+2000-05-13  Fred Kiefer  <FredKiefer@gmx.de>
+	* Headers/gnustep/gui/NSText.h:
+	* Headers/gnustep/gui/NSTextView.h:
+	* Source/NSText.m:
+	* Source/NSTextView.m:
+	Made NSTextView use the ivars of its super class and added some
+	new ivars to NSText. Adopted both implementations to this.
+	Added some missing method declarations to NSTextView.
+	This is only the start of the rearangement of this classes.
+	
+
 2000-05-09 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* gui/Source/NSTabView.m: General tidyup, minro fixes, and implemented
