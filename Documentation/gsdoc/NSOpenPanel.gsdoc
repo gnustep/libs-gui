@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSOpenPanel" prev="NSMutableParaStyle.html" next="NSPICTImageRep.html" up="AppKit.html">
+<gsdoc base="NSOpenPanel" prev="NSMutableParaStyle.html" next="NSPICTImageRep.html" up="Gui.html">
   <head>
     <title>NSOpenPanel</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSOpenPanel</heading>
       <class name="NSOpenPanel" super="NSSavePanel">
-        <declared>AppKit/NSOpenPanel.h</declared>
+        <declared>Gui/NSOpenPanel.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPanel" prev="NSPageLayout.html" next="NSParagraphStyle.html" up="AppKit.html">
+<gsdoc base="NSPanel" prev="NSPageLayout.html" next="NSParagraphStyle.html" up="Gui.html">
   <head>
     <title>NSPanel</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPanel</heading>
       <class name="NSPanel" super="NSWindow">
-        <declared>AppKit/NSPanel.h</declared>
+        <declared>Gui/NSPanel.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSliderCell" prev="NSSlider.html" next="NSSpellChecker.html" up="AppKit.html">
+<gsdoc base="NSSliderCell" prev="NSSlider.html" next="NSSpellChecker.html" up="Gui.html">
   <head>
     <title>NSSliderCell</title>
     <author name="Richard Frith-Macdonald">
@@ -17,7 +17,7 @@
     <chapter>
       <heading>NSSliderCell</heading>
       <class name="NSSliderCell" super="NSActionCell">
-        <declared>AppKit/NSSliderCell.h</declared>
+        <declared>Gui/NSSliderCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
                 <p>An NSSliderCell controls the behaviour and appearance of an associated NSSlider,

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextField" prev="NSTextContainer.html" next="NSTextFieldCell.html" up="AppKit.html">
+<gsdoc base="NSTextField" prev="NSTextContainer.html" next="NSTextFieldCell.html" up="Gui.html">
   <head>
     <title>NSTextField</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTextField</heading>
       <class name="NSTextField" super="NSControl">
-        <declared>AppKit/NSTextField.h</declared>
+        <declared>Gui/NSTextField.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

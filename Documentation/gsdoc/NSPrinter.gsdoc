@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPrinter" prev="NSPrintPanel.html" next="NSProgressIndicator.html" up="AppKit.html">
+<gsdoc base="NSPrinter" prev="NSPrintPanel.html" next="NSProgressIndicator.html" up="Gui.html">
   <head>
     <title>NSPrinter</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPrinter</heading>
       <class name="NSPrinter" super="NSObject">
-        <declared>AppKit/NSPrinter.h</declared>
+        <declared>Gui/NSPrinter.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

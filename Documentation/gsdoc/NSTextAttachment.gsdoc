@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextAttachment" prev="NSText.html" next="NSTextAttachmentCell.html" up="AppKit.html">
+<gsdoc base="NSTextAttachment" prev="NSText.html" next="NSTextAttachmentCell.html" up="Gui.html">
   <head>
     <title>NSTextAttachment</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTextAttachment</heading>
       <class name="NSTextAttachment" super="NSObject">
-        <declared>AppKit/NSTextAttachment.h</declared>
+        <declared>Gui/NSTextAttachment.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

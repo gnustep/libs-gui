@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFileWrapper" prev="NSEvent.html" next="NSFont.html" up="AppKit.html">
+<gsdoc base="NSFileWrapper" prev="NSEvent.html" next="NSFont.html" up="Gui.html">
   <head>
     <title>NSFileWrapper</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSFileWrapper</heading>
       <class name="NSFileWrapper" super="NSObject">
-        <declared>AppKit/NSFileWrapper.h</declared>
+        <declared>Gui/NSFileWrapper.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColor" prev="NSCoderAdditions.html" next="NSColorList.html" up="AppKit.html">
+<gsdoc base="NSColor" prev="NSCoderAdditions.html" next="NSColorList.html" up="Gui.html">
   <head>
     <title>NSColor</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSColor</heading>
       <class name="NSColor" super="NSResponder">
-        <declared>AppKit/NSColor.h</declared>
+        <declared>Gui/NSColor.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

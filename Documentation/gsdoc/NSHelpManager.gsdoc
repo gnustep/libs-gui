@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSHelpManager" prev="NSGraphicsContext.html" next="NSImage.html" up="AppKit.html">
+<gsdoc base="NSHelpManager" prev="NSGraphicsContext.html" next="NSImage.html" up="Gui.html">
   <head>
     <title>NSHelpManager</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSHelpManager</heading>
       <class name="NSHelpManager" super="NSObject">
-        <declared>AppKit/NSHelpManager.h</declared>
+        <declared>Gui/NSHelpManager.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

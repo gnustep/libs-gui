@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMenuItemCell" prev="NSMenuItem.html" next="NSMenuView.html" up="AppKit.html">
+<gsdoc base="NSMenuItemCell" prev="NSMenuItem.html" next="NSMenuView.html" up="Gui.html">
   <head>
     <title>NSMenuItemCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSMenuItemCell</heading>
       <class name="NSMenuItemCell" super="NSButtonCell">
-        <declared>AppKit/NSMenuItemCell.h</declared>
+        <declared>Gui/NSMenuItemCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

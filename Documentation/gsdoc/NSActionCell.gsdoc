@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSActionCell" next="NSAffineTransform.html" up="AppKit.html">
+<gsdoc base="NSActionCell" prev="Introduction.html" next="NSAffineTransform.html" up="Gui.html">
   <head>
     <title>NSActionCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSActionCell</heading>
       <class name="NSActionCell" super="NSCell">
-        <declared>AppKit/NSActionCell.h</declared>
+        <declared>Gui/NSActionCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSRulerView" prev="NSRulerMarker.html" next="NSSavePanel.html" up="AppKit.html">
+<gsdoc base="NSRulerView" prev="NSRulerMarker.html" next="NSSavePanel.html" up="Gui.html">
   <head>
     <title>NSRulerView</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSRulerView</heading>
       <class name="NSRulerView" super="NSView">
-        <declared>AppKit/NSRulerView.h</declared>
+        <declared>Gui/NSRulerView.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

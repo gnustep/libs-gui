@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSApplication" prev="NSAffineTransform.html" next="NSAttributedStrngAdds.html" up="AppKit.html">
+<gsdoc base="NSApplication" prev="NSAffineTransform.html" next="NSAttributedStrngAdds.html" up="Gui.html">
   <head>
     <title>NSApplication</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSApplication</heading>
       <class name="NSApplication" super="NSResponder">
-        <declared>AppKit/NSApplication.h</declared>
+        <declared>Gui/NSApplication.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

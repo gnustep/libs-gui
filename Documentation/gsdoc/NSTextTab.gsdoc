@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextTab" prev="NSTextStorage.html" next="NSTextView.html" up="AppKit.html">
+<gsdoc base="NSTextTab" prev="NSTextStorage.html" next="NSTextView.html" up="Gui.html">
   <head>
     <title>NSTextTab</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTextTab</heading>
       <class name="NSTextTab" super="NSObject">
-        <declared>AppKit/NSParagraphStyle.h</declared>
+        <declared>Gui/NSParagraphStyle.h</declared>
         <conform>NSCopying</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBundleAdditions" prev="NSBrowserCell.html" next="NSButton.html" up="AppKit.html">
+<gsdoc base="NSBundleAdditions" prev="NSBrowserCell.html" next="NSButton.html" up="Gui.html">
   <head>
     <title>NSBundleAdditions</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSBundleAdditions</heading>
       <class name="NSBundleAdditions" super="NSObject">
-        <declared>AppKit/NSHelpManager.h</declared>
+        <declared>Gui/NSHelpManager.h</declared>
           <desc>
           </desc>
         <method type="BOOL" factory="yes">

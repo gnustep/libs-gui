@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCustomImageRep" prev="NSCursor.html" next="NSDPSContext.html" up="AppKit.html">
+<gsdoc base="NSCustomImageRep" prev="NSCursor.html" next="NSDPSContext.html" up="Gui.html">
   <head>
     <title>NSCustomImageRep</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSCustomImageRep</heading>
       <class name="NSCustomImageRep" super="NSImageRep">
-        <declared>AppKit/NSCustomImageRep.h</declared>
+        <declared>Gui/NSCustomImageRep.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

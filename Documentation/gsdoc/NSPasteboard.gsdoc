@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPasteboard" prev="NSParagraphStyle.html" next="NSPopUpButton.html" up="AppKit.html">
+<gsdoc base="NSPasteboard" prev="NSParagraphStyle.html" next="NSPopUpButton.html" up="Gui.html">
   <head>
     <title>NSPasteboard</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPasteboard</heading>
       <class name="NSPasteboard" super="NSObject">
-        <declared>AppKit/NSPasteboard.h</declared>
+        <declared>Gui/NSPasteboard.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSWorkspace" prev="NSWindowController.html" up="AppKit.html">
+<gsdoc base="NSWorkspace" prev="NSWindowController.html" up="Gui.html">
   <head>
     <title>NSWorkspace</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSWorkspace</heading>
       <class name="NSWorkspace" super="NSObject">
-        <declared>AppKit/NSWorkspace.h</declared>
+        <declared>Gui/NSWorkspace.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

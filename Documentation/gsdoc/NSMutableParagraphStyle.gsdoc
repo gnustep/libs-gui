@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMutableParagraphStyle" prev="NSMutableAttributedString.html" next="NSOpenPanel.html" up="AppKit.html">
+<gsdoc base="NSMutableParagraphStyle" prev="NSMutableAttributedString.html" next="NSOpenPanel.html" up="Gui.html">
   <head>
     <title>NSMutableParagraphStyle</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSMutableParagraphStyle</heading>
       <class name="NSMutableParagraphStyle" super="NSParagraphStyle">
-        <declared>AppKit/NSParagraphStyle.h</declared>
+        <declared>Gui/NSParagraphStyle.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

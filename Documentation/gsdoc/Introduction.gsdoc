@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="Introduction">
+<gsdoc base="Introduction" next="NSActionCell.html" up="Gui.html">
   <head>
     <title>Introduction to the AppKit</title>
     <author name="Nicola Pero">

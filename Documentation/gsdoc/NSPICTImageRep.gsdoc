@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPICTImageRep" prev="NSOpenPanel.html" next="NSPageLayout.html" up="AppKit.html">
+<gsdoc base="NSPICTImageRep" prev="NSOpenPanel.html" next="NSPageLayout.html" up="Gui.html">
   <head>
     <title>NSPICTImageRep</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPICTImageRep</heading>
       <class name="NSPICTImageRep" super="NSImageRep">
-        <declared>AppKit/NSPICTImageRep.h</declared>
+        <declared>Gui/NSPICTImageRep.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

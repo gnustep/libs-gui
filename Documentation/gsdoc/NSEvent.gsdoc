@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSEvent" prev="NSEPSImageRep.html" next="NSFileWrapper.html" up="AppKit.html">
+<gsdoc base="NSEvent" prev="NSEPSImageRep.html" next="NSFileWrapper.html" up="Gui.html">
   <head>
     <title>NSEvent</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSEvent</heading>
       <class name="NSEvent" super="NSObject">
-        <declared>AppKit/NSEvent.h</declared>
+        <declared>Gui/NSEvent.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

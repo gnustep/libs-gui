@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSDocumentController" prev="NSDocument.html" next="NSEPSImageRep.html" up="AppKit.html">
+<gsdoc base="NSDocumentController" prev="NSDocument.html" next="NSEPSImageRep.html" up="Gui.html">
   <head>
     <title>NSDocumentController</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSDocumentController</heading>
       <class name="NSDocumentController" super="NSObject">
-        <declared>AppKit/NSDocumentController.h</declared>
+        <declared>Gui/NSDocumentController.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

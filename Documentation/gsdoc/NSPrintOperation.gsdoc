@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPrintOperation" prev="NSPrintInfo.html" next="NSPrintPanel.html" up="AppKit.html">
+<gsdoc base="NSPrintOperation" prev="NSPrintInfo.html" next="NSPrintPanel.html" up="Gui.html">
   <head>
     <title>NSPrintOperation</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPrintOperation</heading>
       <class name="NSPrintOperation" super="NSObject">
-        <declared>AppKit/NSPrintOperation.h</declared>
+        <declared>Gui/NSPrintOperation.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorPanel" prev="NSColorList.html" next="NSColorPicker.html" up="AppKit.html">
+<gsdoc base="NSColorPanel" prev="NSColorList.html" next="NSColorPicker.html" up="Gui.html">
   <head>
     <title>NSColorPanel</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSColorPanel</heading>
       <class name="NSColorPanel" super="NSPanel">
-        <declared>AppKit/NSColorPanel.h</declared>
+        <declared>Gui/NSColorPanel.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCursor" prev="NSControl.html" next="NSCustomImageRep.html" up="AppKit.html">
+<gsdoc base="NSCursor" prev="NSControl.html" next="NSCustomImageRep.html" up="Gui.html">
   <head>
     <title>NSCursor</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSCursor</heading>
       <class name="NSCursor" super="NSObject">
-        <declared>AppKit/NSCursor.h</declared>
+        <declared>Gui/NSCursor.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBrowserCell" prev="NSBrowser.html" next="NSBundleAdditions.html" up="AppKit.html">
+<gsdoc base="NSBrowserCell" prev="NSBrowser.html" next="NSBundleAdditions.html" up="Gui.html">
   <head>
     <title>NSBrowserCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSBrowserCell</heading>
       <class name="NSBrowserCell" super="NSCell">
-        <declared>AppKit/NSBrowserCell.h</declared>
+        <declared>Gui/NSBrowserCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

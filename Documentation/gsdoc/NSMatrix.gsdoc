@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMatrix" prev="NSLayoutManager.html" next="NSMenu.html" up="AppKit.html">
+<gsdoc base="NSMatrix" prev="NSLayoutManager.html" next="NSMenu.html" up="Gui.html">
   <head>
     <title>NSMatrix</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSMatrix</heading>
       <class name="NSMatrix" super="NSControl">
-        <declared>AppKit/NSMatrix.h</declared>
+        <declared>Gui/NSMatrix.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

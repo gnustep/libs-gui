@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSRulerMarker" prev="NSResponder.html" next="NSRulerView.html" up="AppKit.html">
+<gsdoc base="NSRulerMarker" prev="NSResponder.html" next="NSRulerView.html" up="Gui.html">
   <head>
     <title>NSRulerMarker</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSRulerMarker</heading>
       <class name="NSRulerMarker" super="NSObject">
-        <declared>AppKit/NSRulerMarker.h</declared>
+        <declared>Gui/NSRulerMarker.h</declared>
         <conform>NSCopying</conform>
           <desc>
           </desc>

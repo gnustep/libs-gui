@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSView" prev="NSTextView.html" next="NSWindow.html" up="AppKit.html">
+<gsdoc base="NSView" prev="NSTextView.html" next="NSWindow.html" up="Gui.html">
   <head>
     <title>NSView</title>
     <author name="Richard Frith-Macdonald">
@@ -17,7 +17,7 @@
     <chapter>
       <heading>NSView</heading>
       <class name="NSView" super="NSResponder">
-        <declared>AppKit/NSView.h</declared>
+        <declared>Gui/NSView.h</declared>
         <conform>NSCoding</conform>
           <desc>
           <p>NSView is an abstract class which provides facilities for drawing in a window and

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSLayoutManager" prev="NSInputServer.html" next="NSMatrix.html" up="AppKit.html">
+<gsdoc base="NSLayoutManager" prev="NSInputServer.html" next="NSMatrix.html" up="Gui.html">
   <head>
     <title>NSLayoutManager</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSLayoutManager</heading>
       <class name="NSLayoutManager" super="NSObject">
-        <declared>AppKit/NSLayoutManager.h</declared>
+        <declared>Gui/NSLayoutManager.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

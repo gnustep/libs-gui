@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFontPanel" prev="NSFontManager.html" next="NSForm.html" up="AppKit.html">
+<gsdoc base="NSFontPanel" prev="NSFontManager.html" next="NSForm.html" up="Gui.html">
   <head>
     <title>NSFontPanel</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSFontPanel</heading>
       <class name="NSFontPanel" super="NSPanel">
-        <declared>AppKit/NSFontPanel.h</declared>
+        <declared>Gui/NSFontPanel.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

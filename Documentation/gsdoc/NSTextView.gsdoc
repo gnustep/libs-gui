@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextView" prev="NSTextTab.html" next="NSView.html" up="AppKit.html">
+<gsdoc base="NSTextView" prev="NSTextTab.html" next="NSView.html" up="Gui.html">
   <head>
     <title>NSTextView</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTextView</heading>
       <class name="NSTextView" super="NSText">
-        <declared>AppKit/NSTextView.h</declared>
+        <declared>Gui/NSTextView.h</declared>
         <conform>NSTextInput</conform>
           <desc>
           </desc>

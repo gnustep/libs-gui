@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSButton" prev="NSBundleAdditions.html" next="NSButtonCell.html" up="AppKit.html">
+<gsdoc base="NSButton" prev="NSBundleAdditions.html" next="NSButtonCell.html" up="Gui.html">
   <head>
     <title>NSButton</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSButton</heading>
       <class name="NSButton" super="NSControl">
-        <declared>AppKit/NSButton.h</declared>
+        <declared>Gui/NSButton.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

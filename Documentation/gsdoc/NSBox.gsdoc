@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBox" prev="NSBitmapImageRep.html" next="NSBrowser.html" up="AppKit.html">
+<gsdoc base="NSBox" prev="NSBitmapImageRep.html" next="NSBrowser.html" up="Gui.html">
   <head>
     <title>NSBox</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSBox</heading>
       <class name="NSBox" super="NSView">
-        <declared>AppKit/NSBox.h</declared>
+        <declared>Gui/NSBox.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

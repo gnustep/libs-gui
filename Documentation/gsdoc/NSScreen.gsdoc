@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSScreen" prev="NSSavePanel.html" next="NSScrollView.html" up="AppKit.html">
+<gsdoc base="NSScreen" prev="NSSavePanel.html" next="NSScrollView.html" up="Gui.html">
   <head>
     <title>NSScreen</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSScreen</heading>
       <class name="NSScreen" super="NSObject">
-        <declared>AppKit/NSScreen.h</declared>
+        <declared>Gui/NSScreen.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

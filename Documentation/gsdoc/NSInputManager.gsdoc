@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSInputManager" prev="NSImageView.html" next="NSInputServer.html" up="AppKit.html">
+<gsdoc base="NSInputManager" prev="NSImageView.html" next="NSInputServer.html" up="Gui.html">
   <head>
     <title>NSInputManager</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSInputManager</heading>
       <class name="NSInputManager" super="NSObject">
-        <declared>AppKit/NSInputManager.h</declared>
+        <declared>Gui/NSInputManager.h</declared>
         <conform>NSTextInput</conform>
           <desc>
           </desc>

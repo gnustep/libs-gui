@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMutableAttributedStringAdditions" prev="NSMenuView.html" next="NSMutableParaStyle.html" up="AppKit.html">
+<gsdoc base="NSMutableAttributedStringAdditions" prev="NSMenuView.html" next="NSMutableParaStyle.html" up="Gui.html">
   <head>
     <title>NSMutableAttributedStringAdditions</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSMutableAttributedStringAdditions</heading>
       <class name="NSMutableAttributedStringAdditions" super="NSAttributedString">
-        <declared>AppKit/NSAttributedString.h</declared>
+        <declared>Gui/NSAttributedString.h</declared>
           <desc>
           </desc>
         <method type="void">

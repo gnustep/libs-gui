@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPageLayout" prev="NSPICTImageRep.html" next="NSPanel.html" up="AppKit.html">
+<gsdoc base="NSPageLayout" prev="NSPICTImageRep.html" next="NSPanel.html" up="Gui.html">
   <head>
     <title>NSPageLayout</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPageLayout</heading>
       <class name="NSPageLayout" super="NSObject">
-        <declared>AppKit/NSPageLayout.h</declared>
+        <declared>Gui/NSPageLayout.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

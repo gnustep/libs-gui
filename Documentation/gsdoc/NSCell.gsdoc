@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCell" prev="NSCachedImageRep.html" next="NSClipView.html" up="AppKit.html">
+<gsdoc base="NSCell" prev="NSCachedImageRep.html" next="NSClipView.html" up="Gui.html">
   <head>
     <title>NSCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSCell</heading>
       <class name="NSCell" super="NSObject">
-        <declared>AppKit/NSCell.h</declared>
+        <declared>Gui/NSCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

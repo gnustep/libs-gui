@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorWell" prev="NSColorPicker.html" next="NSComboBox.html" up="AppKit.html">
+<gsdoc base="NSColorWell" prev="NSColorPicker.html" next="NSComboBox.html" up="Gui.html">
   <head>
     <title>NSColorWell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSColorWell</heading>
       <class name="NSColorWell" super="NSControl">
-        <declared>AppKit/NSColorWell.h</declared>
+        <declared>Gui/NSColorWell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

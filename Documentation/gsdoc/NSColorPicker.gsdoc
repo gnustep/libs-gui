@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorPicker" prev="NSColorPanel.html" next="NSColorWell.html" up="AppKit.html">
+<gsdoc base="NSColorPicker" prev="NSColorPanel.html" next="NSColorWell.html" up="Gui.html">
   <head>
     <title>NSColorPicker</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSColorPicker</heading>
       <class name="NSColorPicker" super="NSObject">
-        <declared>AppKit/NSColorPicker.h</declared>
+        <declared>Gui/NSColorPicker.h</declared>
         <conform>NSColorPickingDefault</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSGraphicsContext" prev="NSFormCell.html" next="NSHelpManager.html" up="AppKit.html">
+<gsdoc base="NSGraphicsContext" prev="NSFormCell.html" next="NSHelpManager.html" up="Gui.html">
   <head>
     <title>NSGraphicsContext</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSGraphicsContext</heading>
       <class name="NSGraphicsContext" super="NSObject">
-        <declared>AppKit/NSGraphicsContext.h</declared>
+        <declared>Gui/NSGraphicsContext.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

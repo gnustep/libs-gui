@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPopUpButton" prev="NSPasteboard.html" next="NSPopUpButtonCell.html" up="AppKit.html">
+<gsdoc base="NSPopUpButton" prev="NSPasteboard.html" next="NSPopUpButtonCell.html" up="Gui.html">
   <head>
     <title>NSPopUpButton</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSPopUpButton</heading>
       <class name="NSPopUpButton" super="NSButton">
-        <declared>AppKit/NSPopUpButton.h</declared>
+        <declared>Gui/NSPopUpButton.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

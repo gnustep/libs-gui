@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFormCell" prev="NSForm.html" next="NSGraphicsContext.html" up="AppKit.html">
+<gsdoc base="NSFormCell" prev="NSForm.html" next="NSGraphicsContext.html" up="Gui.html">
   <head>
     <title>NSFormCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSFormCell</heading>
       <class name="NSFormCell" super="NSActionCell">
-        <declared>AppKit/NSFormCell.h</declared>
+        <declared>Gui/NSFormCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

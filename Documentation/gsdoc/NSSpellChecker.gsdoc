@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSpellChecker" prev="NSSliderCell.html" next="NSSpellServer.html" up="AppKit.html">
+<gsdoc base="NSSpellChecker" prev="NSSliderCell.html" next="NSSpellServer.html" up="Gui.html">
   <head>
     <title>NSSpellChecker</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSSpellChecker</heading>
       <class name="NSSpellChecker" super="NSObject">
-        <declared>AppKit/NSSpellChecker.h</declared>
+        <declared>Gui/NSSpellChecker.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTabViewItem" prev="NSTabView.html" next="NSTableColumn.html" up="AppKit.html">
+<gsdoc base="NSTabViewItem" prev="NSTabView.html" next="NSTableColumn.html" up="Gui.html">
   <head>
     <title>NSTabViewItem</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTabViewItem</heading>
       <class name="NSTabViewItem" super="NSObject">
-        <declared>AppKit/NSTabViewItem.h</declared>
+        <declared>Gui/NSTabViewItem.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSWindow" prev="NSView.html" next="NSWindowController.html" up="AppKit.html">
+<gsdoc base="NSWindow" prev="NSView.html" next="NSWindowController.html" up="Gui.html">
   <head>
     <title>NSWindow</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSWindow</heading>
       <class name="NSWindow" super="NSResponder">
-        <declared>AppKit/NSWindow.h</declared>
+        <declared>Gui/NSWindow.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

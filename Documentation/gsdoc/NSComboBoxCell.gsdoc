@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSComboBoxCell" prev="NSComboBox.html" next="NSControl.html" up="AppKit.html">
+<gsdoc base="NSComboBoxCell" prev="NSComboBox.html" next="NSControl.html" up="Gui.html">
   <head>
     <title>NSComboBoxCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSComboBoxCell</heading>
       <class name="NSComboBoxCell" super="NSTextFieldCell">
-        <declared>AppKit/NSComboBoxCell.h</declared>
+        <declared>Gui/NSComboBoxCell.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

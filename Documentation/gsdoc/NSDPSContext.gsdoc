@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSDPSContext" prev="NSCustomImageRep.html" next="NSDocument.html" up="AppKit.html">
+<gsdoc base="NSDPSContext" prev="NSCustomImageRep.html" next="NSDocument.html" up="Gui.html">
   <head>
     <title>NSDPSContext</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSDPSContext</heading>
       <class name="NSDPSContext" super="NSGraphicsContext">
-        <declared>AppKit/NSDPSContext.h</declared>
+        <declared>Gui/NSDPSContext.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

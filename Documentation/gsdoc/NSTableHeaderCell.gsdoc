@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTableHeaderCell" prev="NSTableColumn.html" next="NSTableHeaderView.html" up="AppKit.html">
+<gsdoc base="NSTableHeaderCell" prev="NSTableColumn.html" next="NSTableHeaderView.html" up="Gui.html">
   <head>
     <title>NSTableHeaderCell</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTableHeaderCell</heading>
       <class name="NSTableHeaderCell" super="NSTextFieldCell">
-        <declared>AppKit/NSTableHeaderCell.h</declared>
+        <declared>Gui/NSTableHeaderCell.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

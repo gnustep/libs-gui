@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSavePanel" prev="NSRulerView.html" next="NSScreen.html" up="AppKit.html">
+<gsdoc base="NSSavePanel" prev="NSRulerView.html" next="NSScreen.html" up="Gui.html">
   <head>
     <title>NSSavePanel</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSSavePanel</heading>
       <class name="NSSavePanel">
-        <declared>AppKit/NSSavePanel.h</declared>
+        <declared>Gui/NSSavePanel.h</declared>
           <desc>
           </desc>
         <method type="NSSavePanel*" factory="yes">

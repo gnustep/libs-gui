@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSProgressIndicator" prev="NSPrinter.html" next="NSResponder.html" up="AppKit.html">
+<gsdoc base="NSProgressIndicator" prev="NSPrinter.html" next="NSResponder.html" up="Gui.html">
   <head>
     <title>NSProgressIndicator</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSProgressIndicator</heading>
       <class name="NSProgressIndicator" super="NSView">
-        <declared>AppKit/NSProgressIndicator.h</declared>
+        <declared>Gui/NSProgressIndicator.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSImageView" prev="NSImageRep.html" next="NSInputManager.html" up="AppKit.html">
+<gsdoc base="NSImageView" prev="NSImageRep.html" next="NSInputManager.html" up="Gui.html">
   <head>
     <title>NSImageView</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSImageView</heading>
       <class name="NSImageView" super="NSControl">
-        <declared>AppKit/NSImageView.h</declared>
+        <declared>Gui/NSImageView.h</declared>
         <conform>NSCoding</conform>
           <desc>
           </desc>

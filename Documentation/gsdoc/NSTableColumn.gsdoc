@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTableColumn" prev="NSTabViewItem.html" next="NSTableHeaderCell.html" up="AppKit.html">
+<gsdoc base="NSTableColumn" prev="NSTabViewItem.html" next="NSTableHeaderCell.html" up="Gui.html">
   <head>
     <title>NSTableColumn</title>
     <author name="Richard Frith-Macdonald">
@@ -14,7 +14,7 @@
     <chapter>
       <heading>NSTableColumn</heading>
       <class name="NSTableColumn" super="NSObject">
-        <declared>AppKit/NSTableColumn.h</declared>
+        <declared>Gui/NSTableColumn.h</declared>
         <conform>NSObject</conform>
           <desc>
           </desc>

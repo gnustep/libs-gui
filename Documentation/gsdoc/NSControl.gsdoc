@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSControl" prev="NSComboBoxCell.html" next="NSCursor.html" up="AppKit.html">
+<gsdoc base="NSControl" prev="NSComboBoxCell.html" next="NSCursor.html" up="Gui.html">
   <head>
     <title>NSControl</title>
     <author name="Richard Frith-Macdonald">
