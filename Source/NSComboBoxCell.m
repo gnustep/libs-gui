@@ -4,6 +4,8 @@
 
    Author:  Gerrit van Dyk <gerritvd@decillion.net>
    Date: 1999
+   Author:  Quentin Mathe <qmathe@club-internet.fr>
+   Date: 2004
 
    This file is part of the GNUstep GUI Library.
 
@@ -29,6 +31,7 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSValue.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSBox.h"
 #include "AppKit/NSBrowser.h"
@@ -42,58 +45,82 @@
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSScroller.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSTableColumn.h"
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSTextView.h"
+
+static NSNotificationCenter *nc;
+static const BOOL ForceBrowser = NO;
+static const BOOL ForceArrowIcon = NO;
+
+
+@interface GSFirstMouseTableView : NSTableView
+{
+
+}
+
+@end
+
+@implementation GSFirstMouseTableView
+- (BOOL) acceptsFirstMouse: (NSEvent *)event
+{
+  return YES;
+}
+@end
 
 @interface GSComboWindow : NSPanel
 {
-   NSBrowser	*browser;
-
-@private
+   NSBrowser *_browser;
+   GSFirstMouseTableView *_tableView;
    NSComboBoxCell *_cell;
-   BOOL		_stopped;
+   BOOL _stopped;
+   BOOL _localSelection;
 }
 
 + (GSComboWindow *)defaultPopUp;
 
-- (void) positionForCell:(NSComboBoxCell *)aCell
-		    view: (NSView *)popView;
-- (NSSize) popUpCellSizeForPopUp:(NSComboBoxCell *)aCell
-			   width: (float) width;
-- (void) popUpForCell: (NSComboBoxCell *)aCell
-		 view: (NSView *)popView;
-- (void) runModalPopUp;
-- (void) runLoop;
+- (void) layoutWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
+- (void) positionWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
+- (void) popUpForComboBoxCell: (NSComboBoxCell *)comboBoxCell;
+- (void) runModalPopUpWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
+- (void) runLoopWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
+- (void) onWindowEdited: (NSNotification *)notification;
 - (void) reloadData;
 - (void) noteNumberOfItemsChanged;
 - (void) scrollItemAtIndexToTop: (int)index;
 - (void) scrollItemAtIndexToVisible: (int)index;
 - (void) selectItemAtIndex: (int)index;
 - (void) deselectItemAtIndex: (int)index;
+- (void) moveUpSelection;
+- (void) moveDownSelection;
+- (void) validateSelection;
 
 @end
 
-
-static NSNotificationCenter *nc;
-
-@interface NSComboBoxCell(_Private_)
+@interface NSComboBoxCell (GNUstepPrivate)
 - (NSString *) _stringValueAtIndex: (int)index;
-- (void) _didClickInRect: (NSRect)cellFrame
-	   ofView: (NSView *)controlView;
-- (void) _didClick: (id)sender;
+- (void) _performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView;
+- (void) _didClickWithinButton: (id)sender;
+- (BOOL) _isWantedEvent: (NSEvent *)event;
 - (GSComboWindow *) _popUp;
+- (NSRect) _textCellFrame;
+- (void) _setSelectedItem: (int)index;
 @end
 
+// ---
+
+static GSComboWindow *gsWindow = nil;
 
 @implementation GSComboWindow
 
 + (GSComboWindow *) defaultPopUp
 {
-  static GSComboWindow *gsWindow = nil;
-
   if (!gsWindow)
-    gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,100,100)
-			     styleMask: NSBorderlessWindowMask
-			     backing: NSBackingStoreNonretained //NSBackingStoreBuffered
-			     defer: YES];
+    gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,200,200)
+			               styleMask: NSBorderlessWindowMask
+			                 backing: NSBackingStoreNonretained // NSBackingStoreBuffered
+			                   defer: YES];
   return gsWindow;
 }
 
@@ -103,40 +130,74 @@ static NSNotificationCenter *nc;
 		     defer: (BOOL)flag
 {
   NSBox *box;
+  NSScrollView *scrollView;
+  NSRect borderRect;
    
   self = [super initWithContentRect: contentRect
-		styleMask: aStyle
-		backing: bufferingType
-		defer: flag];
+		          styleMask: aStyle
+		            backing: bufferingType
+		              defer: flag];	  
   [self setLevel: NSPopUpMenuWindowLevel];
-  [self setWorksWhenModal: YES];
   [self setBecomesKeyOnlyIfNeeded: YES];
-
+  
+  _localSelection = NO;
+  
   box = [[NSBox alloc] initWithFrame: contentRect];
   [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [box setBorderType: NSLineBorder];
   [box setTitlePosition: NSNoTitle];
-  [box setContentViewMargins: NSMakeSize(1,1)];
-  [box sizeToFit];
+  [box setContentViewMargins: NSMakeSize(0, 0)];
   [self setContentView: box];
+  borderRect = contentRect;
   RELEASE(box);
-  browser = [[NSBrowser alloc] initWithFrame: contentRect];
-  [browser setMaxVisibleColumns: 1];
-  [browser setTitled: NO];
-  [browser setHasHorizontalScroller: NO];
-  [browser setTarget: self];
-  [browser setAction: @selector(selectItem:)];
-  [browser setDelegate: self];
-//    [browser setRefusesFirstResponder: YES];
-  [browser setAutoresizingMask: NSViewWidthSizable | NSViewWidthSizable];
-  [browser setAllowsEmptySelection: NO];
-  [browser setAllowsMultipleSelection: NO];
-  [browser setReusesColumns: YES];
-  // Create an empty matrix
-  [browser loadColumnZero];
-  [box setContentView: browser];
-  RELEASE(browser);
   
+  if (!ForceBrowser)
+    {
+  _tableView = [[GSFirstMouseTableView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+  [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  //[_tableView setBackgroundColor: [NSColor whiteColor]];
+  [_tableView setDrawsGrid: NO];
+  [_tableView setAllowsEmptySelection: YES];
+  [_tableView setAllowsMultipleSelection: NO];
+  [_tableView setAutoresizesAllColumnsToFit: YES];
+  [_tableView setHeaderView: nil];
+  [_tableView setCornerView: nil];
+  [_tableView addTableColumn: [[NSTableColumn alloc] initWithIdentifier: @"content"]];
+  [[_tableView tableColumnWithIdentifier:@"content"]  setDataCell: [[NSCell alloc] initTextCell: @""]];
+  [_tableView setDataSource: self];
+  [_tableView setDelegate: self];
+  
+  scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
+                                                               borderRect.origin.y,
+				                             borderRect.size.width, 
+						          borderRect.size.height)];
+  [scrollView setHasVerticalScroller: YES];
+  [scrollView setDocumentView: _tableView];
+  [box setContentView: scrollView];
+  
+  [_tableView reloadData];
+    }
+  else
+    {
+  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
+                                                          borderRect.origin.y,
+				                        borderRect.size.width, 
+						     borderRect.size.height)];
+  [_browser setMaxVisibleColumns: 1];
+  [_browser setTitled: NO];
+  [_browser setHasHorizontalScroller: NO];
+  [_browser setTarget: self];
+  [_browser setAction: @selector(selectItem:)];
+  [_browser setDelegate: self];
+  [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [_browser setAllowsEmptySelection: YES];
+  [_browser setAllowsMultipleSelection: NO];
+  [_browser setReusesColumns: YES];
+  // Create an empty matrix
+  [_browser loadColumnZero];
+  [box setContentView: _browser];
+    }
+
   return self;
 }
 
@@ -144,294 +205,398 @@ static NSNotificationCenter *nc;
 
 - (void)dealloc
 {
-  // Browser was not retained so don't release it
+  // browser, table view and scroll view were not retained so don't release them
   [super dealloc];
 }
 
-- (NSSize) popUpCellSizeForPopUp: (NSComboBoxCell *)aCell 
-			   width: (float) width
+- (void) layoutWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  NSMatrix *matrix = [browser matrixInColumn: 0];
-  NSSize size;
+  NSMatrix *matrix = [_browser matrixInColumn: 0];
   NSSize bsize = _sizeForBorderType(NSLineBorder);
+  NSSize size;
   float itemHeight;
-  float cellSpacing;
-  int num = [aCell numberOfItems];
-  int max = [aCell numberOfVisibleItems];
-
-  if (num > max)
-    num = max;
-
-  itemHeight = [aCell itemHeight];
+  float textCellWidth;
+  NSSize intercellSpacing;
+  int num = [comboBoxCell numberOfItems];
+  int max = [comboBoxCell numberOfVisibleItems];
+  
+  // Manage table view or browser cells height
+  
+  itemHeight = [comboBoxCell itemHeight];
   if (itemHeight <= 0)
     {
+      // FIX ME : raise NSException
+      if (!ForceBrowser)
+        {
+      itemHeight = [_tableView rowHeight];
+        }
+      else
+        {
       itemHeight = [matrix cellSize].height;
+        }
+    }
+  size.height = itemHeight;
+    
+  // Manage table view or browser cells width
+  
+  textCellWidth = [comboBoxCell _textCellFrame].size.width;
+  if ([comboBoxCell hasVerticalScroller])
+    {
+      size.width = textCellWidth - [NSScroller scrollerWidth] - bsize.width;
     }
   else 
     {
-      size.height = itemHeight;
-      if ([aCell hasVerticalScroller])
-        {
-	  size.width = width - [NSScroller scrollerWidth] - bsize.width;
-	}
-      else 
-        {
-	  size.width = width - bsize.width;
-	}
-      [matrix setCellSize: size];
+      size.width = textCellWidth - bsize.width;
     }
+  if (size.width < 0)
+    {
+      size.width = 0;
+    }
+   
+  if (!ForceBrowser)
+    {
+  [_tableView setRowHeight: size.height];
+    }
+  else
+    {
+  [matrix setCellSize: size];
+    }
+    
+  // Just check intercell spacing
 
-  size = [aCell intercellSpacing];
-  cellSpacing = size.height;
-  if (cellSpacing <= 0)
-    cellSpacing = [matrix intercellSpacing].height;
+  intercellSpacing = [comboBoxCell intercellSpacing];
+  if (intercellSpacing.height <= 0)
+    {
+      // FIX ME : raise NSException
+      if (!ForceBrowser)
+        {
+      intercellSpacing.height = [_tableView intercellSpacing].height;
+        }
+      else
+        {
+      intercellSpacing.height = [matrix intercellSpacing].height;
+	}
+    }
   else 
-    [matrix setIntercellSpacing: size];
-
-  return NSMakeSize(width, 2.0 + bsize.height + (itemHeight + cellSpacing) * num);
+    {
+      if (!ForceBrowser)
+        {
+      [_tableView setIntercellSpacing: intercellSpacing];
+        }
+      else
+        {
+      [matrix setIntercellSpacing: intercellSpacing];
+        }
+    }
+    
+    
+  if (num > max)
+    num = max;
+   
+  [self setFrame: NSMakeRect(0, 0, textCellWidth, 
+     2 * bsize.height + (itemHeight + intercellSpacing.height) * (num - 1)
+     + itemHeight) display: NO];
 }
 
-- (void) positionForCell: (NSComboBoxCell *)aCell
-		    view: (NSView *)popView
+- (void) positionWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  NSRect popRect = [popView bounds];
+  NSView *viewWithComboCell = [comboBoxCell controlView];
   NSRect screenFrame;
+  NSRect comboWindowFrame;
+  NSRect viewWithComboCellFrame;
   NSRect rect;
-  NSSize size;
   NSPoint point, oldPoint;
+  NSView *superview = [viewWithComboCell superview];
    
-  size = [self popUpCellSizeForPopUp: aCell width: NSWidth(popRect)];
-  if (size.width == 0 || size.height == 0)
+  [self layoutWithComboBoxCell: comboBoxCell];
+  
+  // Now we can ask for the size
+  
+  comboWindowFrame = [self frame];
+  if (comboWindowFrame.size.width == 0 || comboWindowFrame.size.height == 0)
     return;
-
-  screenFrame = [[[popView window] screen] frame];
-  point = popRect.origin;
-  if ([popView isFlipped])
-    point.y += NSHeight(popRect);
-  point = [popView convertPoint: point toView: nil];
-  point.y -= 1.0;
-  point = [[popView window] convertBaseToScreen: point];
-  point.y -= size.height;
+  
+  screenFrame = [[[viewWithComboCell window] screen] frame];
+  viewWithComboCellFrame = [viewWithComboCell frame];
+  
+  point = viewWithComboCellFrame.origin;
+  
+  // Switch to the window coordinates
+  point = [[viewWithComboCell superview] convertPoint: point toView: nil];
+  
+  // Switch to the screen coordinates
+  point = [[viewWithComboCell window] convertBaseToScreen: point];
+  
+  // Take in account flipped view
+  if ([superview isFlipped])
+    point.y += NSHeight([superview frame]) 
+      - (viewWithComboCellFrame.origin.y * 2 + NSHeight(viewWithComboCellFrame));
+  
+  point.y -= 1 + NSHeight(comboWindowFrame);
+  
   if (point.y < 0)
     {
-      // Off screen, so move it.
+      // Off screen, so move it
       oldPoint = point;
-      point = popRect.origin;
-      if (![popView isFlipped])
-	  point.y += NSHeight(popRect);
-      point = [popView convertPoint: point toView: nil];
-      point.y += 1.0;
-      point = [[popView window] convertBaseToScreen: point];
-      if (point.y > NSHeight(screenFrame))
-	  point = oldPoint;
       
-      if (point.y + size.height > NSHeight(screenFrame))
-	  point.y = NSHeight(screenFrame) - size.height;
+      point = viewWithComboCellFrame.origin;
+      point.y = NSMaxY(viewWithComboCellFrame);
+      
+      // Switch to the window coordinates  
+      point = [[viewWithComboCell superview] convertPoint: point toView: nil];
+  
+      // Switch to the screen coordiantes
+      point = [[viewWithComboCell window] convertBaseToScreen: point];
+        
+      // Take in account flipped view
+      if ([superview isFlipped])
+        point.y += NSHeight([superview frame]) 
+          - (viewWithComboCellFrame.origin.y * 2 + NSHeight(viewWithComboCellFrame));
+	
+      point.y += 1;  
+      
+      if (point.y + NSHeight(comboWindowFrame) > NSHeight(screenFrame))
+	  point = oldPoint;
     }
 
-  if (point.x + size.width > NSWidth(screenFrame))
-    point.x = NSWidth(screenFrame) - size.width;
-  if (point.x < 0.0)
-    point.x = 0.0;
-
-  rect.size = size;
+  rect.size.width = NSWidth(comboWindowFrame);
+  rect.size.height = NSHeight(comboWindowFrame);
   rect.origin.x = point.x;
   rect.origin.y = point.y;
-  rect = [NSWindow frameRectForContentRect: rect
-		   styleMask: _styleMask];
   [self setFrame: rect display: NO];
 }
 
-- (void) popUpForCell: (NSComboBoxCell *)aCell
-	   view: (NSView *)popView
+- (void) popUpForComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  [self positionForCell: aCell
-	view: popView];
-
-  _cell = aCell;
-  [self reloadData];
+  NSString *more;
+  unsigned int index = NSNotFound;
   
-//    [self enableKeyEquivalentForDefaultButtonCell];
-  [self runModalPopUp];
+   _cell = comboBoxCell;
+   
+  [self positionWithComboBoxCell: _cell];
+  more = [_cell completedString: [_cell stringValue]];
+  index = [[_cell objectValues] indexOfObject: more];
+  if (index != NSNotFound)
+    {
+      [_cell _setSelectedItem: index];
+    }
+    
+  [self reloadData];
+  [self enableKeyEquivalentForDefaultButtonCell];
+  [self runModalPopUpWithComboBoxCell: _cell];
 
   _cell = nil;
 }
 
-- (void) runModalPopUp
+- (void) runModalPopUpWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
   NSWindow	*onWindow;
-  NSEvent	*event;
-  NSException	*exception = nil;
   
   onWindow = [[_cell controlView] window];
-//  [self setLevel: [onWindow level]];
-//  [self orderWindow: NSWindowAbove relativeTo: [onWindow windowNumber]];
 
-  while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
-			 untilDate: [NSDate dateWithTimeIntervalSinceNow: 0]
-			 inMode: NSDefaultRunLoopMode
-			 dequeue: NO]))
-    {
-      if ([event type] == NSAppKitDefined ||
-	  [event type] == NSSystemDefined ||
-	  [event type] == NSApplicationDefined ||
-	  [event windowNumber] == [self windowNumber])
-	break;
-      [NSApp nextEventMatchingMask: NSAnyEventMask
-	     untilDate: [NSDate distantFuture]
-	     inMode: NSDefaultRunLoopMode
-	     dequeue: YES];
-    }
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowWillMoveNotification object: onWindow];
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowWillMiniaturizeNotification object: onWindow];
+  /* the notification below doesn't exist currently
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowWillResizeNotification object: onWindow];
+  */
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowWillCloseNotification object: onWindow];
+   
+  // ### Hack 
+  // ### The code below must be removed when the notifications over will work
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowDidMoveNotification object: onWindow];
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowDidMiniaturizeNotification object: onWindow];
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowDidResizeNotification object: onWindow];
+  // ###
+  
+  [self orderFront: self];
+  [self makeFirstResponder: _tableView];
+  [self runLoopWithComboBoxCell: comboBoxCell];
+  
+  [nc removeObserver: self];
+  [_tableView setDelegate: self];
+  // Hack
+  // Need to reset the delegate to receive the next notifications
+  
+  [self close];
 
-  [self orderFront: nil];
-
-  NS_DURING
-    [self runLoop];
-  NS_HANDLER
-    exception = localException;
-  NS_ENDHANDLER;
-
-  if (onWindow)
-    {
-      [onWindow makeKeyWindow];
-      [onWindow orderFrontRegardless];
-    }
-
-  if ([self isVisible])
-      [self orderOut:nil];
-
-  if (exception)
-    [exception raise];
+  [onWindow makeFirstResponder: [_cell controlView]];
 }
 
-- (void) runLoop
+- (void) runLoopWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  NSEvent		*event;
-  int			cnt = 0;
-  BOOL			kDown;
+  NSEvent *event;
   NSDate *limit = [NSDate distantFuture];
+  unichar key;
   CREATE_AUTORELEASE_POOL (pool);
-  
-  _stopped = NO;
-  while (!_stopped)
+
+  while (YES)
     {
-      kDown = NO;
-      cnt++;
-      if (cnt >= 5)
-        {
-	  RELEASE(pool);
-	  IF_NO_GC(pool = [[NSAutoreleasePool alloc] init]);
-	  cnt = 0;
-	}
       event = [NSApp nextEventMatchingMask: NSAnyEventMask
-		     untilDate: limit
-		     inMode: NSDefaultRunLoopMode
-		     dequeue: NO];
-      if (event)
-        {
-	  if ([event type] == NSAppKitDefined ||
-	      [event type] == NSSystemDefined ||
-	      [event type] == NSApplicationDefined ||
-	      [event windowNumber] == [self windowNumber])
+		                 untilDate: limit
+		                    inMode: NSDefaultRunLoopMode
+		                   dequeue: YES];
+      if ([event type] == NSLeftMouseDown
+       || [event type] == NSRightMouseDown)
+        {		   
+          if (![comboBoxCell _isWantedEvent: event] && [event window] != self)
 	    {
-	      event = [NSApp nextEventMatchingMask: NSAnyEventMask
-			     untilDate: limit
-			     inMode: NSDefaultRunLoopMode
-			     dequeue: YES];
-	      [NSApp sendEvent: event];
-	      if ([event type] == NSKeyDown)
-		  kDown = YES;
-	    }
-	  else if ([event type] == NSMouseMoved ||
-		   [event type] == NSLeftMouseDragged ||
-		   [event type] == NSOtherMouseDragged ||
-		   [event type] == NSRightMouseDragged ||
-		   [event type] == NSMouseEntered ||
-		   [event type] == NSMouseExited ||
-		   [event type] == NSCursorUpdate)
-	    {
-	      event = [NSApp nextEventMatchingMask: NSAnyEventMask
-			     untilDate: limit
-			     inMode: NSDefaultRunLoopMode
-			     dequeue: YES];
-	      [NSApp sendEvent:event];
+              break;
 	    }
 	  else
-	    _stopped = YES;
+	    {
+	      [NSApp sendEvent: event];
+	    }
+        }
+      else if ([event type] == NSKeyDown)
+        {
+	  key = [[event characters] characterAtIndex: 0];
+          if (key == NSUpArrowFunctionKey)
+            {
+              [self moveUpSelection]; 
+            }
+          else if (key == NSDownArrowFunctionKey)
+            {
+              [self moveDownSelection];
+            }
+          else if (key == NSNewlineCharacter 
+	    || key == NSEnterCharacter 
+	    || key == NSCarriageReturnCharacter)
+            {
+              [self validateSelection];
+            }
+          else
+            {
+	      [NSApp sendEvent: event];
+	    }
 	}
+      else
+        {
+	  [NSApp sendEvent: event];
+	}
+      
+      if (_stopped)
+        break;      
     }
-
-  if (kDown)
-    while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
-			   untilDate: limit
-			   inMode: NSDefaultRunLoopMode
-			   dequeue: NO]))
-      {
-	if ([event windowNumber] != [self windowNumber])
-	  break;
-	event = [NSApp nextEventMatchingMask: NSAnyEventMask
-		       untilDate: limit
-		       inMode: NSDefaultRunLoopMode
-		       dequeue: YES];
-	[NSApp sendEvent: event];
-	if ([event type] == NSKeyUp)
-	  break;
-      }
+    
+  _stopped = NO;
+    
   RELEASE(pool);
+}
+
+// onWindow notifications
+
+- (void) onWindowEdited: (NSNotification *)notification
+{
+  _stopped = YES;
 }
 
 - (void) reloadData
 {
-  [browser loadColumnZero];
+  if (!ForceBrowser)
+    {
+  [_tableView reloadData];
+    }
+  else
+    {
+  [_browser loadColumnZero];
+    }
   [self selectItemAtIndex: [_cell indexOfSelectedItem]];
 }
 
 - (void) noteNumberOfItemsChanged
 {
-// FIXME: Should only load the additional items
+  // FIXME: Should only load the additional items
   [self reloadData];
 }
 
 - (void) scrollItemAtIndexToTop: (int)index
 {
-  NSMatrix *matrix = [browser matrixInColumn: 0];
   NSRect rect;
+  
+  if (!ForceBrowser)
+    {
+  rect = [_tableView frameOfCellAtColumn: 0 row: index];
+  [_tableView scrollPoint: rect.origin]; 
+    }
+  else
+    {  
+  NSMatrix *matrix = [_browser matrixInColumn: 0];
 
   rect = [matrix cellFrameAtRow: index column: 0];
   [matrix scrollPoint: rect.origin];
+    }
 }
 
 - (void) scrollItemAtIndexToVisible: (int)index
 {
-  NSMatrix *matrix = [browser matrixInColumn: 0];
+  if (!ForceBrowser)
+    {
+  [_tableView scrollRowToVisible: index];
+    }
+  else
+    {
+  NSMatrix *matrix = [_browser matrixInColumn: 0];
 
   [matrix scrollCellToVisibleAtRow: index column: 0];
+    }
 }
 
 - (void) selectItemAtIndex: (int)index
-{
-  [browser selectRow: index inColumn: 0];
+{ 
+  if (index < 0)
+    return;
+  
+  if (!ForceBrowser)
+    {
+  if ([_tableView selectedRow] == index || [_tableView numberOfRows] <= index)
+    return;
+   _localSelection  = YES;
+  // Will block the TableDidSelectionChange: action
+  [_tableView selectRow: index byExtendingSelection: NO];     
+  _localSelection = NO;
+    }
+  else
+    {
+  NSMatrix *matrix = [_browser matrixInColumn: 0];
+  
+  if ([matrix selectedRow] == index || [matrix numberOfRows] <= index)
+    return;
+  [_browser selectRow: index inColumn: 0];
+    }   
 }
 
 - (void) deselectItemAtIndex: (int)index
 {
-  NSMatrix *matrix = [browser matrixInColumn: 0];
+  if (!ForceBrowser)
+    {
+  [_tableView deselectAll: self];
+    }
+  else
+    {
+  NSMatrix *matrix = [_browser matrixInColumn: 0];
 
   [matrix deselectSelectedCell];
+    }
 }
 
 // Target/Action of Browser
 - (void) selectItem: (id)sender
 {
   if (_cell)
-    {
+    {      
       [_cell selectItemAtIndex: [sender selectedRowInColumn: 0]];
-      [_cell setStringValue: [[sender selectedCell] stringValue]];
       _stopped = YES;
     }
 }
 
-// Browser Delegate Methods
+// Browser delegate methods
 - (int) browser: (NSBrowser *)sender 
 numberOfRowsInColumn: (int)column
 {
@@ -453,8 +618,97 @@ numberOfRowsInColumn: (int)column
   [aCell setLeaf: YES];
 }
 
+// Table view data source methods
+- (int) numberOfRowsInTableView: (NSTableView *)tv
+{
+  return [_cell numberOfItems];
+}
+
+- (id) tableView: (NSTableView *)tv objectValueForTableColumn: (NSTableColumn *)tc row: (int)row
+{
+  return [_cell _stringValueAtIndex: row];
+}
+
+// Table view delegate methods
+- (void) tableViewSelectionDidChange: (NSNotification *)notification
+{
+  [self validateSelection];
+}
+
+// Key actions methods
+- (void) moveUpSelection
+{
+  if (!ForceBrowser)
+    {
+  int index = [_tableView selectedRow] - 1;
+
+  if (index > -1 && index < [_tableView numberOfRows])
+    {
+      _localSelection = YES;
+      [_tableView selectRow: index byExtendingSelection: NO];
+      [_tableView scrollRowToVisible: index];
+      _localSelection = NO;
+    }
+    }
+  else
+    {
+  int index = [_browser selectedRowInColumn: 0] - 1;
+
+  if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
+    {
+      _localSelection = YES;
+      [_browser selectRow: index inColumn: 0];
+      _localSelection = NO;
+    }
+    }
+}
+
+- (void) moveDownSelection
+{
+  if (!ForceBrowser)
+    { 
+  int index = [_tableView selectedRow] + 1;
+  
+  if (index > -1 && index < [_tableView numberOfRows])
+    {
+      _localSelection = YES;
+      [_tableView selectRow: index byExtendingSelection: NO];
+      [_tableView scrollRowToVisible: index];
+      _localSelection = NO;
+    }
+    }
+  else
+    {
+  int index = [_browser selectedRowInColumn: 0] + 1;
+
+  if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
+    {
+      _localSelection = YES;
+      [_browser selectRow: index inColumn: 0];
+      _localSelection = NO;
+    }
+    }
+}
+
+- (void) validateSelection
+{
+  if (_cell && _localSelection == NO)
+    {
+      if (!ForceBrowser)
+        {
+      [_cell selectItemAtIndex: [_tableView selectedRow]];
+        }
+      else
+        {
+      [_cell selectItemAtIndex: [_browser selectedRowInColumn: 0]];
+	}
+      _stopped = YES;
+    }
+}
+
 @end
 
+// ---
 
 @implementation NSComboBoxCell
 
@@ -487,15 +741,23 @@ numberOfRowsInColumn: (int)column
   _itemHeight = 16;
   _selectedItem = -1;
 
-  _buttonCell = [[NSButtonCell alloc] initImageCell: 
-					  [NSImage imageNamed: @"NSComboArrow"]];
+  if (!ForceArrowIcon)
+    {
+      _buttonCell = [[NSButtonCell alloc] initImageCell: 
+        [NSImage imageNamed: @"common_ComboBoxEllipsis"]];
+    }
+  else
+    {
+       _buttonCell = [[NSButtonCell alloc] initImageCell: 
+        [NSImage imageNamed: @"NSComboArrow"]];
+    }
+    
   [_buttonCell setImagePosition: NSImageOnly];
   [_buttonCell setButtonType: NSMomentaryPushButton];
   [_buttonCell setHighlightsBy: NSPushInCellMask];
   [_buttonCell setBordered: YES];
-  // This never gets used.
   [_buttonCell setTarget: self];
-  [_buttonCell setAction: @selector(_didClick:)];
+  [_buttonCell setAction: @selector(_didClickWithinButton:)];
 
   return self;
 }
@@ -562,33 +824,55 @@ numberOfRowsInColumn: (int)column
 
 - (void) selectItemAtIndex: (int)index
 {
-  if (index < -1)
-    index = -1;
+  // Method called by GSComboWindow when a selection is done in the table view or 
+  // the browser
+  
+  NSText *textObject = [[[self controlView] window] fieldEditor: YES 
+                                                      forObject: self];  
+  if ([self usesDataSource])
+    {
+      if ([self numberOfItems] <= index)
+        ; // raise exception
+    }
+  else
+    {
+      if ([_popUpList count] <= index)
+        ; // raise exception
+    }
+  
+  if (index < 0)
+    ; // rais exception
 
   if (_selectedItem != index)
     {
       _selectedItem = index;
       
-      [_popup selectItemAtIndex: index];
+      [_popup selectItemAtIndex: index]; 
+      // This method call will not create a infinite loop when the index has been 
+      // already set by a mouse click because the method is not completed when the 
+      // current index is not different from the index parameter
+      
+      [textObject setString: [self _stringValueAtIndex: _selectedItem]];
+      [textObject setSelectedRange: NSMakeRange(0, [[textObject string] length])];
 
       [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
-	  object: [self controlView]
-	  userInfo: nil];
+	                object: [self controlView]
+	              userInfo: nil];
     }
 }
 
 - (void) deselectItemAtIndex: (int)index
 {
   if (_selectedItem == index)
-  {
-    _selectedItem = -1;
+    {
+      _selectedItem = -1;
 
       [_popup deselectItemAtIndex: index];
 
-    [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
-	object: [self controlView]
-	userInfo: nil];
-  }
+      [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+  	                object: [self controlView]
+	              userInfo: nil];
+    }
 }
 
 - (int) indexOfSelectedItem
@@ -596,18 +880,20 @@ numberOfRowsInColumn: (int)column
   return _selectedItem;
 }
 
-- (int)numberOfItems
+- (int) numberOfItems
 {
   if (_usesDataSource)
     {
       if (!_dataSource)
-	NSLog(@"ComboBox: No DataSource Specified");
+        {
+	  NSLog(@"%@: A DataSource should be specified", self);
+	}
       else
         {
 	  if ([_dataSource respondsToSelector: @selector(numberOfItemsInComboBox:)])
 	    {
-	      return [_dataSource numberOfItemsInComboBox:
-				      (NSComboBox *)[self controlView]];
+	      return [_dataSource numberOfItemsInComboBox: 
+	        (NSComboBox *)[self controlView]];
 	    }
 	  else
 	    {
@@ -619,14 +905,15 @@ numberOfRowsInColumn: (int)column
   else
     return [_popUpList count];
 	 
-   return 0;
+  return 0;
 }
 
 - (id) dataSource { return _dataSource; }
 - (void) setDataSource: (id)aSource
 {
   if (!_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox does not use dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is not set to use a data source", 
+      self);
   else
     _dataSource = aSource;
 }
@@ -634,61 +921,74 @@ numberOfRowsInColumn: (int)column
 - (void) addItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList addObject: object];
+    
   [self reloadData];
 }
 
 - (void) addItemsWithObjectValues: (NSArray *)objects
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList addObjectsFromArray: objects];
+    
   [self reloadData];
 }
 
 - (void) insertItemWithObjectValue: (id)object atIndex: (int)index
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList insertObject: object atIndex: index];
+    
   [self reloadData];
 }
 
 - (void) removeItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList removeObject: object];
+    
   [self reloadData];
 }
 
 - (void) removeItemAtIndex: (int)index
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList removeObjectAtIndex: index];
+    
   [self reloadData];
 }
 
 - (void) removeAllItems
 {
   if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
   else
     [_popUpList removeAllObjects];
+    
   [self reloadData];
 }
 
 - (void) selectItemWithObjectValue: (id)object
 {
  if (_usesDataSource)
-    NSLog(@"Method Invalid: ComboBox uses dataSource");
+    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+      self);
  else
    {
      int i = [_popUpList indexOfObject: object];
@@ -704,18 +1004,22 @@ numberOfRowsInColumn: (int)column
 {
   if (_usesDataSource)
     {
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
       return nil;
     }
   else
-    return [_popUpList objectAtIndex: index];
+    {
+      return [_popUpList objectAtIndex: index];
+    }
 }
 
 - (id) objectValueOfSelectedItem
 {
   if (_usesDataSource)
     {
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
       return nil;
     }
   else
@@ -733,9 +1037,11 @@ numberOfRowsInColumn: (int)column
 {
   if (_usesDataSource)
     {
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
       return 0;
     }
+    
   return [_popUpList indexOfObject: object];
 }
 
@@ -743,9 +1049,11 @@ numberOfRowsInColumn: (int)column
 {
   if (_usesDataSource)
     {
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
       return nil;
     }
+    
   return _popUpList;
 }
 
@@ -755,120 +1063,120 @@ numberOfRowsInColumn: (int)column
   if (_usesDataSource)
     {
       if (!_dataSource)
-	NSLog(@"ComboBox: No DataSource Specified");
+	NSLog(@"%@: A data source should be specified", self);
       else if ([_dataSource respondsToSelector: @selector(comboBox:completedString:)])
         {
 	  return [_dataSource comboBox: (NSComboBox *)[self controlView] 
-			      completedString: substring];
+		       completedString: substring];
 	}
       else if ([_dataSource respondsToSelector: @selector(comboBoxCell:completedString:)])
         {
 	  return [_dataSource comboBoxCell: self completedString: substring];
 	}
+      else
+        {
+          unsigned int i;
+
+          for (i = 0; i < [self numberOfItems]; i++)
+            {
+	      NSString *str = [self _stringValueAtIndex: i];
+
+	      if ([str length] > [substring length] && [str hasPrefix: substring])
+	        return str;
+            }	
+	}
     }
   else
-  {
-    unsigned int i;
+    {
+      unsigned int i;
 
-    for (i = 0; i < [_popUpList count]; i++)
-      {
-	// FIXME: How to convert to a string?  
-	NSString *str = [[_popUpList objectAtIndex: i] description];
+      for (i = 0; i < [_popUpList count]; i++)
+        {
+	  NSString *str = [[_popUpList objectAtIndex: i] description];
 
-	if ([str hasPrefix: substring])
-	  return str;
-      }
-  }
+	  if ([str length] > [substring length] && [str hasPrefix: substring])
+	    return str;
+        }
+    }
+  
   return substring;
 }
 
+- (BOOL)completes { return _completes; }
 - (void)setCompletes:(BOOL)completes
 {
   _completes = completes;
 }
 
-- (BOOL)completes
-{
-  return _completes;
-}
+// Inlined methods
+#define ButtonWidth 18
+#define BorderWidth 2
+// the inset border for the top and the bottom of the button
 
-#define CBButtonWidth 18
-#define CBFrameWidth 2
-static inline NSRect 
-textCellFrameFromRect(NSRect cellRect)
+static inline NSRect textCellFrameFromRect(NSRect cellRect)
 {
   return NSMakeRect(NSMinX(cellRect),
 		    NSMinY(cellRect),
-		    NSWidth(cellRect)-CBButtonWidth,
+		    NSWidth(cellRect) - ButtonWidth,
 		    NSHeight(cellRect));
 }
 
-static inline NSRect 
-buttonCellFrameFromRect(NSRect cellRect)
+static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 {
-  return NSMakeRect(NSMaxX(cellRect)-CBButtonWidth,
-		    NSMinY(cellRect)+CBFrameWidth,
-		    CBButtonWidth,
-		    NSHeight(cellRect)-(CBFrameWidth*2.0));
+  return NSMakeRect(NSMaxX(cellRect) - ButtonWidth,
+		    NSMinY(cellRect) + BorderWidth,
+		    ButtonWidth,
+		    NSHeight(cellRect) - (BorderWidth * 2.0));
 }
 
 // Overridden
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
++ (BOOL) prefersTrackingUntilMouseUp
 {
-  if ([GSCurrentContext() isDrawingToScreen])
+  return YES; 
+  /* Needed to have the clickability of the button take in account when the tracking happens.
+     This method is call by the NSControl -mouseDown: method with the code :
+     [_cell trackMouse: e
+		inRect: _bounds
+	        ofView: self
+          untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]] */
+}
+
+- (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+{
+  // FIX ME: Is this test case below with the method call really needed ?
+  if ([GSCurrentContext() isDrawingToScreen]) 
     {
       [super drawWithFrame: textCellFrameFromRect(cellFrame)
-	     inView: controlView];
+	            inView: controlView];
       [_buttonCell drawWithFrame: buttonCellFrameFromRect(cellFrame)
-		   inView: controlView];
+		          inView: controlView];
     }
   else
-    [super drawWithFrame: cellFrame inView: controlView];
+    {
+      [super drawWithFrame: cellFrame inView: controlView];
+    }
+    
+  _lastValidFrame = cellFrame; // used by GSComboWindow to appear in the right position
 }
 
 - (void) highlight: (BOOL)flag
 	 withFrame: (NSRect)cellFrame
 	    inView: (NSView *)controlView
 {
+  // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen])
     {
       [super highlight: flag
 	     withFrame: textCellFrameFromRect(cellFrame)
-	     inView: controlView];
+	        inView: controlView];
       [_buttonCell highlight: flag
 		   withFrame: buttonCellFrameFromRect(cellFrame)
-		   inView: controlView];
+		      inView: controlView];
     }
   else
-    [super highlight: flag withFrame: cellFrame inView: controlView];
-}
-
-- (void) selectWithFrame: (NSRect)aRect 
-		  inView: (NSView *)controlView
-		  editor: (NSText *)textObj 
-		delegate: (id)anObject
-		   start: (int)selStart 
-		  length: (int)selLength
-{
-  [super selectWithFrame: textCellFrameFromRect(aRect)
-	 inView: controlView
-	 editor: textObj 
-	 delegate: anObject
-	 start: selStart 
-	 length: selLength];
-}
-
-- (void) editWithFrame: (NSRect)aRect 
-		inView: (NSView *)controlView
-		editor: (NSText *)textObj 
-	      delegate: (id)anObject
-		 event: (NSEvent *)theEvent
-{
-  [super editWithFrame: textCellFrameFromRect(aRect)
-	 inView: controlView
-	 editor: textObj 
-	 delegate: anObject
-	 event: theEvent];
+    {
+      [super highlight: flag withFrame: cellFrame inView: controlView];
+    }
 }
 
 - (BOOL) trackMouse: (NSEvent *)theEvent 
@@ -876,36 +1184,52 @@ buttonCellFrameFromRect(NSRect cellRect)
 	     ofView: (NSView *)controlView 
        untilMouseUp: (BOOL)flag
 {
-  NSEvent *nEvent;
-  BOOL 	rValue;
+  NSWindow *cvWindow = [controlView window];
   NSPoint point;
-
+  BOOL isFlipped = [controlView isFlipped];
+  BOOL clicked = NO;
+  
   // Should this be set by NSActionCell ?
   if (_control_view != controlView)
     _control_view = controlView;
 
-  rValue = [super trackMouse: theEvent inRect: cellFrame
-		  ofView: controlView untilMouseUp: flag];
-
-  nEvent = [NSApp currentEvent];
-  if ([theEvent type] == NSLeftMouseDown  &&
-      [nEvent type] == NSLeftMouseUp)
-    {
-      point = [controlView convertPoint: [theEvent locationInWindow]
+  point = [controlView convertPoint: [theEvent locationInWindow]
 			   fromView: nil];
-      if (NSPointInRect(point, cellFrame))
-        {
-	  point = [controlView convertPoint: [nEvent locationInWindow]
-			       fromView: nil];
-	  if (NSPointInRect(point, buttonCellFrameFromRect(cellFrame)))
- 	    {
-//      [_buttonCell performClick: self];
-	      [self _didClickInRect: cellFrame ofView: controlView];
-	    }
+
+  if (!NSMouseInRect(point, cellFrame, isFlipped))
+    return NO; 
+  else if ([theEvent type] == NSLeftMouseDown)
+    {
+      if (NSMouseInRect(point, textCellFrameFromRect(cellFrame), isFlipped))
+	{
+	  return YES;// continue
 	}
+      else if (NSMouseInRect(point, buttonCellFrameFromRect(cellFrame), isFlipped))
+ 	{
+          [controlView lockFocus];
+          [_buttonCell highlight: YES withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
+	  [controlView unlockFocus];
+	  [cvWindow flushWindow];
+	  
+          clicked = [_buttonCell trackMouse: theEvent 
+	                             inRect: buttonCellFrameFromRect(cellFrame)
+	                             ofView: controlView
+		  	       untilMouseUp: NO];
+
+          /* We can do the call below but it is already done by the target/action we have set for the button cell
+	  if (clicked)
+	    [self _didClickWithinButton: self]; // not to be used */
+	  	       
+	  [controlView lockFocus];
+          [_buttonCell highlight: NO withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
+	  [controlView unlockFocus];
+	  [cvWindow flushWindow];
+	  
+	  return NO;
+        }
     }
-  
-  return rValue;
+    
+  return NO;
 }
 
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
@@ -986,11 +1310,104 @@ buttonCellFrameFromRect(NSRect cellRect)
   return self;
 }
 
+- (void) selectWithFrame: (NSRect)aRect 
+		  inView: (NSView *)controlView
+		  editor: (NSText *)textObj 
+		delegate: (id)anObject
+		   start: (int)selStart 
+		  length: (int)selLength
+{
+  [super selectWithFrame: textCellFrameFromRect(aRect)
+                  inView: controlView
+                  editor: textObj 
+                delegate: anObject
+                   start: selStart 
+                  length: selLength];
+  
+  [nc addObserver: self 
+         selector: @selector(textDidChange:)
+	     name: NSTextDidChangeNotification 
+	   object: textObj];
+  [nc addObserver: self 
+         selector: @selector(textViewDidChangeSelection:)
+	     name: NSTextViewDidChangeSelectionNotification 
+	   object: textObj];
+	  
+  // This method is called when the cell obtains the focus;
+  // don't know why the next method editWithFrame: is not called
+}
+
+- (void) editWithFrame: (NSRect)frame
+                inView: (NSView *)controlView
+	        editor: (NSText *)textObj 
+	      delegate: (id)delegate 
+	         event: (NSEvent *)theEvent
+{
+  [super editWithFrame: textCellFrameFromRect(frame)
+                inView: controlView
+                editor: textObj
+              delegate: delegate
+                 event: theEvent];
+  
+  /*
+  [nc addObserver: self 
+         selector: @selector(textDidChange:)
+	     name: NSTextDidChangeNotification 
+	   object: textObj];
+  [nc addObserver: self 
+         selector: @selector(textViewDidChangeSelection:)
+	     name: NSTextViewDidChangeSelectionNotification 
+	   object: textObj]; */
+}
+
+- (void) endEditing: (NSText *)editor
+{
+  [super endEditing: editor];
+  [nc removeObserver: self name: NSTextDidChangeNotification object: editor];
+  [nc removeObserver: self 
+                name: NSTextViewDidChangeSelectionNotification 
+	      object: editor];
+}
+
+- (void) textViewDidChangeSelection: (NSNotification *)notification
+{
+  _prevSelectedRange = [[[notification userInfo] 
+    objectForKey: @"NSOldSelectedCharacterRange"] rangeValue];
+}
+
+- (void) textDidChange: (NSNotification *)notification
+{
+  NSText *textObject = [notification object];
+
+  if ([self completes])
+    {
+      NSString *myString = [[textObject string] copy];
+      NSString *more;
+      unsigned int myStringLength = [myString length];
+      unsigned int location, length;
+      NSRange selectedRange = [textObject selectedRange];
+      
+      if (myStringLength != 0
+        && selectedRange.location == myStringLength
+        && _prevSelectedRange.location < selectedRange.location)
+        {
+          more = [self completedString: myString];
+          if (![more isEqualToString: myString])
+            {
+	      [textObject setString: more];
+	      location = myStringLength;
+              length = [more length] - location;
+	      [textObject setSelectedRange: NSMakeRange(location, length)];
+	    }
+        }
+    }
+}
+
 @end
 
-@implementation NSComboBoxCell(_Private_)
+@implementation NSComboBoxCell (GNUstepPrivate)
 
-- (NSString *)_stringValueAtIndex: (int)index
+- (NSString *) _stringValueAtIndex: (int)index
 {
   if (!_usesDataSource)
     {
@@ -1000,7 +1417,7 @@ buttonCellFrameFromRect(NSRect cellRect)
     {
       if (!_dataSource)
         {
-	  NSLog(@"ComboBox: No DataSource Specified");
+	  NSLog(@"%@: No data source currently specified", self);
 	  return nil;
 	}
       if ([_dataSource respondsToSelector: 
@@ -1020,59 +1437,80 @@ buttonCellFrameFromRect(NSRect cellRect)
   return nil;
 }
 
-- (void) _didClickInRect: (NSRect)cellFrame
-		  ofView: (NSView *)controlView
+- (void) _performClickWithFrame: (NSRect)cellFrame 
+                         inView: (NSView *)controlView
 {
-  // We can not use performClick: on the button cell here as 
-  // the button uses only part of the bounds of the control view.
-  NSWindow *cvWin = [controlView window];
+  NSWindow *cvWindow = [controlView window];
 
   [controlView lockFocus];
   [_buttonCell highlight: YES 
 	       withFrame: buttonCellFrameFromRect(cellFrame) 
-	       inView: controlView];
+	          inView: controlView];
   [controlView unlockFocus];
-  [cvWin flushWindow];
+  [cvWindow flushWindow];
 
-  [self _didClick: self];
+  [self _didClickWithinButton: self];
   
   [controlView lockFocus];
   [_buttonCell highlight: NO 
 	       withFrame: buttonCellFrameFromRect(cellFrame) 
-	       inView: controlView];
+	          inView: controlView];
   [controlView unlockFocus];
-  [cvWin flushWindow];
+  [cvWindow flushWindow];
 
 }
 
-- (void) _didClick: (id)sender
+- (void) _didClickWithinButton: (id)sender
 {
-  NSView *popView = [self controlView];
-
-  if ((_cell.is_disabled) || (popView == nil))
+  NSView *controlView = [self controlView];
+  
+  if ((_cell.is_disabled) || (controlView == nil))
     return;
 
-  [nc postNotificationName: NSComboBoxWillPopUpNotification
-      object: popView
-      userInfo: nil];
-
-  // HACK Abort the editing, otherwise the selected value is
-  // overwritten by the editor
-  //if ([_control_view isKindOfClass: NSControl])
-  [(NSControl *)_control_view abortEditing];
-
+  [nc postNotificationName: NSComboBoxWillPopUpNotification 
+                    object: controlView 
+		  userInfo: nil];
+  
   _popup = [self _popUp];
-  [_popup popUpForCell: self view: popView];
+  [_popup popUpForComboBoxCell: self];
   _popup = nil;
 
   [nc postNotificationName: NSComboBoxWillDismissNotification
-      object: popView
-      userInfo: nil];
+                    object: controlView
+                  userInfo: nil];
 }
 
-- (GSComboWindow *)_popUp
+- (BOOL) _isWantedEvent: (NSEvent *)event
+{
+  NSPoint loc;
+  NSWindow *window = [event window];
+  NSView *controlView = [self controlView];
+  
+  if (window == [[self controlView] window])
+    {
+      loc = [event locationInWindow];
+      loc = [controlView convertPoint: loc fromView: nil];
+      return NSMouseInRect(loc, [self _textCellFrame], [controlView isFlipped]);
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+- (GSComboWindow *) _popUp
 {
   return [GSComboWindow defaultPopUp];
+}
+
+- (NSRect) _textCellFrame
+{
+  return textCellFrameFromRect(_lastValidFrame);
+}
+
+- (void) _setSelectedItem: (int)index
+{
+  _selectedItem = index;
 }
 
 @end

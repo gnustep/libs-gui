@@ -27,9 +27,13 @@
 #ifndef _GNUstep_H_NSComboBoxCell
 #define _GNUstep_H_NSComboBoxCell
 
+#include <Foundation/NSGeometry.h>
 #include <AppKit/NSTextFieldCell.h>
 
-@class NSButtonCell, NSScrollView;
+@class NSButtonCell;
+@class NSMutableArray;
+@class NSArray;
+@class NSString;
 
 @interface NSComboBoxCell : NSTextFieldCell
 {
@@ -43,9 +47,11 @@
    NSSize		_intercellSpacing;
    float		_itemHeight;
    int                  _selectedItem;
+   NSRect               _lastValidFrame;
+   NSRange		_prevSelectedRange;
   
 @private
-   id		_popup;
+   id		        _popup;
 }
 
 - (BOOL)hasVerticalScroller;
@@ -101,8 +107,8 @@
 
 @interface NSObject (NSComboBoxCellDataSource)
 - (int)numberOfItemsInComboBoxCell:(NSComboBoxCell *)comboBoxCell;
-- (id)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
-objectValueForItemAtIndex:(int)index;
+- (id)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
+  objectValueForItemAtIndex:(int)index;
 - (unsigned int)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
   indexOfItemWithStringValue:(NSString *)string;
 #ifndef	STRICT_OPENSTEP

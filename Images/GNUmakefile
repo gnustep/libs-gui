@@ -101,6 +101,7 @@ GNUstep.tiff \
 GNUstepMenuImage.tiff \
 nsmapping.strings \
 NSComboArrow.tiff \
+common_ComboBoxEllipsis.tiff \
 common_RightTabStop.tiff \
 common_CenterTabStop.tiff \
 common_LeftTabStop.tiff \

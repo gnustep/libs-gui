@@ -25,15 +25,9 @@
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
-#include "AppKit/NSApplication.h"
 #include "AppKit/NSComboBox.h"
 #include "AppKit/NSComboBoxCell.h"
 #include "AppKit/NSEvent.h"
-#include "AppKit/NSWindow.h"
-
-@interface NSObject(MouseUpping)
-- (NSEvent *)_mouseUpEvent;
-@end
 
 /*
  * Class variables
@@ -45,9 +39,9 @@ static NSNotificationCenter *nc;
 
 @implementation NSComboBox
 
-+ (void)initialize
++ (void) initialize
 {
-  if (self == [NSComboBox class])
+  if (self == [NSComboBox class]) // Is such test case really needed ?
     {
        [self setVersion: 1];
        comboBoxCellClass = [NSComboBoxCell class];
@@ -242,8 +236,8 @@ static NSNotificationCenter *nc;
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(comboBox##notif_name:)]) \
     [nc addObserver: _delegate \
-      selector: @selector(comboBox##notif_name:) \
-      name: NSComboBox##notif_name##Notification object: self]
+           selector: @selector(comboBox##notif_name:) \
+               name: NSComboBox##notif_name##Notification object: self]
 
   SET_DELEGATE_NOTIFICATION(SelectionDidChange);
   SET_DELEGATE_NOTIFICATION(SelectionIsChanging);
@@ -252,25 +246,17 @@ static NSNotificationCenter *nc;
 }
 
 // Overridden
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 {
-  NSEvent *cEvent;
-
-  [_cell trackMouse: theEvent inRect: [self bounds]
-	 ofView: self untilMouseUp: YES];
-  if ([_cell respondsToSelector: @selector(_mouseUpEvent)])
-    cEvent = [_cell _mouseUpEvent];
-  else
-    cEvent = nil;
-  if ([_cell isSelectable])
-    {
-      if (!cEvent)
-	cEvent = [NSApp currentEvent];
-      if ([cEvent type] == NSLeftMouseUp &&
-	  ([cEvent windowNumber] == [[self window] windowNumber]))
-	[NSApp postEvent: cEvent atStart: NO];
-      [super mouseDown: theEvent];
-    }
+  BOOL clicked; 
+  // clicked is set to the value YES when the click occurs in the text cell
+  // and to the value NO when it occurs in the button cell
+  
+  clicked = [_cell trackMouse: theEvent inRect: [self bounds] 
+    ofView: self untilMouseUp: YES];
+  
+  if (clicked)
+    [super mouseDown: theEvent];
 }
 
 @end

@@ -27,8 +27,10 @@
 #ifndef _GNUstep_H_NSComboBox
 #define _GNUstep_H_NSComboBox
 
-#include <Foundation/NSNotification.h>
 #include <AppKit/NSTextField.h>
+
+@class NSString;
+@class NSNotification;
 
 @interface NSComboBox : NSTextField
 {
@@ -82,14 +84,13 @@
 - (void) setCompletes: (BOOL)completes;
 - (BOOL) completes;
 #endif
-
 @end
 
 @interface NSObject (NSComboBoxDataSource)
 - (int) numberOfItemsInComboBox: (NSComboBox *)aComboBox;
 - (id) comboBox: (NSComboBox *)aComboBox objectValueForItemAtIndex:(int)index;
-- (unsigned int) comboBox: (NSComboBox *)aComboBox
-indexOfItemWithStringValue: (NSString *)string;
+- (unsigned int) comboBox: (NSComboBox *)aComboBox 
+  indexOfItemWithStringValue: (NSString *)string;
 #ifndef	STRICT_OPENSTEP
 /* text completion */
 - (NSString *) comboBox: (NSComboBox *)aComboBox 
