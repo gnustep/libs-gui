@@ -544,7 +544,22 @@ NSApplication	*NSApp = nil;
       case NSKeyDown:
 	{
 	  NSDebugLog(@"send key down event\n");
-	  [[theEvent window] sendEvent: theEvent];
+	  if ([theEvent modifierFlags] & NSCommandKeyMask)
+	    {
+	      NSArray	*window_list = [self windows];
+	      unsigned	i;
+	      unsigned	count = [window_list count];
+
+	      for (i = 0; i < count; i++)
+		{
+		  NSWindow	*window = [window_list objectAtIndex: i];
+
+		  if ([window performKeyEquivalent: theEvent] == YES)
+		    break;
+		}
+	    }
+	  else
+	    [[theEvent window] sendEvent: theEvent];
 	  break;
 	}
 
