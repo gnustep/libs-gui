@@ -15,6 +15,9 @@
 
 	* Source/libgnustep-gui.def: Remove NSMenuWindow.
 
+	* Model/GNUmakefile (libgmodel_BUNDLE_LIBS): New var.
+	(fix suggested by stephen@brandonitconsulting.co.uk).
+
 2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSCell.h

@@ -77,13 +77,12 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
-
-#LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) $(FND_LIBS) $(SYSTEM_LIBS)
-
 ifneq ($(GUI_LIB), nx)
 libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS)
+libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 else
 libgmodel_LIBRARIES_DEPEND_UPON = $(FND_LIBS)
+libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 endif
 nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 	$(FND_LIBS) $(SYSTEM_LIBS)
