@@ -200,6 +200,11 @@ _attributesAtIndexEffectiveRange(
 
   if (index >= tmpLength)
     {
+      if (index == tmpLength)
+	{
+	  *foundIndex = tmpLength;
+	  return nil;
+	}
       [NSException raise: NSRangeException
 		  format: @"index is out of range in function "
 			  @"_attributesAtIndexEffectiveRange()"];
