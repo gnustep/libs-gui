@@ -257,6 +257,9 @@
 	  float p;
 	  /* YES if some highlighting was done and needs to be undone */
 	  BOOL lit = NO;
+	  /* YES if some dragging was actually done - to avoid
+	     retiling/redrawing the table if no dragging is done */
+	  BOOL dragged = NO;
 	  NSEvent *e;
 	  NSDate *farAway = [NSDate distantFuture];
 	  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
@@ -310,8 +313,14 @@
 		     inMode: NSEventTrackingRunLoopMode
 		     dequeue: YES];
 
+	  /* Safety assignment to make sure p is never left
+	     unitialized - should make no difference with current code
+	     but anyway */
+	  p = NSMaxX (rectLow);
+
 	  while ([e type] != NSLeftMouseUp)
 	    {
+	      dragged = YES;
 	      p = [self convertPoint: [e locationInWindow] fromView: nil].x;
 	      if (p < minCoord)
 		{
@@ -348,9 +357,12 @@
 
 	  /* The following tiles the table.  We use a private method 
 	     which avoids tiling the table twice. */
-	  [_tableView _userResizedTableColumn: _resizedColumn
-		      leftWidth: (p - NSMinX (rectLow))
-		      rightWidth: (NSMaxX (rectHigh) - p)];
+	  if (dragged == YES)
+	    {
+	      [_tableView _userResizedTableColumn: _resizedColumn
+			  leftWidth: (p - NSMinX (rectLow))
+			  rightWidth: (NSMaxX (rectHigh) - p)];
+	    }
 
 	  /* Clean up */
 	  _resizedColumn = -1;
