@@ -25,8 +25,11 @@
 */
 
 #include <AppKit/NSDragging.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSImageCell.h>
 #include <AppKit/NSImageView.h>
+#include <AppKit/NSPasteboard.h>
 
 /*
  * Class variables
@@ -108,6 +111,14 @@ static Class imageCellClass;
 - (void) setEditable: (BOOL)flag
 {
   [_cell setEditable: flag];
+  if (flag)
+    {
+      [self registerForDraggedTypes: [NSImage imagePasteboardTypes]];
+    }
+  else
+    {
+      [self unregisterDraggedTypes];
+    }
 }
 
 - (NSImage *) image
@@ -141,32 +152,90 @@ static Class imageCellClass;
 
 - (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
 {
-  // FIX - should highlight to show that we are a valid target
-  return NSDragOperationNone;
+  if (([sender draggingSource] != self) && ([self isEditable]) && 
+      ([NSImage canInitWithPasteboard: [sender draggingPasteboard]]))
+    {
+      [_cell setHighlighted: YES];
+      return NSDragOperationCopy;
+    }
+  else
+    {
+      return NSDragOperationNone;
+    }
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  // FIX - should remove highlighting
+  [_cell setHighlighted: NO];
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
 {
-  if ([self isEditable])
-    return YES;
+  if (([sender draggingSource] != self) && ([self isEditable]))
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
-  // FIX - should copy image data into image cell here
-  return NO;
+  NSImage *image;
+
+  image = [[NSImage alloc] initWithPasteboard: [sender draggingPasteboard]];
+  if (image == nil)
+    {
+      return NO;
+    }
+  else 
+    {
+      [self setImage: image];
+      RELEASE(image);
+      return YES;
+    }
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
+  [_cell setHighlighted: NO];
   // FIX - should update refresh image here
+}
+
+- (void) mouseDragged: (NSEvent*)theEvent
+{
+  if ([self isEditable])
+    {
+      NSPasteboard *pboard;
+      NSImage *anImage = [self image];
+
+      if (anImage != nil)
+        {
+	  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+	  [pboard declareTypes: [NSArray arrayWithObject: NSTIFFPboardType] 
+		  owner: self];
+	  if ([pboard setData: [anImage TIFFRepresentation]
+		      forType: NSTIFFPboardType])
+	    {
+	      [_window dragImage: anImage
+		       at: [theEvent locationInWindow]
+		       offset: NSMakeSize(0, 0)
+		       event: theEvent
+		       pasteboard: pboard
+		       source: self
+		       slideBack: YES];
+	      return;
+	    }
+	}
+    }
+  [super mouseDragged: theEvent];
+}
+
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+{
+  return NSDragOperationCopy;
 }
 
 @end
