@@ -182,11 +182,24 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       NSMutableArray  *ret = [NSMutableArray array];
       NSString        *dir = [self directory];
       
-      dir = [dir stringByDeletingLastPathComponent];
-      while ((currCell = [cellEnum nextObject]))
+      if ([_browser selectedColumn] != [_browser lastColumn])
 	{
-	  [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
-				    [currCell stringValue]]];
+	  /*
+	   * The last column doesn't have anything selected - so we must
+	   * have selected a directory.
+	   */
+	  if (_canChooseDirectories == YES)
+	    {
+	      [ret addObject: dir];
+	    }
+	}
+      else
+	{
+	  while ((currCell = [cellEnum nextObject]))
+	    {
+	      [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
+					[currCell stringValue]]];
+	    }
 	}
       return ret;
     }
@@ -273,7 +286,7 @@ createRowsForColumn: (int)column
   NSString	*path = [sender pathToColumn: column], *file;
   NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
   NSArray       *extArray = [NSArray arrayWithObjects: @"app", 
-				     @"bundle", @"debug", @"profile", nil];
+		       @"bundle", @"debug", @"palette", @"profile", nil];
   unsigned	i, count;
   BOOL		exists, isDir;
   NSBrowserCell *cell;
@@ -285,6 +298,10 @@ createRowsForColumn: (int)column
   if ([files lastObject] == nil)
     return;
 
+  if ([_fileTypes count] > 0)
+    {
+      extArray = [extArray arrayByAddingObjectsFromArray: _fileTypes];
+    }
 
   // sort list of files to display
   if (_delegateHasCompareFilter == YES)

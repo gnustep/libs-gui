@@ -1224,6 +1224,9 @@
   // Nothing selected
   if (i == NSNotFound)
     return nil;
+  // Nothing selected in rightmost column
+  if (i < [self lastColumn])
+    return nil;
 
   matrix = [self matrixInColumn: i];
   return [matrix selectedCells];
