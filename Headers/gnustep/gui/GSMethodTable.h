@@ -25,7 +25,6 @@
 #define _GSMethodTable_h_INCLUDE
 
 #include <Foundation/NSObject.h>
-typedef int NSWindowDepth;
 
 @class NSDate;
 @class NSEvent;

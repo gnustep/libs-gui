@@ -26,8 +26,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
    */
 
-#ifndef	STRICT_OPENSTEP
-
 #ifndef _NSGraphicsContext_h_INCLUDE
 #define _NSGraphicsContext_h_INCLUDE
 
@@ -83,6 +81,10 @@ typedef enum _NSCompositingOperation
   NSCompositePlusLighter
 
 } NSCompositingOperation;
+
+typedef int NSWindowDepth;
+
+#ifndef	STRICT_OPENSTEP
 
 // We have to load this after the NSCompositingOperation are defined!!!
 #include <AppKit/GSMethodTable.h>
