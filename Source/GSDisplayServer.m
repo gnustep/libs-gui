@@ -36,6 +36,8 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/GSDisplayServer.h>
 
+#include "GSSlideView.h"
+
 /* Display attributes */
 NSString * GSDisplayName = @"DisplayName";
 NSString * GSDisplayNumber = @"DisplayNumber";
@@ -370,8 +372,7 @@ GSCurrentServer(void)
 
 - (BOOL) slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  return [GSSlideView _slideImage: image from: from to: to];
 }
 
 - (void) restrictWindow: (int)win toImage: (NSImage*)image
