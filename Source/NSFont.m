@@ -316,7 +316,8 @@ static NSFont *getNSFont(float fontSize, int role)
 	}
     }
 
-  ASSIGN(font_roles[role].cachedFont, font);
+  if (defaultSize)
+    ASSIGN(font_roles[role].cachedFont, font);
 
   return font;
 }
