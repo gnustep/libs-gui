@@ -45,6 +45,10 @@
     tbcol_width = tbcol_minWidth;
   else
     tbcol_width = newWidth;
+
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTableViewColumnDidResizeNotification
+    object:tbcol_tableview];
 }
 
 - (float)width
@@ -55,6 +59,9 @@
 - (void)setMinWidth:(float)minWidth
 {
   tbcol_minWidth = minWidth;
+
+  if (tbcol_width < minWidth)
+    [self setWidth:minWidth];
 }
 
 - (float)minWidth
@@ -65,11 +72,14 @@
 - (void)setMaxWidth:(float)maxWidth
 {
   tbcol_maxWidth = maxWidth;
+
+  if (tbcol_width > maxWidth)
+    [self setWidth:maxWidth];
 }
 
 - (float)maxWidth
 {
-  return maxWidth;
+  return tbcol_maxWidth;
 }
 
 - (void)setResizable:(BOOL)flag
@@ -93,11 +103,11 @@
       changed = YES;
     }
 
-  if (cellSize.width > tbcol_maxWidth)
-    tbcol_maxWidth = cellSize.width;
+  if (cell_size.width > tbcol_maxWidth)
+    tbcol_maxWidth = cell_size.width;
 
-  if (cellSize.width < tbcol_minWidth)
-    tbcol_minWidth = cellSize.width;
+  if (cell_size.width < tbcol_minWidth)
+    tbcol_minWidth = cell_size.width;
 
   if (changed)
     [tbcol_tableview setNeedsDisplay:YES];

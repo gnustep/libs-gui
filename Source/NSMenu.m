@@ -115,17 +115,34 @@ static NSZone *menuZone = NULL;
 - (void) insertItem: (id <NSMenuItem>)newItem
 	    atIndex: (int)index
 {
+  NSNotificationCenter *nc;
+  NSDictionary *d;
+
   if ([(id)newItem conformsToProtocol: @protocol(NSMenuItem)])
     {
       if ([(id)newItem isKindOfClass: [NSMenuItemCell class]])
-        [menu_items insertObject: newItem atIndex: index];
+        {
+	  nc = [NSNotificationCenter defaultCenter];
+  	  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
+					  forKey: @"NSMenuItemIndex"];
+  	  [nc postNotificationName: NSMenuDidAddItemNotification
+                    	    object: self
+                          userInfo: d];
+
+          [menu_items insertObject: newItem atIndex: index];
+	}
       else
         {
+
+	  // The item we received conformed to <NSMenuItem> which is good,
+	  // but it wasn't an NSMenuItemCell which is bad. Therefore, we
+	  // loop through the system and create an NSMenuItemCell for
+	  // this bad boy.
+
           [self insertItemWithTitle: [newItem title]
 			     action: [newItem action]
 		      keyEquivalent: [newItem keyEquivalent]
 			    atIndex: index];
-	  [(NSMenuItem *)newItem release];
         }
     }
   else
@@ -135,9 +152,9 @@ static NSZone *menuZone = NULL;
 }
 
 - (id <NSMenuItem>) insertItemWithTitle: (NSString *)aString
-			        action: (SEL)aSelector
-			 keyEquivalent: (NSString *)charCode 
-			       atIndex: (unsigned int)index
+			         action: (SEL)aSelector
+			  keyEquivalent: (NSString *)charCode 
+			        atIndex: (unsigned int)index
 {
   id anItem = [NSMenuItemCell new];
 
@@ -145,9 +162,11 @@ static NSZone *menuZone = NULL;
   [anItem setAction: aSelector];
   [anItem setKeyEquivalent: charCode];
 
-  [menu_items insertObject: anItem atIndex: index];
+  // Insert the new item into the stream.
 
-  menu_changed = YES;
+  [self insertItem:anItem atIndex:index];
+
+  // For returns sake.
 
   return anItem;
 }
@@ -169,14 +188,28 @@ static NSZone *menuZone = NULL;
 
 - (void) removeItem: (id <NSMenuItem>)anItem
 {
+  [self removeItemAtIndex:[menu_items indexOfObject: anItem]];
+}
+
+- (void) removeItemAtIndex: (int)index
+{
+  NSNotificationCenter *nc;
+  NSDictionary *d;
+  id anItem = [menu_items objectAtIndex:index];
+
+  if (!anItem)
+    return;
+
   if ([(NSMenuItemCell *)anItem isKindOfClass: [NSMenuItemCell class]])
     {
-      int _index = [menu_items indexOfObject: anItem];
+      nc = [NSNotificationCenter defaultCenter];
+      d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
+				      forKey: @"NSMenuItemIndex"];
+      [nc postNotificationName: NSMenuDidRemoveItemNotification
+                        object: self
+                      userInfo: d];
 
-      if (_index == -1)
-	return;
-
-      [menu_items removeObjectAtIndex: _index];
+      [menu_items removeObjectAtIndex: index];
     }
   else
     {
@@ -186,16 +219,19 @@ static NSZone *menuZone = NULL;
   menu_changed = YES;
 }
 
-- (void) removeItemAtIndex: (int)index
-{
-  [menu_items removeObjectAtIndex: index];
-
-  menu_changed = YES;
-}
-
 - (void) itemChanged: (id <NSMenuItem>)anObject
 {
-  // another nebulous method in NSMenu.
+  // another nebulous method in NSMenu. Is this correct?
+
+  NSNotificationCenter *nc;
+  NSDictionary *d;
+
+  nc = [NSNotificationCenter defaultCenter];
+  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:[self indexOfItem: anObject]]
+                                  forKey: @"NSMenuItemIndex"];
+  [nc postNotificationName: NSMenuDidChangeItemNotification
+                    object: self
+                  userInfo: d];  
 }
 
 - (id <NSMenuItem>) itemWithTag: (int)aTag

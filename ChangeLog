@@ -6,6 +6,18 @@
 	linkages between the NSTable* classes is by no means clear.
 	* Source/NSTableColumn.m: if the datacell type has not been set
 	and is asked for we create a standard NSTextFieldCell.
+	* Source/NSTabView.m: implementation is at 90%. All delegate
+	messages are sent as required (if possible) and tab selection is
+	now by the spec. Also a small optimization in tab selection makes
+	sure we don't reselect tabs that are already selected.
+	* Source/NSMenu.m: redid alot of the insertItem: addItem: methods
+	to unify under the one primitive method. Did the same for
+	removeItem:. Also added all the rest of the NSMenu notifications:
+		NSMenuDidAddItemNotification
+		NSMenuDidRemoveItemNotification
+		NSMenuDidChangeItemNotification.
+	I think we need some setDelegate/delegate methods in here, no?
+	* Source/externs.m: added references to new NSMenu notifications.
 
 1999-07-25  Michael Hanni  <mhanni@sprintmail.com>
 

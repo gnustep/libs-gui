@@ -68,15 +68,28 @@
 - (id)initWithTitle:(NSString*)aTitle;
 
 /* Setting up the menu commands */
-- (id <NSMenuItem>)addItemWithTitle:(NSString*)aString
-			     action:(SEL)aSelector
-		      keyEquivalent:(NSString*)charCode;
-- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-				action:(SEL)aSelector
-			 keyEquivalent:(NSString*)charCode
-			       atIndex:(unsigned int)index;
-- (void)removeItem:(id <NSMenuItem>)anItem;
+- (void) insertItem: (id <NSMenuItem>)newItem
+            atIndex: (int)index;
+- (id <NSMenuItem>) insertItemWithTitle: (NSString *)aString
+                                 action: (SEL)aSelector
+                          keyEquivalent: (NSString *)charCode
+                                atIndex: (unsigned int)index;
+- (void) addItem: (id <NSMenuItem>)newItem;
+- (id <NSMenuItem>) addItemWithTitle: (NSString *)aString
+                              action: (SEL)aSelector
+                       keyEquivalent: (NSString *)keyEquiv;
+- (void) removeItem: (id <NSMenuItem>)anItem;
+- (void) removeItemAtIndex: (int)index;
+
 - (NSArray*)itemArray;
+
+- (int) indexOfItem: (id <NSMenuItem>)anObject;
+- (int) indexOfItemWithTitle: (NSString *)aTitle;
+- (int) indexOfItemWithTag: (int)aTag;
+- (int) indexOfItemWithTarget: (id)anObject
+                   andAction: (SEL)actionSelector;
+- (int) indexOfItemWithRepresentedObject: (id)anObject;
+- (int) indexOfItemWithSubmenu: (NSMenu *)anObject;
 
 /* Finding menu items */
 - (id <NSMenuItem>)itemWithTag:(int)aTag;
@@ -135,5 +148,9 @@
 
 extern NSString* const NSMenuDidSendActionNotification;
 extern NSString* const NSMenuWillSendActionNotification;
+extern NSString* const NSMenuDidAddItemNotification;
+extern NSString* const NSMenuDidRemoveItemNotification;
+extern NSString* const NSMenuDidChangeItemNotification;
+
 
 #endif // _GNUstep_H_NSMenu

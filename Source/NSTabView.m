@@ -27,6 +27,12 @@
 {
   [tabViewItem _setTabView:self];
   [tab_items insertObject:tabViewItem atIndex:[tab_items count]];
+
+  if ([tab_delegate respondsToSelector:
+	@selector(tabViewDidChangeNumberOfTabViewItems:)])
+    {
+      [tab_delegate tabViewDidChangeNumberOfTabViewItems:self];
+    }
 }
 
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem
@@ -34,6 +40,12 @@
 {
   [tabViewItem _setTabView:self];
   [tab_items insertObject:tabViewItem atIndex:index];
+
+  if ([tab_delegate respondsToSelector:
+	@selector(tabViewDidChangeNumberOfTabViewItems:)])
+    {
+      [tab_delegate tabViewDidChangeNumberOfTabViewItems:self];
+    }
 }
 
 - (void)removeTabViewItem:(NSTabViewItem *)tabViewItem
@@ -44,6 +56,12 @@
     return;
 
   [tab_items removeObjectAtIndex:i];
+
+  if ([tab_delegate respondsToSelector:
+	@selector(tabViewDidChangeNumberOfTabViewItems:)])
+    {
+      [tab_delegate tabViewDidChangeNumberOfTabViewItems:self];
+    }
 }
 
 - (int)indexOfTabViewItem:(NSTabViewItem *)tabViewItem
@@ -53,8 +71,17 @@
 
 - (int)indexOfTabViewItemWithIdentifier:(id)identifier
 {
-  // the spec is confusing on this method.
-  return 0;
+  int howMany = [tab_items count];
+  int i;
+
+  for (i=0;i<howMany;i++)
+    {
+      id anItem = [tab_items objectAtIndex:i];
+
+      if ([[anItem identifier] isEqual:identifier])
+        return i;
+    }
+  return NSNotFound;
 }
 
 - (int)numberOfTabViewItems
@@ -92,12 +119,54 @@
   [self selectTabViewItemAtIndex:tab_selected_item-1];
 }
 
+- (NSTabViewItem *)selectedTabViewItem
+{
+  return [tab_items objectAtIndex:tab_selected_item];
+}
+
 - (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
 {
+  BOOL canSelect = YES;
+
+  if ([tab_delegate respondsToSelector:
+    @selector(tabView:shouldSelectTabViewItem:)])
+    {
+      canSelect = [tab_delegate tabView:self
+		    shouldSelectTabViewItem:tabViewItem];
+    }
+
+  if (canSelect)
+    {
+      if (tab_selected)
+        {
+          [tab_selected _setTabState:NSBackgroundTab];
+          if ([tab_selected view])
+	    [[tab_selected view] removeFromSuperview];
+        }
+
+        tab_selected = tabViewItem;
+
+	if ([tab_delegate respondsToSelector:
+	  @selector(tabView:willSelectTabViewItem:)])
+	  {
+	    [tab_delegate tabView:self willSelectTabViewItem:tab_selected];
+          }
+
+        [tab_selected _setTabState:NSSelectedTab];
+        if ([tab_selected view])
+          [self addSubview:[tab_selected view]];
+
+	if ([tab_delegate respondsToSelector:
+	  @selector(tabView:didSelectTabViewItem:)])
+	  {
+	    [tab_delegate tabView:self didSelectTabViewItem:tab_selected];
+          }
+    }
 }
 
 - (void)selectTabViewItemAtIndex:(int)index
 {
+  [self selectTabViewItem:[tab_items objectAtIndex:index]];
 }
 
 - (void)takeSelectedTabViewItemFromSender:(id)sender
@@ -146,7 +215,7 @@
 
 - (void)setDelegate:(id)anObject
 {
-  ASSIGN(tab_delegate, anObject);
+  tab_delegate = anObject;
 }
 
 - (id)delegate
@@ -184,7 +253,7 @@
   int howMany = [tab_items count];
   int i;
   NSRect previousRect;
-  NSTabState previousState;
+  int previousState = 0;
 
   DPSgsave(ctxt);
 
@@ -215,13 +284,9 @@
     NSTabViewItem *anItem = [tab_items objectAtIndex:i];
     NSTabState itemState;
 
-    // hack to simulate a selected tab other than tab one.
-//    if (i == 0) [anItem _setTabState:NSSelectedTab];
-
     itemState = [anItem tabState];
 
     s = [anItem sizeOfLabel:NO];
-    NSLog(@"Label: %@ Size: %d\n", [anItem label], (int)s.width);
 
     if (i == 0) {
 
@@ -322,10 +387,6 @@
 
   for (i=0;i<howMany;i++) {
     NSTabViewItem *anItem = [tab_items objectAtIndex:i];
-    NSRect tRect = [anItem _tabRect];
-
-    NSLog(@"point (%f, %f) and rect (%f, %f) (%f, %f)", point.x, point.y,
-tRect.origin.x, tRect.origin.y, tRect.size.width, tRect.size.height);
 
     if(NSPointInRect(point,[anItem _tabRect]))
       return anItem;
@@ -338,30 +399,15 @@ tRect.origin.x, tRect.origin.y, tRect.size.width, tRect.size.height);
 {
   NSTabViewItem *anItem = [self tabViewItemAtPoint:aPoint];
 
-  if (anItem) {
-    if (tab_selected) {
-      [tab_selected _setTabState:NSBackgroundTab];
-      if ([tab_selected view])
-	[[tab_selected view] removeFromSuperview];
+  if (anItem && ![anItem isEqual:tab_selected])
+    {
+      [self selectTabViewItem:anItem];
     }
-
-    tab_selected = anItem;
-    [anItem _setTabState:NSSelectedTab];
-    if ([anItem view]) {
-      [self addSubview:[anItem view]];
-    }
-  }
 
   [self setNeedsDisplay:YES];
 
   return [super hitTest:aPoint];
 }
-
-/*
-- (BOOL) mouse: (NSPoint)aPoint inRect: (NSRect)aRect
-{
-}
-*/
 
 // Coding.
 
