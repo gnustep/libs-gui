@@ -1,3 +1,11 @@
+2004-01-13 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m (trackWithEvent:): Changed checking for
+	highlighted item. Old checking have a problems when
+	_highlightedItemIndex changed after performActionForItemAtIndex:,
+	for example when selecting "Close Window" in detached "Windows"
+	submenu.
+	
 2004-01-12 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/GSTitleView.m (setOwner): Recognize class that responds 
