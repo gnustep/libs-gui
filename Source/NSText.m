@@ -1546,7 +1546,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   _tf.imports_graphics = NO;
   _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = YES;
+  _tf.is_vertically_resizable = NO;
   _tf.uses_font_panel = YES;
   _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
@@ -2312,9 +2312,6 @@ other than copy/paste or dragging. */
   NSTextContainer *aTextContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
   NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
   NSTextStorage *textStorage = [[NSTextStorage alloc] init];
-
-  [aTextContainer setWidthTracksTextView: YES];
-  [aTextContainer setHeightTracksTextView: YES];
 
   [layoutManager addTextContainer: aTextContainer];
   [textStorage addLayoutManager: layoutManager];
