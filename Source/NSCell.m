@@ -152,7 +152,6 @@ static NSColor	*shadowCol;
   //_cell.is_bezeled = NO;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
-  //_cell.is_continuous = NO;
   //_cell.state = 0;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
@@ -179,7 +178,6 @@ static NSColor	*shadowCol;
   //_cell.is_bezeled = NO;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
-  //_cell.is_continuous = NO;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
 
@@ -886,6 +884,16 @@ static NSColor	*shadowCol;
   return textObject;
 }
 
+- (NSString*) title						
+{
+  return [self stringValue];
+}
+
+- (void) setTitle: (NSString*)aString
+{
+  [self setStringValue: aString];
+}
+
 /*
  * Target and Action
  */
@@ -913,13 +921,21 @@ static NSColor	*shadowCol;
 
 - (BOOL) isContinuous
 {
-  return _cell.is_continuous;
+  // Some subclasses should redefine this with NSLeftMouseDraggedMask
+  return (_action_mask & NSPeriodicMask) != 0;
 }
 
 - (void) setContinuous: (BOOL)flag
 {
-  _cell.is_continuous = flag;
-  [self sendActionOn: (NSLeftMouseUpMask|NSPeriodicMask)];
+  // Some subclasses should redefine this with NSLeftMouseDraggedMask
+  if (flag)
+    {
+      _action_mask |= NSPeriodicMask;
+    }
+  else 
+    {
+      _action_mask &= ~NSPeriodicMask;
+    }
 }
 
 - (int) sendActionOn: (int)mask
@@ -1297,7 +1313,7 @@ static NSColor	*shadowCol;
       && [theEvent type] == NSLeftMouseDown)
     [(NSControl*)controlView sendAction: action to: target];
 
-  if (_cell.is_continuous)
+  if (_action_mask & NSPeriodicMask)
     {
       [self getPeriodicDelay: &delay interval: &interval];
       [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
@@ -1394,7 +1410,7 @@ static NSColor	*shadowCol;
 	      inView: controlView
 	   mouseIsUp: mouseWentUp];
 
-  if (_cell.is_continuous)
+  if (_action_mask & NSPeriodicMask)
     [NSEvent stopPeriodicEvents];
 
   if (mouseWentUp)
@@ -1571,6 +1587,28 @@ static NSColor	*shadowCol;
     }
 }
 
+- (void) setControlSize: (NSControlSize)controlSize
+{
+  // FIXME
+}
+
+- (NSControlSize) controlSize
+{
+  // FIXME
+  return NSRegularControlSize;
+}
+
+- (void) setControlTint: (NSControlTint)controlTint
+{
+  // FIXME 
+}
+
+- (NSControlTint) controlTint
+{
+  // FIXME
+  return NSDefaultControlTint;
+}
+
 /*
  * Displaying
  */
@@ -1702,6 +1740,11 @@ static NSColor	*shadowCol;
     }
 }
 
+- (NSColor*) highlightColorWithFrame: (NSRect)cellFrame
+			      inView: (NSView *)controlView
+{
+  return [NSColor selectedControlColor];
+}
 
 - (void) _setupTextWithFrame: (NSRect)aRect
 		      inView: (NSView*)controlView
@@ -1901,7 +1944,8 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_selectable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_continuous;
+  // This used to be is_continuous, which has been replaced.
+  //flag = _cell.is_continuous;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.allows_mixed_state;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1961,7 +2005,8 @@ static NSColor	*shadowCol;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_selectable = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_continuous = flag;
+  // This used to be is_continuous, which has been replaced.
+  //_cell.is_continuous = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.allows_mixed_state = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
