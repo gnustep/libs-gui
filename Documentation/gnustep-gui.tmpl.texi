@@ -302,32 +302,151 @@ argument was given.  The Info-gnustep.plist file could look like this:
 @end example
 
 @node Setup, Contributing, Implementation, Top
-@chapter Spectial Setup Instructions.
+@chapter Special Setup Instructions.
 
 @menu
-* Alt Key::                     
+* Keyboard Modifiers::                     
 @end menu
 
-@node Alt Key,  , Setup, Setup
-@section X-Windows Alt Key
+@node Keyboard Modifiers,  , Setup, Setup
+@section Keyboard Modifiers
 
-I don't have the backend docs setup yet, so this is here:
+This section applies only to the xgps and the xdps backend. 
 
-On an X-windows system, it's the X keyboard map that determines what is
-your 'alt' key. GNUstep uses the X 'cmd2' key as 'alt' - and you may
-need to use the xmodmap command to set your modifier keys to something
-sensible.  On RedHat-5.2 I use 'xmodmap - < mymap' where mymap is:
+@subsection Default Settings
+The OPENstep specification requires 3 main different keyboard 
+modifiers: @key{CONTROL}, @key{COMMAND} and @key{ALTERNATE}.  
+@c
+@itemize @bullet
+@item @key{COMMAND} is used to enter key equivalents (keyboard shortcuts 
+for menus or buttons); for example, usually 'Quit' on the main 
+menu of an application is bound to 'q', so you may usually quit 
+a GNUstep application by pressing @kbd{Command - q}. 
+@item @key{CONTROL} and @key{ALTERNATE} are two additional modifiers. 
+@end itemize
+@c
+By default, GNUstep uses @code{Control_L} (left Ctrl) 
+and @code{Control_R} (right Ctrl) 
+as @key{CONTROL}, @code{Alt_L} (left alt) as @key{COMMAND}, 
+and @code{Alt_R} (right alt, sometimes called AltGr) as @key{ALTERNATE}.  
 
-@example
-remove mod1 = Alt_L
-remove mod3 = Mode_switch
-keycode 113 = Alt_R
-add mod2 = Alt_L
-add mod5 = Alt_R
-@end example
+If this layout does not work for you, because your keyboard 
+misses some of these keys, or they have different X names 
+or they conflict heavily with your window manager shortcuts 
+(or for any other reason), read on.  
 
-This gives me the key to the left of my spacebar as 'cmd' and the key to
-the right of the spacebar as 'alt'. 
+@subsection Changing the Default Settings
+Under GNUstep, you may change the default as you wish: 
+you may choose which keys of your keyboard you want 
+to use for @key{CONTROL}, @key{COMMAND} and @key{ALTERNATE} 
+(You may even use different keys for different GNUstep applications, 
+without conflict).  These settings are internal to GNUstep, 
+and will not influence the behaviour of other X apps.  
+
+You may choose up to 2 keys per modifier.  
+
+Note that, if your keyboard is properly set up for X, 
+you should @emph{not} need to remap your X keyboard 
+to use GNUstep.  By changing the defaults, you should be able 
+to use GNUstep whatever the X keyboard mapping might be.
+
+What you have to do, is simply to instruct GNUstep to use 
+different keys for @key{CONTROL}, @key{COMMAND} and @key{ALTERNATE}. 
+
+The keys to use are determined at the application startup, 
+by reading the user defaults database.  
+
+To set the keys which will act as @key{CONTROL} you have to set 
+@code{GSFirstControlKey} and @code{GSSecondControlKey}; and 
+similarly for the other keys: 
+@table @code
+@item CONTROL
+@code{GSFirstControlKey}
+@code{GSSecondControlKey}
+@item COMMAND
+@code{GSFirstCommandKey}
+@code{GSSecondCommandKey}
+@item ALTERNATE
+@code{GSFirstAlternateKey}
+@code{GSSecondAlternateKey}
+@end table
+
+Valid values are all the standard strings for X keys.  
+To disable completely a key, use @code{NoSymbol} as preference.
+
+Each value which you do not explicity set is substituted with 
+its default value.  The default values are: 
+@table @code
+@item GSFirstControlKey
+@code{Control_L}
+@item GSSecondControlKey
+@code{Control_R}
+@item GSFirstCommandKey
+@code{Alt_L}
+@item GSSecondCommandKey
+@code{NoSymbol}
+@item GSFirstAlternateKey
+@code{Alt_R}
+@item GSSecondAlternateKey
+@code{NoSymbol}
+@end table
+
+What could go wrong is for example that you don't have 
+an @code{Alt_L} key.  With the default settings, 
+you will not be able to enter the @key{COMMAND} key 
+(which is quite an important key).  
+What you can do in this case is to use @code{Control_R} as @key{COMMAND}, 
+giving the following commands (from the command line): 
+
+@smallexample
+defaults write NSGlobalDomain GSFirstCommandKey Control_R
+defaults write NSGlobalDomain GSSecondControlKey NoSymbol
+@end smallexample
+
+These commands write in the GNUstep user database; 
+the information will be used every time you start a GNUstep application. 
+
+The first line sets @code{GSFirstCommandKey} to @code{Control_R}, 
+which makes @code{Control_R} to be read as @key{COMMAND}.  
+
+The second line disables the second control key, 
+which would otherwise be bound to @code{Control_R} by default. 
+If you omit it, @code{Control_R} will be used at the same time 
+as @key{COMMAND} and as @key{CONTROL}, which is not very useful. 
+
+To delete these preferences and restore the defaults, use 
+@smallexample
+defaults delete NSGlobalDomain GSFirstCommandKey
+defaults delete NSGlobalDomain GSSecondControlKey
+@end smallexample
+
+To get a list of currently set defaults, you may use 
+@smallexample
+defaults read
+@end smallexample
+The list might be very long; you may want to extract only 
+setting for the @code{GSFirstCommandKey}, for example: 
+@smallexample
+defaults read | grep GSFirstCommandKey
+@end smallexample
+
+A thing which could go wrong if you are trying to use 
+a setting different from the default, and you do not know much 
+about X, is that you can't find out the name of one of your key.  
+In this case, you may try having a look at the output of programs 
+like @code{xmodmap} or @code{xkeycaps}; even if you do not 
+understand it completely, the output can inspire the right guessing.
+
+A problem you are likely to encounter is that of conflicts 
+with the window manager keyboard shortcuts.  
+Good window managers let you change the keyboard shortcuts, 
+so you may move the wm shortcuts that you do not use to keys 
+which do not conflict (at least not too much) with GNUstep.  
+Usually, to use GNUstep keyboard shortcuts efficiently 
+you need the @key{COMMAND} and @key{CONTROL} key free 
+from window manager interferences; you may instead share 
+the @key{ALTERNATE} key, which is used less, 
+or in conjunction with @key{COMMAND}. 
 
 @node Contributing, Concept Index, Setup, Top
 @chapter Contributing
