@@ -26,7 +26,7 @@
 
 #include "AppKit/GSHorizontalTypesetter.h"
 
-#include "AppKit/GSLayoutManager.h"
+#include <math.h>
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
@@ -34,10 +34,12 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSValue.h>
 
-#include "AppKit/NSTextStorage.h"
 #include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSTextContainer.h"
 #include "AppKit/NSTextAttachment.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/GSLayoutManager.h"
+
 
 
 /*
@@ -613,17 +615,31 @@ restart:
 		for (i = 0; i < c; i++)
 		  {
 		    tab = [tabs objectAtIndex: i];
-		    if ([tab location] >= p.x + lf->rect.origin.x)
+		    /*
+		    We cannot use a tab at our exact location; we must
+		    use one beyond it. The reason is that several tabs in
+		    a row would get very odd behavior. Eg. given "\t\t",
+		    the first tab would move (exactly) to the next tab
+		    stop, and the next tab stop would move to the same
+		    tab, thus having no effect.
+		    */
+		    if ([tab location] > p.x + lf->rect.origin.x)
 		      break;
 		  }
 		if (i == c)
 		  {
 		    /* TODO: we're already past all the tab stops. what
-		    should we do? */
-		    continue;
+		    should we do?
+
+		    Pretend that we have tabs every 100 points.
+		    */
+		    p.x = (floor(p.x / 100.0) + 1.0) * 100.0;
+		  }
+		else
+		  {
+		    p.x = [tab location] - lf->rect.origin.x;
 		  }
 		prev_had_non_nominal_width = YES;
-		p.x = [tab location] - lf->rect.origin.x;
 		continue;
 	      }
 
