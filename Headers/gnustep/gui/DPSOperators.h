@@ -451,7 +451,7 @@ __attribute__((unused));
 /* ----------------------------------------------------------------------- */
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
-static inline void
+static void
 DPSPrintf(GSCTXT *ctxt, const char * fmt, ...)
 __attribute__((unused));
 
@@ -1171,7 +1171,7 @@ GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
 /* ----------------------------------------------------------------------- */
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
-static inline void
+static void
 DPSPrintf(GSCTXT *ctxt, const char * fmt, ...)
 {
   va_list ap;
