@@ -1,3 +1,13 @@
+Sat Dec 12  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSView.m: ([-resizeWithOldSuperviewSize:]) revert to previous code
+	(in order to fix error in logic of handling cases whare MaxX or MaxY
+	are specified).  Added reliable code to avoid fractional values
+	(floors final values rather than deltas - so gives right results
+	even when a frame with fractional values was passed into the method).
+	Yes, I know it's more lines of code - but it's better to have longer
+	code that works correctly than shorter code that doesn't :-)
+
 Fri Dec 11 08:52:03 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/GSContext.h: Remove method table.
