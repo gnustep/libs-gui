@@ -1,3 +1,8 @@
+2002-10-20  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSComboBox.h: Add APPKIT_EXPORT and make layout
+	a bit more consistent. 
+
 2002-10-18  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/announce.texi: Fix grammer.
