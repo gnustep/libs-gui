@@ -76,7 +76,7 @@ static double rint(double a)
 //
 // Internal class for maintaining information about columns
 //
-@interface NSBrowserColumn : NSObject
+@interface NSBrowserColumn : NSObject <NSCoding>
 {
   BOOL _isLoaded;
   id _columnScrollView;
@@ -96,6 +96,8 @@ static double rint(double a)
 - (void)setColumnTitle: (NSString *)aString;
 - (NSString *)columnTitle;
 
+- (void)encodeWithCoder: (NSCoder *)aCoder;
+- (id) initWithCoder: (NSCoder *)aDecoder;
 @end
 
 @implementation NSBrowserColumn
@@ -168,6 +170,30 @@ static double rint(double a)
 - (NSString *)columnTitle
 {
   return _columnTitle;
+}
+
+- (void)encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isLoaded];
+  [aCoder encodeObject: _columnScrollView];
+  [aCoder encodeObject: _columnMatrix];
+  [aCoder encodeValueOfObjCType: @encode(int) at:&_numberOfRows];
+  [aCoder encodeObject: _columnTitle];
+}
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+  _columnScrollView = [aDecoder decodeObject];
+  if (_columnScrollView)
+    RETAIN(_columnScrollView);
+  _columnMatrix = [aDecoder decodeObject];
+  if (_columnMatrix)
+    RETAIN(_columnMatrix);
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+  _columnTitle = [aDecoder decodeObject];
+  if (_columnTitle)
+    RETAIN(_columnTitle);
+  return self;
 }
 
 @end
@@ -1820,7 +1846,10 @@ static double rint(double a)
       bc = [_browserColumns objectAtIndex: i];
 
       if (!(sc = [bc columnScrollView]))
-	return;
+	{
+	  NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
+	  return;
+	}
 
       [sc setFrame: [self frameOfColumn: i]];
       [self _adjustMatrixOfColumn: i];
@@ -2576,8 +2605,8 @@ static double rint(double a)
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: NSStringFromClass (_browserCellClass)];
-  [aCoder encodeConditionalObject:_browserCellPrototype];
-  [aCoder encodeConditionalObject:_browserMatrixClass];
+  [aCoder encodeObject:_browserCellPrototype];
+  [aCoder encodeObject: NSStringFromClass (_browserMatrixClass)];
 
   [aCoder encodeObject:_pathSeparator];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
@@ -2592,21 +2621,23 @@ static double rint(double a)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
 
  
-  //Skip: NSScroller *_horizontalScroller; We'll rebuild it
+  [aCoder encodeObject:_horizontalScroller];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
   [aCoder encodeRect: _scrollerRect];
-  // Skip:  BOOL _skipUpdateScroller;
+  [aCoder encodeSize: _columnSize];
 
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
 
-  [aCoder encodeConditionalObject:_browserDelegate];  
+  [aCoder encodeConditionalObject:_browserDelegate];
 
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
   [aCoder encodeConditionalObject: _target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+
+  [aCoder encodeObject: _browserColumns];
 
   // Just encode the number of columns and the first visible
   // and rebuild the browser columns on the decoding side
@@ -2625,14 +2656,12 @@ static double rint(double a)
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   int colCount;
-  
   [super initWithCoder: aDecoder];
-
-  _browserCellClass= NSClassFromString ((NSString *)[aDecoder decodeObject]);
+  _browserCellClass     = NSClassFromString ((NSString *)[aDecoder decodeObject]);
   _browserCellPrototype = RETAIN([aDecoder decodeObject]);
-  _browserMatrixClass   = [aDecoder decodeObject];
+  _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
 
-  _pathSeparator        = [aDecoder decodeObject];
+  [self setPathSeparator: [aDecoder decodeObject]];
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
@@ -2646,13 +2675,17 @@ static double rint(double a)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
 
   //NSBox *_horizontalScrollerBox;
+  _horizontalScroller = RETAIN([aDecoder decodeObject]);
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
   _scrollerRect = [aDecoder decodeRect];
+  _columnSize = [aDecoder decodeSize];
 
   _skipUpdateScroller = NO;
+  /*
   _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
   [_horizontalScroller setTarget: self];
   [_horizontalScroller setAction: @selector(scrollViaScroller:)];
+  */
   [self setHasHorizontalScroller: _hasHorizontalScroller];
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
@@ -2674,19 +2707,22 @@ static double rint(double a)
   _target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
   
-  _browserColumns = [[NSMutableArray alloc] init];
+  //_browserColumns = [[NSMutableArray alloc] init];
   _titleCell = [GSBrowserTitleCell new];
 
   // Do the minimal thing to initiate the browser...
+  /*
   _lastColumnLoaded = -1;
   _firstVisibleColumn = 0;
   _lastVisibleColumn = 0;
   [self _createColumn];
-
+  */
+  _browserColumns = RETAIN([aDecoder decodeObject]);
   // ..and rebuild any existing browser columns
   [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
 
+  /*
   if (_browserDelegate != nil)
     {
       int i;
@@ -2698,9 +2734,9 @@ static double rint(double a)
         }
       [self scrollColumnsRightBy: _firstVisibleColumn];
     }
-
+  */
   // Make sure it displays ok even if there isn't any column
-  //[self tile];
+  [self tile];
   
   return self;
 }
