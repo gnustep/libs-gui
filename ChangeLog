@@ -1,3 +1,40 @@
+2003-08-17  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSTableView.m ([NSTableView -textDidBeginEditing:]): Fix leak
+	of dictionary object.
+	([NSTableView -textDidChange:]): Idem.
+	([NSTableView -textDidEndEditing:]): Idem.
+	Fixes #4568.
+
+2003-08-17  Adam Fedor  <fedor@gnu.org>
+	
+	* Source/NSImageCell.m ([NSImageCell -setObjectValue:]): Implement.
+
+2003-08-17 Benhur Stein <benhur@inf.ufsm.br>
+	* NSBrowser.m:
+	(-selectRow:inColumn:): cleanup
+	(-loadedCellAtRow:column:): cleanup
+	(-matrixInColumn:): return nil if column not in _browserColumns
+	(-setPath:): cleanup; fix optimization for not loading columns that
+	are already loaded
+	(-setLastColumn:): return if column is not loaded; remove unnecessary
+	call to setNeedsDisplay:; remove columns greater than
+	_lastVisibleColumn instead of numberOfVisibleColumns; call
+	scrollColumnToVisible instead of making it by hand.
+	(-reloadColumn:): reselect previously selected cells by searching them
+	in reloaded matrix, instead of by position
+	(-scrollColumnToVisible:): removed test that assumed that if
+	numberOfVisibleColums is enough to display all loaded columns, they
+	are all displayed. This is not always the case now.
+	(-tile): hack to garantee that all visible columns exist. Should fix 
+	 the code that's before instead.
+	(-doClick:): cleanup; removed drawing of matrix's cells
+	(-moveLeft:): cleanup; move left from firstResponder instead of from
+	selectedColumn
+	(-moveRight:): cleanup; move right from firstResponder instead of from
+	selectedColumn; removed call to doClick:
+	(-_performLoadOfColumn:): change _lastColumnLoaded if necessary    
+
 2003-08-16  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSDocument.m ([NSDocument -init]): Check the count of the

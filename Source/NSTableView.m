@@ -5605,8 +5605,8 @@ byExtendingSelection: (BOOL)flag
 {
   NSMutableDictionary *d;
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
-				     [aNotification userInfo]];
+  d = [NSMutableDictionary dictionaryWithDictionary: 
+				[aNotification userInfo]];
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidBeginEditingNotification
       object: self
@@ -5622,7 +5622,7 @@ byExtendingSelection: (BOOL)flag
 						 @selector(textDidChange:)])
     [_editedCell textDidChange: aNotification];
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
+  d = [NSMutableDictionary dictionaryWithDictionary: 
 				     [aNotification userInfo]];
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidChangeNotification
@@ -5651,7 +5651,7 @@ byExtendingSelection: (BOOL)flag
   _editedColumn = -1;
   _editedRow = -1;
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
+  d = [NSMutableDictionary dictionaryWithDictionary: 
 				     [aNotification userInfo]];
   [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidEndEditingNotification
