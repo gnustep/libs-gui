@@ -4094,6 +4094,7 @@ byExtendingSelection: (BOOL)flag
   NSText *t;
   NSTableColumn *tb;
   NSRect drawingRect;
+  unsigned length = 0;
 
   // We refuse to edit cells if the delegate can not accept results 
   // of editing.
@@ -4119,12 +4120,16 @@ byExtendingSelection: (BOOL)flag
     }
 
   // Now (_textObject == nil)
-  
+
   t = [_window fieldEditor: YES  forObject: self];
-  
+
   if ([t superview] != nil)
-    if ([t resignFirstResponder] == NO)
-      return;
+    {
+      if ([t resignFirstResponder] == NO)
+	{
+	  return;
+	}
+    }
   
   _editedRow = rowIndex;
   _editedColumn = columnIndex;
@@ -4133,10 +4138,12 @@ byExtendingSelection: (BOOL)flag
   tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
   _editedCell = [[tb dataCellForRow: rowIndex] copy];
+
   [_editedCell setEditable: YES];
   [_editedCell setObjectValue: [_dataSource tableView: self
 					    objectValueForTableColumn: tb
 					    row: rowIndex]];
+
 
   // We really want the correct background color!
   if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
@@ -4155,12 +4162,24 @@ byExtendingSelection: (BOOL)flag
 		 forTableColumn: tb   row: rowIndex];
     }
 
+  /* Please note the important point - calling stringValue normally
+     causes the _editedCell to call the validateEditing method of its
+     control view ... which happens to be this NSTableView object :-)
+     but we don't want any spurious validateEditing to be performed
+     before the actual editing is started (otherwise you easily end up
+     with the table view picking up the string stored in the field
+     editor, which is likely to be the string resulting from the last
+     edit somewhere else ... getting into the bug that when you TAB
+     from one cell to another one, the string is copied!), so we must
+     call stringValue when _textObject is still nil.  */
+  if (flag)
+    {
+      length = [[_editedCell stringValue] length];
+    }
+
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
 
-  // Now edit it
-  drawingRect = [self frameOfCellAtColumn: columnIndex
-		      row: rowIndex];
-
+  drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
   if (flag)
     {
       [_editedCell selectWithFrame: drawingRect
@@ -4168,7 +4187,7 @@ byExtendingSelection: (BOOL)flag
 		   editor: _textObject
 		   delegate: self
 		   start: 0
-		   length: [[_editedCell stringValue] length]];
+		   length: length];
     }
   else
     {
@@ -6108,8 +6127,8 @@ byExtendingSelection: (BOOL)flag
   [self setNeedsDisplayInRect: 
 	  [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
   _textObject = nil;
-  _editedCell = nil;
   RELEASE (_editedCell);
+  _editedCell = nil;
   /* Save values */
   row = _editedRow;
   column = _editedColumn;
