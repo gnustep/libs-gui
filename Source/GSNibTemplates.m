@@ -127,6 +127,16 @@ static const int currentVersion = 1; // GSNibItem version number...
 	}
 
       /*
+       * See if there is a main menu to be set.  Report #4815, mainMenu 
+       * should be initialized before awakeFromNib is called.
+       */
+      menu = [nameTable objectForKey: @"NSMenu"];
+      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
+	{
+	  [NSApp setMainMenu: menu];
+	}
+
+      /*
        * Now tell all the objects that they have been loaded from
        * a nib.
        */
@@ -163,15 +173,6 @@ static const int currentVersion = 1; // GSNibItem version number...
 	      else
 		[NSApp _deactivateVisibleWindow: win];
 	    }
-	}
-
-      /*
-       * See if there is a main menu to be set.
-       */
-      menu = [nameTable objectForKey: @"NSMenu"];
-      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
-	{
-	  [NSApp setMainMenu: menu];
 	}
 
       /*

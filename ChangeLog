@@ -1,3 +1,9 @@
+2003-09-01  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: [GSNibContainer awakeWithContext:]
+	was initializing mainMenu too late.   It should be accessible
+	from within awakeFromNib.
+
 2003-08-31  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbarItem.m: Corrected code to instantiate
