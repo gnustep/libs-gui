@@ -236,14 +236,16 @@ static NSDictionary* nsmapping = nil;
 
       if ([path length] != 0) 
 	{
-	  NSImage* image = [[[NSImage alloc] initByReferencingFile:path]
-				autorelease];
+	  NSImage	*image;
 
+	  image = [[self allocWithZone: NSDefaultMallocZone()]
+			initByReferencingFile: path];
 	  if (image)
-	    [image setName: [[path lastPathComponent] 
-				stringByDeletingPathExtension]];
-
-	  	return image;
+	    {
+	      [image setName: aName];
+	      [image release];		// Retained in dictionary.
+	    }
+	  return image;
 	}
     }
   
