@@ -1,5 +1,9 @@
 2002-03-17  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
+	* Source/GSTextStorage.m 
+	([GSTextStorage -replaceCharactersInRange:withString:]): 
+	Only keep attribute #0 when removing it would remove all attributes.
+	(patch by Alexander Malmberg)
 	* Source/NSTableView.m ([NSTableView -deselectAll:]): 
 	Fix bug.
 	* Source/NSTableView.m : initial drag'n'drop support.
