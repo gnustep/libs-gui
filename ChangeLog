@@ -1,3 +1,9 @@
+Sun May  9  9:13:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Further optimisations, plus bugfix to ensure that
+	a view and it's children are moved to window 'nil' when the view is
+	removed from it's superview.
+
 Fri May  7 21:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Large and complex changes made in order to speed up operation of the

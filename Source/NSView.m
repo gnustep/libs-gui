@@ -280,17 +280,17 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
+  [self retain];
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
     super_view->_rFlags.has_subviews = 0;
   super_view = nil;
   [self viewWillMoveToWindow: nil];
+  [self release];
 }
 
 - (void) removeFromSuperview
 {
-  NSWindow		*win;
-
   /*
    * We MUST make sure that coordinates are invalidated even if we have
    * no superview - cos they may have been rebuilt since we lost the
@@ -307,13 +307,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   [super_view setNeedsDisplayInRect: frame];
-
+  [self retain];
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
     super_view->_rFlags.has_subviews = 0;
-  win = window;
-  window = nil;
   super_view = nil;
+  [self viewWillMoveToWindow: nil];
+  [self release];
 }
 
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
@@ -394,19 +394,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  unsigned	count;
-
   window = newWindow;
-
-  count = [sub_views count];
-  if (count > 0)
+  if (_rFlags.has_subviews)
     {
-      unsigned	i;
-      NSView*	array[count];
+      unsigned	count = [sub_views count];
 
-      [sub_views getObjects: array];
-      for (i = 0; i < count; ++i)
-	[array[i] viewWillMoveToWindow: newWindow];
+      if (count > 0)
+	{
+	  unsigned	i;
+	  NSView	*array[count];
+
+	  [sub_views getObjects: array];
+	  for (i = 0; i < count; ++i)
+	    [array[i] viewWillMoveToWindow: newWindow];
+	}
     }
 }
 
@@ -883,17 +884,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 // resize subviews only if we are supposed to and we have never been rotated
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize
 {
-  id e, o;
-
-  if ([self autoresizesSubviews] == NO || is_rotated_from_base == YES)
-    return;
-
-  e = [sub_views objectEnumerator];
-  o = [e nextObject];
-  while (o)
+  if (_rFlags.has_subviews)
     {
-      [o resizeWithOldSuperviewSize: oldSize];        // Resize the subview
+      id e, o;
+
+      if ([self autoresizesSubviews] == NO || is_rotated_from_base == YES)
+	return;
+
+      e = [sub_views objectEnumerator];
       o = [e nextObject];
+      while (o)
+	{
+	  [o resizeWithOldSuperviewSize: oldSize];
+	  o = [e nextObject];
+	}
     }
 }
 
@@ -1080,12 +1084,26 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     return NO;
 }
 
-- (void)display											
+- (void) display											
 {
-  if (!window)
-    return;
+  if (window)
+    {
+      NSRect	rect;
 
-  [self displayRect: bounds];
+      /*
+       * Display the entire view - if there is nothing marked as needing
+       * display, that's just the visible rect.  If there is an area needing
+       * display, do the entire area so that the view will no longer need
+       * be marked as needing display.
+       */
+      if (coordinates_valid == NO)
+	[self _rebuildCoordinates];
+      if (needs_display)
+	rect = NSUnionRect(invalidRect, visibleRect);
+      else
+	rect = visibleRect;
+      [self displayRect: rect];
+    }
 }
 
 - (void) displayIfNeeded
@@ -1099,8 +1117,11 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       else
 	{
 	  NSView	*firstOpaque = [self opaqueAncestor];
-	  NSRect	rect = bounds;
+	  NSRect	rect;
 
+	  if (coordinates_valid == NO)
+	    [self _rebuildCoordinates];
+	  rect = NSUnionRect(invalidRect, visibleRect);
 	  rect = [firstOpaque convertRect: rect fromView: self];
 	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
 	}
@@ -1111,7 +1132,12 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (needs_display)
     {
-      [self displayIfNeededInRectIgnoringOpacity: bounds];
+      NSRect	rect;
+
+      if (coordinates_valid == NO)
+	[self _rebuildCoordinates];
+      rect = NSUnionRect(invalidRect, visibleRect);
+      [self displayIfNeededInRectIgnoringOpacity: rect];
     }
 }
 
@@ -1157,54 +1183,57 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  [self unlockFocus];
 	}
 
-      count = [sub_views count];
-      if (count > 0)
+      if (_rFlags.has_subviews)
 	{
-	  NSView*	array[count];
-
-	  [sub_views getObjects: array];
-
-	  for (i = 0; i < count; i++)
+	  count = [sub_views count];
+	  if (count > 0)
 	    {
-	      NSRect isect;
-	      NSView *subview = array[i];
-	      NSRect subviewFrame = subview->frame;
+	      NSView*	array[count];
 
-	      if ([subview->frameMatrix isRotated])
-		{
-		  [subview->frameMatrix boundingRectFor: subviewFrame
-						 result: &subviewFrame];
-		}
+	      [sub_views getObjects: array];
 
-	      /*
-	       * Having drawn ourself into the rect, we must make sure that
-	       * subviews overlapping the area are redrawn.
-	       */
-	      isect = NSIntersectionRect(redrawRect, subviewFrame);
-	      if (NSIsEmptyRect(isect) == NO)
+	      for (i = 0; i < count; i++)
 		{
-		  isect = [subview convertRect: isect
-				      fromView: self];
+		  NSRect isect;
+		  NSView *subview = array[i];
+		  NSRect subviewFrame = subview->frame;
+
+		  if ([subview->frameMatrix isRotated])
+		    {
+		      [subview->frameMatrix boundingRectFor: subviewFrame
+						     result: &subviewFrame];
+		    }
+
 		  /*
-		   * hack the ivars of the subview directly for speed.
+		   * Having drawn ourself into the rect, we must make sure that
+		   * subviews overlapping the area are redrawn.
 		   */
-		  subview->needs_display = YES;
-		  subview->invalidRect = NSUnionRect(subview->invalidRect,
-			isect);
-		}
-
-	      if (subview->needs_display)
-		{
-		  isect = NSIntersectionRect(aRect, subviewFrame);
+		  isect = NSIntersectionRect(redrawRect, subviewFrame);
 		  if (NSIsEmptyRect(isect) == NO)
 		    {
 		      isect = [subview convertRect: isect
 					  fromView: self];
-		      [subview displayIfNeededInRectIgnoringOpacity: isect];
+		      /*
+		       * hack the ivars of the subview directly for speed.
+		       */
+		      subview->needs_display = YES;
+		      subview->invalidRect = NSUnionRect(subview->invalidRect,
+			    isect);
 		    }
+
 		  if (subview->needs_display)
 		    {
-		      stillNeedsDisplay = YES;
+		      isect = NSIntersectionRect(aRect, subviewFrame);
+		      if (NSIsEmptyRect(isect) == NO)
+			{
+			  isect = [subview convertRect: isect
+					      fromView: self];
+			  [subview displayIfNeededInRectIgnoringOpacity: isect];
+			}
+		      if (subview->needs_display)
+			{
+			  stillNeedsDisplay = YES;
+			}
 		    }
 		}
 	    }
@@ -1258,33 +1287,37 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   [self drawRect: aRect];
   [self unlockFocus];
 
-  count = [sub_views count];
-
-  if (count > 0)
+  if (_rFlags.has_subviews)
     {
-      NSView*	array[count];
+      count = [sub_views count];
 
-      [sub_views getObjects: array];
-
-      for (i = 0; i < count; ++i)
+      if (count > 0)
 	{
-	  NSView	*subview = array[i];
-	  NSRect	subviewFrame = subview->frame;
-	  NSRect	intersection;
+	  NSView*	array[count];
 
-	  if ([subview->frameMatrix isRotated])
-	    [subview->frameMatrix boundingRectFor: subviewFrame
-					   result: &subviewFrame];
+	  [sub_views getObjects: array];
 
-	  intersection = NSIntersectionRect(aRect, subviewFrame);
-	  if (NSIsEmptyRect(intersection) == NO)
+	  for (i = 0; i < count; ++i)
 	    {
-	      intersection = [subview convertRect: intersection fromView: self];
-	      [subview displayRectIgnoringOpacity: intersection];
-	    }
-	  if (subview->needs_display)
-	    {
-	      stillNeedsDisplay = YES;
+	      NSView	*subview = array[i];
+	      NSRect	subviewFrame = subview->frame;
+	      NSRect	intersection;
+
+	      if ([subview->frameMatrix isRotated])
+		[subview->frameMatrix boundingRectFor: subviewFrame
+					       result: &subviewFrame];
+
+	      intersection = NSIntersectionRect(aRect, subviewFrame);
+	      if (NSIsEmptyRect(intersection) == NO)
+		{
+		  intersection = [subview convertRect: intersection
+					     fromView: self];
+		  [subview displayRectIgnoringOpacity: intersection];
+		}
+	      if (subview->needs_display)
+		{
+		  stillNeedsDisplay = YES;
+		}
 	    }
 	}
     }
@@ -1469,7 +1502,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  if ([array[i] tag] == aTag)
 	    return array[i];
 	}
-      *level++;
+      *level += 1;
       for (i = 0; i < count; i++)
 	{
 	  NSView	*v;
@@ -1478,7 +1511,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  if (v != nil)
 	    return v;
 	}
-      *level--;
+      *level -= 1;
     }
   return nil;
 }
@@ -1494,7 +1527,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       view = self;
     }
-  else
+  else if (_rFlags.has_subviews)
     {
       unsigned	count = [sub_views count];
 
@@ -1564,19 +1597,22 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   p = [self convertPoint: aPoint fromView: super_view];
 
-  count = [sub_views count];			// Check our sub_views
-  if (count > 0)
+  if (_rFlags.has_subviews)
     {
-      NSView*	array[count];
-
-      [sub_views getObjects: array];
-
-      while (count > 0)
+      count = [sub_views count];			// Check our sub_views
+      if (count > 0)
 	{
-	  w = array[--count];
-	  v = [w hitTest: p];
-	  if (v)
-	    break;
+	  NSView*	array[count];
+
+	  [sub_views getObjects: array];
+
+	  while (count > 0)
+	    {
+	      w = array[--count];
+	      v = [w hitTest: p];
+	      if (v)
+		break;
+	    }
 	}
     }
   if (v)		// mouse is either in the subview or within self
@@ -1988,19 +2024,22 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       unsigned	count;
 
       coordinates_valid = NO;
-      count = [sub_views count];
-      if (count > 0)
+      if (_rFlags.has_subviews)
 	{
-	  NSView*	array[count];
-	  unsigned	i;
-
-	  [sub_views getObjects: array];
-	  for (i = 0; i < count; i++)
+	  count = [sub_views count];
+	  if (count > 0)
 	    {
-	      NSView	*sub = array[i];
+	      NSView*	array[count];
+	      unsigned	i;
 
-	      if (sub->coordinates_valid == YES)
-		(*invalidateImp)(sub, invalidateSel);
+	      [sub_views getObjects: array];
+	      for (i = 0; i < count; i++)
+		{
+		  NSView	*sub = array[i];
+
+		  if (sub->coordinates_valid == YES)
+		    (*invalidateImp)(sub, invalidateSel);
+		}
 	    }
 	}
     }
