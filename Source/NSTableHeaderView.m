@@ -660,5 +660,29 @@
 	}
     }
 }
+
+/*
+ * Encoding/Decoding
+ */
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  /* Nothing else to encode in NSTableHeaderView:
+       - _tableView is set by the parent NSTableView
+       - _resizedColumn is reset on decoding anyway
+     */
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  _tableView = nil;
+  _resizedColumn = -1;
+
+  return self;
+}
+
 @end
 

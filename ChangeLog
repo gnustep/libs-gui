@@ -1,3 +1,8 @@
+2001-12-03  Laurent Julliard  <laurent@moldus.org>
+
+	* Source/NSTableHeaderView.m (-initWithCoder:, decodeWithCoder:): 
+	minimal decoding/encoding methods
+
 2001-12-02  Gregory Casamento <greg_casamento@yahoo.com>
 	* Source/NSTableView.m
 	-[NSTableView superviewFrameChanged:] Added a check to prevent
