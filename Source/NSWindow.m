@@ -3183,7 +3183,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	      BOOL	isEntry;
 
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
-	      // FIXME ... check whether drag shoulkd propogate up hierarchy
 	      while (v != nil && ((NSViewPtr)v)->_rFlags.has_draginfo == 0)
 		{
 		  v = [v superview];

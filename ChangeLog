@@ -3,8 +3,8 @@
 	* Source/NSSavePanel.m: Change to have entire window accept DnD.
 	* Source/NSWindow.m: Fix to get whole window DnD working, also
 	to enable propogation of drag events up the view hierarchy to the
-	first drag-aware view ... not sure that this is correct but it
-	seems sensible.
+	first drag-aware view ... Adam reports that this seems to be the
+	behavior on MacOS-X too.
 
 2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
 
