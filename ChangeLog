@@ -1,4 +1,4 @@
-2003-05-13 Serg Stoyan <stoyan@on.com.ua>
+2003-05-14 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m 
 	(-setFont:): Set cell height at least to 20 pixels.
