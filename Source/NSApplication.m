@@ -85,12 +85,6 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 {
   int retVal;
 
-#ifdef DEBUG
-#define DEBUG_BUTTON @"Debug"
-#else
-#define DEBUG_BUTTON nil
-#endif
-
   /* Reset the exception handler to the Base library's one, to prevent
      recursive calls to the gui one. */
   NSSetUncaughtExceptionHandler (defaultUncaughtExceptionHandler);  
@@ -109,13 +103,16 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
     }
 
   retVal = NSRunCriticalAlertPanel 
-    ([NSString stringWithFormat: 
-		 GSGuiLocalizedString (@"Critical Error in %@", @""),
+    ([NSString stringWithFormat: _(@"Critical Error in %@"),
 	       [[NSProcessInfo processInfo] processName]],
      @"%@: %@", 
-     GSGuiLocalizedString (@"Abort", @""), 
-     GSGuiLocalizedString (@"Ignore", @""), 
-     GSGuiLocalizedString (DEBUG_BUTTON, @""),
+     _(@"Abort"), 
+     _(@"Ignore"),
+#ifdef DEBUG
+     _(@"Debug"),
+#else
+     nil,
+#endif
      [exception name], 
      [exception reason]);
 
@@ -191,32 +188,25 @@ initialize_gnustep_backend(void)
 	/* FIXME/TODO - update localized error messages.  */
 
 	/* Backend found ? */
-	NSCAssert1(path != nil, 
-		  GSGuiLocalizedString (@"Unable to find backend %@", nil), 
-		   bundleName);
+	NSCAssert1(path != nil, _(@"Unable to find backend %@"), bundleName);
 	NSDebugLog(@"Loading Backend from %@", path);
 	NSDebugFLLog(@"BackendBundle", @"Loading Backend from %@", path);
 
 	/* Create a bundle object.  (Should normally succeed).  */
 	theBundle = [NSBundle bundleWithPath: path];
 	NSCAssert1(theBundle != nil, 
-		  GSGuiLocalizedString 
-		   (@"Can't create NSBundle object for backend at path %@", 
-		    nil),
+		   _(@"Can't create NSBundle object for backend at path %@"),
 		   path);
 
 	/* Now load the object file from the bundle.  */
 	NSCAssert1 ([theBundle load],
-		    GSGuiLocalizedString 
-		    (@"Can't load object file from backend at path %@", nil),
+		    _(@"Can't load object file from backend at path %@"),
 		    path);
 
 	/* Now extract the GSBackend class from the loaded bundle.  */
 	backend = [theBundle classNamed: @"GSBackend"];
-	NSCAssert1(backend != Nil, 
-		   GSGuiLocalizedString 
-		   (@"Backend at path %@ doesn't contain the GSBackend class",
-		    nil),
+	NSCAssert1 (backend != Nil, 
+		    _(@"Backend at path %@ doesn't contain the GSBackend class"),
 		   path);
 	[backend initializeBackend];
       }
@@ -224,8 +214,7 @@ initialize_gnustep_backend(void)
       /* GSBackend will be in a separate library, so use the runtime
 	 to find the class and avoid an unresolved reference problem */
       backend = [[NSBundle gnustepBundle] classNamed: @"GSBackend"];
-      NSCAssert(backend, GSGuiLocalizedString (@"Can't find backend context",
-					       nil));
+      NSCAssert (backend, _(@"Can't find backend context");
       [backend initializeBackend];
 #endif
     }
@@ -603,9 +592,7 @@ static NSCell* tileCell = nil;
    * initialization code behaves always in the same way for this class
    * and for subclasses.
    */
-  NSAssert (NSApp == nil, 
-	    GSGuiLocalizedString 
-	    (@"[NSApplication -init] called more than once", nil));
+  NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
   {
     GSDisplayServer *srv;
     /* Initialization must be enclosed in an autorelease pool.  */
@@ -696,8 +683,7 @@ static NSCell* tileCell = nil;
     {
       if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
 	{
-	  NSLog (GSGuiLocalizedString (@"Cannot load the main model file '%@'",
-				       nil), mainModelFile);
+	  NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
 	}
     }
 
@@ -823,9 +809,8 @@ static NSCell* tileCell = nil;
       object: workspace
       userInfo: userInfo];
   NS_HANDLER
-    NSLog(GSGuiLocalizedString (@"Problem during launch app notification: %@", 
-				nil),
-	  [localException reason]);
+    NSLog (_(@"Problem during launch app notification: %@"),
+	   [localException reason]);
     [localException raise];
   NS_ENDHANDLER
 }
@@ -1937,8 +1922,8 @@ delegate.
   if (_infoPanel == nil)
     _infoPanel = [[GSInfoPanel alloc] initWithDictionary: dictionary];
   
-  [_infoPanel setTitle: GSGuiLocalizedString (@"Info", 
-					      @"Title of the Info Panel")];
+  [_infoPanel setTitle: NSLocalizedString (@"Info", 
+					   @"Title of the Info Panel")];
   [_infoPanel orderFront: self];
 }
 
@@ -2309,7 +2294,7 @@ delegate.
 - (void) reportException: (NSException *)anException
 {
   if (anException)
-    NSLog(GSGuiLocalizedString (@"reported exception - %@", nil), anException);
+    NSLog (_(@"reported exception - %@"), anException);
 }
 
 /*
@@ -2326,8 +2311,7 @@ delegate.
   else
     {
       shouldTerminate = [[NSDocumentController sharedDocumentController] 
-			  reviewUnsavedDocumentsWithAlertTitle: 
-			    GSGuiLocalizedString (@"Quit", nil)
+			  reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
 			   cancellable:YES];
     }
 
