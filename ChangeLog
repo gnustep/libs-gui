@@ -1,3 +1,12 @@
+2003-09-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m
+	According to Gregory John Casamento <greg_casamento@yahoo.com> the
+	popup button does not change its enable state when the selected item
+	does. To adopt this behaviour all setEnable: calls have been
+	removed and one in [initWithCoder:] added that enables the popup
+	for all old encodings.
+	
 2003-09-13  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSPopUpButtonCell.m: Corrected minor problem which 
