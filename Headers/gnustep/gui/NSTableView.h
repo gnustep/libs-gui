@@ -63,6 +63,7 @@
   BOOL               _allowsColumnSelection;
   BOOL               _allowsColumnResizing;
   BOOL               _allowsColumnReordering;
+  BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
   NSText            *_textObject;
   int                _editedRow;
@@ -89,6 +90,12 @@
    * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
    * which updates the cache.  */
   float *_columnOrigins;
+
+  /*
+   *  We keep the superview's width in order to know when to
+   *  size the last column to fit
+   */
+  float _superview_width;
 
   /* if YES [which happens only during a sizeToFit], we are doing
      computations on sizes so we ignore tile (produced for example by
