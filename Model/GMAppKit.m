@@ -559,29 +559,31 @@ void __dummy_GMAppKit_functionForLinking() {}
 {
   /* Check the following: the program simply crashes if there's nothing in the
      model file */
-#if 0
+
   int i, count;
   NSMutableArray* decodedItems
       = [unarchiver decodeObjectWithName:@"itemArray"];
 
   self = [super initWithModelUnarchiver:unarchiver];
 
-  for (i = 0, count = [decodedItems count]; i < count; i++) {
-    id item = [decodedItems objectAtIndex:i];
-    id myItem;
-
-    [self addItemWithTitle:[item title]];
-    myItem = [self itemAtIndex:i];
-    [myItem setTarget:[item target]];
-    [myItem setAction:[item action]];
-    [myItem setEnabled:[item isEnabled]];
-    [myItem setTag:[item tag]];
-    [myItem setKeyEquivalent:[item keyEquivalent]];
+  if (decodedItems) {
+      for (i = 0, count = [decodedItems count]; i < count; i++) {
+	  id item = [decodedItems objectAtIndex:i];
+	  id myItem;
+	  
+	  [self addItemWithTitle:[item title]];
+	  myItem = [self itemAtIndex:i];
+	  [myItem setTarget:[item target]];
+	  [myItem setAction:[item action]];
+	  [myItem setEnabled:[item isEnabled]];
+	  [myItem setTag:[item tag]];
+	  [myItem setKeyEquivalent:[item keyEquivalent]];
+      }
   }
 
   [self selectItemWithTitle:[unarchiver decodeStringWithName:@"selectedItem"]];
   [self synchronizeTitleAndSelectedItem];
-#endif
+
 
   return self;
 }
@@ -788,7 +790,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self orderFront:nil];
 
 #if GNU_GUI_LIBRARY
-  [[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
+  //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
   [[self contentView] setNeedsDisplay:YES];
 #endif
 
@@ -876,7 +878,7 @@ void __dummy_GMAppKit_functionForLinking() {}
         [unarchiver decodeBOOLWithName:@"setWorksWhenModal"]];
 
 #if GNU_GUI_LIBRARY
-  [[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
+    //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
   [[self contentView] setNeedsDisplay:YES];
 #endif
     return self;
@@ -988,7 +990,7 @@ void __dummy_GMAppKit_functionForLinking() {}
           [unarchiver decodeStringWithName:@"directory"]];
 
 #if GNU_GUI_LIBRARY
-  [[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
+    //[[[self contentView] superview] _unconditionallyResetNeedsDisplayInAllViews];
   [[self contentView] setNeedsDisplay:YES];
 #endif
     return self;
@@ -1089,6 +1091,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 	[self setDelegate:delegate];
 
     [self setDoubleAction:[unarchiver decodeSelectorWithName:@"doubleAction"]];
+    return self;
 }
 
 @end  /* NSBrowser (GMArchiverMethods) */
