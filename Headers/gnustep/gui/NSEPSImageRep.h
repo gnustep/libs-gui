@@ -29,13 +29,16 @@
 #ifndef _GNUstep_H_NSEPSImageRep
 #define _GNUstep_H_NSEPSImageRep
 
+#include <Foundation/NSGeometry.h>
 #include <AppKit/NSImageRep.h>
 
 @class NSData;
 
-@interface NSEPSImageRep : NSImageRep <NSCoding>
+@interface NSEPSImageRep : NSImageRep
 {
   // Attributes
+  NSRect _bounds;
+  NSData *_epsData;
 }
 
 //
@@ -54,12 +57,6 @@
 // Drawing the Image 
 //
 - (void)prepareGState;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

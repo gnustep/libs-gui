@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
 
-#include <gnustep/gui/config.h>
+#include <Foundation/NSData.h>
 #include <AppKit/NSEPSImageRep.h>
 
 @implementation NSEPSImageRep 
@@ -34,54 +34,72 @@
 // Initializing a New Instance 
 + (id) imageRepWithData: (NSData *)epsData
 {
-  //[self notImplemented: _cmd];
-  return nil;
-}
-
-+ (NSArray *) imageRepsWithData: (NSData *)epsData
-{
-  //[self notImplemented: _cmd];
-  return nil;
+  return [[self alloc] initWithData: epsData];
 }
 
 - (id) initWithData: (NSData *)epsData
 {
   [self notImplemented: _cmd];
+
+  _epsData = epsData;
+  // Set bounds from parsed header
+  //_bounds = NSMakeRect();
   return self;
 }
 
 // Getting Image Data 
 - (NSRect) boundingBox
 {
-  NSRect rect;
-  [self notImplemented: _cmd];
-  return rect;
+  return _bounds;
 }
 
 - (NSData *) EPSRepresentation
 {
-  [self notImplemented: _cmd];
-  return nil;
+  return _epsData;
+}
+
+- (void) prepareGState
+{
+  // This is for subclasses only
 }
 
 // Drawing the Image 
-- (void) prepareGState
+- (BOOL) draw
 {
   [self notImplemented: _cmd];
+
+  [self prepareGState];
+
+  return YES;
+}
+
+// NSCopying protocol
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSEPSImageRep *copy = [super copyWithZone: zone];
+
+  copy->_epsData = [_epsData copyWithZone: zone];
+
+  return copy;
 }
 
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [self notImplemented: _cmd];
+  NSData *data = [self EPSRepresentation];
+
+  [super encodeWithCoder: aCoder];
+  [data encodeWithCoder: aCoder];
+
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [self notImplemented: _cmd];
-  return self;
+  NSData	*data;
+
+  self = [super initWithCoder: aDecoder];
+  data = [aDecoder decodeObject];
+  return [self initWithData: data];
 }
 
 @end
-
-
