@@ -402,8 +402,8 @@ NSDictionary *paperSizes = nil;
     }
   if (printInfoDefaults == nil)
     {
-      NSDebugLog(@"NSPrinter", @"Could not find printing defaults table, file %@",
-		 NSPrintInfo_DEFAULTSTABLE);
+      /* NSDebugLog(@"NSPrinter", @"Could not find printing defaults table, file %@",
+	      NSPrintInfo_DEFAULTSTABLE); */
       printInfoDefaults = RETAIN([NSMutableDictionary dictionary]);
     }
   if (defPrinter == nil)
