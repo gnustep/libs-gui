@@ -106,8 +106,8 @@ extern NSSize NSTokenSize;
   NSBackingStoreType backing_type;
   unsigned      style_mask;
   int           window_level;
-  NSRect        rectBeingDrawn;
   NSRect        rectNeedingFlush;
+  NSMutableArray *rectsBeingDrawn;
 
   BOOL          is_one_shot;
   BOOL          needs_display;

@@ -159,6 +159,7 @@
   [miniaturized_title release];
   [miniaturized_image release];
   [window_title release];
+  [rectsBeingDrawn release];
 
   [super dealloc];
 }
@@ -217,7 +218,7 @@
   /* rectBeingDrawn is variable used to optimize flushing the backing store.
      It is set by NSGraphicContext during a lockFocus to tell NSWindow what
      part a view is drawing in, so NSWindow only has to flush that portion */
-  rectBeingDrawn = NSZeroRect;
+  rectsBeingDrawn = [[NSMutableArray arrayWithCapacity: 10] retain]; 
   NSDebugLog(@"NSWindow end of init\n");
 
   return self;

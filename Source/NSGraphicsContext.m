@@ -32,7 +32,6 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSLock.h>
-#include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
@@ -203,30 +202,35 @@ struct NSWindow_struct
   return [focus_stack lastObject];
 }
 
-- (void) lockFocusView: (NSView*)aView
+- (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect
 {
-  NSRect rect;
   struct NSWindow_struct *window;
 
   [focus_stack addObject: aView];
   window = (struct NSWindow_struct *)[aView window];
   /* Add aView's visible Rect to its Window's area to be flushed */
-  rect = [aView convertRect: [aView visibleRect] toView: nil];
-  window->rectBeingDrawn = NSUnionRect(window->rectBeingDrawn, rect);
+  if (NSIsEmptyRect(rect))
+    rect = [aView visibleRect];
+  rect = [aView convertRect: rect toView: nil];
+  [window->rectsBeingDrawn addObject: [NSValue valueWithRect: rect]];
 }
 
-- (void) unlockFocusView: (NSView*)aView
+- (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush
 {
+  NSRect        rect;
   struct	NSWindow_struct *window;
   NSView	*v = [focus_stack lastObject];
 
   NSAssert(v == aView, NSInvalidArgumentException);
   /* Set Window's flush rect so our view is properly flushed */
   window = (struct NSWindow_struct *)[aView window];
-  window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush,
-    window->rectBeingDrawn);
-  window->rectBeingDrawn = NSZeroRect;
-  window->needs_flush = YES;
+  if (flush)
+    {
+      rect = [[window->rectsBeingDrawn lastObject] rectValue];
+      window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush, rect);
+      window->needs_flush = YES;
+    }
+  [window->rectsBeingDrawn removeLastObject];
   [focus_stack removeLastObject];
 }
 

@@ -1055,12 +1055,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) lockFocus
 {
-  [[NSGraphicsContext currentContext] lockFocusView: self];
+  [[NSGraphicsContext currentContext] lockFocusView: self 
+				      inRect: [self visibleRect]];
 }
 
 - (void) unlockFocus
 {
-  [[NSGraphicsContext currentContext] unlockFocusView: self];
+  [[NSGraphicsContext currentContext] unlockFocusView: self needsFlush: YES ];
 }
 
 - (BOOL) canDraw

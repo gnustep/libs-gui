@@ -123,11 +123,8 @@ typedef enum _NSWindowOrderingMode
  * in it's implementation of lockFocus and unlockFocus.
  */
 - (NSView*) focusView;
-- (void) lockFocusView: (NSView*)aView;
-- (void) unlockFocusView: (NSView*)aView;
-
-/* Convert a rect in window coordinates to device space (Backend method) */
-- (NSRect) windowRectInDeviceSpace: (NSRect)windowRect;
+- (void) lockFocusView: (NSView*)aView inRect: (NSRect)rect;
+- (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush;
 
 @end
 #endif
