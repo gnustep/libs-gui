@@ -1,3 +1,9 @@
+Wed Feb  5 04:56:45 2003  Serg Stoyan <stoyan@hologr.com>
+	
+	* Source/NSMenuItemCell.m ([-drawKeyEquivalentWithFrame:inView:]): 
+	Do not draw the key equivalent if we are owned by a popup, and are
+	drawing the small popup image.
+	
 Wed Feb  5 04:42:16 2003  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSPrintOperation.m ([-_printOperationDidRun:success:
