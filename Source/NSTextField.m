@@ -339,7 +339,7 @@ static Class textFieldCellClass;
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
 {
-  return YES;
+  return [self isEditable];
 }
 
 - (BOOL) acceptsFirstResponder
