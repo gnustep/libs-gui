@@ -817,7 +817,7 @@
 
 - (NSUndoManager *)undoManager
 {
-  if (_undoManager == nil && [self hasUndoManager])
+  if (_undoManager == nil && [self hasUndoManager] == NO)
     {
       [self setUndoManager: AUTORELEASE([[NSUndoManager alloc] init])];
     }

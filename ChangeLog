@@ -1,3 +1,7 @@
+2005-01-14 05:50 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: corrected undoManager call in NSDocument.
+
 2005-01-13  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GNUmakefile.preamble: Extend FILTER_OUT flag to
