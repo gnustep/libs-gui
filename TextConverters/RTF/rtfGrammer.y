@@ -172,7 +172,7 @@ rtfCharset: RTFansi { $$ = 1; }
 		|	RTFpc  { $$ = 3; }
 		|	RTFpca { $$ = 4; }
 			/* If it's an unknown character set, assume ansi. */
-		|	RTFOtherStatement { $$ = 1; }
+		|	RTFOtherStatement { $$ = 1; free((void*)$1.name); }
 		;
 
 rtfIngredients:	/*	empty	*/
@@ -352,7 +352,8 @@ rtfStatement: RTFfont				{ int font;
                 |	RTFplain	        { GSRTFdefaultCharacterStyle(CTXT); }
                 |	RTFparagraph	        { GSRTFparagraph(CTXT); }
                 |	RTFrow   	        { GSRTFparagraph(CTXT); }
-		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(CTXT, $1); }
+		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(CTXT, $1); 
+		                                  free((void*)$1.name); }
 		;
 
 /*
