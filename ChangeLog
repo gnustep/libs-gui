@@ -1,3 +1,9 @@
+2000-04-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: 
+	Undid last change as this is now obsolete after Richards changes
+	in base. 
+	
 Wed Apr 25 22:31:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableView.m ([-noteNumberOfRowsChanged]): Added code
