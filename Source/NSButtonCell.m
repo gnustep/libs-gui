@@ -37,6 +37,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 
+#include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSWindow.h>
@@ -128,6 +129,7 @@
 
 - (void) setFont: (NSFont*)fontObject		
 {
+  // TODO Should change the size of the key equivalent font
   [super setFont: fontObject];
 }
 
@@ -143,6 +145,61 @@
   if (_control_view)
     if ([_control_view isKindOfClass: [NSControl class]])
       [(NSControl*)_control_view updateCell: self];
+}
+
+- (NSAttributedString *)attributedAlternateTitle
+{
+  // TODO
+  return nil;
+}
+
+- (void)setAttributedAlternateTitle:(NSAttributedString *)aString
+{
+  // TODO
+  [self setAlternateTitle: [aString string]];
+}
+
+- (NSAttributedString *)attributedTitle
+{
+  return [self attributedStringValue];
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)aString
+{
+  [self setAttributedStringValue: aString];
+}
+
+- (void)setTitleWithMnemonic:(NSString *)aString
+{
+  // TODO
+  [super setTitleWithMnemonic: aString];    
+}
+
+- (NSString *)alternateMnemonic
+{
+  // TODO
+  return @"";
+}
+
+- (unsigned)alternateMnemonicLocation
+{
+  // TODO
+  return NSNotFound;
+}
+
+- (void)setAlternateMnemonicLocation:(unsigned)location
+{
+  // TODO
+}
+
+- (void)setAlternateTitleWithMnemonic:(NSString *)aString
+{
+  unsigned int location = [aString rangeOfString: @"&"].location;
+
+  [self setAlternateTitle: [aString stringByReplacingString: @"&"
+				    withString: @""]];
+  // TODO: We should underline this character
+  [self setAlternateMnemonicLocation: location];
 }
 
 /*
@@ -203,11 +260,7 @@
 
 - (void) setKeyEquivalent: (NSString*)key
 {
-  if (_keyEquivalent != key)
-    {
-      [_keyEquivalent release];
-      _keyEquivalent = [key copy];
-    }
+  ASSIGNCOPY(_keyEquivalent, key);
 }
 
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
@@ -247,6 +300,47 @@
    * They are likely to draw differently.
    */
   return !_buttoncell_is_transparent;
+}
+
+- (NSBezelStyle)bezelStyle
+{
+  return _bezel_style;
+}
+
+- (void)setBezelStyle:(NSBezelStyle)bezelStyle
+{
+  _bezel_style = bezelStyle;
+}
+
+- (BOOL)showsBorderOnlyWhileMouseInside
+{
+    return _shows_border_only_while_mouse_inside;
+}
+
+- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show
+{
+  // FIXME: Switch mouse tracking on
+  _shows_border_only_while_mouse_inside = show;
+}
+
+- (NSGradientType)gradientType
+{
+  return _gradient_type;
+}
+
+- (void)setGradientType:(NSGradientType)gradientType
+{
+  _gradient_type = gradientType;
+}
+
+- (BOOL)imageDimsWhenDisabled
+{
+  return _image_dims_when_disabled;
+}
+
+- (void)setImageDimsWhenDisabled:(BOOL)flag
+{
+  _image_dims_when_disabled = flag;
 }
 
 /*
@@ -351,6 +445,9 @@
   return _cell.state;
 }
 
+// FIXME: The spec says that the stringValue and setStringValue methods should 
+// also be redefined. But this does not fit to the way we uses this for the title.
+
 /*
  * Displaying
  */
@@ -382,6 +479,7 @@
   if (_cell.is_bordered)
     {
       [controlView lockFocus];
+      // FIXME Should check the bezel and gradient style
       if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
         {
           NSDrawGrayBezel(cellFrame, NSZeroRect);
@@ -638,7 +736,7 @@
 	{
 	  position.y += size.height;
 	}
-      [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
+      [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
     }
   if (titleToDisplay != nil)
     {
@@ -763,6 +861,7 @@
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
+  // FIXME
   if (_cell.is_bordered)
     {
       /*
@@ -778,6 +877,45 @@
     }
   else
     return theRect;
+}
+
+- (void)setSound:(NSSound *)aSound
+{
+  _sound = aSound;
+}
+
+- (NSSound *)sound
+{
+  return _sound;
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+  _mouse_inside = YES;
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+  _mouse_inside = NO;
+}
+
+- (void)performClick:(id)sender
+{
+  // TODO Like super plus playing the sound
+  [super performClick: sender];
+}
+
+/*
+ * Comparing to Another NSButtonCell
+ */
+- (NSComparisonResult) compare: (id)otherCell
+{
+  if ([otherCell isKindOfClass: [NSButtonCell class]] == NO)
+    {
+      [NSException raise: NSBadComparisonException
+		   format: @"NSButtonCell comparison with non-NSButtonCell"];
+    }
+  return [super compare: otherCell];
 }
 
 /*
@@ -801,6 +939,7 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  // FIXME: Add new ivars
   BOOL tmp;
   [super encodeWithCoder: aCoder];
 
@@ -825,6 +964,7 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  // FIXME: Add new ivars
   BOOL tmp;
   [super initWithCoder: aDecoder];
 
