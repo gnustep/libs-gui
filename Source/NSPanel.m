@@ -241,7 +241,6 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 		(unsigned)sender);
     }
   active = NO;
-  [self orderOut: self];
   [[NSApplication sharedApplication] stopModal];
 }
 
@@ -410,6 +409,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 {
   active = YES;
   [NSApp runModalForWindow: self];
+  [self orderOut: self];
   return result;
 }
 
