@@ -590,7 +590,14 @@ static NSNotificationCenter *nc = nil;
 		      argument: nil];
   [NSApp removeWindowsItem: self];
 
-  [self setFrameAutosaveName: nil];
+  [windowsLock lock];
+  if (_autosaveName != nil)
+    {
+      [autosaveNames removeObject: _autosaveName];
+      _autosaveName = nil;
+    }
+  [windowsLock unlock];
+
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
       NSWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
@@ -623,7 +630,10 @@ static NSNotificationCenter *nc = nil;
   [context _removeDragTypes: nil fromWindow: self];
 
   if (_gstate)
-    DPSundefineuserobject(context, _gstate);
+    {
+      DPSundefineuserobject(context, _gstate);
+    }
+  
   if (_windowNum)
     {
       DPStermwindow(context, _windowNum);
