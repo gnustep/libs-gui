@@ -47,6 +47,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSScroller.h"
+#include "AppKit/NSScrollView.h"
 #include "AppKit/NSTableColumn.h"
 #include "AppKit/NSTableHeaderView.h"
 #include "AppKit/NSText.h"
@@ -3765,20 +3766,23 @@ inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) setHeaderView: (NSTableHeaderView*)aHeaderView
 {
+  
+  if ([_headerView respondsToSelector:@selector(setTableView)])
+    [_headerView setTableView: nil];
+      
+  ASSIGN (_headerView, aHeaderView);
+      
+  if ([_headerView respondsToSelector:@selector(setTableView)])
+    [_headerView setTableView: self];
+      
+  [self tile]; // resizes corner and header views, then displays
+  
   if (_super_view != nil)
     {
-      /* Changing the headerView after the table has been linked to a
-	 scrollview is not yet supported - the doc is not clear
-	 whether it should be supported at all.  If it is, perhaps
-	 it's going to be done through a private method between the
-	 tableview and the scrollview. */
-      NSLog (@"setHeaderView: called after NSTableView has been put "
-	     @"in the view tree!"); 
-    }
-  [_headerView setTableView: nil];
-  ASSIGN (_headerView, aHeaderView);
-  [_headerView setTableView: self];
-  [self tile];
+      id ssv = [_super_view superview];
+      if ([ssv isKindOfClass: [NSScrollView class]])
+        [ssv tile]; // draws any border type over corner and header views 
+    } 
 }
 
 - (NSTableHeaderView*) headerView
@@ -3789,7 +3793,13 @@ inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setCornerView: (NSView*)aView
 {
   ASSIGN (_cornerView, aView);
-  [self tile];
+  [self tile]; // resizes corner and header views, then displays
+  if (_super_view)
+    {
+      id ssv = [_super_view superview];
+      if ([ssv isKindOfClass: [NSScrollView class]])
+        [ssv tile]; // draws any border type over corner and header views 
+    }
 }
 
 - (NSView*) cornerView

@@ -59,6 +59,7 @@
   BOOL _hasHeaderView;
   BOOL _hasCornerView;
   NSClipView *_headerClipView;
+  NSView *_cornerView;
 }
 
 /* Calculating layout */
@@ -140,6 +141,8 @@
 /* Arranging components */
 - (void)tile;
 
+/* GNUstep private methods */
+- (void)_synchronizeHeaderAndCornerView;
 @end
 
 #endif /* _GNUstep_H_NSScrollView */

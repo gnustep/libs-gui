@@ -786,7 +786,6 @@ static float scrollerWidth;
   NSSize border = _sizeForBorderType(_borderType);
   NSRectEdge bottomEdge, topEdge;
   float headerViewHeight = 0;
-  NSView *cornerView = nil;
 
   /* Determine edge positions.  */
   if (_rFlags.flipped_view)
@@ -803,9 +802,12 @@ static float scrollerWidth;
   /* Prepare the contentRect by the insetting the borders.  */
   contentRect = NSInsetRect (_bounds, border.width, border.height);
   
+  [self _synchronizeHeaderAndCornerView];
+  
   /* First, allocate vertical space for the headerView / cornerView
      (but - NB - the headerView needs to be placed above the clipview
      later on, we can't place it now).  */
+
   if (_hasHeaderView == YES)
     {
       headerViewHeight = [[_headerClipView documentView] frame].size.height;
@@ -813,10 +815,9 @@ static float scrollerWidth;
 
   if (_hasCornerView == YES)
     {
-      cornerView = [(NSTableView *)[_contentView documentView] cornerView];
       if (headerViewHeight == 0)
 	{
-	  headerViewHeight = [cornerView frame].size.height;
+	  headerViewHeight = [_cornerView frame].size.height;
 	}
     }
 
@@ -874,7 +875,7 @@ static float scrollerWidth;
   /* Now place the corner view.  */
   if (_hasCornerView)
     {
-      [cornerView setFrameOrigin: headerRect.origin];
+      [_cornerView setFrameOrigin: headerRect.origin];
     }
 
   /* Now place the rulers.  */
@@ -990,39 +991,8 @@ static float scrollerWidth;
 
 - (void) setDocumentView: (NSView *)aView
 {
-  BOOL hadHeaderView = _hasHeaderView;
-
-  if (_hasCornerView == YES)
-    {
-      [self removeSubview: 
-	[(NSTableView *)[_contentView documentView] cornerView]];
-    }
-  _hasCornerView = ([aView respondsToSelector: @selector(cornerView)]
-		    && ([(NSTableView *)aView cornerView] != nil));
-  if (_hasCornerView == YES)
-    {
-      [self addSubview: [(NSTableView *)aView cornerView]];
-    }
-  //
-  _hasHeaderView = ([aView respondsToSelector: @selector(headerView)]
-		    && ([(NSTableView *)aView headerView] != nil));
-  if (_hasHeaderView == YES)
-    {
-      if (hadHeaderView == NO)
-	{
-	  _headerClipView = [NSClipView new];
-	  [self addSubview: _headerClipView];
-	  RELEASE (_headerClipView);
-	}
-      [_headerClipView setDocumentView: 
-			 [(NSTableView *)aView headerView]];
-    }
-  else if (hadHeaderView == YES)
-    {
-      [self removeSubview: _headerClipView];
-    }
-  //
   [_contentView setDocumentView: aView];
+
   if (_contentView && !_contentView->_rFlags.flipped_view)
     {
       [_vertScroller setFloatValue: 1];
@@ -1318,6 +1288,61 @@ static float scrollerWidth;
     }
 
   return self;
+}
+
+/* GNUstep private method */
+
+/* we update both of these at the same time during -tile
+   so there is no reason in seperating them that'd just add
+   message passing */
+- (void) _synchronizeHeaderAndCornerView
+{
+  BOOL hadHeaderView = _hasHeaderView;
+  BOOL hadCornerView = _hasCornerView;
+  NSView *aView = nil;
+  _hasHeaderView = ([[self documentView] 
+                        respondsToSelector: @selector(headerView)]
+                    && (aView=[(NSTableView *)[self documentView] headerView]));
+  if (_hasHeaderView == YES)
+    {
+      if (hadHeaderView == NO)
+        {
+          _headerClipView = [NSClipView new];
+          [self addSubview: _headerClipView];
+          RELEASE (_headerClipView);
+        }
+      [_headerClipView setDocumentView: aView]; 
+    }
+  else if (hadHeaderView == YES)
+    {
+      [self removeSubview: _headerClipView];
+    }
+  if (_hasVertScroller == YES)
+    {
+      aView = nil; 
+      _hasCornerView =
+              ([[self documentView] respondsToSelector: @selector(cornerView)]
+               && (aView=[(NSTableView *)[self documentView] cornerView]));
+      
+      if (aView == _cornerView)
+        return;
+      if (_hasCornerView == YES)
+        {
+          if (hadCornerView == NO)
+            {
+ 	      [self addSubview:aView];
+	    }
+          else
+            {
+              [self replaceSubview: _cornerView with: aView];
+	    }
+        }
+      else if (hadCornerView == YES)
+        {
+          [self removeSubview: _cornerView];
+        }
+      _cornerView = aView;
+    }
 }
 
 @end

@@ -1,3 +1,14 @@
+2004-09-13 Matt Rice <ratmice@yahoo.com>
+	* NSScrollView.h: Declare new ivar _cornerView and private method
+	-_synchronizeCornerAndHeaderView
+	* NSScrollView.m (tile): Call _synchronizeCornerAndHeaderView method 
+	from here. Replace local cornerView variable with _cornerView.
+	(-setDocumentView:): Remove code to set the corner and header views.
+	(-_synchronizeCornerAndHeaderView): Implement new method.
+	* NSTableView.m (-setHeaderView:, -setCornerView:): call tile on the 
+	scroll view we're in. Remove comments and warnings for cases which are
+	now implemented.
+
 2004-09-12 Matt Rice <ratmice@yahoo.com>
 	* Headers/AppKit/NSCell.h (-_sendsActionOn:): New method.
 	* Source/NSCell.m (-_sendsActionOn:): Implement it.
