@@ -1,3 +1,8 @@
+Sat Jun 22 14:46:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSAffineTransform.h ([+matrixFrom:]): Method removed.
+	* Source/NSAffineTransform.m: Idem.
+
 Sat Jun 22 14:34:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSView.m ([-_rebuildCoordinates]): Use -invert, not
