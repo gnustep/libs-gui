@@ -1,3 +1,12 @@
+2003-06-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/GSDisplayServer.h
+	Changes style parameter of [stylewindow:style:] and
+	[styleoffsets:::::] to unsigned, to be consistent with the other
+	style methods.
+	* Source/GSDisplayServer.m
+	Adopted to changes in header.
+
 2003-06-15 16:26  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m: Use NSIsEmptyRect instead of
