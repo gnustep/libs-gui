@@ -2023,25 +2023,21 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) close
 {
-  if (_f.has_closed == YES)
-    {
-      // already closed
-      return;
-    }
-
-  CREATE_AUTORELEASE_POOL(pool);
-
-  [nc postNotificationName: NSWindowWillCloseNotification object: self];
-  _f.has_opened = NO;
-  [[NSRunLoop currentRunLoop]
-	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-			target: self
-		      argument: nil];
-  [NSApp removeWindowsItem: self];
-  [self orderOut: self];
-  RELEASE(pool);
   if (_f.has_closed == NO)
     {
+      CREATE_AUTORELEASE_POOL(pool);
+
+      [nc postNotificationName: NSWindowWillCloseNotification object: self];
+      _f.has_opened = NO;
+      [[NSRunLoop currentRunLoop]
+	cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+	target: self
+	argument: nil];
+      [NSApp removeWindowsItem: self];
+      [self orderOut: self];
+
+      RELEASE(pool);
+      
       _f.has_closed = YES;
       if (_f.is_released_when_closed)
 	{

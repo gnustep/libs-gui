@@ -1,3 +1,8 @@
+2002-02-18  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m ([NSWindow -close]): Changes made earlier
+	would not compile w/ gcc < 3.0.
+	
 2002-02-18  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableHeaderView.m ([NSTableHeaderView -mouseDown:]): 
