@@ -900,6 +900,7 @@ static NSCell* tileCell = nil;
       [theWindow center];
 // FIXME need support for NSModalPanelWindowLevel in Window Maker
 //      [theWindow setLevel: NSModalPanelWindowLevel];
+      [theWindow setLevel: NSMainMenuWindowLevel];
     }
   [theWindow orderFrontRegardless];
   if ([self isActive] == YES)
