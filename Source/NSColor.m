@@ -1225,25 +1225,21 @@ static NSMutableDictionary	*colorStrings = nil;
 
 + (NSColor*) systemColorWithName: (NSString*)name
 {
-  NSColor	*color = [systemColors colorWithKey: name];
+  NSColor	*color;
+  NSString	*rep = [colorStrings objectForKey: name];
 
+  if (rep == nil)
+    {
+      NSLog(@"Request for unknown system color - '%@'\n", name);
+      return nil;
+    }
+  color = [NSColor colorFromString: rep];
   if (color == nil)
     {
-      NSString	*rep = [colorStrings objectForKey: name];
-
-      if (rep == nil)
-	{
-	  NSLog(@"Request for unknown system color - '%@'\n", name);
-	  return nil;
-	}
-      color = [NSColor colorFromString: rep];
-      if (color == nil)
-	{
-	  NSLog(@"System color '%@' has bad string rep - '%@'\n", name, rep);
-	  return nil;
-	}
-      [systemColors setColor: color forKey: name];
+      NSLog(@"System color '%@' has bad string rep - '%@'\n", name, rep);
+      return nil;
     }
+  [systemColors setColor: color forKey: name];
   return color;
 }
 
