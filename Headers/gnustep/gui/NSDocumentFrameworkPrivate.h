@@ -49,8 +49,6 @@
 
 @interface NSWindowController (Private)
 - (void)_windowDidLoad;
-- (void)_synchronizeWindowTitleWithDocumentName;
-- (void)setWindow:(NSWindow *)window;
 @end
 
 #endif // _GNUstep_H_NSDocumentFramworkPrivate
