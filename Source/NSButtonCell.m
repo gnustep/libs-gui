@@ -614,14 +614,13 @@
   else
     mask = NSNoCellMask;
 
-  // pushed in buttons contents are displaced to the bottom right 1px
+  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
   if (_cell.is_bordered && (mask & NSPushInCellMask))
     {
       cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
     }
 
-  /*
-  // determine the background color
+  /* Determine the background color. */
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
       backgroundColor = [NSColor selectedControlColor];
@@ -630,10 +629,10 @@
   if (backgroundColor == nil)
     backgroundColor = [NSColor controlBackgroundColor];
 
-  // set cell's background color
+  /* Draw the cell's background color.  We always draw the background,
+     as required by our nextstep-like look and feel.  */
   [backgroundColor set];
-  NSRectFill(cellFrame);
-  */
+  NSRectFill (cellFrame);
 
   /*
    * Determine the image and the title that will be
@@ -659,6 +658,11 @@
 
   if (imageToDisplay)
     {
+      /* FIXME - the following is a hack!  Because we don't seem to be
+	 getting alpha composing of images right, we use this hack of
+	 hard-setting manually the background color of the image to
+	 the wanted background color ... this should go away when
+	 alpha composing of images works 100%.  */
       [imageToDisplay setBackgroundColor: backgroundColor];
       imageSize = [imageToDisplay size];
     }
