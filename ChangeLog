@@ -1,3 +1,11 @@
+1999-11-18  David Lazaro Saz  <khelekir@encomix.es>
+
+	* Source/NSMenuView.m ([NSMenuView
+	-performActionWithHighlightingForItemAtIndex:]): Added a short delay to
+	item unhiglighting (100ms).
+	([NSMenuView -trackWithEvent:]): When an attached menu is present other
+	items only highlight when the cursor stops at them.
+
 1999-11-17  David Lazaro Saz  <khelekir@encomix.es>
 
 	* Source/NSWindow.m ([NSWindow -setLevel:]):

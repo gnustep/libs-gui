@@ -670,8 +670,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   [menuv_menu performActionForItemAtIndex: index];
 
+  [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
   [targetMenuView setHighlightedItemIndex: -1];
 }
+
+#define MOVE_THRESHOLD_DELTA 1
 
 - (BOOL)trackWithEvent: (NSEvent *)event
 {
@@ -681,25 +684,31 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
                                   | NSPeriodicMask;
   NSDate        *theDistantFuture = [NSDate distantFuture];
 
-  NSPoint  location;
   int      index;
+  NSPoint  location;
+  NSPoint  lastLocation = {0,0};
   NSMenu  *alreadyAttachedMenu = NO;
+  BOOL     delayedSelect = NO;
 
   do
     {
-      location = [window mouseLocationOutsideOfEventStream];
-      index    = [self indexOfItemAtPoint: location];
+      location     = [window mouseLocationOutsideOfEventStream];
+      index        = [self indexOfItemAtPoint: location];
 
       if ([event type] == NSPeriodic)
-	if ([menuv_menu isPartlyOffScreen])
-	  {
-	    NSPoint pointerLoc = [window convertBaseToScreen: location];
+	{
+	  if ([menuv_menu isPartlyOffScreen])
+	    {
+	      NSPoint pointerLoc = [window convertBaseToScreen:
+					     location];
 
-	    // TODO: Why 1 in the Y axis?
-	    if (pointerLoc.x == 0 || pointerLoc.y == 1 ||
-		pointerLoc.x == [[window screen] frame].size.width - 1)
-	      [menuv_menu shiftOnScreen];
-	  }
+	      // TODO: Why 1 in the Y axis?
+	      if (pointerLoc.x == 0 || pointerLoc.y == 1 ||
+		  pointerLoc.x == [[window screen] frame].size.width
+		  - 1)
+		[menuv_menu shiftOnScreen];
+	    }
+	}
 
       if (index == -1)
 	{
@@ -722,14 +731,29 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  if (index != menuv_highlightedItemIndex)
 	    {
-	      [self setHighlightedItemIndex: index];
+	      if ([event type] == NSPeriodic && delayedSelect)
+		{
+		  if (location.x - lastLocation.x < MOVE_THRESHOLD_DELTA ||
+		      abs(location.y - lastLocation.y) < MOVE_THRESHOLD_DELTA)
+		    delayedSelect = NO;
 
-	      if ([menuv_menu attachedMenu])
-		[self detachSubmenu];
+		  lastLocation = location;
+		}
 
-	      if ((alreadyAttachedMenu =
-		   [[menuv_items_link objectAtIndex: index] submenu]))
-		[self attachSubmenuForItemAtIndex: index];
+	      if (![menuv_menu attachedMenu] || !delayedSelect)
+		{
+		  [self setHighlightedItemIndex: index];
+
+		  if ([menuv_menu attachedMenu])
+		    [self detachSubmenu];
+
+		  if ((alreadyAttachedMenu =
+		       [[menuv_items_link objectAtIndex: index] submenu]))
+		    {
+		      [self attachSubmenuForItemAtIndex: index];
+		      delayedSelect = YES;
+		    }
+		}
 	    }
 	}
 

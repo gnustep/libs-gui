@@ -1147,7 +1147,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     }
 }
 
-#define SHIFT_DELTA 15.0
+#define SHIFT_DELTA 18.0
 
 - (void) shiftOnScreen
 {
