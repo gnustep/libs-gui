@@ -2899,8 +2899,7 @@ Figure out how the additional layout stuff is supposed to work.
        * situation, there might be no new glyphs where the old glyphs
        * were!  */
       [_backgroundColor set];
-      NSRectFill (rect);
-
+      NSRectFill([self bounds]);
     }
 
   /* Then draw the special background of the new glyphs.  */
@@ -3455,7 +3454,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker
 /*
 This method is for user changes; see NSTextView_actions.m.
 
-(Note that this makes it impossible to past programmatically, but it's
+(Note that this makes it impossible to paste programmatically, but it's
 necessary to get the -shouldChangeTextInRange:replacementString: calls
 right.)
 */
