@@ -1507,7 +1507,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   if (!ForceArrowIcon)
     {
       _buttonCell = [[NSButtonCell alloc] initImageCell: 
-        [NSImage imageNamed: @"NSComboBoxEllipsis"]];
+        [NSImage imageNamed: @"common_ComboBoxEllipsis"]];
     }
   else
     {
