@@ -2908,7 +2908,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	  if (_f.has_closed == NO)
 	    {
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
-	      if (_f.is_key == NO)
+	      if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
 		{
 		  [self makeKeyAndOrderFront: self];
 		}
