@@ -529,9 +529,9 @@ static NSMapTable* windowmaps = NULL;
 - (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
 {
   /* ask delegate if it can provide a field editor */
-  if ([delegate respondsToSelector:
+  if ([_delegate respondsToSelector:
 	    @selector(windowWillReturnFieldEditor:toObject:)])
-    return [delegate windowWillReturnFieldEditor: self toObject: anObject];
+    return [_delegate windowWillReturnFieldEditor: self toObject: anObject];
 
   /*
    * Each window has a global text field editor, if it doesn't exist create it
@@ -886,9 +886,9 @@ static NSMapTable* windowmaps = NULL;
 
   if (NSEqualSizes(frameRect.size, frame.size) == NO)
     {
-      if ([delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+      if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
 	{
-	  frameRect.size = [delegate windowWillResize: self
+	  frameRect.size = [_delegate windowWillResize: self
 					       toSize: frameRect.size];
 	}
     }
@@ -1378,13 +1378,13 @@ resetCursorRectsForView(NSView *theView)
       return;
     }
 
-  if ([delegate respondsToSelector: @selector(windowShouldClose:)])
+  if ([_delegate respondsToSelector: @selector(windowShouldClose:)])
     {
       /*
        *	if delegate responds to windowShouldClose query it to see if
        *	it's ok to close the window
        */
-      if (![delegate windowShouldClose: self])
+      if (![_delegate windowShouldClose: self])
 	{
 	  NSBeep();
 	  return;
@@ -2014,14 +2014,14 @@ resetCursorRectsForView(NSView *theView)
 		break;
 
 #define     GSPerformDragSelector(view, sel, info, action)		     \
-		if (view == content_view && delegate)			     \
-                  action = (int)[delegate performSelector: sel withObject:   \
+		if (view == content_view && _delegate)			     \
+                  action = (int)[_delegate performSelector: sel withObject:   \
 					    info];			     \
 		else							     \
 		  action = (int)[view performSelector: sel withObject: info]
 #define     GSPerformVoidDragSelector(view, sel, info)			\
-		if (view == content_view && delegate)			\
-                  [delegate performSelector: sel withObject: info];	\
+		if (view == content_view && _delegate)			\
+                  [_delegate performSelector: sel withObject: info];	\
 		else							\
 		  [view performSelector: sel withObject: info]
 
@@ -2303,8 +2303,8 @@ resetCursorRectsForView(NSView *theView)
 {
   id result = nil;
 
-  if (delegate && [delegate respondsToSelector: _cmd])
-    result = [delegate validRequestorForSendType: sendType
+  if (_delegate && [_delegate respondsToSelector: _cmd])
+    result = [_delegate validRequestorForSendType: sendType
 				      returnType: returnType];
 
   if (result == nil)
@@ -2616,20 +2616,20 @@ resetCursorRectsForView(NSView *theView)
  */
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void) setDelegate: (id)anObject
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
-  if (delegate)
-    [nc removeObserver: delegate name: nil object: self];
-  delegate = anObject;
+  if (_delegate)
+    [nc removeObserver: _delegate name: nil object: self];
+  _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector: @selector(window##notif_name:)]) \
-    [nc addObserver: delegate \
+  if ([_delegate respondsToSelector: @selector(window##notif_name:)]) \
+    [nc addObserver: _delegate \
       selector: @selector(window##notif_name:) \
       name: NSWindow##notif_name##Notification object: self]
 
@@ -2654,11 +2654,11 @@ resetCursorRectsForView(NSView *theView)
  */
 - (BOOL) windowShouldClose: (id)sender
 {
-  if ([delegate respondsToSelector: @selector(windowShouldClose:)])
+  if ([_delegate respondsToSelector: @selector(windowShouldClose:)])
     {
       BOOL ourReturn; 
 
-      ourReturn = [delegate windowShouldClose: sender];
+      ourReturn = [_delegate windowShouldClose: sender];
 
       if (ourReturn)
 	{
@@ -2673,8 +2673,8 @@ resetCursorRectsForView(NSView *theView)
 
 - (NSSize) windowWillResize: (NSWindow *)sender toSize: (NSSize)frameSize
 {
-  if ([delegate respondsToSelector: @selector(windowWillResize:toSize:)])
-    return [delegate windowWillResize: sender toSize: frameSize];
+  if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+    return [_delegate windowWillResize: sender toSize: frameSize];
   else
     return frameSize;
 }
@@ -2686,86 +2686,86 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) windowDidBecomeKey: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidBecomeKey:)])
-    return [delegate windowDidBecomeKey: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidBecomeKey:)])
+    return [_delegate windowDidBecomeKey: aNotification];
 }
 
 - (void) windowDidBecomeMain: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidBecomeMain:)])
-    return [delegate windowDidBecomeMain: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidBecomeMain:)])
+    return [_delegate windowDidBecomeMain: aNotification];
 }
 
 - (void) windowDidChangeScreen: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidChangeScreen:)])
-    return [delegate windowDidChangeScreen: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidChangeScreen:)])
+    return [_delegate windowDidChangeScreen: aNotification];
 }
 
 - (void) windowDidDeminiaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidDeminiaturize:)])
-    return [delegate windowDidDeminiaturize: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidDeminiaturize:)])
+    return [_delegate windowDidDeminiaturize: aNotification];
 }
 
 - (void) windowDidExpose: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidExpose:)])
-    return [delegate windowDidExpose: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidExpose:)])
+    return [_delegate windowDidExpose: aNotification];
 }
 
 - (void) windowDidMiniaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidMiniaturize:)])
-    return [delegate windowDidMiniaturize: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidMiniaturize:)])
+    return [_delegate windowDidMiniaturize: aNotification];
 }
 
 - (void) windowDidMove: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidMove:)])
-    return [delegate windowDidMove: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidMove:)])
+    return [_delegate windowDidMove: aNotification];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidResignKey:)])
-    return [delegate windowDidResignKey: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidResignKey:)])
+    return [_delegate windowDidResignKey: aNotification];
 }
 
 - (void) windowDidResignMain: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidResignMain:)])
-    return [delegate windowDidResignMain: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidResignMain:)])
+    return [_delegate windowDidResignMain: aNotification];
 }
 
 - (void) windowDidResize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidResize:)])
-    return [delegate windowDidResize: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidResize:)])
+    return [_delegate windowDidResize: aNotification];
 }
 
 - (void) windowDidUpdate: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowDidUpdate:)])
-    return [delegate windowDidUpdate: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowDidUpdate:)])
+    return [_delegate windowDidUpdate: aNotification];
 }
 
 - (void) windowWillClose: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowWillClose:)])
-    return [delegate windowWillClose: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowWillClose:)])
+    return [_delegate windowWillClose: aNotification];
 }
 
 - (void) windowWillMiniaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowWillMiniaturize:)])
-    return [delegate windowWillMiniaturize: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowWillMiniaturize:)])
+    return [_delegate windowWillMiniaturize: aNotification];
 }
 
 - (void) windowWillMove: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector: @selector(windowWillMove:)])
-    return [delegate windowWillMove: aNotification];
+  if ([_delegate respondsToSelector: @selector(windowWillMove:)])
+    return [_delegate windowWillMove: aNotification];
 }
 
 /*
@@ -2979,7 +2979,7 @@ resetCursorRectsForView(NSView *theView)
   original_responder = nil;
   _initial_first_responder = nil;
   _selection_direction = NSDirectSelection;
-  delegate = nil;
+  _delegate = nil;
   window_num = 0;
   gstate = 0;
   background_color = RETAIN([NSColor controlColor]);
