@@ -1,3 +1,8 @@
+Sun Jan 28 20:20:42 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSClipView.m ([-viewFrameChanged:]): Invoke 
+	reflectScrolledClipView: to update the scrollers.
+
 Sun Jan 28 16:53:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSView.m ([-mouse:inRect:]): Use NSMouseInRect.
