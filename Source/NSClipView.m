@@ -39,6 +39,7 @@
   [super init];
   [self setAutoresizesSubviews:YES];
   [self setBackgroundColor:[NSColor lightGrayColor]];
+  _copiesOnScroll = YES;
   return self;
 }
 
@@ -113,8 +114,6 @@
   if (NSEqualPoints(originalBounds.origin, newBounds.origin))
     return;
 
-//  [self setBoundsOrigin: newBounds.origin];
-
   if (_copiesOnScroll)
     {
       // copy the portion of the view that is common before and after scrolling.
@@ -123,9 +122,10 @@
       intersection = NSIntersectionRect(originalBounds, newBounds);
       if (NSEqualRects(intersection, NSZeroRect))
 	{
-	  // no intersection -- docview should draw everyting
+	  // no intersection -- docview should draw everything
 	  [self setBoundsOrigin: newBounds.origin];
-	  [_documentView setNeedsDisplayInRect: newBounds];
+	  [_documentView setNeedsDisplayInRect:
+                  [self convertRect: newBounds toView: _documentView]];
 	}
       else
 	{
@@ -160,7 +160,8 @@
 		  redrawRect.origin.x = newBounds.origin.x
 					+ intersection.size.width;
 		}
-	      [_documentView setNeedsDisplayInRect: redrawRect];
+	      [_documentView setNeedsDisplayInRect:
+                      [self convertRect: redrawRect toView: _documentView]];
 	    }
 
 	  if (dy != 0)
@@ -184,7 +185,8 @@
 		  redrawRect.origin.y = newBounds.origin.y
 					+ intersection.size.height;
 		}
-	      [_documentView setNeedsDisplayInRect: redrawRect];
+	      [_documentView setNeedsDisplayInRect:
+                      [self convertRect: redrawRect toView: _documentView]];
 	    }
 	}
     }
@@ -192,7 +194,8 @@
     {
       // dont copy anything -- docview draws it all
       [self setBoundsOrigin: newBounds.origin];
-      [_documentView setNeedsDisplayInRect: newBounds];
+      [_documentView setNeedsDisplayInRect:
+              [self convertRect: newBounds toView: _documentView]];
     }
 }
 

@@ -520,18 +520,9 @@ static BOOL preCalcValues = NO;
   float oldFloatValue = _floatValue;
   float floatValue;
   NSDate *theDistantFuture = [NSDate distantFuture];
-  PSMatrix* matrix;
   NSEventType eventType;
   NSRect knobRect = {{0,0},{0,0}};
   int periodCount = 0;		// allows a forced update
-  NSMutableArray* path = [self _pathBetweenSubview: self
-				       toSuperview: [window contentView]];
-
-  [path addObject: [window contentView]];
-  matrix = [self _concatenateMatricesInReverseOrderFromPath: path];
-  [matrix inverse];
-
-  //fprintf(stderr, " trackKnob \n");
 
   [self _preCalcParts];			// pre calc scroller parts
   preCalcValues = YES;
@@ -546,7 +537,7 @@ static BOOL preCalcValues = NO;
       if (eventType != NSPeriodic)
 	{
 	  apoint = [theEvent locationInWindow];
-	  // zero the periodic count whenever a real position event is recieved
+	  // zero the periodic count whenever a real position event is received
 	  periodCount = 0;
 	}
       else
@@ -556,7 +547,7 @@ static BOOL preCalcValues = NO;
 	  if (periodCount == 6)
 	    apoint = [window mouseLocationOutsideOfEventStream];
 
-	  point = [matrix pointInMatrixSpace: apoint];
+	  point = [self convertPoint:apoint fromView:nil];
 
 	  if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
 	    {
