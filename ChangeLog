@@ -1,3 +1,10 @@
+Sun Jan  6 10:49:49 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSServicesManager.m ([-rebuildServicesMenu]): If the key
+	equivalent can not be found under the language used for the menu
+	item, use the default key equivalent if any.
+	* Tools/exampleInfo.plist: Added service names in Italian.
+
 Thu Jan  3 07:35:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-mouseDown:]): Implemented activation of
