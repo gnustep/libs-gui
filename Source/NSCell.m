@@ -499,13 +499,19 @@
 
 - (void)drawWithFrame:(NSRect)cellFrame
 	       inView:(NSView *)controlView
-{}
+{
+  /* Mark the cell's frame rectangle as needing flush */
+  [[controlView window] _view:controlView needsFlushInRect:cellFrame];
+}
 
 - (void)highlight:(BOOL)lit
 	withFrame:(NSRect)cellFrame
 	   inView:(NSView *)controlView
 {
-    cell_highlighted = lit;
+  cell_highlighted = lit;
+
+  /* Mark the cell's frame rectangle as needing flush */
+  [[controlView window] _view:controlView needsFlushInRect:cellFrame];
 }
 
 - (BOOL)isHighlighted

@@ -5,7 +5,7 @@
 @include version.texi
 @end ifset
 
-Last updated July 1997.  The most up-to-date version of this status
+Last updated March 1998.  The most up-to-date version of this status
 report is available at:
 
 @example
@@ -56,10 +56,9 @@ displayed; its possible that not all TIFF image types are handled yet as
 the backend implementation must deal with each of them.  No compression
 nor generation of TIFF representations.
 
-@item NSBox:: [8] 
-Many of the methods have code, but whether the class
-is usable depends upon how much implementation has been done in the
-backend.
+@item NSBox:: [9]
+Should be complete; will need some additional testing when view resizing
+is implemented.
 
 @item NSBrowser:: [9]
 There is an odd display artifact; lists which are smaller than the
@@ -68,6 +67,7 @@ versus the top of the column.  This is actually an issue with NSMatrix
 and will be remedied when flip views are implemented.
 
 @item NSBrowserCell:: [9]
+Should be complete.
 
 @item NSButton:: [9]
 Repeat intervals have been implemented.
@@ -103,7 +103,7 @@ and writing color list files.
 
 @item NSColorWell:: [9]
 Implementation should be fairly complete; backend implementation required
-for the actual drawing of the control.
+for the actual drawing of the control.  Needs drag-n-drop capability.
 
 @item NSControl:: [8]
 No field editor; doesn't know how to calculate its size.
@@ -189,11 +189,10 @@ Usability greatly depends upon backend implementation.
 @item NSPrinter:: [9]
 The code was written but not tested very much. We also need to add printer
 description files to the PrinterTypes directory inside the gnustep instalation
-directory. Thanks to Simon Frankau for the implementation.
+directory.
 
 @item NSPrintinfo:: [9]
-The code has been implemented but not tested. Thanks to Simon Frankau for the
-implementation.
+The code has been implemented but not tested.
 
 @item NSPrintOperation:: [2]
 

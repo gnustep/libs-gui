@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.4.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.5.0 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,10 +31,16 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.4.0'.
+   The currently released version of the library is `0.5.0'.
 
-Noteworthy changes in version `0.4.0'
+Noteworthy changes in version `0.5.0'
 =====================================
+
+   * NSBrowser and NSBrowserCell have been implemented.  There is one
+     odd display artifact; lists which are smaller than the browser
+     column area have the list justified to the bottom of the column
+     versus the top of the column.  This is actually an issue with
+     NSMatrix and will be remedied when flip views are implemented.
 
    * Two important optimizations that speed up the displaying of views
      and flushing of windows have been implemented. Only the views that
@@ -83,7 +89,7 @@ How can I get support for this software?
 GNUstep GUI Library; however, you may wish to use the GNUstep
 discussion mailing list for general questions and discussion.  Look at
 the GNUstep Web Pages for more information regarding GNUstep resources
-`http://www.gnustep.org'
+`http://www.gnustep.org/'
 
    There are also companies which provide commercial support for the
 GNUstep GUI Library, see the file `SUPPORT' for more information.
@@ -91,17 +97,17 @@ GNUstep GUI Library, see the file `SUPPORT' for more information.
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.4.0.tar.gz distribution file has been placed on
-`ftp.gnustep.org' in `pub/gnustep'.
+   The gstep-gui-0.5.0.tar.gz distribution file has been placed on
+`ftp.gnustep.org' in `pub/gnustep/core'.
 
-   The program requires gcc 2.7.0 or higher.
+   The program requires gcc 2.8.0 or higher.
 
-   It requires the Display Ghostscript System version 0.2.0 and the
+   It requires the Display Ghostscript System version 0.5.0 and the
 TIFF Graphics library version 3.4.
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `0.2.12' and libFoundation version
+GNUstep Base Library version `0.5.0' and libFoundation version
 `0.7.1'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
@@ -112,8 +118,7 @@ with no subject line, and two-line body with line one `help' and line
 two `quit'.
 
    The most recent (not necessarily tested) snapshots of the library
-will be placed in
-`ftp://alpha.gnu.ai.mit.edu/gnu/gnustep'.
+will be placed in `ftp://alpha.gnu.org/gnu/gnustep'.
 
 Where do I send bug reports?
 ============================
@@ -125,32 +130,35 @@ Where do I send bug reports?
 Creators rejoice!
 Scott Christley
 <scottc@net-community.com>
-*****
+Obtaining GNU Software
+======================
 
-   Check out the GNUstep web site. (`http://www.gnustep.org')
+Check out the GNU web site. (`http://www.gnu.org/')
+
+   Check out the GNUstep web site. (`http://www.gnustep.org/')
 
    The GNUstep GUI Library was donated to the Free Software Foundation
 as part of the On-line Community project of NET-Community.
 NET-Community is a company that develops and supports free software.
-Check out their web site to learn more. (`http://www.net-community.com')
+Check out their web site to learn more.
+(`http://www.net-community.com/')
 
-   [ Most GNU software is packed using the GNU `gzip' compression
-program.    Source code is available on most sites distributing GNU
-software.
+   Most GNU software is packed using the GNU `gzip' compression program.
+Source code is available on most sites distributing GNU software.
 
    For information on how to order GNU software on tape, floppy or
-cd-rom, or   printed GNU manuals, check the file etc/ORDERS in the GNU
-Emacs distribution   or in GNUinfo/ORDERS on prep, or e-mail a request
-to: <gnu@prep.ai.mit.edu>
+cd-rom, or printed GNU manuals, check the file etc/ORDERS in the GNU
+Emacs distribution or in GNUinfo/ORDERS on prep, or e-mail a request to:
+<gnu@gnu.org>
 
    By ordering your GNU software from the FSF, you help us continue to
 develop more free software.  Media revenues are our primary source of
 support.  Donations to FSF are deductible on US tax returns.
 
-   The above software will soon be at these ftp sites as well.
-Please try them before `prep.ai.mit.edu' as `prep' is very busy!
+   The above software will soon be at these ftp sites as well.  Please
+try them before `ftp.gnu.org' as it is very busy!
 
-   thanx <gnu@prep.ai.mit.edu>
+   thanx <gnu@gnu.org>
 
 *ASIA:*
         - `ftp://ftp.cs.titech.ac.jp'

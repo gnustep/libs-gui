@@ -40,7 +40,7 @@ We currently do not have a mailing list setup explicitly for the
 GNUstep GUI Library; however, you may wish to use the GNUstep
 discussion mailing list for general questions and discussion.  Look at
 the GNUstep Web Pages for more information regarding GNUstep resources
-@url{http://www.gnustep.org}
+@url{http://www.gnustep.org/}
 
 There are also companies which provide commercial support for the
 GNUstep GUI Library, see the file @file{SUPPORT} for more
@@ -91,32 +91,33 @@ Creators rejoice!@*
 Scott Christley@*
 @email{scottc@@net-community.com}@*
 
-@noindent
-*****
+@section Obtaining GNU Software
 
-Check out the GNUstep web site. (@url{http://www.gnustep.org})
+Check out the GNU web site. (@url{http://www.gnu.org/})
+
+Check out the GNUstep web site. (@url{http://www.gnustep.org/})
 
 The GNUstep GUI Library was donated to the Free Software Foundation
 as part of the On-line Community project of NET-Community.  NET-Community is
 a company that develops and supports free software.  Check out
-their web site to learn more. (@url{http://www.net-community.com})
+their web site to learn more. (@url{http://www.net-community.com/})
 
+Most GNU software is packed using the GNU `gzip' compression program.
+Source code is available on most sites distributing GNU software.
 
-[ Most GNU software is packed using the GNU `gzip' compression program.
-  Source code is available on most sites distributing GNU software.
+For information on how to order GNU software on tape, floppy or cd-rom,
+or printed GNU manuals, check the file etc/ORDERS in the GNU Emacs
+distribution or in GNUinfo/ORDERS on prep, or e-mail a request to:
+@email{gnu@@gnu.org}
 
-  For information on how to order GNU software on tape, floppy or cd-rom, or
-  printed GNU manuals, check the file etc/ORDERS in the GNU Emacs distribution
-  or in GNUinfo/ORDERS on prep, or e-mail a request to: @email{gnu@@prep.ai.mit.edu}
+By ordering your GNU software from the FSF, you help us continue to
+develop more free software.  Media revenues are our primary source of
+support.  Donations to FSF are deductible on US tax returns.
 
-  By ordering your GNU software from the FSF, you help us continue to
-  develop more free software.  Media revenues are our primary source of
-  support.  Donations to FSF are deductible on US tax returns.
+The above software will soon be at these ftp sites as well.
+Please try them before @samp{ftp.gnu.org} as it is very busy!
 
-  The above software will soon be at these ftp sites as well.
-  Please try them before @samp{prep.ai.mit.edu} as @samp{prep} is very busy!
-
-  thanx @email{gnu@@prep.ai.mit.edu}
+thanx @email{gnu@@gnu.org}
 
 @table @strong
 

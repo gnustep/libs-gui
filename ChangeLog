@@ -1,3 +1,20 @@
+Wed Mar 11 10:47:31 1998  Scott Christley  <scottc@net-community.com>
+
+	* Version: Version 0.5.0
+	* Documentation/announce.tmpl.texi: Update.
+	* Documentation/news.tmpl.texi: Update.
+	* Documentation/status.tmpl.texi: Update.
+	* ANNOUNCE: Regenerate.
+	* FAQ: Regenerate.
+	* INSTALL: Regenerate.
+	* NEWS: Regenerate.
+	* README: Regenerate.
+	* STATUS: Regenerate.
+
+	* Source/NSCell.m (-drawWithFrame:inView:): Mark the cell's
+	frame as needing flush.
+	(-highlight:withFrame:inView:): Likewise.
+
 Sat Feb 14 16:34:22 1998  Scott Christley  <scottc@net-community.com>
 
 	* Model/GNUmakefile (HEADER_FILES_DIR): Correct definition.

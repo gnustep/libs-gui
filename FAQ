@@ -76,17 +76,17 @@ is available at:
 
   5. Where can I get a copy?
 
-     The gstep-gui-0.4.0.tar.gz distribution file has been placed on
-     `ftp.gnustep.org' in `pub/gnustep'.
+     The gstep-gui-0.5.0.tar.gz distribution file has been placed on
+     `ftp.gnustep.org' in `pub/gnustep/core'.
 
-     The program requires gcc 2.7.0 or higher.
+     The program requires gcc 2.8.0 or higher.
 
-     It requires the Display Ghostscript System version 0.2.0 and the
+     It requires the Display Ghostscript System version 0.5.0 and the
      TIFF Graphics library version 3.4.
 
      It also requires a FoundationKit library as specified by the
      OpenStep specification.  The FoundationKit libraries known to work
-     are the GNUstep Base Library version `0.2.12' and libFoundation
+     are the GNUstep Base Library version `0.5.0' and libFoundation
      version `0.7.1'.
 
      The `.tar' file is compressed with GNU gzip.  Gzip can be obtained
@@ -98,6 +98,6 @@ is available at:
 
      The most recent (not necessarily tested) snapshots of the library
      will be placed in
-     `ftp://alpha.gnu.ai.mit.edu/gnu/gnustep'.
+     `ftp://alpha.gnu.org/gnu/gnustep'.
 
 

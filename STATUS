@@ -1,7 +1,7 @@
 Status Report
 *************
 
-Last updated July 1997.  The most up-to-date version of this status
+Last updated March 1998.  The most up-to-date version of this status
 report is available at:
 
      `http://www.gnustep.org/Documentation/gnustep-gui/gnustep-gui_toc.html'
@@ -52,12 +52,19 @@ Classes
      handled yet as the backend implementation must deal with each of
      them.  No compression nor generation of TIFF representations.
 
-*NSBox:: [8]*
-     Many of the methods have code, but whether the class is usable
-     depends upon how much implementation has been done in the backend.
+*NSBox:: [9]*
+     Should be complete; will need some additional testing when view
+     resizing is implemented.
 
-*NSBrowser:: [2]*
-*NSBrowserCell:: [2]*
+*NSBrowser:: [9]*
+     There is an odd display artifact; lists which are smaller than the
+     browser column area have the list justified to the bottom of the
+     column versus the top of the column.  This is actually an issue
+     with NSMatrix and will be remedied when flip views are implemented.
+
+*NSBrowserCell:: [9]*
+     Should be complete.
+
 *NSButton:: [9]*
      Repeat intervals have been implemented.  Key equivalents still
      need to be implemented.  There should be little need for backend
@@ -91,7 +98,8 @@ Classes
 *NSColorPicker:: [2]*
 *NSColorWell:: [9]*
      Implementation should be fairly complete; backend implementation
-     required for the actual drawing of the control.
+     required for the actual drawing of the control.  Needs drag-n-drop
+     capability.
 
 *NSControl:: [8]*
      No field editor; doesn't know how to calculate its size.
@@ -170,12 +178,10 @@ Classes
 *NSPrinter:: [9]*
      The code was written but not tested very much. We also need to add
      printer description files to the PrinterTypes directory inside the
-     gnustep instalation directory. Thanks to Simon Frankau for the
-     implementation.
+     gnustep instalation directory.
 
 *NSPrintinfo:: [9]*
-     The code has been implemented but not tested. Thanks to Simon
-     Frankau for the implementation.
+     The code has been implemented but not tested.
 
 *NSPrintOperation:: [2]*
 *NSPrintPanel:: [2]*
