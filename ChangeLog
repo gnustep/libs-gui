@@ -1,3 +1,23 @@
+1999-09-05  Michael Hanni   <mhanni@sprintmail.com>
+
+        * Source/NSMenuView.m: fix nagging bug reported by Gregory John
+        Casamento  <gcasamen@my-deja.com>.
+
+1999-09-04  Michael Hanni   <mhanni@sprintmail.com>
+
+        * Model/GMAppKit.m: patch from Tim Bissell
+        <tim.bissell@dresdnerkb.com> adds proper decoding/encoding of
+        NSButtonCell titles.
+        * Source/NSSlider.m: patch to add missing unlockFocus.
+        * Source/NSBrowserCell.m: patch from Tim Bissell
+        <tim.bissell@dresdnerkb.com> set NSBrowerCell to be initially not
+        editable (mimcs OS 4.2 behaviour).
+        * Source/NSWorkspace.m: added patch from Tim Bissell
+        <tim.bissell@dresdnerkb.com> which adds special GNUstep
+        functionality to NSWorkspace (for FileViewer.app).
+        * Headers/NSWorkspace.h: added method definitions for additions by
+        Tim Bissell <tim.bissell@dresdnerkb.com>
+
 Fri Sep  3 22:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSAttributedString.m: implemented (untested) most of the

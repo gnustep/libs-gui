@@ -148,6 +148,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
     }
   } else if (index >= 0) {
     if ( menuv_highlightedItemIndex != -1 ) {
+
       anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
 
       [anItem highlight: NO
@@ -500,6 +501,36 @@ static float GSMenuBarHeight = 25.0; // a guess.
                                          
   if (index >= 0 && index < theCount)
     {
+      if (menuv_highlightedItemIndex > -1)
+        {
+	  BOOL finished = NO;
+	  NSMenu *aMenu = menuv_menu;
+
+	  while (!finished)
+	    { // "forward"cursive menu find.
+	      if ([aMenu attachedMenu])
+		{
+		  aMenu = [aMenu attachedMenu];
+		}
+	      else
+		finished = YES;
+	    }
+
+	  finished = NO;
+
+	  while (!finished)
+	    { // Recursive menu close & deselect.
+	      if ([aMenu supermenu] && aMenu != menuv_menu)
+		{
+		  [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		  aMenu = [aMenu supermenu];
+		} 
+	      else
+		finished = YES;
+
+	      [window flushWindow];
+	    }
+	}
       [self setHighlightedItemIndex: index];
       lastIndex = index;
     }
@@ -632,8 +663,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	    else
 	      {
       // FIXME, Michael. This might be needed... or not?
-      NSLog(@"This is the final else... its evil\n");
 /* FIXME this code is just plain nasty.
+      NSLog(@"This is the final else... its evil\n");
 		if (lastIndex >= 0 && lastIndex < theCount)
 		  {
 		    [self setHighlightedItemIndex: -1];
