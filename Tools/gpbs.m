@@ -1054,7 +1054,7 @@ main(int argc, char** argv, char **env)
 
   /* Register a connection that provides the server object to the network */
   conn = [NSConnection defaultConnection];
-  [conn setRootobject: server];
+  [conn setRootObject: server];
   if ([conn registerName: PBSNAME] == NO)
     {
       NSLog(@"Unable to register with name server.\n");
