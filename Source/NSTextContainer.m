@@ -149,13 +149,11 @@
 - (void) setTextView: (NSTextView*)aTextView
 {
   NSNotificationCenter *nc;
-  BOOL informsLayoutManager = NO;
 
   nc = [NSNotificationCenter defaultCenter];
 	  
   if (_textView)
     {
-      informsLayoutManager = YES;
       [_textView setTextContainer: nil];
       [nc removeObserver: self  name: NSViewFrameDidChangeNotification 
 	  object: _textView];
@@ -179,10 +177,7 @@
 	}
     }
 
-  if (informsLayoutManager == YES)
-    {
-      [_layoutManager textContainerChangedTextView: self];
-    }
+  [_layoutManager textContainerChangedTextView: self];
 }
 
 - (NSTextView*) textView
