@@ -548,6 +548,13 @@ static NSNotificationCenter *nc = nil;
       _counterpart = 0;
       RELEASE(mini);
     }
+  /* Clean references to this window - important if some of the views
+     are not deallocated now */
+  [_wv viewWillMoveToWindow: nil];
+  /* NB: releasing the window view does not necessarily result in the
+     deallocation of the window's views ! - some of them might be
+     retained for some other reason by the programmer or by other
+     parts of the code */
   TEST_RELEASE(_wv);
   TEST_RELEASE(_fieldEditor);
   TEST_RELEASE(_backgroundColor);
