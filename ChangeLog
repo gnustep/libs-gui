@@ -1,5 +1,16 @@
 2000-06-07  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImageRep.m
+	Corrected some methods on this class so that subclasses may use
+	them. MOved all the class methods to the front of the file.	
+	* Source/NSBitmapImageRep.m
+	Removed methods implemented by superclass.
+	* Headers/gnustep/gui/NSEPSImageRep.h:
+	* Source/NSEPSImageRep.m
+	Added some basic implementation for this class.
+	
+2000-06-07  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextAttachment.m 
 	Removed the copyWithZone: method as this has been fixed on
 	GSTextStorage.
