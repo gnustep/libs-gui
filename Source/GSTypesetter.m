@@ -69,15 +69,5 @@
   return 0;
 }
 
-
--(BOOL) relayoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-			   glyphRange: (NSRange)glyphRange
-		     lineFragmentRect: (NSRect *)lineFragRect
-			textContainer: (NSTextContainer **)textContainer
-	     previousLineFragmentRect: (NSRect)previousLineFragRect
-{
-	return NO;
-}
-
 @end
 

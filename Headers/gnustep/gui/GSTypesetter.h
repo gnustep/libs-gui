@@ -126,34 +126,6 @@ Subclasses need to implement this method.
 		    nextGlyphIndex: (unsigned int *)nextGlyphIndex
 	     numberOfLineFragments: (unsigned int)howMany;
 
-
-/*
-Used to relayout soft-invalidated glyphs.
-
-glyphRange is a range of glyphs that were laid out in lineFragRect.
-
-The previous line fragment rectangle is previousLineFragRect, in
-textContainer.
-
-If the glyphs in lineFragRect don't need to be laid out again (ie. if they
-can be laid out in the same place as before, or if the line fragment
-rectangle can be shifted to a new position without disturbing the glyphs in
-it), the method should return YES and place a (possibly shifted) line
-fragment rectangle for the glyphs in lineFragRect, and the textContainer
-for the line fragment rectangle in textContainer.
-
-If the glyphs need to be laid out from scratch, it should return NO. The
-layout manager then needs to call layoutGlyphsIn... to lay the glyphs out
-again.
-
-GSTypesetter's implementation returns NO.
-*/
--(BOOL) relayoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-			   glyphRange: (NSRange)glyphRange
-		     lineFragmentRect: (NSRect *)lineFragRect
-			textContainer: (NSTextContainer **)textContainer
-	     previousLineFragmentRect: (NSRect)previousLineFragRect;
-
 @end
 
 #endif
