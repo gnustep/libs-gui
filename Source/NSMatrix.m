@@ -2037,39 +2037,67 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   change.height = newBoundsSize.height - oldBoundsSize.height;
   change.width = newBoundsSize.width - oldBoundsSize.width;
 
-  if ((change.height == 0) && (change.width == 0))
-    return;
-  
   if (autosizesCells)
     {
-      if (nr <= 0) nr = 1;
-      change.height = change.height / nr;
-      cellSize.height += change.height;
-      if (cellSize.height < 0)
-	cellSize.height = 0;
-
-      if (nc <= 0) nc = 1;      
-      change.width = change.width / nc;
-      cellSize.width += change.width;
-      if (cellSize.width < 0)
-	cellSize.width = 0;
-    }
-  else
-    {
-      if (nr > 1) 
-	{	
-	  change.height = change.height / (nr - 1);
-	  intercell.height += change.height;
-	  if (intercell.height < 0)
-	    intercell.height = 0;
+      if (change.height != 0)
+	{
+	  if (nr <= 0) nr = 1;
+	  if (cellSize.height == 0)
+	    {
+	      cellSize.height = oldBoundsSize.height - ((nr - 1) * intercell.height);
+	      cellSize.height = cellSize.height / nr; 
+	    }
+	  change.height = change.height / nr;
+	  cellSize.height += change.height;
+	  if (cellSize.height < 0)
+	    cellSize.height = 0;
 	}
-      if (nc > 1) 
-	{	
-	  change.width = change.width / (nc - 1);
-	  intercell.width += change.width;
-	  if (intercell.width < 0)
-	    intercell.width = 0;
-	}      
+      if (change.width != 0)
+	{
+	  if (nc <= 0) nc = 1;      
+	  if (cellSize.width == 0)
+	    {
+	      cellSize.width = oldBoundsSize.width - ((nc - 1) * intercell.width);
+	      cellSize.width = cellSize.width / nc; 
+	    }
+	  change.width = change.width / nc;
+	  cellSize.width += change.width;
+	  if (cellSize.width < 0)
+	    cellSize.width = 0;
+	}
+    }
+  else // !autosizesCells
+    {
+      if (change.height != 0)
+	{
+	  if (nr > 1) 
+	    {	
+	      if (intercell.height == 0)
+		{
+		  intercell.height = oldBoundsSize.height - (nr * cellSize.height);
+		  intercell.height = intercell.height / (nr - 1); 
+		}
+	      change.height = change.height / (nr - 1);
+	      intercell.height += change.height;
+	      if (intercell.height < 0)
+		intercell.height = 0;
+	    }
+	}
+      if (change.width != 0)
+	{
+	  if (nc > 1) 
+	    {
+	      if (intercell.width == 0)
+		{
+		  intercell.width = oldBoundsSize.width - (nc * cellSize.width);
+		  intercell.width = intercell.width / (nc - 1); 
+		}
+	      change.width = change.width / (nc - 1);
+	      intercell.width += change.width;
+	      if (intercell.width < 0)
+		intercell.width = 0;
+	    }      
+	}
     }
   [self setNeedsDisplay: YES];
 }
