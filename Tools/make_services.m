@@ -612,6 +612,10 @@ scanDynamic(NSMutableDictionary *services, NSString *path)
 	  continue;
 	}
 
+      /* *.service bundles are handled in scanDirectory */
+      if ([[name pathExtension] isEqualToString: @"service"])
+	continue;
+
       infPath = [path stringByAppendingPathComponent: name];
 
       info = [NSDictionary dictionaryWithContentsOfFile: infPath];
