@@ -3068,7 +3068,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 				       NSDefaultMallocZone ()]);
 }
 
-- (int) columnWithIdentifier: (id)anObject
+- (int) columnWithIdentifier: (id)identifier
 {
   NSEnumerator	*enumerator = [_tableColumns objectEnumerator];
   NSTableColumn	*tb;
@@ -3076,7 +3076,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   
   while ((tb = [enumerator nextObject]) != nil)
     {
-      if ([[tb identifier] isEqual: anObject])
+      if ([[tb identifier] isEqual: identifier])
 	return return_value;
       else
 	return_value++;
@@ -5175,9 +5175,9 @@ byExtendingSelection: (BOOL)flag
     }
 }
 
-- (void) setFrame: (NSRect) aRect
+- (void) setFrame: (NSRect)frameRect
 {
-  [super setFrame: aRect];
+  [super setFrame: frameRect];
 }
 
 - (void) sizeToFit
@@ -5607,7 +5607,7 @@ byExtendingSelection: (BOOL)flag
  * Drawing 
  */
 
-- (void)drawRow: (int)rowIndex clipRect: (NSRect)aRect
+- (void) drawRow: (int)rowIndex clipRect: (NSRect)clipRect
 {
   int startingColumn; 
   int endingColumn;
@@ -5626,7 +5626,7 @@ byExtendingSelection: (BOOL)flag
      rect - so we avoid it and do it natively */
 
   /* Determine starting column as fast as possible */
-  x_pos = NSMinX (aRect);
+  x_pos = NSMinX (clipRect);
   i = 0;
   while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
     {
@@ -5638,7 +5638,7 @@ byExtendingSelection: (BOOL)flag
     startingColumn = 0;
 
   /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (aRect);
+  x_pos = NSMaxX (clipRect);
   // Nota Bene: we do *not* reset i
   while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
     {
@@ -6104,13 +6104,13 @@ byExtendingSelection: (BOOL)flag
     return YES;
 }
 
-- (BOOL) textShouldEndEditing: (NSText *)aTextObject
+- (BOOL) textShouldEndEditing: (NSText*)textObject
 {
   if ([_delegate respondsToSelector:
 		   @selector(control:textShouldEndEditing:)])
     {
       if ([_delegate control: self
-		     textShouldEndEditing: aTextObject] == NO)
+		     textShouldEndEditing: textObject] == NO)
 	{
 	  NSBeep ();
 	  return NO;
@@ -6137,7 +6137,7 @@ byExtendingSelection: (BOOL)flag
 	}
     }
 
-  return [_editedCell isEntryAcceptable: [aTextObject text]];
+  return [_editedCell isEntryAcceptable: [textObject text]];
 }
 
 /* 

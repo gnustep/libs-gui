@@ -903,14 +903,14 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 /**
  * Adds a container to the layout manager.
  */
-- (void) addTextContainer: (NSTextContainer*)obj
+- (void) addTextContainer: (NSTextContainer*)container
 {
-  if ([_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound)
+  if ([_textContainers indexOfObjectIdenticalTo: container] == NSNotFound)
     {
       int i;
       
-      [_textContainers addObject: obj];
-      [obj setLayoutManager: self];
+      [_textContainers addObject: container];
+      [container setLayoutManager: self];
       // FIXME: Invalidate layout beyond previous last container
       _textContainersCount++;
       /* NB: We do not retain this here !  It's already retained in the
@@ -1555,17 +1555,17 @@ _Sane(self);
 }
 
 /**
- * Returns the glyph at the specified index.<br />
+ * Returns the glyph at the specified glyphIndex.<br />
  * Causes any gaps (areas where glyphs have been invalidated) before this
- * index to be re-filled.<br />
- * Raises an exception if the index is out of range.
+ * glyphIndex to be re-filled.<br />
+ * Raises an exception if the glyphIndex is out of range.
  */
-- (NSGlyph) glyphAtIndex: (unsigned)index
+- (NSGlyph) glyphAtIndex: (unsigned)glyphIndex
 {
   BOOL		flag;
   NSGlyph	glyph;
 
-  glyph = [self glyphAtIndex: index isValidIndex: &flag];
+  glyph = [self glyphAtIndex: glyphIndex isValidIndex: &flag];
   if (flag == NO)
     {
       [NSException raise: NSRangeException
@@ -1575,14 +1575,14 @@ _Sane(self);
 }
 
 /**
- * Returns the glyph at the specified index.<br />
+ * Returns the glyph at the specified glyphIndex.<br />
  * Causes any gaps (areas where glyphs have been invalidated) before this
- * index to be re-filled.<br />
- * Sets the flag to indicate whether the index was found ... if it wasn't
+ * glyphIndex to be re-filled.<br />
+ * Sets the flag to indicate whether the glyphIndex was found ... if it wasn't
  * the returned glyph is meaningless.
  */
-- (NSGlyph) glyphAtIndex: (unsigned)index
-	    isValidIndex: (BOOL*)flag
+- (NSGlyph) glyphAtIndex: (unsigned)glyphIndex
+	    isValidIndex: (BOOL*)isValidIndex
 {
 #if USE_GLYPHS
   NSGlyph	glyph;
@@ -1591,14 +1591,15 @@ _Sane(self);
 
 _GLog(self,_cmd);
   if (GSIArrayCount((GSIArray)_glyphGaps) > 0
-    && (GSIArrayItemAtIndex((GSIArray)_glyphGaps, 0).ulng) <= index)
+    && (GSIArrayItemAtIndex((GSIArray)_glyphGaps, 0).ulng) <= glyphIndex)
     {
       unsigned long	gap;
 
       string = [_textStorage string];
 
       while (GSIArrayCount((GSIArray)_glyphGaps) > 0
-	&& (gap = GSIArrayItemAtIndex((GSIArray)_glyphGaps, 0).ulng) <= index)
+	&& (gap = GSIArrayItemAtIndex((GSIArray)_glyphGaps, 0).ulng)
+	<= glyphIndex)
 	{
 	  unsigned	endChar;
 	  unsigned	startChar;
@@ -1656,7 +1657,7 @@ _GLog(self,_cmd);
 	}
     }
 
-  if (index >= _GlyphEnd(self) && _CharEnd(self) < textLength)
+  if (glyphIndex >= _GlyphEnd(self) && _CharEnd(self) < textLength)
     {
       unsigned	endChar = textLength;
       unsigned	startChar = _CharEnd(self);
@@ -1667,7 +1668,7 @@ _GLog(self,_cmd);
 	  string = [_textStorage string];
 	}
       /* FIXME ... should generate glyphs properly here */
-      while (startChar < endChar && glyphIndex <= index)
+      while (startChar < endChar && glyphIndex <= glyphIndex)
 	{
 	  unichar	c = [string characterAtIndex: startChar];
 
@@ -1679,48 +1680,49 @@ _GLog(self,_cmd);
 
 _GLog(self,_cmd);
 _Sane(self);
-  if (_JumpToGlyph(self, index) == YES)
+  if (_JumpToGlyph(self, glyphIndex) == YES)
     {
-      *flag = YES;
+      *isValidIndex = YES;
       glyph = gGlyph(*_Info(self));
     }
   else
     {
-      *flag = NO;
+      *isValidIndex = NO;
       glyph = NSNullGlyph;
     }
 #if	ALL_CHECKS
-  if (index >= [_textStorage length])
+  if (glyphIndex >= [_textStorage length])
     {
       if (glyph != NSNullGlyph)
 	{
 	  missmatch(_cmd);
-	  *flag = NO;
+	  *isValidIndex = NO;
 	  glyph = NSNullGlyph;
 	}
     }
-  else if (glyph != (NSGlyph)[[_textStorage string] characterAtIndex: index])
+  else if (glyph != (NSGlyph)[[_textStorage string] characterAtIndex:
+    glyphIndex])
     {
       missmatch(_cmd);
-      *flag = YES;
-      glyph = (NSGlyph)[[_textStorage string] characterAtIndex: index];
+      *isValidIndex = YES;
+      glyph = (NSGlyph)[[_textStorage string] characterAtIndex: glyphIndex];
     }
 #endif
   return glyph;
 #else
-  return (NSGlyph)[[_textStorage string] characterAtIndex: index];
+  return (NSGlyph)[[_textStorage string] characterAtIndex: glyphIndex];
 #endif
 }
 
 /**
- * Replaces the glyph at index with newGlyph without changing
+ * Replaces the glyph at glyphIndex with newGlyph without changing
  * character index or other attributes.
  */
-- (void) replaceGlyphAtIndex: (unsigned)index
+- (void) replaceGlyphAtIndex: (unsigned)glyphIndex
 		   withGlyph: (NSGlyph)newGlyph
 {
 _GLog(self,_cmd);
-  if (_JumpToGlyph(self, index) == NO)
+  if (_JumpToGlyph(self, glyphIndex) == NO)
     {
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
@@ -2280,7 +2282,7 @@ _GLog(self,_cmd);
  * add new attributed, you must replace this method with one which can
  * store your new attributes.
  */
-- (void) setIntAttribute: (int)attribute
+- (void) setIntAttribute: (int)attributeTag
 		   value: (int)anInt
 	 forGlyphAtIndex: (unsigned)glyphIndex
 {
@@ -2293,7 +2295,7 @@ _GLog(self,_cmd);
 		  format: @"glyph index out of range"];
     }
   info = *_Info(self);
-  if (attribute == GSGlyphDrawsOutsideLineFragment)
+  if (attributeTag == GSGlyphDrawsOutsideLineFragment)
     {
       if (anInt == 0)
 	{
@@ -2304,7 +2306,7 @@ _GLog(self,_cmd);
 	  gDrawsOutside(info) = 1;
 	}
     }
-  else if (attribute == GSGlyphIsNotShown)
+  else if (attributeTag == GSGlyphIsNotShown)
     {
       if (anInt == 0)
 	{
@@ -2315,11 +2317,11 @@ _GLog(self,_cmd);
 	  gIsNotShown(info) = 1;
 	}
     }
-  else if (attribute == GSGlyphGeneration)
+  else if (attributeTag == GSGlyphGeneration)
     {
       gGeneration(info) = anInt;
     }
-  else if (attribute == GSGlyphInscription)
+  else if (attributeTag == GSGlyphInscription)
     {
       gInscription(info) = anInt;
     }
@@ -2328,9 +2330,9 @@ _GLog(self,_cmd);
 }
 
 /**
- * Returns the value for the attribute at the glyphIndex.
+ * Returns the value for the attributeTag at the glyphIndex.
  */
-- (int) intAttribute: (int)attribute
+- (int) intAttribute: (int)attributeTag
      forGlyphAtIndex: (unsigned)glyphIndex
 {
   GSIArrayItem	info;
@@ -2343,7 +2345,7 @@ _GLog(self,_cmd);
     }
   info = *_Info(self);
 
-  if (attribute == GSGlyphDrawsOutsideLineFragment)
+  if (attributeTag == GSGlyphDrawsOutsideLineFragment)
     {
       if (gDrawsOutside(info) == 0)
 	{
@@ -2354,7 +2356,7 @@ _GLog(self,_cmd);
 	  return 1;
 	}
     }
-  else if (attribute == GSGlyphIsNotShown)
+  else if (attributeTag == GSGlyphIsNotShown)
     {
       if (gIsNotShown(info) == 0)
 	{
@@ -2365,11 +2367,11 @@ _GLog(self,_cmd);
 	  return 1;
 	}
     }
-  else if (attribute == GSGlyphGeneration)
+  else if (attributeTag == GSGlyphGeneration)
     {
       return gGeneration(info);
     }
-  else if (attribute == GSGlyphInscription)
+  else if (attributeTag == GSGlyphInscription)
     {
       return gInscription(info);
     }
@@ -2383,7 +2385,7 @@ _GLog(self,_cmd);
   /* TODO */
 }
 
-- (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
+- (NSRange) glyphRangeForTextContainer: (NSTextContainer*)container
 {
   /* TODO */
   return NSMakeRange(NSNotFound, 0);
@@ -2412,6 +2414,9 @@ _GLog(self,_cmd);
     }
 }
 
+/**
+ * Not implemented.
+ */
 - (void) setLineFragmentRect: (NSRect)fragmentRect
 	       forGlyphRange: (NSRange)glyphRange
 		    usedRect: (NSRect)usedRect
@@ -2419,27 +2424,33 @@ _GLog(self,_cmd);
   /* TODO */
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
-			    effectiveRange: (NSRange*)lineFragmentRange
+			    effectiveRange: (NSRange*)effectiveGlyphRange
 {
   /* TODO */
   return NSZeroRect;
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
-				effectiveRange: (NSRange*)lineFragmentRange
+				effectiveRange: (NSRange*)effectiveGlyphRange
 {
   /* TODO */
   return NSZeroRect;
 }
 
-- (void) setExtraLineFragmentRect: (NSRect)aRect
+- (void) setExtraLineFragmentRect: (NSRect)fragmentRect
 			 usedRect: (NSRect)usedRect
-		    textContainer: (NSTextContainer*)aTextContainer
+		    textContainer: (NSTextContainer*)container
 {
-  _extraLineFragmentRect = aRect;
+  _extraLineFragmentRect = fragmentRect;
   _extraLineFragmentUsedRect = usedRect;
-  _extraLineFragmentContainer = aTextContainer;
+  _extraLineFragmentContainer = container;
 }
 
 - (NSRect) extraLineFragmentRect 
@@ -2487,42 +2498,60 @@ _GLog(self,_cmd);
   return NO;
 }
 
-- (void) setLocation: (NSPoint)aPoint
+/**
+ * Not implemented.
+ */
+- (void) setLocation: (NSPoint)location
 forStartOfGlyphRange: (NSRange)glyphRange
 {
   /* TODO */
 }
 
+/**
+ * Not implemented.
+ */
 - (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
 {
   /* TODO */
   return NSZeroPoint;
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
 {
   /* TODO */
   return NSMakeRange(NSNotFound, 0);
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRect*) rectArrayForCharacterRange: (NSRange)charRange
-          withinSelectedCharacterRange: (NSRange)selChareRange
-                       inTextContainer: (NSTextContainer*)aTextContainer
+          withinSelectedCharacterRange: (NSRange)selCharRange
+                       inTextContainer: (NSTextContainer*)container
                              rectCount: (unsigned*)rectCount
 {
   /* TODO */
   return NULL;
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRect*) rectArrayForGlyphRange: (NSRange)glyphRange
-          withinSelectedGlyphRange: (NSRange)selectedGlyphRange
-                   inTextContainer: (NSTextContainer*)aTextContainer
+          withinSelectedGlyphRange: (NSRange)selGlyphRange
+                   inTextContainer: (NSTextContainer*)container
                          rectCount: (unsigned*)rectCount
 {
   /* TODO */
   return _cachedRectArray;
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer*)aTextContainer
 {
@@ -2530,22 +2559,31 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return NSZeroRect;
 }
 
-- (NSRange) glyphRangeForBoundingRect: (NSRect)aRect
-		      inTextContainer: (NSTextContainer*)aTextContainer
+/**
+ * Not implemented.
+ */
+- (NSRange) glyphRangeForBoundingRect: (NSRect)bounds
+		      inTextContainer: (NSTextContainer*)container
 {
   /* TODO */
   return NSMakeRange(0, 0);
 }
 
+/**
+ * Not implemented.
+ */
 - (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
-                           inTextContainer: (NSTextContainer*)aTextContainer
+  inTextContainer: (NSTextContainer*)container
 {
   /* TODO */
   return NSMakeRange(0, 0);
 }
 
-- (unsigned) glyphIndexForPoint: (NSPoint)aPoint
-		inTextContainer: (NSTextContainer*)aTextContainer
+/**
+ * Not implemented.
+ */
+- (unsigned) glyphIndexForPoint: (NSPoint)point
+		inTextContainer: (NSTextContainer*)container
  fractionOfDistanceThroughGlyph: (float*)partialFraction
 {
   /* TODO */

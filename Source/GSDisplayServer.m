@@ -202,7 +202,7 @@ GSCurrentServer(void)
 
 /** <init />
     Initializes the server. This typically causes the receiver to 
-    <em>connect</em> to the display (e.g. XOpenDisplay() on an X-Windows
+    <em>connect</em> to the display (e.g. XOpenDisplay () on an X-Windows
     server). 
 */
 - (id) initWithAttributes: (NSDictionary *)attributes

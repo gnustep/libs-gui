@@ -264,13 +264,13 @@ static SEL getSel;
 
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
-	   cellClass: (Class)class
+	   cellClass: (Class)classId
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: frameRect];
 
-  [self setCellClass: class];
+  [self setCellClass: classId];
   return [self _privateFrame: frameRect
 		        mode: aMode
 		numberOfRows: rowsHigh
@@ -279,13 +279,13 @@ static SEL getSel;
 
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
-	   prototype: (NSCell*)prototype
+	   prototype: (NSCell*)aCell
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: frameRect];
 
-  [self setPrototype: prototype];
+  [self setPrototype: aCell];
   return [self _privateFrame: frameRect
 		        mode: aMode
 		numberOfRows: rowsHigh
@@ -593,9 +593,9 @@ static SEL getSel;
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
-- (void) removeColumn: (int)col
+- (void) removeColumn: (int)column
 {
-  if (col >= 0 && col < _numCols)
+  if (column >= 0 && column < _numCols)
     {
       int i;
 
@@ -603,8 +603,8 @@ static SEL getSel;
 	{
 	  int	j;
 
-	  AUTORELEASE(_cells[i][col]);
-	  for (j = col + 1; j < _maxCols; j++)
+	  AUTORELEASE(_cells[i][column]);
+	  for (j = column + 1; j < _maxCols; j++)
 	    {
 	      _cells[i][j-1] = _cells[i][j];
 	      _selectedCells[i][j-1] = _selectedCells[i][j];
@@ -613,12 +613,12 @@ static SEL getSel;
       _numCols--;
       _maxCols--;
 
-      if (col == _selectedColumn)
+      if (column == _selectedColumn)
 	{
 	  _selectedCell = nil;
 	  [self selectCellAtRow: _selectedRow column: 0];
 	}
-      if (col == _dottedColumn)
+      if (column == _dottedColumn)
 	{
 	  if (_numCols && [_cells[_dottedRow][0] acceptsFirstResponder])
 	    _dottedColumn = 0;
@@ -629,10 +629,10 @@ static SEL getSel;
   else
     {
 #if	STRICT == 0
-      NSLog(@"remove non-existent column (%d) from matrix", col);
+      NSLog(@"remove non-existent column (%d) from matrix", column);
 #else
       [NSException raise: NSRangeException
-		  format: @"remove non-existent column (%d) from matrix", col];
+	format: @"remove non-existent column (%d) from matrix", column];
 #endif
     }
 }
@@ -683,21 +683,21 @@ static SEL getSel;
     }
 }
 
-- (void) renewRows: (int)r
-	   columns: (int)c
+- (void) renewRows: (int)newRows
+	   columns: (int)newColumns
 {
-  [self _renewRows: r columns: c rowSpace: 0 colSpace: 0];
+  [self _renewRows: newRows columns: newColumns rowSpace: 0 colSpace: 0];
 }
 
-- (void) setCellSize: (NSSize)size
+- (void) setCellSize: (NSSize)aSize
 {
-  _cellSize = size;
+  _cellSize = aSize;
   [self sizeToCells];
 }
 
-- (void) setIntercellSpacing: (NSSize)size
+- (void) setIntercellSpacing: (NSSize)aSize
 {
-  _intercell = size;
+  _intercell = aSize;
   [self sizeToCells];
 }
 
@@ -765,20 +765,20 @@ static SEL getSel;
 
 - (BOOL) getRow: (int*)row
 	 column: (int*)column
-       forPoint: (NSPoint)point
+       forPoint: (NSPoint)aPoint
 {
   BOOL	betweenRows;
   BOOL	betweenCols;
   BOOL	beyondRows;
   BOOL	beyondCols;
-  int	approxRow = point.y / (_cellSize.height + _intercell.height);
+  int	approxRow = aPoint.y / (_cellSize.height + _intercell.height);
   float	approxRowsHeight = approxRow * (_cellSize.height + _intercell.height);
-  int	approxCol = point.x / (_cellSize.width + _intercell.width);
+  int	approxCol = aPoint.x / (_cellSize.width + _intercell.width);
   float	approxColsWidth = approxCol * (_cellSize.width + _intercell.width);
 
   /* First check the limit cases - is the point outside the matrix */
-  beyondCols = (point.x > _bounds.size.width  || point.x < 0);
-  beyondRows = (point.y > _bounds.size.height || point.y < 0);
+  beyondCols = (aPoint.x > _bounds.size.width  || aPoint.x < 0);
+  beyondRows = (aPoint.y > _bounds.size.height || aPoint.y < 0);
 
   /* Determine if the point is inside a cell - note: if the point lies
      on the cell boundaries, we consider it inside the cell.  to be
@@ -786,13 +786,13 @@ static SEL getSel;
      completely in the intercell spacing - not on the border */
   /* The following is non zero if the point lies between rows (not inside 
      a cell) */
-  betweenRows = (point.y < approxRowsHeight
-		 || point.y > approxRowsHeight + _cellSize.height);
-  betweenCols = (point.x < approxColsWidth
-		 || point.x > approxColsWidth + _cellSize.width);
+  betweenRows = (aPoint.y < approxRowsHeight
+    || aPoint.y > approxRowsHeight + _cellSize.height);
+  betweenCols = (aPoint.x < approxColsWidth
+    || aPoint.x > approxColsWidth + _cellSize.width);
 
-  if (beyondRows || betweenRows || beyondCols || betweenCols || 
-      (_numCols == 0) || (_numRows == 0))
+  if (beyondRows || betweenRows || beyondCols || betweenCols
+    || (_numCols == 0) || (_numRows == 0))
     {
       if (row)
 	{
@@ -1605,14 +1605,15 @@ static SEL getSel;
     }
 }
 
-- (BOOL) textShouldBeginEditing: (NSText *)textObject
+- (BOOL) textShouldBeginEditing: (NSText*)aTextObject
 {
   if (_delegate && [_delegate respondsToSelector:
-				@selector(control:textShouldBeginEditing:)])
-    return [_delegate control: self
-		      textShouldBeginEditing: textObject];
-  else
-    return YES;
+    @selector(control:textShouldBeginEditing:)])
+    {
+      return [_delegate control: self
+	 textShouldBeginEditing: aTextObject];
+    }
+  return YES;
 }
 
 - (BOOL) textShouldEndEditing: (NSText *)aTextObject
@@ -2614,9 +2615,9 @@ static SEL getSel;
   return _mode;
 }
 
-- (void) setCellClass: (Class)class
+- (void) setCellClass: (Class)classId
 {
-  _cellClass = class;
+  _cellClass = classId;
   if (_cellClass == nil)
     {
       _cellClass = defaultCellClass;
@@ -2661,9 +2662,9 @@ static SEL getSel;
   return _intercell;
 }
 
-- (void) setBackgroundColor: (NSColor*)c
+- (void) setBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN(_backgroundColor, c);
+  ASSIGN(_backgroundColor, aColor);
 }
 
 - (NSColor*) backgroundColor
@@ -2671,9 +2672,9 @@ static SEL getSel;
   return _backgroundColor;
 }
 
-- (void) setCellBackgroundColor: (NSColor*)c
+- (void) setCellBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN(_cellBackgroundColor, c);
+  ASSIGN(_cellBackgroundColor, aColor);
 }
 
 - (NSColor*) cellBackgroundColor
@@ -2681,11 +2682,11 @@ static SEL getSel;
   return _cellBackgroundColor;
 }
 
-- (void) setDelegate: (id)object
+- (void) setDelegate: (id)anObject
 {
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
-  _delegate = object;
+  _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(controlText##notif_name:)]) \
@@ -2716,9 +2717,12 @@ static SEL getSel;
   return _target;
 }
 
-- (void) setAction: (SEL)sel
+/**
+ * Sets the message to send when a single click occurs.<br />
+ */
+- (void) setAction: (SEL)aSelector
 {
-  _action = sel;
+  _action = aSelector;
 }
 
 - (SEL) action
@@ -2726,12 +2730,15 @@ static SEL getSel;
   return _action;
 }
 
-// NB: In GNUstep the following method does *not* set 
-// ignoresMultiClick to NO as in the MacOS-X spec. 
-// It simply sets the doubleAction, as in OpenStep spec.
-- (void) setDoubleAction: (SEL)sel
+/**
+ * Sets the message to send when a double click occurs.<br />
+ * NB: In GNUstep the following method does *not* set 
+ * ignoresMultiClick to NO as in the MacOS-X spec.<br />
+ * It simply sets the doubleAction, as in OpenStep spec.
+ */
+- (void) setDoubleAction: (SEL)aSelector
 {
-  _doubleAction = sel;
+  _doubleAction = aSelector;
 }
 
 - (SEL) doubleAction
@@ -2739,9 +2746,9 @@ static SEL getSel;
   return _doubleAction;
 }
 
-- (void) setErrorAction: (SEL)sel
+- (void) setErrorAction: (SEL)aSelector
 {
-  _errorAction = sel;
+  _errorAction = aSelector;
 }
 
 - (SEL) errorAction
@@ -2749,9 +2756,13 @@ static SEL getSel;
   return _errorAction;
 }
 
-- (void) setAllowsEmptySelection: (BOOL)f
+/**
+ * Sets a flag to indicate whether the matrix should permit empty selections
+ * or should force one or mor cells to be selected at all times.
+ */
+- (void) setAllowsEmptySelection: (BOOL)flag
 {
-  _allowsEmptySelection = f;
+  _allowsEmptySelection = flag;
 }
 
 - (BOOL) allowsEmptySelection
@@ -2779,9 +2790,13 @@ static SEL getSel;
   return _drawsBackground;
 }
 
-- (void) setDrawsCellBackground: (BOOL)f
+/**
+ * Set a flag to say whether the matrix will draw call backgrounds (YES)
+ * or expect the cell to do it itsself (NO).
+ */
+- (void) setDrawsCellBackground: (BOOL)flag
 {
-  _drawsCellBackground = f;
+  _drawsCellBackground = flag;
 }
 
 - (BOOL) drawsCellBackground

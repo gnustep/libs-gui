@@ -677,24 +677,30 @@
 }
 
 
-- (NSControlSize)controlSize
+- (NSControlSize) controlSize
 {
   // FIXME
   return NSRegularControlSize;
 }
 
-- (void)setControlSize:(NSControlSize)size
+/**
+ * Not implemented.
+ */
+- (void) setControlSize: (NSControlSize)controlSize
 {
   // FIXME 
 }
 
-- (NSControlTint)controlTint
+- (NSControlTint) controlTint
 {
   // FIXME
   return NSDefaultControlTint;
 }
 
-- (void)setControlTint:(NSControlTint)tint
+/**
+ * Not implemented.
+ */
+- (void) setControlTint: (NSControlTint)controlTint
 {
   // FIXME 
 }

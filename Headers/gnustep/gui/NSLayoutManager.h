@@ -169,7 +169,7 @@ typedef enum {
 - (NSArray *) textContainers;
 
 -(void) addTextContainer: (NSTextContainer *)container;
-- (void) insertTextContainer: (NSTextContainer *)container 
+- (void) insertTextContainer: (NSTextContainer*)aTextContainer 
 		     atIndex: (unsigned)index;
 - (void) removeTextContainerAtIndex: (unsigned)index;
 
@@ -194,7 +194,7 @@ typedef enum {
 
 - (void) textStorage: (NSTextStorage *)aTextStorage
 	      edited: (unsigned)mask
-	       range: (NSRange)range
+	       range: (NSRange)newCharRange
       changeInLength: (int)lengthChange
     invalidatedRange: (NSRange)invalidatedRange;
 
