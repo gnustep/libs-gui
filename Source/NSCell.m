@@ -49,7 +49,6 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/PSOperators.h>
-#include "GSUtil.h"
 
 static Class	colorClass;
 static Class	cellClass;
