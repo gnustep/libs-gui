@@ -1,3 +1,13 @@
+Sat Jun 22 16:46:59 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSInputManager.h ([-loadBindingsFromFile:]): Made it 
+	a public method.
+	* Source/NSInputManager.m ([-initWithName:host:]): Changed the way
+	in which keybindings loading is controlled via user defaults, now
+	simpler and more powerful.  Hopefully this is the final version.
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Documented the keybinding defaults.
+	* Documentation/gsdoc/DefaultsSummary.html: Regenerated.
+
 Sat Jun 22 15:19:31 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSAffineTransform.h (rotationAngle):
