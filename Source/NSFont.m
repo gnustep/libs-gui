@@ -258,7 +258,7 @@ static NSFont *getNSFont(float fontSize, int role)
       font_role |= 1;
 
       if (font_roles[role].cachedFont)
-	return font_roles[role].cachedFont;
+	return AUTORELEASE(RETAIN(font_roles[role].cachedFont));
 
       fontSize = [defaults floatForKey:
 	[NSString stringWithFormat: @"%@Size", font_roles[role].key]];
@@ -328,7 +328,9 @@ static void setNSFont(NSString *key, NSFont *font)
   [defaults setObject: [font fontName] forKey: key];
 
   for (i = 1; i < RoleMax; i++)
-    DESTROY(font_roles[i].cachedFont);
+    {
+      DESTROY(font_roles[i].cachedFont);
+    }
 
   /* Don't care about errors */
   [defaults synchronize];
