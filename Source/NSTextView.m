@@ -2365,7 +2365,7 @@ afterString in order over charRange. */
       else
 	{
 	  /* At the beginning of text - TODO: Make beeping or not
-	     beeping configurable vie User Defaults */
+	     beeping configurable via User Defaults */
 	  NSBeep ();
 	  return;
 	}
@@ -2494,7 +2494,7 @@ afterString in order over charRange. */
 
 - (void) moveToBeginningOfDocument: (id)sender
 {
-  [self setSelectedRange: NSMakeRange (0,0)];
+  [self setSelectedRange: NSMakeRange (0, 0)];
 }
 
 - (void) moveToBeginningOfLine: (id)sender
@@ -2531,9 +2531,13 @@ afterString in order over charRange. */
 
 - (void) moveToEndOfLine: (id)sender
 {
-  NSRange aRange;
+- (void) moveToEndOfLine: (id)sender
+{
   NSRect ignored;
-
+  NSRange line, glyphs;
+  unsigned newLocation;
+  unsigned maxRange;
+  
   /* We do nothing if we are at the end of the text.  */
   if (_selected_range.location == [_textStorage length])
     {
@@ -2542,17 +2546,41 @@ afterString in order over charRange. */
 
   ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
 			      _selected_range.location
-			    effectiveRange: &aRange];
+			    effectiveRange: &glyphs];
+  
+  line = [_layoutManager characterRangeForGlyphRange: glyphs
+			 actualGlyphRange: NULL];
+  
+  maxRange = NSMaxRange (line);
 
-  /* FIXME the following  */
-  if (NSMaxRange (aRange) == [_textStorage length])
+  if (maxRange == [_textStorage length])
     {
-      [self setSelectedRange: NSMakeRange (NSMaxRange (aRange), 0) ];
+      /* End of text is special - we want the insertion point to
+	 appear *after* the last character, which means as if before 
+	 the next (virtual) character after the end of text.  */
+      newLocation = maxRange;
+    }
+  else if (maxRange == 0)
+    {
+      /* Beginning of text is special only for technical reasons -
+	 since maxRange is an unsigned, we can't safely subtract 1
+	 from it if it is 0.  */
+      newLocation = maxRange;
     }
   else
     {
-      [self setSelectedRange: NSMakeRange ((NSMaxRange (aRange)) - 1, 0) ];
+      /* Else, we want the insertion point to appear before the last
+	 character in the line range.  Normally the last character in
+	 the line range is a space or a newline.  */
+      newLocation = maxRange - 1;
+      
+      if (newLocation < line.location)
+	{
+	  newLocation = line.location;
+	}
     }
+
+  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
 }
 
 - (void) moveWordBackward: (id)sender
