@@ -1,3 +1,7 @@
+Sat Feb 23 20:51:31 2002  Georg Fleischmann <georg@vhf.de>
+
+	* Source/NSBezierPath.m ([+bezierPath]): Return autoreleased object.
+
 Sat Feb 23 11:28:32 2002  Gregory Casamento <greg_casamento@yahoo.com>
 
 	* Headers/gnustep/gui/AppKit.h: Added NSOutlineView header
