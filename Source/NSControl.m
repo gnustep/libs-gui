@@ -104,11 +104,12 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 - copyWithZone:(NSZone *)zone
 {
   id c;
-  c = NSAllocateObject (isa, 0, zone);
+  c = NSCopyObject (self, 0, zone);
 
   NSLog(@"NSControl: copyWithZone\n");
 
   // make sure the new copy also has a new copy of the cell
+  [cell retain];
   [c setCell: [[cell copy] autorelease]];
   return c;
 }
@@ -296,12 +297,22 @@ right:(unsigned)rightDigits
 //
 - (void)drawCell:(NSCell *)aCell
 {
-  if (cell == aCell) [cell drawWithFrame:bounds inView:self];
+  if (cell == aCell)
+    {
+      [self lockFocus];
+      [cell drawWithFrame:bounds inView:self];
+      [self unlockFocus];
+    }
 }
 
 - (void)drawCellInside:(NSCell *)aCell
 {
-  if (cell == aCell) [cell drawInteriorWithFrame:bounds inView:self];
+  if (cell == aCell)
+    {
+      [self lockFocus];
+      [cell drawInteriorWithFrame:bounds inView:self];
+      [self unlockFocus];
+    }
 }
 
 - (void)selectCell:(NSCell *)aCell

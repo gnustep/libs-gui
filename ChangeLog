@@ -1,4 +1,32 @@
-Fri Mar 14 18:23:18 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Thu Mar 20 10:40:51 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Source/NSControl.m (-copyWithZone:): Copy the object instead of
+	allocating so that instance variable values are copied.  Retain
+	the cell because it will be released when we set a new one.
+	(-drawCell:, -drawCellInside:): Lock and unlock the focus
+	when drawing the cell.
+	* Source/NSImage.m (_base_name, extension): Delete functions; 
+	functionality is now provided by NSString.
+	(+imageNamed:) Use NSString methods instead of local functions for
+	obtaining base name and extension.  Check if extension is one of
+	the image types before deleting.
+	(-useFromFile:): Use NSString methods instead of local functions
+	for obtaining the extension.
+	* Source/NSScroller.m (-setFloatValue:knobProportion:): Set knob
+	proportion first before setting float value.
+	(-drawRect:): Remove method.
+	(-drawParts): Flush window.
+	(-trackKnob:): Correct position of knob relative to pointer.
+	(-trackScrollButtons:): Fill out implementation.
+	(-mouseDown:): Lock and unlock focus.
+	* Source/NSTextField.m (-setTextCursor:, -copyWithZone:): New methods.
+	* Source/NSTextFieldCell.m (-initTextCell:): By default 
+	it draws the background.
+	* Source/NSView.m (-ancestoreSharedWithView:): Implement.
+	(-lockFocus, -unlockFocus): Make sure our superview locks or unlocks
+	the focus before us.
+
+Fri Mar 14 18:23:18 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Flush the view's window after a redraw.
 	* Source/NSButton.m (-mouseDown:): Likewise.
@@ -28,7 +56,7 @@ Wed Mar  5 17:43:34 1997  GNUstep Development  <gnustep@net-community.com>
 	* Headers/gnustep/gui/nsimage-tiff.h: Include gnustep-gui config.
 	* Source/tiff.m: Include header file.
 
-Tue Mar  4 18:05:24 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Tue Mar  4 18:05:24 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSFont.m (-minimumAdvancement): New method.
 	* Source/NSButton.m (-initWithFrame:): Use an autoreleased cell.
@@ -118,7 +146,7 @@ Tue Mar  4 09:28:57 1997  GNUstep Development  <gnustep@net-community.com>
 	* Source/NSBundle.m (+imageNamed:): Create a bundle with
 	gnustep library install path for searching system resources.
 
-Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSButton.m: New methods -setAlignment: and -alignment,
 	setIntValue:, setFloatValue:, setDoubleValue:, setAlignment:,
@@ -133,7 +161,7 @@ Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 	way in which setIntValue:, setFloatValue: and setDoubleValue: work.
 	Commented out a point conversion that works wrong (why?).
 
-Sat Feb 15 23:12:35 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Sat Feb 15 23:12:35 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Major reorganization of header files. Types and constants were moved
 	in the files they belong (too many to enumerate here). Each header
@@ -175,7 +203,7 @@ Thu Feb  6 19:31:54 1997  GNUstep Development  <gnustep@net-community.com>
 	* NSView.m: Don't use -isKindOfClass: because it isn't working
 	as we expect with the backend classes doing a +poseAs:
 
-Mon Feb 10 17:23:06 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Mon Feb 10 17:23:06 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSFont.m: Completely reworked. Get the default fonts using
 	the NSUserDefaults class instead of hard-coding them. Almost all the
@@ -267,7 +295,7 @@ Thu Jan 23 15:10:13 1997  Scott Christley  <scottc@net-community.com>
 	defined in NSApplication.
 	* Source/NSTextFieldCell.m (-initWithFrame:): Bezeled by default.
 
-Tue Jan 14 9:33:04 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+Tue Jan 14 9:33:04 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/Functions.m: Exclude from compiling the NSLog functions when
 	working with libFoundation.

@@ -88,6 +88,24 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
 }
 
 //
+// Creating copies
+//
+- (void)setTextCursor:(NSCursor *)aCursor
+{
+  text_cursor = aCursor;
+}
+
+- copyWithZone:(NSZone *)zone
+{
+  id c;
+
+  c = [super copyWithZone: zone];
+
+  [c setTextCursor: [NSCursor IBeamCursor]];
+  return c;
+}
+
+//
 // Setting User Access to Text 
 //
 - (BOOL)isEditable

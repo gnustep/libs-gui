@@ -72,30 +72,6 @@ static NSMutableDictionary*	nameDict;
 
 NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
-/* (NSString doesn't do these yet) */
-/* Strip the extension from a name */
-#define BASENAME(str)   ((strrchr(str, '/')) ? strrchr(str, '/')+1 : str)
-static NSString *
-_base_name(NSString *name)
-{
-  return [NSString stringWithCString: BASENAME([name cString])];
-} 
-
-/* Get the extension from a name  */
-static NSString *
-extension(NSString *name)
-{
-  const char* cname;
-  char *s;
-    
-  cname = [name cString];
-  s = strrchr(cname, '.');
-  if (s > strrchr(cname, '/'))
-    return [NSString stringWithCString:s+1];
-  else
-    return nil;
-} 
-
 /* Find the rep_data_t holding a representation */
 rep_data_t
 repd_for_rep(NSArray *_reps, NSImageRep *rep)
@@ -171,27 +147,39 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
       NSString* ext;
       NSString* path = nil;
       NSBundle* main;
+      NSArray *array;
+      NSString *the_name = aName;
       main = [NSBundle mainBundle];
-      ext  = extension(aName);
+      ext  = [aName pathExtension];
 
-      NSDebugLog(@"search locally\n");
-      NSDebugLog(@"extension is %s\n", [ext cString]);
+      /* Check if extension is one of the image types */
+      array = [self imageFileTypes];
+      if ([array indexOfObject: ext] != NSNotFound)
+	{
+	  /* Extension is one of the image types
+	     So remove from the name */
+	  the_name = [aName stringByDeletingPathExtension];
+	}
+      else
+	{
+	  /* Otherwise extension is not an image type
+	     So leave it alone */
+	  the_name = aName;
+	  ext = nil;
+	}
+
       /* First search locally */
       if (ext)
-	path = [main pathForResource: aName ofType: ext];
+	path = [main pathForResource: the_name ofType: ext];
       else 
 	{
 	  id o, e;
-	  NSArray* array;
 
-	  array = [self imageFileTypes];
-	  if (!array)
-	    NSDebugLog(@"array is nil\n");
 	  e = [array objectEnumerator];
 	  while ((o = [e nextObject]))
 	    {
 	      NSDebugLog(@"extension %s\n", [o cString]);
-	      path = [main pathForResource:aName 
+	      path = [main pathForResource:the_name 
 		        ofType: o];
 	      if ([path length] != 0)
 		break;
@@ -204,7 +192,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	  NSBundle *system = [NSBundle bundleWithPath: gnustep_libdir];
 
 	  if (ext)
-	    path = [system pathForResource: aName
+	    path = [system pathForResource: the_name
 			   ofType: ext
 			   inDirectory: NSImage_PATH];
 	  else 
@@ -218,7 +206,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
-		  path = [system pathForResource: aName
+		  path = [system pathForResource: the_name
 				 ofType: o
 				 inDirectory: NSImage_PATH];
 		  if ([path length] != 0)
@@ -231,7 +219,9 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	{
 	  NSImage* image = [[NSImage alloc] initByReferencingFile:path];
 	  if (image)
-	    [image setName:_base_name(path)];
+	    [image setName: [[path lastPathComponent] 
+				stringByDeletingPathExtension]];
+	  [nameDict setObject: image forKey: [image name]];
 	  return image;
 	}
     }
@@ -665,7 +655,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   NSString*  ext;
   rep_data_t repd;
 
-  ext = extension(fileName);
+  ext = [fileName pathExtension];
   if (!ext)
     return NO;
   array = [[self class] imageFileTypes];

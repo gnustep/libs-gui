@@ -80,6 +80,7 @@
   background_color = [NSColor whiteColor];
   text_color = [NSColor blackColor];
   cell_font = [NSFont systemFontOfSize:12];
+  draw_background = YES;
   return self;
 }
 

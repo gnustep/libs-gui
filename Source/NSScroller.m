@@ -146,8 +146,8 @@ id gnustep_gui_nsscroller_class = nil;
 - (void)setFloatValue:(float)aFloat
        knobProportion:(float)ratio
 {
-  [cell setFloatValue: aFloat];
   knob_proportion = ratio;
+  [cell setFloatValue: aFloat];
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -164,6 +164,9 @@ id gnustep_gui_nsscroller_class = nil;
 //
 - (void)drawRect:(NSRect)rect
 {
+  // xxx We can add some smarts here so that only the parts
+  // which intersect with the rect get drawn.
+
   [self drawParts];
 }
 
@@ -206,6 +209,7 @@ id gnustep_gui_nsscroller_class = nil;
   if (!knob_dimple)
     knob_dimple = [NSImage imageNamed: @"common_Dimple"];
   [self drawKnob];
+  [[self window] flushWindow];
 }
 
 - (void)highlight:(BOOL)flag
@@ -264,10 +268,10 @@ id gnustep_gui_nsscroller_class = nil;
 
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
     NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
-  NSRect partRect = [self boundsOfScrollerPart: NSScrollerKnob];
   NSPoint point = [self convertPoint: [theEvent locationInWindow] 
 			fromView: nil];
   NSPoint last_point;
+  NSRect knobRect = [self boundsOfScrollerPart: NSScrollerKnob];
   NSRect barRect = [self boundsOfScrollerPart: NSScrollerKnobSlot];
   float pos;
 
@@ -286,21 +290,21 @@ id gnustep_gui_nsscroller_class = nil;
 
       if (is_horizontal)
 	{
-	  pos = (point.x - barRect.origin.x) / barRect.size.width;
+	  pos = (point.x - barRect.origin.x - (knobRect.size.width/2))
+	    / (barRect.size.width - knobRect.size.width);
 	  [self setFloatValue: pos];
-	  [self lockFocus];
 	  [self drawBar];
 	  [self drawKnob];
-	  [self unlockFocus];
+	  [[self window] flushWindow];
 	}
       else
 	{
-	  pos = (point.y - barRect.origin.y) / barRect.size.height;
+	  pos = (point.y - barRect.origin.y - (knobRect.size.height/2)) 
+	    / (barRect.size.height - knobRect.size.height);
 	  [self setFloatValue: pos];
-	  [self lockFocus];
 	  [self drawBar];
 	  [self drawKnob];
-	  [self unlockFocus];
+	  [[self window] flushWindow];
 	}
 
       // Did the mouse go up?
@@ -316,49 +320,108 @@ id gnustep_gui_nsscroller_class = nil;
 
   // Have the target perform the action
   [self sendAction:[self action] to:[self target]];
+
+  // Update the display
+  [self drawParts];
+  [[self window] flushWindow];
 }
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
 {
   NSApplication *theApp = [NSApplication sharedApplication];
-  BOOL mouseUp, done;
+  BOOL done;
   NSEvent *e;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
     NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+  NSRect partRect = [self boundsOfScrollerPart: hit_part];
+  NSPoint point = [self convertPoint: [theEvent locationInWindow] 
+			fromView: nil];
+  NSPoint last_point;
+  NSScrollerArrow arrow;
+  BOOL arrow_highlighted = NO;
+
+  // Find out which arrow button
+  switch (hit_part)
+    {
+    case NSScrollerDecrementPage:
+    case NSScrollerDecrementLine:
+      arrow = NSScrollerDecrementArrow;
+      break;
+    case NSScrollerIncrementPage:
+    case NSScrollerIncrementLine:
+    default:
+      arrow = NSScrollerIncrementArrow;
+      break;
+    }
 
   // capture mouse
   [[self window] captureMouse: self];
 
+  // If point is in arrow then highlight it
+  if ([self mouse: point inRect: partRect])
+    {
+      [self drawArrow: arrow highlight: YES];
+      [[self window] flushWindow];
+      arrow_highlighted = YES;
+    }
+  else
+    return;
+
+  // Get next mouse events until a mouse up is obtained
   done = NO;
-  e = theEvent;
   while (!done)
     {
-      mouseUp = [cell trackMouse: e inRect: bounds
-		      ofView:self untilMouseUp:YES];
-      e = [theApp currentEvent];
+      last_point = point;
+      e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
+		  inMode:nil dequeue:YES];
 
-      // If mouse went up then we are done
-      if ((mouseUp) || ([e type] == NSLeftMouseUp))
-	done = YES;
+      point = [self convertPoint: [e locationInWindow] fromView: nil];
+
+      // Point is not in arrow
+      if (![self mouse: point inRect: partRect])
+	{
+	  // unhighlight arrow if highlighted
+	  if (arrow_highlighted)
+	    {
+	      [self drawArrow: arrow highlight: NO];
+	      [[self window] flushWindow];
+	      arrow_highlighted = NO;
+	    }
+	}
       else
 	{
-	  NSDebugLog(@"NSScroller process another event\n");
-	  e = [theApp nextEventMatchingMask:event_mask untilDate:nil
-		      inMode:nil dequeue:YES];
+	  // Point is in cell
+	  // highlight cell if not highlighted
+	  if (!arrow_highlighted)
+	    {
+	      [self drawArrow: arrow highlight: YES];
+	      [[self window] flushWindow];
+	      arrow_highlighted = YES;
+	    }
 	}
+
+      // Did the mouse go up?
+      if ([e type] == NSLeftMouseUp)
+	done = YES;
     }
 
   // Release mouse
   [[self window] releaseMouse: self];
 
   // If the mouse went up in the button
-  if (mouseUp)
-    { 
-      // Set a new value
+  if ([self mouse: point inRect: partRect])
+    {
+      // unhighlight arrow
+      [self drawArrow: arrow highlight: NO];
+      [[self window] flushWindow];
 
       // Have the target perform the action
       [self sendAction:[self action] to:[self target]];
     }
+
+  // Update the display
+  [self drawParts];
+  [[self window] flushWindow];
 }
 
 //
@@ -394,6 +457,8 @@ id gnustep_gui_nsscroller_class = nil;
   // We must have hit a real part so record it
   hit_part = area;
 
+  [self lockFocus];
+
   // Track the knob if that's where it hit
   if ((hit_part == NSScrollerKnob) || (hit_part == NSScrollerKnobSlot))
     [self trackKnob: theEvent];
@@ -404,6 +469,8 @@ id gnustep_gui_nsscroller_class = nil;
       (hit_part == NSScrollerIncrementPage) ||
       (hit_part == NSScrollerIncrementLine))
     [self trackScrollButtons: theEvent];
+
+  [self unlockFocus];
 }
 
 //

@@ -259,9 +259,28 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (NSView *)ancestorSharedWithView:(NSView *)aView
 {
-  NSView *v = nil;
+  // Are they the same?
+  if (self == aView)
+    return self;
 
-  return v;
+  // Is self a descendant of view?
+  if ([self isDescendantOf: aView])
+    return aView;
+
+  // Is view a descendant of self?
+  if ([aView isDescendantOf: self])
+    return self;
+
+  // If neither are descendants of each other
+  // and either does not have a superview
+  // then they cannot have a common ancestor
+  if (![self superview])
+    return nil;
+  if (![aView superview])
+    return nil;
+
+  // Find the common ancestor of superviews
+  return [[self superview] ancestorSharedWithView: [aView superview]];
 }
 
 - (BOOL)isDescendantOf:(NSView *)aView
@@ -734,11 +753,25 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 //
 - (void)lockFocus
 {
+  NSView *s = [self superview];
+
+  // lock our superview
+  if (s)
+    [s lockFocus];
+
+  // push ourselves
   [[self class] pushFocusView: self];
 }
 
 - (void)unlockFocus
 {
+  NSView *s = [self superview];
+
+  // unlock our superview
+  if (s)
+    [s unlockFocus];
+
+  // pop ourselves
   [[self class] popFocusView];
 }
 
