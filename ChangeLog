@@ -1,3 +1,9 @@
+Fri Nov 30 12:58:45 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSCell.m ([-setStringValue:]): Use NSWarnMLog to warn for
+	nil string values rather than raising an exception (Suggestion by
+	richard).
+
 2001-11-28  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSServicesManager.m (-rebuildServices): Use userLanguages
@@ -191,7 +197,7 @@ Thu Nov  8 23:30:47 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 2001-11-06  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
-	* Source/NSTableView.m [- sizeToFit]: replaced floorf with floor
+	* Source/NSTableView.m ([-sizeToFit]): replaced floorf with floor
 	suggestion from Stephen Brandon <stephen@brandonitconsulting.co.uk>
 
 2001-11-03  Fred Kiefer <FredKiefer@gmx.de>
