@@ -1,3 +1,8 @@
+Thu May  4 19:11:48 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSPanel.m ([GSAlertPanel -initWithContentRect:styleMask:backing:defer:screen:]): 
+	Fixed position of the panel title, so that it is displayed again.
+
 2000-04-29 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSFont.m: ([-initWithCoder:]) corrected retain/release error.
@@ -154,6 +159,7 @@
 	the other documentation files.
 
 2000-04-08  James Dessart <skwirl@cam.org>
+
 	* Documentation/gsdoc/NSSlider.gsdoc: Made corrections to class description
 	* Documentation/gsdoc/NSSliderCell.gsdoc: Basic documentation (added in mid-March)
 	* Documentation/gsdoc/NSView.gsdoc: Start of basic documentation
