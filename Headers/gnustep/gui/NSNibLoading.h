@@ -30,6 +30,8 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSGeometry.h>
 
 @class	NSString;
 @class	NSDictionary;

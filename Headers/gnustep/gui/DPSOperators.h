@@ -668,6 +668,17 @@ DPSviewclippath(GSCTXT *ctxt)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* System ops */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSrestore(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSsave(GSCTXT *ctxt)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -2177,6 +2188,23 @@ DPScurrentalpha(GSCTXT *ctxt, float *a)
 {
   (ctxt->methods->DPScurrentalpha_)
     (ctxt, @selector(DPScurrentalpha:), a);
+}
+
+/* ----------------------------------------------------------------------- */
+/* System ops */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSrestore(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSrestore)
+    (ctxt, @selector(DPSrestore));
+}
+
+static inline void
+DPSsave(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSsave)
+    (ctxt, @selector(DPSsave));
 }
 
 /* ----------------------------------------------------------------------- */

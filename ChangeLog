@@ -1,3 +1,29 @@
+2001-09-02  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-lockFocusInRect:) Properly mark the save object.
+	Do a rectviewclip in (sortof) the right place.
+
+2001-08-31  Georg Fleischmann
+
+	* Source/NSView.m
+	[NSView lockFocusInRect:]: DPSsave(ctxt) added
+	[NSView unlockFocusWithFlush:]: DPSrestore(ctxt) added
+
+	* Headers/gnustep/gui/DPSOperators.h
+	DPSrestore() and DPSsave(): new
+
+	* Headers/gnustep/gui/GSMethodTable.h
+	DPSrestore and DPSsave added
+
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	-DPSrestore and -DPSsave added
+
+	* Source/NSGraphicsContext.m
+	[NSGraphicContext _inittializeMethodTable]:
+	DPSrestore and DPSsave added
+	[NSGraphicsContext DPSrestore]: new
+	[NSGraphicsContext DPSsave]: new
+
 2001-09-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m ([NSImage -initWithCoder:]): Create _reps array

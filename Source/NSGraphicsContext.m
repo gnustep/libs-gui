@@ -731,6 +731,13 @@ NSGraphicsContext	*GSCurrentContext()
   methodTable.DPSviewclippath =
     GET_IMP(@selector(DPSviewclippath));
 /* ----------------------------------------------------------------------- */
+/* System system ops */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPSrestore =
+    GET_IMP(@selector(DPSrestore));
+  methodTable.DPSsave =
+    GET_IMP(@selector(DPSsave));
+/* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
   methodTable.DPScurrentdrawingfunction_ =
@@ -1794,6 +1801,20 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPSviewclippath 
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* System ops */
+/* ----------------------------------------------------------------------- */
+
+- (void) DPSrestore
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsave
 {
   [self subclassResponsibility: _cmd];
 }

@@ -366,6 +366,13 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsetbbox: (float)llx : (float)lly : (float)urx : (float)ury ;
 - (void) DPSviewclip;
 - (void) DPSviewclippath;
+
+/* ----------------------------------------------------------------------- */
+/* System system ops */
+/* ----------------------------------------------------------------------- */
+- (void) DPSrestore ;
+- (void) DPSsave ;
+
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */

@@ -369,6 +369,14 @@ typedef struct {
   void (*DPSviewclippath)
 	(NSGraphicsContext*, SEL);
 /* ----------------------------------------------------------------------- */
+/* System ops */
+/* ----------------------------------------------------------------------- */
+  void (*DPSrestore)
+	(NSGraphicsContext*, SEL);
+  void (*DPSsave)
+	(NSGraphicsContext*, SEL);
+
+/* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
   void (*DPScurrentdrawingfunction_)
