@@ -812,18 +812,23 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /* Text operations */
 /* ----------------------------------------------------------------------- */
-/** Displays a string as in the PostScript ashow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto:: operations and/or the -GSSetCharacterSpacing: method 
+
+/** Displays a string as in DPSshow, except that (x,y) is added to
+    the advancement of every glyph.  An alternative means of achieving
+    the same effect is to use the -GSSetCharacterSpacing: method.  Either
+    approach should be more efficient that using -DPSshow: with appropriate
+    -DPSrmoveto:: operations.
 */
 - (void) DPSashow: (float)x : (float)y : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Displays a string as in the PostScript awidthshow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto:: operations and/or the -GSSetCharacterSpacing: method 
+/** Displays a string as in a combination of DPSashow and DPSwidthshow:
+    (ax,ay) is added to the advancement of every glyph, while (cx,cy) is
+    also added to the advancement for character c's glyph specifically.
+    Using this method should be more efficient that using -DPSshow:
+    with appropriate -DPSrmoveto:: operations.
 */
 - (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char *)s 
 {
@@ -844,17 +849,23 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Displays a string as in the PostScript widthshow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto:: operations.
+/** Displays a string as in DPSshow, except that, for character c only,
+    the glpyh x and y advancement is determined by the values (x,y),
+    instead of by the glyph itself.  This is often used to adjust the
+    length of a line of text by changing the width of the space character.
+    Using this method should be more efficient than using -DPSshow:
+    with appropriate -DPSrmoveto:: operations.
 */
 - (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char *)s 
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Displays a string as in the PostScript widthshow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
+/** Displays a string as in DPSshow, except that the glyph x
+    advancement is determined by the values in numarray, one for
+    each glyph, instead of by the glyphs themselves.  size
+    should be equal to the length of s in glyphs.  Using this method
+    should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
 - (void) DPSxshow: (const char *)s : (const float*)numarray : (int)size 
@@ -862,8 +873,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Displays a string as in the PostScript xyshow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
+/** Displays a string as in DPSshow, except that the glyph x and y
+    advancement is determined by the values in numarray, one x and one y
+    for each glyph, in alternating order, instead of by the glyphs themselves.
+    size should be equal to the length of s in glyphs.  Using this method
+    should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
 - (void) DPSxyshow: (const char *)s : (const float*)numarray : (int)size 
@@ -871,8 +885,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Displays a string as in the PostScript yshow operator. This operator
-    is obsolete. You should instead use -DPSshow: with appropriate
+/** Displays a string as in DPSshow, except that the glyph y
+    advancement is determined by the values in numarray, one for
+    each glyph, instead of by the glyphs themselves.  size
+    should be equal to the length of s in glyphs.  Using this method
+    should be more efficient than using -DPSshow: with appropriate
     -DPSrmoveto:: operations.
 */
 - (void) DPSyshow: (const char *)s : (const float*)numarray : (int)size 

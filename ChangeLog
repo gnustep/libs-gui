@@ -1,3 +1,8 @@
+2005-03-29 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSGraphicsContext.m: Undeprecate DPSxshow, DPSyshow,
+	DPSxyshow, DPSashow, DPSwidthshow, and DPSawidthshow.
+
 2005-03-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDragView.m:
