@@ -890,28 +890,56 @@ documentAttributes: (NSDictionary **)dict
       NSRange		found;
       unsigned		end;
 
-      // Extend loc to take in entire paragraph if necessary.
+      /* Extend loc to take in entire paragraph if necessary.  */
       r = [str lineRangeForRange: NSMakeRange (loc, 1)];
       end = NSMaxRange (r);
 
-      // get the style in effect at the paragraph start.
+      /* Get the style in effect at the paragraph start.  */
       style = [self attribute: NSParagraphStyleAttributeName
 		    atIndex: r.location
 		    longestEffectiveRange: &found
 		    inRange: r];
-      
-      if (style != nil && NSMaxRange (found) < end)
-        {
-	  // Styles differ - add the old style to the remainder of the range.
-	  found.location = NSMaxRange (found);
-	  found.length = end - found.location;
-	  [self addAttribute: NSParagraphStyleAttributeName
-		value: style
-		range: found];
-	  loc = end;
+      if (style == nil)
+	{
+	  /* No style found at the beginning of paragraph.  found is
+             the range without the style set.  */
+	  if ((NSMaxRange (found) + 1) < end)
+	    {
+	      /* This skips the range with style not set, and attempts
+		 again to set the style for the whole paragraph taking
+		 the style at the first location with a style set.  */
+	      loc = NSMaxRange (found) + 1;
+	    }
+	  else
+	    {
+	      /* All the paragraph without a style ... too bad, fixup
+		 the whole paragraph using the default paragraph style.  */
+	      [self addAttribute: NSParagraphStyleAttributeName
+		    value: [NSParagraphStyle defaultParagraphStyle]
+		    range: r];
+
+	      /* Move on to the next paragraph.  */
+	      loc = end;	      
+	    }
 	}
       else
-	loc = NSMaxRange (found);
+	{
+	  if (NSMaxRange (found) < end)
+	    {
+	      /* Not the whole paragraph has the same style ... add
+		 the style found at the beginning to the remainder of
+		 the paragraph.  */
+	      found.location = NSMaxRange (found);
+	      found.length = end - found.location;
+	      [self addAttribute: NSParagraphStyleAttributeName
+		    value: style
+		    range: found];
+	    }
+
+	  /* Move on to the next paragraph.  */
+	  loc = end;
+	}
+      
     }
 }
 
