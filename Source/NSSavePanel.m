@@ -1022,8 +1022,8 @@ selectCellWithString: (NSString*)title
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
 {
-  NSString              *path, *file, *pathAndFile, *extension, *h; 
-  NSArray               *files, *hiddenFiles;
+  NSString              *path, *file, *pathAndFile, *extension; 
+  NSArray               *files;
   unsigned	         i, count, addedRows; 
   BOOL		         exists, isDir;
   NSBrowserCell         *cell;
@@ -1040,16 +1040,64 @@ createRowsForColumn: (int)column
   path = [_browser pathToColumn: column];
   files = [[NSFileManager defaultManager] directoryContentsAtPath: path];
 
-  // Remove hidden files
-  h = [path stringByAppendingPathComponent: @".hidden"];
-  h = [NSString stringWithContentsOfFile: h];
-  hiddenFiles = [h componentsSeparatedByString: @"\n"];
-  if (hiddenFiles)
-    [(NSMutableArray*)files removeObjectsInArray: hiddenFiles];
+  /* Remove hidden files.  */
+  {
+    NSString *h;
+    NSArray *hiddenFiles;
+    BOOL gsSavePanelHideDotFiles;
+
+    /* We need to remove files listed in the xxx/.hidden file.  */
+    h = [path stringByAppendingPathComponent: @".hidden"];
+    h = [NSString stringWithContentsOfFile: h];
+    hiddenFiles = [h componentsSeparatedByString: @"\n"];
+
+    /* We need to remove files starting with `.' (dot), but only if
+       the user asked for it in the defaults.  Perhaps we could add a
+       button turning on/off display of hidden files ?  */    
+    gsSavePanelHideDotFiles = [[NSUserDefaults standardUserDefaults]
+				boolForKey: @"GSSavePanelHideDotFiles"];
+    
+    /* Now copy the files array into a mutable array - but only if
+       strictly needed.  */
+    if (hiddenFiles != nil  ||  gsSavePanelHideDotFiles)
+      {
+	/* We must make a mutable copy of the array because the API
+	   says that NSFileManager -directoryContentsAtPath: return a
+	   NSArray, not a NSMutableArray, so we shouldn't expect it to
+	   be mutable.  */
+	NSMutableArray *mutableFiles = AUTORELEASE ([files mutableCopy]);
+	
+	/* Ok - now modify the mutable array removing unwanted files.  */
+	if (hiddenFiles != nil)
+	  {
+	    [mutableFiles removeObjectsInArray: hiddenFiles];
+	  }
   
+	if (gsSavePanelHideDotFiles)
+	  {
+	    /* Don't use i which is unsigned.  */
+	    int j = [mutableFiles count] - 1;
+	    
+	    while (j >= 0)
+	      {
+		NSString *file = (NSString *)[mutableFiles objectAtIndex: j];
+
+		if ([file hasPrefix: @"."])
+		  {
+		    /* NSLog (@"Removing dot file %@", file); */
+		    [mutableFiles removeObjectAtIndex: j];
+		  }
+		j--;
+	      }
+	  }
+	
+	files = mutableFiles;
+      }
+  }
+
   count = [files count];
 
-  // if array is empty, just return (nothing to display)
+  /* If array is empty, just return (nothing to display).  */
   if (count == 0)
     {
       RELEASE (pool);
@@ -1074,6 +1122,7 @@ createRowsForColumn: (int)column
     {
       int compare(id elem1, id elem2, void *context)
       {
+	/* TODO - use IMP optimization here.  */
 	return (int)[_delegate panel: self
 		     compareFilename: elem1
 				with: elem2
@@ -1119,7 +1168,7 @@ createRowsForColumn: (int)column
 	{
 	  if (addedRows == 0)
 	    {
-	      [matrix addColumn];	      
+	      [matrix addColumn];
 	    }
 	  else // addedRows > 0
 	    {
