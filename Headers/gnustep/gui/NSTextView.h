@@ -38,6 +38,7 @@
 #include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSInputManager.h>
 
+@class NSTimer;
 @class NSTextContainer;
 @class NSTextStorage;
 @class NSLayoutManager;
