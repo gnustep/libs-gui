@@ -35,12 +35,14 @@
 
 @interface NSSplitView : NSView
 {
-  id	delegate;
-  int dividerWidth, draggedBarWidth;
-  id splitCursor;
-  BOOL isVertical;
-  NSImage *dimpleImage;
-  NSColor *backgroundColor, *dividerColor;
+  id	   _delegate;
+  float    _dividerWidth;
+  float    _draggedBarWidth;
+  id       _splitCursor;
+  BOOL     _isVertical;
+  NSImage *_dimpleImage;
+  NSColor *_backgroundColor; 
+  NSColor *_dividerColor;
 }
 
 - (void) setDelegate: (id)anObject;
@@ -53,7 +55,6 @@
 
 /* extra methods to make it more usable */
 - (float) dividerThickness;  //defaults to 8
-- (void) setDividerThickNess: (float)newWidth;
 - (float) draggedBarWidth;
 - (void) setDraggedBarWidth: (float)newWidth;
 /* if flag is yes, dividerThickness is reset to the height/width of the dimple
@@ -69,8 +70,14 @@
 @end
 
 @interface NSObject(NSSplitViewDelegate)
-- (void) splitView: (NSSplitView *)sender resizeSubviewsWithOldSize: (NSSize)oldSize;
-- (void) splitView: (NSSplitView *)sender constrainMinCoordinate: (float *)min maxCoordinate: (float *)max ofSubviewAt: (int)offset;
+- (void) splitView: (NSSplitView *)sender 
+resizeSubviewsWithOldSize: (NSSize)oldSize;
+
+- (void) splitView: (NSSplitView *)sender 
+constrainMinCoordinate: (float *)min 
+     maxCoordinate: (float *)max 
+       ofSubviewAt: (int)offset;
+
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
 @end
