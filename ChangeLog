@@ -1,3 +1,8 @@
+Fri Sep  1 22:34:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSBrowser.m ([-_performLoadOfColumn:]): Fixed 
+	memory leak.
+
 Fri Sep  1 13:02:45 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-textDidEndEditing:]): Implemented Tab,
