@@ -94,10 +94,10 @@ static float default_miter_limit = 10.0;
 
 + (id)bezierPath
 {
-  return [[NSBezierPath_concrete_class alloc] init];
+  return AUTORELEASE ([[NSBezierPath_concrete_class alloc] init]);
 }
 
-+ (NSBezierPath *)bezierPathWithRect:(NSRect)aRect
++ (NSBezierPath *)bezierPathWithRect: (NSRect)aRect
 {
   NSBezierPath *path;
   NSPoint p;
@@ -118,7 +118,7 @@ static float default_miter_limit = 10.0;
   return path;
 }
 
-+ (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)rect
++ (NSBezierPath *)bezierPathWithOvalInRect: (NSRect)rect
 {
   NSBezierPath *path;
   NSPoint p, p1, p2;
@@ -159,22 +159,22 @@ static float default_miter_limit = 10.0;
 //
 // Immediate mode drawing of common paths
 //
-+ (void)fillRect:(NSRect)aRect
++ (void)fillRect: (NSRect)aRect
 {
   PSrectfill(NSMinX(aRect), NSMinY(aRect), NSWidth(aRect),  NSHeight(aRect));
 }
 
-+ (void)strokeRect:(NSRect)aRect
++ (void)strokeRect: (NSRect)aRect
 {
   PSrectstroke(NSMinX(aRect), NSMinY(aRect), NSWidth(aRect),  NSHeight(aRect));
 }
 
-+ (void)clipRect:(NSRect)aRect
++ (void)clipRect: (NSRect)aRect
 {
   PSrectclip(NSMinX(aRect), NSMinY(aRect), NSWidth(aRect),  NSHeight(aRect));
 }
 
-+ (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2
++ (void)strokeLineFromPoint: (NSPoint)point1  toPoint: (NSPoint)point2
 {
   NSBezierPath *path = [NSBezierPath bezierPath];
   
@@ -183,7 +183,7 @@ static float default_miter_limit = 10.0;
   [path stroke];
 }
 
-+ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)aPoint
++ (void)drawPackedGlyphs: (const char *)packedGlyphs  atPoint: (NSPoint)aPoint
 {
   NSBezierPath *path = [NSBezierPath bezierPath];
   
