@@ -1,3 +1,9 @@
+2000-05-12 Georg Fleischmann
+
+        * gui/Model/GMAppKit.m
+        ([NSScrollView(GMArchiverMethods) -initWithModelUnarchiver:]):
+        move unarchiving of backgroundColor behind documentView
+
 2000-05-20  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSText.h:

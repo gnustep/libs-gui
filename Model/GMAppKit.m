@@ -489,8 +489,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   [self setContentView: AUTORELEASE([NSClipView new])];
 
-  [self setBackgroundColor:
-    [unarchiver decodeObjectWithName: @"backgroundColor"]];
   [self setBorderType:
     [unarchiver decodeIntWithName: @"borderType"]];
   [self setHasHorizontalScroller:
@@ -499,6 +497,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     [unarchiver decodeBOOLWithName: @"hasVerticalScroller"]];
   [self setDocumentView:
     [unarchiver decodeObjectWithName: @"documentView"]];
+  [self setBackgroundColor:
+    [unarchiver decodeObjectWithName: @"backgroundColor"]];
 
   return self;
 }
