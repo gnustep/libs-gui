@@ -1206,7 +1206,6 @@ static NSRecursiveLock	*windowsLock;
 	{
 	  GSTrackingRect	*rects[count];
 	  NSPoint		loc = [theEvent locationInWindow];
-	  BOOL		flipped = ((NSViewPtr)theView)->_rFlags.flipped_view;
 	  unsigned		i;
 
 	  [tr getObjects: rects];
@@ -1218,9 +1217,9 @@ static NSRecursiveLock	*windowsLock;
 	      GSTrackingRect	*r = rects[i];
 
 	      /* Check mouse at last point */
-	      last = NSMouseInRect(last_point, r->rectangle, flipped);
+	      last = NSMouseInRect(last_point, r->rectangle, NO);
 	      /* Check mouse at current point */
-	      now = NSMouseInRect(loc, r->rectangle, flipped);
+	      now = NSMouseInRect(loc, r->rectangle, NO);
 
 	      if ((!last) && (now))		// Mouse entered event
 		{
@@ -1297,22 +1296,15 @@ static NSRecursiveLock	*windowsLock;
 	  NSPoint		loc = [theEvent locationInWindow];
 	  NSPoint		lastConv;
 	  NSPoint		locConv;
-	  BOOL		flipped = ((NSViewPtr)theView)->_rFlags.flipped_view;
 	  unsigned		i;
-
-	  /*
-	   * Convert points from window to view coordinates.
-	   */
-	  lastConv = [theView convertPoint: last_point fromView: nil];
-	  locConv = [theView convertPoint: loc fromView: nil];
 
 	  [tr getObjects: rects];
 
 	  for (i = 0; i < count; ++i)
 	    {
 	      GSTrackingRect	*r = rects[i];
-	      BOOL			last;
-	      BOOL			now;
+	      BOOL		last;
+	      BOOL		now;
 
 	      if ([r isValid] == NO)
 		continue;
@@ -1320,8 +1312,8 @@ static NSRecursiveLock	*windowsLock;
 	      /*
 	       * Check for presence of point in rectangle.
 	       */
-	      last = NSMouseInRect(lastConv, r->rectangle, flipped);
-	      now = NSMouseInRect(locConv, r->rectangle, flipped);
+	      last = NSMouseInRect(lastConv, r->rectangle, NO);
+	      now = NSMouseInRect(locConv, r->rectangle, NO);
 
 	      // Mouse entered
 	      if ((!last) && (now))

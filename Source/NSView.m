@@ -1754,6 +1754,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   GSTrackingRect	*m;
 
+  aRect = [self convertRect: aRect toView: nil];
   m = [rectClass allocWithZone: NSDefaultMallocZone()];
   m = [m initWithRect: aRect
 		  tag: 0
@@ -1991,8 +1992,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 			     userData: (void*)data
 			 assumeInside: (BOOL)flag
 {
-  NSTrackingRectTag t;
-  unsigned i, j;
+  NSTrackingRectTag	t;
+  unsigned		i, j;
   GSTrackingRect	*m;
 
   t = 0;
@@ -2005,6 +2006,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   ++t;
 
+  aRect = [self convertRect: aRect toView: nil];
   m = [[rectClass alloc] initWithRect: aRect
 				  tag: t
 				owner: anObject

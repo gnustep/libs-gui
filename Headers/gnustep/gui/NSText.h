@@ -36,7 +36,6 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
 #include <Foundation/NSRange.h>
-#include <AppKit/NSStringDrawing.h>
 
 @class NSString;
 @class NSData;
@@ -44,7 +43,6 @@
 @class NSColor;
 @class NSFont;
 
-#if GNUSTEP
 typedef enum _NSTextAlignment {
 	NSLeftTextAlignment,
 	NSRightTextAlignment,
@@ -63,7 +61,8 @@ enum {
 	NSUpTextMovement	 = 0x15,
 	NSDownTextMovement	 = 0x16
 };	 	
-#endif
+
+#include <AppKit/NSStringDrawing.h>
 
 // these definitions should migrate to NSTextView when implemented
 
