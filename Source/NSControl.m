@@ -181,56 +181,76 @@ static Class actionCellClass;
 - (void) setDoubleValue: (double)aDouble
 {
   NSCell *selected = [self selectedCell];
-
-  [self abortEditing];
+  BOOL wasEditing = [self abortEditing];
 
   [selected setDoubleValue: aDouble];
   if (![selected isKindOfClass: actionCellClass])
     [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
 }
 
 - (void) setFloatValue: (float)aFloat
 {
   NSCell *selected = [self selectedCell];
-
-  [self abortEditing];
+  BOOL wasEditing = [self abortEditing];
 
   [selected setFloatValue: aFloat];
   if (![selected isKindOfClass: actionCellClass])
     [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
 }
 
 - (void) setIntValue: (int)anInt
 {
   NSCell *selected = [self selectedCell];
-
-  [self abortEditing];
+  BOOL wasEditing = [self abortEditing];
 
   [selected setIntValue: anInt];
   if (![selected isKindOfClass: actionCellClass])
     [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
 }
 
 - (void) setStringValue: (NSString *)aString
 {
   NSCell *selected = [self selectedCell];
-
-  [self abortEditing];
+  BOOL wasEditing = [self abortEditing];
 
   [selected setStringValue: aString];
   if (![selected isKindOfClass: actionCellClass])
     [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
 }
 
 - (void) setObjectValue: (id)anObject
 {
   NSCell *selected = [self selectedCell];
-
-  [self abortEditing];
+  BOOL wasEditing = [self abortEditing];
 
   [selected setObjectValue: anObject];
   if (![selected isKindOfClass: actionCellClass])
     [self setNeedsDisplay: YES];
+
+  if (wasEditing)
+    {
+      [[self window] makeFirstResponder: self];
+    }
 }
 
 - (void) setNeedsDisplay
@@ -354,7 +374,6 @@ static Class actionCellClass;
       return NO;
     }
 
-  [t setString: @""];
   [[self selectedCell] endEditing: t];
   return YES;
 }

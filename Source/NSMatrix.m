@@ -3442,7 +3442,6 @@ static SEL getSel;
 {
   if (_textObject)
     {
-      [_textObject setString: @""];
       [_selectedCell endEditing: _textObject];
       _textObject = nil;
       return YES;

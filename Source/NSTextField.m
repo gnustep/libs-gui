@@ -371,7 +371,6 @@ static Class textFieldCellClass;
 {
   if (_text_object)
     {
-      [_text_object setString: @""];
       [_cell endEditing: _text_object];
       _text_object = nil;
       return YES;
@@ -388,7 +387,7 @@ static Class textFieldCellClass;
     return nil;
 }
 
-- (void) validateEditing 
+- (void) validateEditing
 {
   if (_text_object)
     {

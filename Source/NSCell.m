@@ -870,6 +870,7 @@ static NSColor	*shadowCol;
 
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
+  [textObject setString: @""];
   [textObject setTextColor: [self textColor]];
   if (_cell.contents_is_attributed_string == NO)
     {

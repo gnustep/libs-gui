@@ -3099,7 +3099,6 @@ byExtendingSelection: (BOOL)flag
 { 
   if (_textObject)
     {
-      [_textObject setString: @""];
       [_editedCell endEditing: _textObject];
       RELEASE (_editedCell);
       [self setNeedsDisplayInRect: 

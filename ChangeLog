@@ -1,3 +1,17 @@
+2005-01-18 16:53  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSCell.m (-setUpFieldEditorAttributes:): Clear the
+	text object's string.
+	* Source/NSControl.m (-setDoubleValue:, -setFloatValue:)
+	(-setIntValue:, -setStringValue:, -setObjectValue:): If the receiver
+	was being edited when the method was called, make it the first
+	responder after changing the value.
+	(-abortEditing): Don't clear the text object's string.
+	* Source/NSMatrix.m (-abortEditing): Don't clear the text object's
+	string.
+	* Source/NSTableView.m (-abortEditing): Ditto.
+	* Source/NSTextField.m (-abortEditing): Ditto.
+
 2005-01-18 16:39  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSBitmapImageRep.m
