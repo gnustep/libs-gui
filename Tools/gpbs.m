@@ -57,6 +57,15 @@ initialize_gnustep_backend(void)
   return YES;
 }
 
+@interface	GMModel: NSObject
+{
+}
+@end
+
+@implementation	GMModel
+@end
+
+
 @class PasteboardServer;
 
 int	debug = 0;

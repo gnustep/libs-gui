@@ -4,6 +4,21 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <AppKit/NSPasteboard.h>
 
+BOOL
+initialize_gnustep_backend(void)
+{
+  /* Dummy replacement for the xdps function */
+  return YES;
+}
+
+@interface	GMModel: NSObject
+{
+}
+@end
+
+@implementation	GMModel
+@end
+
 @interface	pbOwner : NSObject
 {
 }
