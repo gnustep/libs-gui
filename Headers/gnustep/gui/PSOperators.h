@@ -26,7 +26,11 @@
 
 #include <AppKit/DPSOperators.h>
 
+#ifndef NO_GNUSTEP
+#define	DEFCTXT	GSCurrentContext()
+#else
 #define	DEFCTXT	[NSGraphicsContext currentContext]
+#endif
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
