@@ -1,5 +1,6 @@
 Mon Mar  1 20:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	Removed PSMatrix - replaced by NSAffineTransform
 	* Headers/AppKit/NSAffineTransform.h: New file based on PSMatrix.h
 	* Source/NSAffineTransform.m: New file based on PSMatrix.m
 	* Source/NSView.m: Modified to use NSAffineTransformAffineTransform
