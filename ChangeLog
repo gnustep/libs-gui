@@ -1,3 +1,9 @@
+Tue Feb 26 19:08:38 2002  Nicola Pero <nicola@brainstorm.co.uk>
+
+	Patch by Michael Hanni <mhanni@yahoo.com> modified - 
+	* Source/NSTabView.m ([-selectTabViewItem:]): Set the frame of the
+	new selected view to content rect.
+
 Tue Feb 26 18:26:53 2002  Nicola Pero <nicola@brainstorm.co.uk>
 
 	Patch from Alexander Malmberg <alexander@malmberg.org>:
