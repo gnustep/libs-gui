@@ -93,7 +93,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
 @end
 
 @interface GSFontInfo (Backend)
--initWithFontName: (NSString *)fontName matrix: (const float *)fmatrix;
+-initWithFontName: (NSString *)fontName
+	   matrix: (const float *)fmatrix
+       screenFont: (BOOL)screenFont;
 @end
 
 @implementation GSFontInfo
@@ -104,10 +106,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)nfontName 
-                             matrix: (const float *)fmatrix;
+                             matrix: (const float *)fmatrix
+			 screenFont: (BOOL)screenFont;
 {
   return AUTORELEASE([[fontInfoClass alloc] initWithFontName: nfontName 
-						      matrix: fmatrix]);
+						      matrix: fmatrix
+						  screenFont: screenFont]);
 }
 
 + (int) weightForString: (NSString *)weightString

@@ -65,6 +65,7 @@ APPKIT_EXPORT const float*NSFontIdentityMatrix;
   NSString *fontName;
   float matrix[6];
   BOOL matrixExplicitlySet;
+  BOOL screenFont;
 
   id fontInfo;
   void *_fontRef;

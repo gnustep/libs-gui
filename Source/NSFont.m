@@ -52,7 +52,8 @@ static NSFont	*placeHolder = nil;
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
 	     matrix: (const float*)fontMatrix
-	        fix: (BOOL)explicitlySet;
+	        fix: (BOOL)explicitlySet
+	 screenFont: (BOOL)screenFont;
 @end
 
 static int currentVersion = 2;
@@ -61,14 +62,16 @@ static int currentVersion = 2;
  * Just to ensure that we use a standard name in the cache.
  */
 static NSString*
-newNameWithMatrix(NSString *name, const float *matrix, BOOL fix)
+newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
+		  BOOL screenFont)
 {
   NSString	*nameWithMatrix;
 
   nameWithMatrix = [[NSString alloc] initWithFormat:
-    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c", name,
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %c", name,
     matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
-    (fix == NO) ? 'N' : 'Y'];
+    (fix == NO) ? 'N' : 'Y',
+    screenFont ? 'S' : 'P'];
   return nameWithMatrix;
 }
 
@@ -555,7 +558,10 @@ setNSFont(NSString* key, NSFont* font)
   else
     fix = YES;
 
-  font = [placeHolder initWithName: aFontName matrix: fontMatrix fix: fix];
+  font = [placeHolder initWithName: aFontName
+			    matrix: fontMatrix
+			       fix: fix
+			screenFont: NO];
 
   return AUTORELEASE(font);
 }
@@ -582,7 +588,10 @@ setNSFont(NSString* key, NSFont* font)
   fontMatrix[0] = fontSize;
   fontMatrix[3] = fontSize;
 
-  font = [placeHolder initWithName: aFontName matrix: fontMatrix fix: NO];
+  font = [placeHolder initWithName: aFontName
+			    matrix: fontMatrix
+			       fix: NO
+			screenFont: NO];
   return AUTORELEASE(font);
 }
 
@@ -612,6 +621,7 @@ setNSFont(NSString* key, NSFont* font)
 - (id) initWithName: (NSString*)name
 	     matrix: (const float*)fontMatrix
 		fix: (BOOL)explicitlySet
+	 screenFont: (BOOL)screen;
 {
   NSString	*nameWithMatrix;
   NSFont	*font;
@@ -620,7 +630,8 @@ setNSFont(NSString* key, NSFont* font)
   NSAssert(fontName == nil, NSInternalInconsistencyException);
 
   /* Check whether the font is cached */
-  nameWithMatrix = newNameWithMatrix(name, fontMatrix, explicitlySet);
+  nameWithMatrix = newNameWithMatrix(name, fontMatrix, explicitlySet,
+				     screen);
   font = (id)NSMapGet(globalFontMap, (void*)nameWithMatrix);
   if (font == nil)
     {
@@ -636,8 +647,10 @@ setNSFont(NSString* key, NSFont* font)
       fontName = [name copy];
       memcpy(matrix, fontMatrix, sizeof(matrix));
       matrixExplicitlySet = explicitlySet;
+      screenFont = screen;
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
-						 matrix: fontMatrix]);
+						 matrix: fontMatrix
+					     screenFont: screen]);
       if (fontInfo == nil)
 	{
 	  RELEASE (self);
@@ -666,7 +679,8 @@ setNSFont(NSString* key, NSFont* font)
     {
       NSString	*nameWithMatrix;
 
-      nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet);
+      nameWithMatrix = newNameWithMatrix(fontName, matrix,
+					 matrixExplicitlySet, screenFont);
       NSMapRemove(globalFontMap, (void*)nameWithMatrix);
       RELEASE(nameWithMatrix);
       RELEASE(fontName);
@@ -680,7 +694,8 @@ setNSFont(NSString* key, NSFont* font)
   NSString	*nameWithMatrix;
   NSString	*description;
 
-  nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet);
+  nameWithMatrix = newNameWithMatrix(fontName, matrix, matrixExplicitlySet,
+				     screenFont);
   description = [[super description] stringByAppendingFormat: @" %@",
     nameWithMatrix];
   RELEASE(nameWithMatrix);
@@ -768,8 +783,26 @@ setNSFont(NSString* key, NSFont* font)
 
 - (NSDictionary*) afmDictionary	{ return [fontInfo afmDictionary]; }
 - (NSString*) afmFileContents	{ return [fontInfo afmFileContents]; }
-- (NSFont*) printerFont		{ return self; }
-- (NSFont*) screenFont		{ return self; }
+
+- (NSFont*) printerFont
+{
+  if (!screenFont)
+    return self;
+  return [placeHolder initWithName: fontName
+			    matrix: matrix
+			       fix: matrixExplicitlySet
+			screenFont: NO];
+}
+- (NSFont*) screenFont
+{
+  if (screenFont)
+    return self;
+  return [placeHolder initWithName: fontName
+			    matrix: matrix
+			       fix: matrixExplicitlySet
+			screenFont: YES];
+}
+
 - (float) ascender		{ return [fontInfo ascender]; }
 - (float) descender		{ return [fontInfo descender]; }
 - (float) capHeight		{ return [fontInfo capHeight]; }
@@ -934,7 +967,10 @@ setNSFont(NSString* key, NSFont* font)
 	fix = YES;
     }
 
-  self = [self initWithName: name  matrix: fontMatrix fix: fix];
+  self = [self initWithName: name
+		     matrix: fontMatrix
+			fix: fix
+		 screenFont: NO];
   return self;
 }
 

@@ -1,3 +1,9 @@
+2002-11-26 12:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSFontInfo.h, Headers/gnustep/gui/NSFont.h,
+	Source/GSFontInfo.m, Source/NSFont.m: Add proper handling of
+	screen/printer fonts. Changes the backend GSFontInfo interface.
+
 2002-11-24 20:58  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSMenu.h: Declare NSMutableArray.
