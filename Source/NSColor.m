@@ -34,6 +34,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSColor.h>
 #include <AppKit/NSColorList.h>

@@ -39,7 +39,7 @@ AC_PROG_CPP
 AC_CANONICAL_SYSTEM
 
 AC_CHECK_LIB(m, main)
-AC_CHECK_FUNCS(rintf)
+AC_CHECK_FUNCS(rint rintf)
 
 #--------------------------------------------------------------------
 # Find for JPEG

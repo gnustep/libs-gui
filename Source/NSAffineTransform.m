@@ -429,7 +429,7 @@ static NSAffineTransformStruct identityTransform = {
   if (rotationAngle < 0)
     {
       rotationAngle = atan2(matrix.m21, matrix.m11);
-      rotationAngle *= 180.0 / M_PI;
+      rotationAngle *= 180.0 / pi;
     }
   return rotationAngle;
 }

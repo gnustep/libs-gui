@@ -245,10 +245,10 @@ objectValueForTableColumn: (NSTableColumn *)aTableColumn
 
 @end
 
-extern NSString *NSTableViewColumnDidMoveNotification;
-extern NSString *NSTableViewColumnDidResizeNotification;
-extern NSString *NSTableViewSelectionDidChangeNotification;
-extern NSString *NSTableViewSelectionIsChangingNotification;
+APPKIT_EXPORT NSString *NSTableViewColumnDidMoveNotification;
+APPKIT_EXPORT NSString *NSTableViewColumnDidResizeNotification;
+APPKIT_EXPORT NSString *NSTableViewSelectionDidChangeNotification;
+APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
 
 /*
  * Methods Implemented by the Delegate

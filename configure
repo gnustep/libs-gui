@@ -993,7 +993,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
-for ac_func in rintf
+for ac_func in rint rintf
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:1000: checking for $ac_func" >&5

@@ -88,3 +88,11 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers
 # all the libraries the target library depends upon.
 
 LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) $(ADDITIONAL_DEPENDS)
+
+ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+libgnustep-gui_LIBRARIES_DEPEND_UPON += -lobjc
+endif
+ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+libgnustep-gui_LIBRARIES_DEPEND_UPON += -lobjc
+endif
+

@@ -45,6 +45,7 @@
 #include <Foundation/NSNotificationQueue.h>
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
+#include <Foundation/NSDebug.h>
 
 #define stringify_it(X) #X
 #define	mkpath(X) stringify_it(X) "/Tools"

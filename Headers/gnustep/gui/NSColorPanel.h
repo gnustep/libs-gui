@@ -128,6 +128,6 @@ enum {
 @end
 
 /* Notifications */
-extern NSString *NSColorPanelColorChangedNotification;
+APPKIT_EXPORT NSString *NSColorPanelColorChangedNotification;
 
 #endif // _GNUstep_H_NSColorPanel

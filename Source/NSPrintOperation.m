@@ -42,6 +42,8 @@
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
 
+#include <gnustep/base/GSLocale.h>
+
 @interface NSGraphicsContext (Printing)
 
 + (NSGraphicsContext*) postscriptContextWithInfo: (NSDictionary*)info;

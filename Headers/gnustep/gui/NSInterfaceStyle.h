@@ -29,6 +29,8 @@
 #ifndef _GNUstep_H_NSInterfaceStyle
 #define _GNUstep_H_NSInterfaceStyle
 
+#include <AppKit/AppKitDefines.h>
+
 @class NSResponder;
 @class NSString;
 
@@ -46,11 +48,10 @@ typedef	enum {
 
 } NSInterfaceStyle;
 
-extern	NSString	*NSInterfaceStyleDefault;
+APPKIT_EXPORT NSString	*NSInterfaceStyleDefault;
 
-extern	NSInterfaceStyle
+APPKIT_EXPORT NSInterfaceStyle
 NSInterfaceStyleForKey(NSString *key, NSResponder *responder);
-
 
 #endif // _GNUstep_H_NSInterfaceStyle
 #endif // STRICT_OPENSTEP

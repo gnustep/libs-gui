@@ -294,9 +294,9 @@ enum {
 @end
 
 /* Notifications */
-extern NSString *NSTextDidBeginEditingNotification;
-extern NSString *NSTextDidEndEditingNotification;
-extern NSString *NSTextDidChangeNotification;
+APPKIT_EXPORT NSString *NSTextDidBeginEditingNotification;
+APPKIT_EXPORT NSString *NSTextDidEndEditingNotification;
+APPKIT_EXPORT NSString *NSTextDidChangeNotification;
 
 @interface NSObject (NSTextDelegate)
 - (BOOL) textShouldBeginEditing: (NSText*)textObject; /* YES means do it */

@@ -378,6 +378,7 @@ readNSString (StringContext *ctxt)
 
 @end
 
+#undef IGNORE
 #define	FONTS	((RTFConsumer *)ctxt)->fonts
 #define	COLOURS	((RTFConsumer *)ctxt)->colours
 #define	RESULT	((RTFConsumer *)ctxt)->result

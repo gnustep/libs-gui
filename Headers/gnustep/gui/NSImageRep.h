@@ -31,6 +31,7 @@
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -117,6 +118,6 @@ enum {
 
 @end
 
-extern NSString *NSImageRepRegistryChangedNotification;
+APPKIT_EXPORT NSString *NSImageRepRegistryChangedNotification;
 
 #endif // _GNUstep_H_NSImageRep

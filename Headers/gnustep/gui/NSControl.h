@@ -170,9 +170,9 @@
 
 @end
 
-extern NSString *NSControlTextDidBeginEditingNotification;
-extern NSString *NSControlTextDidEndEditingNotification;
-extern NSString *NSControlTextDidChangeNotification;
+APPKIT_EXPORT NSString *NSControlTextDidBeginEditingNotification;
+APPKIT_EXPORT NSString *NSControlTextDidEndEditingNotification;
+APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 
 //
 // Methods Implemented by the Delegate

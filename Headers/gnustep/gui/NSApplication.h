@@ -56,8 +56,8 @@ enum {
   NSRunContinuesResponse
 };
 
-extern NSString	*NSModalPanelRunLoopMode;
-extern NSString	*NSEventTrackingRunLoopMode;
+APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
+APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
 @interface NSApplication : NSResponder <NSCoding>
 {
@@ -284,10 +284,6 @@ extern NSString	*NSEventTrackingRunLoopMode;
 #endif
 @end
 
-
-/* Backend functions */
-extern BOOL initialize_gnustep_backend (void);
-
 #ifndef	NO_GNUSTEP
 /*
  * A formal protocol that duplicates the informal protocol for delegates.
@@ -325,62 +321,62 @@ extern BOOL initialize_gnustep_backend (void);
 /*
  * Notifications
  */
-extern NSString	*NSApplicationDidBecomeActiveNotification;
-extern NSString	*NSApplicationDidFinishLaunchingNotification;
-extern NSString	*NSApplicationDidHideNotification;
-extern NSString	*NSApplicationDidResignActiveNotification;
-extern NSString	*NSApplicationDidUnhideNotification;
-extern NSString	*NSApplicationDidUpdateNotification;
-extern NSString	*NSApplicationWillBecomeActiveNotification;
-extern NSString	*NSApplicationWillFinishLaunchingNotification;
-extern NSString	*NSApplicationWillHideNotification;
-extern NSString	*NSApplicationWillResignActiveNotification;
-extern NSString	*NSApplicationWillTerminateNotification;
-extern NSString	*NSApplicationWillUnhideNotification;
-extern NSString	*NSApplicationWillUpdateNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidBecomeActiveNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidFinishLaunchingNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidHideNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidResignActiveNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidUnhideNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidUpdateNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillBecomeActiveNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillFinishLaunchingNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillHideNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillResignActiveNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillTerminateNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillUnhideNotification;
+APPKIT_EXPORT NSString	*NSApplicationWillUpdateNotification;
 
 /*
  * Determine Whether an Item Is Included in Services Menus
  */
-int
+APPKIT_EXPORT int
 NSSetShowsServicesMenuItem(NSString *item, BOOL showService);
 
-BOOL
+APPKIT_EXPORT BOOL
 NSShowsServicesMenuItem(NSString *item);
 
 /*
  * Programmatically Invoke a Service
  */
-BOOL
+APPKIT_EXPORT BOOL
 NSPerformService(NSString *item, NSPasteboard *pboard);
 
 /*
  * Force Services Menu to Update Based on New Services
  */
-void
+APPKIT_EXPORT void
 NSUpdateDynamicServices(void);
 
 /*
  * Register object to handle services requests.
  */
-void
+APPKIT_EXPORT void
 NSRegisterServicesProvider(id provider, NSString *name);
 
-void 
+APPKIT_EXPORT void 
 NSUnRegisterServicesProvider(NSString *name);
 
-int
+APPKIT_EXPORT int
 NSApplicationMain(int argc, const char **argv);
 
-NSString*
+APPKIT_EXPORT NSString*
 NSOpenStepRootDirectory(void);
 
-void 
+APPKIT_EXPORT void 
 NSShowSystemInfoPanel(NSDictionary *options);
 
 /*
  * The NSApp global variable.
  */
-extern NSApplication	*NSApp;
+APPKIT_EXPORT NSApplication	*NSApp;
 
 #endif // _GNUstep_H_NSApplication

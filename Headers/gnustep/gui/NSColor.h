@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSColor
 
 #include <Foundation/NSCoder.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSDictionary;
@@ -225,7 +226,7 @@ typedef enum _NSControlTint {
 
 @end
 
-extern NSString	*NSSystemColorsDidChangeNotification;
+APPKIT_EXPORT NSString	*NSSystemColorsDidChangeNotification;
 
 #ifndef	STRICT_MACOS_X
 @interface NSCoder (NSCoderAdditions)

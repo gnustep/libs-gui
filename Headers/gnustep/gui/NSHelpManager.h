@@ -73,7 +73,7 @@
 @end
 
 // Notifications
-extern NSString* NSContextHelpModeDidActivateNotification;
-extern NSString* NSContextHelpModeDidDeactivateNotification;
+APPKIT_EXPORT NSString* NSContextHelpModeDidActivateNotification;
+APPKIT_EXPORT NSString* NSContextHelpModeDidDeactivateNotification;
 
 #endif // GNUstep_H_NSHelpManager

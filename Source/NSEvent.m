@@ -39,6 +39,7 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>

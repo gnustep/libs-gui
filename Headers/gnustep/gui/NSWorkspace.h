@@ -31,6 +31,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -168,36 +169,36 @@
 #endif
 
 /* Notifications */
-extern NSString *NSWorkspaceDidLaunchApplicationNotification;
-extern NSString *NSWorkspaceDidMountNotification;
-extern NSString *NSWorkspaceDidPerformFileOperationNotification;
-extern NSString *NSWorkspaceDidTerminateApplicationNotification;
-extern NSString *NSWorkspaceDidUnmountNotification;
-extern NSString *NSWorkspaceWillLaunchApplicationNotification;
-extern NSString *NSWorkspaceWillPowerOffNotification;
-extern NSString *NSWorkspaceWillUnmountNotification;
+APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;
+APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;
+APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification;
+APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification;
+APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;
+APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;
+APPKIT_EXPORT NSString *NSWorkspaceWillPowerOffNotification;
+APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;
 
 //
 // Workspace File Type Globals 
 //
-extern NSString *NSPlainFileType;
-extern NSString *NSDirectoryFileType;
-extern NSString *NSApplicationFileType;
-extern NSString *NSFilesystemFileType;
-extern NSString *NSShellCommandFileType;
+APPKIT_EXPORT NSString *NSPlainFileType;
+APPKIT_EXPORT NSString *NSDirectoryFileType;
+APPKIT_EXPORT NSString *NSApplicationFileType;
+APPKIT_EXPORT NSString *NSFilesystemFileType;
+APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 //
 // Workspace File Operation Globals 
 //
-extern NSString *NSWorkspaceCompressOperation;
-extern NSString *NSWorkspaceCopyOperation;
-extern NSString *NSWorkspaceDecompressOperation;
-extern NSString *NSWorkspaceDecryptOperation;
-extern NSString *NSWorkspaceDestroyOperation;
-extern NSString *NSWorkspaceDuplicateOperation;
-extern NSString *NSWorkspaceEncryptOperation;
-extern NSString *NSWorkspaceLinkOperation;
-extern NSString *NSWorkspaceMoveOperation;
-extern NSString *NSWorkspaceRecycleOperation;
+APPKIT_EXPORT NSString *NSWorkspaceCompressOperation;
+APPKIT_EXPORT NSString *NSWorkspaceCopyOperation;
+APPKIT_EXPORT NSString *NSWorkspaceDecompressOperation;
+APPKIT_EXPORT NSString *NSWorkspaceDecryptOperation;
+APPKIT_EXPORT NSString *NSWorkspaceDestroyOperation;
+APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
+APPKIT_EXPORT NSString *NSWorkspaceEncryptOperation;
+APPKIT_EXPORT NSString *NSWorkspaceLinkOperation;
+APPKIT_EXPORT NSString *NSWorkspaceMoveOperation;
+APPKIT_EXPORT NSString *NSWorkspaceRecycleOperation;
 
 #endif // _GNUstep_H_NSWorkspace

@@ -31,6 +31,7 @@
 
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSInterfaceStyle.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSEvent;

@@ -32,6 +32,7 @@
 #define _GNUstep_H_NSColorList
 
 #include <Foundation/NSCoder.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -108,6 +109,6 @@
 @end
 
 /* Notifications */
-extern NSString *NSColorListChangedNotification;
+APPKIT_EXPORT NSString *NSColorListChangedNotification;
 
 #endif // _GNUstep_H_NSColorList

@@ -102,6 +102,6 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder;
 @end
 
-extern NSString *NSPopUpButtonWillPopUpNotification;
+APPKIT_EXPORT NSString *NSPopUpButtonWillPopUpNotification;
 
 #endif // _GNUstep_H_NSPopUpButton

@@ -28,10 +28,11 @@
 #ifndef _GNUstep_H_NSAttributedString
 #define _GNUstep_H_NSAttributedString
 
-#import <Foundation/Foundation.h>
-#import <AppKit/NSFileWrapper.h>
-#import <AppKit/NSFontManager.h>
-#import <AppKit/NSText.h>
+#include <Foundation/Foundation.h>
+#include <AppKit/NSFileWrapper.h>
+#include <AppKit/NSFontManager.h>
+#include <AppKit/NSText.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSTextAttachment;
 
@@ -39,17 +40,17 @@
 // the respective property in a text attributes 
 // dictionary.  if the key is not in the dictionary 	
 // the default value is assumed  											
-extern NSString *NSFontAttributeName;
-extern NSString *NSParagraphStyleAttributeName;
-extern NSString *NSForegroundColorAttributeName;
-extern NSString *NSUnderlineStyleAttributeName;
-extern NSString *NSSuperscriptAttributeName;
-extern NSString *NSBackgroundColorAttributeName;
-extern NSString *NSAttachmentAttributeName;
-extern NSString *NSLigatureAttributeName;
-extern NSString *NSBaselineOffsetAttributeName;
-extern NSString *NSKernAttributeName;
-extern NSString *NSLinkAttributeName;
+APPKIT_EXPORT NSString *NSFontAttributeName;
+APPKIT_EXPORT NSString *NSParagraphStyleAttributeName;
+APPKIT_EXPORT NSString *NSForegroundColorAttributeName;
+APPKIT_EXPORT NSString *NSUnderlineStyleAttributeName;
+APPKIT_EXPORT NSString *NSSuperscriptAttributeName;
+APPKIT_EXPORT NSString *NSBackgroundColorAttributeName;
+APPKIT_EXPORT NSString *NSAttachmentAttributeName;
+APPKIT_EXPORT NSString *NSLigatureAttributeName;
+APPKIT_EXPORT NSString *NSBaselineOffsetAttributeName;
+APPKIT_EXPORT NSString *NSKernAttributeName;
+APPKIT_EXPORT NSString *NSLinkAttributeName;
 
 // Currently supported values for NSUnderlineStyleAttributeName
 enum 									

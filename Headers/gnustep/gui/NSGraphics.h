@@ -29,8 +29,7 @@
 #include <Foundation/NSGeometry.h>
 
 #include <AppKit/NSGraphicsContext.h>
-
-
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSColor;
@@ -39,72 +38,72 @@
 /*
  * Colorspace Names 
  */
-extern NSString *NSCalibratedWhiteColorSpace; 
-extern NSString *NSCalibratedBlackColorSpace; 
-extern NSString *NSCalibratedRGBColorSpace;
-extern NSString *NSDeviceWhiteColorSpace;
-extern NSString *NSDeviceBlackColorSpace;
-extern NSString *NSDeviceRGBColorSpace;
-extern NSString *NSDeviceCMYKColorSpace;
-extern NSString *NSNamedColorSpace;
-extern NSString *NSCustomColorSpace;
+APPKIT_EXPORT NSString *NSCalibratedWhiteColorSpace; 
+APPKIT_EXPORT NSString *NSCalibratedBlackColorSpace; 
+APPKIT_EXPORT NSString *NSCalibratedRGBColorSpace;
+APPKIT_EXPORT NSString *NSDeviceWhiteColorSpace;
+APPKIT_EXPORT NSString *NSDeviceBlackColorSpace;
+APPKIT_EXPORT NSString *NSDeviceRGBColorSpace;
+APPKIT_EXPORT NSString *NSDeviceCMYKColorSpace;
+APPKIT_EXPORT NSString *NSNamedColorSpace;
+APPKIT_EXPORT NSString *NSCustomColorSpace;
 
 
 /*
- * Color function externs
+ * Color function APPKIT_EXPORTs
  */
-extern const NSWindowDepth _GSGrayBitValue;
-extern const NSWindowDepth _GSRGBBitValue;
-extern const NSWindowDepth _GSCMYKBitValue;
-extern const NSWindowDepth _GSCustomBitValue;
-extern const NSWindowDepth _GSNamedBitValue;
-extern const NSWindowDepth *_GSWindowDepths[7];
-extern const NSWindowDepth NSDefaultDepth;
-extern const NSWindowDepth NSTwoBitGrayDepth;
-extern const NSWindowDepth NSEightBitGrayDepth;
-extern const NSWindowDepth NSEightBitRGBDepth;
-extern const NSWindowDepth NSTwelveBitRGBDepth;
-extern const NSWindowDepth GSSixteenBitRGBDepth;
-extern const NSWindowDepth NSTwentyFourBitRGBDepth;
+APPKIT_EXPORT const NSWindowDepth _GSGrayBitValue;
+APPKIT_EXPORT const NSWindowDepth _GSRGBBitValue;
+APPKIT_EXPORT const NSWindowDepth _GSCMYKBitValue;
+APPKIT_EXPORT const NSWindowDepth _GSCustomBitValue;
+APPKIT_EXPORT const NSWindowDepth _GSNamedBitValue;
+APPKIT_EXPORT const NSWindowDepth *_GSWindowDepths[7];
+APPKIT_EXPORT const NSWindowDepth NSDefaultDepth;
+APPKIT_EXPORT const NSWindowDepth NSTwoBitGrayDepth;
+APPKIT_EXPORT const NSWindowDepth NSEightBitGrayDepth;
+APPKIT_EXPORT const NSWindowDepth NSEightBitRGBDepth;
+APPKIT_EXPORT const NSWindowDepth NSTwelveBitRGBDepth;
+APPKIT_EXPORT const NSWindowDepth GSSixteenBitRGBDepth;
+APPKIT_EXPORT const NSWindowDepth NSTwentyFourBitRGBDepth;
 
 /*
  * Gray Values 
  */
-extern const float NSBlack;
-extern const float NSDarkGray;
-extern const float NSWhite;
-extern const float NSLightGray;
-extern const float NSGray;
+APPKIT_EXPORT const float NSBlack;
+APPKIT_EXPORT const float NSDarkGray;
+APPKIT_EXPORT const float NSWhite;
+APPKIT_EXPORT const float NSLightGray;
+APPKIT_EXPORT const float NSGray;
 
 /*
  * Device Dictionary Keys 
  */
-extern NSString *NSDeviceResolution;
-extern NSString *NSDeviceColorSpaceName;
-extern NSString *NSDeviceBitsPerSample;
-extern NSString *NSDeviceIsScreen;
-extern NSString *NSDeviceIsPrinter;
-extern NSString *NSDeviceSize;
+APPKIT_EXPORT NSString *NSDeviceResolution;
+APPKIT_EXPORT NSString *NSDeviceColorSpaceName;
+APPKIT_EXPORT NSString *NSDeviceBitsPerSample;
+APPKIT_EXPORT NSString *NSDeviceIsScreen;
+APPKIT_EXPORT NSString *NSDeviceIsPrinter;
+APPKIT_EXPORT NSString *NSDeviceSize;
 
 /*
  * Get Information About Color Space and Window Depth
  */
-const NSWindowDepth *NSAvailableWindowDepths(void);
-NSWindowDepth NSBestDepth(NSString *colorSpace, 
+APPKIT_EXPORT const NSWindowDepth *NSAvailableWindowDepths(void);
+APPKIT_EXPORT NSWindowDepth NSBestDepth(NSString *colorSpace, 
 			  int bitsPerSample, int bitsPerPixel, 
 			  BOOL planar, BOOL *exactMatch);
-int NSBitsPerPixelFromDepth(NSWindowDepth depth);
-int NSBitsPerSampleFromDepth(NSWindowDepth depth);
-NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
-int NSNumberOfColorComponents(NSString *colorSpaceName);
-BOOL NSPlanarFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT int NSBitsPerPixelFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT int NSBitsPerSampleFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
+APPKIT_EXPORT int NSNumberOfColorComponents(NSString *colorSpaceName);
+APPKIT_EXPORT BOOL NSPlanarFromDepth(NSWindowDepth depth);
 
 
 /*
  * Functions for getting information about windows.
  */
-void NSCountWindows(int *count);
-void NSWindowList(int size, int list[]);
+APPKIT_EXPORT void NSCountWindows(int *count);
+APPKIT_EXPORT void NSWindowList(int size, int list[]);
 
 static inline void
 NSEraseRect(NSRect aRect)
@@ -162,13 +161,13 @@ NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count)
     (ctxt, @selector(NSRectFillListWithGrays:::), rects, grays, count);
 }
 
-NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
+APPKIT_EXPORT NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
 			const NSRectEdge * sides, 
 			const float *grays, int count);
-void NSDrawButton(const NSRect aRect, const NSRect clipRect);
-void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
-void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
-void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawButton(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
+APPKIT_EXPORT void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
 
 // This is from an old version of the specification 
 static inline void
@@ -301,8 +300,8 @@ GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
 @class	NSArray;
 @class	NSWindow;
 
-NSArray* GSAllWindows();
-NSWindow* GSWindowWithNumber(int num);
+APPKIT_EXPORT NSArray* GSAllWindows();
+APPKIT_EXPORT NSWindow* GSWindowWithNumber(int num);
 #endif
 
 #ifndef	STRICT_OPENSTEP

@@ -31,6 +31,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSString.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -40,39 +41,39 @@
 //
 // Pasteboard Type Globals 
 //
-extern NSString *NSStringPboardType;
-extern NSString *NSColorPboardType;
-extern NSString *NSFileContentsPboardType;
-extern NSString *NSFilenamesPboardType;
-extern NSString *NSFontPboardType;
-extern NSString *NSRulerPboardType;
-extern NSString *NSPostScriptPboardType;
-extern NSString *NSTabularTextPboardType;
-extern NSString *NSRTFPboardType;
-extern NSString *NSRTFDPboardType;
-extern NSString *NSTIFFPboardType;
-extern NSString *NSDataLinkPboardType;
-extern NSString *NSGeneralPboardType;
+APPKIT_EXPORT NSString *NSStringPboardType;
+APPKIT_EXPORT NSString *NSColorPboardType;
+APPKIT_EXPORT NSString *NSFileContentsPboardType;
+APPKIT_EXPORT NSString *NSFilenamesPboardType;
+APPKIT_EXPORT NSString *NSFontPboardType;
+APPKIT_EXPORT NSString *NSRulerPboardType;
+APPKIT_EXPORT NSString *NSPostScriptPboardType;
+APPKIT_EXPORT NSString *NSTabularTextPboardType;
+APPKIT_EXPORT NSString *NSRTFPboardType;
+APPKIT_EXPORT NSString *NSRTFDPboardType;
+APPKIT_EXPORT NSString *NSTIFFPboardType;
+APPKIT_EXPORT NSString *NSDataLinkPboardType;
+APPKIT_EXPORT NSString *NSGeneralPboardType;
 
 #ifndef STRICT_OPENSTEP
-extern NSString *NSPDFPboardType;
-extern NSString *NSPICTPboardType;
-extern NSString *NSURLPboardType;
+APPKIT_EXPORT NSString *NSPDFPboardType;
+APPKIT_EXPORT NSString *NSPICTPboardType;
+APPKIT_EXPORT NSString *NSURLPboardType;
 #endif
 
 //
 // Pasteboard Name Globals 
 //
-extern NSString *NSDragPboard;
-extern NSString *NSFindPboard;
-extern NSString *NSFontPboard;
-extern NSString *NSGeneralPboard;
-extern NSString *NSRulerPboard;
+APPKIT_EXPORT NSString *NSDragPboard;
+APPKIT_EXPORT NSString *NSFindPboard;
+APPKIT_EXPORT NSString *NSFontPboard;
+APPKIT_EXPORT NSString *NSGeneralPboard;
+APPKIT_EXPORT NSString *NSRulerPboard;
 
 //
 // Pasteboard Exceptions
 //
-extern NSString *NSPasteboardCommunicationException;
+APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 
 
 @interface NSPasteboard : NSObject
@@ -164,10 +165,10 @@ provideDataForType:(NSString *)type
 //
 // Return File-related Pasteboard Types
 //
-NSString *NSCreateFileContentsPboardType(NSString *fileType);
-NSString *NSCreateFilenamePboardType(NSString *filename);
-NSString *NSGetFileType(NSString *pboardType);
-NSArray *NSGetFileTypes(NSArray *pboardTypes);
+APPKIT_EXPORT NSString *NSCreateFileContentsPboardType(NSString *fileType);
+APPKIT_EXPORT NSString *NSCreateFilenamePboardType(NSString *filename);
+APPKIT_EXPORT NSString *NSGetFileType(NSString *pboardType);
+APPKIT_EXPORT NSArray *NSGetFileTypes(NSArray *pboardTypes);
 
 
 #endif // _GNUstep_H_NSPasteboard

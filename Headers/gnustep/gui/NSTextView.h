@@ -439,15 +439,15 @@ doCommandBySelector: (SEL)commandSelector;
 - (NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
 @end
 
-extern NSString *NSTextViewWillChangeNotifyingTextViewNotification;
+APPKIT_EXPORT NSString *NSTextViewWillChangeNotifyingTextViewNotification;
 // NSOldNotifyingTextView -> the old view, NSNewNotifyingTextView ->
 // the new view.  The text view delegate is not automatically
 // registered to receive this notification because the text machinery
 // will automatically switch over the delegate to observe the new
 // first text view as the first text view changes.
 
-extern NSString *NSTextViewDidChangeSelectionNotification;
-extern NSString *NSOldSelectedCharacterRange;
+APPKIT_EXPORT NSString *NSTextViewDidChangeSelectionNotification;
+APPKIT_EXPORT NSString *NSOldSelectedCharacterRange;
 
 #endif /* _GNUstep_H_NSTextView */
 

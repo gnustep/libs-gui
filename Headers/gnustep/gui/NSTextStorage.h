@@ -137,7 +137,7 @@ enum
 
 /**** Notifications ****/
 
-extern NSString *NSTextStorageWillProcessEditingNotification;
-extern NSString *NSTextStorageDidProcessEditingNotification;
+APPKIT_EXPORT NSString *NSTextStorageWillProcessEditingNotification;
+APPKIT_EXPORT NSString *NSTextStorageDidProcessEditingNotification;
 
 #endif

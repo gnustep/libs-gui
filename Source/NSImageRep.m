@@ -35,6 +35,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSEPSImageRep.h>

@@ -165,6 +165,7 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
 libgnustep-gui_HEADER_FILES = \
 AppKit.h \
 GSVersion.h \
+AppKitDefines.h \
 AppKitExceptions.h \
 DPSOperators.h \
 GMAppKit.h \
@@ -289,6 +290,9 @@ NSWindowController.h \
 NSWorkspace.h \
 PSOperators.h \
 nsimage-tiff.h
+
+# Extra DLL exports file
+libgnustep-gui_DLL_DEF = libgnustep-gui.def
 
 include GNUmakefile.preamble
 

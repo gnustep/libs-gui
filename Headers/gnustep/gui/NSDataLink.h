@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSDataLink
 
 #include <Foundation/NSCoder.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSArray;
@@ -54,7 +55,7 @@ typedef enum _NSDataLinkUpdateMode {
   NSUpdateNever
 } NSDataLinkUpdateMode;
 
-extern NSString *NSDataLinkFileNameExtension;
+APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
 
 @interface NSDataLink : NSObject <NSCoding>
 {

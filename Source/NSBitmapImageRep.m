@@ -34,6 +34,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSPasteboard.h>

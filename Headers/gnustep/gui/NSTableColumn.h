@@ -30,6 +30,8 @@
 #ifndef _GNUstep_H_NSTableColumn
 #define _GNUstep_H_NSTableColumn
 
+#include <AppKit/AppKitDefines.h>
+
 @class NSCell;
 @class NSTableView;
 
@@ -86,5 +88,5 @@
 @end
 
 /* Notifications */
-extern NSString *NSTableViewColumnDidResizeNotification;
+APPKIT_EXPORT NSString *NSTableViewColumnDidResizeNotification;
 #endif

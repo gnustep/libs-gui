@@ -95,8 +95,8 @@ typedef enum _NSSelectionDirection {
 } NSSelectionDirection;
 #endif
 
-extern NSSize NSIconSize;
-extern NSSize NSTokenSize;
+APPKIT_EXPORT NSSize NSIconSize;
+APPKIT_EXPORT NSSize NSTokenSize;
 
 @interface NSWindow : NSResponder <NSCoding>
 {
@@ -530,19 +530,19 @@ extern NSSize NSTokenSize;
 #endif
 
 /* Notifications */
-extern NSString *NSWindowDidBecomeKeyNotification;
-extern NSString *NSWindowDidBecomeMainNotification;
-extern NSString *NSWindowDidChangeScreenNotification;
-extern NSString *NSWindowDidDeminiaturizeNotification;
-extern NSString *NSWindowDidExposeNotification;
-extern NSString *NSWindowDidMiniaturizeNotification;
-extern NSString *NSWindowDidMoveNotification;
-extern NSString *NSWindowDidResignKeyNotification;
-extern NSString *NSWindowDidResignMainNotification;
-extern NSString *NSWindowDidResizeNotification;
-extern NSString *NSWindowDidUpdateNotification;
-extern NSString *NSWindowWillCloseNotification;
-extern NSString *NSWindowWillMiniaturizeNotification;
-extern NSString *NSWindowWillMoveNotification;
+APPKIT_EXPORT NSString *NSWindowDidBecomeKeyNotification;
+APPKIT_EXPORT NSString *NSWindowDidBecomeMainNotification;
+APPKIT_EXPORT NSString *NSWindowDidChangeScreenNotification;
+APPKIT_EXPORT NSString *NSWindowDidDeminiaturizeNotification;
+APPKIT_EXPORT NSString *NSWindowDidExposeNotification;
+APPKIT_EXPORT NSString *NSWindowDidMiniaturizeNotification;
+APPKIT_EXPORT NSString *NSWindowDidMoveNotification;
+APPKIT_EXPORT NSString *NSWindowDidResignKeyNotification;
+APPKIT_EXPORT NSString *NSWindowDidResignMainNotification;
+APPKIT_EXPORT NSString *NSWindowDidResizeNotification;
+APPKIT_EXPORT NSString *NSWindowDidUpdateNotification;
+APPKIT_EXPORT NSString *NSWindowWillCloseNotification;
+APPKIT_EXPORT NSString *NSWindowWillMiniaturizeNotification;
+APPKIT_EXPORT NSString *NSWindowWillMoveNotification;
 
 #endif /* _GNUstep_H_NSWindow */

@@ -41,6 +41,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSImage.h>
 #include <AppKit/AppKitExceptions.h>

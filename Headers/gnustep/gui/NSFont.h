@@ -33,6 +33,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSString.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSDictionary;
 
@@ -57,7 +58,7 @@ typedef enum _NSMultibyteGlyphPacking {
   NSFourByteGlyphPacking
 } NSMultibyteGlyphPacking;
 
-extern const float *NSFontIdentityMatrix;
+APPKIT_EXPORT const float *NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding, NSCopying>
 {
@@ -183,22 +184,22 @@ int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf,
 				  char *packedGlyphs);
 #endif
 
-extern NSString *NSAFMAscender;
-extern NSString *NSAFMCapHeight;
-extern NSString *NSAFMCharacterSet;
-extern NSString *NSAFMDescender;
-extern NSString *NSAFMEncodingScheme;
-extern NSString *NSAFMFamilyName;
-extern NSString *NSAFMFontName;
-extern NSString *NSAFMFormatVersion;
-extern NSString *NSAFMFullName;
-extern NSString *NSAFMItalicAngle;
-extern NSString *NSAFMMappingScheme;
-extern NSString *NSAFMNotice;
-extern NSString *NSAFMUnderlinePosition;
-extern NSString *NSAFMUnderlineThickness;
-extern NSString *NSAFMVersion;
-extern NSString *NSAFMWeight;
-extern NSString *NSAFMXHeight;
+APPKIT_EXPORT NSString *NSAFMAscender;
+APPKIT_EXPORT NSString *NSAFMCapHeight;
+APPKIT_EXPORT NSString *NSAFMCharacterSet;
+APPKIT_EXPORT NSString *NSAFMDescender;
+APPKIT_EXPORT NSString *NSAFMEncodingScheme;
+APPKIT_EXPORT NSString *NSAFMFamilyName;
+APPKIT_EXPORT NSString *NSAFMFontName;
+APPKIT_EXPORT NSString *NSAFMFormatVersion;
+APPKIT_EXPORT NSString *NSAFMFullName;
+APPKIT_EXPORT NSString *NSAFMItalicAngle;
+APPKIT_EXPORT NSString *NSAFMMappingScheme;
+APPKIT_EXPORT NSString *NSAFMNotice;
+APPKIT_EXPORT NSString *NSAFMUnderlinePosition;
+APPKIT_EXPORT NSString *NSAFMUnderlineThickness;
+APPKIT_EXPORT NSString *NSAFMVersion;
+APPKIT_EXPORT NSString *NSAFMWeight;
+APPKIT_EXPORT NSString *NSAFMXHeight;
 
 #endif // _GNUstep_H_NSFont

@@ -1,3 +1,19 @@
+2001-07-30  Adam Fedor  <fedor@gnu.org>
+
+	* Fixes to compile shared (DLL) on Windows.
+	* GNUmakefile.postamble (header-links): Add rules for MingW target.
+	* configure.in: Check for rint.
+	* Source/GNUmakefile: Add dll def file.
+	* Source/GNUmakefile.postamble: Rule to make dll def file.
+	* Source/GNUmakefile.preamble: Add libobjc depend for Windows targets.
+	
+	* Headers/gnustep/gui/AppKitDefines.h: New file.
+	* Headers/gnustep/gui/*: Change extern to APPKIT_EXPORT.
+	* Headers/gnustep/gui/config.h.in: Regenerate using autoheader.
+
+	* Source/NSAffineTransform.m: Use pi consistantly.
+	* Source/NSBrowser.m: Define rint if we don't have it.
+
 2001-07-30  Georg Fleischmann
 
 	* gui/Source/NSWindow.m

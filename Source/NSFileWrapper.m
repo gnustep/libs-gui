@@ -39,7 +39,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSArchiver.h>
-
+#include <Foundation/NSDebug.h>
 
 @implementation NSFileWrapper
 

@@ -128,6 +128,6 @@ typedef enum {
 @end    
 
 /* Notifications */ 
-extern NSString*NSPopUpButtonCellWillPopUpNotification;
+APPKIT_EXPORT NSString*NSPopUpButtonCellWillPopUpNotification;
 
 #endif // _GNUstep_H_NSPopUpButtonCell

@@ -77,6 +77,6 @@
 @end
 
 
-extern NSString *_NSFormCellDidChangeTitleWidthNotification;
+APPKIT_EXPORT NSString *_NSFormCellDidChangeTitleWidthNotification;
 
 #endif // _GNUstep_H_NSFormCell

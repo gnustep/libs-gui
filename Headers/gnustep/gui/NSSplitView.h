@@ -88,7 +88,7 @@ constrainSplitPosition: (float)proposedPosition
 @end
 
 /* Notifications */
-extern NSString *NSSplitViewDidResizeSubviewsNotification;
-extern NSString *NSSplitViewWillResizeSubviewsNotification;
+APPKIT_EXPORT NSString *NSSplitViewDidResizeSubviewsNotification;
+APPKIT_EXPORT NSString *NSSplitViewWillResizeSubviewsNotification;
 
 #endif

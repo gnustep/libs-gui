@@ -31,6 +31,7 @@
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSDictionary;
@@ -131,48 +132,48 @@ typedef enum _NSPrintingPaginationMode {
 //
 // Printing Information Dictionary Keys 
 //
-extern NSString *NSPrintAllPages;
-extern NSString *NSPrintBottomMargin;
-extern NSString *NSPrintCopies;
-extern NSString *NSPrintFaxCoverSheetName;
-extern NSString *NSPrintFaxHighResolution;
-extern NSString *NSPrintFaxModem;
-extern NSString *NSPrintFaxReceiverNames;
-extern NSString *NSPrintFaxReceiverNumbers;
-extern NSString *NSPrintFaxReturnReceipt;
-extern NSString *NSPrintFaxSendTime;
-extern NSString *NSPrintFaxTrimPageEnds;
-extern NSString *NSPrintFaxUseCoverSheet;
-extern NSString *NSPrintFirstPage;
-extern NSString *NSPrintHorizontalPagination;
-extern NSString *NSPrintHorizontallyCentered;
-extern NSString *NSPrintJobDisposition;
-extern NSString *NSPrintJobFeatures;
-extern NSString *NSPrintLastPage;
-extern NSString *NSPrintLeftMargin;
-extern NSString *NSPrintManualFeed;
-extern NSString *NSPrintOrientation;
-extern NSString *NSPrintPackageException;
-extern NSString *NSPrintPagesPerSheet;
-extern NSString *NSPrintPaperFeed;
-extern NSString *NSPrintPaperName;
-extern NSString *NSPrintPaperSize;
-extern NSString *NSPrintPrinter;
-extern NSString *NSPrintReversePageOrder;
-extern NSString *NSPrintRightMargin;
-extern NSString *NSPrintSavePath;
-extern NSString *NSPrintScalingFactor;
-extern NSString *NSPrintTopMargin;
-extern NSString *NSPrintVerticalPagination;
-extern NSString *NSPrintVerticallyCentered;
+APPKIT_EXPORT NSString *NSPrintAllPages;
+APPKIT_EXPORT NSString *NSPrintBottomMargin;
+APPKIT_EXPORT NSString *NSPrintCopies;
+APPKIT_EXPORT NSString *NSPrintFaxCoverSheetName;
+APPKIT_EXPORT NSString *NSPrintFaxHighResolution;
+APPKIT_EXPORT NSString *NSPrintFaxModem;
+APPKIT_EXPORT NSString *NSPrintFaxReceiverNames;
+APPKIT_EXPORT NSString *NSPrintFaxReceiverNumbers;
+APPKIT_EXPORT NSString *NSPrintFaxReturnReceipt;
+APPKIT_EXPORT NSString *NSPrintFaxSendTime;
+APPKIT_EXPORT NSString *NSPrintFaxTrimPageEnds;
+APPKIT_EXPORT NSString *NSPrintFaxUseCoverSheet;
+APPKIT_EXPORT NSString *NSPrintFirstPage;
+APPKIT_EXPORT NSString *NSPrintHorizontalPagination;
+APPKIT_EXPORT NSString *NSPrintHorizontallyCentered;
+APPKIT_EXPORT NSString *NSPrintJobDisposition;
+APPKIT_EXPORT NSString *NSPrintJobFeatures;
+APPKIT_EXPORT NSString *NSPrintLastPage;
+APPKIT_EXPORT NSString *NSPrintLeftMargin;
+APPKIT_EXPORT NSString *NSPrintManualFeed;
+APPKIT_EXPORT NSString *NSPrintOrientation;
+APPKIT_EXPORT NSString *NSPrintPackageException;
+APPKIT_EXPORT NSString *NSPrintPagesPerSheet;
+APPKIT_EXPORT NSString *NSPrintPaperFeed;
+APPKIT_EXPORT NSString *NSPrintPaperName;
+APPKIT_EXPORT NSString *NSPrintPaperSize;
+APPKIT_EXPORT NSString *NSPrintPrinter;
+APPKIT_EXPORT NSString *NSPrintReversePageOrder;
+APPKIT_EXPORT NSString *NSPrintRightMargin;
+APPKIT_EXPORT NSString *NSPrintSavePath;
+APPKIT_EXPORT NSString *NSPrintScalingFactor;
+APPKIT_EXPORT NSString *NSPrintTopMargin;
+APPKIT_EXPORT NSString *NSPrintVerticalPagination;
+APPKIT_EXPORT NSString *NSPrintVerticallyCentered;
 
 //
 // Print Job Disposition Values 
 //
-extern NSString *NSPrintCancelJob;
-extern NSString *NSPrintFaxJob;
-extern NSString *NSPrintPreviewJob;
-extern NSString *NSPrintSaveJob;
-extern NSString *NSPrintSpoolJob;
+APPKIT_EXPORT NSString *NSPrintCancelJob;
+APPKIT_EXPORT NSString *NSPrintFaxJob;
+APPKIT_EXPORT NSString *NSPrintPreviewJob;
+APPKIT_EXPORT NSString *NSPrintSaveJob;
+APPKIT_EXPORT NSString *NSPrintSpoolJob;
 
 #endif // _GNUstep_H_NSPrintInfo
