@@ -1,9 +1,9 @@
-2002-06-11  Georg Fleischmann <georg@vhf.de>
+2002-06-10  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSControl.m ([NSControl -mouseDown:]): Set NSPeriodicMask
 	for continuous cells, and 0 otherwise.
 
-2002-06-11  Georg Fleischmann <georg@vhf.de>
+2002-06-10  Georg Fleischmann <georg@vhf.de>
 
 	* Model/GMAppKit.m ([NSCell -encodeWithModelArchiver:]): Restore
 	sendActionMask.
