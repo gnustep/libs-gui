@@ -1,3 +1,15 @@
+Tue Apr  9 23:04:43 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSTable.m ([-setFrame:], [-setFrameSize:]): New methods.
+	([-resizeWithOldSuperviewSize:]): Removed; code moved into
+	-_updateForNewFrameSize:.
+	([-_updateForNewFrameSize:]): New method.
+	Everywhere: use [super setFrameSize:xxx], not [self
+	setFrameSize:xxx] to set the frame size after autoresizing
+	operations.
+	* Source/GSTable.m ([-lockFocusInRect:, -unlockFocusNeedsFlush:]):
+	Removed.
+
 Tue Apr  9 22:28:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patch by Alexander Malmberg <alexander@malmberg.org>:
