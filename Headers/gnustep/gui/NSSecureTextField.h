@@ -32,22 +32,18 @@
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>
 
-@class NSNotification;
-@class NSColor;
-@class NSText;
-@class NSCursor;
-
 @interface NSSecureTextField : NSTextField
-{
-}
+{}
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 @interface NSSecureTextFieldCell : NSTextFieldCell
 {
-  BOOL i_echosBullets;
+  BOOL _echosBullets;
 }
-- (void)setEchosBullets:(BOOL)flag;
-- (BOOL)echosBullets;
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 #endif /* _GNUstep_H_NSSecureTextField */
