@@ -1128,12 +1128,14 @@ documentAttributes: (NSDictionary **)dict
       NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
 				      intValue];
       NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
+      NSString *str = [[NSString alloc] initWithData: data 
+					encoding: encoding];
       NSAttributedString *attr;
 
-     attr = [[NSAttributedString alloc] 
-		 initWithString: [NSString initWithData: data 
-					   encoding: encoding]
+      attr = [[NSAttributedString alloc] 
+		 initWithString: str
 		    attributes: defaultAttrs];
+      RELEASE(str);
       [self setAttributedString: attr];
       RELEASE(attr);
 
