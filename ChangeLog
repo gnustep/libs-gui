@@ -1,3 +1,7 @@
+2002-10-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSFontInfo.m (+encodingForRegistry:encoding:): Remove.
+
 Tue Oct 22 02:13:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Resources/GNUmakefile (string): Renamed to after-strings so 

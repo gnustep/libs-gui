@@ -80,8 +80,6 @@
 
 + (int) weightForString: (NSString *)weightString;
 + (NSString *) stringForWeight: (int)weight;
-+ (NSStringEncoding) encodingForRegistry: (NSString*)registry 
-				encoding: (NSString*)encoding;
 
 - (NSDictionary *)afmDictionary;
 - (NSString *)afmFileContents;
