@@ -668,7 +668,7 @@ static NSNotificationCenter *nc = nil;
 
   /* Other stuff we need to do for deferred windows */
   if (_windowTitle != nil)
-    DPStitlewindow(GSCurrentContext(), [_windowTitle cString], _windowNum);
+    DPStitlewindow(GSCurrentContext(), [_windowTitle lossyCString], _windowNum);
   if (!NSEqualSizes(_minimumSize, NSZeroSize))
     [self setMinSize: _minimumSize];
   if (!NSEqualSizes(_maximumSize, NSZeroSize))
@@ -860,7 +860,7 @@ static NSNotificationCenter *nc = nil;
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
       if (_windowNum > 0)
-	DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
+	DPStitlewindow(GSCurrentContext(), [aString lossyCString], _windowNum);
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
@@ -881,7 +881,7 @@ static NSNotificationCenter *nc = nil;
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
       if (_windowNum > 0)
-	DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
+	DPStitlewindow(GSCurrentContext(), [aString lossyCString], _windowNum);
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
