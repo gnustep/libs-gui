@@ -256,7 +256,7 @@ static NSCell	*tileCell = nil;
       NSPoint	lastLocation;
       NSPoint	location;
       unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-	| NSPeriodicMask | NSMiddleMouseUpMask | NSRightMouseUpMask;
+	| NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
       NSDate	*theDistantFuture = [NSDate distantFuture];
       BOOL	done = NO;
 
@@ -273,7 +273,7 @@ static NSCell	*tileCell = nil;
 	  switch ([theEvent type])
 	    {
 	      case NSRightMouseUp:
-	      case NSMiddleMouseUp:
+	      case NSOtherMouseUp:
 	      case NSLeftMouseUp:
 	      /* right mouse up or left mouse up means we're done */
 		done = YES;
@@ -2702,15 +2702,15 @@ resetCursorRectsForView(NSView *theView)
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSMiddleMouseDown:
+      case NSOtherMouseDown:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
-	[v middleMouseDown: theEvent];
+	[v otherMouseDown: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSMiddleMouseUp:
+      case NSOtherMouseUp:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
-	[v middleMouseUp: theEvent];
+	[v otherMouseUp: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
@@ -2727,7 +2727,7 @@ resetCursorRectsForView(NSView *theView)
 	break;
 
       case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
+      case NSOtherMouseDragged:
       case NSRightMouseDragged:
       case NSMouseMoved:
 	switch (type)
@@ -2736,9 +2736,9 @@ resetCursorRectsForView(NSView *theView)
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
 	      [v mouseDragged: theEvent];
 	      break;
-	    case NSMiddleMouseDragged:
+	    case NSOtherMouseDragged:
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
-	      [v middleMouseDragged: theEvent];
+	      [v otherMouseDragged: theEvent];
 	      break;
 	    case NSRightMouseDragged:
 	      v = [_contentView hitTest: [theEvent locationInWindow]];

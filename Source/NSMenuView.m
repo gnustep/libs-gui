@@ -881,10 +881,10 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
       end = NSRightMouseUp;
       eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
     }
-  else if (type == NSMiddleMouseDown)
+  else if (type == NSOtherMouseDown)
     {
-      end = NSMiddleMouseUp;
-      eventMask |= NSMiddleMouseUpMask | NSMiddleMouseDraggedMask;
+      end = NSOtherMouseUp;
+      eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
     }
   else
     {

@@ -354,7 +354,7 @@ static NSCell* tileCell = nil;
       NSPoint	lastLocation;
       NSPoint	location;
       unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-	| NSPeriodicMask | NSMiddleMouseUpMask | NSRightMouseUpMask;
+	| NSPeriodicMask | NSOtherMouseUpMask | NSRightMouseUpMask;
       NSDate	*theDistantFuture = [NSDate distantFuture];
       BOOL	done = NO;
 
@@ -371,7 +371,7 @@ static NSCell* tileCell = nil;
 	  switch ([theEvent type])
 	    {
 	      case NSRightMouseUp:
-	      case NSMiddleMouseUp:
+	      case NSOtherMouseUp:
 	      case NSLeftMouseUp:
 	      /* any mouse up means we're done */
 		done = YES;
@@ -1409,7 +1409,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	      NSEventType type = [event type];
 
 	      if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-		|| (type == NSMiddleMouseDown) || (type == NSMiddleMouseUp)
+		|| (type == NSOtherMouseDown) || (type == NSOtherMouseUp)
 		|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
 		|| (type == NSMouseMoved))
 		{

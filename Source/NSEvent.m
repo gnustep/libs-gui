@@ -452,6 +452,12 @@ static Class eventClass;
   return NSMakePoint(x, y);
 }
 
+- (int) buttonNumber
+{
+  /* FIXME */
+  return 0;
+}
+
 - (int) clickCount
 {
   /* Make sure it is one of the right event types */
@@ -622,8 +628,8 @@ static Class eventClass;
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
-      case NSMiddleMouseDown:
-      case NSMiddleMouseUp:
+      case NSOtherMouseDown:
+      case NSOtherMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
 	[aCoder encodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
@@ -658,7 +664,7 @@ static Class eventClass;
       case NSScrollWheel:
       case NSMouseMoved:
       case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
+      case NSOtherMouseDragged:
       case NSRightMouseDragged:
 	[aCoder encodeValuesOfObjCTypes: "fff", 
 		&event_data.scrollWheel.deltaX,
@@ -681,8 +687,8 @@ static Class eventClass;
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
-      case NSMiddleMouseDown:
-      case NSMiddleMouseUp:
+      case NSOtherMouseDown:
+      case NSOtherMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
 	[aDecoder decodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
@@ -718,7 +724,7 @@ static Class eventClass;
       case NSScrollWheel:
       case NSMouseMoved:
       case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
+      case NSOtherMouseDragged:
       case NSRightMouseDragged:
 	[aDecoder decodeValuesOfObjCTypes: "fff", 
 		  &event_data.scrollWheel.deltaX,
@@ -754,13 +760,13 @@ static Class eventClass;
   const char* eventTypes[] = {
     "leftMouseDown",
     "leftMouseUp",
-    "middleMouseDown",
-    "middleMouseUp",
+    "otherMouseDown",
+    "otherMouseUp",
     "rightMouseDown",
     "rightMouseUp",
     "mouseMoved",
     "leftMouseDragged",
-    "middleMouseDragged",
+    "otherMouseDragged",
     "rightMouseDragged",
     "mouseEntered",
     "mouseExited",
@@ -779,8 +785,8 @@ static Class eventClass;
     {
       case NSLeftMouseDown:
       case NSLeftMouseUp:
-      case NSMiddleMouseDown:
-      case NSMiddleMouseUp:
+      case NSOtherMouseDown:
+      case NSOtherMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
 	return [NSString stringWithFormat:
@@ -838,7 +844,7 @@ static Class eventClass;
       case NSScrollWheel:
       case NSMouseMoved:
       case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
+      case NSOtherMouseDragged:
       case NSRightMouseDragged:
 	return [NSString stringWithFormat:
 	      @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"

@@ -104,10 +104,10 @@
 - (void) mouseMoved: (NSEvent*)theEvent;
 - (void) mouseUp: (NSEvent*)theEvent;
 - (void) noResponderFor: (SEL)eventSelector;
-#ifndef	NO_GNUSTEP
-- (void) middleMouseDown: (NSEvent*)theEvent;
-- (void) middleMouseDragged: (NSEvent*)theEvent;
-- (void) middleMouseUp: (NSEvent*)theEvent;
+#ifndef	STRICT_OPENSTEP
+- (void) otherMouseDown: (NSEvent*)theEvent;
+- (void) otherMouseDragged: (NSEvent*)theEvent;
+- (void) otherMouseUp: (NSEvent*)theEvent;
 #endif
 - (void) rightMouseDown: (NSEvent*)theEvent;
 - (void) rightMouseDragged: (NSEvent*)theEvent;

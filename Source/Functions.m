@@ -86,15 +86,15 @@ NSEventMaskFromType(NSEventType type)
     {
       case NSLeftMouseDown:	return NSLeftMouseDownMask;
       case NSLeftMouseUp:	return NSLeftMouseUpMask;
-      case NSMiddleMouseDown:	return NSMiddleMouseDownMask;
-      case NSMiddleMouseUp:	return NSMiddleMouseUpMask;
+      case NSOtherMouseDown:	return NSOtherMouseDownMask;
+      case NSOtherMouseUp:	return NSOtherMouseUpMask;
       case NSRightMouseDown:	return NSRightMouseDownMask;
       case NSRightMouseUp:	return NSRightMouseUpMask;
       case NSMouseMoved:	return NSMouseMovedMask;
       case NSMouseEntered:	return NSMouseEnteredMask;
       case NSMouseExited:	return NSMouseExitedMask;
       case NSLeftMouseDragged:	return NSLeftMouseDraggedMask;
-      case NSMiddleMouseDragged:	return NSMiddleMouseDraggedMask;
+      case NSOtherMouseDragged:	return NSOtherMouseDraggedMask;
       case NSRightMouseDragged:	return NSRightMouseDraggedMask;
       case NSKeyDown:		return NSKeyDownMask;
       case NSKeyUp:		return NSKeyUpMask;

@@ -4113,8 +4113,8 @@ other than copy/paste or dragging. */
 	type: NSStringPboardType];
 }
 
-/** Bind middle mouse up to pasteSelection. This should be done via configuation! */
-- (void) middleMouseUp: (NSEvent*)theEvent
+/** Bind other mouse up to pasteSelection. This should be done via configuation! */
+- (void) otherMouseUp: (NSEvent*)theEvent
 {
   // Should we change the insertion point, based on the event position?
   [self pasteSelection];

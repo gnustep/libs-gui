@@ -2234,13 +2234,13 @@ NSGraphicsContext	*GSCurrentContext()
 			  matched = YES;
 			break;
 
-		      case NSMiddleMouseDown:
-			if (mask & NSMiddleMouseDownMask)
+		      case NSOtherMouseDown:
+			if (mask & NSOtherMouseDownMask)
 			  matched = YES;
 			break;
 
-		      case NSMiddleMouseUp:
-			if (mask & NSMiddleMouseUpMask)
+		      case NSOtherMouseUp:
+			if (mask & NSOtherMouseUpMask)
 			  matched = YES;
 			break;
 
@@ -2274,8 +2274,8 @@ NSGraphicsContext	*GSCurrentContext()
 			  matched = YES;
 			break;
 
-		      case NSMiddleMouseDragged:
-			if (mask & NSMiddleMouseDraggedMask)
+		      case NSOtherMouseDragged:
+			if (mask & NSOtherMouseDraggedMask)
 			  matched = YES;
 			break;
 
@@ -2404,13 +2404,13 @@ NSGraphicsContext	*GSCurrentContext()
 			  shouldRemove = YES;
 			break;
 
-		      case NSMiddleMouseDown:
-			if (mask & NSMiddleMouseDownMask)
+		      case NSOtherMouseDown:
+			if (mask & NSOtherMouseDownMask)
 			  shouldRemove = YES;
 			break;
 
-		      case NSMiddleMouseUp:
-			if (mask & NSMiddleMouseUpMask)
+		      case NSOtherMouseUp:
+			if (mask & NSOtherMouseUpMask)
 			  shouldRemove = YES;
 			break;
 
@@ -2444,8 +2444,8 @@ NSGraphicsContext	*GSCurrentContext()
 			  shouldRemove = YES;
 			break;
 
-		      case NSMiddleMouseDragged:
-			if (mask & NSMiddleMouseDraggedMask)
+		      case NSOtherMouseDragged:
+			if (mask & NSOtherMouseDraggedMask)
 			  shouldRemove = YES;
 			break;
 

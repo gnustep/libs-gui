@@ -227,7 +227,7 @@
 	    }
 	  else if ([event type] == NSMouseMoved ||
 		   [event type] == NSLeftMouseDragged ||
-		   [event type] == NSMiddleMouseDragged ||
+		   [event type] == NSOtherMouseDragged ||
 		   [event type] == NSRightMouseDragged ||
 		   [event type] == NSMouseEntered ||
 		   [event type] == NSMouseExited ||

@@ -490,7 +490,7 @@ static Class actionCellClass;
   int oldActionMask;
   NSPoint location;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
-    | NSMouseMovedMask | NSLeftMouseDraggedMask | NSMiddleMouseDraggedMask
+    | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
   NSDebugLog(@"NSControl mouseDown\n");
 
