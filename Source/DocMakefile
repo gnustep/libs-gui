@@ -27,7 +27,6 @@ MAKEFILE_NAME = DocMakefile
 include $(GNUSTEP_MAKEFILES)/common.make
 
 ADD_THESE_QUESTION_MARK = \
-NSAttributedString.h \
 NSColorPicking.h \
 NSGraphics.h \
 NSNibConnector.h \
@@ -41,6 +40,7 @@ AUTOGSDOC_HEADERS_GUI = \
 NSActionCell.h \
 NSAffineTransform.h \
 NSApplication.h \
+NSAttributedString.h \
 NSBezierPath.h \
 NSBitmapImageRep.h \
 NSBox.h \
@@ -157,12 +157,11 @@ DOCUMENT_NAME = Gui GuiAdditions
 Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
 GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
 
-Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
-	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
+Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
 
 GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
-	../Documentation/GuiAdditions/GuiAdditions.gsdoc
+	../Documentation/GuiAdditions.gsdoc
 
 #
 # Hack ... using the -DocumentationDirectory flag overrides the value
@@ -205,15 +204,14 @@ include $(GNUSTEP_MAKEFILES)/documentation.make
 
 before-all::    ../Documentation/Gui \
 	../Documentation/GuiAdditions
-	cp ../Documentation/Gui/Gui.gsdoc .
-	cp ../Documentation/GuiAdditions/GuiAdditions.gsdoc .
+	cp ../Documentation/Gui.gsdoc .
+	cp ../Documentation/GuiAdditions.gsdoc .
 
 ../Documentation/Gui:
 	$(MKDIRS) ../Documentation/Gui
 
 ../Documentation/GuiAdditions:
 	$(MKDIRS) ../Documentation/GuiAdditions
-
 
 #
 # Clean up temporary files used while generating documentation.
