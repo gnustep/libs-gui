@@ -227,9 +227,9 @@ static const int current_version = 1;
 - (void) setDelegate: (id)anObject
 { 
 #define CHECK_REQUIRED_METHOD(selector_name) \
-  if (![anObject respondsToSelector: @selector(##selector_name)]) \
+  if (![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
-                 format: @"delegate does not respond to ##selector_name"]
+                 format: @"delegate does not respond to %@",@#selector_name]
 
   CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:);
   CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);

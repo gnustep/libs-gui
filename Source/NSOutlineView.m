@@ -719,9 +719,9 @@ static NSImage *unexpandable  = nil;
 - (void) setDataSource: (id)anObject
 {
 #define CHECK_REQUIRED_METHOD(selector_name) \
-  if (![anObject respondsToSelector: @selector(##selector_name)]) \
+  if (![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
-                 format: @"data source does not respond to ##selector_name"]
+                 format: @"data source does not respond to %@", @#selector_name]
 
   CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
   CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);

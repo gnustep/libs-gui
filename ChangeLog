@@ -1,3 +1,8 @@
+2002-09-21 18:54  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m corrected preprocessor error messages.
+	* Source/NSToolbar.m corrected preprocessor error messages.
+	
 2002-09-21 17:48  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSFontPanel.m (-_familySelectionChanged:, score_difference):
