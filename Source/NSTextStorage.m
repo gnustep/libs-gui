@@ -35,12 +35,15 @@
 static	Class	abstract;
 static	Class	concrete;
 
+static NSNotificationCenter *nc = nil;
+
 + (void) initialize
 {
   if (self == [NSTextStorage class])
     {
       abstract = self;
       concrete = [GSTextStorage class];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -55,6 +58,11 @@ static	Class	concrete;
 - (void) dealloc
 {
   RELEASE (_layoutManagers);
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
   [super dealloc];
 }
 
@@ -178,8 +186,6 @@ static	Class	concrete;
   int i;
   unsigned length;
 
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-
   NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
 
   /*
@@ -260,8 +266,6 @@ static	Class	concrete;
  */
 - (void) setDelegate: (id)anObject
 {
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     [nc removeObserver: _delegate  name: nil  object: self];
   _delegate = anObject;
