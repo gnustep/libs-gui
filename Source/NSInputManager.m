@@ -169,12 +169,14 @@ static NSMutableArray *_inputServerList = nil;
   if ((self = [super init]) == nil)
     {
       NSLog(@"NSInputManager: Initialization failed");
+      [pool release];
       return nil;
     }
   if ([self standardKeyBindingAbsolutePath] == nil)
     {
       NSLog(@"%@: Couldn't read StandardKeyBinding.dict",
 	    self, [self standardKeyBindingAbsolutePath]);
+      [pool release], pool = nil;
       [self release];
       return nil;
     }
@@ -184,6 +186,7 @@ static NSMutableArray *_inputServerList = nil;
 	  [self createKeyBindingTable] == NO ||
 	  [self establishConnectionToInputServer: host] == NO)
 	{
+	  [pool release], pool = nil;
 	  [self release];
 	  return nil;
 	}
@@ -192,6 +195,7 @@ static NSMutableArray *_inputServerList = nil;
     {
       if ([self createKeyBindingTable] == NO)
 	{
+	  [pool release], pool = nil;
 	  [self release];
 	  return nil;
 	}
@@ -201,7 +205,6 @@ static NSMutableArray *_inputServerList = nil;
   [NSInputManager addToInputServerList: self];
 
   [pool release], pool = nil;
-
   return self;
 }
 
