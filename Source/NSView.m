@@ -74,6 +74,8 @@ static Class	viewClass;
 
 static NSAffineTransform	*flip = nil;
 
+static NSNotificationCenter *nc = nil;
+
 static SEL	appSel;
 static SEL	invalidateSel;
 
@@ -171,6 +173,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
+
+      nc = [NSNotificationCenter defaultCenter];
 
       viewClass = [NSView class];
       rectClass = [GSTrackingRect class];
@@ -578,9 +582,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_post_bounds_changes)
     {
-      [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+			     object: self];
     }
 }
 
@@ -643,9 +646,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     changedSize = YES;
   
   _frame = frameRect;
-  _bounds.size = _frame.size;
+  /* FIXME: Touch bounds only if we are not scaled or rotated */
+  _bounds.size = frameRect.size;
+  
+
   if (changedOrigin)
-    [_frameMatrix setFrameOrigin: _frame.origin];
+    {
+      [_frameMatrix setFrameOrigin: _frame.origin];
+    }
 
   if (changedSize && _is_rotated_or_scaled_from_base)
     {
@@ -660,9 +668,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       [self resizeSubviewsWithOldSize: old_size];
       if (_post_frame_changes)
-	[[NSNotificationCenter defaultCenter]
-	  postNotificationName: NSViewFrameDidChangeNotification
-	                object: self];
+	[nc postNotificationName: NSViewFrameDidChangeNotification
+	    object: self];
     }
 }
 
@@ -676,9 +683,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_frameMatrix setFrameOrigin: _frame.origin];
 
   if (_post_frame_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewFrameDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewFrameDidChangeNotification
+	object: self];
 }
 
 - (void) setFrameSize: (NSSize)newSize
@@ -704,20 +710,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       float sx = _bounds.size.width  / _frame.size.width;
       float sy = _bounds.size.height / _frame.size.height;
-
+      
       _frame.size = newSize;
       _bounds.size.width  = _frame.size.width  * sx;
       _bounds.size.height = _frame.size.height * sy;
     }
   else
     _frame.size = _bounds.size = newSize;
-
+  
   [self resizeSubviewsWithOldSize: old_size];
   if (_post_frame_changes)
     {
-      [[NSNotificationCenter defaultCenter]
-		      postNotificationName: NSViewFrameDidChangeNotification
-				    object: self];
+      [nc postNotificationName: NSViewFrameDidChangeNotification
+	  object: self];
     }
 }
 
@@ -731,9 +736,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
   if (_post_frame_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewFrameDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewFrameDidChangeNotification
+	object: self];
 }
 
 - (BOOL) isRotatedFromBase
@@ -780,9 +784,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewBoundsDidChangeNotification
+	object: self];
 }
 
 - (void) setBounds: (NSRect)aRect
@@ -807,9 +810,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewBoundsDidChangeNotification
+	object: self];
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
@@ -824,9 +826,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_post_bounds_changes)
     {
-      [[NSNotificationCenter defaultCenter]
-		      postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
     }
 }
 
@@ -851,9 +852,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewBoundsDidChangeNotification
+	object: self];
 }
 
 - (void) setBoundsRotation: (float)angle
@@ -867,9 +867,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (_post_bounds_changes)
     {
-      [[NSNotificationCenter defaultCenter]
-		      postNotificationName: NSViewBoundsDidChangeNotification
-				    object: self];
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
     }
 }
 
@@ -882,9 +881,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_boundsMatrix translateToPoint: point];
 
   if (_post_bounds_changes)
-    [[NSNotificationCenter defaultCenter]
-		    postNotificationName: NSViewBoundsDidChangeNotification
-				  object: self];
+    [nc postNotificationName: NSViewBoundsDidChangeNotification
+	object: self];
 }
 
 - (NSRect) centerScanRect: (NSRect)aRect
@@ -962,8 +960,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       matrix = [self _matrixToWindow];
     }
-  new = [matrix pointInMatrixSpace: aPoint];
-
+  new = [matrix pointInMatrixSpace: aPoint];  
   matrix = [aView _matrixFromWindow];
   new = [matrix pointInMatrixSpace: new];
 
@@ -1021,6 +1018,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       return aRect;
     }
   NSAssert(_window == [aView window], NSInvalidArgumentException);
+
   if (_coordinates_valid)
     {
       matrix = _matrixToWindow;
@@ -1145,6 +1143,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   BOOL		changedOrigin = NO;
   BOOL		changedSize = NO;
 
+  /* FIXME: No need to compute the bounds.  setFrame: should do that
+     if needed */
+
   if (_autoresizingMask == NSViewNotSizable)
     return;
 
@@ -1169,15 +1170,21 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       changePerOption = change/options;
 
       if (_autoresizingMask & NSViewWidthSizable)
-	{
+	{ 
 	  float oldFrameWidth = newFrame.size.width;
 
-	  newFrame.size.width += changePerOption;
+          newFrame.size.width += changePerOption;
+
 	  if (_is_rotated_or_scaled_from_base)
-	    newBounds.size.width *= newFrame.size.width/oldFrameWidth;
+	    {
+	      newBounds.size.width *= newFrame.size.width/oldFrameWidth;
+	    }
 	  else
-	    newBounds.size.width += changePerOption;
-	  changedSize = YES;
+	    {
+	      newBounds.size.width += changePerOption;
+	    }
+
+          changedSize = YES;
 	}
       if (_autoresizingMask & NSViewMinXMargin)
 	{
@@ -1209,11 +1216,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	{
 	  float oldFrameHeight = newFrame.size.height;
 
-	  newFrame.size.height += changePerOption;
+          newFrame.size.height += changePerOption;
+	  
 	  if (_is_rotated_or_scaled_from_base)
-	    newBounds.size.height *= newFrame.size.height/oldFrameHeight;
+	    {
+	      newBounds.size.height *= newFrame.size.height/oldFrameHeight;
+	    }
 	  else
-	    newBounds.size.height += changePerOption;
+	    {
+	      newBounds.size.height += changePerOption;
+	    }
+	      
 	  changedSize = YES;
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
@@ -1237,10 +1250,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
     }
   [self setFrame: newFrame];
-  /* Since setFrame sets the bounds itself, reset it correctly */
-  _bounds = newBounds;
-  if (changedSize && _is_rotated_or_scaled_from_base)
-    [self _updateBoundsMatrix];
 }
 
 - (void) allocateGState
@@ -1323,9 +1332,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       w = NSWidth(rect);
       h = NSHeight(rect);
       DPSrectviewclip(ctxt, x, y, w, h);
-
-      /* Add any scaling due to the bounds matrix */
-      //[_boundsMatrix concat];
 
       /* Allow subclases to make other modifications */
       [self setUpGState];
@@ -2694,7 +2700,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 /*
  *	The [-_invalidateCoordinates] method marks the coordinate mapping
- *	matrices (matrixFromWindof and _matrixToWindow) and the cached visible
+ *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
  *	rectangle as invalid.  It recursively invalidates the coordinates for
  *	all subviews as well.
  *	This method must be called whenever the size, shape or position of
@@ -2768,7 +2774,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 /*
  *	The [-_rebuildCoordinates] method rebuilds the coordinate mapping
- *	matrices (matrixFromWindof and _matrixToWindow) and the cached visible
+ *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
  *	rectangle if they have been invalidated.
  */
 - (void) _rebuildCoordinates
@@ -2792,11 +2798,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	{
 	  NSRect	superviewsVisibleRect;
 	  BOOL		wasFlipped = _super_view->_rFlags.flipped_view;
-	  float		vals[6];
 	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
 
-	  [pMatrix getMatrix: vals];
-	  [_matrixToWindow setMatrix: vals];
+	  [_matrixToWindow getMatrixFromTransform: pMatrix];
 	  (*appImp)(_matrixToWindow, appSel, _frameMatrix);
 	  if (_rFlags.flipped_view != wasFlipped)
 	    {
@@ -2805,18 +2809,18 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	       * exactly overlays the original.	 To do that, we must translate
 	       * the origin by the height of the view.
 	       */
-	      flip->matrix.ty = _bounds.size.height;
+	      flip->matrix.ty = _frame.size.height;
 	      (*appImp)(_matrixToWindow, appSel, flip);
 	    }
 	  (*appImp)(_matrixToWindow, appSel, _boundsMatrix);
-	  [_matrixToWindow getMatrix: vals];
-	  [_matrixFromWindow setMatrix: vals];
+	  [_matrixFromWindow getMatrixFromTransform: _matrixToWindow];
 	  [_matrixFromWindow inverse];
 
 	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
 					   fromView: _super_view];
 
 	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+
 	}
     }
 }
