@@ -1,13 +1,14 @@
 {
     "Object    1" = {
-        elements = ("Object    2", "Object   51", "Object   52"); 
+        elements = ("Object    2", "Object   52", "Object   53"); 
         isa = NSMutableArray; 
     }; 
     "Object    2" = {className = NSApplication; isa = IMCustomObject; realObject = "Object    3"; }; 
     "Object    3" = {
+        delegate = nil; 
         isa = NSApplication; 
         keyWindow = nil; 
-        mainMenu = "Object   30"; 
+        mainMenu = "Object   31"; 
         mainWindow = nil; 
         windows = "Object    4"; 
     }; 
@@ -127,7 +128,8 @@
             "Object   20", 
             "Object   21", 
             "Object   24", 
-            "Object   27"
+            "Object   27", 
+            "Object   30"
         ); 
         isa = NSMutableArray; 
     }; 
@@ -265,7 +267,7 @@
         bounds = "{x = 0; y = 0; width = 114; height = 24}"; 
         delay = 0.200000; 
         font = "Object   15"; 
-        frame = "{x = 16; y = 56; width = 114; height = 24}"; 
+        frame = "{x = 15; y = 56; width = 114; height = 24}"; 
         highlightsBy = 12; 
         ignoresMultiClick = NO; 
         image = nil; 
@@ -365,7 +367,7 @@
         drawsBackground = NO; 
         errorAction = nil; 
         font = "Object   25"; 
-        frame = "{x = 194; y = 159; width = 132; height = 26}"; 
+        frame = "{x = 193; y = 159; width = 132; height = 26}"; 
         ignoresMultiClick = NO; 
         isBezeled = NO; 
         isBordered = YES; 
@@ -451,43 +453,35 @@
         red = 1.000000; 
         saturation = 0.000000; 
     }; 
-    "Object   30" = {
+    "Object   30" = {isa = NSPopUpButton; pullsDown = NO; }; 
+    "Object   31" = {
         autoenablesItems = YES; 
         isa = NSMenu; 
-        itemArray = "Object   31"; 
+        itemArray = "Object   32"; 
         title = test; 
     }; 
-    "Object   31" = {
-        elements = ("Object   32", "Object   38", "Object   49", "Object   50"); 
+    "Object   32" = {
+        elements = ("Object   33", "Object   39", "Object   50", "Object   51"); 
         isa = NSMutableArray; 
     }; 
-    "Object   32" = {
+    "Object   33" = {
         action = "submenuAction:"; 
         isEnabled = YES; 
         isa = NSMenuItem; 
         keyEquivalent = ""; 
         tag = 0; 
-        target = "Object   33"; 
-        title = Info; 
-    }; 
-    "Object   33" = {
-        autoenablesItems = YES; 
-        isa = NSMenu; 
-        itemArray = "Object   34"; 
+        target = "Object   34"; 
         title = Info; 
     }; 
     "Object   34" = {
-        elements = ("Object   35", "Object   36", "Object   37"); 
-        isa = NSMutableArray; 
+        autoenablesItems = YES; 
+        isa = NSMenu; 
+        itemArray = "Object   35"; 
+        title = Info; 
     }; 
     "Object   35" = {
-        action = nil; 
-        isEnabled = NO; 
-        isa = NSMenuItem; 
-        keyEquivalent = ""; 
-        tag = 0; 
-        target = nil; 
-        title = "Info Panel..."; 
+        elements = ("Object   36", "Object   37", "Object   38"); 
+        isa = NSMutableArray; 
     }; 
     "Object   36" = {
         action = nil; 
@@ -496,9 +490,18 @@
         keyEquivalent = ""; 
         tag = 0; 
         target = nil; 
-        title = Preferences...; 
+        title = "Info Panel..."; 
     }; 
     "Object   37" = {
+        action = nil; 
+        isEnabled = NO; 
+        isa = NSMenuItem; 
+        keyEquivalent = ""; 
+        tag = 0; 
+        target = nil; 
+        title = Preferences...; 
+    }; 
+    "Object   38" = {
         action = nil; 
         isEnabled = YES; 
         isa = NSMenuItem; 
@@ -507,35 +510,35 @@
         target = nil; 
         title = Help...; 
     }; 
-    "Object   38" = {
+    "Object   39" = {
         action = "submenuAction:"; 
         isEnabled = YES; 
         isa = NSMenuItem; 
         keyEquivalent = ""; 
         tag = 0; 
-        target = "Object   39"; 
-        title = Document; 
-    }; 
-    "Object   39" = {
-        autoenablesItems = YES; 
-        isa = NSMenu; 
-        itemArray = "Object   40"; 
+        target = "Object   40"; 
         title = Document; 
     }; 
     "Object   40" = {
+        autoenablesItems = YES; 
+        isa = NSMenu; 
+        itemArray = "Object   41"; 
+        title = Document; 
+    }; 
+    "Object   41" = {
         elements = (
-            "Object   41", 
             "Object   42", 
             "Object   43", 
             "Object   44", 
             "Object   45", 
             "Object   46", 
             "Object   47", 
-            "Object   48"
+            "Object   48", 
+            "Object   49"
         ); 
         isa = NSMutableArray; 
     }; 
-    "Object   41" = {
+    "Object   42" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -544,7 +547,7 @@
         target = nil; 
         title = Open...; 
     }; 
-    "Object   42" = {
+    "Object   43" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -553,7 +556,7 @@
         target = nil; 
         title = New; 
     }; 
-    "Object   43" = {
+    "Object   44" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -562,7 +565,7 @@
         target = nil; 
         title = Save; 
     }; 
-    "Object   44" = {
+    "Object   45" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -571,7 +574,7 @@
         target = nil; 
         title = "Save As..."; 
     }; 
-    "Object   45" = {
+    "Object   46" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -580,7 +583,7 @@
         target = nil; 
         title = "Save To..."; 
     }; 
-    "Object   46" = {
+    "Object   47" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -589,7 +592,7 @@
         target = nil; 
         title = "Save All"; 
     }; 
-    "Object   47" = {
+    "Object   48" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -598,7 +601,7 @@
         target = nil; 
         title = "Revert to Saved"; 
     }; 
-    "Object   48" = {
+    "Object   49" = {
         action = nil; 
         isEnabled = NO; 
         isa = NSMenuItem; 
@@ -607,7 +610,7 @@
         target = nil; 
         title = Close; 
     }; 
-    "Object   49" = {
+    "Object   50" = {
         action = nil; 
         isEnabled = YES; 
         isa = NSMenuItem; 
@@ -616,7 +619,7 @@
         target = nil; 
         title = Hide; 
     }; 
-    "Object   50" = {
+    "Object   51" = {
         action = nil; 
         isEnabled = YES; 
         isa = NSMenuItem; 
@@ -625,88 +628,96 @@
         target = nil; 
         title = Quit; 
     }; 
-    "Object   51" = {className = NSFontManager; isa = IMCustomObject; }; 
-    "Object   52" = {className = Controller; isa = IMCustomObject; }; 
-    "Object   53" = {
+    "Object   52" = {className = NSFontManager; isa = IMCustomObject; }; 
+    "Object   53" = {className = Controller; isa = IMCustomObject; }; 
+    "Object   54" = {
         elements = (
-            "Object   54", 
-            "Object   56", 
-            "Object   58", 
-            "Object   60", 
-            "Object   62", 
+            "Object   55", 
+            "Object   57", 
+            "Object   59", 
+            "Object   61", 
             "Object   63", 
             "Object   64", 
             "Object   65", 
             "Object   66", 
-            "Object   67"
+            "Object   67", 
+            "Object   68", 
+            "Object   69"
         ); 
         isa = NSMutableArray; 
     }; 
-    "Object   54" = {
+    "Object   55" = {
         destination = "Object    2"; 
         isa = IMControlConnector; 
-        label = "Object   55"; 
+        label = "Object   56"; 
+        source = "Object   51"; 
+    }; 
+    "Object   56" = {isa = NSString; string = "terminate:"; }; 
+    "Object   57" = {
+        destination = "Object    2"; 
+        isa = IMControlConnector; 
+        label = "Object   58"; 
         source = "Object   50"; 
     }; 
-    "Object   55" = {isa = NSString; string = "terminate:"; }; 
-    "Object   56" = {
-        destination = "Object    2"; 
-        isa = IMControlConnector; 
-        label = "Object   57"; 
-        source = "Object   49"; 
-    }; 
-    "Object   57" = {isa = NSString; string = "hide:"; }; 
-    "Object   58" = {
+    "Object   58" = {isa = NSString; string = "hide:"; }; 
+    "Object   59" = {
         destination = "Object   27"; 
         isa = IMOutletConnector; 
-        label = "Object   59"; 
-        source = "Object   52"; 
+        label = "Object   60"; 
+        source = "Object   53"; 
     }; 
-    "Object   59" = {isa = NSString; string = textField; }; 
-    "Object   60" = {
-        destination = "Object   52"; 
+    "Object   60" = {isa = NSString; string = textField; }; 
+    "Object   61" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   16"; 
     }; 
-    "Object   61" = {isa = NSString; string = "buttonPressed:"; }; 
-    "Object   62" = {
-        destination = "Object   52"; 
+    "Object   62" = {isa = NSString; string = "buttonPressed:"; }; 
+    "Object   63" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   17"; 
     }; 
-    "Object   63" = {
-        destination = "Object   52"; 
+    "Object   64" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   14"; 
     }; 
-    "Object   64" = {
-        destination = "Object   52"; 
+    "Object   65" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   18"; 
     }; 
-    "Object   65" = {
-        destination = "Object   52"; 
+    "Object   66" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   19"; 
     }; 
-    "Object   66" = {
-        destination = "Object   52"; 
+    "Object   67" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   20"; 
     }; 
-    "Object   67" = {
-        destination = "Object   52"; 
+    "Object   68" = {
+        destination = "Object   53"; 
         isa = IMControlConnector; 
-        label = "Object   61"; 
+        label = "Object   62"; 
         source = "Object   21"; 
     }; 
-    RootObject = {Connections = "Object   53"; Objects = "Object    1"; isa = GMModel; }; 
+    "Object   69" = {
+        destination = "Object   53"; 
+        isa = IMOutletConnector; 
+        label = "Object   70"; 
+        source = "Object    2"; 
+    }; 
+    "Object   70" = {isa = NSString; string = delegate; }; 
+    RootObject = {Connections = "Object   54"; Objects = "Object    1"; isa = GMModel; }; 
     TopLevelObjects = (RootObject); 
     Version = 1; 
 }

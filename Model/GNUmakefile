@@ -40,6 +40,8 @@ libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui/AppKit
 libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h GMAppKit.h
 
 test_OBJC_FILES = test.m Controller.m
+test_MAIN_MODEL_FILE = test.gmodel
+test_RESOURCES = test.gmodel
 
 nib2gmodel_OBJC_FILES = IBClasses.m Translator.m nib2gmodel.m
 

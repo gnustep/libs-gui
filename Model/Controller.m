@@ -10,4 +10,9 @@
   [textField setStringValue:text];
 }
 
+- (id)window
+{
+  return [textField window];
+}
+
 @end

@@ -148,10 +148,12 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeInt:[self state] withName:@"state"];
   [archiver encodeFloat:delay withName:@"delay"];
   [archiver encodeFloat:interval withName:@"interval"];
+#if 1
   [archiver encodeString:[self title] withName:@"title"];
   [archiver encodeString:[self alternateTitle] withName:@"alternateTitle"];
   [archiver encodeObject:[self image] withName:@"image"];
   [archiver encodeObject:[self alternateImage] withName:@"alternateImage"];
+#endif
   [archiver encodeInt:[self imagePosition] withName:@"imagePosition"];
   [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
   [archiver encodeBOOL:[self isTransparent] withName:@"isTransparent"];
@@ -520,10 +522,15 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [super encodeWithModelArchiver:archiver];
   [archiver encodeBOOL:[self pullsDown] withName:@"pullsDown"];
+#if 0
+  /* OUCH! This code crashes the translator; probably we interfere somehow with
+     the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
+     popup buttons cannot be handled by the convertor! */
   [archiver encodeArray:[self itemArray] withName:@"itemArray"];
   [archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
+  [super encodeWithModelArchiver:archiver];
+#endif
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver

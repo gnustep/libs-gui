@@ -34,6 +34,10 @@ extern NSMutableArray* objects;
 extern NSMutableArray* connections;
 
 @interface Translator : NSObject
+{
+  NSString* gmodelFile;
+}
+
 - (void)translateNibFile:(NSString*)nibFile toModelFile:(NSString*)gmodelFile;
 @end
 

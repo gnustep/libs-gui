@@ -5,4 +5,5 @@
     id textField;
 }
 - (void)buttonPressed:(id)sender;
+- (id)window;
 @end

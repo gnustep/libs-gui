@@ -30,6 +30,7 @@
    Imran Qureshi.
  */
 
+#import <Foundation/NSNotification.h>
 #import <AppKit/AppKit.h>
 #import <extensions/GMArchiver.h>
 #import "IMLoading.h"
@@ -41,14 +42,14 @@ NSMutableArray* connections;
 
 @implementation Translator
 
-- (void)translateNibFile:(NSString*)nibFile toModelFile:(NSString*)gmodelFile
+- (void)translateNibFile:(NSString*)nibFile toModelFile:(NSString*)modelFile
 {
-  GMArchiver* archiver;
-  GMModel* model;
+  GMArchiver* archiver = [[GMArchiver new] autorelease];
+  GMModel* model = [[GMModel new] autorelease];
 
   objects = [[NSMutableArray new] autorelease];
   connections = [[NSMutableArray new] autorelease];
-  model = [[GMModel new] autorelease];
+  gmodelFile = [modelFile retain];
 
   [NSApplication sharedApplication];
   if (![NSBundle loadNibFile:nibFile
@@ -59,7 +60,6 @@ NSMutableArray* connections;
     exit (1);
   }
 
-  archiver = [[GMArchiver new] autorelease];
   [model _setObjects:objects connections:connections];
   [archiver encodeRootObject:model withName:@"RootObject"];
   if (![archiver writeToFile:gmodelFile])
