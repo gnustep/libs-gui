@@ -74,6 +74,9 @@ typedef enum _NSSelectionAffinity {
        sharing this layout manager.  In this case, we need to keep the
        views in sync. */
     unsigned multiple_textviews: 1;
+    /* YES if delegate responds to
+       `shouldChangeTextInRange:replacementString:' */
+    unsigned delegate_responds_to_should_change: 1;
   } _tvf;
   
   /* The following is the object used when posting notifications.  
