@@ -85,14 +85,18 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 }
 
 /*
- * Special setFrame: implementation - don't use the autosize mechanism
- * Just resize the windows content-view to this size.
+ * Special setFrame: implementation - a minimal autoresize mechanism
  */
 - (void) setFrame: (NSRect)frameRect
 {
+  NSSize oldSize = frame.size;
+  NSView *cv = [window contentView];
+
   autoresize_subviews = NO;
   [super setFrame: frameRect];
-  [[window contentView] setFrame: frameRect];
+  // Safety Check.
+  [cv setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [cv resizeWithOldSuperviewSize: oldSize];
 }
 
 - (Class) classForCoder: (NSCoder*)aCoder
