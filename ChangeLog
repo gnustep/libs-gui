@@ -1,3 +1,15 @@
+2000-10-24  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: _GNULineLayoutInfo has new ivar
+	usedRect. Simplified the code a bit.
+	* Source/NSText.m: [buildUpTextNetwork:] The text container no
+	longer tracks its view by default. 
+	[initWithFrame:textContainer:] the view is no longer resizable by default.
+	* Source/NSTextContainer.m: [setContainerSize:] only informs
+	layout manager if really changed.
+	* Source/Parser/attributedStringConsumer.m
+	Use NSASCIIStringEncoding instead of NSLatin1StringEncoding for RTF
+	
 2000-10-21  Michael Hanni <mhanni@sprintmail.com>
 
 	* Source/NSTabView.m: ([-dealloc:]) updated.
