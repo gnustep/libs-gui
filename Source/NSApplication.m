@@ -203,8 +203,9 @@ initialize_gnustep_backend(void)
 		    _(@"Can't load object file from backend at path %@"),
 		    path);
 
-	/* Now extract the GSBackend class from the loaded bundle.  */
-	backend = [theBundle classNamed: @"GSBackend"];
+	/* Now get the GSBackend class, which should have just been loaded
+	 * from the bundle.  */
+	backend = NSClassFromString (@"GSBackend");
 	NSCAssert1 (backend != Nil, 
 		    _(@"Backend at path %@ doesn't contain the GSBackend class"),
 		   path);
