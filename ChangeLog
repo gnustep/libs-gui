@@ -1,3 +1,14 @@
+2002-06-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-finishLaunching): Use makeKeyWindow
+	not becomeKeyWindow.
+
+	* Source/NSWindow.m (-canBecomeKeyWindow): Conform to docs. don't
+	check if visible or miniaturized.
+	(-canBecomeMainWindow): Idem for miniaturized only.
+	(-makeKeyWindow): Check if visible, miniaturized.
+	(-makeMainWindow): Idem.
+
 Wed Jun 19 15:54:39 2002  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSMenu.m ([-performActionForItemAtIndex:]): Select item

@@ -1158,23 +1158,26 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+/** Returns YES if the receiver can be made key. If this method returns
+    NO, the window will not be made key. This implementation returns YES
+    if the window is resizable or has a title bar. You can override this
+    method to change it's behavior */
 - (BOOL) canBecomeKeyWindow
 {
-  if (!_f.visible)
-    return NO;
-  if (_f.is_miniaturized)
-    return NO;
   if ((NSResizableWindowMask | NSTitledWindowMask) & _styleMask)
     return YES;
   else
     return NO;
 }
 
+/** Returns YES if the receiver can be the main window. If this method
+    returns NO, the window will not become the main window. This
+    implementation returns YES if the window is resizable or has a
+    title bar and is visible and is not an NSPanel. You can override
+    this method to change it's behavior */
 - (BOOL) canBecomeMainWindow
 {
   if (!_f.visible)
-    return NO;
-  if (_f.is_miniaturized)
     return NO;
   if ((NSResizableWindowMask | NSTitledWindowMask) & _styleMask)
     return YES;
@@ -1235,7 +1238,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) makeKeyWindow
 {
-  if (_f.is_key == YES)
+  if (!_f.visible || _f.is_miniaturized || _f.is_key == YES)
     {
       return;
     }
@@ -1248,7 +1251,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) makeMainWindow
 {
-  if (_f.is_main == YES)
+  if (!_f.visible || _f.is_miniaturized || _f.is_main == YES)
     {
       return;
     }
