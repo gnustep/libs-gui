@@ -27,3 +27,6 @@ before-libgmodel-all:: \
 
 ../Headers/gnustep/gui/%.h: %.h
 	cp $^ $@
+
+# Additional dependencies
+$(GNUSTEP_OBJ_DIR)/GMArchiver.o: GMArchiveObjects.m

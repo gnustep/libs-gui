@@ -28,7 +28,7 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSPathUtilities.h>
 
-#include <extensions/GMArchiver.h>
+#include <AppKit/GMArchiver.h>
 #include "AppKit/IMLoading.h"
 #include "AppKit/IMCustomObject.h"
 

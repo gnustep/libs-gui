@@ -44,7 +44,7 @@
 #include <Foundation/NSFileManager.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/IMLoading.h>
-#include <extensions/GMArchiver.h>
+#include <AppKit/GMArchiver.h>
 
 // toDo:	
 // - interactive directory creation in SavePanel

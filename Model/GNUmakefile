@@ -37,7 +37,8 @@ endif
 
 #APP_NAME = test
 
-libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m
+libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m \
+	GMArchiver.m
 libgmodel_HEADER_FILES_DIR = ../Headers/AppKit
 libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui/AppKit
 libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h GMAppKit.h
@@ -59,7 +60,7 @@ ADDITIONAL_CPPFLAGS += $(RUNTIME_DEFINE) $(GUI_DEFINE) $(BACKEND_DEFINE)
 
 ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR)
 
-ADDITIONAL_TOOL_LIBS += -lgmodel -lFoundationExt
+ADDITIONAL_TOOL_LIBS += -lgmodel
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
 
 # Additional include directories the compiler should search
@@ -69,7 +70,7 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
 
-LIBRARIES_DEPEND_UPON = -lFoundationExt $(FND_LIBS) $(GUI_LIBS) \
+LIBRARIES_DEPEND_UPON = $(FND_LIBS) $(GUI_LIBS) \
 		$(BACKEND_LIBS) $(SYSTEM_LIBS)
 
 -include GNUmakefile.local

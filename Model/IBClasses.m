@@ -28,7 +28,7 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
-#import <extensions/GMArchiver.h>
+#import <AppKit/GMArchiver.h>
 #import "IBClasses.h"
 #import "Translator.h"
 #import "IMConnectors.h"

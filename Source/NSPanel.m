@@ -47,7 +47,7 @@
 #include <AppKit/IMLoading.h>
 #include <AppKit/GMAppKit.h>
 
-#include <extensions/GMArchiver.h>
+#include <AppKit/GMArchiver.h>
 
 
 

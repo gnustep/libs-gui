@@ -26,10 +26,22 @@
 #include <string.h>
 
 #import <AppKit/NSActionCell.h>
-#include <extensions/GMArchiver.h>
-#include <extensions/objc-runtime.h>
+#include <AppKit/GMArchiver.h>
 #include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
+
+#if GNU_RUNTIME
+
+#include <objc/objc-api.h>
+#include <objc/Protocol.h>
+#include <objc/encoding.h>
+
+#else /* NeXT_RUNTIME */
+
+#include <objc/objc-class.h>
+#include <extensions/objc-api.h>
+#include <extensions/encoding.h>
+#endif
 
 static void
 object_set_instance_variable (id anObject,
