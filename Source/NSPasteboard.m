@@ -183,7 +183,7 @@ static  NSMapTable              *mimeMap = NULL;
 	{
 	  the_server = (id<GSPasteboardSvr>)[NSConnection
 	    rootProxyForConnectionWithRegisteredName:
-            [PBS_NAME stringByAppendingFormat: @"-%@", host] host: @"*"];
+            [PBSNAME stringByAppendingFormat: @"-%@", host] host: @"*"];
           if (the_server == nil)
             {
 	      NSLog(@"Unable to contact pasteboard server for %@ - "
