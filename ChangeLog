@@ -1,3 +1,17 @@
+2001-12-07  Pierre-Yves Rivaille  <pyrivail@ens-lyon.fr>
+
+	* Headers/gnustep/gui/NSTableColumn.h: 
+	* Source/NSTableColumn.m: changed the initWithIdentifier return 
+	type from NSTableColumn* to id. It prevents warning when 
+	subclassing and is consistent with the docs.
+	* Headers/gnustep/gui/NSTableView.h: renamed ivar _del_editable to 
+	_dataSource_editable. Previously the delegate was responsible for 
+	tableView:setObjectValue:forTableColumn:row:, whereas it is now the 
+	dataSource that is responsible for it (it conforms with the docs)
+	* Source/NSTableView.m: [setDelegate:], [setDataSource:] and
+	[validateEditing] changed to conform to previous change
+	* Source/NSTableView.m (quick_sort_internal) : fixed typo
+	
 Wed Dec  5 11:04:14 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSPrintInfo.m ([+initPrintInfoDefaults]): Commented out
