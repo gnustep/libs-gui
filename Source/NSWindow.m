@@ -2354,6 +2354,8 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) setFrameAutosaveName: (NSString *)name
 {
+  NSString	*nameToRemove = nil;
+
   if ([name isEqual: autosave_name])
     {
       return YES;		/* That's our name already.	*/
@@ -2367,6 +2369,10 @@ resetCursorRectsForView(NSView *theView)
     }
   if (autosave_name != nil)
     {
+      if (name == nil || [name isEqual: @""] == YES)
+	{
+	  nameToRemove = RETAIN(autosave_name);
+	}
       [autosaveNames removeObject: autosave_name];
       autosave_name = nil;
     }
@@ -2377,7 +2383,7 @@ resetCursorRectsForView(NSView *theView)
       autosave_name = name;
       [name release];
     }
-  else
+  else if (nameToRemove != nil)
     {
       NSUserDefaults	*defs;
       NSString		*key;
@@ -2405,14 +2411,15 @@ resetCursorRectsForView(NSView *theView)
 	    {
 	      dict = AUTORELEASE([dict mutableCopy]);
 	    }
-	  [dict removeObjectForKey: name];
+	  [dict removeObjectForKey: nameToRemove];
 	  [defs setObject: dict forKey: key];
 	}
       else
 	{
-	  key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
+	  key = [NSString stringWithFormat: @"NSWindow Frame %@", nameToRemove];
 	  [defs removeObjectForKey: key];
 	}
+      RELEASE(nameToRemove);
     }
   [windowsLock unlock];
   return YES;

@@ -1,3 +1,10 @@
+Wed Dec 15 15:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: ([-setFrameAutosaveName:]) bugfix for setting a
+	nil name (and removing the old name).
+	* Source/NSMenu.m: ([-close]) close attached menus too.
+	([-display]) display attached menus too.
+
 Wed Dec 15 11:13:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSResponder.m: Don't try to encode/decode next responder -

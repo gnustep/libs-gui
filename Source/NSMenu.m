@@ -1036,6 +1036,12 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   [aWindow orderFront: nil];
 
   menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
+
+  /*
+   * If we have just been made visible, we must make sure that any attached
+   * submenu is visible too.
+   */
+  [[self attachedMenu] display];
 }
 
 - (void) displayTransient
@@ -1069,6 +1075,18 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) close
 {
+  NSMenu	*sub = [self attachedMenu];
+
+  /*
+   * If we have an attached submenu, we must close that too - but then make
+   * sure we still have a record of it so that it can be re-displayed if we
+   * are redisplayed.
+   */
+  if (sub != nil)
+    {
+      [sub close];
+      menu_attachedMenu = sub;
+    }
   [aWindow orderOut: self];
   menu_is_visible = NO;
 
