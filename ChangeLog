@@ -1,3 +1,11 @@
+Thu Apr  8 21:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Tidy window view stuff
+	* Source/NSWorkspace.m: Improve app launching to try various locations.
+	* Source/GSServicesManager.m: Workaround compiler bug and remove
+	unused method.
+	* Headers/AppKitGSServicesManager.h: Remove unused method.
+
 Wed Apr  7 21:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: Position image correctly in flipped view.
