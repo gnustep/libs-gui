@@ -23,7 +23,9 @@ this library).  GNUstep-HOWTO is located at @url{http://www.gnustep.org}
 and in the gnustep-make package (which you should install first).
 
 You must have installed gnustep-base and gnustep-make 
-before building this library.
+before building this library. Other external libraries that you should
+have installed include libtiff, libjpg, and libpng. Read the GNUstep-HOWTO
+for more information.
 
 After installing this library, install gnustep-back.
 

@@ -1,7 +1,26 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.1'.
+The currently released version of the library is `0.9.2'.
+
+Noteworthy changes in version `0.9.2'
+=====================================
+
+   * Complete NSToolbar implementation
+
+   * New Mac OS X methods in NSView and other classes
+
+   * Fixed some sheet handling problems.
+
+   * Integrated gif, jpg, and png handling in front-end.
+
+   * Added overridable button and frame drawing functions
+
+   * Add some keyed decode/encoding to some classes
+
+   * NSStringDrawing redesigned.
+
+   * Much improved loading of gorm files
 
 Noteworthy changes in version `0.9.1'
 =====================================

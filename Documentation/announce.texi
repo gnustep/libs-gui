@@ -40,10 +40,7 @@ file has been placed on @samp{@value{GNUSTEP-GUI-FTP-MACHINE}} in
 @samp{@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
 @end ifset
 
-the TIFF Graphics library version
-@value{GNUSTEP-GUI-LIBTIFF} is required.
-
-It also requires the GNUstep Base Library.
+Read the INSTALL file or the GNUstep-HOWTO for installation instructions.
 
 @section Where do I send bug reports?
 

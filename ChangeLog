@@ -1,3 +1,8 @@
+2004-02-28  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.9.2
+	* Documentation/news.texi: Update.
+
 2004-02-28  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbarItem.m: Corrected misspelling of Separator.

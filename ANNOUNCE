@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.9.1 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.9.2 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,23 +28,33 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.9.1'
+Noteworthy changes in version `0.9.2'
 =====================================
 
-   * NSWindow - DnD works on whole window and events are propogated up
-     to first DnD aware view.
+   * Complete NSToolbar implementation
 
-   * Absolute paths and DnD works in OpenPanels.
+   * New Mac OS X methods in NSView and other classes
+
+   * Fixed some sheet handling problems.
+
+   * Integrated gif, jpg, and png handling in front-end.
+
+   * Added overridable button and frame drawing functions
+
+   * Add some keyed decode/encoding to some classes
+
+   * NSStringDrawing redesigned.
+
+   * Much improved loading of gorm files
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.9.1.tar.gz distribution file has been placed on
+   The gstep-gui-0.9.2.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
-   the TIFF Graphics library version 3.4 is required.
-
-   It also requires the GNUstep Base Library.
+   Read the INSTALL file or the GNUstep-HOWTO for installation
+instructions.
 
 Where do I send bug reports?
 ============================
