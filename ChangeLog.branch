@@ -1,3 +1,9 @@
+2004-04-13  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Source/NSInputManager.m (-createKeyBindingTable): Remove the
+	  IF statement whose condition is given by
+	  -wantsToInterpretAllKeystrokes.
+
 2004-04-10  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* InputManagers/PlainInputServer/PlainInputServer.dict: The key
