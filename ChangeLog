@@ -1,5 +1,15 @@
 2002-11-10  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSSimpleLayoutManager.m
+	* Source/NSOutlineView.m
+	Removed compiler warnings by correcting method names.
+	* Source/NSBezierPath.m
+	* Source/NSOpenPanel.m
+	* Source/NSStringDrawing.m
+	Corrected includes to speed up compilation.
+	
+2002-11-10  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSComboSupport.h
 	* Source/GSComboSupport.m
 	Removed files.
